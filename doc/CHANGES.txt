@@ -75,17 +75,17 @@ Zope Changes
           'data_record_normalized_score_' contain the score and
           normalized score for the result object.
 
-	- Added Keyword Indexes to the Catalog.  Keyword indexes allow
-	  you to index a sequence of 'keywords' as an atomic property
-	  of an object.  This is useful for buiding catagorical
-	  hierarchies.
+        - Added Keyword Indexes to the Catalog.  Keyword indexes allow
+          you to index a sequence of 'keywords' as an atomic property
+          of an object.  This is useful for buiding catagorical
+          hierarchies.
 
-	- Z SQL Methods arguments list is now a TEXTAREA widget to
-	  ease editing long aruments lists.
+        - Z SQL Methods arguments list is now a TEXTAREA widget to
+          ease editing long aruments lists.
 
-	- SQL Database Adapters now have a 'test' tab where arbitrary
-	  SQL may be entered and executed immediately through the
-	  connection object.  DTML is not supported in this tab.
+        - SQL Database Adapters now have a 'test' tab where arbitrary
+          SQL may be entered and executed immediately through the
+          connection object.  DTML is not supported in this tab.
 
         - SQL Methods now support an option 'op' parameter on the DTML 
           method <dtml-sqltest> which allows you to choose the
@@ -95,6 +95,11 @@ Zope Changes
           applications. The changes _emulate_ aspects of DAV level 2
           locking but do _not_ provide actual locking support at the
           present time.
+
+        - Files and Images now can be served without loading themselves
+          into memory. This is automatically done for large Files and 
+          Images. As a by product, RESPONSE.write now works better in
+          ZServer.
 
       Features Changed
 
@@ -106,12 +111,12 @@ Zope Changes
 
         - Added a coptimizations module.  The first optimization is
           to provide an implementation of persistent_id in C.  This
-	  routine, which is called extremely often while pickling was
-	  found to be a significant bottleneck.
+          routine, which is called extremely often while pickling was
+          found to be a significant bottleneck.
 
         - More flexible cache management methods were added to ZODB
           Connection objects so that apps that want to move objects
-	  out of memory can force aggressive cache behavior.
+          out of memory can force aggressive cache behavior.
 
         - Added the beginnings of internationalization support to Zope.
           The Zope startup script (z2.py) now supports a "-L" option 
@@ -124,6 +129,9 @@ Zope Changes
         - Logging from ZServer modified to produce Common Log Format
           in a Combined format, where user-agent and referer are also 
           logged.
+          
+        - xmlrpclib was updated to relect the current version (0.9.8)
+          from Pythonware.
 
       Bugs Fixed
 
@@ -165,7 +173,7 @@ Zope Changes
           initialized.
 
         - Fixed bug that allowed users with local roles gain priviledges on
-	  acquired objects.  getRolesInContext did not used the correct 
+          acquired objects.  getRolesInContext did not used the correct 
           context, as defined by the inner-most object wrapping.
 
         - Some unnecessary debug mode overhead eliminated - external
@@ -178,9 +186,9 @@ Zope Changes
       Bugs Fixed
 
         - Fixed a bug which allowed unauthorized options to be displayed 
-	  when adding a Folder. Now you only see options to add an 
-	  index_document and/or a user folder if you have adequate 
-	  permissions.
+          when adding a Folder. Now you only see options to add an 
+          index_document and/or a user folder if you have adequate 
+          permissions.
 
 
     Zope 2.0
@@ -205,8 +213,8 @@ Zope Changes
           data are uploaded as a string by using the ':string'
           ZPublisher type in the upload form.
 
-	  More advanced DA's could, and probably should support
-	  sub-transactions.
+          More advanced DA's could, and probably should support
+          sub-transactions.
 
       Bugs Fixed
 
@@ -221,7 +229,7 @@ Zope Changes
           connections leaked, the site would accept no more web
           requests. 
 
-	- The transaction-integration for relational databases didn't
+        - The transaction-integration for relational databases didn't
           work properly.  Aborting Zope transactions didn't abort
           relational database transactions. What's worse, transactions
           were not committed after a Zope transaction using a
@@ -252,17 +260,17 @@ Zope Changes
           attribute is used. Also, the null attribute had no effect
           when outputing missing values.
 
-	- It was impossible to map some permissions to themselves, or
+        - It was impossible to map some permissions to themselves, or
           to other inherited, but not registered permissions in
           products and in class methods.  When this failed, a silly
           error message ("Waaa" ;) was output.
 
-	- SQL methods had an unused method, getFindContent allowed
+        - SQL methods had an unused method, getFindContent allowed
           anonymous users to read SQL method source.  This method was
           renamed to PrincipiaSearchSource, and protected with a
           permission.
 
-	- SQL methods could not be found with the find mechanism by
+        - SQL methods could not be found with the find mechanism by
           searching their source.
 
         - The PrincipiaSearchSource method of DTML documents and
@@ -276,7 +284,7 @@ Zope Changes
           External methods with request variables. This was especially
           problematic for XML-RPC, which uses positional arguments.
 
-	- It was difficult or impossible to call External methods with
+        - It was difficult or impossible to call External methods with
           'self' arguments from XML-RPC.
         
 
@@ -341,7 +349,7 @@ Zope Changes
 
         - Image dimensions were not autodetected for PNG 1.2 files.
 
-	- The "View" view didn't display correctly for images with ids
+        - The "View" view didn't display correctly for images with ids
           with characters that had special meaning in URLs.
 
         - The 'optional' attribute in the 'sqltest' tag had no effect.
@@ -393,7 +401,7 @@ Zope Changes
 
         - The undo form did not restrict undoable transactions to
           just those transactions performed by users that were 
-	  authenticated at the same level.  This made the new undo
+          authenticated at the same level.  This made the new undo
           less restrictive than the Zope 1 undo.  Undo should probably
           be *more* restrictive, but that will have to wait for 2.1
           or later.
