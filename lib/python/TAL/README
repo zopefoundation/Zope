@@ -76,20 +76,12 @@ TO DO
 
 Here are some things that should be done.
 
-- Add calls to an expression compiler
-
-- Raise exceptions for all errors (currently it just prints to
-  stdout).
-
 - Provide a dummy implementation of evaluateStructure()?
 
 - Check for attempt to replace the documentElement.  (Exception: when
   replacing with a single element?  Should it be the same tag?)
 
 - Speed up findMacro()?
-
-- When using z:replace="structure ...", should make a copy of the
-  nodes; perhaps the data should be a documentFragment node?
 
 It's unclear on what to do about these items:
 
