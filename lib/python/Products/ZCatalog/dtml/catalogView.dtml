@@ -71,13 +71,11 @@ function toggleSelect() {
     </td>
     <td align="left" valign="top">
     <div class="form-text">
-      <dtml-with sequence-item only>
-        <dtml-if name="meta_type">
-          <dtml-var name="meta_type" size="15">
-        <dtml-else>
-          <i>Unknown</i>
-        </dtml-if>
-      </dtml-with>
+      <dtml-if expr="has_key('meta_type') and meta_type">
+        <dtml-var name="meta_type" size="15">
+      <dtml-else>
+        <i>Unknown</i>
+      </dtml-if>
     </div>
     </td>
   </tr>
