@@ -16,8 +16,7 @@ Benefits
     web server.
 
   - Applications can be moved from one publishing mechanism, such as
-    CGI, to another mechanism, such as Fast CGI or ILU Requestor, with
-    no change.
+    CGI, to another mechanism, such as Fast CGI or COM, with no change.
 
   - Python objects are published as Python objects.  The web server
     "calls" the objects in much the same way that other Python objects
@@ -49,14 +48,6 @@ Published objects
 
   are published.
 
-  Alternatively, a module variable, named 'web_objects' can be
-  defined.  If this variable is defined, it should be bound to a
-  mapping object that maps published names to published objects.
-  Objects that are published through a module's 'web_objects' are not
-  subject to the restrictions listed above. For example, modules or
-  objects without documentation strings may be published by including
-  them in a module's 'web_objects' attribute.
-
   Sub-objects (or sub-sub objects, ...) of published objects are
   also published, as long as the sub-objects:
    
@@ -65,12 +56,6 @@ Published objects
     - have names that do not begin with an underscore, and
 
     - are not modules.
-
-  A sub-object that cannot have a doc strings may be published by
-  including a special attribute in the containing object named:
-  subobject_name__doc__.  For example, if foo.bar.spam doesn't have a
-  doc string, but foo.bar has a non-empty attribute
-  foo.bar.spam__doc__, then foo.bar.spam can be published.
 
   Note that object methods are considered to be subobjects.
 
@@ -86,25 +71,13 @@ Published objects
   fails, then the object publisher raises a '"Not Found"' exception.  If
   either of the accesses suceeds, then, of course, processing continues.
 
+  Normally, URL traversal begins with the published module.  If the
+  Published module has a global variable named 'bobo_application',
+  then traversal begins with this object instead.
+
   If the final object encountered when traversing the URL has an
   'index_html' attribute, the object traversal will continue to this
   attribute.   This is useful for providing default methods for objects.
-
-  In some cases, a parent object may hold special attributed for a
-  subobject.  This may be the case either when a sub-object cannot have
-  the special attribute or when it is convenience for the parent
-  object to manage attribute data (e.g. to share attribute data among
-  multiple children).  When the object publisher looks for a special
-  attribute, it first trys to get the attribute from the published
-  object.  If it fails to get the special attribute, it uses the same
-  access mechanism used to extract the subobject from the parent
-  object to get an attribute (or item) using a name obtained by
-  concatinating the sub-object name with the special attribute
-  name. For example, let 'foo.bar' be a dictionary, and foo.bar.spam
-  an item in the dictionary.  When attempting to obtain the special
-  attribute '__roles__', the object publisher will first try to
-  evaluate 'foo.bar.spam.__roles__', and then try to evaluate:
-  'foo.bar["spam"+"__roles__"]'. 
 
 Access Control
 
@@ -114,19 +87,14 @@ Access Control
   The '__allow_groups__' attribute may be a mapping object, in which
   case it is a collection of named groups.  Alternatively, the
   '__allow_groups__' attribute may be a sequence, in which case it is
-  a collection of named groups.  Each group must be a dictionary that
-  use names as keys (i.e. sets of names).  The values in these
-  dictionaries may contain passwords for authenticating each of the
-  names.  The basic authentication realm name used is
-  'module_name.server_name', where 'module_name' is the name of the
-  module containing the published objects, and server_name is the name
-  of the web server.
+  a collection of unnamed groups.  Each group must be a mapping from
+  name to password.
 
   The module used to publish an object may contain it's own
   '__allow_groups__' attribute, thereby limiting access to all of the
   objects in a module.
 
-  If multiple objects in the URI path have '__allow_groups__'
+  If multiple objects in the URL path have '__allow_groups__'
   attributes, then the '__allow_groups__' attribute from the last
   object in the path that has this attribute will be used.  The
   '__allow_groups__' attribute for a subobject overides
@@ -276,17 +244,9 @@ Return types
   will be set to 'text/html'.  Otherwise the content-type will be set
   to 'text/plain'.
 
-  A special case is when the returned object is a two-element tuple.
-  If the return object is a two-element tuple, then the first element
-  will be converted to a string and treated as an HTML title, and
-  the second element will be converted to a string and treated as
-  the contents of an HTML body. An HTML document is created and
-  returned (with type text/html) by adding necessary html, head,
-  title, and body tags.
-
   If the returned object is None or the string representation of the
-  returned object is an empty string, then HTTP the return status will
-  be set "No Content", and no body will be returned.  On some
+  returned object is an empty string, then the HTTP return status will
+  be set to "No Content", and no body will be returned.  On some
   browsers, this will cause the displayed document to be unchanged.
 
 Base References
@@ -300,18 +260,6 @@ Base References
   reference is a relative reference beginning with a dot, then an
   absolute reference will be constructed from the effective URL used
   to access the published object and from the relative reference. 
-
-Providing On-Line help
-
-  On-line help is provided for published objects, both explicitly and
-  implicitly.  To provide on-line help for an object, simply provide a
-  'help' attribute for the object.  If a 'help' attribute is not
-  provided, then the object's documentation string is used. When a URI
-  like: 'http:/some.server/cgi-bin/some_module/foo/bar/help' is
-  presented to the publisher, it will try to access the 'help'
-  attribute of 'some_module.foo.bar'.  If the object does not have a
-  'help' attribute, then the object's documentation string will be
-  returned.
       
 Exception handling
 
@@ -491,7 +439,7 @@ Publishing a module using Fast CGI
     o Configure the Fast CGI-enabled web server to execute this
       file.
 
-$Id: Publish.py,v 1.55 1997/09/26 19:15:47 jim Exp $"""
+$Id: Publish.py,v 1.56 1997/10/10 19:34:20 jim Exp $"""
 #'
 #     Copyright 
 #
@@ -546,7 +494,7 @@ $Id: Publish.py,v 1.55 1997/09/26 19:15:47 jim Exp $"""
 # See end of file for change log.
 #
 ##########################################################################
-__version__='$Revision: 1.55 $'[11:-2]
+__version__='$Revision: 1.56 $'[11:-2]
 
 
 def main():
@@ -742,6 +690,7 @@ class ModulePublisher:
 	except: groups=None
 
 	web_objects=None
+	roles=UNSPECIFIED_ROLES
 	try:
 	    object=module.bobo_application
 	    try:
@@ -749,7 +698,7 @@ class ModulePublisher:
 		inherited_groups.append(groups)
 	    except: groups=None
 	    try: roles=object.__roles__
-	    except: roles=UNSPECIFIED_ROLES
+	    except: pass
 	except: 
 	    try:
 		web_objects=module.web_objects
@@ -820,11 +769,14 @@ class ModulePublisher:
 	method=upper(request['REQUEST_METHOD'])
 	if method=='GET' or method=='POST': method='index_html'
 
+	URL=self.script
+
     	# Get default object if no path was specified:
     	if not path:
     	    entry_name=method
     	    try:
     		if hasattr(object,entry_name):
+		    response.setBase(URL+'/','')
     		    path=[entry_name]
     		else:
     		    try:
@@ -835,7 +787,6 @@ class ModulePublisher:
     	    if not path: path = ['help']
 
 	# Traverse the URL to find the object:
-	URL=self.script
 	parents=[]
     
 	try:  # Try to bind the top-level object to the request
@@ -1465,6 +1416,9 @@ def publish_module(module_name,
 
 #
 # $Log: Publish.py,v $
+# Revision 1.56  1997/10/10 19:34:20  jim
+# Various bug fixes made while preparing the Bobo course.
+#
 # Revision 1.55  1997/09/26 19:15:47  jim
 # Added url unquoting of form field names.
 #
