@@ -1,7 +1,7 @@
 
 """Very Safe Python Expressions
 """
-__rcs_id__='$Id: VSEval.py,v 1.6 1997/10/29 21:31:02 jim Exp $'
+__rcs_id__='$Id: VSEval.py,v 1.7 1997/11/05 22:42:31 jim Exp $'
 
 ############################################################################
 #     Copyright 
@@ -55,7 +55,7 @@ __rcs_id__='$Id: VSEval.py,v 1.6 1997/10/29 21:31:02 jim Exp $'
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 
 from string import join
 import new, sys
@@ -402,7 +402,7 @@ def t3():
     e=Eval('a.b', __mul__=mul, __getattr__=None)
     print e(a=A)
 
-def careful_mul(a,b):
+def careful_mul(a,b,env):
     try: l1=len(a)
     except: l1=a
     try: l2=len(b)
@@ -436,6 +436,9 @@ if __name__=='__main__': globals()[sys.argv[1]]()
 ############################################################################
 #
 # $Log: VSEval.py,v $
+# Revision 1.7  1997/11/05 22:42:31  jim
+# Changed careful_mul to be compatible with recent changes.
+#
 # Revision 1.6  1997/10/29 21:31:02  jim
 # Changed namespace name to _vars.
 #
