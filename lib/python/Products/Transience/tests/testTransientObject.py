@@ -59,6 +59,21 @@ class TestTransientObject(TestCase):
         ft = fauxtime.time()
         assert t.getCreated() <= ft
 
+    def test_getLastModifiedUnset(self):
+        t = self.t.new('xyzzy')
+        assert t.getLastModified() == None
+
+    def test_getLastModifiedSet(self):
+        t = self.t.new('xyzzy')
+        t['a'] = 1
+        assert t.getLastModified() is not None
+
+    def testSetLastModified(self):
+        t = self.t.new('xyzzy')
+        ft = fauxtime.time()
+        t.setLastModified()
+        assert t.getLastModified() is not None
+
     def test_setLastAccessed(self):
         t = self.t.new('xyzzy')
         ft = fauxtime.time()

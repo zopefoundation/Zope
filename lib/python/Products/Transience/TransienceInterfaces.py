@@ -95,12 +95,28 @@ class Transient(Interface.Base):
     def getLastAccessed():
         """
         Return the time the transient object was last accessed in
-        integer seconds-since-the-epoch form.
+        integer seconds-since-the-epoch form.  Last accessed time
+        is defined as the last time the transient object's container
+        "asked about" this transient object.
         """
 
     def setLastAccessed():
         """
         Cause the last accessed time to be set to now.
+        """
+
+    def getLastModified():
+        """
+        Return the time the transient object was last modified in
+        integer seconds-since-the-epoch form.  Modification generally implies
+        a call to one of the transient object's __setitem__ or __delitem__
+        methods, directly or indirectly as a result of a call to
+        update, clear, or other mutating data access methods.
+        """
+
+    def setLastModified():
+        """
+        Cause the last modified time to be set to now.
         """
 
     def getCreated():

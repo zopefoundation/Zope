@@ -13,10 +13,10 @@
 """
 Simple ZODB-based transient object implementation.
 
-$Id: TransientObject.py,v 1.3 2001/11/28 15:51:09 matt Exp $
+$Id: TransientObject.py,v 1.4 2002/03/24 04:44:32 chrism Exp $
 """
 
-__version__='$Revision: 1.3 $'[11:-2]
+__version__='$Revision: 1.4 $'[11:-2]
 
 from Persistence import Persistent
 from Acquisition import Implicit
@@ -25,11 +25,12 @@ from TransienceInterfaces import ItemWithId, Transient, DictionaryLike,\
      TTWDictionary, ImmutablyValuedMappingOfPickleableObjects
 from AccessControl import ClassSecurityInfo
 import Globals
-from zLOG import LOG, BLATHER
+from zLOG import LOG, BLATHER, INFO
+import sys
 
 _notfound = []
 
-WRITEGRANULARITY=30     # Timing granularity for write clustering, in seconds
+WRITEGRANULARITY=30 # Timing granularity for access write clustering, seconds
 
 class TransientObject(Persistent, Implicit):
     """ Dictionary-like object that supports additional methods
@@ -45,12 +46,21 @@ class TransientObject(Persistent, Implicit):
     security = ClassSecurityInfo()
     security.setDefaultAccess('allow')
     security.declareObjectPublic()
+    _last_modified = None
+    # _last modified indicates the last time that __setitem__, __delitem__,
+    # update or clear was called on us.
 
     def __init__(self, containerkey):
         self.token = containerkey
         self.id = self._generateUniqueId()
         self._container = {}
         self._created = self._last_accessed = time.time()
+        # _last_accessed indicates the last time that *our container
+        # was asked about us* (NOT the last time __getitem__ or get
+        # or any of our other invariant data access methods are called).
+        # Our container manages our last accessed time, we don't much
+        # concern ourselves with it other than exposing an interface
+        # to set it on ourselves.
 
     # -----------------------------------------------------------------
     # ItemWithId
@@ -72,12 +82,18 @@ class TransientObject(Persistent, Implicit):
     def getLastAccessed(self):
         return self._last_accessed
 
-    def setLastAccessed(self, WG=WRITEGRANULARITY):
+    def setLastAccessed(self):
         # check to see if the last_accessed time is too recent, and avoid
         # setting if so, to cut down on heavy writes
         t = time.time()
-        if (self._last_accessed + WG) < t:
+        if (self._last_accessed + WRITEGRANULARITY) < t:
             self._last_accessed = t
+
+    def getLastModified(self):
+        return self._last_modified
+
+    def setLastModified(self):
+        self._last_modified = time.time()
 
     def getCreated(self):
         return self._created
@@ -109,7 +125,7 @@ class TransientObject(Persistent, Implicit):
 
     def clear(self):
         self._container.clear()
-        self._p_changed = 1
+        self.setLastModified()
 
     def update(self, d):
         for k in d.keys():
@@ -129,25 +145,22 @@ class TransientObject(Persistent, Implicit):
             k._p_jar = self._p_jar
             k._p_changed = 1
         self._container[k] = v
-        self._p_changed = 1
+        self.setLastModified()
 
     def __getitem__(self, k):
         return self._container[k]
 
     def __delitem__(self, k):
         del self._container[k]
+        self.setLastModified()
 
     # -----------------------------------------------------------------
     # TTWDictionary
     #
 
     set = __setitem__
-
-    def delete(self, k):
-        del self._container[k]
-        self._p_changed = 1
-        
     __guarded_setitem__ = __setitem__
+    delete = __delitem__
 
     # -----------------------------------------------------------------
     # Other non interface code
@@ -159,27 +172,58 @@ class TransientObject(Persistent, Implicit):
         return 1
 
     def _p_resolveConflict(self, saved, state1, state2):
-        attrs = ['token', 'id', '_created', '_invalid']
-        # note that last_accessed and _container are the only attrs
-        # missing from this list.  The only time we can clearly resolve
-        # the conflict is if everything but the last_accessed time and
-        # the contents are the same, so we make sure nothing else has
-        # changed.  We're being slightly sneaky here by accepting
-        # possibly conflicting data in _container, but it's acceptable
-        # in this context.
         LOG('Transience', BLATHER, 'Resolving conflict in TransientObject')
-        for attr in attrs:
-            old = saved.get(attr)
-            st1 = state1.get(attr)
-            st2 = state2.get(attr)
-            if not (old == st1 == st2):
-                return None
-        # return the object with the most recent last_accessed value.
-        if state1['_last_accessed'] > state2['_last_accessed']:
-            return state1
-        else:
-            return state2
+        try:
+            states = [saved, state1, state2]
 
+            # We can clearly resolve the conflict if one state is invalid,
+            # because it's a terminal state.
+            for state in states:
+                if state.has_key('_invalid'):
+                    LOG('Transience', BLATHER, 'a state was invalid')
+                    return state
+            # The only other times we can clearly resolve the conflict is if
+            # the token, the id, or the creation time don't differ between
+            # the three states, so we check that here.  If any differ, we punt
+            # by returning None.  Returning None indicates that we can't
+            # resolve the conflict.
+            attrs = ['token', 'id', '_created']
+            for attr in attrs:
+                if not (saved.get(attr)==state1.get(attr)==state2.get(attr)):
+                    LOG('Transience', BLATHER, 'cant resolve conflict')
+                    return None
+
+            # Now we need to do real work.
+            #
+            # Data in our _container dictionaries might conflict.  To make
+            # things simple, we intentionally create a race condition where the
+            # state which was last modified "wins".  It would be preferable to
+            # somehow merge our _containers together, but as there's no
+            # generally acceptable way to union their states, there's not much
+            # we can do about it if we want to be able to resolve this kind of
+            # conflict.
+
+            # We return the state which was most recently modified, if
+            # possible.
+            states.sort(lastmodified_sort)
+            if states[0].get('_last_modified'):
+                LOG('Transience', BLATHER, 'returning last mod state')
+                return states[0]
+
+            # If we can't determine which object to return on the basis
+            # of last modification time (no state has been modified), we return
+            # the object that was most recently accessed (last pulled out of
+            # our parent).  This will return an essentially arbitrary state if
+            # all last_accessed values are equal.
+            states.sort(lastaccessed_sort)
+            LOG('Transience', BLATHER, 'returning last_accessed state')
+            return states[0]
+        except:
+            LOG('Transience', INFO,
+                'Conflict resolution error in TransientObject', '',
+                sys.exc_info()
+                )
+            
     getName = getId # this is for SQLSession compatibility
 
     def _generateUniqueId(self):
@@ -191,5 +235,21 @@ class TransientObject(Persistent, Implicit):
         return "id: %s, token: %s, contents: %s" % (
             self.id, self.token, `self.items()`
             )
+
+def lastmodified_sort(d1, d2):
+    """ sort dictionaries in descending order based on last mod time """
+    m1 = d1.get('_last_modified', 0)
+    m2 = d2.get('_last_modified', 0)
+    if m1 == m2: return 0
+    if m1 > m2: return -1 # d1 is "less than" d2
+    return 1
+
+def lastaccessed_sort(d1, d2):
+    """ sort dictionaries in descending order based on last access time """
+    m1 = d1.get('_last_accessed', 0)
+    m2 = d2.get('_last_accessed', 0)
+    if m1 == m2: return 0
+    if m1 > m2: return -1 # d1 is "less than" d2
+    return 1
 
 Globals.InitializeClass(TransientObject)
