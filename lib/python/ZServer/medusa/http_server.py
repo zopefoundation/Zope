@@ -6,7 +6,7 @@
 #						 All Rights Reserved.
 #
 
-RCS_ID =  '$Id: http_server.py,v 1.27 2001/07/02 13:48:46 chrism Exp $'
+RCS_ID =  '$Id: http_server.py,v 1.28 2001/07/02 19:44:26 shane Exp $'
 
 # python modules
 import os
@@ -717,7 +717,7 @@ REQUEST = re.compile ('([^ ]+) ([^ ]+)(( HTTP/([0-9.]+))$|$)')
 
 def crack_request (r):
     m = REQUEST.match (r)
-    if m.end() == len(r):
+    if m is not None and m.end() == len(r):
         if m.group(3):
             version = m.group(5)
         else:
