@@ -23,7 +23,7 @@ class Dummy:
 
     def foo( self ):
         return self._foo
-    
+
     def __str__( self ):
         return '<Dummy: %s>' % self._foo
     
@@ -148,6 +148,29 @@ class TestCase( unittest.TestCase ):
         self._checkApply(self._none_req, values[-1:])
         assert None in self._index.uniqueValues('foo')
 
+    def testReindex( self ):
+        self._populateIndex()
+        result, used = self._index._apply_index( {'foo':'abc'} )
+        assert list(result)==[2]
+        assert self._index.keyForDocument(2)=='abc'
+        d = Dummy('world')
+        self._index.index_object(2,d)
+        result, used = self._index._apply_index( {'foo':'world'} )
+        assert list(result)==[2]
+        assert self._index.keyForDocument(2)=='world'
+        del d._foo
+        self._index.index_object(2,d)
+        result, used = self._index._apply_index( {'foo':'world'} )
+        assert list(result)==[]
+        try:
+            should_not_be = self._index.keyForDocument(2)
+        except KeyError:
+            # As expected, we deleted that attribute.
+            pass
+        else:
+            # before Collector #291 this would be 'world'
+            raise ValueError(repr(should_not_be))
+                    
     def testRange(self):
         """Test a range search"""
         index = FieldIndex( 'foo' )
@@ -183,3 +206,9 @@ class TestCase( unittest.TestCase ):
 
 def test_suite():
     return unittest.makeSuite( TestCase )
+
+def main():
+    unittest.TextTestRunner().run(test_suite())
+
+if __name__ == '__main__':
+    main()

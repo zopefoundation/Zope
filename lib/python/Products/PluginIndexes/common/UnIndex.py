@@ -13,7 +13,7 @@
 
 """Simple column indices"""
 
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
 
 from Globals import Persistent
 from Acquisition import Implicit
@@ -224,6 +224,13 @@ class UnIndex(Persistent, Implicit):
         if datum != oldDatum:
             if oldDatum is not _marker:
                 self.removeForwardIndexEntry(oldDatum, documentId)
+                if datum is _marker:
+                    try:
+                        del self._unindex[documentId]
+                    except:
+                        LOG('UnIndex', ERROR,
+                            'Should not happen: oldDatum was there, now its not,'
+                            'for document with id %s' % documentId)
 
             if datum is not _marker:
                 self.insertForwardIndexEntry(datum, documentId)

@@ -104,6 +104,8 @@ Zope Changes
       - Fixed a bug in TM.py that would cause database adapters to hang
         on errors in the second phase of the two-phase commit.
 
+      - Collector #291: ZCatalog not unindexing deleted properties
+
   Zope 2.5.1 beta 1
     
     Bugs Fixed
