@@ -58,8 +58,45 @@ Zope Changes
         - Added a new absolute_url method which can generate an absolute
           url for the object on which the method is called.
 
+	- GIF and PNG Images now figure out their own dimensions when
+          uploaded. Image height and width properties are now editable.
+
         - Images now generate themselves as html IMG tags, using an absolute
           url and correct height and width tags if possible.
+
+        - There is a new form input type, boolean, for inputing boolean
+          data.
+
+	- Added a read_only option to the SimpleDB.MultipleRevision and 
+          PickleDictionary constructors to open a database in read_only
+          mode.
+
+        - Added an environment variable, ZOPE_READ_ONLY, used by the
+          Zope framework.  If this variable is set, then the database
+          is opened in read only mode.  If this variable is set to a
+          string parsable by DateTime.DateTime, then the database is
+          opened read-only as of the time given.  Note that changes
+          made by another process after the database has been opened
+          are not visible.
+
+	- Added a database_quota option to the SimpleDB.MultipleRevision and 
+          PickleDictionary constructors and a
+          SimpleDB.MultipleRevision.set_quota method to set a database
+          quota. The quota is given as either an integer number of
+          bytes, or a function taking an integer number of bytes
+          argument and returning whether the quota has been exceeded.
+
+	- Added an environment variable, ZOPE_DATABASE_QUOTA, used by the
+          Zope framework. If this variable is set, it should be set to
+          an integer number of bytes.  Additions to the database are
+          not allowed if the database size exceeds the quota.          
+
+        - Added size and last modification time to DTML Method and DTML
+          Document edit interface.
+
+        - Added a new module, BoboPOS.winlock, that provides file
+          locking on windows.  This should prevent many cases of data
+          corruption. 
 
       Bugs Fixed
  
@@ -106,8 +143,11 @@ Zope Changes
           rename the entire cgi environment when mod_rewrite rules are 
           used in .htaccess files.
 
-        - Added size and last modification time to DTML Method and DTML
-          Document edit interface.
+        - If system clocks were changed, so that database records 
+          had records in the "future", then database corruption could
+          either occur or be incorrectly reported.  Now this situation
+          results in an informative error message and corruption does
+          not occur.
 
     Zope 1.9.0
 
