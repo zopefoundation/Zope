@@ -103,9 +103,11 @@ class CopyingDOMVisitor(DOMVisitor):
 
     def visitElement(self, node):
         self.copyElement(node)
+        self.copyAllAttributes(node)
         DOMVisitor.visitElement(self, node)
+        self.backUp()
 
-    def endVisitElement(self, node):
+    def backUp(self):
         self.curNode = self.curNode.parentNode
 
     def copyElement(self, node):
@@ -120,17 +122,24 @@ class CopyingDOMVisitor(DOMVisitor):
             self.curNode.appendChild(newNode)
         self.curNode = newNode
 
+    def copyAllAttributes(self, node):
+        for attr in node.attributes.values():
+            self.copyAttribute(attr)
+
+    def copyAttribute(self, attr):
+        if attr.namespaceURI:
+            self.curNode.setAttributeNS(
+                attr.namespaceURI, attr.nodeName, attr.nodeValue)
+        else:
+            self.curNode.setAttribute(attr.nodeName, attr.nodeValue)
+
     def visitText(self, node):
         newNode = self.newDocument.createTextNode(node.nodeValue)
         self.curNode.appendChild(newNode)
 
     def visitComment(self, node):
-        newNode = self.newDocument.createComment(node.nodeValue)
-        self.curNode.appendChild(newNode)
-
-    def visitAttribute(self, node):
-        if node.namespaceURI:
-            self.curNode.setAttributeNS(
-                node.namespaceURI, node.nodeName, node.nodeValue)
-        else:
-            self.curNode.setAttribute(node.nodeName, node.nodeValue)
+        if self.newDocument:
+            newNode = self.newDocument.createComment(node.nodeValue)
+            self.curNode.appendChild(newNode)
+        # XXX Else, this is a comment before the documentElement; lose it.
+        

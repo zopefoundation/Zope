@@ -125,8 +125,8 @@ def timefunc(count, func, *args):
     return result
 
 def findmacros(doc):
-    from TALVisitor import MacroIndexer
-    return MacroIndexer(doc)()
+    from TALVisitor import macroIndexer
+    return macroIndexer(doc)
 
 if __name__ == "__main__":
     main()

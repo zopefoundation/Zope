@@ -114,11 +114,10 @@ class DOMVisitor:
     implementation).
 
     You can influence which nodes are visited in which order by
-    overriding visitAllChildren() and visitAllAttributes(), and/or by
-    overriding visitDocument() and visitElement().  If you override
-    the latter two, be careful to either call the base class method or
-    call visitAllAttributes(), visitAllChildren() and
-    endVisitElement() as shown in their base class implementations,
+    overriding visitAllChildren(), and/or by overriding
+    visitDocument() and visitElement().  If you override the latter
+    two, be careful to either call the base class method or call
+    visitAllChildren() as shown in their base class implementations,
     otherwise the tree traversal will break.
     """
 
@@ -154,7 +153,7 @@ class DOMVisitor:
     # Dictionary mapping node types to method names, used in visitNode
     visitSwitch = {
         Node.ELEMENT_NODE: "visitElement",
-        Node.ATTRIBUTE_NODE: "visitAttr",
+        Node.ATTRIBUTE_NODE: "visitAttribute",
         Node.TEXT_NODE: "visitText",
         Node.CDATA_SECTION_NODE: "visitCDATASection",
         Node.ENTITY_REFERENCE_NODE: "visitEntityReference",
@@ -185,22 +184,10 @@ class DOMVisitor:
         """
         Visit an element node.
 
-        This calls visitAllAttributes() to visit the attributes, and
-        visitAllChildren() to recurse into the document tree.  It also
-        calls endVisitElement() in order to signal the end of the visit.
+        This calls visitAllChildren() to recurse into the document
+        tree.
         """
-        self.visitAllAttributes(node)
         self.visitAllChildren(node)
-        self.endVisitElement(node)
-
-    def endVisitElement(self, node):
-        """
-        This method is called after visitElement has finished visiting
-        all its children.  It is useful for processing to be done
-        after the element's subtree has been visited, e.g. spitting
-        out an end tag or closing a scope.
-        """
-        pass
 
     def visitAllChildren(self, node):
         """
@@ -208,13 +195,6 @@ class DOMVisitor:
         """
         for child in node.childNodes:
             self.visitNode(child)
-
-    def visitAllAttributes(self, node):
-        """
-        Call visitAttribute() for each attribute of the given node.
-        """
-        for attr in node.attributes.values():
-            self.visitAttribute(attr)
 
     def visitAttribute(self, node):
         """

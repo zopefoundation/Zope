@@ -112,142 +112,100 @@ class TALVisitor(CopyingDOMVisitor):
         self.document = document
         self.engine = engine
         self.currentMacro = None
+        self.originalNode = None
+        self.slotIndex = None
 
     def visitElement(self, node):
-        self.engine.beginScope()
-        if not self.checkTAL(node):
+        if not node.attributes:
             CopyingDOMVisitor.visitElement(self, node)
-        self.engine.endScope()
+            return
+        macroName = node.getAttributeNS(ZOPE_METAL_NS, "use-macro")
+        if macroName:
+            macroNode = self.findMacro(macroName)
+            if macroNode:
+                self.expandMacro(macroNode, node)
+            return
+        if self.currentMacro and self.slotIndex and self.originalNode:
+            slotName = node.getAttributeNS(ZOPE_METAL_NS, "define-slot")
+            if slotName:
+                slotNode = self.slotIndex.get(slotName)
+                if slotNode:
+                    self.visitElement(slotNode)
+                    return
+        if node.getAttributeNS(ZOPE_TAL_NS, "omit"):
+            # XXX Problem: this DOM implementation doesn't
+            # differentiate between argument empty and argument
+            # absent.
+            # XXX Question: should 'omit' be done before or after
+            # 'define'?
+            return
+        defines = node.getAttributeNS(ZOPE_TAL_NS, "define")
+        if defines:
+            self.engine.beginScope()
+            self.doDefine(defines)
+            self.finishElement(node)
+            self.engine.endScope()
+        else:
+            self.finishElement(node)
 
-    def checkTAL(self, node):
-        # Do TAL expansion.  Return value is 1 if node expansion
-        # complete, 0 if original node should be copied.
-        attrs = node.attributes
-        if not attrs:
-            return 0
-        # Collect TAL attributes
-        setOps = []
-        ifOps = []
-        modOps = []
-        attrOps = []
-        omit = 0
-        macroNode = 0
-        for attr in attrs.values():
-            if attr.namespaceURI == ZOPE_TAL_NS:
-                name = attr.localName
-                if name == "define":
-                    setOps.append(attr)
-                elif name == "condition":
-                    ifOps.append(attr)
-                elif name in ("insert", "replace"):
-                    modOps.append(attr)
-                elif name == "attributes":
-                    attrOps.append(attr)
-                elif name == "omit":
-                    omit = 1
-                else:
-                    print "Unrecognized ZOPE/TAL attribute:",
-                    print "%s=%s" % (attr.nodeName, `attr.nodeValue`)
-                    # This doesn't stop us from doing the rest!
-            elif attr.namespaceURI == ZOPE_METAL_NS:
-                name = attr.localName
-                if name == "define-macro":
-                    pass
-                elif name == "define-slot":
-                    pass
-                elif name == "use-macro":
-                    macroNode = self.findMacro(attr.nodeValue)
-                elif name == "use-slot":
-                    pass
-                else:
-                    print "Unrecognized ZOPE/METAL attribute:",
-                    print "%s=%s" % (attr.nodeName, `attr.nodeValue`)
-        # If any of these assertions fail, the DOM is broken
-        assert len(setOps) <= 1
-        assert len(ifOps) <= 1
-        assert len(attrOps) <= 1
-        # Macro expansion overrides anything else:
-        if macroNode:
-            self.expandMacro(macroNode)
-            return 1
-        # Execute TAL attributes in proper order:
-        # 0. omit, 1. define, 2. condition, 3. insert/replace, 4. attributes
-        if omit:
-            if setOps or ifOps or modOps or attrOps:
-                print "Note: z:omit conflicts with all other z:... attributes"
-            return 1
-        if setOps:
-            [attr] = setOps
-            self.doDefine(node, attr.nodeValue)
-        if ifOps:
-            [attr] = ifOps
-            if not self.doCondition(node, attr.nodeValue):
-                return 1
+    def finishElement(self, node):
+        condition = node.getAttributeNS(ZOPE_TAL_NS, "condition")
+        if condition and not self.engine.evaluateBoolean(condition):
+            return
         attrDict = {}
-        if attrOps:
-            [attr] = attrOps
-            attrDict = self.prepAttr(node, attr.nodeValue)
-        if len(modOps) > 1:
-            names = map(lambda a: a.nodeName, modOps)
-            print "Mutually exclusive ZOPE/TAL attributes:", [names]
-        elif modOps:
-            [attr] = modOps
-            return self.doModify(
-                node, attr.localName, attr.nodeValue, attrDict)
-        if attrDict:
+        attributes = node.getAttributeNS(ZOPE_TAL_NS, "attributes")
+        if attributes:
+            attrDict = self.parseAttributeReplacements(attributes)
+        insert = node.getAttributeNS(ZOPE_TAL_NS, "insert")
+        replace = node.getAttributeNS(ZOPE_TAL_NS, "replace")
+        if not (insert or replace):
+            done = 0
+        else:
+            if insert and replace:
+                print "Warning: z:insert overrides z:replace on the same node"
+            done = self.doModify(node, insert, insert or replace, attrDict)
+        if not done:
             self.copyElement(node)
             self.copyAttributes(node, attrDict)
             self.visitAllChildren(node)
-            self.endVisitElement(node)
-            return 1
-        return 0
+            self.backUp()
 
     def findMacro(self, macroName):
         # XXX This is not written for speed :-)
         doc, localName = self.engine.findMacroDocument(macroName)
         if not doc:
             doc = self.document
-        macroDict = MacroIndexer(doc)()
+        macroDict = macroIndexer(doc)
         if macroDict.has_key(localName):
             return macroDict[localName]
         else:
             print "No macro found:", macroName
             return None
 
-    def expandMacro(self, node):
-        assert node.nodeType == Node.ELEMENT_NODE
-        saveCurrentMacro = self.currentMacro
-        self.currentMacro = node
-        self.engine.beginScope()
-        if not self.checkTAL(node):
-            self.copyElement(node)
-            self.copyAttributes(node, {})
-            self.visitAllChildren(node)
-            self.endVisitElement(node)
-        self.engine.endScope()
-        self.currentMacro = saveCurrentMacro
+    def expandMacro(self, macroNode, originalNode):
+        save = self.currentMacro, self.slotIndex, self.originalNode
+        self.currentMacro = macroNode
+        self.slotIndex = slotIndexer(originalNode)
+        self.originalNode = originalNode
+        self.visitElement(macroNode)
+        self.currentMacro, self.slotIndex, self.originalNode = save
 
-    def doDefine(self, node, arg):
+    def doDefine(self, arg):
         for part in self.splitParts(arg):
             m = re.match(
-                r"\s*(global\s+|local\s+)?(%s)\s+as\s+(.*)" % NAME_RE, part)
+                r"\s*(?:(global|local)\s+)?(%s)\s+as\s+(.*)" % NAME_RE, part)
             if not m:
                 print "Bad syntax in z:define argument:", `part`
             else:
                 scope, name, expr = m.group(1, 2, 3)
-                scope = string.strip(scope or "local")
+                scope = scope or "local"
                 value = self.engine.evaluateValue(expr)
                 if scope == "local":
                     self.engine.setLocal(name, value)
                 else:
                     self.engine.setGlobal(name, value)
 
-    def doCondition(self, node, arg):
-        return self.engine.evaluateBoolean(arg)
-
-    def doModify(self, node, cmdName, arg, attrDict):
-        assert cmdName in ("insert", "replace")
-        inserting = (cmdName == "insert")
+    def doModify(self, node, inserting, arg, attrDict):
         m = re.match(
             r"(?:\s*(text|structure|for\s+(%s)\s+in)\s+)?(.*)" % NAME_RE, arg)
         if not m:
@@ -274,7 +232,7 @@ class TALVisitor(CopyingDOMVisitor):
         for item in sequence:
             self.engine.setLocal(name, item)
             self.visitAllChildren(node)
-        self.endVisitElement(node)
+        self.backUp()
         return 1
 
     def doReplaceLoop(self, node, key, name, expr, attrDict):
@@ -287,7 +245,7 @@ class TALVisitor(CopyingDOMVisitor):
             self.copyElement(node)
             self.copyAttributes(node, attrDict)
             self.visitAllChildren(node)
-            self.endVisitElement(node)
+            self.backUp()
         return 1
 
     def doNonLoop(self, node, inserting, key, expr, attrDict):
@@ -320,7 +278,7 @@ class TALVisitor(CopyingDOMVisitor):
             attrValue = attr.nodeValue
             if attrDict.has_key(attrName):
                 expr = attrDict[attrName]
-                if string.strip(expr) == "nothing":
+                if expr == "nothing":
                     continue
                 attrValue = self.engine.evaluateText(expr)
                 if attrValue is None:
@@ -335,7 +293,7 @@ class TALVisitor(CopyingDOMVisitor):
             else:
                 self.curNode.setAttribute(attrName, attrValue)
 
-    def prepAttr(self, node, arg):
+    def parseAttributeReplacements(self, arg):
         dict = {}
         for part in self.splitParts(arg):
             m = re.match(r"\s*([^\s=]+)\s*=\s*(.*)", part)
@@ -352,36 +310,55 @@ class TALVisitor(CopyingDOMVisitor):
     def splitParts(self, arg):
         # Break in pieces at undoubled semicolons and
         # change double semicolons to singles:
+        arg = string.replace(arg, ";;", "\0")
         parts = string.split(arg, ';')
-        while "" in parts:
-            i = parts.index("")
-            if i+1 >= len(parts):
-                break
-            parts[i-1:i+2] = ["%s;%s" % (parts[i-1], parts[i+1])]
+        parts = map(lambda s: string.replace(s, "\0", ";;"), parts)
         return parts
 
 
-class MacroIndexer(DOMVisitor):
-
+def macroIndexer(document):
     """
-    Helper class to create an index of all macros in a DOM tree.
+    Return a dictionary containing all define-macro nodes in a document.
+
+    The dictionary will have the form {macroName: node, ...}.
     """
+    macroIndex = {}
+    _macroVisitor(document.documentElement, macroIndex)
+    return macroIndex
 
-    def __call__(self):
-        self.macroIndex = {}
-        DOMVisitor.__call__(self)
-        return self.macroIndex
-
-    def visitElement(self, node):
-        macroName = node.getAttributeNS(ZOPE_METAL_NS, "define-macro")
-        if macroName:
-            self.defineMacro(macroName, node)
-        # No need to call visitAllAttributes() or endVisitElement()
-        self.visitAllChildren(node)
-
-    def defineMacro(self, macroName, node):
-        if self.macroIndex.has_key(macroName):
+def _macroVisitor(node, macroIndex, __elementNodeType=Node.ELEMENT_NODE):
+    # Internal routine to efficiently recurse down the tree of elements
+    macroName = node.getAttributeNS(ZOPE_METAL_NS, "define-macro")
+    if macroName:
+        if macroIndex.has_key(macroName):
             print ("Duplicate macro definition: %s in <%s>" %
                    (macroName, node.nodeName))
         else:
-            self.macroIndex[macroName] = node
+            macroIndex[macroName] = node
+    for child in node.childNodes:
+        if child.nodeType == __elementNodeType:
+            _macroVisitor(child, macroIndex)
+
+
+def slotIndexer(rootNode):
+    """
+    Return a dictionary containing all use-slot nodes in a subtree.
+
+    The dictionary will have the form {slotName: node, ...}.
+    """
+    slotIndex = {}
+    _slotVisitor(rootNode, slotIndex)
+    return slotIndex
+
+def _slotVisitor(node, slotIndex, __elementNodeType=Node.ELEMENT_NODE):
+    # Internal routine to efficiently recurse down the tree of elements
+    slotName = node.getAttributeNS(ZOPE_METAL_NS, "use-slot")
+    if slotName:
+        if slotIndex.has_key(slotName):
+            print ("Duplicate slot definition: %s in <%s>" %
+                   (slotName, node.nodeName))
+        else:
+            slotIndex[slotName] = node
+    for child in node.childNodes:
+        if child.nodeType == __elementNodeType:
+            _slotVisitor(child, slotIndex)
