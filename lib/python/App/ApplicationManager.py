@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""System management components"""
-__version__='$Revision: 1.55 $'[11:-2]
+__version__='$Revision: 1.56 $'[11:-2]
 
 
 import sys,os,time,string,Globals, Acquisition, os
@@ -292,9 +292,11 @@ class ApplicationManager(Folder,CacheManager):
         rc=_v_rcs
         rd=[]
         for n, c in nc.items():
-            prev=rc[n]
-            if c > prev:
-                rd.append( (c - prev, (c, prev, n)) )
+            try:
+                prev=rc[n]
+                if c > prev:
+                    rd.append( (c - prev, (c, prev, n)) )
+            except: pass
         rd.sort()
         rd.reverse()
 
