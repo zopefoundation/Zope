@@ -374,20 +374,16 @@ class TALGenerator:
         fillSlot = metaldict.get("fill-slot")
         define = taldict.get("define")
         condition = taldict.get("condition")
+        repeat = taldict.get("repeat")
         content = taldict.get("content")
         replace = taldict.get("replace")
-        repeat = taldict.get("repeat")
         attrsubst = taldict.get("attributes")
         onError = taldict.get("on-error")
         if len(metaldict) > 1:
             raise METALError("at most one METAL attribute per element",
                              position)
-        n = 0
-        if content: n = n+1
-        if replace: n = n+1
-        if repeat: n = n+1
-        if n > 1:
-            raise TALError("at most one of content, replace, repeat",
+        if content and replace:
+            raise TALError("content and replace are mutually exclusive",
                            position)
 
         repeatWhitespace = None
@@ -425,17 +421,17 @@ class TALGenerator:
         if condition:
             self.pushProgram()
             todo["condition"] = condition
-        if content:
-            todo["content"] = content
-        elif replace:
-            todo["replace"] = replace
-            self.pushProgram()
-        elif repeat:
+        if repeat:
             todo["repeat"] = repeat
             self.emit("beginScope")
             self.pushProgram()
             if repeatWhitespace:
                 self.emitText(repeatWhitespace)
+        if content:
+            todo["content"] = content
+        if replace:
+            todo["replace"] = replace
+            self.pushProgram()
         if attrsubst:
             repldict = parseAttributeReplacements(attrsubst)
             for key, value in repldict.items():
@@ -467,8 +463,8 @@ class TALGenerator:
         useMacro = todo.get("useMacro")
         defineSlot = todo.get("defineSlot")
         fillSlot = todo.get("fillSlot")
-        content = todo.get("content")
         repeat = todo.get("repeat")
+        content = todo.get("content")
         replace = todo.get("replace")
         condition = todo.get("condition")
         onError = todo.get("onError")
@@ -489,11 +485,11 @@ class TALGenerator:
             self.emitSubstitution(content, {}, position)
         if not isend:
             self.emitEndTag(name)
+        if replace:
+            self.emitSubstitution(replace, repldict, position)
         if repeat:
             self.emitRepeat(repeat, position)
             self.emit("endScope")
-        if replace:
-            self.emitSubstitution(replace, repldict, position)
         if condition:
             self.emitCondition(condition)
         if onError:
