@@ -146,13 +146,11 @@ class HTMLTALParser(SGMLParser):
                 prefix, suffix = string.split(key, ':', 1)
                 nsuri = self.nsdict.get(prefix)
                 if nsuri == ZOPE_METAL_NS:
-                    value = unescape(value)
                     item = (key, value)
                     metaldict[suffix] = value
                     if suffix == "define-macro":
                         item = (key,value,"macroHack")
                 elif nsuri == ZOPE_TAL_NS:
-                    value = unescape(value)
                     item = (key, value)
                     taldict[suffix] = value
             attrlist.append(item)
@@ -206,13 +204,3 @@ class HTMLTALParser(SGMLParser):
 
     def handle_pi(self, data):
         self.gen.emitRawText("<?%s>" % data)
-
-# Helper
-
-def unescape(s):
-    if '&' not in s:
-        return s
-    s = string.replace(s, "&lt;", "<")
-    s = string.replace(s, "&gt;", ">")
-    s = string.replace(s, "&amp;", "&") # Must be last
-    return s

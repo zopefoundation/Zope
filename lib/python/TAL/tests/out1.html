@@ -1,0 +1,67 @@
+<?xml version="1.0" ?>
+
+<html>
+
+  <head>dadada</head>
+
+  <body xmlns:z="http://xml.zope.org/namespaces/tal" z:define="foo python:1">
+
+    <h1 z:condition="python:1" z:insert="str:This
+Is
+The
+Replaced
+Title">This</h1>
+
+  <!-- test entity references -->
+  &nbsp;&HarryPotter;
+
+  <!-- examples adapted from TemplateAttributeLanguageSyntax -->
+
+    <span z:insert="str:here/id">here/id</span>
+
+    <p z:define="x str:template/title; global five python:2+3;" z:insert="text var:five">5</p>
+
+    <p z:repeat="car python:['honda', 'subaru', 'acura']">
+      honda
+    </p>
+    <p z:repeat="car python:['honda', 'subaru', 'acura']">
+      subaru
+    </p>
+    <p z:repeat="car python:['honda', 'subaru', 'acura']">
+      acura
+    </p>
+
+    <p xml:foo="bar">foo bar</p>
+
+  <!-- more examples -->
+
+    <ul>
+    <span z:repeat="car python:['honda', 'subaru', 'acura']">
+      <li z:insert="var:car">honda</li>
+    </span>
+    <span z:repeat="car python:['honda', 'subaru', 'acura']">
+      <li z:insert="var:car">subaru</li>
+    </span>
+    <span z:repeat="car python:['honda', 'subaru', 'acura']">
+      <li z:insert="var:car">acura</li>
+    </span>
+    </ul>
+
+  <!-- test attribute expansion -->
+
+    <a href="http://python.org" z:attributes="href python:'http://python.org' ">python</a>
+    <a z:attributes="href python:'http://python.org' " href="http://python.org">python</a>
+
+  <!-- test insert/replace structure -->
+    <span z:insert="structure python:None"></span>
+    
+
+    <span z:define="global x str:&lt;h3&gt;Header Level 3&lt;/h3&gt;"/>
+    <span z:define="global x python:'&amp;' + 'nbsp;;' + x"/>
+
+    &nbsp;<h3>Header Level 3</h3>
+    <span z:insert="structure x">&nbsp;<h3>Header Level 3</h3></span>
+
+  </body>
+
+</html>

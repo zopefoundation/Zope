@@ -239,6 +239,7 @@ class SGMLParser:
             elif attrvalue[:1] == '\'' == attrvalue[-1:] or \
                  attrvalue[:1] == '"' == attrvalue[-1:]:
                 attrvalue = attrvalue[1:-1]
+            attrvalue = self.unescape(attrvalue)
             attrs.append((string.lower(attrname), attrvalue))
             k = m.end(0)
         if rawdata[j:j+1] == '/>':
@@ -371,6 +372,17 @@ class SGMLParser:
     def unknown_endtag(self, tag): pass
     def unknown_charref(self, ref): pass
     def unknown_entityref(self, ref): pass
+
+    # Helper to remove special character quoting
+    def unescape(self, s):
+        if '&' not in s:
+            return s
+        s = string.replace(s, "&lt;", "<")
+        s = string.replace(s, "&gt;", ">")
+        s = string.replace(s, "&apos;", "'")
+        s = string.replace(s, "&quot;", '"')
+        s = string.replace(s, "&amp;", "&") # Must be last
+        return s
 
 
 class TestSGMLParser(SGMLParser):
