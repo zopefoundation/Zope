@@ -13,7 +13,7 @@
 __doc__='''Generic Database adapter'''
 
 
-__version__='$Revision: 1.114 $'[11:-2]
+__version__='$Revision: 1.115 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct, RDB, re
 import DocumentTemplate, marshal, md5, base64, Acquisition, os
@@ -274,6 +274,8 @@ class DA(
         """Get source for FTP download"""
         self.REQUEST.RESPONSE.setHeader('Content-Type', 'text/plain')
         return '<params>%s</params>\n%s' % (self.arguments_src, self.src)
+
+    def get_size(self): return len(self.document_src())
 
     def PUT(self, REQUEST, RESPONSE):
         """Handle put requests"""
