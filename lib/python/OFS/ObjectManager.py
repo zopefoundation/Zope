@@ -84,12 +84,12 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.58 1999/03/26 19:50:37 brian Exp $"""
+$Id: ObjectManager.py,v 1.59 1999/03/29 14:31:17 brian Exp $"""
 
-__version__='$Revision: 1.58 $'[11:-2]
+__version__='$Revision: 1.59 $'[11:-2]
 
 import App.Management, Acquisition, App.Undo, Globals, CopySupport
-import App.FactoryDispatcher, ts_regex
+import os, App.FactoryDispatcher, ts_regex
 from Globals import HTMLFile, HTMLFile, Persistent
 from Globals import MessageDialog, default__class_init__
 from webdav.NullResource import NullResource
