@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.125 $'[11:-2]
+__version__='$Revision: 1.126 $'[11:-2]
 
 import Globals, string, struct, content_types
 from OFS.content_types import guess_content_type
@@ -602,9 +602,9 @@ class Image(File):
         ydelta = yscale or scale
 
         if xdelta and width:
-            width = str(int(width) * xdelta)
+            width =  str(int(round(int(width) * xdelta)))
         if ydelta and height:
-            height = str(int(height) * ydelta)
+            height = str(int(round(int(height) * ydelta)))
 
         result='<img src="%s"' % (self.absolute_url())
 
