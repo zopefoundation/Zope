@@ -77,7 +77,7 @@ Transient Objects
 import Interface
 
 class Transient(Interface.Base):
-    def invalidate(self):
+    def invalidate():
         """
         Invalidate (expire) the transient object.
 
@@ -85,69 +85,69 @@ class Transient(Interface.Base):
         related to this object to be called as a side effect.
         """
 
-    def isValid(self):
+    def isValid():
         """
         Return true if transient object is still valid, false if not.
         A transient object is valid if its invalidate method has not been
         called.
         """
 
-    def getLastAccessed(self):
+    def getLastAccessed():
         """
         Return the time the transient object was last accessed in
         integer seconds-since-the-epoch form.
         """
 
-    def setLastAccessed(self):
+    def setLastAccessed():
         """
         Cause the last accessed time to be set to now.
         """
 
-    def getCreated(self):
+    def getCreated():
         """
         Return the time the transient object was created in integer
         seconds-since-the-epoch form.
         """
 
-    def getContainerKey(self):
+    def getContainerKey():
         """
         Return the key under which the object was placed in its
         container.
         """
 
 class DictionaryLike(Interface.Base):
-    def keys(self):
+    def keys():
         """
         Return sequence of key elements.
         """
 
-    def values(self):
+    def values():
         """
         Return sequence of value elements.
         """
 
-    def items(self):
+    def items():
         """
         Return sequence of (key, value) elements.
         """
 
-    def get(self, k, default='marker'):
+    def get(k, default='marker'):
         """
         Return value associated with key k.  If k does not exist and default
         is not marker, return default, else raise KeyError.
         """
 
-    def has_key(self, k):
+    def has_key(k):
         """
         Return true if item referenced by key k exists.
         """
 
-    def clear(self):
+    def clear():
         """
         Remove all key/value pairs.
         """
 
-    def update(self, d):
+    def update(d):
         """
         Merge dictionary d into ourselves.
         """
@@ -155,36 +155,36 @@ class DictionaryLike(Interface.Base):
     # DictionaryLike does NOT support copy()
 
 class ItemWithId(Interface.Base):
-    def getId(self):
+    def getId():
         """
         Returns a meaningful unique id for the object.  Note that this id
         need not the key under which the object is stored in its container.
         """
 
 class TTWDictionary(DictionaryLike, ItemWithId):
-    def set(self, k, v):
+    def set(k, v):
         """
         Call __setitem__ with key k, value v.
         """
 
-    def delete(self, k):
+    def delete(k):
         """
         Call __delitem__ with key k.
         """
 
-    def __guarded_setitem__(self, k, v):
+    def __guarded_setitem__(k, v):
         """
         Call __setitem__ with key k, value v.
         """
 
 class ImmutablyValuedMappingOfPickleableObjects(Interface.Base):
-    def __setitem__(self, k, v):
+    def __setitem__(k, v):
         """
         Sets key k to value v, if k is both hashable and pickleable and
         v is pickleable, else raise TypeError.
         """
 
-    def __getitem__(self, k):
+    def __getitem__(k):
         """
         Returns the value associated with key k.
 
@@ -195,7 +195,7 @@ class ImmutablyValuedMappingOfPickleableObjects(Interface.Base):
         to the mapping via __setitem__.
         """
 
-    def __delitem__(self, k):
+    def __delitem__(k):
         """
         Remove the key/value pair related to key k.
         """
@@ -207,7 +207,7 @@ class HomogeneousItemContainer(Interface.Base):
      2.  Is responsible for the creation of its subobjects.
      3.  Allows for the access of a subobject by key.
     """
-    def get(self, k, default=None):
+    def get(k, default=None):
         """
         Return value associated with key k via __getitem__.  If value
         associated with k does not exist, return default.
@@ -216,14 +216,14 @@ class HomogeneousItemContainer(Interface.Base):
         is passed in and returned.
         """
 
-    def has_key(self, k):
+    def has_key(k):
         """
         Return true if container has value associated with key k, else
         return false.
         """
 
 class StringKeyedHomogeneousItemContainer(HomogeneousItemContainer):
-    def new(self, k):
+    def new(k):
         """
         Creates a new subobject of the type supported by this container
         with key "k" and returns it.
@@ -239,7 +239,7 @@ class StringKeyedHomogeneousItemContainer(HomogeneousItemContainer):
         Returned object is acquisition-wrapped in self.
         """
 
-    def new_or_existing(self, k):
+    def new_or_existing(k):
         """
         If an object already exists in the container with key "k", it
         is returned.
@@ -256,24 +256,24 @@ class StringKeyedHomogeneousItemContainer(HomogeneousItemContainer):
         """
     
 class TransientItemContainer(Interface.Base):
-    def setTimeoutMinutes(self, timeout_mins):
+    def setTimeoutMinutes(timeout_mins):
         """
         Set the number of minutes of inactivity allowable for subobjects
         before they expire.
         """
 
-    def getTimeoutMinutes(self):
+    def getTimeoutMinutes():
         """
         Return the number of minutes allowed for subobject inactivity
         before expiration.
         """
 
-    def getAddNotificationTarget(self):
+    def getAddNotificationTarget():
         """
         Returns the currently registered 'add notification' value, or None.
         """
 
-    def setAddNotificationTarget(self, f):
+    def setAddNotificationTarget(f):
         """
         Cause the 'add notification' function to be 'f'.
 
@@ -290,13 +290,13 @@ class TransientItemContainer(Interface.Base):
               print "id of 'item' arg was %s" % item.getId()
         """
 
-    def getDelNotificationTarget(self):
+    def getDelNotificationTarget():
         """
         Returns the currently registered 'delete notification' value, or
         None.
         """
 
-    def setDelNotificationTarget(self, f):
+    def setDelNotificationTarget(f):
         """
         Cause the 'delete notification' function to be 'f'.
 

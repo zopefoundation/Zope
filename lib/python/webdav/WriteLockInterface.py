@@ -11,7 +11,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 import Interface
 
@@ -35,6 +35,7 @@ class LockItemInterface(Interface.Base):
 
     """
 
+    # XXX:  WAAAA!  What is a ctor doing in the interface?
     def __init__(self, creator, owner, depth=0, timeout='Infinity',
                  locktype='write', lockscope='exclusive', token=None):
         """\
@@ -68,36 +69,36 @@ class LockItemInterface(Interface.Base):
         the object.
         """
 
-    def getCreator(self):
+    def getCreator():
         """ Returns the Zope user who created the lock.  This is returned
         in a tuple containing the Users ID and the path to the user folder
         they came from."""
 
-    def getCreatorPath(self):
+    def getCreatorPath():
         """ Returns a string of the path to the user object in the user
         folder they were found in. """
 
-    def getOwner(self):
+    def getOwner():
         """ Returns the string value of the 'owner' property sent
         in by WebDAV """
 
-    def getLockToken(self):
+    def getLockToken():
         """ returns the opaque lock token """
 
-    def getDepth(self):
+    def getDepth():
         """ returns the depth of the lock """
 
-    def getTimeout(self):
+    def getTimeout():
         """ returns an integer value of the timeout setting """
 
-    def getTimeoutString(self):
+    def getTimeoutString():
         """ returns the timeout value in a form acceptable by
         WebDAV (ie - 'Seconds-40800') """
 
-    def setTimeout(self, newtimeout):
+    def setTimeout(newtimeout):
         """ refreshes the timeout information """
 
-    def getModifiedTime(self):
+    def getModifiedTime():
         """ returns a time.time value of the last time the Lock was
         modified.  From RFC 2518:
 
@@ -108,13 +109,13 @@ class LockItemInterface(Interface.Base):
 
         The modified time is used to calculate the refreshed value """
 
-    def refresh(self):
+    def refresh():
         """ Tickles the locks modified time by setting it to the current
         time.time() value.  (As stated in the RFC, the timeout counter
         SHOULD be restarted for any HTTP method called by the lock owner
         on the locked object). """
 
-    def isValid(self):
+    def isValid():
         """ Returns true if (self.getModifiedTime() + self.getTimeout())
         is greater than the current time.time() value. """
         # now = time.time()
@@ -123,18 +124,18 @@ class LockItemInterface(Interface.Base):
         #
         # return (modified + timeout > now)    # there's time remaining
 
-    def getLockType(self):
+    def getLockType():
         """ returns the lock type ('write') """
 
-    def getLockScope(self):
+    def getLockScope():
         """ returns the lock scope ('exclusive') """
 
-    def asLockDiscoveryProperty(self, ns='d'):
+    def asLockDiscoveryProperty(ns='d'):
         """ Return the lock rendered as an XML representation of a
         WebDAV 'lockdiscovery' property.  'ns' is the namespace identifier
         used on the XML elements."""
 
-    def asXML(self):
+    def asXML():
         """ Render a full XML representation of a lock for WebDAV,
         used when returning the value of a newly created lock. """
         
@@ -173,41 +174,41 @@ class WriteLockInterface(Interface.Base):
     """
 
     
-    def wl_lockItems(self, killinvalids=0):
+    def wl_lockItems(killinvalids=0):
         """ Returns (key, value) pairs of locktoken, lock.
 
         if 'killinvalids' is true, invalid locks (locks whose timeout
         has been exceeded) will be deleted"""
 
-    def wl_lockValues(self, killinvalids=0):
+    def wl_lockValues(killinvalids=0):
         """ Returns a sequence of locks.  if 'killinvalids' is true,
         invalid locks will be deleted"""
 
-    def wl_lockTokens(self, killinvalids=0):
+    def wl_lockTokens(killinvalids=0):
         """ Returns a sequence of lock tokens.  if 'killinvalids' is true,
         invalid locks will be deleted"""
 
-    def wl_hasLock(self, token, killinvalids=0):
+    def wl_hasLock(token, killinvalids=0):
         """ Returns true if the lock identified by the token is attached
         to the object. """
 
-    def wl_isLocked(self):
+    def wl_isLocked():
         """ Returns true if 'self' is locked at all.  If invalid locks
         still exist, they should be deleted."""
 
-    def wl_setLock(self, locktoken, lock):
+    def wl_setLock(locktoken, lock):
         """ Store the LockItem, 'lock'.  The locktoken will be used to fetch
         and delete the lock.  If the lock exists, this MUST
         overwrite it if all of the values except for the 'timeout' on the
         old and new lock are the same. """
 
-    def wl_getLock(self, locktoken):
+    def wl_getLock(locktoken):
         """ Returns the locktoken identified by the locktokenuri """
 
-    def wl_delLock(self, locktoken):
+    def wl_delLock(locktoken):
         """ Deletes the locktoken identified by the locktokenuri """
         
-    def wl_clearLocks(self):
+    def wl_clearLocks():
         """ Deletes ALL DAV locks on the object - should only be called
         by lock management machinery. """
         

@@ -5,7 +5,7 @@ class CatalogAware:
     Description of the Item interface
     """
 
-    def creator(self):
+    def creator():
         """
 
         Return a sequence of user names who have the local Owner role
@@ -14,7 +14,7 @@ class CatalogAware:
 
         """
 
-    def summary(self, num=200):
+    def summary(num=200):
         """
 
         Returns the summary of the text contents of the object (if
@@ -22,7 +22,7 @@ class CatalogAware:
 
         """
 
-    def index_object(self):
+    def index_object():
         """
 
         This object will try and catalog itself when this method is
@@ -30,7 +30,7 @@ class CatalogAware:
 
         """
 
-    def unindex_object(self):
+    def unindex_object():
         """
 
         This object will try and uncatalog itself when this method is
@@ -38,7 +38,7 @@ class CatalogAware:
 
         """
 
-    def reindex_all(self, obj=None):
+    def reindex_all(obj=None):
         """
 
         This method will cause this object to get reindexed.  If this

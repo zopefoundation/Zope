@@ -53,6 +53,10 @@ Zope Changes
         
     Bugs:
 
+      - Removed spurious 'self' from scarecrow interfaces;  updated
+        method-generation in Interface package to ignore self when
+        source is a method (rather than a function).
+
       - Collector #32: Use difflib instead of ndiff
 
       - Fixed long standing bug in PythonScript where get_size returned

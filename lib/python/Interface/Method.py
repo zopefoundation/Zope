@@ -10,7 +10,7 @@ CO_VARKEYWORDS = 8
 
 class MethodClass:
 
-    def fromFunction(self, func, interface=''):
+    def fromFunction(self, func, interface='', strip_first=0):
         m=Method(func.__name__, func.__doc__)
         defaults=func.func_defaults or ()
         c=func.func_code
@@ -18,15 +18,17 @@ class MethodClass:
         names=c.co_varnames
         d={}
         nr=na-len(defaults)
-        if nr==0:
+
+        if strip_first and nr==0: # 'strip_first' implies method, has 'self'
             defaults=defaults[1:]
             nr=1
         
         for i in range(len(defaults)):
             d[names[i+nr]]=defaults[i]
 
-        m.positional=names[1:na]
-        m.required=names[1:nr]
+        start_index = strip_first and 1 or 0
+        m.positional=names[start_index:na]
+        m.required=names[start_index:nr]
         m.optional=d
 
         argno = na
@@ -45,7 +47,7 @@ class MethodClass:
 
     def fromMethod(self, meth, interface=''):
         func = meth.im_func
-        return self.fromFunction(func, interface)
+        return self.fromFunction(func, interface, strip_first=1)
 
 class Method(Attribute):
     """Method interfaces

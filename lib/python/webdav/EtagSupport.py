@@ -11,7 +11,7 @@
 # 
 ##############################################################################
 
-__version__ = "$Revision: 1.5 $"[11:-2]
+__version__ = "$Revision: 1.6 $"[11:-2]
 
 
 import time, Interface, re
@@ -21,7 +21,7 @@ class EtagBaseInterface(Interface.Base):
     Basic Etag support interface, meaning the object supports generating
     an Etag that can be used by certain HTTP and WebDAV Requests.
     """
-    def http__etag(self):
+    def http__etag():
         """\
         Entity tags are used for comparing two or more entities from
         the same requested resource.  Predominantly used for Caching,
@@ -37,7 +37,7 @@ class EtagBaseInterface(Interface.Base):
         match the current Etag).
         """
 
-    def http__refreshEtag(self):
+    def http__refreshEtag():
         """\
         While it may make sense to use the ZODB Object Id or
         bobobase_modification_time to generate an Etag, this could
