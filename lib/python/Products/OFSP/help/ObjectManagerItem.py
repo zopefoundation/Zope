@@ -1,3 +1,7 @@
+"""
+ObjectManagerItem
+"""
+
 class ObjectManagerItem:
     """
     A Zope object that can be contained within an Object Manager.

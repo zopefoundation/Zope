@@ -5,7 +5,7 @@
 
 <dtml-tree>
 <dtml-if "meta_type =='Help Topic'">
-  <a href="<dtml-var absolute_url>" target="help_main"><dtml-var title_and_id></a>
+  <a href="<dtml-var absolute_url>" target="help_main"><dtml-var title_or_id></a>
 <dtml-else>
   <dtml-var title>
 </dtml-if>
