@@ -106,7 +106,9 @@ from AccessControl import getSecurityManager
 
 manage_addZCatalogForm=DTMLFile('dtml/addZCatalog',globals())
 
-def manage_addZCatalog(self, id, title, vocab_id=None, REQUEST=None):
+def manage_addZCatalog(self, id, title,
+                       vocab_id='create_default_catalog_',
+                       REQUEST=None):
     """Add a ZCatalog object
     """
     id=str(id)
