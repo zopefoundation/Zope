@@ -108,7 +108,7 @@ class THUNKED_TM(TM.TM):
             thunk_lock.release()
             self._registered=0
 
-    def tpc_abort(self, *ignored):
+    def abort(self, *ignored):
         try: self._abort()
         finally:
             thunk_lock.release()

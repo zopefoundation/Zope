@@ -108,7 +108,7 @@ class TM:
             except: pass
 
     def tpc_begin(self, *ignored): pass
-    commit=abort=tpc_begin
+    commit=tpc_abort=tpc_begin
 
     def _finish(self):
         self.db.commit()
@@ -121,7 +121,7 @@ class TM:
         try: self._finish()
         finally: self._registered=0
 
-    def tpc_abort(self, *ignored):
+    def abort(self, *ignored):
         try: self._abort()
         finally: self._registered=0
 
