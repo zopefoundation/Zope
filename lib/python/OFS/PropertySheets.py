@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.3 $'[11:-2]
+__version__='$Revision: 1.4 $'[11:-2]
 
 import time, string, App.Management
 from ZPublisher.Converters import type_converters
@@ -342,15 +342,7 @@ class PropertySheet(Persistent, Implicit):
             return self.manage_propertiesForm(self, REQUEST)
 
 
-
-
-class DefaultProperties(PropertySheet):
-    """The default property set mimics the behavior of old-style Zope
-       properties -- it stores its property values in the instance of
-       its owner."""
-
-    id='default'
-    md={'xmlns': 'http://www.zope.org/propsets/default'}
+class Virtual:
 
     def __init__(self):
         pass
@@ -358,8 +350,16 @@ class DefaultProperties(PropertySheet):
     def v_self(self):
         return self.aq_parent.aq_parent
 
+class DefaultProperties(Virtual, PropertySheet):
+    """The default property set mimics the behavior of old-style Zope
+       properties -- it stores its property values in the instance of
+       its owner."""
 
-class DAVProperties(PropertySheet):
+    id='default'
+    md={'xmlns': 'http://www.zope.org/propsets/default'}
+
+
+class DAVProperties(Virtual, PropertySheet):
     """WebDAV properties"""
 
     id='webdav'
@@ -372,12 +372,6 @@ class DAVProperties(PropertySheet):
         {'id':'getcontentlength', 'mode':'r'},
         {'id':'source',           'mode':'r'},
         )
-
-    def __init__(self):
-        pass
-    
-    def v_self(self):
-        return self.aq_parent.aq_parent
 
     def hasProperty(self, id):
         return self.dav__propmap.has_key(id)
