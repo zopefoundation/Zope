@@ -29,7 +29,7 @@ values and click "Save Changes".
   <!--#endif-->
   </td>
   <td align="left" valign="top">
-  <strong><LABEL FOR="cb-<!--#var id-->"><!--#var id--></LABEL></strong>
+  <strong><LABEL FOR="cb-<!--#var id-->"><!--#var "propertyLabel(id)"--></LABEL></strong>
   </td>
   <td align="left" valign="top">
   <!--#if "'w' in _['sequence-item'].get('mode', 'awd')"-->
