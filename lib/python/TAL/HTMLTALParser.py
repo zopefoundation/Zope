@@ -91,7 +91,7 @@ import string
 
 from TALGenerator import TALGenerator
 from TALDefs import ZOPE_METAL_NS, ZOPE_TAL_NS, METALError, TALError
-from nsgmllib import SGMLParser
+from HTMLParser import HTMLParser
 
 BOOLEAN_HTML_ATTRS = [
     # List of Boolean attributes in HTML that may be given in
@@ -149,12 +149,12 @@ class NestingError(Exception):
         return s
 
 
-class HTMLTALParser(SGMLParser):
+class HTMLTALParser(HTMLParser):
 
     # External API
 
     def __init__(self, gen=None):
-        SGMLParser.__init__(self)
+        HTMLParser.__init__(self)
         if gen is None:
             gen = TALGenerator()
         self.gen = gen
@@ -179,7 +179,7 @@ class HTMLTALParser(SGMLParser):
     def getCode(self):
         return self.gen.getCode()
 
-    # Overriding SGMLParser methods
+    # Overriding HTMLParser methods
 
     def finish_starttag(self, tag, attrs):
         self.scan_xmlns(attrs)

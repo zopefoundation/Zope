@@ -1,6 +1,4 @@
-"""A parser for SGML, using the derived class as a static DTD."""
-
-# XXX This only supports those SGML features used by HTML.
+"""A parser for HTML."""
 
 # XXX There should be a way to distinguish between PCDATA (parsed
 # character data -- the normal case), RCDATA (replaceable character
@@ -10,8 +8,6 @@
 
 import re
 import string
-
-__all__ = ["SGMLParser"]
 
 # Regular expressions used for parsing
 
@@ -41,7 +37,7 @@ declname = re.compile(r'[a-zA-Z][-_.a-zA-Z0-9]*\s*')
 declstringlit = re.compile(r'(\'[^\']*\'|"[^"]*")\s*')
 
 
-class SGMLParseError(Exception):
+class HTMLParseError(Exception):
     """Exception raised for all parse errors."""
     def __init__(self, msg, pos=(None, None)):
         self.msg = msg
@@ -53,8 +49,8 @@ class SGMLParseError(Exception):
                 % (self.msg, self.lineno, self.offset))
 
 
-# SGML parser base class -- find tags and call handler functions.
-# Usage: p = SGMLParser(); p.feed(data); ...; p.close().
+# HTML parser class -- find tags and call handler functions.
+# Usage: p = HTMLParser(); p.feed(data); ...; p.close().
 # The dtd is defined by deriving a class which defines methods
 # with special names to handle tags: start_foo and end_foo to handle
 # <foo> and </foo>, respectively, or do_foo to handle <foo> by itself.
@@ -64,7 +60,7 @@ class SGMLParseError(Exception):
 # chunks).  Entity references are passed by calling
 # self.handle_entityref() with the entity reference as argument.
 
-class SGMLParser:
+class HTMLParser:
 
     # Interface -- initialize and reset this instance
     def __init__(self, verbose=0):
@@ -207,7 +203,7 @@ class SGMLParser:
                     i = self.updatepos(i, k)
                     continue
             else:
-                raise SGMLParserError('neither < nor & ??', self.getpos())
+                raise HTMLParserError('neither < nor & ??', self.getpos())
             # We get here only if incomplete matches but
             # nothing else
             match = incomplete.match(rawdata, i)
@@ -231,7 +227,7 @@ class SGMLParser:
     def parse_comment(self, i):
         rawdata = self.rawdata
         if rawdata[i:i+4] != '<!--':
-            raise SGMLParseError('unexpected call to parse_comment()',
+            raise HTMLParseError('unexpected call to parse_comment()',
                                  self.getpos())
         match = commentclose.search(rawdata, i+4)
         if not match:
@@ -268,7 +264,7 @@ class SGMLParser:
                 # end of buffer between tokens
                 return -1
             else:
-                raise SGMLParseError(
+                raise HTMLParseError(
                     "unexpected char in declaration: %s" % `rawdata[i]`,
                     self.getpos())
         assert 0, "can't get here!"
@@ -277,7 +273,7 @@ class SGMLParser:
     def parse_pi(self, i):
         rawdata = self.rawdata
         if rawdata[i:i+2] != '<?':
-            raise SGMLParseError('unexpected call to parse_pi()',
+            raise HTMLParseError('unexpected call to parse_pi()',
                                  self.getpos())
         match = piclose.search(rawdata, i+2)
         if not match:
@@ -306,7 +302,7 @@ class SGMLParser:
         attrs = []
         match = tagfind.match(rawdata, i+1)
         if not match:
-            raise SGMLParseError('unexpected call to parse_starttag()',
+            raise HTMLParseError('unexpected call to parse_starttag()',
                                  self.getpos())
         k = match.end(0)
         tag = string.lower(rawdata[i+1:k])
@@ -471,11 +467,11 @@ class SGMLParser:
         return s
 
 
-class TestSGMLParser(SGMLParser):
+class TestHTMLParser(HTMLParser):
 
     def __init__(self, verbose=0):
         self.testdata = ""
-        SGMLParser.__init__(self, verbose)
+        HTMLParser.__init__(self, verbose)
 
     def handle_data(self, data):
         self.testdata = self.testdata + data
@@ -518,7 +514,7 @@ class TestSGMLParser(SGMLParser):
         print '*** unknown char ref: &#' + ref + ';'
 
     def close(self):
-        SGMLParser.close(self)
+        HTMLParser.close(self)
         self.flush()
 
 
@@ -530,9 +526,9 @@ def test(args = None):
 
     if args and args[0] == '-s':
         args = args[1:]
-        klass = SGMLParser
+        klass = HTMLParser
     else:
-        klass = TestSGMLParser
+        klass = TestHTMLParser
 
     if args:
         file = args[0]

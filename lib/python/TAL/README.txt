@@ -56,7 +56,7 @@ TALGenerator.py		class to generate intermediate code
 XMLParser.py		base class to parse XML, avoiding DOM
 TALParser.py		class to parse XML with TAL into intermediate code
 HTMLTALParser.py	class to parse HTML with TAL into intermediate code
-nsgmllib.py		modified version of sgmllib.py
+HTMLParser.py		HTML-parsing base class
 driver.py		script to demonstrate TAL expansion
 timer.py		script to time various processing phases
 setpath.py		hack to set sys.path and import ZODB
@@ -93,8 +93,6 @@ TO DO
   exceptions, including those raised by eval() of "python:..."
   expressions.  (But how?  Can we just stick lineno, offset attributes
   on existing exceptions?)
-
-- nsgmllib.py is a pretty silly name.  Maybe HTMLParser.py?
 
 - HTMLTALParser.py and TALParser.py are silly names too.  Should be
   HTMLTALCompiler.py and XMLTALCompiler.py (or maybe shortened,
