@@ -58,7 +58,8 @@ PyZlib_compress(self, args)
                       "Can't allocate memory to compress data");
       return NULL;
     }
-  zst.zalloc=(alloc_func)zst.zfree=(free_func)Z_NULL;
+  zst.zalloc=(free_func)Z_NULL;
+  zst.zfree=(free_func)Z_NULL;
   zst.next_out=(Byte *)output;
   zst.next_in =(Byte *)input;
   zst.avail_in=length;
@@ -146,7 +147,8 @@ PyZlib_decompress(self, args)
                       "Can't allocate memory to decompress data");
       return NULL;
     }
-  zst.zalloc=(alloc_func)zst.zfree=(free_func)Z_NULL;
+  zst.zalloc=(alloc_func)Z_NULL;
+  zst.zfree=(free_func)Z_NULL;
   zst.next_out=(Byte *)output;
   zst.next_in =(Byte *)input;
   err=inflateInit(&zst);
@@ -254,7 +256,8 @@ PyZlib_compressobj(selfptr, args)
     }
   self=newcompobject(&Comptype);
   if (self==NULL) return(NULL);
-  self->zst.zalloc=(alloc_func)self->zst.zfree=(free_func)Z_NULL;
+  self->zst.zalloc=(alloc_func)Z_NULL;
+  self->zst.zfree=(free_func)Z_NULL;
   err=deflateInit2(&self->zst, level, method, wbits, memLevel, strategy);
   switch(err)
     {
@@ -297,7 +300,8 @@ PyZlib_decompressobj(selfptr, args)
     }  
   self=newcompobject(&Decomptype);
   if (self==NULL) return(NULL);
-  self->zst.zalloc=(alloc_func)self->zst.zfree=(free_func)Z_NULL;
+  self->zst.zalloc=(alloc_func)Z_NULL;
+  self->zst.zfree=(free_func)Z_NULL;
   /* XXX If illegal values of wbits are allowed to get here, Python
      coredumps, instead of raising an exception as it should. 
      This is a bug in zlib 0.95; I have reported it. */
@@ -661,6 +665,7 @@ PyInit_zlib()
         d = PyModule_GetDict(m);
         ZlibError = Py_BuildValue("s", "zlib.error");
         PyDict_SetItemString(d, "error", ZlibError);
+        PyDict_SetItemString(d, "IDString", "$Id: zlibmodule.c,v 1.2 1997/06/30 17:02:18 jim Exp $");
 	insint(d, "MAX_WBITS", MAX_WBITS);
 	insint(d, "DEFLATED", DEFLATED);
 	insint(d, "DEF_MEM_LEVEL", DEF_MEM_LEVEL);
