@@ -96,7 +96,7 @@ def main(home, user='', group=''):
         print 'setting dir permissions'
         def dir_chmod(mode, dir, files, user=user, group=group):
             ch(dir, user=user, group=group, mode=mode)
-        os.path.walk(home, dir_chmod, mode)
+        os.path.walk(home, dir_chmod, 0775)
         print '-'*78
         print 'creating default database'
         open(db_path,'wb').write(open(dd_path,'rb').read())
