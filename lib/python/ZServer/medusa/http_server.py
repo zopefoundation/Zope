@@ -6,7 +6,7 @@
 #						 All Rights Reserved.
 #
 
-RCS_ID =  '$Id: http_server.py,v 1.22 2001/04/25 19:07:31 andreas Exp $'
+RCS_ID =  '$Id: http_server.py,v 1.23 2001/04/30 14:38:40 andreas Exp $'
 
 # python modules
 import os
@@ -454,12 +454,19 @@ class http_channel (asynchat.async_chat):
 
 			request = lines[0]
 
+
+
+			command, uri, version = crack_request (request)
+
 			# unquote path if necessary (thanks to Skip Montaro for pointing
 			# out that we must unquote in piecemeal fashion).
+            # ajung: unquote the request *after* calling crack_request because
+            # this function breaks when it gets an unquoted request
+
 			if '%' in request:
 				request = unquote (request)
 
-			command, uri, version = crack_request (request)
+
 			header = join_headers (lines[1:])
 
 			r = http_request (self, request, command, uri, version, header)
