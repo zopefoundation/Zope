@@ -261,6 +261,7 @@ class TextTopic(HelpTopic):
     """
     A basic Help Topic. Holds a text file.
     """
+    index_html = None
     def __init__(self, id, title, file, permissions=None, categories=None):
         self.id=id
         self.title=title
@@ -272,7 +273,7 @@ class TextTopic(HelpTopic):
         if categories is not None:
             self.categories=categories
         
-    def index_html(self, REQUEST=None):
+    def __call__(self, REQUEST=None):
         "View the Help Topic"
         self._check_for_update()
         return self.obj
@@ -286,7 +287,9 @@ class STXTopic(TextTopic):
     """
     A structured-text topic. Holds a HTMLFile object.
     """
-    def index_html(self, REQUEST=None):
+    index_html = None
+    
+    def __call__(self, REQUEST=None):
         """ View the STX Help Topic """
         self._check_for_update()
         return self.htmlfile(self, REQUEST)
