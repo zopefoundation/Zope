@@ -84,7 +84,7 @@
 ##############################################################################
 """HTML formated DocumentTemplates
 
-$Id: DT_HTML.py,v 1.28 2001/05/25 11:30:32 andreas Exp $"""
+$Id: DT_HTML.py,v 1.29 2001/05/25 11:34:56 andreas Exp $"""
 
 from DT_String import String, FileMixin
 import DT_String, re
@@ -102,8 +102,6 @@ class dtml_re_class:
                strip=strip,
                replace=replace,
                ):
-
-        open('xx.log','a').write('-'*78 + '\n' + text)
 
         while 1:
             mo = start_search(text,start)
