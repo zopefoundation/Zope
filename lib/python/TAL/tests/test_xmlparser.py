@@ -106,14 +106,14 @@ class XMLParserTestCase(unittest.TestCase):
             parser.parseString(source)
         self.assertRaises(XMLParser.XMLParseError, parse)
 
-    def check_processing_instruction_only(self):
+    def check_processing_instruction_plus(self):
         self._run_check("<?processing instruction?><a/>", [
             ("pi", "processing", "instruction"),
             ("starttag", "a", []),
             ("endtag", "a"),
             ])
 
-    def check_simple_html(self):
+    def _check_simple_html(self):
         self._run_check("""\
 <?xml version='1.0' encoding='iso-8859-1'?>
 <!DOCTYPE html PUBLIC 'foo' 'bar'>
