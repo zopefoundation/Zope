@@ -508,6 +508,15 @@ setup(
                 ['TAL/tests/output', ['TAL/tests/output/*']]],
     )
 
+# tempstorage
+setup(
+    name='tempstorage',
+    author=AUTHOR,
+
+    packages=['tempstorage', 'tempstorage.tests'],
+    data_files=[['tempstorage', ['tempstorage/*.xml']]],
+    )
+
 # Testing
 setup(
     name='Testing',
@@ -920,10 +929,8 @@ setup(
     name='TemporaryFolder',
     author=AUTHOR,
 
-    packages=['Products.TemporaryFolder', 'Products.TemporaryFolder.tests'],
-    data_files=[['Products/TemporaryFolder',
-                    ['Products/TemporaryFolder/*.xml']],
-                ['Products/TemporaryFolder/dtml',
+    packages=['Products.TemporaryFolder', 'Products.TemporaryFolder'],
+    data_files=[['Products/TemporaryFolder/dtml',
                     ['Products/TemporaryFolder/dtml/*']],
                 ['Products/TemporaryFolder/help',
                     ['Products/TemporaryFolder/help/*']],
