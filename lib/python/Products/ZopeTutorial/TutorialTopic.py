@@ -84,7 +84,7 @@
 ##############################################################################
 import OFS.Folder
 from HelpSys.HelpTopic import TextTopic
-from Globals import HTML, HTMLFile, MessageDialog
+from Globals import HTML, DTMLFile, MessageDialog
 import DateTime
 import DocumentTemplate
 import StructuredText
@@ -105,7 +105,7 @@ class TutorialTopic(TextTopic):
         text=str(StructuredText.HTML(text))
         self.obj=HTML(pre_pat.sub(clean_pre, text))
         
-    index_html=HTMLFile('dtml/lessonView', globals())
+    index_html=DTMLFile('dtml/lessonView', globals())
             
     def lessonURL(self, id, REQUEST):
         """
@@ -158,10 +158,10 @@ onClick="javascript:window.open('%s/manage_main', 'manage_main').focus()"
                 names[0], names[1], names[2])
         return '<a href="%s">API Documentation</a>' % url
 
-    tutorialNavigation=HTMLFile('dtml/tutorialNav', globals())
+    tutorialNavigation=DTMLFile('dtml/tutorialNav', globals())
 
 
-addTutorialForm=HTMLFile('dtml/tutorialAdd', globals())
+addTutorialForm=DTMLFile('dtml/tutorialAdd', globals())
 
 def addTutorial(self, id, REQUEST=None, RESPONSE=None):
     """

@@ -85,11 +85,11 @@
 __doc__='''SQL Methods
 
 
-$Id: SQL.py,v 1.15 2001/01/08 22:47:05 brian Exp $'''
-__version__='$Revision: 1.15 $'[11:-2]
+$Id: SQL.py,v 1.16 2001/01/11 19:52:54 chrism Exp $'''
+__version__='$Revision: 1.16 $'[11:-2]
 
 import Shared.DC.ZRDB.DA
-from Globals import HTMLFile
+from Globals import DTMLFile
 
 def SQLConnectionIDs(self):
     """Find SQL database connections in the current folder and above
@@ -118,7 +118,7 @@ def SQLConnectionIDs(self):
     ids.sort()
     return ids
 
-manage_addZSQLMethodForm=HTMLFile('dtml/add', globals())
+manage_addZSQLMethodForm=DTMLFile('dtml/add', globals())
 def manage_addZSQLMethod(self, id, title,
                                 connection_id, arguments, template,
                                 REQUEST=None, submit=None):
@@ -190,5 +190,5 @@ class SQL(Shared.DC.ZRDB.DA.DA):
     """
     meta_type='Z SQL Method'
                 
-    manage_main=HTMLFile('dtml/edit', globals())
+    manage_main=DTMLFile('dtml/edit', globals())
 
