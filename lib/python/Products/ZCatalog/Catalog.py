@@ -443,7 +443,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
 
 
 ## Searching engine.  You don't really have to worry about what goes
-## on below here...
+## on below here...  Most of this stuff came from ZTables with tweaks.
 
     def _indexedSearch(self, args, sort_index, append, used,
                        IIBType=type(IIBucket()), intSType=type(intSet())):

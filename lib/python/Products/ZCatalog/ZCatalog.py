@@ -102,7 +102,6 @@ from SearchIndex import UnIndex, UnTextIndex
 from Vocabulary import Vocabulary
 import IOBTree
 
-from ZCatalogInterface import ZCatalogInterface
 
 manage_addZCatalogForm=HTMLFile('addZCatalog',globals())
 
@@ -166,8 +165,6 @@ class ZCatalog(Folder, Persistent, Implicit):
     meta_type = "ZCatalog"
     icon='misc_/ZCatalog/ZCatalog.gif'
 
-    __extends__=(ZCatalogInterface,)
-    
     manage_options=(  
         {'label': 'Contents', 'action': 'manage_main',
          'target': 'manage_main',
