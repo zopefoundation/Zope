@@ -647,8 +647,7 @@ setup(
     name='Top-level',
     author=AUTHOR,
 
-    py_modules=['Globals', 'ImageFile', 'LOG', 'Main', 'dcdb', 'ts_regex',
-                'xmlrpclib',]
+    py_modules=['Globals', 'ImageFile', 'LOG', 'ts_regex', 'xmlrpclib',]
 )
 
 # Products base directory
