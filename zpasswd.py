@@ -85,7 +85,7 @@
 ##############################################################################
 """Zope password change system"""
 
-__version__='$Revision: 1.9 $ '[11:-2]
+__version__='$Revision: 1.10 $ '[11:-2]
 
 import sys, string, sha, binascii, whrandom, getopt, getpass, os
 
@@ -166,10 +166,10 @@ for all necessary information.  The available options are:
     -d / --domains=
     Set the domain names that the user user can log in from.  Defaults to
     any. OPTIONAL.
-
-    Filename is not option, and should be the name of the file to store the
-    information in.
-
+    
+    Filename is required, and should be the name of the file to store the
+    information in (usually "access").
+    
 Copyright (C) 1999 Digital Creations, Inc.
 """ % argv[0]
 
