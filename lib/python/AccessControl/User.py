@@ -1,6 +1,6 @@
 """Access control package"""
 
-__version__='$Revision: 1.44 $'[11:-2]
+__version__='$Revision: 1.45 $'[11:-2]
 
 
 from PersistentMapping import PersistentMapping
@@ -75,6 +75,7 @@ except:
     super=User('superuser','123',('manage',))
 
 super.hasRole=lambda parent, roles=None: 1
+super.has_role=lambda roles=None: 1
 
 nobody=User('Anonymous User','',('Anonymous',))
 
