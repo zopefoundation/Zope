@@ -176,7 +176,7 @@ class ZClassMethodsSheet(
                 'The id %s is invalid - it is already in use.' % id)
 
         ZClassMethodsSheet.inheritedAttribute('_checkId')(
-            self, id, 0)
+            self, id, 1)
 
         return id+' '
 
