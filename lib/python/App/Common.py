@@ -85,10 +85,11 @@
 
 """Commonly used utility functions."""
 
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
 from time import time, asctime, gmtime
-from string import split
+import sys, os
+from string import split, rfind
 
 
 def rfc1123_date(t=None, time=time, asctime=asctime, gmtime=gmtime,
@@ -121,3 +122,22 @@ def is_acquired(ob, hasattr=hasattr, aq_base=aq_base, absattr=absattr):
         return 0
     return 1
 
+
+def package_home(globals_dict):
+    __name__=globals_dict['__name__']
+    m=sys.modules[__name__]
+    if hasattr(m,'__path__'):
+        r=m.__path__[0]
+    elif "." in __name__:
+        r=sys.modules[__name__[:rfind(__name__,'.')]].__path__[0]
+    else:
+        r=__name__
+    return os.path.join(os.getcwd(), r)
+
+
+def attrget(o,name,default):
+    if hasattr(o,name): return getattr(o,name)
+    return default
+
+def Dictionary(**kw): return kw # Sorry Guido
+    
