@@ -1,6 +1,6 @@
 """Access control support"""
 
-__version__='$Revision: 1.14 $'[11:-2]
+__version__='$Revision: 1.15 $'[11:-2]
 
 
 from Globals import HTMLFile, MessageDialog
@@ -234,7 +234,7 @@ Globals.default__class_init__(RoleManager)
 
 
 
-
+ListType=type([])
 
 class Permission:
     # A Permission maps a named logical permission to a set
@@ -271,19 +271,23 @@ class Permission:
 	# subobjects for this permission. To do this, we add
 	# the given roles to the __roles__ of each attribute
 	# that this permission represents.
+	first=1
+	data=None
 	for name in self.data:
 	    if name=='': attr=self.obj
 	    else: attr=getattr(self.obj, name)
 	    if hasattr(attr,'aq_self'):
 		attr=attr.aq_self
-	    if hasattr(attr, '__roles__'):
-		data=attr.__roles__
-	    else: data=[]
-	    if data is None:
-		data=[]
-	    data=list(data)
-	    for role in roles:
-		data.append(role)
+
+	    if first:
+		if hasattr(attr, '__roles__'):
+		    data=attr.__roles__
+		    if data is None: data=[]
+		    elif type(data) is not ListType: data=list(data)
+		else: data=[]
+		for role in roles: data.append(role)
+		first=0
+
 	    attr.__roles__=data
 
     def delRoles(self, roles):
@@ -292,28 +296,25 @@ class Permission:
 	# the given roles from the __roles__ of each attribute
 	# that this permission represents. If the __roles__ of any
 	# attribute is thus left empty, it is deleted.
+	first=1
+	data=None
 	for name in self.data:
 	    if name=='': attr=self.obj
 	    else: attr=getattr(self.obj, name)
 	    if hasattr(attr,'aq_self'):
 		attr=attr.aq_self
-	    if not hasattr(attr, '__roles__'):
-	    #	return
-	        data=['Shared']
-	    #data=attr.__roles__
-            else: data=attr.__roles__
-	    if data is None: data=[]
-	    data=list(data)
-	    for role in roles:
-		if role in data:
-		    data.remove(role)
+
+	    if first:
+		if hasattr(attr, '__roles__'):
+		    data=attr.__roles__
+		    if data is None: data=[]
+		    elif type(data) is not ListType: data=list(data)
+		else: data=['Shared']
+		for role in roles:
+		    if role in data: data.remove(role)
+		first=0
+
 	    attr.__roles__=data
-	    #if data: attr.__roles__=data
-	    #else:
-		# The hasattr above will find __roles__ defined
-		# in the class, but we wont be able to delete it.
-		#try:    del attr.__roles__
-		#except: pass
 		
     def __len__(self): return 1
     def __str__(self): return self.name
