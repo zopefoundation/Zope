@@ -1,0 +1,21 @@
+<dtml-comment>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+ <HEAD> <TITLE>Upgrading from SiteAccess 1</TITLE> </HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#000066" VLINK="#606060" TOPMARGIN="0" LEFTMARGIN="0" MARGINWIDTH="0" MARGINHEIGHT="0">
+</dtml-comment>
+<dtml-var doc_header>
+
+<h3>Must Upgrade</h3>
+<p>If your site has SiteAccess 1 objects in it, you must upgrade them.  Until
+you do, they will be inert</p>
+<h4>From the command line</h4>
+<p>Copy 'updata.py' from the 'Extensions' directory of the SiteAccess Product
+to the 'lib/python' directory.  Run it there, then delete it.</p>
+<h4>From an External Method</h4>
+<p>In the Zope root folder, add an External Method with method "updata" and
+python file "SiteAccess.updata".  Click on the "Try It" tab, then delete it.</p>
+<dtml-var doc_footer>
+<dtml-comment>
+</BODY></HTML>
+</dtml-comment>

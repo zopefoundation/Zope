@@ -1,0 +1,21 @@
+SiteRoot - Edit: Edit SiteRoot parameters
+
+  Description
+
+    This view displays the SiteRoot parameters and allows you to 
+    change them.
+
+  Information
+
+    'Title' -- The optional title.
+
+    'Base' -- Replacement for base of URLs.  If you do not want to replace this
+    portion of URLs, leave it blank.
+
+    'Path' -- Replacement for the URL path to the SiteRoot's container.  If you
+    do not want to replace this portion of URLs, leave it blank.  
+
+  Controls
+
+    'Change' -- Changes the parameters.
+

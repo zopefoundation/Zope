@@ -1,0 +1,31 @@
+<html><head><title>Set the Access Rule</title>
+</head>
+<body bgcolor="#FFFFFF" link="#000099" vlink="#555555">
+<h2>Set the Access Rule</h2>
+
+<p>In the form below <em>Method Id</em> is the Id of a method in the Zope
+root which will be called at the start of each request.  It can implement
+rewrite rules, preload request variables, etc.
+</p>
+<dtml-if "manage_getAccessRule(this())">
+<p>The current Access Rule is
+<a href="<dtml-var "'%s/%s/manage_workspace' % (this().absolute_url(), manage_getAccessRule(this()))">">
+"<dtml-var "manage_getAccessRule(this())">"</a>.</p>
+<dtml-else>
+<p>No Access Rule is currently set.</p>
+</dtml-if>
+
+<form action="manage_addAccessRule" method="post">
+
+<table>     
+<tr>	<th align='LEFT'><em>Method Id<em></th>
+        <td align='LEFT'><input name="method_id" size="80">
+</td></tr>
+<tr><td colspan=2>
+<input type="SUBMIT" name="submit" value=" Set Rule ">
+<input type="SUBMIT" name="none" value=" No Access Rule ">
+</td></tr>
+
+</table>
+</form>
+</body></html>
