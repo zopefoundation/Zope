@@ -11,7 +11,7 @@
 #
 ##############################################################################
 
-__version__ = '$Id: PathIndex.py,v 1.31 2003/01/23 17:46:27 andreasjung Exp $'
+__version__ = '$Id: PathIndex.py,v 1.32 2003/01/27 18:59:17 fdrake Exp $'
 
 from Products.PluginIndexes import PluggableIndex
 from Products.PluginIndexes.common.util import parseIndexRequest
@@ -200,8 +200,8 @@ class PathIndex(Persistent, Implicit, SimpleItem):
         relative URL or a part of a relative URL or
         a tuple (path,level).
 
-        level>=0  starts searching at the given level
-        level<0   not implemented yet
+        level >= 0  starts searching at the given level
+        level <  0  not implemented yet
         """
 
         if isinstance(path,StringType):
@@ -215,7 +215,7 @@ class PathIndex(Persistent, Implicit, SimpleItem):
         if len(comps) == 0:
             return IISet(self._unindex.keys())
 
-        if level >=0:
+        if level >= 0:
 
             results = []
             for i in range(len(comps)):
