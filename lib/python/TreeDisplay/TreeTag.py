@@ -12,8 +12,8 @@
 ##############################################################################
 """Rendering object hierarchies as Trees
 """
-__rcs_id__='$Id: TreeTag.py,v 1.57 2004/01/15 22:58:25 tseaver Exp $'
-__version__='$Revision: 1.57 $'[11:-2]
+__rcs_id__='$Id: TreeTag.py,v 1.58 2004/04/29 19:03:08 caseman Exp $'
+__version__='$Revision: 1.58 $'[11:-2]
 
 from DocumentTemplate.DT_Util import *
 from DocumentTemplate.DT_String import String
@@ -671,7 +671,7 @@ class MiniUnpickler(pickle.Unpickler):
     dispatch = pickle.Unpickler.dispatch.copy()
 
     for k,v in dispatch.items():
-        if k=='' or k in '().012FGIJKLMNTUVX]adeghjlpqrstu}':
+        if k=='' or k in '().012FGIJKLMNTUVXS]adeghjlpqrstu}':
             # This key is necessary and safe, so leave it in the map
             pass
         else:
@@ -682,11 +682,6 @@ class MiniUnpickler(pickle.Unpickler):
                 pass
             elif k in [pickle.PERSID, pickle.BINPERSID]:
                 # These are just unnecessary
-                pass
-            elif k in [pickle.STRING]:
-                # This one is controversial: A string is harmlessm, but the
-                # implementation of pickle leaks memory (strings may be interned)
-                # The problem can be avoided by using binary pickles.
                 pass
     del k
     del v
@@ -705,7 +700,6 @@ def _should_fail(x,binary=1):
 class _junk_class: pass
 
 def _test():
-    _should_fail('hello',0)
     _should_succeed('hello')
     _should_succeed(1)
     _should_succeed(1L)
