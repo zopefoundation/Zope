@@ -85,7 +85,7 @@
 ##############################################################################
 """Zope user bootstrap system"""
 
-__version__='$Revision: 1.11 $ '[11:-2]
+__version__='$Revision: 1.12 $ '[11:-2]
 
 import sys, string, sha, binascii, whrandom, getopt, getpass, os
 
@@ -96,9 +96,9 @@ except ImportError:
 
 def generate_salt():
     """Generate a salt value for the crypt function."""
-    salt_choices = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" \
-                   "abcdefghijklmnopqrstuvwxyz" \
-                   "0123456789./"
+    salt_choices = ("ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                    "abcdefghijklmnopqrstuvwxyz"
+                    "0123456789./")
     return whrandom.choice(salt_choices)+whrandom.choice(salt_choices)
 
 def generate_passwd(password, encoding):
@@ -114,9 +114,9 @@ def generate_passwd(password, encoding):
 
 def write_generated_password(home, ac_path, username):
     import whrandom
-    pw_choices = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" \
-                 "abcdefghijklmnopqrstuvwxyz" \
-                 "0123456789!"
+    pw_choices = ("ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                  "abcdefghijklmnopqrstuvwxyz"
+                  "0123456789!")
     acfile=open(ac_path, 'w')
     pw = ''
     for i in range(8):

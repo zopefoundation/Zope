@@ -135,11 +135,10 @@ Zope Installation Frequently Asked Questions
 
   Managing the Zope process
 
-
     1. How do I find the application server in my process listing?
 
        Whether running Zope with ZServer (yay) or straight PCGI (not
-       so yay), there will be a .pid file in var with the pid of the
+       so yay), or there will be a .pid file in var with the pid of the
        process.  For ZServer, the pid file is named 'z2.pid' (and it
        contains two pids).  For PCGI, the file will be 'pcgi.pid'.
 
@@ -187,8 +186,8 @@ Zope Installation Frequently Asked Questions
   General
 
 
-    1. My browser is giving a message of 'Sorry, an error occurred.'
-       How do I find out the error?
+    1. My browser is giving a message, 'Sorry, an error occurred.'
+       How do I find out what the real error is?
 
        Step number one in these scenarios is to view the HTML source of 
        the frame containing the error. In general, the *traceback* of
@@ -198,4 +197,4 @@ Zope Installation Frequently Asked Questions
        Occassionally you won't see the error message. Rather, the HTML 
        source will contain the last good HTML returned by the request
        before the error occurred. This is due to caching by the
-       browser. Clear your cache and view the HTML source again.
+       browser.  Clear your cache and view the HTML source again.

@@ -517,17 +517,17 @@ def set_locale(val):
         import locale
     except:
         raise SystemExit, (
-            'The locale module could not be imported.\n' \
-            'To use localization options, you must ensure\n' \
-            'that the locale module is compiled into your\n' \
+            'The locale module could not be imported.\n'
+            'To use localization options, you must ensure\n'
+            'that the locale module is compiled into your\n'
             'Python installation.'
             )
     try:
         locale.setlocale(locale.LC_ALL, val)
     except:
         raise SystemExit, (
-            'The specified locale is not supported by your system.\n' \
-            'See your operating system documentation for more\n' \
+            'The specified locale is not supported by your system.\n'
+            'See your operating system documentation for more\n'
             'information on locale support.'
             )
 if LOCALE_ID is not None:
