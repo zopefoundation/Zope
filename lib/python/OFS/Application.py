@@ -85,8 +85,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.139 2001/01/19 20:19:36 brian Exp $'''
-__version__='$Revision: 1.139 $'[11:-2]
+$Id: Application.py,v 1.140 2001/01/25 21:48:50 chrism Exp $'''
+__version__='$Revision: 1.140 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os, string, Products
@@ -443,8 +443,10 @@ def initialize(app):
     install_products(app)
 
     # Note that the code from here on only runs if we are not a ZEO
-    # client.
-    if os.environ.get('ZEO_CLIENT',''):
+    # client, or if we are a ZEO client and we've specified by way
+    # of env variable that we want to force products to load.
+    if (os.environ.get('ZEO_CLIENT') and
+        not os.environ.get('FORCE_PRODUCT_LOAD')):
         return
 
     # Check for dangling pointers (broken zclass dependencies) in the
@@ -667,8 +669,10 @@ def install_products(app):
                     Folder.__dict__['__ac_permissions__']=tuple(
                         list(Folder.__ac_permissions__)+new_permissions)
 
-                if os.environ.get('ZEO_CLIENT',''):
-                    # we don't want to install products from clients!
+                if (os.environ.get('ZEO_CLIENT') and
+                    not os.environ.get('FORCE_PRODUCT_LOAD')):
+                    # we don't want to install products from clients
+                    # (unless FORCE_PRODUCT_LOAD is defined).
                     get_transaction().abort()
                 else:
                     get_transaction().note('Installed product '+product_name)

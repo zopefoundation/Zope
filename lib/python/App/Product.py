@@ -470,7 +470,8 @@ def initializeProduct(productp, name, home, app):
             {'label':'README', 'action':'manage_readme'},
             )
 
-    if os.environ.get('ZEO_CLIENT',''):
+    if (os.environ.get('ZEO_CLIENT') and
+        not os.environ.get('FORCE_PRODUCT_LOAD')):
         get_transaction().abort()
         return product
 
