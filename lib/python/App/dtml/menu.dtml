@@ -13,7 +13,7 @@ td {
 </style>
 
 <table width="100%" cellspacing="0" border="0">
-<tr>
+<tr bgcolor="#000000">
   <td valign="top" nowrap>
   <dtml-if icon>
   <a href="manage_workspace" target="manage_main"><img 
@@ -22,11 +22,13 @@ td {
   </dtml-if>
   <strong>
   <a href="manage_workspace" target="manage_main">
+  <font color="#ffffff">
   <dtml-if expr="URLPATH1==BASEPATH1">
   Root Folder
   <dtml-else>
   <dtml-var id>
   </dtml-if>
+  </font>
   </a>
   </strong>
   </td>
@@ -65,24 +67,31 @@ td {
 <dtml-unless expr="REQUEST.get('zmi_top_frame', '1')">
 <table width="100%" bgcolor="#6699cc">
 <tr>
-<td valign="top" align="left" colspan="2">
-
+<td valign="top" align="center">
 <div align="center">
 <a href="http://www.zope.org/" target="_new"><img src="<dtml-var 
 BASEPATH1>/p_/zopelogo_jpg" height="32" width="90" border="0" 
 alt="" />
 </div>
-<div align="center" class="std-text">
-Logged in as <strong><dtml-var
-AUTHENTICATED_USER></strong>
-<br />
+<div class="form-element">
+<form action="<dtml-var BASEPATH1>" method="POST" target="manage_main">
+<span class="std-text">Logged in as <strong><dtml-var 
+ AUTHENTICATED_USER></strong></span> &nbsp;&nbsp;
+
+<select class="form-element" name=":action" onChange="window.parent.manage_main.location.href='&dtml-BASEPATH1;/'+this.options[this.selectedIndex].value">
+<option value="ZopeQuickStart">Getting Started</option>
 <dtml-if "AUTHENTICATED_USER.getUserName() != 'Anonymous User'">
- <a href="<dtml-var BASEPATH1>/manage_zmi_prefs"
-   target="manage_main">Preferences</a>
- | <a href="<dtml-var BASEPATH1>/manage_logout" target="_top">Logout</a>
+<option value="manage_zmi_prefs">Preferences</option>
+<option value="manage_logout">Logout</option>
 </dtml-if>
+</select> 
+<input class="form-element" type="submit" name="submit" value=" Go " />
+&nbsp;
+</form>
 </div>
-</td></tr></table>
+</td>
+</tr>
+</table>
 </dtml-unless>
 
 <dtml-var manage_page_footer>

@@ -1,7 +1,7 @@
 <dtml-var manage_page_header>
 
 <dtml-var "manage_form_title(this(), _,
-           form_title='Preferences',
+           form_title='Browser Preferences',
            help_product='OFSP',
            help_topic='Preferences.stx'
 	   )">
@@ -34,48 +34,49 @@ button in order for some changes to take effect.
 <tr>
   <td align="left" valign="top">
   <div class="form-label">
-  Top frame
+  Show Top Frame
   </div>
   </td>
   <td align="left" valign="top">
+  <div class="form-text">
   <dtml-let tf="REQUEST.get('zmi_top_frame', '1')">
   <input type="radio" name="zmi_top_frame" value="1"
     <dtml-if tf>checked="checked"</dtml-if>
-    /> On
+    /> Yes
   <input type="radio" name="zmi_top_frame" value=""
     <dtml-unless tf>checked="checked"</dtml-unless>
-    /> Off
+    /> No
   </dtml-let>
+  </div>
   </td>
 </tr>
 
 <tr>
   <td align="left" valign="top">
   <div class="form-label">
-  Use style sheets
+  Use Style Sheets
   </div>
   </td>
   <td align="left" valign="top">
+  <div class="form-text">
   <dtml-let ag="REQUEST.get('HTTP_USER_AGENT', '')"
      is_nav4="ag[:9] == 'Mozilla/4' and _.string.find(ag, 'MSIE') < 0"
-     use_css="REQUEST.get('zmi_use_css', is_nav4 and 'inline' or '1')">
+     use_css="REQUEST.get('zmi_use_css', '1')">
   <input type="radio" name="zmi_use_css" value="1"
     <dtml-if expr="use_css and use_css != 'inline'">checked="checked"</dtml-if>
-    /> Linked
-  <input type="radio" name="zmi_use_css" value="inline"
-    <dtml-if expr="use_css == 'inline'">checked="checked"</dtml-if>
-    /> Inline
+    /> Yes
   <input type="radio" name="zmi_use_css" value=""
     <dtml-if expr="not use_css">checked="checked"</dtml-if>
-    /> None
+    /> No
   </dtml-let>
+  </div>
   </td>
 </tr>
 
 <tr>
   <td align="left" valign="top">
   <div class="form-label">
-  Text area columns
+  Text Area Width
   </div>
   </td>
   <td align="left" valign="top">
@@ -87,7 +88,7 @@ button in order for some changes to take effect.
 <tr>
   <td align="left" valign="top">
   <div class="form-label">
-  Text area rows
+  Text Area Height
   </div>
   </td>
   <td align="left" valign="top">
