@@ -1,38 +1,39 @@
-<HTML><HEAD><TITLE>Edit <!--#var title_or_id--></TITLE></HEAD>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML lang="en"><HEAD><TITLE>Edit <dtml-var title_or_id></TITLE></HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
-<!--#var manage_tabs-->
-<H2>Edit <!--#var title_or_id--></H2>
+<dtml-var manage_tabs>
+<H2>Edit <dtml-var title_or_id></H2>
 
 
-<!--#if SQLConnectionIDs-->
-<!--#if connectionIsValid-->
-   <!--#if connected--><!--#else-->
+<dtml-if SQLConnectionIDs>
+<dtml-if connectionIsValid>
+   <dtml-if connected><dtml-else>
       <strong>Warning:</strong>
       The database connection used by this method is currently not
       open.
-   <!--#/if-->
-<!--#else-->
+   </dtml-if>
+<dtml-else>
       <strong>Warning:</strong>
       The database connection for this method cannot be found!
-<!--#/if-->
+</dtml-if>
 
 <form action="manage_edit" method="POST">
 
 <table>
 
 <tr>	<th align='LEFT'>ID</th>
-        <td align='LEFT'><!--#var id--></td></tr>
+        <td align='LEFT'><dtml-var id></td></tr>
 <tr>	<th align='LEFT'><em>Title</em></th>
         <td align='LEFT'><input name="title" size="40"
-             value="<!--#var title html_quote-->"></td></tr>
+             value="<dtml-var title html_quote>"></td></tr>
 <tr>	<th align='LEFT'>Connection id</th>
         <td align='LEFT'><select name="connection_id">
-              <!--#in SQLConnectionIDs-->
-                <option value="<!--#var sequence-item html_quote-->"
-                 <!--#if expr="connection_id==_vars['sequence-item']"-->
-                 SELECTED<!--#/if-->>
-                <!--#var sequence-key--></option>
-              <!--#/in-->
+              <dtml-in SQLConnectionIDs>
+                <option value="<dtml-var sequence-item html_quote>"
+                 <dtml-if expr="connection_id==_vars['sequence-item']">
+                 SELECTED</dtml-if>>
+                <dtml-var sequence-key></option>
+              </dtml-in>
             </select></td></tr>
 <tr valign="top"><th align='LEFT'><em>Arguments</em></th>
 	<td align='LEFT'>
@@ -40,17 +41,17 @@
 		</tr>
 <tr>	<td colspan=2 align='LEFT'><strong>Query template</strong><br>
 	    <textarea name="template:text"
-  	<!--#if sql_pref__cols-->
-	COLS="<!--#var sql_pref__cols-->"
-	<!--#else sql_pref__cols-->
+  	<dtml-if sql_pref__cols>
+	COLS="<dtml-var sql_pref__cols>"
+	<dtml-else sql_pref__cols>
 	COLS="50"
-	<!--#/if sql_pref__cols-->
-	<!--#if sql_pref__rows-->
-	ROWS="<!--#var sql_pref__rows-->"
-	<!--#else sql_pref__rows-->
+	</dtml-if sql_pref__cols>
+	<dtml-if sql_pref__rows>
+	ROWS="<dtml-var sql_pref__rows>"
+	<dtml-else sql_pref__rows>
 	ROWS="20"
-	<!--#/if sql_pref__rows-->><!--#var
-               src fmt=html-quote--></textarea></td></tr>
+	</dtml-if sql_pref__rows>><dtml-var
+               src fmt=html-quote></textarea></td></tr>
 
 <tr>
 	<TD colspan=2 align=left>
@@ -67,13 +68,13 @@
 
 </form>
 
-<!--#else-->
+<dtml-else>
 <em><strong>Warning:</strong>
 There are no SQL database connections.  You need
 to add a Zope SQL database connection
 before you can use an Zope SQL Method.
 </em>
-<!--#/if-->
+</dtml-if>
 </body></html>
 
 

@@ -1,4 +1,5 @@
-<html><head><title>Add Property Sheet Interface</title></head>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html lang="en"><head><title>Add Property Sheet Interface</title></head>
 <body bgcolor="#FFFFFF" link="#000099" vlink="#555555">
 <h2>Add Property Sheet Interface</h2>
 
@@ -14,7 +15,7 @@
 <tr>
   <th align="left" valign="top"><em>Title</em></th>
   <td align="left" valign="top" colspan="3">
-    <input type="text" name="title" size="40" value="<!--#var title html_quote-->">
+    <input type="text" name="title" size="40" value="<dtml-var title html_quote>">
   </td>
 </tr>
 
@@ -22,10 +23,10 @@
   <th align="left" valign="top">Property Sheet</th>
   <td align="left" valign="top" colspan="3">
     <select name=":method">
-       <!--#in "propertysheets.common.objectValues()"-->
-          <option value="<!--#var id html_quote-->/manage_createView"
-             ><!--#var title_and_id html_quote--></option>
-       <!--#/in-->
+       <dtml-in "propertysheets.common.objectValues()">
+          <option value="<dtml-var id html_quote>/manage_createView"
+             ><dtml-var title_and_id html_quote></option>
+       </dtml-in>
     </select>
   </td>
 </tr>

@@ -1,4 +1,5 @@
-<html>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html lang="en">
 <head>
 <title>
 Object Reference
@@ -17,18 +18,18 @@ focuses on those object services useful in
 
 
 <ul>
-<!--#in hs_objectvalues-->
-<!--#with sequence-item-->
-<li> <a href="<!--#var BASE1-->/HelpSys/ObjectRef/<!--#var 
- meta_type fmt=url-quote-->/hs_main"><!--#var meta_type--></a>
-<!--#endwith-->
+<dtml-in hs_objectvalues>
+<dtml-with sequence-item>
+<li> <a href="<dtml-var BASE1>/HelpSys/ObjectRef/<dtml-var 
+ meta_type fmt=url-quote>/hs_main"><dtml-var meta_type></a>
+</dtml-with>
 </li>
-<!--#endin-->
+</dtml-in>
 </ul>
 
 <p>
 <a href="../hs_main">
-<img src="<!--#var SCRIPT_NAME-->/HelpSys/hs_larrow" height="9" width="9" border="0" valign="bottom" alt=""> Back to Help</a>
+<img src="<dtml-var SCRIPT_NAME>/HelpSys/hs_larrow" height="9" width="9" border="0" valign="bottom" alt=""> Back to Help</a>
 </p>
 
 </body>

@@ -1,25 +1,26 @@
-<HTML>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML lang="en">
 <HEAD>
 <TITLE>Find Results</TITLE>
 <SCRIPT LANGUAGE="javascript">
 <!--
 function new_wnd()
-{  wnd=window.open("<!--#var URL-->?<!--#var QUERY_STRING-->","find_result");
+{  wnd=window.open("<dtml-var URL>?<dtml-var QUERY_STRING>","find_result");
 }
-//-->
+//>
 </SCRIPT>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
 <P>
 
-<!--#in expr="('obj_ids', 'obj_metatypes', 'obj_searchterm', 'obj_expr', 'obj_mtime', 'obj_mspec', 'obj_permission', 'obj_roles', 'search_sub')"-->
-<!--#else expr="_.hasattr(REQUEST, _['sequence-item'])"-->
-<!--#call expr="REQUEST.set(_['sequence-item'], _.None)"-->
-<!--#/else-->
-<!--#/in-->
+<dtml-in expr="('obj_ids', 'obj_metatypes', 'obj_searchterm', 'obj_expr', 'obj_mtime', 'obj_mspec', 'obj_permission', 'obj_roles', 'search_sub')">
+<dtml-else expr="_.hasattr(REQUEST, _['sequence-item'])">
+<dtml-call expr="REQUEST.set(_['sequence-item'], _.None)">
+</dtml-else>
+</dtml-in>
 
-<!--#if btn_submit-->
-<!--#with "_.namespace(
+<dtml-if btn_submit>
+<dtml-with "_.namespace(
     results=PrincipiaFind(this(), 
 	obj_ids=obj_ids, 
         obj_metatypes=obj_metatypes, 
@@ -30,43 +31,43 @@ function new_wnd()
         obj_permission=obj_permission, 
         obj_roles=obj_roles, 
         search_sub=search_sub, 
-        REQUEST=REQUEST))"-->
+        REQUEST=REQUEST))">
 
-<!--#if results-->
+<dtml-if results>
 <HR>
 <STRONG>
-Found <!--#var results fmt=collection-length--> item<!--#if expr="_.len(results) != 1"-->s<!--#/if-->. 
+Found <dtml-var results fmt=collection-length> item<dtml-if expr="_.len(results) != 1">s</dtml-if>. 
 </STRONG>
 <HR>
 
 <TABLE BORDER="0" CELLSPACING="0" CELLPADDING="2">
-<!--#in results-->
+<dtml-in results>
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <A HREF="<!--#var sequence-key-->/manage_workspace">
-  <IMG SRC="<!--#var SCRIPT_NAME-->/<!--#var icon-->"
+  <A HREF="<dtml-var sequence-key>/manage_workspace">
+  <IMG SRC="<dtml-var SCRIPT_NAME>/<dtml-var icon>"
    ALT="Click to open this item" BORDER="0"></A>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <A HREF="<!--#var sequence-key-->/manage_workspace">
-  <!--#var sequence-key-->
-  <!--#if title-->
-  (<!--#var title-->)
-  <!--#/if-->
+  <A HREF="<dtml-var sequence-key>/manage_workspace">
+  <dtml-var sequence-key>
+  <dtml-if title>
+  (<dtml-var title>)
+  </dtml-if>
   </A>
   </TD>
 </TR>
-<!--#/in-->
+</dtml-in>
 </TABLE>
-<!--#else-->
+<dtml-else>
 <HR>
 <STRONG>
 No items were found matching this query.
 </STRONG>
 <HR>
-<!--#/if-->
-<!--#/with-->
-<!--#/if-->
+</dtml-if>
+</dtml-with>
+</dtml-if>
 
 </BODY>
 </HTML>

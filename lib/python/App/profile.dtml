@@ -1,4 +1,5 @@
-<html>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html lang="en">
 <head>
 <title>Profiler Information</title>
 <style type="text/css">
@@ -12,40 +13,40 @@ font-size: 10pt;
 font-size: 10pt;
 }
 
--->
+>
 </style>
 </head>
 <body bgcolor="#FFFFFF" link="#000099" vlink="#555555">
-<!--#var manage_tabs-->
+<dtml-var manage_tabs>
 
 <h3>Profile Information</h3>
 <p>
 
-<!--#let sort="REQUEST.get('sort', 'time')"
+<dtml-let sort="REQUEST.get('sort', 'time')"
           limit="REQUEST.get('limit', 100)" 
-          stats="manage_profile_stats(sort, limit)"-->
-<!--#if stats-->
-<form action="<!--#var URL-->" method="POST">
+          stats="manage_profile_stats(sort, limit)">
+<dtml-if stats>
+<form action="<dtml-var URL>" method="POST">
 <table>
 <tr>
 <td><strong>Sort</strong>: 
     <select name="sort">
-    <!--#in "('time', 'cumulative', 'calls', 'pcalls',
+    <dtml-in "('time', 'cumulative', 'calls', 'pcalls',
               'name', 'file', 'module', 'line',
-              'nfl', 'stdname')"-->
-    <option value="<!--#var sequence-item-->"<!--#if 
-     "sort==_['sequence-item']"--> selected<!--#/if-->><!--#var 
-    sequence-item-->
-    <!--#/in-->
+              'nfl', 'stdname')">
+    <option value="<dtml-var sequence-item>"<dtml-if 
+     "sort==_['sequence-item']"> selected</dtml-if>><dtml-var 
+    sequence-item>
+    </dtml-in>
     </select>
 </td>
 <td><strong>Limit</strong>: 
     <select name="limit:int">
-    <!--#in "(100, 200, 300, 400, 500)"-->
-    <option value="<!--#var sequence-item-->"<!--#if 
-     "limit==_['sequence-item']"--> selected<!--#/if-->><!--#var 
-    sequence-item-->
-    <!--#/in-->
+    <dtml-in "(100, 200, 300, 400, 500)">
+    <option value="<dtml-var sequence-item>"<dtml-if 
+     "limit==_['sequence-item']"> selected</dtml-if>><dtml-var 
+    sequence-item>
+    </dtml-in>
     </select>
 </td>
 <td>
@@ -56,10 +57,10 @@ font-size: 10pt;
 </form>
 <hr>
 <pre>
-<!--#var stats-->
+<dtml-var stats>
 </pre>
 
-<!--#else-->
+<dtml-else>
   <em>
   Profiling is not currently enabled or there is not yet any profiling 
   data to report. To enable profiling, restart the Zope process with 
@@ -67,8 +68,8 @@ font-size: 10pt;
   variable should be the full system path to a file that will be used 
   to dump a profile report when the process restarts or exits.
   </em>
-<!--#/if-->
-<!--#/let-->
+</dtml-if>
+</dtml-let>
 
 </body>
 </html>

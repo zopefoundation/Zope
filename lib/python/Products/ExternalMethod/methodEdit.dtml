@@ -1,30 +1,31 @@
-<HTML>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML lang="en">
 <HEAD>
-<TITLE>Edit <!--#var title_or_id--></TITLE>
+<TITLE>Edit <dtml-var title_or_id></TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555" ALINK="#77003B">
-<!--#var manage_tabs-->
+<dtml-var manage_tabs>
 
-<h2>Edit <!--#var title_or_id--></h2>
+<h2>Edit <dtml-var title_or_id></h2>
 
 <FORM ACTION="manage_edit" METHOD="POST">
 <TABLE CELLSPACING="2">
 <TR>
   <TH ALIGN="LEFT" VALIGN="TOP">Id</TH>
-  <TD ALIGN="LEFT" VALIGN="TOP"><!--#var id--></TD>
+  <TD ALIGN="LEFT" VALIGN="TOP"><dtml-var id></TD>
 </TR>
 <TR>
   <TH ALIGN="LEFT" VALIGN="TOP"><EM>Title</EM></TH>
   <TD ALIGN="LEFT" VALIGN="TOP">
-    <INPUT TYPE="TEXT" NAME="title" SIZE="50" VALUE="<!--#var title html_quote-->">
+    <INPUT TYPE="TEXT" NAME="title" SIZE="50" VALUE="<dtml-var title html_quote>">
   </TD>
 </TR>
 <tr>	<th ALIGN="LEFT">Function name</th>
 	<td ALIGN="LEFT"><input name="function" size="30"
-             value="<!--#var function html_quote-->"></td></tr>
+             value="<dtml-var function html_quote>"></td></tr>
 <tr>	<th ALIGN="LEFT">Python module file (without suffix)</th>
 	<td ALIGN="LEFT"><input name="module" size="30"
-             value="<!--#var module html_quote-->"></td></tr>
+             value="<dtml-var module html_quote>"></td></tr>
 <TR>
 <TR>
 <TD></TD>

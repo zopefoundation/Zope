@@ -85,8 +85,8 @@
 database_type='Gadfly'
 __doc__='''%s Database Connection
 
-$Id: DA.py,v 1.8 1999/07/22 16:10:04 jim Exp $''' % database_type
-__version__='$Revision: 1.8 $'[11:-2]
+$Id: DA.py,v 1.9 1999/11/03 18:56:32 sroberts Exp $''' % database_type
+__version__='$Revision: 1.9 $'[11:-2]
 
 from db import DB, manage_DataSources
 import sys, DABase, Globals
@@ -157,7 +157,7 @@ class Connection(DABase.Connection):
                     raise 'BadRequest', (
                         '<strong>Invalid connection string: </strong>'
                         '<CODE>%s</CODE><br>\n'
-                        '<!--\n%s\n%s\n-->\n'
+                        '<!--\n%s\n%s\n>\n'
                         % (s,t,v)), tb
             finally: tb=None
     

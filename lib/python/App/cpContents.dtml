@@ -1,9 +1,10 @@
-<HTML>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML lang="en">
 <HEAD>
 <TITLE>Contents</TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
-<!--#var manage_tabs-->
+<dtml-var manage_tabs>
 
 <p>
 The Control Panel provides access to system management functions,
@@ -12,11 +13,11 @@ such as database and product management.
 <FORM ACTION="manage_shutdown" METHOD="POST">
 
 <ul>
-<li><em>Zope</em> version: <!--#var version_txt-->
-<li>Python version: <!--#var sys_version-->
-<li>System Platform: <!--#var sys_platform-->
-<li>Process ID: <!--#var process_id--> (<!--#var thread_get_ident-->)
-<li>Running for: <!--#var process_time-->
+<li><em>Zope</em> version: <dtml-var version_txt>
+<li>Python version: <dtml-var sys_version>
+<li>System Platform: <dtml-var sys_platform>
+<li>Process ID: <dtml-var process_id> (<dtml-var thread_get_ident>)
+<li>Running for: <dtml-var process_time>
 </ul>
 <P>
 
@@ -34,7 +35,7 @@ such as database and product management.
 </table>
 </FORM>
 
-<!--#if manage_restartable-->
+<dtml-if manage_restartable>
 
 <FORM ACTION="manage_restart" METHOD="POST">
 
@@ -51,38 +52,38 @@ such as database and product management.
   </tr>
 </table>
 </FORM>
-<!--#/if-->
+</dtml-if>
 
-<!--#if Principia-Version-->
-<EM>You are currently working in version <!--#var Principia-Version--></EM>
-<!--#/if Principia-Version-->
+<dtml-if Principia-Version>
+<EM>You are currently working in version <dtml-var Principia-Version></EM>
+</dtml-if Principia-Version>
 <P>
 
 <TABLE>
-<!--#in objectItems-->
+<dtml-in objectItems>
 <TR>
   <td> </td>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <A HREF="<!--#var sequence-key-->/manage_workspace">
-  <IMG SRC="<!--#var SCRIPT_NAME-->/<!--#var icon-->"
+  <A HREF="<dtml-var sequence-key>/manage_workspace">
+  <IMG SRC="<dtml-var SCRIPT_NAME>/<dtml-var icon>"
    ALT="Click to open this item" BORDER="0"></A>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <A HREF="<!--#var sequence-key-->/manage_workspace">
-  <!--#var title--> 
+  <A HREF="<dtml-var sequence-key>/manage_workspace">
+  <dtml-var title> 
   </A>
-  <!--#if locked_in_version-->
-    <!--#if modified_in_version-->
-      <IMG SRC="<!--#var SCRIPT_NAME-->/p_/locked"
+  <dtml-if locked_in_version>
+    <dtml-if modified_in_version>
+      <IMG SRC="<dtml-var SCRIPT_NAME>/p_/locked"
        ALT="This item has been modified in this version">
-    <!--#else-->
-      <IMG SRC="<!--#var SCRIPT_NAME-->/p_/lockedo"
+    <dtml-else>
+      <IMG SRC="<dtml-var SCRIPT_NAME>/p_/lockedo"
        ALT="This item has been modified in another version">
-    <!--#/if-->
-  <!--#/if-->
+    </dtml-if>
+  </dtml-if>
   </TD>
 </TR>
-<!--#/in objectValues-->
+</dtml-in objectValues>
 </TABLE>
 
 </BODY>

@@ -1,29 +1,30 @@
-<html>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html lang="en">
   <head>
-    <title>Add Z <!--#var database_type--> Database Connection</title>
+    <title>Add Z <dtml-var database_type> Database Connection</title>
   </head>
   <body bgcolor="#FFFFFF" link="#000099" vlink="#555555" alink="#77003B">
   
-    <h2>Add Z <!--#var database_type--> Database Connection</h2>
+    <h2>Add Z <dtml-var database_type> Database Connection</h2>
     <p>See the note below.</p>
 
-    <!--#if data_sources-->
+    <dtml-if data_sources>
     
-    <form action="manage_addZ<!--#var database_type-->Connection" 
+    <form action="manage_addZ<dtml-var database_type>Connection" 
           method="POST">
       <table cellspacing="2">
 	<tr>
 	  <th align="LEFT" valign="TOP">Id</th>
 	  <td align="LEFT" valign="TOP">
             <input type="TEXT" name="id" size="35"
-                value="<!--#var database_type-->_database_connection">
+                value="<dtml-var database_type>_database_connection">
           </td>
 	</tr>
 	<tr>
 	  <th align="LEFT" valign="TOP"><em>Title</em></th>
 	  <td align="LEFT" valign="TOP">
             <input type="TEXT" name="title" size="35"
-                value="Zope <!--#var database_type--> Database Connection">
+                value="Zope <dtml-var database_type> Database Connection">
           </td>
 	</tr>
 	<tr>
@@ -34,12 +35,12 @@
           your Principia installation.</font></em>
           </td>
 	  <td align="LEFT" valign="TOP"><select name=connection size=5>
-            <!--#in data_sources-->
-              <option value="<!--#var sequence-key html_quote-->">
-                <!--#var sequence-key--><!--#if 
-                   sequence-item-->, <!--#var sequence-item--><!--#/if-->
-              </option-->
-            <!--#/in-->
+            <dtml-in data_sources>
+              <option value="<dtml-var sequence-key html_quote>">
+                <dtml-var sequence-key><dtml-if 
+                   sequence-item>, <dtml-var sequence-item></dtml-if>
+              </option>
+            </dtml-in>
           </select></td>
 	</tr>
 	<tr>
@@ -55,13 +56,13 @@
       </table>
     </form>
 
-    <!--#else-->
+    <dtml-else>
 
-    Sorry, you cannot create any Zope <!--#var database_type--> Database
-    Connections because no <!--#var database_type--> databases exist, or
+    Sorry, you cannot create any Zope <dtml-var database_type> Database
+    Connections because no <dtml-var database_type> databases exist, or
     all of the existing databases are in use.
 
-    <!--#/if-->
+    </dtml-if>
 
 
 <hr>

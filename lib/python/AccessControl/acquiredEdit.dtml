@@ -1,14 +1,15 @@
-<html><head><title>Manage Acquired Permission Settings</title></head>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html lang="en"><head><title>Manage Acquired Permission Settings</title></head>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555" ALINK="#77003B">
-<!--#if manage_tabs--><!--#var manage_tabs--><!--#/if manage_tabs-->
+<dtml-if manage_tabs><dtml-var manage_tabs></dtml-if manage_tabs>
 
 <FORM ACTION="manage_acquiredPermissions" METHOD="POST">
 
 Select permissions that acquire permission settings:<br>
 <select name=permissions:list multiple size=10>
-<!--#in permission_settings mapping-->
-  <option <!--#if acquire-->SELECTED<!--#/if-->><!--#var name--></option>
-<!--#/in-->
+<dtml-in permission_settings mapping>
+  <option <dtml-if acquire>SELECTED</dtml-if>><dtml-var name></option>
+</dtml-in>
 </select><p>
 <input type=submit value="Change">
 </form></body></html>

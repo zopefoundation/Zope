@@ -1,4 +1,5 @@
-<html>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html lang="en">
 <head>
 <title>Debug Information</title>
 <style type="text/css">
@@ -12,7 +13,7 @@ font-size: 10pt;
 font-size: 10pt;
 }
 
--->
+>
 </style>
 <dtml-if debug_auto_reload>
 <meta HTTP-EQUIV=REFRESH 
@@ -21,63 +22,63 @@ font-size: 10pt;
 </head>
 
 <body bgcolor="#FFFFFF" link="#000099" vlink="#555555">
-<!--#var manage_tabs-->
+<dtml-var manage_tabs>
 
-<!--#if update_snapshot-->
-<!--#call rcsnapshot-->
-<!--#endif-->
+<dtml-if update_snapshot>
+<dtml-call rcsnapshot>
+</dtml-if>
 
 <h3>Debug Information</h3>
 <form>
 <p>
 <ul>
-<li>Zope version: <!--#var version_txt-->
-<li>Python version: <!--#var sys_version-->
-<li>System Platform: <!--#var sys_platform-->
-<li>Process ID: <!--#var process_id--> (<!--#var thread_get_ident-->)
-<li>Running for: <!--#var process_time-->
-<li>Top Refcounts: <select name="foo"><!--#in 
-    "refcount(100)"--><option><!--#var 
-    sequence-item-->: <!--#var sequence-key--></option><!--#/in
-    --></select><br><br>
+<li>Zope version: <dtml-var version_txt>
+<li>Python version: <dtml-var sys_version>
+<li>System Platform: <dtml-var sys_platform>
+<li>Process ID: <dtml-var process_id> (<dtml-var thread_get_ident>)
+<li>Running for: <dtml-var process_time>
+<li>Top Refcounts: <select name="foo"><dtml-in 
+    "refcount(100)"><option><dtml-var 
+    sequence-item>: <dtml-var sequence-key></option></dtml-in
+    ></select><br><br>
 
 <table border="1">
-<!--#in rcdeltas mapping-->
-<!--#if sequence-start-->
+<dtml-in rcdeltas mapping>
+<dtml-if sequence-start>
 <tr>
 <th class="header" align="left" valign="top">
 Class
 </th>
 <th class="header" align="left" valign="top">
-<!--#var rcdate fmt="fCommon" null=""-->
+<dtml-var rcdate fmt="fCommon" null="">
 </th>
 <th class="header" align="left" valign="top">
-<!--#var ZopeTime fmt="fCommon"-->
+<dtml-var ZopeTime fmt="fCommon">
 </th>
 <th class="header" align="left" valign="top">
 Delta
 </th>
 </tr>
-<!--#/if-->
+</dtml-if>
 <tr>
 <td class="cell" align="left" valign="top">
-<!--#var name-->
+<dtml-var name>
 </td>
 <td class="cell" align="left" valign="top">
-<!--#var pc--> 
+<dtml-var pc> 
 </td>
 <td class="cell" align="left" valign="top">
-<!--#var rc-->
+<dtml-var rc>
 </td>
 <td class="cell" align="left" valign="top">
-+<!--#var delta-->
++<dtml-var delta>
 </td>
 </tr>
-<!--#/in-->
+</dtml-in>
 </table>
 
-<a href="<!--#var URL-->?update_snapshot=1">Update Snapshot</a> | 
-<a href="<!--#var URL-->">Refresh</a>
+<a href="<dtml-var URL>?update_snapshot=1">Update Snapshot</a> | 
+<a href="<dtml-var URL>">Refresh</a>
 
 <li>Connections:
 <table border="1">

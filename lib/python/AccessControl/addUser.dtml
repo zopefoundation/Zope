@@ -1,14 +1,15 @@
-<HTML>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML lang="en">
 <HEAD>
 <TITLE>Add User</TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
-<!--#var manage_tabs-->
+<dtml-var manage_tabs>
 <P>
 To add a new user, enter the name,
-<!--#unless remote_user_mode__-->
+<dtml-unless remote_user_mode__>
   password, confirmation
-<!--#/unless-->
+</dtml-unless>
 and roles for the new user and click &quot;Add&quot;.
 <EM>Domains</EM> is an optional list of domains from 
 which the user is allowed to login. 
@@ -25,10 +26,10 @@ which the user is allowed to login.
   </TD>
 </TR>
 
-<!--#if remote_user_mode__-->
+<dtml-if remote_user_mode__>
   <INPUT TYPE="HIDDEN" NAME="password" value="password">
   <INPUT TYPE="HIDDEN" NAME="confirm"  value="password">
-<!--#else-->
+<dtml-else>
 <TR>
   <TD VALIGN="TOP">
   <STRONG>Password</STRONG>
@@ -45,7 +46,7 @@ which the user is allowed to login.
   <INPUT TYPE="PASSWORD" NAME="confirm" SIZE="40">
   </TD>
 </TR>
-<!--#/if-->
+</dtml-if>
 
 <TR>
 <TD VALIGN="TOP">
@@ -62,13 +63,13 @@ which the user is allowed to login.
   </TD>
   <TD VALIGN="TOP">
   <SELECT NAME="roles:list" SIZE="5" MULTIPLE>
-  <!--#in valid_roles-->
-  <!--#if expr="_vars['sequence-item'] != 'Anonymous'"-->
-  <!--#if expr="_vars['sequence-item'] != 'Shared'"-->
-  <OPTION VALUE="<!--#var sequence-item html_quote-->"><!--#var sequence-item-->
-  <!--#/if-->
-  <!--#/if-->
-  <!--#/in valid_roles-->
+  <dtml-in valid_roles>
+  <dtml-if expr="_vars['sequence-item'] != 'Anonymous'">
+  <dtml-if expr="_vars['sequence-item'] != 'Shared'">
+  <OPTION VALUE="<dtml-var sequence-item html_quote>"><dtml-var sequence-item>
+  </dtml-if>
+  </dtml-if>
+  </dtml-in valid_roles>
   </SELECT>
   <BR>
   <INPUT TYPE="SUBMIT" NAME="submit" VALUE="Add">

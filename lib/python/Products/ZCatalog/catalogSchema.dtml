@@ -1,9 +1,10 @@
-<HTML>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML lang="en">
 <HEAD>
 <TITLE>View Catalog Records</TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
-<!--#var manage_tabs-->
+<dtml-var manage_tabs>
 
 <p>This list defines what per object meta data the Catalog will store.
 When objects get cataloged, the values of any attributes they may have
@@ -22,14 +23,14 @@ content in it's entirety (it is useful in this example to <i>index</i>
 the text contents, which is configured in the <b>Indexes</b> View
 tab).  This way, the summary data may be shown in the search results.</p>
 
-<form action="<!--#var URL1-->">
+<form action="<dtml-var URL1>">
 
 <ul>
-<!--#in schema-->
+<dtml-in schema>
  <li>
-  <input type="checkbox" name="names:list" value="<!--#var sequence-item html_quote-->">
-<!--#var sequence-item--></li>
-<!--#/in-->
+  <input type="checkbox" name="names:list" value="<dtml-var sequence-item html_quote>">
+<dtml-var sequence-item></li>
+</dtml-in>
 </ul>
 <br>
 <input name="manage_delColumns:method" type=submit value=" Delete ">

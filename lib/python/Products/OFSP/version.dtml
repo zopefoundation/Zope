@@ -1,45 +1,46 @@
-<HTML>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML lang="en">
 <HEAD>
-<TITLE><!--#var title_or_id--></TITLE>
+<TITLE><dtml-var title_or_id></TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
-<!--#var manage_tabs-->
+<dtml-var manage_tabs>
 
-<!--#if Zope-Version-->
-  <!--#if expr="_vars['Zope-Version'] != cookie"-->
+<dtml-if Zope-Version>
+  <dtml-if expr="_vars['Zope-Version'] != cookie">
     <h2>Another version is active!</h2>
   
     You cannot start working in this version while another version,
-    <strong><!--#var Zope-Version--></strong> is active.
-    Leave <strong><!--#var Zope-Version--></strong> first and then
+    <strong><dtml-var Zope-Version></strong> is active.
+    Leave <strong><dtml-var Zope-Version></strong> first and then
     you may work in this version.
 
     <form action=leave_another>
-    <input type=submit value="Quit Working in <!--#var Zope-Version html_quote-->">
+    <input type=submit value="Quit Working in <dtml-var Zope-Version html_quote>">
     </form>
 
-  <!--#else-->
+  <dtml-else>
 
-    <h2>Active <!--#var title_or_id--> Version Operations</h2>
+    <h2>Active <dtml-var title_or_id> Version Operations</h2>
   
       <form action=leave>
         You <strong>are</strong> currently working in the
-        <!--#var Zope-Version--> version.  To
+        <dtml-var Zope-Version> version.  To
         <strong>quit</strong> working in this version click on this button: 
-        <input type=submit value="Quit Working in <!--#var Zope-Version html_quote-->">
+        <input type=submit value="Quit Working in <dtml-var Zope-Version html_quote>">
       </form>
-  <!--#/if-->
-<!--#else-->
-  <h2>Inactive <!--#var title_or_id--> Version Operations</h2>
+  </dtml-if>
+<dtml-else>
+  <h2>Inactive <dtml-var title_or_id> Version Operations</h2>
   
     <form action=enter>
       You <strong>are not</strong> currently working in the
-      <!--#var title_and_id-->
+      <dtml-var title_and_id>
       version.  To <strong>start</strong> working in this version click
       on this button: 
-      <input type=submit value="Start Working in <!--#var title_or_id html_quote-->">
+      <input type=submit value="Start Working in <dtml-var title_or_id html_quote>">
     </form>
-<!--#endif-->
+</dtml-if>
 </body> </html>
 
 

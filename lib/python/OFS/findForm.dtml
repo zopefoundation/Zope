@@ -1,9 +1,10 @@
-<HTML>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML lang="en">
 <HEAD>
 <TITLE>Find</TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
-<!--#var manage_tabs-->
+<dtml-var manage_tabs>
 <P>
 Find allows you to locate Zope objects based on different
 criteria. For more find choices choose the <EM>Advanced</EM>
@@ -19,9 +20,9 @@ find option.
   <TD ALIGN="LEFT" VALIGN="TOP">
   <SELECT NAME="obj_metatypes:list" SIZE="4" MULTIPLE>
   <OPTION VALUE="all" SELECTED> All types
-<!--#in all_meta_types mapping-->
-  <OPTION VALUE="<!--#var name html_quote-->"> <!--#var name-->
-<!--#/in-->
+<dtml-in all_meta_types mapping>
+  <OPTION VALUE="<dtml-var name html_quote>"> <dtml-var name>
+</dtml-in>
   </SELECT>
   </TD>
 </TR>

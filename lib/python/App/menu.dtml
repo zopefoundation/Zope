@@ -1,4 +1,5 @@
-<HTML>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML lang="en">
 <HEAD>
 <TITLE>Navigator</TITLE>
 </HEAD>
@@ -6,33 +7,33 @@
 <TABLE CELLSPACING="0">
 <TR>
   <TD VALIGN="TOP" NOWRAP>
-  <!--#if icon-->
+  <dtml-if icon>
   <A HREF="manage_workspace" TARGET="manage_main">
-  <IMG SRC="<!--#var SCRIPT_NAME-->/<!--#var icon-->" BORDER="0"
+  <IMG SRC="<dtml-var SCRIPT_NAME>/<dtml-var icon>" BORDER="0"
    ALT="Click to open this item"></A> 
-  <!--#/if-->
+  </dtml-if>
   <STRONG>
   <A HREF="manage_workspace" TARGET="manage_main">
-  <!--#if expr="URL1[-(_.len(SCRIPT_NAME)):]==SCRIPT_NAME"-->
-  <!--#var expr="SCRIPT_NAME[1:]"-->
-  <!--#else-->
-  <!--#var id-->
-  <!--#/if-->
+  <dtml-if expr="URL1[-(_.len(SCRIPT_NAME)):]==SCRIPT_NAME">
+  <dtml-var expr="SCRIPT_NAME[1:]">
+  <dtml-else>
+  <dtml-var id>
+  </dtml-if>
   </A>
   </STRONG>
   </TD>
 </TR>
 </TABLE>
-<!--#tree sort=id nowrap=1-->
-<!--#if icon-->
-<A HREF="<!--#var tree-item-url fmt=url-quote-->/manage_workspace" TARGET="manage_main">
-<IMG SRC="<!--#var SCRIPT_NAME-->/<!--#var icon-->" BORDER="0"
+<dtml-tree sort=id nowrap=1>
+<dtml-if icon>
+<A HREF="<dtml-var tree-item-url fmt=url-quote>/manage_workspace" TARGET="manage_main">
+<IMG SRC="<dtml-var SCRIPT_NAME>/<dtml-var icon>" BORDER="0"
  ALT="Click to open this item"></A> 
-<!--#/if-->
-<A HREF="<!--#var tree-item-url fmt=url-quote-->/manage_workspace" TARGET="manage_main">
-<!--#var id-->
+</dtml-if>
+<A HREF="<dtml-var tree-item-url fmt=url-quote>/manage_workspace" TARGET="manage_main">
+<dtml-var id>
 </A>
-<!--#/tree-->
+</dtml-tree>
 <TABLE CELLSPACING="0">
 <TR>
   <TD WIDTH="16"></TD>

@@ -1,6 +1,7 @@
-<HTML><HEAD><TITLE>Basic Instance Properties</TITLE></HEAD>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML lang="en"><HEAD><TITLE>Basic Instance Properties</TITLE></HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
-<!--#var manage_tabs-->
+<dtml-var manage_tabs>
 <p>Instance Icons are displayed with images in management interfaces.
 Select an image file from your local computer by clicking the
 <em>Browse</em> button. The image you select will be uploaded
@@ -14,37 +15,37 @@ will need to be adjusted if the class is moved.</p>
 <TABLE CELLSPACING="2">
 <TR>
   <TH ALIGN="LEFT" VALIGN="TOP">Base classes</TH>
-  <TD ALIGN="LEFT" VALIGN="TOP"><!--#var "_.string.join(ZClassBaseClassNames(), ', ')"-->
+  <TD ALIGN="LEFT" VALIGN="TOP"><dtml-var "_.string.join(ZClassBaseClassNames(), ', ')">
   </TD>
 </TR>
 <TR>
   <TH ALIGN="LEFT" VALIGN="TOP">title</TH>
   <TD ALIGN="LEFT" VALIGN="TOP">
     <INPUT TYPE="TEXT" NAME="title" SIZE="40"
-     value="<!--#var zClassTitle html_quote-->">
+     value="<dtml-var zClassTitle html_quote>">
   </TD>
 </TR>
 <TR>
   <TH ALIGN="LEFT" VALIGN="TOP">meta type</TH>
   <TD ALIGN="LEFT" VALIGN="TOP">
     <INPUT TYPE="TEXT" NAME="meta_type" SIZE="40"
-     value="<!--#var classMetaType html_quote-->">
+     value="<dtml-var classMetaType html_quote>">
   </TD>
 </TR>
-<!--#if show_class_id-->
+<dtml-if show_class_id>
 <TR>
   <TH ALIGN="LEFT" VALIGN="TOP">class id</TH>
   <TD ALIGN="LEFT" VALIGN="TOP">
     <INPUT TYPE="TEXT" NAME="class_id" SIZE="40"
-     value="<!--#var class_id html_quote-->">
+     value="<dtml-var class_id html_quote>">
   </TD>
 </TR>
-<!--#/if-->
+</dtml-if>
 <TR>
   <TH ALIGN="LEFT" VALIGN="TOP"><EM>icon</EM></TH>
   <TD ALIGN="LEFT" VALIGN="TOP">
     <INPUT TYPE="TEXT" NAME="icon" SIZE="40"
-     value="<!--#var classIcon html_quote-->">
+     value="<dtml-var classIcon html_quote>">
   </TD>
 </TR>
 <TR>
@@ -52,10 +53,10 @@ will need to be adjusted if the class is moved.</p>
   <STRONG>Icon image</STRONG>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <!--#if classIcon-->
-  <img src="<!--#var SCRIPT_NAME-->/<!--#var classIcon
-     -->?t=<!--#var ZopeTime fmt=second-->" border="0"><br>
-  <!--#/if-->
+  <dtml-if classIcon>
+  <img src="<dtml-var SCRIPT_NAME>/<dtml-var classIcon
+     >?t=<dtml-var ZopeTime fmt=second>" border="0"><br>
+  </dtml-if>
   <INPUT TYPE="file" NAME="file" SIZE="25" VALUE="">
   </TD>
 </TR>

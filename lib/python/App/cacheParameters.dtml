@@ -1,49 +1,50 @@
-<HTML>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML lang="en">
 <HEAD>
 <TITLE>Cache</TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
-<!--#var manage_tabs-->
+<dtml-var manage_tabs>
 
 <h2>Cache Parameters and Statistics</h2>
 <table>
 <tr><th align=left>Total number of objects in the database</th>
-<td><!--#var database_size--></td></tr>
+<td><dtml-var database_size></td></tr>
 
 <tr><th align=left>Total number of objects in all of the caches combined</th>
-<td><!--#var cache_length--></td></tr>
+<td><dtml-var cache_length></td></tr>
 
 <tr><th valign=top align=left>Target size</th><td>
-<form action="<!--#var URL1-->/manage_cache_size" method=GET>
-<input type="text" name="value:int" value="<!--#var cache_size html_quote-->" size=6>
+<form action="<dtml-var URL1>/manage_cache_size" method=GET>
+<input type="text" name="value:int" value="<dtml-var cache_size html_quote>" size=6>
 <input type="submit" value="Change">
 </form></td></tr>
 
 <tr><th valign=top align=left>Target maximum time between accesses</th><td>
-<form action="<!--#var URL1-->/manage_cache_age" method=GET>
-<input type="text" name="value:int" value="<!--#var cache_age html_quote-->" size=6>
+<form action="<dtml-var URL1>/manage_cache_age" method=GET>
+<input type="text" name="value:int" value="<dtml-var cache_age html_quote>" size=6>
 <input type="submit" value="Change">
 </form></td></tr>
 
-<!--#in cacheStatistics-->
-<tr><th align=left><!--#var sequence-key--></th>
-    <td><!--#var sequence-item--></td>
+<dtml-in cacheStatistics>
+<tr><th align=left><dtml-var sequence-key></th>
+    <td><dtml-var sequence-item></td>
 </tr>
-<!--#/in-->
+</dtml-in>
 
 </table>
 
-<!--#if show_cache_detail-->
+<dtml-if show_cache_detail>
   <h4>Cache Details</h4><P>
 
   <table border><tr><th>Object Class</th><th>Count</th></tr>
-    <!--#in cache_detail-->
-      <tr><td><!--#var sequence-key--></td><td><!--#var sequence-item--></td></tr>
-    <!--#/in-->
+    <dtml-in cache_detail>
+      <tr><td><dtml-var sequence-key></td><td><dtml-var sequence-item></td></tr>
+    </dtml-in>
   </table>
-<!--#/if-->
+</dtml-if>
 
-<!--#if show_cache_extreme_detail-->
+<dtml-if show_cache_extreme_detail>
   <h4>Objects in the cache</h4><P>
 
   <table border><tr><th>Object ID</th>
@@ -51,15 +52,15 @@
              <th>Reference Count</th>
              <th>References</th>
           </tr>
-    <!--#in cache_extreme_detail mapping-->
-      <tr><td><!--#var oid--></td>
-          <td><!--#var klass--></td>
-          <td><!--#var rc--></td>
-          <td><!--#var references--></td>
+    <dtml-in cache_extreme_detail mapping>
+      <tr><td><dtml-var oid></td>
+          <td><dtml-var klass></td>
+          <td><dtml-var rc></td>
+          <td><dtml-var references></td>
       </tr>
-    <!--#/in-->
+    </dtml-in>
   </table>
-<!--#/if-->
+</dtml-if>
 
 </BODY></HTML>
 

@@ -1,40 +1,41 @@
-<HTML>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML lang="en">
 <HEAD>
 <TITLE>PropertySheets</TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
-<!--#var manage_tabs-->
+<dtml-var manage_tabs>
 <P>
 
 <FORM ACTION="." METHOD="POST">
 <TABLE BORDER="0" CELLSPACING="0" CELLPADDING="2">
 
-<!--#in items sort-->
-<!--#with "_(REQUEST=REQUEST, item=_['sequence-item'].aq_base)" only-->
-<!--#with item-->
-<!--#if id-->
+<dtml-in items sort>
+<dtml-with "_(REQUEST=REQUEST, item=_['sequence-item'].aq_base)" only>
+<dtml-with item>
+<dtml-if id>
 
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <A HREF="<!--#var id-->">
-    <!--#var id--> (<!--#var xml_namespace-->)
+  <A HREF="<dtml-var id>">
+    <dtml-var id> (<dtml-var xml_namespace>)
   </A>
-  <!--#if locked_in_session-->
-    <!--#if modified_in_session-->
-      <IMG SRC="<!--#var "REQUEST['SCRIPT_NAME']"-->/p_/locked"
+  <dtml-if locked_in_session>
+    <dtml-if modified_in_session>
+      <IMG SRC="<dtml-var "REQUEST['SCRIPT_NAME']">/p_/locked"
        ALT="This item has been modified in this session">
-    <!--#else-->
-      <IMG SRC="<!--#var "REQUEST['SCRIPT_NAME']"-->/p_/lockedo"
+    <dtml-else>
+      <IMG SRC="<dtml-var "REQUEST['SCRIPT_NAME']">/p_/lockedo"
        ALT="This item has been modified in another session">
-    <!--#/if-->
-  <!--#/if-->
+    </dtml-if>
+  </dtml-if>
   </TD>
 </TR>
 
-<!--#/if-->
-<!--#/with-->
-<!--#/with-->
-<!--#/in-->
+</dtml-if>
+</dtml-with>
+</dtml-with>
+</dtml-in>
 
 </TABLE>
 

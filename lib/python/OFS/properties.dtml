@@ -1,107 +1,108 @@
-<html>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html lang="en">
 <head>
 <title>Properties</title>
 </head>
 <body bgcolor="#FFFFFF" link="#000099" vlink="#555555">
-<!--#var manage_tabs-->
+<dtml-var manage_tabs>
 
-<!--#if Principia-Version-->
+<dtml-if Principia-Version>
 <p>
-<em>You are currently working in version <!--#var Principia-Version--></em>
+<em>You are currently working in version <dtml-var Principia-Version></em>
 </p>
-<!--#/if Principia-Version-->
+</dtml-if Principia-Version>
 
 <P>
 Properties allow you to assign simple values to Zope objects.
 </P>
 
-<form action="<!--#var URL1-->" method="POST">
-<!--#if propertyMap-->
+<form action="<dtml-var URL1>" method="POST">
+<dtml-if propertyMap>
 <p>
 The following properties are defined for this item. 
-<!--#if property_extensible_schema__-->
+<dtml-if property_extensible_schema__>
 To <a href="#addpropform">
 add a new property</a>, enter a name, type and value for the new property 
 and click the &quot;Add&quot; button. 
-<!--#/if-->
+</dtml-if>
 To change property values, edit the 
 values and click "Save Changes". 
 </p>
 <table border="0" cellspacing="0" cellpadding="2">
-<!--#in propertyMap mapping-->
+<dtml-in propertyMap mapping>
 <tr>
   <td align="left" valign="top" width="16">
-  <!--#if "'d' in _['sequence-item'].get('mode', 'awd')"-->
-  <input type="checkbox" name="ids:list" value="<!--#var id html_quote-->" ID="cb-<!--#var id-->">
-  <!--#else-->
-  <!--#endif-->
+  <dtml-if "'d' in _['sequence-item'].get('mode', 'awd')">
+  <input type="checkbox" name="ids:list" value="<dtml-var id html_quote>" ID="cb-<dtml-var id>">
+  <dtml-else>
+  </dtml-if>
   </td>
   <td align="left" valign="top">
-  <strong><LABEL FOR="cb-<!--#var id-->"><!--#var "propertyLabel(id)"--></LABEL></strong>
+  <strong><LABEL FOR="cb-<dtml-var id>"><dtml-var "propertyLabel(id)"></LABEL></strong>
   </td>
   <td align="left" valign="top">
-  <!--#if "'w' in _['sequence-item'].get('mode', 'awd')"-->
-  <!--#if "type == 'int'"-->
-  <input type="text" name="<!--#var id-->:<!--#var type-->" size="35"
-   value="<!--#if "hasProperty(id)"--><!--#var 
-   "'%d' % getProperty(id)" html_quote--><!--#/if-->">
-  <!--#elif "type == 'long'"-->
-  <input type="text" name="<!--#var id-->:<!--#var type-->" size="35"
-   value="<!--#if "hasProperty(id)"--><!--#var 
-   "('%s' % getProperty(id))[:-1]" html_quote--><!--#/if-->">
-  <!--#elif "type in ('float', 'date')"-->
-  <input type="text" name="<!--#var id-->:<!--#var type-->" size="35"
-   value="<!--#var "getProperty(id)" html_quote-->">
-  <!--#elif "type=='string'"-->
-  <input type="text" name="<!--#var id-->:string" size="35"
-   value="<!--#var "getProperty(id)" html_quote-->">
-  <!--#elif "type=='boolean'"-->
-  <input type="checkbox" name="<!--#var id-->:boolean" size="35"
-   <!--#if "getProperty(id)"-->CHECKED<!--#/if-->>
-  <!--#elif "type=='tokens'"-->
-  <input type="text" name="<!--#var id-->:tokens" size="35"
-   value="<!--#in "getProperty(id)"--><!--#var sequence-item html_quote--> <!--#endin-->">
-  <!--#elif "type=='text'"-->
-  <textarea name="<!--#var id-->:text" rows="6" cols="35"><!--#var 
-   "getProperty(id)" html_quote--></textarea>
-  <!--#elif "type=='lines'"-->
-  <textarea name="<!--#var id-->:lines" rows="6" cols="35"><!--#in
-  "getProperty(id)"--><!--#var sequence-item html_quote--><!--#if
-   sequence-end--><!--#else--><!--#var "'\n'"--><!--#/if--><!--#endin--></textarea>
-  <!--#elif "type=='selection'"-->
-    <!--#if "_.has_key(select_variable)"-->
-    <select name="<!--#var id-->">
-      <!--#in "_[select_variable]"-->
+  <dtml-if "'w' in _['sequence-item'].get('mode', 'awd')">
+  <dtml-if "type == 'int'">
+  <input type="text" name="<dtml-var id>:<dtml-var type>" size="35"
+   value="<dtml-if "hasProperty(id)"><dtml-var 
+   "'%d' % getProperty(id)" html_quote></dtml-if>">
+  <dtml-elif "type == 'long'">
+  <input type="text" name="<dtml-var id>:<dtml-var type>" size="35"
+   value="<dtml-if "hasProperty(id)"><dtml-var 
+   "('%s' % getProperty(id))[:-1]" html_quote></dtml-if>">
+  <dtml-elif "type in ('float', 'date')">
+  <input type="text" name="<dtml-var id>:<dtml-var type>" size="35"
+   value="<dtml-var "getProperty(id)" html_quote>">
+  <dtml-elif "type=='string'">
+  <input type="text" name="<dtml-var id>:string" size="35"
+   value="<dtml-var "getProperty(id)" html_quote>">
+  <dtml-elif "type=='boolean'">
+  <input type="checkbox" name="<dtml-var id>:boolean" size="35"
+   <dtml-if "getProperty(id)">CHECKED</dtml-if>>
+  <dtml-elif "type=='tokens'">
+  <input type="text" name="<dtml-var id>:tokens" size="35"
+   value="<dtml-in "getProperty(id)"><dtml-var sequence-item html_quote> </dtml-in>">
+  <dtml-elif "type=='text'">
+  <textarea name="<dtml-var id>:text" rows="6" cols="35"><dtml-var 
+   "getProperty(id)" html_quote></textarea>
+  <dtml-elif "type=='lines'">
+  <textarea name="<dtml-var id>:lines" rows="6" cols="35"><dtml-in
+  "getProperty(id)"><dtml-var sequence-item html_quote><dtml-if
+   sequence-end><dtml-else><dtml-var "'\n'"></dtml-if></dtml-in></textarea>
+  <dtml-elif "type=='selection'">
+    <dtml-if "_.has_key(select_variable)">
+    <select name="<dtml-var id>">
+      <dtml-in "_[select_variable]">
          <option
-          <!--#if "_['sequence-item']==getProperty(id)"-->SELECTED<!--#/if-->
-          ><!--#var sequence-item html_quote--></option>
-      <!--#/in-->
+          <dtml-if "_['sequence-item']==getProperty(id)">SELECTED</dtml-if>
+          ><dtml-var sequence-item html_quote></option>
+      </dtml-in>
     </select>
-    <!--#else-->
-       No value for <!--#var select_variable-->
-    <!--#/if-->
-  <!--#elif "type=='multiple selection'"-->
-    <!--#if select_variable-->
-    <select name="<!--#var id-->:list" multiple
-      size="<!--#var "_.min(7, _.len(_[select_variable]))"-->">
-      <!--#in "_[select_variable]"-->
-         <option<!--#if 
-         "_['sequence-item'] in getProperty(id)"--> SELECTED<!--#endif
-         -->><!--#var sequence-item html_quote--></option>
-      <!--#/in-->
+    <dtml-else>
+       No value for <dtml-var select_variable>
+    </dtml-if>
+  <dtml-elif "type=='multiple selection'">
+    <dtml-if select_variable>
+    <select name="<dtml-var id>:list" multiple
+      size="<dtml-var "_.min(7, _.len(_[select_variable]))">">
+      <dtml-in "_[select_variable]">
+         <option<dtml-if 
+         "_['sequence-item'] in getProperty(id)"> SELECTED</dtml-if
+         >><dtml-var sequence-item html_quote></option>
+      </dtml-in>
     </select>
-    <!--#/if-->
-  <!--#else-->
+    </dtml-if>
+  <dtml-else>
   <em>Unknown property type</em>
-  <!--#endif-->
-  <!--#else-->
+  </dtml-if>
+  <dtml-else>
   <table border="1">
-  <tr><td><!--#var "getProperty(id)" html_quote--></td></tr>
+  <tr><td><dtml-var "getProperty(id)" html_quote></td></tr>
   </table>
-  <!--#endif-->
+  </dtml-if>
   </td>
 </tr>
-<!--#endin-->
+</dtml-in>
 <tr>
   <td align="left" valign="top" width="16">
   </td>
@@ -115,20 +116,20 @@ values and click "Save Changes".
 </tr>
 </table>
 
-<!--#else-->
+<dtml-else>
 <p>
 There are currently no properties defined for this item. 
-<!--#if property_extensible_schema__-->
+<dtml-if property_extensible_schema__>
 To add a property, click the &quot;Add...&quot; button.
-<!--#/if-->
+</dtml-if>
 </p>
 
-<!--#endif-->
+</dtml-if>
 </form>
 
-<!--#if property_extensible_schema__-->
+<dtml-if property_extensible_schema__>
 <a name="addpropform">
-<form action="<!--#var URL1-->/manage_addProperty" method="POST">
+<form action="<dtml-var URL1>/manage_addProperty" method="POST">
 <p>
 To add a new property, enter a name, type and value for the new 
 property and click the &quot;Add&quot; 
@@ -166,7 +167,7 @@ button.
 </tr>
 </table>
 </form>
-<!--#/if-->
+</dtml-if>
 
 </body>
 </html>

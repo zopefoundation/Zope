@@ -1,18 +1,19 @@
-<HTML>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML lang="en">
 <HEAD>
 <TITLE>Find Options</TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
 
-<!--#if btn_submit-->
+<dtml-if btn_submit>
 
-<!--#in expr="('ffnw', 'ffaf')"-->
-<!--#if expr="_.hasattr(REQUEST, 'fv_'+_['sequence-item']) and _.getattr(REQUEST, 'fv_'+_['sequence-item']) and not _.hasattr(REQUEST, 'cv_'+_['sequence-item'])"-->
-<!--#call expr="REQUEST.RESPONSE.setCookie('cv_'+_['sequence-item'], _.getattr(REQUEST, 'fv_'+_['sequence-item']), path='/', expires='Friday, 31-Dec-99 23:59:59 GMT')"-->
-<!--#elif expr="_.hasattr(REQUEST, 'cv_'+_['sequence-item']) and _.getattr(REQUEST, 'cv_'+_['sequence-item']) and not _.hasattr(REQUEST, 'fv_'+_['sequence-item'])"-->
-<!--#call expr="REQUEST.RESPONSE.expireCookie('cv_'+_['sequence-item'], path='/')"-->
-<!--#/if-->
-<!--#/in-->
+<dtml-in expr="('ffnw', 'ffaf')">
+<dtml-if expr="_.hasattr(REQUEST, 'fv_'+_['sequence-item']) and _.getattr(REQUEST, 'fv_'+_['sequence-item']) and not _.hasattr(REQUEST, 'cv_'+_['sequence-item'])">
+<dtml-call expr="REQUEST.RESPONSE.setCookie('cv_'+_['sequence-item'], _.getattr(REQUEST, 'fv_'+_['sequence-item']), path='/', expires='Friday, 31-Dec-99 23:59:59 GMT')">
+<dtml-elif expr="_.hasattr(REQUEST, 'cv_'+_['sequence-item']) and _.getattr(REQUEST, 'cv_'+_['sequence-item']) and not _.hasattr(REQUEST, 'fv_'+_['sequence-item'])">
+<dtml-call expr="REQUEST.RESPONSE.expireCookie('cv_'+_['sequence-item'], path='/')">
+</dtml-if>
+</dtml-in>
 <P>
 <BR><BR>
 <CENTER>
@@ -22,7 +23,7 @@ Your preferences have been saved.
 <INPUT TYPE="BUTTON" NAME="btn_close" VALUE=" Ok " onClick="window.close()">
 </FORM>
 
-<!--#else-->
+<dtml-else>
 
 <H2>Find Options</H2>
 <P>
@@ -31,16 +32,16 @@ Your preferences have been saved.
 <!--
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <INPUT TYPE="CHECKBOX" NAME="fv_ffnw" VALUE="1"<!--#if cv_ffnw--> CHECKED<!--#/if-->>
+  <INPUT TYPE="CHECKBOX" NAME="fv_ffnw" VALUE="1"<dtml-if cv_ffnw> CHECKED</dtml-if>>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
   <STRONG>Open results in new window</STRONG>
   </TD>
 </TR>
--->
+>
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <INPUT TYPE="CHECKBOX" NAME="fv_ffaf" VALUE="1"<!--#if cv_ffaf--> CHECKED<!--#/if-->>
+  <INPUT TYPE="CHECKBOX" NAME="fv_ffaf" VALUE="1"<dtml-if cv_ffaf> CHECKED</dtml-if>>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
   <STRONG>Always use advanced find</STRONG>
@@ -59,7 +60,7 @@ Your preferences have been saved.
 
 </TABLE>
 </FORM>
-<!--#/if-->
+</dtml-if>
 
 </BODY>
 </HTML>

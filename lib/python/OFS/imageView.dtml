@@ -1,14 +1,15 @@
-<html>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html lang="en">
 <head>
 <title>View</title>
 </head>
 <body bgcolor="#FFFFFF" link="#000099" vlink="#555555">
-<!--#var manage_tabs-->
+<dtml-var manage_tabs>
 
 <p>
-<img src="<!--#var id url_quote-->" <!--#if width-->width="<!--#var width-->" <!--#/if
---><!--#if height-->height="<!--#var height-->" <!--#/if-->ALT="<!--#var 
-title_or_id-->">
+<img src="<dtml-var id url_quote>" <dtml-if width>width="<dtml-var width>" </dtml-if
+><dtml-if height>height="<dtml-var height>" </dtml-if>ALT="<dtml-var 
+title_or_id>">
 </p>
 
 </body>

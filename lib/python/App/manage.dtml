@@ -1,18 +1,19 @@
-<HTML>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML lang="en">
 <HEAD>
-<TITLE><!--#var title_or_id--> on <!--#var URL1--></TITLE>
+<TITLE><dtml-var title_or_id> on <dtml-var URL1></TITLE>
 <SCRIPT LANGUAGE="javascript">
 <!--
 function update_menu()
 {   window.manage_menu.location.href=window.manage_menu.location.href;
 }
-//-->
+//>
 </SCRIPT>
 </HEAD>
 <FRAMESET COLS="175,*">
-  <FRAME SRC="<!--#var URL1-->/manage_menu" NAME="manage_menu"
+  <FRAME SRC="<dtml-var URL1>/manage_menu" NAME="manage_menu"
    MARGINWIDTH="2" MARGINHEIGHT="2" SCROLLING="auto">
-  <FRAME SRC="<!--#var URL1-->/manage_workspace" NAME="manage_main"
+  <FRAME SRC="<dtml-var URL1>/manage_workspace" NAME="manage_main"
    MARGINWIDTH="2" MARGINHEIGHT="0" SCROLLING="auto">
 </FRAMESET>
 <NOFRAMES>

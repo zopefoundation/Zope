@@ -51,7 +51,7 @@ xmldecl = re.compile('<\?xml'+_S+
 procopen = re.compile(r'<\?(?P<proc>' + _Name + ')' + _opS)
 procclose = re.compile(_opS + r'\?>')
 commentopen = re.compile('<!--')
-commentclose = re.compile('-->')
+commentclose = re.compile('>')
 doubledash = re.compile('--')
 attrfind = re.compile(
     _S + '(?P<name>' + _Name + ')'

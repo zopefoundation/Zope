@@ -1,4 +1,5 @@
-<HTML>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML lang="en">
 <HEAD>
 <TITLE>Add Draft</TITLE>
 </HEAD>
@@ -21,17 +22,17 @@ the original object.
   <TH ALIGN="LEFT" VALIGN="TOP">Base Object</TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
   <SELECT NAME=baseid size=7>
-  <!--#in objectValues sort=title_or_id-->
-    <!--#unless "meta_type in ('Version', 'Principia Draft', 'User Folder')"-->
-      <OPTION VALUE="<!--#var id html_quote-->">
-      <!--#if title-->
-	<!--#var title size=25--> (<!--#var id-->)
-      <!--#else-->
-	<!--#var id-->
-      <!--#endif-->
+  <dtml-in objectValues sort=title_or_id>
+    <dtml-unless "meta_type in ('Version', 'Principia Draft', 'User Folder')">
+      <OPTION VALUE="<dtml-var id html_quote>">
+      <dtml-if title>
+	<dtml-var title size=25> (<dtml-var id>)
+      <dtml-else>
+	<dtml-var id>
+      </dtml-if>
       </OPTION>
-    <!--#/unless-->
-  <!--#/in-->
+    </dtml-unless>
+  </dtml-in>
   </SELECT>
   </TD>
 </TR>

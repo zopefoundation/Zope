@@ -1,4 +1,5 @@
-<html>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html lang="en">
 <head>
 <title>
 Object Reference
@@ -12,35 +13,35 @@ Object Reference
 
 
 
-<h3><!--#if icon--><img src="<!--#var SCRIPT_NAME-->/<!--#var icon-->" height="16" width="16" alt=""><!--#endif--> <!--#var meta_type--></h3>
+<h3><dtml-if icon><img src="<dtml-var SCRIPT_NAME>/<dtml-var icon>" height="16" width="16" alt=""></dtml-if> <dtml-var meta_type></h3>
 
 <code>
-<!--#var get_docstring_html-->
+<dtml-var get_docstring_html>
 </code>
 
 
-<h3><!--#var meta_type--> methods</h3>
+<h3><dtml-var meta_type> methods</h3>
 
-<!--#call "REQUEST.set('cached_method_list', get_method_list())"-->
-<!--#call "REQUEST.set('row_max', _.len(cached_method_list)/2)"-->
-<!--#if "_.len(cached_method_list) % 2"-->
-<!--#call "REQUEST.set('row_max', row_max+1)"-->
-<!--#endif-->
+<dtml-call "REQUEST.set('cached_method_list', get_method_list())">
+<dtml-call "REQUEST.set('row_max', _.len(cached_method_list)/2)">
+<dtml-if "_.len(cached_method_list) % 2">
+<dtml-call "REQUEST.set('row_max', row_max+1)">
+</dtml-if>
 
 <table width="100%" border="0">
 <tr>
 <td align="left" valign="top">
 <code>
-<!--#in "cached_method_list[:row_max]"-->
-<a href="#<!--#var get_name-->"><!--#var get_name--></a><br>
-<!--#endin-->
+<dtml-in "cached_method_list[:row_max]">
+<a href="#<dtml-var get_name>"><dtml-var get_name></a><br>
+</dtml-in>
 </code>
 </td>
 <td align="left" valign="top">
 <code>
-<!--#in "cached_method_list[row_max:]"-->
-<a href="#<!--#var get_name-->"><!--#var get_name--></a><br>
-<!--#endin-->
+<dtml-in "cached_method_list[row_max:]">
+<a href="#<dtml-var get_name>"><dtml-var get_name></a><br>
+</dtml-in>
 </code>
 </td>
 </tr>
@@ -48,31 +49,31 @@ Object Reference
 
 
 <dl>
-<!--#in cached_method_list-->
+<dtml-in cached_method_list>
 <dt><code>
-    <a name="<!--#var get_name-->">
-    <strong><!--#var get_signature--></strong>
+    <a name="<dtml-var get_name>">
+    <strong><dtml-var get_signature></strong>
     </code>
 </dt>
 <dd><code>
-<!--#if permission-->
-    <strong>Permission:</strong> <!--#var permission--><br><br>
-<!--#endif-->
+<dtml-if permission>
+    <strong>Permission:</strong> <dtml-var permission><br><br>
+</dtml-if>
 
-<!--#if get_docstring_html-->
-    <!--#var get_docstring_html-->
-<!--#else-->
+<dtml-if get_docstring_html>
+    <dtml-var get_docstring_html>
+<dtml-else>
     <p>No documentation for this method</p>
-<!--#endif-->
-    <a href="#top"><img src="<!--#var SCRIPT_NAME-->/HelpSys/hs_uarrow" height="9" width="9" border="0" valign="bottom" alt=""> top</a><br><br>
+</dtml-if>
+    <a href="#top"><img src="<dtml-var SCRIPT_NAME>/HelpSys/hs_uarrow" height="9" width="9" border="0" valign="bottom" alt=""> top</a><br><br>
     </code>
 </dd>
-<!--#endin-->
+</dtml-in>
 </dl>
 
 <p>
 <a href="../hs_main">
-<img src="<!--#var SCRIPT_NAME-->/HelpSys/hs_larrow" height="9" width="9" border="0" valign="bottom" alt=""> Back to Object Reference</a>
+<img src="<dtml-var SCRIPT_NAME>/HelpSys/hs_larrow" height="9" width="9" border="0" valign="bottom" alt=""> Back to Object Reference</a>
 </p>
 </body>
 </html>

@@ -1,9 +1,10 @@
-<HTML>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML lang="en">
 <HEAD>
-<TITLE><!--#var title--></TITLE>
+<TITLE><dtml-var title></TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
-<!--#var manage_tabs-->
+<dtml-var manage_tabs>
 
 <P>
 The Database Manager allows you to view database status information.
@@ -17,7 +18,7 @@ and &quot;undoing&quot; previous changes to your site.
   <STRONG>Database Size</STRONG>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <!--#var db_size-->
+  <dtml-var db_size>
   </TD>
 </TR>
 <TR>
@@ -25,7 +26,7 @@ and &quot;undoing&quot; previous changes to your site.
   <STRONG>Database Location</STRONG>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <font size="-1"><!--#var db_name--></font>
+  <font size="-1"><dtml-var db_name></font>
   </TD>
 </TR>
 </TABLE>

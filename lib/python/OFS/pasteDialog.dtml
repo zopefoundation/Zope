@@ -1,18 +1,19 @@
-<HTML>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML lang="en">
 <HEAD>
 <TITLE>Paste Item</TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
-<!--#if moniker-->
-<!--#in moniker-->
-<H2>Paste <!--#var sequence-var-mtype--></H2>
+<dtml-if moniker>
+<dtml-in moniker>
+<H2>Paste <dtml-var sequence-var-mtype></H2>
 
-<!--#if bad-->
+<dtml-if bad>
 <EM>An item with the specified id exists</EM>. 
 Please specify another id.
-<!--#else bad-->
-Please specify the id to use for this <!--#var sequence-var-mtype-->.
-<!--#/if bad-->
+<dtml-else bad>
+Please specify the id to use for this <dtml-var sequence-var-mtype>.
+</dtml-if bad>
 
 <FORM ACTION="pasteFromClipboard" METHOD="POST">
 <TABLE CELLSPACING="2">
@@ -22,7 +23,7 @@ Please specify the id to use for this <!--#var sequence-var-mtype-->.
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
   <INPUT TYPE="TEXT" NAME="clip_id" SIZE="40"
-   VALUE="<!--#var sequence-var-id html_quote-->">
+   VALUE="<dtml-var sequence-var-id html_quote>">
   </TD>
 </TR>
 <TR>
@@ -33,8 +34,8 @@ Please specify the id to use for this <!--#var sequence-var-mtype-->.
 </TR>
 </TABLE>
 </FORM>
-<!--#/in moniker-->
-<!--#/if moniker-->
+</dtml-in moniker>
+</dtml-if moniker>
 </BODY>
 </HTML>
 

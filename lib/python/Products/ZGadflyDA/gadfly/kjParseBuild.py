@@ -179,7 +179,7 @@ class ruleset:
        done = 1 # assume we're done until a change is made to First
 
        # iterate through all rules looking for a new arc to add
-       # indicating Terminal --> possible first token derivation
+       # indicating Terminal > possible first token derivation
        #
        for R in self.Rules:
            GoalNonterm = R.Nonterm
@@ -379,10 +379,10 @@ class ruleset:
 
   # compute an SLR NFA for the ruleset with states for each SLR "item"
   # and transitions, eg:
-  #     X --> .AB
-  #   on A maps to X --> A.B
-  #   on epsilon maps to A --> .ZC
-  #                  and A --> .WK
+  #     X > .AB
+  #   on A maps to X > A.B
+  #   on epsilon maps to A > .ZC
+  #                  and A > .WK
   # an item is a pair (rulenumber, bodyposition)
   # where body position 0 is interpreted to point before the
   # beginning of the body.
@@ -513,8 +513,8 @@ class ruleset:
 
   # this function completes the computation of an SLR DFA
   # by adding reduction states for each DFA state S containing
-  # item   H --> B.
-  # which reduces rule H --> B
+  # item   H > B.
+  # which reduces rule H > B
   # for each token T in Follow of H.
   # if S already has a transition for T then there is a conflict!
   #
@@ -905,7 +905,7 @@ class Reconstruct:
    # this "virtual class" is only for common behaviors of subclasses.
    def MakeTokenArchives(self):
      # make a list of all tokens and
-     # initialize token --> int dictionary
+     # initialize token > int dictionary
      keys = self.Gram.DFA.StateTokenMap.keys()
      tokenToInt = {}
      tokenSet = kjSet.NewSet([])

@@ -1,21 +1,22 @@
-<HTML>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML lang="en">
 <HEAD>
 <TITLE>Rename Item</TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
-<!--#if expr="_.hasattr(REQUEST, 'ids') and REQUEST['ids']"-->
-<!--#with expr="manage_CopyContainerFirstItem(REQUEST)"-->
-<!--#if cb_isMoveable-->
-<H2>Rename <!--#var meta_type--></H2>
+<dtml-if expr="_.hasattr(REQUEST, 'ids') and REQUEST['ids']">
+<dtml-with expr="manage_CopyContainerFirstItem(REQUEST)">
+<dtml-if cb_isMoveable>
+<H2>Rename <dtml-var meta_type></H2>
 <P>
 <FORM ACTION="." METHOD="POST">
 <TABLE CELLSPACING="0">
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <IMG SRC="<!--#var SCRIPT_NAME-->/<!--#var icon-->" ALT="" BORDER="0">
+  <IMG SRC="<dtml-var SCRIPT_NAME>/<dtml-var icon>" ALT="" BORDER="0">
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <!--#var id-->
+  <dtml-var id>
   </TD>
 </TR>
 <TR>
@@ -29,7 +30,7 @@
 <TR>
 <TD></TD>
 <TD>
-  <INPUT TYPE="HIDDEN" NAME="id" VALUE="<!--#var id html_quote-->">
+  <INPUT TYPE="HIDDEN" NAME="id" VALUE="<dtml-var id html_quote>">
   <INPUT TYPE="HIDDEN" NAME=":default_method" VALUE="manage_renameObject">
   <INPUT TYPE="submit" NAME="manage_renameObject:method" VALUE=" Ok ">
   <INPUT TYPE="submit" NAME="manage_main:method" VALUE="Cancel">
@@ -37,19 +38,19 @@
 </TR>
 </TABLE>
 </FORM>
-<!--#else-->
+<dtml-else>
 <FORM ACTION="manage_main" METHOD="GET">
 <CENTER>
 <BR><BR>
-The item <EM><!--#var id--></EM> does not support this operation.
+The item <EM><dtml-var id></EM> does not support this operation.
 <P>
 <INPUT TYPE="submit" NAME="submit" VALUE=" Ok ">
 </CENTER>
 </FORM>
-<!--#/if-->
+</dtml-if>
 
-<!--#/with-->
-<!--#else-->
+</dtml-with>
+<dtml-else>
 <FORM ACTION="manage_main" METHOD="GET">
 <CENTER>
 <BR><BR>
@@ -59,7 +60,7 @@ You must select an item to rename.
 </CENTER>
 </FORM>
 
-<!--#/if-->
+</dtml-if>
 </BODY>
 </HTML>
 

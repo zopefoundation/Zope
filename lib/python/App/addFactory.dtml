@@ -1,4 +1,5 @@
-<html><head><title>Add an Object Factory</title></head>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html lang="en"><head><title>Add an Object Factory</title></head>
 <body bgcolor="#FFFFFF" link="#000099" vlink="#555555" alink="#77003B">
 
 <h2>Add an Object Factory</h2>
@@ -13,7 +14,7 @@ user adds a new object.  This must be one of the objects in the
 product, typically a Document.
 </P>
 
-<!--#if objectIds-->
+<dtml-if objectIds>
 <form action="manage_addPrincipiaFactory" method="POST">
 <table cellspacing="2">
 
@@ -37,22 +38,22 @@ product, typically a Document.
   
   <tr><th ALIGN="LEFT">Method</th>
       <td ALIGN="LEFT"><select name="initial">
-	<!--#in objectItems-->
-           <!--#if "meta_type != 'Principia Factory'"-->
-	     <option><!--#var sequence-key--></option>
-	   <!--#/if-->
-	<!--#/in-->
+	<dtml-in objectItems>
+           <dtml-if "meta_type != 'Principia Factory'">
+	     <option><dtml-var sequence-key></option>
+	   </dtml-if>
+	</dtml-in>
       </select></td></tr>
 
   <tr><td></td><td><br><input type="SUBMIT" value="Generate"></td></tr>
 
 </table></form>
       
-<!--#else-->
+<dtml-else>
 
 Before you can define a factory, you have to define one or more "methods", 
 such as Document or other objects that do the factory's work.
 
-<!--#/if-->
+</dtml-if>
 
 </body></html>

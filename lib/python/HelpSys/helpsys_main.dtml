@@ -1,4 +1,5 @@
-<html>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html lang="en">
 <head>
 <title>
 Z Object Publishing Environment Help
@@ -35,7 +36,7 @@ services provided by high-level objects such as Documents
 and Folders. Other references will be added soon.
 </p>
 <ul>
-<li> <a href="<!--#var BASE1-->/HelpSys/ObjectRef/hs_main">
+<li> <a href="<dtml-var BASE1>/HelpSys/ObjectRef/hs_main">
      Object Reference
      </a>
 

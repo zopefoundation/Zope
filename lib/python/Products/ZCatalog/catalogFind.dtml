@@ -1,9 +1,10 @@
-<HTML>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML lang="en">
 <HEAD>
 <TITLE>Advanced Find</TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
-<!--#var manage_tabs-->
+<dtml-var manage_tabs>
 <P>
 Use this form to locate objects to be cataloged.
 <P>
@@ -17,9 +18,9 @@ Use this form to locate objects to be cataloged.
   <TD ALIGN="LEFT" VALIGN="TOP">
   <SELECT NAME="obj_metatypes:list" SIZE="4" MULTIPLE>
   <OPTION VALUE="all" SELECTED> All types
-<!--#in all_meta_types mapping-->
-  <OPTION VALUE="<!--#var name html_quote-->"> <!--#var name-->
-<!--#/in-->
+<dtml-in all_meta_types mapping>
+  <OPTION VALUE="<dtml-var name html_quote>"> <dtml-var name>
+</dtml-in>
   </SELECT>
   </TD>
 </TR>
@@ -70,9 +71,9 @@ Use this form to locate objects to be cataloged.
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
   <SELECT NAME="obj_roles:list" SIZE="3" MULTIPLE>
-<!--#in valid_roles-->
-  <OPTION VALUE="<!--#var sequence-item html_quote-->"> <!--#var sequence-item-->
-<!--#/in-->
+<dtml-in valid_roles>
+  <OPTION VALUE="<dtml-var sequence-item html_quote>"> <dtml-var sequence-item>
+</dtml-in>
   </SELECT>
   </TD>
 </TR>
@@ -83,9 +84,9 @@ Use this form to locate objects to be cataloged.
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
   <SELECT NAME="obj_permission">
-<!--#in permission_settings mapping-->
-  <OPTION VALUE="<!--#var name html_quote-->"> <!--#var name-->
-<!--#/in-->
+<dtml-in permission_settings mapping>
+  <OPTION VALUE="<dtml-var name html_quote>"> <dtml-var name>
+</dtml-in>
   </SELECT>
   </TD>
 </TR>

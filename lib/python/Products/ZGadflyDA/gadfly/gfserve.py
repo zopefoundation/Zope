@@ -21,7 +21,7 @@
    which performs any startup actions on the database needed
    and returns either None or a Dictionary of
    
-       name --> policy objects
+       name > policy objects
        
    where the policy objects describe policies beyond the
    admin policy.  The startup function may also

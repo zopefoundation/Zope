@@ -1,24 +1,25 @@
-<HTML>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML lang="en">
 <HEAD>
 <TITLE>Edit</TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
-<!--#var manage_tabs-->
+<dtml-var manage_tabs>
 
   <FORM ACTION="manage_edit" METHOD="POST">
     <TABLE CELLSPACING="2">
       <TR>
 	<TH ALIGN="LEFT" VALIGN="TOP">Id</TH>
-	<TD ALIGN="LEFT" VALIGN="TOP"><!--#var id--></TD>
+	<TD ALIGN="LEFT" VALIGN="TOP"><dtml-var id></TD>
       </TR>
       <TR>
 	<TH ALIGN="LEFT" VALIGN="TOP"><EM>Title</EM></TH>
 	<TD ALIGN="LEFT" VALIGN="TOP">
-	<!--#if title-->
+	<dtml-if title>
 	<INPUT TYPE="TEXT" NAME="title" SIZE="40" VALUE="&dtml-title;">
-	<!--#else title-->
+	<dtml-else title>
 	<INPUT TYPE="TEXT" NAME="title" SIZE="40" VALUE="">
-	<!--#/if title-->
+	</dtml-if title>
 	</TD>
       </TR>
       <tr>
@@ -26,7 +27,7 @@
         <em>Size</em>
         </th>
 	<td align="left" valign="top">
-        <!--#var get_size thousands_commas--> bytes
+        <dtml-var get_size thousands_commas> bytes
 	</td>
       </tr>
       <tr>
@@ -34,23 +35,23 @@
         <em>Last modified</em>
         </th>
 	<td align="left" valign="top">
-        <!--#var bobobase_modification_time-->
+        <dtml-var bobobase_modification_time>
 	</td>
       </tr>
       <TR>
 	<TD COLSPAN="2" ALIGN="CENTER">
 	<TEXTAREA NAME="data:text" WRAP="Off"
-	<!--#if dtpref_cols-->
-	COLS="<!--#var dtpref_cols-->"
-	<!--#else dtpref_cols-->
+	<dtml-if dtpref_cols>
+	COLS="<dtml-var dtpref_cols>"
+	<dtml-else dtpref_cols>
 	COLS="50"
-	<!--#/if dtpref_cols-->
-	<!--#if dtpref_rows-->
-	ROWS="<!--#var dtpref_rows-->"
-	<!--#else dtpref_rows-->
+	</dtml-if dtpref_cols>
+	<dtml-if dtpref_rows>
+	ROWS="<dtml-var dtpref_rows>"
+	<dtml-else dtpref_rows>
 	ROWS="20"
-	<!--#/if dtpref_rows-->><!--#var 
-        __str__--></TEXTAREA>
+	</dtml-if dtpref_rows>><dtml-var 
+        __str__></TEXTAREA>
 	</TD>
       </TR>
       <TR>

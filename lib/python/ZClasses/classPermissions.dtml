@@ -1,8 +1,9 @@
-<html><head><title>Security</title></head>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html lang="en"><head><title>Security</title></head>
 <body bgcolor="#ffffff" link="#000099" vlink="#555555" alink="#77003b">
-<!--#if manage_tabs-->
-<!--#var manage_tabs-->
-<!--#/if manage_tabs-->
+<dtml-if manage_tabs>
+<dtml-var manage_tabs>
+</dtml-if manage_tabs>
 <p>
 Use this view to select permissions used by this class.
 When setting permissions for individual methods or property sheets, 
@@ -29,9 +30,9 @@ you will be able to select from class permissions and inherited permissions.
 <input type=submit value="   Change   ">
 </td>
 <td valign=top>
-  <!--#in classInheritedPermissions sort-->
-    <em><!--#var sequence-item--></em><br>
-  <!--#/in-->
+  <dtml-in classInheritedPermissions sort>
+    <em><dtml-var sequence-item></em><br>
+  </dtml-in>
 </td>
 </tr>
 </table>

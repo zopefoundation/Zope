@@ -1,18 +1,19 @@
-<HTML>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML lang="en">
 <HEAD>
-<TITLE>Add <!--#var Kind--></TITLE>
+<TITLE>Add <dtml-var Kind></TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
-<H2>Add <!--#var Kind--></H2>
+<H2>Add <dtml-var Kind></H2>
 
 <P>
- You can create a new <!--#var kind--> in the system using the form below. 
- Select an <!--#var kind--> from your local computer by clicking the
- <em>Browse</em> button. The <!--#var kind--> you select will be uploaded
+ You can create a new <dtml-var kind> in the system using the form below. 
+ Select an <dtml-var kind> from your local computer by clicking the
+ <em>Browse</em> button. The <dtml-var kind> you select will be uploaded
  to the application.
 </P>
 
-<FORM ACTION="manage_add<!--#var Kind-->" METHOD="POST"
+<FORM ACTION="manage_add<dtml-var Kind>" METHOD="POST"
       ENCTYPE="multipart/form-data">
 <TABLE CELLSPACING="2">
 <TR>
@@ -33,7 +34,7 @@
 </TR>
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <STRONG><!--#var Kind--></STRONG>
+  <STRONG><dtml-var Kind></STRONG>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
   <INPUT TYPE="file" NAME="file" SIZE="25" VALUE="">

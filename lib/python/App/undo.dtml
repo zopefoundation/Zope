@@ -1,12 +1,13 @@
-<HTML>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML lang="en">
 <HEAD>
 <TITLE>Undo Changes</TITLE>
 </HEAD> 
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555" ALINK="#77003B">
-<!--#var manage_tabs-->
+<dtml-var manage_tabs>
 <P>
 
-<!--#if undoable_transactions-->
+<dtml-if undoable_transactions>
 
   <FORM ACTION="manage_undo_transactions" METHOD="POST">
   This application's transactional feature allows you to easily undo changes
@@ -22,41 +23,41 @@
     <tr><td colspan=2 align=center><INPUT TYPE="SUBMIT" VALUE=" Undo ">
         </td></tr>
     <tr><td></td></tr>
-    <!--#if first_transaction-->
+    <dtml-if first_transaction>
        <tr><td colspan=2 align=center>
-       <a href="manage_UndoForm?first_transaction:int=<!--#var
+       <a href="manage_UndoForm?first_transaction:int=<dtml-var
 	 expr="first_transaction*2-last_transaction"
-	 -->&last_transaction:int=<!--#var first_transaction
-         -->&PrincipiaUndoBatchSize:int=<!--#var PrincipiaUndoBatchSize
-         -->">
+	 >&last_transaction:int=<dtml-var first_transaction
+         >&PrincipiaUndoBatchSize:int=<dtml-var PrincipiaUndoBatchSize
+         >">
        Later Transactions</h>
        </td></tr>
-    <!--#/if-->
-    <!--#in undoable_transactions mapping-->
+    </dtml-if>
+    <dtml-in undoable_transactions mapping>
       <tr>
       <td valign=top><input type=checkbox name="transaction_info:list"
-	  value="<!--#var id html_quote-->"></td>
+	  value="<dtml-var id html_quote>"></td>
       <td valign=top>
-	  <strong><!--#var description--></strong> by <strong>
-          <!--#if user_name-->
-	    <!--#var user_name-->
-          <!--#else-->
+	  <strong><dtml-var description></strong> by <strong>
+          <dtml-if user_name>
+	    <dtml-var user_name>
+          <dtml-else>
             <em>Zope</em>
-          <!--#/if-->
-	  </strong> on <!--#var time fmt=Mon--> <!--#var time fmt=day--> at
-	  <!--#var time fmt=Time-->
+          </dtml-if>
+	  </strong> on <dtml-var time fmt=Mon> <dtml-var time fmt=day> at
+	  <dtml-var time fmt=Time>
       </td>
     </tr>
-    <!--#/in-->
+    </dtml-in>
     <tr><td colspan=2 align=center>
-    <!--#if expr="_.len(undoable_transactions) == PrincipiaUndoBatchSize"-->
-       <a href="manage_UndoForm?first_transaction:int=<!--#var
-	 last_transaction-->&last_transaction:int=<!--#var
+    <dtml-if expr="_.len(undoable_transactions) == PrincipiaUndoBatchSize">
+       <a href="manage_UndoForm?first_transaction:int=<dtml-var
+	 last_transaction>&last_transaction:int=<dtml-var
 	 expr="last_transaction+PrincipiaUndoBatchSize"
-         -->&PrincipiaUndoBatchSize:int=<!--#var PrincipiaUndoBatchSize
-         -->">
+         >&PrincipiaUndoBatchSize:int=<dtml-var PrincipiaUndoBatchSize
+         >">
        Earlier Transactions</a>
-    <!--#/if-->
+    </dtml-if>
     </td></tr>
     <tr><td></td></tr>
     <tr><td colspan=2 align=center><INPUT TYPE="SUBMIT" VALUE=" Undo ">
@@ -64,11 +65,11 @@
   </table>
   </FORM>
 
-<!--#else-->
+<dtml-else>
 
   There are no transactions that can be undone.
 
-<!--#/if-->
+</dtml-if>
 
 </BODY>
 </HTML>

@@ -1,11 +1,12 @@
-<HTML>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML lang="en">
 <HEAD>
 <TITLE>Upload</TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
-<!--#var manage_tabs-->
+<dtml-var manage_tabs>
 <P>
-You can update data in the <!--#var kind--> using the form below. 
+You can update data in the <dtml-var kind> using the form below. 
 Select a data file from your local computer by clicking the <EM>Browse</EM> 
 button. The file you select will be uploaded to the application.
 
@@ -14,7 +15,7 @@ button. The file you select will be uploaded to the application.
 <TABLE CELLSPACING="2">
 <TR>
   <TH ALIGN="LEFT" VALIGN="TOP">Id</TH>
-  <TD ALIGN="LEFT" VALIGN="TOP"><!--#var id--></TD>
+  <TD ALIGN="LEFT" VALIGN="TOP"><dtml-var id></TD>
 </TR>
 <TR>
   <TH ALIGN="LEFT" VALIGN="TOP">Data</TH>

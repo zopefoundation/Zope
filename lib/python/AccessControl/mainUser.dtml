@@ -1,32 +1,33 @@
-<HTML>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML lang="en">
 <HEAD>
 <TITLE>Contents</TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
-<!--#var manage_tabs-->
+<dtml-var manage_tabs>
 
 <FORM ACTION="manage_users" METHOD="POST">
-<!--#if user_names-->
+<dtml-if user_names>
 The following users have been defined. Click on a user to edit 
 that user.
 <P>
 <TABLE BORDER="0" CELLSPACING="0" CELLPADDING="2">
-<!--#in user_names-->
+<dtml-in user_names>
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <INPUT TYPE="CHECKBOX" NAME="names:list" VALUE="<!--#var sequence-item html_quote-->">
+  <INPUT TYPE="CHECKBOX" NAME="names:list" VALUE="<dtml-var sequence-item html_quote>">
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <A HREF="manage_users?name=<!--#var sequence-item fmt=url-quote-->&submit=Edit">
-  <IMG SRC="<!--#var SCRIPT_NAME-->/p_/User_icon" ALT="Click to edit user"
+  <A HREF="manage_users?name=<dtml-var sequence-item fmt=url-quote>&submit=Edit">
+  <IMG SRC="<dtml-var SCRIPT_NAME>/p_/User_icon" ALT="Click to edit user"
    BORDER="0">
    </A>
-  <A HREF="manage_users?name=<!--#var sequence-item fmt=url-quote-->&submit=Edit">
-  <!--#var sequence-item-->
+  <A HREF="manage_users?name=<dtml-var sequence-item fmt=url-quote>&submit=Edit">
+  <dtml-var sequence-item>
   </A>
   </TD>
 </TR>
-<!--#/in user_names-->
+</dtml-in user_names>
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP">
   </TD>
@@ -36,12 +37,12 @@ that user.
   </TD>
 </TR>
 </TABLE>
-<!--#else user_names-->
+<dtml-else user_names>
 <P>
 <EM>There are no users defined.</EM>
 <P>
 <INPUT TYPE="SUBMIT" NAME="submit" VALUE="Add...">
-<!--#/if user_names-->
+</dtml-if user_names>
 </FORM>
 </BODY>
 </HTML>

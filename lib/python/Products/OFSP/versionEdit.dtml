@@ -1,9 +1,10 @@
-<HTML>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML lang="en">
 <HEAD>
 <TITLE>Edit</TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
-<!--#var manage_tabs-->
+<dtml-var manage_tabs>
 
 <FORM ACTION="manage_edit" METHOD="POST">
 <TABLE CELLSPACING="2">
@@ -12,7 +13,7 @@
   <STRONG>Id</STRONG>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <!--#var id-->
+  <dtml-var id>
   </TD>
 </TR>
 <TR>
@@ -20,7 +21,7 @@
   <EM><STRONG>Title</STRONG></EM>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <INPUT TYPE="TEXT" NAME="title" SIZE="40" VALUE="<!--#var title html_quote-->">
+  <INPUT TYPE="TEXT" NAME="title" SIZE="40" VALUE="<dtml-var title html_quote>">
   </TD>
 </TR>
 <TR>

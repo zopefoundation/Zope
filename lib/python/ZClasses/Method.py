@@ -238,12 +238,12 @@ class ZClassMethodsSheet(
         return self.classDefinedAndInheritedPermissions()
 
 default_dm_html='''<html>
-<head><title><!--#var document_title--></title></head>
+<head><title><dtml-var document_title></title></head>
 <body bgcolor="#FFFFFF" LINK="#000099" VLINK="#555555">
-<!--#var manage_tabs-->
+<dtml-var manage_tabs>
 
-<P>This is the <!--#var document_id--> Document in
-the <!--#var title_and_id--> Folder.</P>
+<P>This is the <dtml-var document_id> Document in
+the <dtml-var title_and_id> Folder.</P>
 
 </body></html>
 '''

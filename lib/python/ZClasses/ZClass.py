@@ -607,30 +607,30 @@ addDefault="""<HTML>
 <HEAD><TITLE>Add %(id)s</TITLE></HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
 
-<!--#comment--> We add the new object by calling the class in
+<dtml-comment> We add the new object by calling the class in
                 a with tag.  Not only does this get the thing
                 added, it adds the new thing's attributes to
                 the DTML name space, so we can call methods
                 to initialize the object.
-<!--#/comment-->
+</dtml-comment>
 
-<!--#with "%(id)s.createInObjectManager(REQUEST['id'], REQUEST)"-->
+<dtml-with "%(id)s.createInObjectManager(REQUEST['id'], REQUEST)">
 
-  <!--#comment-->
+  <dtml-comment>
 
      You can ad code that modifies the new instance here.
 
      For example, if you have a property sheet that you want to update
      from form values, you can call it here:
 
-       <!--#call "propertysheets.Basic.manage_editProperties(
-                  REQUEST)"-->
+       <dtml-call "propertysheets.Basic.manage_editProperties(
+                  REQUEST)">
 
-  <!--#/comment-->
+  </dtml-comment>
 
-<!--#/with-->
+</dtml-with>
 
-<!--#comment--> Now we need to return something.  We do this via
+<dtml-comment> Now we need to return something.  We do this via
                 a redirect so that the URL is correct.
 
                 Unfortunately, the way we do this depends on
@@ -638,16 +638,16 @@ addDefault="""<HTML>
                 If we live in a product, we need to use DestinationURL
                 to decide where to go. If we live in a class,
                 DestinationURL won't be available, so we use URL2.
-<!--#/comment-->
-<!--#if DestinationURL-->
+</dtml-comment>
+<dtml-if DestinationURL>
 
- <!--#call "RESPONSE.redirect(
-       DestinationURL+'/manage_workspace')"-->
+ <dtml-call "RESPONSE.redirect(
+       DestinationURL+'/manage_workspace')">
 
-<!--#else-->
+<dtml-else>
 
-    <!--#call "RESPONSE.redirect(
-           URL2+'/manage_workspace')"-->
-<!--#/if-->
+    <dtml-call "RESPONSE.redirect(
+           URL2+'/manage_workspace')">
+</dtml-if>
 </body></html>
 """

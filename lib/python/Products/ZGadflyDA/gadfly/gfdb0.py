@@ -272,10 +272,10 @@ class Database0:
        
    def bindings(self, fromlist):
        """return (attdict, reldict, amb, ambatts) from fromlist = [(name,alias)...]
-          where reldict: alias --> tuplelist
-                attdict: attribute_name --> unique_relation
-                amb: dict of dottedname --> (rel, att)
-                ambatts: dict of ambiguous_name --> witness_alias
+          where reldict: alias > tuplelist
+                attdict: attribute_name > unique_relation
+                amb: dict of dottedname > (rel, att)
+                ambatts: dict of ambiguous_name > witness_alias
        """
        from string import upper
        rels = self.rels
@@ -584,7 +584,7 @@ class Relation0:
        self.filter = filter
        self.set_empty()
        self.add_tuples(tuples)
-       # indices map attname --> indices containing att
+       # indices map attname > indices containing att
        # relation to shadow and log (if non-null)
        self.log = None
        self.name = None # anonymous by default
@@ -921,7 +921,7 @@ class Index:
        self.unique = unique
        self.name = name
        self.atts = tuple(attributes)
-       # values --> tuples
+       # values > tuples
        self.index = {}
        self.dseqnums = {}
        

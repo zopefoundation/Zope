@@ -1,4 +1,5 @@
-<HTML><HEAD><TITLE>Changed: <!--#var title_or_id--></TITLE></HEAD>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML lang="en"><HEAD><TITLE>Changed: <dtml-var title_or_id></TITLE></HEAD>
 <BODY BGCOLOR="#FFFFFF">
 <FORM ACTION="manage_workspace" METHOD="POST">
 <TABLE BORDER="0" WIDTH="100%" CELLPADDING="10">
@@ -10,7 +11,7 @@
   <TD VALIGN="TOP">
   <BR><BR>
   <CENTER>
-  <!--#var title_and_id--> has been successfully edited.
+  <dtml-var title_and_id> has been successfully edited.
   </CENTER>
   </TD>
 </TR>

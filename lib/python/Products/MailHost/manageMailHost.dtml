@@ -1,44 +1,45 @@
-<HTML>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML lang="en">
 <HEAD>
 <TITLE>Edit</TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
-<!--#var manage_tabs-->
+<dtml-var manage_tabs>
 
 <FORM ACTION="manage_makeChanges" METHOD="POST">
 <TABLE CELLSPACING="2">
 <TR VALIGN="TOP">
   <TH ALIGN="LEFT">Id</TH>
-  <TD ALIGN="LEFT"><!--#var id--></TD>
+  <TD ALIGN="LEFT"><dtml-var id></TD>
 </TR>
 <TR VALIGN="TOP">
   <TH ALIGN="LEFT"><EM>Title</EM></TH>
   <TD ALIGN="LEFT">
-    <INPUT TYPE="TEXT" NAME="title" SIZE="40" VALUE="<!--#var title html_quote-->">
+    <INPUT TYPE="TEXT" NAME="title" SIZE="40" VALUE="<dtml-var title html_quote>">
   </TD>
 </TR>
 <TR VALIGN="TOP">
   <TH ALIGN="LEFT">Local Host</TH>
   <TD ALIGN="LEFT">
-    <INPUT TYPE="TEXT" NAME="localHost" SIZE="40" VALUE="<!--#var localHost html_quote-->">
+    <INPUT TYPE="TEXT" NAME="localHost" SIZE="40" VALUE="<dtml-var localHost html_quote>">
   </TD>
 </TR>
 <TR VALIGN="TOP">
   <TH ALIGN="LEFT">SMTP Host</TH>
   <TD ALIGN="LEFT">
-    <INPUT TYPE="TEXT" NAME="smtpHost" SIZE="40" VALUE="<!--#var smtpHost html_quote-->">
+    <INPUT TYPE="TEXT" NAME="smtpHost" SIZE="40" VALUE="<dtml-var smtpHost html_quote>">
   </TD>
 </TR>
 <TR VALIGN="TOP">
   <TH ALIGN="LEFT">SMTP Port</TH>
   <TD ALIGN="LEFT">
-    <INPUT TYPE="TEXT" NAME="smtpPort:int" SIZE="4" VALUE="<!--#var smtpPort html_quote-->">
+    <INPUT TYPE="TEXT" NAME="smtpPort:int" SIZE="4" VALUE="<dtml-var smtpPort html_quote>">
   </TD>
 </TR>
 <TR VALIGN="TOP">
  <TH ALIGN="LEFT">Max. Timeout</TH>
  <TD ALIGN="LEFT">
-   <INPUT TYPE="TEXT" NAME="timeout:float" SIZE="4" VALUE="<!--#var timeout html_quote-->">
+   <INPUT TYPE="TEXT" NAME="timeout:float" SIZE="4" VALUE="<dtml-var timeout html_quote>">
  </TD>
 </TR>
 

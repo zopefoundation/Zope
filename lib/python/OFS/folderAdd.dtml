@@ -1,4 +1,5 @@
-<HTML>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML lang="en">
 <HEAD>
 <TITLE>Add Folder</TITLE>
 </HEAD>
@@ -39,23 +40,23 @@ information for the Folder.
 </TR>
 <TR><TD COLSPAN="2"><BR></TD></TR>
 
-<!--#if "AUTHENTICATED_USER.has_permission('Add Documents, Images, and Files',this())"-->
+<dtml-if "AUTHENTICATED_USER.has_permission('Add Documents, Images, and Files',this())">
 <TR>
  <TD ALIGN="TOP" COLSPAN="2">
 <INPUT TYPE="CHECKBOX" NAME="createPublic:int" VALUE="1" CHECKED ID="cbCreatePublic">
   <STRONG><LABEL FOR="cbCreatePublic">Create public interface</LABEL></STRONG>
  </TD>
 </TR>
-<!--#/if-->
+</dtml-if>
 
-<!--#if "AUTHENTICATED_USER.has_permission('Add User Folders',this())"-->
+<dtml-if "AUTHENTICATED_USER.has_permission('Add User Folders',this())">
 <TR>
  <TD ALIGN="TOP" COLSPAN="2">
 <INPUT TYPE="CHECKBOX" NAME="createUserF:int" VALUE="1" CHECKED ID="cbCreateUserF">
   <STRONG><LABEL FOR="cbCreateUserF">Create user folder</LABEL></STRONG>
  </TD>
 </TR>
-<!--#/if-->
+</dtml-if>
 
 <TR>
 <TD></TD>

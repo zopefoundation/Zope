@@ -1,16 +1,17 @@
-<HTML>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML lang="en">
 <HEAD>
 <TITLE>Add ZClass</TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
 <H2>Add ZClass</H2>
 
-<!--#with "_(selected=[], unselected=[], baseclasses=[], id='', title='',
+<dtml-with "_(selected=[], unselected=[], baseclasses=[], id='', title='',
              meta_type='',
              all=manage_subclassableClassNames(),
-             )"-->
-<!--#with REQUEST-->
-<!--#with "_(
+             )">
+<dtml-with REQUEST>
+<dtml-with "_(
     selected=_.reorder(
        all,
        with   = baseclasses+
@@ -19,22 +20,22 @@
        without= (REQUEST.get('manage_addZClassForm','')==' <-    ' 
                  and   selected or [])
        ),
-    )"-->
-<!--#with "_(unselected=_.reorder(all, without=selected))"-->
+    )">
+<dtml-with "_(unselected=_.reorder(all, without=selected))">
 
 <FORM ACTION="." METHOD="GET"><TABLE>
 
 <TR>
   <TH ALIGN="LEFT" VALIGN="TOP">Id</TH>
   <TD ALIGN="LEFT" VALIGN="TOP" COLSPAN="3">
-    <INPUT TYPE="TEXT" NAME="id" SIZE="40" VALUE="<!--#var id html_quote-->">
+    <INPUT TYPE="TEXT" NAME="id" SIZE="40" VALUE="<dtml-var id html_quote>">
   </TD>
 </TR>
 
 <TR>
   <TH ALIGN="LEFT" VALIGN="TOP"><EM>Title</EM></TH>
   <TD ALIGN="LEFT" VALIGN="TOP" COLSPAN="3">
-    <INPUT TYPE="TEXT" NAME="title" SIZE="40" VALUE="<!--#var title html_quote-->">
+    <INPUT TYPE="TEXT" NAME="title" SIZE="40" VALUE="<dtml-var title html_quote>">
   </TD>
 </TR>
 
@@ -43,14 +44,14 @@
     Meta type</TH>
   <TD ALIGN="LEFT" VALIGN="TOP" COLSPAN="3">
     <INPUT TYPE="TEXT" NAME="meta_type" SIZE="40" 
-       VALUE="<!--#var meta_type html_quote-->">
+       VALUE="<dtml-var meta_type html_quote>">
   </TD>
 </TR>
 
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP" COLSPAN="2">
     <INPUT TYPE="CHECKBOX" NAME="CreateAFactory:int" VALUE="1"
-    <!--#if CreateAFactory-->CHECKED<!--#/if-->>
+    <dtml-if CreateAFactory>CHECKED</dtml-if>>
     <STRONG>Create constructor objects.</STRONG>
   </TD>
 </TR> 
@@ -61,17 +62,17 @@
   <TD ALIGN="LEFT" VALIGN="TOP">
      Unselected:<BR>
      <SELECT NAME="unselected:list" size=9 multiple>
-       <!--#in unselected-->
-         <OPTION VALUE="<!--#var sequence-key html_quote-->"
-	 ><!--#var sequence-item--></OPTION>
-       <!--#/in-->
+       <dtml-in unselected>
+         <OPTION VALUE="<dtml-var sequence-key html_quote>"
+	 ><dtml-var sequence-item></OPTION>
+       </dtml-in>
      </SELECT>
   </TD>
   <TD ALIGN="LEFT" VALIGN="MIDDLE">
-     <!--#in selected-->
+     <dtml-in selected>
         <input type=hidden name="baseclasses:list"
-	       value="<!--#var sequence-key html_quote-->"><br>
-     <!--#/in-->
+	       value="<dtml-var sequence-key html_quote>"><br>
+     </dtml-in>
      <INPUT TYPE="SUBMIT" NAME="manage_addZClassForm:method" 
             VALUE="    -> ">
      <BR>
@@ -81,10 +82,10 @@
   <TD ALIGN="LEFT" VALIGN="TOP">
      Selected:<br>
      <SELECT NAME="selected:list" size=9 multiple>
-       <!--#in selected-->
-         <OPTION VALUE="<!--#var sequence-key html_quote-->"
-         ><!--#var sequence-item--></OPTION>
-       <!--#/in-->
+       <dtml-in selected>
+         <OPTION VALUE="<dtml-var sequence-key html_quote>"
+         ><dtml-var sequence-item></OPTION>
+       </dtml-in>
      </SELECT>
   </TD>
 </TR>
@@ -95,10 +96,10 @@
 </TR>
 </TABLE></FORM>
 
-<!--#/with-->
-<!--#/with-->
-<!--#/with-->
-<!--#/with-->
+</dtml-with>
+</dtml-with>
+</dtml-with>
+</dtml-with>
 
 </BODY></HTML>
 

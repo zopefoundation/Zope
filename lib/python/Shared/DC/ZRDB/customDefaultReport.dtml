@@ -1,41 +1,41 @@
-<!--#in %(id)s size=50 start=query_start-->
-   <!--#if sequence-start-->
+<dtml-in %(id)s size=50 start=query_start>
+   <dtml-if sequence-start>
 
-      <!--#if previous-sequence-->
+      <dtml-if previous-sequence>
 
-        <a href="<!--#var URL--><!--#var sequence-query
-                 -->query_start=<!--#var
-                 previous-sequence-start-number-->">
-        (Previous <!--#var previous-sequence-size--> results)
+        <a href="<dtml-var URL><dtml-var sequence-query
+                 >query_start=<dtml-var
+                 previous-sequence-start-number>">
+        (Previous <dtml-var previous-sequence-size> results)
         </a>
 
-      <!--#/if previous-sequence-->
+      </dtml-if previous-sequence>
 
       %(else no_table)[<table border>
         %(heading)s
       %(else)]
 
-   <!--#/if sequence-start-->
+   </dtml-if sequence-start>
 
    %(row)s
 
-   <!--#if sequence-end-->
+   <dtml-if sequence-end>
 
       %(else no_table)[</table>%(else)]
 
-      <!--#if next-sequence-->
+      <dtml-if next-sequence>
 
-         <a href="<!--#var URL--><!--#var sequence-query
-            -->query_start=<!--#var
-            next-sequence-start-number-->">
-         (Next <!--#var next-sequence-size--> results)
+         <a href="<dtml-var URL><dtml-var sequence-query
+            >query_start=<dtml-var
+            next-sequence-start-number>">
+         (Next <dtml-var next-sequence-size> results)
          </a>
 
-      <!--#/if next-sequence-->
-   <!--#/if sequence-end-->
+      </dtml-if next-sequence>
+   </dtml-if sequence-end>
 
-<!--#else-->
+<dtml-else>
 
-  There was no data matching this <!--#var title_or_id--> query.
+  There was no data matching this <dtml-var title_or_id> query.
 
-<!--#/in-->
+</dtml-in>

@@ -1,9 +1,10 @@
-<HTML>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML lang="en">
 <HEAD>
 <TITLE>Import Object</TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
-<!--#var manage_tabs-->
+<dtml-var manage_tabs>
 
 <P>
 You can export Zope objects to a file in order to transfer
@@ -18,8 +19,8 @@ on the server.
 <TR>
   <TH ALIGN="LEFT" VALIGN="TOP">Export object id</TH>
   <TD ALIGH="LEFT" VALIGN="TOP">
-  <INPUT TYPE="TEXT" NAME="id" SIZE="25" VALUE="<!--#if ids--><!--#var 
-  "ids[0]" html_quote--><!--#/if-->">
+  <INPUT TYPE="TEXT" NAME="id" SIZE="25" VALUE="<dtml-if ids><dtml-var 
+  "ids[0]" html_quote></dtml-if>">
   </TD>
 </TR>
 <TR>

@@ -140,11 +140,11 @@ class ZCommonSheet(OFS.PropertySheets.PropertySheet, OFS.SimpleItem.Item):
 
     def _view_widget_for_type(self, t, id):
         if t not in ('lines', 'tokens'):
-            return '<!--#var %s-->' % id
+            return '<dtml-var %s>' % id
         return """
-        <!--#in %s-->
-           <!--#var sequence-item-->
-        <!--#/in %s-->
+        <dtml-in %s>
+           <dtml-var sequence-item>
+        </dtml-in %s>
         """ % (id, id)
 
     def manage_createView(self, id, title='', ps_view_type=None, REQUEST=None):
@@ -153,7 +153,7 @@ class ZCommonSheet(OFS.PropertySheets.PropertySheet, OFS.SimpleItem.Item):
         if ps_view_type == 'Edit':
             return self.manage_createEditor(id, title, REQUEST)
             
-        r=['<!--#var standard_html_header-->',
+        r=['<dtml-var standard_html_header>',
            '<table>']
         a=r.append
         for p in self.propertyMap():
@@ -165,7 +165,7 @@ class ZCommonSheet(OFS.PropertySheets.PropertySheet, OFS.SimpleItem.Item):
               )
             a('  </tr>')
         a('</table>')
-        a('<!--#var standard_html_footer-->')
+        a('<dtml-var standard_html_footer>')
         r=join(r,'\n')
         self.aq_parent.aq_parent.methods.manage_addDTMLMethod(id, title, r)
         if REQUEST is not None:
@@ -177,52 +177,52 @@ class ZCommonSheet(OFS.PropertySheets.PropertySheet, OFS.SimpleItem.Item):
             else: q=''
             return ('''
             <input name="%s:%s" size="35"
-                   value="<!--#var %s%s-->">'''
+                   value="<dtml-var %s%s>">'''
                     % (id, t, id, q)
                     )
         if t=='boolean':
             return ('''
             <input type="checkbox" name="%s:boolean" size="35"
-                <!--#if %s-->CHECKED<!--#/if-->>'''
+                <dtml-if %s>CHECKED</dtml-if>>'''
                     % (id, id)
                     )
                     
         if t=='tokens':
             return ('''
             <input type="text" name="%s:tokens" size="35"
-               value="<!--#in %s--><!--#var sequence-item--> <!--#endin-->">'''
+               value="<dtml-in %s><dtml-var sequence-item> </dtml-in>">'''
                     % (id, id)
                     )
                     
         if t=='text':
             return ('''
-            <textarea name="%s:text" rows="6" cols="35"><!--#var %s
-            --></textarea>'''
+            <textarea name="%s:text" rows="6" cols="35"><dtml-var %s
+            ></textarea>'''
                     % (id, id)
                     )
                     
         if t=='lines':
             return ('''
-            <textarea name="%s:lines" rows="6" cols="35"><!--#in %s
-            --><!--#var sequence-item-->\n<!--#/in--></textarea>'''
+            <textarea name="%s:lines" rows="6" cols="35"><dtml-in %s
+            ><dtml-var sequence-item>\n</dtml-in></textarea>'''
                     % (id, id) 
                     )
 
                     
         if t=='selection':
             return ('''
-            <!--#if "_.has_key('%(id)s')"-->
+            <dtml-if "_.has_key('%(id)s')">
             <select name="%(id)s">
-              <!--#in "_.string.split('%(select_variable)s')"-->
+              <dtml-in "_.string.split('%(select_variable)s')">
                 <option
-                  <!--#if "_['sequence-item']=='%(id)s'"-->
-                  SELECTED<!--#/if-->
-                  ><!--#var sequence-item--></option>
-              <!--#/in-->
+                  <dtml-if "_['sequence-item']=='%(id)s'">
+                  SELECTED</dtml-if>
+                  ><dtml-var sequence-item></option>
+              </dtml-in>
             </select>
-            <!--#else-->
+            <dtml-else>
               No value for %(id)s
-            <!--#/if-->'''            
+            </dtml-if>'''            
                     % p
                     )
 
@@ -236,9 +236,9 @@ class ZCommonSheet(OFS.PropertySheets.PropertySheet, OFS.SimpleItem.Item):
     def manage_createEditor(self, id, title='', REQUEST=None):
         """Create an edit interface for a property sheet
         """
-        r=['<html><head><title><!--#var title_or_id--></title></head>',
+        r=['<html><head><title><dtml-var title_or_id></title></head>',
            '<body bgcolor="#FFFFFF" link="#000099" vlink="#555555">',
-           '<!--#var manage_tabs-->',
+           '<dtml-var manage_tabs>',
            '<form action="propertysheets/%s/manage_editProperties"><table>'
            % self.id]
         a=r.append

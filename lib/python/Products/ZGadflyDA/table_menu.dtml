@@ -1,5 +1,5 @@
-<!--#var standard_html_header-->
-<a href="tableNamed/<!--#var Name-->/manage_designInput">Design Input *</a>
-<a href="tableNamed/<!--#var Name-->/manage_designUpdate">Design Update *</a>
-<a href="tableNamed/<!--#var Name-->/manage_designDelete">Design Delete</a>
-<!--#var standard_html_footer-->
+<dtml-var standard_html_header>
+<a href="tableNamed/<dtml-var Name>/manage_designInput">Design Input *</a>
+<a href="tableNamed/<dtml-var Name>/manage_designUpdate">Design Update *</a>
+<a href="tableNamed/<dtml-var Name>/manage_designDelete">Design Delete</a>
+<dtml-var standard_html_footer>

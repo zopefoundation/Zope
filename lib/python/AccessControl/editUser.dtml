@@ -1,9 +1,10 @@
-<HTML>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML lang="en">
 <HEAD>
 <TITLE>Change User</TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
-<!--#var manage_tabs-->
+<dtml-var manage_tabs>
 
 <FORM ACTION="manage_users" METHOD="POST">
 <TABLE>
@@ -12,14 +13,14 @@
 <STRONG>Name</STRONG>
 </TD>
 <TD VALIGN="TOP">
-<!--#var expr="user.name"-->
+<dtml-var expr="user.name">
 </TD>
 </TR>
 <TR><TD COLSPAN=2>&nbsp;</TD></TR>
-<!--#if remote_user_mode__-->
-  <INPUT TYPE="HIDDEN" NAME="password" value="<!--#var password html_quote-->">
-  <INPUT TYPE="HIDDEN" NAME="confirm"  value="<!--#var password html_quote-->">
-<!--#else-->
+<dtml-if remote_user_mode__>
+  <INPUT TYPE="HIDDEN" NAME="password" value="<dtml-var password html_quote>">
+  <INPUT TYPE="HIDDEN" NAME="confirm"  value="<dtml-var password html_quote>">
+<dtml-else>
 <TR>
 <TD VALIGN="TOP">
 <STRONG>New Password</STRONG>
@@ -36,7 +37,7 @@
 <INPUT TYPE="PASSWORD" NAME="confirm" SIZE="40">
 </TD>
 </TR>
-<!--#/if-->
+</dtml-if>
 <TR><TD COLSPAN=2>&nbsp;</TD></TR>
 <TR>
 <TD VALIGN="TOP">
@@ -44,7 +45,7 @@
 </TD>
 <TD VALIGN="TOP">
 <INPUT TYPE="TEXT" NAME="domains:tokens" SIZE="40"
-  VALUE="<!--#if expr="user.domains"--><!--#in expr="user.domains"--><!--#var sequence-item html_quote--> <!--#/in--><!--#/if-->">
+  VALUE="<dtml-if expr="user.domains"><dtml-in expr="user.domains"><dtml-var sequence-item html_quote> </dtml-in></dtml-if>">
 </TD>
 </TR>
 
@@ -54,19 +55,19 @@
 </TD>
 <TD VALIGN="TOP">
 <SELECT NAME="roles:list" SIZE="5" MULTIPLE>
-<!--#in valid_roles-->
-<!--#if expr="_vars['sequence-item'] != 'Anonymous'"-->
-<!--#if expr="_vars['sequence-item'] != 'Shared'"-->
-<!--#if expr="_vars['sequence-item'] in user.roles"-->
-<OPTION VALUE="<!--#var sequence-item html_quote-->" SELECTED><!--#var sequence-item-->
-<!--#else-->
-<OPTION VALUE="<!--#var sequence-item html_quote-->"><!--#var sequence-item-->
-<!--#/if-->
-<!--#/if-->
-<!--#/if-->
-<!--#/in valid_roles-->
+<dtml-in valid_roles>
+<dtml-if expr="_vars['sequence-item'] != 'Anonymous'">
+<dtml-if expr="_vars['sequence-item'] != 'Shared'">
+<dtml-if expr="_vars['sequence-item'] in user.roles">
+<OPTION VALUE="<dtml-var sequence-item html_quote>" SELECTED><dtml-var sequence-item>
+<dtml-else>
+<OPTION VALUE="<dtml-var sequence-item html_quote>"><dtml-var sequence-item>
+</dtml-if>
+</dtml-if>
+</dtml-if>
+</dtml-in valid_roles>
 </SELECT>
-<INPUT TYPE="HIDDEN" NAME="name" VALUE="<!--#var expr="user.name" html_quote-->">
+<INPUT TYPE="HIDDEN" NAME="name" VALUE="<dtml-var expr="user.name" html_quote>">
 <BR>
 <INPUT TYPE="SUBMIT" NAME="submit" VALUE="Change">
 </TD>

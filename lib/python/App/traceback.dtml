@@ -1,12 +1,13 @@
-<HTML><HEAD><TITLE><!--#var id--> Import Traceback</TITLE>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML lang="en"><HEAD><TITLE><dtml-var id> Import Traceback</TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
-<!--#var manage_tabs-->
+<dtml-var manage_tabs>
 
-<h3><!--#var id--> Import Traceback</h3>
+<h3><dtml-var id> Import Traceback</h3>
 
 <pre>
-<!--#var import_error_-->
+<dtml-var import_error_>
 </pre>
 
 </BODY>

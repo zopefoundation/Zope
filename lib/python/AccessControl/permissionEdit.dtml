@@ -1,24 +1,25 @@
-<html><head><title>Manage Permission</title></head>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html lang="en"><head><title>Manage Permission</title></head>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555" ALINK="#77003B">
-<!--#if manage_tabs-->
-<!--#var manage_tabs-->
-<!--#/if manage_tabs-->
+<dtml-if manage_tabs>
+<dtml-var manage_tabs>
+</dtml-if manage_tabs>
 
 <FORM ACTION="manage_permission" METHOD="POST">
 
 <input type=hidden name=permission_to_manage
-       value="<!--#var permission_to_manage html_quote-->">
+       value="<dtml-var permission_to_manage html_quote>">
 Roles assigned to permission
-<strong><em><!--#var permission_to_manage--></em></strong>:<br>
+<strong><em><dtml-var permission_to_manage></em></strong>:<br>
 <select name=roles:list multiple size=10>
-<!--#in expr="rolesOfPermission(permission_to_manage)" mapping=1-->
-    <option <!--#var selected-->><!--#var name--></option>
-<!--#/in-->
+<dtml-in expr="rolesOfPermission(permission_to_manage)" mapping=1>
+    <option <dtml-var selected>><dtml-var name></option>
+</dtml-in>
 </select>
-<!--#unless isTopLevelPrincipiaApplicationObject-->
+<dtml-unless isTopLevelPrincipiaApplicationObject>
   <br>Also use roles acquired from folders containing this object:
         <input type=checkbox name=acquire
-           <!--#var expr="acquiredRolesAreUsedBy(permission_to_manage)"-->>
-<!--#/unless-->
+           <dtml-var expr="acquiredRolesAreUsedBy(permission_to_manage)">>
+</dtml-unless>
 <p><input type=submit value="Change">
 </form></body></html>

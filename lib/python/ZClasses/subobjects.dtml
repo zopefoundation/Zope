@@ -1,6 +1,7 @@
-<html><head><title><!--#var title_or_id--></title></head>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html lang="en"><head><title><dtml-var title_or_id></title></head>
 <body bgcolor="#FFFFFF" link="#000099" vlink="#555555">
-<!--#var manage_tabs-->
+<dtml-var manage_tabs>
 
 <form action="manage_edit">
 <table>
@@ -12,20 +13,20 @@
   </td>
   <td>
     <select name="meta_types:list" size=10 multiple>
-      <!--#with "_(selected=selected_meta_types())"-->
-       <!--#in possible_meta_types mapping-->
+      <dtml-with "_(selected=selected_meta_types())">
+       <dtml-in possible_meta_types mapping>
           <option
-            <!--#if "name in selected"-->selected<!--#/if-->
-          ><!--#var name--></option>
-       <!--#/in-->
-      <!--#/with-->
+            <dtml-if "name in selected">selected</dtml-if>
+          ><dtml-var name></option>
+       </dtml-in>
+      </dtml-with>
     </select>
   </td>
 </tr>
 <tr><td colspan=2>
   Objects should appear in folder lists?
     <input type=checkbox name=isFolderish value="Y"
-      <!--#if isFolderish-->CHECKED<!--#/if-->
+      <dtml-if isFolderish>CHECKED</dtml-if>
     ></td></tr>
 </tr>
 <tr><td colspan=2 align=center>

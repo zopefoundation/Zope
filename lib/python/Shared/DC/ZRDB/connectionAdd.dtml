@@ -1,24 +1,25 @@
-<html>
-  <head><title>Add <!--#var default_title--></title></head>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html lang="en">
+  <head><title>Add <dtml-var default_title></title></head>
   <body bgcolor="#FFFFFF" link="#000099" vlink="#555555" alink="#77003B">
   
-    <h2>Add <!--#var default_title--></h2>
+    <h2>Add <dtml-var default_title></h2>
     
-    <form action="manage_addZ<!--#var database_type-->Connection"
+    <form action="manage_addZ<dtml-var database_type>Connection"
       method="POST">
       <table cellspacing="2">
 	<tr>
 	  <th align="LEFT" valign="TOP">Id</th>
 	  <td align="LEFT" valign="TOP">
             <input type="TEXT" name="id" size="40"
-                value="<!--#var default_id html_quote-->">
+                value="<dtml-var default_id html_quote>">
           </td>
 	</tr>
 	<tr>
 	  <th align="LEFT" valign="TOP"><em>Title</em></th>
 	  <td align="LEFT" valign="TOP">
             <input type="TEXT" name="title" size="40"
-                value="<!--#var default_title html_quote-->">
+                value="<dtml-var default_title html_quote>">
           </td>
 	</tr>
 	<tr>

@@ -1,40 +1,41 @@
-<html>
-  <head><title><!--#var title_or_id--> Status</title></head>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html lang="en">
+  <head><title><dtml-var title_or_id> Status</title></head>
   <body bgcolor="#FFFFFF" link="#000099" vlink="#555555" alink="#77003B">
-    <!--#var manage_tabs-->
+    <dtml-var manage_tabs>
     
-    <h2><!--#var title_or_id--> Status</h2>
+    <h2><dtml-var title_or_id> Status</h2>
 
       <table cellspacing="2">
 
         <tr>
 	  <th align="LEFT" valign="TOP">Id</th>
-	  <td align="LEFT" valign="TOP"><!--#var id--></td>
+	  <td align="LEFT" valign="TOP"><dtml-var id></td>
 	</tr>
 
 	<tr>
 	  <th align="LEFT" valign="TOP"><em>Title</em></th>
-	  <td align="LEFT" valign="TOP"><!--#var title--></td>
+	  <td align="LEFT" valign="TOP"><dtml-var title></td>
 	</tr>
 
 	<tr>
 	  <th align="LEFT" valign="TOP">Database Connection String</th>
-	  <td align="LEFT" valign="TOP"><!--#var connection_string--></td>
+	  <td align="LEFT" valign="TOP"><dtml-var connection_string></td>
 	</tr>
 
 <tr></tr><tr>
 <td colspan=2>
-<!--#if connected-->
+<dtml-if connected>
   The database connection is <em>open</em>.<br>
   <form action="manage_close_connection" method="get">
      <input type="SUBMIT" value="Close Database Connection">
   </form>
-<!--#else-->
+<dtml-else>
   The database connection is <em>not open</em>.<br>
   <form action="manage_open_connection" method="get">
      <input type="SUBMIT" value="Open Database Connection">
   </form>
-<!--#/if-->
+</dtml-if>
 </td>
 <tr>
   </table>

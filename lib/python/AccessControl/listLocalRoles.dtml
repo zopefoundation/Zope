@@ -1,23 +1,24 @@
-<html>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html lang="en">
 <head>
 <title>Manage Local Roles</title>
 </head>
 <body bgcolor="#FFFFFF" link="#000099" vlink="#555555" alink="#77003B">
-<!--#if manage_tabs-->
-<!--#var manage_tabs-->
-<!--#endif-->
+<dtml-if manage_tabs>
+<dtml-var manage_tabs>
+</dtml-if>
 
-<!--#if stat-->
+<dtml-if stat>
 <hr>
-<font color="red"><!--#var stat--></font>
+<font color="red"><dtml-var stat></font>
 <hr>
-<!--#endif-->
+</dtml-if>
 
 <p>
 <strong>Local roles</strong> allow you to give particular users extra roles 
 in the context of this object, in addition to the roles they already have. 
 
-<!--#if has_local_roles-->
+<dtml-if has_local_roles>
 <br>
 The following users have been given local roles. To modify the local roles 
 given to a particular user, click on the name of the user. To remove all 
@@ -26,19 +27,19 @@ and click the <em>Remove</em> button.
 </p>
 <form action="manage_delLocalRoles" method="POST">
 <table cellspacing="2" border="0">
-<!--#in get_local_roles-->
+<dtml-in get_local_roles>
 <tr>
   <td align="left" valign="top">
-  <input type="checkbox" name="userids:list" value="<!--#var sequence-key html_quote-->">
+  <input type="checkbox" name="userids:list" value="<dtml-var sequence-key html_quote>">
   </td>
   <td align="left" valign="top">
-  <a href="manage_editLocalRoles?userid=<!--#var sequence-key 
-   fmt="url-quote"-->"><!--#var sequence-key--></a> (<!--#in 
-   sequence-item--><!--#var sequence-item--><!--#unless 
-   sequence-end-->, <!--#/unless--><!--#endin-->)
+  <a href="manage_editLocalRoles?userid=<dtml-var sequence-key 
+   fmt="url-quote">"><dtml-var sequence-key></a> (<dtml-in 
+   sequence-item><dtml-var sequence-item><dtml-unless 
+   sequence-end>, </dtml-unless></dtml-in>)
   </td>
 </tr>
-<!--#endin-->
+</dtml-in>
 <tr>
   <td align="left" valign="top">
   </td>
@@ -48,7 +49,7 @@ and click the <em>Remove</em> button.
 </tr>
 </table>
 </form>
-<!--#endif-->
+</dtml-if>
 
 <p>
 To give a user extra roles when accessing this object (and its children), 
@@ -62,9 +63,9 @@ roles that should be given to that user from the <em>Roles</em> list.
   <strong>User</strong>
   <br>
   <select name="userid" size="5">
-  <!--#in get_valid_userids-->
-  <option value="<!--#var sequence-item html_quote-->"><!--#var sequence-item-->
-  <!--#endin-->
+  <dtml-in get_valid_userids>
+  <option value="<dtml-var sequence-item html_quote>"><dtml-var sequence-item>
+  </dtml-in>
   </select>
   </td>
 
@@ -72,11 +73,11 @@ roles that should be given to that user from the <em>Roles</em> list.
   <strong>Roles</strong>
   <br>
   <select name="roles:list" size="5" multiple>
-<!--#in valid_roles--><!--#if 
-"_vars['sequence-item'] not in ('Anonymous', 'Shared')"-->
-<option value="<!--#var sequence-item html_quote-->"><!--#var sequence-item-->
-<!--#endif-->
-<!--#endin-->
+<dtml-in valid_roles><dtml-if 
+"_vars['sequence-item'] not in ('Anonymous', 'Shared')">
+<option value="<dtml-var sequence-item html_quote>"><dtml-var sequence-item>
+</dtml-if>
+</dtml-in>
   </select>
   </td>
 </tr>

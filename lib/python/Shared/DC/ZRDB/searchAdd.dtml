@@ -1,4 +1,5 @@
-<HTML><HEAD><TITLE>Add a Search Interface</TITLE></HEAD>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML lang="en"><HEAD><TITLE>Add a Search Interface</TITLE></HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
 
 <H2>Add a Search Interface</H2>
@@ -23,9 +24,9 @@ report and search form objects that will be created.
             
 <tr>    <th align='LEFT'>Select one<br>or more<br>searchable objects</th>
         <td align='LEFT'><select name="queries:list" size=4 multiple>
-        <!--#in ZQueryIds-->
-           <option><!--#var sequence-item--></option>
-        <!--#/in-->
+        <dtml-in ZQueryIds>
+           <option><dtml-var sequence-item></option>
+        </dtml-in>
         </select></td></tr>
 <tr>    <th align='LEFT'>Report Id</th>
         <td align='LEFT'><input name="report_id" size="40"></td></tr>

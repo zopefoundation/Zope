@@ -1,11 +1,12 @@
-<HTML>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML lang="en">
 <HEAD>
 <TITLE>Security</TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555" ALINK="#77003B">
-<!--#if manage_tabs-->
-<!--#var manage_tabs-->
-<!--#/if manage_tabs-->
+<dtml-if manage_tabs>
+<dtml-var manage_tabs>
+</dtml-if manage_tabs>
 
 <P>
 The listing below shows the current security settings for this item. 
@@ -24,12 +25,12 @@ acquired permission settings may be augmented by selecting Roles for
 a permission in addition to selecting to acquire permissions.
 </P>
 
-<!--#if "_['id'] != 'acl_users'"-->
+<dtml-if "_['id'] != 'acl_users'">
 <P>
 You can define new Roles by using the <EM>User defined roles</EM>
 form below.
 </P>
-<!--#/if-->
+</dtml-if>
 
 <style type="text/css">
 <!--
@@ -37,79 +38,79 @@ td {
   font-size: 10pt;
   color: black;
 }
--->
+>
 </style>
 
-<!--#with expr="_.namespace(valid_roles=valid_roles())"-->
+<dtml-with expr="_.namespace(valid_roles=valid_roles())">
 <FORM ACTION="manage_changePermissions" METHOD="POST">
 <TABLE>
 <TR>
-  <!--#unless isTopLevelPrincipiaApplicationObject-->
+  <dtml-unless isTopLevelPrincipiaApplicationObject>
   <TD></TD>
-  <!--#/unless-->
+  </dtml-unless>
   <TD>
   <STRONG>
   Permission
   </STRONG>
   </TD>
-  <TD ALIGN="LEFT" COLSPAN="<!--#var expr="_.len(valid_roles)"-->">
+  <TD ALIGN="LEFT" COLSPAN="<dtml-var expr="_.len(valid_roles)">">
   <STRONG>
   Roles
   </STRONG>
   </TD>
 </TR>
 <TR>
-  <!--#unless isTopLevelPrincipiaApplicationObject-->
+  <dtml-unless isTopLevelPrincipiaApplicationObject>
   <TD>
   <STRONG>
   <a href="manage_acquiredForm">Acquire<BR>permission<BR>settings</a>?
   </STRONG>
   </TD>
-  <!--#/unless-->
+  </dtml-unless>
   <TD></TD>
-  <!--#in valid_roles-->
+  <dtml-in valid_roles>
   <TD CLASS="bold">
-  <A HREF="manage_roleForm?role_to_manage=<!--#
-     var sequence-item url_quote-->"><!--#var sequence-item--></A>
+  <A HREF="manage_roleForm?role_to_manage=<dtml-
+     var sequence-item url_quote>"><dtml-var sequence-item></A>
   </TD>
-  <!--#/in valid_roles-->
+  </dtml-in valid_roles>
 </TR>
 
-<!--#in permission_settings mapping-->
+<dtml-in permission_settings mapping>
 <TR>
-  <!--#unless isTopLevelPrincipiaApplicationObject-->
+  <dtml-unless isTopLevelPrincipiaApplicationObject>
   <TD ALIGN="CENTER">
-  <INPUT TYPE="checkbox" NAME="a<!--#var sequence-index-->" 
-   <!--#var acquire-->>
+  <INPUT TYPE="checkbox" NAME="a<dtml-var sequence-index>" 
+   <dtml-var acquire>>
   </TD>
-  <!--#/unless-->
+  </dtml-unless>
   <TD ALIGN="LEFT">
-      <A HREF="manage_permissionForm?permission_to_manage=<!--#
-               var name url_quote-->">
-      <!--#var name--></A>
+      <A HREF="manage_permissionForm?permission_to_manage=<dtml-
+               var name url_quote>">
+      <dtml-var name></A>
   </TD>
-  <!--#in roles mapping-->
+  <dtml-in roles mapping>
   <TD ALIGN="CENTER">
-     <INPUT TYPE="CHECKBOX" NAME="<!--#var name-->" <!--#var checked-->>
+     <INPUT TYPE="CHECKBOX" NAME="<dtml-var name>" <dtml-var checked>>
   </TD>
-  <!--#/in-->
+  </dtml-in>
 </TR>
 
-<!--#/in permission_settings-->
+</dtml-in permission_settings>
 <TR>
-<!--#if isTopLevelPrincipiaApplicationObject-->
-<TD COLSPAN="<!--#var expr="_.len(valid_roles)+1"-->" ALIGN="CENTER">
-<!--#else-->
-<TD COLSPAN="<!--#var expr="_.len(valid_roles)+2"-->" ALIGN="CENTER">
-<!--#/if-->
+<dtml-if isTopLevelPrincipiaApplicationObject>
+<TD COLSPAN="<dtml-var expr="_.len(valid_roles)+1">" ALIGN="CENTER">
+<dtml-else>
+<TD COLSPAN="<dtml-var expr="_.len(valid_roles)+2">" ALIGN="CENTER">
+</dtml-if>
 <INPUT TYPE="SUBMIT" VALUE="Change">
 </TD>
 </TR>
 </TABLE>
 </FORM>
-<!--#/with-->
+</dtml-with>
 
-<!--#if "_['id'] != 'acl_users'"-->
+<dtml-if "_['id'] != 'acl_users'">
 <P> 
 <FORM ACTION="manage_defined_roles" METHOD="POST">
 <TABLE CELLPADDING="2">
@@ -130,23 +131,23 @@ td {
   <INPUT TYPE="SUBMIT" NAME="submit" VALUE="Add Role">
   </TD>
 </TR>
-<!--#if userdefined_roles-->
+<dtml-if userdefined_roles>
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP">
   <SELECT NAME="roles:list">
-  <!--#in userdefined_roles-->
-  <OPTION VALUE="<!--#var sequence-item html_quote-->"><!--#var sequence-item-->
-  <!--#/in userdefined_roles-->
+  <dtml-in userdefined_roles>
+  <OPTION VALUE="<dtml-var sequence-item html_quote>"><dtml-var sequence-item>
+  </dtml-in userdefined_roles>
   </SELECT>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
   <INPUT TYPE="SUBMIT" NAME="submit" VALUE="Delete Role">
   </TD>
 </TR>
-<!--#/if userdefined_roles-->
+</dtml-if userdefined_roles>
 </TABLE>
 </FORM>
-<!--#/if-->
+</dtml-if>
 
 
 </BODY>

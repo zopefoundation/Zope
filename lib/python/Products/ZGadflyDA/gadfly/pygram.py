@@ -887,21 +887,21 @@ def unMarshalpygram():
 #    "eg, for top_stmt, conjoin two smt lists"
 #    return list[0] + list[1]
 #
-## file_input -->zeroth
+## file_input >zeroth
 #
 ## simple, compound, one_small, small_semi: echol
 #def echol(list, Context):
 #    return list
 #
-## more_small --> seq_sep
+## more_small > seq_sep
 #def seq_sep(list, Context):
 #    list[0].append(list[2])
 #    return list[0]
 #
 ## smexpr, smassn, smpring, smdel, smflow, smimport, smglobal, smexec
-##  --> zeroth
+##  > zeroth
 #
-## cmif, cmwhile, cmfor, cmtry, cmdef, cmclass --> zeroth
+## cmif, cmwhile, cmfor, cmtry, cmdef, cmclass > zeroth
 #
 #
 #def BindRules(pyg):

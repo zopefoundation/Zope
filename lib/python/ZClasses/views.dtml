@@ -1,25 +1,26 @@
-<html><head><title><!--#var title_or_id--></title></head>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html lang="en"><head><title><dtml-var title_or_id></title></head>
 <body bgcolor="#FFFFFF" link="#000099" vlink="#555555">
-<!--#var manage_tabs-->
+<dtml-var manage_tabs>
 
 <form action=".">
 <table>
 
-<!--#in data mapping-->
+<dtml-in data mapping>
   <tr>
      <td><input type=checkbox name="selected:list"
-                value="<!--#var label html_quote-->"></td>
-     <th align=left valign=top><!--#var label html_quote--></th>
+                value="<dtml-var label html_quote>"></td>
+     <th align=left valign=top><dtml-var label html_quote></th>
      <td align=left valign=top>
        <select name="actions:list">
-         <!--#in zclass_candidate_view_actions-->
+         <dtml-in zclass_candidate_view_actions>
            <option
-              <!--#if "_['sequence-item'] == action"-->SELECTED
-              <!--#/if-->><!--#var sequence-item--></option>
-         <!--#/in-->
+              <dtml-if "_['sequence-item'] == action">SELECTED
+              </dtml-if>><dtml-var sequence-item></option>
+         </dtml-in>
        </select></td>
   </tr>
-<!--#/in-->
+</dtml-in>
 <tr><td colspan=3 align=center>
     <input type=submit value=" Change " name="manage_edit:method">
     <input type=submit value=" Delete " name="manage_delete:method">
@@ -32,9 +33,9 @@
   <th align=left valign=top>New: <input type=text name="label" size=20></th>
   <td align=left valign=top>
     <select name=action>
-      <!--#in zclass_candidate_view_actions-->
-	   <option><!--#var sequence-item--></option>
-      <!--#/in-->
+      <dtml-in zclass_candidate_view_actions>
+	   <option><dtml-var sequence-item></option>
+      </dtml-in>
     </select></td>
 </tr>
 <tr><td colspan=2 align=center>

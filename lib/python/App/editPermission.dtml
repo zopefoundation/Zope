@@ -1,19 +1,20 @@
-<html><head><title>Change a permission</title></head>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html lang="en"><head><title>Change a permission</title></head>
 <body bgcolor="#FFFFFF" link="#000099" vlink="#555555" alink="#77003B">
-<!--#var manage_tabs-->
+<dtml-var manage_tabs>
 
 <form action="manage_edit" method="POST">
 <table cellspacing="2">
 
   <tr>
     <th align="LEFT" valign="TOP">Id</th>
-    <td align="LEFT" valign="TOP"><!--#var id--></td>
+    <td align="LEFT" valign="TOP"><dtml-var id></td>
     </tr>
 
   <tr>
     <th align="LEFT" valign="TOP">Title</th>
     <td align="LEFT" valign="TOP"><input type="TEXT" name="title"
-     size="40" value="<!--#var title html_quote-->"></td>
+     size="40" value="<dtml-var title html_quote>"></td>
     </tr>
   
   <tr>

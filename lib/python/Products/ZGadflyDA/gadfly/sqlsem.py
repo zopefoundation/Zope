@@ -367,7 +367,7 @@ class BoundTuple:
    closed = 0 # true if equality constraints inferred
 
    def __init__(self, **bindings):
-       """bindings are name-->simpletuple associations."""
+       """bindings are name>simpletuple associations."""
        self.eqs = Graph()
        self.assns = Tuple()
        for (name, simpletuple) in bindings.items():
@@ -386,7 +386,7 @@ class BoundTuple:
        self.assns = kjbuckets.kjDict(aitems)
            
    def relbind(self, dict, db):
-       """return bindings of self wrt dict rel-->att"""
+       """return bindings of self wrt dict rel>att"""
        result = BoundTuple()
        e2 = result.eqs
        a2 = result.assns
@@ -823,7 +823,7 @@ class Count(Average):
 
 def aggregate(assignments, exprlist):
     """aggregates are a assignments with special
-       attribute None --> list of subtuple"""
+       attribute None > list of subtuple"""
     lexprs = len(exprlist)
     if lexprs<1:
        raise ValueError, "aggregate on no expressions?"
@@ -1267,7 +1267,7 @@ class TupleCollector:
        return join(l, ", ")
        
    def addbinding(self, attribute, expression):
-       """bind att-->expression."""
+       """bind att>expression."""
        self.order.append((attribute, expression) )
        self.attorder.append(attribute )
        self.exporder.append(expression)
@@ -2541,7 +2541,7 @@ class Selector:
        #self.union_spec = "DISTINCT" # default union mode
        self.relbindings = None # binding of relations
        self.unbound_set = None # unbound attributes
-       self.rel_atts = None # graph of alias-->attname bound in self
+       self.rel_atts = None # graph of alias>attname bound in self
        self.all_aggregate = 0
        if select_list!="*" and not group_list:
           if select_list.contains_aggregate:
@@ -2661,7 +2661,7 @@ class Selector:
        
    def plan_query(self):
        """generate a query plan (sequence of join operators)."""
-       rel_atts = self.rel_atts # rel-->attname
+       rel_atts = self.rel_atts # rel>attname
        where_pred = self.where_pred.detrivialize()
        #select_list = self.select_list
        # shortcut

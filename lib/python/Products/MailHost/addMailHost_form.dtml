@@ -1,4 +1,5 @@
-<HTML>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML lang="en">
 <HEAD>
 <TITLE>Add MailHost</TITLE>
 </HEAD>
@@ -37,7 +38,7 @@ when trying to send mail.
 <TR VALIGN="TOP">
   <TH ALIGN="LEFT">Local Host</TH>
   <TD ALIGN="LEFT">
-    <INPUT TYPE="TEXT" NAME="localhost" SIZE="40" VALUE="<!--#var localhost html_quote-->">
+    <INPUT TYPE="TEXT" NAME="localhost" SIZE="40" VALUE="<dtml-var localhost html_quote>">
   </TD>
 </TR>
 <TR VALIGN="TOP">

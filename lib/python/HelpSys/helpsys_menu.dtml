@@ -1,4 +1,5 @@
-<html>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html lang="en">
 <head>
 <title>Z Object Publishing Environment Help</title>
 </head>
@@ -7,7 +8,7 @@
 <tr>
   <td valign="top" nowrap>
   <a href="hs_main" target="hs_cframe">
-  <img src="<!--#var SCRIPT_NAME-->/<!--#var hs_eicon-->" border="0"
+  <img src="<dtml-var SCRIPT_NAME>/<dtml-var hs_eicon>" border="0"
    alt="Z Online Help"></a> 
   <strong>
   <a href="hs_main" target="hs_cframe">
@@ -17,17 +18,17 @@
   </td>
 </tr>
 </table>
-<!--#tree id=hs_id url=hs_url branches=hs_objectvalues nowrap=1-->
-<a href="<!--#var tree-item-url-->/hs_main" target="hs_cframe">
-<!--#if tree-item-expanded-->
-<img src="<!--#var SCRIPT_NAME-->/<!--#var hs_eicon-->" border="0" alt="click to view this item"></a> 
-<!--#else-->
-<img src="<!--#var SCRIPT_NAME-->/<!--#var hs_cicon-->" border="0" alt="click to view this item"></a> 
-<!--#endif-->
-<a href="<!--#var tree-item-url-->/hs_main" target="hs_cframe">
-<!--#var hs_title-->
+<dtml-tree id=hs_id url=hs_url branches=hs_objectvalues nowrap=1>
+<a href="<dtml-var tree-item-url>/hs_main" target="hs_cframe">
+<dtml-if tree-item-expanded>
+<img src="<dtml-var SCRIPT_NAME>/<dtml-var hs_eicon>" border="0" alt="click to view this item"></a> 
+<dtml-else>
+<img src="<dtml-var SCRIPT_NAME>/<dtml-var hs_cicon>" border="0" alt="click to view this item"></a> 
+</dtml-if>
+<a href="<dtml-var tree-item-url>/hs_main" target="hs_cframe">
+<dtml-var hs_title>
 </a>
-<!--#/tree-->
+</dtml-tree>
 
 </body>
 </html>

@@ -1,4 +1,5 @@
-<HTML><HEAD><TITLE>Add a SQL Method</TITLE>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML lang="en"><HEAD><TITLE>Add a SQL Method</TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
 <H2>Add a SQL Method</H2>
@@ -37,7 +38,7 @@ which the SQL Method will execute.
 <tr valign="top">    <th align='LEFT'><em>Arguments<em></th>
         <td align='LEFT'>
 	  <textarea name="arguments" cols="40" rows="4"></textarea>
-<!--<input name="arguments" size="40">--></td></tr>
+<!--<input name="arguments" size="40">></td></tr>
 <tr>    <td colspan=2 align='LEFT'><strong>Query template</strong><br>
             <textarea name="template:text" rows=9 cols=50 wrap="off">select *
 from data</textarea></td></tr>

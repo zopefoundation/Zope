@@ -1,25 +1,26 @@
-<html><head>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html lang="en"><head>
   <title>Create a Distribution Archive</title>
 </head><body bgcolor="#FFFFFF" link="#000099" vlink="#555555" alink="#77003B">
-<!--#var manage_tabs-->
+<dtml-var manage_tabs>
 
 <H2>Create a Distribution Archive</H2>
 
 <form action="manage_distribute"><table>
   <tr><th align="LEFT" valign="TOP">Version</th>
       <td align="LEFT" valign="TOP">
-        <input type=text name="version" value="<!--#var new_version html_quote-->">
+        <input type=text name="version" value="<dtml-var new_version html_quote>">
       </td>
   </tr>
   <tr><th align="LEFT" valign="TOP">Configurable objects</th>
       <td align="LEFT" valign="TOP">
         <select name="configurable_objects:list" size=10 multiple>
-        <!--#in objectItems-->
-           <option value="<!--#var sequence-key html_quote-->" <!--#
+        <dtml-in objectItems>
+           <option value="<dtml-var sequence-key html_quote>" <dtml-
               if "_['sequence-key'] in configurable_objects_"
-                -->SELECTED<!--#/if-->><!--#
-            var title_and_id--></option>
-        <!--#/in-->
+                >SELECTED</dtml-if>><dtml-
+            var title_and_id></option>
+        </dtml-in>
         </select>
       </td>
   </tr>

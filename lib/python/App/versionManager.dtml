@@ -1,28 +1,29 @@
-<HTML>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML lang="en">
 <HEAD>
 <TITLE>Manage Versions</TITLE>
 </HEAD> 
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555" ALINK="#77003B">
-<!--#var manage_tabs-->
+<dtml-var manage_tabs>
 <P>
 
-<!--#if version_info-->
+<dtml-if version_info>
 
-  <FORM ACTION="<!--#var URL1-->" METHOD="POST">
+  <FORM ACTION="<dtml-var URL1>" METHOD="POST">
   Select one or more versions below and then click on the &quot;Save&quot;
   button to save the versions or click on the &quot;Discard&quot; button to
   discard changes made in the versions.
 
   <table>
-    <!--#in version_info mapping-->
+    <dtml-in version_info mapping>
       <tr>
       <td valign=top><input type=checkbox name="versions:list"
-	  value="<!--#var id html_quote-->"></td>
+	  value="<dtml-var id html_quote>"></td>
       <td valign=top>
-         <a href="<!--#var SCRIPT_NAME-->/<!--#var id-->/manage_workspace"><!--#var id--></a>
+         <a href="<dtml-var SCRIPT_NAME>/<dtml-var id>/manage_workspace"><dtml-var id></a>
       </td>
     </tr>
-    <!--#/in-->
+    </dtml-in>
     <tr><td colspan=2 align=center>
     </td></tr>
     <tr><td></td></tr>
@@ -34,11 +35,11 @@
   </table>
   </FORM>
 
-<!--#else-->
+<dtml-else>
 
   There are no non-empty versions.
 
-<!--#/if-->
+</dtml-if>
 
 </BODY>
 </HTML>

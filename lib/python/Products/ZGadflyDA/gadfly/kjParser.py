@@ -773,7 +773,7 @@ class ParserObj:
   # on a rule.
   # Algorithm: determine the state at beginning of reduction
   #  and the next state indicated by the head nonterminal of the rule.
-  #  special case: empty stack and root nonterminal --> success.
+  #  special case: empty stack and root nonterminal > success.
   #
   def GotoState(self, rule):
      FSM = self.FSM
@@ -1005,9 +1005,9 @@ class FSMachine:
              else:
                 Mark = ToStateData[1]
              if Mark != ForbiddenMark:
-                print key, " --> ", map, " = ", ToStateData
+                print key, " > ", map, " = ", ToStateData
           else:
-             print key, " --> reduction to rule number ", map[0][1]
+             print key, " > reduction to rule number ", map[0][1]
 
   # what tokens does a state expect?
   def Expects(self, State):

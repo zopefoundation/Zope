@@ -1,9 +1,10 @@
-<HTML>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML lang="en">
   <HEAD>
     <TITLE>View Catalog Records</TITLE>
   </HEAD>
   <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
-    <!--#var manage_tabs-->
+    <dtml-var manage_tabs>
 
     <p> Subtransactions allow Zope to commit small parts of a
       transaction over a period of time instead of all at once.  For
@@ -47,8 +48,8 @@
       memory.  If this number is higher, the Catalog will index
       quickly but consume much more memory.</p>
 
-      Subtransaction threshold: <input name="threshold:int" value="<!--#var
-      threshold html_quote-->"><br> <input type=submit value=" Change ">
+      Subtransaction threshold: <input name="threshold:int" value="<dtml-var
+      threshold html_quote>"><br> <input type=submit value=" Change ">
 
     </dtml-if>
     </form>
@@ -57,12 +58,12 @@
     <h3>Index Status</h3>
 
     <ul>
-      <!--#in index_objects-->
+      <dtml-in index_objects>
       <li>
-	<!--#var "_.len(_['sequence-item'])"--> 
-	object are indexed in <b><!--#var "_['sequence-item'].id"--></b>
+	<dtml-var "_.len(_['sequence-item'])"> 
+	object are indexed in <b><dtml-var "_['sequence-item'].id"></b>
       </li>
-      <!--#/in-->
+      </dtml-in>
     </ul>
   </BODY>
 </HTML>

@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Database Connection
 
-$Id: DABase.py,v 1.8 1999/04/29 19:21:32 jim Exp $'''
-__version__='$Revision: 1.8 $'[11:-2]
+$Id: DABase.py,v 1.9 1999/11/03 18:56:33 sroberts Exp $'''
+__version__='$Revision: 1.9 $'[11:-2]
 
 from db import manage_DataSources
 import Shared.DC.ZRDB.Connection, sys
@@ -198,13 +198,13 @@ class TableBrowser(Browser, Acquisition.Implicit):
             n=c['Name']
             names.append(n)
             if s=='Argument':
-                values.append("<!--#sql-value %s type=%s-->'" %
+                values.append("<dtml-sql-value %s type=%s>'" %
                               (n, vartype(t)))
                 a='%s%s' % (n, boboType(t))
                 if d: a="%s=%s" % (a,d)
                 args.append(a)
             elif s=='Property':
-                values.append("<!--#sql-value %s type=%s-->'" %
+                values.append("<dtml-sql-value %s type=%s>'" %
                               (n, vartype(t)))
             else:
                 if isStringType(t):
