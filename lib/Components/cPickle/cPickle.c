@@ -1,5 +1,5 @@
 /*
-     $Id: cPickle.c,v 1.20 1997/02/19 14:52:46 jim Exp $
+     $Id: cPickle.c,v 1.21 1997/02/19 15:29:36 jim Exp $
 
      Copyright 
 
@@ -80,7 +80,6 @@ static char cPickle_module_documentation[] =
 #define LONG        'L'
 #define BININT2     'M'
 #define NONE        'N'
-#define BININT8     'O'
 #define PERSID      'P'
 #define BINPERSID   'Q'
 #define REDUCE      'R'
@@ -1869,38 +1868,6 @@ load_binint2(Unpicklerobject *self, PyObject *args) {
 
     return load_binintx(self, s, 2);
 }
-
-
-static int
-load_binint8(Unpicklerobject *self, PyObject *args) {
-    PyObject *l = 0;
-    char *end, *s;
-    int res = -1;
-
-    if ((*self->read_func)(self, &s, 8) < 0) return -1;
-
-    /* load a python int if we can */
-    if (sizeof(long) == 8) {
-        res = load_binintx(self, s, 8);
-        goto finally;
-    }
-
-    /* load a python long otherwise */
-    /* This is wrong!!!  Which is why we don't call this anymore. :) */
-    UNLESS(l = PyLong_FromString(s, &end, 0))
-        goto finally;
-
-    if (PyList_Append(self->stack, l) < 0)
-        goto finally;
-
-    res = 0;
-
-finally:
-    Py_XDECREF(l);
-
-    return res;
-}
-
     
 static int
 load_long(Unpicklerobject *self, PyObject *args) {
@@ -2975,11 +2942,6 @@ Unpickler_load(Unpicklerobject *self, PyObject *args) {
                     break;
                 continue;
 
-            case BININT8:
-                if (load_binint8(self, NULL) < 0)
-                    break;
-                continue;
-
             case LONG:
                 if (load_long(self, NULL) < 0)
                     break;
@@ -3545,7 +3507,7 @@ init_stuff(PyObject *module, PyObject *module_dict) {
 void
 initcPickle() {
     PyObject *m, *d;
-    char *rev="$Revision: 1.20 $";
+    char *rev="$Revision: 1.21 $";
 
     /* Create the module and add the functions */
     m = Py_InitModule4("cPickle", cPickle_methods,
