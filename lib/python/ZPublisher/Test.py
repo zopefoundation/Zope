@@ -162,9 +162,9 @@ Examples
             s
 
 
-$Id: Test.py,v 1.30 1999/03/10 00:15:52 klm Exp $
+$Id: Test.py,v 1.31 1999/06/29 18:24:43 jim Exp $
 '''
-__version__='$Revision: 1.30 $'[11:-2]
+__version__='$Revision: 1.31 $'[11:-2]
 
 import sys, traceback, profile, os, getopt, string
 from time import clock
@@ -238,17 +238,67 @@ def run(statement, *args):
         return prof.print_stats()
 
 
+def publish_module(module_name,
+                   stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr,
+                   environ=os.environ, debug=0, request=None, response=None,
+                   extra={}):
+    must_die=0
+    status=200
+    after_list=[None]
+    from Response import Response
+    from Request import Request
+    from Publish import publish
+    try:
+        try:
+            try:
+                if response is None:
+                    response=Response(stdout=stdout, stderr=stderr)
+                else:
+                    stdout=response.stdout
+                if request is None:
+                    request=Request(stdin, environ, response)
+            finally:
+                pass
+            response=request.response # could have changed!
+            for k, v in extra.items(): request[k]=v
+            response = publish(request, module_name, after_list, debug=debug)
+        except SystemExit, v:
+            if hasattr(sys, 'exc_info'): must_die=sys.exc_info()
+            else: must_die = SystemExit, v, sys.exc_traceback
+            response.exception(must_die)
+        except ImportError, v:
+            if type(v) is type(()) and len(v)==3: must_die=v
+            elif hasattr(sys, 'exc_info'): must_die=sys.exc_info()
+            else: must_die = SystemExit, v, sys.exc_traceback
+            response.exception(1, v)
+        except:
+            response.exception()
+            status=response.getStatus()
+        if response:
+            response=str(response)
+        if response: stdout.write(response)
+
+        # The module defined a post-access function, call it
+        if after_list[0] is not None: after_list[0]()
+
+    finally:
+        if request is not None: request.other={}
+
+    if must_die: raise must_die[0], must_die[1], must_die[2]
+    sys.exc_type, sys.exc_value, sys.exc_traceback = None, None, None
+    return status
+
 def publish_module_pm(module_name,
                       stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr,
-                      environ=os.environ, debug=0):
+                      environ=os.environ, debug=0,extra={}):
 
     from Response import Response
     from Request import Request
     from Publish import publish
-
     after_list=[None]
     response=Response(stdout=stdout, stderr=stderr)
     request=Request(stdin, environ, response)
+    for k, v in extra.items(): request[k]=v
     response = publish(request, module_name, after_list, debug=debug)
 
 
@@ -260,7 +310,8 @@ except:
 
 defaultModule='Main'
 def publish(script=None,path_info='/',
-            u=None,p=None,d=None,t=None,e=None,s=None,pm=0):
+            u=None,p=None,d=None,t=None,e=None,s=None,pm=0,
+            extra={}):
 
     profile=p
     debug=d
@@ -300,7 +351,6 @@ def publish(script=None,path_info='/',
 
     # We delay import to here, in case Publish is part of the
     # application distribution.
-    from Publish import publish_module
 
     if profile:
         import __main__
@@ -308,9 +358,11 @@ def publish(script=None,path_info='/',
         __main__.file=file
         __main__.env=env
         print profile
-        publish_module(file, environ=env, stdout=open('/dev/null','w'))
+        publish_module(file, environ=env, stdout=open('/dev/null','w'),
+                       extra=extra)
         c=("for i in range(%s): "
-           "publish_module(file, environ=env, stdout=open('/dev/null','w'))"
+           "publish_module(file, environ=env, stdout=open('/dev/null','w'),"
+           "extra=extra)"
            % repeat_count
            )
         if profile: run(c,profile)
@@ -371,22 +423,23 @@ def publish(script=None,path_info='/',
         '  algorithm.\n'
         '* Then type c<cr> to jump to published object call.'
         )
-        db.run('publish_module(file,environ=env,debug=1)',
+        db.run('publish_module(file,environ=env,debug=1,extra=extra)',
                Publish.__dict__,
-               {'file':file, 'env':env})
+               {'publish_module': publish_module,
+                'file':file, 'env':env, 'extra': extra})
     elif timeit:
         stdout=sys.stdout
         t= time(publish_module,file,
-                stdout=open('/dev/null','w'), environ=env)
+                stdout=open('/dev/null','w'), environ=env, extra=extra)
         stdout.write('%s milliseconds\n' % t)
     elif pm:
         stdout=sys.stdout
-        publish_module_pm(file, environ=env, stdout=stdout)
+        publish_module_pm(file, environ=env, stdout=stdout, extra=extra)
         print '\n%s\n' % ('_'*60)
     else:
         if silent: stdout=open('/dev/null','w')
         else: stdout=sys.stdout
-        publish_module(file, environ=env, stdout=stdout)
+        publish_module(file, environ=env, stdout=stdout, extra=extra)
         print '\n%s\n' % ('_'*60)
 
 if __name__ == "__main__": main()
