@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Shared classes and functions
 
-$Id: Aqueduct.py,v 1.43 2001/01/12 16:42:49 chrism Exp $'''
-__version__='$Revision: 1.43 $'[11:-2]
+$Id: Aqueduct.py,v 1.44 2001/01/15 16:07:39 brian Exp $'''
+__version__='$Revision: 1.44 $'[11:-2]
 
 import Globals, os
 from Globals import Persistent
@@ -99,7 +99,7 @@ from DocumentTemplate import HTML
 
 from string import strip, replace
 
-dtml_dir=Globals.package_home(globals()) + '/dtml'
+dtml_dir=os.path.join(Globals.package_home(globals()), 'dtml')
 
 InvalidParameter='Invalid Parameter'
 
