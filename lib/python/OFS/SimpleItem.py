@@ -107,8 +107,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.31 1999/01/27 19:11:33 brian Exp $'''
-__version__='$Revision: 1.31 $'[11:-2]
+$Id: SimpleItem.py,v 1.32 1999/01/27 22:10:31 brian Exp $'''
+__version__='$Revision: 1.32 $'[11:-2]
 
 import regex, sys, Globals, App.Management
 from DateTime import DateTime
@@ -284,7 +284,7 @@ class Item(CopySource, App.Management.Tabs):
             id=callable(obj.id) and obj.id() or obj.id
             url.append(id)
             obj=obj.aq_parent
-        url.append(self.REQUEST.script)
+        url.append(self.aq_acquire('REQUEST').script)
         url.reverse()
         return join(url, '/')
 
