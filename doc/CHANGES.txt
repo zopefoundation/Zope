@@ -32,6 +32,9 @@ Zope Changes
         the whole request in memory or just a chunk inside
         webdav.NullResource.PUT().
 
+      - RAMCacheManager: Allow invalidation of a cache entry from the
+        Statistics view in the ZMI
+
     Bugs fixed
 
       - ZPublisher: changed some hardcoded 'latin1' arguments to 'iso-8859-15'

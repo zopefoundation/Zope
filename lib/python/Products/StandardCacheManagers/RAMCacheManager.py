@@ -346,7 +346,7 @@ class RAMCacheManager (CacheManager, SimpleItem):
                                      'manage_stats',
                                      'getCacheReport',
                                      'sort_link',)),
-        ('Change cache managers', ('manage_editProps',), ('Manager',)),
+        ('Change cache managers', ('manage_editProps','manage_invalidate'), ('Manager',)),
         )
 
     manage_options = (
@@ -450,6 +450,20 @@ class RAMCacheManager (CacheManager, SimpleItem):
             newsr = not sort_reverse
         url = url + '&sort_reverse=' + (newsr and '1' or '0')
         return '<a href="%s">%s</a>' % (escape(url, 1), escape(name))
+
+    def manage_invalidate(self, paths, REQUEST=None):
+        """ ZMI helper to invalidate an entry """
+        for path in paths:
+            try:
+                ob = self.unrestrictedTraverse(path)
+            except (AttributeError, KeyError):
+                pass
+
+            ob.ZCacheable_invalidate()
+
+        if REQUEST is not None:
+            msg = 'Cache entries invalidated'
+            return self.manage_stats(manage_tabs_message=msg)
 
 Globals.default__class_init__(RAMCacheManager)
 
