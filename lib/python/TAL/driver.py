@@ -91,11 +91,13 @@ import sys
 
 import getopt
 
-import setpath                          # Local hack to tweak sys.path etc.
-
-# Use the ParsedXML product and its DOM implementation
-from Products.ParsedXML import Printer
-from Products.ParsedXML.DOM import Core, ExpatBuilder
+use_minidom = 0
+try:
+    import setpath                      # Local hack to tweak sys.path etc.
+    import Products.ParsedXML
+except ImportError:
+    sys.stderr.write("Using minidom\n")
+    use_minidom = 1
 
 # Import local classes
 from CopyingDOMVisitor import CopyingDOMVisitor
@@ -104,7 +106,7 @@ from DummyEngine import DummyEngine
 FILE = "test/test1.xml"
 
 def main():
-    noVersionTest = 0
+    noVersionTest = use_minidom
     macros = 0
     compile = 0
     try:
@@ -144,22 +146,40 @@ def main():
         printtree(doc)
 
 def parsefile(file):
-    return ExpatBuilder.parse(file, 1)
+    if use_minidom:
+        from xml.dom import minidom
+        return minidom.parse(file)
+    else:
+        from Products.ParsedXML.DOM import ExpatBuilder
+        return ExpatBuilder.parse(file, 1)
 
 def printtree(node, stream=None, encoding=None):
     if stream is None:
         stream = sys.stdout
-    Printer.PrintVisitor(node, stream, encoding)()
+    if use_minidom:
+        assert not encoding
+        node.writexml(stream)
+    else:
+        from Products.ParsedXML import Printer
+        Printer.PrintVisitor(node, stream, encoding)()
+
+def getdom():
+    if use_minidom:
+        from xml.dom import minidom
+        return minidom.DOMImplementation()
+    else:
+        from Products.ParsedXML.DOM import Core
+        return Core.theDOMImplementation
 
 def copytree(root, dom=None):
     if dom is None:
-        dom = Core.theDOMImplementation
+        dom = getdom()
     return CopyingDOMVisitor(root, dom)()
 
 def talizetree(root, dom=None, engine=None):
     from TALVisitor import TALVisitor
     if dom is None:
-        dom = Core.theDOMImplementation
+        dom = getdom()
     if engine is None:
         engine = DummyEngine()
     return TALVisitor(root, dom, engine)()
