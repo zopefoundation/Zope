@@ -257,7 +257,7 @@ class TextTopic(HelpTopic):
         
     def index_html(self, REQUEST=None):
         "View the Help Topic"
-        if Globals.DevelopmentMode:
+        if 0 and Globals.DevelopmentMode:
             try:    mtime=os.stat(self.file)
             except: mtime=0
             if mtime != self._v_last_read:
@@ -278,7 +278,7 @@ class STXTopic(TextTopic):
     """
     def index_html(self, REQUEST=None):
         """ View the STX Help Topic """
-        if Globals.DevelopmentMode:
+        if 0 and Globals.DevelopmentMode:
             try:    mtime=os.stat(self.file)
             except: mtime=0
             if mtime != self._v_last_read:
@@ -314,7 +314,7 @@ class ImageTopic(HelpTopic):
     
     def index_html(self, REQUEST, RESPONSE):
         "View the Help Topic"
-        if Globals.DevelopmentMode:
+        if 0 and Globals.DevelopmentMode:
             try:    mtime=os.stat(self.file)
             except: mtime=0
             if mtime != self._v_last_read:
