@@ -24,6 +24,17 @@ import whrandom,string, unittest
 # Stuff of Chris
 ################################################################################
 
+from AccessControl.SecurityManagement import newSecurityManager
+from AccessControl.SecurityManagement import noSecurityManager
+
+class DummyUser:
+
+    def __init__( self, name ):
+        self._name = name
+
+    def getUserName( self ):
+        return self._name
+
 
 class CatalogBase:
     def setUp(self):
@@ -34,7 +45,7 @@ class CatalogBase:
     def tearDown(self):
         self._vocabulary = self._catalog = None
 
-class TestAddDelColumn(unittest.TestCase,CatalogBase):
+class TestAddDelColumn(CatalogBase,unittest.TestCase):
     def testAdd(self):
         self._catalog.addColumn('id')
         assert self._catalog.schema.has_key('id') == 1, 'add column failed'
@@ -101,7 +112,9 @@ class TestZCatalogObject(unittest.TestCase):
 
     def testInstantiateWithoutVocab(self):
         v = Vocabulary.Vocabulary('Vocabulary', 'Vocabulary', globbing=1)
+        newSecurityManager( None, DummyUser( 'phred' ) )
         zc = ZCatalog.ZCatalog('acatalog')
+        noSecurityManager()
         assert hasattr(zc, 'Vocabulary')
         assert zc.getVocabulary().__class__ == v.__class__
 
