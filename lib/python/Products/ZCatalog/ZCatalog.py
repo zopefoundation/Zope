@@ -296,7 +296,7 @@ class ZCatalog(Folder, Persistent, Implicit):
         c_elapse = time.clock()
         
         words = 0
-        path=string.split(URL2, REQUEST.script)[1][1:]
+        path=urllib.unquote(string.split(URL2, REQUEST.script)[1])
         
         results = self.ZopeFindAndApply(REQUEST.PARENTS[1],
                                         obj_metatypes=obj_metatypes,
