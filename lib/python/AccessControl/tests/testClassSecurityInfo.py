@@ -10,22 +10,34 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-""" """
+""" Unit tests for ClassSecurityInfo.
+"""
 
-import os, sys, unittest, ZODB, Globals
-from AccessControl.SecurityInfo import ClassSecurityInfo
-from OFS.Folder import Folder
+import unittest
 
 
 class ClassSecurityInfoTests(unittest.TestCase):
 
 
-    def testSetPermissionDefault(self):
+    def _getTargetClass(self):
+
+        from AccessControl.SecurityInfo import ClassSecurityInfo
+        return ClassSecurityInfo
+
+    def test_SetPermissionDefault(self):
+
         # Test setting default roles for permissions.
 
+        import Globals  # XXX: avoiding import cycle
+        from App.class_init import default__class_init__
+        from ExtensionClass import Base
+
+        ClassSecurityInfo = self._getTargetClass()
+
         # Setup a test class with default role -> permission decls.
-        class Test(Folder):
-            """Test class"""
+        class Test(Base):
+            """Test class
+            """
             __ac_roles__ = ('Role A', 'Role B', 'Role C')
 
             meta_type = "Test"
@@ -43,7 +55,7 @@ class ClassSecurityInfoTests(unittest.TestCase):
                 pass
 
         # Do class initialization.
-        Globals.InitializeClass(Test)
+        default__class_init__(Test)
 
         # Now check the resulting class to see if the mapping was made
         # correctly. Note that this uses carnal knowledge of the internal
@@ -51,6 +63,7 @@ class ClassSecurityInfoTests(unittest.TestCase):
         object = Test()
         imPermissionRole = object.foo__roles__
         self.failUnless(len(imPermissionRole) == 4)
+
         for item in ('Manager', 'Role A', 'Role B', 'Role C'):
             self.failUnless(item in imPermissionRole)
 
@@ -60,8 +73,5 @@ def test_suite():
     suite.addTest(unittest.makeSuite(ClassSecurityInfoTests))
     return suite
 
-def main():
-    unittest.TextTestRunner().run(test_suite())
-
 if __name__ == '__main__':
-    main()
+    unittest.main(defaultTest='test_suite')
