@@ -250,7 +250,7 @@ int pcgiEnvironmentToResourceAssignment(pcgiResource *r)
                 else if ((strcmp(nam,"PCGI_HOST"))==0)
                     strcpy(r->sockhost, val);
                 else if ((strcmp(nam,"PCGI_INSERT_PATH"))==0 ||
-                        (strcmp(nam,"PCGI_WORKING_DIR")))
+                         (strcmp(nam,"PCGI_WORKING_DIR"))==0)
                 {
                     if (strlen(val) >= MAXPATH)
                     {
