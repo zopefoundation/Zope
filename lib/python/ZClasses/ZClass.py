@@ -539,8 +539,9 @@ class ZClass( Base
             except: durl=REQUEST['URL3']
             RESPONSE.redirect(durl+'/manage_workspace')
         else:
-            # get id from obj since btreefolder now picks a random id for IOBtreeFolders
-            return folder._getOb(i.id)
+            # An object is not guarenteed to have the id we passed in.
+            id = i.getId()
+            return folder._getOb(id)
         
     index_html=createInObjectManager
 
