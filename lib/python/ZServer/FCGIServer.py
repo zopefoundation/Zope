@@ -45,8 +45,8 @@ import DebugLogger
 from cStringIO import StringIO
 from tempfile import TemporaryFile
 import socket, string, os, sys, time
-from types import StringType
 import thread
+from types import StringTypes
 
 tz_for_log = compute_timezone_for_log()
 
@@ -558,7 +558,7 @@ class FCGIChannel(asynchat.async_chat):
         self.closed=1
         while self.producer_fifo:
             p=self.producer_fifo.first()
-            if p is not None and type(p) != StringType:
+            if p is not None and not isinstance(p, StringTypes):
                 p.more() # free up resources held by producer
             self.producer_fifo.pop()
         asyncore.dispatcher.close(self)

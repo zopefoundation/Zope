@@ -35,10 +35,10 @@ import sys
 import re
 import os
 import posixpath
-import types
 import thread
 import time
 import socket
+from types import StringTypes
 from cStringIO import StringIO
 
 from PubCore import handle
@@ -338,7 +338,7 @@ class zhttp_channel(http_channel):
             self.current_request=None
         while self.producer_fifo:
             p=self.producer_fifo.first()
-            if p is not None and type(p) != types.StringType:
+            if p is not None and not isinstance(p, StringTypes):
                 p.more() # free up resources held by producer
             self.producer_fifo.pop()
         dispatcher.close(self)
