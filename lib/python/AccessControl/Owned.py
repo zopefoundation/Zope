@@ -85,8 +85,8 @@
 __doc__='''Support for owned objects
 
 
-$Id: Owned.py,v 1.6 2000/10/12 16:55:21 amos Exp $'''
-__version__='$Revision: 1.6 $'[11:-2]
+$Id: Owned.py,v 1.7 2000/11/09 14:14:09 chrism Exp $'''
+__version__='$Revision: 1.7 $'[11:-2]
 
 import Globals, urlparse, SpecialUsers, ExtensionClass, string
 from AccessControl import getSecurityManager
@@ -176,7 +176,7 @@ class Owned(ExtensionClass.Base):
                 child.changeOwnership(user, 1)
             else:
                 # make ownership explicit
-                child._owner=child._owner
+                child._owner=new
             
         if old is not UnownableOwner:
             self._owner=new
