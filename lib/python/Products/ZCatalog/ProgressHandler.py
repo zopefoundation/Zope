@@ -76,9 +76,9 @@ class StdoutHandler:
 
     def report(self, current, *args, **kw):
         if current > 0:
-            seconds_so_far = time.time() - self._start
-            seconds_to_go  = seconds_so_far / current * (self._max - current)
             if current % self._steps == 0: 
+                seconds_so_far = time.time() - self._start
+                seconds_to_go  = seconds_so_far / current * (self._max - current)
                 self.output('%d/%d (%.2f%%) Estimated termination: %s' % \
                 (current, self._max, (100.0 * current / self._max), 
                  DateTime(time.time() + seconds_to_go)))
