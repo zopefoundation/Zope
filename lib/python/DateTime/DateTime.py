@@ -12,7 +12,7 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.74 $'[11:-2]
+__version__='$Revision: 1.75 $'[11:-2]
 
 
 import re,sys, os, math,  DateTimeZone
@@ -1582,19 +1582,6 @@ class DateTime:
     def __float__(self):
         """Convert to floating-point number of seconds since the epoch (gmt)"""
         return float(self._t)
-
-    def debugCompare(self, dt):
-        '''Compares the internal representation of the date with
-        the representation in dt.  Allows sub-millisecond variations.
-        Primarily for testing.'''
-        return self.millis() == dt.millis() and \
-               math.floor(self._t * 1000.0) == \
-               math.floor(dt._t * 1000.0) and \
-               math.floor(self._d * 86400000.0) == \
-               math.floor(dt._d * 86400000.0) and \
-               math.floor(self.time * 86400000.0) == \
-               math.floor(dt.time * 86400000.0)
-
 
     def _parse_iso8601(self,s):
         try:
