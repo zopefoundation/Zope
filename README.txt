@@ -56,7 +56,7 @@ Using Zope Components Separately
 
 Notes
 
-  * Zope requires Python 1.5.1. It may work with Python 1.5.2
+  * Zope requires Python 1.5.2.
   * Lots more documentation is coming.
   * Don't forget to check the Zope web site and mailing list.
   * Read the source, have fun!
