@@ -8,8 +8,8 @@
 #
 ############################################################################## 
 __doc__='''OFS
-$Id: __init__.py,v 1.7 1998/01/29 20:52:00 brian Exp $'''
-__version__='$Revision: 1.7 $'[11:-2]
+$Id: __init__.py,v 1.8 1998/02/09 17:25:41 jim Exp $'''
+__version__='$Revision: 1.8 $'[11:-2]
 
 import Session, DraftFolder
 from ImageFile import ImageFile
@@ -34,22 +34,6 @@ methods={
 #    'manage_addDraftFolder': DraftFolder.add,
     }
 
-permissions=(
-    {'name' : 'View management screens',
-     'items': ['manage_addDocumentForm','manage_addFolderForm',
-	      'manage_addImageForm', 'manage_addFileForm',
-	      'manage_addSessionForm', 'manage_addDraftFolderForm'
-	      ]
-     },
-    {'name' : 'Add objects',
-     'items': ['manage_addDocument','manage_addFolder',
-	      'manage_addImage', 'manage_addFile',
-	      'manage_addSession','manage_addDraftFolder',
-	      'manage_addUserFolder'
-	      ]
-     },
-    )
-
 misc_={
     'draft': ImageFile('images/DraftFolder.gif', globals()),
     'sup': ImageFile('images/DraftFolderControl.gif', globals()),
@@ -59,6 +43,9 @@ misc_={
 ############################################################################## 
 #
 # $Log: __init__.py,v $
+# Revision 1.8  1998/02/09 17:25:41  jim
+# *** empty log message ***
+#
 # Revision 1.7  1998/01/29 20:52:00  brian
 # Added eval support
 #
