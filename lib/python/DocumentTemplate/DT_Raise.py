@@ -65,8 +65,8 @@
 #   (540) 371-6909
 #
 ############################################################################ 
-__rcs_id__='$Id: DT_Raise.py,v 1.1 1998/03/04 18:19:56 jim Exp $'
-__version__='$Revision: 1.1 $'[11:-2]
+__rcs_id__='$Id: DT_Raise.py,v 1.2 1998/03/04 18:50:39 jim Exp $'
+__version__='$Revision: 1.2 $'[11:-2]
 
 from DT_Util import *
 import sys
@@ -86,7 +86,8 @@ class Raise:
 	expr=self.expr
 	if expr is None:
 		t=self.__name__
-		if __builtins__.has_key(t): t=__builtins__[t]
+		if t[-5:]=='Error' and __builtins__.has_key(t):
+		    t=__builtins__[t]
 	else:
 	    try: t=expr.eval(md)
 	    except: t='Invalid Error Type Expression'
@@ -102,31 +103,9 @@ class Raise:
 ##########################################################################
 #
 # $Log: DT_Raise.py,v $
+# Revision 1.2  1998/03/04 18:50:39  jim
+# *** empty log message ***
+#
 # Revision 1.1  1998/03/04 18:19:56  jim
 # added comment and raise tags
-#
-# Revision 1.8  1998/01/14 18:23:42  jim
-# Added expr to unless.
-#
-# Revision 1.7  1998/01/14 18:03:25  jim
-# Added Unless tag as replacement for else tag.
-#
-# Revision 1.6  1997/12/31 20:32:11  jim
-# If and else blocks now cache variables.
-#
-# Revision 1.5  1997/11/07 17:08:11  jim
-# Changed so exception is raised if a sequence cannot be gotten during
-# rendering.
-#
-# Revision 1.4  1997/09/25 18:56:38  jim
-# fixed problem in reporting errors
-#
-# Revision 1.3  1997/09/22 14:42:49  jim
-# added expr
-#
-# Revision 1.2  1997/09/08 15:35:40  jim
-# Fixed bug that caused else blocks to render if blocks.
-#
-# Revision 1.1  1997/08/27 18:55:42  jim
-# initial
 #
