@@ -54,10 +54,10 @@
 __doc__='''Sequence variables support
 
 
-$Id: DT_InSV.py,v 1.5 1998/09/02 14:35:53 jim Exp $'''
-__version__='$Revision: 1.5 $'[11:-2]
+$Id: DT_InSV.py,v 1.6 1998/09/08 16:06:09 jim Exp $'''
+__version__='$Revision: 1.6 $'[11:-2]
 
-from string import lower, upper, rfind
+from string import lower, rfind
 from math import sqrt
 TupleType=type(())
 try:
@@ -404,6 +404,9 @@ def opt(start,end,size,orphan,sequence):
 ############################################################################## 
 #
 # $Log: DT_InSV.py,v $
+# Revision 1.6  1998/09/08 16:06:09  jim
+# Got rid of some extra imports.
+#
 # Revision 1.5  1998/09/02 14:35:53  jim
 # open source copyright
 #

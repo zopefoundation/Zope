@@ -54,10 +54,10 @@
 
 """Very Safe Python Expressions
 """
-__rcs_id__='$Id: VSEval.py,v 1.16 1998/09/02 21:06:07 jim Exp $'
-__version__='$Revision: 1.16 $'[11:-2]
+__rcs_id__='$Id: VSEval.py,v 1.17 1998/09/08 16:03:00 jim Exp $'
+__version__='$Revision: 1.17 $'[11:-2]
 
-from string import join, find, split, translate
+from string import translate
 import string
 gparse=None
 
