@@ -85,10 +85,10 @@
 
 """Commonly used utility functions."""
 
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 import sys, os, time
-from string import split, rfind
+from string import rfind
 
 
 def rfc1123_date(ts=None, format='%a, %d %b %Y %H:%M:%S GMT'):
