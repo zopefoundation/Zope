@@ -155,7 +155,7 @@ class Product(Folder):
     import_error_=None
 
     def new_version(self,
-                    _intending=regex.compile("[.]?[0-9]+$").search,
+                    _intending=regex.compile("[.]?[0-9]+$").search, #TS
                     ):
         # Return a new version number based on the existing version.
         v=str(self.version)

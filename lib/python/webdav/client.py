@@ -1,6 +1,6 @@
 """HTTP 1.1 / WebDAV client library."""
 
-__version__='$Revision: 1.9 $'[11:-2]
+__version__='$Revision: 1.10 $'[11:-2]
 
 import sys, os, string, regex, time, types
 import socket, httplib, mimetools
@@ -10,7 +10,7 @@ from base64 import encodestring
 from cStringIO import StringIO
 from whrandom import random
 from urllib import quote
-from regsub import gsub
+
 
     
 
@@ -88,9 +88,8 @@ class Resource:
             return headers
         if atype=='Basic':
             headers['Authorization']=(
-                "Basic %s" %
-                gsub('\012','',encodestring('%s:%s' % (
-                    self.username,self.password))))
+                "Basic %s" % string.replace(encodestring('%s:%s' % (self.username,self.password)),
+					    '\012',''))
             return headers
         raise ValueError, 'Unknown authentication scheme: %s' % atype
 
@@ -503,7 +502,7 @@ class MultiPart:
             if hasattr(val,'name'):
                 ct, enc=guess_type(val.name)
                 if not ct: ct='application/octet-stream'
-                fn=gsub('\\\\','/',val.name)
+                fn=string.replace(val.name,'\\','/')
                 fn=fn[(string.rfind(fn,'/')+1):]
             else:
                 ct='application/octet-stream'

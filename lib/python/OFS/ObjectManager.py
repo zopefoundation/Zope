@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.76 1999/07/08 11:28:50 jim Exp $"""
+$Id: ObjectManager.py,v 1.77 1999/07/15 16:49:02 jim Exp $"""
 
-__version__='$Revision: 1.76 $'[11:-2]
+__version__='$Revision: 1.77 $'[11:-2]
 
 import App.Management, Acquisition, App.Undo, Globals, CopySupport
 import os, App.FactoryDispatcher, ts_regex, Products
@@ -98,7 +98,7 @@ from urllib import quote
 from cStringIO import StringIO
 import marshal
 
-bad_id=ts_regex.compile('[^a-zA-Z0-9-_~\,\. ]').match
+bad_id=ts_regex.compile('[^a-zA-Z0-9-_~\,\. ]').match #TS
 
 _marker=[]
 class ObjectManager(

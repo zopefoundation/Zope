@@ -170,7 +170,7 @@ Special symbology is used to indicate special constructs:
   Together with the previous rule this allows easy coding of references or
   end notes. 
 
-$Id: StructuredText.py,v 1.18 1999/03/24 00:03:18 klm Exp $'''
+$Id: StructuredText.py,v 1.19 1999/07/15 16:43:15 jim Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -222,6 +222,9 @@ $Id: StructuredText.py,v 1.18 1999/03/24 00:03:18 klm Exp $'''
 #   (540) 371-6909
 #
 # $Log: StructuredText.py,v $
+# Revision 1.19  1999/07/15 16:43:15  jim
+# Checked in Scott Robertson's thread-safety fixes.
+#
 # Revision 1.18  1999/03/24 00:03:18  klm
 # Provide for relative links, eg <a href="file_in_same_dir">whatever</a>,
 # as:
@@ -327,14 +330,13 @@ $Id: StructuredText.py,v 1.18 1999/03/24 00:03:18 klm Exp $'''
 #
 #
 # 
-
-import regex, regsub
-from regsub import gsub
+import ts_regex
+from ts_regex import gsub
 from string import split, join, strip, find
 
-indent_tab  =regex.compile('\(\n\|^\)\( *\)\t')
-indent_space=regex.compile('\n\( *\)')
-paragraph_divider=regex.compile('\(\n *\)+\n')
+indent_tab  =ts_regex.compile('\(\n\|^\)\( *\)\t')
+indent_space=ts_regex.compile('\n\( *\)')
+paragraph_divider=ts_regex.compile('\(\n *\)+\n')
 
 def untabify(aString):
     '''\
@@ -343,10 +345,11 @@ def untabify(aString):
     result=''
     rest=aString
     while 1:
-        start=indent_tab.search(rest)
-        if start >= 0:
-            lnl=len(indent_tab.group(1))
-            indent=len(indent_tab.group(2))
+	ts_results = indent_tab.search_group(rest, (1,2))
+        if ts_results:
+	    start, grps = ts_results
+            lnl=len(grps[0])
+            indent=len(grps[1])
             result=result+rest[:start]
             rest="\n%s%s" % (' ' * ((indent/8+1)*8),
                              rest[start+indent+1+lnl:])
@@ -390,9 +393,11 @@ def indent_level(aString):
     text='\n'+aString
     indent=l=len(text)
     while 1:
-        start=indent_space.search(text,start)
-        if start >= 0:
-            i=len(indent_space.group(1))
+
+	ts_results = indent_space.search_group(text, (1,2), start)
+        if ts_results:
+	    start, grps = ts_results
+            i=len(grps[0])
             start=start+i+1
             if start < l and text[start] != '\n':       # Skip blank lines
                 if not i: return (0,aString)
@@ -419,12 +424,12 @@ def structure(list):
         i=i+sublen
     return r
 
-bullet=regex.compile('[ \t\n]*[o*-][ \t\n]+\([^\0]*\)')
-example=regex.compile('[\0- ]examples?:[\0- ]*$')
-dl=regex.compile('\([^\n]+\)[ \t]+--[ \t\n]+\([^\0]*\)')
-nl=regex.compile('\n')
-ol=regex.compile('[ \t]*\(\([0-9]+\|[a-zA-Z]+\)[.)]\)+[ \t\n]+\([^\0]*\|$\)')
-olp=regex.compile('[ \t]*([0-9]+)[ \t\n]+\([^\0]*\|$\)')
+bullet=ts_regex.compile('[ \t\n]*[o*-][ \t\n]+\([^\0]*\)')
+example=ts_regex.compile('[\0- ]examples?:[\0- ]*$').search
+dl=ts_regex.compile('\([^\n]+\)[ \t]+--[ \t\n]+\([^\0]*\)')
+nl=ts_regex.compile('\n').search
+ol=ts_regex.compile('[ \t]*\(\([0-9]+\|[a-zA-Z]+\)[.)]\)+[ \t\n]+\([^\0]*\|$\)')
+olp=ts_regex.compile('[ \t]*([0-9]+)[ \t\n]+\([^\0]*\|$\)')
 
 
 optional_trailing_punctuation = '\(,\|\([.:?;]\)\)?'
@@ -474,7 +479,7 @@ class StructuredText:
                                      aStructuredString)
 
         self.level=level
-        paragraphs=regsub.split(untabify(aStructuredString),paragraph_divider)
+        paragraphs=ts_regex.split(untabify(aStructuredString),paragraph_divider)
         paragraphs=map(indent_level,paragraphs)
 
         self.structure=structure(paragraphs)
@@ -488,10 +493,10 @@ ctag_prefix="\([\0- (]\|^\)"
 ctag_suffix="\([\0- ,.:;!?)]\|$\)"
 ctag_middle="[%s]\([^\0- %s][^%s]*[^\0- %s]\|[^%s]\)[%s]"
 ctag_middl2="[%s][%s]\([^\0- %s][^%s]*[^\0- %s]\|[^%s]\)[%s][%s]"
-em    =regex.compile(ctag_prefix+(ctag_middle % (("*",)*6) )+ctag_suffix)
-strong=regex.compile(ctag_prefix+(ctag_middl2 % (("*",)*8))+ctag_suffix)
-under =regex.compile(ctag_prefix+(ctag_middle % (("_",)*6) )+ctag_suffix)
-code  =regex.compile(ctag_prefix+(ctag_middle % (("\'",)*6))+ctag_suffix)
+em    =ts_regex.compile(ctag_prefix+(ctag_middle % (("*",)*6) )+ctag_suffix)
+strong=ts_regex.compile(ctag_prefix+(ctag_middl2 % (("*",)*8))+ctag_suffix)
+under =ts_regex.compile(ctag_prefix+(ctag_middle % (("_",)*6) )+ctag_suffix)
+code  =ts_regex.compile(ctag_prefix+(ctag_middle % (("\'",)*6))+ctag_suffix)
         
 def ctag(s):
     if s is None: s=''
@@ -508,9 +513,9 @@ class HTML(StructuredText):
     '''\
 
     def __str__(self,
-                extra_dl=regex.compile("</dl>\n<dl>"),
-                extra_ul=regex.compile("</ul>\n<ul>"),
-                extra_ol=regex.compile("</ol>\n<ol>"),
+                extra_dl=ts_regex.compile("</dl>\n<dl>"),
+                extra_ul=ts_regex.compile("</ul>\n<ul>"),
+                extra_ol=ts_regex.compile("</ol>\n<ol>"),
                 ):
         '''\
         Return an HTML string representation of the structured text data.
@@ -563,40 +568,52 @@ class HTML(StructuredText):
         r=''
         for s in structure:
             # print s[0],'\n', len(s[1]), '\n\n'
-            if bullet.match(s[0]) >= 0:
-                p=bullet.group(1)
+	    
+	    ts_results = bullet.match_group(s[0], (1,))
+            if ts_results:
+		p = ts_results[1]
                 r=self.ul(r,p,self._str(s[1],level))
-            elif ol.match(s[0]) >= 0:
-                p=ol.group(3)
-                r=self.ol(r,p,self._str(s[1],level))
-            elif olp.match(s[0]) >= 0:
-                p=olp.group(1)
-                r=self.ol(r,p,self._str(s[1],level))
-            elif dl.match(s[0]) >= 0:
-                t,d=dl.group(1,2)
-                r=self.dl(r,t,d,self._str(s[1],level))
-            elif example.search(s[0]) >= 0 and s[1]:
-                # Introduce an example, using pre tags:
-                r=self.normal(r,s[0],self.pre(s[1]))
-            elif s[0][-2:]=='::' and s[1]:
-                # Introduce an example, using pre tags:
-                r=self.normal(r,s[0][:-1],self.pre(s[1]))
-            elif nl.search(s[0]) < 0 and s[1] and s[0][-1:] != ':':
-                # Treat as a heading
-                t=s[0]
-                r=self.head(r,t,level,
-                            self._str(s[1],level and level+1))
-            else:
-                r=self.normal(r,s[0],self._str(s[1],level))
+	    else:
+		ts_results = ol.match_group(s[0], (3,))
+		if ts_results:
+		    p = ts_results[1]
+		    r=self.ol(r,p,self._str(s[1],level))
+		else:
+		    ts_results = olp.match_group(s[0], (1,))
+		    if ts_results:
+			p = ts_results[1]
+			r=self.ol(r,p,self._str(s[1],level))
+		    else:
+			ts_results = dl.match_group(s[0], (1,2))
+			if ts_results:
+			    t,d = ts_results[1]
+			    r=self.dl(r,t,d,self._str(s[1],level))
+			else:
+			    if example(s[0]) >= 0 and s[1]:
+				# Introduce an example, using pre tags:
+				r=self.normal(r,s[0],self.pre(s[1]))
+			    else:
+				if s[0][-2:]=='::' and s[1]:
+				    # Introduce an example, using pre tags:
+				    r=self.normal(r,s[0][:-1],self.pre(s[1]))
+				else:
+
+				    if nl(s[0]) < 0 and s[1] and s[0][-1:] != ':':
+					# Treat as a heading
+					t=s[0]
+					r=self.head(r,t,level,
+						    self._str(s[1],level and level+1))
+				    else:
+					r=self.normal(r,s[0],self._str(s[1],level))
         return r
         
 
 def html_quote(v,
                character_entities=(
-                       (regex.compile('&'), '&amp;'),
-                       (regex.compile("<"), '&lt;' ),
-                       (regex.compile(">"), '&gt;' ),
-                       (regex.compile('"'), '&quot;'))): #"
+                       (ts_regex.compile('&'), '&amp;'),
+                       (ts_regex.compile("<"), '&lt;' ),
+                       (ts_regex.compile(">"), '&gt;' ),
+                       (ts_regex.compile('"'), '&quot;'))): #"
         text=str(v)
         for re,name in character_entities:
             text=gsub(re,name,text)
@@ -633,17 +650,18 @@ def main():
         s=sys.stdin.read()
 
     if opts:
-        import regex, regsub
+
 
         if filter(lambda o: o[0]=='-w', opts):
             print 'Content-Type: text/html\n'
 
         if s[:2]=='#!':
-            s=regsub.sub('^#![^\n]+','',s)
+            s=ts_regex.sub('^#![^\n]+','',s)
 
-        r=regex.compile('\([\0-\n]*\n\)')
-        if r.match(s) >= 0:
-            s=s[len(r.group(1)):]
+        r=ts_regex.compile('\([\0-\n]*\n\)')
+	ts_results = r.match_group(s, (1,))
+        if ts_results:
+            s=s[len(ts_results[1]):]
         s=str(html_with_references(s))
         if s[:4]=='<h1>':
             t=s[4:find(s,'</h1>')]

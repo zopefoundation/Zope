@@ -103,18 +103,17 @@ that allows one to simply make a single web request.
 The module also provides a command-line interface for calling objects.
 
 """
-__version__='$Revision: 1.30 $'[11:-2]
+__version__='$Revision: 1.31 $'[11:-2]
 
 import sys, regex, socket, mimetools
 from httplib import HTTP
 from os import getpid
 from time import time
 from random import random
-from regsub import gsub
 from base64 import encodestring
 from urllib import urlopen, quote
 from types import FileType, ListType, DictType, TupleType
-from string import strip, split, atoi, join, rfind, translate, maketrans
+from string import strip, split, atoi, join, rfind, translate, maketrans, replace
 from urlparse import urlparse
 
 class Function:
@@ -205,9 +204,9 @@ class Function:
             not headers.has_key('Authorization')):
             headers['Authorization']=(
                 "Basic %s" %
-                gsub('\012','',encodestring('%s:%s' % (
-                    self.username,self.password))))
-
+                replace(encodestring('%s:%s' % (self.username,self.password),
+				     '\012','')))
+	    
         try:
             h=HTTP()
             h.connect(self.host, self.port)
@@ -268,8 +267,7 @@ class Function:
         for n,v in self.headers.items():
             rq.append('%s: %s' % (n,v))
         if self.username and self.password:
-            c=gsub('\012','',encodestring('%s:%s' % (
-                             self.username,self.password)))
+            c=replace(encodestring('%s:%s' % (self.username,self.password)),'\012','')
             rq.append('Authorization: Basic %s' % c)
         rq.append(MultiPart(d).render())
         rq=join(rq,'\n')
@@ -480,7 +478,7 @@ class MultiPart:
 
         elif dt==FileType or hasattr(val,'read'):
             if hasattr(val,'name'):
-                fn=gsub('\\\\','/',val.name)
+                fn=replace(val.name, '\\', '/')
                 fn=fn[(rfind(fn,'/')+1):]
                 ex=fn[(rfind(fn,'.')+1):]
                 if self._extmap.has_key(ex): ct=self._extmap[ex]

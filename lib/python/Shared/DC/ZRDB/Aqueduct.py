@@ -84,12 +84,12 @@
 ##############################################################################
 __doc__='''Shared classes and functions
 
-$Id: Aqueduct.py,v 1.32 1999/03/22 23:20:16 jim Exp $'''
-__version__='$Revision: 1.32 $'[11:-2]
+$Id: Aqueduct.py,v 1.33 1999/07/15 16:38:22 jim Exp $'''
+__version__='$Revision: 1.33 $'[11:-2]
 
 import Globals, os
 from Globals import HTMLFile, Persistent
-import DocumentTemplate, DateTime, regex, regsub, string
+import DocumentTemplate, DateTime, ts_regex,  regex, string
 import binascii, Acquisition
 DateTime.now=DateTime.DateTime
 from cStringIO import StringIO
@@ -97,7 +97,7 @@ from OFS import SimpleItem
 from AccessControl.Role import RoleManager
 from DocumentTemplate import HTML
 
-from string import strip
+from string import strip, replace
 
 dtml_dir=Globals.package_home(globals())
 
@@ -337,11 +337,11 @@ class Args:
 def parse(text,
           result=None,
           keys=None,
-          unparmre=regex.compile(
+          unparmre=ts_regex.compile(
               '\([\0- ]*\([^\0- =\"]+\)\)'),
-          parmre=regex.compile(
+          parmre=ts_regex.compile(
               '\([\0- ]*\([^\0- =\"]+\)=\([^\0- =\"]+\)\)'),
-          qparmre=regex.compile(
+          qparmre=ts_regex.compile(
               '\([\0- ]*\([^\0- =\"]+\)="\([^"]*\)\"\)'),
           ):
 
@@ -351,21 +351,30 @@ def parse(text,
 
     __traceback_info__=text
 
-    if parmre.match(text) >= 0:
-        name=parmre.group(2)
-        value={'default':parmre.group(3)}
-        l=len(parmre.group(1))
-    elif qparmre.match(text) >= 0:
-        name=qparmre.group(2)
-        value={'default':qparmre.group(3)}
-        l=len(qparmre.group(1))
-    elif unparmre.match(text) >= 0:
-        name=unparmre.group(2)
-        l=len(unparmre.group(1))
-        value={}
+    ts_results = parmre.match_group(text, (1,2,3))
+    if ts_results:
+	start, grps = ts_results
+        name=grps[1]
+        value={'default':grps[2]}
+        l=len(grps[0])
     else:
-        if not text or not strip(text): return Args(result,keys)
-        raise InvalidParameter, text
+	ts_results = qparmre.match_group(text, (1,2,3))
+	if ts_results:
+	    	start, grps = ts_results
+		name=grps[1]
+		value={'default':grps[2]}
+		l=len(grps[0])
+	else:
+	    ts_results = unparmre.match_group(text, (1,2))
+	    if ts_reults:
+		start, grps = ts_results
+		name=grps[1]
+		l=len(grps[0])
+		value={}
+	    else:
+		if not text or not strip(text): return Args(result,keys)
+		raise InvalidParameter, text
+
 
     lt=string.find(name,':')
     if lt > 0:
@@ -379,33 +388,38 @@ def parse(text,
 
 def quotedHTML(text,
                character_entities=(
-                   (regex.compile('&'), '&amp;'),
-                   (regex.compile("<"), '&lt;' ),
-                   (regex.compile(">"), '&gt;' ),
-                   (regex.compile('"'), '&quot;'))): #"
-    import regsub
+                   ('&', '&amp;'),
+                   ("<", '&lt;' ),
+                   (">", '&gt;' ),
+                   ('"', '&quot;'))): #"
+
+
     for re,name in character_entities:
-        text=regsub.gsub(re,name,text)
+        text=replace(text,re,name)
+
     return text
 
-def nicify(name, under=regex.compile('_')):
-    name=regsub.gsub(under,' ',string.strip(name))
+def nicify(name):
+    name=replace(string.strip(name), '_',' ')
     return string.upper(name[:1])+name[1:]
 
 def decapitate(html, RESPONSE=None,
-               header_re=regex.compile(
+               header_re=ts_regex.compile(
                    '\(\('
                           '[^\0- <>:]+:[^\n]*\n'
                       '\|'
                           '[ \t]+[^\0- ][^\n]*\n'
                    '\)+\)[ \t]*\n\([\0-\377]+\)'
                    ),
-               space_re=regex.compile('\([ \t]+\)'),
-               name_re=regex.compile('\([^\0- <>:]+\):\([^\n]*\)'),
+               space_re=ts_regex.compile('\([ \t]+\)'),
+               name_re=ts_regex.compile('\([^\0- <>:]+\):\([^\n]*\)'),
                ):
-    if header_re.match(html) < 0: return html
 
-    headers, html = header_re.group(1,3)
+
+    ts_results = header_re.match_group(html, (1,3))
+    if not ts_results: return html
+
+    headers, html = ts_reulsts[1]
 
     headers=string.split(headers,'\n')
 
@@ -413,16 +427,19 @@ def decapitate(html, RESPONSE=None,
     while i < len(headers):
         if not headers[i]:
             del headers[i]
-        elif space_re.match(headers[i]) >= 0:
-            headers[i-1]="%s %s" % (headers[i-1],
-                                    headers[i][len(space_re.group(1)):])
-            del headers[i]
-        else:
-            i=i+1
+	else:
+	    ts_results = space_re.match_group(headers[i], (1,))
+	    if ts_reults:
+		headers[i-1]="%s %s" % (headers[i-1],
+					headers[i][len(ts_reults[1]):])
+		del headers[i]
+	    else:
+		i=i+1
 
     for i in range(len(headers)):
-        if name_re.match(headers[i]) >= 0:
-            k, v = name_re.group(1,2)
+	ts_results = name_re.match_group(headers[i], (1,2))
+        if ts_reults:
+            k, v = ts_reults[1]
             v=string.strip(v)
         else:
             raise ValueError, 'Invalid Header (%d): %s ' % (i,headers[i])
