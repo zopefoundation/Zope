@@ -102,7 +102,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 
 from Globals import HTML, HTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi,lower
@@ -135,12 +135,15 @@ class DTMLMethod(cDocument, HTML, Explicit, RoleManager, Item_w__name__):
                     {'label':'Security', 'action':'manage_access'},
                    )
     __ac_permissions__=(
-    ('View management screens', ['manage', 'manage_main', 'manage_editForm',
-                                 'manage_tabs', 'manage_uploadForm']),
-    ('Change DTML Methods',     ['manage_edit', 'manage_upload', 'PUT']),
-    ('Change proxy roles', ['manage_proxyForm', 'manage_proxy']),
-    ('View', ['__call__', '']),
-    ('FTP access', ['manage_FTPstat','manage_FTPget','manage_FTPlist']),
+    ('View management screens', ('manage', 'manage_main', 'manage_editForm',
+                                 'manage_tabs', 'manage_uploadForm')),
+    ('Access contents information', ('PROPFIND',)),
+    ('Change DTML Methods',     ('manage_edit', 'manage_upload', 'PUT')),
+    ('Change proxy roles', ('manage_proxyForm', 'manage_proxy')),
+    ('View', ('__call__', 'HEAD', '')),
+    ('FTP access', ('manage_FTPstat','manage_FTPget','manage_FTPlist')),
+    ('Manage properties', ('PROPPATCH',)),
+    ('Delete objects',     ('DELETE',)),
     )
     _state_name={'raw':1, 'globals':1, '__name__':1, '_vars':1,
                  '_proxy_roles':1, 'title':1}.has_key
@@ -177,7 +180,8 @@ class DTMLMethod(cDocument, HTML, Explicit, RoleManager, Item_w__name__):
 
     def get_size(self):
         return len(self.raw)
-
+    getSize=get_size
+    
     def oldvalidate(self, inst, parent, name, value, md):
         if hasattr(value, '__roles__'):
             roles=value.__roles__
@@ -310,7 +314,7 @@ class DTMLMethod(cDocument, HTML, Explicit, RoleManager, Item_w__name__):
 
     def PUT(self, REQUEST, RESPONSE):
         """Handle HTTP PUT requests."""
-        self.init_headers(RESPONSE)
+        self.dav__init(REQUEST, RESPONSE)
         body=REQUEST.get('BODY', '')
         self._validateProxy(REQUEST)
         self.munge(body)

@@ -105,9 +105,9 @@
 
 Folders are the basic container objects and are analogous to directories.
 
-$Id: Folder.py,v 1.67 1999/03/04 17:44:51 brian Exp $"""
+$Id: Folder.py,v 1.68 1999/03/09 17:06:52 brian Exp $"""
 
-__version__='$Revision: 1.67 $'[11:-2]
+__version__='$Revision: 1.68 $'[11:-2]
 
 import Globals, SimpleItem, Acquisition, mimetypes, content_types
 from Globals import HTMLFile
@@ -171,7 +171,7 @@ class Folder(ObjectManager, PropertyManager, RoleManager, Collection,
     )
 
     __ac_permissions__=(
-        ('View', ()),
+        ('View', ('HEAD',)),
         ('View management screens',
          ('manage','manage_menu','manage_main','manage_copyright',
           'manage_tabs','manage_propertiesForm','manage_UndoForm',
@@ -181,7 +181,8 @@ class Folder(ObjectManager, PropertyManager, RoleManager, Collection,
           'manage_findResult')),
         ('Access contents information',
          ('objectIds', 'objectValues', 'objectItems','hasProperty',
-          'propertyIds', 'propertyValues','propertyItems',''),
+          'propertyIds', 'propertyValues','propertyItems',
+          'PROPFIND',''),
          ('Anonymous', 'Manager'),
          ),
         ('Undo changes',       ('manage_undo_transactions',)),
@@ -194,7 +195,8 @@ class Folder(ObjectManager, PropertyManager, RoleManager, Collection,
         ('Delete objects',     ('manage_delObjects', 'DELETE')),
         ('Manage properties',
          ('manage_addProperty', 'manage_editProperties',
-          'manage_delProperties', 'manage_changeProperties',)),
+          'manage_delProperties', 'manage_changeProperties',
+          'PROPPATCH')),
         ('FTP access',         ('manage_FTPstat','manage_FTPlist')),
         ('Import/Export objects',
          ('manage_importObject','manage_importExportForm',
@@ -223,9 +225,10 @@ class Folder(ObjectManager, PropertyManager, RoleManager, Collection,
 
     def __getitem__(self, key):
         if hasattr(self, 'REQUEST'):
-            method=self.REQUEST.get('REQUEST_METHOD', 'GET')
+            request=self.REQUEST
+            method=request.get('REQUEST_METHOD', 'GET')
             if not method in ('GET', 'POST'):
-                return NullResource(self, key).__of__(self)
+                return NullResource(self, key, request).__of__(self)
         raise KeyError, key
 
     def folderClass(self):

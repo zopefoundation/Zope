@@ -102,7 +102,7 @@
 ##############################################################################
 """DTML Document objects."""
 
-__version__='$Revision: 1.9 $'[11:-2]
+__version__='$Revision: 1.10 $'[11:-2]
 from DocumentTemplate.DT_Util import InstanceDict, TemplateDict
 from ZPublisher.Converters import type_converters
 from Globals import HTML, HTMLFile, MessageDialog
@@ -130,15 +130,18 @@ class DTMLDocument(DTMLMethod, PropertyManager):
                    )
 
     __ac_permissions__=(
-    ('View management screens', ['manage', 'manage_main', 'manage_editForm',
-                                 'manage_tabs', 'manage_uploadForm']),
-    ('Change permissions',      ['manage_access']),
-    ('Change DTML Documents',   ['manage_edit', 'manage_upload', 'PUT']),
-    ('Change proxy roles', ['manage_proxyForm', 'manage_proxy']),
-    ('Manage properties',  ['manage_addProperty', 'manage_editProperties',
-                            'manage_delProperties','manage_changeProperties']),
-    ('View', ['__call__', '']),
-    ('FTP access', ['manage_FTPstat','manage_FTPget','manage_FTPlist']),
+    ('View management screens', ('manage', 'manage_main', 'manage_editForm',
+                                 'manage_tabs', 'manage_uploadForm')),
+    ('Access contents information', ('PROPFIND',)),
+    ('Change permissions',      ('manage_access',)),
+    ('Change DTML Documents',   ('manage_edit', 'manage_upload', 'PUT')),
+    ('Change proxy roles', ('manage_proxyForm', 'manage_proxy')),
+    ('Manage properties',  ('manage_addProperty', 'manage_editProperties',
+                            'manage_delProperties','manage_changeProperties',
+                            'PROPPATCH')),
+    ('View', ('__call__', 'HEAD', '')),
+    ('FTP access', ('manage_FTPstat','manage_FTPget','manage_FTPlist')),
+    ('Delete objects',     ('DELETE',)),
     )
 
     def __getstate__(self):
