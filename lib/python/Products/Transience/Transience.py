@@ -13,10 +13,10 @@
 """
 Transient Object Container Class ('timeslice'-based design).
 
-$Id: Transience.py,v 1.34 2003/11/28 16:46:11 jim Exp $
+$Id: Transience.py,v 1.35 2004/01/21 19:59:09 Brian Exp $
 """
 
-__version__='$Revision: 1.34 $'[11:-2]
+__version__='$Revision: 1.35 $'[11:-2]
 
 import Globals
 from Globals import HTMLFile
@@ -27,7 +27,8 @@ from OFS.SimpleItem import SimpleItem
 from Persistence import Persistent
 from Acquisition import Implicit
 from AccessControl import ClassSecurityInfo, getSecurityManager
-from AccessControl.SecurityManagement import newSecurityManager
+from AccessControl.SecurityManagement import newSecurityManager, \
+     setSecurityManager
 from AccessControl.User import nobody
 from BTrees.OOBTree import OOBTree, OOBucket, OOSet
 from BTrees.IOBTree import IOBTree
@@ -276,8 +277,9 @@ class TransientObjectContainer(SimpleItem):
 
         for item in items:
             if callable(method):
+                sm = getSecurityManager()
                 try:
-                    user = getSecurityManager().getUser()
+                    user = sm.getUser()
                     try:
                         newSecurityManager(None, nobody)
                         method(item, self)
@@ -291,7 +293,7 @@ class TransientObjectContainer(SimpleItem):
                             error=sys.exc_info()
                             )
                 finally:
-                    newSecurityManager(None, user)
+                    setSecurityManager(sm)
             else:
                 err = '%s in %s attempted to call non-callable %s'
                 path = self.getPhysicalPath()

@@ -13,8 +13,8 @@
 __doc__='''short description
 
 
-$Id: SecurityManagement.py,v 1.9 2004/01/15 23:09:03 tseaver Exp $'''
-__version__='$Revision: 1.9 $'[11:-2]
+$Id: SecurityManagement.py,v 1.10 2004/01/21 19:59:09 Brian Exp $'''
+__version__='$Revision: 1.10 $'[11:-2]
 
 def getSecurityManager():
     """Get a security manager, for the current thread.
@@ -31,6 +31,11 @@ def getSecurityManager():
         _managers[thread_id]=manager
 
     return manager
+
+def setSecurityManager(manager):
+    """install *manager* as current security manager for this thread."""
+    thread_id=get_ident()
+    _managers[thread_id]=manager
 
 import SpecialUsers
 
