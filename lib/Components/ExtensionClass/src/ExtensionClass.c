@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: ExtensionClass.c,v 1.46 2001/03/28 14:06:50 jeremy Exp $
+  $Id: ExtensionClass.c,v 1.47 2001/10/04 14:09:38 matt Exp $
 
   If you have questions regarding this software,
   contact:
@@ -54,7 +54,7 @@ static char ExtensionClass_module_documentation[] =
 "  - They provide access to unbound methods,\n"
 "  - They can be called to create instances.\n"
 "\n"
-"$Id: ExtensionClass.c,v 1.46 2001/03/28 14:06:50 jeremy Exp $\n"
+"$Id: ExtensionClass.c,v 1.47 2001/10/04 14:09:38 matt Exp $\n"
 ;
 
 #include <stdio.h>
@@ -1649,35 +1649,45 @@ ExtensionClass_FindInstanceAttribute(PyObject *inst, PyObject *oname,
   if (ClassHasInstDict(self))
     {
       r= INSTANCE_DICT(inst);
-      if ((r = PyObject_GetItem(r,oname)) && NeedsToBeBound(r))
-	{
-	  ASSIGN(r, CallMethodO(r, py__of__, Build("(O)", inst), NULL));
-	  UNLESS(r) return NULL;
-	}
+      if (PyDict_Check(r))
+        {
+          r = PyDict_GetItem(r,oname);
+          Py_XINCREF(r);
+        }
+      else
+        {
+          UNLESS (r = PyObject_GetItem(r,oname))
+            PyErr_Clear();
+        }
+
+      if (r)
+        {
+          if (NeedsToBeBound(r))
+            {
+              ASSIGN(r, CallMethodO(r, py__of__, Build("(O)", inst), NULL));
+            }
+          return r;
+        }
     }
-  UNLESS(r)
-    {
-      if (*name=='_' && name[1]=='_' 
-          && 
-          (   (name[2]=='b' && strcmp(name+2,"bases__")==0) 
-           || (name[2]=='d' && strcmp(name+2,"dict__")==0)
-              )
+
+  if (*name=='_' && name[1]=='_' 
+      && 
+      (   (name[2]=='b' && strcmp(name+2,"bases__")==0) 
+          || (name[2]=='d' && strcmp(name+2,"dict__")==0)
           )
-	{
-	  PyErr_SetObject(PyExc_AttributeError, oname);
-	  return NULL;
-	}
-
-      PyErr_Clear();
-
-      UNLESS(r=CCL_getattr(self,oname,0)) return NULL;
-
-      /* We got something from our class, maybe its an unbound method. */
-      if (UnboundCMethod_Check(r))
-	ASSIGN(r,(PyObject*)bindCMethod((CMethod*)r,inst));
-      else if (UnboundPMethod_Check(r))
-	ASSIGN(r,bindPMethod((PMethod*)r,inst));
+      )
+    {
+      PyErr_SetObject(PyExc_AttributeError, oname);
+      return NULL;
     }
+  
+  UNLESS(r=CCL_getattr(self,oname,0)) return NULL;
+  
+  /* We got something from our class, maybe its an unbound method. */
+  if (UnboundCMethod_Check(r))
+    ASSIGN(r,(PyObject*)bindCMethod((CMethod*)r,inst));
+  else if (UnboundPMethod_Check(r))
+    ASSIGN(r,bindPMethod((PMethod*)r,inst));
       
   return r;
 }
@@ -1704,44 +1714,67 @@ static int
 subclass_simple_setattr(PyObject *self, char *name, PyObject *v);
 
 static PyObject *
+CCL_getattr2(PyObject *self, PyObject *oname, int look_super)
+{
+  PyObject *r=0, *b, *d;
+
+  if (ExtensionClass_Check(self))
+    {
+      b=((PyExtensionClass*)self)->bases;
+      d=((PyExtensionClass*)self)->class_dictionary;
+    }
+  else if (PyClass_Check(self))
+    {
+      b=((PyClassObject*)self)->cl_bases;
+      d=((PyClassObject*)self)->cl_dict;
+    }
+  else
+    {
+      UNLESS (r=PyObject_GetAttr(self, oname)) PyErr_Clear();
+      return r;
+    }
+
+  if (! look_super && d)
+    {
+      if (PyDict_Check(d))
+        {
+          if((r=PyDict_GetItem(d, oname)))
+            {          
+              Py_INCREF(r);
+              return r;
+            }
+        }
+      else
+        {
+          if((r=PyObject_GetItem(d, oname))) return r;
+          PyErr_Clear();
+        }
+    }
+
+  if (b)
+    {
+      int n, i;
+      
+      n = PyTuple_Check(b) ? PyTuple_GET_SIZE(b) : 0; /* I don't care ;) */
+      for (i=0; i < n; i++)
+        {
+          r=CCL_getattr2(PyTuple_GET_ITEM(b, i), oname, 0);
+          if (r) return r;
+        }
+    }
+
+  return NULL;
+}
+
+static PyObject *
 CCL_getattr(PyExtensionClass *self, PyObject *oname, int look_super)
 {
   PyObject *r=0;
 
-  if (! look_super) r=PyObject_GetItem(self->class_dictionary,oname);
-  UNLESS(r)
+  UNLESS (r=CCL_getattr2(OBJECT(self), oname, look_super)) 
     {
-      if (self->bases)
-	{
-	  int n, i;
-	  PyObject *c;
-	  
-	  n=PyTuple_Size(self->bases);
-	  for (i=0; i < n; i++)
-	    {
-	      PyErr_Clear();
-	      c=PyTuple_GET_ITEM(self->bases, i);
-	      if (ExtensionClass_Check(c))
-		r=CCL_getattr(AsExtensionClass(c),oname,0);
-	      else
-		r=PyObject_GetAttr(c,oname);
-	      if (r) break;
-	    }
-	}
-      UNLESS(r)
-	{
-	  PyObject *t, *v, *tb;
-
-	  PyErr_Fetch(&t,&v,&tb);
-	  if (t==PyExc_KeyError && PyObject_Compare(v,oname) == 0)
-	    {
-	      Py_DECREF(t);
-	      t=PyExc_AttributeError;
-	      Py_INCREF(t);
-	    }
-	  PyErr_Restore(t,v,tb);	  
-	  return NULL;
-	}
+      PyErr_SetObject(PyExc_AttributeError, oname);
+      return NULL;
     }
 
   if (PyFunction_Check(r) || NeedsToBeBound(r))
@@ -1749,6 +1782,21 @@ CCL_getattr(PyExtensionClass *self, PyObject *oname, int look_super)
   else if (PyMethod_Check(r) && ! PyMethod_Self(r))
     ASSIGN(r,newPMethod(self, PyMethod_Function(r)));
 
+  return r;
+}
+
+static PyObject *
+CCL_getattrne(PyExtensionClass *self, PyObject *oname)
+{
+  PyObject *r=0;
+
+  if ((r=CCL_getattr2(OBJECT(self), oname, 0)))
+    {
+      if (PyFunction_Check(r) || NeedsToBeBound(r))
+        ASSIGN(r,newPMethod(self,r));
+      else if (PyMethod_Check(r) && ! PyMethod_Self(r))
+        ASSIGN(r,newPMethod(self, PyMethod_Function(r)));
+    }
   return r;
 }
 
@@ -2109,14 +2157,24 @@ subclass_getspecial(PyObject *inst, PyObject *oname)
   if (HasInstDict(inst))
     {
       r= INSTANCE_DICT(inst);
-      r = PyObject_GetItem(r,oname);
-      UNLESS(r)
-	{
-	  PyErr_Clear();
-	  r=CCL_getattr(self,oname,0);
-	}
+      if (PyDict_Check(r))
+        {
+          if ((r = PyDict_GetItem(r,oname)))
+            Py_INCREF(r);
+          else
+            r=CCL_getattr(self,oname,0);
+        }
+      else
+        {
+          UNLESS (r = PyObject_GetItem(r,oname))
+            {
+              PyErr_Clear();
+              r=CCL_getattr(self,oname,0);
+            }
+        }
     }
-  else r=CCL_getattr(self,oname,0);
+  else 
+    r=CCL_getattr(self,oname,0);
   
   return r;
 }
@@ -3476,7 +3534,7 @@ void
 initExtensionClass(void)
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.46 $";
+  char *rev="$Revision: 1.47 $";
   PURE_MIXIN_CLASS(Base, "Minimalbase class for Extension Classes", NULL);
 
   PMethodType.ob_type=&PyType_Type;
