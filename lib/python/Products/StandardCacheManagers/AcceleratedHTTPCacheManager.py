@@ -98,7 +98,7 @@ from Globals import DTMLFile
 import urlparse, httplib
 from urllib import quote
 from string import lower, join, split
-
+from App.Common import rfc1123_date
 
 def http_date(value, format='%a, %d %b %Y %H:%M:%S GMT'):
     return time.strftime(format, time.gmtime(value))
@@ -173,8 +173,8 @@ class AcceleratedHTTPCache (Cache):
             return
         # Set HTTP Expires and Cache-Control headers
         seconds=self.interval
-        expires=http_date(time.time() + seconds)
-        # RESPONSE.setHeader('Last-Modified', http_date(time.time()))
+        expires=rfc1123_date(time.time() + seconds)
+        # RESPONSE.setHeader('Last-Modified',rfc1123_date(time.time()))
         RESPONSE.setHeader('Cache-Control', 'max-age=%d' % seconds)
         RESPONSE.setHeader('Expires', expires)
 
