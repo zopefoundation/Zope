@@ -34,11 +34,11 @@ sqlgroup: Formats complex SQL expressions
 
       select * from employees 
       <dtml-sqlgroup where>
-        <dtml-sqltest salary op=gt type=float optional>
+        <dtml-sqltest salary op="gt" type="float" optional>
       <dtml-and>
-        <dtml-sqltest first op=eq type=string multiple optional>
+        <dtml-sqltest first type="nb" multiple optional>
       <dtml-and>
-        <dtml-sqltest last  op=eq type=string multiple optional>
+        <dtml-sqltest last type="nb" multiple optional>
       </dtml-sqlgroup>  
 
     If 'first' is 'Bob' and 'last' is 'Smith, McDonald' it renders::
@@ -64,12 +64,12 @@ sqlgroup: Formats complex SQL expressions
       select * from employees
       <dtml-sqlgroup where>
         <dtml-sqlgroup>
-           <dtml-sqltest first op=like type=string>
+           <dtml-sqltest first op="like" type="nb">
         <dtml-and>
-           <dtml-sqltest last op=like type=string>
+           <dtml-sqltest last op="like" type="nb">
         <dtml-sqlgroup>
       <dtml-or>
-        <dtml-sqltest salary op=gt type=float>
+        <dtml-sqltest salary op="gt" type="float">
       </dtml-sqlgroup>
 
     Given sample arguments, this template renders to SQL like so::

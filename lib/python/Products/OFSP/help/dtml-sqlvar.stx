@@ -16,8 +16,9 @@ sqlvar: Inserts SQL variables
   Attributes
 
     type=string -- The type of the variable. Valid types include:
-    'string', 'int', 'float' and 'nb'. 'nb' means non-blank
-    string. The type attribute is required and is used to properly
+    'string', 'int', 'float' and 'nb'. 'nb' means non-blank string and
+    should be used in place of 'string' unless you want to use blank
+    strings. The type attribute is required and is used to properly
     escape inserted variable.
 
     optional=boolean -- If true and the variable is null or
@@ -28,7 +29,7 @@ sqlvar: Inserts SQL variables
     Basic usage::
 
       select * from employees 
-        where name=<dtml-sqlvar name type="string">
+        where name=<dtml-sqlvar name type="nb">
 
     This SQL quotes the 'name' string variable.
 

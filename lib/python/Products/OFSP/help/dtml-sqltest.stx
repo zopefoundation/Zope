@@ -18,9 +18,10 @@ sqltest: Formats SQL condition tests
   Attributes
 
     type=string -- The type of the variable. Valid types include:
-    'string', 'int', 'float' and 'nb'. 'nb' means non-blank
-    string. The type attribute is required and is used to properly
-    escape inserted variable.
+    'string', 'int', 'float' and 'nb'. 'nb' means non-blank string,
+    and should be used instead of 'string' unless you want to test for
+    blank values. The type attribute is required and is used to
+    properly escape inserted variable.
 
     column=string -- The name of the SQL column to test against. This
     attribute defaults to the variable name.
@@ -54,7 +55,7 @@ sqltest: Formats SQL condition tests
     Basic usage::
 
       select * from employees
-        where <dtml-sqltest name type="string">
+        where <dtml-sqltest name type="nb">
 
     If the 'name' variable is 'Bob' then this renders::
 
