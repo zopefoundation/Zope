@@ -88,7 +88,6 @@
 import ZCatalog, Catalog
 
 
-# Zope 2.x.x initialization
 
 def initialize(context):
     context.registerClass(
@@ -99,29 +98,3 @@ def initialize(context):
         icon='www/ZCatalog.gif',
         )
     context.registerBaseClass(ZCatalog.ZCatalog)
-
-
-
-# Zope 1.x.x initialization
-
-classes=('ZCatalog.ZCatalog',)
-meta_types=(
-    {'name':'ZCatalog','action':'manage_addZCatalogForm'},
-    )
-methods={
-    'manage_addZCatalogForm': ZCatalog.manage_addZCatalogForm,
-    'manage_addZCatalog':     ZCatalog.manage_addZCatalog,
-    }
-misc_={
-    'ZCatalog.gif': ImageFile("www/ZCatalog.gif", globals())
-    }
-__ac_permissions__=(
-    ('Add ZCatalogs', ('manage_addZCatalogForm', 'manage_addZCatalog')),
-    ('Manage ZCatalog Entries', ()),
-    ('Search ZCatalog',()),
-    )
-
-
-
-
-
