@@ -14,7 +14,7 @@
 
 """Berkeley storage with full undo and versioning support.
 
-$Revision: 1.70 $
+$Revision: 1.71 $
 """
 
 import time
@@ -1053,6 +1053,10 @@ class BDBFullStorage(BerkeleyBase, ConflictResolvingStorage):
         self._lock_acquire()
         try:
             serial, tid = self._getSerialAndTid(oid)
+            # See if the object has been uncreated
+            lrevid = unpack('>8s', self._metadata[oid+tid][16:24])[0]
+            if lrevid == DNE:
+                raise KeyError
             return serial
         finally:
             self._lock_release()
