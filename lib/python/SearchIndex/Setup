@@ -1,15 +1,15 @@
 *shared*
-intSet intSet.c -I/projects/_/ExtensionClass -I/projects/_/cPersistence
-Splitter Splitter.c
+intSet intSet.c -I/projects/_/ExtensionClass -I/projects/_/cPersistence -I/projects/_/python
+Splitter Splitter.c -I/projects/_/python
 
 #Trie Trie.c -I/projects/_/ExtensionClass -I/projects/_/cPersistence
 
-BTree BTree.c -I/projects/_/ExtensionClass -I/projects/_/cPersistence
-IIBTree IIBTree.c -I/projects/_/ExtensionClass -I/projects/_/cPersistence
-IOBTree IOBTree.c -I/projects/_/ExtensionClass -I/projects/_/cPersistence
-OIBTree OIBTree.c -I/projects/_/ExtensionClass -I/projects/_/cPersistence
+BTree BTree.c -I/projects/_/ExtensionClass -I/projects/_/cPersistence -I/projects/_/python
+IIBTree IIBTree.c -I/projects/_/ExtensionClass -I/projects/_/cPersistence -I/projects/_/python
+IOBTree IOBTree.c -I/projects/_/ExtensionClass -I/projects/_/cPersistence -I/projects/_/python
+OIBTree OIBTree.c -I/projects/_/ExtensionClass -I/projects/_/cPersistence -I/projects/_/python
 
-Query Query.c
+Query Query.c -I/projects/_/python
  
 # install Index.py
 # install TextIndex.py
