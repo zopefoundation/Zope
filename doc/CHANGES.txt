@@ -17,6 +17,9 @@ Zope Changes
       - enhanced the checks for 'Domains' field in the UserFolder
 
       - Webdav: fixed broken MOVE and COPY commands
+
+      - Updated DTMLMethod validation support patch with version
+        by Steve Alexander
         
 
   Zope 2.5 Alpha 2
