@@ -163,6 +163,7 @@ class monitor_server (asyncore.dispatcher):
     channel_class = monitor_channel
     
     def __init__ (self, hostname='127.0.0.1', port=8023):
+        asyncore.dispatcher.__init__(self)
         self.hostname = hostname
         self.port = port
         self.create_socket (socket.AF_INET, socket.SOCK_STREAM)
