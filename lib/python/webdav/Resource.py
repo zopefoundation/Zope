@@ -85,7 +85,7 @@
 
 """WebDAV support - resource objects."""
 
-__version__='$Revision: 1.38 $'[11:-2]
+__version__='$Revision: 1.39 $'[11:-2]
 
 import sys, os, string, mimetypes, davcmds, ExtensionClass, Lockable
 from common import absattr, aq_base, urlfix, rfc1123_date, tokenFinder, urlbase
@@ -538,7 +538,8 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
                 RESPONSE.setBody(lock.asXML())
         else:
             # There's no body, so this likely to be a refresh request
-            if not ifhdr: RESPONSE.setStatus(412) # Precondition failed
+            if not ifhdr:
+                raise 'Precondition Failed', 'If Header Missing'
             taglist = IfParser(ifhdr)
             found = 0
             for tag in taglist:
