@@ -3,7 +3,7 @@
 
 __doc__='''CGI Response Output formatter
 
-$Id: Response.py,v 1.20 1997/11/07 14:59:18 jim Exp $'''
+$Id: Response.py,v 1.21 1997/11/07 19:55:17 jim Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -50,98 +50,13 @@ $Id: Response.py,v 1.20 1997/11/07 14:59:18 jim Exp $'''
 # If you have questions regarding this software,
 # contact:
 #
-#   Jim Fulton, jim@digicool.com
-#
+#   Digital Creations, info@Digicool.com
 #   (540) 371-6909
-#
-# $Log: Response.py,v $
-# Revision 1.20  1997/11/07 14:59:18  jim
-# Fixed bug in printing tracebacks.
-#
-# Revision 1.19  1997/10/29 18:46:55  jim
-# Fixed leak in exception handler.
-#
-# Revision 1.18  1997/10/22 14:48:26  jim
-# Added simple repr method top support printing requests.
-#
-# Revision 1.17  1997/09/15 19:20:56  brian
-# NS Server apparently chokes on multi-line headers, so bci exception info
-# no longer uses ml.
-#
-# Revision 1.16  1997/04/29 18:29:00  jim
-# Changed bobo-exception header code to use tb tail, rather than head
-# for reporting errors.
-#
-# Revision 1.15  1997/04/18 19:46:19  jim
-# Brian's changes to try and get file name and line no in exceptions.
-#
-# Revision 1.14  1997/04/12 17:17:32  jim
-# Brian added loggic to set bobo-specific headers to transmit exception
-# info.
-#
-# Revision 1.13  1997/04/11 23:13:23  jim
-# Fixed cookies.
-#
-# Revision 1.12  1997/01/28 22:59:19  jim
-# Fixed bug that caused html didling of non-html data
-#
-# Revision 1.11  1996/09/16 14:43:25  jim
-# Changes to make shutdown methods work properly.  Now shutdown methods
-# can simply sys.exit(0).
-#
-# Added on-line documentation and debugging support to bobo.
-#
-# Revision 1.10  1996/09/13 22:52:10  jim
-# *** empty log message ***
-#
-# Revision 1.9  1996/08/30 23:28:29  jfulton
-# Added code to map 300 redirects to 302.
-#
-# Revision 1.8  1996/08/29 22:11:35  jfulton
-# Bug fixes.
-#
-# Revision 1.7  1996/08/05 11:27:59  jfulton
-# Added check for asHTML method.
-# Added traceback comment quoting.
-# Added code to add header of response doesn't contain one.
-#
-# Revision 1.6  1996/07/25 16:44:24  jfulton
-# - Fixed bug in recognizing HTML exception values.
-# - Added transaction support.
-#
-# Revision 1.5  1996/07/10 22:45:57  jfulton
-# Made exception handling fussier about exception values.
-# Now the value must contain white space to be considered an error
-# message.
-#
-# Revision 1.4  1996/07/08 20:34:09  jfulton
-# Many changes, including:
-#
-#   - Butter realm management
-#   - Automatic type conversion
-#   - Improved documentation
-#   - ...
-#
-# Revision 1.3  1996/07/03 18:25:50  jfulton
-# Added support for file upload via newcgi module.
-#
-# Revision 1.2  1996/07/01 11:51:54  jfulton
-# Updated code to:
-#
-#   - Provide a first cut authentication.authorization scheme
-#   - Fix several bugs
-#   - Provide better error messages
-#   - Provide automagic insertion of base
-#   - Support Fast CGI module publisher.
-#
-# Revision 1.1  1996/06/17 18:57:18  jfulton
-# Almost initial version.
-#
-#
 # 
-__version__='$Revision: 1.20 $'[11:-2]
+__version__='$Revision: 1.21 $'[11:-2]
 
 import string, types, sys, regex, regsub
+from string import find, rfind, lower, upper, strip, split, join
 
 status_reasons={
     200: 'OK',
@@ -231,6 +146,8 @@ end_of_header_re=regex.compile('</head>',regex.casefold)
 
 absuri_re=regex.compile("[a-zA-Z0-9+.-]+:[^\0- \"\#<>]+\(#[^\0- \"\#<>]*\)?")
 
+bogus_str=regex.compile(" [a-fA-F0-9]+>$")
+
 class Response:
     """\
     An object representation of an HTTP response.
@@ -280,7 +197,7 @@ class Response:
 	ServiceUnavailable } that will be converted to the correct
 	integer value. '''
 	if type(status) is types.StringType:
-	    status=string.lower(status)
+	    status=lower(status)
 	try: status=status_codes[status]
 	except: status=500
 	self.status=status
@@ -293,7 +210,7 @@ class Response:
 	'''\
 	Sets an HTTP return header "name" with value "value", clearing
 	the previous value set for the header, if one exists. '''
-	self.headers[string.lower(name)]=value
+	self.headers[lower(name)]=value
 
     __setitem__=setHeader
 
@@ -316,6 +233,14 @@ class Response:
 	if type(body) is not types.StringType:
 	    if hasattr(body,'asHTML'):
 		body=body.asHTML()
+
+	body=str(body)
+	l=len(body)
+	if (find(body,'>')==l-1 and body[:1]=='<' and l < 200 and
+	    bogus_str.search(body) > 0):
+	    raise 'NotFound', (
+		"Sorry, the requested document does not exist.<p>"
+		"\n<!--\n%s\n-->" % body[1:-1])
 	    
 	if(title):
 	    self.body=('<html>\n<head>\n<title>%s</title>\n</head>\n'
@@ -337,7 +262,7 @@ class Response:
 	self.insertBase()
 
     def host(self,base):
-	return base[:string.find(base,'/',string.find(base,'//'))]
+	return base[:find(base,'/',find(base,'//'))]
 
     def insertBase(self,
 		   base_re=regex.compile('\(<base[\0- ]+\([^>]+\)>\)',
@@ -367,7 +292,7 @@ class Response:
 				    href=href[2:]
 				elif href[:3]=='../' or href=='..':
 				    href=href[3:]
-				    base=base[:string.rfind(base,'/')]
+				    base=base[:rfind(base,'/')]
 				else:
 				    break
 			if base:
@@ -442,8 +367,7 @@ class Response:
 	self.setHeader(name,h)
 
     def isHTML(self,str):
-	return (string.lower(string.strip(str)[:6]) == '<html>' or
-		string.find(str,'</') > 0)
+	return lower(strip(str)[:6]) == '<html>' or find(str,'</') > 0
 
     def quoteHTML(self,text,
 		  character_entities=(
@@ -480,14 +404,13 @@ class Response:
 		except: pass
 		tb = tb.tb_next
 		n = n+1
-	result.append(string.joinfields(
-	    traceback.format_exception_only(etype, value), ' '))
+	result.append(join(traceback.format_exception_only(etype, value), ' '))
 	sys.exc_type,sys.exc_value,sys.exc_traceback=etype,value,tb
 	return result
 
     def _traceback(self,t,v,tb):
 	tb=self.format_exception(t,v,tb,200)
-	tb=string.joinfields(tb,'\n')
+	tb=join(tb,'\n')
 	tb=self.quoteHTML(tb)
 	return "\n<!--\n%s\n-->" % tb
 
@@ -507,7 +430,7 @@ class Response:
 	    while tb.tb_next is not None: tb=tb.tb_next
 	    el=str(tb.tb_lineno)
             ef=str(tb.tb_frame.f_code.co_filename)
-	    if string.find(ev,'<html>') >= 0: ev='bobo exception'
+	    if find(ev,'<html>') >= 0: ev='bobo exception'
 	    self.setHeader('bobo-exception-type',et)
 	    self.setHeader('bobo-exception-value',ev)
 	    self.setHeader('bobo-exception-file',ef)
@@ -627,7 +550,7 @@ class Response:
 	    headersl=headersl+self._cookie_list()
 	headersl[len(headersl):]=['',body]
 
-	return string.joinfields(headersl,'\n')
+	return join(headersl,'\n')
 
     def __repr__(self):
 	return 'CGIResponse(%s)' % `self.body`
@@ -669,8 +592,8 @@ class Response:
 
 
 def upcase(s):
-    s=string.upper(s[:1])+s[1:]
-    l=string.find(s,'-')
+    s=upper(s[:1])+s[1:]
+    l=find(s,'-')
     if l > 0:
 	l=l+1
 	return s[:l]+upcase(s[l:])
@@ -689,3 +612,94 @@ def main():
 
 
 if __name__ == "__main__": main()
+
+############################################################################
+#
+# $Log: Response.py,v $
+# Revision 1.21  1997/11/07 19:55:17  jim
+# Added check for responses that look like bogus default object strings:
+# <some damn instance as 123ab34c>
+#
+# Revision 1.20  1997/11/07 14:59:18  jim
+# Fixed bug in printing tracebacks.
+#
+# Revision 1.19  1997/10/29 18:46:55  jim
+# Fixed leak in exception handler.
+#
+# Revision 1.18  1997/10/22 14:48:26  jim
+# Added simple repr method top support printing requests.
+#
+# Revision 1.17  1997/09/15 19:20:56  brian
+# NS Server apparently chokes on multi-line headers, so bci exception info
+# no longer uses ml.
+#
+# Revision 1.16  1997/04/29 18:29:00  jim
+# Changed bobo-exception header code to use tb tail, rather than head
+# for reporting errors.
+#
+# Revision 1.15  1997/04/18 19:46:19  jim
+# Brian's changes to try and get file name and line no in exceptions.
+#
+# Revision 1.14  1997/04/12 17:17:32  jim
+# Brian added loggic to set bobo-specific headers to transmit exception
+# info.
+#
+# Revision 1.13  1997/04/11 23:13:23  jim
+# Fixed cookies.
+#
+# Revision 1.12  1997/01/28 22:59:19  jim
+# Fixed bug that caused html didling of non-html data
+#
+# Revision 1.11  1996/09/16 14:43:25  jim
+# Changes to make shutdown methods work properly.  Now shutdown methods
+# can simply sys.exit(0).
+#
+# Added on-line documentation and debugging support to bobo.
+#
+# Revision 1.10  1996/09/13 22:52:10  jim
+# *** empty log message ***
+#
+# Revision 1.9  1996/08/30 23:28:29  jfulton
+# Added code to map 300 redirects to 302.
+#
+# Revision 1.8  1996/08/29 22:11:35  jfulton
+# Bug fixes.
+#
+# Revision 1.7  1996/08/05 11:27:59  jfulton
+# Added check for asHTML method.
+# Added traceback comment quoting.
+# Added code to add header of response doesn't contain one.
+#
+# Revision 1.6  1996/07/25 16:44:24  jfulton
+# - Fixed bug in recognizing HTML exception values.
+# - Added transaction support.
+#
+# Revision 1.5  1996/07/10 22:45:57  jfulton
+# Made exception handling fussier about exception values.
+# Now the value must contain white space to be considered an error
+# message.
+#
+# Revision 1.4  1996/07/08 20:34:09  jfulton
+# Many changes, including:
+#
+#   - Butter realm management
+#   - Automatic type conversion
+#   - Improved documentation
+#   - ...
+#
+# Revision 1.3  1996/07/03 18:25:50  jfulton
+# Added support for file upload via newcgi module.
+#
+# Revision 1.2  1996/07/01 11:51:54  jfulton
+# Updated code to:
+#
+#   - Provide a first cut authentication.authorization scheme
+#   - Fix several bugs
+#   - Provide better error messages
+#   - Provide automagic insertion of base
+#   - Support Fast CGI module publisher.
+#
+# Revision 1.1  1996/06/17 18:57:18  jfulton
+# Almost initial version.
+#
+#
