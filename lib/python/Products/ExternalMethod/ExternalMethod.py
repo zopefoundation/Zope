@@ -60,14 +60,14 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, Explicit,
 	self._function=function
 	try: del modules[module]
 	except: pass
-	self.getFunction()
+	self.getFunction(1)
 	if REQUEST: return MessageDialog(
 	    title  ='Changed %s' % self.id,
 	    message='%s has been updated' % self.id,
 	    action =REQUEST['URL1']+'/manage_main',
 	    target ='manage_main')
 
-    def getFunction(self):
+    def getFunction(self, check=0):
 
 	module=self._module
 	
@@ -83,12 +83,16 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, Explicit,
 	f=m[self._function]
 	if hasattr(f,'im_func'): ff=f.im_func
 	else: ff=f
+	   
+	if check:
+	    # Check to make sure function signature is the same.
+	    # Otherwise, we may end up causing an unwanted change.
+
+	    if self.func_defaults != ff.func_defaults:
+		self.func_defaults  = ff.func_defaults
 	    
-	if self.func_defaults != ff.func_defaults:
-	   self.func_defaults  = ff.func_defaults
-	    
-	func_code=FuncCode(ff,f is not ff)
-	if func_code != self.func_code: self.func_code=func_code
+	    func_code=FuncCode(ff,f is not ff)
+	    if func_code != self.func_code: self.func_code=func_code
     
 	self._v_f=f
 
@@ -124,4 +128,4 @@ class FuncCode:
 
     def __cmp__(self,other):
 	return cmp((self.co_argcount, self.co_varnames),
-		   (othr.co_argcount, othr.co_varnames))
+		   (other.co_argcount, other.co_varnames))
