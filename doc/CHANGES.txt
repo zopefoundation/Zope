@@ -28,6 +28,10 @@ Zope Changes
 
     Features added
 
+      - The ZEO server now records its PID to a file like the ZEO
+        client. Defaults to $INSTANCE_HOME/var/ZEO.pid, and its
+        configurable in $INSTANCE_HOME/etc/zeo.conf.
+
       - PluginIndexes: the ZCatalog's "Indexes" tab now show the number of
         distinct values indexed by each index instead of a mixture of indexed
         objects versus number of distinct values. Indexes derived from UnIndex 

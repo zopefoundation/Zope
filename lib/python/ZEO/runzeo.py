@@ -104,6 +104,8 @@ class ZEOOptionsMixin:
                  None, 'auth-database=')
         self.add('auth_realm', 'zeo.authentication_realm',
                  None, 'auth-realm=')
+        self.add('pid_file', 'zeo.pid_filename',
+                 None, 'pid-file=')
 
 class ZEOOptions(ZDOptions, ZEOOptionsMixin):
 
@@ -126,6 +128,7 @@ class ZEOServer:
         self.setup_default_logging()
         self.check_socket()
         self.clear_socket()
+        self.make_pidfile()
         try:
             self.open_storages()
             self.setup_signals()
@@ -134,6 +137,7 @@ class ZEOServer:
         finally:
             self.close_storages()
             self.clear_socket()
+            self.remove_pidfile()
 
     def setup_default_logging(self):
         if self.options.config_logger is not None:
@@ -227,6 +231,37 @@ class ZEOServer:
         #     the same effect with Python's logging package?
         #     Should we restart as with SIGHUP?
         log("received SIGUSR2, but it was not handled!", level=logging.WARNING)
+
+    def make_pidfile(self):
+        if not self.options.read_only:
+            pidfile = self.options.pid_file
+            # 'pidfile' is marked as not required.
+            if not pidfile:
+                pidfile = os.path.join(os.environ["INSTANCE_HOME"],
+                                       "var", "ZEO.pid")
+            try:
+                if os.path.exists(pidfile):
+                    os.unlink(pidfile)
+                pid = os.getpid()
+                f = open(pidfile,'w')
+                f.write(`pid`)
+                f.close()
+            except IOError:
+                error("PID file '%s' cannot be opened.")
+            except AttributeError:
+                pass  # getpid not supported. Unix/Win only
+
+    def remove_pidfile(self):
+        if not self.options.read_only:
+            pidfile = self.options.pid_file
+            if not pidfile:
+                pidfile = os.path.join(os.environ["INSTANCE_HOME"],
+                                       "var", "ZEO.pid")
+            try:
+                if os.path.exists(pidfile):
+                    os.unlink(pidfile)
+            except IOError:
+                error("PID file '%s' could not be removed.")
 
     def close_storages(self):
         for name, storage in self.storages.items():
