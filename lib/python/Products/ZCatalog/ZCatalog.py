@@ -830,8 +830,7 @@ class ZCatalog(Folder, Persistent, Implicit):
         # an "extra" record.
 
         if 'extra' in base.__init__.func_code.co_varnames:
-            extra.catalog = self
-            index = apply(base,(name,), {"extra":extra})
+            index = apply(base,(name,), {"extra":extra,"caller":self})
         else:
             index = base(name,self)
         
