@@ -84,8 +84,8 @@
 ##############################################################################
 """Mounted database support
 
-$Id: TemporaryFolder.py,v 1.2 2001/11/13 21:44:33 matt Exp $"""
-__version__='$Revision: 1.2 $'[11:-2]
+$Id: TemporaryFolder.py,v 1.3 2001/11/17 15:46:52 chrism Exp $"""
+__version__='$Revision: 1.3 $'[11:-2]
 
 import Globals
 from Globals import HTMLFile
@@ -149,5 +149,9 @@ class MountedTemporaryFolder(MountPoint, OFS.SimpleItem.Item):
         # Set up our folder object
         folder.id = self.id                     # be a chameleon
         folder.title = self.title
-
         folder.icon = "misc_/TemporaryFolder/tempfolder.gif"
+        s=folder.manage_options[1:]
+        folder.manage_options = (
+            {'label':'Contents', 'action':'manage_main',
+             'help':('TemporaryFolder','TemporaryFolder.stx')},
+            )+s
