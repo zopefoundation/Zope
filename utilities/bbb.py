@@ -234,8 +234,11 @@ def xml(pos, oid, start, tname, user, t, p, first):
     u=ppml.ToXMLUnpickler
     
     write=sys.stdout.write
+
+    if first: write('<?xml version="1.0">\n<ZopeData>\n')
     if pos is None: 
 	write('</transaction>\n')
+	write('</ZopeData>\n')
 	return
 
     if user or t or first:
@@ -253,8 +256,11 @@ def xml(pos, oid, start, tname, user, t, p, first):
 
 def xmls(pos, oid, start, tname, user, t, p, first):
     write=sys.stdout.write
+
+    if first: write('<?xml version="1.0">\n<transactions>\n')
     if pos is None: 
 	write('</transaction>\n')
+	write('</transactioons>\n')
 	return
 
     if user or t or first:
