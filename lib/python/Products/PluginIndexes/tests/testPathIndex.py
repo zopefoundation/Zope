@@ -187,5 +187,11 @@ class TestCase( unittest.TestCase ):
                 res = self._index._apply_index({"path":{'query':path,"level":level}})
                 lst = list(res[0].keys())
                 assert lst==results,res
+
+        for comp,level,results in tests:
+            for path in [comp,"/"+comp,"/"+comp+"/"]:
+                res = self._index._apply_index({"path":{'query':( (path,level),)}})
+                lst = list(res[0].keys())
+                assert lst==results,res
     
 framework()
