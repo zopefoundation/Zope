@@ -85,8 +85,8 @@
 """Document Template Tests
 """
 
-__rcs_id__='$Id: testDTML.py,v 1.5 2001/05/23 18:03:37 shane Exp $'
-__version__='$Revision: 1.5 $'[11:-2]
+__rcs_id__='$Id: testDTML.py,v 1.6 2001/07/02 16:30:46 shane Exp $'
+__version__='$Revision: 1.6 $'[11:-2]
 
 import sys, os
 import unittest
@@ -108,6 +108,8 @@ def read_file(name):
 from DocumentTemplate import HTML, String
 from ExtensionClass import Base
 class D:
+    __allow_access_to_unprotected_subobjects__ = 1
+
     def __init__(self, **kw):
         for k, v in kw.items(): self.__dict__[k]=v
 
@@ -476,7 +478,7 @@ foo bar
    andrew, 5
    chessie, 2
 """
-        result = HTML(html)(data=data)
+        result = self.doc_class(html)(data=data)
         assert result == expected, result
 
     def checkBasicHTMLIn2(self):
@@ -491,7 +493,16 @@ foo bar
    2
    3
 """
-        result = HTML(html)(xxx=xxx)
+        result = self.doc_class(html)(xxx=xxx)
+        assert result == expected, result
+
+    def checkBasicHTMLIn3(self):
+        ns = {'prop_ids': ('title', 'id'), 'title': 'good', 'id': 'times'}
+        html = """:<dtml-in prop_ids><dtml-var sequence-item>=<dtml-var
+        expr="_[_['sequence-item']]">:</dtml-in>"""
+        result = self.doc_class(html)(None, ns)
+        expected = ":title=good:id=times:"
+
         assert result == expected, result
 
     def checkHTMLInElse(self):
@@ -510,7 +521,7 @@ foo bar
 2
 3
 """
-        result = HTML(html)(xxx=xxx, data={})
+        result = self.doc_class(html)(xxx=xxx, data={})
         assert result == expected, result
         
     def checkBasicStringIn(self):

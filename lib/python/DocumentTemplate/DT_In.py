@@ -402,8 +402,8 @@
 
 ''' #'
 
-__rcs_id__='$Id: DT_In.py,v 1.52 2001/06/21 17:45:12 shane Exp $'
-__version__='$Revision: 1.52 $'[11:-2]
+__rcs_id__='$Id: DT_In.py,v 1.53 2001/07/02 16:30:46 shane Exp $'
+__version__='$Revision: 1.53 $'[11:-2]
 
 import sys
 from DT_Util import ParseError, parse_params, name_param, str
@@ -412,6 +412,7 @@ from DT_Util import simple_name, add_with_prefix
 import re
 from DT_InSV import sequence_variables, opt
 TupleType=type(())
+StringTypes = (type(''), type(u''))
 
 class InFactory:
     blockContinuations=('else',)
@@ -652,14 +653,23 @@ class InClass:
                         client = sequence[index]
 
                     pkw['sequence-index']=index
-                    if type(client)==TupleType and len(client)==2:
+                    t = type(client)
+                    if t is TupleType and len(client)==2:
                         client=client[1]
 
-                    if mapping: push(client)
-                    else: push(InstanceDict(client, md))
+                    if mapping:
+                        pushed = 1
+                        push(client)
+                    elif t in StringTypes:
+                        pushed = 0
+                    else:
+                        pushed = 1
+                        push(InstanceDict(client, md))
 
                     try: append(render(section, md))
-                    finally: pop(1)
+                    finally:
+                        if pushed:
+                            pop()
 
                     if index==first: pkw['sequence-start']=0
 
@@ -744,14 +754,23 @@ class InClass:
                         client = sequence[index]
 
                     pkw['sequence-index']=index
-                    if type(client)==TupleType and len(client)==2:
+                    t = type(client)
+                    if t is TupleType and len(client)==2:
                         client=client[1]
 
-                    if mapping: push(client)
-                    else: push(InstanceDict(client, md))
+                    if mapping:
+                        pushed = 1
+                        push(client)
+                    elif t in StringTypes:
+                        pushed = 0
+                    else:
+                        pushed = 1
+                        push(InstanceDict(client, md))
 
                     try: append(render(section, md))
-                    finally: pop()
+                    finally:
+                        if pushed:
+                            pop()
                     if index==0: pkw['sequence-start']=0
 
                 result = ''.join(result)
