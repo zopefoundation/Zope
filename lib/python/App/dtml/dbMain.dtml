@@ -34,6 +34,7 @@ and cache management.
 </tr>
 </table>
 
+<br />
 <form action="manage_pack" method="post">
 <table cellspacing="0" cellpadding="2" border="0">
 <tr>

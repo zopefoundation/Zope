@@ -11,11 +11,13 @@ function update_menu() {
 //-->
 </script>
 </head>
-<dtml-if "_.string.find(REQUEST.get('HTTP_USER_AGENT', ''), 'MSIE') > -1">
-<frameset rows="34, *">
-<dtml-else>
+<dtml-let ag="REQUEST.get('HTTP_USER_AGENT', '')">
+<dtml-if "ag[:9] == 'Mozilla/4' and _.string.find(ag, 'MSIE') < 0">
 <frameset rows="40, *">
+<dtml-else>
+<frameset rows="34, *">
 </dtml-if>
+</dtml-let>
   <frame src="<dtml-var URL1>/manage_top_frame" name="manage_top_frame"
    marginwidth="0" marginheight="0" scrolling="no"/>
   <frameset cols="175,*">
