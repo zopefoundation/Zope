@@ -84,8 +84,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.7 1999/03/18 20:16:59 brian Exp $'''
-__version__='$Revision: 1.7 $'[11:-2]
+$Id: HTTPResponse.py,v 1.8 1999/04/22 23:37:11 amos Exp $'''
+__version__='$Revision: 1.8 $'[11:-2]
 
 import string, types, sys, regex
 from string import find, rfind, lower, upper, strip, split, join, translate
@@ -252,7 +252,7 @@ class HTTPResponse(BaseResponse):
 
     __setitem__=setHeader
 
-    def setBody(self, body, title='',
+    def setBody(self, body, title='', is_error=0,
                 bogus_str_search=regex.compile(" [a-fA-F0-9]+>$").search,
                 ):
         '''\
@@ -266,6 +266,9 @@ class HTTPResponse(BaseResponse):
 
         If the body is a 2-element tuple, then it will be treated
         as (title,body)
+        
+        If is_error is true then the HTML will be formatted as a Zope error
+        message instead of a generic HTML page.
         '''
         if type(body) is types.TupleType:
             title,body=body
@@ -283,16 +286,17 @@ class HTTPResponse(BaseResponse):
             if self.debug_mode: _tbopen, _tbclose = '<PRE>', '</PRE>'
             else:               _tbopen, _tbclose = '<!--',  '-->'
             
-            raise 'NotFound', (
-                "Sorry, the requested document does not exist.<p>"
+            self.notFoundError(
                 "\n%s\n%s\n%s" % (_tbopen, body[1:-1], _tbclose))
-            
-        if(title):
-            self.body=('<html>\n<head>\n<title>%s</title>\n</head>\n'
-                       '<body>\n%s\n</body>\n</html>'
-                       % (str(title),str(body)))
+                
         else:
-            self.body=str(body)
+            if(title):
+                if not is_error:
+                    self.body=self._html(str(title), str(body))
+                else:
+                    self.body=self._error_html(str(title), str(body))
+            else:
+                self.body=str(body)
         self.insertBase()
         return self
 
@@ -445,31 +449,43 @@ class HTTPResponse(BaseResponse):
                 "<body>\n%s\n</body>\n"
                 "</html>\n" % (title,body))
 
+    def _error_html(self,title,body):
+        # XXX could this try to use standard_error_message somehow?
+        return ("<html>\n"
+                "<head>\n<title>Zope Error %s</title>\n</head>\n"
+                "<body><h2>Zope Error %s</h2>\n%s\n"
+                "<p>(View HTML source for more information.)</body>\n"
+                "</html>\n" % (title,title,body))
+
     def notFoundError(self,entry='who knows!'):
-        raise 'NotFound',self._html(
+        raise 'NotFound',self._error_html(
             "Resource not found",
-            "Sorry, the requested document does not exist.<p>"
+            "Sorry, the requested Zope resource does not exist.<p>" +
+            "Check the URL and try again.<p>" +
             "\n<!--\n%s\n-->" % entry)
 
     forbiddenError=notFoundError  # If a resource is forbidden,
                                   # why reveal that it exists?
 
     def debugError(self,entry):
-        raise 'NotFound',self._html(
+        raise 'NotFound',self._error_html(
             "Debugging Notice",
-            "Bobo has encountered a problem publishing your object.<p>"
+            "Zope has encountered a problem publishing your object.<p>"
             "\n%s" % entry)
 
     def badRequestError(self,name):
         if regex.match('^[A-Z_0-9]+$',name) >= 0:
-            raise 'InternalError', self._html(
+            raise 'InternalError', self._error_html(
                 "Internal Error",
-                "Sorry, an internal error occurred in this resource.")
+                "Sorry, an internal error occurred in this Zope resource.")
 
-        raise 'BadRequest',self._html(
+        raise 'BadRequest',self._error_html(
             "Invalid request",
-            "The parameter, <em>%s</em>, was omitted from the request."
-            % name)
+            "The parameter, <em>%s</em>, " % name +
+            "was omitted from the request.<p>" + 
+            "Make sure to specify all required parameters, " +
+            "and try the request again."
+            )
 
     def _unauthorized(self):
         realm=self.realm
@@ -480,16 +496,10 @@ class HTTPResponse(BaseResponse):
         m="<strong>You are not authorized to access this resource.</strong>"
         if self.debug_mode:
             if self._auth:
-                m=m+'\nUsername and password are not correct.'
+                m=m+'<p>\nUsername and password are not correct.'
             else:
-                m=m+'\nNo Authorization header found.'
+                m=m+'<p>\nNo Authorization header found.'
         raise 'Unauthorized', m
-
-    def forbiddenError(self,object=None):
-        raise 'NotFound',self._html(
-            "Resource not found",
-            "Sorry, the requested document does not exist.<p>"
-            "<!--%s-->" % object)
 
     def exception(self, fatal=0, info=None,
                   absuri_match=regex.compile(
@@ -557,24 +567,31 @@ class HTTPResponse(BaseResponse):
             if t is SystemExit and v.code==0:
                 tb=self.setBody(
                     (str(t),
-                    'This application has exited normally.<p>'
-                     + self._traceback(t,v,tb)))
+                    'Zope has exited normally.<p>'
+                     + self._traceback(t,v,tb)),
+                     is_error=1)
             else:
                 tb=self.setBody(
                     (str(t),
-                    'Sorry, a SERIOUS APPLICATION ERROR occurred.<p>'
-                     + self._traceback(t,v,tb)))
+                     'Sorry, a serious Zope error occurred.<p>'
+                     + self._traceback(t,v,tb)),
+                     is_error=1)
 
         elif type(b) is not types.StringType or tag_search(b) < 0:
             tb=self.setBody(
                 (str(t),
-                 'Sorry, an error occurred.<p>'
-                 + self._traceback(t,v,tb)))
+                'Sorry, a Zope error occurred.<p>'+
+                 self._traceback(t,v,tb)),
+                 is_error=1)
 
-        elif self.isHTML(b):
-            tb=self.setBody(b+self._traceback(t,'(see above)',tb))
+        elif lower(strip(b))[:6]=='<html>':
+            # error is an HTML document, not just a snippet of html
+            tb=self.setBody(b + self._traceback(t,'(see above)',tb),
+                is_error=1)
         else:
-            tb=self.setBody((str(t),b+self._traceback(t,'(see above)',tb)))
+            tb=self.setBody(
+                (str(t), b + self._traceback(t,'(see above)',tb)),
+                 is_error=1)
 
         return tb
 
