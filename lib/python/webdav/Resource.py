@@ -85,7 +85,7 @@
 
 """WebDAV support - resource objects."""
 
-__version__='$Revision: 1.25 $'[11:-2]
+__version__='$Revision: 1.26 $'[11:-2]
 
 import sys, os, string, mimetypes, davcmds, ExtensionClass
 from common import absattr, aq_base, urlfix, rfc1123_date
@@ -110,9 +110,7 @@ class Resource(ExtensionClass.Base):
         ('View',                             ('HEAD',)),
         ('Access contents information',      ('PROPFIND',)),
         ('Manage properties',                ('PROPPATCH',)),
-        ('Add Documents, Images, and Files', ('PUT',)),
         ('Delete objects',                   ('DELETE',)),
-        ('Add Folders',                      ('MKCOL',)),
     )
 
     def dav__init(self, request, response):
