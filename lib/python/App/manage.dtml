@@ -1,23 +1,30 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
-<HTML lang="en">
-<HEAD>
-<TITLE>&dtml-title_or_id; on &dtml.-URL1;</TITLE>
-<SCRIPT LANGUAGE="javascript">
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+<title>&dtml-title_or_id; on &dtml.-URL1;</title>
+<script language="javascript">
 <!--
-function update_menu()
-{   window.manage_menu.location.href=window.manage_menu.location.href;
+function update_menu() {   
+  window.manage_menu.location.href=window.manage_menu.location.href;
+}
+
+function openHelpWindow(url) {
+  helpWindow = window.open(url,"zope_help","width=600,height=500,menubar=yes,toolbar=yes,scrollbars=yes,resizable=yes"); 
+  helpWindow.focus();
+  return false;
 }
 //-->
-</SCRIPT>
-</HEAD>
-<FRAMESET COLS="175,*">
-  <FRAME SRC="&dtml.-URL1;/manage_menu" NAME="manage_menu"
-   MARGINWIDTH="2" MARGINHEIGHT="2" SCROLLING="auto">
-  <FRAME SRC="&dtml.-URL1;/manage_workspace" NAME="manage_main"
-   MARGINWIDTH="2" MARGINHEIGHT="0" SCROLLING="auto">
-</FRAMESET>
-<NOFRAMES>
+</script>
+</head>
+<frameset cols="175,*">
+  <frame src="&dtml.-URL1;/manage_menu" name="manage_menu"
+   marginwidth="2" marginheight="2" scrolling="auto">
+  <frame src="&dtml.-URL1;/manage_workspace" name="manage_main"
+   marginwidth="2" marginheight="0" scrolling="auto">
+</frameset>
+<noframes>
 Management interfaces require the use of a <B>frames-capable</B> web browser.
-</NOFRAMES>
-</HTML>
+</noframes>
+</html>
 
