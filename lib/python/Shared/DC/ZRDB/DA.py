@@ -85,8 +85,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.64 1999/03/22 23:20:29 jim Exp $'''
-__version__='$Revision: 1.64 $'[11:-2]
+$Id: DA.py,v 1.65 1999/03/25 16:07:43 jim Exp $'''
+__version__='$Revision: 1.65 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct, RDB
 import DocumentTemplate, marshal, md5, base64, DateTime, Acquisition, os
@@ -142,13 +142,11 @@ class DA(
  
     # Specify how individual operations add up to "permissions":
     __ac_permissions__=(
-        ('View management screens', ('manage_tabs','manage_main', 'index_html',
+        ('View management screens', ('manage_main', 'index_html',
                                      'manage_advancedForm',
                                      )),
-        ('Change permissions',      ('manage_access',)            ),
         ('Change Database Methods',
-         ('manage_edit','manage_advanced',
-          'manage_testForm','manage_test')),
+         ('manage_edit','manage_advanced', 'manage_testForm','manage_test')),
         ('Use Database Methods', ('__call__',''), ('Anonymous','Manager')),
         )
    

@@ -85,8 +85,8 @@
 __doc__='''Generic Database Connection Support
 
 
-$Id: Connection.py,v 1.17 1999/03/10 00:15:44 klm Exp $'''
-__version__='$Revision: 1.17 $'[11:-2]
+$Id: Connection.py,v 1.18 1999/03/25 16:07:28 jim Exp $'''
+__version__='$Revision: 1.18 $'[11:-2]
 
 import Globals, OFS.SimpleItem, AccessControl.Role, Acquisition, sys
 from DateTime import DateTime
@@ -110,13 +110,10 @@ class Connection(
  
     # Specify how individual operations add up to "permissions":
     __ac_permissions__=(
-        ('View management screens', ('manage_tabs','manage_main',
-                                     'manage_properties')),
-        ('Change permissions',      ('manage_access',)            ),
-        ('Change Database Connections', ('manage_edit',)              ),
+        ('View management screens', ('manage_main',)),
+        ('Change Database Connections', ('manage_edit',)),
         ('Open/Close Database Connection',
-         ('manage_open_connection',
-          'manage_close_connection')),
+         ('manage_open_connection', 'manage_close_connection')),
         )
 
     _v_connected=''
