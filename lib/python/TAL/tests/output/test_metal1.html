@@ -72,8 +72,8 @@
 
 <span metal:use-macro="INNER3">INNER
     <yyy metal:fill-slot="INNERSLOT">
-    <zzz metal:define-macro="INSLOT">INSLOT</zzz>
+    <zzz metal:define-macro="INSLOT"><aaa metal:slot="null">INSLOT</aaa></zzz>
   </yyy>
   </span>
 
-<zzz metal:use-macro="INSLOT">INSLOT</zzz>
+<zzz metal:use-macro="INSLOT"><aaa>INSLOT</aaa></zzz>

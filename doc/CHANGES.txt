@@ -32,6 +32,8 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #646: metal:slot was lost during the I18n merge.
+
       - Removed the signal handler hung off USR1 for packing the database.
         This feature proved dangerous as the pack operation would happen in
         the main thread, causing all asyncore operations to stop until it
