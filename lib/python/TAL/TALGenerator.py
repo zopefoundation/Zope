@@ -143,7 +143,12 @@ class TALGenerator:
             self.program.append(("endTag", name))
 
     def emitText(self, text):
-        self.program.append(("rawtext", cgi.escape(text)))
+        text = cgi.escape(text)
+        if self.program and self.program[-1][0] == "rawtext":
+            # Concatenate text
+            self.program[-1] = ("rawtext", self.program[-1][1] + text)
+            return
+        self.program.append(("rawtext", text))
 
     def emitDefines(self, defines):
         for part in splitParts(defines):
