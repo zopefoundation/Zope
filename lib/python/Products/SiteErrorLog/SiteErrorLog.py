@@ -13,7 +13,7 @@
 ##############################################################################
 """Site error log module.
 
-$Id: SiteErrorLog.py,v 1.10 2002/08/14 22:25:11 mj Exp $
+$Id: SiteErrorLog.py,v 1.11 2002/08/21 14:23:24 shane Exp $
 """
 
 import os
@@ -203,8 +203,11 @@ class SiteErrorLog (SimpleItem):
 
     security.declareProtected(use_error_logging, 'getProperties')
     def getProperties(self):
-        return {'keep_entries': self.keep_entries,
-                'copy_to_zlog': self.copy_to_zlog}
+        return {
+            'keep_entries': self.keep_entries,
+            'copy_to_zlog': self.copy_to_zlog,
+            'ignored_exceptions': self._ignored_exceptions,
+            }
 
     security.declareProtected(log_to_event_log, 'checkEventLogPermission')
     def checkEventLogPermission(self):
@@ -214,7 +217,8 @@ class SiteErrorLog (SimpleItem):
         return 1
 
     security.declareProtected(use_error_logging, 'setProperties')
-    def setProperties(self, keep_entries, copy_to_zlog=0, RESPONSE=None):
+    def setProperties(self, keep_entries, copy_to_zlog=0,
+                      ignored_exceptions=(), RESPONSE=None):
         """Sets the properties of this site error log.
         """
         copy_to_zlog = not not copy_to_zlog
@@ -223,6 +227,8 @@ class SiteErrorLog (SimpleItem):
             self.checkEventLogPermission()
         self.keep_entries = int(keep_entries)
         self.copy_to_zlog = copy_to_zlog
+        self._ignored_exceptions = tuple(
+            filter(None, map(str, ignored_exceptions)))
         if RESPONSE is not None:
             RESPONSE.redirect(
                 '%s/manage_main?manage_tabs_message=Changed+properties.' %
@@ -230,12 +236,14 @@ class SiteErrorLog (SimpleItem):
 
     security.declareProtected(use_error_logging, 'getLogEntries')
     def getLogEntries(self):
-        """Returns the entries in the log.
+        """Returns the entries in the log, most recent first.
 
         Makes a copy to prevent changes.
         """
         # List incomprehension ;-)
-        return [entry.copy() for entry in self._getLog()]
+        res = [entry.copy() for entry in self._getLog()]
+        res.reverse()
+        return res
 
     security.declareProtected(use_error_logging, 'getLogEntryById')
     def getLogEntryById(self, id):

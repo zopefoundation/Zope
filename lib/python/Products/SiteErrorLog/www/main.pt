@@ -35,6 +35,17 @@ file(s).
   </tr>
   <tr>
     <td align="left" valign="top">
+    <div class="form-label">
+    Ignored exception types
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <textarea name="ignored_exceptions:lines" cols="40" rows="3"
+      tal:content="python: '\n'.join(props['ignored_exceptions'])"></textarea>
+    </td>
+  </tr>
+  <tr>
+    <td align="left" valign="top">
     </td>
     <td align="left" valign="top">
     <div class="form-element">
@@ -45,7 +56,7 @@ file(s).
   </tr>
 </table>
 
-<h3>Exception Log</h3>
+<h3>Exception Log (most recent first)</h3>
 
 <div tal:define="entries container/getLogEntries">
 
