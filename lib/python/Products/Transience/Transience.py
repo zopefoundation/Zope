@@ -85,10 +85,10 @@
 """
 Core session tracking SessionData class.
 
-$Id: Transience.py,v 1.15 2001/11/08 21:15:28 matt Exp $
+$Id: Transience.py,v 1.16 2001/11/08 21:20:41 matt Exp $
 """
 
-__version__='$Revision: 1.15 $'[11:-2]
+__version__='$Revision: 1.16 $'[11:-2]
 
 import Globals
 from Globals import HTMLFile, MessageDialog
@@ -518,9 +518,7 @@ class TransientObjectContainer(SimpleItem):
 
     security.declareProtected(ACCESS_TRANSIENTS_PERM, 'has_key')
     def has_key(self, k):
-        self._getCurrentBucket()
-        index = self._ring._index
-        v = index.get(k, _notfound) 
+        v = self.get(k, _notfound) 
         if v is _notfound or not v.isValid(): return 0
         return 1
 
