@@ -13,10 +13,11 @@ from Method import Method
 from Attr import Attribute
 from types import FunctionType, ClassType
 import Exceptions
+from InterfaceBase import InterfaceBase
 
 _typeImplements={}
 
-class Interface:
+class Interface(InterfaceBase):
     """Prototype (scarecrow) Interfaces Implementation
     """
 
@@ -51,29 +52,8 @@ class Interface:
 
         self.__attrs = attrs
 
-    def deferred(self):
-        """Return a defrered class corresponding to the interface
-        """
-        if hasattr(self, "_deferred"): return self._deferred
-
-        klass={}
-        exec "class %s: pass" % self.__name__ in klass
-        klass=klass[self.__name__]
-        
-        self.__d(klass.__dict__)
-
-        self._deferred=klass
-
-        return klass
-
-    def __d(self, dict):
-
-        for k, v in self.__attrs.items():
-            if isinstance(v, Method) and not dict.has_key(k):
-                dict[k]=v
-
-        for b in self.__bases__: b.__d(dict)
-            
+    def getBases(self):
+        return self.__bases__
 
     def extends(self, other):
         """Does an interface extend another?
@@ -139,6 +119,30 @@ class Interface:
         """
         return self.__attrs.get(name, default)
 
+    def deferred(self):
+        """Return a defrered class corresponding to the interface
+        """
+        if hasattr(self, "_deferred"): return self._deferred
+
+        klass={}
+        exec "class %s: pass" % self.__name__ in klass
+        klass=klass[self.__name__]
+        
+        self.__d(klass.__dict__)
+
+        self._deferred=klass
+
+        return klass
+
+    def __d(self, dict):
+
+        for k, v in self.__attrs.items():
+            if isinstance(v, Method) and not dict.has_key(k):
+                dict[k]=v
+
+        for b in self.__bases__: b.__d(dict)
+            
+
     def __any(self, interfaces):
         for i in interfaces:
             if isinstance(i,Interface):
@@ -149,6 +153,7 @@ class Interface:
 
     def __repr__(self):
         return "<Interface %s at %x>" % (self.__name__, id(self))
+
 
 Base=Interface("Interface")
 
