@@ -53,7 +53,7 @@ class BaseIndex(Persistent):
 
         # wid -> {docid -> weight}; t -> D -> w(D, t)
         # Different indexers have different notions of term weight, but we
-        # expect all indexers to use ._wordinfo to map wids to its notion
+        # expect each indexer to use ._wordinfo to map wids to its notion
         # of a docid-to-weight map.
         # There are two kinds of OOV words:  wid 0 is explicitly OOV,
         # and it's possible that the lexicon will return a non-zero wid
@@ -63,6 +63,12 @@ class BaseIndex(Persistent):
         # this index if and only if _wordinfo.has_key(wid).  Note that
         # wid 0 must not be a key in _wordinfo.
         self._wordinfo = IOBTree()
+
+        # docid -> weight
+        # Different indexers have different notions of doc weight, but we
+        # expect each indexer to use ._docweight to map docids to its
+        # notion of what a doc weight is.
+        self._docweight = IIBTree()
 
         # docid -> WidCode'd list of wids
         # Used for un-indexing, and for phrase search.

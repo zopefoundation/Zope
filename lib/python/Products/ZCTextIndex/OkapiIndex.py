@@ -63,20 +63,20 @@ class OkapiIndex(BaseIndex):
         # ._wordinfo for Okapi is
         # wid -> {docid -> frequency}; t -> D -> f(D, t)
 
+        # ._docweight for Okapi is
         # docid -> # of words in the doc
         # This is just len(self._docwords[docid]), but _docwords is stored
         # in compressed form, so uncompressing it just to count the list
         # length would be ridiculously expensive.
-        self._doclen = IIBTree()
 
-        # sum(self._doclen.values()), the total # of words in all docs
+        # sum(self._docweight.values()), the total # of words in all docs
         # This is a long for "better safe than sorry" reasons.  It isn't
         # used often enough that speed should matter.
         self._totaldoclen = 0L
 
     def index_doc(self, docid, text):
         wids = self._lexicon.sourceToWordIds(text)
-        self._doclen[docid] = len(wids)
+        self._docweight[docid] = len(wids)
         self._totaldoclen += len(wids)
 
         wid2count = self._get_frequencies(wids)
@@ -92,8 +92,8 @@ class OkapiIndex(BaseIndex):
 
         del self._docwords[docid]
 
-        count = self._doclen[docid]
-        del self._doclen[docid]
+        count = self._docweight[docid]
+        del self._docweight[docid]
         self._totaldoclen -= count
 
     # The workhorse.  Return a list of (IIBucket, weight) pairs, one pair
@@ -105,7 +105,7 @@ class OkapiIndex(BaseIndex):
     def _search_wids(self, wids):
         if not wids:
             return []
-        N = float(len(self._doclen))  # total # of docs
+        N = float(len(self._docweight))  # total # of docs
         meandoclen = self._totaldoclen / N
         K1 = self.K1
         B = self.B
@@ -117,7 +117,7 @@ class OkapiIndex(BaseIndex):
         #               f(D, t) + k1 * ((1-b) + b*len(D)/E(len(D)))
 
         L = []
-        docid2len = self._doclen
+        docid2len = self._docweight
         for t in wids:
             assert self._wordinfo.has_key(t)  # caller responsible for OOV
             d2f = self._wordinfo[t] # map {docid -> f(docid, t)}

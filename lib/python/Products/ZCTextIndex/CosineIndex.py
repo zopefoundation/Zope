@@ -54,8 +54,8 @@ class CosineIndex(BaseIndex):
         # ._wordinfo for cosine is wid -> {docid -> weight};
         # t -> D -> w(d, t)/W(d)
 
+        # ._docweight for Okapi is
         # docid -> W(docid)
-        self._docweight = IIBTree()
 
     # Most of the computation for computing a relevance score for the
     # document occurs in the search() method.  The code currently
