@@ -10,8 +10,8 @@
 ############################################################################## 
 __doc__='''Shared Aqueduct classes and functions
 
-$Id: Aqueduct.py,v 1.22 1998/04/15 14:23:36 jim Exp $'''
-__version__='$Revision: 1.22 $'[11:-2]
+$Id: Aqueduct.py,v 1.23 1998/04/15 14:55:26 jim Exp $'''
+__version__='$Revision: 1.23 $'[11:-2]
 
 from Globals import HTMLFile, Persistent
 import DocumentTemplate, DateTime, regex, regsub, string, urllib, rotor
@@ -25,6 +25,8 @@ from DocumentTemplate import HTML
 from string import strip
 
 dtml_dir="%s/lib/python/Aqueduct/" % SOFTWARE_HOME
+
+InvalidParameter='Invalid Parameter'
 
 class BaseQuery(Persistent, SimpleItem.Item, Acquisition.Implicit, RoleManager):
 
@@ -387,6 +389,9 @@ def delimited_output(results,REQUEST,RESPONSE):
 ############################################################################## 
 #
 # $Log: Aqueduct.py,v $
+# Revision 1.23  1998/04/15 14:55:26  jim
+# Fixed InvalidParameter NameError
+#
 # Revision 1.22  1998/04/15 14:23:36  jim
 # Changed parse to return a mapping object that keeps its
 # items sorted in original order.
