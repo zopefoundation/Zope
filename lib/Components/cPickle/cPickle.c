@@ -1,5 +1,5 @@
 /*
- * $Id: cPickle.c,v 1.60 1998/10/28 22:57:49 jim Exp $
+ * $Id: cPickle.c,v 1.61 1998/11/10 00:48:51 jim Exp $
  * 
  * Copyright (c) 1996-1998, Digital Creations, Fredericksburg, VA, USA.  
  * All rights reserved.
@@ -49,7 +49,7 @@
 static char cPickle_module_documentation[] = 
 "C implementation and optimization of the Python pickle module\n"
 "\n"
-"$Id: cPickle.c,v 1.60 1998/10/28 22:57:49 jim Exp $\n"
+"$Id: cPickle.c,v 1.61 1998/11/10 00:48:51 jim Exp $\n"
 ;
 
 #include "Python.h"
@@ -3300,6 +3300,8 @@ load_reduce(Unpicklerobject *self) {
         Py_DECREF(callable);
     }
     Py_DECREF(arg_tup);
+
+    if (! ob) return -1;
    
     PDATA_PUSH(self->stack, ob, -1);
     return 0;
@@ -4275,7 +4277,7 @@ init_stuff(PyObject *module, PyObject *module_dict) {
 void
 initcPickle() {
     PyObject *m, *d, *v;
-    char *rev="$Revision: 1.60 $";
+    char *rev="$Revision: 1.61 $";
     PyObject *format_version;
     PyObject *compatible_formats;
 
