@@ -8,20 +8,8 @@ Note: Tests require Zope >= 2.7
 
 
 import unittest
-
-from Testing.makerequest import makerequest
-
-class DummyFileUpload:
-    def __init__(self, data='', filename='', content_type=''):
-        self.data = data
-        self.filename = filename
-        self.headers = {'content_type': content_type}
-
-    def read(self):
-        return self.data
-    
 import Zope
-Zope.startup()
+from Testing.makerequest import makerequest
 
 class ZPTRegressions(unittest.TestCase):
 
@@ -67,7 +55,15 @@ class ZPTRegressions(unittest.TestCase):
         pt = self.app.pt1
         self.assertEqual(pt.document_src(), self.text)
         
-        
+ class DummyFileUpload:
+    def __init__(self, data='', filename='', content_type=''):
+        self.data = data
+        self.filename = filename
+        self.headers = {'content_type': content_type}
+
+    def read(self):
+
+       
 def test_suite():
     return unittest.makeSuite(ZPTRegressions)
 
