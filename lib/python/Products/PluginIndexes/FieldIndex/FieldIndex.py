@@ -13,12 +13,8 @@
 
 """Simple column indices"""
 
-__version__='$Revision: 1.7 $'[11:-2]
+__version__='$Revision: 1.8 $'[11:-2]
 
-from Globals import Persistent
-from Acquisition import Implicit
-import BTree
-import IOBTree
 from zLOG import LOG, ERROR
 from types import StringType, ListType, IntType, TupleType
 
@@ -30,15 +26,11 @@ import BTrees.Length
 from Products.PluginIndexes import PluggableIndex 
 from Products.PluginIndexes.common.UnIndex import UnIndex
 
-from Globals import Persistent, DTMLFile
-from Acquisition import Implicit
-from OFS.History import Historical
-from OFS.SimpleItem import SimpleItem
-
+from Globals import DTMLFile
 
 _marker = []
 
-class FieldIndex(UnIndex, Persistent, Implicit, SimpleItem):
+class FieldIndex(UnIndex):
     """Field Indexes"""
 
     __implements__ = (PluggableIndex.PluggableIndexInterface,)

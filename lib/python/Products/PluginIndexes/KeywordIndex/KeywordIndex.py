@@ -15,18 +15,15 @@ from zLOG import LOG, ERROR
 from types import StringType
 from BTrees.OOBTree import OOSet, difference
 
-
 from Globals import Persistent, DTMLFile
 from Acquisition import Implicit
-from OFS.History import Historical
-from OFS.SimpleItem import SimpleItem
 
 from Products.PluginIndexes import PluggableIndex 
 from Products.PluginIndexes.common.UnIndex import UnIndex 
 
 _marker = []
 
-class KeywordIndex(UnIndex,Persistent, Implicit,SimpleItem):
+class KeywordIndex(UnIndex,Persistent, Implicit):
 
     __implements__ = (PluggableIndex.PluggableIndexInterface,)
 

@@ -14,14 +14,13 @@
 """Text Index
 
 """
-__version__ = '$Revision: 1.29 $'[11:-2]
+__version__ = '$Revision: 1.30 $'[11:-2]
 
 
 import  re
 import operator,warnings
 from Globals import Persistent,DTMLFile
 from zLOG import LOG, ERROR
-from OFS.SimpleItem import SimpleItem
 from Acquisition import Implicit
 from Products.PluginIndexes.common.ResultList import ResultList
 from Products.PluginIndexes import PluggableIndex       
@@ -52,7 +51,7 @@ operator_dict = {'andnot': AndNot, 'and': And, 'or': Or,
                  '...': Near, 'near': Near,
                  AndNot: AndNot, And: And, Or: Or, Near: Near}
 
-class TextIndex(Persistent, Implicit, SimpleItem):
+class TextIndex(Persistent, Implicit):
     """Full-text index.
 
     There is a ZCatalog UML model that sheds some light on what is

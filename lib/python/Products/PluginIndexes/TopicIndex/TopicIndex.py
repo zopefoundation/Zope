@@ -11,21 +11,20 @@
 # 
 ##############################################################################
 
-__version__ = '$Id: TopicIndex.py,v 1.6 2002/04/24 15:46:09 andreasjung Exp $'
+__version__ = '$Id: TopicIndex.py,v 1.7 2002/04/25 12:32:14 andreasjung Exp $'
 
 from Products.PluginIndexes import PluggableIndex 
 from Products.PluginIndexes.common.util import parseIndexRequest
 
 from Globals import Persistent, DTMLFile
 from Acquisition import Implicit
-from OFS.SimpleItem import SimpleItem
 from BTrees.OOBTree import OOBTree
 from BTrees.IIBTree import IISet,intersection,union
 import FilteredSet
 
 _marker = []
 
-class TopicIndex(Persistent, Implicit, SimpleItem):
+class TopicIndex(Persistent, Implicit):
 
     """ A TopicIndex maintains a set of FilteredSet objects.
     Every FilteredSet object consists of an expression and 
