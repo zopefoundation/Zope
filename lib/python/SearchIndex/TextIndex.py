@@ -127,8 +127,8 @@ Notes on a new text index design
 
 
 
-$Id: TextIndex.py,v 1.2 1997/09/12 14:25:40 jim Exp $'''
-__version__='$Revision: 1.2 $'[11:-2]
+$Id: TextIndex.py,v 1.3 1997/09/17 17:53:32 jim Exp $'''
+__version__='$Revision: 1.3 $'[11:-2]
 
 from Globals import Persistent
 from Trie import Trie
@@ -215,6 +215,9 @@ class TextIndex(Persistent):
 		r=w2ids[word]=intSet()
 	    r.insert(id)
 
+    def unindex_item(self, id):
+	del self._id2info[id]
+
     def _subindex(self, isrc, d, pos):
 
         src = WordSequence(isrc, self._syn)  
@@ -238,8 +241,10 @@ class TextIndex(Persistent):
 
 	info=self._id2info
 	for id in set:
-	    v=info[id]
-	    r[id]=v[0],v[1][word]
+	    try:
+		v=info[id]
+		r[id]=v[0],v[1][word]
+	    except: pass
 
 	return r
 
@@ -284,6 +289,10 @@ class TextIndex(Persistent):
 ############################################################################## 
 #
 # $Log: TextIndex.py,v $
+# Revision 1.3  1997/09/17 17:53:32  jim
+# Added unindex_item.
+# This thing needs an overhaul; already. :-(
+#
 # Revision 1.2  1997/09/12 14:25:40  jim
 # Added logic to allow "blank" inputs.
 #
