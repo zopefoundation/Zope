@@ -13,15 +13,10 @@
 
 static char intSet_module_documentation[] = 
 ""
-"\n$Id: intSet.c,v 1.25 2003/10/19 22:19:39 tseaver Exp $"
+"\n$Id: intSet.c,v 1.26 2003/10/19 22:26:29 tseaver Exp $"
 ;
 
 #include "cPersistence.h"
-#include <limits.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <errno.h>
-#include <time.h>
 
 #define UNLESS(E) if(!(E))
 #define RETURN_NONE Py_INCREF(Py_None); return Py_None
