@@ -1106,7 +1106,7 @@ Wrapper_inContextOf(Wrapper *self, PyObject *args)
 }
 
 PyObject *
-Wrappers_are_not_picklable(PyObject *Wrapper, PyObject *args)
+Wrappers_are_not_picklable(PyObject *wrapper, PyObject *args)
 {
   PyErr_SetString(PyExc_TypeError, 
                   "Can't pickle objects in acquisition wrappers.");
@@ -1543,7 +1543,7 @@ init_Acquisition(void)
   /* Create the module and add the functions */
   m = Py_InitModule4("_Acquisition", methods,
 	   "Provide base classes for acquiring objects\n\n"
-	   "$Id: _Acquisition.c,v 1.2 2003/11/28 16:44:14 jim Exp $\n",
+	   "$Id: _Acquisition.c,v 1.3 2003/12/27 13:54:02 sidnei Exp $\n",
 		     OBJECT(NULL),PYTHON_API_VERSION);
 
   d = PyModule_GetDict(m);
