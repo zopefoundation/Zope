@@ -114,27 +114,6 @@ class ObjectManagerItem:
       'REQUEST' -- The current web request.
       
         This object is acquired and should not be set.
-
-      '__replaceable__' -- Object ID policy flags
-
-        Objects placed in an ObjectManager can have a special property,
-        '__replaceable__'.  This property controls the policy surrounding the
-        ID assigned to the object.  Currently this property can only be
-        set in Python.  There are two flags which can be OR'ed
-        together:
-
-        ObjectManager.REPLACEABLE -- Normally, ObjectManager does not
-        allow new objects to be created using an ID that is already in use
-        in the container.  If the object has the property '__replaceable__ =
-        ObjectManager.REPLACEABLE', however, users are permitted to replace
-        the object with another object having the same ID.
-        
-        ObjectManager.UNIQUE -- Sometimes you need to be able to set up
-        a "component" object that won't be overridden purposely nor
-        accidentally in subfolders.  Setting '__replaceable__ =
-        ObjectManager.UNIQUE' will cause ObjectManager to disallow creation
-        of objects of the same ID in subfolders.  This has the effect of
-        enforcing a unique object ID policy.
     """
     
     def title_or_id(self):
