@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__='''Simple module for writing tar files
 
-$Id: tar.py,v 1.7 2003/11/18 13:16:58 tseaver Exp $'''
-__version__='$Revision: 1.7 $'[11:-2]
+$Id: tar.py,v 1.8 2004/01/19 16:28:08 Brian Exp $'''
+__version__='$Revision: 1.8 $'[11:-2]
 
 import sys, time, zlib
 try:
@@ -28,7 +28,14 @@ def oct8(i):
 
 def oct12(i):
     i=oct(i)
-    return '0'*(11-len(i))+i+' '
+    v = '0'*(11-len(i))+i+' '
+    if len(v) > 12:
+        left = v[:-12]
+        for c in left:
+            if c != '0':
+                raise ValueError, 'value too large for oct12'
+        return v[-12:]
+    return v
 
 def pad(s,l):
     ls=len(s)
