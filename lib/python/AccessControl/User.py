@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.63 $'[11:-2]
+__version__='$Revision: 1.64 $'[11:-2]
 
 import Globals, App.Undo, socket, regex
 from Globals import HTMLFile, MessageDialog, Persistent, PersistentMapping
@@ -163,6 +163,10 @@ class BasicUser(Implicit):
             else: return r
 
     def allowed(self,parent,roles=None):
+        """Check wether the user has access to parent
+
+        assuming that parent.__roles__ is the given roles.
+        """
         usr_roles=self.getRoles()
         try:
             if roles is None or 'Anonymous' in roles:
