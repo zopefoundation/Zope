@@ -58,8 +58,8 @@
 __doc__='''Cache management support
 
 
-$Id: CacheManager.py,v 1.5 1998/02/05 15:20:21 jim Exp $'''
-__version__='$Revision: 1.5 $'[11:-2]
+$Id: CacheManager.py,v 1.6 1998/03/24 16:39:11 jim Exp $'''
+__version__='$Revision: 1.6 $'[11:-2]
 
 import Globals, time, sys
 
@@ -73,7 +73,7 @@ class CacheManager:
 
     def cache_length(self): return len(Globals.Bobobase._jar.cache)
 
-    def database_size(self): return len(Globals.Bobobase._jar.db.index)
+    def database_size(self): return len(Globals.Bobobase._jar.db.index)*4
 
     def cache_age(self): return self._cache_age
     def manage_cache_age(self,value,REQUEST):
@@ -157,6 +157,9 @@ class CacheManager:
 ############################################################################## 
 #
 # $Log: CacheManager.py,v $
+# Revision 1.6  1998/03/24 16:39:11  jim
+# Changed to give more likely database size.
+#
 # Revision 1.5  1998/02/05 15:20:21  jim
 # Lowered cache size.
 #
