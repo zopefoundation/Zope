@@ -51,7 +51,7 @@
 #   (540) 371-6909
 #
 ##############################################################################
-"$Id: DT_String.py,v 1.15 1998/09/02 21:06:04 jim Exp $"
+"$Id: DT_String.py,v 1.16 1998/09/02 21:16:45 jim Exp $"
 
 from string import split, strip
 import regex, ts_regex
@@ -124,7 +124,10 @@ class String:
         if type(command) is tt:
             cname, module, name = command
             d={}
-            exec 'from %s import %s' % (module, name) in d
+            try:
+                exec 'from %s import %s' % (module, name) in d
+            except ImportError:
+                exec 'from DocumentTemplate.%s import %s' % (module, name) in d
             command=d[name]
             self.commands[cname]=command
         return tag, args, command, coname
