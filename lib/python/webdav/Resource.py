@@ -85,9 +85,9 @@
 
 """WebDAV support - resource objects."""
 
-__version__='$Revision: 1.16 $'[11:-2]
+__version__='$Revision: 1.17 $'[11:-2]
 
-import sys, os, string, mimetypes, xmlcmds
+import sys, os, string, mimetypes, davcmds
 from common import absattr, aq_base, urlfix, rfc1123_date
 
 
@@ -197,7 +197,7 @@ class Resource:
     def PROPFIND(self, REQUEST, RESPONSE):
         """Retrieve properties defined on the resource."""
         self.dav__init(REQUEST, RESPONSE)
-        cmd=xmlcmds.PropFind(REQUEST)
+        cmd=davcmds.PropFind(REQUEST)
         result=cmd.apply(self)
         RESPONSE.setStatus(207)
         RESPONSE.setHeader('Content-Type', 'text/xml; charset="utf-8"')
@@ -211,7 +211,7 @@ class Resource:
             raise 'Method Not Allowed', (
                   'Method not supported for this resource.')
         # TODO: add lock checking here
-        cmd=xmlcmds.PropPatch(REQUEST)
+        cmd=davcmds.PropPatch(REQUEST)
         result=cmd.apply(self)
         RESPONSE.setStatus(207)
         RESPONSE.setHeader('Content-Type', 'text/xml; charset="utf-8"')
