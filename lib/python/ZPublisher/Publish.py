@@ -478,11 +478,11 @@ Publishing a module using CGI
       containing the module to be published) to the module name in the
       cgi-bin directory.
 
-$Id: Publish.py,v 1.97 1998/09/09 18:05:05 jim Exp $"""
+$Id: Publish.py,v 1.98 1998/09/21 22:25:12 jim Exp $"""
 #'
 #
 ##########################################################################
-__version__='$Revision: 1.97 $'[11:-2]
+__version__='$Revision: 1.98 $'[11:-2]
 
 import sys, os, string, cgi, regex
 from string import *
@@ -768,7 +768,8 @@ class ModulePublisher:
                     except AttributeError:
                         got=1
                         try: subobject=object[entry_name]
-                        except (KeyError, IndexError):
+                        except (KeyError, IndexError,
+                                TypeError, AttributeError):
                             if entry_name=='.': subobject=object
                             elif entry_name=='..' and parents:
                                 subobject=parents[-1]
