@@ -13,7 +13,7 @@
 __doc__='''Generic Database adapter'''
 
 
-__version__='$Revision: 1.113 $'[11:-2]
+__version__='$Revision: 1.114 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct, RDB, re
 import DocumentTemplate, marshal, md5, base64, Acquisition, os
@@ -40,6 +40,11 @@ from webdav.Lockable import ResourceLockedError
 from zExceptions import BadRequest
 try: from IOBTree import Bucket
 except: Bucket=lambda:{}
+
+
+class DatabaseError(BadRequest):
+   " base class for external relational data base connection problems "
+   pass
 
 
 class nvSQL(DocumentTemplate.HTML):
@@ -412,7 +417,7 @@ class DA(
                 c))
 
         try: DB__=dbc()
-        except: raise BadRequest, (
+        except: raise DatabaseError, (
             '%s is not connected to a database' % self.id)
 
         if hasattr(self, 'aq_parent'):
