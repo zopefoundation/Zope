@@ -10,12 +10,13 @@
 __doc__='''Simple column indexes
 
 
-$Id: Index.py,v 1.7 1997/09/17 18:58:08 brian Exp $'''
-__version__='$Revision: 1.7 $'[11:-2]
+$Id: Index.py,v 1.8 1997/09/23 16:46:48 jim Exp $'''
+__version__='$Revision: 1.8 $'[11:-2]
 
 from BTree import BTree
 from intSet import intSet
 import operator
+from Missing import MV
 
 ListType=type([])
 
@@ -61,6 +62,9 @@ class Index:
 
 	for i,row in self._data.items(start):
 	    k=f(row,id)
+
+	    if k is None or k == MV: continue
+	    
 	    try: set=index[k]
 	    except KeyError:
 		set=intSet()
@@ -81,6 +85,9 @@ class Index:
 
 	row=self._data[i]
 	k=f(row,id)
+
+	if k is None or k == MV: return
+
 	try: set=index[k]
 	except KeyError:
 	    set=intSet()
@@ -146,6 +153,9 @@ class Index:
 ############################################################################## 
 #
 # $Log: Index.py,v $
+# Revision 1.8  1997/09/23 16:46:48  jim
+# Added logic to handle missing data.
+#
 # Revision 1.7  1997/09/17 18:58:08  brian
 # Fixed a booboo in unindex_item
 #
