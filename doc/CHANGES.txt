@@ -24,6 +24,8 @@ Zope Changes
 
    - Fix the FTP server: Collector #1628
 
+   - check if ExtendedPathIndex might be a reasonable replacement for PathIndex
+
   after Zope 2.8a1
 
     Features added
