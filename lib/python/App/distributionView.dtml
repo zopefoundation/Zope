@@ -12,8 +12,16 @@
         <input type=text name="version" value="<dtml-var new_version html_quote>">
       </td>
   </tr>
-  <tr><th align="LEFT" valign="TOP">Configurable objects</th>
-      <td align="LEFT" valign="TOP">
+  <tr><th align="LEFT" valign="TOP" colspan="2"><input type="radio"
+    name="redistributable" value="1" checked> Allow redistribution</th>
+  </tr>
+  <tr><th align="LEFT" valign="TOP" colspan="2"><input type="radio"
+    name="redistributable" value="0"> Disallow redistribution and
+allow the user to configure only the selected objects:
+  </th>
+  </tr>
+  <tr>
+      <td align="LEFT" valign="TOP" colspan="2">
         <select name="configurable_objects:list" size=10 multiple>
         <dtml-in objectItems>
            <option value="<dtml-var sequence-key html_quote>" <dtml-

@@ -152,6 +152,7 @@ class Product(Folder, PermissionManager):
     icon='p_/Product_icon'
     version=''
     configurable_objects_=()
+    redistributable=0
     import_error_=None
     _isBeingUsedAsAMethod_=1
 
@@ -221,12 +222,14 @@ class Product(Folder, PermissionManager):
         return self.REQUEST['BASE4']
     DestinationURL__roles__=None
 
-    def manage_distribute(self, version, RESPONSE, configurable_objects=[]):
+    def manage_distribute(self, version, RESPONSE, configurable_objects=[],
+                          redistributable=0):
         "Set the product up to create a distribution and give a link"
         if self.__dict__.has_key('manage_options'):
             raise TypeError, 'This product is <b>not</b> redistributable.'
         self.version=version=strip(version)
         self.configurable_objects_=configurable_objects
+        self.redistributable=redistributable
         RESPONSE.redirect('Distributions/%s-%s.tar.gz' % (self.id, version))
         
     def _distribution(self):
@@ -274,11 +277,17 @@ class Product(Folder, PermissionManager):
 
         # product.dat
         f=CompressedOutputFile(rot)
+        if self.redistributable:
+            # Since it's redistributable, make all objects configurable.
+            objectList = self._objects
+        else:
+            objectList = tuple(filter(
+                lambda o, obs=self.configurable_objects_:
+                o['id'] in obs,
+                self._objects))
         meta={
-            '_objects': tuple(filter(
-            lambda o, obs=self.configurable_objects_:
-            o['id'] in obs,
-            self._objects))
+            '_objects': objectList,
+            'redistributable': self.redistributable,
             }
         f.write(cPickle.dumps(meta,1))
 
@@ -395,9 +404,6 @@ class Distribution:
 
 def initializeProduct(productp, name, home, app):
     # Initialize a levered product
-
-    
-
     products=app.Control_Panel.Products
 
     if hasattr(productp, '__import_error__'): ie=productp.__import_error__
@@ -409,20 +415,24 @@ def initializeProduct(productp, name, home, app):
     try:
         if ihasattr(products,name):
             old=getattr(products, name)
-            if (ihasattr(old,'version') and old.version==fver and
-                hasattr(old, 'import_error_') and
-                old.import_error_==ie):
-                return old
+            if ihasattr(old,'version') and old.version==fver:
+                if hasattr(old, 'import_error_') and \
+                   old.import_error_==ie:
+                    # Version hasn't changed. Don't reinitialize.
+                    return old
     except: pass
     
+    disable_distribution = 1
     try:
-        f=CompressedInputFile(open(home+'/product.dat','rb'),name+' shshsh')
+        f=CompressedInputFile(open(home+'/product.dat','rb'), name+' shshsh')
     except:
         f=fver and (" (%s)" % fver)
         product=Product(name, 'Installed product %s%s' % (name,f))
     else:
         meta=cPickle.Unpickler(f).load()
         product=app._p_jar.importFile(f)
+        if meta.get('redistributable', 0):
+            disable_distribution = 0
         product._objects=meta['_objects']
 
     if old is not None:
@@ -434,12 +444,13 @@ def initializeProduct(productp, name, home, app):
 
     products._setObject(name, product)
     #product.__of__(products)._postCopy(products)
-    product.manage_options=Folder.manage_options
     product.icon='p_/InstalledProduct_icon'
     product.version=fver
     product.home=home
-    product._distribution=None
-    product.manage_distribution=None
+    if disable_distribution:
+        product.manage_options=Folder.manage_options
+        product._distribution=None
+        product.manage_distribution=None
     product.thisIsAnInstalledProduct=1
 
     if ie:
