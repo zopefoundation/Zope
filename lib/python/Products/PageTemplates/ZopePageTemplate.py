@@ -87,7 +87,7 @@
 Zope object encapsulating a Page Template.
 """
 
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
 import os, AccessControl, Acquisition, sys
 from Globals import DTMLFile, MessageDialog, package_home
@@ -334,6 +334,7 @@ def initialize(context):
         permission='Add Page Templates',
         constructors=(manage_addPageTemplateForm,
                       manage_addPageTemplate),
+        icon='www/zpt.gif',
         )
     context.registerHelp()
     context.registerHelpTitle('Zope Help')
