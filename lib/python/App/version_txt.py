@@ -83,10 +83,17 @@
 # 
 ##############################################################################
 
-import os
+import os,sys,string,re
+
+v=sys.version_info
 
 def version_txt():
-    try: return open(os.path.join(SOFTWARE_HOME,'version.txt')).read()
-    except: return '(unreleased version)'
+
+    try: 
+        s = open(os.path.join(SOFTWARE_HOME,'version.txt')).read()
+        s = re.sub("\(.*?)\?","",s)
+        s= '(%s, python %d.%d.%d, %s)' % (s,v[0],v[1],v[2],sys.platform)
+        return s
+    except: 
+        return '(unreleased version, python %d.%d.%d, %s)' % (v[0],v[1],v[2],sys.platform)
         
-    return self._v_version_txt
