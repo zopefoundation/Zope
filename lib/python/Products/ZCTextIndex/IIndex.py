@@ -25,7 +25,9 @@ class IIndex(Interface.Base):
     def search(term):
         """Execute a search on a single term given as a string.
 
-        Return an IIBucket.
+        Return an IIBucket mapping docid to score, or None if all docs
+        match due to the lexicon returning no wids for the term (e.g.,
+        if the term is entirely composed of stopwords).
         """
 
     def search_phrase(phrase):
