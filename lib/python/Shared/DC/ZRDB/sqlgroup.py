@@ -57,8 +57,8 @@
 #       rights reserved.
 #
 ############################################################################ 
-__rcs_id__='$Id: sqlgroup.py,v 1.2 1998/03/18 23:25:55 jim Exp $'
-__version__='$Revision: 1.2 $'[11:-2]
+__rcs_id__='$Id: sqlgroup.py,v 1.3 1998/04/02 21:33:38 jim Exp $'
+__version__='$Revision: 1.3 $'[11:-2]
 
 from DocumentTemplate.DT_Util import *
 from string import strip, join
@@ -68,18 +68,17 @@ class SQLGroup:
     blockContinuations='and','or'
     name='sqlgroup'
     required=None
+    where=None
 
     def __init__(self, blocks):
 
 	self.blocks=blocks
 	tname, args, section = blocks[0]
 	self.__name__="%s %s" % (tname, args)
-	args = parse_params(args, required=1)
-	self.args=args
-	if args.has_key('required'):
-	    self.required=args['required']
-	elif args.has_key('') and args['']=='required':
-	    self.required=1
+	args = parse_params(args, required=1, where=1)
+	if args.has_key(''): args[args['']]=1
+	if args.has_key('required'): self.required=args['required']
+	if args.has_key('where'): self.where=args['where']
 
     def render(self,md):
 
@@ -92,8 +91,10 @@ class SQLGroup:
 		r.append("%s\n" % s)
 		
 	if r:
-	    if len(r) > 1: return "(%s)\n" % join(r,' ')
-	    return r[0] 
+	    if len(r) > 1: r="(%s)\n" % join(r,' ')
+	    else: r=r[0]
+	    if self.where: r="where\n"+r
+	    return r
 
 	if self.required:
 	    raise 'Input Error', 'Not enough input was provided!<p>'
@@ -105,6 +106,9 @@ class SQLGroup:
 ##########################################################################
 #
 # $Log: sqlgroup.py,v $
+# Revision 1.3  1998/04/02 21:33:38  jim
+# Added where attribute.
+#
 # Revision 1.2  1998/03/18 23:25:55  jim
 # Added 'required' attribute (and fixed doc).
 #
