@@ -127,7 +127,7 @@ def main(args):
        -h   -- Show command summary
     """ % (pcgi)
     
-    try: options, args = getopt.getopt(sys.argv[1:], 'p:g:hu')
+    try: options, args = getopt.getopt(sys.argv[1:], 'p:g:hu:')
     except: error(usage, sys.exc_info())
     if args: error('', ('Unexpected arguments', args))
 
