@@ -574,9 +574,10 @@ if LOCALE_ID is not None:
 # application code so that ZServer's asyncore gets to be the
 # official one. Also gets SOFTWARE_HOME, INSTANCE_HOME, and CLIENT_HOME
 import ZServer
+import zdaemon
 
 if Zpid and not READ_ONLY:
-    import zdaemon, App.FindHomes, posix
+    import App.FindHomes, posix
     sys.ZMANAGED=1
     
     zdaemon.run(sys.argv, os.path.join(CLIENT_HOME, Zpid),
