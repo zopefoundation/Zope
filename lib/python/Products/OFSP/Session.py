@@ -1,6 +1,6 @@
 """Session object"""
 
-__version__='$Revision: 1.13 $'[11:-2]
+__version__='$Revision: 1.14 $'[11:-2]
 
 import Globals, time
 from AccessControl.Role import RoleManager
@@ -11,9 +11,9 @@ from OFS.SimpleItem import Item
 from string import rfind
 
 
-addForm=Globals.HTMLFile('sessionAdd', globals())
+manage_addSessionForm=Globals.HTMLFile('sessionAdd', globals())
 
-def add(self, id, title, REQUEST=None):
+def manage_addSession(self, id, title, REQUEST=None):
     """ """
     self._setObject(id, Session(id,title,REQUEST))
     return self.manage_main(self,REQUEST)
@@ -113,6 +113,9 @@ class Session(Persistent,Implicit,RoleManager,Item):
 ############################################################################## 
 #
 # $Log: Session.py,v $
+# Revision 1.14  1998/02/10 18:40:38  jim
+# Changed creation method names for latest security scheme.
+#
 # Revision 1.13  1998/01/02 17:41:19  brian
 # Made undo available only in folders
 #
