@@ -249,8 +249,8 @@ class ChannelPipe:
             sys.ZServerExitCode=r
             self._channel.push(ShutdownProducer(), 0)
             Wakeup(lambda: asyncore.close_all())
-        elif self._close:
-            self._channel.push(None, 0)
+        else:
+            if self._close: self._channel.push(None, 0)
             Wakeup()
 
         self._channel=None #need to break cycles?
