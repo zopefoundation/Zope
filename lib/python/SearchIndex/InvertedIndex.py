@@ -30,7 +30,7 @@ Example usage:
     print i['blah']
 
       
-$Id: InvertedIndex.py,v 1.43 1997/04/25 15:42:07 chris Exp $'''
+$Id: InvertedIndex.py,v 1.44 1997/04/25 16:14:52 chris Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -82,6 +82,9 @@ $Id: InvertedIndex.py,v 1.43 1997/04/25 15:42:07 chris Exp $'''
 #   (540) 371-6909
 #
 # $Log: InvertedIndex.py,v $
+# Revision 1.44  1997/04/25 16:14:52  chris
+# changed Index.highlight() to make sure positions are a list
+#
 # Revision 1.43  1997/04/25 15:42:07  chris
 # fixed bug in Index.__getitem__() which caused a TypeError
 # when searching for a stopword
@@ -227,7 +230,7 @@ $Id: InvertedIndex.py,v 1.43 1997/04/25 15:42:07 chris Exp $'''
 #
 #
 # 
-__version__='$Revision: 1.43 $'[11:-2]
+__version__='$Revision: 1.44 $'[11:-2]
 
 
 import regex, string, copy
@@ -780,6 +783,9 @@ class Index:
 
     def highlight(self, text, positions, before, after):
         ws = WordSequence(text, self.synstop)
+        
+        positions = map(None, positions)
+
         positions.sort()
         positions.reverse()
 	for position in positions:
