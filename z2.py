@@ -453,6 +453,13 @@ if Zpid and not READ_ONLY:
 # Import Zope (or Main), and thus get SOFTWARE_HOME and INSTANCE_HOME
 exec "import "+MODULE in {}
 
+
+# Uncomment to turn on Debug Logging
+# from ZServer import DebugLogger
+# logfile=os.path.join(INSTANCE_HOME,'var/debug.log')
+# DebugLogger.log=DebugLogger.DebugLogger(logfile).log
+
+
 import zLOG
 from Zope import ZLogger
 
@@ -528,6 +535,7 @@ if HTTP_PORT:
 if FTP_PORT:
     zftp = FTPServer(
         module=MODULE,
+        ip=IP_ADDRESS,
         port=FTP_PORT,
         resolver=rs,
         logger_object=lg)
