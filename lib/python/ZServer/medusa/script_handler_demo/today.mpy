@@ -1,0 +1,23 @@
+# -*- Mode: Python; tab-width: 4 -*-
+
+print '<html>'
+
+import time
+print "<p align=center>It is %s here at <b>nightmare.com</b></p>"% (
+	time.ctime (time.time())
+	)
+
+import string
+
+def uptime ():
+	return string.atof (
+		string.split (
+			open ('/proc/uptime', 'r').readline()
+			)[0]
+		)
+
+print "<p align=center>This machine has been up since: %s </p>" % (
+	time.ctime (time.time() - uptime())
+	)
+
+print '</html>'

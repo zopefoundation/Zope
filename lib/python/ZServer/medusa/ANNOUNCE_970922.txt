@@ -1,0 +1,127 @@
+
+This is a major update of Medusa.  Almost everything has been
+rewritten; the web server has been rewritten from scratch
+twice. [ain't Python nice. 8^) ]
+
+Here is a quick rundown of the improvements and new features:
+
+HTTP Server:
+
+  Good support for persistent connections (HTTP/1.0 _and_ 1.1)
+  required a redesign of the request-handling mechanism.  Requests are
+  now separate objects, and as much as possible differences between
+  the two protocol versions have been hidden from the user.  [I should
+  say 'extender'].
+
+  HTTP/1.0 persistence is provided via the 'Connection: Keep-Alive'
+  mechanism supported by most currently available browsers.
+
+  HTTP/1.1 default persistence is implemented, along with various
+  features to support pipelining, including the 'chunked' transfer
+  encoding. [which is enabled by default in situations where the
+  extension is providing data dynamically]
+
+  [a note on a change in terminology: 'extensions' are now 'handlers']
+
+  Sample request handlers for the basic authentication scheme and the
+  PUT method are provided, along with a demonstration of a
+  'publishing' interface - this allows the server to support updatable
+  web pages.
+
+  A sample handler for unix user directories (the familiar '~user/'
+  URI) is included.
+
+  The new handler mechanism is quite general and powerful: It is easy
+  to write handlers that 'wrap' other handlers to provide combined
+  behavior.  (For example, the 'publishing' demo wraps an
+  authentication handler around a PUT handler to provide authentication
+  for page updates).
+  
+Sophisticated Logging:
+  A few different logging objects are implemented:
+
+  An implementation of the Unix 'syslog' is included: it understands
+  the syslog protocol natively, and can thus log asynchronously to
+  either the local host, or to a remote host. This means it will also
+  work on non-unix platforms.
+
+  A 'socket' logger: send log info directly to a network connection.
+  A 'file' logger: log into any file object.
+
+  The above logging objects can be combined using the 'multi' logger.
+
+DNS resolver:
+  A simple asynchronous caching DNS resolver is included - this
+  piggybacks off of a known name server.  The resolver is currently
+  used to provide resolved hostnames for logging for the other
+  servers.
+
+'Monitor' server:
+  This is a 'remote interpreter' server.  Server administrators can
+  use this to get directly at the server WHILE IT IS RUNNING.  I use
+  it to upgrade pieces of the server, or to install or remove handlers
+  `on the fly'.  It is optionally protected by an MD5-based challenge-
+  response authentication, and by a stream-cipher encryption.
+  Encryption is available if you have access to the Python
+  Cryptography Toolkit, or something like it.
+
+  It's been difficult to convey the power and convenience of this
+  server: Anything that can be done from a python prompt can be done
+  while connected to it.  It is also a tremendous aid when debugging
+  servers or extensions.
+
+'Chat' server:
+  For reasons I won't pretend to understand, servers supporting
+  IRC-like 'chat' rooms of various types are quite popular in the
+  commercial world: This is a quick demonstration of how to write such
+  a server, and how to integrate it with medusa.  This simple example
+  could easily be integrated into the web server to provide a
+  web-navigated, web-administered chat server.
+
+
+
+That was the good news, here's the 'bad' :
+==================================================  
+
+I've ditched the command-line interface for the time being.  In order
+to make it sufficiently powerful I found myself inventing yet another
+'configuration language'.  This seemed rather silly given python's
+innate ability to handle such things.  So now medusa is driven by a
+user 'script'.  A sample script is provided with judicious commentary.
+
+Probably the most glaring omission in Medusa is the lack of CGI support.
+I have dropped this for several reasons:
+
+  1) it is unreasonably difficult to support in a portable fashion
+  2) it is clearly a hack in the worst sense of the word; insecure and
+     inefficient.  why not just use inetd?
+  3) much more powerful things can be done within the framework of
+     Medusa with much less effort.
+  4) CGI can easily be provided using Apache or any other web server
+     by running it in 'tandem' with medusa [i.e., on another port].
+
+If someone desperately needs the CGI support, I can explain how to
+integrate it with Medusa - the code is not very different from the
+module included with the Python library.
+
+==================================================
+
+Medusa is provided free of charge for non-commercial use.  Commercial
+use requires a license (US$200).  Source code is included (it's called
+"The Documentation"), and users are encouraged to develop and
+distribute their own extensions under their own terms.
+
+Note that the core of Medusa is an asynchronous socket library that is
+distributed under a traditional Python copyright, so unless you're
+plugging directly into medusa's higher-level servers, and doing so for
+commercial purposes, you needn't worry about me getting Run Over By a
+Bus.
+
+More information is available from:
+
+  http://www.nightmare.com/medusa/
+
+Enjoy!
+
+-Sam Rushing
+rushing@nightmare.com

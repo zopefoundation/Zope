@@ -1,0 +1,9 @@
+# -*- Mode: text; tab-width:4 -*-
+#
+# $Id: README,v 1.2 2001/04/25 19:09:54 andreas Exp $
+#
+
+Preliminary support for asynchronous sendfile() on linux and freebsd.
+Not heavily tested yet.
+
+-Sam

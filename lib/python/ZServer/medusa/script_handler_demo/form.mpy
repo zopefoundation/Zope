@@ -1,0 +1,22 @@
+# -*- Mode: Python; tab-width: 4 -*-
+
+# send and process a POST form
+
+import sys
+
+# anything on stdin?
+data = sys.stdin.read()
+
+form = """<html><form method=POST action="form.mpy">
+%s<hr>
+<input name=test size=50 value="">
+<input type=submit name=search value="Search">
+</form></html>"""
+
+if data:
+	import cgi
+	info = '<h2>CGI variables:</h2>%s\r\n' % repr(cgi.parse_qs(data))
+else:
+	info = ''
+
+print form % info
