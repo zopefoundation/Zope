@@ -88,6 +88,7 @@ import Acquisition
 import BTree, OIBTree, IOBTree
 from SearchIndex import UnIndex, UnTextIndex, Query
 import regex, pdb
+from string import lower
 import Record
 from Missing import MV
 
@@ -499,7 +500,7 @@ class Catalog(Persistent, Acquisition.Implicit):
                     so=kw['sort-order']
                 elif hasattr(self, 'sort-order'):
                     so=getattr(self, 'sort-order')
-                elif kw.kas_key('sort_order'):
+                elif kw.has_key('sort_order'):
                     so=kw['sort_order']
                 else: so=None
                 if (type(so) is type('') and
