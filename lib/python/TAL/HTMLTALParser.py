@@ -68,12 +68,10 @@ class HTMLTALParser(SGMLParser):
 
     def finish_starttag(self, tag, attrs):
         self.scan_xmlns(attrs)
-        print tag, self.nsdict
         if tag not in EMPTY_HTML_TAGS:
             self.tagstack.append(tag)
         else:
             self.pop_xmlns()
-            print "<", tag, self.nsdict
         self.gen.emitStartTag(tag, attrs)
 
     def finish_endtag(self, tag):
@@ -86,7 +84,6 @@ class HTMLTALParser(SGMLParser):
                     self.finish_endtag(None)
                 self.tagstack.pop()
             self.pop_xmlns()
-            print "<", tag, self.nsdict
         self.gen.emitEndTag(tag)
 
     def handle_charref(self, name):
