@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-"$Id: DT_String.py,v 1.33 2000/03/09 19:22:33 brian Exp $"
+"$Id: DT_String.py,v 1.34 2000/03/09 20:07:56 brian Exp $"
 
 from string import split, strip
 import regex, ts_regex
@@ -465,9 +465,7 @@ class String:
             if mapping:
                 push(mapping)
                 if hasattr(mapping,'AUTHENTICATED_USER'):
-                    auth_user=mapping['AUTHENTICATED_USER']
-                    verify_watermark(auth_user)
-                    md.AUTHENTICATED_USER=auth_user
+                    md.AUTHENTICATED_USER=mapping['AUTHENTICATED_USER']
             md.validate=self.validate
             if client is not None:
                 if type(client)==type(()):
@@ -551,19 +549,3 @@ class File(FileMixin, String):
     template is used the first time.
     """
     def manage_edit(self,data): raise TypeError, 'cannot edit files'
-
-
-
-# This bit performs watermark verification on the authenticated
-# user object passed into the template. It is Zope-specific, and
-# we don't want to break non-Zope apps so we check to see if we
-# are running with Zope before installing the watermark function.
-
-if hasattr(__builtins__, 'INSTANCE_HOME'):
-
-    from AccessControl.User import verify_watermark
-
-else:
-
-    def verify_watermark(auth_user):
-        pass

@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.38 $'[11:-2]
+__version__='$Revision: 1.39 $'[11:-2]
 
 from Globals import HTML, HTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi,lower
@@ -142,6 +142,11 @@ class DTMLMethod(cDocument, HTML, Acquisition.Implicit, RoleManager,
         Response, and key word arguments."""
         kw['document_id']   =self.id
         kw['document_title']=self.title
+
+        # Verify the authenticated user object.
+        auth_user=REQUEST.get('AUTHENTICATED_USER', None)
+        if auth_user is not None:
+            verify_watermark(auth_user)
 
         if client is None:
             # Called as subtemplate, so don't need error propigation!
