@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.7 $'[11:-2]
+__version__='$Revision: 1.8 $'[11:-2]
 
 from zbytecodehacks.VSExec import SafeBlock, GuardedBinaryOps, \
      UntupleFunction, RedirectWrites, WriteGuard, RedirectReads, ReadGuard, \
@@ -200,6 +200,7 @@ def __careful_map__(f, *seqs):
     for seq in seqs:
         if type(seq) is type(''):
             raise TypeError, 'cannot map a string'
+        list(seq) # Ensure that it's a sequence
     return apply(map, tuple([f] + map(ReadGuard, seqs)))
 safebin['map'] = __careful_map__
 
