@@ -142,6 +142,9 @@ function toggleSelect() {
   </td>
 
 </tr>
+
+<dtml-call "REQUEST.set('oldidx',0)">
+
 <dtml-in objectItems sort_expr="skey" reverse_expr="rkey">
 <dtml-if sequence-odd>
 <tr class="row-normal">
@@ -156,16 +159,6 @@ function toggleSelect() {
   <a href="&dtml.url_quote-sequence-key;/manage_workspace">
   &dtml-sequence-key; <dtml-if title>(&dtml-title;)</dtml-if>
   </a>
-  <dtml-if locked_in_version>
-    <dtml-if modified_in_version>
-      <img src="&dtml-BASEPATH1;/p_/locked"
-       alt="This item has been modified in this version" />
-    <dtml-else>
-      <img src="&dtml-BASEPATH1;/p_/lockedo"
-       alt="This item has been modified in another version" />
-       (<em>&dtml-locked_in_version;</em>)
-    </dtml-if>
-  </dtml-if>
   </div>
 
    </td>
@@ -177,6 +170,7 @@ function toggleSelect() {
       <dtml-if "_.string.find(_.str(_.getattr(this(),'__implements__','old')),'PluggableIndexInterface')>-1">
         <dtml-var meta_type>
       <dtml-else>
+         <dtml-call "REQUEST.set('oldidx',1)">
          (pre-2.4 index)
          <dtml-var meta_type>
       </dtml-if>
@@ -210,8 +204,9 @@ function toggleSelect() {
   <input class="form-element" type="submit" name="manage_delIndex:method"     value="Remove index">
   <input class="form-element" type="submit" name="manage_reindexIndex:method" value="Reindex">
   <input class="form-element" type="submit" name="manage_clearIndex:method"   value="Clear index">
-  <input class="form-element" type="submit" name="manage_convertIndex:method" value="Convert index">
-
+  <dtml-if oldidx>
+    <input class="form-element" type="submit" name="manage_convertIndex:method" value="Convert index">
+  </dtml-if>
 <script type="text/javascript">
 <!-- 
 if (document.forms[0]) {

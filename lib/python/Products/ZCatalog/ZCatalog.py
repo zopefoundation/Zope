@@ -780,6 +780,40 @@ class ZCatalog(Folder, Persistent, Implicit):
         ct=time.clock()-ct
         return 'Finished conversion in %s seconds (%s cpu)' % (tt, ct)
 
+
+    def manage_convertIndex(self, ids, REQUEST=None, RESPONSE=None, URL1=None):
+        """convert old-style indexes to new-style indexes"""
+
+        from Products.PluginIndexes.KeywordIndex import KeywordIndex 
+        from Products.PluginIndexes.FieldIndex import FieldIndex
+        from Products.PluginIndexes.TextIndex import TextIndex
+        from Acquisition import aq_base
+        import copy
+
+        converted = []
+        for id in ids:
+            idx = self.Indexes[id]
+
+            iface = getattr(idx,'__implements__',None)
+            if iface is None:
+
+                mt = idx.meta_type
+
+                converted.append(id)
+                self.delIndex(id)
+
+                if mt in ('Field Index','Keyword Index'):
+                    self.addIndex(id,mt.replace(' ',''))
+                elif mt == 'Text Index':
+                    # TODO: Lexicon handling to be added
+                    self.addIndex(id,'TextIndex')
+
+        if converted:
+            RESPONSE.redirect(URL1 + '/manage_main?manage_tabs_message=Indexes%20converted')
+        else:
+            RESPONSE.redirect(URL1 + '/manage_main?manage_tabs_message=No%20indexes%20found%20to%20be%20converted')
+                    
+
     #
     # Indexing methods 
     #
