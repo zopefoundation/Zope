@@ -399,6 +399,8 @@ class TALGenerator:
             self.emit("setPosition", position)
         if defineMacro:
             self.pushProgram()
+            self.emit("version", TAL_VERSION)
+            self.emit("mode", self.xml and "xml" or "html")
             todo["defineMacro"] = defineMacro
         if useMacro:
             self.pushSlots()
