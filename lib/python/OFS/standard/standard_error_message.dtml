@@ -10,23 +10,23 @@
   </p>
   
   <p>
-  <strong>Error Type: &dtml-error_type;</strong><br />
-  <strong>Error Value: &dtml-error_value;</strong><br /> 
-  </P>
+      <strong>Error Type: &dtml-error_type;</strong><br/>
+      <strong>Error Value: &dtml-error_value;</strong><br/> 
+  </p>
  
   <hr noshade="noshade" />
  
   <p>Troubleshooting Suggestions</p>
 
   <ul>
-  <dtml-if "error_type in ('KeyError','NameError')">
-  <li>This resource may be trying to reference a
-  nonexistent object or variable <strong>&dtml-error_value;</strong>.</li>
-  </dtml-if>
-  <li>The URL may be incorrect.</li>
-  <li>The parameters passed to this resource may be incorrect.</li>
-  <li>A resource that this resource relies on may be encountering
-      an error.</li>
+      <dtml-if "error_type in ('KeyError','NameError')">
+      <li>This resource may be trying to reference a
+      nonexistent object or variable <strong>&dtml-error_value;</strong>.</li>
+      </dtml-if>
+      <li>The URL may be incorrect.</li>
+      <li>The parameters passed to this resource may be incorrect.</li>
+      <li>A resource that this resource relies on may be encountering
+          an error.</li>
   </ul>
 
   <p>For more detailed information about the error, please
