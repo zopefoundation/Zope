@@ -23,7 +23,7 @@
       </TR>
       <TR>
 	<TD COLSPAN="2" ALIGN="CENTER">
-	<TEXTAREA NAME="data:text"
+	<TEXTAREA NAME="data:text" WRAP=NONE
 	<!--#if dtpref_cols-->
 	COLS="<!--#var dtpref_cols-->"
 	<!--#else dtpref_cols-->
