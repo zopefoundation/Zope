@@ -114,6 +114,7 @@ __version__='$Revision$'[11:-2]
 
 
 import Acquisition, PermissionRole, sys
+from string import lower
 from zLOG import LOG, WARNING
 
 
@@ -197,6 +198,14 @@ class SecurityInfo(Acquisition.Implicit):
         This should be a boolean value, a map of attribute names to
         booleans, or a callable (name, value) -> boolean.
         """
+        if type(access) == type(''):
+            access = lower(access)
+            if access == 'allow':
+                access = 1
+            elif access == 'deny':
+                access = 0
+            else:
+                raise ValueError, "'allow' or 'deny' expected"
         self.access = access
 
 
