@@ -15,6 +15,9 @@ Zope Changes
 
       - PathIndex: fixed minor bugs, enhanced testsuite
 
+      - DTML-MIME tag: creates now a 'Mime-Version: 1.0' to make
+        some fussy email programs happy
+
 
     Features Added
 
