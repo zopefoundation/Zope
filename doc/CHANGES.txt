@@ -4,6 +4,29 @@ Zope Changes
   Change information for previous versions of Zope can be found in the
   file HISTORY.txt.
 
+    Zope 2.4 alpha 2
+
+      Bugs fixed
+
+        - Collector #2274: fixed typo in Transaction.py. Made Connection.py
+          a bit more noisy in case of failure
+
+        - Collector #2273: fixed bug in STXNG (unable to handle :img: 
+          commands with absolute URLs)
+
+        - Collector #2272: fixed problem in Transaction.py (Objects
+          with id==None could not print themselves)
+
+        - fixed Python module import problems causing XML export/import
+          too be completely broken
+    
+        - Collector #2270: fixed import problem when $INSTANCE_HOME  
+          was set
+
+        - Collector #2269: default script for PythonScript is no longer
+          compiled during installation
+
+
     Zope 2.4 alpha 1
 
       Features Added
