@@ -129,8 +129,9 @@ Special symbology is used to indicate special constructs:
   first '**' and whitespace or puctuation to the right of the second '**')
   is made strong.
 
-- Text encloded by double quotes followed by a colon, a URL, and punctuation 
-  is treated as a hyper link. For example:
+- Text encloded by double quotes followed by a colon, a URL, and concluded
+  by punctuation plus white space, *or* just white space, is treated as a
+  hyper link. For example:
 
     "Zope site":http://www.zope.org/. 
 
@@ -138,7 +139,8 @@ Special symbology is used to indicate special constructs:
   This works for relative as well as absolute URLs.
 
 - Text enclosed by double quotes followed by a comma, one or more spaces,
-  an absolute URL and punctuation is treated as a hyper link. For example:
+  an absolute URL and concluded by punctuation plus white space, or just
+  white space, is treated as a hyper link. For example: 
 
     "mail me", mailto:amos@digicool.com.
 
@@ -158,10 +160,11 @@ Special symbology is used to indicate special constructs:
 
     .. [12] "Effective Techniques" Smith, Joe ... 
 
-  Is interpreted as '<a name="12">[12]</a> "Effective ...'. Together with
-  the previous rule this allows easy coding of references or end notes.
+  Is interpreted as '<a name="12">[12]</a> "Effective Techniques" ...'.
+  Together with the previous rule this allows easy coding of references or
+  end notes. 
 
-$Id: StructuredText.py,v 1.12 1999/03/10 00:15:46 klm Exp $'''
+$Id: StructuredText.py,v 1.13 1999/03/11 00:49:57 klm Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -213,6 +216,16 @@ $Id: StructuredText.py,v 1.12 1999/03/10 00:15:46 klm Exp $'''
 #   (540) 371-6909
 #
 # $Log: StructuredText.py,v $
+# Revision 1.13  1999/03/11 00:49:57  klm
+# Links are now recognized whether or not the candidate strings are
+# terminated with punctuation before the trailing whitespace.  The old
+# form - trailing punctuation then whitespace - is preserved, but the
+# punctuation is now unnecessary.
+#
+# The regular expressions are a bit more complicated, but i've factored
+# out the common parts and but them in variables with suggestive names,
+# which may make them easier to understand.
+#
 # Revision 1.12  1999/03/10 00:15:46  klm
 # Committing with version 1.0 of the license.
 #
@@ -364,21 +377,22 @@ ol=regex.compile('[ \t]*\(\([0-9]+\|[a-zA-Z]+\)[.)]\)+[ \t\n]+\([^\0]*\|$\)')
 olp=regex.compile('[ \t]*([0-9]+)[ \t\n]+\([^\0]*\|$\)')
 
 
+optional_trailing_punctuation = '\(,\|\([.:?;]\)\)?'
+trailing_space = '\([\0- ]\)'
+not_punctuation_or_whitespace = "[^-,.?:\0- ]"
 
 class StructuredText:
 
-    '''\
-    Model text as structured collection of paragraphs.
+    """Model text as structured collection of paragraphs.
 
     Structure is implied by the indentation level.
 
     This class is intended as a base classes that do actual text
     output formatting.
-    '''
+    """
 
-    def __init__(self,aStructuredString, level=0):
-        '''\
-        Convert a string containing structured text into a structured text object.
+    def __init__(self, aStructuredString, level=0):
+        '''Convert a structured text string into a structured text object.
 
         Aguments:
 
@@ -387,19 +401,21 @@ class StructuredText:
         '''
 
         aStructuredString = gsub(
-            '\"\([^\"\0]+\)\":'            # title part
-            '\([-:a-zA-Z0-9_,./?=@]+\)'  # URL
-            '\(,\|\([.:?;]\)\)'                   # trailing puctuation
-            '\([\0- ]\)',                         # trailing space
-            '<a href="\\2">\\1</a>\\4\\5',
+            '\"\([^\"\0]+\)\":'         # title: <"text":>
+            + ('\([-:a-zA-Z0-9_,./?=@]+%s\)'
+               % not_punctuation_or_whitespace)
+            + optional_trailing_punctuation
+            + trailing_space,
+            '<a href="\\2">\\1</a>\\4\\5\\6',
             aStructuredString)
 
         aStructuredString = gsub(
-            '\"\([^\"\0]+\)\",[\0- ]+'            # title part
-            '\([a-zA-Z]+:[-:a-zA-Z0-9_,./?=@]+\)'  # URL
-            '\(,\|\([.:?;]\)\)'                   # trailing puctuation
-            '\([\0- ]\)',                         # trailing space
-            '<a href="\\2">\\1</a>\\4\\5',
+            '\"\([^\"\0]+\)\",[\0- ]+'            # title: <"text", >
+            + ('\([a-zA-Z]+:[-:a-zA-Z0-9_,./?=@]*%s\)'
+               % not_punctuation_or_whitespace)
+            + optional_trailing_punctuation
+            + trailing_space,
+            '<a href="\\2">\\1</a>\\4\\5\\6',
             aStructuredString)
 
         self.level=level
@@ -565,7 +581,8 @@ def main():
         if filter(lambda o: o[0]=='-w', opts):
             print 'Content-Type: text/html\n'
 
-        if s[:2]=='#!': s=regsub.sub('^#![^\n]+','',s)
+        if s[:2]=='#!':
+            s=regsub.sub('^#![^\n]+','',s)
 
         r=regex.compile('\([\0-\n]*\n\)')
         if r.match(s) >= 0:
