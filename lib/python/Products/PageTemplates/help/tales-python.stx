@@ -4,7 +4,7 @@ TALES Python expressions
 
     Python expression syntax::
 
-      any valid Python language expression
+      Any valid Python language expression
 
   Description
   
@@ -51,26 +51,25 @@ TALES Python expressions
       Finally, these functions are available in Python expressions,
       but not in Python-based scripts:
 
-      'path(string)' -- Evaluate a TALES "path":tales-path.stx
+      'path(string)' -- Evaluate a TALES "path":../tales-path.stx
       expression.
 
-      'string(string)' -- Evaluate a TALES "string":tales-string.stx
+      'string(string)' -- Evaluate a TALES "string":../tales-string.stx
       expression.
 
-      'exists(string)' -- Evaluates a TALES "exists":tales-exists.stx
+      'exists(string)' -- Evaluates a TALES "exists":../tales-exists.stx
       expression.
 
-      'nocall(string)' -- Evaluates a TALES "nocall":tales-nocall.stx
+      'nocall(string)' -- Evaluates a TALES "nocall":../tales-nocall.stx
       expression.
 
     Python Modules
 
       A number of Python modules are available by default. You can
-      make more modules available. See XXX for more information. You
-      can access modules either via path expressions (for example
-      'modules/string/join') or in Python with the 'modules' mapping
-      object (for example 'modules["string"].join'). Here are the
-      default modules:
+      make more modules available. You can access modules either via
+      path expressions (for example 'modules/string/join') or in
+      Python with the 'modules' mapping object (for example
+      'modules["string"].join'). Here are the default modules:
 
       'string' -- The standard "Python string
       module":http://www.python.org/doc/current/lib/module-string.html. Note:
@@ -83,23 +82,21 @@ TALES Python expressions
       'math' -- The standard "Python math
       module":http://www.python.org/doc/current/lib/module-math.html.
 
-      'sequence' -- A module with a powerful sorting function. See XXX
-      for more information.
+      'sequence' -- A module with a powerful sorting function. See
+      "sequence":../../../OFSP/Help/sequence.py for more information.
 
       'Products.PythonScripts.standard' -- Various HTML formatting
-      functions available in DTML. See XXX for more information.
+      functions available in DTML. See
+      "Products.PythonScripts.standard":../../../OFSP/Help/standard.py
+      for more information.
 
-      'ZPTUtils.Batch' -- Batch processing facilities similar to those
-      offered by 'dtml-in'. See XXX for more information.
+      'ZTUtils' -- Batch processing facilities similar to those
+      offered by 'dtml-in'. See "ZTUtils":../../../OFSP/Help/ZTUtils.py
+      for more information.
 
-      'ZTUtils.Tree' -- Tree processing facilities similar to those
-      offered by 'dtml-tree'. See XXX for more information.
-
-      'ZTUtils.SimpleTree' -- Simplified tree processing facilities
-      similar to those offered by 'dtml-tree'. See XXX for more
+      'AccessControl' -- Security and access checking facilities. See
+      "AccessControl":../../../OFSP/Help/AccessControl.py for more
       information.
-
-      'AccessControl.XXX' -- XXX what is available from this package?
 
   Examples
 
