@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.29 $'[11:-2]
+__version__='$Revision: 1.30 $'[11:-2]
 
 import regex, sys, os, string
 from string import lower, atoi, rfind, split, strip, join, upper, find
@@ -976,8 +976,21 @@ def parse_cookie(text,
 
     return apply(parse_cookie,(text[l:],result))
 
+import sys
+
 # add class
 class record:
+    def __getattr__(self, key, default=None):
+        if key in ('get', 'keys', 'items', 'values', 'copy', 'has_key'):
+            return getattr(self.__dict__, key)
+        try:
+            return self.__dict__[key]
+        except KeyError, kerr:
+            raise AttributeError, kerr, sys.exc_info()[2]
+
+    def __getitem__(self, key):
+        return self.__dict__[key]
+            
     def __str__(self):
         L1 = self.__dict__.items()
         L1.sort()
