@@ -71,11 +71,12 @@ try:
 	    self.match=r.match
 
     class SafeFunction:
+	_l=thread.allocate_lock()
+	_a=_l.acquire
+	_r=_l.release
+
 	def __init__(self, f):
 	    self._f=f
-	    l=thread.allocate_lock()
-	    self._a=l.acquire
-	    self._r=l.release
 
 	def __call__(self, *args, **kw):
 	    self._a()
