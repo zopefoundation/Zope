@@ -1,6 +1,6 @@
 """Copy interface"""
 
-__version__='$Revision: 1.15 $'[11:-2]
+__version__='$Revision: 1.16 $'[11:-2]
 
 import Globals, Moniker, rPickle, tempfile
 from cPickle import loads, dumps
@@ -77,8 +77,11 @@ class CopyContainer:
             # Check for special object!
 	    try:    r=obj.aq_parent._reserved_names
 	    except: r=()
-            if prev_id in special:
-                raise 'NotSupported', eNotSupported
+            if prev_id in r:
+                raise 'NotSupported', Globals.MessageDialog(
+                      title='Not Supported',
+                      message='This item cannot be cut and pasted',
+                      action ='manage_main')
             
 	    obj.aq_parent._delObject(prev_id)
             if hasattr(obj, 'aq_base'):
