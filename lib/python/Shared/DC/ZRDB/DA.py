@@ -85,8 +85,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.68 1999/07/26 13:15:54 brian Exp $'''
-__version__='$Revision: 1.68 $'[11:-2]
+$Id: DA.py,v 1.69 1999/08/03 20:18:37 jim Exp $'''
+__version__='$Revision: 1.69 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct, RDB
 import DocumentTemplate, marshal, md5, base64, Acquisition, os
@@ -288,7 +288,7 @@ class DA(
             try:
                 src=self(REQUEST, src__=1)
                 if find(src,'\0'): src=join(split(src,'\0'),'\n'+'-'*60+'\n')
-                result=self(REQUEST)
+                result=self(REQUEST, test__=1)
                 if result._searchable_result_columns():
                     r=custom_default_report(self.id, result)
                 else:
@@ -352,7 +352,7 @@ class DA(
 
         return result
 
-    def __call__(self, REQUEST=None, __ick__=None, src__=0, **kw):
+    def __call__(self, REQUEST=None, __ick__=None, src__=0, test__=0, **kw):
         """Call the database method
 
         The arguments to the method should be passed via keyword
@@ -406,7 +406,7 @@ class DA(
         else:
             result=Results(result, brain, p)
         columns=result._searchable_result_columns()
-        if columns != self._col: self._col=columns
+        if test__ and columns != self._col: self._col=columns
         return result
 
     def da_has_single_argument(self): return len(self._arg)==1
