@@ -26,7 +26,11 @@ class Lexicon:
     def __init__(self, *pipeline):
         self._wids = OIBTree()  # word -> wid
         self._words = IOBTree() # wid -> word
-        # XXX we're reserving wid 0, but that might be yagni
+        # wid 0 is reserved for words that aren't in the lexicon (OOV -- out
+        # of vocabulary).  This can happen, e.g., if a query contains a word
+        # we never saw before, and that isn't a known stopword (or otherwise
+        # filtered out).  Returning a special wid value for OOV words is a
+        # way to let clients know when an OOV word appears.
         self._nextwid = 1
         self._pipeline = pipeline
 
@@ -78,12 +82,10 @@ class Lexicon:
         assert prefix and not prefix.endswith("*")
         keys = self._wids.keys(prefix) # Keys starting at prefix
         wids = []
-        words = []
         for key in keys:
             if not key.startswith(prefix):
                 break
             wids.append(self._wids[key])
-            words.append(key)
         return wids
 
     def _getWordIdCreate(self, word):
