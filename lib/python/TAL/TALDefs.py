@@ -90,6 +90,8 @@ import string
 import re
 from xml.dom import Node
 
+XMLNS_NS = "http://www.w3.org/2000/xmlns/" # URI for XML NS declarations
+
 ZOPE_TAL_NS = "http://xml.zope.org/namespaces/tal"
 ZOPE_METAL_NS = "http://xml.zope.org/namespaces/metal"
 
