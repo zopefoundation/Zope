@@ -1,5 +1,5 @@
 # 
-# $Id: __init__.py,v 1.2 2003/02/01 09:28:30 andreasjung Exp $
+# $Id: __init__.py,v 1.3 2003/08/16 00:54:35 chrism Exp $
 #
 __version__='1.0'
 
@@ -7,7 +7,8 @@ __version__='1.0'
 import ZReST
 def initialize(context):
     context.registerClass(
-        ZReST, meta_type = 'ReStructuredText Document',
+        ZReST.ZReST,
+        meta_type = 'ReStructuredText Document',
         constructors = (
             ZReST.manage_addZReSTForm, ZReST.manage_addZReST
         )
@@ -16,6 +17,9 @@ def initialize(context):
 
 #
 # $Log: __init__.py,v $
+# Revision 1.3  2003/08/16 00:54:35  chrism
+# Initialize the class, not the module.
+#
 # Revision 1.2  2003/02/01 09:28:30  andreasjung
 # merge from ajung-restructuredtext-integration-branch
 #
