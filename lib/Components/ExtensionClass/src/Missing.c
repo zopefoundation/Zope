@@ -14,7 +14,7 @@
 
 static char Missing_module_documentation[] = 
 ""
-"\n$Id: Missing.c,v 1.19 2003/05/09 20:57:10 jeremy Exp $"
+"\n$Id: Missing.c,v 1.20 2003/05/09 21:50:36 jeremy Exp $"
 ;
 
 #include "ExtensionClass.h"
@@ -26,7 +26,7 @@ typedef struct {
 } Missing;
 
 static PyObject *vname=0, *Missing_dot_Value=0, *empty_string=0, *reduce=0;
-static PyObject *theValue;
+static PyObject *theValue, *notMissing;
 
 static void
 Missing_dealloc(Missing *self)
@@ -49,20 +49,32 @@ Missing_str(Missing *self)
   return empty_string;
 }
 
-/* Code to access Missing objects as numbers */
+/* Code to access Missing objects as numbers.
+
+   We must guarantee that notMissing is never returned to Python code,
+   because it would violate the guarantee that all Python-accessible
+   Missing values are equal to each other.
+
+*/
 
 static PyObject *
 Missing_bin(PyObject *v, PyObject *w)
 {
-  Py_INCREF(v);
-  return v;
+    if (v == notMissing)
+	v = w;
+    assert(v != notMissing);
+    Py_INCREF(v);
+    return v;
 }
 
 static PyObject *
 Missing_pow(PyObject *v, PyObject *w, PyObject *z)
 {
-  Py_INCREF(v);
-  return v;
+    if (v == notMissing)
+	v = w;
+    assert(v != notMissing);
+    Py_INCREF(v);
+    return v;
 }				
 
 static PyObject *
@@ -78,60 +90,18 @@ Missing_nonzero(PyObject *v)
   return 0;
 }
 
-/* coerce should return two values of the same type.
-
-   We violate that contract in a controlled way, by always coercing
-   the other object to Py_None.  We are guaranteed that our tp_compare
-   will be called because Py_None does not define a tp_compare.
+/* Always return the distinguished notMissing object as the result
+   of the coercion.  The notMissing object does not compare equal
+   to other Missing objects.
 */
 
 static int
 Missing_coerce(PyObject **pv, PyObject **pw)
 {
     Py_INCREF(*pv);
-    Py_INCREF(Py_None);
-    *pw = Py_None;
+    Py_INCREF(notMissing);
+    *pw = notMissing;
     return 0;
-}
-
-static PyObject *
-Missing_int(Missing *v)
-{
-  PyErr_SetString(PyExc_TypeError,
-		  "Missing objects do not support conversion to integer");
-  return NULL;
-}
-
-static PyObject *
-Missing_long(Missing *v)
-{
-  PyErr_SetString(PyExc_TypeError,
-		  "Missing objects do not support conversion to long");
-  return NULL;
-}
-
-static PyObject *
-Missing_float(Missing *v)
-{
-  PyErr_SetString(PyExc_TypeError,
-		  "Missing objects do not support conversion to float");
-  return NULL;
-}
-
-static PyObject *
-Missing_oct(Missing *v)
-{ 
-  PyErr_SetString(PyExc_TypeError,
-	  "Missing objects do not support conversion to an octal string");
-  return NULL;
-}
-
-static PyObject *
-Missing_hex(Missing *v)
-{
-  PyErr_SetString(PyExc_TypeError,
-     	"Missing objects do not support conversion to hexadecimal strings");
-  return NULL;
 }
 
 static PyNumberMethods Missing_as_number = {
@@ -142,22 +112,39 @@ static PyNumberMethods Missing_as_number = {
 	(binaryfunc)Missing_bin,	/*nb_remainder*/
 	(binaryfunc)Missing_bin,	/*nb_divmod*/
 	(ternaryfunc)Missing_pow,	/*nb_power*/
-	(unaryfunc)Missing_un,	/*nb_negative*/
-	(unaryfunc)Missing_un,	/*nb_positive*/
-	(unaryfunc)Missing_un,	/*nb_absolute*/
+	(unaryfunc)Missing_un,		/*nb_negative*/
+	(unaryfunc)Missing_un,		/*nb_positive*/
+	(unaryfunc)Missing_un,		/*nb_absolute*/
 	(inquiry)Missing_nonzero,	/*nb_nonzero*/
-	(unaryfunc)Missing_un,	/*nb_invert*/
+	(unaryfunc)Missing_un,		/*nb_invert*/
 	(binaryfunc)Missing_bin,	/*nb_lshift*/
 	(binaryfunc)Missing_bin,	/*nb_rshift*/
 	(binaryfunc)Missing_bin,	/*nb_and*/
 	(binaryfunc)Missing_bin,	/*nb_xor*/
 	(binaryfunc)Missing_bin,	/*nb_or*/
 	(coercion)Missing_coerce,	/*nb_coerce*/
-	(unaryfunc)Missing_int,	/*nb_int*/
-	(unaryfunc)Missing_long,	/*nb_long*/
-	(unaryfunc)Missing_float,	/*nb_float*/
-	(unaryfunc)Missing_oct,	/*nb_oct*/
-	(unaryfunc)Missing_hex,	/*nb_hex*/
+	0,		/*nb_int*/
+	0,		/*nb_long*/
+	0,		/*nb_float*/
+	0,		/*nb_oct*/
+	0,		/*nb_hex*/
+#if PY_MAJOR_VERSION == 2 && PY_MINOR_VERSION != 1
+	0,		/* nb_inplace_add */
+	0,		/* nb_inplace_subtract */
+	0,		/* nb_inplace_multiply */
+	0,		/* nb_inplace_divide */
+	0,		/* nb_inplace_remainder */
+	0, 		/* nb_inplace_power */
+	0,		/* nb_inplace_lshift */
+	0,		/* nb_inplace_rshift */
+	0,		/* nb_inplace_and */
+	0,		/* nb_inplace_xor */
+	0,		/* nb_inplace_or */
+	Missing_bin, /* nb_floor_divide */
+	Missing_bin,	/* nb_true_divide */
+	0,		/* nb_inplace_floor_divide */
+	0,		/* nb_inplace_true_divide */
+#endif
 };
 
 /* ------------------------------------------------------- */
@@ -226,16 +213,17 @@ Missing_call(PyObject *self, PyObject *args, PyObject *kw)
   return self;
 }
 
-/* All Missing objects are equal to each other, but we have
-   specially arranged for Py_None to be passed as m2 via
-   Missing_coerce().  So be prepared for Py_None where
-   a Missing is expected.
+/* All Missing objects are equal to each other, except for the
+   special notMissing object.  It is returned by coerce to 
+   indicate that Missing is being compare to something else.
 */
 
 static int
-Missing_cmp(Missing *m1, Missing *m2)
+Missing_cmp(PyObject *m1, PyObject *m2)
 {
-    return Py_None == (PyObject *)m2;
+    if (m1 == notMissing)
+	return -1;
+    return (m2 == notMissing);
 }
 
 static PyExtensionClass MissingType = {
@@ -249,7 +237,7 @@ static PyExtensionClass MissingType = {
   (printfunc)0,				/*tp_print*/
   (getattrfunc)0,			/*obsolete tp_getattr*/
   (setattrfunc)0,			/*obsolete tp_setattr*/
-  (cmpfunc)Missing_cmp,			/*tp_compare*/
+  Missing_cmp,				/*tp_compare*/
   (reprfunc)Missing_repr,		/*tp_repr*/
   &Missing_as_number,			/*tp_as_number*/
   0,					/*tp_as_sequence*/
@@ -300,7 +288,8 @@ initMissing(void)
 
   PyExtensionClass_Export(d,"Missing",MissingType);
 
-  theValue=PyObject_CallObject((PyObject*)&MissingType, NULL);
+  theValue = PyObject_CallObject((PyObject*)&MissingType, NULL);
+  notMissing = PyObject_CallObject((PyObject*)&MissingType, NULL);
   reduce=PyCFunction_New(reduce_ml, theValue);
 
   PyDict_SetItemString(d, "Value", theValue);
