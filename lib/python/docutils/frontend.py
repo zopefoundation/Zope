@@ -1,7 +1,7 @@
 # Author: David Goodger
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.3 $
-# Date: $Date: 2003/07/10 15:49:30 $
+# Revision: $Revision: 1.4 $
+# Date: $Date: 2003/07/14 01:08:31 $
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -24,8 +24,8 @@ import types
 import ConfigParser as CP
 import codecs
 import docutils
-import optparse
-from optparse import Values, SUPPRESS_HELP
+import optik as optparse
+from optik import Values, SUPPRESS_HELP
 
 
 def store_multiple(option, opt, value, parser, *args, **kwargs):
