@@ -4,4 +4,4 @@ test_MultiMapping
 3
 2
 {'spam': 3}
-{'spam': 1, 'eggs': 2}
+{'eggs': 2, 'spam': 1}

@@ -1,3 +1,4 @@
+from pprint import pprint
 from MultiMapping import *
 
 m=MultiMapping()
@@ -12,8 +13,8 @@ m.push({'spam':3})
 print m['spam']
 print m['eggs']
 
-print m.pop()
-print m.pop()
+pprint(m.pop())
+pprint(m.pop())
 
 try:
     print m.pop()
