@@ -93,6 +93,11 @@ def main(home, user='', group=''):
     dd_path=os.path.join(data_dir, 'Data.fs.in')
     if not os.path.exists(db_path) and os.path.exists(dd_path):
         print '-'*78
+        print 'setting dir permissions'
+        def dir_chmod(mode, dir, files, user=user, group=group):
+            ch(dir, user=user, group=group, mode=mode)
+        os.path.walk(home, dir_chmod, mode)
+        print '-'*78
         print 'creating default database'
         open(db_path,'wb').write(open(dd_path,'rb').read())
         ch(db_path, user, group)
