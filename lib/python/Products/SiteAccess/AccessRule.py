@@ -34,7 +34,7 @@ def _swallow(request, prefix):
 def manage_addAccessRule(self, method_id=None, REQUEST=None, **ignored):
     """Point a __before_traverse__ entry at the specified method"""
     # We want the original object, not stuff in between, and no acquisition
-    self = self.this() 
+    self = self.this()
     self = getattr(self, 'aq_base', self)
     priority = (1, 'AccessRule')
 
@@ -54,7 +54,7 @@ def manage_addAccessRule(self, method_id=None, REQUEST=None, **ignored):
             except: pass
         hook = AccessRule(method_id)
         registerBeforeTraverse(self, hook, 'AccessRule', 1)
-        try: 
+        try:
             getattr(self, method_id).icon = 'misc_/SiteAccess/AccessRule.gif'
         except: pass
         if REQUEST:
@@ -70,7 +70,7 @@ def manage_addAccessRule(self, method_id=None, REQUEST=None, **ignored):
 
 def getAccessRule(self, REQUEST=None):
     "Return the name of the current AccessRule, if any"
-    self = self.this() 
+    self = self.this()
     rules = queryBeforeTraverse(self, 'AccessRule')
     if rules:
         return rules[0][1].name

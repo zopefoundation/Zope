@@ -89,13 +89,13 @@ Commands:
            3.41 (0, 1)
 
        as described above.
-       
+
     pdebug command args
 
        Run one of the other commands in the Python debugger.
 
 sample suite of tests::
-    
+
     cd lib/python
     python Products/ZCatalog/regressiontests/loadmail.py base ~/zope.mbox 1000
     python Products/ZCatalog/regressiontests/loadmail.py index 100
@@ -162,7 +162,7 @@ def loadmail(dest, name, mbox, printstat=0, max=-1):
         dest.manage_addFolder(name)
     else:
         Products.BTreeFolder.BTreeFolder.manage_addBTreeFolder(dest, name)
-    
+
     dest=getattr(dest, name)
     f=open(mbox)
     mb=mailbox.UnixMailbox(f)
@@ -186,7 +186,7 @@ def loadmail(dest, name, mbox, printstat=0, max=-1):
         message=mb.next()
 
     dest.number_of_messages=i
-    print 
+    print
     get_transaction().commit()
 
 def loadinc(name, mb, printstat=0, max=99999999, wait=1):
@@ -233,8 +233,8 @@ def loadinc(name, mb, printstat=0, max=99999999, wait=1):
 
         doc=app=mdest=0
         jar.close()
-            
-            
+
+
     if printstat: sys.stdout.write("\t%s\t%s\t\n" % (i, f.tell()))
     sys.stdout.flush()
     return rconflicts, wconflicts
@@ -259,7 +259,7 @@ def indexf(app):
     r.PARENTS=[0, app.mail]
     app.cat.manage_catalogFoundItems(r,r,'','',['DTML Document'])
     get_transaction().commit()
-    
+
 def index():
     os.environ['STUPID_LOG_FILE']=''
     os.environ['STUPID_LOG_SEVERITY']='-111'
@@ -276,16 +276,16 @@ def index():
          import PLexicon
     from Products.ZCTextIndex.Lexicon \
          import Splitter, CaseNormalizer
-    
+
     app.cat._setObject('lex',
                        PLexicon('lex', '', Splitter(), CaseNormalizer())
                        )
-                      
+
     class extra:
         doc_attr = 'PrincipiaSearchSource'
         lexicon_id = 'lex'
         index_type = 'Okapi BM25 Rank'
-    
+
     app.cat.addIndex('PrincipiaSearchSource', 'ZCTextIndex', extra)
 
     get_transaction().commit()
@@ -377,7 +377,7 @@ def inc():
     print t, c, size, mem
 
     #hist("%s-%s-%s" % (omin, count, threads))
-    
+
     Zope.DB.close()
 
 words=['banishment', 'indirectly', 'imprecise', 'peeks',
@@ -608,7 +608,7 @@ def incedit(edits, wait, ndel=20, nins=20):
 
         doc=app=0
         jar.close()
-        
+
     return rconflicts, wconflicts
 
 def edit():
@@ -671,7 +671,7 @@ def edit():
     print t, c, size, mem
 
     #hist("e%s" % (threads))
-    
+
     Zope.DB.close()
 
 def VmSize():

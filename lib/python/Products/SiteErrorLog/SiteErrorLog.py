@@ -2,18 +2,18 @@
 #
 # Copyright (c) 2001, 2002 Zope Corporation and Contributors.
 # All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE.
-# 
+#
 ##############################################################################
 """Site error log module.
 
-$Id: SiteErrorLog.py,v 1.9 2002/06/29 18:46:45 chrism Exp $
+$Id: SiteErrorLog.py,v 1.10 2002/08/14 22:25:11 mj Exp $
 """
 
 import os
@@ -46,7 +46,7 @@ log_to_event_log = 'Log to the Event Log'
 _rate_restrict_pool = {}
 
 # The number of seconds that must elapse on average between sending two
-# exceptions of the same name into the the Event Log. one per minute. 
+# exceptions of the same name into the the Event Log. one per minute.
 _rate_restrict_period = 60
 
 # The number of exceptions to allow in a burst before the above limit
@@ -136,7 +136,7 @@ class SiteErrorLog (SimpleItem):
                 strtype = str(getattr(info[0], '__name__', info[0]))
                 if strtype in self._ignored_exceptions:
                     return
-                                
+
                 if not isinstance(info[2], StringType) and not isinstance(
                     info[2], UnicodeType):
                     tb_text = ''.join(
@@ -227,7 +227,7 @@ class SiteErrorLog (SimpleItem):
             RESPONSE.redirect(
                 '%s/manage_main?manage_tabs_message=Changed+properties.' %
                 self.absolute_url())
-    
+
     security.declareProtected(use_error_logging, 'getLogEntries')
     def getLogEntries(self):
         """Returns the entries in the log.
@@ -272,4 +272,3 @@ def manage_addErrorLog(dispatcher, RESPONSE=None):
         RESPONSE.redirect(
             dispatcher.DestinationURL() +
             '/manage_main?manage_tabs_message=Error+Log+Added.' )
-

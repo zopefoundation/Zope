@@ -1,20 +1,20 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 database_type='Gadfly'
 __doc__='''%s Database Connection
 
-$Id: DA.py,v 1.14 2002/05/27 12:27:25 chrisw Exp $''' % database_type
-__version__='$Revision: 1.14 $'[11:-2]
+$Id: DA.py,v 1.15 2002/08/14 22:25:17 mj Exp $''' % database_type
+__version__='$Revision: 1.15 $'[11:-2]
 
 from db import DB, manage_DataSources
 import sys, DABase, Globals
@@ -31,7 +31,7 @@ def manage_addZGadflyConnection(
     self, id, title, connection, check=None, REQUEST=None):
     """Add a DB connection to a folder"""
 
-    # Note - type checking is taken care of by _setObject 
+    # Note - type checking is taken care of by _setObject
     # and the Connection object constructor.
     self._setObject(id, Connection(
         id, title, connection, check))
@@ -51,13 +51,13 @@ class Connection(DABase.Connection):
         if hasattr(self, '_v_database_connection'):
             return self._v_database_connection.opened
         return ''
-    
+
     def title_and_id(self):
         s=_Connection.inheritedAttribute('title_and_id')(self)
         if (hasattr(self, '_v_database_connection') and
             self._v_database_connection.opened):
             s="%s, which is connected" % s
-        else: 
+        else:
             s="%s, which is <font color=red> not connected</font>" % s
         return s
 
@@ -66,7 +66,7 @@ class Connection(DABase.Connection):
         if (hasattr(self, '_v_database_connection') and
             self._v_database_connection.opened):
             s="%s (connected)" % s
-        else: 
+        else:
             s="%s (<font color=red> not connected</font>)" % s
         return s
 
@@ -78,7 +78,7 @@ class Connection(DABase.Connection):
                 c=self._v_database_connection=c[s]
                 if not c.opened: c.open()
                 return self
-    
+
             try:
                 try:
                     self._v_database_connection=c[s]=DB(s)
@@ -90,8 +90,7 @@ class Connection(DABase.Connection):
                         '<!--\n%s\n%s\n-->\n'
                         % (s,t,v)), tb
             finally: tb=None
-    
+
             return self
         finally:
             _connections_lock.release()
-

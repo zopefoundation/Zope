@@ -1,22 +1,22 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """
 Simple ZODB-based transient object implementation.
 
-$Id: TransientObject.py,v 1.8 2002/06/24 19:31:16 chrism Exp $
+$Id: TransientObject.py,v 1.9 2002/08/14 22:25:13 mj Exp $
 """
 
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
 
 from Persistence import Persistent
 from Acquisition import Implicit
@@ -114,7 +114,7 @@ class TransientObject(Persistent, Implicit):
 
     def getContainerKey(self):
         return self.token
-    
+
     # -----------------------------------------------------------------
     # DictionaryLike
     #
@@ -132,7 +132,7 @@ class TransientObject(Persistent, Implicit):
         v = self._container.get(k, default)
         if v is _notfound: return None
         return v
-        
+
     def has_key(self, k):
         if self._container.get(k, _notfound) is not _notfound: return 1
         return 0
@@ -243,7 +243,7 @@ class TransientObject(Persistent, Implicit):
                 'Conflict resolution error in TransientObject', '',
                 sys.exc_info()
                 )
-            
+
     getName = getId # this is for SQLSession compatibility
 
     def _generateUniqueId(self):

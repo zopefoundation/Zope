@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 '''Raising exceptions
 
@@ -22,9 +22,9 @@
        <!--#/raise-->
     <!--#/if-->
 
-''' 
-__rcs_id__='$Id: DT_Raise.py,v 1.12 2001/11/28 15:50:55 matt Exp $'
-__version__='$Revision: 1.12 $'[11:-2]
+'''
+__rcs_id__='$Id: DT_Raise.py,v 1.13 2002/08/14 22:29:52 mj Exp $'
+__version__='$Revision: 1.13 $'[11:-2]
 
 from DT_Util import parse_params, name_param, render_blocks, str
 
@@ -43,9 +43,9 @@ class Raise:
     def render(self,md):
         expr=self.expr
         if expr is None:
-                t=self.__name__
-                if t[-5:]=='Error' and __builtins__.has_key(t):
-                    t=__builtins__[t]
+            t=self.__name__
+            if t[-5:]=='Error' and __builtins__.has_key(t):
+                t=__builtins__[t]
         else:
             try: t=expr.eval(md)
             except: t='Invalid Error Type Expression'

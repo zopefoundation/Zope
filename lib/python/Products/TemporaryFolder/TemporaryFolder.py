@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """
 Mounted database support
@@ -22,9 +22,9 @@ lives in another ZODB.
 To understand this fully, you'll need to read the source of
 ZODB.Mount.MountPoint.
 
-$Id: TemporaryFolder.py,v 1.6 2002/08/12 21:14:15 chrism Exp $
+$Id: TemporaryFolder.py,v 1.7 2002/08/14 22:25:13 mj Exp $
 """
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 
 import Globals
 from Globals import HTMLFile
@@ -38,7 +38,7 @@ from LowConflictConnection import LowConflictConnection
 
 ADD_TEMPORARY_FOLDER_PERM="Add Temporary Folder"
 
-    
+
 def constructTemporaryFolder(self, id, title=None, REQUEST=None):
     """ """
     ms = MountedTemporaryFolder(id, title)
@@ -58,7 +58,7 @@ class MountedTemporaryFolder(MountPoint, OFS.SimpleItem.Item):
     icon = 'p_/broken'
     manage_options = ({'label':'Traceback', 'action':'manage_traceback'},)
     meta_type = 'Broken Temporary Folder'
-    
+
     def __init__(self, id, title='', params=None):
         self.id = str(id)
         self.title = title
@@ -71,7 +71,7 @@ class MountedTemporaryFolder(MountPoint, OFS.SimpleItem.Item):
         db = DB(TemporaryStorage())
         db.klass = LowConflictConnection
         return db
-    
+
     def _getMountRoot(self, root):
         sdc = root.get('folder', None)
         if sdc is None:
@@ -79,7 +79,7 @@ class MountedTemporaryFolder(MountPoint, OFS.SimpleItem.Item):
             self._populate(sdc, root)
 
         return sdc
-    
+
     def mount_error_(self):
         return self._v_connect_error
 

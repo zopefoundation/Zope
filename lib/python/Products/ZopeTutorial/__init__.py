@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 import TutorialTopic
 import App.Common
@@ -41,15 +41,15 @@ def initialize(context):
             help.lastRegistered >= DateTime(os.stat(lesson_path)[stat.ST_MTIME]):
         return
     help.lastRegistered=DateTime()
-    
+
     # delete old help topics
     for id in help.objectIds('Help Topic'):
         help._delObject(id)
-    
+
     # create glossary
     text=open(glossary_path).read()
     text=term_pat.sub(defineTerm, text)
-    
+
     glossary=TutorialTopic.GlossaryTopic('tutorialGlossary',
                                          'Zope Tutorial Glossary', text)
     context.registerHelpTopic('tutorialGlossary', glossary)
@@ -58,7 +58,7 @@ def initialize(context):
     f=open(lesson_path)
     lines=[]
     id=0
-    
+
     while 1:
         line = f.readline()
         if (line.strip() and line.find(' ') != 0) or line=='':
@@ -69,7 +69,7 @@ def initialize(context):
                 text=''.join(lines[1:])
                 text=term_pat.sub(glossaryTerm, text)
                 topic=TutorialTopic.TutorialTopic(topic_id, lines[0].strip(), spacestrip(text))
-                context.registerHelpTopic(topic_id, topic)            
+                context.registerHelpTopic(topic_id, topic)
             lines=[line]
         else:
             lines.append(line)
@@ -81,12 +81,12 @@ def initialize(context):
 def spacestrip(txt):
     """ dedent text by 2 spaces !
 
-    We need this to workaround a nasty bug in STXNG. 
+    We need this to workaround a nasty bug in STXNG.
     STXNG creates empty <pre>..</pre> when then text start
     if a level > 1. This fix is lame. The problem should be fixed
     inside STXNG
     """
-    
+
     l = []
     for x in txt.split("\n"):
         if len(x)>2 and x[:2]=='  ':

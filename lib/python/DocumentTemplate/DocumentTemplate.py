@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 '''Document templates with fill-in fields
 
@@ -60,7 +60,7 @@ Two source formats are supported:
          <!--#var total fmt=12.2f-->
 
       is used to insert the variable 'total' with the C format
-      '12.2f'.        
+      '12.2f'.
 
 Document templates support conditional and sequence insertion
 
@@ -105,7 +105,7 @@ Document Templates may be created 4 ways:
 '''
 
 
-__version__='$Revision: 1.13 $'[11:-2]
+__version__='$Revision: 1.14 $'[11:-2]
 
 ParseError='Document Template Parse Error'
 

@@ -1,20 +1,20 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 ''' The Let tag was contributed to Zope by and is copyright, 1999
     Phillip J. Eby.  Permission has been granted to release the Let tag
     under the Zope Public License.
-    
+
 
    Let name=value...
 
@@ -38,7 +38,7 @@
    Variables are processed in sequence, so later assignments can
    reference and/or overwrite the results of previous assignments,
    as desired.
-''' 
+'''
 
 from DT_Util import render_blocks, Eval, ParseError
 from DT_Util import str # Probably needed due to hysterical pickles.
@@ -48,7 +48,7 @@ import re
 class Let:
     blockContinuations=()
     name='let'
-    
+
     def __init__(self, blocks):
         tname, args, section = blocks[0]
         self.__name__ = args
@@ -58,7 +58,7 @@ class Let:
         for i in range(len(args)):
             name,expr = args[i]
             if expr[:1]=='"' and expr[-1:]=='"' and len(expr) > 1:
-				# expr shorthand
+                                # expr shorthand
                 expr=expr[1:-1]
                 try: args[i] = name, Eval(expr).eval
                 except SyntaxError, v:
@@ -85,7 +85,7 @@ def parse_let_params(text,
             parmre=re.compile('([\000- ]*([^\000- ="]+)=([^\000- ="]+))'),
             qparmre=re.compile('([\000- ]*([^\000- ="]+)="([^"]*)")'),
             **parms):
-    
+
     result=result or []
 
     mo = parmre.match(text)
@@ -108,4 +108,3 @@ def parse_let_params(text,
     text=text[l:].strip()
     if text: return apply(parse_let_params,(text,result,tag),parms)
     else: return result
-

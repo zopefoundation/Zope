@@ -1,20 +1,20 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """
 Advanced sort support by Oleg Broytmann <phd@@phd.pp.ru> 23 Apr 2001
 eg Sort(sequence, (("akey", "nocase"), ("anotherkey", "cmp", "desc")))
 
-$Id: SortEx.py,v 1.4 2002/02/07 17:47:42 andreasjung Exp $
+$Id: SortEx.py,v 1.5 2002/08/14 22:29:53 mj Exp $
 """
 
 
@@ -36,19 +36,19 @@ def sort(sequence, sort=(), _=None, mapping=0):
         allowed values:
 
         - "cmp" -- the standard comparison function (default)
- 
+
         - "nocase" -- case-insensitive comparison
- 
+
         - "strcoll" or "locale" -- locale-aware string comparison
 
         - "strcoll_nocase" or "locale_nocase" -- locale-aware case-insensitive
            string comparison
- 
+
         - "xxx" -- a user-defined comparison function
- 
+
       - direction -- defines the sort direction for the key (optional).
         (allowed values: "asc" (default) , "desc")
-    """      
+    """
 
 
 
@@ -60,7 +60,7 @@ def sort(sequence, sort=(), _=None, mapping=0):
                 need_sortfunc = 1
                 break
 
-    sortfields = sort # multi sort = key1,key2 
+    sortfields = sort # multi sort = key1,key2
     multsort = len(sortfields) > 1 # flag: is multiple sort
 
     if need_sortfunc:
@@ -92,25 +92,25 @@ def sort(sequence, sort=(), _=None, mapping=0):
             v=client
 
         if sort:
-             if multsort: # More than one sort key.
-                 k = []
-                 for sk in sortfields:
-                     try:
-                         if mapping: akey = v[sk]
-                         else: akey = getattr(v, sk)
-                     except AttributeError, KeyError: akey = None
-                     if not basic_type(akey):
-                         try: akey = akey()
-                         except: pass
-                     k.append(akey)
-             else: # One sort key.
-                 try:
-                     if mapping: k = v[sort]
-                     else: k = getattr(v, sort)
-                 except AttributeError, KeyError: k = None
-                 if not basic_type(type(k)):           
-                     try: k = k()
-                     except: pass
+            if multsort: # More than one sort key.
+                k = []
+                for sk in sortfields:
+                    try:
+                        if mapping: akey = v[sk]
+                        else: akey = getattr(v, sk)
+                    except AttributeError, KeyError: akey = None
+                    if not basic_type(akey):
+                        try: akey = akey()
+                        except: pass
+                    k.append(akey)
+            else: # One sort key.
+                try:
+                    if mapping: k = v[sort]
+                    else: k = getattr(v, sort)
+                except AttributeError, KeyError: k = None
+                if not basic_type(type(k)):
+                    try: k = k()
+                    except: pass
 
         s.append((k,client))
 
@@ -122,7 +122,7 @@ def sort(sequence, sort=(), _=None, mapping=0):
 
     sequence=[]
     for k, client in s:
-         sequence.append(client)
+        sequence.append(client)
     return sequence
 
 
@@ -219,5 +219,3 @@ class SortBy:
 
         # all functions returned 0 - identical sequences
         return 0
-
-

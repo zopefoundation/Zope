@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 '''
 Accelerated HTTP cache manager --
@@ -138,7 +138,7 @@ class AcceleratedHTTPCacheManager (CacheManager, SimpleItem):
     def getId(self):
         ' '
         return self.id
-        
+
     ZCacheManager_getCache__roles__ = ()
     def ZCacheManager_getCache(self):
         cacheid = self.__cacheid
@@ -181,7 +181,7 @@ class AcceleratedHTTPCacheManager (CacheManager, SimpleItem):
         req = self.REQUEST
         sort_by = req.get('sort_by', 'anon')
         sort_reverse = int(req.get('sort_reverse', 1))
-        return sort_by, sort_reverse        
+        return sort_by, sort_reverse
 
     def getCacheReport(self):
         """

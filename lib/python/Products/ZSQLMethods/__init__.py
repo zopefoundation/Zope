@@ -1,20 +1,20 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 __doc__='''SQL Method Product
 
 
-$Id: __init__.py,v 1.17 2001/11/28 15:51:10 matt Exp $'''
-__version__='$Revision: 1.17 $'[11:-2]
+$Id: __init__.py,v 1.18 2002/08/14 22:25:18 mj Exp $'''
+__version__='$Revision: 1.18 $'[11:-2]
 import Shared.DC.ZRDB.Search, Shared.DC.ZRDB.Aqueduct, SQL
 import Shared.DC.ZRDB.RDB
 import Shared.DC.ZRDB.sqlvar, Shared.DC.ZRDB.sqlgroup, Shared.DC.ZRDB.sqltest

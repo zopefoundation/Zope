@@ -1,5 +1,5 @@
 ############################################################################
-# 
+#
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
@@ -103,7 +103,7 @@ class SessionDataManager(Item, Implicit, Persistent, RoleManager, Owned, Tabs):
     security.declareProtected(ARBITRARY_SESSIONDATA_PERM,'getSessionDataByKey')
     def getSessionDataByKey(self, key):
         return self._getSessionDataObjectByKey(key)
-    
+
     security.declareProtected(ACCESS_CONTENTS_PERM, 'getBrowserIdManager')
     def getBrowserIdManager(self):
         """ """
@@ -115,7 +115,7 @@ class SessionDataManager(Item, Implicit, Persistent, RoleManager, Owned, Tabs):
         return mgr
 
     # END INTERFACE METHODS
-    
+
     def __init__(self, id, path=None, title='', requestName=None):
         self.id = id
         self.setContainerPath(path)
@@ -160,14 +160,14 @@ class SessionDataManager(Item, Implicit, Persistent, RoleManager, Owned, Tabs):
             self.obpath = list(path) # sequence
         else:
             raise SessionDataManagerErr, ('Bad path value %s' % path)
-            
+
     security.declareProtected(MGMT_SCREEN_PERM, 'getContainerPath')
     def getContainerPath(self):
         """ """
         if self.obpath is not None:
             return string.join(self.obpath, '/')
         return '' # blank string represents undefined state
-    
+
     def _hasSessionDataObject(self, key):
         """ """
         c = self._getSessionDataContainer()

@@ -81,10 +81,10 @@ class BaseIndex(Persistent):
         # docid -> WidCode'd list of wids
         # Used for un-indexing, and for phrase search.
         self._docwords = IOBTree()
-        
+
         # Use a BTree length for efficient length computation w/o conflicts
         self.length = BTrees.Length.Length()
-        
+
     def length(self):
         """Return the number of words in the index."""
         # This is overridden per instance
@@ -155,7 +155,7 @@ class BaseIndex(Persistent):
         # The wid->weight mappings are fed into _add_wordinfo, and docweight
         # becomes the value of _docweight[docid].
         raise NotImplementedError
-        
+
     def has_doc(self, docid):
         return self._docwords.has_key(docid)
 
@@ -281,7 +281,7 @@ class BaseIndex(Persistent):
             doc2score[docid] = weight
             self._wordinfo[wid] = doc2score # not redundant:  Persistency!
         self.length.change(new_word_count)
-        
+
 
     def _del_wordinfo(self, wid, docid):
         doc2score = self._wordinfo[wid]

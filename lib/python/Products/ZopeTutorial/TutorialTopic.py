@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 import OFS.Folder
 from HelpSys.HelpTopic import TextTopic
@@ -32,7 +32,7 @@ class TutorialTopic(TextTopic):
         self.title=title
         text=str(StructuredText.HTML(text))
         self.obj=HTML(pre_pat.sub(clean_pre, text))
-        
+
     index_html=DTMLFile('dtml/lessonView', globals())
 
     def checkInstallation(self, REQUEST):
@@ -56,7 +56,7 @@ class TutorialTopic(TextTopic):
         if not ok:
             REQUEST.set('hide_next', 1)
         return ok
-            
+
     def lessonURL(self, id, REQUEST):
         """
         URL of the examples for a lesson
@@ -65,7 +65,7 @@ class TutorialTopic(TextTopic):
             return '%s/lesson%d' % (REQUEST['tutorialExamplesURL'], id)
         except KeyError:
             return ""
-            
+
     def tutorialShowLesson(self, id, REQUEST):
         """
         Navigate management frame to a given lesson's screen.
@@ -87,7 +87,7 @@ follow along manually, or reinstall the tutorial examples.
 Note: make sure that you have cookies turned on in your browser.
 </p>
 """
-        
+
         return """\
 <SCRIPT LANGUAGE="javascript">
 <!--
@@ -115,7 +115,7 @@ class GlossaryTopic(TutorialTopic):
         self.obj=HTML(text)
 
     index_html=DTMLFile('dtml/glossaryView', globals())
-        
+
     def formatted_content(self, REQUEST):
         """
         Custom stx formatting for tutorial topics
@@ -168,11 +168,11 @@ def addTutorial(self, id, REQUEST=None, RESPONSE=None):
     except:
         folder._p_jar=self.Destination()._p_jar
         folder.manage_importObject(tutorialExamplesFile)
- 
+
     # acquire REQUEST if necessary
     if REQUEST is None:
         REQUEST=self.REQUEST
-        
+
     # Set local roles on examples
     changeOwner(folder, REQUEST['AUTHENTICATED_USER'])
 
@@ -197,11 +197,11 @@ def changeOwner(obj, owner):
     for user, roles in obj.get_local_roles():
         if 'Owner' in roles:
             obj.manage_delLocalRoles([user])
-            break    
+            break
     obj.manage_setLocalRoles(owner.getUserName(), ['Owner'])
     for subobj in obj.objectValues():
         changeOwner(subobj, owner)
-        
+
 def clean_pre(match):
     """
     Reformat a pre tag to get rid of extra indentation
@@ -215,20 +215,20 @@ def clean_pre(match):
         indent=len(line) - len(line.lstrip())
         if min_indent is None or indent < min_indent:
             if line.strip():
-                min_indent=indent   
+                min_indent=indent
     for line in lines:
         nlines.append(line[min_indent:])
-    
+
     while 1:
         if not nlines[0].strip():
             nlines.pop(0)
         else:
             break
-    
+
     while 1:
         if not nlines[-1].strip():
             nlines.pop()
         else:
             break
-    
+
     return "<PRE>%s</PRE>" % '\n'.join(nlines)

@@ -1,20 +1,20 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 __doc__='''SQL Methods
 
 
-$Id: SQL.py,v 1.20 2001/11/28 15:51:10 matt Exp $'''
-__version__='$Revision: 1.20 $'[11:-2]
+$Id: SQL.py,v 1.21 2002/08/14 22:25:18 mj Exp $'''
+__version__='$Revision: 1.21 $'[11:-2]
 
 import Shared.DC.ZRDB.DA
 from Globals import DTMLFile
@@ -75,7 +75,7 @@ def manage_addZSQLMethod(self, id, title,
             u="%s/%s/manage_testForm" % (u,id)
         else:
             u=u+'/manage_main'
-            
+
         REQUEST.RESPONSE.redirect(u)
     return ''
 
@@ -102,7 +102,7 @@ class SQL(Shared.DC.ZRDB.DA.DA):
         and result data.
 
         For more information, see the searchable-object interface
-        specification. 
+        specification.
 
       - Containment
 
@@ -119,7 +119,7 @@ class SQL(Shared.DC.ZRDB.DA.DA):
     """
     __implements__ = (WriteLockInterface,)
     meta_type='Z SQL Method'
-                
+
     manage=manage_main=DTMLFile('dtml/edit', globals())
     manage_main._setName('manage_main')
 

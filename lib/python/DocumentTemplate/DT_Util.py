@@ -1,17 +1,17 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
-'''$Id: DT_Util.py,v 1.87 2002/08/01 16:00:39 mj Exp $''' 
-__version__='$Revision: 1.87 $'[11:-2]
+'''$Id: DT_Util.py,v 1.88 2002/08/14 22:29:52 mj Exp $'''
+__version__='$Revision: 1.88 $'[11:-2]
 
 import re, os
 from html_quote import html_quote, ustr # for import by other modules, dont remove!
@@ -234,7 +234,7 @@ def name_param(params,tag='',expr=0, attr='name', default_unnamed=1):
     #   # Fix up something like: <!--#in expr="whatever" mapping-->
     #   params[params['']]=default_unnamed
     #   del params['']
-        
+
     if used(''):
         v=params['']
 
@@ -257,7 +257,7 @@ def name_param(params,tag='',expr=0, attr='name', default_unnamed=1):
                 'that doesn\'t support expr attributes.',
                 tag)
 
-        else: # name shorthand            
+        else: # name shorthand
             if used(attr):
                 raise ParseError, ('Two %s values were given' % attr, tag)
             if expr:
@@ -277,7 +277,7 @@ def name_param(params,tag='',expr=0, attr='name', default_unnamed=1):
         name=params['expr']
         expr=Eval(name)
         return name, expr
-        
+
     raise ParseError, ('No %s given' % attr, tag)
 
 Expr_doc="""
@@ -308,20 +308,20 @@ Python expression support
   mapping object.  This variable can be useful for accessing objects
   in a document template namespace that have names that are not legal
   Python variable names::
-  
+
      <!--#var expr="_['sequence-number']*5"-->
-  
+
   This variable also has attributes that provide access to standard
   utility objects.  These attributes include:
-  
+
   - The objects: 'None', 'abs', 'chr', 'divmod', 'float', 'hash',
        'hex', 'int', 'len', 'max', 'min', 'oct', 'ord', 'pow',
        'round', and 'str' from the standard Python builtin module.
 
   - Special security-aware versions of 'getattr' and 'hasattr',
-  
+
   - The Python 'string', 'math', and 'whrandom' modules, and
-  
+
   - A special function, 'test', that supports if-then expressions.
     The 'test' function accepts any number of arguments.  If the
     first argument is true, then the second argument is returned,
@@ -329,10 +329,10 @@ Python expression support
     argument is returned, and so on.  If there is an odd number of
     arguments, then the last argument is returned in the case that
     none of the tested arguments is true, otherwise None is
-    returned. 
-  
+    returned.
+
   For example, to convert a value to lower case::
-  
+
     <!--#var expr="_.string.lower(title)"-->
 
 """
@@ -370,7 +370,7 @@ def parse_params(text,
 
     result=result or {}
 
-    # HACK - we precalculate all matches. Maybe we don't need them 
+    # HACK - we precalculate all matches. Maybe we don't need them
     # all. This should be fixed for performance issues
 
     mo_p = parmre.match(text)
@@ -393,7 +393,7 @@ def parse_params(text,
             if parms.has_key(name):
                 if parms[name] is None: raise ParseError, (
                     'Attribute %s requires a value' % name, tag)
-                    
+
                 result[name]=parms[name]
             else: raise ParseError, (
                 'Invalid attribute name, "%s"' % name, tag)
@@ -410,7 +410,7 @@ def parse_params(text,
     else:
         if not text or not text.strip(): return result
         raise ParseError, ('invalid parameter: "%s"' % text, tag)
-    
+
     if not parms.has_key(name):
         raise ParseError, (
             'Invalid attribute name, "%s"' % name, tag)
@@ -420,7 +420,7 @@ def parse_params(text,
         if type(p) is not ListType or p:
             raise ParseError, (
                 'Duplicate values for attribute "%s"' % name, tag)
-            
+
     result[name]=value
 
     text=text[l:].strip()

@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 """Python Scripts Product
@@ -17,7 +17,7 @@ This product provides support for Script objects containing restricted
 Python code.
 """
 
-__version__='$Revision: 1.42 $'[11:-2]
+__version__='$Revision: 1.43 $'[11:-2]
 
 import sys, os, traceback, re, marshal
 from Globals import DTMLFile, MessageDialog, package_home
@@ -153,11 +153,11 @@ class PythonScript(Script, Historical, Cacheable):
         """Replace the body of the script with the text in file."""
         if self.wl_isLocked():
             raise ResourceLockedError, "The script is locked via WebDAV."
-            
-        if type(file) is not type(''): 
+
+        if type(file) is not type(''):
             if not file: raise ValueError, 'File not specified'
             file = file.read()
-            
+
         self.write(file)
         message = 'Saved changes.'
         return self.ZPythonScriptHTML_editForm(self, REQUEST,
@@ -183,7 +183,7 @@ class PythonScript(Script, Historical, Cacheable):
         """Parameters to test the script with."""
         param_names = []
         for name in self._params.split(','):
-           
+
             name = name.strip()
             if name and name[0] != '*' and re.match('\w',name):
                 param_names.append(name.split('=', 1)[0])
@@ -201,7 +201,7 @@ class PythonScript(Script, Historical, Cacheable):
             getattr(self, 'Script_magic', None) != Script_magic):
             global _log_complaint
             if _log_complaint:
-                LOG(self.meta_type, INFO, _log_complaint)    
+                LOG(self.meta_type, INFO, _log_complaint)
                 _log_complaint = 0
             # Changes here won't get saved, unless this Script is edited.
             body = self._body.rstrip()
@@ -329,7 +329,7 @@ class PythonScript(Script, Historical, Cacheable):
         if user is not None and user.allowed(self, roles):
             return
         raise 'Forbidden', ('You are not authorized to change <em>%s</em> '
-            'because you do not have proxy roles.\n<!--%s, %s-->' 
+            'because you do not have proxy roles.\n<!--%s, %s-->'
             % (self.id, user, roles))
 
     security.declareProtected('Change proxy roles',
@@ -358,7 +358,7 @@ class PythonScript(Script, Historical, Cacheable):
         self.dav__simpleifhandler(REQUEST, RESPONSE, refresh=1)
         self.write(REQUEST.get('BODY', ''))
         RESPONSE.setStatus(204)
-        return RESPONSE        
+        return RESPONSE
 
     manage_FTPput = PUT
 
@@ -449,7 +449,7 @@ class PythonScript(Script, Historical, Cacheable):
         hlines = ['%s %s "%s"' % (prefix, self.meta_type, self.id)]
         mm = self._metadata_map().items()
         mm.sort()
-        for kv in mm: 
+        for kv in mm:
             hlines.append('%s=%s' % kv)
         if self.errors:
             hlines.append('')

@@ -1,19 +1,19 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """
 Transience initialization routines
 
-$Id: __init__.py,v 1.6 2001/11/28 15:51:09 matt Exp $
+$Id: __init__.py,v 1.7 2002/08/14 22:25:13 mj Exp $
 """
 
 import ZODB # this is to help out testrunner, don't remove.
@@ -21,7 +21,7 @@ import Transience
 # import of MaxTransientObjectsExceeded for easy import from scripts,
 # this is protected by a module security info declaration in the
 # Sessions package.
-from Transience import MaxTransientObjectsExceeded 
+from Transience import MaxTransientObjectsExceeded
 
 def initialize(context):
     context.registerClass(
@@ -33,4 +33,3 @@ def initialize(context):
         )
     context.registerHelp()
     context.registerHelpTitle('Zope Help')
-

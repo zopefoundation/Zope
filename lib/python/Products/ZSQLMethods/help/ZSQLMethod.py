@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 def manage_addZSQLMethod(id, title,
@@ -26,7 +26,7 @@ def manage_addZSQLMethod(id, title,
 
     The 'template' argument is a string containing the source for the
     SQL Template.
-    
+
     """
 
 
@@ -47,7 +47,7 @@ class ZSQLMethod:
     and result data.
 
     For more information, see the searchable-object interface
-    specification. 
+    specification.
 
     Database methods support URL traversal to access and invoke
     methods on individual record objects. For example, suppose you
@@ -81,7 +81,7 @@ class ZSQLMethod:
         The returned value is a sequence of record objects.
 
         """
-    
+
 
     def manage_edit(title,connection_id,arguments,template):
         """
@@ -100,15 +100,3 @@ class ZSQLMethod:
         the SQL Template.
 
         """
-
-
-
-
-
-
-
-
-
-
-
-

@@ -1,7 +1,7 @@
 # Utility program to patch Data.fs.in to include a temporary folder, browser
 # id manager, and session data manager
 ############################################################################
-# 
+#
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
@@ -18,7 +18,7 @@ import Globals
 from ZODB import FileStorage, DB
 import Products.Sessions.BrowserIdManager
 import Products.Sessions.SessionDataManager
-import Products.TemporaryFolder.TemporaryFolder 
+import Products.TemporaryFolder.TemporaryFolder
 import os.path
 import sys
 

@@ -65,8 +65,3 @@ from Globals import InitializeClass
 #   'error_reply', 'error_temp', 'error_perm', 'error_proto')
 # from httplib import NNTP
 # allow_class(NNTP)
-
-
-
-
-

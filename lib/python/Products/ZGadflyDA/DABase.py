@@ -1,19 +1,19 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 __doc__='''Database Connection
 
-$Id: DABase.py,v 1.11 2001/11/28 15:51:10 matt Exp $'''
-__version__='$Revision: 1.11 $'[11:-2]
+$Id: DABase.py,v 1.12 2002/08/14 22:25:17 mj Exp $'''
+__version__='$Revision: 1.12 $'[11:-2]
 
 from db import manage_DataSources
 import Shared.DC.ZRDB.Connection, sys
@@ -33,7 +33,7 @@ class Connection(Shared.DC.ZRDB.Connection.Connection):
     manage_browse=HTMLFile('dtml/browse',globals())
 
     info=None
-        
+
     def tpValues(self):
         #if hasattr(self, '_v_tpValues'): return self._v_tpValues
         r=[]
@@ -104,7 +104,7 @@ class TableBrowser(Browser, Acquisition.Implicit):
             b.TABLE_NAME=tname
             r.append(b)
         return r
-            
+
     def tpId(self): return self._d['TABLE_NAME']
     def tpURL(self): return "Table/%s" % self._d['TABLE_NAME']
     def Name(self): return self._d['TABLE_NAME']
@@ -144,8 +144,8 @@ class TableBrowser(Browser, Acquisition.Implicit):
                     raise ValueError, (
                         'no default was given for <em>%s</em>' % n)
 
-            
-            
+
+
 
 class ColumnBrowser(Browser):
     icon='field'

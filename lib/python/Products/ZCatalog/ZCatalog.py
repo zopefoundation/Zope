@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """ZCatalog product"""
 
@@ -46,7 +46,7 @@ def manage_addZCatalog(self, id, title,
     """Add a ZCatalog object
     """
     id=str(id)
-    title=str(title)        
+    title=str(title)
     c=ZCatalog(id, title, vocab_id, self)
     self._setObject(id, c)
     if REQUEST is not None:
@@ -59,13 +59,13 @@ class ZCatalog(Folder, Persistent, Implicit):
     """ZCatalog object
 
     A ZCatalog contains arbirary index like references to Zope
-    objects.  ZCatalog's can index either 'Field' values of object, or 
+    objects.  ZCatalog's can index either 'Field' values of object, or
     'Text' values.
 
     ZCatalog does not store references to the objects themselves, but
     rather to a unique identifier that defines how to get to the
     object.  In Zope, this unique idenfier is the object's relative
-    path to the ZCatalog (since two Zope object's cannot have the same 
+    path to the ZCatalog (since two Zope object's cannot have the same
     URL, this is an excellent unique qualifier in Zope).
 
     Most of the dirty work is done in the _catalog object, which is an
@@ -92,13 +92,13 @@ class ZCatalog(Folder, Persistent, Implicit):
          'action': 'manage_catalogIndexes',
          'help': ('ZCatalog','ZCatalog_Indexes.stx')},
         {'label': 'Metadata',           # TAB: Metadata
-         'action': 'manage_catalogSchema', 
+         'action': 'manage_catalogSchema',
          'help':('ZCatalog','ZCatalog_MetaData-Table.stx')},
         {'label': 'Find Objects',       # TAB: Find Objects
-         'action': 'manage_catalogFind', 
+         'action': 'manage_catalogFind',
          'help':('ZCatalog','ZCatalog_Find-Items-to-ZCatalog.stx')},
         {'label': 'Advanced',           # TAB: Advanced
-         'action': 'manage_catalogAdvanced', 
+         'action': 'manage_catalogAdvanced',
          'help':('ZCatalog','ZCatalog_Advanced.stx')},
         {'label': 'Undo',               # TAB: Undo
          'action': 'manage_UndoForm',
@@ -116,19 +116,19 @@ class ZCatalog(Folder, Persistent, Implicit):
         ('Manage ZCatalog Entries',
          ['manage_catalogObject', 'manage_uncatalogObject',
           'catalog_object', 'uncatalog_object', 'refreshCatalog',
-          
+
           'manage_catalogView', 'manage_catalogFind',
           'manage_catalogSchema', 'manage_catalogIndexes',
           'manage_catalogAdvanced', 'manage_objectInformation',
-          
+
           'manage_catalogReindex', 'manage_catalogFoundItems',
           'manage_catalogClear', 'manage_addColumn', 'manage_delColumn',
           'manage_addIndex', 'manage_delIndex', 'manage_clearIndex',
           'manage_reindexIndex', 'manage_main', 'availableSplitters',
-          
+
           # these two are deprecated:
           'manage_delColumns', 'manage_deleteIndex'
-          ], 
+          ],
          ['Manager']),
 
         ('Search ZCatalog',
@@ -136,7 +136,7 @@ class ZCatalog(Folder, Persistent, Implicit):
           'getpath', 'schema', 'indexes', 'index_objects', 'getIndexObjects'
           'all_meta_types', 'valid_roles', 'resolve_url',
           'getobject'],
-         ['Anonymous', 'Manager']), 
+         ['Anonymous', 'Manager']),
         )
 
 
@@ -154,21 +154,21 @@ class ZCatalog(Folder, Persistent, Implicit):
     threshold=10000
     _v_total=0
     _v_transaction = None
-    
+
     def __init__(self, id, title='', vocab_id=None, container=None):
         # ZCatalog no longer cares about vocabularies
         # so the vocab_id argument is ignored (Casey)
-        
+
         if container is not None:
             self=self.__of__(container)
         self.id=id
         self.title=title
-        
-        # vocabulary and vocab_id are left for backwards 
+
+        # vocabulary and vocab_id are left for backwards
         # compatibility only, they are not used anymore
         self.vocabulary = None
-        self.vocab_id = ''        
-        
+        self.vocab_id = ''
+
         self.threshold = 10000
         self._v_total = 0
 
@@ -176,8 +176,8 @@ class ZCatalog(Folder, Persistent, Implicit):
 
     def __len__(self):
         return len(self._catalog)
-    
-    
+
+
     # getVocabulary method is no longer supported
     # def getVocabulary(self):
     #   """ more ack! """
@@ -200,7 +200,7 @@ class ZCatalog(Folder, Persistent, Implicit):
             self.threshold = None
         else:
             self.threshold = 10000
-        
+
         RESPONSE.redirect(
             URL1 +
             '/manage_catalogAdvanced?manage_tabs_message=Catalog%20Changed')
@@ -210,12 +210,12 @@ class ZCatalog(Folder, Persistent, Implicit):
         if urls:
             if isinstance(urls, types.StringType):
                 urls=(urls,)
-                
+
             for url in urls:
                 obj = self.resolve_path(url)
                 if not obj:
                     obj = self.resolve_url(url, REQUEST)
-                if obj is not None: 
+                if obj is not None:
                     self.catalog_object(obj, url)
 
         RESPONSE.redirect(
@@ -248,14 +248,14 @@ class ZCatalog(Folder, Persistent, Implicit):
 
         elapse = time.time() - elapse
         c_elapse = time.clock() - c_elapse
-        
+
         RESPONSE.redirect(
             URL1 +
             '/manage_catalogAdvanced?manage_tabs_message=' +
             urllib.quote('Catalog Updated \n'
                          'Total time: %s\n'
                          'Total CPU time: %s' % (`elapse`, `c_elapse`)))
-        
+
 
     def refreshCatalog(self, clear=0):
         """ re-index everything we can find """
@@ -289,18 +289,18 @@ class ZCatalog(Folder, Persistent, Implicit):
                                  obj_expr=None, obj_mtime=None,
                                  obj_mspec=None, obj_roles=None,
                                  obj_permission=None):
-    
+
         """ Find object according to search criteria and Catalog them
         """
 
         elapse = time.time()
         c_elapse = time.clock()
-        
+
         words = 0
         obj = REQUEST.PARENTS[1]
         path = '/'.join(obj.getPhysicalPath())
 
-        
+
         results = self.ZopeFindAndApply(obj,
                                         obj_metatypes=obj_metatypes,
                                         obj_ids=obj_ids,
@@ -317,16 +317,16 @@ class ZCatalog(Folder, Persistent, Implicit):
 
         elapse = time.time() - elapse
         c_elapse = time.clock() - c_elapse
-        
+
         RESPONSE.redirect(
             URL1 +
             '/manage_catalogView?manage_tabs_message=' +
             urllib.quote('Catalog Updated\n'
                          'Total time: %s\n'
-                         'Total CPU time: %s' 
+                         'Total CPU time: %s'
                          % (`elapse`, `c_elapse`))
             )
-                         
+
 
     def manage_addColumn(self, name, REQUEST=None, RESPONSE=None, URL1=None):
         """ add a column """
@@ -351,7 +351,7 @@ class ZCatalog(Folder, Persistent, Implicit):
             "\n"
             "Please use instead the manage_delColumn method.\n"
             ,DeprecationWarning)
-        
+
         self.manage_delColumn(names, REQUEST=REQUEST, RESPONSE=RESPONSE,
                               URL1=URL1)
 
@@ -360,7 +360,7 @@ class ZCatalog(Folder, Persistent, Implicit):
         """ delete a column or some columns """
         if isinstance(names, types.StringType):
             names = (names,)
-            
+
         for name in names:
             self.delColumn(name)
 
@@ -379,7 +379,7 @@ class ZCatalog(Folder, Persistent, Implicit):
             RESPONSE.redirect(
                 URL1 +
                 '/manage_catalogIndexes?manage_tabs_message=Index%20Added')
-        
+
 
     def manage_deleteIndex(self, ids=None, REQUEST=None, RESPONSE=None,
         URL1=None):
@@ -395,7 +395,7 @@ class ZCatalog(Folder, Persistent, Implicit):
             "\n"
             "Please use instead the manage_delIndex method.\n"
             ,DeprecationWarning)
-        
+
         self.manage_delIndex(ids=ids, REQUEST=REQUEST, RESPONSE=RESPONSE,
                              URL1=URL1)
 
@@ -413,7 +413,7 @@ class ZCatalog(Folder, Persistent, Implicit):
 
         for name in ids:
             self.delIndex(name)
-        
+
         if REQUEST and RESPONSE:
             RESPONSE.redirect(
                 URL1 +
@@ -433,7 +433,7 @@ class ZCatalog(Folder, Persistent, Implicit):
 
         for name in ids:
             self.clearIndex(name)
-        
+
         if REQUEST and RESPONSE:
             RESPONSE.redirect(
                 URL1 +
@@ -441,7 +441,7 @@ class ZCatalog(Folder, Persistent, Implicit):
 
 
     def reindexIndex(self,name,REQUEST):
-        
+
         paths = tuple(self._catalog.paths.values())
 
         for p in paths:
@@ -449,7 +449,7 @@ class ZCatalog(Folder, Persistent, Implicit):
             if not obj:
                 obj = self.resolve_url(p, REQUEST)
             if obj is not None:
-                self.catalog_object(obj, p, idxs=[name])             
+                self.catalog_object(obj, p, idxs=[name])
 
 
     def manage_reindexIndex(self, ids=None, REQUEST=None, RESPONSE=None,
@@ -459,7 +459,7 @@ class ZCatalog(Folder, Persistent, Implicit):
             return MessageDialog(title='No items specified',
                 message='No items were specified!',
                 action = "./manage_catalogIndexes",)
-                
+
         if isinstance(ids, types.StringType):
             ids = (ids,)
 
@@ -498,7 +498,7 @@ class ZCatalog(Folder, Persistent, Implicit):
         # indexing code.  We throw away the result of the call to
         # catalogObject (which is a word count), because it's
         # worthless to us here.
-        
+
         if self.threshold is not None:
             # figure out whether or not to commit a subtransaction.
             t = id(get_transaction())
@@ -555,7 +555,7 @@ class ZCatalog(Folder, Persistent, Implicit):
     def getIndexDataForRID(self, rid):
         """return the current index contents for the specific rid"""
         return self._catalog.getIndexDataForRID(rid)
-    
+
     def schema(self):
         return self._catalog.schema.keys()
 
@@ -566,7 +566,7 @@ class ZCatalog(Folder, Persistent, Implicit):
         # This method returns unwrapped indexes!
         # You should probably use getIndexObjects instead
         return self._catalog.indexes.values()
-        
+
     def getIndexObjects(self):
         # Return a list of wrapped(!) indexes
         catalog = self._catalog
@@ -596,9 +596,9 @@ class ZCatalog(Folder, Persistent, Implicit):
 
     def searchResults(self, REQUEST=None, used=None, **kw):
         """Search the catalog according to the ZTables search interface.
-        
+
         Search terms can be passed in the REQUEST or as keyword
-        arguments. 
+        arguments.
         """
 
         return self._catalog.searchResults(REQUEST, used, **kw)
@@ -608,7 +608,7 @@ class ZCatalog(Folder, Persistent, Implicit):
 ## this stuff is so the find machinery works
 
     meta_types=() # Sub-object types that are specific to this object
-    
+
     # Dont need this anymore -- we inherit from object manager
     #def all_meta_types(self):
     #    pmt=()
@@ -649,7 +649,7 @@ class ZCatalog(Folder, Persistent, Implicit):
 
         This is a *great* hack.  Zope find just doesn't do what we
         need here; the ability to apply a method to all the objects
-        *as they're found* and the need to pass the object's path into 
+        *as they're found* and the need to pass the object's path into
         that method.
 
         """
@@ -659,7 +659,7 @@ class ZCatalog(Folder, Persistent, Implicit):
 
             if obj_metatypes and 'all' in obj_metatypes:
                 obj_metatypes=None
-                
+
             if obj_mtime and type(obj_mtime)==type('s'):
                 obj_mtime=DateTime(obj_mtime).timeTime()
 
@@ -668,7 +668,7 @@ class ZCatalog(Folder, Persistent, Implicit):
 
             if obj_roles and type(obj_roles) is type('s'):
                 obj_roles=[obj_roles]
-                
+
             if obj_expr:
                 # Setup expr machinations
                 md=td()
@@ -690,7 +690,7 @@ class ZCatalog(Folder, Persistent, Implicit):
         for id, ob in items:
             if pre: p="%s/%s" % (pre, id)
             else:   p=id
-            
+
             dflag=0
             if hasattr(ob, '_p_changed') and (ob._p_changed == None):
                 dflag=1
@@ -723,7 +723,7 @@ class ZCatalog(Folder, Persistent, Implicit):
                 else:
                     add_result((p, ob))
                     dflag=0
-                    
+
             if search_sub and hasattr(bs, 'objectItems'):
                 self.ZopeFindAndApply(ob, obj_ids, obj_metatypes,
                                       obj_searchterm, obj_expr,
@@ -737,7 +737,7 @@ class ZCatalog(Folder, Persistent, Implicit):
         return result
 
     def resolve_url(self, path, REQUEST):
-        """ 
+        """
         Attempt to resolve a url into an object in the Zope
         namespace. The url may be absolute or a catalog path
         style url. If no object is found, None is returned.
@@ -745,12 +745,12 @@ class ZCatalog(Folder, Persistent, Implicit):
         """
         script=REQUEST.script
         if path.find(script) != 0:
-            path='%s/%s' % (script, path) 
+            path='%s/%s' % (script, path)
         try: return REQUEST.resolve_url(path)
         except: pass
 
     def resolve_path(self, path):
-        """ 
+        """
         Attempt to resolve a url into an object in the Zope
         namespace. The url may be absolute or a catalog path
         style url. If no object is found, None is returned.
@@ -813,7 +813,7 @@ class ZCatalog(Folder, Persistent, Implicit):
     def manage_convertIndex(self, ids, REQUEST=None, RESPONSE=None, URL1=None):
         """convert old-style indexes to new-style indexes"""
 
-        from Products.PluginIndexes.KeywordIndex import KeywordIndex 
+        from Products.PluginIndexes.KeywordIndex import KeywordIndex
         from Products.PluginIndexes.FieldIndex import FieldIndex
         from Products.PluginIndexes.TextIndex import TextIndex
 
@@ -845,10 +845,10 @@ class ZCatalog(Folder, Persistent, Implicit):
                 '/manage_main?'
                 'manage_tabs_message='
                 'No%20indexes%20found%20to%20be%20converted')
-                    
+
 
     #
-    # Indexing methods 
+    # Indexing methods
     #
 
     def addIndex(self, name, type,extra=None):
@@ -861,7 +861,7 @@ class ZCatalog(Folder, Persistent, Implicit):
         p = None
 
         for prod in products:
-            if prod['name'] == type: 
+            if prod['name'] == type:
                 p = prod
                 break
 
@@ -882,7 +882,7 @@ class ZCatalog(Folder, Persistent, Implicit):
             index = apply(base,(name,), {"extra":extra,"caller":self})
         else:
             index = base(name,self)
-        
+
         self._catalog.addIndex(name,index)
 
 
@@ -899,7 +899,7 @@ class ZCatalog(Folder, Persistent, Implicit):
     def delColumn(self, name):
         return self._catalog.delColumn(name)
 
-    
+
 Globals.default__class_init__(ZCatalog)
 
 
@@ -924,13 +924,13 @@ def expr_match(ob, ed, c=InstanceDict, r=0):
 
 def mtime_match(ob, t, q, fn=hasattr):
     if not fn(ob, '_p_mtime'):
-        return 0    
+        return 0
     return q=='<' and (ob._p_mtime < t) or (ob._p_mtime > t)
 
 def role_match(ob, permission, roles, lt=type([]), tt=type(())):
     pr=[]
     fn=pr.append
-    
+
     while 1:
         if hasattr(ob, permission):
             p=getattr(ob, permission)

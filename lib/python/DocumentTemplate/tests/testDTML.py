@@ -1,20 +1,20 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """Document Template Tests
 """
 
-__rcs_id__='$Id: testDTML.py,v 1.13 2002/08/14 15:46:58 chrism Exp $'
-__version__='$Revision: 1.13 $'[11:-2]
+__rcs_id__='$Id: testDTML.py,v 1.14 2002/08/14 22:29:53 mj Exp $'
+__version__='$Revision: 1.14 $'[11:-2]
 
 import sys, os
 import unittest
@@ -259,7 +259,7 @@ class DTMLTests (unittest.TestCase):
             <dtml-var expr="'http%3A%2F%2Fwww.zope.org%3Fa%3Db+123'" fmt=url-unquote-plus>
             """
             )
-            
+
         expected = (
             """
             http://www.zope.org?a=b 123
@@ -277,7 +277,7 @@ class DTMLTests (unittest.TestCase):
             <dtml-var expr="'http%3A%2F%2Fwww.zope.org%3Fa%3Db+123'" url_unquote_plus>
             """
             )
-            
+
         expected = (
             """
             http://www.zope.org?a=b 123
@@ -285,7 +285,7 @@ class DTMLTests (unittest.TestCase):
             )
         self.assertEqual(html1(), expected)
         self.assertEqual(html2(), expected)
-            
+
 
     def test_fmt(self):
         html=self.doc_class(
@@ -499,7 +499,7 @@ foo bar
 """
         result = self.doc_class(html)(xxx=xxx, data={})
         assert result == expected, result
-        
+
     def testBasicStringIn(self):
         data=(
             d(name='jim', age=39),
@@ -522,7 +522,7 @@ foo bar
 """
         result = String(s)(data=data)
         assert expected == result, result
-        
+
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest( unittest.makeSuite( DTMLTests ) )

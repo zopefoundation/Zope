@@ -1,20 +1,20 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 '''Sequence insertion
 
        A sequence may be inserted using an 'in' command.  The 'in'
        command specifies the name of a sequence object and text to
-       be inserted for each element in the sequence.  
+       be inserted for each element in the sequence.
 
        The EPFS syntax for the in command is::
 
@@ -25,7 +25,7 @@
        The HTML syntax for the in command is::
 
           <!--#in name-->
-               text 
+               text
           <!--#/in name-->
 
       See the example below that shows how 'if', 'else', and 'in' commands
@@ -70,7 +70,7 @@
       sort_expr -- This allows an expression to control sort order.
 
       reverse -- Reverse the sequence (may be combined with sort).  Note
-      that this can cause a huge memory use in lazy activation instances. 
+      that this can cause a huge memory use in lazy activation instances.
 
       reverse_expr -- This calculated parameter allows you to calculate the
       need of reversing on the fly.
@@ -160,7 +160,7 @@
                        parameter is 0.
 
           'overlap' -- The desired overlap between batches. The
-                       default is no overlap.     
+                       default is no overlap.
 
       Typically, only 'start' and 'size' will be specified.
 
@@ -331,8 +331,8 @@
 
 ''' #'
 
-__rcs_id__='$Id: DT_In.py,v 1.59 2002/05/07 17:55:37 htrd Exp $'
-__version__='$Revision: 1.59 $'[11:-2]
+__rcs_id__='$Id: DT_In.py,v 1.60 2002/08/14 22:29:52 mj Exp $'
+__version__='$Revision: 1.60 $'[11:-2]
 
 import sys
 from DT_Util import ParseError, parse_params, name_param, str, join_unicode
@@ -360,7 +360,7 @@ class InClass:
     start_name_re=None
     reverse=None
     sort_expr=reverse_expr=None
-    
+
     def __init__(self, blocks):
         tname, args, section = blocks[0]
         args=parse_params(args, name='', start='1',end='-1',size='10',
@@ -385,10 +385,10 @@ class InClass:
 
         if has_key('reverse'):
             self.reverse=args['reverse']
-            
+
         if has_key('no_push_item'):
             self.no_push_item=args['no_push_item']
-            
+
         if has_key('mapping'): self.mapping=args['mapping']
         for n in 'start', 'size', 'end':
             if has_key(n): self.batch=1
@@ -397,7 +397,7 @@ class InClass:
         if prefix and not simple_name(prefix):
             raise ParseError, _tm(
                 'prefix is not a simple name', 'in')
-        
+
         for n in 'orphan','overlap','previous','next':
             if has_key(n) and not self.batch:
                 raise ParseError, (
@@ -417,7 +417,7 @@ class InClass:
                         '&+'+
                         ''.join(["[%s]" % c for c in v])+
                         '=[0-9]+&+')
-                   
+
         name,expr=name_param(args,'in',1)
         if expr is not None: expr=expr.eval
         self.__name__, self.expr = name, expr
@@ -433,7 +433,7 @@ class InClass:
                     raise ParseError, (
                         'name in else does not match in', 'in')
             self.elses=section.blocks
-            
+
 
     def renderwb(self, md):
         expr=self.expr
@@ -456,7 +456,7 @@ class InClass:
 
         section=self.section
         params=self.args
-        
+
         mapping=self.mapping
         no_push_item=self.no_push_item
 
@@ -470,7 +470,7 @@ class InClass:
             sequence=self.reverse_sequence(sequence)
         elif self.reverse is not None:
             sequence=self.reverse_sequence(sequence)
-            
+
         next=previous=0
         try: start=int_param(params,md,'start',0)
         except: start=1
@@ -570,7 +570,7 @@ class InClass:
                             pkw['next-sequence-end-index']=pend-1
                             pkw['next-sequence-size']=pend+1-pstart
                         except: pass
-        
+
                     if index==last: pkw['sequence-end']=1
 
                     if guarded_getitem is not None:
@@ -636,7 +636,7 @@ class InClass:
             raise 'InError', (
                 'Strings are not allowed as input to the in tag.')
 
-        section=self.section        
+        section=self.section
         mapping=self.mapping
         no_push_item=self.no_push_item
 
@@ -669,46 +669,46 @@ class InClass:
         if cache: push(cache)
         push(vars)
         try:
-                result = []
-                append=result.append
-                guarded_getitem = getattr(md, 'guarded_getitem', None)
-                for index in range(l):
-                    if index==last: pkw['sequence-end']=1
-                    if guarded_getitem is not None:
-                        try: client = guarded_getitem(sequence, index)
-                        except ValidationError, vv:
-                            if (self.args.has_key('skip_unauthorized') and
-                                self.args['skip_unauthorized']):
-                                if index==1: pkw['sequence-start']=0
-                                continue
-                            raise ValidationError, '(item %s): %s' % (
-                                index, vv), sys.exc_info()[2]
-                    else:
-                        client = sequence[index]
+            result = []
+            append=result.append
+            guarded_getitem = getattr(md, 'guarded_getitem', None)
+            for index in range(l):
+                if index==last: pkw['sequence-end']=1
+                if guarded_getitem is not None:
+                    try: client = guarded_getitem(sequence, index)
+                    except ValidationError, vv:
+                        if (self.args.has_key('skip_unauthorized') and
+                            self.args['skip_unauthorized']):
+                            if index==1: pkw['sequence-start']=0
+                            continue
+                        raise ValidationError, '(item %s): %s' % (
+                            index, vv), sys.exc_info()[2]
+                else:
+                    client = sequence[index]
 
-                    pkw['sequence-index']=index
-                    t = type(client)
-                    if t is TupleType and len(client)==2:
-                        client=client[1]
+                pkw['sequence-index']=index
+                t = type(client)
+                if t is TupleType and len(client)==2:
+                    client=client[1]
 
-                    if no_push_item:
-                        pushed = 0
-                    elif mapping:
-                        pushed = 1
-                        push(client)
-                    elif t in StringTypes:
-                        pushed = 0
-                    else:
-                        pushed = 1
-                        push(InstanceDict(client, md))
+                if no_push_item:
+                    pushed = 0
+                elif mapping:
+                    pushed = 1
+                    push(client)
+                elif t in StringTypes:
+                    pushed = 0
+                else:
+                    pushed = 1
+                    push(InstanceDict(client, md))
 
-                    try: append(render(section, md))
-                    finally:
-                        if pushed:
-                            pop()
-                    if index==0: pkw['sequence-start']=0
+                try: append(render(section, md))
+                finally:
+                    if pushed:
+                        pop()
+                if index==0: pkw['sequence-start']=0
 
-                result = join_unicode(result)
+            result = join_unicode(result)
 
         finally:
             if cache: pop()
@@ -721,7 +721,7 @@ class InClass:
         # Modified with multiple sort fields by Ross Lazarus
         # April 7 2000 rossl@med.usyd.edu.au
         # eg <dtml-in "foo" sort="akey,anotherkey">
-        
+
         # Modified with advanced sort functions by
         # Oleg Broytmann <phd@phd.pp.ru> 30 Mar 2001
         # eg <dtml-in "foo" sort="akey/nocase,anotherkey/cmp/desc">
@@ -729,7 +729,7 @@ class InClass:
         sort=self.sort
         need_sortfunc = sort.find('/') >= 0
 
-        sortfields = sort.split(',')   # multi sort = key1,key2 
+        sortfields = sort.split(',')   # multi sort = key1,key2
         multsort = len(sortfields) > 1 # flag: is multiple sort
 
         if need_sortfunc:
@@ -756,25 +756,25 @@ class InClass:
                 v=client
 
             if sort:
-                 if multsort: # More than one sort key.
-                     k = []
-                     for sk in sortfields:
-                         try:
-                             if mapping: akey = v[sk]
-                             else: akey = getattr(v, sk)
-                         except AttributeError, KeyError: akey = None
-                         if not basic_type(akey):
-                             try: akey = akey()
-                             except: pass
-                         k.append(akey)
-                 else: # One sort key.
-                     try:
-                         if mapping: k = v[sort]
-                         else: k = getattr(v, sort)
-                     except AttributeError, KeyError: k = None
-                     if not basic_type(type(k)):           
-                         try: k = k()
-                         except: pass
+                if multsort: # More than one sort key.
+                    k = []
+                    for sk in sortfields:
+                        try:
+                            if mapping: akey = v[sk]
+                            else: akey = getattr(v, sk)
+                        except AttributeError, KeyError: akey = None
+                        if not basic_type(akey):
+                            try: akey = akey()
+                            except: pass
+                        k.append(akey)
+                else: # One sort key.
+                    try:
+                        if mapping: k = v[sort]
+                        else: k = getattr(v, sort)
+                    except AttributeError, KeyError: k = None
+                    if not basic_type(type(k)):
+                        try: k = k()
+                        except: pass
 
             s.append((k,client))
 
@@ -786,7 +786,7 @@ class InClass:
 
         sequence=[]
         for k, client in s:
-             sequence.append(client)
+            sequence.append(client)
         return sequence
 
     def reverse_sequence(self, sequence):

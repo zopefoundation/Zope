@@ -1,5 +1,5 @@
 ############################################################################
-# 
+#
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
@@ -81,7 +81,7 @@ class BrowserIdManagerInterface(
         """
         Returns true if browser id is 'new'.  A browser id is 'new'
         when it is first created and the client has therefore not sent it
-        back to the server in any request.  
+        back to the server in any request.
 
         Permission required: Access contents information
 
@@ -111,7 +111,7 @@ class BrowserIdManagerInterface(
         """
         Deletes the browser id cookie from the client browser, iff the
         'cookies' browser id namespace is being used.
-        
+
         Permission required: Access contents information
 
         Raises:  BrowserIdManagerErr.  If the 'cookies' namespace isn't
@@ -123,7 +123,7 @@ class BrowserIdManagerInterface(
         Sets the browser id cookie to browser id 'bid' by force.
         Useful when you need to 'chain' browser id cookies across domains
         for the same user (perhaps temporarily using query strings).
-        
+
         Permission required: Access contents information
 
         Raises:  BrowserIdManagerErr.  If the 'cookies' namespace isn't

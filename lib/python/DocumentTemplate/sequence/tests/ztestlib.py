@@ -1,8 +1,6 @@
-
-
 class standard_html: # Base class for using with ZTemplates
-   def __init__(self, title):
-      self.standard_html_header = """<HTML>
+    def __init__(self, title):
+        self.standard_html_header = """<HTML>
    <HEAD>
       <TITLE>
          %s
@@ -11,25 +9,25 @@ class standard_html: # Base class for using with ZTemplates
 
 <BODY>""" % title
 
-      self.standard_html_footer = """</BODY>
+        self.standard_html_footer = """</BODY>
 </HTML>"""
 
-      self.title = title
+        self.title = title
 
 
 def test(s):
-   outfile = open("test.out", 'w')
-   outfile.write(s)
-   outfile.close()
+    outfile = open("test.out", 'w')
+    outfile.write(s)
+    outfile.close()
 
 
 def exception():
-   import sys, traceback
-   exc_type, exc_value, exc_tb = sys.exc_info()
+    import sys, traceback
+    exc_type, exc_value, exc_tb = sys.exc_info()
 
-   outfile = open("test.err", 'w')
-   traceback.print_exception(exc_type, exc_value, exc_tb, None, outfile)
-   outfile.close()
+    outfile = open("test.err", 'w')
+    traceback.print_exception(exc_type, exc_value, exc_tb, None, outfile)
+    outfile.close()
 
 
 wordlist = [

@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 """
@@ -17,10 +17,10 @@ MappingStorage.  Unlike MappingStorage, it needs not be packed to get rid of
 non-cyclic garbage and it does rudimentary conflict resolution.  This is a
 ripoff of Jim's Packless bsddb3 storage.
 
-$Id: TemporaryStorage.py,v 1.9 2002/06/30 18:23:15 chrism Exp $
+$Id: TemporaryStorage.py,v 1.10 2002/08/14 22:25:13 mj Exp $
 """
 
-__version__ ='$Revision: 1.9 $'[11:-2]
+__version__ ='$Revision: 1.10 $'[11:-2]
 
 from zLOG import LOG, BLATHER
 from ZODB.referencesf import referencesf
@@ -82,12 +82,12 @@ class TemporaryStorage(BaseStorage, ConflictResolvingStorage):
                     del self._conflict_cache[k]
             self._last_cache_gc = now
         self._tmp = []
-        
+
     def close(self):
         """
         Close the storage
         """
-    
+
     def load(self, oid, version):
         self._lock_acquire()
         try:
@@ -112,7 +112,7 @@ class TemporaryStorage(BaseStorage, ConflictResolvingStorage):
                 return data[0] # data here is actually (data, t)
         finally:
             self._lock_release()
-            
+
     def store(self, oid, serial, data, version, transaction):
         if transaction is not self._transaction:
             raise POSException.StorageTransactionError(self, transaction)
@@ -217,7 +217,7 @@ class TemporaryStorage(BaseStorage, ConflictResolvingStorage):
                 self._takeOutGarbage(oid)
 
         self._tmp = []
-        
+
     def _takeOutGarbage(self, oid):
         # take out the garbage.
         referenceCount=self._referenceCount
@@ -246,7 +246,7 @@ class TemporaryStorage(BaseStorage, ConflictResolvingStorage):
                 referenceCount[roid] = rc - 1
         try: del self._oreferences[oid]
         except: pass
-                
+
     def pack(self, t, referencesf):
         self._lock_acquire()
         try:
@@ -268,9 +268,3 @@ class TemporaryStorage(BaseStorage, ConflictResolvingStorage):
                     self._takeOutGarbage(oid)
         finally:
             self._lock_release()
-
-
-    
-
-    
-

@@ -1,18 +1,18 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
-'''$Id: db.py,v 1.12 2001/11/28 15:51:10 matt Exp $'''
-__version__='$Revision: 1.12 $'[11:-2]
+'''$Id: db.py,v 1.13 2002/08/14 22:25:17 mj Exp $'''
+__version__='$Revision: 1.13 $'[11:-2]
 
 import os
 from string import strip, split
@@ -23,7 +23,7 @@ from DateTime import DateTime
 data_dir=os.path.join(Globals.data_dir,'gadfly')
 
 def manage_DataSources():
-    
+
     if not os.path.exists(data_dir):
         try:
             os.mkdir(data_dir)
@@ -42,7 +42,7 @@ def manage_DataSources():
             existence of the directory, <code>%s</code>.  This
             exists, but is not a directory.
             """ % data_dir)
-    
+
     return map(
         lambda d: (d,''),
         filter(lambda f, i=os.path.isdir, d=data_dir, j=os.path.join:
@@ -112,7 +112,7 @@ class DB(Shared.DC.ZRDB.THUNK.THUNKED_TM):
                     'Multiple incompatible selects in '
                     'multiple sql-statement query'
                     )
-            
+
             if not result: result=c.fetchmany(max_rows)
             elif len(result) < max_rows:
                 result=result+c.fetchmany(max_rows-len(result))
@@ -134,7 +134,7 @@ class DB(Shared.DC.ZRDB.THUNK.THUNKED_TM):
                 'null': null_ok,
                 })
         return items, result
-    
+
     # Gadfly needs the extra checkpoint call.
     def _abort(self):
         self.db.rollback()

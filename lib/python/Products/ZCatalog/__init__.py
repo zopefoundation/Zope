@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 """ZCatalog product"""
@@ -26,7 +26,7 @@ createZClassForBase( CatalogPathAwareness.CatalogPathAware, globals()
 
 def initialize(context):
     context.registerClass(
-        ZCatalog.ZCatalog, 
+        ZCatalog.ZCatalog,
         permission='Add ZCatalogs',
         constructors=(ZCatalog.manage_addZCatalogForm,
                       ZCatalog.manage_addZCatalog),
@@ -40,7 +40,6 @@ def initialize(context):
                       Vocabulary.manage_addVocabulary),
         icon='www/Vocabulary.gif',
         )
-    
+
     context.registerHelp()
     context.registerHelpTitle('Zope Help')
-

@@ -1,4 +1,3 @@
-
 import ZODB
 from ZODB.tests.MinPO import MinPO
 from Products.TemporaryFolder import TemporaryStorage
@@ -47,7 +46,7 @@ class TemporaryStorageTests(
             oid4 = self._storage.new_oid()
             self._dostore(oid4, data=MinPO(11))
             assert len(self._storage._conflict_cache) == 1
-            
+
         finally:
             TemporaryStorage.CONFLICT_CACHE_GCEVERY = old_gcevery
             TemporaryStorage.CONFLICT_CACHE_MAXAGE =  old_maxage
@@ -64,14 +63,14 @@ def main():
     runner.run(alltests)
 
 def debug():
-   test_suite().debug()
+    test_suite().debug()
 
 def pdebug():
     import pdb
     pdb.run('debug()')
 
 if __name__=='__main__':
-   if len(sys.argv) > 1:
-      globals()[sys.argv[1]]()
-   else:
-      main()
+    if len(sys.argv) > 1:
+        globals()[sys.argv[1]]()
+    else:
+        main()

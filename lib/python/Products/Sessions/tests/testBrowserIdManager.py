@@ -1,21 +1,21 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """
 Test suite for session id manager.
 
-$Id: testBrowserIdManager.py,v 1.10 2002/08/10 19:28:38 chrism Exp $
+$Id: testBrowserIdManager.py,v 1.11 2002/08/14 22:25:10 mj Exp $
 """
-__version__ = "$Revision: 1.10 $"[11:-2]
+__version__ = "$Revision: 1.11 $"[11:-2]
 
 import sys
 import ZODB
@@ -34,7 +34,7 @@ class TestBrowserIdManager(TestCase):
         environ['SERVER_PORT']='80'
         req = HTTPRequest(stdin, environ, resp)
         self.m.REQUEST = req
-        
+
     def tearDown(self):
         del self.m
 
@@ -114,7 +114,7 @@ class TestBrowserIdManager(TestCase):
         self.m.setCookieDomain('.zope.org')
         setdomain = self.m.getCookieDomain()
         self.failUnless( setdomain == '.zope.org', "%s" % setdomain )
-        
+
     def testSetCookieSecure(self):
         self.m.setCookieSecure(1)
         self.failUnless( self.m.getCookieSecure() == 1 )
@@ -143,7 +143,7 @@ class TestBrowserIdManager(TestCase):
         self.failUnless( not self.m.hasBrowserId() )
         a = self.m.getBrowserId()
         self.failUnless( self.m.hasBrowserId() )
-        
+
     def testBrowserIdIsNew(self):
         a = self.m.getBrowserId()
         self.failUnless( self.m.isBrowserIdNew() )
@@ -178,7 +178,7 @@ class TestBrowserIdManager(TestCase):
         a = self.m.getBrowserId()
         self.failUnless( self.m.isBrowserIdFromCookie() )
         self.failUnless( not self.m.isBrowserIdFromForm() )
- 
+
     def testIsBrowserIdFromFormOnly(self):
         token = self.m.getBrowserId()
         self.m.REQUEST.browser_id_ = token
@@ -202,7 +202,7 @@ class TestBrowserIdManager(TestCase):
         self.m.flushBrowserIdCookie()
         c = self.m.REQUEST.RESPONSE.cookies[tokenkey]
         self.failUnless( c['value'] == 'deleted' )
-        
+
     def testSetBrowserIdCookieByForce(self):
         token = self.m.getBrowserId()
         self.m.REQUEST.browser_id_ = token
@@ -238,7 +238,7 @@ class TestBrowserIdManager(TestCase):
 def test_suite():
     testsuite = makeSuite(TestBrowserIdManager, 'test')
     return testsuite
-        
+
 if __name__ == '__main__':
     runner = TextTestRunner(verbosity=9)
     runner.run(test_suite())

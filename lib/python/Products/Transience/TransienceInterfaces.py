@@ -1,4 +1,4 @@
-########################################################################## 
+##########################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
 #
@@ -9,7 +9,7 @@
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
 #
-########################################################################## 
+##########################################################################
 """
 Transient Objects
 
@@ -66,7 +66,7 @@ Transient Objects
 
     class Foo(Persistence.Persistent):
         pass
-        
+
     transient_object = transient_data_container.new('t')
     foo = transient_object['foo'] = Foo()
     foo.bar = 1
@@ -270,7 +270,7 @@ class StringKeyedHomogeneousItemContainer(HomogeneousItemContainer):
 
         Returned object is acquisition-wrapped in self.
         """
-    
+
 class TransientItemContainer(Interface.Base):
     def setTimeoutMinutes(timeout_mins):
         """

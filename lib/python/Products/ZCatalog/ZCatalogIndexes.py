@@ -1,17 +1,17 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
-"""$Id: ZCatalogIndexes.py,v 1.7 2002/06/28 17:25:23 caseman Exp $
+"""$Id: ZCatalogIndexes.py,v 1.8 2002/08/14 22:25:15 mj Exp $
 """
 
 from  Globals import DTMLFile, InitializeClass
@@ -42,19 +42,19 @@ class ZCatalogIndexes (IFAwareObjectManager, Folder, Persistent, Implicit):
 
     meta_type = "ZCatalogIndex"
     manage_options = ()
-    
+
     security = ClassSecurityInfo()
-    
+
     security.declareObjectProtected(manage_zcatalog_indexes)
     security.setPermissionDefault(manage_zcatalog_indexes, ('Manager',))
     security.declareProtected(manage_zcatalog_indexes, 'addIndexForm')
     addIndexForm= DTMLFile('dtml/addIndexForm',globals())
-    
+
     # You no longer manage the Indexes here, they are managed from ZCatalog
     def manage_main(self, REQUEST, RESPONSE):
         """Redirect to the parent where the management screen now lives"""
         RESPONSE.redirect('../manage_catalogIndexes')
-        
+
     manage_workspace = manage_main
 
     #
@@ -62,7 +62,7 @@ class ZCatalogIndexes (IFAwareObjectManager, Folder, Persistent, Implicit):
     #
 
     # base accessors loop back through our dictionary interface
-    def _setOb(self, id, object): 
+    def _setOb(self, id, object):
         indexes = self.aq_parent._catalog.indexes
         indexes[id] = object
         self.aq_parent._indexes = indexes
@@ -74,14 +74,14 @@ class ZCatalogIndexes (IFAwareObjectManager, Folder, Persistent, Implicit):
         self.aq_parent._indexes = indexes
         #self.aq_parent._p_changed = 1
 
-    def _getOb(self, id, default=_marker): 
+    def _getOb(self, id, default=_marker):
         indexes = self.aq_parent._catalog.indexes
         if default is _marker:  return indexes.get(id)
         return indexes.get(id, default)
-        
+
     security.declareProtected(manage_zcatalog_indexes, 'objectIds')
     def objectIds(self, spec=None):
-        
+
         indexes = self.aq_parent._catalog.indexes
         if spec is not None:
             if type(spec) == type('s'):
@@ -121,15 +121,13 @@ InitializeClass(ZCatalogIndexes)
 class OldCatalogWrapperObject(SimpleItem, Implicit):
 
     manage_options= (
-        {'label': 'Settings',     
+        {'label': 'Settings',
          'action': 'manage_main'},
     )
- 
+
     manage_main = DTMLFile('dtml/manageOldindex',globals())
     manage_main._setName('manage_main')
     manage_workspace = manage_main
 
     def __init__(self, o):
         self.index = o
-
-

@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 __doc__='''Variable insertion parameters
 
@@ -58,7 +58,7 @@ __doc__='''Variable insertion parameters
 
          - Cannot be formatted with the specified format, and
 
-         - Are either the special Python value 'None' or 
+         - Are either the special Python value 'None' or
            are false and yield an empty string when converted to
            a string.
 
@@ -89,12 +89,12 @@ __doc__='''Variable insertion parameters
        value after formatting has been applied.  These parameters
        are supplied without arguments.
 
-       'lower' --  cause all upper-case letters to be converted to lower case. 
+       'lower' --  cause all upper-case letters to be converted to lower case.
 
-       'upper' --  cause all upper-case letters to be converted to lower case. 
+       'upper' --  cause all upper-case letters to be converted to lower case.
 
        'capitalize' -- cause the first character of the inserted value
-       to be converted to upper case. 
+       to be converted to upper case.
 
        'spacify' -- cause underscores in the inserted value to be
        converted to spaces.
@@ -140,7 +140,7 @@ __doc__='''Variable insertion parameters
        truncation, the value given for the 'etc' attribute is added to
        the string.  If the 'etc' attribute is not provided, then '...'
        is used.  For example, if the value of spam is
-       '"blah blah blah blah"', then the tag       
+       '"blah blah blah blah"', then the tag
        '<dtml-var spam size=10>' inserts '"blah blah ..."'.
 
 
@@ -148,11 +148,11 @@ Evaluating expressions without rendering results
 
    A 'call' tag is provided for evaluating named objects or expressions
    without rendering the result.
-   
+
 
 ''' # '
-__rcs_id__='$Id: DT_Var.py,v 1.56 2002/08/14 16:34:20 rdmurray Exp $'
-__version__='$Revision: 1.56 $'[11:-2]
+__rcs_id__='$Id: DT_Var.py,v 1.57 2002/08/14 22:29:52 mj Exp $'
+__version__='$Revision: 1.57 $'[11:-2]
 
 from DT_Util import parse_params, name_param, str, ustr
 import os, string, re,  sys
@@ -163,7 +163,7 @@ from types import StringType
 from Acquisition import aq_base
 from ZPublisher.TaintedString import TaintedString
 
-class Var: 
+class Var:
     name='var'
     expr=None
 
@@ -177,7 +177,7 @@ class Var:
                             url_unquote_plus=1,missing='',
                             newline_to_br=1, url=1)
         self.args=args
-        
+
         self.modifiers=tuple(
             map(lambda t: t[1],
                 filter(lambda m, args=args, used=args.has_key:
@@ -226,7 +226,7 @@ class Var:
         if have_arg('null') and not val and val != 0:
             # check for null (false but not zero, including None, [], '')
             return args['null']
-            
+
 
         # handle special formats defined using fmt= first
         if have_arg('fmt'):
@@ -248,7 +248,7 @@ class Var:
                         else:
                             val = special_formats[fmt](val, name, md)
                     elif fmt=='': val=''
-                    else: 
+                    else:
                         if isinstance(val, TaintedString):
                             val = TaintedString(fmt % val)
                         else:
@@ -317,12 +317,12 @@ class Var:
 
         if isinstance(val, TaintedString):
             val = val.quoted()
-        
+
         return val
 
     __call__=render
 
-class Call: 
+class Call:
     name='call'
     expr=None
 
@@ -379,7 +379,7 @@ def thousands_commas(v, name='(Unknown name)', md={},
         v=v[:l+1]+','+v[l+1:]
         mo=thou(v)
     return v+s
-    
+
 def whole_dollars_with_commas(v, name='(Unknown name)', md={}):
     try: v= "$%d" % v
     except: v=''
@@ -399,7 +399,7 @@ def len_comma(v, name='(Unknown name)', md={}):
 StructuredText=None
 def structured_text(v, name='(Unknown name)', md={}):
     global StructuredText
-    if StructuredText is None: 
+    if StructuredText is None:
         from StructuredText.StructuredText import HTML
 
     if isinstance(v,StringType): txt = v
@@ -408,11 +408,11 @@ def structured_text(v, name='(Unknown name)', md={}):
         txt = aq_base(v).read_raw()
 
     else: txt = str(v)
-        
-    return HTML(txt, 
+
+    return HTML(txt,
                 level=int(os.environ.get('STX_DEFAULT_LEVEL',3)),
                 header=0)
-        
+
 
 def sql_quote(v, name='(Unknown name)', md={}):
     """Quote single quotes in a string by doubling them.
@@ -457,15 +457,15 @@ class Comment:
 
     The 'comment' tag can be used to simply include comments
     in DTML source.
-    
+
     For example::
-    
+
       <!--#comment-->
-      
+
         This text is not rendered.
 
       <!--#/comment-->
-    ''' 
+    '''
     name='comment'
     blockContinuations=()
 

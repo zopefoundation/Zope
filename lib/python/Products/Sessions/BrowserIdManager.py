@@ -1,5 +1,5 @@
 ############################################################################
-# 
+#
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
@@ -11,7 +11,7 @@
 #
 ############################################################################
 
-__version__='$Revision: 1.13 $'[11:-2]
+__version__='$Revision: 1.14 $'[11:-2]
 import Globals
 from Persistence import Persistent
 from ZODB import TimeStamp
@@ -53,9 +53,9 @@ def constructBrowserIdManager(
     ob = self._getOb(id)
     if REQUEST is not None:
         return self.manage_main(self, REQUEST, update_menu=1)
-    
+
 class BrowserIdManagerErr(Exception): pass
-    
+
 class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
     """ browser id management class """
 
@@ -99,7 +99,7 @@ class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
         not create a browser id for the current request if one doesn't
         already exist """
         if self.getBrowserId(create=0): return 1
-                
+
     security.declareProtected(ACCESS_CONTENTS_PERM, 'getBrowserId')
     def getBrowserId(self, create=1):
         """
@@ -120,7 +120,7 @@ class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
                 # somebody screwed with the REQUEST instance during
                 # this request.
                 raise BrowserIdManagerErr, (
-                    'Ill-formed browserid in REQUEST.browser_id_:  %s' % 
+                    'Ill-formed browserid in REQUEST.browser_id_:  %s' %
                     escape(bid)
                     )
             return bid
@@ -194,7 +194,7 @@ class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
         # ns will be None if new, negating None below returns 1, which
         # would indicate that it's new on this request
         return not getattr(self.REQUEST, 'browser_id_ns_')
-    
+
     security.declareProtected(ACCESS_CONTENTS_PERM, 'encodeUrl')
     def encodeUrl(self, url, create=1):
         """
@@ -313,7 +313,7 @@ class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
         if not (type(path) is type('') and not badcookiecharsin(path)):
             raise BrowserIdManagerErr, 'Bad cookie path %s' % escape(repr(path))
         self.cookie_path = path
-    
+
     security.declareProtected(ACCESS_CONTENTS_PERM, 'getCookiePath')
     def getCookiePath(self):
         """ """
@@ -397,7 +397,7 @@ class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
 
         A == leading-0-padded 8-char string-rep'd random integer
         B == modified base64-encoded 11-char timestamp
-        
+
         To be URL-compatible, base64 encoding is modified as follows:
           '=' end-padding is stripped off
           '+' is translated to '-'
@@ -428,14 +428,14 @@ class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
                 return # should we raise an exception?
             if string.split(URL1,':')[0] != 'https':
                 return # should we raise an exception?
-         
+
         cookies = REQUEST.RESPONSE.cookies
         cookie = cookies[self.browserid_name]= {}
         for k,v in d.items():
             if v:
                 cookie[k] = v #only stuff things with true values
         cookie['value'] = bid
-        
+
     def _getB64TStamp(
         self, b2a=binascii.b2a_base64,gmtime=time.gmtime, time=time.time,
         b64_trans=b64_trans, split=string.split,

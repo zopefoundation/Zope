@@ -1,20 +1,20 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 __doc__='''short description
 
 
-$Id: DTtestExpr.py,v 1.7 2001/11/28 15:50:55 matt Exp $'''
-__version__='$Revision: 1.7 $'[11:-2]
+$Id: DTtestExpr.py,v 1.8 2002/08/14 22:29:52 mj Exp $'''
+__version__='$Revision: 1.8 $'[11:-2]
 
 from DocumentTemplate import *
 import sys
@@ -47,7 +47,7 @@ def test4():
         print '-' * 77
         print i, h(level=i)
     print '-' * 77
-    
+
 
 if __name__ == "__main__":
     try: command=sys.argv[1]

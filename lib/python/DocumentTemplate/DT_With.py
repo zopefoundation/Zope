@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 '''Nested namespace access
 
@@ -31,10 +31,10 @@
    should be treated as mapping object, rather than as an object with
    named attributes.
 
-''' 
+'''
 
-__rcs_id__='$Id: DT_With.py,v 1.14 2001/11/28 15:50:55 matt Exp $'
-__version__='$Revision: 1.14 $'[11:-2]
+__rcs_id__='$Id: DT_With.py,v 1.15 2002/08/14 22:29:52 mj Exp $'
+__version__='$Revision: 1.15 $'[11:-2]
 
 from DT_Util import parse_params, name_param, InstanceDict, render_blocks, str
 from DT_Util import TemplateDict
@@ -43,7 +43,7 @@ class With:
     name='with'
     mapping=None
     only=0
-    
+
     def __init__(self, blocks):
         tname, args, section = blocks[0]
         args=parse_params(args, name='', expr='', mapping=1, only=1)

@@ -109,13 +109,13 @@ class TestAddDelIndexes(CatalogBase, unittest.TestCase):
         self._catalog.addIndex('id', idx)
         self._catalog.delIndex('id')
         assert self._catalog.indexes.has_key('id') != 1, 'del index failed'
-        
+
     def testDelTextIndex(self):
         idx = TextIndex('id')
         self._catalog.addIndex('id', idx)
         self._catalog.delIndex('id')
         assert self._catalog.indexes.has_key('id') != 1, 'del index failed'
-        
+
     def testDelKeywordIndex(self):
         idx = KeywordIndex('id')
         self._catalog.addIndex('id', idx)
@@ -138,7 +138,7 @@ class TestCatalogObject(unittest.TestCase):
         self._catalog.addIndex('col1', col1)
         self._catalog.addIndex('col2', col2)
         self._catalog.addIndex('col3', col3)
-        self._catalog.addColumn('col1') 
+        self._catalog.addColumn('col1')
         self._catalog.addColumn('col2')
         self._catalog.addColumn('col3')
 
@@ -146,12 +146,12 @@ class TestCatalogObject(unittest.TestCase):
         att2 = TextIndex('att2')
         att3 = KeywordIndex('att3')
         num  = FieldIndex('num')
-        
+
         self._catalog.addIndex('att1', att1)
         self._catalog.addIndex('att2', att2)
         self._catalog.addIndex('att3', att3)
         self._catalog.addIndex('num', num)
-        self._catalog.addColumn('att1') 
+        self._catalog.addColumn('att1')
         self._catalog.addColumn('att2')
         self._catalog.addColumn('att3')
         self._catalog.addColumn('num')
@@ -163,7 +163,7 @@ class TestCatalogObject(unittest.TestCase):
             att3 = ['att3']
             def __init__(self, num):
                 self.num = num
-                
+
             def col1(self):
                 return 'col1'
 
@@ -173,7 +173,7 @@ class TestCatalogObject(unittest.TestCase):
             def col3(self):
                 return ['col3']
 
-            
+
         for x in range(0, self.upper):
             self._catalog.catalogObject(dummy(x), `x`)
         self._catalog.aq_parent = dummy('foo') # fake out acquisition
@@ -208,11 +208,11 @@ class TestCatalogObject(unittest.TestCase):
         assert len(a) == self.upper, 'should be %s, but is %s' % (self.upper,
                                                                   len(a))
 
-    def testUncatalogFieldIndex(self):    
+    def testUncatalogFieldIndex(self):
         self.uncatalog()
         a = self._catalog(att1='att1')
         assert len(a) == 0, 'len: %s' % (len(a))
-        
+
     def testUncatalogTextIndex(self):
         self.uncatalog()
         a = self._catalog(att2='att2')
@@ -259,7 +259,7 @@ class TestCatalogObject(unittest.TestCase):
         assert len(a) == upper, 'length should be %s, its %s'%(upper, len(a))
         for x in range(self.upper):
             assert a[x].num == x, x
-            
+
     def testBadSortIndex(self):
         self.assertRaises(CatalogError, self.badsortindex)
 
@@ -313,7 +313,7 @@ class TestCatalogObject(unittest.TestCase):
         # set is much larger than the sort index.
         a = self._catalog(sort_on='att1')
         self.assertEqual(len(a), self.upper)
-        
+
 
 class objRS(ExtensionClass.Base):
 
@@ -330,16 +330,16 @@ class testRS(unittest.TestCase):
         self._catalog.addIndex('number',  index)
         self._catalog.addColumn('number')
 
-        for i in range(5000): 
+        for i in range(5000):
             obj = objRS(whrandom.randint(0,20000))
             self._catalog.catalogObject(obj,i)
-           
+
         self._catalog.aq_parent = objRS(200)
 
     def testRangeSearch(self):
-        for i in range(10000): 
+        for i in range(10000):
 
-            m = whrandom.randint(0,20000) 
+            m = whrandom.randint(0,20000)
             n = m + 1000
 
             for r  in self._catalog.searchResults(

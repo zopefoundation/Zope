@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 """ZCatalog Findable class"""
@@ -25,7 +25,7 @@ class CatalogAware:
     it is added or copied in Zope.  If you make changes to your own
     object, you are responsible for calling your object's index_object
     method. """
-    
+
     meta_type='CatalogAware'
     default_catalog='Catalog'
 
@@ -37,7 +37,7 @@ class CatalogAware:
         message = "Your changes have been saved"
         if REQUEST is not None:
             return self.manage_main(self, REQUEST, manage_tabs_message=message)
-    
+
 
     def manage_afterAdd(self, item, container):
         self.index_object()
@@ -81,7 +81,7 @@ class CatalogAware:
     def getPath(self):
         """Return the physical path for an object."""
         return '/'.join(self.getPhysicalPath())
-    
+
     def summary(self, num=200):
         """Return a summary of the text content of the object."""
         if not hasattr(self, 'text_content'):
@@ -133,11 +133,3 @@ class CatalogPathAware(CatalogAware):
     nontrivial, we don't want to spend a lot of time on ZClasses, and
     this works.
     """
-
-
-
-
-
-
-
-

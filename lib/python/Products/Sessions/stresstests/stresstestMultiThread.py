@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 import sys, os, time
 if __name__ == "__main__":
@@ -117,7 +117,7 @@ class TestMultiThread(TestCase):
             time.sleep(0.1)
         while threading.activeCount() > 1:
             time.sleep(1)
-        
+
     def testNonOverlappingBrowserIds(self):
         readers = []
         writers = []
@@ -143,7 +143,7 @@ class TestMultiThread(TestCase):
             time.sleep(0.1)
         while threading.activeCount() > 1:
             time.sleep(1)
-        
+
 class BaseReaderWriter(threading.Thread):
     def __init__(self, db, iters, sdm_name):
         self.conn = db.open()
@@ -180,7 +180,7 @@ class BaseReaderWriter(threading.Thread):
             self.conn.close()
             del self.app
             print i
-            
+
 class ReaderThread(BaseReaderWriter):
     def run1(self):
         session_data_manager = getattr(self.app, self.sdm_name)
@@ -216,4 +216,3 @@ def test_suite():
 if __name__ == '__main__':
     runner = TextTestRunner(verbosity=9, descriptions=9)
     runner.run(test_suite())
-

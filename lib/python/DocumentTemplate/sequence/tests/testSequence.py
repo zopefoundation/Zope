@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 import os, sys, unittest
@@ -30,7 +30,7 @@ class TestCase( unittest.TestCase ):
     def tearDown( self ):
         """
         """
-           
+
     def test1( self ):
         "test1"
         assert res1==SortEx(wordlist)
@@ -42,7 +42,7 @@ class TestCase( unittest.TestCase ):
     def test3( self ):
         "test3"
         assert res3==SortEx(wordlist, (("key", "cmp"),), mapping=1)
-        
+
     def test4( self ):
         "test4"
         assert res4==SortEx(wordlist, (("key", "cmp", "desc"),), mapping=1)
@@ -60,7 +60,7 @@ class TestCase( unittest.TestCase ):
         "test7"
 
         def myCmp(s1, s2):
-           return -cmp(s1, s2)
+            return -cmp(s1, s2)
 
         # Create namespace...
         from DocumentTemplate.DT_Util import TemplateDict

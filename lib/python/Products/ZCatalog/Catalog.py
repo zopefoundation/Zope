@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 from Persistence import Persistent
@@ -67,12 +67,12 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
 
         if brains is not None:
             self._v_brains = brains
-            
+
         self.updateBrains()
 
     def clear(self):
         """ clear catalog """
-        
+
         self.data  = IOBTree()  # mapping of rid to meta_data
         self.uids  = OIBTree()  # mapping of uid to rid
         self.paths = IOBTree()  # mapping of rid to uid
@@ -118,7 +118,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
 
     def __getitem__(self, index, ttype=type(())):
         """
-        Returns instances of self._v_brains, or whatever is passed 
+        Returns instances of self._v_brains, or whatever is passed
         into self.useBrains.
         """
         if type(index) is ttype:
@@ -150,7 +150,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
 
         class mybrains(AbstractCatalogBrain, brains):
             pass
-        
+
         scopy = self.schema.copy()
 
         scopy['data_record_id_']=len(self.schema.keys())
@@ -166,7 +166,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         """
         adds a row to the meta data schema
         """
-        
+
         schema = self.schema
         names = list(self.names)
 
@@ -176,7 +176,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         if name[0] == '_':
             raise 'Invalid Meta-Data Name', \
                   'Cannot cache fields beginning with "_"'
-        
+
         if not schema.has_key(name):
             if schema.values():
                 schema[name] = max(schema.values())+1
@@ -197,9 +197,9 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
 
         # new column? update the brain
         self.updateBrains()
-            
+
         self.__changed__(1)    #why?
-            
+
     def delColumn(self, name):
         """
         deletes a row from the meta data schema
@@ -233,7 +233,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
             self.data[key] = tuple(rec)
 
     def addIndex(self, name, index_type):
-        """Create a new index, given a name and a index_type.  
+        """Create a new index, given a name and a index_type.
 
         Old format: index_type was a string, 'FieldIndex' 'TextIndex' or
         'KeywordIndex' is no longer valid; the actual index must be instantiated
@@ -248,7 +248,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
 
         if name.startswith('_'):
             raise 'Invalid Index Name', 'Cannot index fields beginning with "_"'
-    
+
         if not name:
             raise 'Invalid Index Name', 'Name of index is empty'
 
@@ -271,15 +271,15 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         indexes = self.indexes
         del indexes[name]
         self.indexes = indexes
-        
+
     def getIndex(self, name):
         """ get an index wrapped in the catalog """
         return self.indexes[name].__of__(self)
-        
+
     # the cataloging API
 
     def catalogObject(self, object, uid, threshold=None,idxs=[]):
-        """ 
+        """
         Adds an object to the Catalog by iteratively applying it
         all indexes.
 
@@ -288,7 +288,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         'uid' is the unique Catalog identifier for this object
 
         """
-        
+
         data = self.data
 
         # meta_data is stored as a tuple for efficiency
@@ -297,17 +297,17 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         index=self.uids.get(uid, None)
         if index is not None:
             # old data
-            
+
             if data.get(index, 0) != newDataRecord:
                 # Update the meta-data, if necessary
                 data[index] = newDataRecord
-                
+
         else:
             # new data
-            
+
             if type(data) is IOBTree:
                 # New style, get radom id
-                
+
                 index=getattr(self, '_v_nextid', 0)
                 if index%4000 == 0: index = randid()
                 while not data.insert(index, newDataRecord):
@@ -332,10 +332,10 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
 
             try: self.__len__.change(1)
             except AttributeError: pass # No managed length (old-style)
-                    
+
             self.uids[uid] = index
             self.paths[index] = uid
-            
+
         total = 0
 
         if idxs==[]: use_indexes = self.indexes.keys()
@@ -353,7 +353,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         return total
 
     def uncatalogObject(self, uid):
-        """ 
+        """
         Uncatalog and object from the Catalog.  and 'uid' is a unique
         Catalog identifier
 
@@ -384,7 +384,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
             LOG('Catalog', ERROR, ('uncatalogObject unsuccessfully '
                                    'attempted to uncatalog an object '
                                    'with a uid of %s. ' % uid))
-            
+
 
     def uniqueValuesFor(self, name):
         """ return unique values for FieldIndex name """
@@ -422,7 +422,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         for name in self.indexes.keys():
             result[name] = self.getIndex(name).getEntryForObject(rid, "")
         return result
-    
+
 ## This is the Catalog search engine. Most of the heavy lifting happens below
 
     def _indexedSearch(self, request, sort_index, append, used):
@@ -433,19 +433,19 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         data = self.data
 
         # Indexes fulfill a fairly large contract here. We hand each
-        # index the request mapping we are given (which may be composed 
+        # index the request mapping we are given (which may be composed
         # of some combination of web request, kw mappings or plain old dicts)
         # and the index decides what to do with it. If the index finds work
         # for itself in the request, it returns the results and a tuple of
         # the attributes that were used. If the index finds nothing for it
         # to do then it returns None.
-        
+
         # For hysterical reasons, if all indexes return None for a given
         # request (and no attributes were used) then we append all results
         # in the Catalog. This generally happens when the search values
         # in request are all empty strings or do not coorespond to any of
         # the indexes.
-        
+
         # Note that if the indexes find query arguments, but the end result
         # is an empty sequence, we do nothing
 
@@ -490,13 +490,13 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                 # it, compute the normalized score, and Lazify it.
                 rset = rs.byValue(0) # sort it by score
                 max = float(rset[0][0])
-                
+
                 # Here we define our getter function inline so that
                 # we can conveniently store the max value as a default arg
                 # and make the normalized score computation lazy
                 def getScoredResult(item, max=max, self=self):
                     """
-                    Returns instances of self._v_brains, or whatever is passed 
+                    Returns instances of self._v_brains, or whatever is passed
                     into self.useBrains.
                     """
                     score, key = item
@@ -506,14 +506,14 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                     r.data_record_score_ = score
                     r.data_record_normalized_score_ = int(100. * score / max)
                     return r
-                
+
                 # Lazify the results
                 append(LazyMap(getScoredResult, rset))
-                    
+
             elif sort_index is None and not hasattr(rs, 'values'):
                 # no scores?  Just Lazify.
                 if hasattr(rs, 'keys'):
-                    rs = rs.keys() 
+                    rs = rs.keys()
                 append(LazyMap(self.__getitem__, rs))
             else:
                 # sort.  If there are scores, then this block is not
@@ -658,18 +658,18 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
 class CatalogError(Exception): pass
 
 class CatalogSearchArgumentsMap:
-    """Multimap catalog arguments coming simultaneously from keywords 
+    """Multimap catalog arguments coming simultaneously from keywords
     and request.
-    
+
     Values that are empty strings are treated as non-existent. This is
-    to ignore empty values, thereby ignoring empty form fields to be 
+    to ignore empty values, thereby ignoring empty form fields to be
     consistent with hysterical behavior.
     """
-    
+
     def __init__(self, request, keywords):
         self.request = request or {}
         self.keywords = keywords or {}
-        
+
     def __getitem__(self, key):
         marker = []
         v = self.keywords.get(key, marker)
@@ -678,7 +678,7 @@ class CatalogSearchArgumentsMap:
         if v == '':
             raise KeyError(key)
         return v
-            
+
     def get(self, key, default=None):
         try:
             v = self[key]
@@ -686,7 +686,7 @@ class CatalogSearchArgumentsMap:
             return default
         else:
             return v
-            
+
     def has_key(self, key):
         try:
             self[key]
@@ -694,8 +694,8 @@ class CatalogSearchArgumentsMap:
             return 0
         else:
             return 1
-        
-        
+
+
 def mergeResults(r, has_sort_keys, reverse):
     """Sort/merge sub-results, generating a flat sequence.
 
@@ -728,4 +728,3 @@ def mergeResults(r, has_sort_keys, reverse):
                 tmp.append(elt)
                 size += len(elt)
             return LazyCat(tmp, size)
-    

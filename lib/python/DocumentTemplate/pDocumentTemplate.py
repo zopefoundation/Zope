@@ -1,20 +1,20 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 __doc__='''Python implementations of document template some features
 
 
-$Id: pDocumentTemplate.py,v 1.35 2002/03/27 10:14:02 htrd Exp $'''
-__version__='$Revision: 1.35 $'[11:-2]
+$Id: pDocumentTemplate.py,v 1.36 2002/08/14 22:29:53 mj Exp $'''
+__version__='$Revision: 1.36 $'[11:-2]
 
 import  sys, types
 
@@ -69,7 +69,7 @@ class InstanceDict:
 
         cache=self.cache
         if cache.has_key(key): return cache[key]
-        
+
         inst=self.self
 
         if key[:1]=='_':
@@ -115,14 +115,14 @@ class MultiMapping:
         return kz
 
 class DictInstance:
-    
+
     def __init__(self, mapping):
         self.__d=mapping
 
     def __getattr__(self, name):
         try: return self.__d[name]
         except KeyError: raise AttributeError, name
-        
+
 class TemplateDict:
 
     level=0
@@ -152,10 +152,10 @@ class TemplateDict:
         return v
 
     def __len__(self):
-       total = 0
-       for d in self.dicts.dicts:
-           total = total + len(d)
-       return total
+        total = 0
+        for d in self.dicts.dicts:
+            total = total + len(d)
+        return total
 
     def has_key(self,key):
         try:
@@ -163,7 +163,7 @@ class TemplateDict:
         except KeyError:
             return 0
         return 1
-    
+
     getitem=__getitem__
 
     def __call__(self, *args, **kw):

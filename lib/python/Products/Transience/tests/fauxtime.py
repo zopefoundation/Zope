@@ -9,4 +9,3 @@ def time():
 def sleep(duration):
     """ False sleep -- sleep for 1/10 the time specifed """
     origtime.sleep(duration / 10.0)
-

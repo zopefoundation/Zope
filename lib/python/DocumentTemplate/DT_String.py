@@ -1,16 +1,16 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
-"$Id: DT_String.py,v 1.50 2002/08/01 16:00:39 mj Exp $"
+"$Id: DT_String.py,v 1.51 2002/08/14 22:29:52 mj Exp $"
 
 import thread,re,exceptions,os
 
@@ -36,7 +36,7 @@ class String:
         %(name)s
       %(in results)]
 
-    """ 
+    """
 
     isDocTemp=1
 
@@ -46,7 +46,7 @@ class String:
     func_code.co_varnames='self','REQUEST'
     func_code.co_argcount=2
     func_code.__roles__=()
-    
+
     func_defaults__roles__=()
     func_defaults=()
 
@@ -186,7 +186,7 @@ class String:
     def skip_eol(self, text, start, eol=re.compile('[ \t]*\n')):
         # if block open is followed by newline, then skip past newline
         mo =eol.match(text,start)
-        if mo is not None: 
+        if mo is not None:
             start = start + mo.end(0) - mo.start(0)
 
         return start
@@ -210,7 +210,7 @@ class String:
 
             try: tag, args, command, coname= self._parseTag(mo,scommand,sa)
             except ParseError, m: self.parse_error(m[0],m[1], text, l)
-            
+
             if command:
                 start=l+len(tag)
                 if hasattr(command, 'blockContinuations'):
@@ -223,7 +223,7 @@ class String:
                 section._v_blocks=section.blocks=self.parse(text[:l],sstart)
                 section._v_cooked=None
                 blocks.append((tname,sargs,section))
-    
+
                 start=self.skip_eol(text,l+len(tag))
 
                 if coname:
@@ -315,7 +315,7 @@ class String:
         """
         if mapping is not None or vars:
             self.initvars(mapping, vars)
-        if source_string is not None: 
+        if source_string is not None:
             self.raw=source_string
         self.cook()
 
@@ -371,13 +371,13 @@ class String:
         containing values to be looked up.  Values will be looked up
         using getattr, so inheritence of values is supported.  Note
         that names beginning with '_' will not be looked up from the
-        client. 
+        client.
 
         The optional argument, 'mapping' is used to specify a mapping
         object containing values to be inserted.
 
         Values to be inserted may also be specified using keyword
-        arguments. 
+        arguments.
 
         Values will be inserted from one of several sources.  The
         sources, in the order in which they are consulted, are:
@@ -392,7 +392,7 @@ class String:
              created, and
 
           o  The 'mapping' argument provided when the template was
-             created. 
+             created.
 
         '''
         # print '============================================================'
@@ -459,8 +459,8 @@ class String:
                 # otherwise its just a normal client object.
                 push(InstanceDict(client, md)) # Circ. Ref. 8-|
                 pushed=pushed+1
-                
-        if self._vars: 
+
+        if self._vars:
             push(self._vars)
             pushed=pushed+1
 
@@ -498,7 +498,7 @@ class String:
 class FileMixin:
     # Mix-in class to abstract certain file-related attributes
     edited_source=''
-    
+
     def __init__(self, file_name='', mapping=None, __name__='', **vars):
         """\
         Create a document template based on a named file.
@@ -515,7 +515,7 @@ class FileMixin:
         if self.edited_source: return self.edited_source
         if not os.path.exists(self.raw):
             print 'file not found: %s' % self.raw
- 
+
         if self.raw: return open(self.raw,'r').read()
         return ''
 

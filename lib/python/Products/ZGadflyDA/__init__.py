@@ -1,19 +1,19 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 __doc__='''Generic Database Adapter Package Registration
 
-$Id: __init__.py,v 1.13 2001/11/28 15:51:10 matt Exp $'''
-__version__='$Revision: 1.13 $'[11:-2]
+$Id: __init__.py,v 1.14 2002/08/14 22:25:17 mj Exp $'''
+__version__='$Revision: 1.14 $'[11:-2]
 
 import Globals, os
 
@@ -57,7 +57,7 @@ def manage_addZGadflyConnectionForm(self, REQUEST, *args, **kw):
         self, self, REQUEST,
         database_type=database_type,
         data_sources=DA.data_sources)
-    
+
 def manage_addZGadflyConnection(
     self, id, title, connection, check=None, REQUEST=None):
     " "

@@ -37,15 +37,15 @@ class UnicodeTextIndexCatalogTest(unittest.TestCase):
         t4 = TO('i am a brown ' + unicode('fox') + ' dancing with a future alien',[])
         t5 = TO("""
         Die USA und Großbritannien können nach der Zerstörung der
-        afghanischen Luftabwehr nun rund um die Uhr Angriffe fliegen. Das gab 
+        afghanischen Luftabwehr nun rund um die Uhr Angriffe fliegen. Das gab
         Verteidigungsminister Donald Rumsfeld bekannt. Bei den dreitägigen Angriffen
         seien auch bis auf einen alle Flugplätze der Taliban zerstört worden. Rumsfeld
-        erklärte weiter, er könne die Berichte nicht bestätigen, wonach bei den 
+        erklärte weiter, er könne die Berichte nicht bestätigen, wonach bei den
         amerikanischen Angriffen vier afghanische Mitarbeiter einer von den UN
         finanzierten Hilfsorganisation getötet wurden. Diese könnten auch durch
         Gegenfeuer der Taliban getötet worden sein.
         """,[unicode('dreitägigen','latin1'),'zerstört'])
-                                                                                                            
+
 
         self.cat.catalog_object(t1,"o1")
         self.cat.catalog_object(t2,"o2")
@@ -59,7 +59,7 @@ class UnicodeTextIndexCatalogTest(unittest.TestCase):
               ('dreitägigen',('o5',))
             ]
 
-        
+
         self.kw_tests = [ ('quick',('o1',) ),
                           ('zerstört',('o3','o5')),
                           ('dreitägigen',('o5',))

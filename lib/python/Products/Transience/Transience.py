@@ -1,22 +1,22 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """
 Transient Object Container Class ('timeslice'-based design).
 
-$Id: Transience.py,v 1.27 2002/08/07 14:48:48 chrism Exp $
+$Id: Transience.py,v 1.28 2002/08/14 22:25:13 mj Exp $
 """
 
-__version__='$Revision: 1.27 $'[11:-2]
+__version__='$Revision: 1.28 $'[11:-2]
 
 import Globals
 from Globals import HTMLFile
@@ -127,7 +127,7 @@ class TransientObjectContainer(SimpleItem):
         {   'label':    'Manage',
             'action':   'manage_container',
             'help':     ('Transience', 'Transience.stx')
-        }, 
+        },
         {   'label':    'Security',
             'action':   'manage_access'
         },
@@ -229,7 +229,7 @@ class TransientObjectContainer(SimpleItem):
     def setAddNotificationTarget(self, f):
         # We should assert that the callback function 'f' implements
         # the TransientNotification interface
-        self._addCallback = f             
+        self._addCallback = f
 
     security.declareProtected(MGMT_SCREEN_PERM, 'getDelNotificationTarget')
     def getDelNotificationTarget(self):
@@ -252,7 +252,7 @@ class TransientObjectContainer(SimpleItem):
     def _notify(self, items, kind):
         if not type(items) in [type([]), type(())]:
             items = [items]
-            
+
         if kind =='add':
             name = 'notifyAdd'
             callback = self._addCallback
@@ -437,7 +437,7 @@ class TransientObjectContainer(SimpleItem):
             self._deindex_next=Increaser(self._getCurrentTimeslice())
         finally:
             self.lock.release()
-            
+
     def _getCurrentBucket(self):
         """
         Do housekeeping if necessary, then return the 'current' bucket.
@@ -673,7 +673,7 @@ class TransientObjectContainer(SimpleItem):
                 data[i] = OOBTree()
         except Queue.Empty:
             DEBUG and TLOG('replentish queue empty')
-        
+
         # gc the stale buckets at the "beginning" of _data ("garbage collect")
         # iterate over the keys in data that have no minimum value and
         # a maximum value of delete_end (note: ordered set)
@@ -741,7 +741,7 @@ class TransientObjectContainer(SimpleItem):
 
         finally:
             self.lock.release()
-            
+
     def __getitem__(self, k):
         self.lock.acquire()
         try:
@@ -803,7 +803,7 @@ class TransientObjectContainer(SimpleItem):
                     # we accessed the object, so it becomes current
                     # by moving it to the current bucket
                     del self._data[b][k] # delete the item from the old bucket.
-                    self._data[current][k] = v # add the value to the current 
+                    self._data[current][k] = v # add the value to the current
                     self._setLastAccessed(v)
                     index[k] = current # change the index to the current buck.
 
@@ -812,7 +812,7 @@ class TransientObjectContainer(SimpleItem):
                 return v
         finally:
             self.lock.release()
-            
+
     def _setLastAccessed(self, transientObject):
         self.lock.acquire()
         try:
@@ -860,7 +860,7 @@ class Increaser(Persistent):
 
     def set(self, v):
         self.value = v
-        
+
     def __getstate__(self):
         return self.value
 

@@ -41,10 +41,10 @@ class Indexable:
 class LexiconHolder(Acquisition.Implicit):
     def __init__(self, lexicon):
         self.lexicon = lexicon
-        
+
     def getPhysicalPath(self):
         return ('',) # Pretend to be the root
-    
+
 def dummyUnrestrictedTraverse(self, path):
     if path == ('', 'lexicon',):
         return self.lexicon
@@ -102,13 +102,13 @@ class ZCIndexTestsBase:
 
     def setUp(self):
         self.lexicon = PLexicon('lexicon', '',
-                                Splitter(), 
-                                CaseNormalizer(), 
+                                Splitter(),
+                                CaseNormalizer(),
                                 StopWordRemover())
         caller = LexiconHolder(self.lexicon)
-        self.zc_index = ZCTextIndex('name', 
-                                    None, 
-                                    caller, 
+        self.zc_index = ZCTextIndex('name',
+                                    None,
+                                    caller,
                                     self.IndexFactory,
                                     'text',
                                     'lexicon')
@@ -466,14 +466,14 @@ class QueryTestsBase(testQueryEngine.TestQueryEngine,
 
     def setUp(self):
         self.lexicon = PLexicon('lexicon', '',
-                                Splitter(), 
-                                CaseNormalizer(), 
+                                Splitter(),
+                                CaseNormalizer(),
                                 StopWordRemover())
         caller = LexiconHolder(self.lexicon)
-        
-        self.zc_index = ZCTextIndex('name', 
-                                    None, 
-                                    caller, 
+
+        self.zc_index = ZCTextIndex('name',
+                                    None,
+                                    caller,
                                     self.IndexFactory,
                                     'text',
                                     'lexicon')

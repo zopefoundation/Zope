@@ -3,7 +3,7 @@ Products.PythonScripts.standard: Utility functions and classes
 
   The functions and classes in this module are available from
   Python-based scripts, DTML, and Page Templates.
-  
+
 """
 
 def whole_dollars(number):
@@ -23,7 +23,7 @@ def structured_text(s):
     See Also
 
       "Structured-Text Rules":http://dev.zope.org/Members/jim/StructuredTextWiki/StructuredTextNGRules
-    
+
     """
 
 def sql_quote(s):
@@ -41,7 +41,7 @@ def html_quote(s):
 
       "Python 'cgi' module":http://www.python.org/doc/current/lib/Functions_in_cgi_module.html
       'escape' function.
-      
+
     """
 
 def url_quote(s):
@@ -123,7 +123,7 @@ class DTML:
     def call(client=None, REQUEST={}, **kw):
         """
         Render the DTML.
-        
+
         To accomplish its task, DTML often needs to resolve various
         names into objects.  For example, when the code &lt;dtml-var
         spam&gt; is executed, the DTML engine tries to resolve the
@@ -148,5 +148,5 @@ class DTML:
         three methods.  You can pass any number of them or none at
         all. Names will be looked up first in the keyword argument,
         next in the client and finally in the mapping.
-        
+
         """

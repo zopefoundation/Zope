@@ -31,14 +31,14 @@ SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 # This is patched version of unittest.py and allows to pass additional
 # parameters to the TestCase constructor.
-# This special version is only need to run the regression test 
+# This special version is only need to run the regression test
 # in testCatalog.py#
 #
 # ajung
 
 __author__ = "Steve Purcell"
 __email__ = "stephen_purcell@yahoo.com"
-__version__ = "$Revision: 1.2 $"[11:-2]
+__version__ = "$Revision: 1.3 $"[11:-2]
 
 import time
 import sys
@@ -101,7 +101,7 @@ class TestResult:
     def stop(self):
         "Indicates that the tests should be aborted"
         self.shouldStop = 1
-    
+
     def __repr__(self):
         return "<%s run=%i errors=%i failures=%i>" % \
                (self.__class__, self.testsRun, len(self.errors),
@@ -111,14 +111,14 @@ class TestResult:
 class TestCase:
     """A class whose instances are single test cases.
 
-    Test authors should subclass TestCase for their own tests. Construction 
+    Test authors should subclass TestCase for their own tests. Construction
     and deconstruction of the test's environment ('fixture') can be
     implemented by overriding the 'setUp' and 'tearDown' methods respectively.
 
     By default, the test code itself should be placed in a method named
     'runTest'.
-    
-    If the fixture may be used for many test cases, create as 
+
+    If the fixture may be used for many test cases, create as
     many test methods as are needed. When instantiating such a TestCase
     subclass, specify in the constructor arguments the name of the test method
     that the instance is to execute.
@@ -131,7 +131,7 @@ class TestCase:
            method when executed. Raises a ValueError if the instance does
            not have a method with the specified name.
         """
-        
+
         try:
             self.__testMethodName = methodName
             testMethod = getattr(self, methodName)
@@ -250,7 +250,7 @@ class TestCase:
     def fail(self, msg=None):
         """Fail immediately, with the given message."""
         raise AssertionError, msg
-                                   
+
     def __exc_info(self):
         """Return a version of sys.exc_info() with the traceback frame
            minimised; usually the top level of the traceback frame is not
@@ -465,7 +465,7 @@ class _WritelnDecorator:
         if args: apply(self.write, args)
         self.write(self.linesep)
 
- 
+
 class _JUnitTextTestResult(TestResult):
     """A test result class that can print formatted text results to a stream.
 
@@ -481,12 +481,12 @@ class _JUnitTextTestResult(TestResult):
         self.stream.flush()
         if error[0] is KeyboardInterrupt:
             self.shouldStop = 1
- 
+
     def addFailure(self, test, error):
         TestResult.addFailure(self,test,error)
         self.stream.write('F')
         self.stream.flush()
- 
+
     def startTest(self, test):
         TestResult.startTest(self,test)
         self.stream.write('.')
@@ -505,7 +505,7 @@ class _JUnitTextTestResult(TestResult):
             self.stream.writeln("%i) %s" % (i, test))
             self.stream.writeln(errString)
             i = i + 1
- 
+
     def printErrors(self):
         self.printNumberedErrors("error",self.errors)
 
@@ -523,7 +523,7 @@ class _JUnitTextTestResult(TestResult):
             self.stream.writeln("Run: %i ; Failures: %i ; Errors: %i" %
                                 (self.testsRun, len(self.failures),
                                  len(self.errors)))
-            
+
     def printResult(self):
         self.printHeader()
         self.printErrors()
@@ -532,7 +532,7 @@ class _JUnitTextTestResult(TestResult):
 
 class JUnitTextTestRunner:
     """A test runner class that displays results in textual form.
-    
+
     The display format approximates that of JUnit's 'textui' test runner.
     This test runner may be removed in a future version of PyUnit.
     """
@@ -565,7 +565,7 @@ class _VerboseTextTestResult(TestResult):
         self.stream = stream
         self.lastFailure = None
         self.descriptions = descriptions
-        
+
     def startTest(self, test):
         TestResult.startTest(self, test)
         if self.descriptions:
@@ -608,7 +608,7 @@ class _VerboseTextTestResult(TestResult):
 
 class VerboseTextTestRunner:
     """A test runner class that displays results in textual form.
-    
+
     It prints out the names of tests as they are run, errors as they
     occur, and a summary of the results at the end of the test run.
     """
@@ -640,7 +640,7 @@ class VerboseTextTestRunner:
         else:
             self.stream.writeln("OK")
         return result
-        
+
 
 # Which flavour of TextTestRunner is the default?
 TextTestRunner = VerboseTextTestRunner
@@ -717,7 +717,7 @@ Examples:
         if self.testRunner is None:
             self.testRunner = TextTestRunner()
         result = self.testRunner.run(self.test)
-        sys.exit(not result.wasSuccessful())    
+        sys.exit(not result.wasSuccessful())
 
 main = TestProgram
 

@@ -36,9 +36,9 @@ class Traverser(Persistent, Item):
                   message='This object already contains a %s' % self.meta_type,
                   action=nextURL)
         self.addToContainer(container)
-        if nextURL:    
+        if nextURL:
             return MessageDialog(title='Item Added',
-              message='This object now has a %s' % self.meta_type, 
+              message='This object now has a %s' % self.meta_type,
               action=nextURL)
 
     def manage_beforeDelete(self, item, container):
@@ -96,11 +96,11 @@ class SiteRoot(Traverser, Implicit):
         '''Set the title, base, and path'''
         self.__init__(title, base, path)
         if REQUEST:
-          return MessageDialog(title='SiteRoot changed.',
-            message='The title is now "%s"<br>'
-                    'The base is now "%s"<br>'
-                    'The path is now "%s"<br>' % (title, base, path),
-            action='%s/manage_main' % REQUEST['URL1'])
+            return MessageDialog(title='SiteRoot changed.',
+              message='The title is now "%s"<br>'
+                      'The base is now "%s"<br>'
+                      'The path is now "%s"<br>' % (title, base, path),
+              action='%s/manage_main' % REQUEST['URL1'])
 
     def __call__(self, client, request, response=None):
         '''Traversing'''

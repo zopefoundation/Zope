@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 import sys, os, time, random, unittest
 
@@ -75,7 +75,7 @@ class TestTransientObjectContainer(TestBase):
         for x in v:
             assert x == i
             i = i + 1
-            
+
     def testKeysWorks(self):
         for x in range(10, 110):
             self.t[x] = x
@@ -137,7 +137,7 @@ class TestTransientObjectContainer(TestBase):
         self.t[4] = 99
         del self.t[2]
         assert lsubtract(self.t.keys(),[1,3,4,5,6,10])==[], `self.t.keys()`
-        
+
     def donttestDeleteTwoChildrenInorderSuccessorWorks(self):
         self.t[5] = 6
         self.t[2] = 10
@@ -325,7 +325,7 @@ class TestTransientObjectContainer(TestBase):
         # we should still have 100 - 199
         for x in range(110, 210):
             assert self.t[x] == x
-        # but we shouldn't have 0 - 100 
+        # but we shouldn't have 0 - 100
         for x in range(10, 110):
             try: self.t[x]
             except KeyError: pass
@@ -439,13 +439,13 @@ class TestTransientObjectContainer(TestBase):
         for x in range(11):
             self.t.new(str(x))
 
-        
+
 def lsubtract(l1, l2):
-   l1=list(l1)
-   l2=list(l2)
-   l = filter(lambda x, l1=l1: x not in l1, l2)
-   l = l + filter(lambda x, l2=l2: x not in l2, l1)
-   return l
+    l1=list(l1)
+    l2=list(l2)
+    l = filter(lambda x, l1=l1: x not in l1, l2)
+    l = l + filter(lambda x, l2=l2: x not in l2, l1)
+    return l
 
 def test_suite():
     testsuite = makeSuite(TestTransientObjectContainer, 'test')
@@ -456,4 +456,3 @@ def test_suite():
 if __name__ == '__main__':
     runner = TextTestRunner(verbosity=9)
     runner.run(test_suite())
-

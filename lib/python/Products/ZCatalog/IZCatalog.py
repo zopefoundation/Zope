@@ -2,17 +2,17 @@
 #
 # Copyright (c) 2002 Zope Corporation and Contributors.
 # All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE.
-# 
+#
 ##############################################################################
 """
-$Id: IZCatalog.py,v 1.2 2002/08/14 19:10:14 caseman Exp $
+$Id: IZCatalog.py,v 1.3 2002/08/14 22:25:15 mj Exp $
 """
 
 from Interface import Interface
@@ -35,20 +35,20 @@ class IZCatalog(Interface):
       Keyword -- Keyword indexes index sequences of values.  The index
       can be used to search for objects that match one or more of the
       search terms.
-      
+
       Path -- Path indexes index URI paths. They allow you to find objects
       based on their placement in a hierarchy.
-      
+
       Date -- Date indexes index date and type data. They are a type of field
       index specifically optimized for indexing dates.
 
       Date Range -- Date range indexes index time intervals. They are designed
       for efficient searching of dates falling between two boundaries
       (such as effective / expiration dates).
-      
+
       Topic -- Topic indexes store prefiltered sets of documents. They are used
-      to optimize complex queries into a single fast query by prefiltering 
-      documents by an expression 
+      to optimize complex queries into a single fast query by prefiltering
+      documents by an expression
 
     The ZCatalog can maintain a table of extra data about cataloged
     objects.  This information can be used on search result pages to
@@ -61,7 +61,7 @@ class IZCatalog(Interface):
     ZCatalog does not store references to the objects themselves, but
     rather to a unique identifier that defines how to get to the
     object.  In Zope, this unique identifier is the object's relative
-    path to the ZCatalog (since two Zope objects cannot have the same 
+    path to the ZCatalog (since two Zope objects cannot have the same
     URL, this is an excellent unique qualifier in Zope).
 
     """
@@ -108,11 +108,11 @@ class IZCatalog(Interface):
 
     def index_objects():
         """Returns a sequence of actual index objects.
-        
+
         NOTE: This returns unwrapped indexes! You should probably use
         getIndexObjects instead. Some indexes expect to be wrapped.
         """
-        
+
     def getIndexObjects():
         """Returns a list of acquisition wrapped index objects
         """
@@ -184,7 +184,7 @@ class IZCatalog(Interface):
         documented in The Zope Book.
 
         """
-    
+
     def __call__(REQUEST=None, **kw):
         """Search the catalog, the same way as 'searchResults'.
         """

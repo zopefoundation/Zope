@@ -28,7 +28,7 @@ def _cvt_btr(app):
                             btr[k] = NameCaller(v)
                 if touched:
                     rewriteBeforeTraverse(o, btr)
-                    
+
 if __name__ == '__main__':
     print "Converting SiteAccess objects from 1.x to 2.x ..."
     app = Zope.app()

@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 import sys, os, unittest
 
@@ -34,7 +34,7 @@ class TestTransientObject(TestCase):
         Products.Transience.TransientObject.time = oldtime
         self.t = None
         del self.t
-        
+
     def test_id(self):
         t = self.t.new('xyzzy')
         assert t.getId() != 'xyzzy'
@@ -99,10 +99,10 @@ class TestTransientObject(TestCase):
         assert t.get('foobie') is None
         self.assertRaises(AttributeError, self._genLenError, t)
         assert t.get('foobie',None) is None
-        assert t.has_key('a') 
-        assert not t.has_key('foobie') 
+        assert t.has_key('a')
+        assert not t.has_key('foobie')
         t.clear()
-        assert not len(t.keys()) 
+        assert not len(t.keys())
 
     def test_TTWDictionary(self):
         t = self.t.new('mouthfultest')
@@ -111,7 +111,7 @@ class TestTransientObject(TestCase):
         assert t.get('foo') == 'bar'
         t.set('foobie', 'blech')
         t.delete('foobie')
-        assert t.get('foobie') is None 
+        assert t.get('foobie') is None
 
 
 def test_suite():
@@ -130,4 +130,3 @@ data = {
 if __name__ == '__main__':
     runner = TextTestRunner(verbosity=9)
     runner.run(test_suite())
-

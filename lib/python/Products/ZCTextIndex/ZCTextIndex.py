@@ -56,7 +56,7 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
     )
 
     query_options = ['query']
-    
+
     security = ClassSecurityInfo()
     security.declareObjectProtected(manage_zcatalog_indexes)
 
@@ -65,11 +65,11 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
     def __init__(self, id, extra=None, caller=None, index_factory=None,
                  field_name=None, lexicon_id=None):
         self.id = id
-        
+
         # Arguments can be passed directly to the constructor or
         # via the silly "extra" record.
         self._fieldname = field_name or getattr(extra, 'doc_attr', '') or id
-        
+
         lexicon_id = lexicon_id or extra.lexicon_idp
         lexicon = getattr(caller, lexicon_id, None)
 
@@ -94,11 +94,11 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
             self._index_factory = index_factory
 
         self.index = self._index_factory(self.getLexicon())
-        
+
     ## Private Methods ##
-            
+
     security.declarePrivate('getLexicon')
-    
+
     def getLexicon(self):
         """Get the lexicon for this index
         """
@@ -108,7 +108,7 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
             lexicon = getattr(self.aq_parent, self.lexicon.getId())
             self.lexicon_path = lexicon.getPhysicalPath()
             del self.lexicon
-            
+
         try:
             return self._v_lexicon
         except AttributeError:
@@ -122,7 +122,7 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
     ## External methods not in the Pluggable Index API ##
 
     security.declareProtected('query', search_zcatalog)
-    
+
     def query(self, query, nbest=10):
         """Return pair (mapping from docids to scores, num results).
 
@@ -196,8 +196,8 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
         """reinitialize the index (but not the lexicon)"""
         try:
             # Remove the cached reference to the lexicon
-            # So that it is refreshed 
-            del self._v_lexicon 
+            # So that it is refreshed
+            del self._v_lexicon
         except (AttributeError, KeyError):
             pass
         self.index = self._index_factory(self.getLexicon())
@@ -209,11 +209,11 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
     def getIndexType(self):
         """Return index type string"""
         return getattr(self, '_index_type', self._index_factory.__name__)
-        
+
     def getFieldName(self):
         """Return indexed attribute name"""
         return self._fieldname
-        
+
     def getLexiconPath(self):
         """Return the path of the lexicon used by the index"""
         try:
@@ -268,7 +268,7 @@ class PLexicon(Lexicon, Acquisition.Implicit, SimpleItem):
     manage_options = ({'label':'Overview', 'action':'manage_main'},
                       {'label':'Query', 'action':'queryLexicon'},
                      ) + SimpleItem.manage_options
-                     
+
     security = ClassSecurityInfo()
     security.declareObjectProtected(LexiconQueryPerm)
 
@@ -282,11 +282,11 @@ class PLexicon(Lexicon, Acquisition.Implicit, SimpleItem):
     def getPipelineNames(self):
         """Return list of names of pipeline element classes"""
         return [element.__class__.__name__ for element in self._pipeline]
-    
+
     _queryLexicon = DTMLFile('dtml/queryLexicon', globals())
-    
+
     security.declareProtected(LexiconQueryPerm, 'queryLexicon')
-    
+
     def queryLexicon(self, REQUEST, words=None, page=0, rows=20, cols=4):
         """Lexicon browser/query user interface
         """
@@ -297,7 +297,7 @@ class PLexicon(Lexicon, Acquisition.Implicit, SimpleItem):
             words = [self.get_word(wid) for wid in wids]
         else:
             words = self.words()
-                    
+
         word_count = len(words)
         rows = max(min(rows, 500), 1)
         cols = max(min(cols, 12), 1)
@@ -306,18 +306,18 @@ class PLexicon(Lexicon, Acquisition.Implicit, SimpleItem):
         page = max(min(page, page_count - 1), 0)
         start = rows * cols * page
         end = min(rows * cols * (page + 1), word_count)
-        
+
         if word_count:
             words = list(words[start:end])
         else:
             words = []
-            
+
         columns = []
         i = 0
         while i < len(words):
             columns.append(words[i:i + rows])
             i += rows
-        
+
         return self._queryLexicon(self, REQUEST,
                                   page=page,
                                   rows=rows,
@@ -328,8 +328,8 @@ class PLexicon(Lexicon, Acquisition.Implicit, SimpleItem):
                                   page_count=page_count,
                                   page_range=xrange(page_count),
                                   page_columns=columns)
-                                  
-    security.declareProtected(LexiconMgmtPerm, 'manage_main')        
+
+    security.declareProtected(LexiconMgmtPerm, 'manage_main')
     manage_main = DTMLFile('dtml/manageLexicon', globals())
 
 InitializeClass(PLexicon)

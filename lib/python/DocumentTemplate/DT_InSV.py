@@ -1,20 +1,20 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 __doc__='''Sequence variables support
 
 
-$Id: DT_InSV.py,v 1.21 2001/11/28 15:50:54 matt Exp $'''
-__version__='$Revision: 1.21 $'[11:-2]
+$Id: DT_InSV.py,v 1.22 2002/08/14 22:29:52 mj Exp $'''
+__version__='$Revision: 1.22 $'[11:-2]
 
 from math import sqrt
 import re
@@ -28,10 +28,10 @@ except: mv=None
 class sequence_variables:
 
     alt_prefix = None
-    
+
     def __init__(self,items=None,query_string='',start_name_re=None,
                  alt_prefix=''):
-        
+
         self.items=items
         self.query_string=query_string
         self.start_name_re=start_name_re
@@ -68,35 +68,35 @@ class sequence_variables:
         roman = ''
 
         while num >= 1000:
-                num = num - 1000
-                roman = '%sM' % roman
+            num = num - 1000
+            roman = '%sM' % roman
 
         while num >= 500:
-                num = num - 500
-                roman = '%sD' % roman
+            num = num - 500
+            roman = '%sD' % roman
 
         while num >= 100:
-                num = num - 100
-                roman = '%sC' % roman
+            num = num - 100
+            roman = '%sC' % roman
 
         while num >= 50:
-                num = num - 50
-                roman = '%sL' % roman
+            num = num - 50
+            roman = '%sL' % roman
 
         while num >= 10:
-                num = num - 10
-                roman = '%sX' % roman                 
+            num = num - 10
+            roman = '%sX' % roman
 
         while num >= 5:
-                num = num - 5
-                roman = '%sV' % roman
+            num = num - 5
+            roman = '%sV' % roman
 
         while num < 5 and num >= 1:
-                num = num - 1
-                roman = '%sI' % roman
+            num = num - 1
+            roman = '%sI' % roman
 
         # Replaces special cases in Roman Numerals
-        
+
         roman = roman.replace('DCCCC', 'CM')
         roman = roman.replace('CCCC', 'CD')
         roman = roman.replace('LXXXX', 'XC')
@@ -132,7 +132,7 @@ class sequence_variables:
         return l
 
     def query(self, *ignored):
-        
+
         if self.start_name_re is None: raise KeyError, 'sequence-query'
         query_string=self.query_string
         while query_string and query_string[:1] in '?&':
@@ -140,7 +140,7 @@ class sequence_variables:
         while query_string[-1:] == '&':
             query_string=query_string[:-1]
         if query_string:
-            query_string='&%s&' % query_string                  
+            query_string='&%s&' % query_string
             reg=self.start_name_re
 
             if type(reg)==type(re.compile(r"")):
@@ -160,9 +160,9 @@ class sequence_variables:
             query_string='?'+query_string[1:]
         else: query_string='?'
         self['sequence-query']=query_string
-        
+
         return query_string
-        
+
 
     statistic_names=(
         'total', 'count', 'min', 'max', 'median', 'mean',
@@ -225,7 +225,7 @@ class sequence_variables:
             if count > 1:
                 sumsq=sumsq*n/(n-1)
                 data['variance-%s' % name]=sumsq
-                data['standard-deviation-%s' % name]=sqrt(sumsq)            
+                data['standard-deviation-%s' % name]=sqrt(sumsq)
             else:
                 data['variance-%s' % name]=''
                 data['standard-deviation-%s' % name]=''
@@ -368,7 +368,7 @@ class sequence_variables:
             except: pass
 
         if key=='sequence-query': return self.query()
-            
+
         raise KeyError, key
 
 

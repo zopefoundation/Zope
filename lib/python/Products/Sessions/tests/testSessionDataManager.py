@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 import sys, os, time
 
@@ -92,11 +92,11 @@ def _populate(app):
 
     app.temp_folder._setObject(toc_name, toc)
     get_transaction().commit()
-    
+
     # index_html necessary for publishing emulation for testAutoReqPopulate
     app._setObject('index_html', DTMLMethod('', __name__='foo'))
     get_transaction().commit()
-    
+
 class TestBase(TestCase):
     def setUp(self):
         db = _getDB()
@@ -137,7 +137,7 @@ class TestSessionManager(TestBase):
         sd = self.app.session_data_manager.getSessionData(1)
         sdm = aq_base(getattr(self.app, sdm_name))
         toc = aq_base(getattr(self.app.temp_folder, toc_name))
-        
+
         self.failUnless(aq_base(sd.aq_parent) is sdm)
         self.failUnless(aq_base(sd.aq_parent.aq_parent) is toc)
 
@@ -229,4 +229,3 @@ def test_suite():
 if __name__ == '__main__':
     runner = TextTestRunner(verbosity=9, descriptions=9)
     runner.run(test_suite())
-

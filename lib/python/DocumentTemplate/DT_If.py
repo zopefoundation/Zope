@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 __doc__='''Conditional insertion
 
@@ -19,14 +19,14 @@ __doc__='''Conditional insertion
        format, use::
 
           %(if name)[
-               text 
+               text
           %(if name)]
 
        To include text when an object is true using the HTML
        format, use::
 
           <!--#if name-->
-               text 
+               text
           <!--#/if name-->
 
        where 'name' is the name bound to the object.
@@ -35,14 +35,14 @@ __doc__='''Conditional insertion
        format, use::
 
           %(else name)[
-               text 
+               text
           %(else name)]
 
        To include text when an object is false using the HTML
        format, use::
 
           <!--#else name-->
-               text 
+               text
           <!--#/else name-->
 
        Finally to include text when an object is true and to
@@ -50,10 +50,10 @@ __doc__='''Conditional insertion
        EPFS format, use::
 
           %(if name)[
-               true text 
+               true text
           %(if name)]
           %(else name)[
-               false text 
+               false text
           %(else name)]
 
        and to include text when an object is true and to
@@ -61,9 +61,9 @@ __doc__='''Conditional insertion
        HTML format, use::
 
           <!--#if name-->
-               true text 
+               true text
           <!--#else name-->
-               false text 
+               false text
           <!--#/if name-->
 
        Notes:
@@ -74,9 +74,9 @@ __doc__='''Conditional insertion
          is used inside the tag, including in enclosed tags, the
          variable is not reevaluated.
 
-''' 
-__rcs_id__='$Id: DT_If.py,v 1.18 2001/11/28 15:50:54 matt Exp $'
-__version__='$Revision: 1.18 $'[11:-2]
+'''
+__rcs_id__='$Id: DT_If.py,v 1.19 2002/08/14 22:29:52 mj Exp $'
+__version__='$Revision: 1.19 $'[11:-2]
 
 from DT_Util import ParseError, parse_params, name_param, str
 

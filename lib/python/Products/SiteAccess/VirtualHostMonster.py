@@ -97,9 +97,9 @@ class VirtualHostMonster(Persistent, Item, Implicit):
 
     def manage_addToContainer(self, container, nextURL=''):
         self.addToContainer(container)
-        if nextURL:    
+        if nextURL:
             return MessageDialog(title='Item Added',
-              message='This object now has a %s' % self.meta_type, 
+              message='This object now has a %s' % self.meta_type,
               action=nextURL)
 
     def manage_beforeDelete(self, item, container):

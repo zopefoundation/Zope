@@ -1,17 +1,17 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
-__doc__='''$Id: Lazy.py,v 1.6 2001/11/28 15:51:09 matt Exp $'''
-__version__='$Revision: 1.6 $'[11:-2]
+__doc__='''$Id: Lazy.py,v 1.7 2002/08/14 22:25:15 mj Exp $'''
+__version__='$Revision: 1.7 $'[11:-2]
 
 
 class Lazy:
@@ -20,7 +20,7 @@ class Lazy:
     __allow_access_to_unprotected_subobjects__=1
 
     def __repr__(self): return `list(self)`
-    
+
     def __len__(self):
 
         try: return self._len
@@ -62,7 +62,7 @@ class Lazy:
             seq.append(other)
 
         return LazyCat(seq)
-    
+
     def __getslice__(self,i1,i2):
         r=[]
         for i in xrange(i1,i2):
@@ -75,7 +75,7 @@ class Lazy:
 class LazyCat(Lazy):
     # Lazy concatenation of one or more sequences.  Should be handy
     # for accessing small parts of big searches.
-    
+
     def __init__(self, sequences, length=None):
         self._seq=sequences
         self._data=[]

@@ -66,6 +66,6 @@ class IIndex(Interface.Base):
 
     def unindex_doc(docid):
         "XXX"
-        
+
     def has_doc(docid):
         """Returns true if docid is an id of a document in the index"""

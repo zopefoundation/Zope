@@ -1,20 +1,20 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """Document Template Tests
 """
 
-__rcs_id__='$Id: testDTMLUnicode.py,v 1.2 2002/03/27 10:14:02 htrd Exp $'
-__version__='$Revision: 1.2 $'[11:-2]
+__rcs_id__='$Id: testDTMLUnicode.py,v 1.3 2002/08/14 22:29:53 mj Exp $'
+__version__='$Revision: 1.3 $'[11:-2]
 
 import sys, os
 import unittest

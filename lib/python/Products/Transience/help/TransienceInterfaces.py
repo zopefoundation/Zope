@@ -1,4 +1,4 @@
-########################################################################## 
+##########################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
 #
@@ -9,7 +9,7 @@
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
 #
-########################################################################## 
+##########################################################################
 """
 Transient Objects
 
@@ -24,7 +24,7 @@ class TransientObjectContainer:
     container. You'll almost always deal with a TransientObject
     itself which you'll usually get as 'REQUEST.SESSION'.
     """
-    
+
     def getId(self):
         """
         Returns a meaningful unique id for the object.
@@ -79,7 +79,7 @@ class TransientObjectContainer:
 
         Permission -- 'Create Transient Objects'
         """
-    
+
     def setTimeoutMinutes(self, timeout_mins):
         """
         Set the number of minutes of inactivity allowable for subobjects
@@ -182,7 +182,7 @@ class TransientObject:
 
         Permission -- Always available
         """
-        
+
     def invalidate(self):
         """
         Invalidate (expire) the transient object.
@@ -291,5 +291,3 @@ class MaxTransientObjectsExceeded:
 
       from Products.Transience import MaxTransientObjectsExceeded
     """
-
-

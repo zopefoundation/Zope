@@ -7,4 +7,3 @@ def careful_mul(env, *factors):
     for factor in factors:
         r=r*factor
     return r
-

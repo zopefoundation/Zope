@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 import  sys, traceback
@@ -19,41 +19,41 @@ from DT_Return import DTReturn
 
 class Try:
     """Zope DTML Exception handling
-    
+
     usage:
-    
+
     <!--#try-->
     <!--#except SomeError AnotherError-->
     <!--#except YetAnotherError-->
     <!--#except-->
     <!--#else-->
     <!--#/try-->
-      
+
     or:
-      
+
     <!--#try-->
     <!--#finally-->
     <!--#/try-->
-    
+
     The DTML try tag functions quite like Python's try command.
-    
+
     The contents of the try tag are rendered. If an exception is raised,
     then control switches to the except blocks. The first except block to
     match the type of the error raised is rendered. If an except block has
     no name then it matches all raised errors.
-    
+
     The try tag understands class-based exceptions, as well as string-based
     exceptions. Note: the 'raise' tag raises string-based exceptions.
-    
+
     Inside the except blocks information about the error is available via
     three variables.
-    
+
       'error_type' -- This variable is the name of the exception caught.
-    
+
       'error_value' -- This is the caught exception's value.
-    
+
       'error_tb' -- This is a traceback for the caught exception.
-      
+
     The optional else block is rendered when no exception occurs in the
     try block. Exceptions in the else block are not handled by the preceding
     except blocks.
@@ -78,10 +78,10 @@ class Try:
     lost.
 
     Original version by Jordan B. Baker.
-    
+
     Try..finally and try..else implementation by Martijn Pieters.
     """
-    
+
     name = 'try'
     blockContinuations = 'except', 'else', 'finally'
     finallyBlock=None
@@ -158,7 +158,7 @@ class Try:
                 errname = t.__name__
 
             handler = self.find_handler(t)
-                                    
+
             if handler is None:
                 # we didn't find a handler, so reraise the error
                 raise
@@ -181,7 +181,7 @@ class Try:
                 return result
             else:
                 return result + render_blocks(self.elseBlock, md)
-               
+
     def render_try_finally(self, md):
         result = ''
         # first try to render the first block
@@ -202,13 +202,13 @@ class Try:
                 return None
         for e,h in self.handlers:
             if e==exception.__name__ or e=='' or self.match_base(exception,e):
-                return h    
-        return None 
+                return h
+        return None
 
     def match_base(self,exception,name):
         for base in exception.__bases__:
             if base.__name__==name or self.match_base(base,name):
                 return 1
         return None
-        
+
     __call__ = render

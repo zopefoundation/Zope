@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 import os, sys, unittest
 
@@ -74,9 +74,9 @@ class TestPythonScriptNoAq(unittest.TestCase):
         assert txt == 'txt', txt
 
     def testParam2(self):
-       one, two = self._newPS('##parameters=x,y\nreturn x,y')('one','two')
-       assert one == 'one'
-       assert two == 'two'
+        one, two = self._newPS('##parameters=x,y\nreturn x,y')('one','two')
+        assert one == 'one'
+        assert two == 'two'
 
     def testParam26(self):
         import string
@@ -85,7 +85,7 @@ class TestPythonScriptNoAq(unittest.TestCase):
         tup = apply(self._newPS('##parameters=%s\nreturn %s'
                                 % (sparams,sparams)), params)
         assert tup == tuple(params), (tup, params)
-        
+
     def testArithmetic(self):
         one = self._newPS('return 1 * 5 + 4 / 2 - 6')()
         assert one == 1, one
@@ -103,7 +103,7 @@ class TestPythonScriptNoAq(unittest.TestCase):
     def testForLoop(self):
         ten = self._newPS(readf('for_loop'))()
         assert ten == 10
-        
+
     def testMutateLiterals(self):
         l, d = self._newPS(readf('mutate_literals'))()
         assert l == [2], l
@@ -122,7 +122,7 @@ class TestPythonScriptNoAq(unittest.TestCase):
         a,b = self._newPS(readf('try_except'))()
         assert a==1
         assert b==1
-        
+
     def testBigBoolean(self):
         true = self._newPS(readf('big_boolean'))()
         assert true, true
@@ -166,4 +166,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

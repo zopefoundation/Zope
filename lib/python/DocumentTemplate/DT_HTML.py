@@ -1,18 +1,18 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """HTML formated DocumentTemplates
 
-$Id: DT_HTML.py,v 1.31 2001/11/28 15:50:54 matt Exp $"""
+$Id: DT_HTML.py,v 1.32 2002/08/14 22:29:52 mj Exp $"""
 
 from DT_String import String, FileMixin
 import DT_String, re
@@ -71,7 +71,7 @@ class dtml_re_class:
             else:
                 if text[s:s+5] == '&dtml' and text[s+5] in '.-':
                     n=s+6
-                    e=text.find(';',n)                        
+                    e=text.find(';',n)
                     if e >= 0:
                         args=text[n:e]
                         l=len(args)
@@ -97,7 +97,7 @@ class dtml_re_class:
                                         d[3]=d['args']=args
                                         self._start = s
                                         return self
-                        
+
                 start=s+1
                 continue
 
@@ -106,7 +106,7 @@ class dtml_re_class:
         mo = name_match(text,n)
         if mo is None: return None
         l = mo.end(0) - mo.start(0)
- 
+
         a=n+l
         name=text[n:a].strip()
 
@@ -177,7 +177,7 @@ class HTML(DT_String.String):
                 if not (args==sargs or
                         args==sargs[:l] and sargs[l:l+1] in ' \t\n'):
                     return tag, args, self.commands[name], None
-            
+
             return tag, args, None, name
 
         try: return tag, args, self.commands[name], None
@@ -225,7 +225,7 @@ class HTML(DT_String.String):
     manage_editForm__roles__=()
     def manage_editForm(self, URL1, REQUEST):
         '''Display doc template editing form''' #"
-        
+
         return self._manage_editForm(
             self,
             mapping=REQUEST,
@@ -302,7 +302,7 @@ class HTMLFile(FileMixin, HTML):
         if data.find('\r'):
             data='\n\r'.join(data.split('\r\n'))
             data='\n'.join(data.split('\n\r'))
-            
+
         if self.edited_source:
             self.edited_source=data
             self._v_cooked=self.cook()

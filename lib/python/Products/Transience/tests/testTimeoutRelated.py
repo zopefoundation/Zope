@@ -72,7 +72,7 @@ class TestBase(TestCase):
         del self.app
         Products.Transience.Transience.time = oldtime
         Products.Transience.TransientObject.time = oldtime
-        
+
 class TestLastAccessed(TestBase):
     def testLastAccessed(self):
         sdo = self.app.sm.new_or_existing('TempObject')

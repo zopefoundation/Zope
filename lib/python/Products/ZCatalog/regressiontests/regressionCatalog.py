@@ -59,28 +59,28 @@ class testZODB:
     """ some wrapper stuff around ZODB """
 
     def __init__(self, file = "data/work/Data.fs",open=1):
-    
+
         self.db = ZODB.DB( ZODB.FileStorage.FileStorage(file) )
 
         if open==1:
             self.connection = self.db.open()
             self.root = self.connection.root()
 
-        
+
     def write(self,name,obj):
         self.root[name] = obj
         get_transaction().commit()
 
-        
+
     def read(self,name):
         return self.root[name]
 
-        
+
     def __del__(self):
         self.db.close()
 
-        
-        
+
+
 class testCatalog(Persistence.Persistent,unittest.TestCase):
     """ Wrapper around the catalog stuff """
 
@@ -89,7 +89,7 @@ class testCatalog(Persistence.Persistent,unittest.TestCase):
         self.num_files = 0
         self.keywords = []
         self.maxfiles = maxfiles
-        
+
         self._vocabulary = Vocabulary.Vocabulary('Vocabulary',
                             'Vocabulary', globbing=1)
         self._catalog    = ZCatalog.ZCatalog("zcatalog")
@@ -118,7 +118,7 @@ class testCatalog(Persistence.Persistent,unittest.TestCase):
             try:
                 self.catMessage(msg)
                 self.msg_ids.append(msg.dict["message-id"])
-            except: 
+            except:
                 msg = mb.next()
                 continue
 
@@ -133,20 +133,20 @@ class testCatalog(Persistence.Persistent,unittest.TestCase):
                 msg = mb.next()
                 continue
 
-            for s in sub: 
+            for s in sub:
                 if not s in self.keywords: self.keywords.append(s)
-           
+
         self._catalog.aq_parent = None
-        
+
 
     def catMessage(self,m):
-        self._catalog.catalogObject( testMessage(m) , 
+        self._catalog.catalogObject( testMessage(m) ,
                                     m.dict["message-id"] )
-        
+
     def uncatMessage(self,uid):
         self._catalog.uncatalogObject( uid )
-        
-            
+
+
 class testMessage(ExtensionClass.Base):
 
     def __init__(self,msg,modify_doc=0):
@@ -159,28 +159,28 @@ class testMessage(ExtensionClass.Base):
 
         if modify_doc !=0:
             self.keywords = map(self.reverse,self.keywords)
-            
+
 
         self.file_id = msg.dict.get("message-id","")
-   
+
         self.length  = len(str(msg))
         date         = msg.dict.get("date","")
         try:
             self.date    =  time.mktime(rfc822.parsedate(date)[:9])
-        except: pass  
+        except: pass
 
     def reverse(self,s):
         l = list(s)
         l.reverse()
         return string.join(l,"")
 
-        
+
     def __del__(self):
-       pass 
+        pass
 
 
 class BuildEnv(dispatcher.Dispatcher,unittest.TestCase):
-    """ build environment """        
+    """ build environment """
 
     def __init__(self,func,*args,**kw):
 
@@ -190,16 +190,16 @@ class BuildEnv(dispatcher.Dispatcher,unittest.TestCase):
         self.init_phase = 0
 
         self.setlog( open("dispatcher.log","a") )
-        self.logn('treads=%d  searchiterations=%d' % 
+        self.logn('treads=%d  searchiterations=%d' %
                     (numThreads,searchIterations))
-        self.logn('updateiterations=%d  maxfiles=%d' % 
+        self.logn('updateiterations=%d  maxfiles=%d' %
                     (updateIterations,maxFiles))
 
-    #############################################################        
+    #############################################################
     # Build up ZODB
-    #############################################################        
+    #############################################################
 
-        
+
     def buildTestEnvironment(self,args,kw):
         self.init_phase = 1
         self.dispatcher("funcTestEnvironment",("funcTestEnvironment",1,args,kw))
@@ -210,13 +210,13 @@ class BuildEnv(dispatcher.Dispatcher,unittest.TestCase):
         env = self.th_setup()
 
         if not os.path.exists(dataDir): os.makedirs(dataDir)
-        
+
         os.system("rm -f %s/*" % dataDir)
         zodb = testZODB("%s/Data_orig.fs" % dataDir)
-            
+
         print "parsing and reading mailbox file %s....please wait" % mbox
         tc = testCatalog( mbox,maxFiles )
-            
+
         print "writing Catalog to ZODB"
         zodb.write("catalog" , tc)
 
@@ -224,25 +224,25 @@ class BuildEnv(dispatcher.Dispatcher,unittest.TestCase):
         kw = keywords.Keywords()
         kw.build(mbox,1000)
 
-    
+
         print tc.num_files, "files read"
         print "Initalization complete"
 
         self.th_teardown(env)
 
-        
+
 class testSearches(dispatcher.Dispatcher,unittest.TestCase):
     """ test searches """
 
     def __init__(self,func,*args,**kw):
 
-        unittest.TestCase.__init__(self,func,args,kw) 
+        unittest.TestCase.__init__(self,func,args,kw)
         dispatcher.Dispatcher.__init__(self,func)
 
         self.init_phase = 0
 
         self.setlog( open("dispatcher.log","a") )
-        
+
 
     def setUp(self):
 
@@ -250,19 +250,19 @@ class testSearches(dispatcher.Dispatcher,unittest.TestCase):
         if not os.path.exists("data/work"): os.makedirs("data/work")
         assert os.system("cp %s/Data_orig.fs data/work/Data.fs" % dataDir)==0, \
             "Error while replicating original data"
-        
-        self.zodb 	 	= testZODB("data/work/Data.fs",open=0)
-        self.threads    = {} 
+
+        self.zodb               = testZODB("data/work/Data.fs",open=0)
+        self.threads    = {}
         self.init_zodb_size = self.zodb_size()
 
         kw = keywords.Keywords()
         kw.reload()
-        self.keywords  = kw.keywords()    
+        self.keywords  = kw.keywords()
 
         self.logn("-" * 80)
-        self.logn('treads=%d  searchiterations=%d' % 
+        self.logn('treads=%d  searchiterations=%d' %
                     (numThreads,searchIterations))
-        self.logn('updateiterations=%d  maxfiles=%d' % 
+        self.logn('updateiterations=%d  maxfiles=%d' %
                     (updateIterations,maxFiles))
 
 
@@ -270,7 +270,7 @@ class testSearches(dispatcher.Dispatcher,unittest.TestCase):
         self.log_zodb_size("before",self.init_zodb_size)
         self.log_zodb_size("after ",self.zodb_size())
         del self.zodb
-        self.zodb = self.catalog = None		
+        self.zodb = self.catalog = None
 
     def log_zodb_size(self,s,n):
         self.logn("Size of ZODB (data/work/Data.fs) %s test : %s" % (s,n) )
@@ -285,16 +285,16 @@ class testSearches(dispatcher.Dispatcher,unittest.TestCase):
         if n <1024.0*1024.0: return "%8.3lf KB" % (1.0*n/1024.0)
         if n <1024.0*1024.0*1024.0: return "%8.3lf MB" % (1.0*n/1024.0/1024.0)
 
-        
 
-    #############################################################        
+
+    #############################################################
     # Fulltext test
-    #############################################################        
+    #############################################################
 
 
     def testFulltextIndex(self,args,kw):
         """ benchmark FulltextIndex """
-        self.dispatcher('funcFulltextIndex' , 
+        self.dispatcher('funcFulltextIndex' ,
             ('funcFulltextIndex', kw["numThreads"] , () , {} ) )
 
 
@@ -311,13 +311,13 @@ class testSearches(dispatcher.Dispatcher,unittest.TestCase):
         self.th_teardown(env)
 
 
-    #############################################################        
+    #############################################################
     # Field index test
-    #############################################################        
+    #############################################################
 
     def testFieldIndex(self,args,kw):
         """ benchmark field index"""
-        self.dispatcher('funcFieldIndex' , 
+        self.dispatcher('funcFieldIndex' ,
             ('funcFieldIndex',kw["numThreads"] , () , {} ) )
 
 
@@ -329,21 +329,21 @@ class testSearches(dispatcher.Dispatcher,unittest.TestCase):
         env = self.th_setup()
 
         for i in range(0,searchIterations):
-        
+
             res = cat.searchResults( {"length" : i } )
             for r in res:
                 assert i==r.length , "%s should have size %d but is %s" %  \
                     (r.file_id,i,r.length)
 
         self.th_teardown(env)
-                
-    #############################################################        
+
+    #############################################################
     # Keyword index test
-    #############################################################        
+    #############################################################
 
     def testKeywordIndex(self,args,kw):
         """ benchmark Keyword index"""
-        self.dispatcher('funcKeywordIndex' , 
+        self.dispatcher('funcKeywordIndex' ,
             ('funcKeywordIndex', kw["numThreads"] , () , {} ) )
 
 
@@ -351,22 +351,22 @@ class testSearches(dispatcher.Dispatcher,unittest.TestCase):
         """ benchmark KeywordIndex """
 
         cat,msg_ids = self.get_catalog()
-        
+
         env = self.th_setup()
 
         for kw in self.keywords:
             res = cat.searchResults( {"subject" : kw } )
 #            assert len(res) != 0 , "Search result for keyword '%s' is empty" % kw
-        
+
         self.th_teardown(env)
-       
-    #############################################################        
+
+    #############################################################
     # Field range index test
-    #############################################################        
+    #############################################################
 
     def testFieldRangeIndex(self,args,kw):
         """ benchmark field range index"""
-        self.dispatcher('funcFieldRangeIndex' , 
+        self.dispatcher('funcFieldRangeIndex' ,
             ('funcFieldRangeIndex', kw["numThreads"] , () , {} ) )
 
 
@@ -379,7 +379,7 @@ class testSearches(dispatcher.Dispatcher,unittest.TestCase):
 
         rg = []
         for i in range(searchIterations):
-            m = whrandom.randint(0,10000) 
+            m = whrandom.randint(0,10000)
             n = m + 200
             rg.append((m,n))
 
@@ -394,13 +394,13 @@ class testSearches(dispatcher.Dispatcher,unittest.TestCase):
 
 
 
-    #############################################################        
+    #############################################################
     # Keyword + range index test
-    #############################################################        
+    #############################################################
 
     def testKeywordRangeIndex(self,args,kw):
         """ benchmark Keyword range index"""
-        self.dispatcher('funcKeywordRangeIndex' , 
+        self.dispatcher('funcKeywordRangeIndex' ,
             ('funcKeywordRangeIndex', kw["numThreads"] , () , {} ) )
 
 
@@ -411,15 +411,15 @@ class testSearches(dispatcher.Dispatcher,unittest.TestCase):
 
         rg = []
         for i in range(len(self.keywords)):
-            m = whrandom.randint(0,10000) 
+            m = whrandom.randint(0,10000)
             n = m + 200
             rg.append( (m,n) )
 
         env = self.th_setup()
 
-        results = []            
+        results = []
         for i in range(len(self.keywords)):
-            results.append( cat.searchResults( {"keywords":self.keywords[i], 
+            results.append( cat.searchResults( {"keywords":self.keywords[i],
                                                 "length" : rg[i],
                                                 "length_usage" : "range:min:max" } )
                                             )
@@ -427,13 +427,13 @@ class testSearches(dispatcher.Dispatcher,unittest.TestCase):
         self.th_teardown(env)
 
 
-    #############################################################        
+    #############################################################
     # Test full reindexing
-    #############################################################        
+    #############################################################
 
     def testUpdates(self,args,kw):
         """ benchmark concurrent catalog/uncatalog operations """
-        self.dispatcher("testUpdates" , 
+        self.dispatcher("testUpdates" ,
             ("funcUpdates", kw["numThreads"] , args, kw ))
 
 
@@ -463,7 +463,7 @@ class testSearches(dispatcher.Dispatcher,unittest.TestCase):
                 cat.uncatalog_object(mid)
 
                 if kw.get("commit",1)==1:
-                    get_transaction().commit()            
+                    get_transaction().commit()
                     time.sleep(0.1)
             except ZODB.POSException.ConflictError:
                 uncat_conflicts = uncat_conflicts + 1
@@ -472,14 +472,14 @@ class testSearches(dispatcher.Dispatcher,unittest.TestCase):
                 cat.catalog_object(obj,mid)
 
                 if kw.get("commit",1)==1:
-                    get_transaction().commit()            
+                    get_transaction().commit()
                     time.sleep(0.1)
 
             except ZODB.POSException.ConflictError:
                 cat_conflicts = cat_conflicts + 1
 
         try:
-            get_transaction().commit()            
+            get_transaction().commit()
         except: pass
 
 
@@ -501,30 +501,30 @@ class testSearches(dispatcher.Dispatcher,unittest.TestCase):
         while msg and i<numUpdates:
 
             obj = testMessage(msg)
-   
+
             mid = msg.dict.get("message-id",None)
             if mid:
-                dict[mid] = obj 
+                dict[mid] = obj
                 i = i+1
 
             msg = mb.next()
-       
-        return dict 
-    
+
+        return dict
 
 
-    #############################################################        
+
+    #############################################################
     # Test full reindexing
-    #############################################################        
+    #############################################################
 
     def testReindexing(self,args,kw):
         """ test reindexing of existing data """
-        self.dispatcher("testReindexing" , 
+        self.dispatcher("testReindexing" ,
             ("funcReindexing",kw["numThreads"] , (mbox,1000) , {} ))
 
     def testReindexingAndModify(self,args,kw):
         """ test reindexing of existing data but with modifications"""
-        self.dispatcher("testReindexing" , 
+        self.dispatcher("testReindexing" ,
             ("funcReindexing",kw["numThreads"] , (mbox,1000,1) , {} ))
 
 
@@ -563,13 +563,13 @@ class testSearches(dispatcher.Dispatcher,unittest.TestCase):
         self.th_teardown(env,cat_conflicts=cat_conflicts)
 
 
-    #############################################################        
+    #############################################################
     # Test full reindexing
-    #############################################################        
-    
+    #############################################################
+
     def testIncrementalIndexing(self,args,kw):
         """ testing incremental indexing """
-        self.dispatcher("testIncrementalIndexing" , 
+        self.dispatcher("testIncrementalIndexing" ,
             ("funcReindexing",kw["numThreads"], (mbox2,1000) , {}))
 
 
@@ -581,7 +581,7 @@ class testSearches(dispatcher.Dispatcher,unittest.TestCase):
 
         connection  = self.zodb.db.open()
         root        = connection.root()
-        cat	        = root["catalog"]._catalog
+        cat         = root["catalog"]._catalog
         msg_ids     = root['catalog'].msg_ids
 
         return cat,msg_ids
@@ -594,7 +594,7 @@ def usage(program):
     print "initalize the test catalog:   %s -i -f <maximum number files to use> " % program
     print "to run the basic tests:       %s -b -f <maximum number files to use> " % program
     print "to run the advanced tests:    %s -a -f <maximum number files to use> " % program
-                
+
 
 def main():
 
@@ -606,7 +606,7 @@ def main():
     optsLst = map(lambda x: x[0],opts)
 
     if optsLst==[]: usage(os.path.basename(sys.argv[0])); sys.exit(0)
-    
+
     for k,v in opts:
         if k in ['-h','--help'] : usage(os.path.basename(sys.argv[0])); sys.exit(0)
         if k == "-f":   maxFiles    = string.atoi(v)
@@ -616,7 +616,7 @@ def main():
     if '-i' in optsLst:
         unittest.TextTestRunner().run(get_tests('init'))
 
-            
+
     if '-b' in optsLst:
         unittest.TextTestRunner().run(get_tests('bench1'))
 
@@ -680,8 +680,8 @@ def get_tests(what):
          testSearches("testReindexingAndModify",numThreads=1),
 #        testSearches("testUpdates",numThreads=10,numUpdates=100),
     )
-            
-    init_tests = ( 
+
+    init_tests = (
         BuildEnv("buildTestEnvironment",dataDir,maxFiles) ,
     )
 
@@ -698,13 +698,12 @@ def pdebug():
     test_suite()
 
 def debug():
-   test_suite().debug()
- 
+    test_suite().debug()
+
 def pdebug():
     import pdb
     pdb.run('debug()')
 
 
 if __name__ == '__main__':
-       main()
-
+    main()

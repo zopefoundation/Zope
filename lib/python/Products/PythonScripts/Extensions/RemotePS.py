@@ -8,7 +8,7 @@
 
  foobarsize = s.foo.bar.restricted_exec('len(context.objectIds())')
 '''
- 
+
 from Products.PythonScripts.PythonScript import PythonScript
 from string import join
 

@@ -51,7 +51,7 @@ class TestTimeIndex(TestCase):
         c.manage_addIndex('from', 'TextIndex')
         c.manage_addIndex('date', 'FieldIndex')
         c.manage_addIndex('raw', 'TextIndex')
-        
+
     def tearDown(self):
         try: self.app._delObject('catalogtest')
         except AttributeError: pass
@@ -61,7 +61,7 @@ class TestTimeIndex(TestCase):
         except AttributeError: pass
         self.app = None
         del self.app
-      
+
     def checkTimeBulkIndex(self):
         print
         c = self.app.catalogtest.catalog
@@ -109,7 +109,7 @@ class TestTimeIndex(TestCase):
         assert len(c({'raw':'chris'})) != 0
         assert len(c({'raw':'gghdjkasjdsda'})) == 0
         assert c({'PrincipiaSearchSource':'the*'})
-    
+
     def checkTimeSubcommit(self):
         print
         for x in (None,100,500,1000,10000):
@@ -190,7 +190,7 @@ def out(s):
 
 def test_suite():
     s1 = makeSuite(TestTimeIndex, 'check')
-    
+
     testsuite = TestSuite((s1,))
     return testsuite
 
@@ -199,7 +199,7 @@ def main():
     if not os.path.isfile(mb):
         print "do you want to get the zope.mbox file from lists.zope.org?"
         print "it's required for testing (98MB, ~ 30mins on fast conn)"
-        print "it's also available at korak:/home/chrism/zope.mbox" 
+        print "it's also available at korak:/home/chrism/zope.mbox"
         print "-- type 'Y' or 'N'"
         a = raw_input()
         if lower(a[:1]) == 'y':
@@ -235,8 +235,7 @@ def debug():
     test_suite().debug()
 
 if __name__=='__main__':
-   if len(sys.argv) > 1:
-      globals()[sys.argv[1]]()
-   else:
-      main()
-
+    if len(sys.argv) > 1:
+        globals()[sys.argv[1]]()
+    else:
+        main()
