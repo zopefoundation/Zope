@@ -13,8 +13,8 @@
 __doc__='''short description
 
 
-$Id: SecurityManagement.py,v 1.7 2002/08/14 21:29:07 mj Exp $'''
-__version__='$Revision: 1.7 $'[11:-2]
+$Id: SecurityManagement.py,v 1.8 2003/05/14 21:51:23 shane Exp $'''
+__version__='$Revision: 1.8 $'[11:-2]
 
 def getSecurityManager():
     """Get a security manager, for the current thread.
@@ -22,9 +22,12 @@ def getSecurityManager():
     thread_id=get_ident()
     manager=_managers.get(thread_id, None)
     if manager is None:
-        manager=SecurityManager(
-            thread_id,
-            SecurityContext(SpecialUsers.nobody))
+        nobody = getattr(SpecialUsers, 'nobody', None)
+        if nobody is None:
+            # Initialize SpecialUsers by importing User.py.
+            import User
+            nobody = SpecialUsers.nobody
+        manager = SecurityManager(thread_id, SecurityContext(nobody))
         _managers[thread_id]=manager
 
     return manager
