@@ -85,7 +85,7 @@
 """
 Temporary Folder initialization routines
 
-$Id: __init__.py,v 1.1 2001/11/01 20:18:12 matt Exp $
+$Id: __init__.py,v 1.2 2001/11/02 19:22:42 matt Exp $
 """
 
 import TemporaryFolder
@@ -101,3 +101,4 @@ def initialize(context):
         )
 
     context.registerHelp()
+    context.registerHelpTitle('Zope Help')

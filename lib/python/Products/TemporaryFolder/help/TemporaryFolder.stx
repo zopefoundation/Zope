@@ -1,0 +1,46 @@
+Temporary Folders
+
+  Overview 
+
+    Temporary Folders are Folders which are created out of memory, in such
+    the same way as a RAM disk, for example, which have their contents
+    lost upon shutdown.  To facilitate use of Temporary Folders, they have a
+    mechanism whereby they automatically populate themselves upon startup.
+
+  Creating
+
+    Creating a Temporary Folder is fairly straightforward; one creates them
+    as you would a regular Folder; through the Zope management interface:
+
+      - Specify an id (a name) for the folder
+
+      - Specify an optional title for the folder
+
+    Once created and mounted, Temporary Folders are regular Folder objects.
+    Mounting of the Temporary Folder happens automatically the first time
+    it is accessed.
+
+  Populating
+
+    Temporary Folders will populate themselves with exported objects based
+    on a directory in Zope's var directory.  A directory named from the object
+    with 'Imports' appended to it is examined for files ending with the
+    extension '.zexp'.  Thus, a Temporary Folder named 'tempFolder' would
+    have the directory 'var/tempFolderImports' scanned for .zexp files.
+
+    The Zope administrator may copy exported files from Zope's var directory
+    into the Temporary Folder's Imports directory to have those items added
+    to the Temporary Folder then the Folder is mounted.
+
+    *N.B.* Because only the name (the ID) of the Temporary Folder is considered
+    for importing objects, two Temporary Folders with the same name will
+    be automatically populated with the same items, although each will receive
+    a private copy of those items.
+
+  Interaction with ZEO
+
+    Temporary Folders exist local to the Zope server; thus, each server in
+    a ZEO cluster would have their own private copy of data in a Temporary
+    Folder.  Only temporary data that should be local to a specific Zope
+    instance should go in the Temporary Folder.  Items which need to be
+    shared between Zope servers should not be placed in Temporary Folders.
