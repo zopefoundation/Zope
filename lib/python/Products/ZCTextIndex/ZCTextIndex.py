@@ -84,10 +84,6 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
         chooser.addmany(results.items())
         return chooser.getbest(), len(results)
 
-    def numObjects(self):
-        """Return number of object indexed"""
-        return self.index.length()
-
     ## Pluggable Index APIs ##
 
     def index_object(self, docid, obj, threshold=None):
@@ -133,10 +129,14 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
         get_word = self.lexicon.get_word
         return [get_word(wid) for wid in word_ids]
 
-    ## XXX To which API does this conform? ##
+    ## The ZCatalog Index management screen uses these methods ##
+
+    def numObjects(self):
+        """Return number of unique words in the index"""
+        return self.index.length()
 
     def clear(self):
-        """reinitialize the index"""
+        """reinitialize the index (but not the lexicon)"""
         self.index = self._index_factory(self.lexicon)
 
     ## User Interface Methods ##
