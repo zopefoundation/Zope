@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.72 1998/09/22 16:42:13 jim Exp $'''
-__version__='$Revision: 1.72 $'[11:-2]
+$Id: Application.py,v 1.73 1998/11/17 22:24:50 brian Exp $'''
+__version__='$Revision: 1.73 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys,App.Product, App.ProductRegistry
@@ -239,7 +239,7 @@ def open_bobobase():
 	get_transaction().commit()
 
     # b/c: Ensure that a ProductFolder exists.
-    if not hasattr(app.Control_Panel, 'Products'):
+    if not hasattr(app.Control_Panel.aq_base, 'Products'):
         app.Control_Panel.Products=App.Product.ProductFolder()
         get_transaction().commit()
 
@@ -433,6 +433,10 @@ class Misc_:
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.73  1998/11/17 22:24:50  brian
+# Fixed b/w compatibility test to ensure Product folder is installed so that an
+# existing Products folder wont be found via acquisition
+#
 # Revision 1.72  1998/09/22 16:42:13  jim
 # Added doc string to allow trversal from "..".
 #
