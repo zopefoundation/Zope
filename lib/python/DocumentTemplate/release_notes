@@ -1,5 +1,20 @@
 DocumentTemplate releases
 
+  2.2.1
+
+    This is a bug fix release that fixes one bug:
+
+    - DocumentTemplate would attempt to determine whether values 
+      (other than values of known to be uncallable types) were
+      callable by attempting calls.  If any TypeError or AttributeError
+      was raised, then the value was assumed to be uncallable.  This could
+      mask errors in many cases.
+
+      Now, no attempt is made to catch exceptions when calling objects
+      of known to be callable types.  Attribute errors are ignored 
+      only of the object (of InstanceType or some non-standard type)
+      does not have a '__call__' attribute.
+
   2.2
 
     This release has a number of new features and bug fixes.
