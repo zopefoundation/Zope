@@ -240,6 +240,8 @@ class Transaction(object):
         # commit protocol.
 
         manager = getattr(obj, "_p_jar", obj)
+        if manager is None:
+            raise ValueError("Register with no manager")
         adapter = self._adapters.get(manager)
         if adapter is None:
             if myhasattr(manager, "commit_sub"):
