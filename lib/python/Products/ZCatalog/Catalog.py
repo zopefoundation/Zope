@@ -124,6 +124,8 @@ class Catalog(Item):
                   ('subject', 'TextIndex', 's', None),
                   ('description', 'TextIndex', 's', None),
                   ('date', 'FieldIndex', 'd', None),
+                  ('creator', 'TextIndex', 's', 1),
+                  ('summary', 'TextIndex', 's', 1),
                   ('reviewed', 'FieldIndex', 'i', None),
                   ]
 
@@ -141,11 +143,6 @@ class Catalog(Item):
 
         self._ztable._data.setOrphanIndex('text_content', 'TextIndex',
         call_methods=1)
-
-        self._ztable._data.addComputedField('modified_since',
-                                            '(_.DateTime() - 1)',
-                                            index_type='FieldIndex',
-                                            type='d')
 
         self._ztable.update_database_schema(uindex, utype, call)
 
@@ -259,8 +256,10 @@ class Catalog(Item):
 
         record['subject'] = obj.subject
         record['description'] = obj.description
-        record['summary'] = obj.summary
+        record['summary'] = obj.summary()
         record['reviewed'] = obj.reviewed
+        record['date'] = obj.date
+        record['creator'] = obj.creator()
 
         return record
 
