@@ -85,7 +85,7 @@
 
 """WebDAV support - resource objects."""
 
-__version__='$Revision: 1.36 $'[11:-2]
+__version__='$Revision: 1.37 $'[11:-2]
 
 import sys, os, string, mimetypes, davcmds, ExtensionClass
 from common import absattr, aq_base, urlfix, rfc1123_date
@@ -137,7 +137,10 @@ class Resource(ExtensionClass.Base):
             except: method=None
 
         if method is not None:
-            try: return getSecurityManager().validateValue(method)
+            try:
+                return getSecurityManager().validate(None, object,
+                                                     methodname,
+                                                     method)
             except: pass
 
         raise 'Unauthorized', msg
@@ -296,8 +299,6 @@ class Resource(ExtensionClass.Base):
             self.dav__validate(object, 'DELETE', REQUEST)
             parent._delObject(name)
         parent._setObject(name, ob)
-        #ob=ob.__of__(parent)
-        #ob._postCopy(parent, op=0)
         RESPONSE.setStatus(existing and 204 or 201)
         if not existing:
             RESPONSE.setHeader('Location', dest)
@@ -338,8 +339,11 @@ class Resource(ExtensionClass.Base):
         if existing and flag=='F':
             raise 'Precondition Failed', 'Resource %s exists.' % dest
         try: parent._checkId(name, allow_dup=1)
-        except: raise 'Forbidden', sys.exc_info()[1]
+        except:
+            raise 'Forbidden', sys.exc_info()[1]
         try: parent._verifyObjectPaste(self)
+        except 'Unauthorized':
+            raise 'Unauthorized', sys.exc_info()[1]
         except: raise 'Forbidden', sys.exc_info()[1]
 
         ob=aq_base(self._getCopy(parent))
@@ -350,8 +354,6 @@ class Resource(ExtensionClass.Base):
             self.dav__validate(object, 'DELETE', REQUEST)
             parent._delObject(name)            
         parent._setObject(name, ob)
-        #ob=ob.__of__(parent)
-        #ob._postCopy(parent, op=1)
         RESPONSE.setStatus(existing and 204 or 201)
         if not existing:
             RESPONSE.setHeader('Location', dest)
