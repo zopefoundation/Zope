@@ -6,7 +6,7 @@
 #						 All Rights Reserved.
 #
 
-RCS_ID =  '$Id: http_server.py,v 1.28 2001/07/02 19:44:26 shane Exp $'
+RCS_ID =  '$Id: http_server.py,v 1.29 2001/08/17 13:00:06 andreasjung Exp $'
 
 # python modules
 import os
@@ -165,7 +165,7 @@ class http_request:
     def response (self, code=200):
         message = self.responses[code]
         self.reply_code = code
-        return 'HTTP/%s %d %s' % (self.version, code, message)
+        return 'HTTP/%s %d %s' % (self.version or '1.0', code, message)
         
     def error (self, code):
         self.reply_code = code
