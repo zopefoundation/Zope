@@ -72,7 +72,6 @@ class Results:
 
 		r.__dict__['__init__']=__init__
 		    
-
 	self._class=r
 
 	# OK, we've read meta data, now get line indexes
