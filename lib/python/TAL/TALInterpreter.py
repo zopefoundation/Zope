@@ -91,7 +91,6 @@ import string
 import getopt
 import cgi
 
-from TALVisitor import macroIndexer
 from TALCompiler import TALCompiler
 
 class TALInterpreter:
@@ -218,7 +217,6 @@ def quote(s):
 
 def test():
     from driver import FILE, parsefile
-    from TALCompiler import TALCompiler
     from DummyEngine import DummyEngine
     try:
         opts, args = getopt.getopt(sys.argv[1:], "")
