@@ -1,6 +1,6 @@
 """Access control package"""
 
-__version__='$Revision: 1.14 $'[11:-2]
+__version__='$Revision: 1.15 $'[11:-2]
 
 import Globals
 from Persistence import Persistent
@@ -126,7 +126,7 @@ class UserFolder(Implicit, Persistent, Item):
 	return self._data.keys()
 
     def roleNames(self):
-	return Globals.Bobobase['roles']
+	return self.validRoles()
 
     def validate(self,request,auth,roles=None):
 	if lower(auth[:6])!='basic ':
@@ -245,6 +245,9 @@ class UserFolderHandler:
 
 
 # $Log: User.py,v $
+# Revision 1.15  1997/11/07 17:09:31  brian
+# Fixed validRoles
+#
 # Revision 1.14  1997/10/23 17:35:45  brian
 # Added hasRole method to User objects
 #
