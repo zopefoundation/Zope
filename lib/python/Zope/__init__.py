@@ -164,7 +164,7 @@ def zpublisher_exception_hook(
             # some sane protocol for this, but for now we'll use
             # brute force:
             LOG('Z2 CONFLICT', INFO,
-                'Conflict Error, %s' % REQUEST.get('PATH_INFO', ''))
+                'Competing writes at, %s' % REQUEST.get('PATH_INFO', ''))
             raise ZPublisher.Retry
 
         if (getattr(REQUEST.get('RESPONSE', None), '_error_format', '')
