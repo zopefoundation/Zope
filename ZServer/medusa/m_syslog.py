@@ -222,7 +222,7 @@ if __name__ == '__main__':
         except:
             print 'syslog_client() [%s] ctor threw' % desc
             traceback.print_exc()
-        return
+            return
 
         try:
             client.log( 'testing syslog_client() [%s]' % desc

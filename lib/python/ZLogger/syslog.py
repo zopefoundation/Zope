@@ -215,14 +215,14 @@ if __name__ == '__main__':
 
     def test_client( desc, address=None ):
         try:
-        if address:
-            client = syslog_client( address )
-        else:
-            client = syslog_client()
+            if address:
+                client = syslog_client( address )
+            else:
+                client = syslog_client()
         except:
-        print 'syslog_client() [%s] ctor threw' % desc
+            print 'syslog_client() [%s] ctor threw' % desc
             traceback.print_exc()
-        return
+            return
 
         try:
             client.log( 'testing syslog_client() [%s]' % desc
