@@ -89,10 +89,11 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.67 2000/03/14 17:30:31 brian Exp $'''
-__version__='$Revision: 1.67 $'[11:-2]
+$Id: SimpleItem.py,v 1.68 2000/04/04 22:41:52 jim Exp $'''
+__version__='$Revision: 1.68 $'[11:-2]
 
 import regex, sys, Globals, App.Management, Acquisition
+import AccessControl.Role
 from webdav.Resource import Resource
 from ExtensionClass import Base
 from DateTime import DateTime
@@ -107,6 +108,7 @@ import marshal
 import ZDOM
 
 HTML=Globals.HTML
+_marker=[]
 
 class Item(Base, Resource, CopySource, App.Management.Tabs,
            ZDOM.Element):
@@ -139,6 +141,13 @@ class Item(Base, Resource, CopySource, App.Management.Tabs,
     __propsets__=()
 
     manage_options=()
+
+    # Attributes that must be acquired
+    REQUEST=Acquisition.Acquired
+
+    getPhysicalRoot=Acquisition.Acquired
+    getPhysicalRoot__roles__=()
+    
 
     def title_or_id(self):
         """
@@ -321,6 +330,29 @@ class Item(Base, Resource, CopySource, App.Management.Tabs,
             
         return id
 
+    unrestrictedTraverse__roles__=()
+    def unrestrictedTraverse(self, path, default=_marker):
+        object = self
+        get=getattr
+        N=None
+        M=_marker
+        try:
+            for name in path:
+                t=get(object, '__bobo_traverse__', N)
+                if t is not N:
+                    object=t(N, name)
+                else:
+                    v=get(object, name, M)
+                    if v is not M:
+                        object=v
+                    else:
+                        object=object[name]
+
+            return object
+        except:
+            if default==_marker: raise
+            return default
+
 Globals.default__class_init__(Item)
 
 class Item_w__name__(Item):
@@ -385,7 +417,6 @@ def pretty_tb(t,v,tb):
     return tb
 
 
-import AccessControl.Role
 class SimpleItem(Item, Globals.Persistent,
                  Acquisition.Implicit,
                  AccessControl.Role.RoleManager,
