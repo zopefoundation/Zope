@@ -11,17 +11,19 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.41 1998/01/22 00:15:00 jim Exp $'''
-__version__='$Revision: 1.41 $'[11:-2]
+$Id: Application.py,v 1.42 1998/01/28 23:39:02 brian Exp $'''
+__version__='$Revision: 1.42 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys
-from string import lower, find
+import time, rotor, marshal
+from string import strip, lower, find, rfind, join
 from DateTime import DateTime
 from AccessControl.User import UserFolder
 from App.ApplicationManager import ApplicationManager
-
+from Persistence import Persistent
 from ImageFile import ImageFile
+
 
 class Application(Folder.Folder):
     title    ='Principia'
@@ -128,6 +130,24 @@ class Application(Folder.Folder):
 	return DateTime()
 
 
+class Expired(Persistent):
+    icon='p_/broken'
+
+    def __setstate__(self, s={}):
+	dict=self.__dict__
+	if s.has_key('id'):
+	    dict['id']=s['id']
+	elif s.has_key('__name__'):
+	    dict['id']=s['__name__']
+	else: dict['id']='Unknown'
+	dict['title']='** Expired **'
+
+    def __save__(self):
+	pass
+
+    __inform_commit__=__save__
+
+
 
 
 
@@ -136,7 +156,7 @@ def open_bobobase():
     Bobobase=Globals.Bobobase=Globals.PickleDictionary(Globals.BobobaseName)
 
     product_dir=os.path.join(SOFTWARE_HOME,'lib/python/Products')
-    
+
     install_products()
 
     __traceback_info__=sys.path
@@ -148,10 +168,6 @@ def open_bobobase():
 	Bobobase['Application']=app
 	get_transaction().commit()
 
-    if not Bobobase.has_key('roles'):
-	Bobobase['roles']=('manage',)
-	get_transaction().commit()
-
     # Backward compatibility
     if not hasattr(app, 'Control_Panel'):
 	cpl=ApplicationManager()
@@ -160,6 +176,10 @@ def open_bobobase():
 	get_transaction().commit()
 
     return Bobobase
+
+
+
+
 
 def install_products():
     # Install a list of products into the basic folder class, so
@@ -184,6 +204,10 @@ def install_products():
 		continue
 
 	product=getattr(__import__("Products.%s" % product_name), product_name)
+
+	if product_name not in ['OFSP','MailHost']:
+	    if not lic_check(product_name):
+		continue
 
 	for meta_type in pgetattr(product, 'meta_types', ()):
 	    if product_name=='OFSP': meta_types.insert(0,meta_type)
@@ -233,6 +257,67 @@ def install_products():
 
     Folder.Folder.dynamic_meta_types=tuple(meta_types)
 
+
+
+
+def lic_check(product_name):
+    path_join  =os.path.join
+    product_dir=path_join(SOFTWARE_HOME,'lib/python/Products')
+    package_dir=path_join(product_dir, product_name)
+    bobobase   =Globals.Bobobase
+
+    try: f=open(path_join(package_dir,'%s.lic' % product_name), 'rb')
+    except:
+	try:
+	    product=getattr(__import__("Products.%s" % product_name),
+			product_name)
+	    for s in pgetattr(product, 'classes', ()):
+		p=rfind(s,'.')
+		m='Products.%s.%s' % (product_name, s[:p])
+		c=s[p+1:]
+		__import__(m)
+		setattr(sys.modules[m], c, Expired)
+	except: pass
+	return 0
+
+    dat=f.read()
+    f.close()
+    rot=rotor.newrotor('\357\261\390\247\357\362\306\216\226', 13)
+    dat=rot.decrypt(dat)
+    dat=list(dat)
+    dat.reverse()
+    dat=join(dat,'')
+    dat=marshal.loads(dat)
+    del rot
+    name=dat[0]
+    val =dat[1]
+    if name != product_name:
+	return 0
+    if val is None:
+	return 1
+    else:
+	if not bobobase.has_key('_t_'):
+	    bobobase['_t_']={}
+	    get_transaction().commit()
+	t=bobobase['_t_']
+	if not t.has_key(product_name):
+	    t[product_name]=time.time()
+	    bobobase['_t_']=t
+	    get_transaction().commit()
+	if (t[product_name] + (86400.0 * val)) < time.time():
+	    product=getattr(__import__("Products.%s" % product_name),
+			    product_name)
+	    for s in pgetattr(product, 'classes', ()):
+		p=rfind(s,'.')
+		m='Products.%s.%s' % (product_name, s[:p])
+		c=s[p+1:]
+		__import__(m)
+		setattr(sys.modules[m], c, Expired)
+		return 0
+
+
+
+
 def pgetattr(product, name, default=install_products):
     if hasattr(product, name): return getattr(product, name)
     if hasattr(product, '__init__'):
@@ -258,6 +343,9 @@ class Misc_:
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.42  1998/01/28 23:39:02  brian
+# Added licensing logic
+#
 # Revision 1.41  1998/01/22 00:15:00  jim
 # Added machinery to handle broken objects
 #
