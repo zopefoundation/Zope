@@ -12,7 +12,7 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.87 $'[11:-2]
+__version__='$Revision: 1.88 $'[11:-2]
 
 
 import os, re, math,  DateTimeZone
@@ -632,16 +632,14 @@ class DateTime:
         ac=len(args)
         millisecs = None
 
-        if ac and args[0]==None: 
-            raise self.SyntaxError, None
-        elif ac==10:
+        if ac==10:
             # Internal format called only by DateTime
             yr,mo,dy,hr,mn,sc,tz,t,d,s=args                  
         elif ac == 11:
             # Internal format that includes milliseconds.
             yr,mo,dy,hr,mn,sc,tz,t,d,s,millisecs=args
 
-        elif not args:
+        elif not args or (ac and args[0]==None):
             # Current time, to be displayed in local timezone
             t = time()
             lt = safelocaltime(t)
