@@ -1,71 +1,36 @@
 
 """Folder object
 
-$Id: Folder.py,v 1.38 1998/02/10 18:37:07 jim Exp $"""
+$Id: Folder.py,v 1.39 1998/03/09 19:39:05 jim Exp $"""
 
-__version__='$Revision: 1.38 $'[11:-2]
+__version__='$Revision: 1.39 $'[11:-2]
 
 
 from Globals import HTMLFile
 from ObjectManager import ObjectManager
 from CopySupport import CopyContainer
-from Image import Image, File, ImageHandler
+from Image import Image, File
 from Document import DocumentHandler
-from AccessControl.User import UserFolderHandler
 from AccessControl.Role import RoleManager
 import SimpleItem
 from string import rfind, lower
 from content_types import content_type, find_binary, text_type
 import Globals
 
-class FolderHandler:
-    """ """
-    manage_addFolderForm=HTMLFile('folderAdd', globals())
+manage_addFolderForm=HTMLFile('folderAdd', globals())
 
-    def folderClass(self):
-	return Folder
-	return self.__class__
-
-    def manage_addFolder(self,id,title='',createPublic=0,createUserF=0,
+def manage_addFolder(self,id,title='',createPublic=0,createUserF=0,
 			 REQUEST=None):
-	"""Add a new Folder object"""
-	i=self.folderClass()()
-	i.id=id
-	i.title=title
-	self._setObject(id,i)
-	if createUserF:  i.manage_addUserFolder()
-	if createPublic: i.manage_addDocument(id='index_html',title='')
-	if REQUEST: return self.manage_main(self,REQUEST,update_menu=1)
-
-    def folderIds(self):
-	t=[]
-	for i in self.objectMap():
-	    if i['meta_type']=='Folder': t.append(i['id'])
-	return t
-
-    def folderValues(self):
-	t=[]
-	for i in self.objectMap():
-	    if i['meta_type']=='Folder': t.append(getattr(self,i['id']))
-	return t
-
-    def folderItems(self):
-	t=[]
-	for i in self.objectMap():
-	    if i['meta_type']=='Folder':
-		n=i['id']
-		t.append((n,getattr(self,n)))
-	return t
-
-    test_url___allow_groups__=None
-    def test_url_(self):
-	"""Test connection"""
-	return 'PING'
-
-Globals.default__class_init__(FolderHandler)
+    """Add a new Folder object"""
+    i=self.folderClass()()
+    i.id=id
+    i.title=title
+    self._setObject(id,i)
+    if createUserF:  i.manage_addUserFolder()
+    if createPublic: i.manage_addDocument(id='index_html',title='')
+    if REQUEST: return self.manage_main(self,REQUEST,update_menu=1)
 
 class Folder(ObjectManager,RoleManager,DocumentHandler,
-	     ImageHandler,FolderHandler,UserFolderHandler,
 	     SimpleItem.Item,CopyContainer):
     """ """
     __roles__=['Manager', 'Shared']
@@ -102,14 +67,6 @@ class Folder(ObjectManager,RoleManager,DocumentHandler,
     ('Undo changes',       ['manage_undo_transactions']),
     ('Change permissions', ['manage_access']),
     ('Add objects', ['manage_addObject']),
-    ('Add Documents, Images, and Files',
-     ('manage_addDocumentForm', 'manage_addDocument',
-      'manage_addFileForm', 'manage_addFile',
-      'manage_addImageForm', 'manage_addImage',
-      'PUT')
-     ),
-    ('Add Folders',('manage_addFolderForm', 'manage_addFolder')),
-    ('Add User Folders',('manage_addUserFolder',)),
     ('Delete objects',     ['manage_delObjects']),
     ('Add properties',     ['manage_addProperty']),
     ('Change properties',  ['manage_editProperties']),
@@ -144,11 +101,14 @@ class Folder(ObjectManager,RoleManager,DocumentHandler,
 	except: pass
 	raise KeyError, key
 
-    PUT__roles__='Manager',
-    def PUT(self):
-	# This is here mainly as a hac^H^Hook for holding PUT permissions
-	raise TypeError, 'Directory PUT is not supported'
+    def folderClass(self):
+	return Folder
+	return self.__class__
 
+    test_url___allow_groups__=None
+    def test_url_(self):
+	"""Test connection"""
+	return 'PING'
 
 class PUTer:
     """ """
