@@ -160,9 +160,13 @@ class PCGIPublisher:
         self.StringIO = StringIO
 
         try:
-            from cgi_module_publisher import publish_module
+            from HTTP_ORB import publish_module
         except ImportError:
-            return self.fatalError("unable to import publish_module from cgi_module_publisher")
+            try:
+                from cgi_module_publisher import publish_module
+            except ImportError:
+                return self.fatalError(
+                    "unable to import publish_module from HTTP_ORB")
 
         self.publish_module = publish_module
 
