@@ -1,13 +1,79 @@
-"""Bobo call interface"""
-__version__='$Revision: 1.9 $'[11:-2]
+#!/bin/env python
+############################################################################## 
+#
+#     Copyright 
+#
+#       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
+#       Street, Suite 300, Fredericksburg, Virginia 22401 U.S.A. All
+#       rights reserved.  Copyright in this software is owned by DCLC,
+#       unless otherwise indicated. Permission to use, copy and
+#       distribute this software is hereby granted, provided that the
+#       above copyright notice appear in all copies and that both that
+#       copyright notice and this permission notice appear. Note that
+#       any product, process or technology described in this software
+#       may be the subject of other Intellectual Property rights
+#       reserved by Digital Creations, L.C. and are not licensed
+#       hereunder.
+#
+#     Trademarks 
+#
+#       Digital Creations & DCLC, are trademarks of Digital Creations, L.C..
+#       All other trademarks are owned by their respective companies. 
+#
+#     No Warranty 
+#
+#       The software is provided "as is" without warranty of any kind,
+#       either express or implied, including, but not limited to, the
+#       implied warranties of merchantability, fitness for a particular
+#       purpose, or non-infringement. This software could include
+#       technical inaccuracies or typographical errors. Changes are
+#       periodically made to the software; these changes will be
+#       incorporated in new editions of the software. DCLC may make
+#       improvements and/or changes in this software at any time
+#       without notice.
+#
+#     Limitation Of Liability 
+#
+#       In no event will DCLC be liable for direct, indirect, special,
+#       incidental, economic, cover, or consequential damages arising
+#       out of the use of or inability to use this software even if
+#       advised of the possibility of such damages. Some states do not
+#       allow the exclusion or limitation of implied warranties or
+#       limitation of liability for incidental or consequential
+#       damages, so the above limitation or exclusion may not apply to
+#       you.
+#  
+#
+# If you have questions regarding this software, contact:
+#
+#   Digital Creations, L.C.
+#   910 Princess Ann Street
+#   Fredericksburge, Virginia  22401
+#
+#   info@digicool.com
+#
+#   (540) 371-6909
+#
+############################################################################## 
+__doc__="""Bobo call interface"""
+__version__='$Revision: 1.10 $'[11:-2]
 
-import sys,regex
-from httplib import HTTP
+import sys,regex,socket,mimetools
+from httplib import HTTP, replyprog
+from os import getpid
 from time import time
+from rand import rand
+from regsub import gsub
 from base64 import encodestring
 from urllib import urlopen, quote
-from string import split,atoi,join,rfind,splitfields
-from regsub import gsub
+from types import FileType,ListType,DictType,TupleType
+from string import strip,split,atoi,join,rfind,splitfields,joinfields
+
+
+
+
+
+
 
 def marshal_float(n,f): return '%s:float=%s' % (n,f)
 def marshal_int(n,f):   return '%s:int=%s' % (n,f)
@@ -172,6 +238,227 @@ class RemoteMethod:
 
 
 
+
+# This section added for multipart/form-data
+# file upload support...
+
+class MultiPart:
+    def __init__(self,*args):
+        c=len(args)
+        if c==1:    name,val=None,args[0]
+        elif c==2:  name,val=args[0],args[1]
+        else:       raise ValueError, 'Invalid arguments'
+
+
+        h={'Content-Type':              {'_v':''},
+           'Content-Transfer-Encoding': {'_v':''},
+           'Content-Disposition':       {'_v':''},}
+        dt=type(val)
+        b=t=None
+
+        if dt==DictType:
+	    t=1
+            b=self.boundary()
+            d=[]
+            h['Content-Type']['_v']='multipart/form-data; boundary=%s' % b
+            for n,v in val.items(): d.append(MultiPart(n,v))
+
+        elif (dt==ListType) or (dt==TupleType):
+            raise ValueError, 'Sorry, nested multipart is not done yet!'
+
+        elif dt==FileType:
+            fn=gsub('\\\\','/',val.name)
+            fn=fn[(rfind(fn,'/')+1):]
+            ex=fn[(rfind(fn,'.')+1):]
+            try:    ct=self._extmap[ex]
+            except: ct=self._extmap['']
+            try:    ce=self._encmap[ct]
+            except: ce=''
+
+            h['Content-Disposition']['_v']      ='form-data'
+            h['Content-Disposition']['name']    ='"%s"' % name
+            h['Content-Disposition']['filename']='"%s"' % fn
+            h['Content-Transfer-Encoding']['_v']=ce
+            h['Content-Type']['_v']             =ct
+            d=val.read()
+
+        else:
+            h['Content-Disposition']['_v']='form-data'
+            h['Content-Disposition']['name']='"%s"' % name
+            d=str(val)
+
+        self._headers =h
+        self._data    =d
+        self._boundary=b
+        self._top     =t
+
+
+    def boundary(self):
+        return '%s_%s_%s' % (int(time()), getpid(), rand())
+
+
+    def render(self):
+        h=self._headers
+        s=[]
+
+	if self._top:
+            for n,v in h.items():
+                if v['_v']:
+                    s.append('%s: %s' % (n,v['_v']))
+                    for k in v.keys():
+                        if k != '_v': s.append('; %s=%s' % (k, v[k]))
+                    s.append('\n')
+            p=[]
+            t=[]
+            b=self._boundary
+            for d in self._data: p.append(d.render())
+            t.append('--%s\n' % b)
+            t.append(joinfields(p,'\n--%s\n' % b))
+            t.append('\n--%s--\n' % b)
+            t=joinfields(t,'')
+            s.append('Content-Length: %s\n\n' % len(t))
+            s.append(t)
+            return joinfields(s,'')
+
+	else:
+            for n,v in h.items():
+                if v['_v']:
+                    s.append('%s: %s' % (n,v['_v']))
+                    for k in v.keys():
+                        if k != '_v': s.append('; %s=%s' % (k, v[k]))
+                    s.append('\n')
+            s.append('\n')
+
+            if self._boundary:
+	        p=[]
+                b=self._boundary
+                for d in self._data: p.append(d.render())
+	        s.append('--%s\n' % b)
+                s.append(joinfields(p,'\n--%s\n' % b))
+                s.append('\n--%s--\n' % b)
+                return joinfields(s,'')
+            else:
+                return joinfields(s,'')+self._data
+
+
+    _extmap={'':     'text/plain',
+             'rdb':  'text/plain',
+             'html': 'text/html',
+             'dtml': 'text/html',
+             'htm':  'text/html',
+             'dtm':  'text/html',
+             'gif':  'image/gif',
+             'jpg':  'image/jpeg',
+             'exe':  'application/octet-stream',
+             }
+
+    _encmap={'image/gif': 'binary',
+             'image/jpg': 'binary',
+             'application/octet-stream': 'binary',
+             }
+
+
+
+
+class mpRemoteMethod:
+    username=password=''
+    def __init__(self,url,*args):
+	while url[-1:]=='/': url=url[:-1]
+	self.url=url
+	self.headers={}
+	self.func_name=url[rfind(url,'/')+1:]
+	self.__dict__['__name__']=self.func_name
+	self.func_defaults=()
+	
+	self.args=args
+	if urlregex.match(url) >= 0:
+	    host,port,rurl=urlregex.group(1,2,3)
+	    if port: port=atoi(port[1:])
+	    else: port=80
+	    self.host=host
+	    self.port=port
+	    self.rurl=rurl
+	else: raise ValueError, url
+
+
+    type2suffix={type(1.0): ':float',
+		 type(1):   ':int',
+		 type(1L):  ':long',
+		 type([]):  ':list',
+		 type(()):  ':tuple',
+		 }
+
+    def __call__(self,*args,**kw):
+	for i in range(len(args)):
+	    try:
+		k=self.args[i]
+		if kw.has_key(k): raise TypeError, 'Keyword arg redefined'
+		kw[k]=args[i]
+	    except IndexError:    raise TypeError, 'Too many arguments'
+
+	d={}
+	smap=self.type2suffix
+	for k,v in kw.items():
+	    s=''
+	    if ':' not in k:
+	        try:    s=smap(type(v))
+	        except: pass
+	    d['%s%s' % (k,s)]=v
+
+        rq=[('POST %s HTTP/1.0' % self.rurl),]
+	for n,v in self.headers.items():
+	    rq.append('%s: %s' % (n,v))
+	if self.username and self.password:
+	    c=gsub('\012','',encodestring('%s:%s' % (
+		             self.username,self.password)))
+	    rq.append('Authorization: Basic %s' % c)
+        rq.append(MultiPart(d).render())
+        rq=joinfields(rq,'\n')
+
+	try:
+            sock=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+            sock.connect(self.host,self.port)
+            sock.send(rq)
+            reply=sock.makefile('rb')
+            sock=None
+            line=reply.readline()
+	    if replyprog.match(line) < 0:
+		raise 'BadReply','Bad reply from server'
+            ec,em=replyprog.group(1,2)
+            ec=atoi(ec)
+            em=strip(em)
+            headers=mimetools.Message(reply,0)
+            response=reply.read()
+	except:
+	    raise NotAvailable, \
+		  RemoteException(NotAvailable,sys.exc_value,
+				  self.url,'<MultiPart Form>')
+		
+	if ec==200: return (headers,response)
+	else:
+	    try:    v=headers.dict['bobo-exception-value']
+	    except: v=ec
+	    try:    f=headers.dict['bobo-exception-file']
+	    except: f='Unknown'
+	    try:    l=headers.dict['bobo-exception-line']
+	    except: l='Unknown'
+	    try:    t=exceptmap[headers.dict['bobo-exception-type']]
+	    except:
+		if   ec >= 400 and ec < 500: t=NotFound
+		elif ec == 503:              t=NotAvailable
+		else:                        t=ServerError
+	    raise t, RemoteException(t,v,f,l,self.url,'<MultiPart Form>',
+				     ec,em,response)
+
+
+
+
+
+
+
+
+
+
 Function=RemoteMethod
 
 def ErrorTypes(code):
@@ -254,6 +541,10 @@ if __name__ == "__main__": main()
 
 #
 # $Log: Client.py,v $
+# Revision 1.10  1997/06/06 14:26:32  brian
+# Added multipart/form-data support with a new mpRemoteMethod object
+# which allows file upload via bci.
+#
 # Revision 1.9  1997/05/05 21:58:20  brian
 # Worked around weird problem where python didnt want to assign to
 # __name__ in RemoteMethod's __init__
