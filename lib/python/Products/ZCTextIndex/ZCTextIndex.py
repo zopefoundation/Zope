@@ -44,7 +44,7 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
         {'label': 'Settings', 'action': 'manage_main'},
     )
     
-    query_options = ['query', 'nbest']
+    query_options = ['query']
 
     def __init__(self, id, extra, caller):
         self.id = id
