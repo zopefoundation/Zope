@@ -41,6 +41,9 @@ def setConfiguration(cfg):
     global _config
     _config = cfg
 
+    if cfg is None:
+        return
+	
     from App import FindHomes
     import __builtin__
     __builtin__.CLIENT_HOME = FindHomes.CLIENT_HOME = cfg.clienthome
