@@ -87,7 +87,7 @@
 An implementation of a generic TALES engine
 """
 
-__version__='$Revision: 1.17 $'[11:-2]
+__version__='$Revision: 1.18 $'[11:-2]
 
 import re, sys, ZTUtils
 from MultiMapping import MultiMapping
@@ -269,6 +269,8 @@ class Context:
 
     def setRepeat(self, name, expr):
         expr = self.evaluate(expr)
+        if not expr:
+            return self._engine.Iterator(name, (), self)
         it = self._engine.Iterator(name, expr, self)
         old_value = self.repeat_vars.get(name)
         self._scope_stack[-1].append((name, old_value))

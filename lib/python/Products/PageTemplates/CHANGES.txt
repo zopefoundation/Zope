@@ -8,5 +8,7 @@ Page Template changes
 
       Features Added
 
+        - Allow any false value in tal:repeat to act as an empty sequence.
+
       Bugs Fixed
 
