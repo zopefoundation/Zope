@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Document objects."""
 
-__version__='$Revision: 1.41 $'[11:-2]
+__version__='$Revision: 1.42 $'[11:-2]
 from DocumentTemplate.DT_Util import InstanceDict, TemplateDict
 from ZPublisher.Converters import type_converters
 from Globals import HTML, DTMLFile, MessageDialog
@@ -100,6 +100,7 @@ from AccessControl import getSecurityManager
 
 done='done'
 
+_marker = []  # Create a new marker object.
 
 class DTMLDocument(PropertyManager, DTMLMethod):
     """DTML Document objects are DocumentTemplate.HTML objects that act
@@ -141,6 +142,7 @@ class DTMLDocument(PropertyManager, DTMLMethod):
         self.title=str(title)
         if type(data) is not type(''): data=data.read()
         self.munge(data)
+        self.ZCacheable_invalidate()
         if REQUEST:
             message="Content changed."
             return self.manage_main(self,REQUEST,manage_tabs_message=message)
@@ -150,6 +152,7 @@ class DTMLDocument(PropertyManager, DTMLMethod):
         self._validateProxy(REQUEST)
         if type(file) is not type(''): file=file.read()
         self.munge(file)
+        self.ZCacheable_invalidate()
         if REQUEST:
             message="Content uploaded."
             return self.manage_main(self,REQUEST,manage_tabs_message=message)
@@ -157,6 +160,13 @@ class DTMLDocument(PropertyManager, DTMLMethod):
     def __call__(self, client=None, REQUEST={}, RESPONSE=None, **kw):
         """Render the document given a client object, REQUEST mapping,
         Response, and key word arguments."""
+
+        if not self._cache_namespace_keys:
+            data = self.ZCacheable_get(default=_marker)
+            if data is not _marker:
+                # Return cached results.
+                return data
+
         kw['document_id']   =self.getId()
         kw['document_title']=self.title
         if hasattr(self, 'aq_explicit'):
@@ -170,12 +180,17 @@ class DTMLDocument(PropertyManager, DTMLMethod):
             if client is None:
                 # Called as subtemplate, so don't need error propigation!
                 r=apply(HTML.__call__, (self, bself, REQUEST), kw)
-                if RESPONSE is None: return r
-                return decapitate(r, RESPONSE)
+                if RESPONSE is None: result = r
+                else: result = decapitate(r, RESPONSE)
+                if not self._cache_namespace_keys:
+                    self.ZCacheable_set(result)
+                return result
 
             r=apply(HTML.__call__, (self, (client, bself), REQUEST), kw)
-            if type(r) is not type(''): return r
-            if RESPONSE is None: return r
+            if type(r) is not type('') or RESPONSE is None:
+                if not self._cache_namespace_keys:
+                    self.ZCacheable_set(r)
+                return r
 
         finally: security.removeContext(self)
 
@@ -186,8 +201,10 @@ class DTMLDocument(PropertyManager, DTMLMethod):
             else:
                 c, e=guess_content_type(self.__name__, r)
             RESPONSE.setHeader('Content-Type', c)
-        return decapitate(r, RESPONSE)
-
+        result = decapitate(r, RESPONSE)
+        if not self._cache_namespace_keys:
+            self.ZCacheable_set(result)
+        return result
 
 
 Globals.default__class_init__(DTMLDocument)
