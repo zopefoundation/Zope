@@ -5,6 +5,7 @@
   packages anyway.
 - Removed warnhook.py, we now use the one from ZODB.tests.
 - Removed doctest.py, we now use the one from zope.testing.
+- Removed dochttp.py + test, we now use the one from zope.app.tests.
 
 0.9.6
 - Dropped support for Zope 2.5 as it lacks the setSecurityManager() API.
