@@ -416,7 +416,6 @@ class Catalog(Persistent, Acquisition.Implicit):
                 append(LazyMap(self.__getitem__, rs))
             else:
                 for k, intset in sort_index._index.items():
-                    __traceback_info__=intset, intset.__class__
                     intset=intset.intersection(rs)
                     if intset: 
                         append((k,LazyMap(self.__getitem__, intset)))
