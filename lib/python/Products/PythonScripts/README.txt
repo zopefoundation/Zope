@@ -62,7 +62,7 @@ Python Scripts
  
            This is because that package/module would have to be imported for its
            included security assertions to take effect, but to do
-	   that would require importing a module without any security
+           that would require importing a module without any security
            declarations, which defeats the point of the restricted
            python environment.
 
@@ -71,5 +71,5 @@ Python Scripts
            asserting, among other things, that it is safe for Zope to check 
            that package/module for security assertions. As a result, please 
            be careful when place packages or modules that are not Zope Products 
-	   in the Products directory.
+           in the Products directory.
         
