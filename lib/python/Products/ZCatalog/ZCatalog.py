@@ -160,7 +160,7 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
           
           'manage_catalogReindex', 'manage_catalogFoundItems',
           'manage_catalogClear', 'manage_addColumn', 'manage_delColumns',
-          'manage_addIndex', 'manage_delIndexs', 'manage_main',], 
+          'manage_addIndex', 'manage_delIndexes', 'manage_main',], 
          ['Manager']),
 
          ('Search ZCatalog',
