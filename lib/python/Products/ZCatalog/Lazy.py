@@ -161,7 +161,8 @@ class LazyMap(Lazy):
 
 class LazyFilter(Lazy):
     # Act like a sequence, but get data from a filtering process.
-    # Don't access data until necessary
+    # Don't access data until necessary. Only data for which test(data) 
+    # returns true will be considered part of the set.
 
     def __init__(self, test, seq):
         self._seq=seq
@@ -202,7 +203,10 @@ class LazyFilter(Lazy):
 
 class LazyMop(Lazy):
     # Act like a sequence, but get data from a filtering process.
-    # Don't access data until necessary
+    # Don't access data until necessary. Only data for which test(data) 
+    # returns true will be considered part of the set. Exceptions raised
+    # in the test method are ignored and treated like test(data) return a
+    # false value.
 
     def __init__(self, test, seq):
         self._seq=seq
