@@ -1,6 +1,6 @@
 """Image object"""
 
-__version__='$Revision: 1.40 $'[11:-2]
+__version__='$Revision: 1.41 $'[11:-2]
 
 import Globals
 from Globals import HTMLFile, MessageDialog
@@ -36,7 +36,7 @@ class File(Persistent,Implicit,RoleManager,Item_w__name__):
 
     manage_options=({'label':'Edit', 'action':'manage_main'},
 		    {'label':'Upload', 'action':'manage_uploadForm'},
-		    {'label':'View', 'action':'view_image_or_file'},
+		    {'label':'View', 'action':''},
 		    {'label':'Security', 'action':'manage_access'},
 		   )
 
@@ -180,6 +180,12 @@ class Image(File):
     """
     meta_type='Image'
     icon     ='p_/image'
+
+    manage_options=({'label':'Edit', 'action':'manage_main'},
+		    {'label':'Upload', 'action':'manage_uploadForm'},
+		    {'label':'View', 'action':'view_image_or_file'},
+		    {'label':'Security', 'action':'manage_access'},
+		   )
 
     manage_editForm  =HTMLFile('imageEdit',globals(),Kind='Image',kind='image')
     view_image_or_file =HTMLFile('imageView',globals())
