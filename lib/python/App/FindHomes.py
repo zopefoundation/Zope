@@ -13,9 +13,9 @@
 
 """Commonly used utility functions."""
 
-__version__='$Revision: 1.7 $'[11:-2]
+__version__='$Revision: 1.8 $'[11:-2]
 
-import os, sys, Products, string
+import os, sys, Products
 from Common import package_home
 path_join = os.path.join
 path_split = os.path.split
@@ -63,7 +63,7 @@ ip=path_join(INSTANCE_HOME, 'Products')
 ippart = 0
 ppath = Products.__path__
 if os.path.isdir(ip) and ip not in ppath:
-    disallow=string.lower(os.environ.get('DISALLOW_LOCAL_PRODUCTS',''))
+    disallow=os.environ.get('DISALLOW_LOCAL_PRODUCTS','').lower()
     if disallow in ('no', 'off', '0', ''):
         ppath.insert(0, ip)
         ippart = 1
@@ -71,14 +71,14 @@ if os.path.isdir(ip) and ip not in ppath:
 ppathpat = os.environ.get('PRODUCTS_PATH', None)
 if ppathpat is not None:
     psep = os.pathsep
-    if string.find(ppathpat, '%(') >= 0:
-        newppath = string.split(ppathpat % {
-            'PRODUCTS_PATH': string.join(ppath, psep),
-            'SOFTWARE_PRODUCTS': string.join(ppath[ippart:], psep),
+    if ppathpat.find('%(') >= 0:
+        newppath = (ppathpat % {
+            'PRODUCTS_PATH': psep.join(ppath ),
+            'SOFTWARE_PRODUCTS': psep.join(ppath[ippart:] ),
             'INSTANCE_PRODUCTS': ip,
-            }, psep)
+            }).split(psep)
     else:
-        newppath = string.split(ppathpat, psep)
+        newppath = ppathpat.split(psep)
     del ppath[:]
     for p in filter(None, newppath):
         p = os.path.abspath(p)

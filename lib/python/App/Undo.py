@@ -12,12 +12,11 @@
 ##############################################################################
 __doc__='''short description
 
-$Id: Undo.py,v 1.27 2001/11/28 15:50:52 matt Exp $'''
-__version__='$Revision: 1.27 $'[11:-2]
+$Id: Undo.py,v 1.28 2002/02/07 17:37:10 andreasjung Exp $'''
+__version__='$Revision: 1.28 $'[11:-2]
 
 import Globals, ExtensionClass
 from DateTime import DateTime
-from string import atof, find, atoi, split, rfind, join
 from AccessControl import getSecurityManager
 import base64
 
@@ -99,7 +98,7 @@ class UndoSupport(ExtensionClass.Base):
             desc = d['description']
             tid=d['id']
             if desc:
-                desc = split(desc)
+                desc = desc.split()
                 d1=desc[0]
                 desc = join(desc[1:])
                 if len(desc) > 60: desc = desc[:56]+' ...'
@@ -116,7 +115,7 @@ class UndoSupport(ExtensionClass.Base):
         """
         undo=Globals.UndoManager.undo
         for tid in transaction_info:
-            tid=split(tid)
+            tid=tid.split()
             if tid:
                 get_transaction().note("Undo %s" % join(tid[1:]))
                 tid=decode64(tid[0])

@@ -19,7 +19,7 @@ from HelpSys import HelpTopic, APIHelpTopic
 from HelpSys.HelpSys import ProductHelp
 from FactoryDispatcher import FactoryDispatcher
 from zLOG import LOG, WARNING
-import string, os.path, re
+import os.path, re
 import stat
 from DateTime import DateTime
 from types import ListType, TupleType
@@ -210,8 +210,8 @@ class ProductContext:
             
         key="%s/%s" % (module, name)
 
-        if module[:9]=='Products.': module=string.split(module,'.')[1]
-        else: module=string.split(module,'.')[0]
+        if module[:9]=='Products.': module=module.split('.')[1]
+        else: module=module.split('.')[0]
             
         info="%s: %s" % (module, name)
 
@@ -293,7 +293,7 @@ class ProductContext:
 
         for file in os.listdir(path):
             ext=os.path.splitext(file)[1]
-            ext=string.lower(ext)
+            ext=ext.lower()
             if ext in ('.dtml',):
                 contents = open(os.path.join(path,file),'rb').read()
                 m = title_re.search(contents)
@@ -313,7 +313,7 @@ class ProductContext:
                 ht=HelpTopic.TextTopic(file, title, os.path.join(path,file))
                 self.registerHelpTopic(file, ht)
             elif ext in ('.stx', '.txt'):
-                title=string.split(open(os.path.join(path,file),'rb').readline(), ':')[0]
+                title=(open(os.path.join(path,file),'rb').readline()).split(':')[0]
                 ht=HelpTopic.STXTopic(file, title, os.path.join(path, file))
                 self.registerHelpTopic(file, ht)
             elif ext in ('.jpg', '.gif', '.png'):

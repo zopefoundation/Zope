@@ -11,7 +11,7 @@
 # 
 ##############################################################################
 
-import os,sys,string,re
+import os,sys,re
 
 v=sys.version_info
 

@@ -12,12 +12,11 @@
 ##############################################################################
 '''
 Functions for refreshing products.
-$Id: RefreshFuncs.py,v 1.3 2001/11/28 15:50:52 matt Exp $
+$Id: RefreshFuncs.py,v 1.4 2002/02/07 17:37:10 andreasjung Exp $
 '''
 
 import os, sys
 from time import time
-from string import split, join
 import Products
 from ExtensionClass import Base
 from Globals import PersistentMapping
@@ -255,7 +254,7 @@ def setupModTimes(productid):
         exists = os.path.exists
 
         for name, module in modlist:
-            splitname = split(name, '.')[2:]
+            splitname = name.split( '.')[2:]
             if not splitname:
                 filename = '__init__'
             else:

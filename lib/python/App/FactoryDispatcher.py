@@ -14,7 +14,6 @@
 
 # Implement the manage_addProduct method of object managers
 import Acquisition, sys, Products
-from string import rfind
 from AccessControl.PermissionMapping import aqwrap
 from AccessControl.Owned import UnownableOwner
 
@@ -53,8 +52,8 @@ class FactoryDispatcher(Acquisition.Implicit):
                 v=REQUEST['URL']
             except KeyError: pass
             else:
-                v=v[:rfind(v,'/')]
-                self._u=v[:rfind(v,'/')]
+                v=v[:v.rfind('/')]
+                self._u=v[:v.rfind('/')]
 
     def Destination(self):
         "Return the destination for factory output"

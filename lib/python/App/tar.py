@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__='''Simple module for writing tar files
 
-$Id: tar.py,v 1.4 2001/11/28 15:50:53 matt Exp $'''
-__version__='$Revision: 1.4 $'[11:-2]
+$Id: tar.py,v 1.5 2002/02/07 17:37:10 andreasjung Exp $'''
+__version__='$Revision: 1.5 $'[11:-2]
 
 import sys, time, zlib
 try:
@@ -21,8 +21,6 @@ try:
 except:
     from struct import pack
     
-
-from string import find, join
 
 def oct8(i):
     i=oct(i)
@@ -45,7 +43,7 @@ class TarEntry:
         "Initialize a Tar archive entry"
         self.data=data
         if mtime is None: mtime=int(time.time())
-        header=join([
+        header=''.join([
             pad(path,      100),
             oct8(mode),
             oct8(uid),
@@ -63,7 +61,7 @@ class TarEntry:
             '000000 \0',
             pad(prefix,    155),
             '\0'*12,
-            ], '')
+            ])
         if len(header) != 512: raise 'Bad Header Length', len(header)
         header=(header[:148]+
                 oct8(reduce(lambda a,b: a+b, map(ord,header)))+
@@ -82,7 +80,7 @@ def tar(entries):
     for name, data in entries:
         ra(str(TarEntry(name,data)))
     ra('\0'*1024)
-    return join(r,'')
+    return ''.join(r)
 
 def tgz(entries):
     c=zlib.compressobj()
@@ -93,7 +91,7 @@ def tgz(entries):
         ra(compress(str(TarEntry(name,data))))
     ra(compress('\0'*1024))
     ra(c.flush())
-    return join(r,'')
+    return ''.join(r)
 
 class tgzarchive:
 
@@ -135,4 +133,4 @@ class gzFile:
         append(self._c.flush())
         append(pack("<i", self._crc))
         append(pack("<i", self._l))
-        return join(r,'')
+        return ''.join(r)

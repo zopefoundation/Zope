@@ -14,10 +14,9 @@ __doc__='''Standard routines for handling extensions.
 
 Extensions currently include external methods and pluggable brains.
 
-$Id: Extensions.py,v 1.17 2001/11/28 15:50:52 matt Exp $'''
-__version__='$Revision: 1.17 $'[11:-2]
+$Id: Extensions.py,v 1.18 2002/02/07 17:37:10 andreasjung Exp $'''
+__version__='$Revision: 1.18 $'[11:-2]
 
-from string import find, split
 import os, zlib, rotor, imp
 import Products
 path_split=os.path.split
@@ -79,7 +78,7 @@ def getPath(prefix, name, checkProduct=1, suffixes=('',)):
         'The file name, %s, should be a simple file name' % name)
 
     if checkProduct:
-       l = find(name, '.')
+       l = name.find('.')
        if l > 0:
            p = name[:l]
            n = name[l + 1:]
@@ -128,7 +127,7 @@ def getObject(module, name, reload=0,
         m=binmod.__dict__
 
     elif p[-4:]=='.pyp':
-        prod_id=split(module, '.')[0]
+        prod_id=module.split('.')[0]
         data=zlib.decompress(
             rotor.newrotor(prod_id +' shshsh').decrypt(open(p,'rb').read())
             )

@@ -11,10 +11,10 @@
 # 
 ##############################################################################
 __doc__="""System management components"""
-__version__='$Revision: 1.77 $'[11:-2]
+__version__='$Revision: 1.78 $'[11:-2]
 
 
-import sys,os,time,string,Globals, Acquisition, os, Undo
+import sys,os,time,Globals, Acquisition, os, Undo
 from Globals import DTMLFile
 from OFS.ObjectManager import ObjectManager
 from OFS.Folder import Folder
@@ -25,7 +25,7 @@ from OFS import SimpleItem
 from App.Dialogs import MessageDialog
 from Product import ProductFolder
 from version_txt import version_txt
-from StringIO import StringIO
+from cStringIO import StringIO
 from AccessControl import getSecurityManager
 import zLOG
 
@@ -360,7 +360,6 @@ class ApplicationManager(Folder,CacheManager):
         path_join=os.path.join
         isdir=os.path.isdir
         exists=os.path.exists
-        strip=string.strip
 
         product_dir=path_join(SOFTWARE_HOME,'Products')
         product_names=os.listdir(product_dir)
@@ -380,7 +379,7 @@ class ApplicationManager(Folder,CacheManager):
                 file=open(version_txt, 'r')
                 data=file.readline()
                 file.close()
-                info.append(strip(data))
+                info.append(data.strip())
         return info
 
 

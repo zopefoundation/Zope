@@ -13,10 +13,9 @@
 
 """Commonly used utility functions."""
 
-__version__='$Revision: 1.10 $'[11:-2]
+__version__='$Revision: 1.11 $'[11:-2]
 
 import sys, os, time
-from string import rfind
 
 
 # These are needed because the various date formats below must
@@ -98,7 +97,7 @@ def package_home(globals_dict):
     if hasattr(m,'__path__'):
         r=m.__path__[0]
     elif "." in __name__:
-        r=sys.modules[__name__[:rfind(__name__,'.')]].__path__[0]
+        r=sys.modules[__name__[:__name__.rfind('.')]].__path__[0]
     else:
         r=__name__
     return os.path.join(os.getcwd(), r)

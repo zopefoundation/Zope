@@ -34,13 +34,12 @@
 #   on restart if there is still a product directory.
 
 
-import Globals, OFS.Folder, OFS.SimpleItem, os, string, Acquisition, Products
+import Globals, OFS.Folder, OFS.SimpleItem, os,  Acquisition, Products
 import re, zlib, Globals, cPickle, marshal, rotor
 import ZClasses, ZClasses.ZClass, AccessControl.Owned
 from urllib import quote
 
 from OFS.Folder import Folder
-from string import atoi, find, strip, join
 from Factory import Factory
 from Permission import PermissionManager
 import ZClasses, ZClasses.ZClass
@@ -180,7 +179,7 @@ class Product(Folder, PermissionManager):
         "Set the product up to create a distribution and give a link"
         if self.__dict__.has_key('manage_options'):
             raise TypeError, 'This product is <b>not</b> redistributable.'
-        self.version=version=strip(version)
+        self.version=version=version.strip()
         self.configurable_objects_=configurable_objects
         self.redistributable=redistributable
         RESPONSE.redirect('Distributions/%s-%s.tar.gz' %
@@ -256,7 +255,7 @@ class Product(Folder, PermissionManager):
 
         def __bobo_traverse__(self, REQUEST, name):
             if name[-7:] != '.tar.gz': raise 'Invalid Name', name
-            l=find(name,'-')
+            l=name.find('-')
             id, version = name[:l], name[l+1:-7]
             product=self.aq_parent
             if product.id==id and product.version==version:
@@ -425,7 +424,7 @@ class CompressedOutputFile:
 
     def getdata(self):
         self._r.append(self._rot.encryptmore(self._c.flush()))
-        return join(self._r,'')
+        return ''.join(self._r)
 
 class CompressedInputFile:
     _done=0
@@ -459,10 +458,10 @@ class CompressedInputFile:
         return r
 
     def readline(self):
-        l=find(self._b, '\n')
+        l=self._b.find('\n')
         while l < 0 and not self._done:
             self._next()
-            l=find(self._b, '\n')
+            l=self._b.find('\n')
         if l < 0: l=len(self._b)
         else: l=l+1
         r=self._b[:l]
@@ -488,7 +487,7 @@ def initializeProduct(productp, name, home, app):
     if hasattr(productp, '__import_error__'): ie=productp.__import_error__
     else: ie=None
 
-    try: fver=strip(open(home+'/version.txt').read())
+    try: fver=open(home+'/version.txt').read().strip()
     except: fver=''
     old=None
     try:

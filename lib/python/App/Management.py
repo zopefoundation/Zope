@@ -13,14 +13,13 @@
 
 """Standard management interface support
 
-$Id: Management.py,v 1.55 2001/11/28 15:50:52 matt Exp $"""
+$Id: Management.py,v 1.56 2002/02/07 17:37:10 andreasjung Exp $"""
 
-__version__='$Revision: 1.55 $'[11:-2]
+__version__='$Revision: 1.56 $'[11:-2]
 
 import sys, Globals, ExtensionClass, urllib
 from Dialogs import MessageDialog
 from Globals import DTMLFile, HTMLFile
-from string import split, join, find
 from AccessControl import getSecurityManager, Unauthorized
 
 class Tabs(ExtensionClass.Base):
@@ -76,7 +75,7 @@ class Tabs(ExtensionClass.Base):
             raise Unauthorized, (
                 'You are not authorized to view this object.')
 
-        if find(m,'/'):
+        if m.find('/'):
             raise 'Redirect', (
                 "%s/%s" % (REQUEST['URL1'], m))
         
@@ -100,7 +99,7 @@ class Tabs(ExtensionClass.Base):
         script = '%s/%s' % (script, last)
         out.append('<a class="strong-link" href="%s/manage_workspace">%s</a>'%
                    (script, unquote(last)))
-        return '%s%s' % (url, join(out,'/'))
+        return '%s%s' % (url, '/'.join(out))
 
     def tabs_path_info(self, script, path,
                        # Static vars
@@ -111,7 +110,7 @@ class Tabs(ExtensionClass.Base):
         while path[-1:]=='/': path=path[:-1]
         while script[:1]=='/': script=script[1:]
         while script[-1:]=='/': script=script[:-1]
-        path=split(path,'/')[:-1]
+        path=path.split('/')[:-1]
         if script: path=[script]+path
         if not path: return ''
         script=''
@@ -121,7 +120,7 @@ class Tabs(ExtensionClass.Base):
             script="%s/%s" % (script, quote(p))
             out.append('<a href="%s/manage_workspace">%s</a>' % (script, p))
         out.append(last)
-        return join(out, '/')
+        return '/'.join(out)
 
     class_manage_path__roles__=None
     def class_manage_path(self):

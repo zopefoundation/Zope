@@ -12,17 +12,16 @@
 ##############################################################################
 """Image object that is stored in a file"""
 
-__version__='$Revision: 1.14 $'[11:-2]
+__version__='$Revision: 1.15 $'[11:-2]
 
 from OFS.content_types import guess_content_type
 from Globals import package_home
 from Common import rfc1123_date
-from string import rfind, split
 from DateTime import DateTime
 from time import time
 from os import stat
 import Acquisition
-import string, os
+import  os
 
 
 class ImageFile(Acquisition.Explicit):
@@ -42,8 +41,8 @@ class ImageFile(Acquisition.Explicit):
         if content_type:
             self.content_type=content_type
         else:
-            self.content_type='image/%s' % path[rfind(path,'.')+1:]
-        self.__name__=path[rfind(path,'/')+1:]
+            self.content_type='image/%s' % path[path.rfind('.')+1:]
+        self.__name__=path[path.rfind('/')+1:]
         self.lmt=float(stat(path)[8]) or time()
         self.lmh=rfc1123_date(self.lmt)
 
@@ -55,7 +54,7 @@ class ImageFile(Acquisition.Explicit):
         # somewhere...
         header=REQUEST.get_header('If-Modified-Since', None)
         if header is not None:
-            header=string.split(header, ';')[0]
+            header=header.split(';')[0]
             # Some proxies seem to send invalid date strings for this
             # header. If the date string is not valid, we ignore it
             # rather than raise an error to be generally consistent

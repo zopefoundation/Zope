@@ -13,10 +13,10 @@
 __doc__='''Cache management support
 
 
-$Id: CacheManager.py,v 1.22 2001/11/28 15:50:52 matt Exp $'''
-__version__='$Revision: 1.22 $'[11:-2]
+$Id: CacheManager.py,v 1.23 2002/02/07 17:37:10 andreasjung Exp $'''
+__version__='$Revision: 1.23 $'[11:-2]
 
-import Globals, time, sys, string
+import Globals, time, sys
 
 class CacheManager:
     """Cache management mix-in
@@ -190,8 +190,8 @@ class CacheManager:
         if REQUEST is not None:
             # format as text
             REQUEST.RESPONSE.setHeader('Content-Type', 'text/plain')
-            return string.join(map(lambda (name, count): '%6d %s' %
-                                   (count, name), detail), '\n')
+            return '\n'.join(map(lambda (name, count): '%6d %s' %
+                                   (count, name), detail))
         else:
             # raw
             return detail
@@ -229,7 +229,7 @@ class CacheManager:
                     dict['conn_no'], `dict['oid']`, dict['rc'],
                     state, dict['klass'], idinfo))
             REQUEST.RESPONSE.setHeader('Content-Type', 'text/plain')
-            return string.join(res, '\n')
+            return '\n'.join(res)
         else:
             # raw
             return detail
