@@ -205,7 +205,7 @@ class TALGenerator:
     def emitDefines(self, defines, position):
         for part in splitParts(defines):
             m = re.match(
-                r"\s*(?:(global|local)\s+)?(%s)\s+(.*)" % NAME_RE, part)
+                r"(?s)\s*(?:(global|local)\s+)?(%s)\s+(.*)\Z" % NAME_RE, part)
             if not m:
                 raise TALError("invalid define syntax: " + `part`,
                                position)
@@ -223,7 +223,7 @@ class TALGenerator:
         self.emit("condition", cexpr, program)
 
     def emitRepeat(self, arg):
-        m = re.match("\s*(%s)\s+(.*)" % NAME_RE, arg)
+        m = re.match("(?s)\s*(%s)\s+(.*)\Z" % NAME_RE, arg)
         if not m:
             raise TALError("invalid repeat syntax: " + `repeat`)
         name, expr = m.group(1, 2)
