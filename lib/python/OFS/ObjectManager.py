@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.72 1999/05/19 16:19:16 klm Exp $"""
+$Id: ObjectManager.py,v 1.73 1999/06/18 00:32:39 amos Exp $"""
 
-__version__='$Revision: 1.72 $'[11:-2]
+__version__='$Revision: 1.73 $'[11:-2]
 
 import App.Management, Acquisition, App.Undo, Globals, CopySupport
 import os, App.FactoryDispatcher, ts_regex, Products
@@ -485,7 +485,14 @@ class ObjectManager(
                         self.manage_FTPlist.__roles__):
                 mode=mode | 0007
         mtime=self.bobobase_modification_time().timeTime()
-        return marshal.dumps((mode,0,0,1,0,0,0,mtime,mtime,mtime))
+        # get owner and group
+        owner=group='Zope'
+        for r in self.get_local_roles():
+            user,roles=r
+            if 'Owner' in roles:
+                owner=user
+                break
+        return marshal.dumps((mode,0,0,1,owner,group,0,mtime,mtime,mtime))
 
 
     def __getitem__(self, key):

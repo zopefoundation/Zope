@@ -89,8 +89,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.55 1999/06/08 16:11:12 klm Exp $'''
-__version__='$Revision: 1.55 $'[11:-2]
+$Id: SimpleItem.py,v 1.56 1999/06/18 00:32:39 amos Exp $'''
+__version__='$Revision: 1.56 $'[11:-2]
 
 import regex, sys, Globals, App.Management, Acquisition
 from webdav.Resource import Resource
@@ -285,7 +285,14 @@ class Item(Base, Resource, CopySource, App.Management.Tabs):
             size=0
         # get modification time
         mtime=self.bobobase_modification_time().timeTime()
-        return marshal.dumps((mode,0,0,1,0,0,size,mtime,mtime,mtime))
+        # get owner and group
+        owner=group='Zope'
+        for r in self.get_local_roles():
+            user,roles=r
+            if 'Owner' in roles:
+                owner=user
+                break
+        return marshal.dumps((mode,0,0,1,owner,group,size,mtime,mtime,mtime))
 
     def manage_FTPlist(self,REQUEST):
         """Directory listing for FTP. In the case of non-Foldoid objects,
