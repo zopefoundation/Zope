@@ -1,6 +1,6 @@
 """Access control package"""
 
-__version__='$Revision: 1.16 $'[11:-2]
+__version__='$Revision: 1.17 $'[11:-2]
 
 import Globals
 from Persistence import Persistent
@@ -208,7 +208,7 @@ class UserFolderHandler:
     """ """
     meta_types_=({'name':'User Folder', 'action':'manage_addUserFolder'},)
 
-    def manage_addUserFolder(self,dtself,REQUEST):
+    def manage_addUserFolder(self,dtself,REQUEST,**ignored):
         """ """
         i=UserFolder()
         i._init()
@@ -245,6 +245,10 @@ class UserFolderHandler:
 
 
 # $Log: User.py,v $
+# Revision 1.17  1997/11/07 20:57:41  jim
+# Made manage_addUserFolder accept and ignore keyword arguments to be
+# compatible with the new addObject protocol.
+#
 # Revision 1.16  1997/11/07 17:33:57  jim
 # Renamed meta_types to meta_types_ for new OFS-as-product change.
 #
