@@ -30,7 +30,7 @@ Example usage:
     print i['blah']
 
       
-$Id: InvertedIndex.py,v 1.19 1997/03/05 19:25:52 chris Exp $'''
+$Id: InvertedIndex.py,v 1.20 1997/03/05 19:28:18 chris Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -82,6 +82,9 @@ $Id: InvertedIndex.py,v 1.19 1997/03/05 19:25:52 chris Exp $'''
 #   (540) 371-6909
 #
 # $Log: InvertedIndex.py,v $
+# Revision 1.20  1997/03/05 19:28:18  chris
+# fixed typo
+#
 # Revision 1.19  1997/03/05 19:25:52  chris
 # removed references to SingleThreadedTransaction
 #
@@ -144,7 +147,7 @@ $Id: InvertedIndex.py,v 1.19 1997/03/05 19:25:52 chris Exp $'''
 #
 #
 # 
-__version__='$Revision: 1.19 $'[11:-2]
+__version__='$Revision: 1.20 $'[11:-2]
 
 
 import regex, regsub, string, copy
@@ -468,7 +471,7 @@ class Index:
     nwords = math.log(len(src))
 
     d = {}
-    s = -1
+    i = -1
     for s in src:
       i = i + 1
       s = string.lower(s)
