@@ -12,7 +12,7 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.80 $'[11:-2]
+__version__='$Revision: 1.81 $'[11:-2]
 
 
 import re,sys, os, math,  DateTimeZone
@@ -1438,7 +1438,7 @@ class DateTime:
     def rfc822(self):
         """Return the date in RFC 822 format"""
         if self._tz == self._localzone0: #Use local standard time
-            tzoffset = _tzoffset2rfc822zone(localzone)
+            tzoffset = _tzoffset2rfc822zone(timezone)
         elif self._tz == self._localzone1: # Use local daylight saving time
             tzoffset = _tzoffset2rfc822zone(altzone)
         else:
