@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.116 2000/12/13 14:34:55 shane Exp $"""
+$Id: ObjectManager.py,v 1.117 2000/12/13 19:57:44 evan Exp $"""
 
-__version__='$Revision: 1.116 $'[11:-2]
+__version__='$Revision: 1.117 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, ts_regex, Products
@@ -527,8 +527,11 @@ class ObjectManager(
         dirname, file=os.path.split(file)
         if dirname:
             raise 'Bad Request', 'Invalid file name %s' % file
-        file=os.path.join(INSTANCE_HOME, 'import', file)
-        if not os.path.exists(file):
+        for impath in (INSTANCE_HOME, SOFTWARE_HOME):
+            file=os.path.join(impath, 'import', file)
+            if os.path.exists(file):
+                break
+        else:
             raise 'Bad Request', 'File does not exist: %s' % file
         # locate a valid connection
         connection=self._p_jar
