@@ -164,13 +164,12 @@ Evaluating expressions without rendering results
    
 
 ''' # '
-__rcs_id__='$Id: DT_Var.py,v 1.25 1998/09/15 13:59:28 brian Exp $'
-__version__='$Revision: 1.25 $'[11:-2]
+__rcs_id__='$Id: DT_Var.py,v 1.26 1998/09/15 14:14:45 jim Exp $'
+__version__='$Revision: 1.26 $'[11:-2]
 
 from DT_Util import parse_params, name_param, html_quote, str
 import regex, string, sys, regex
 from string import find, split, join, atoi, rfind
-from regsub import gsub
 
 class Var: 
     name='var'
