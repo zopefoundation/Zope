@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-"$Id: DT_String.py,v 1.36 2000/06/15 18:50:47 brian Exp $"
+"$Id: DT_String.py,v 1.37 2000/08/17 14:03:42 brian Exp $"
 
 from string import split, strip
 import regex, ts_regex
@@ -118,15 +118,21 @@ class String:
     func_code=func_code()
     func_code.co_varnames='self','REQUEST'
     func_code.co_argcount=2
+    func_code.__roles__=()
+    
+    func_defaults__roles__=()
     func_defaults=()
 
+    errQuote__roles__=()
     def errQuote(self, s): return s
-      
+
+    parse_error__roles__=()
     def parse_error(self, mess, tag, text, start):
         raise ParseError, "%s, for tag %s, on line %s of %s<p>" % (
             mess, self.errQuote(tag), len(split(text[:start],'\n')),
             self.errQuote(self.__name__))
 
+    commands__roles__=()
     commands={
         'var': Var,
         'call': Call,
@@ -142,8 +148,11 @@ class String:
         'return': ReturnTag,
         }
 
-    def SubTemplate(self, name): return String('', __name__=name)
+    SubTemplate__roles__=()
+    def SubTemplate(self, name):
+        return String('', __name__=name)
 
+    tagre__roles__=()
     def tagre(self):
         return regex.symcomp(
             '%('                                     # beginning
@@ -155,6 +164,7 @@ class String:
             ')\(<fmt>[0-9]*[.]?[0-9]*[a-z]\|[]![]\)' # end
             , regex.casefold) 
 
+    _parseTag__roles__=()
     def _parseTag(self, tagre, command=None, sargs='', tt=type(())):
         tag, args, command, coname = self.parseTag(tagre,command,sargs)
         if type(command) is tt:
@@ -167,7 +177,8 @@ class String:
             command=d[name]
             self.commands[cname]=command
         return tag, args, command, coname
-    
+
+    parseTag__roles__=()
     def parseTag(self, tagre, command=None, sargs=''):
         """Parse a tag using an already matched re
 
@@ -208,8 +219,11 @@ class String:
             args=args and ("%s %s" % (name, args)) or name
             return tag, args, Var, None
 
-    def varExtra(self,tagre): return tagre.group('fmt')
+    varExtra__roles__=()
+    def varExtra(self,tagre):
+        return tagre.group('fmt')
 
+    parse__roles__=()
     def parse(self,text,start=0,result=None,tagre=None):
         if result is None: result=[]
         if tagre is None: tagre=self.tagre()
@@ -240,12 +254,14 @@ class String:
         if text: result.append(text)
         return result
 
+    skip_eol__roles__=()
     def skip_eol(self, text, start, eol=regex.compile('[ \t]*\n')):
         # if block open is followed by newline, then skip past newline
         l=eol.match(text,start)
         if l > 0: start=start+l
         return start
 
+    parse_block__roles__=()
     def parse_block(self, text, start, result, tagre,
                     stag, sloc, sargs, scommand):
 
@@ -292,7 +308,8 @@ class String:
                     except ParseError, m: self.parse_error(m[0],stag,text,l)
 
                     return start
-    
+
+    parse_close__roles__=()
     def parse_close(self, text, start, tagre, stag, sloc, scommand, sa):
         while 1:
             l=tagre.search(text,start)
@@ -309,6 +326,7 @@ class String:
                                            command,args)
             elif not coname: return start
 
+    shared_globals__roles__=()
     shared_globals={}
 
     def __init__(self, source_string='', mapping=None, __name__='<string>',
@@ -323,12 +341,14 @@ class String:
         self.initvars(mapping, vars)
         self.setName(__name__)
 
+
     def name(self): return self.__name__
     id=name
 
     setName__roles__=[]
     def setName(self,v): self.__dict__['__name__']=v
 
+    default__roles__=()
     def default(self,name=None,**kw):
         """\
         Change or query default values in a document template.
@@ -342,6 +362,7 @@ class String:
         for key in kw.keys(): self.globals[key]=kw[key]
         return name
 
+    var__roles__=()
     def var(self,name=None,**kw):
         """\
         Change or query a variable in a document template.
@@ -355,7 +376,7 @@ class String:
         for key in kw.keys(): self._vars[key]=kw[key]
         return name
 
-    munge__roles__=[]
+    munge__roles__=()
     def munge(self,source_string=None,mapping=None,**vars):
         """\
         Change the text or default values for a document template.
@@ -366,15 +387,19 @@ class String:
             self.raw=source_string
         self.cook()
 
+    manage_edit__roles__=()
     def manage_edit(self,data,REQUEST=None):
         self.munge(data)
 
+    read_raw__roles__=()
     def read_raw(self,raw=None):
         return self.raw
 
+    read__roles__=()
     def read(self,raw=None):
         return self.read_raw()
 
+    cook__roles__=()
     def cook(self,
              cooklock=ts_regex.allocate_lock(),
              ):
@@ -385,6 +410,7 @@ class String:
         finally:
             cooklock.release()
 
+    initvars__roles__=()
     def initvars(self, globals, vars):
         if globals:
             for k in globals.keys():
@@ -505,6 +531,7 @@ class String:
             if pushed: md._pop(pushed) # Get rid of circular reference!
             md.level=level # Restore previous level
 
+    validate__roles__=()
     validate=None
 
     def __str__(self):
@@ -533,6 +560,7 @@ class FileMixin:
         self.initvars(mapping, vars)
         self.setName(__name__ or file_name)
 
+    read_raw__roles__=()
     def read_raw(self):
         if self.edited_source: return self.edited_source
         if self.raw: return open(self.raw,'r').read()
@@ -548,4 +576,5 @@ class File(FileMixin, String):
     Note that the file will not be read until the document
     template is used the first time.
     """
+    manage_edit__roles__=()
     def manage_edit(self,data): raise TypeError, 'cannot edit files'

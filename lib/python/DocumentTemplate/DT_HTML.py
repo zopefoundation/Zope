@@ -84,7 +84,7 @@
 ##############################################################################
 """HTML formated DocumentTemplates
 
-$Id: DT_HTML.py,v 1.23 1999/10/22 14:17:00 jim Exp $"""
+$Id: DT_HTML.py,v 1.24 2000/08/17 14:03:42 brian Exp $"""
 
 from DT_String import String, FileMixin
 import DT_String, regex
@@ -212,9 +212,11 @@ class HTML(DT_String.String):
     are inserted into HTML editing forms.
     """
 
+    tagre__roles__=()
     def tagre(self):
         return dtml_re_class()
 
+    parseTag__roles__=()
     def parseTag(self, tagre, command=None, sargs=''):
         """Parse a tag using an already matched re
 
@@ -250,15 +252,19 @@ class HTML(DT_String.String):
         except KeyError:
             raise ParseError, ('Unexpected tag', tag)
 
+    SubTemplate__roles__=()
     def SubTemplate(self, name): return HTML('', __name__=name)
 
+    varExtra__roles__=()
     def varExtra(self,tagre): return 's'
 
+    manage_edit__roles__=()
     def manage_edit(self,data,REQUEST=None):
         'edit a template'
         self.munge(data)
         if REQUEST: return self.editConfirmation(self,REQUEST)
 
+    quotedHTML__roles__=()
     def quotedHTML(self,
                    text=None,
                    character_entities=(
@@ -271,16 +277,20 @@ class HTML(DT_String.String):
             if find(text, re) >= 0: text=join(split(text,re),name)
         return text
 
+    errQuote__roles__=()
     errQuote=quotedHTML
 
     def __str__(self):
         return self.quotedHTML()
 
+    # these should probably all be deprecated.
+    management_interface__roles__=()
     def management_interface(self):
         '''Hook to allow public execution of management interface with
         everything else private.'''
         return self
 
+    manage_editForm__roles__=()
     def manage_editForm(self, URL1, REQUEST):
         '''Display doc template editing form''' #"
         
@@ -291,6 +301,8 @@ class HTML(DT_String.String):
             URL1=URL1
             )
 
+    manage_editDocument__roles__=()
+    manage__roles__=()
     manage_editDocument=manage=manage_editForm
 
 class HTMLDefault(HTML):
@@ -300,8 +312,10 @@ class HTMLDefault(HTML):
     This is to make a distinction from HTML objects that should edit
     themselves in place.
     '''
+    copy_class__roles__=()
     copy_class=HTML
 
+    manage_edit__roles__=()
     def manage_edit(self,data,PARENTS,URL1,REQUEST):
         'edit a template'
         newHTML=self.copy_class(data,self.globals,self.__name__)
@@ -319,7 +333,7 @@ class HTMLFile(FileMixin, HTML):
     Note that the file will not be read until the document
     template is used the first time.
     """
-
+    manage_default__roles__=()
     def manage_default(self, REQUEST=None):
         'Revert to factory defaults'
         if self.edited_source:
@@ -327,6 +341,7 @@ class HTMLFile(FileMixin, HTML):
             self._v_cooked=self.cook()
         if REQUEST: return self.editConfirmation(self,REQUEST)
 
+    manage_editForm__roles__=()
     def manage_editForm(self, URL1, REQUEST):
         '''Display doc template editing form'''
 
@@ -343,8 +358,11 @@ class HTMLFile(FileMixin, HTML):
                                      __str__=str(self),
                                      FactoryDefaultString=FactoryDefaultString,
                                      )
+    manage_editDocument__roles__=()
+    manage__roles__=()
     manage_editDocument=manage=manage_editForm
 
+    manage_edit__roles__=()
     def manage_edit(self,data,
                     PARENTS=[],URL1='',URL2='',REQUEST='', SUBMIT=''):
         'edit a template'
