@@ -1,4 +1,4 @@
-##############################################################################
+7##############################################################################
 # 
 # Zope Public License (ZPL) Version 1.0
 # -------------------------------------
@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Shared classes and functions
 
-$Id: Aqueduct.py,v 1.36 1999/07/21 19:43:39 michel Exp $'''
-__version__='$Revision: 1.36 $'[11:-2]
+$Id: Aqueduct.py,v 1.37 1999/09/21 15:43:18 jeffrey Exp $'''
+__version__='$Revision: 1.37 $'[11:-2]
 
 import Globals, os
 from Globals import HTMLFile, Persistent
@@ -289,8 +289,8 @@ def custom_default_report(id, result, action='', no_table=0,
     row=[]
     for c in columns:
         n=c['name']
-        if goofy(n) >= 0: n='expr="_vars[\'%s]"' % (`'"'+n`[2:])
-        row.append('          %s<!--#var %s%s-->%s'
+        if goofy(n) >= 0: n='expr="_[\'%s]"' % (`'"'+n`[2:])
+        row.append('          %s<dtml-var %s%s>%s'
                    % (td,n,c['type']!='s' and ' null=""' or '',_td))
 
     row=('     %s\n%s\n        %s' % (tr,string.joinfields(row,delim), _tr))
