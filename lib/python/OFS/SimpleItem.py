@@ -89,8 +89,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.83 2001/01/11 21:44:44 chrism Exp $'''
-__version__='$Revision: 1.83 $'[11:-2]
+$Id: SimpleItem.py,v 1.84 2001/01/25 17:43:41 brian Exp $'''
+__version__='$Revision: 1.84 $'[11:-2]
 
 import ts_regex, sys, Globals, App.Management, Acquisition, App.Undo
 import AccessControl.Role, AccessControl.Owned, App.Common
@@ -139,6 +139,11 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
         if hasattr(self, '__name__'):
             return self.__name__
         raise AttributeError, 'This object has no id'
+
+    def _setId(self, id):
+        if hasattr(self, 'id') and callable(self.id):
+            raise ValueError, 'This object has an id method; id cannot be set'
+        self.id=id
 
     # Alias id to __name__, which will make tracebacks a good bit nicer:
     __name__=ComputedAttribute(lambda self: self.getId())
