@@ -1,9 +1,9 @@
 
 """Folder object
 
-$Id: Folder.py,v 1.37 1998/02/05 23:34:58 jim Exp $"""
+$Id: Folder.py,v 1.38 1998/02/10 18:37:07 jim Exp $"""
 
-__version__='$Revision: 1.37 $'[11:-2]
+__version__='$Revision: 1.38 $'[11:-2]
 
 
 from Globals import HTMLFile
@@ -79,7 +79,7 @@ class Folder(ObjectManager,RoleManager,DocumentHandler,
 
     meta_types=()
     dynamic_meta_types=(
-	UserFolderHandler.meta_types_
+	# UserFolderHandler.meta_types_
 	)
 
     manage_options=(
@@ -101,9 +101,15 @@ class Folder(ObjectManager,RoleManager,DocumentHandler,
       'manage_tabs','manage_propertiesForm','manage_UndoForm']),
     ('Undo changes',       ['manage_undo_transactions']),
     ('Change permissions', ['manage_access']),
-    ('Add objects', [ 'manage_addObject', 'manage_addDocument',
-	'manage_addFile', 'manage_addImage', 'manage_addFolder',
-	'manage_addUserFolder']),
+    ('Add objects', ['manage_addObject']),
+    ('Add Documents, Images, and Files',
+     ('manage_addDocumentForm', 'manage_addDocument',
+      'manage_addFileForm', 'manage_addFile',
+      'manage_addImageForm', 'manage_addImage',
+      'PUT')
+     ),
+    ('Add Folders',('manage_addFolderForm', 'manage_addFolder')),
+    ('Add User Folders',('manage_addUserFolder',)),
     ('Delete objects',     ['manage_delObjects']),
     ('Add properties',     ['manage_addProperty']),
     ('Change properties',  ['manage_editProperties']),
@@ -138,12 +144,18 @@ class Folder(ObjectManager,RoleManager,DocumentHandler,
 	except: pass
 	raise KeyError, key
 
+    PUT__roles__='Manager',
+    def PUT(self):
+	# This is here mainly as a hac^H^Hook for holding PUT permissions
+	raise TypeError, 'Directory PUT is not supported'
+
 
 class PUTer:
     """ """
     def __init__(self, parent, key):
 	self._parent=parent
 	self._key=key
+	self.__roles__=parent.PUT__roles__
 
     def PUT(self, REQUEST, BODY):
 	""" """
