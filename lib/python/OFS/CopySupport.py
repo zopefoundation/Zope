@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""Copy interface"""
-__version__='$Revision: 1.42 $'[11:-2]
+__version__='$Revision: 1.43 $'[11:-2]
 
 import sys, string, Globals, Moniker, tempfile, ExtensionClass
 from marshal import loads, dumps
@@ -367,8 +367,8 @@ class CopyContainer(ExtensionClass.Base):
             if hasattr(meth, '__roles__'):
                 roles=meth.__roles__
                 user=REQUEST.get('AUTHENTICATED_USER', None)
-                if (not hasattr(user, 'hasRole') or
-                    not user.hasRole(None, roles)):
+                if (not hasattr(user, 'has_role') or
+                    not user.has_role(roles, self)):
                     raise 'Unauthorized', (
                           """You are not authorized to perform this
                              operation."""
