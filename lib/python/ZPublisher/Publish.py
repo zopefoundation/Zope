@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__="""Python Object Publisher -- Publish Python objects on web servers
 
-$Id: Publish.py,v 1.136 1999/08/04 20:51:18 jim Exp $"""
-__version__='$Revision: 1.136 $'[11:-2]
+$Id: Publish.py,v 1.137 1999/08/16 20:20:21 jim Exp $"""
+__version__='$Revision: 1.137 $'[11:-2]
 
 import sys, os
 from string import lower, atoi, rfind, strip
@@ -171,7 +171,7 @@ def publish(request, module_name, after_list, debug=0,
         return response
     except:
         if err_hook is not None:
-            if parents: parents=parents[-1]
+            if parents: parents=parents[0]
             try:
                 return err_hook(parents, request,
                                 sys.exc_info()[0],
