@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Application support
 
-$Id: Application.py,v 1.160 2001/10/19 13:40:14 Brian Exp $'''
-__version__='$Revision: 1.160 $'[11:-2]
+$Id: Application.py,v 1.161 2001/11/13 22:02:47 matt Exp $'''
+__version__='$Revision: 1.161 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os, string, Products
@@ -418,6 +418,60 @@ def initialize(app):
             _standard_error_msg)
         get_transaction().note('Added standard_error_message')
         get_transaction().commit()
+
+
+    # b/c: Ensure that a temp folder exists
+    if not hasattr(app, 'temp_folder'):
+        from Products.TemporaryFolder.TemporaryFolder import MountedTemporaryFolder
+        tf = MountedTemporaryFolder('temp_folder','Temporary Folder')
+        app._setObject('temp_folder', tf)
+        get_transaction().note('Added temp_folder')
+        get_transaction().commit()
+        del tf
+        
+    # b/c: Ensure that there is a transient container in the temp folder
+    tf = app.temp_folder
+    if not hasattr(tf, 'transient_container'):
+        from Products.Transience.Transience import TransientObjectContainer
+
+        addnotify = os.environ.get('ZSESSION_ADD_NOTIFY', '/session_add')
+        delnotify = os.environ.get('ZSESSION_DEL_NOTIFY', '/session_del')
+        if app.unrestrictedTraverse(addnotify,None) is None: addnotify=None
+        if app.unrestrictedTraverse(delnotify,None) is None: delnotify=None
+
+        toc = TransientObjectContainer('transient_container', 
+            'Transient Object Container', addNotification=addnotify,
+            delNotification = delnotify)
+        tf._setObject('transient_container', toc)
+        get_transaction().note('Added transient_container to '
+            'temp_folder')
+        get_transaction().commit()
+        del toc
+        del addnotify
+        del delnotify
+
+    del tf
+
+    # b/c: Ensure that a browser ID manager exists
+    if not hasattr(app, 'browser_id_manager'):
+        from Products.Sessions.BrowserIdManager import BrowserIdManager
+        bid = BrowserIdManager('browser_id_manager', 'Browser Id Manager')
+        app._setObject('browser_id_manager', bid)
+        get_transaction().note('Added browser_id_manager')
+        get_transaction().commit()
+        del bid
+
+    # b/c: Ensure that a session data manager exists
+    if not hasattr(app, 'session_data_manager'):
+        from Products.Sessions.SessionDataManager import SessionDataManager
+        sdm = SessionDataManager('session_data_manager',
+            title='Session Data Manager',
+            path='/temp_folder/transient_container',
+            requestName='SESSION')
+        app._setObject('session_data_manager', sdm)
+        get_transaction().note('Added session_data_manager')
+        get_transaction().commit()
+        del sdm
 
     # b/c: Ensure that Owner role exists.
     if hasattr(app, '__ac_roles__') and not ('Owner' in app.__ac_roles__):
