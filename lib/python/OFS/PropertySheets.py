@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.16 $'[11:-2]
+__version__='$Revision: 1.17 $'[11:-2]
 
 import time, string, App.Management
 from ZPublisher.Converters import type_converters
@@ -293,7 +293,7 @@ class PropertySheet(Persistent, Implicit):
                 meta=item.get('meta', {})
                 attrs=meta.get('__xml_attrs__', None)
                 if attrs is not None:
-                    attrs=map(lambda n, v: ' %s="%s"' % (n, v), attrs.items())
+                    attrs=map(lambda n: ' %s="%s"' % n, attrs.items())
                     attrs=join(attrs, '')
                 else: attrs=''
                 prop='  <n:%s%s>%s</n:%s>' % (name, attrs, value, name)
@@ -325,8 +325,7 @@ class PropertySheet(Persistent, Implicit):
                         meta=item.get('meta', {})
                         attrs=meta.get('__xml_attrs__', None)
                         if attrs is not None:
-                            attrs=map(lambda n, v: ' %s="%s"' % (n, v),
-                                      attrs.items())
+                            attrs=map(lambda n: ' %s="%s"' % n, attrs.items())
                             attrs=join(attrs, '')
                         else: attrs=''
                         prop='  <n:%s%s>%s</n:%s>' % (name, attrs, value, name)
