@@ -182,53 +182,53 @@ Zope authentication with existing web servers
 
       Get Apache to authenticate /cgi-bin/Zope
 
-	Add a directive in your Apache configuration file such as::
+        Add a directive in your Apache configuration file such as::
 
-	 <Location /cgi-bin/Zope/>
-	 AuthType Basic
-	 AuthName Zope-realm
-	 AuthUserFile /usr/local/etc/httpd/conf/ru_users
-	 require valid-user
-	 </Location>
+         <Location /cgi-bin/Zope/>
+         AuthType Basic
+         AuthName Zope-realm
+         AuthUserFile /usr/local/etc/httpd/conf/ru_users
+         require valid-user
+         </Location>
 
-	Then send Apache a '-1' signal to tell it to re-read its
-	configuration files.
+        Then send Apache a '-1' signal to tell it to re-read its
+        configuration files.
 
-	*Note*: The above presumes that '/cgi-bin/Zope' has been made
-	executable by some other Apache directive in the configuration
-	file.
+        *Note*: The above presumes that '/cgi-bin/Zope' has been made
+        executable by some other Apache directive in the configuration
+        file.
 
       Ensure Apache has 'superuser'
 
-	Using Apache's tools for managing a user database, make 
-	sure that the 'AuthUserFile' defined above has a valid user 
-	called 'superuser'.
+        Using Apache's tools for managing a user database, make 
+        sure that the 'AuthUserFile' defined above has a valid user 
+        called 'superuser'.
 
       Get Zope to use Apache's authentication
 
-	Change Zope's access file to contain just the superuser
-	id followed by a colon, as in::
+        Change Zope's access file to contain just the superuser
+        id followed by a colon, as in::
 
-	  superuser:
+          superuser:
 
-	Note that this can be any value, including spaces.  The only
-	restriction is that the value must match a user defined in
-	Apache's user database.
+        Note that this can be any value, including spaces.  The only
+        restriction is that the value must match a user defined in
+        Apache's user database.
 
-	Shut down Zope by doing::
+        Shut down Zope by doing::
 
-	  kill `cat var/Main.pid`
+          kill `cat var/Main.pid`
 
-	from the Zope directory.
+        from the Zope directory.
 
       Configure Zope
 
-	At this point you are able to log in using the "superuser"
-	identity.  If you want other people defined in the Apache user
-	database to have identities in Zope, you need to add them to
-	a User Folder (the object whose ID is acl_users). Either click on
-	the pre-defined acl_users in the top folder or add a User Folder
-	object to a subfolder.
+        At this point you are able to log in using the "superuser"
+        identity.  If you want other people defined in the Apache user
+        database to have identities in Zope, you need to add them to
+        a User Folder (the object whose ID is acl_users). Either click on
+        the pre-defined acl_users in the top folder or add a User Folder
+        object to a subfolder.
   
   Specific web servers
   
@@ -265,6 +265,32 @@ Zope authentication with existing web servers
 
       * An ISAPI module to support PCGI is under development.
 
+      * IIS 4.0 throws away Zope's error messages by default. This behavior
+      can create quite a few problems, including authentication problems.
+
+      Microsoft prides itself on the clear error messages that IIS 4.0 presents,
+      when the user makes a mistake. These error messages are implemented in the
+      form of Custom Error handlers, that return a file, or URL to a user when a
+      certain error occurs.
+
+      This means, that when you forget to fill in an Id when you want to create,
+      say, a new SQL Method, Zope's clear error message is replaced by IIS's
+      totally irrelevant error message. Also, it completely breaks authentication
+      when the user uses IE5.0 when trying to log into a secure area of the
+      server. These Custom Error handlers are enabled by default.
+
+      Luckily, the handlers can quite easily be switched off:
+
+      Open the IIS website in the Management Console, and navigate to the folder
+      you put the PCGI executable in. If you named your Zope installation 'Zope',
+      it will be called 'Zope.exe'. Double-click on that file. A property page
+      will appear. Select the 'Custom Errors' tab. Now, select every HTTP Error
+      code in the listbox that doesn't have type 'Default', and click on the 'Set
+      to Default' button for each one. This will disable IIS overriding the error
+      message returned by Zope.
+
+      Click OK, and voila, Zope is allowed to tell the world what it thinks went
+      wrong.
 
 
 
