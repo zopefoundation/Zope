@@ -143,8 +143,7 @@ class XMLParser:
         self.parseStream(open(filename))
 
     def parseString(self, s):
-        from cStringIO import StringIO
-        self.parseStream(StringIO(s))
+        self.parser.Parse(s, 1)
 
     def parseURL(self, url):
         import urllib
