@@ -89,7 +89,7 @@ This product provides support for Script objects containing restricted
 Python code.
 """
 
-__version__='$Revision: 1.33 $'[11:-2]
+__version__='$Revision: 1.34 $'[11:-2]
 
 import sys, os, traceback, re, marshal
 from Globals import DTMLFile, MessageDialog, package_home
@@ -461,6 +461,8 @@ class PythonScript(Script, Historical, Cacheable):
                     bup = 1
 
             body = body.rstrip()
+            if body:
+                body = body + '\n'
             if body != self._body:
                 self._body = body
             if bup:
