@@ -11,8 +11,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.42 1998/04/27 18:31:32 jim Exp $'''
-__version__='$Revision: 1.42 $'[11:-2]
+$Id: DA.py,v 1.43 1998/04/27 18:56:13 jim Exp $'''
+__version__='$Revision: 1.43 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct.Aqueduct, Aqueduct.RDB
 import DocumentTemplate, marshal, md5, base64, DateTime, Acquisition, os
@@ -251,8 +251,13 @@ class DA(
 	    else:
 		if hasattr(self, 'REQUEST'): REQUEST=self.REQUEST
 		else: REQUEST={}
-	
-	try: DB__=getattr(self, self.connection_id)()
+
+	try: dbc=getattr(self, self.connection_id)
+	except AttributeError:
+	    raise AttributeError, (
+		"The database connection, <em>%s</em>, cannot be found.")
+
+	try: DB__=dbc()
 	except: raise 'Database Error', (
 	    '%s is not connected to a database' % self.id)
 	
@@ -265,7 +270,7 @@ class DA(
 
 	argdata=self._argdata(REQUEST)
 	argdata['sql_delimiter']='\0'
-	argdata['sql_quote']=DB__.sql_quote__
+	argdata['sql_quote']=dbc.sql_quote__
 	query=apply(self.template, (p,), argdata)
 
 	if src__: return query
@@ -283,7 +288,12 @@ class DA(
 	
     def query(self,REQUEST,RESPONSE):
 	' '
-	try: DB__=getattr(self, self.connection_id)()
+	try: dbc=getattr(self, self.connection_id)
+	except AttributeError:
+	    raise AttributeError, (
+		"The database connection, <em>%s</em>, cannot be found.")
+
+	try: DB__=dbc()
 	except: raise 'Database Error', (
 	    '%s is not connected to a database' % self.id)
 
@@ -301,7 +311,7 @@ class DA(
 	    else: p=None
 
 	    argdata['sql_delimiter']='\0'
-	    argdata['sql_quote']=DB__.sql_quote__
+	    argdata['sql_quote']=dbc.sql_quote__
 	    query=apply(self.template,(p,),argdata)
 
 	    if self.cache_time_:
@@ -428,6 +438,10 @@ def getBrain(self,
 ############################################################################## 
 #
 # $Log: DA.py,v $
+# Revision 1.43  1998/04/27 18:56:13  jim
+# Now export an sql_quote function that is used by sqlvar and sqltest
+# to quote strings.
+#
 # Revision 1.42  1998/04/27 18:31:32  jim
 # Changed the way quoting was exported.
 #

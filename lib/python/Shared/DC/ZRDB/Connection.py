@@ -10,13 +10,14 @@
 __doc__='''Generic Database Connection Support
 
 
-$Id: Connection.py,v 1.9 1998/04/27 16:10:32 jim Exp $'''
-__version__='$Revision: 1.9 $'[11:-2]
+$Id: Connection.py,v 1.10 1998/04/27 18:56:29 jim Exp $'''
+__version__='$Revision: 1.10 $'[11:-2]
 
 import Globals, OFS.SimpleItem, AccessControl.Role, Persistence, Acquisition, sys
 from DateTime import DateTime
 from App.Dialogs import MessageDialog
 from Globals import HTMLFile
+from string import find, join, split
 
 class Connection(
     Persistence.Persistent,
@@ -145,6 +146,10 @@ class Connection(
 ############################################################################## 
 #
 # $Log: Connection.py,v $
+# Revision 1.10  1998/04/27 18:56:29  jim
+# Now export an sql_quote function that is used by sqlvar and sqltest
+# to quote strings.
+#
 # Revision 1.9  1998/04/27 16:10:32  jim
 # *** empty log message ***
 #
