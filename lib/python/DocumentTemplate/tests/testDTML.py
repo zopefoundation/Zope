@@ -13,8 +13,8 @@
 """Document Template Tests
 """
 
-__rcs_id__='$Id: testDTML.py,v 1.14 2002/08/14 22:29:53 mj Exp $'
-__version__='$Revision: 1.14 $'[11:-2]
+__rcs_id__='$Id: testDTML.py,v 1.15 2003/07/09 15:12:07 fdrake Exp $'
+__version__='$Revision: 1.15 $'[11:-2]
 
 import sys, os
 import unittest
@@ -42,6 +42,9 @@ class D:
     def __repr__(self): return "D(%s)" % `self.__dict__`
 
 def d(**kw): return kw
+
+class PukeError(Exception):
+    """Exception raised in test code."""
 
 class DTMLTests (unittest.TestCase):
 
@@ -353,7 +356,7 @@ foo bar
 
                 puke__roles__ = None  # Public
                 def puke(self):
-                    raise 'Puke', 'raaalf'
+                    raise PukeError('raaalf')
 
         html=self.doc_class(
             """
@@ -366,7 +369,7 @@ foo bar
             """)
         try:
             html(spam=foo())
-        except 'Puke':
+        except PukeError:
             # Passed the test.
             pass
         else:
