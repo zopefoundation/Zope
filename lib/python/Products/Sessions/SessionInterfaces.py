@@ -1,6 +1,6 @@
 import Interface
 
-class BrowserIdManager(
+class BrowserIdManagerInterface(
     Interface.Base
     ):
     """
@@ -96,7 +96,7 @@ class BrowserIdManager(
         a token key namespace at the time of the call.
         """
 
-class SessionDataManager(
+class SessionDataManagerInterface(
     Interface.Base
     ):
     """
@@ -110,6 +110,8 @@ class SessionDataManager(
     def getBrowserIdManager(self):
         """
         Returns the nearest acquirable browser id manager.
+
+        Raises SessionDataManagerErr if no browser id manager can be found.
 
         Permission required: Access session data
         """
