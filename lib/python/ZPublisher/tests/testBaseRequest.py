@@ -43,6 +43,13 @@ class DummyObjectWithBPTH(DummyObjectBasic):
         REQUEST._hacked_path=1
 
 
+class DummyObjectWithBBT(DummyObjectBasic):
+    """ Dummy class with docstring.
+    """
+
+    def __bobo_traverse__(self, REQUEST, name):
+        raise AttributeError, name
+
 class DummyObjectWithBD(DummyObjectBasic):
     """Dummy class with docstring."""
 
@@ -53,6 +60,13 @@ class DummyObjectWithBD(DummyObjectBasic):
             raise RuntimeError('Infinite loop detected.')
         return self, self._default_path
 
+class DummyObjectWithBDBBT(DummyObjectWithBD):
+    """Dummy class with docstring."""
+
+    def __bobo_traverse__(self, REQUEST, name):
+        if name == self._default_path[0]:
+            return getattr(self, name)
+        raise AttributeError, name
 
 class TestBaseRequest(TestCase):
 
@@ -64,6 +78,8 @@ class TestBaseRequest(TestCase):
         self.f1._setObject('objWithDefaultNone', DummyObjectWithDefaultNone() )
         self.f1._setObject('objWithBPTH', DummyObjectWithBPTH() )
         self.f1._setObject('objWithBD', DummyObjectWithBD() )
+        self.f1._setObject('objWithBBT', DummyObjectWithBBT() )
+        self.f1._setObject('objWithBDBBT', DummyObjectWithBDBBT() )
 
     def makeBaseRequest(self):
         response = HTTPResponse()
@@ -130,6 +146,35 @@ class TestBaseRequest(TestCase):
         r = self.makeBaseRequest()
         self.f1.objWithBD._default_path = ['']
         self.failUnlessRaises(NotFound, r.traverse, 'folder/objWithBD')
+
+    def test_traverse_withBBT_handles_AttributeError(self):
+        # Test that if __bobo_traverse__ raises AttributeError
+        # that we get a NotFound
+        from ZPublisher import NotFound
+        r = self.makeBaseRequest()
+        self.failUnlessRaises(NotFound, r.traverse, 'folder/objWithBBT/bbt_foo')
+
+    def test_traverse_withBDBBT(self):
+        # Test for an object which has a __browser_default__
+        # and __bobo_traverse__
+        # __bobo_traverse__ should return the object
+        # pointed by __browser_default__
+        r = self.makeBaseRequest()
+        self.f1.objWithBDBBT._default_path = ['view']
+        r.traverse('folder/objWithBDBBT')
+        self.assertEqual(r.URL, '/folder/objWithBDBBT/view')
+        self.assertEqual(r.response.base, '/folder/objWithBDBBT/')
+
+    def test_traverse_withBDBBT_NotFound(self):
+        # Test for an object which has a __browser_default__
+        # and __bobo_traverse__
+        # __bobo_traverse__ should raise an AttributeError, which will
+        # raise a NotFound
+        from ZPublisher import NotFound
+        r = self.makeBaseRequest()
+        self.f1.objWithBDBBT._default_path = ['xxx']
+        r = self.makeBaseRequest()
+        self.failUnlessRaises(NotFound, r.traverse, 'folder/objWithBDBBT')
 
     def test_traverse_slash(self):
         r = self.makeBaseRequest()

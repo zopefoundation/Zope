@@ -64,6 +64,11 @@ Zope Changes
       - If a PROPPATCH element value contains only a CDATA section,
         store the CDATA contents only.
 
+      - Catch AttributeErrors and KeyErrors raised from
+        __bobo_traverse__ and convert them to NotFound. In debug mode
+        a more verbose error message is issued, the same way it's done
+        on attribute/item traversal.
+
   Zope 2.8a1
 
 
