@@ -78,6 +78,10 @@ Zope Changes
         - The control panel process id display now also includes the
           thread id.
 
+        - The Zope start script, 'start', is now written in a
+          location-independent manner, making it a little easier to
+          move Zope sites around after installation.
+
       Features Changed
 
         Zope 2.0 introduces a new HTML DTML syntax that, among other
