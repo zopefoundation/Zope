@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
 import time, string
 from ZPublisher.Converters import type_converters
@@ -182,14 +182,12 @@ class PropertySheet(Persistent, Implicit):
 
     def propertyValues(self):
         # Return a list of property values.
-        vself=self.v_self()
-        return map(lambda i,s=vself: s.getProperty(i['id']),
+        return map(lambda i, s=self: s.getProperty(i['id']),
                    self.propertyMap())
 
     def propertyItems(self):
         # Return a list of (id, property) tuples.
-        vself=self.v_self()
-        return map(lambda i,s=vself: (i['id'], s.getProperty(i['id'])), 
+        return map(lambda i, s=self: (i['id'], s.getProperty(i['id'])), 
                    self.propertyMap())
 
     def propertyInfo(self, id):
@@ -211,14 +209,19 @@ class PropertySheet(Persistent, Implicit):
     def dav__propstat(self, url, allprop, vals, join=string.join):
         # The dav__propstat method returns a chunk of xml containing
         # one or more propstat elements indicating property names,
-        # values, errors and status codes.
+        # values, errors and status codes. This is called by some
+        # of the WebDAV support machinery. If a property set does
+        # not support WebDAV, just override this method to return
+        # an empty string.
         propstat='<d:propstat%s>\n' \
                  '  <d:prop>\n' \
                  '%s\n' \
                  '  </d:prop>\n' \
                  '  <d:status>HTTP/1.1 %s</d:status>\n' \
-                 '</d:propstat>'        
+                 '</d:propstat>'
         result=[]
+        if not self.propertyMap():
+            return ''
         if not allprop and not vals:
             # propname request
             for name in self.propertyIds():
@@ -454,7 +457,7 @@ class PropertySheets(Implicit):
         for propset in self.__propsets__():
             if propset.id==name:
                 return propset.__of__(self)
-        raise 'Not Found', name
+        return getattr(self, name)
 
     def __getitem__(self, n):
         return self.__propsets__()[n].__of__(self)
@@ -468,8 +471,8 @@ class PropertySheets(Implicit):
     def manage_addPropertySheet(self, id, ns):
         """ """
         md={'xmlns':ns}
-        ps=PropertySet(id, md)
-        self.addPropertySet(ps)
+        ps=PropertySheet(id, md)
+        self.addPropertySheet(ps)
         return 'OK'
 
     def addPropertySheet(self, propset):
