@@ -1090,7 +1090,6 @@ setup(
 
     packages=['Products.Five', 'Products.Five.tests'],
     data_files=[['Products/Five', ['Products/Five/*']],
-                ['Products/Five/demo', ['Products/Five/demo/*']],
                 ['Products/Five/doc', ['Products/Five/doc/*']],
                 ['Products/Five/skel', ['Products/Five/skel/*']],
                 ['Products/Five/tests', ['Products/Five/tests/*']],
