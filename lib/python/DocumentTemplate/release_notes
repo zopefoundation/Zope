@@ -1,0 +1,124 @@
+DocumentTemplate releases
+
+      - There is a new user's guide in HTML and PDF formats with
+        table of contents and index.
+
+      - Import of some modules is delayed providing 30% faster imports.
+
+      - Several occurrences of 'from some_module import *' have been 
+        eliminated.
+
+      - No longer enable the through-the-web-editing interface by default.
+
+      - Made regex use thread safe.
+
+      - Added short-hand expr usage:
+
+           <!--#some_tag "foo.bar"-->
+
+        is not a short-hand for:
+
+           <!--#some_tag expr="foo.bar"-->
+
+      - Fixed bugs in error reporting.
+
+      - Handle valueless attributes a bit better.
+        In particular, if a valueless parameter is not
+        in the first position, it is not confused for a name,
+
+  2.1
+
+    This release has a number of new features and bug fixes.
+
+    Features
+
+      - The rendering code has been rearranged substantially to 
+        improve performance.  Most common rendering operations, like
+        simple-variable and conditional insertion are "inlined" in the
+        main rendering loop.  This avoids many method calls.
+
+        An unfortunate side effect of this change is that error
+        tracebacks are less informative.  This will be addressed in a
+        future and probably the next release.
+
+      - A new tag, 'with', has been added to simplify accessing
+        subobjects. For example, if the variable 'emp' is an instance,
+        the 'with' tag can be used to easily access attributes of 'emp'
+        without using an expression.
+
+      - A new 'raise' tag supports raising exceptions from
+        DocumentTemplates.  A future release will have a try/except tag.
+
+      - The special variable, '_', now provides namespace access in
+        addition to providing access to special "builtin" functions.
+
+      - Security-aware 'getattr' and 'hasattr' methods have been
+        added to the special '_' variable.
+
+      - New 'render' method for '_' to render expressions in much the
+        same way that the 'name' tag attribute automatically renders
+        retrieved objects by calling sub-templates and functions.
+
+    Bugs fixed
+
+      - A bug has been fixed in the handling of 'KeyError' exceptions
+        in rendering of conditional tags, like 'if' and 'unless'.  Now
+        an 'if' tag considers an undefined variable to be "false" as
+        described in the documentation.
+
+  2.0
+
+    The 2.0 release is a major rewrite of the original DocumentTemplate
+    implementation. One of the major implementation changes was to
+    break the implementation into multiple source files which can be
+    used as a ni package.  
+  
+    This release has a number of important features:
+  
+    - Slightly better performance,
+  
+    - Additional tag features, including:
+  
+	  - 'else' tags with 'in' tags,
+  
+	  - 'elif' tags in 'if' tags.
+  
+	  - Ability to use either '/' or 'end' in end tags.  For example,
+	    you can use '/if' or 'endif'.
+  
+	  - Names can be ommitted from end tags.
+  
+    - An expression feature that uses a form of "super safe python"
+      that prevents denial-of-service attacks, which is of concern of 
+      if document templates are edited through the web.
+  
+      A DocumentTemplate subclass can also define a 'validate' method::
+	
+	def validate(self, inst, parent, name, value, md):
+  
+      which validates access to the object given in the
+      argument, 'value' which was accessed by name, 'name', 
+      from the object, 'inst'.  The argument 'parent'
+      is the object that the value actually came from, which
+      is not 'inst' if the value was acquired.  The argument, 'md'
+      is the DocumentTemplate namespace object.
+  
+    - A new 'unless' tag, for inserting text if a condition is false.
+      This replaces the stand-alone 'else' tag, which is deprecated.
+  
+    - A new 'comment' tag.
+  
+      A 'comment' tag is not included in a compiled
+      DocumentTemplate, and is therefore more efficient than::
+  
+	 <!--#if expr="0"-->
+  
+    - A new 'raise' tag for raising exceptions in DocumentTemplates.
+      This is handy for validating inputs.  There will eventually be
+      a 'try' tag.
+  
+    - New 'in' tag variables for getting information about the start and 
+      end indexes of the current batch.
+
+  "Download DocumentTemplate 2.1":DocumentTemplate-2.1.tar.gz.
+
