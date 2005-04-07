@@ -142,7 +142,8 @@ Base_getattro(PyObject *obj, PyObject *name)
                              If the tp_descr_get of res is of_get, 
                              then call it. */
 
-                          if (res->ob_type->ob_type == &ExtensionClassType
+                          if (PyObject_TypeCheck(res->ob_type,
+                                                 &ExtensionClassType)
                               && res->ob_type->tp_descr_get != NULL)
                             res = res->ob_type->tp_descr_get(
                                                  res, obj, 
@@ -603,6 +604,7 @@ static PyTypeObject ExtensionClassType = {
         /* tp_as_buffer      */ 0,
         /* tp_flags          */ Py_TPFLAGS_DEFAULT
                                 | Py_TPFLAGS_HAVE_GC
+                                | Py_TPFLAGS_BASETYPE
                                 ,
 	/* tp_doc            */ "Meta-class for extension classes",
         /* tp_traverse       */ (traverseproc)0,

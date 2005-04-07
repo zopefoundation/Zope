@@ -1,0 +1,114 @@
+Basic ZClass Tests
+==================
+
+We can create ZClasses from Python, It's a bit complicated, as
+ZClasses were designed mainly to be used from the web.
+
+First, we need to install the ZClass-aware class factory in our
+database:
+
+    >>> import Zope2.App.ClassFactory
+    >>> some_database.classFactory = Zope2.App.ClassFactory.ClassFactory
+
+To do anything, we need a working Zope object space:
+
+    >>> conn = some_database.open()
+    >>> from OFS.Application import Application
+    >>> app = Application()
+    >>> conn.root()['Application'] = app
+    >>> from OFS.Application import initialize
+    >>> initialize(app)
+
+Once we have an object space, we need to create a product to hold the ZClass:
+
+    >>> app.Control_Panel.Products.manage_addProduct('test', '')
+    >>> test = app.Control_Panel.Products['test']
+
+Then we can create the ZClass in the product:
+
+    >>> test.manage_addZClass('C', zope_object=True,  CreateAFactory=True)
+
+Having created a ZClass, we can create an instance:
+
+    >>> c = test.C()
+    >>> c._setId('c')
+    >>> app._setObject('c', c)
+    'c'
+
+Now, ZClass instances aren't very interesting by themselves.  We can
+give them data by defining property sheets:
+
+    >>> test.C.propertysheets.common.manage_addCommonSheet('basic', '')
+    >>> test.C.propertysheets.common['basic'].manage_addProperty(
+    ...     'x', 'hee ', 'string')
+    >>> app.c.x
+    'hee '
+    >>> test.C.propertysheets.common['basic'].manage_addProperty(
+    ...                   'y', 42, 'int')
+    >>> app.c.y
+    42
+
+Of course, we can change the data:
+
+    >>> app.c.x = 'hi '
+    >>> app.c.y = 3
+    >>> app.c.x, app.c.y
+    ('hi ', 3)
+
+We can also add methods, such as Python scripts:
+
+    >>> test.C.propertysheets.methods.manage_addProduct[
+    ...      'PythonScripts'].manage_addPythonScript('eek')
+    ''
+    >>> test.C.propertysheets.methods['eek'].ZPythonScript_edit('',
+    ...      'return container.x * container.y')
+
+    >>> app.c.eek()
+    'hi hi hi '
+
+Let's commit our changes:
+
+    >>> import transaction
+    >>> transaction.commit()
+
+We can access the class in another connection. We'll ise an explicit
+transaction manager so that we can use the second connection without
+creating a separate thread:
+
+    >>> tm2 = transaction.TransactionManager()
+    >>> conn2 = some_database.open(txn_mgr=tm2)
+    >>> app2 = conn2.root()['Application']
+    >>> test2 = app2.Control_Panel.Products['test']
+    >>> c2 = test2.C()
+    >>> c2._setId('c2')
+    >>> app2._setObject('c2', c2)
+    'c2'
+
+    >>> app2.c2.x = '*'
+    >>> print app2.c2.x, app2.c2.y, app2.c2.eek(), '!'
+    * 42 ****************************************** !
+
+    >>> print app.c.x, app.c.y, app.c.eek(), '!'
+    hi  3 hi hi hi  !
+
+    >>> tm2.commit()
+
+
+Of course, we should be able to see the new object created in the
+other connection:
+
+    >>> conn.sync()
+    >>> app.c2.eek()
+    '******************************************'
+
+We can copy instances:
+
+    >>> c3 = app.c2._getCopy(app)
+    >>> c3 is app.c2.aq_base
+    False
+
+    >>> c3.eek()
+    '******************************************'
+
+    >>> c3.__class__ is app.c2.__class__
+    True

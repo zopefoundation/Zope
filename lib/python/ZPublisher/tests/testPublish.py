@@ -267,7 +267,7 @@ def testPublisher():
     pass
 
 
-import doctest
+from zope.testing import doctest
 
 def test_suite():
     return doctest.DocTestSuite()

@@ -57,7 +57,7 @@ $Id: tests.py,v 1.2 2003/11/28 16:46:39 jim Exp $
 
 import ThreadLock, threading, time
 import unittest
-from doctest import DocTestSuite
+from zope.testing.doctest import DocTestSuite
 
 def test_suite():
     return unittest.TestSuite((

@@ -709,7 +709,35 @@ def test_inheriting___doc__():
 
     """
 
-from doctest import DocTestSuite
+def test___of___w_metaclass_instance():
+    """When looking for extension class instances, need to handle meta classes
+
+    >>> class C(Base):
+    ...     pass
+
+    >>> class O(Base):
+    ...     def __of__(self, parent):
+    ...         print '__of__ called on an O'
+
+    >>> class M(ExtensionClass):
+    ...     pass
+
+    >>> class X:
+    ...     __metaclass__ = M
+    ...     
+
+    >>> class S(X, O):
+    ...     pass
+
+    >>> c = C()
+    >>> c.s = S()
+    >>> c.s
+    __of__ called on an O
+
+    """
+
+
+from zope.testing.doctest import DocTestSuite
 import unittest
 
 def test_suite():

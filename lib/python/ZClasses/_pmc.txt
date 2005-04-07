@@ -1,0 +1,174 @@
+Persistent Extension Classes
+============================
+
+The _pmc module provides a meta class that can be used to implement
+persistent extension classes for ZClasses.
+
+Persistent classes have the following properties:
+
+- They cannot be turned into ghosts
+
+- They can only contain picklable subobjects
+
+Let's look at an example:
+
+    >>> def __init__(self, name):
+    ...     self.name = name
+
+    >>> def foo(self):
+    ...     return self.name, self.kind
+
+    >>> import ZClasses._pmc
+    >>> class C:
+    ...     __metaclass__ = ZClasses._pmc.ZClassPersistentMetaClass
+    ...     __init__ = __init__
+    ...     foo = foo
+    ...     kind = 'sample'
+
+This example is obviously a bit contrived. In particular, we defined
+the methods outside of the class. Why?  Because all of the items in a
+persistent class must be picklable.  We defined the methods as global
+functions to make them picklable.
+
+The class we created works a lot like other persistent objects.  It
+has standard standard persistent attributes:
+
+    >>> C._p_oid
+    >>> C._p_jar
+    >>> C._p_serial
+    >>> C._p_changed
+    False
+
+Because we haven't saved the object, the jar, oid, and serial are all
+None and it's not changed.
+
+We can create and use instances of the class:
+
+    >>> c = C('first')
+    >>> c.foo()
+    ('first', 'sample')
+
+We can modify the class and none of the persistent attributes will
+change because the object hasn't been saved.
+
+    >>> def bar(self):
+    ...     print 'bar', self.name
+    >>> C.bar = bar
+    >>> c.bar()
+    bar first
+
+    >>> C._p_oid
+    >>> C._p_jar
+    >>> C._p_serial
+    >>> C._p_changed
+    False
+
+Now, we can store the class in a database. We have to be careful,
+however, to use the ZClass-aware class factory so that we can find
+ZClasses, which are stored in the database, rather than in modules:
+
+    >>> import Zope2.App.ClassFactory
+    >>> some_database.classFactory = Zope2.App.ClassFactory.ClassFactory
+
+    >>> connection = some_database.open()
+    >>> connection.root()['C'] = C
+    >>> import transaction
+    >>> transaction.commit()
+
+Now, if we look at the persistence variables, we'll see that they have
+values:
+
+    >>> C._p_oid
+    '\x00\x00\x00\x00\x00\x00\x00\x01'
+    >>> C._p_jar is not None
+    True
+    >>> C._p_serial is not None
+    True
+    >>> C._p_changed
+    False
+
+Now, if we modify the class:
+
+    >>> def baz(self):
+    ...     print 'baz', self.name
+    >>> C.baz = baz
+    >>> c.baz()
+    baz first
+
+We'll see that the class has changed:
+
+    >>> C._p_changed
+    True
+
+If we abort the transaction:
+
+    >>> transaction.abort()
+
+Then the class will return to it's prior state:
+
+    >>> c.baz()
+    Traceback (most recent call last):
+    ...
+    AttributeError: baz
+
+    >>> c.bar()
+    bar first
+
+We can open another connection and access the class there. Let's do
+that in another thread:
+
+    >>> import threading
+    >>> def run(func):
+    ...     thread = threading.Thread(target=func)
+    ...     thread.start()
+    ...     thread.join()
+
+    >>> def read_class():
+    ...     connection = some_database.open()
+    ...     C = connection.root()['C']
+    ...     c = C('other')
+    ...     c.bar()
+    ...     connection.close()
+
+    >>> run(read_class)
+    bar other
+
+If we make changes without commiting them:
+
+    >>> C.bar = baz
+    >>> c.bar()
+    baz first
+
+Other connections/threads are unaffected:
+
+    >>> run(read_class)
+    bar other
+
+Until we commit:
+
+    >>> transaction.commit()
+    >>> run(read_class)
+    baz other
+
+Similarly, we don't see changes made in other connextions:
+
+    >>> def write_class():
+    ...     connection = some_database.open()
+    ...     C = connection.root()['C']
+    ...     C.color = 'red'
+    ...     transaction.commit()
+    ...     connection.close()
+
+    >>> run(write_class)
+
+    >>> c.color
+    Traceback (most recent call last):
+    ...
+    AttributeError: color
+
+until we sync:
+
+    >>> connection.sync()
+    >>> c.color
+    'red'
+

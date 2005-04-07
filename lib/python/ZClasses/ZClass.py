@@ -22,6 +22,7 @@ from ComputedAttribute import ComputedAttribute
 from Products.PythonScripts.PythonScript import PythonScript
 from zExceptions import BadRequest, Redirect
 import webdav.Collection
+import ZClasses._pmc
 
 import transaction
 
@@ -93,7 +94,18 @@ from OFS.misc_ import p_
 p_.ZClass_Icon=Globals.ImageFile('class.gif', globals())
 
 class PersistentClass(Base, webdav.Collection.Collection ):
-    def __class_init__(self): pass
+
+    __metaclass__ = ZClasses._pmc.ZClassPersistentMetaClass
+
+    # We need this class to be treated as a normal global class, even
+    # though it is an instance of ZClassPersistentMetaClass.
+    # Subclasses should be stored in the database.  See
+    # _pmc._p_DataDescr.__get__.
+    
+    __global_persistent_class_not_stored_in_DB__ = True
+    
+    def __class_init__(self):
+        pass
 
 manage_addZClassForm=Globals.DTMLFile(
     'dtml/addZClass', globals(),
@@ -116,12 +128,6 @@ def find_class(ob, name):
             continue
         raise AttributeError, name
 
-def dbVersionEquals(ver):
-    # A helper function to isolate db version checking.
-    return hasattr(Globals, 'DatabaseVersion') and \
-       Globals.DatabaseVersion == ver
-
-
 bad_id=re.compile('[^a-zA-Z0-9_]').search
 
 def manage_addZClass(self, id, title='', baseclasses=[],
@@ -129,6 +135,7 @@ def manage_addZClass(self, id, title='', baseclasses=[],
                      zope_object=0):
     """Add a Z Class
     """
+    
     if bad_id(id) is not None:
         raise BadRequest, (
             'The id %s is invalid as a class name.' % id)
@@ -337,8 +344,6 @@ class ZClass( Base
 
     changeClassId__roles__ = ()  # Private
     def changeClassId(self, newid=None):
-        if not dbVersionEquals('3'):
-            return
         if newid is None: newid=self._new_class_id()
         self._unregister()
         if newid:
@@ -413,16 +418,12 @@ class ZClass( Base
         self.propertysheets.methods.manage_afterClone(item)
 
     def manage_afterAdd(self, item, container):
-        if not dbVersionEquals('3'):
-            return
         if not self._zclass_.__module__:
             self.setClassAttr('__module__', self._new_class_id())
         self._register()
         self.propertysheets.methods.manage_afterAdd(item, container)
 
     def manage_beforeDelete(self, item, container):
-        if not dbVersionEquals('3'):
-            return
         self._unregister()
         self.propertysheets.methods.manage_beforeDelete(item, container)
 
@@ -517,7 +518,7 @@ class ZClass( Base
     def setClassAttr(self, name, value):
         c=self._zclass_
         setattr(c, name, value)
-        if not c._p_changed:
+        if (not c._p_changed) and (c._p_jar is not None):
             transaction.get().register(c)
             c._p_changed=1
 
@@ -525,7 +526,7 @@ class ZClass( Base
     def delClassAttr(self, name):
         c=self._zclass_
         delattr(c, name)
-        if not c._p_changed:
+        if (not c._p_changed) and (c._p_jar is not None):
             transaction.get().register(c)
             c._p_changed=1
 

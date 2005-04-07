@@ -175,11 +175,11 @@ static struct ExtensionClassCAPIstruct {
 
 /* The following macro checks whether a type is an extension class: */
 #define PyExtensionClass_Check(TYPE) \
-  (((PyObject*)(TYPE))->ob_type == ECExtensionClassType)
+  PyObject_TypeCheck((PyObject*)(TYPE), ECExtensionClassType)
 
 /* The following macro checks whether an instance is an extension instance: */
 #define PyExtensionInstance_Check(INST) \
-  (((PyObject*)(INST))->ob_type->ob_type == ECExtensionClassType)
+  PyObject_TypeCheck(((PyObject*)(INST))->ob_type, ECExtensionClassType)
 
 #define CHECK_FOR_ERRORS(MESS) 
 
@@ -213,7 +213,7 @@ static PyExtensionClass NAME ## Type = { PyObject_HEAD_INIT(NULL) 0, # NAME, \
 
 /* Check whether an object has an __of__ method for returning itself
    in the context of it's container. */
-#define has__of__(O) ((O)->ob_type->ob_type == ECExtensionClassType \
+#define has__of__(O) (PyObject_TypeCheck((O)->ob_type, ECExtensionClassType) \
                       && (O)->ob_type->tp_descr_get != NULL)
 
 /* The following macros are used to check whether an instance
