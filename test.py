@@ -278,8 +278,7 @@ class ImmediateTestResult(unittest._TextTestResult):
         elif self.dots:
             self.stream.write(prefix[0])
             
-        if not self._progress:
-            errlist.append((test, tb))
+        errlist.append((test, tb))
 
     def startTest(self, test):
         if self._progress:
