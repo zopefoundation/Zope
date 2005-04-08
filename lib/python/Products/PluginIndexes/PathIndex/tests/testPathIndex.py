@@ -11,7 +11,7 @@
 #
 ##############################################################################
 
-import os, sys, unittest
+import unittest
 
 from Products.PluginIndexes.PathIndex.PathIndex import PathIndex
 
