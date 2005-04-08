@@ -1,5 +1,5 @@
 # Copyright (c) 2004 Zope Corporation and Plone Solutions
-# BSD license
+# ZPL V 2.1 license
 
 import os, sys
 if __name__ == '__main__':
@@ -8,7 +8,7 @@ if __name__ == '__main__':
 from Products.PluginIndexes.PathIndex.tests import epitc
 
 class TestPathIndex(epitc.PathIndexTestCase):
-    """ Test ExtendedPathIndex objects """
+    """ Test PathIndex objects """
 
     def testEmpty(self):
         self.assertEqual(self._index.numObjects() ,0)
