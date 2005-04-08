@@ -42,7 +42,8 @@ from ZRPythonExpr import _SecureModuleImporter
 from ZRPythonExpr import call_with_ns
 from DeferExpr import DeferWrapper
 from DeferExpr import DeferExpr
-
+from DeferExpr import LazyWrapper
+from DeferExpr import LazyExpr
 
 _engine = None
 def getEngine():
@@ -62,6 +63,7 @@ def installHandlers(engine):
     reg('python', PythonExpr)
     reg('not', NotExpr)
     reg('defer', DeferExpr)
+    reg('lazy', LazyExpr)
 
 SecureModuleImporter = _SecureModuleImporter()
 
