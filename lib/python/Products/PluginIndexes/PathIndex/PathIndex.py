@@ -57,11 +57,30 @@ class PathIndex(Persistent, SimpleItem):
 
     query_options = ("query", "level", "operator", "depth", "navtree")
 
-    def ___init__(self,id,caller=None):
+    def __init__(self, id, extra=None, caller=None):
+        """ PathIndex supports indexed_attrs """
+
+        def get(o, k, default):
+            if isinstance(o, dict):
+                return o.get(k, default)
+            else:
+                return getattr(o, k, default)
+
         self.id = id
         self.operators = ('or','and')
         self.useOperator = 'or'
         self.clear()
+
+        attrs = get(extra, 'indexed_attrs', None)
+        if attrs is None:
+            return
+        if isinstance(attrs, str):
+            attrs = attrs.split(',')
+        attrs = filter(None, [a.strip() for a in attrs])
+
+        if attrs:
+            # We only index the first attribute so snip off the rest
+            self.indexed_attrs = tuple(attrs[:1])
 
     def clear(self):
         self._depth = 0
@@ -122,26 +141,6 @@ class PathIndex(Persistent, SimpleItem):
 
 
 
-    def __init__(self, id, extra=None, caller=None):
-        """ ExtendedPathIndex supports indexed_attrs """
-        self.___init__( id, caller)
-
-        def get(o, k, default):
-            if isinstance(o, dict):
-                return o.get(k, default)
-            else:
-                return getattr(o, k, default)
-
-        attrs = get(extra, 'indexed_attrs', None)
-        if attrs is None:
-            return
-        if isinstance(attrs, str):
-            attrs = attrs.split(',')
-        attrs = filter(None, [a.strip() for a in attrs])
-
-        if attrs:
-            # We only index the first attribute so snip off the rest
-            self.indexed_attrs = tuple(attrs[:1])
 
     def index_object(self, docid, obj ,threshold=100):
         """ hook for (Z)Catalog """
