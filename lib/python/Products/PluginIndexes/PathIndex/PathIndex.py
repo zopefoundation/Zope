@@ -55,9 +55,9 @@ class PathIndex(Persistent, SimpleItem):
          'help': ('PathIndex','PathIndex_Settings.stx')},
     )
 
-    query_options = ("query", "level", "operator")
+    query_options = ("query", "level", "operator", "depth", "navtree")
 
-    def __init__(self,id,caller=None):
+    def ___init__(self,id,caller=None):
         self.id = id
         self.operators = ('or','and')
         self.useOperator = 'or'
@@ -87,10 +87,77 @@ class PathIndex(Persistent, SimpleItem):
         if level > self._depth:
             self._depth = level
 
+
+    def numObjects(self):
+        """ return the number distinct values """
+        return len(self._unindex)
+
+    def indexSize(self):
+        """ return the number of indexed objects"""
+        return len(self)
+
+    def __len__(self):
+        return self._length()
+
+    def hasUniqueValuesFor(self, name):
+        """has unique values for column name"""
+        return name == self.id
+
+    def uniqueValues(self, name=None, withLength=0):
+        """ needed to be consistent with the interface """
+        return self._index.keys()
+
+    def getEntryForObject(self, docid, default=_marker):
+        """ Takes a document ID and returns all the information 
+            we have on that specific object. 
+        """
+        try:
+            return self._unindex[docid]
+        except KeyError:
+            # XXX Why is default ignored?
+            return None
+
+
+
+
+
+
+    def __init__(self, id, extra=None, caller=None):
+        """ ExtendedPathIndex supports indexed_attrs """
+        self.___init__( id, caller)
+
+        def get(o, k, default):
+            if isinstance(o, dict):
+                return o.get(k, default)
+            else:
+                return getattr(o, k, default)
+
+        attrs = get(extra, 'indexed_attrs', None)
+        if attrs is None:
+            return
+        if isinstance(attrs, str):
+            attrs = attrs.split(',')
+        attrs = filter(None, [a.strip() for a in attrs])
+
+        if attrs:
+            # We only index the first attribute so snip off the rest
+            self.indexed_attrs = tuple(attrs[:1])
+
     def index_object(self, docid, obj ,threshold=100):
         """ hook for (Z)Catalog """
 
-        f = getattr(obj, self.id, None)
+        # PathIndex first checks for an attribute matching its id and
+        # falls back to getPhysicalPath only when failing to get one.
+        # The presence of 'indexed_attrs' overrides this behavior and
+        # causes indexing of the custom attribute.
+
+        attrs = getattr(self, 'indexed_attrs', None)
+        if attrs:
+            index = attrs[0]
+        else:
+            index = self.id
+
+        f = getattr(obj, index, None)
         if f is not None:
             if safe_callable(f):
                 try:
@@ -100,7 +167,7 @@ class PathIndex(Persistent, SimpleItem):
             else:
                 path = f
 
-            if not isinstance(path, (StringType, TupleType)):
+            if not isinstance(path, (str, tuple)):
                 raise TypeError('path value must be string or tuple of strings')
         else:
             try:
@@ -108,15 +175,25 @@ class PathIndex(Persistent, SimpleItem):
             except AttributeError:
                 return 0
 
-        if isinstance(path, (ListType, TupleType)):
+        if isinstance(path, (list, tuple)):
             path = '/'+ '/'.join(path[1:])
         comps = filter(None, path.split('/'))
-       
+
+        # Make sure we reindex properly when path change
+        if self._unindex.has_key(docid) and self._unindex.get(docid) != path:
+            self.unindex_object(docid)
+
         if not self._unindex.has_key(docid):
+            if hasattr(self, '_migrate_length'):
+                self._migrate_length()
             self._length.change(1)
 
         for i in range(len(comps)):
             self.insertEntry(comps[i], docid, i)
+
+        # Add terminator
+        self.insertEntry(None, docid, len(comps)-1)
+
         self._unindex[docid] = path
         return 1
 
@@ -124,15 +201,17 @@ class PathIndex(Persistent, SimpleItem):
         """ hook for (Z)Catalog """
 
         if not self._unindex.has_key(docid):
-            LOG.error('Attempt to unindex nonexistent document with id %s'
-                      % docid)
+            LOG.error('Attempt to unindex nonexistent document'
+                     ' with id %s' % docid)
             return
 
-        comps =  self._unindex[docid].split('/')
+        # There is an assumption that paths start with /
+        path = self._unindex[docid]
+        if not path.startswith('/'):
+            path = '/'+path
+        comps =  path.split('/')
 
-        for level in range(len(comps[1:])):
-            comp = comps[level+1]
-
+        def unindex(comp, level, docid=docid):
             try:
                 self._index[comp][level].remove(docid)
 
@@ -142,13 +221,26 @@ class PathIndex(Persistent, SimpleItem):
                 if not self._index[comp]:
                     del self._index[comp]
             except KeyError:
-                LOG.error('Attempt to unindex document with id %s failed'
-                          % docid)
+                LOG.error('Attempt to unindex document'
+                          ' with id %s failed' % docid)
+                return
 
+        for level in range(len(comps[1:])):
+            comp = comps[level+1]
+            unindex(comp, level)
+
+        # Remove the terminator
+        level = len(comps[1:])
+        comp = None
+        unindex(comp, level-1)
+
+        if hasattr(self, '_migrate_length'):
+            self._migrate_length()
+                
         self._length.change(-1)
         del self._unindex[docid]
 
-    def search(self, path, default_level=0):
+    def search(self, path, default_level=0, depth=-1, navtree=0):
         """
         path is either a string representing a
         relative URL or a part of a relative URL or
@@ -158,29 +250,58 @@ class PathIndex(Persistent, SimpleItem):
         level <  0  not implemented yet
         """
 
-        if isinstance(path, StringType):
-            level = default_level
+        if isinstance(path, str):
+            startlevel = default_level
         else:
-            level = int(path[1])
+            startlevel = int(path[1])
             path  = path[0]
 
         comps = filter(None, path.split('/'))
 
+        # Make sure that we get depth = 1 if in navtree mode
+        # unless specified otherwise
+
+        if depth == -1:
+            depth = 0 or navtree
+
         if len(comps) == 0:
-            return IISet(self._unindex.keys())
+            if not depth and not navtree:
+                return IISet(self._unindex.keys())
 
-        if level >= 0:
-            results = []
-            for i in range(len(comps)):
-                comp = comps[i]
-                if not self._index.has_key(comp): return IISet()
-                if not self._index[comp].has_key(level+i): return IISet()
-                results.append( self._index[comp][level+i] )
+        if startlevel >= 0:
 
-            res = results[0]
-            for i in range(1,len(results)):
-                res = intersection(res,results[i])
-            return res
+            pathset = None # Same as pathindex
+            navset  = None # For collecting siblings along the way
+            depthset = None # For limiting depth
+
+            if navtree and depth and \
+                   self._index.has_key(None) and \
+                   self._index[None].has_key(startlevel):
+                navset = self._index[None][startlevel]
+
+            for level in range(startlevel, startlevel+len(comps) + depth):
+                if level-startlevel < len(comps):
+                    comp = comps[level-startlevel]
+                    if not self._index.has_key(comp) or not self._index[comp].has_key(level): 
+                        # Navtree is inverse, keep going even for nonexisting paths
+                        if navtree:
+                            pathset = IISet()
+                        else:
+                            return IISet()
+                    else:
+                        pathset = intersection(pathset, self._index[comp][level])
+                    if navtree and depth and \
+                           self._index.has_key(None) and \
+                           self._index[None].has_key(level+depth):
+                        navset  = union(navset, intersection(pathset, self._index[None][level+depth]))
+                if level-startlevel >= len(comps) or navtree:
+                    if self._index.has_key(None) and self._index[None].has_key(level):
+                        depthset = union(depthset, intersection(pathset, self._index[None][level]))
+
+            if navtree:
+                return union(depthset, navset) or IISet()
+            else:
+                return intersection(pathset,depthset) or IISet()
 
         else:
             results = IISet()
@@ -197,17 +318,6 @@ class PathIndex(Persistent, SimpleItem):
                     results = union(results,ids)
             return results
 
-    def numObjects(self):
-        """ return the number distinct values """
-        return len(self._unindex)
-
-    def indexSize(self):
-        """ return the number of indexed objects"""
-        return len(self)
-
-    def __len__(self):
-        return self._length()
-
     def _apply_index(self, request, cid=''):
         """ hook for (Z)Catalog
             'request' --  mapping type (usually {"path": "..." }
@@ -222,6 +332,8 @@ class PathIndex(Persistent, SimpleItem):
 
         level    = record.get("level",0)
         operator = record.get('operator',self.useOperator).lower()
+        depth    = getattr(record, 'depth',-1) # Set to 0 or navtree in search - use getattr to get 0 value
+        navtree  = record.get('navtree',0)
 
         # depending on the operator we use intersection of union
         if operator == "or":  set_func = union
@@ -229,7 +341,7 @@ class PathIndex(Persistent, SimpleItem):
 
         res = None
         for k in record.keys:
-            rows = self.search(k,level)
+            rows = self.search(k,level, depth, navtree)
             res = set_func(res,rows)
 
         if res:
@@ -237,31 +349,20 @@ class PathIndex(Persistent, SimpleItem):
         else:
             return IISet(), (self.id,)
 
-    def hasUniqueValuesFor(self, name):
-        """has unique values for column name"""
-        return name == self.id
-
-    def uniqueValues(self, name=None, withLength=0):
-        """ needed to be consistent with the interface """
-        return self._index.keys()
-
     def getIndexSourceNames(self):
         """ return names of indexed attributes """
-        return ('getPhysicalPath', )
 
-    def getEntryForObject(self, docid, default=_marker):
-        """ Takes a document ID and returns all the information 
-            we have on that specific object. 
-        """
+        # By default PathIndex advertises getPhysicalPath even
+        # though the logic in index_object is different.
+
         try:
-            return self._unindex[docid]
-        except KeyError:
-            # XXX Why is default ignored?
-            return None
+            return tuple(self.indexed_attrs)
+        except AttributeError:
+            return ('getPhysicalPath',)
+
 
     index_html = DTMLFile('dtml/index', globals())
     manage_workspace = DTMLFile('dtml/managePathIndex', globals())
-
 
 manage_addPathIndexForm = DTMLFile('dtml/addPathIndex', globals())
 
