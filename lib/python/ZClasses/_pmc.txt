@@ -10,6 +10,8 @@ Persistent classes have the following properties:
 
 - They can only contain picklable subobjects
 
+- They don't live in regular file-system modules
+
 Let's look at an example:
 
     >>> def __init__(self, name):
@@ -22,6 +24,7 @@ Let's look at an example:
     >>> class C:
     ...     __metaclass__ = ZClasses._pmc.ZClassPersistentMetaClass
     ...     __init__ = __init__
+    ...     __module__ = '__zodb__'
     ...     foo = foo
     ...     kind = 'sample'
 
@@ -29,6 +32,12 @@ This example is obviously a bit contrived. In particular, we defined
 the methods outside of the class. Why?  Because all of the items in a
 persistent class must be picklable.  We defined the methods as global
 functions to make them picklable.
+
+Also note that we explictly set the module.  Persistent classes don't
+live in normal Python modules. Rather, they live in the database.  We
+use information in __module__ to record where in the database.  When
+we want to use a database, we will need to supply a custom class
+factory to load instances of the class.
 
 The class we created works a lot like other persistent objects.  It
 has standard standard persistent attributes:
@@ -63,17 +72,15 @@ change because the object hasn't been saved.
     >>> C._p_changed
     False
 
-Now, we can store the class in a database. We have to be careful,
-however, to use the ZClass-aware class factory so that we can find
-ZClasses, which are stored in the database, rather than in modules:
+Now, we can store the class in a database. We're going to use an
+explicit transaction manager so that we can show parallel transactions
+without having to use threads.
 
-    >>> import Zope2.App.ClassFactory
-    >>> some_database.classFactory = Zope2.App.ClassFactory.ClassFactory
-
-    >>> connection = some_database.open()
-    >>> connection.root()['C'] = C
     >>> import transaction
-    >>> transaction.commit()
+    >>> tm = transaction.TransactionManager()
+    >>> connection = some_database.open(txn_mgr=tm)
+    >>> connection.root()['C'] = C
+    >>> tm.commit()
 
 Now, if we look at the persistence variables, we'll see that they have
 values:
@@ -102,7 +109,7 @@ We'll see that the class has changed:
 
 If we abort the transaction:
 
-    >>> transaction.abort()
+    >>> tm.abort()
 
 Then the class will return to it's prior state:
 
@@ -114,23 +121,15 @@ Then the class will return to it's prior state:
     >>> c.bar()
     bar first
 
-We can open another connection and access the class there. Let's do
-that in another thread:
 
-    >>> import threading
-    >>> def run(func):
-    ...     thread = threading.Thread(target=func)
-    ...     thread.start()
-    ...     thread.join()
+We can open another connection and access the class there.
 
-    >>> def read_class():
-    ...     connection = some_database.open()
-    ...     C = connection.root()['C']
-    ...     c = C('other')
-    ...     c.bar()
-    ...     connection.close()
+    >>> tm2 = transaction.TransactionManager()
+    >>> connection2 = some_database.open(txn_mgr=tm2)
 
-    >>> run(read_class)
+    >>> C2 = connection2.root()['C']
+    >>> c2 = C2('other')
+    >>> c2.bar()
     bar other
 
 If we make changes without commiting them:
@@ -139,27 +138,26 @@ If we make changes without commiting them:
     >>> c.bar()
     baz first
 
-Other connections/threads are unaffected:
+    >>> C is C2
+    False
 
-    >>> run(read_class)
+Other connections are unaffected:
+
+    >>> connection2.sync()
+    >>> c2.bar()
     bar other
 
 Until we commit:
 
-    >>> transaction.commit()
-    >>> run(read_class)
+    >>> tm.commit()
+    >>> connection2.sync()
+    >>> c2.bar()
     baz other
 
-Similarly, we don't see changes made in other connextions:
+Similarly, we don't see changes made in other connections:
 
-    >>> def write_class():
-    ...     connection = some_database.open()
-    ...     C = connection.root()['C']
-    ...     C.color = 'red'
-    ...     transaction.commit()
-    ...     connection.close()
-
-    >>> run(write_class)
+    >>> C2.color = 'red'
+    >>> tm2.commit()
 
     >>> c.color
     Traceback (most recent call last):
@@ -172,3 +170,114 @@ until we sync:
     >>> c.color
     'red'
 
+Instances of Persistent Classes
+-------------------------------
+
+We can, of course, store instances of perstent classes in the
+database:
+
+    >>> c.color = 'blue'
+    >>> connection.root()['c'] = c
+    >>> tm.commit()
+
+    >>> connection2.sync()
+    >>> connection2.root()['c'].color
+    'blue'
+
+NOTE: If a non-persistent instance of a persistent class is copied,
+      the class may be copied as well. This is usually not the desired
+      result. 
+
+
+Persistent instances of persistent classes
+------------------------------------------
+
+Persistent instances of persistent classes are handled differently
+than normal instances.  When we copy a persistent instances of a
+persistent class, we want to avoid copying the class.
+
+Lets create a persistent class that subclasses Persistent:
+
+    >>> import persistent
+    >>> class P(persistent.Persistent, C):
+    ...     __module__ = '__zodb__'
+    ...     color = 'green'
+
+    >>> connection.root()['P'] = P
+
+    >>> import persistent.mapping
+    >>> connection.root()['obs'] = persistent.mapping.PersistentMapping()
+    >>> p = P('p')
+    >>> connection.root()['obs']['p'] = p
+    >>> tm.commit()
+
+You might be wondering why we didn't just stick 'p' into the root
+object. We created an intermediate persistent object instead.  We are
+storing persistent classes in the root object. To create a ghost for a
+persistent instance of a persistent class, we need to be able to be
+able to access the root object and it must be loaded first.  If the
+instance was in the root object, we'd be unable to create it while
+loading the root object.
+
+Now, if we try to load it, we get a broken oject:
+
+    >>> connection2.sync()
+    >>> connection2.root()['obs']['p']
+    <persistent broken __zodb__.P instance '\x00\x00\x00\x00\x00\x00\x00\x04'>
+
+because the module, "__zodb__" can't be loaded.  We need to provide a
+class factory that knows about this special module. Here we'll supply a
+sample class factory that looks up a class name in the database root
+if the module is "__zodb__".  It falls back to the normal class lookup 
+for other modules:
+
+    >>> from ZODB.broken import find_global
+    >>> def classFactory(connection, modulename, globalname):
+    ...     if modulename == '__zodb__':
+    ...        return connection.root()[globalname]
+    ...     return find_global(modulename, globalname)
+
+    >>> some_database.classFactory = classFactory
+
+Normally, the classFactory should be set before a database is opened. 
+We'll reopen the connections we're using.  We'll assign the old
+connections to a variable first to prevent getting them from the
+connection pool:
+
+    >>> old = connection, connection2
+    >>> connection = some_database.open(txn_mgr=tm)
+    >>> connection2 = some_database.open(txn_mgr=tm2)
+   
+Now, we can read the object:
+
+    >>> connection2.root()['obs']['p'].color
+    'green'
+    >>> connection2.root()['obs']['p'].color = 'blue'
+    >>> tm2.commit()
+
+    >>> connection.sync()
+    >>> p = connection.root()['obs']['p']
+    >>> p.color
+    'blue'
+
+Copying
+-------
+
+If we copy an instance via export/import, the copy and the original
+share the same class:
+
+    >>> file = connection.exportFile(p._p_oid)
+    >>> file.seek(0)
+    >>> cp = connection.importFile(file)
+    >>> cp.color
+    'blue'
+
+    >>> cp is not p
+    True
+
+    >>> cp.__class__ is p.__class__
+    True
+
+
+
+XXX test abort of import
