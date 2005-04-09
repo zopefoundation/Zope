@@ -138,7 +138,7 @@ class BasicTests(unittest.TestCase):
 
         if not isinstance(stxtxt, UnicodeType):
             res = HTML(stxtxt,level=1,header=0)
-            if res.find(expected)==-1:
+            if not expected in res:
                 print "Text:     ",stxtxt
                 print "Converted:",res
                 print "Expected: ",expected
@@ -148,8 +148,10 @@ class BasicTests(unittest.TestCase):
             ustxtxt = stxtxt
         else:
             ustxtxt = unicode(stxtxt)
+
         res = HTML(ustxtxt,level=1,header=0)
-        if res.find(expected)==-1:
+        if not expected in res:
+
             print "Text:     ",stxtxt.encode('latin-1')
             print "Converted:",res.encode('latin-1')
             print "Expected: ",expected.encode('latin-1')
@@ -210,12 +212,29 @@ class BasicTests(unittest.TestCase):
         '<code>"literal":http://www.zope.org/.</code>')
 
 
+    def testLink(self):
+        self._test('"foo":http://www.zope.org/foo/bar',
+                   '<p><a href="http://www.zope.org/foo/bar">foo</a></p>')
+
+        self._test('"foo":http://www.zope.org/foo/bar/%20x',
+                   '<p><a href="http://www.zope.org/foo/bar/%20x">foo</a></p>')
+
+        self._test('"foo":http://www.zope.org/foo/bar?arg1=1&arg2=2',
+                   '<p><a href="http://www.zope.org/foo/bar?arg1=1&arg2=2">foo</a></p>')
+     
     def testImgLink(self):
         self._test('"foo":img:http://www.zope.org/bar.gif',
-                   '<p><img src="http://www.zope.org/bar.gif" alt="foo" />')
+                   '<img src="http://www.zope.org/bar.gif" alt="foo">')
 
         self._test('"foo":img:http://www.zope.org:8080/bar.gif',
-                   '<p><img src="http://www.zope.org:8080/bar.gif" alt="foo" />')
+                   '<img src="http://www.zope.org:8080/bar.gif" alt="foo">')
+
+        self._test('"foo":img:http://www.zope.org:8080/foo/bar?arg=1',
+                   '<img src="http://www.zope.org:8080/foo/bar?arg=1" alt="foo">')
+
+        self._test('"foo":img:http://www.zope.org:8080/foo/b%20ar?arg=1',
+                   '<img src="http://www.zope.org:8080/foo/b%20ar?arg=1" alt="foo">')
+
 
     def XXXtestUnicodeContent(self):
         # This fails because ST uses the default locale to get "letters"

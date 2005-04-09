@@ -29,6 +29,9 @@ Zope Changes
 
     Bugs fixed
   
+      - Collector #1750: StructuredText: fixed handling of image URLs
+        with query string
+
       - Collector #1748: Fixed SIGSEGV in Acquisition
 
       - Hotfix_20050405:  classes defined in untrusted code could shadow

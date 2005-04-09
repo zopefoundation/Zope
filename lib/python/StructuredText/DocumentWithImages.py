@@ -18,18 +18,18 @@ class StructuredTextImage(StructuredTextMarkup):
     "A simple embedded image"
 
 class DocumentWithImages(DocumentClass):
-    """
-
-    """
+    """ Document with images """
 
     text_types = [
        'doc_img',
        ] + DocumentClass.text_types
 
+
     def doc_img(
         self, s,
-        expr1=re.compile('\"([ _a-zA-Z0-9*.:/;,\-\n\~]+)\":img:([a-zA-Z0-9\_\-.:/;,\n\~]+)').search,
+        expr1=re.compile('\"([ _a-zA-Z0-9*.:/;,\-\n\~]+)\":img:([a-zA-Z0-9%\_\-.:/\?=;,\n\~]+)').search,
         ):
+
 
         r=expr1(s)
         if r:
