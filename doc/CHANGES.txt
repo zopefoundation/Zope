@@ -14,7 +14,7 @@ Zope Changes
      especially to acquisition wrappers.
 
    - Renable C Zope security policy by implementing recent Python
-     changes in C, brining the Python and C implementations back in
+     changes in C, bringing the Python and C implementations back in
      sync.  See lib/python/AccessControl/ZopeSecurityPolicy.py.
 
    - Change acquisition wrappers to implement the descr get slot
@@ -29,6 +29,8 @@ Zope Changes
 
     Bugs fixed
   
+      - Collector #1748: Fixed SIGSEGV in Acquisition
+
       - Hotfix_20050405:  classes defined in untrusted code could shadow
         the roles of methods defined as protected by their bases.
 
