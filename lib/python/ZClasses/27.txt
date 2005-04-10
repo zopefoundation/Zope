@@ -12,7 +12,8 @@ Let's make sure we can load old ZClasses:
     >>> from Zope2.ClassFactory import ClassFactory
     >>> db.classFactory = ClassFactory
     >>> conn = db.open()
-    >>> ac = conn.root()['Application'].ac
+    >>> app = conn.root()['Application'] 
+    >>> ac = app.ac
     >>> ac.eek()
     'xxx'
     >>> ac.y = 2

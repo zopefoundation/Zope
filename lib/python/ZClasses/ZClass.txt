@@ -71,7 +71,7 @@ Let's commit our changes:
     >>> import transaction
     >>> transaction.commit()
 
-We can access the class in another connection. We'll ise an explicit
+We can access the class in another connection. We'll use an explicit
 transaction manager so that we can use the second connection without
 creating a separate thread:
 
@@ -107,8 +107,11 @@ We can copy instances:
     >>> c3 is app.c2.aq_base
     False
 
-    >>> c3.eek()
+    >>> app.c3 = c3
+    >>> app.c3.eek()
     '******************************************'
+
+But the copies share a common class:
 
     >>> c3.__class__ is app.c2.__class__
     True
