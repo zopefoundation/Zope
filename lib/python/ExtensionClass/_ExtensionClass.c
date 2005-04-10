@@ -301,10 +301,42 @@ EC_new(PyTypeObject *self, PyObject *args, PyObject *kw)
   return result;
 }
 
+/* set up __get__, if necessary */
+static int
+EC_init_of(PyTypeObject *self)
+{
+  PyObject *__of__;
+
+  __of__ = PyObject_GetAttr(OBJECT(self), str__of__);
+  if (__of__)
+    {
+      Py_DECREF(__of__);
+      if (self->tp_descr_get)
+        {
+          if (self->tp_descr_get != of_get)
+            {
+              PyErr_SetString(PyExc_TypeError,
+                              "Can't mix __of__ and descriptors");
+              return -1;
+            }
+        }
+      else
+        self->tp_descr_get = of_get;
+    }
+  else
+    {
+      PyErr_Clear();
+      if (self->tp_descr_get == of_get)
+        self->tp_descr_get = NULL;
+    }
+
+  return 0;
+}
+
 static int
 EC_init(PyTypeObject *self, PyObject *args, PyObject *kw)
 {
-  PyObject *__class_init__, *__of__, *r;
+  PyObject *__class_init__, *r;
 
   if (PyType_Type.tp_init(OBJECT(self), args, kw) < 0) 
     return -1; 
@@ -318,24 +350,8 @@ EC_init(PyTypeObject *self, PyObject *args, PyObject *kw)
         return -1;
     }
 
-  /* set up __get__, if necessary */
-  if (self->tp_descr_get != of_get)
-    {
-      __of__ = PyObject_GetAttr(OBJECT(self), str__of__);
-      if (__of__)
-        {
-          Py_DECREF(__of__);
-          if (self->tp_descr_get)
-            {
-              PyErr_SetString(PyExc_TypeError,
-                              "Can't mix __of__ and descriptors");
-              return -1;
-            }
-          self->tp_descr_get = of_get;
-        }
-      else
-        PyErr_Clear();
-    }
+  if (EC_init_of(self) < 0)
+    return -1;
 
   /* Call __class_init__ */
   __class_init__ = PyObject_GetAttr(OBJECT(self), str__class_init__);
@@ -635,10 +651,28 @@ debug(PyObject *self, PyObject *o)
   return Py_None;
 }
 
+static PyObject *
+pmc_init_of(PyObject *self, PyObject *args)
+{
+  PyObject *o;
+
+  if (! PyArg_ParseTuple(args, "O!", (PyObject *)&ExtensionClassType, &o))
+    return NULL;
+
+  if (EC_init_of((PyTypeObject *)o) < 0)
+    return NULL;
+
+  Py_INCREF(Py_None);
+  return Py_None;
+}
+
+
 /* List of methods defined in the module */
 
 static struct PyMethodDef ec_methods[] = {
   {"debug", (PyCFunction)debug, METH_O, ""},
+  {"pmc_init_of", (PyCFunction)pmc_init_of, METH_VARARGS, 
+   "Initialize __get__ for classes that define __of__"},
   {NULL,	 (PyCFunction)NULL, 0, NULL}		/* sentinel */
   };
 

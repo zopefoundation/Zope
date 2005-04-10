@@ -736,6 +736,76 @@ def test___of___w_metaclass_instance():
 
     """
 
+def test___of__set_after_creation():
+    """We may need to set __of__ after a class is created.
+
+    Normally, in a class's __init__, the initialization code checks for
+    an __of__ method and, if it isn't already set, sets __get__.
+
+    If a class is persistent and loaded from the database, we want
+    this to happen in __setstate__.  The pmc_init_of function allws us
+    to do that.
+
+    We'll create an extension class without a __of__. We'll also give
+    it a special meta class, just to make sure that this works with
+    funny metaclasses too:
+
+    >>> import ExtensionClass
+    >>> class M(ExtensionClass.ExtensionClass):
+    ...     "A meta class"
+    >>> class B(ExtensionClass.Base):
+    ...     __metaclass__ = M
+    ...     def __init__(self, name):
+    ...         self.name = name
+    ...     def __repr__(self):
+    ...         return self.name
+
+    >>> B.__class__ is M
+    True
+
+    >>> x = B('x')
+    >>> x.y = B('y')
+    >>> x.y
+    y
+
+    We define a __of__ method for B after the fact:
+
+    >>> def __of__(self, other):
+    ...     print '__of__(%r, %r)' % (self, other)
+    ...     return self
+
+    >>> B.__of__ = __of__
+
+    We see that this has no effect:
+
+    >>> x.y
+    y
+
+    Until we use pmc_init_of:
+
+    >>> ExtensionClass.pmc_init_of(B)
+    >>> x.y
+    __of__(y, x)
+    y
+    
+    Note that there is no harm in calling pmc_init_of multiple times:
+    
+    >>> ExtensionClass.pmc_init_of(B)
+    >>> ExtensionClass.pmc_init_of(B)
+    >>> ExtensionClass.pmc_init_of(B)
+    >>> x.y
+    __of__(y, x)
+    y
+
+    If we remove __of__, we'll go back to the behavior we had before:
+
+    >>> del B.__of__
+    >>> ExtensionClass.pmc_init_of(B)
+    >>> x.y
+    y
+    
+
+    """
 
 from zope.testing.doctest import DocTestSuite
 import unittest
