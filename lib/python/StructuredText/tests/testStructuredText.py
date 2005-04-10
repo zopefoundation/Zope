@@ -158,7 +158,6 @@ class BasicTests(unittest.TestCase):
             raise AssertionError, ("basic test failed for Unicode '%s'"
                                    % stxtxt)
 
-
     def testUnderline(self):
         self._test("xx _this is html_ xx",
                    "xx <u>this is html</u> xx")
@@ -179,38 +178,29 @@ class BasicTests(unittest.TestCase):
         self._test('<a href="index_html">index_html</a>',
                    '<a href="index_html">index_html</a>')
 
-
     def testUnderscoresInLiteral1(self):
-
         self._test("def __init__(self)",
                    "def __init__(self)")
 
     def testUnderscoresInLiteral2(self):
-
         self._test("this is '__a_literal__' eh",
                    "<code>__a_literal__</code>")
 
-
     def testUnderlinesWithoutWithspaces(self):
-
         self._test("Zopes structured_text is sometimes a night_mare",
                    "Zopes structured_text is sometimes a night_mare")
-
 
     def testAsterisksInLiteral(self):
         self._test("this is a '*literal*' eh",
         "<code>*literal*</code>")
 
-
     def testDoubleAsterisksInLiteral(self):
         self._test("this is a '**literal**' eh",
         "<code>**literal**</code>")
 
-
     def testLinkInLiteral(self):
         self._test("this is a '\"literal\":http://www.zope.org/.' eh",
         '<code>"literal":http://www.zope.org/.</code>')
-
 
     def testLink(self):
         self._test('"foo":http://www.zope.org/foo/bar',
@@ -224,16 +214,16 @@ class BasicTests(unittest.TestCase):
      
     def testImgLink(self):
         self._test('"foo":img:http://www.zope.org/bar.gif',
-                   '<img src="http://www.zope.org/bar.gif" alt="foo">')
+                   '<img src="http://www.zope.org/bar.gif" alt="foo" />')
 
         self._test('"foo":img:http://www.zope.org:8080/bar.gif',
-                   '<img src="http://www.zope.org:8080/bar.gif" alt="foo">')
+                   '<img src="http://www.zope.org:8080/bar.gif" alt="foo" />')
 
         self._test('"foo":img:http://www.zope.org:8080/foo/bar?arg=1',
-                   '<img src="http://www.zope.org:8080/foo/bar?arg=1" alt="foo">')
+                   '<img src="http://www.zope.org:8080/foo/bar?arg=1" alt="foo" />')
 
         self._test('"foo":img:http://www.zope.org:8080/foo/b%20ar?arg=1',
-                   '<img src="http://www.zope.org:8080/foo/b%20ar?arg=1" alt="foo">')
+                   '<img src="http://www.zope.org:8080/foo/b%20ar?arg=1" alt="foo" />')
 
 
     def XXXtestUnicodeContent(self):
