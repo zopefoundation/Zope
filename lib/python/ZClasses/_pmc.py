@@ -125,6 +125,22 @@ class _p_MethodDescr(object):
 
 special_class_descrs = '__dict__', '__weakref__'
 
+
+def _p_maybeupdate(self, name):
+    get = self._p_class_dict.get
+    data_manager = get('_p_jar')
+
+    if (
+        (data_manager is not None)
+        and          
+        (get('_p_oid') is not None)
+        and
+        (get('_p_changed') == False)
+        ):
+        
+        self._p_changed = True
+        data_manager.register(self)
+
 class ZClassPersistentMetaClass(ExtensionClass.ExtensionClass):
 
     _p_jar = _p_oid_or_jar_Descr('_p_jar')
@@ -133,41 +149,38 @@ class ZClassPersistentMetaClass(ExtensionClass.ExtensionClass):
     _p_serial = _p_DataDescr('_p_serial')
 
     def __new__(self, name, bases, cdict, _p_changed=False):
+
+        # _p_changed will be None if we are being loaded from the
+        # database, because __getnewargs__ returns an extra argument
+        # for _p_changed.
+
+        # The above is *not* true for old (< 2.8) ZClass code.
+        # Old ZClass records have all of their data in their
+        # arguments.  This is rather fortunate.  It means that
+        # we don't need to call __setstate__. We *do*, however, need
+        # to call pmc_init_of.
+
         cdict = dict([(k, v) for (k, v) in cdict.items()
                       if not k.startswith('_p_')])
         cdict['_p_class_dict'] = {'_p_changed': _p_changed}
-        return super(ZClassPersistentMetaClass, self).__new__(
-            self, name, bases, cdict)
-         
+        result = super(ZClassPersistentMetaClass, self
+                       ).__new__(self, name, bases, cdict)
+        ExtensionClass.pmc_init_of(result)
+        return result
 
     def __getnewargs__(self):
         return self.__name__, self.__bases__, {}, None
 
     __getnewargs__ = _p_MethodDescr(__getnewargs__)
 
-    def _p_maybeupdate(self, name):
-        get = self._p_class_dict.get
-        data_manager = get('_p_jar')
-
-        if (
-            (data_manager is not None)
-            and          
-            (get('_p_oid') is not None)
-            and
-            (get('_p_changed') == False)
-            ):
-            
-            self._p_changed = True
-            data_manager.register(self)
-
     def __setattr__(self, name, v):
         if not ((name.startswith('_p_') or name.startswith('_v'))):
-            self._p_maybeupdate(name)
+            _p_maybeupdate(self, name)
         super(ZClassPersistentMetaClass, self).__setattr__(name, v)
 
     def __delattr__(self, name):
         if not ((name.startswith('_p_') or name.startswith('_v'))):
-            self._p_maybeupdate(name)
+            _p_maybeupdate(self, name)
         super(ZClassPersistentMetaClass, self).__delattr__(name)
 
     def _p_deactivate(self):
@@ -197,28 +210,37 @@ class ZClassPersistentMetaClass(ExtensionClass.ExtensionClass):
     __getstate__ = _p_MethodDescr(__getstate__)
     
     def __setstate__(self, state):
-        self.__bases__, cdict = state
-        cdict = dict([(k, v) for (k, v) in cdict.items()
-                      if not k.startswith('_p_')])
+        try:
+            self.__bases__, cdict = state
+        except TypeError:
+            # Maybe an old ZClass with state == None
+            if state is None:
+                cdict = None
 
-        _p_class_dict = self._p_class_dict
-        self._p_class_dict = {}
+        if cdict is not None:
+            cdict = dict([(k, v) for (k, v) in cdict.items()
+                          if not k.startswith('_p_')])
 
-        to_remove = [k for k in self.__dict__
-                     if ((k not in cdict)
-                         and
-                         (k not in special_class_descrs)
-                         and
-                         (k != '_p_class_dict')
-                         )]
+            _p_class_dict = self._p_class_dict
+            self._p_class_dict = {}
 
-        for k in to_remove:
-            delattr(self, k)
-        
-        for k, v in cdict.items():
-            setattr(self, k, v)
+            to_remove = [k for k in self.__dict__
+                         if ((k not in cdict)
+                             and
+                             (k not in special_class_descrs)
+                             and
+                             (k != '_p_class_dict')
+                             )]
 
-        self._p_class_dict = _p_class_dict
+            for k in to_remove:
+                delattr(self, k)
+
+            for k, v in cdict.items():
+                setattr(self, k, v)
+
+            self._p_class_dict = _p_class_dict
+
+        ExtensionClass.pmc_init_of(self)
 
         self._p_changed = False
         
