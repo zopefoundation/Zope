@@ -279,5 +279,56 @@ share the same class:
     True
 
 
+__of__
+======
 
-XXX test abort of import
+Extension Classes define a special method __of__.  Extension classes
+that define __of__ attributes are treated as read descriptors and the
+__of__ method is also used as a __get__ methods.
+
+Let's look at an example.
+
+    >>> from ExtensionClass import Base
+    >>> class Named(Base):
+    ...     def __init__(self, name):
+    ...         self.name = name
+    ...     def __repr__(self):
+    ...         return self.name
+
+    >>> class WithOf(Named):
+    ...     def __of__(self, parent):
+    ...         print '__of__', self, parent
+    ...         return self
+
+    >>> n = Named('n')
+    >>> n.w = WithOf('w')
+    >>> w = n.w
+    __of__ w n
+
+We see that __of__ was called when we did the getattr. Now let's try a
+persistent version:
+
+    >>> C = connection.root()['C']
+    >>> class PersistentWithOf(C, WithOf):
+    ...     pass
+
+    >>> n.w = PersistentWithOf('pw')
+    >>> w = n.w
+    __of__ pw n
+
+(We reloaded C from the connection we were going to use.)
+
+Now we'll save our class in the database and reload it:
+
+    >>> connection.root()['PW'] = PersistentWithOf
+    >>> tm.commit()
+
+    >>> connection2.sync()
+    >>> PW = connection2.root()['PW']
+
+And the class loaded from the database will have the same behavior:
+
+    >>> n.w = PW('pw2')
+    >>> w = n.w
+    __of__ pw2 n
+
