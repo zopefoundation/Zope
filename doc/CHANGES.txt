@@ -29,6 +29,9 @@ Zope Changes
 
     Bugs fixed
   
+      - Collector #1754: Fixed import of 'transaction' in
+        'zopectl adduser' (which wasy dying with a NameError).
+
       - Collector #1750: StructuredText: fixed handling of image URLs
         with query string
 
