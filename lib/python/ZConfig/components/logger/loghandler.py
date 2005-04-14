@@ -13,7 +13,7 @@
 
 """Handlers which can plug into a PEP 282 logger."""
 
-import os.path
+import os
 import sys
 
 from logging import Handler, StreamHandler
@@ -42,6 +42,27 @@ class FileHandler(StreamHandler):
         self.close()
         self.stream = open(self.baseFilename, self.mode)
 
+class Win32FileHandler(FileHandler):
+    """File-based log handler for Windows that supports an additional 'rotate'
+    method.  reopen() is generally useless since Windows cannot do a move on
+    an open file.
+    """
+    def rotate(self, rotateFilename=None):
+        if not rotateFilename:
+            rotateFilename = self.baseFilename + ".last"
+        error = None
+        self.close()
+        try:
+            os.rename(self.baseFilename, rotateFilename)
+        except OSError:
+            pass
+
+        self.stream = open(self.baseFilename, self.mode)
+
+if os.name == "nt":
+    # Make it the default for Windows - we install a 'reopen' handler that
+    # tries to rotate the logfile.
+    FileHandler = Win32FileHandler
 
 class NullHandler(Handler):
     """Handler that does nothing."""
