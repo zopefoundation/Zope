@@ -3,6 +3,9 @@ Building and installing Zope from source
 
   Welcome to Zope!  This document describes building and installing
   Zope on UNIX and Linux.
+  
+  See WINDOWS.txt for information about Windows.  See the PLATFORMS
+  directory for notes about various other platforms.
 
 System requirements when building from source
 

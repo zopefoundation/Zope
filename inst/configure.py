@@ -23,7 +23,7 @@ QUIET=0
 if sys.platform == 'win32':
     PREFIX = 'c:\\Zope-' + versions.ZOPE_MAJOR_VERSION
     IN_MAKEFILE = 'Makefile.win.in'
-    MAKE_COMMAND='the Visual C++ batch file "VCVARS32.bat" and then "nmake build"'
+    MAKE_COMMAND='the Visual C++ batch file "VCVARS32.bat" and then "nmake"'
 else:
     PREFIX = '/opt/Zope-' + versions.ZOPE_MAJOR_VERSION
     IN_MAKEFILE = 'Makefile.in'

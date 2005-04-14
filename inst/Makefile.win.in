@@ -31,14 +31,14 @@ CD=cd
 XCOPY=xcopy /i /s /e /y
 COPY=copy
 
-.PHONY: clean install build unbuild
-.PHONY: default
-
 default: build
 # default:     The default step (invoked when make is called without a target)
 	@ echo.
 	@ echo Zope built.  Next, do 'nmake install'.
-	@ echo
+	@ echo.
+
+.PHONY: clean install build unbuild
+.PHONY: default
 
 # build:       Do whatever 'setup.py build' implies
 build:
@@ -47,7 +47,7 @@ build:
 
 # unbuild:     Remove the build directory (undo the make build step)
 unbuild:
-	$(RMRF) $(BUILD_BASE)
+	-$(RMRF) $(BUILD_BASE)
 
 # install:     Install a software home.
 install: build
@@ -62,7 +62,7 @@ install: build
 #              the source directory for good measure.
 clean: unbuild
 	$(CD) "$(BASE_DIR)
-	$(RM) /s *.pyc *.pyo *.dll *.o *.obj *.pyd
+	-$(RM) /s *.pyc *.pyo *.dll *.o *.obj *.pyd
 
 
 

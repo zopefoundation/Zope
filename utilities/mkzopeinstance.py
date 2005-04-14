@@ -93,9 +93,11 @@ def main():
         user, password = get_inituser()
 
     # we need to distinguish between python.exe and pythonw.exe under
-    # Windows in order to make Zope run using python.exe when run in a
-    # console window and pythonw.exe when run as a service, so we do a bit
-    # of sniffing here.
+    # Windows.  Zope is always run using 'python.exe' (even for services),
+    # however, it may be installed via pythonw.exe (as a sub-process of an
+    # installer).  Thus, sys.executable may not be the executable we use.
+    # We still provide both PYTHON and PYTHONW, but PYTHONW should never
+    # need be used.
     psplit = os.path.split(sys.executable)
     exedir = os.path.join(*psplit[:-1])
     pythonexe = os.path.join(exedir, 'python.exe')
