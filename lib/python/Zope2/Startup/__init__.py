@@ -315,7 +315,10 @@ class ZopeStarter:
 class WindowsZopeStarter(ZopeStarter):
 
     def registerSignals(self):
-        pass
+        from Signals import Signals
+        Signals.registerZopeSignals([self.cfg.eventlog,
+                                     self.cfg.access,
+                                     self.cfg.trace])
 
     def setupInitialLogging(self):
         ZopeStarter.setupInitialLogging(self)
