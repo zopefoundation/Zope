@@ -161,7 +161,7 @@ class Service(win32serviceutil.ServiceFramework):
             # XXX why the test before the log message?
             if self.backoff_interval > BACKOFF_INITIAL_INTERVAL:
                 self.info("created process")
-            if not (self.run() and self.checkRestart()):            
+            if not (self.run() and self.checkRestart()):
                 break
 
         self.ReportServiceStatus(win32service.SERVICE_STOP_PENDING)
@@ -206,7 +206,7 @@ class Service(win32serviceutil.ServiceFramework):
             win32api.TerminateProcess(self.hZope, 3)
         self.ReportServiceStatus(win32service.SERVICE_STOP_PENDING)
 
-        # Wait for the redirect thread - it should have died as the remote 
+        # Wait for the redirect thread - it should have died as the remote
         # process terminated.
         # As we are shutting down, we do the join with a little more care,
         # reporting progress as we wait (even though we never will <wink>)
@@ -234,7 +234,6 @@ class Service(win32serviceutil.ServiceFramework):
                                                win32event.INFINITE)
         if rc == win32event.WAIT_OBJECT_0:
             # user sent a stop service request
-            self.SvcStop()
             keep_running = False
         elif rc == win32event.WAIT_OBJECT_0 + 1:
             # user did not send a service stop request, but
@@ -261,7 +260,6 @@ class Service(win32serviceutil.ServiceFramework):
         # this was an abormal shutdown.
         if self.backoff_cumulative > BACKOFF_MAX:
             self.error("restarting too frequently; quit")
-            self.SvcStop()
             return False
         self.warning("sleep %s to avoid rapid restarts"
                      % self.backoff_interval)
@@ -276,7 +274,7 @@ class Service(win32serviceutil.ServiceFramework):
         self.backoff_cumulative += self.backoff_interval
         self.backoff_interval *= 2
         return True
-        
+
     def createProcessCaptureIO(self, cmd):
         hInputRead, hInputWriteTemp = self.newPipe()
         hOutReadTemp, hOutWrite = self.newPipe()
@@ -302,7 +300,7 @@ class Service(win32serviceutil.ServiceFramework):
         # problematic in general, but should work in the controlled
         # circumstances of a service process.
         create_flags = win32process.CREATE_NEW_CONSOLE
-        info = win32process.CreateProcess(None, cmd, None, None, True, 
+        info = win32process.CreateProcess(None, cmd, None, None, True,
                                           create_flags, None, None, si)
         # (NOTE: these really aren't necessary for Python - they are closed
         # as soon as they are collected)
