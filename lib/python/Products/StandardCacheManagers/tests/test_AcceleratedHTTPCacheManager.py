@@ -17,6 +17,7 @@ $Id$
 """
 import unittest
 import threading
+import time
 from SimpleHTTPServer import SimpleHTTPRequestHandler
 from BaseHTTPServer import HTTPServer
 
@@ -51,7 +52,7 @@ class AcceleratedHTTPCacheTests(unittest.TestCase):
     def tearDown(self):
         if self.thread:
             self.httpd.server_close()
-            self.thread.join()
+            self.thread.join(2)
 
     def _getTargetClass(self):
 
@@ -73,7 +74,9 @@ class AcceleratedHTTPCacheTests(unittest.TestCase):
 
         sa = self.httpd.socket.getsockname()
         self.thread = threading.Thread(target=self.httpd.handle_request)
+        self.thread.setDaemon(True)
         self.thread.start()
+        time.sleep(0.2) # Allow time for server startup
 
     def test_PURGE_passes_Host_header(self):
 
