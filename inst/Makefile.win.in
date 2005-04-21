@@ -59,7 +59,7 @@ install: build version_txt
 
 # version_txt: create a version file in lib/python/version.txt
 version_txt:
-	echo "Zope $(MAJOR_VERSION).$(MINOR_VERSION)-$(RELEASE_TAG)" >\
+	echo Zope $(MAJOR_VERSION).$(MINOR_VERSION)-$(RELEASE_TAG) >\
           "$(BASE_DIR)/lib/python/version.txt"
 
 # clean:       Delete the build files and any binaries/bytecode files in
@@ -67,6 +67,7 @@ version_txt:
 clean: unbuild
 	$(CD) "$(BASE_DIR)
 	-$(RM) /s *.pyc *.pyo *.dll *.o *.obj *.pyd
+	-$(RM) (BASE_DIR)/lib/python/version.txt
 
 
 
