@@ -320,7 +320,8 @@ class TestPortalTestCase(ZopeTestCase.PortalTestCase):
         # XXX: Changed in 0.9.0
         #self.assertEqual(self._called, ['afterClear', 'beforeSetUp', 'afterSetUp'])
         self.assertEqual(self._called, ['beforeSetUp', 'afterSetUp'])
-        self.assertEqual(self.portal._v_skindata, 'refreshed')
+        # XXX: Changed in 0.9.7
+        #self.assertEqual(self.portal._v_skindata, 'refreshed')
 
     def test_tearDown(self):
         # Everything should be removed
@@ -343,7 +344,8 @@ class TestPortalTestCase(ZopeTestCase.PortalTestCase):
         # XXX: Changed in 0.9.0
         #self.assertEqual(self._called, ['afterClear', 'beforeSetUp', 'afterSetUp'])
         self.assertEqual(self._called, ['beforeSetUp', 'afterSetUp'])
-        self.assertEqual(self.portal._v_skindata, 'refreshed')
+        # XXX: Changed in 0.9.7
+        #self.assertEqual(self.portal._v_skindata, 'refreshed')
 
     # This is crazy
 

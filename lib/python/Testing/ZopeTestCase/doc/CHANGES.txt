@@ -8,6 +8,8 @@
 - Removed doctest.py, we now use the one from zope.testing.
 - Removed dochttp.py + test, we now use the one from zope.app.tests.
 - ZopeLite now takes care not to monkey patch an already started Zope.
+- PortalTestCase no longer calls _refreshSkinData() as CMF is smart enough
+  now (and CMF 1.5+ does not work that way anyway).
 
 0.9.6
 - Dropped support for Zope 2.5 as it lacks the setSecurityManager() API.

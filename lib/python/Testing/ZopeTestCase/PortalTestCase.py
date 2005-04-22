@@ -59,7 +59,6 @@ class PortalTestCase(base.TestCase):
             self.app = self._app()
             self.portal = self._portal()
             self._setup()
-            self._refreshSkinData()
             self.afterSetUp()
         except:
             self._clear()
