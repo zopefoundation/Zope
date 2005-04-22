@@ -14,12 +14,10 @@
 __version__ = "$Revision$"[11:-2]
 
 import Acquisition, Record
-from zExceptions import NotFound
-from zExceptions import Unauthorized
 from ZODB.POSException import ConflictError
 
-# Switch for new behavior, raise NotFound instead of returning None.
-# Use 'catalog-getOb-raises off' in zope.conf to restore old behavior.
+# Switch for new behavior, raise exception instead of returning None.
+# Use 'catalog-getObject-raises off' in zope.conf to restore old behavior.
 GETOBJECT_RAISES = True
 
 class AbstractCatalogBrain(Record.Record, Acquisition.Implicit):
@@ -44,6 +42,20 @@ class AbstractCatalogBrain(Record.Record, Acquisition.Implicit):
         #     together. If undesired exceptions get raised somehow we should 
         #     avoid bare except band-aids and find a real solution.
         return self.REQUEST.physicalPathToURL(self.getPath(), relative)
+
+    def _unrestrictedGetObject(self):
+        """Return the object for this record
+
+        Same as getObject, but does not do security checks.
+        """
+        try:
+            return self.aq_parent.unrestrictedTraverse(self.getPath())
+        except ConflictError:
+            raise
+        except:
+            if GETOBJECT_RAISES:
+                raise
+            return None
 
     def getObject(self, REQUEST=None):
         """Return the object for this record

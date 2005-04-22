@@ -626,7 +626,7 @@ class TestZCatalogGetObject(unittest.TestCase):
         self.assertEqual(brain.getObject().getId(), 'ob')
 
     def test_getObject_missing_raises_NotFound(self):
-        # Check that if the object is missing None is returned
+        # Check that if the object is missing we raise
         from zExceptions import NotFound
         self._init_getObject_flag(True)
         root = self.root
@@ -698,6 +698,64 @@ class TestZCatalogGetObject(unittest.TestCase):
         ob = brain.getObject()
         self.failIf(ob is None)
         self.assertEqual(ob.getId(), 'ob')
+
+    # Now test _unrestrictedGetObject
+
+    def test_unrestrictedGetObject_found(self):
+        # Check normal traversal
+        root = self.root
+        catalog = root.catalog
+        root.ob = Folder('ob')
+        catalog.catalog_object(root.ob)
+        brain = catalog.searchResults()[0]
+        self.assertEqual(brain.getPath(), '/ob')
+        self.assertEqual(brain._unrestrictedGetObject().getId(), 'ob')
+
+    def test_unrestrictedGetObject_restricted(self):
+        # Check that if the object's security does not allow traversal,
+        # it's still is returned
+        root = self.root
+        catalog = root.catalog
+        root.fold = Folder('fold')
+        root.fold.ob = Folder('ob')
+        catalog.catalog_object(root.fold.ob)
+        brain = catalog.searchResults()[0]
+        # allow all accesses
+        pickySecurityManager = PickySecurityManager()
+        setSecurityManager(pickySecurityManager)
+        self.assertEqual(brain._unrestrictedGetObject().getId(), 'ob')
+        # disallow just 'ob' access
+        pickySecurityManager = PickySecurityManager(['ob'])
+        setSecurityManager(pickySecurityManager)
+        self.assertEqual(brain._unrestrictedGetObject().getId(), 'ob')
+        # disallow just 'fold' access
+        pickySecurityManager = PickySecurityManager(['fold'])
+        setSecurityManager(pickySecurityManager)
+        self.assertEqual(brain._unrestrictedGetObject().getId(), 'ob')
+
+    def test_unrestrictedGetObject_missing_raises_NotFound(self):
+        # Check that if the object is missing we raise
+        from zExceptions import NotFound
+        self._init_getObject_flag(True)
+        root = self.root
+        catalog = root.catalog
+        root.ob = Folder('ob')
+        catalog.catalog_object(root.ob)
+        brain = catalog.searchResults()[0]
+        del root.ob
+        self.assertRaises((NotFound, AttributeError, KeyError),
+                          brain._unrestrictedGetObject)
+
+    def test_unrestrictedGetObject_missing_returns_None(self):
+        # Check that if the object is missing None is returned
+        self._init_getObject_flag(False)
+        root = self.root
+        catalog = root.catalog
+        root.ob = Folder('ob')
+        catalog.catalog_object(root.ob)
+        brain = catalog.searchResults()[0]
+        del root.ob
+        self.assertEqual(brain._unrestrictedGetObject(), None)
 
 
 def test_suite():

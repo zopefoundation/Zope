@@ -30,6 +30,9 @@ Zope Changes
       - Added lazy: TAL expression and fixed defer: expression for python
         expression
 
+      - ZCatalog.CatalogBrains: An _unrestrictedGetObject method has
+        been added.
+
     Bugs fixed
   
       - Collector #1754: Fixed import of 'transaction' in
@@ -59,7 +62,7 @@ Zope Changes
         cannot access (raising Unauthorized).  Sites which rely on the old
         behavior can restore setting a new zope.conf option,
         'catalog-getObject-raises', to "off".
-        
+
         This compatibility option will be removed in Zope 2.10.
 
       - PluginIndexes: the ZCatalog's "Indexes" tab now show the number of
