@@ -27,6 +27,9 @@ Zope Changes
 
     Features added
 
+      - Added lazy: TAL expression and fixed defer: expression for python
+        expression
+
     Bugs fixed
   
       - Collector #1754: Fixed import of 'transaction' in

@@ -1,6 +1,8 @@
 import os, sys, unittest
 
 from Products.PageTemplates import Expressions
+from Products.PageTemplates.DeferExpr import LazyWrapper
+from Products.PageTemplates.DeferExpr import DeferWrapper
 
 class ExpressionTests(unittest.TestCase):
 
@@ -51,6 +53,15 @@ class ExpressionTests(unittest.TestCase):
         assert ec.evaluate('x | string:x') == 'x'
         assert ec.evaluate('x | string:$one') == '1'
         assert ec.evaluate('x | not:exists:x')
+        
+    def testWrappers(self):
+        """Test if defer and lazy are returning their wrappers
+        """
+        ec = self.ec
+        defer = ec.evaluate('defer: b')
+        lazy = ec.evaluate('lazy: b')
+        self.failUnless(isinstance(defer, DeferWrapper))
+        self.failUnless(isinstance(lazy, LazyWrapper))
 
 def test_suite():
     return unittest.makeSuite(ExpressionTests)

@@ -18,6 +18,7 @@ __version__='$Revision: 1.13 $'[11:-2]
 
 from TALES import CompilerError
 from sys import exc_info
+from DeferExpr import DeferWrapper
 
 class getSecurityManager:
     '''Null security manager'''
@@ -57,6 +58,9 @@ class PythonExpr:
                     names[vname] = val
             else:
                 names[vname] = val
+        for key, val in names.items():
+            if isinstance(val, DeferWrapper):
+                names[key] = val()
         return names
 
     def __call__(self, econtext):
