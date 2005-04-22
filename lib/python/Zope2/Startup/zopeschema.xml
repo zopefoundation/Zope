@@ -776,7 +776,7 @@
      and Unauthorized for disallowed objects.  If the option is "off", they
      will return None in such cases (which was the old behavior)
      </description>
-     <metadefault>off</metadefault>
+     <metadefault>on</metadefault>
   </key>
 
   <multisection type="ZServer.server" name="*" attribute="servers"/>
