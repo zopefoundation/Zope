@@ -507,7 +507,6 @@ setup(
     author=AUTHOR,
 
     packages=['Testing', 'Testing.ZopeTestCase',
-              'Testing.ZopeTestCase.zopetest',
               'Testing.ZopeTestCase.zopedoctest'],
     data_files=[['Testing', ['Testing/README.txt']],
                 ['Testing/var', ['Testing/var/README.txt']],
