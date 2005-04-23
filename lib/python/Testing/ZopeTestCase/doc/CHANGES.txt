@@ -10,6 +10,8 @@
 - ZopeLite now takes care not to monkey patch an already started Zope.
 - PortalTestCase no longer calls _refreshSkinData() as CMF is smart enough
   now (and CMF 1.5+ does not work that way anyway).
+- Fixed a bug where using sessions in sandboxed (functional) tests would cause
+  connection pool depletion and subsequent hangs. Thanks to Balazs Ree.
 
 0.9.6
 - Dropped support for Zope 2.5 as it lacks the setSecurityManager() API.

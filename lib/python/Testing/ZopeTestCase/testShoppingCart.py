@@ -105,11 +105,27 @@ class TestShoppingCart(ZopeTestCase.ZopeTestCase):
         self.cart.addItems([DummyOrder('510-007', 2),])
         self.assertEqual(self.cart.getTotal(), 149.95)
 
+    def testGetItem(self):
+        # Getting an item from the "database" should work
+        item = self.cart.getItem('510-115')
+        self.assertEqual(item['id'], '510-115')
+        self.assertEqual(item['title'], 'Econo Feeder')
+        self.assertEqual(item['price'], 7.95)
+
+    def testEight(self):
+        # Additional test to trigger connection pool depletion bug
+        pass
+
+
+class TestSandboxedShoppingCart(ZopeTestCase.Sandboxed, TestShoppingCart):
+    '''Demonstrate that sessions work in sandboxes''' 
+
 
 def test_suite():
     from unittest import TestSuite, makeSuite
     suite = TestSuite()
     suite.addTest(makeSuite(TestShoppingCart))
+    suite.addTest(makeSuite(TestSandboxedShoppingCart))
     return suite
 
 if __name__ == '__main__':

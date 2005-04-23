@@ -17,6 +17,7 @@ $Id: sandbox.py,v 1.2 2004/08/19 15:31:26 shh42 Exp $
 
 import ZopeLite as Zope2
 import transaction
+import base
 import utils
 
 
@@ -31,6 +32,7 @@ class Sandboxed:
     def _app(self):
         '''Returns the app object for a test.'''
         app = Zope2.app(Zope2.sandbox().open())
+        base._connections.register(app._p_jar)
         AppZapper().set(app)
         return utils.makerequest(app)
 
@@ -38,6 +40,7 @@ class Sandboxed:
         '''Clears the transaction and the AppZapper.'''
         transaction.abort()
         AppZapper().clear()
+        base.closeConnections()
 
 
 class AppZapper:
