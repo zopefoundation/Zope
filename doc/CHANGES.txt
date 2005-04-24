@@ -22,6 +22,8 @@ Zope Changes
 
    - Port ZOPE_CONFIG patch from Zope 2.7 to Zope 2.8
 
+   - Including BTreeFolder2 with beta 2
+
 
   Zope 2.8b1 (2005/04/24)
 
