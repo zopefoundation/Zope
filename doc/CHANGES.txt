@@ -33,6 +33,10 @@ Zope Changes
       - ZCatalog.CatalogBrains: An _unrestrictedGetObject method has
         been added.
 
+      - ZODB transactions now support savepoints. See
+        transaction/savepoint.txt.  These will replace
+        subtransactions.
+
     Bugs fixed
   
       - Collector #1754: Fixed import of 'transaction' in

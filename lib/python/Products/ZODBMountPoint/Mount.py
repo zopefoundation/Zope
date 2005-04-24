@@ -201,7 +201,9 @@ class ConnectionPatches:
                         am.closedConnection(conn)
                 conn.cacheGC() # This is a good time to do some GC
                 # XXX maybe we ought to call the close callbacks.
-                conn._storage = conn._tmp = conn.new_oid = conn._opened = None
+                conn._storage = conn._normal_storage = None
+                conn._savepoint_storage = None
+                conn.new_oid = conn._opened = None
                 conn._debug_info = ()
 
                 # collector #1350: ensure that the connection is unregistered
