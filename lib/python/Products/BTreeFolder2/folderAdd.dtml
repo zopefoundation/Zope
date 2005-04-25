@@ -1,0 +1,67 @@
+<dtml-let form_title="'Add BTreeFolder2'">
+<dtml-if manage_page_header>
+  <dtml-var manage_page_header>
+  <dtml-var manage_form_title>
+<dtml-else>
+  <html><head><title>&dtml-form_title;</title></head>
+  <body bgcolor="#ffffff">
+  <h2>&dtml-form_title;</h2>
+</dtml-if>
+</dtml-let>
+
+<p class="form-help">
+A Folder contains other objects. Use Folders to organize your
+web objects in to logical groups.
+</p>
+
+<p class="form-help">
+A BTreeFolder2 may be able to handle a larger number
+of objects than a standard folder because it does not need to
+activate other subobjects in order to access a single subobject.
+It is more efficient than the original BTreeFolder product,
+but does not provide attribute access.
+</p>
+
+<FORM ACTION="manage_addBTreeFolder" METHOD="POST">
+
+<table cellspacing="0" cellpadding="2" border="0">
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-label">
+    Id
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <input type="text" name="id" size="40" />
+    </td>
+  </tr>
+
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-optional">
+    Title
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <input type="text" name="title" size="40" />
+    </td>
+  </tr>
+
+  <tr>
+    <td align="left" valign="top">
+    </td>
+    <td align="left" valign="top">
+    <div class="form-element">
+    <input class="form-element" type="submit" name="submit" 
+     value="Add" />
+    </div>
+    </td>
+  </tr>
+</table>
+</form>
+
+<dtml-if manage_page_footer>
+  <dtml-var manage_page_footer>
+<dtml-else>
+  </body></html>
+</dtml-if>
