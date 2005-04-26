@@ -538,7 +538,8 @@ setup(
     author=AUTHOR,
 
     packages=['ZClasses'],
-    data_files=[['ZClasses', ['ZClasses/*.gif']],
+    data_files=[['ZClasses', ['ZClasses/*.gif', 'ZClasses/*.txt',
+                              'ZClasses/*.fs']],
                 ['ZClasses/dtml', ['ZClasses/dtml/*']]],
     )
 
@@ -553,7 +554,8 @@ setup(
               'transaction', 'transaction.tests',
               'ZODB', 'ZODB.FileStorage', 'ZODB.tests'],
     data_files=[['persistent/tests', ['persistent/tests/*.txt']],
-                ['ZODB', ['ZODB/*.xml']],
+                ['transaction', ['transaction/*.txt']],
+                ['ZODB', ['ZODB/*.txt', 'ZODB/*.xml']],
                 ['ZODB/tests', ['ZODB/tests/*.txt']]],
     ext_modules=[
         Extension(name='persistent.cPersistence',
