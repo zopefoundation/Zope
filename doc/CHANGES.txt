@@ -20,8 +20,6 @@ Zope Changes
    - Change acquisition wrappers to implement the descr get slot
      directly, thus speeding the use of the slot.
 
-   - Port ZOPE_CONFIG patch from Zope 2.7 to Zope 2.8
-
 
   after Zope 2.8b1 
 
@@ -31,6 +29,7 @@ Zope Changes
 
     Bugs fixed
   
+      - Collector #1233: ported ZOPE_CONFIG patch from Zope 2.7 to Zope 2.8
 
 
   Zope 2.8b1 (2005/04/24)

@@ -42,8 +42,9 @@ def startup():
         # Already began (and maybe finished) startup, so don't run again
         return
     _began_startup = 1
-    _configure()
+    from Zope2.Startup.run import _setconfig
     from Zope2.App.startup import startup as _startup
+    _setconfig()
     _startup()
 
 def app(*args, **kw):
@@ -57,15 +58,8 @@ def debug(*args, **kw):
     import ZPublisher
     return ZPublisher.test('Zope', *args, **kw)
 
-from Zope2.Startup.run import configure
 
-def _configure():
-    # Load configuration file from (optional) environment variable
-    # Also see http://zope.org/Collectors/Zope/1233
-    import os
-    configfile = os.environ.get('ZOPE_CONFIG')
-    if configfile is not None:
-        configure(configfile)
+from Zope2.Startup.run import configure
 
 # Zope2.App.startup.startup() sets the following variables in this module.
 DB = None
