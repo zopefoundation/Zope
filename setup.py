@@ -1155,6 +1155,7 @@ if not "depends" in Extension.__init__.func_code.co_varnames:
 EXTS = ['.conf', '.css', '.dtd', '.gif', '.jpg', '.html',
         '.js',   '.mo',  '.png', '.pt', '.stx', '.ref',
         '.txt',  '.xml', '.zcml', '.mar', '.in', '.sample',
+        '.rst',  '.request', '.response',
         ]
 IGNORE_NAMES = (
     'CVS', '.svn', # Revision Control Directories
