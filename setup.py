@@ -1157,6 +1157,12 @@ EXTS = ['.conf', '.css', '.dtd', '.gif', '.jpg', '.html',
         '.txt',  '.xml', '.zcml', '.mar', '.in', '.sample',
         '.rst',  '.request', '.response',
         ]
+
+ONESHOTS = [# zope/app/publisher/browser/tests/testfiles/
+            # has a file named plain 'png', with no extension.
+            'png',
+           ]
+
 IGNORE_NAMES = (
     'CVS', '.svn', # Revision Control Directories
     )
@@ -1182,16 +1188,16 @@ class Finder:
         for ignore in IGNORE_NAMES:
             if ignore in files:
                 files.remove(ignore)
-        for file in files:
+        for fname in files:
             # First see if this is one of the packages we want to add, or if
             # we're really skipping this package.
             if '__init__.py' in files:
                 aspkg = dir[self._plen:].replace(os.sep, '.')
                 self._pkgs[aspkg] = True
             # Add any extra files we're interested in
-            base, ext = os.path.splitext(file)
-            if ext in self._exts:
-                self._files.append(os.path.join(dir, file))
+            base, ext = os.path.splitext(fname)
+            if ext in self._exts or fname in ONESHOTS:
+                self._files.append(os.path.join(dir, fname))
 
     def copy_files(self, cmd, outputbase):
         for file in self._files:
