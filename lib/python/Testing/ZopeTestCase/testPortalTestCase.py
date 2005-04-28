@@ -48,15 +48,16 @@ from OFS.SimpleItem import SimpleItem
 from OFS.Folder import Folder
 
 class DummyPortal(Folder):
-    _v_skindata = None
     def __init__(self, id):
         self.id = id
         self._addRole('Member')
         self._setObject('portal_membership', DummyMembershipTool())
         self.manage_addFolder('Members')
+        self._called = []
+    def clearCurrentSkin(self):
+        self._called.append('clearCurrentSkin')
     def setupCurrentSkin(self):
-        if self._v_skindata is None:
-            self._v_skindata = 'refreshed'
+        self._called.append('setupCurrentSkin')
 
 class DummyMembershipTool(SimpleItem):
     id = 'portal_membership'
@@ -148,12 +149,11 @@ class TestPortalTestCase(ZopeTestCase.PortalTestCase):
         self.assertEqual(owner_info, ([portal_name, 'acl_users'], user_name))
 
     def test_refreshSkinData(self):
-        # The _v_skindata attribute should be refreshed
+        # The skin cache should be refreshed
         self.app = self._app()
         self.portal = self.getPortal()
-        self.assertEqual(self.portal._v_skindata, None)
         self._refreshSkinData()
-        self.assertEqual(self.portal._v_skindata, 'refreshed')
+        self.assertEqual(self.portal._called, ['clearCurrentSkin', 'setupCurrentSkin'])
 
     def test_setRoles(self):
         # Roles should be set for user
@@ -320,8 +320,6 @@ class TestPortalTestCase(ZopeTestCase.PortalTestCase):
         # XXX: Changed in 0.9.0
         #self.assertEqual(self._called, ['afterClear', 'beforeSetUp', 'afterSetUp'])
         self.assertEqual(self._called, ['beforeSetUp', 'afterSetUp'])
-        # XXX: Changed in 0.9.7
-        #self.assertEqual(self.portal._v_skindata, 'refreshed')
 
     def test_tearDown(self):
         # Everything should be removed
@@ -344,8 +342,6 @@ class TestPortalTestCase(ZopeTestCase.PortalTestCase):
         # XXX: Changed in 0.9.0
         #self.assertEqual(self._called, ['afterClear', 'beforeSetUp', 'afterSetUp'])
         self.assertEqual(self._called, ['beforeSetUp', 'afterSetUp'])
-        # XXX: Changed in 0.9.7
-        #self.assertEqual(self.portal._v_skindata, 'refreshed')
 
     # This is crazy
 

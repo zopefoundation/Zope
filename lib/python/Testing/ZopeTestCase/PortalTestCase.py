@@ -95,11 +95,12 @@ class PortalTestCase(base.TestCase):
         self.folder = pm.getHomeFolder(user_name)
 
     def _refreshSkinData(self):
-        '''Refreshes the magic _v_skindata attribute.'''
-        if hasattr(self.portal, '_v_skindata'):
+        '''Refreshes the skin cache.'''
+        if hasattr(self.portal, 'clearCurrentSkin'):
+            self.portal.clearCurrentSkin()
+        else: # CMF 1.4
             self.portal._v_skindata = None
-        if hasattr(self.portal, 'setupCurrentSkin'):
-            self.portal.setupCurrentSkin()
+        self.portal.setupCurrentSkin()
 
     # Portal interface
 
