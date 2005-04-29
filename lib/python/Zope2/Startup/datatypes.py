@@ -93,8 +93,12 @@ def importable_name(name):
                 package = __import__(n, g, g, component)
         return package
     except ImportError:
-        raise ValueError, (
-            'The object named by "%s" could not be imported' %  name )
+
+        import traceback, cStringIO
+        IO = cStringIO.StringIO()
+        traceback.print_exc(file=IO)
+        raise ValueError(
+            'The object named by "%s" could not be imported\n%s' %  (name, IO.getvalue()))
 
 # A datatype that ensures that a dotted path name can be resolved but
 # returns the name instead of the object
