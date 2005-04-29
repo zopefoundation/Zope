@@ -81,7 +81,7 @@ class StdoutHandler:
                 seconds_to_go  = seconds_so_far / current * (self._max - current)
                 self.output('%d/%d (%.2f%%) Estimated termination: %s' % \
                 (current, self._max, (100.0 * current / self._max), 
-                 DateTime(time.time() + seconds_to_go)))
+                 DateTime(time.time() + seconds_to_go).strftime('%Y/%m/%d %H:%M:%Sh')))
 
     def output(self, text):
         print >>self.fp, '%s: %s' % (self._ident, text)
