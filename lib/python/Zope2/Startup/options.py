@@ -24,7 +24,3 @@ class ZopeOptions(zdaemon.zdoptions.ZDOptions):
     schemadir = os.path.dirname(os.path.abspath(__file__))
     schemafile = "zopeschema.xml"
 
-
-    def default_configfile(self):
-        """Use ZOPE_CONFIG if specified and -C not passed."""
-        return os.environ.get('ZOPE_CONFIG')
