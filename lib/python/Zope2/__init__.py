@@ -57,7 +57,7 @@ def debug(*args, **kw):
     import ZPublisher
     return ZPublisher.test('Zope', *args, **kw)
 
-
+from Zope2.Startup.run import configure
 
 def _configure():
     # Load configuration file from (optional) environment variable
@@ -80,3 +80,4 @@ import os
 if os.environ.get('ZOPE_COMPATIBLE_STARTUP'):
     # Open the database immediately (see comment above).
     startup()
+
