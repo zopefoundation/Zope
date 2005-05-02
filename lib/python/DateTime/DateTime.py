@@ -19,14 +19,13 @@ import re, math,  DateTimeZone
 from time import time, gmtime, localtime
 from time import daylight, timezone, altzone, strftime
 
-from App.config import getConfiguration
-
 default_datefmt = None
 
 def getDefaultDateFormat():
     global default_datefmt
     if default_datefmt is None:
         try:
+            from App.config import getConfiguration
             default_datefmt = getConfiguration().datetime_format
             return default_datefmt
         except:
