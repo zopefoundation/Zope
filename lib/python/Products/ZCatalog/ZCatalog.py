@@ -487,7 +487,7 @@ class ZCatalog(Folder, Persistent, Implicit):
             if pghandler: pghandler.report(i)
 
             obj = self.resolve_path(p)
-            if not obj:
+            if obj is None:
                 obj = self.resolve_url(p, REQUEST)
             if obj is None:
                 LOG.error('reindexIndex could not resolve '

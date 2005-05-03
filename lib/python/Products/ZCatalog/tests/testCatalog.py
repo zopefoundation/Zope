@@ -155,6 +155,12 @@ class zdummy(ExtensionClass.Base):
     def title(self):
         return '%d' % self.num
 
+class zdummyFalse(zdummy):
+
+    def __nonzero__(self):
+        return False
+
+
 class TestZCatalog(unittest.TestCase):
     def setUp(self):
         from Products.ZCatalog.ZCatalog import ZCatalog
@@ -171,7 +177,7 @@ class TestZCatalog(unittest.TestCase):
             ob = zdummy(x)
             self.d[str(x)] = ob
             self._catalog.catalog_object(ob, str(x))
-
+        
     def _resolve_num(self, num):
         return self.d[num]
 
@@ -212,6 +218,19 @@ class TestZCatalog(unittest.TestCase):
         self._catalog.reindexIndex('title', {})
         data = self._catalog.getMetadataForUID('0')
         self.assertEqual(data['title'], '0')
+    
+    def testReindexIndexesFalse(self):
+        # setup
+        false_id = self.upper + 1
+        ob = zdummyFalse(false_id)
+        self.d[str(false_id)] = ob
+        self._catalog.catalog_object(ob, str(false_id))
+        # test, object evaluates to false; there was bug which caused the
+        # object to be removed from index
+        ob.num = 9999
+        self._catalog.reindexIndex('title', {})
+        result = self._catalog(title='9999')
+        self.assertEquals(1, len(result))
 
     def test_interface(self):
         from Products.ZCatalog.IZCatalog import IZCatalog
