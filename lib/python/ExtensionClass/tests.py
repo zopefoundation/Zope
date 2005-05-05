@@ -807,6 +807,34 @@ def test___of__set_after_creation():
 
     """
 
+def test_Basic_gc():
+    """Test to make sure that EC instances participate in GC
+
+    >>> from ExtensionClass import Base
+    >>> import gc
+    >>> class C1(Base):
+    ...     pass
+    ... 
+    >>> class C2(Base):
+    ...     def __del__(self):
+    ...         print 'removed'
+    ... 
+    >>> a=C1()
+    >>> a.b = C1()
+    >>> a.b.a = a
+    >>> a.b.c = C2()
+    >>> thresholds = gc.get_threshold()
+    >>> gc.set_threshold(0)
+    >>> ignore = gc.collect()
+    >>> del a
+    >>> ignored = gc.collect()
+    removed
+    >>> ignored > 0
+    True
+    >>> gc.set_threshold(*thresholds)
+
+"""
+
 from zope.testing.doctest import DocTestSuite
 import unittest
 
