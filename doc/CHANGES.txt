@@ -34,6 +34,8 @@ Zope Changes
       - Collector #1751: Improved error reporting reporting during the 
         startup phase
 
+      - Collector #1745: Fixed ZSQL error KeyError 'query'
+
 
   Zope 2.8b1 (2005/04/24)
 
