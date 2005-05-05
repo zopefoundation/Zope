@@ -176,7 +176,7 @@ class SchemaLoader(BaseLoader):
             __import__(package)
         except ImportError, e:
             raise ZConfig.SchemaResourceError(
-                "could not load package %s: %s" % (package, str(e)),
+                "could not load package %s: %s" % (package, repr(e)),
                 filename=file,
                 package=package)
         pkg = sys.modules[package]

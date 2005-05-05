@@ -36,6 +36,7 @@ Zope Changes
 
       - Collector #1745: Fixed ZSQL error KeyError 'query'
 
+      - Collector #1735: fixed UnicodeDecodeError in Loader.py
 
   Zope 2.8b1 (2005/04/24)
 
