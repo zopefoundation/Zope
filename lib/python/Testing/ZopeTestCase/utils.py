@@ -173,15 +173,13 @@ class ConnectionRegistry:
         self._conns.append(conn)
 
     def close(self, conn):
-        try: self._conns.remove(conn)
-        except: pass
-        try: conn.close()
-        except: pass
+        if self.contains(conn):
+            self._conns.remove(conn)
+        conn.close()
 
     def closeAll(self):
         for conn in self._conns:
-            try: conn.close()
-            except: pass
+            conn.close()
         self._conns = []
 
     def __len__(self):
