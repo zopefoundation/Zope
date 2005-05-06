@@ -14,7 +14,7 @@
 ##############################################################################
 """Five interfaces
 
-$Id: interfaces.py 8253 2005-01-13 12:49:07Z regebro $
+$Id: interfaces.py 12029 2005-05-06 17:04:32Z yuppie $
 """
 from zope.interface import Interface, Attribute
 from zope.interface.interfaces import IInterface
@@ -25,6 +25,7 @@ try:
 except ImportError:
     class IPersistent(Interface):
         """Persistent object"""
+
 
 class IPersistentExtra(Interface):
 
@@ -37,6 +38,7 @@ class IPersistentExtra(Interface):
     def modified_in_version():
         """Was the object modified in this version?"""
 
+
 class IBrowserDefault(Interface):
     """Provide a hook for deciding about the default view for an object"""
 
@@ -46,46 +48,69 @@ class IBrowserDefault(Interface):
         find the method to be published.
         """
 
+
+class IMenuItemType(IInterface):
+    """Menu item type
+
+    Menu item types are interfaces that define classes of
+    menu items.
+    """
+
+
+#
+# Zope 2.7 core interfaces
+#
+
+# based on Acquisition.*AcquisitionWrapper
 class IAcquisitionWrapper(Interface):
+    """ Wrapper object for acquisition.
+    """
 
-    def acquire(name, filter=0, extra=None, expl=0, default=0,
-                explicit=1, containment=0):
+    def aq_acquire(name, filter=None, extra=None, explicit=True, default=0,
+                   containment=0):
         """Get an attribute, acquiring it if necessary"""
-
-    aq_acquire = acquire
 
     def aq_inContextOf(obj, inner=1):
         """Test whether the object is currently in the context of the
         argument"""
 
+
+# based on Acquisition.*plicit
 class IAcquisition(Interface):
+    """ Acquire attributes from containers.
+    """
 
     def __of__(context):
         """Return the object in a context"""
 
-    def aq_acquire(name, filter=None, extra=None, explicit=None):
-        """Get an attribute, acquiring it if necessary"""
 
-    def aq_get(name, default=None):
-        """Get an attribute, acquiring it if necessary."""
+## XXX: these are wrapper attributes and/or module functions
+##
+##    def aq_acquire(name, filter=None, extra=None, explicit=None):
+##        """Get an attribute, acquiring it if necessary"""
+##
+##    def aq_get(name, default=None):
+##        """Get an attribute, acquiring it if necessary."""
+##
+##    # those are computed attributes, aren't they?
+##
+##    def aq_base():
+##        """Get the object unwrapped"""
+##
+##    def aq_parent():
+##        """Get the parent of an object"""
+##
+##    def aq_self():
+##        """Get the object with the outermost wrapper removed"""
+##
+##    def aq_inner():
+##        """Get the object with alll but the innermost wrapper removed"""
+##
+##    def aq_chain(containment=0):
+##        """Get a list of objects in the acquisition environment"""
 
-    # those are computed attributes, aren't they?
 
-    def aq_base():
-        """Get the object unwrapped"""
-
-    def aq_parent():
-        """Get the parent of an object"""
-
-    def aq_self():
-        """Get the object with the outermost wrapper removed"""
-
-    def aq_inner():
-        """Get the object with alll but the innermost wrapper removed"""
-
-    def aq_chain(containment=0):
-        """Get a list of objects in the acquisition environment"""
-
+# based on OFS.SimpleItem.Item and Management.Tabs
 class IManageable(Interface):
     """Something that is manageable in the ZMI"""
 
@@ -107,16 +132,16 @@ class IManageable(Interface):
     def filtered_manage_options(REQUEST=None):
         """ """
 
-    def manage_workspace():
+    def manage_workspace(REQUEST):
         """Dispatch to first interface in manage_options"""
 
     def tabs_path_default(REQUEST):
         """ """
 
-    def tabs_path_info(script, path,):
+    def tabs_path_info(script, path):
         """ """
 
-    def class_manage_path(self):
+    def class_manage_path():
         """ """
 
     manage_options = Tuple(
@@ -125,6 +150,8 @@ class IManageable(Interface):
 
     manage_tabs = Attribute("""Management tabs""")
 
+
+# based on OFS.FTPInterface.FTPInterface
 class IFTPAccess(Interface):
     """Provide support for FTP access"""
 
@@ -141,6 +168,8 @@ class IFTPAccess(Interface):
         In the case of non-foldoid objects it should return a single
         tuple (id,stat) representing itself."""
 
+
+# copied from webdav.WriteLockInterface.WriteLockInterface
 class IWriteLock(Interface):
     """This represents the basic protocol needed to support the write lock
     machinery.
@@ -211,6 +240,8 @@ class IWriteLock(Interface):
         """ Deletes ALL DAV locks on the object - should only be called
         by lock management machinery. """
 
+
+# based on webdav.Resource.Resource
 class IDAVResource(IWriteLock):
     """Provide basic WebDAV support for non-collection objects."""
 
@@ -227,7 +258,7 @@ class IDAVResource(IWriteLock):
         """
         Init expected HTTP 1.1 / WebDAV headers which are not
         currently set by the base response object automagically.
-        
+
         Note we set an borg-specific header for ie5 :( Also, we sniff
         for a ZServer response object, because we don't want to write
         duplicate headers (since ZS writes Date and Connection
@@ -240,7 +271,7 @@ class IDAVResource(IWriteLock):
                              col=0, url=None, refresh=0):
         """ """
 
-    def HEAD(EQUEST, RESPONSE):
+    def HEAD(REQUEST, RESPONSE):
         """Retrieve resource information without a response body."""
 
     def PUT(REQUEST, RESPONSE):
@@ -268,7 +299,7 @@ class IDAVResource(IWriteLock):
     def PROPFIND(REQUEST, RESPONSE):
         """Retrieve properties defined on the resource."""
 
-    def PROPPATCH(self, REQUEST, RESPONSE):
+    def PROPPATCH(REQUEST, RESPONSE):
         """Set and/or remove properties defined on the resource."""
 
     def MKCOL(REQUEST, RESPONSE):
@@ -300,6 +331,8 @@ class IDAVResource(IWriteLock):
     def listDAVObjects():
         """ """
 
+
+# based on OFS.CopySupport.CopySource
 class ICopySource(Interface):
     """Interface for objects which allow themselves to be copied."""
 
@@ -320,22 +353,24 @@ class ICopySource(Interface):
            either one is a new object
         """
 
-    def _postCopy(self, container, op=0):
+    def _postCopy(container, op=0):
         """Called after the copy is finished to accomodate special cases.
         The op var is 0 for a copy, 1 for a move."""
 
-    def _setId(self, id):
+    def _setId(id):
         """Called to set the new id of a copied object."""
 
-    def cb_isCopyable(self):
+    def cb_isCopyable():
         """Is object copyable? Returns 0 or 1"""
 
-    def cb_isMoveable(self):
+    def cb_isMoveable():
         """Is object moveable? Returns 0 or 1"""
 
-    def cb_userHasCopyOrMovePermission(self):
+    def cb_userHasCopyOrMovePermission():
         """ """
 
+
+# based on OFS.Traversable.Traversable
 class ITraversable(Interface):
 
     def absolute_url(relative=0):
@@ -379,18 +414,18 @@ class ITraversable(Interface):
 
     def unrestrictedTraverse(path, default=None, restricted=0):
         """Lookup an object by path,
-        
+
         path -- The path to the object. May be a sequence of strings or a slash
         separated string. If the path begins with an empty path element
         (i.e., an empty string or a slash) then the lookup is performed
         from the application root. Otherwise, the lookup is relative to
         self. Two dots (..) as a path element indicates an upward traversal
         to the acquisition parent.
-        
+
         default -- If provided, this is the value returned if the path cannot
         be traversed for any reason (i.e., no object exists at that path or
         the object is inaccessible).
-        
+
         restricted -- If false (default) then no security checking is performed.
         If true, then all of the objects along the path are validated with
         the security machinery. Usually invoked using restrictedTraverse().
@@ -399,6 +434,8 @@ class ITraversable(Interface):
     def restrictedTraverse(path, default=None):
         """Trusted code traversal code, always enforces security"""
 
+
+# based on AccessControl.Owned.Owned
 class IOwned(Interface):
 
     manage_owner = Attribute("""Manage owner view""")
@@ -436,7 +473,7 @@ class IOwned(Interface):
         true then also take ownership of all sub-objects, otherwise
         sub-objects retain their ownership information."""
 
-    def userCanTakeOwnership(self):
+    def userCanTakeOwnership():
         """ """
 
     def manage_takeOwnership(REQUEST, RESPONSE, recursive=0):
@@ -448,12 +485,14 @@ class IOwned(Interface):
         """Change the type (implicit or explicit) of ownership.
         """
 
-    def _deleteOwnershipAfterAdd(self):
+    def _deleteOwnershipAfterAdd():
         """ """
 
-    def manage_fixupOwnershipAfterAdd(self):
+    def manage_fixupOwnershipAfterAdd():
         """ """
 
+
+# based on App.Undo.UndoSupport
 class IUndoSupport(Interface):
 
     manage_UndoForm = Attribute("""Manage Undo form""")
@@ -469,6 +508,8 @@ class IUndoSupport(Interface):
     def manage_undo_transactions(transaction_info=(), REQUEST=None):
         """ """
 
+
+# based on many classes
 class IZopeObject(Interface):
 
     isPrincipiaFolderish = Bool(
@@ -481,6 +522,8 @@ class IZopeObject(Interface):
         description=u"The object's Zope2 meta type",
         )
 
+
+# based on OFS.SimpleItem.Item
 class IItem(IZopeObject, IManageable, IFTPAccess, IDAVResource,
             ICopySource, ITraversable, IOwned, IUndoSupport):
 
@@ -504,9 +547,6 @@ class IItem(IZopeObject, IManageable, IFTPAccess, IDAVResource,
         attribute of an object directly. The getId method is public.
         """
 
-    def _setId(id):
-        """Set the id"""
-
     def title_or_id():
         """Returns the title if it is not blank and the id otherwise."""
 
@@ -520,14 +560,21 @@ class IItem(IZopeObject, IManageable, IFTPAccess, IDAVResource,
                                    tagSearch=None, error_log_url=''):
         """Raise standard error message"""
 
+
+# based on OFS.SimpleItem.Item_w__name__
 class IItemWithName(IItem):
     """Item with name"""
+
+    def _setId(id):
+        """Set the id"""
 
     def getPhysicalPath():
         """Returns a path (an immutable sequence of strings) that can be used
         to access this object again later, for example in a copy/paste
         operation."""
 
+
+# based on AccessControl.PermissionMapping.RoleManager
 class IPermissionMapping(Interface):
 
     def manage_getPermissionMapping():
@@ -545,6 +592,8 @@ class IPermissionMapping(Interface):
                                     class_permissions=[], REQUEST=None):
         """Change the permission mapping"""
 
+
+# based on AccessControl.Role.RoleManager
 class IRoleManager(IPermissionMapping):
     """An object that has configurable permissions"""
 
@@ -668,9 +717,13 @@ class IRoleManager(IPermissionMapping):
     def possible_permissions():
         """ """
 
+
+# based on OFS.SimpleItem.SimpleItem
 class ISimpleItem(IItem, IPersistent, IAcquisition, IRoleManager):
     """Not-so-simple item"""
 
+
+# based on OFS.CopySupport.CopyContainer
 class ICopyContainer(Interface):
     """Interface for containerish objects which allow cut/copy/paste"""
 
@@ -685,11 +738,11 @@ class ICopyContainer(Interface):
     def _getOb(id, default=None):
         """ """
 
-    def manage_CopyContainerFirstItem(self, REQUEST):
+    def manage_CopyContainerFirstItem(REQUEST):
         """ """
 
-    def manage_CopyContainerAllItems(self, REQUEST):
-        return map(lambda i, s=self: s._getOb(i), tuple(REQUEST['ids']))
+    def manage_CopyContainerAllItems(REQUEST):
+        """ """
 
     def manage_cutObjects(ids=None, REQUEST=None):
         """Put a reference to the objects named in ids in the clip board"""
@@ -739,6 +792,8 @@ class ICopyContainer(Interface):
         (the object will not yet have been connected to the
         acquisition hierarchy)."""
 
+
+# based on App.Management.Navigation
 class INavigation(Interface):
     """Basic navigation UI support"""
 
@@ -757,6 +812,8 @@ class INavigation(Interface):
 
 INavigation.setTaggedValue('manage_page_style.css', Attribute(""" """))
 
+
+# based on webdav.Collection.Collection
 class IDAVCollection(IDAVResource):
     """The Collection class provides basic WebDAV support for collection
     objects. It provides default implementations for all supported
@@ -790,6 +847,8 @@ class IDAVCollection(IDAVResource):
     def listDAVObjects():
         """ """
 
+
+# based on OFS.ObjectManager.ObjectManager
 class IObjectManager(IZopeObject, ICopyContainer, INavigation, IManageable,
                      IAcquisition, IPersistent, IDAVCollection, ITraversable):
     """Generic object manager
@@ -878,6 +937,8 @@ class IObjectManager(IZopeObject, ICopyContainer, INavigation, IManageable,
     def __getitem__(key):
         """ """
 
+
+# based on OFS.PropertyManager.PropertyManager
 class IPropertyManager(Interface):
     """The PropertyManager mixin class provides an object with
     transparent property management. An object which wants to
@@ -1034,6 +1095,8 @@ class IPropertyManager(Interface):
     def manage_delProperties(ids=None, REQUEST=None):
         """Delete one or more properties specified by 'ids'."""
 
+
+# based on OFS.FindSupport.FindSupport
 class IFindSupport(Interface):
     """Find support for Zope Folders"""
 
@@ -1061,6 +1124,8 @@ class IFindSupport(Interface):
                          apply_func=None, apply_path=''):
         """Zope Find interface and apply"""
 
+
+# based on OFS.Folder.Folder
 class IFolder(IObjectManager, IPropertyManager, IRoleManager,
               IDAVCollection, IItem, IFindSupport):
     """Folders are basic container objects that provide a standard
@@ -1068,6 +1133,7 @@ class IFolder(IObjectManager, IPropertyManager, IRoleManager,
     management interface and can have arbitrary properties."""
 
 
+# copied from OFS.IOrderSupport.IOrderedContainer
 class IOrderedContainer(Interface):
     """ Ordered Container interface.
 
@@ -1163,9 +1229,13 @@ class IOrderedContainer(Interface):
         Returns -- Number of moved sub-objects
         """
 
+
+# based on OFS.OrderedFolder.OrderedFolder
 class IOrderedFolder(IOrderedContainer, IFolder):
     """Ordered folder"""
 
+
+# based on OFS.Application.Application
 class IApplication(IFolder, IFindSupport):
     """Top-level system object"""
 
@@ -1222,12 +1292,3 @@ class IApplication(IFolder, IFindSupport):
         """Check the global (zclass) registry for problems, which can
         be caused by things like disk-based products being deleted.
         Return true if a problem is found"""
-
-
-class IMenuItemType(IInterface):
-    """Menu item type
-
-    Menu item types are interfaces that define classes of
-    menu items.
-    """
-        
