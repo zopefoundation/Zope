@@ -211,7 +211,7 @@ called ``classes.py`` and the interfaces in a module called
   </configure>
 
 Five will automatically pickup ``configure.zcml`` when it's placed in
-the product's directory.  Any object that provides ``INewInterface``
+the product's directory.  Any object that provides ``IMyInterface``
 can now be adapted to ``INewInterface``, like this::
 
   from classes import MyClass
