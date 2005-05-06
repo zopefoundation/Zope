@@ -19,7 +19,7 @@ See testPythonScript.py and testShoppingCart.py for
 example test cases. See testSkeleton.py for a quick
 way of getting started.
 
-$Id: testPortalTestCase.py,v 1.30 2005/01/30 14:22:48 shh42 Exp $
+$Id$
 """
 
 import os, sys
@@ -508,8 +508,8 @@ class TestSetUpRaises(HookTest):
         except self.Error:
             self.assertHooks(['beforeSetUp', '_setup', 'afterClear'])
             # Connection has been closed
-            from Testing.ZopeTestCase import base
-            self.assertEqual(len(base._connections), 0)
+            from Testing.ZopeTestCase import connections
+            self.assertEqual(connections.count(), 0)
 
     def _setup(self):
         HookTest._setup(self)

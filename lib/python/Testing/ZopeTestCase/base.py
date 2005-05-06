@@ -12,7 +12,7 @@
 ##############################################################################
 """TestCase for Zope testing
 
-$Id: base.py,v 1.1 2004/08/19 13:59:41 shh42 Exp $
+$Id$
 """
 
 import ZopeLite as Zope2
@@ -22,26 +22,20 @@ import transaction
 import profiler
 import utils
 import interfaces
+import connections
 
 from AccessControl.SecurityManagement import noSecurityManager
-
-_connections = utils.ConnectionRegistry()
-
 
 
 def app():
     '''Opens a ZODB connection and returns the app object.'''
     app = Zope2.app()
-    _connections.register(app._p_jar)
+    connections.register(app._p_jar)
     return utils.makerequest(app)
 
 def close(app):
     '''Closes the app's ZODB connection.'''
-    _connections.close(app._p_jar)
-
-def closeConnections():
-    '''Closes all registered ZODB connections.'''
-    _connections.closeAll()
+    connections.close(app._p_jar)
 
 
 
@@ -131,7 +125,7 @@ class TestCase(profiler.Profiled, unittest.TestCase):
     def _close(self):
         '''Closes the ZODB connection.'''
         transaction.abort()
-        closeConnections()
+        connections.closeAll()
 
     def logout(self):
         '''Logs out.'''

@@ -19,7 +19,7 @@ See testPythonScript.py and testShoppingCart.py for
 example test cases. See testSkeleton.py for a quick
 way of getting started.
 
-$Id: testBaseTestCase.py,v 1.7 2005/02/09 12:42:40 shh42 Exp $
+$Id$
 """
 
 import os, sys
@@ -30,6 +30,7 @@ import transaction
 
 from Testing.ZopeTestCase import base
 from Testing.ZopeTestCase import utils
+from Testing.ZopeTestCase import connections
 
 from AccessControl import getSecurityManager
 from AccessControl.SecurityManagement import newSecurityManager
@@ -80,9 +81,9 @@ class TestTestCase(HookTest):
         self.assertHooks(['beforeTearDown', 'beforeClose', 'afterClear'])
 
     def testAppOpensConnection(self):
-        self.assertEqual(len(base._connections), 1)
+        self.assertEqual(connections.count(), 1)
         self._app()
-        self.assertEqual(len(base._connections), 2)
+        self.assertEqual(connections.count(), 2)
 
     def testClearCallsCloseHook(self):
         self._called = []
@@ -102,15 +103,15 @@ class TestTestCase(HookTest):
         self.assertEqual(len(self.getObjectsInTransaction()), 0)
 
     def testClearClosesConnection(self):
-        self.assertEqual(len(base._connections), 1)
+        self.assertEqual(connections.count(), 1)
         self._clear()
-        self.assertEqual(len(base._connections), 0)
+        self.assertEqual(connections.count(), 0)
 
     def testClearClosesAllConnections(self):
         self._app()
-        self.assertEqual(len(base._connections), 2)
+        self.assertEqual(connections.count(), 2)
         self._clear()
-        self.assertEqual(len(base._connections), 0)
+        self.assertEqual(connections.count(), 0)
 
     def testClearLogsOut(self):
         uf = self.app.acl_users
@@ -128,15 +129,15 @@ class TestTestCase(HookTest):
         self.assertEqual(len(self.getObjectsInTransaction()), 0)
 
     def testCloseClosesConnection(self):
-        self.assertEqual(len(base._connections), 1)
+        self.assertEqual(connections.count(), 1)
         self._close()
-        self.assertEqual(len(base._connections), 0)
+        self.assertEqual(connections.count(), 0)
 
     def testCloseClosesAllConnections(self):
         self._app()
-        self.assertEqual(len(base._connections), 2)
+        self.assertEqual(connections.count(), 2)
         self._close()
-        self.assertEqual(len(base._connections), 0)
+        self.assertEqual(connections.count(), 0)
 
     def testLogoutLogsOut(self):
         uf = self.app.acl_users
@@ -167,7 +168,7 @@ class TestSetUpRaises(HookTest):
         except self.Error:
             self.assertHooks(['beforeSetUp', '_setup', 'afterClear'])
             # Connection has been closed
-            self.assertEqual(len(base._connections), 0)
+            self.assertEqual(connections.count(), 0)
 
     def _setup(self):
         HookTest._setup(self)
@@ -188,7 +189,7 @@ class TestTearDownRaises(HookTest):
         except self.Error:
             self.assertHooks(['beforeTearDown', 'beforeClose', 'afterClear'])
             # Connection has been closed
-            self.assertEqual(len(base._connections), 0)
+            self.assertEqual(connections.count(), 0)
 
     def beforeClose(self):
         HookTest.beforeClose(self)
@@ -206,7 +207,7 @@ class TestConnectionRegistry(base.TestCase):
             self.closed = 1
 
     def afterSetUp(self):
-        self.reg = utils.ConnectionRegistry()
+        self.reg = connections.ConnectionRegistry()
         self.conns = [self.Conn(), self.Conn(), self.Conn()]
 
     def testRegister(self):
@@ -214,6 +215,7 @@ class TestConnectionRegistry(base.TestCase):
         for conn in self.conns:
             self.reg.register(conn)
         assert len(self.reg) == 3
+        assert self.reg.count() == 3
 
     def testCloseConnection(self):
         # Should be able to close a single registered connection

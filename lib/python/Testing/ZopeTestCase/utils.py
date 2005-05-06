@@ -15,7 +15,7 @@
 These functions are designed to be imported and run at
 module level to add functionality to the test environment.
 
-$Id: utils.py,v 1.21 2005/02/11 09:00:21 shh42 Exp $
+$Id$
 """
 
 import os
@@ -161,32 +161,6 @@ def makelist(arg):
     if type(arg) == type(''):
        return filter(None, [arg])
     raise ValueError('Argument must be list, tuple, or string')
-
-
-class ConnectionRegistry:
-    '''ZODB connection registry'''
-
-    def __init__(self):
-        self._conns = []
-
-    def register(self, conn):
-        self._conns.append(conn)
-
-    def close(self, conn):
-        if self.contains(conn):
-            self._conns.remove(conn)
-        conn.close()
-
-    def closeAll(self):
-        for conn in self._conns:
-            conn.close()
-        self._conns = []
-
-    def __len__(self):
-        return len(self._conns)
-
-    def contains(self, conn):
-        return conn in self._conns
 
 
 __all__ = [

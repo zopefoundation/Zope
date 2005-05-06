@@ -21,13 +21,14 @@ The fixture consists of:
 The default user is logged in and has the 'Access contents information'
 and 'View' permissions given to his role.
 
-$Id: ZopeTestCase.py,v 1.29 2005/02/09 12:42:40 shh42 Exp $
+$Id$
 """
 
 import base
 import functional
 import interfaces
 import utils
+import connections
 
 from AccessControl import getSecurityManager
 from AccessControl.SecurityManagement import newSecurityManager
@@ -80,7 +81,7 @@ class ZopeTestCase(base.TestCase):
         '''Clears the fixture.'''
         # This code is a wart from the olden days.
         try:
-            if base._connections.contains(self.app._p_jar):
+            if connections.contains(self.app._p_jar):
                 self.app._delObject(folder_name)
         except:
             pass
@@ -121,5 +122,4 @@ class FunctionalTestCase(functional.Functional, ZopeTestCase):
 
 from base import app
 from base import close
-from base import closeConnections
 
