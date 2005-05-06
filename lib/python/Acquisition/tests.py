@@ -369,6 +369,7 @@ def test_unwrapped():
     Traceback (most recent call last):
     ...
     AttributeError: id
+
     >>> Acquisition.aq_acquire(c, 'id',
     ...        lambda searched, parent, name, ob, extra: extra,
     ...        1)
@@ -1386,7 +1387,7 @@ def test_creating_wrappers_directly():
     >>> w = ImplicitAcquisitionWrapper(a.b)
     Traceback (most recent call last):
     ...
-    TypeError: argument must be 2-item sequence, not B
+    TypeError: __init__() takes exactly 2 arguments (1 given)
 
     We can reassign aq_parent
 
@@ -1399,8 +1400,12 @@ def test_creating_wrappers_directly():
     >>> w = ImplicitAcquisitionWrapper()
     Traceback (most recent call last):
     ...
-    TypeError: function takes at least one argument
+    TypeError: __init__() takes exactly 2 arguments (0 given)
 
+    >>> w = ImplicitAcquisitionWrapper(obj=1)
+    Traceback (most recent call last):
+    ...
+    TypeError: kwyword arguments not allowed
     """
 
 def test_cant_pickle_acquisition_wrappers_classic():
@@ -1523,6 +1528,71 @@ def showaq(m_self, indent=''):
     else:
         rval = rval + indent + id + "\n"
     return rval
+
+
+
+def test_Basic_gc():
+    """Test to make sure that EC instances participate in GC
+
+    >>> from ExtensionClass import Base
+    >>> import gc
+    >>> thresholds = gc.get_threshold()
+    >>> gc.set_threshold(0)
+
+    >>> for B in I, E:
+    ...     class C1(B):
+    ...         pass
+    ... 
+    ...     class C2(Base):
+    ...         def __del__(self):
+    ...             print 'removed'
+    ... 
+    ...     a=C1('a')
+    ...     a.b = C1('a.b')
+    ...     a.b.a = a
+    ...     a.b.c = C2()
+    ...     ignore = gc.collect()
+    ...     del a
+    ...     removed = gc.collect()
+    ...     print removed > 0
+    removed
+    True
+    removed
+    True
+
+    >>> gc.set_threshold(*thresholds)
+
+    """
+
+def test_Wrapper_gc():
+    """Test to make sure that EC instances participate in GC
+
+    >>> import gc
+    >>> thresholds = gc.get_threshold()
+    >>> gc.set_threshold(0)
+
+    >>> for B in I, E:
+    ...     class C:
+    ...         def __del__(self):
+    ...             print 'removed'
+    ... 
+    ...     a=B('a')
+    ...     a.b = B('b')
+    ...     a.a_b = a.b # circ ref through wrapper
+    ...     a.b.c = C()
+    ...     ignored = gc.collect()
+    ...     del a
+    ...     removed = gc.collect()
+    ...     removed > 0
+    removed
+    True
+    removed
+    True
+
+    >>> gc.set_threshold(*thresholds)
+
+"""
+
 
     
 
