@@ -11,6 +11,14 @@ Five contributors
 
 - Tres Seaver (tres@zope.com)
 
+- Jan-Wijbrand Kolman (jw@infrae.com)
+
+- Stefan Holek (ssh@epy.co.at)
+
+- Florent Guillaume (fg@nuxeo.com)
+
+- Godefroid Chapelle (gotcha@bubblenet.be)
+
 - Andy Adiwidjaja (mail@adiwidjaja.com)
 
 - Stuart Bishop (stuart@stuartbishop.net)
