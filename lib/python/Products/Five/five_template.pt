@@ -1,6 +1,6 @@
 <html metal:define-macro="page">
 <head>
-<metal:block define-slot="css_slot">
+<metal:block define-slot="style_slot">
 </metal:block>
 </head>
 <body>

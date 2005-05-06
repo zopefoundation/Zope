@@ -12,7 +12,7 @@
 ##############################################################################
 """ZCML machinery
 
-$Id: zcml.py 9855 2005-03-17 16:41:09Z shh $
+$Id: zcml.py 10534 2005-04-11 15:06:02Z dreamcatcher $
 """
 import os
 from zope.configuration import xmlconfig
@@ -51,4 +51,12 @@ def load_config(file, package=None):
     """
     global _context
     _context = xmlconfig.file(file, package, _context)
+
+def load_string(s):
+    """Load a snipped of ZCML into the context.
+
+    Use with extreme care.
+    """
+    global _context
+    _context = xmlconfig.string(s, _context)
 

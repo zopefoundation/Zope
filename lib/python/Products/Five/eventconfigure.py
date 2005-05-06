@@ -13,6 +13,8 @@
 """
 Use 'structured monkey patching' to enable zope.app.container event sending for
 Zope 2 objects.
+
+$Id: eventconfigure.py 10337 2005-04-05 16:01:21Z philikon $
 """
 
 from Products.Five.fiveconfigure import isFiveMethod
@@ -69,7 +71,7 @@ def manage_afterAdd(self, item, container):
     if method is not None:
         self.__five_original_manage_afterAdd(item, container)
 
-manage_afterAdd.__five_method__ = None
+manage_afterAdd.__five_method__ = True
 
 def manage_beforeDelete(self, item, container):
     notify(ObjectRemovedEvent(self))
@@ -78,7 +80,7 @@ def manage_beforeDelete(self, item, container):
     if method is not None:
         self._five_original_manage_beforeDelete(item, container)
 
-manage_beforeDelete.__five_method__ = None
+manage_beforeDelete.__five_method__ = True
 
 def classSendEvents(class_):
     """Make instances of the class send Object*Event.

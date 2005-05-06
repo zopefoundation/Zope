@@ -259,6 +259,12 @@
        />
 
     <meta:directive
+       name="sizable"
+       schema=".fivedirectives.ISendEventsDirective"
+       handler=".sizeconfigure.sizable"
+       />
+
+    <meta:directive
         name="pagesFromDirectory"
         schema=".fivedirectives.IPagesFromDirectoryDirective"
         handler=".fiveconfigure.pagesFromDirectory"

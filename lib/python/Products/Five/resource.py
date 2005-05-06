@@ -59,9 +59,10 @@ class PageTemplateResource(BrowserView, Resource):
     #implements(IBrowserPublisher)
 
     def __browser_default__(self, request):
-        return self, ()
+        return self, ('render', )
 
-    def __call__(self):
+    def render(self):
+        """Rendered content"""
         pt = self.context
         return pt(self.request)
 

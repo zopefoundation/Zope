@@ -21,6 +21,7 @@ from zope.app.form.browser.submit import Update
 
 from Products.Five.tests.products.FiveTest.simplecontent import manage_addFieldSimpleContent
 from Products.Five.tests.products.FiveTest.helpers import manage_addFiveTraversableFolder
+from Products.Five.tests.products.FiveTest.schemacontent import manage_addComplexSchemaContent
 
 
 class EditFormTest(Functional, FiveTestCase):
@@ -59,6 +60,7 @@ class EditFormTest(Functional, FiveTestCase):
         self.folder = self.folder.ftf
         response = self.publish('/test_folder_1_/ftf/+/addsimplecontent.html',
                                 basic='manager:r00t')
+        self.assertEquals(200, response.getStatus())
         # we're using a GET request to post variables, but seems to be
         # the easiest..
         response = self.publish(
@@ -71,6 +73,11 @@ class EditFormTest(Functional, FiveTestCase):
         self.assertEquals('FooTitle', self.folder.alpha.title)
         self.assertEquals('FooDescription', self.folder.alpha.description)
 
+    def test_objectWidget(self):
+        manage_addComplexSchemaContent(self.folder, 'csc')
+        response = self.publish('/test_folder_1_/csc/edit.html',
+                                basic='manager:r00t')
+        self.assertEquals(200, response.getStatus())
 
 def test_suite():
     from unittest import TestSuite, makeSuite

@@ -10,7 +10,6 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-
 import os, sys
 if __name__ == '__main__':
     execfile(os.path.join(sys.path[0], 'framework.py'))
@@ -26,22 +25,9 @@ from Products.Five.tests.dummy import Dummy1, Dummy2
 from Globals import InitializeClass
 
 
-class PageSecurityTest(CleanUp, FiveTestCase):
-
-    def setUp(self):
-        super(PageSecurityTest, self).setUp()
-        zcml.reset()
-        zcml.load_site()
-        self.dummy1 = Dummy1
-
-    def tearDown(self):
-        super(PageSecurityTest, self).tearDown()
-        zcml.reset()
-        clearSecurityInfo(self.dummy1)
+class PageSecurityTest(FiveTestCase):
 
     def test_page_security(self):
-        self.failIf(hasattr(self.dummy1, '__ac_permissions__'))
-
         decl = """
         <configure xmlns="http://namespaces.zope.org/zope"
             xmlns:browser="http://namespaces.zope.org/browser">
@@ -50,37 +36,40 @@ class PageSecurityTest(CleanUp, FiveTestCase):
              for="Products.Five.tests.dummy.IDummy"
              class="Products.Five.tests.dummy.DummyView"
              attribute="foo"
-             name="foo.txt"
+             name="test_page_security"
              permission="zope2.ViewManagementScreens"
            />
 
         </configure>
         """
-        zcml.string(decl)
+        zcml.load_string(decl)
         request = FakeRequest()
-        view = getView(Dummy1(), 'foo.txt', request)
+        # Wrap into an acquisition so that imPermissionRole objects
+        # can be evaluated.
+        view = getView(Dummy1(), 'test_page_security', request)
 
         ac = getattr(view, '__ac_permissions__')
-        ex_ac = (('View management screens', ('foo',)),)
+        # It's protecting the object with the permission, and not the
+        # attribute, so we get ('',) instead of ('foo',).
+        ex_ac = (('View management screens', ('',)),)
         self.assertEquals(ac, ex_ac)
-        foo_roles = getattr(view, 'foo__roles__', None)
-        self.failIf(foo_roles is None)
-        self.failIf(foo_roles == ())
-        self.assertEquals(foo_roles.__of__(view), ('Manager',))
+
+        # Wrap into an acquisition so that imPermissionRole objects
+        # can be evaluated. __roles__ is a imPermissionRole object.
+        view = view.__of__(self.folder)
+        view_roles = getattr(view, '__roles__', None)
+        self.failIf(view_roles is None)
+        self.failIf(view_roles == ())
+        self.assertEquals(view_roles, ('Manager',))
 
 
-class SecurityEquivalenceTest(CleanUp, FiveTestCase):
+class SecurityEquivalenceTest(FiveTestCase):
 
     def setUp(self):
-        super(SecurityEquivalenceTest, self).setUp()
-        zcml.reset()
-        zcml.initialize()
         self.dummy1 = Dummy1
         self.dummy2 = Dummy2
 
     def tearDown(self):
-        zcml.reset()
-        super(SecurityEquivalenceTest, self).tearDown()
         clearSecurityInfo(self.dummy1)
         clearSecurityInfo(self.dummy2)
 
@@ -107,7 +96,7 @@ class SecurityEquivalenceTest(CleanUp, FiveTestCase):
         </content>
         </configure>
         """
-        zcml.string(decl)
+        zcml.load_string(decl)
         InitializeClass(self.dummy2)
 
         ac1 = getattr(self.dummy1, '__ac_permissions__')
@@ -143,7 +132,6 @@ class SecurityEquivalenceTest(CleanUp, FiveTestCase):
 class CheckPermissionTest(FiveTestCase):
 
     def test_publicPermissionId(self):
-        #import pdb;pdb.set_trace()
         self.failUnless(checkPermission('zope2.Public', self.folder))
 
     def test_privatePermissionId(self):
@@ -151,7 +139,8 @@ class CheckPermissionTest(FiveTestCase):
         self.failIf(checkPermission('zope2.Private', self.folder))
 
     def test_accessPermissionId(self):
-        self.failUnless(checkPermission('zope2.AccessContentsInformation', self.folder))
+        self.failUnless(checkPermission('zope2.AccessContentsInformation',
+                                        self.folder))
 
     def test_invalidPermissionId(self):
         self.failIf(checkPermission('notapermission', self.folder))
@@ -160,8 +149,8 @@ class CheckPermissionTest(FiveTestCase):
 def test_suite():
     from unittest import TestSuite, makeSuite
     suite = TestSuite()
-    #suite.addTest(makeSuite(SecurityEquivalenceTest))
-    #suite.addTest(makeSuite(PageSecurityTest))
+    suite.addTest(makeSuite(SecurityEquivalenceTest))
+    suite.addTest(makeSuite(PageSecurityTest))
     suite.addTest(makeSuite(CheckPermissionTest))
     return suite
 

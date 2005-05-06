@@ -10,7 +10,6 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-
 import os, sys
 if __name__ == '__main__':
     execfile(os.path.join(sys.path[0], 'framework.py'))
@@ -197,10 +196,7 @@ class FiveTest(FiveTestCase):
     def test_template_resource(self):
         resource = self.folder.unrestrictedTraverse('testoid/++resource++cockatiel.html')
         self.assert_(isinstance(resource, Resource))
-        expected = """\
-<p>Have you ever seen a cockatiel?</p>
-<p>maybe</p>
-"""
+        expected = 'http://nohost/test_folder_1_/testoid/++resource++cockatiel.html'
         self.assertEquals(expected, resource())
 
     def test_file_resource(self):
@@ -343,6 +339,11 @@ class PublishTest(Functional, FiveTestCase):
         response = self.publish(url, basic='manager:r00t')
         self.assertEquals(200, response.getStatus())
 
+    def test_publish_template_resource(self):
+        url = '/test_folder_1_/testoid/++resource++cockatiel.html'
+        response = self.publish(url, basic='manager:r00t')
+        self.assertEquals(200, response.getStatus())
+        
     # Disabled __call__ overriding for now. Causes more trouble
     # than it fixes.
     # def test_existing_call(self):
@@ -362,7 +363,6 @@ class PublishTest(Functional, FiveTestCase):
         self.assert_('page 1' in response.getBody())
         response = self.publish('/test_folder_1_/testoid/dirpage2')
         self.assert_('page 2' in response.getBody())
-
 
 class IRecurse(Interface):
     pass
@@ -417,6 +417,17 @@ class MenuTest(FiveTestCase):
         self.assertEquals('Test Menu Item 2', menu[1]['title'])
         self.assertEquals('parakeet.html', menu[1]['action'])
 
+class SizeTest(FiveTestCase):
+
+    def test_no_get_size_on_original(self):
+        manage_addSimpleContent(self.folder, 'simple', 'Simple')
+	obj = self.folder.simple
+	self.assertEquals(obj.get_size(), 42)
+
+    def test_get_size_on_original_and_fallback(self):
+	manage_addFancyContent(self.folder, 'fancy', 'Fancy')
+	obj = self.folder.fancy
+	self.assertEquals(obj.get_size(), 43)
 
 def test_suite():
     from unittest import TestSuite, makeSuite
@@ -425,6 +436,7 @@ def test_suite():
     suite.addTest(makeSuite(FiveTest))
     suite.addTest(makeSuite(PublishTest))
     suite.addTest(makeSuite(MenuTest))
+    suite.addTest(makeSuite(SizeTest))
     return suite
 
 if __name__ == '__main__':

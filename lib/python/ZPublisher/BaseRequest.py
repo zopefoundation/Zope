@@ -150,6 +150,9 @@ class BaseRequest:
     def has_key(self,key):
         return self.get(key, _marker) is not _marker
 
+    def __contains__(self, key):
+        return self.has_key(key)
+    
     def keys(self):
         keys = {}
         keys.update(self.common)

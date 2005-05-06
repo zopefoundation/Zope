@@ -6,6 +6,7 @@
   <include file="services.zcml" />
   <include file="interfaces.zcml" />
   <include file="permissions.zcml" />
+  <include file="browser.zcml" />
 
   <include package="zope.app.traversing" />
   <include package="zope.app.form.browser" />
@@ -28,65 +29,6 @@
       factory=".viewable.BrowserDefault"
       provides=".interfaces.IBrowserDefault"
       />
-
-  <browser:page
-      for="*"
-      name="absolute_url"
-      class=".browser.AbsoluteURL"
-      permission="zope.Public"
-      allowed_interface="zope.app.traversing.browser.interfaces.IAbsoluteURL"
-      />
-
-  <browser:page
-      for="*"
-      template="five_template.pt"
-      name="five_template"
-      permission="zope.Public"
-      />
-
-  <browser:page
-    for="*"
-    name="standard_macros"
-    permission="zope2.View"
-    class=".browser.StandardMacros"
-    allowed_interface="zope.interface.common.mapping.IItemMapping"
-    />
-        
-  <view
-      for="*"
-      factory=".browser.AbsoluteURL"
-      type="zope.publisher.interfaces.http.IHTTPRequest"
-      permission="zope.Public"
-      provides="zope.app.traversing.browser.interfaces.IAbsoluteURL"
-      />
-
-  <browser:page
-      for="zope.app.traversing.interfaces.IContainmentRoot"
-      name="absolute_url"
-      class=".browser.SiteAbsoluteURL"
-      permission="zope.Public"
-      allowed_interface="zope.app.traversing.browser.interfaces.IAbsoluteURL"
-      />
-
-  <view
-      for="zope.app.traversing.interfaces.IContainmentRoot"
-      factory=".browser.SiteAbsoluteURL"
-      type="zope.publisher.interfaces.http.IHTTPRequest"
-      permission="zope.Public"
-      provides="zope.app.traversing.browser.interfaces.IAbsoluteURL"
-      />
-
-  <browser:view
-      for=".interfaces.IObjectManager"
-      name="+"
-      class=".adding.ContentAdding"
-      permission="zope2.ViewManagementScreens"
-      >
-
-    <browser:page name="index.html"  template="adding.pt" />
-    <browser:page name="action.html" attribute="action" />
-
-  </browser:view>
 
   <adapter
       for=".interfaces.IObjectManager"

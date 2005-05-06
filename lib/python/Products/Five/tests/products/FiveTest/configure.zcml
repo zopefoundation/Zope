@@ -310,6 +310,31 @@
       permission="zope2.Public"
       />
       
+  <browser:editform
+      schema=".interfaces.ISimpleContent"
+      for=".interfaces.ISimpleContent"
+      name="protectededitform.html"
+      permission="zope2.ViewManagementScreens"
+      />
+
+  <five:traversable class=".schemacontent.ComplexSchemaContent" />
+
+  <browser:editform
+      schema=".interfaces.IComplexSchemaContent"
+      for=".interfaces.IComplexSchemaContent"
+      name="edit.html"
+      permission="zope2.Public"
+      class=".browser.ComplexSchemaView"
+      />
+
+  <view
+      type="zope.publisher.interfaces.browser.IBrowserRequest"
+      for="zope.schema.interfaces.IObject"
+      provides="zope.app.form.interfaces.IInputWidget"
+      factory="zope.app.form.browser.objectwidget.ObjectWidget"
+      permission="zope.Public"
+      />
+
   <!-- With a widget override -->
   <browser:editform
       schema=".interfaces.IFieldSimpleContent"
@@ -347,6 +372,12 @@
          
   </browser:addform>
 
+  <browser:addform
+     schema=".interfaces.IFieldSimpleContent"
+     content_factory=".simplecontent.FieldSimpleContent"
+     name="protectedaddform.html"
+     permission="zope2.ViewManagementScreens"
+     />
 
   <!-- stuff that we'll override in overrides.zcml -->
 
@@ -428,11 +459,32 @@
       menu="testmenu"
       />
 
+  <!-- register size adapters -->
+
+  <five:sizable
+      class=".simplecontent.SimpleContent"
+      />
+
+  <five:sizable
+      class=".fancycontent.FancyContent"
+      />
+
+  <adapter
+      for=".interfaces.ISimpleContent"
+      provides="zope.app.size.interfaces.ISized"
+      factory=".size.SimpleContentSize"
+      />
+
+  <adapter
+      for=".interfaces.IFancyContent"
+      provides="zope.app.size.interfaces.ISized"
+      factory=".size.FancyContentSize"
+      />
 
   <!-- subscribe to all events -->
   <five:sendEvents
       class=".simplecontent.SimpleContent"
-     />
+      />
 
   <subscriber
       factory=".subscriber.objectEventSubscriber"

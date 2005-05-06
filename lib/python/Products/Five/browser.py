@@ -12,14 +12,13 @@
 ##############################################################################
 """Provide basic browser functionality
 
-$Id: browser.py 9730 2005-03-10 22:50:43Z jw $
+$Id: browser.py 10829 2005-04-18 19:18:27Z philikon $
 """
 
 # python
 import sys
 from datetime import datetime
 
-# ZODB
 import transaction
 
 # Zope 2
@@ -31,8 +30,6 @@ from Globals import InitializeClass
 # Zope 3
 from interfaces import ITraversable
 from zope.interface import implements
-from zope.interface.common.mapping import IItemMapping
-from zope.component import getView
 from zope.component import getViewProviding
 from zope.app.traversing.browser.interfaces import IAbsoluteURL
 from zope.app.location.interfaces import ILocation
@@ -121,35 +118,6 @@ class SiteAbsoluteURL(AbsoluteURL):
                  'url': context.absolute_url()
                  },)
 
-class Macros:
-    implements(IItemMapping)
-
-    macro_pages = ()
-    aliases = {
-        'view': 'page',
-        'dialog': 'page',
-        'addingdialog': 'page'
-        }
-
-    def __getitem__(self, key):
-        key = self.aliases.get(key, key)
-        context = self.context
-        request = self.request
-        for name in self.macro_pages:
-            page = getView(context, name, request)
-            try:
-                v = page[key]
-            except KeyError:
-                pass
-            else:
-                return v
-        raise KeyError, key
-
-class StandardMacros(BrowserView, Macros):
-    macro_pages = ('five_template',
-                   'widget_macros',
-                   'form_macros',) 
-
 class EditView(BrowserView):
     """Simple edit-view base class
 
@@ -215,7 +183,7 @@ class EditView(BrowserView):
             except WidgetsError, errors:
                 self.errors = errors
                 status = "An error occured."
-                transaction.abort()
+                transaction.get().abort()
             else:
                 setUpEditWidgets(self, self.schema, source=self.adapted,
                                  ignoreStickyValues=True,
@@ -244,7 +212,6 @@ class AddView(EditView):
         setUpWidgets(self, self.schema, IInputWidget, names=self.fieldNames)
 
     def update(self):
-
         if self.update_status is not None:
             # We've been called before. Just return the previous result.
             return self.update_status

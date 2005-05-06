@@ -10,12 +10,12 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-
 import os, sys
 if __name__ == '__main__':
     execfile(os.path.join(sys.path[0], 'framework.py'))
 
 from Products.Five.tests.fivetest import *
+from Products.Five.tests.products.FiveTest.helpers import manage_addFiveTraversableFolder
 
 from AccessControl import getSecurityManager
 from AccessControl import Unauthorized
@@ -75,7 +75,8 @@ view_names = [
     'owl.html',
     'flamingo.html',
     'flamingo2.html',
-    'condor.html']
+    'condor.html',
+    'protectededitform.html']
 
 public_view_names = [
     'public_attribute_page',
@@ -165,9 +166,38 @@ class PublishTest(Functional, FiveTestCase):
             response = self.publish('/test_folder_1_/testoid/%s' % view_name,
                                     basic='viewer:secret')
             # we expect that we get a 401 Unauthorized
-            self.assertEqual(response.getStatus(), 401)
+            status = response.getStatus()
+            self.failUnless(status == 401, (status, 401, view_name))
 
-    def test_permission(self):
+    def test_all_permissions(self):
+        permissions = self.folder.possible_permissions()
+        self.folder._addRole('Viewer')
+        self.folder.manage_role('Viewer', permissions)
+        self.folder.manage_addLocalRoles(
+            'viewer', ['Viewer'])
+
+        for view_name in view_names:
+            response = self.publish('/test_folder_1_/testoid/%s' % view_name,
+                                    basic='viewer:secret')
+            status = response.getStatus()
+            self.failUnless(status == 200, (status, 200, view_name))
+
+    def test_almost_all_permissions(self):
+        permissions = self.folder.possible_permissions()
+        permissions.remove(ViewManagementScreens)
+        self.folder._addRole('Viewer')
+        self.folder.manage_role('Viewer', permissions)
+        self.folder.manage_addLocalRoles(
+            'viewer', ['Viewer'])
+
+        for view_name in view_names:
+            response = self.publish('/test_folder_1_/testoid/%s' % view_name,
+                                    basic='viewer:secret')
+            # we expect that we get a 401 Unauthorized
+            status = response.getStatus()
+            self.failUnless(status == 401, (status, 401, view_name))
+
+    def test_manager_permission(self):
         for view_name in view_names:
             response = self.publish('/test_folder_1_/testoid/%s' % view_name,
                                     basic='manager:r00t')
@@ -177,8 +207,25 @@ class PublishTest(Functional, FiveTestCase):
     def test_public_permission(self):
         for view_name in public_view_names:
             response = self.publish('/test_folder_1_/testoid/%s' % view_name)
-            self.assertEqual(response.getStatus(), 200)
+            status = response.getStatus()
+            self.failUnless(status == 200, (status, 200, view_name))
 
+    def test_addpages(self):
+        manage_addFiveTraversableFolder(self.folder, 'ftf')
+
+        # Unprotected as anonymous
+        response = self.publish('/test_folder_1_/ftf/+/addsimplecontent.html')
+        self.assertEqual(response.getStatus(), 200)
+
+        # Protected as manager
+        response = self.publish('/test_folder_1_/ftf/+/protectedaddform.html',
+                                    basic='manager:r00t')
+        self.assertEqual(response.getStatus(), 200)
+
+        # Protected as user
+        response = self.publish('/test_folder_1_/ftf/+/protectedaddform.html',
+                                    basic='viewer:secret')
+        self.assertEqual(response.getStatus(), 401)
 
 def test_suite():
     from unittest import TestSuite, makeSuite
