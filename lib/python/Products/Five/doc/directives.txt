@@ -53,6 +53,11 @@ utility
 
 Declare a global utility.
 
+interface
+---------
+Register an interface in ZCML.
+
+
 browser ``http://namespaces.zope.org/browser``
 ==============================================
 
@@ -79,9 +84,15 @@ defaultSkin
 
 Declare the default skin used.
 
-interface
----------
-Define an interface in ZCML.
+editform
+--------
+
+Create an edit form based on a schema.
+
+addform
+--------
+
+Create an add form based on a schema.
 
 layer
 -----
@@ -131,19 +142,22 @@ Make a Zope 2 content class use a Zope 3 default view when looking at
 it without any paths appended to it. This works then instead of
 ``index_html`` in Zope 2.
 
+sizable
+-------
+
+Retrieve size information for a Zope 2 content class via a Zope 3
+style ``ISized`` adapter.
+
+sendEvents
+----------
+
+Lets a Zope 2 content class send out Zope 3 object events that
+correspond to the Zope 2 methods ``manage_afterAdd`` and
+``manage_beforeDelete``.
+
 pagesFromDirectory
 ------------------
 
 Load all *.pt files in a directory as pages. Useful when you want to
 share templates between Five and CMF, so you can declare pages like
 this is a similar way to setting up skin folders in portal_skins.
-
-browser:editform
-----------------
-
-Create an edit form based on a schema.
-
-browser:addform
----------------
-
-Create an add form based on a schema.
