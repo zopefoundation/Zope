@@ -1,16 +1,39 @@
+============
 Five Changes
 ============
 
+Five 1.0 (2005-04-27)
+=====================
+
+This version is also included in Zope 2.8.
+
+Features
+--------
+
+* Zope 3 style ``ISized`` adapters for objects are now exposed to the
+  ZMI and other Zope 2 frameworks via the known ``get_size`` method,
+  provided this is turned for the class in question via the
+  five:sizable ZCML directive.
+
 * There is now a standard standard_macros. Five page templates can use
-  context/@@standard_macros/view to get the default site layout.
+  context/@@standard_macros/view to get the default site layout, and
+  people can register their own standard_macros in a skin.
 
-* The addform and editform directive now supports the widget zcml subdirective,
-  that previously was ignored.
+* The addform and editform directive now supports the widget ZCML
+  subdirective, which previously was ignored.
 
-* Five now supports the vocabulary zcml directive.
+* Five now supports the vocabulary ZCML directive.
+
+Bugfixes
+--------
+
+* Add and edit forms are now protected properly.
+
+* The checkbox widget did not work correctly in its off state, this
+  has been fixed.
 
 Five 0.3 (2005-03-11)
----------------------
+=====================
 
 * Five now uses the Zope 2 page template engine, not the Zope 3
   engine. This allows better integration with Zope 2-based page
@@ -49,7 +72,7 @@ Five 0.3 (2005-03-11)
   found). Zope 2.7.4 (or higher) is required for this fix.
 
 Five 0.2b (2004-09-24)
-----------------------
+======================
 
 * Added utility module, 'bridge', allowing reuse of Zope 2 interfaces
   (by introspecting them to create equivalent Zope 3 interfaces).
@@ -99,6 +122,6 @@ Five 0.2b (2004-09-24)
 * Change in findProducts so that non-filesystem products are skipped.
 
 Five 0.1 (2004-07-30)
----------------------
+=====================
 
 Initial public release (mainly Martijn's work)
