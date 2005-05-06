@@ -12,97 +12,114 @@
 ##############################################################################
 """Interface tests
 
-$Id: testInterfaces.py,v 1.3 2005/01/01 20:38:16 shh42 Exp $
+$Id$
 """
 
 import os, sys
 if __name__ == '__main__':
     execfile(os.path.join(sys.path[0], 'framework.py'))
 
-from Testing import ZopeTestCase
+from Testing.ZopeTestCase import *
 from Testing.ZopeTestCase.interfaces import *
 
-try:
-    from Interface.Verify import verifyObject
-    have_verify = 1
-except ImportError:
-    print 'testInterfaces.py: The tests in this module require Zope >= 2.6'
-    have_verify = 0
+from Interface.Verify import verifyClass
+from Interface.Verify import verifyObject
 
 
-class TestBaseTestCase(ZopeTestCase.TestCase):
-
-    _setup_fixture = 0
+class TestAbstractClasses(TestCase):
 
     def testIProfiled(self):
+        self.failUnless(verifyClass(IProfiled, Profiled))
+
+    def testIFunctional(self):
+        self.failUnless(verifyClass(IFunctional, Functional))
+
+
+class TestBaseTestCase(TestCase):
+
+    def testIProfiled(self):
+        self.failUnless(verifyClass(IProfiled, TestCase))
         self.failUnless(verifyObject(IProfiled, self))
 
     def testIZopeTestCase(self):
+        self.failUnless(verifyClass(IZopeTestCase, TestCase))
         self.failUnless(verifyObject(IZopeTestCase, self))
 
 
-class TestZopeTestCase(ZopeTestCase.ZopeTestCase):
+class TestZopeTestCase(ZopeTestCase):
 
     _setup_fixture = 0
 
     def testIProfiled(self):
+        self.failUnless(verifyClass(IProfiled, ZopeTestCase))
         self.failUnless(verifyObject(IProfiled, self))
 
     def testIZopeTestCase(self):
+        self.failUnless(verifyClass(IZopeTestCase, ZopeTestCase))
         self.failUnless(verifyObject(IZopeTestCase, self))
 
     def testIZopeSecurity(self):
+        self.failUnless(verifyClass(IZopeSecurity, ZopeTestCase))
         self.failUnless(verifyObject(IZopeSecurity, self))
 
 
-class TestFunctionalTestCase(ZopeTestCase.FunctionalTestCase):
+class TestFunctionalTestCase(FunctionalTestCase):
 
     _setup_fixture = 0
 
     def testIFunctional(self):
+        self.failUnless(verifyClass(IFunctional, FunctionalTestCase))
         self.failUnless(verifyObject(IFunctional, self))
 
     def testIProfiled(self):
+        self.failUnless(verifyClass(IProfiled, FunctionalTestCase))
         self.failUnless(verifyObject(IProfiled, self))
 
     def testIZopeTestCase(self):
+        self.failUnless(verifyClass(IZopeTestCase, FunctionalTestCase))
         self.failUnless(verifyObject(IZopeTestCase, self))
 
     def testIZopeSecurity(self):
+        self.failUnless(verifyClass(IZopeSecurity, FunctionalTestCase))
         self.failUnless(verifyObject(IZopeSecurity, self))
 
 
-class TestPortalTestCase(ZopeTestCase.PortalTestCase):
+class TestPortalTestCase(PortalTestCase):
 
     _configure_portal = 0
 
-    def getPortal(self):
+    def _portal(self):
         return None
 
     def testIProfiled(self):
+        self.failUnless(verifyClass(IProfiled, PortalTestCase))
         self.failUnless(verifyObject(IProfiled, self))
 
     def testIZopeTestCase(self):
+        self.failUnless(verifyClass(IZopeTestCase, PortalTestCase))
         self.failUnless(verifyObject(IZopeTestCase, self))
 
     def testIZopeSecurity(self):
+        self.failUnless(verifyClass(IZopeSecurity, PortalTestCase))
         self.failUnless(verifyObject(IZopeSecurity, self))
 
     def testIPortalTestCase(self):
+        self.failUnless(verifyClass(IPortalTestCase, PortalTestCase))
         self.failUnless(verifyObject(IPortalTestCase, self))
 
     def testIPortalSecurity(self):
+        self.failUnless(verifyClass(IPortalSecurity, PortalTestCase))
         self.failUnless(verifyObject(IPortalSecurity, self))
 
 
 def test_suite():
     from unittest import TestSuite, makeSuite
     suite = TestSuite()
-    if have_verify:
-        suite.addTest(makeSuite(TestBaseTestCase))
-        suite.addTest(makeSuite(TestZopeTestCase))
-        suite.addTest(makeSuite(TestFunctionalTestCase))
-        suite.addTest(makeSuite(TestPortalTestCase))
+    suite.addTest(makeSuite(TestAbstractClasses))
+    suite.addTest(makeSuite(TestBaseTestCase))
+    suite.addTest(makeSuite(TestZopeTestCase))
+    suite.addTest(makeSuite(TestFunctionalTestCase))
+    suite.addTest(makeSuite(TestPortalTestCase))
     return suite
 
 if __name__ == '__main__':
