@@ -99,10 +99,6 @@ class TestPortalTestCase(PortalTestCase):
         self.failUnless(verifyClass(IZopeTestCase, PortalTestCase))
         self.failUnless(verifyObject(IZopeTestCase, self))
 
-    def testIZopeSecurity(self):
-        self.failUnless(verifyClass(IZopeSecurity, PortalTestCase))
-        self.failUnless(verifyObject(IZopeSecurity, self))
-
     def testIPortalTestCase(self):
         self.failUnless(verifyClass(IPortalTestCase, PortalTestCase))
         self.failUnless(verifyObject(IPortalTestCase, self))
