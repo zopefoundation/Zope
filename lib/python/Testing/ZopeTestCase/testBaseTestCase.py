@@ -283,23 +283,6 @@ class TestConnectionRegistry(base.TestCase):
         assert self.reg.contains(self.conns[2])
 
 
-class TestRequestVariables(base.TestCase):
-    '''Makes sure the REQUEST contains required variables'''
-
-    def testRequestVariables(self):
-        request = self.app.REQUEST
-        self.failIfEqual(request.get('SERVER_NAME', ''), '')
-        self.failIfEqual(request.get('SERVER_PORT', ''), '')
-        self.failIfEqual(request.get('REQUEST_METHOD', ''), '')
-        self.failIfEqual(request.get('URL', ''), '')
-        self.failIfEqual(request.get('SERVER_URL', ''), '')
-        self.failIfEqual(request.get('URL0', ''), '')
-        self.failIfEqual(request.get('URL1', ''), '')
-        self.failIfEqual(request.get('BASE0', ''), '')
-        self.failIfEqual(request.get('BASE1', ''), '')
-        self.failIfEqual(request.get('BASE2', ''), '')
-
-
 class TestListConverter(base.TestCase):
 
     def testList0(self):
@@ -337,6 +320,61 @@ class TestListConverter(base.TestCase):
         self.assertRaises(ValueError, utils.makelist, dummy())
 
 
+class TestRequestVariables(base.TestCase):
+    '''Makes sure the REQUEST contains required variables'''
+
+    def testRequestVariables(self):
+        request = self.app.REQUEST
+        self.failIfEqual(request.get('SERVER_NAME', ''), '')
+        self.failIfEqual(request.get('SERVER_PORT', ''), '')
+        self.failIfEqual(request.get('REQUEST_METHOD', ''), '')
+        self.failIfEqual(request.get('URL', ''), '')
+        self.failIfEqual(request.get('SERVER_URL', ''), '')
+        self.failIfEqual(request.get('URL0', ''), '')
+        self.failIfEqual(request.get('URL1', ''), '')
+        self.failIfEqual(request.get('BASE0', ''), '')
+        self.failIfEqual(request.get('BASE1', ''), '')
+        self.failIfEqual(request.get('BASE2', ''), '')
+
+
+import gc
+_sentinel1 = []
+
+class TestRequestGarbage1(base.TestCase):
+    '''Make sure we do not leak REQUEST._held (and REQUEST.other)'''
+
+    class Held:
+        def __del__(self):
+            _sentinel1.append('__del__')
+
+    def afterSetUp(self):
+        self.anApp = base.app()
+        self.anApp.REQUEST._hold(self.Held())
+
+    def testBaseCloseClosesRequest(self):
+        base.close(self.anApp)
+        gc.collect()
+        self.assertEqual(_sentinel1, ['__del__'])
+
+
+_sentinel2 = []
+
+class TestRequestGarbage2(base.TestCase):
+    '''Make sure we do not leak REQUEST._held (and REQUEST.other)'''
+
+    class Held:
+        def __del__(self):
+            _sentinel2.append('__del__')
+
+    def afterSetUp(self):
+        self.app.REQUEST._hold(self.Held())
+
+    def testClearClosesRequest(self):
+        self._clear()
+        gc.collect()
+        self.assertEqual(_sentinel2, ['__del__'])
+
+
 def test_suite():
     from unittest import TestSuite, makeSuite
     suite = TestSuite()
@@ -344,8 +382,10 @@ def test_suite():
     suite.addTest(makeSuite(TestSetUpRaises))
     suite.addTest(makeSuite(TestTearDownRaises))
     suite.addTest(makeSuite(TestConnectionRegistry))
-    suite.addTest(makeSuite(TestRequestVariables))
     suite.addTest(makeSuite(TestListConverter))
+    suite.addTest(makeSuite(TestRequestVariables))
+    suite.addTest(makeSuite(TestRequestGarbage1))
+    suite.addTest(makeSuite(TestRequestGarbage2))
     return suite
 
 if __name__ == '__main__':

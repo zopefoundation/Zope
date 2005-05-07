@@ -35,6 +35,7 @@ def app():
 
 def close(app):
     '''Closes the app's ZODB connection.'''
+    app.REQUEST.close()
     connections.close(app._p_jar)
 
 
@@ -118,6 +119,8 @@ class TestCase(profiler.Profiled, unittest.TestCase):
         '''Clears the fixture.'''
         if call_close_hook:
             self.beforeClose()
+        if connections.contains(self.app._p_jar):
+            self.app.REQUEST.close()
         self._close()
         self.logout()
         self.afterClear()
