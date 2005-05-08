@@ -114,7 +114,11 @@ class ZopeTestCase(base.TestCase):
 
 
 class FunctionalTestCase(functional.Functional, ZopeTestCase):
-    '''Base class for functional Zope tests'''
+    '''Convenience base class for functional Zope tests
+
+       You can mix-in Functional with every xTestCase
+       to turn it into a functional test case.
+    '''
 
     __implements__ = (functional.Functional.__implements__,
                       ZopeTestCase.__implements__)

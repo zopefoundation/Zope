@@ -10,17 +10,19 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Example ZopeTestCase testing a PythonScript object in the default fixture
+"""Example ZopeTestCase testing a PythonScript in the default fixture
 
-Note that you are encouraged to call any of the following methods
-from your own tests to modify the test user's security credentials:
+This test module demonstrates the security API of ZopeTestCase.
 
-  - setRoles()
-  - setPermissions()
-  - login()
-  - logout()
+Note that you are encouraged to call any of the following methods to
+modify the test user's security credentials:
 
-$Id: testPythonScript.py,v 1.9 2004/04/09 12:38:37 shh42 Exp $
+    setRoles()
+    setPermissions()
+    login()
+    logout()
+
+$Id$
 """
 
 import os, sys
@@ -52,9 +54,9 @@ class TestPythonScript(ZopeTestCase.ZopeTestCase):
         self.ps = self.folder['ps']
         self.ps.ZPythonScript_edit(ps_params1, ps_body1)
 
-    # Test the fixture ##############################################
+    # Test the setup
 
-    def testFixture(self):
+    def testSetup(self):
         # The PythonScript should exist and be properly set up
         self.failUnless(hasattr(self.folder, 'ps'))
         self.assertEqual(self.ps.body(), ps_body1+'\n')
@@ -62,7 +64,7 @@ class TestPythonScript(ZopeTestCase.ZopeTestCase):
         owner = self.ps.getOwner()
         self.assertEqual(owner.getUserName(), ZopeTestCase.user_name)
 
-    # Test the scripts ##############################################
+    # Test the script(s)
 
     def testCanCallScript1WithArgument(self):
         # PythonScript should return 2
@@ -78,18 +80,18 @@ class TestPythonScript(ZopeTestCase.ZopeTestCase):
         self.assertEqual(self.ps(1), 2)
 
     def testCannotCallScript2WithoutArgument(self):
-        # PythonScript should raise a TypeError
+        # PythonScript should raise a TypeError if called without arguments
         self.ps.ZPythonScript_edit(ps_params2, ps_body2)
         self.assertRaises(TypeError, self.ps, ())
 
-    # Test access protection ########################################
+    # Test access protection with restrictedTraverse
 
     def testCannotAccessWithoutAccessPermission(self):
         # manage_main should be protected
         self.assertRaises(Unauthorized, self.ps.restrictedTraverse, 'manage_main')
 
     def testCanAccessWithAccessPermission(self):
-        # manage_main should be accessible
+        # manage_main should be accessible if we have the necessary permissions
         self.setPermissions(access_permissions)
         try:
             self.ps.restrictedTraverse('manage_main')
@@ -97,26 +99,26 @@ class TestPythonScript(ZopeTestCase.ZopeTestCase):
             self.fail('Access to manage_main was denied')
 
     def testCannotAccessIfAnonymous(self):
-        # manage_main should be protected
+        # manage_main should be protected from Anonymous
         self.logout()
         self.assertRaises(Unauthorized, self.ps.restrictedTraverse, 'manage_main')
 
     def testCanAccessIfManager(self):
-        # manage_main should be accessible to Managers
+        # manage_main should be accessible to Manager
         self.setRoles(['Manager'])
         try:
             self.ps.restrictedTraverse('manage_main')
         except Unauthorized:
             self.fail('Access to manage_main was denied to Manager')
 
-    # Test access protection with SecurityManager ###################
+    # Test access protection with SecurityManager
 
     def testCannotAccessWithoutAccessPermissionSecurityManager(self):
         # manage_main should be protected
         self.assertRaises(Unauthorized, getSecurityManager().validateValue, self.ps.manage_main)
 
     def testCanAccessWithAccessPermissionSecurityManager(self):
-        # manage_main should be accessible
+        # manage_main should be accessible if we have the necessary permissions
         self.setPermissions(access_permissions)
         try:
             getSecurityManager().validateValue(self.ps.manage_main)
@@ -124,19 +126,19 @@ class TestPythonScript(ZopeTestCase.ZopeTestCase):
             self.fail('Access to manage_main was denied')
 
     def testCannotAccessIfAnonymousSecurityManager(self):
-        # manage_main should be protected
+        # manage_main should be protected from Anonymous
         self.logout()
         self.assertRaises(Unauthorized, getSecurityManager().validateValue, self.ps.manage_main)
 
     def testCanAccessIfManagerSecurityManager(self):
-        # manage_main should be accessible to Managers
+        # manage_main should be accessible to Manager
         self.setRoles(['Manager'])
         try:
             getSecurityManager().validateValue(self.ps.manage_main)
         except Unauthorized:
             self.fail('Access to manage_main was denied to Manager')
 
-    # Test edit protection ##########################################
+    # Test edit protection with restrictedTraverse
 
     def testCannotEditWithoutChangePermission(self):
         # PythonScript should not be editable
@@ -151,7 +153,7 @@ class TestPythonScript(ZopeTestCase.ZopeTestCase):
                     'ZPythonScript_edit was protected but no exception was raised')
 
     def testCanEditWithChangePermission(self):
-        # PythonScript should be editable
+        # PythonScript should be editable if we have the necessary permissions
         self.setPermissions(change_permissions)
         try:
             self.ps.restrictedTraverse('ZPythonScript_edit')(ps_params2, ps_body2)
@@ -162,7 +164,7 @@ class TestPythonScript(ZopeTestCase.ZopeTestCase):
             self.assertEqual(self.ps.params(), ps_params2)
 
     def testCannotEditIfAnonymous(self):
-        # PythonScript should not be editable
+        # PythonScript should not be editable by Anonymous
         self.logout()
         try:
             self.ps.restrictedTraverse('ZPythonScript_edit')(ps_params2, ps_body2)
@@ -175,7 +177,7 @@ class TestPythonScript(ZopeTestCase.ZopeTestCase):
                     'ZPythonScript_edit was protected but no exception was raised')
 
     def testCanEditIfManager(self):
-        # PythonScript should be editable for Managers
+        # PythonScript should be editable by Manager
         self.setRoles(['Manager'])
         try:
             self.ps.restrictedTraverse('ZPythonScript_edit')(ps_params2, ps_body2)

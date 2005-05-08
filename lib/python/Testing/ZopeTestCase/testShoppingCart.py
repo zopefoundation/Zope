@@ -10,7 +10,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Example ZopeTestCase testing the ShoppingCart example application.
+"""Example ZopeTestCase testing the ShoppingCart example application
 
 Note the use of sessions and how the SESSION object is added to
 the REQUEST in afterSetUp().
@@ -18,7 +18,7 @@ the REQUEST in afterSetUp().
 You can use zLOG.LOG() if you set up the event log variables first.
 Handy for debugging and tracing your tests.
 
-$Id: testShoppingCart.py,v 1.11 2005/02/23 17:14:56 shh42 Exp $
+$Id$
 """
 
 import os, sys

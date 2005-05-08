@@ -12,11 +12,11 @@
 ##############################################################################
 """Tests ZODB behavior in ZopeTestCase
 
-Demonstrates that cut/copy/paste/clone/rename and import/export 
-work in ZopeTestCase if a subtransaction is commited before performing
-the respective operations.
+Demonstrates that cut/copy/paste/clone/rename and import/export
+work if a subtransaction is committed before performing the respective
+operation.
 
-$Id: testZODBCompat.py,v 1.17 2004/04/09 12:38:37 shh42 Exp $
+$Id$
 """
 
 import os, sys

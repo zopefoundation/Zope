@@ -343,44 +343,6 @@ class TestPortalTestCase(ZopeTestCase.PortalTestCase):
         #self.assertEqual(self._called, ['afterClear', 'beforeSetUp', 'afterSetUp'])
         self.assertEqual(self._called, ['beforeSetUp', 'afterSetUp'])
 
-    # This is crazy
-
-    def __test_crazyRoles_0(self):
-        # Permission assignments should be reset
-        self.app = self._app()
-        perms = self.getPermissionsOfRole('Anonymous', self.app)
-        for perm in ['Access contents information', 'View', 'Query Vocabulary', 'Search ZCatalog']:
-            if perm not in perms:
-                self.fail('Expected permission "%s"' % perm)
-
-    def __test_crazyRoles_1(self):
-        # Permission assignments should be reset
-        self.app = self._app()
-        self.app.manage_role('Anonymous', ['View'])
-        self.assertPermissionsOfRole(['View'], 'Anonymous', self.app)
-        self.failIf(getSecurityManager().checkPermission('Access contents information', self.app))
-
-    def __test_crazyRoles_2(self):
-        # Permission assignments should be reset
-        self.app = self._app()
-        try:
-            self.assertPermissionsOfRole(['View'], 'Anonymous', self.app)
-        except self.failureException:
-            pass
-
-    def __test_crazyRoles_3(self):
-        # Permission assignments should be reset
-        self.app = self._app()
-        self.failUnless(getSecurityManager().checkPermission('Access contents information', self.app))
-
-    def __test_crazyRoles_4(self):
-        # Permission assignments should be reset
-        self.app = self._app()
-        perms = self.getPermissionsOfRole('Anonymous', self.app)
-        for perm in ['Access contents information', 'View', 'Query Vocabulary', 'Search ZCatalog']:
-            if perm not in perms:
-                self.fail('Expected permission "%s"' % perm)
-
     # Helpers
 
     def getPermissionsOfRole(self, role, context=None):

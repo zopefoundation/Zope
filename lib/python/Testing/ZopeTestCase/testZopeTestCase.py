@@ -19,7 +19,7 @@ See testPythonScript.py and testShoppingCart.py for
 example test cases. See testSkeleton.py for a quick
 way of getting started.
 
-$Id: testZopeTestCase.py,v 1.25 2005/01/30 14:22:48 shh42 Exp $
+$Id$
 """
 
 import os, sys
@@ -318,44 +318,6 @@ class TestZopeTestCase(ZopeTestCase.ZopeTestCase):
         # Manager does not have 'Take ownership' anymore
         manager_perms.remove('Take ownership')
         self.assertPermissionsOfRole(manager_perms, 'Manager')
-
-    # This is crazy 
-
-    def __test_crazyRoles_0(self):
-        # Permission assignments should be reset
-        self.app = self._app()
-        perms = self.getPermissionsOfRole('Anonymous', self.app)
-        for perm in ['Access contents information', 'View', 'Query Vocabulary', 'Search ZCatalog']:
-            if perm not in perms:
-                self.fail('Expected permission "%s"' % perm)
-
-    def __test_crazyRoles_1(self):
-        # Permission assignments should be reset
-        self.app = self._app()
-        self.app.manage_role('Anonymous', ['View'])
-        self.assertPermissionsOfRole(['View'], 'Anonymous', self.app)
-        self.failIf(getSecurityManager().checkPermission('Access contents information', self.app))
-
-    def __test_crazyRoles_2(self):
-        # Permission assignments should be reset
-        self.app = self._app()
-        try:
-            self.assertPermissionsOfRole(['View'], 'Anonymous', self.app)
-        except self.failureException:
-            pass
-
-    def __test_crazyRoles_3(self):
-        # Permission assignments should be reset
-        self.app = self._app()
-        self.failUnless(getSecurityManager().checkPermission('Access contents information', self.app))
-
-    def __test_crazyRoles_4(self):
-        # Permission assignments should be reset
-        self.app = self._app()
-        perms = self.getPermissionsOfRole('Anonymous', self.app)
-        for perm in ['Access contents information', 'View', 'Query Vocabulary', 'Search ZCatalog']:
-            if perm not in perms:
-                self.fail('Expected permission "%s"' % perm)
 
     # Helpers
 

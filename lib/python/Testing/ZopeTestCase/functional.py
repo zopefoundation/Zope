@@ -12,9 +12,9 @@
 ##############################################################################
 """Support for functional unit testing in ZTC
 
-After Marius Gedminas' functional.py module for Zope 3.
+After Marius Gedminas' functional.py module for Zope3.
 
-$Id: functional.py,v 1.3 2004/09/12 16:49:59 shh42 Exp $
+$Id$
 """
 
 import sys, re, base64

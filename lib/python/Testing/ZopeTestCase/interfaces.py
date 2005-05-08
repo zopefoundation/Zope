@@ -12,14 +12,10 @@
 ##############################################################################
 """ZopeTestCase interfaces
 
-$Id: interfaces.py,v 1.5 2005/02/07 21:59:35 shh42 Exp $
+$Id$
 """
 
-try:
-    from Interface import Interface
-except ImportError:
-    # Old interface package
-    from Interface import Base as Interface
+from Interface import Interface
 
 
 class IZopeTestCase(Interface):

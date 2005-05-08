@@ -12,7 +12,10 @@
 ##############################################################################
 """Example functional ZopeTestCase
 
-$Id: testFunctional.py,v 1.16 2005/02/12 13:13:04 shh42 Exp $
+Demonstrates how to use the publish() API to execute GET, POST, PUT, etc.
+requests against the ZPublisher and how to examine the response.
+
+$Id$
 """
 
 import os, sys
