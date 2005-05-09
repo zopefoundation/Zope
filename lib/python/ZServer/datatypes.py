@@ -16,32 +16,8 @@
 Each server type is represented by a ServerFactory instance.
 """
 
-import os
 import socket
 import ZConfig
-
-_default_host_info = None
-
-def get_default_host_info():
-    global _default_host_info
-    if _default_host_info is None:
-        hostname = socket.gethostname()
-        try:
-            ip = socket.gethostbyname(hostname)
-        except socket.error:
-            hostname = 'localhost'
-            ip = socket.gethostbyname(hostname)
-        try:
-            hostname = socket.gethostbyaddr(ip)[0]
-        except socket.error:
-            hostname = ip
-        ## AJ: We change 'localhost' to '' to force Medusa to use
-        ## any network interface instead of using only 127.0.0.1. This is 
-        ## a not totally clean solution :-/ See also Collector #1507.
-        if os.name == 'posix' and 'localhost' in hostname.lower(): 
-            hostname = ''
-        _default_host_info = hostname, ip
-    return _default_host_info
 
 
 class ServerFactory:
@@ -53,18 +29,11 @@ class ServerFactory:
         else:
             self.host, self.port = address
 
-    def prepare(self, defaulthost=None, dnsresolver=None,
+    def prepare(self, defaulthost='', dnsresolver=None,
                 module=None, env=None, portbase=None):
-        if defaulthost:
-            hostname = defaulthost
-            ip = socket.gethostbyname(hostname)
-        elif defaulthost is '':
-            hostname = ''
-            ip = '127.0.0.1'
-        else:
-            hostname, ip = get_default_host_info()
         if not self.host:
-            self._set_default_host(hostname, ip)
+            ip = socket.gethostbyname(defaulthost)
+            self._set_default_host(defaulthost, ip)
         else:
             self.ip = socket.gethostbyname(self.host)
         self.dnsresolver = dnsresolver
@@ -107,7 +76,7 @@ class HTTPServerFactory(ServerFactory):
         handler._force_connection_close = self.force_connection_close
         if self.webdav_source_clients:
             handler.set_webdav_source_clients(self.webdav_source_clients)
-        server = HTTPServer.zhttp_server(ip=self.host, port=self.port,
+        server = HTTPServer.zhttp_server(ip=self.ip, port=self.port,
                                          resolver=self.dnsresolver,
                                          logger_object=access_logger)
         server.install_handler(handler)
@@ -134,7 +103,7 @@ class FTPServerFactory(ServerFactory):
     def create(self):
         from ZServer.AccessLogger import access_logger
         from ZServer.FTPServer import FTPServer
-        return FTPServer(ip=self.host, hostname=self.host, port=self.port,
+        return FTPServer(ip=self.ip, hostname=self.host, port=self.port,
                          module=self.module, resolver=self.dnsresolver,
                          logger_object=access_logger)
 
@@ -147,7 +116,7 @@ class PCGIServerFactory(ServerFactory):
     def create(self):
         from ZServer.AccessLogger import access_logger
         from ZServer.PCGIServer import PCGIServer
-        return PCGIServer(ip=self.host, port=self.port,
+        return PCGIServer(ip=self.ip, port=self.port,
                           module=self.module, resolver=self.dnsresolver,
                           pcgi_file=self.path,
                           logger_object=access_logger)
@@ -172,7 +141,7 @@ class FCGIServerFactory(ServerFactory):
     def create(self):
         from ZServer.AccessLogger import access_logger
         from ZServer.FCGIServer import FCGIServer
-        return FCGIServer(ip=self.host, port=self.port,
+        return FCGIServer(ip=self.ip, port=self.port,
                           socket_file=self.path,
                           module=self.module, resolver=self.dnsresolver,
                           logger_object=access_logger)
