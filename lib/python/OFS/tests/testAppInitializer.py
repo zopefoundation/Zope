@@ -51,7 +51,7 @@ def getSchema():
     return ZConfig.loadSchema(schemafile)
 
 def getApp():
-    from ZODB.ZApplication import ZApplicationWrapper
+    from App.ZApplication import ZApplicationWrapper
     DB = getConfiguration().dbtab.getDatabase('/')
     return ZApplicationWrapper(DB, 'Application', Application, (), 'foo')()
 

@@ -70,8 +70,9 @@ def __bobo_traverse__(self, REQUEST=None, name=None):
     return self.__old_bobo_traverse__(REQUEST, name)
 
 
-from ZODB.ZApplication import ZApplicationWrapper
+from App.ZApplication import ZApplicationWrapper
 if not hasattr(ZApplicationWrapper, '__old_bobo_traverse__'):
-    ZApplicationWrapper.__old_bobo_traverse__ = ZApplicationWrapper.__bobo_traverse__
+    ZApplicationWrapper.__old_bobo_traverse__ = (
+        ZApplicationWrapper.__bobo_traverse__)
     ZApplicationWrapper.__bobo_traverse__ = __bobo_traverse__
 

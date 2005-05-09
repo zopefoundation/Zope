@@ -326,7 +326,7 @@ def autoRefresh(jar):
 
 def setupAutoRefresh(jar):
     # Install hook.
-    from ZODB.ZApplication import connection_open_hooks
+    from App.ZApplication import connection_open_hooks
     connection_open_hooks.append(autoRefresh)
     # Init mod times.
     checkAutoRefresh(jar)
