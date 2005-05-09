@@ -1,0 +1,219 @@
+[Setup]
+AppName=Zope <<VERSION>>
+AppVerName=Zope <<VERSION>>
+AppPublisher=Zope Corporation
+AppPublisherURL=http://www.zope.org
+AppSupportURL=http://www.zope.org
+AppUpdatesURL=http://www.zope.org
+DefaultDirName={pf}\Zope-<<VERSION>>
+DefaultGroupName=Zope <<VERSION>>
+OutputBaseFilename=Zope-<<VERSION>>-win32
+WizardImageFile=<<MAKEFILEDIR>>\etc\zlogo_left.bmp
+WizardSmallImageFile=<<MAKEFILEDIR>>\etc\zlogo_top.bmp
+
+SourceDir=.
+OutputDir=.
+
+[Components]
+Name: main; Description: "Main Zope files"; Types: full compact custom; Flags: fixed
+Name: instance; Description: "Zope 'instance home' files (required to run Zope immediately)"; Types: full compact custom; ExtraDiskSpaceRequired: 1453056
+
+[Tasks]
+Name: service; Description: "Run your Zope instance as a Windows service (start Zope automatically at system startup)"; MinVersion: 4.0,4.0; Components: instance; Check: IsAdministrator
+
+[Files]
+; Main Zope files
+Source: "<<MAKEFILEDIR>>\etc\README.html"; DestDir: "{app}"; Flags: ignoreversion
+Source:"bin\*.*"; DestDir: "{app}\bin"; Flags: ignoreversion recursesubdirs
+Source:"doc\*.*"; DestDir: "{app}\doc"; Flags: ignoreversion recursesubdirs
+Source:"import\*.*"; DestDir: "{app}\import"; Flags: ignoreversion recursesubdirs
+Source:"lib\*.*"; DestDir: "{app}\lib"; Flags: ignoreversion recursesubdirs
+Source:"skel\*.*"; DestDir: "{app}\skel"; Flags: ignoreversion recursesubdirs
+; these are required to be put into the bin directory for proper function of NT services
+Source:"bin\Lib\site-packages\PythonService.exe"; DestDir: "{app}\bin"; Flags: ignoreversion
+Source:"bin\Lib\site-packages\PyWinTypes23.dll"; DestDir: "{app}\bin"; Flags: ignoreversion
+; This is a helper module for manging registry entries at uninstall time
+Source: "<<MAKEFILEDIR>>\bin\fixreg.py"; DestDir: "{app}\bin"; Flags: ignoreversion
+
+[Icons]
+Name: "{group}\Run Zope In Console"; Filename: "{code:GetDataDir}\bin\runzope.bat"; Check: DoInstanceHome
+Name: "{group}\Uninstall Zope"; Filename: "{uninstallexe}";
+Name: "{group}\Make Zope Instance"; Filename: "{app}\bin\python.exe"; Parameters: """{app}\bin\mkzopeinstance.py"""
+
+[Run]
+Filename: "{app}\bin\pythonw.exe"; Parameters: """{app}\bin\compilezpy.py"" ""{app}"" "; Description: "Byte-compiling Python files"; StatusMsg: "Byte-compiling Python files..."
+Filename:"{app}\bin\pythonw.exe"; Parameters: """{app}\bin\mkzopeinstance.py"" --user=""admin:{code:GetPassword}"" --dir=""{code:GetDataDir}"" "; Description: "Creating default instance"; StatusMsg: "Creating default instance..."; Check: DoInstanceHome
+Filename: "{app}\bin\pythonw.exe"; Parameters: """{code:GetDataDir}\bin\zopeservice.py"" --startup auto install"; Check: DoService
+Filename: "{app}\README.html"; Flags: shellexec skipifdoesntexist postinstall skipifsilent; Description: "View 'QuickStart' document in a web browser"
+Filename: "{app}\bin\pythonw.exe"; Parameters: """{code:GetDataDir}\bin\zopeservice.py"" start"; Description: "Launch Zope"; Flags: nowait postinstall skipifsilent; Check: DoService
+Filename: "{code:GetDataDir}\bin\runzope.bat"; Description: "Launch Zope"; Flags: nowait postinstall skipifsilent; Check: DontDoService
+
+[UninstallRun]
+Filename: "{app}\bin\pythonw.exe"; Parameters: """{code:GetDataDir}\bin\zopeservice.py"" stop"; Check: DoService
+Filename: "{app}\bin\pythonw.exe"; Parameters: """{code:GetDataDir}\bin\zopeservice.py"" remove"; Check: DoService
+Filename: "{app}\bin\pythonw.exe"; Parameters: """{app}\bin\decompilezpy.py"" ""{app}"""
+Filename: "{app}\bin\pythonw.exe"; Parameters: """{app}\bin\fixreg.py"" ""<<VERSION>>"""
+
+[Registry]
+Root: HKLM; Subkey: "Software\Zope Corporation\Zope"; ValueType: string; ValueName: "PreviousVersion"; ValueData: "{reg:HKLM\Software\Zope Corporation\Zope,CurrentVersion|}"
+Root: HKLM; Subkey: "Software\Zope Corporation\Zope"; Flags: uninsdeletekeyifempty; ValueType: string; ValueName: "CurrentVersion"; ValueData: "<<VERSION>>"
+Root: HKLM; Subkey: "Software\Zope Corporation\Zope\<<VERSION>>"; Flags: uninsdeletekey; ValueType: string; ValueName: "Home"; ValueData: "{app}"
+Root: HKLM; Subkey: "Software\Zope Corporation\Zope\<<VERSION>>"; Flags: uninsdeletekey; ValueType: string; ValueName: "Python"; ValueData: "{app}\bin\python.exe"
+Root: HKLM; Subkey: "Software\Zope Corporation\Zope\<<VERSION>>"; Flags: uninsdeletekey; ValueType: string; ValueName: "Pythonw"; ValueData: "{app}\bin\pythonw.exe"
+
+[Code]
+var
+  PasswordPrompts, PasswordValues : array of String;
+  PasswordChars		  : array of char;
+
+  DataDirValues: array of String;
+  
+  Password	  : string;
+  DataDir		  :  String;
+
+function InitializeSetup(): Boolean;
+begin
+  { set up password data structures }
+  SetArrayLength(PasswordPrompts, 1);
+  PasswordPrompts[0] := 'Password:';
+  SetArrayLength(PasswordValues, 1);
+  PasswordValues[0] := '';
+  SetArrayLength(PasswordChars, 1);
+  PasswordChars[0] := '*';
+  Password := '';
+
+  { set up data dir data structures }
+  SetArrayLength(DataDirValues, 1);
+  DataDir := '';
+  
+  Result := True;
+end;
+
+function CollectInstanceDir(): Boolean;
+
+var
+  Next: Boolean;
+  DirOk: Boolean;
+
+begin
+  DirOk := True;
+  ScriptDlgPageSetSubCaption1('Select where Zope instance files should be installed');
+	ScriptDlgPageSetSubCaption2('Select the folder to which you would like Setup to install Zope "instance" files, then click Next.');
+
+ 	if DataDir = '' then DataDir:= 'C:\Zope-Instance';
+	if DataDirValues[0] <> '' then DataDirValues[0]:= '';
+
+	{ Ask for a dir until the user has approved one or clicked Back or Cancel }
+	
+  Next:= InputDir(DataDirValues[0], DataDir);
+	
+  if Next and FileOrDirExists(DataDir) then DirOk := False;
+
+	while Next and not DirOk do begin
+	  if DataDir = '' then begin
+	    DirOk := False;
+      MsgBox(SetupMessage(msgInvalidPath), mbError, MB_OK);
+    end;
+  	if FileOrDirExists(DataDir) then begin
+	      DirOk := MsgBox('Directory Exists' #13#13 'The directory ' + DataDir + ' already exists.  Would you like to create instance files in that directory anyway?', mbConfirmation, MB_YESNO) = idYes;
+	  end;
+	  if not DirOk then Next := InputDir(DataDirValues[0], DataDir);
+  end;
+
+	Result:=Next;
+
+end;
+
+function CollectPassword(): Boolean;
+var
+  Next: Boolean;
+begin
+  ScriptDlgPageSetSubCaption1('Specify adminisrator password');
+	ScriptDlgPageSetSubCaption2('The login name for your Zope administrator account is "admin". When you first connect to the Zope management interface, you will need to login using the "admin" username and the password you specify below.');
+	Next := InputQueryArrayEx(PasswordPrompts, PasswordChars, PasswordValues);
+	
+	while Next and (PasswordValues[0] = '') do begin
+	  MsgBox('You must enter an administrator password', mbError, MB_OK)
+		Next := InputQueryArrayEx(PasswordPrompts, PasswordChars, PasswordValues);
+	end;
+	Password := PasswordValues[0];
+  Result:=Next;
+end;
+
+function DoInstanceHome():Boolean;
+var
+   S : String;
+begin
+   S := WizardSelectedComponents(False);
+   Result := Pos('instance', S) <> 0;
+end;
+
+function DoService(): Boolean;
+var
+  S : String;
+begin
+  S := WizardSelectedTasks(False);
+  Result := Pos('service', S) <> 0;
+end;
+
+function DontDoService(): Boolean;
+begin
+  Result := not DoService();
+end;
+
+function ScriptDlgPages(CurPage: Integer; BackClicked: Boolean): Boolean;
+var
+   Next	      : Boolean;
+   CurSubPage : Integer;
+begin
+  Next:=True;
+  if ( (not BackClicked and (CurPage = wpSelectTasks)) or (BackClicked and (CurPage = wpReady))  )
+        and DoInstanceHome() then begin
+    if not BackClicked then CurSubPage:=0 else CurSubPage:=1;
+     
+    ScriptDlgPageOpen();
+    ScriptDlgPageSetCaption('Instance Setup');
+
+    while (CurSubPage >=0) and (CurSubPage <=1) and not Terminated do begin
+      case CurSubPage of
+	      0:  Next:=CollectInstanceDir();
+	      1:  Next:=CollectPassword();
+	    end;
+	    if Next then CurSubPage := CurSubPage +1 else CurSubPage := CurSubPage -1;
+	  end;
+
+    if not BackClicked then
+      Result := Next
+    else
+      Result := not Next;
+    ScriptDlgPageClose(not Result);
+
+  end;
+  Result:=Next;
+end;
+
+function NextButtonClick(CurPage: Integer): Boolean;
+begin
+  Result := ScriptDlgPages(CurPage, False);
+end;
+
+function BackButtonClick(CurPage: Integer): Boolean;
+begin
+  Result := ScriptDlgPages(CurPage, True);
+end;
+
+function GetPassword(Default: String): String;
+begin
+  Result := Password;
+end;
+
+function GetDataDir(Default	:  String):String;
+begin
+   Result := DataDir;
+end; { GetInstanceDir }
+
+function IsAdministrator(): Boolean;
+begin
+   Result := IsAdminLoggedOn();
+end;
+
