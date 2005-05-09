@@ -27,11 +27,7 @@ TEMPFILENAME = tempfile.mktemp()
 
 # For address kinds of values that don't specify a hostname, ZConfig
 # supplies a platform-dependent default.
-import sys
-DEFAULT_HOSTNAME = ''
-if sys.platform in ['win32',]:
-    DEFAULT_HOSTNAME = 'localhost'
-del sys
+DEFAULT_HOSTNAME = ZConfig.datatypes.DEFAULT_HOST
 
 class BaseTest(unittest.TestCase):
     schema = None
@@ -56,14 +52,14 @@ class BaseTest(unittest.TestCase):
         self.assertEqual(len(conf.servers), 1)
         return conf.servers[0]
 
-    def check_prepare(self, factory):
+    def check_prepare(self, factory, defaulthost='127.0.0.1'):
         # On Linux the default hostname is an empty string, but on Windows
         # it's "localhost".  So factory.prepare() will replace factory.host
         # with "127.0.0.1" only on non-Windows boxes.
-        expected_factory_host = factory.host or "127.0.0.1"
+        expected_factory_host = factory.host or defaulthost
         port = factory.port
         o = object()
-        factory.prepare("127.0.0.1", o, "module",
+        factory.prepare(defaulthost, o, "module",
                         {"key": "value"}, portbase=9300)
         self.assert_(factory.dnsresolver is o)
         self.assertEqual(factory.module, "module")
@@ -108,6 +104,22 @@ class ZServerConfigurationTestCase(BaseTest):
         self.check_prepare(factory)
         server = factory.create()
         self.assertEqual(server.ip, '127.0.0.1')
+        self.assertEqual(server.port, 9381)
+        server.close()
+
+    def test_http_factory_defaulthost(self):
+        factory = self.load_factory("""\
+            <http-server>
+              address 81
+              force-connection-close true
+              webdav-source-clients cadaever
+            </http-server>
+            """)
+        self.check_prepare(factory, defaulthost='0.0.0.0')
+        server = factory.create()
+        self.assertEqual(server.ip, '0.0.0.0',
+                         'Zope Collector issue #1507/1728 (ignoring '
+                         'defaulthost): %r != \'0.0.0.0\'' % server.ip)
         self.assertEqual(server.port, 9381)
         server.close()
 
