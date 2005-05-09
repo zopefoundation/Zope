@@ -32,7 +32,7 @@ import OFS.Application
 import os
 import sys
 import ZODB
-import ZODB.ZApplication
+import App.ZApplication
 import Zope2
 import ZPublisher
 
@@ -85,7 +85,7 @@ def startup():
 
     # Set up the "app" object that automagically opens
     # connections
-    app = ZODB.ZApplication.ZApplicationWrapper(
+    app = App.ZApplication.ZApplicationWrapper(
         DB, 'Application', OFS.Application.Application, (),
         Globals.VersionNameName)
     Zope2.bobo_application = app
