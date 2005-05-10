@@ -30,7 +30,13 @@ Zope Changes
       - Included BTreeFolder2
 
     Bugs fixed
-  
+
+      - Collector #1776: Improved setup.py.
+        The Finder class is now used for the complete lib/python tree and has
+        a blacklist instead of a whitelist for file extensions. So there
+        should no longer be a need to update setup.py if modules or files are
+        added or removed in lib/python.
+
       - Collector #1751: Improved error reporting reporting during the 
         startup phase
 
