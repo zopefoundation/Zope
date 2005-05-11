@@ -64,7 +64,7 @@ class ZopeTestCase(base.TestCase):
     def _setupFolder(self):
         '''Creates and configures the folder.'''
         self.app.manage_addFolder(folder_name)
-        self.folder = self.app._getOb(folder_name)
+        self.folder = getattr(self.app, folder_name)
         self.folder._addRole(user_role)
         self.folder.manage_role(user_role, standard_permissions)
 
@@ -81,7 +81,7 @@ class ZopeTestCase(base.TestCase):
         '''Clears the fixture.'''
         # This code is a wart from the olden days.
         try:
-            if connections.contains(self.app._p_jar):
+            if connections.contains(self.app):
                 self.app._delObject(folder_name)
         except:
             pass

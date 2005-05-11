@@ -16,7 +16,12 @@ $Id$
 """
 
 class ConnectionRegistry:
-    '''ZODB connection registry'''
+    '''ZODB connection registry
+
+    This registry can hold either ZODB.Connection objects or OFS.Application
+    objects. In the latter case, a close operation will close the REQUEST as
+    well as the Connection referenced by the Application's _p_jar attribute.
+    '''
 
     def __init__(self):
         self._conns = []
@@ -36,12 +41,19 @@ class ConnectionRegistry:
     def close(self, conn):
         if self.contains(conn):
             self._conns.remove(conn)
-        conn.close()
+        self._do_close(conn)
 
     def closeAll(self):
         for conn in self._conns:
-            conn.close()
+            self._do_close(conn)
         self._conns = []
+
+    def _do_close(self, conn):
+        if hasattr(conn, 'close'):
+            conn.close()
+        else:
+            conn.REQUEST.close()
+            conn._p_jar.close()
 
 
 registry = ConnectionRegistry()

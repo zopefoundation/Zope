@@ -42,7 +42,7 @@ def hasattr_(ob, attr):
     return hasattr(aq_base(ob), attr)
 
 
-# Dummy Portal
+# A dummy portal
 
 from OFS.SimpleItem import SimpleItem
 from OFS.Folder import Folder
@@ -66,7 +66,7 @@ class DummyMembershipTool(SimpleItem):
         portal.Members.manage_addFolder(member_id)
     def getHomeFolder(self, member_id):
         portal = self.aq_inner.aq_parent
-        return portal.Members[member_id]
+        return getattr(portal.Members, member_id)
 
 
 class TestPortalTestCase(ZopeTestCase.PortalTestCase):
@@ -78,7 +78,7 @@ class TestPortalTestCase(ZopeTestCase.PortalTestCase):
     def getPortal(self):
         # Must make sure we return a portal object
         self.app._setObject(portal_name, DummyPortal(portal_name))
-        return self.app[portal_name]
+        return getattr(self.app, portal_name)
 
     def setUp(self):
         # For this test case we *want* to start
@@ -391,7 +391,7 @@ class TestPlainUserFolder(ZopeTestCase.PortalTestCase):
 
     def getPortal(self):
         self.app._setObject(portal_name, DummyPortal(portal_name))
-        return self.app[portal_name]
+        return getattr(self.app, portal_name)
 
     def testGetUserDoesNotWrapUser(self):
         user = self.portal.acl_users.getUserById(user_name)
@@ -412,7 +412,7 @@ class TestWrappingUserFolder(ZopeTestCase.PortalTestCase):
 
     def getPortal(self):
         self.app._setObject(portal_name, DummyPortal(portal_name))
-        return self.app[portal_name]
+        return getattr(self.app, portal_name)
 
     def _setupUserFolder(self):
         self.portal._setObject('acl_users', WrappingUserFolder())
@@ -458,11 +458,12 @@ class HookTest(ZopeTestCase.PortalTestCase):
 
 class TestSetUpRaises(HookTest):
 
+    class Error:
+        pass
+
     def getPortal(self):
         self.app._setObject(portal_name, DummyPortal(portal_name))
-        return self.app[portal_name]
-
-    class Error: pass
+        return getattr(self.app, portal_name)
 
     def setUp(self):
         try:

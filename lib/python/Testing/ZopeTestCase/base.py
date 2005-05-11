@@ -16,7 +16,6 @@ $Id$
 """
 
 import ZopeLite as Zope2
-
 import unittest
 import transaction
 import profiler
@@ -27,16 +26,17 @@ import connections
 from AccessControl.SecurityManagement import noSecurityManager
 
 
+
 def app():
     '''Opens a ZODB connection and returns the app object.'''
     app = Zope2.app()
-    connections.register(app._p_jar)
-    return utils.makerequest(app)
+    app = utils.makerequest(app)
+    connections.register(app)
+    return app
 
 def close(app):
     '''Closes the app's ZODB connection.'''
-    app.REQUEST.close()
-    connections.close(app._p_jar)
+    connections.close(app)
 
 
 
@@ -119,8 +119,6 @@ class TestCase(profiler.Profiled, unittest.TestCase):
         '''Clears the fixture.'''
         if call_close_hook:
             self.beforeClose()
-        if connections.contains(self.app._p_jar):
-            self.app.REQUEST.close()
         self._close()
         self.logout()
         self.afterClear()

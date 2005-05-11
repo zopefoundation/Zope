@@ -33,14 +33,15 @@ class Sandboxed:
     def _app(self):
         '''Returns the app object for a test.'''
         app = Zope2.app(Zope2.sandbox().open())
-        connections.register(app._p_jar)
         AppZapper().set(app)
-        return utils.makerequest(app)
+        app = utils.makerequest(app)
+        connections.register(app)
+        return app
 
     def _close(self):
         '''Clears the transaction and the AppZapper.'''
-        transaction.abort()
         AppZapper().clear()
+        transaction.abort()
         connections.closeAll()
 
 

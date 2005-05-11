@@ -24,7 +24,7 @@ The twist is that the portal object itself is *not* created
 by the PortalTestCase class! Subclasses must make sure
 getPortal() returns a usable portal object to the setup code.
 
-$Id: PortalTestCase.py,v 1.38 2005/02/09 12:42:40 shh42 Exp $
+$Id$
 """
 
 import base
@@ -111,7 +111,7 @@ class PortalTestCase(base.TestCase):
 
            Note: This method should not be called by tests!
         '''
-        return self.app[portal_name]
+        return getattr(self.app, portal_name)
 
     def createMemberarea(self, name):
         '''Creates a memberarea for the specified user.
