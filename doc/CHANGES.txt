@@ -31,6 +31,9 @@ Zope Changes
 
     Bugs fixed
 
+      - Don't copy '.svn' directories from skeleton into an instance
+        (thanks to Dale Hirt for the patch).
+
       - Collector #1776: Improved setup.py.
         The Finder class is now used for the complete lib/python tree and has
         a blacklist instead of a whitelist for file extensions. So there

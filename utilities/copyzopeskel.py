@@ -186,12 +186,12 @@ def copyskel(sourcedir, targetdir, uid, gid, **replacements):
         print >>sys.stderr, msg
         sys.exit(1)
 
-CVS = os.path.normcase("CVS")
+CVS_DIRS = [os.path.normcase("CVS"), os.path.normcase(".svn")]
 
 def copydir((targetdir, replacements, uid, gid), sourcedir, names):
     # Don't recurse into CVS directories:
     for name in names[:]:
-        if os.path.normcase(name) == CVS:
+        if os.path.normcase(name) in CVS_DIRS:
             names.remove(name)
         elif os.path.isfile(os.path.join(sourcedir, name)):
             # Copy the file:
