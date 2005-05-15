@@ -14,31 +14,32 @@
 
 $Id$
 """
-import App.Management, Acquisition, Globals, CopySupport, Products
-import os, App.FactoryDispatcher, re, Products
-from OFS.Traversable import Traversable
-from OFS import SimpleItem
+
+import sys, fnmatch, copy, os, re
+import marshal
+from cgi import escape
+from cStringIO import StringIO
+from types import StringType, UnicodeType
+
+import App.Management, Acquisition, Globals, Products
+import App.FactoryDispatcher, Products
 from Globals import DTMLFile, Persistent
 from Globals import MessageDialog, default__class_init__
 from Globals import REPLACEABLE, NOT_REPLACEABLE, UNIQUE
 from webdav.NullResource import NullResource
 from webdav.Collection import Collection
 from Acquisition import aq_base
-from AccessControl.SecurityInfo import ClassSecurityInfo
 from webdav.Lockable import ResourceLockedError
 from ZODB.POSException import ConflictError
-from urllib import quote
-from cStringIO import StringIO
-import marshal
 import App.Common
 from App.config import getConfiguration
 from AccessControl import getSecurityManager
 from AccessControl.ZopeSecurityPolicy import getRoles
 from zLOG import LOG, ERROR
 from zExceptions import BadRequest
-import sys,fnmatch,copy
-from cgi import escape
-from types import StringType, UnicodeType
+
+from OFS.Traversable import Traversable
+import CopySupport
 
 # the name BadRequestException is relied upon by 3rd-party code
 BadRequestException = BadRequest
@@ -92,10 +93,20 @@ def checkValidId(self, id, allow_dup=0):
         raise BadRequest, (
             'The id "%s" contains characters illegal in URLs.' % id)
 
-class BeforeDeleteException( Exception ): pass # raise to veto deletion
-class BreakoutException ( Exception ): pass  # raised to break out of loops
+
+class BeforeDeleteException(Exception):
+
+    pass # raise to veto deletion
+
+
+class BreakoutException(Exception):
+
+    pass  # raised to break out of loops
+
 
 _marker=[]
+
+
 class ObjectManager(
     CopySupport.CopyContainer,
     App.Management.Navigation,
@@ -105,6 +116,7 @@ class ObjectManager(
     Collection,
     Traversable,
     ):
+
     """Generic object manager
 
     This class provides core behavior for collections of heterogeneous objects.
@@ -125,11 +137,11 @@ class ObjectManager(
     )
 
 
-    meta_type  ='Object Manager'
+    meta_type = 'Object Manager'
 
     meta_types=() # Sub-object types that are specific to this object
 
-    _objects   =()
+    _objects = ()
 
     manage_main=DTMLFile('dtml/main', globals())
     manage_index_main=DTMLFile('dtml/index_main', globals())
@@ -232,8 +244,12 @@ class ObjectManager(
 
     _checkId = checkValidId
 
-    def _setOb(self, id, object): setattr(self, id, object)
-    def _delOb(self, id): delattr(self, id)
+    def _setOb(self, id, object):
+        setattr(self, id, object)
+
+    def _delOb(self, id):
+        delattr(self, id)
+
     def _getOb(self, id, default=_marker):
         # FIXME: what we really need to do here is ensure that only
         # sub-items are returned. That could have a measurable hit
@@ -245,7 +261,7 @@ class ObjectManager(
             raise AttributeError, id
         return default
 
-    def _setObject(self,id,object,roles=None,user=None, set_owner=1):
+    def _setObject(self, id, object, roles=None, user=None, set_owner=1):
         v=self._checkId(id)
         if v is not None: id=v
         try:    t=object.meta_type
@@ -353,13 +369,11 @@ class ObjectManager(
             return set
         return [ o['id']  for o in self._objects ]
 
-
     def objectValues(self, spec=None):
         # Returns a list of actual subobjects of the current object.
         # If 'spec' is specified, returns only objects whose meta_type
         # match 'spec'.
         return [ self._getOb(id) for id in self.objectIds(spec) ]
-
 
     def objectItems(self, spec=None):
         # Returns a list of (id, subobject) tuples of the current object.
@@ -371,7 +385,7 @@ class ObjectManager(
         # Return a tuple of mappings containing subobject meta-data
         return tuple(map(lambda dict: dict.copy(), self._objects))
 
-    def objectIds_d(self,t=None):
+    def objectIds_d(self, t=None):
         if hasattr(self, '_reserved_names'): n=self._reserved_names
         else: n=()
         if not n: return self.objectIds(t)
@@ -381,17 +395,17 @@ class ObjectManager(
             if id not in n: a(id)
         return r
 
-    def objectValues_d(self,t=None):
+    def objectValues_d(self, t=None):
         return map(self._getOb, self.objectIds_d(t))
 
-    def objectItems_d(self,t=None):
+    def objectItems_d(self, t=None):
         r=[]
         a=r.append
         g=self._getOb
         for id in self.objectIds_d(t): a((id, g(id)))
         return r
 
-    def objectMap_d(self,t=None):
+    def objectMap_d(self, t=None):
         if hasattr(self, '_reserved_names'): n=self._reserved_names
         else: n=()
         if not n: return self._objects
@@ -401,7 +415,7 @@ class ObjectManager(
             if d['id'] not in n: a(d.copy())
         return r
 
-    def superValues(self,t):
+    def superValues(self, t):
         # Return all of the objects of a given type located in
         # this object and containing objects.
         if type(t)==type('s'): t=(t,)
@@ -584,11 +598,12 @@ class ObjectManager(
             listing += [f for f in os.listdir(directory) 
                         if f.endswith('.zexp') or f.endswith('.xml')]
         return listing
-        
+
     # FTP support methods
 
     def manage_FTPlist(self, REQUEST):
-        "Directory listing for FTP"
+        """Directory listing for FTP.
+        """
         out=()
 
         # check to see if we are being acquiring or not
@@ -650,9 +665,9 @@ class ObjectManager(
         if not REQUEST['id'] in self.objectIds():
             raise KeyError(REQUEST['id'])
 
-
     def manage_FTPstat(self,REQUEST):
-        "Psuedo stat used for FTP listings"
+        """Psuedo stat, used by FTP for directory listings.
+        """
         mode=0040000
         from AccessControl.User import nobody
         # check to see if we are acquiring our objectValues or not
@@ -678,7 +693,6 @@ class ObjectManager(
                 break
         return marshal.dumps((mode,0,0,1,owner,group,0,mtime,mtime,mtime))
 
-
     def __getitem__(self, key):
         v=self._getOb(key, None)
         if v is not None: return v
@@ -688,6 +702,7 @@ class ObjectManager(
             if request.maybe_webdav_client and not method in ('GET', 'POST'):
                 return NullResource(self, key, request).__of__(self)
         raise KeyError, key
+
 
 def findChildren(obj,dirname=''):
     """ recursive walk through the object hierarchy to
@@ -703,7 +718,9 @@ def findChildren(obj,dirname=''):
 
     return lst
 
+
 class IFAwareObjectManager:
+
     def all_meta_types(self, interfaces=None):
 
         if interfaces is None:

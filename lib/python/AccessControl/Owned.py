@@ -19,6 +19,7 @@ import Globals, urlparse, SpecialUsers, ExtensionClass
 from AccessControl import getSecurityManager, Unauthorized
 from Acquisition import aq_get, aq_parent, aq_base
 
+
 UnownableOwner=[]
 def ownableFilter(self):
     _owner = aq_get(self, '_owner', None, 1)
@@ -137,9 +138,11 @@ class Owned(ExtensionClass.Base):
 
     changeOwnership__roles__=()
     def changeOwnership(self, user, recursive=0):
-        """Change the ownership to the given user.  If 'recursive' is
-        true then also take ownership of all sub-objects, otherwise
-        sub-objects retain their ownership information."""
+        """Change the ownership to the given user.
+
+        If 'recursive' is true then also take ownership of all sub-objects,
+        otherwise sub-objects retain their ownership information.
+        """
 
         new=ownerInfo(user)
         if new is None: return # Special user!
@@ -167,9 +170,9 @@ class Owned(ExtensionClass.Base):
         return security.checkPermission('Take ownership', self)
 
     def manage_takeOwnership(self, REQUEST, RESPONSE, recursive=0):
-        """
-        Take ownership (responsibility) for an object. If 'recursive'
-        is true, then also take ownership of all sub-objects.
+        """Take ownership (responsibility) for an object.
+
+        If 'recursive' is true, then also take ownership of all sub-objects.
         """
         security=getSecurityManager()
         want_referer=REQUEST['URL1']+'/manage_owner'
@@ -261,13 +264,16 @@ class Owned(ExtensionClass.Base):
             except: pass
             if s is None: object._p_deactivate()
 
-
 Globals.default__class_init__(Owned)
 
+
 class EmergencyUserCannotOwn(Exception):
+
     "The emergency user cannot own anything"
 
+
 class EditUnowned(Exception):
+
     "Can't edit unowned executables"
 
 

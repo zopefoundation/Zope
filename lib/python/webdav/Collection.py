@@ -10,10 +10,10 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
+"""WebDAV support - collection objects.
 
-"""WebDAV support - collection objects."""
-
-__version__='$Revision: 1.27 $'[11:-2]
+$Id$
+"""
 
 import Globals, davcmds, Lockable
 from common import urlfix, rfc1123_date
@@ -22,6 +22,7 @@ from AccessControl import getSecurityManager
 from urllib import unquote
 from zExceptions import MethodNotAllowed, NotFound
 from webdav.common import Locked, PreconditionFailed
+
 
 class Collection(Resource):
     """The Collection class provides basic WebDAV support for
@@ -131,8 +132,5 @@ class Collection(Resource):
         if objectValues is not None:
             return objectValues()
         return []
-        
-
-
 
 Globals.default__class_init__(Collection)

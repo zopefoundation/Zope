@@ -14,27 +14,32 @@
 
 $Id$
 """
-import re, sys, Globals, Moniker, tempfile, ExtensionClass
+
+import re, sys, tempfile
+from cgi import escape
 from marshal import loads, dumps
 from urllib import quote, unquote
 from zlib import compress, decompress
 
+import Globals, Moniker, ExtensionClass
+import transaction
 from App.Dialogs import MessageDialog
 from AccessControl import getSecurityManager
 from AccessControl.Permissions import delete_objects as DeleteObjects
 from Acquisition import aq_base, aq_inner, aq_parent
 from zExceptions import Unauthorized, BadRequest
 from webdav.Lockable import ResourceLockedError
-from cgi import escape
 
-import transaction
 
 CopyError='Copy Error'
 
 copy_re = re.compile('^copy([0-9]*)_of_(.*)')
 
 _marker=[]
+
+
 class CopyContainer(ExtensionClass.Base):
+
     """Interface for containerish objects which allow cut/copy/paste"""
 
     __ac_permissions__=(
@@ -48,8 +53,12 @@ class CopyContainer(ExtensionClass.Base):
 
     # The following three methods should be overridden to store sub-objects
     # as non-attributes.
-    def _setOb(self, id, object): setattr(self, id, object)
-    def _delOb(self, id): delattr(self, id)
+    def _setOb(self, id, object):
+        setattr(self, id, object)
+
+    def _delOb(self, id):
+        delattr(self, id)
+
     def _getOb(self, id, default=_marker):
         if hasattr(aq_base(self), id):
             return getattr(self, id)
@@ -136,9 +145,11 @@ class CopyContainer(ExtensionClass.Base):
 
     def manage_pasteObjects(self, cb_copy_data=None, REQUEST=None):
         """Paste previously copied objects into the current object.
-           If calling manage_pasteObjects from python code, pass
-           the result of a previous call to manage_cutObjects or
-           manage_copyObjects as the first argument."""
+
+        If calling manage_pasteObjects from python code, pass the result of a
+        previous call to manage_cutObjects or manage_copyObjects as the first
+        argument.
+        """
         cp=None
         if cb_copy_data is not None:
             cp=cb_copy_data
@@ -421,6 +432,7 @@ Globals.default__class_init__(CopyContainer)
 
 
 class CopySource(ExtensionClass.Base):
+
     """Interface for objects which allow themselves to be copied."""
 
     # declare a dummy permission for Copy or Move here that we check
@@ -430,14 +442,18 @@ class CopySource(ExtensionClass.Base):
         )
 
     def _canCopy(self, op=0):
-        """Called to make sure this object is copyable. The op var
-        is 0 for a copy, 1 for a move."""
+        """Called to make sure this object is copyable.
+
+        The op var is 0 for a copy, 1 for a move.
+        """
         return 1
 
     def _notifyOfCopyTo(self, container, op=0):
-        """Overide this to be pickly about where you go! If you dont
-        want to go there, raise an exception. The op variable is
-        0 for a copy, 1 for a move."""
+        """Overide this to be pickly about where you go!
+
+        If you dont want to go there, raise an exception. The op variable is 0
+        for a copy, 1 for a move.
+        """
         pass
 
     def _getCopy(self, container):

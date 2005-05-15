@@ -14,19 +14,23 @@
 
 $Id$
 """
-import ExtensionClass, Globals
-import ZDOM
-from PropertySheets import DefaultPropertySheets, vps
-from ZPublisher.Converters import type_converters
-from Globals import DTMLFile, MessageDialog
-from Acquisition import Implicit, aq_base
-from Globals import Persistent
-from zExceptions import BadRequest
+
 from cgi import escape
 from types import ListType
 
+import ExtensionClass, Globals
+from ZPublisher.Converters import type_converters
+from Globals import DTMLFile, MessageDialog
+from Acquisition import aq_base
+from Globals import Persistent
+from zExceptions import BadRequest
+
+import ZDOM
+from PropertySheets import DefaultPropertySheets, vps
+
 
 class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
+
     """
     The PropertyManager mixin class provides an object with
     transparent property management. An object which wants to
@@ -128,22 +132,28 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
         return 1
 
     def hasProperty(self, id):
-        """Return true if object has a property 'id'"""
+        """Return true if object has a property 'id'.
+        """
         for p in self._properties:
             if id==p['id']:
                 return 1
         return 0
 
     def getProperty(self, id, d=None):
-        """Get the property 'id', returning the optional second
-           argument or None if no such property is found."""
+        """Get the property 'id'.
+
+        Returns the optional second argument or None if no such property is
+        found.
+        """
         if self.hasProperty(id):
             return getattr(self, id)
         return d
 
     def getPropertyType(self, id):
-        """Get the type of property 'id', returning None if no
-           such property exists"""
+        """Get the type of property 'id'.
+
+        Returns None if no such property exists.
+        """
         for md in self._properties:
             if md['id']==id:
                 return md.get('type', 'string')
@@ -207,24 +217,28 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
                                       self._properties))
 
     def propertyIds(self):
-        """Return a list of property ids """
+        """Return a list of property ids.
+        """
         return map(lambda i: i['id'], self._properties)
 
     def propertyValues(self):
-        """Return a list of actual property objects """
+        """Return a list of actual property objects.
+        """
         return map(lambda i,s=self: getattr(s,i['id']), self._properties)
 
     def propertyItems(self):
-        """Return a list of (id,property) tuples """
+        """Return a list of (id,property) tuples.
+        """
         return map(lambda i,s=self: (i['id'],getattr(s,i['id'])),
                                     self._properties)
     def _propertyMap(self):
-        """Return a tuple of mappings, giving meta-data for properties """
+        """Return a tuple of mappings, giving meta-data for properties.
+        """
         return self._properties
 
     def propertyMap(self):
-        """
-        Return a tuple of mappings, giving meta-data for properties.
+        """Return a tuple of mappings, giving meta-data for properties.
+
         Return copies of the real definitions for security.
         """
         return tuple(map(lambda dict: dict.copy(), self._propertyMap()))
@@ -247,8 +261,10 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
     # Web interface
 
     def manage_addProperty(self, id, value, type, REQUEST=None):
-        """Add a new property via the web. Sets a new property with
-        the given id, type, and value."""
+        """Add a new property via the web.
+
+        Sets a new property with the given id, type, and value.
+        """
         if type_converters.has_key(type):
             value=type_converters[type](value)
         self._setProperty(id.strip(), value, type)
@@ -257,6 +273,7 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
 
     def manage_editProperties(self, REQUEST):
         """Edit object properties via the web.
+
         The purpose of this method is to change all property values,
         even those not listed in REQUEST; otherwise checkboxes that
         get turned off will be ignored.  Use manage_changeProperties()
@@ -345,8 +362,5 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
 
         if REQUEST is not None:
             return self.manage_propertiesForm(self, REQUEST)
-
-
-
 
 Globals.default__class_init__(PropertyManager)

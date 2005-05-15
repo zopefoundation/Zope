@@ -14,12 +14,14 @@
 
 $Id$
 """
+from cgi import escape
+
 from Globals import DTMLFile, MessageDialog, Dictionary
 from Acquisition import Implicit, Acquired, aq_get
 import Globals, ExtensionClass, PermissionMapping, Products
-from Permission import Permission
 from App.Common import aq_base
-from cgi import escape
+
+from Permission import Permission
 
 
 DEFAULTMAXLISTUSERS=250
@@ -30,7 +32,9 @@ def _isBeingUsedAsAMethod(self):
 def _isNotBeingUsedAsAMethod(self):
     return not aq_get(self, '_isBeingUsedAsAMethod_', 0)
 
+
 class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
+
     """An object that has configurable permissions"""
 
     __ac_permissions__=(
@@ -89,9 +93,10 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
         return tuple(r)
 
     def permission_settings(self, permission=None):
-        """Return user-role permission settings. If 'permission' 
-           is passed to the method then only the settings for 'permission'
-           is returned.
+        """Return user-role permission settings.
+
+        If 'permission' is passed to the method then only the settings for
+        'permission' is returned.
         """
         result=[]
         valid=self.valid_roles()
@@ -127,7 +132,8 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
                              help_product='OFSP')
 
     def manage_role(self, role_to_manage, permissions=[], REQUEST=None):
-        "Change the permissions given to the given role"
+        """Change the permissions given to the given role.
+        """
         self._isBeingUsedAsAMethod(REQUEST, 0)
         for p in self.ac_inherited_permissions(1):
             name, value = p[:2]
@@ -142,7 +148,8 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
                                  help_product='OFSP')
 
     def manage_acquiredPermissions(self, permissions=[], REQUEST=None):
-        "Change the permissions that acquire"
+        """Change the permissions that acquire.
+        """
         self._isBeingUsedAsAMethod(REQUEST, 0)
         for p in self.ac_inherited_permissions(1):
             name, value = p[:2]
@@ -161,11 +168,12 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
 
     def manage_permission(self, permission_to_manage,
                           roles=[], acquire=0, REQUEST=None):
-        """Change the settings for the given permission
+        """Change the settings for the given permission.
 
         If optional arg acquire is true, then the roles for the permission
         are acquired, in addition to the ones specified, otherwise the
-        permissions are restricted to only the designated roles."""
+        permissions are restricted to only the designated roles.
+        """
         self._isBeingUsedAsAMethod(REQUEST, 0)
         for p in self.ac_inherited_permissions(1):
             name, value = p[:2]
@@ -186,7 +194,8 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
     _method_manage_access=DTMLFile('dtml/methodAccess', globals())
 
     def manage_access(self, REQUEST, **kw):
-        "Return an interface for making permissions settings"
+        """Return an interface for making permissions settings.
+        """
         if hasattr(self, '_isBeingUsedAsAMethod') and \
            self._isBeingUsedAsAMethod():
             return apply(self._method_manage_access,(), kw)
@@ -194,7 +203,8 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
             return apply(self._normal_manage_access,(), kw)
 
     def manage_changePermissions(self, REQUEST):
-        "Change all permissions settings, called by management screen"
+        """Change all permissions settings, called by management screen.
+        """
         self._isBeingUsedAsAMethod(REQUEST, 0)
         valid_roles=self.valid_roles()
         indexes=range(len(valid_roles))
@@ -223,9 +233,9 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
             message='Your changes have been saved',
             action ='manage_access')
 
-
     def permissionsOfRole(self, role):
-        "used by management screen"
+        """Used by management screen.
+        """
         r=[]
         for p in self.ac_inherited_permissions(1):
             name, value = p[:2]
@@ -237,7 +247,8 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
         return r
 
     def rolesOfPermission(self, permission):
-        "used by management screen"
+        """Used by management screen.
+        """
         valid_roles=self.valid_roles()
         for p in self.ac_inherited_permissions(1):
             name, value = p[:2]
@@ -255,7 +266,8 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
             "The permission <em>%s</em> is invalid." % escape(permission))
 
     def acquiredRolesAreUsedBy(self, permission):
-        "used by management screen"
+        """Used by management screen.
+        """
         for p in self.ac_inherited_permissions(1):
             name, value = p[:2]
             if name==permission:
@@ -380,14 +392,12 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
             stat='Your changes have been saved.'
             return self.manage_listLocalRoles(self, REQUEST, stat=stat)
 
-
-
-
     #------------------------------------------------------------
 
     access_debug_info__roles__=()
     def access_debug_info(self):
-        "Return debug info"
+        """Return debug info.
+        """
         clas=class_attrs(self)
         inst=instance_attrs(self)
         data=[]
@@ -407,7 +417,8 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
         return data
 
     def valid_roles(self):
-        "Return list of valid roles"
+        """Return list of valid roles.
+        """
         obj=self
         dict={}
         dup =dict.has_key
@@ -427,7 +438,8 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
         return tuple(roles)
 
     def validate_roles(self, roles):
-        "Return true if all given roles are valid"
+        """Return true if all given roles are valid.
+        """
         valid=self.valid_roles()
         for role in roles:
             if role not in valid:
@@ -435,16 +447,17 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
         return 1
 
     def userdefined_roles(self):
-        "Return list of user-defined roles"
+        """Return list of user-defined roles.
+        """
         roles=list(self.__ac_roles__)
         for role in classattr(self.__class__,'__ac_roles__'):
             try:    roles.remove(role)
             except: pass
         return tuple(roles)
 
-
-    def manage_defined_roles(self,submit=None,REQUEST=None):
-        """Called by management screen."""
+    def manage_defined_roles(self, submit=None, REQUEST=None):
+        """Called by management screen.
+        """
 
         if submit=='Add Role':
             role=reqattr(REQUEST, 'role')
@@ -473,7 +486,6 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
         if REQUEST is not None:
             return self.manage_access(REQUEST)
 
-
     def _delRoles(self, roles, REQUEST=None):
         if not roles:
             return MessageDialog(
@@ -488,10 +500,8 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
         if REQUEST is not None:
             return self.manage_access(REQUEST)
 
-
     def _has_user_defined_role(self, role):
         return role in self.__ac_roles__
-
 
     # Compatibility names only!!
 
@@ -499,10 +509,10 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
     validRoles=valid_roles
     #manage_rolesForm=manage_access
 
-    def manage_editRoles(self,REQUEST,acl_type='A',acl_roles=[]):
+    def manage_editRoles(self, REQUEST, acl_type='A', acl_roles=[]):
         pass
 
-    def _setRoles(self,acl_type,acl_roles):
+    def _setRoles(self, acl_type, acl_roles):
         pass
 
     def possible_permissions(self):
@@ -519,7 +529,6 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
         d.sort()
 
         return d
-
 
 Globals.default__class_init__(RoleManager)
 

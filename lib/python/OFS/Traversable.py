@@ -14,23 +14,24 @@
 
 $Id$
 """
+
+from urllib import quote
+
 from Acquisition import Acquired, aq_inner, aq_parent, aq_base
 from AccessControl import getSecurityManager
 from AccessControl import Unauthorized
 from AccessControl.ZopeGuards import guarded_getattr
 from ZODB.POSException import ConflictError
-from urllib import quote
-
 from zExceptions import NotFound
 
 _marker = object()
+
 
 class Traversable:
 
     absolute_url__roles__=None # Public
     def absolute_url(self, relative=0):
-        """
-        Return the absolute URL of the object.
+        """Return the absolute URL of the object.
 
         This a canonical URL based on the object's physical
         containment path.  It is affected by the virtual host
@@ -57,8 +58,7 @@ class Traversable:
 
     absolute_url_path__roles__=None # Public
     def absolute_url_path(self):
-        """
-        Return the path portion of the absolute URL of the object.
+        """Return the path portion of the absolute URL of the object.
 
         This includes the leading slash, and can be used as an
         'absolute-path reference' as defined in RFC 2396.
@@ -72,8 +72,7 @@ class Traversable:
 
     virtual_url_path__roles__=None # Public
     def virtual_url_path(self):
-        """
-        Return a URL for the object, relative to the site root.
+        """Return a URL for the object, relative to the site root.
 
         If a virtual host is configured, the URL is a path relative to
         the virtual host's root object.  Otherwise, it is the physical
@@ -91,11 +90,13 @@ class Traversable:
 
     getPhysicalPath__roles__=None # Public
     def getPhysicalPath(self):
-        '''Returns a path (an immutable sequence of strings)
-        that can be used to access this object again
-        later, for example in a copy/paste operation.  getPhysicalRoot()
-        and getPhysicalPath() are designed to operate together.
-        '''
+        """Get the physical path of the object.
+
+        Returns a path (an immutable sequence of strings) that can be used to
+        access this object again later, for example in a copy/paste operation.
+        getPhysicalRoot() and getPhysicalPath() are designed to operate
+        together.
+        """
         path = (self.getId(),)
 
         p = aq_parent(aq_inner(self))
@@ -106,26 +107,26 @@ class Traversable:
 
     unrestrictedTraverse__roles__=() # Private
     def unrestrictedTraverse(self, path, default=_marker, restricted=0):
-        """Lookup an object by path,
-        
+        """Lookup an object by path.
+
         path -- The path to the object. May be a sequence of strings or a slash
         separated string. If the path begins with an empty path element
         (i.e., an empty string or a slash) then the lookup is performed
         from the application root. Otherwise, the lookup is relative to
         self. Two dots (..) as a path element indicates an upward traversal
         to the acquisition parent.
-        
+
         default -- If provided, this is the value returned if the path cannot
         be traversed for any reason (i.e., no object exists at that path or
         the object is inaccessible).
-        
+
         restricted -- If false (default) then no security checking is performed.
         If true, then all of the objects along the path are validated with
         the security machinery. Usually invoked using restrictedTraverse().
         """
         if not path:
             return self
-        
+
         _getattr = getattr
         _none = None
         marker = _marker

@@ -15,15 +15,21 @@
 Sometimes, we need an object's permissions to be remapped to other permissions
 when the object is used in specual ways.  This is rather hard, since we
 need the object's ordinary permissions intact so we can manage it.
+
+$Id$
 """
 
-import ExtensionClass, Acquisition
-from Permission import pname
-from Owned import UnownableOwner
-from Globals import InitializeClass
 from cgi import escape
 
+import ExtensionClass, Acquisition
+from Globals import InitializeClass
+
+from Owned import UnownableOwner
+from Permission import pname
+
+
 class RoleManager:
+
     def manage_getPermissionMapping(self):
         """Return the permission mapping for the object
 
@@ -96,6 +102,8 @@ class RoleManager:
         base=getattr(p, 'aq_base', None)
         return type(base) is PermissionMapper
 
+InitializeClass(RoleManager)
+
 
 def getPermissionMapping(name, obj, st=type('')):
     obj=getattr(obj, 'aq_base', obj)
@@ -148,5 +156,3 @@ class Rewrapper(ExtensionClass.Base):
             Acquisition.ImplicitAcquisitionWrapper(
                 w, parent))
         return apply(self, args, kw)
-
-InitializeClass(RoleManager)

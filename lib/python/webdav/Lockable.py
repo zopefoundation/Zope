@@ -10,15 +10,20 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
+"""WebDAV support - lockable item.
 
-__version__ = "$Revision: 1.10 $"[11:-2]
+$Id$
+"""
 
-from WriteLockInterface import WriteLockInterface, LockItemInterface
-from EtagSupport import EtagSupport
-from LockItem import LockItem
 from AccessControl import ClassSecurityInfo
+from Globals import InitializeClass
 from Globals import PersistentMapping
 import Acquisition
+
+from EtagSupport import EtagSupport
+from WriteLockInterface import LockItemInterface
+from WriteLockInterface import WriteLockInterface
+
 
 class ResourceLockedError(Exception): pass
 
@@ -134,9 +139,7 @@ class LockableItem(EtagSupport):
         if hasattr(Acquisition.aq_base(self), '__no_valid_write_locks__'):
             self.__no_valid_write_locks__()
 
-
-import Globals
-Globals.default__class_init__(LockableItem)
+InitializeClass(LockableItem)
 
 
 ### Utility functions

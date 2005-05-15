@@ -10,14 +10,19 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
+"""Etag support.
 
-__version__ = "$Revision: 1.11 $"[11:-2]
+$Id$
+"""
 
+import time
 
-import time, Interface
+from Interface import Interface
+
 from webdav.common import PreconditionFailed
 
-class EtagBaseInterface(Interface.Base):
+
+class EtagBaseInterface(Interface):
     """\
     Basic Etag support interface, meaning the object supports generating
     an Etag that can be used by certain HTTP and WebDAV Requests.
@@ -52,6 +57,7 @@ class EtagBaseInterface(Interface.Base):
 
         Thus, Etags need to be refreshed manually when an object changes.
         """
+
 
 class EtagSupport:
     """\

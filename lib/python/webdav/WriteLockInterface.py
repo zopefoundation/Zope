@@ -10,14 +10,18 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
+"""Write lock interfaces.
 
-__version__='$Revision: 1.6 $'[11:-2]
+$Id$
+"""
 
-import Interface
+from Interface import Interface
 
-class LockItemInterface(Interface.Base):
-    """\
-    A LockItem contains information about a lock.  This includes:
+
+class LockItemInterface(Interface):
+    """A LockItem contains information about a lock.
+
+    This includes:
 
      o The locktoken uri (used to identify the lock by WebDAV)
 
@@ -36,7 +40,7 @@ class LockItemInterface(Interface.Base):
     """
 
     # XXX:  WAAAA!  What is a ctor doing in the interface?
-    def __init__(self, creator, owner, depth=0, timeout='Infinity',
+    def __init__(creator, owner, depth=0, timeout='Infinity',
                  locktype='write', lockscope='exclusive', token=None):
         """\
         If any of the  following are untrue, a **ValueError** exception
@@ -139,10 +143,9 @@ class LockItemInterface(Interface.Base):
         """ Render a full XML representation of a lock for WebDAV,
         used when returning the value of a newly created lock. """
 
-class WriteLockInterface(Interface.Base):
-    """\
-    This represents the basic protocol needed to support the write lock
-    machinery.
+
+class WriteLockInterface(Interface):
+    """Basic protocol needed to support the write lock machinery.
 
     It must be able to answer the questions:
 
@@ -170,9 +173,7 @@ class WriteLockInterface(Interface.Base):
     **All methods in the WriteLock interface that deal with checking valid
     locks MUST check the timeout values on the lockitem (ie, by calling
     'lockitem.isValid()'), and DELETE the lock if it is no longer valid**
-
     """
-
 
     def wl_lockItems(killinvalids=0):
         """ Returns (key, value) pairs of locktoken, lock.

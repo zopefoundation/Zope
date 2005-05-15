@@ -19,50 +19,59 @@ item types.
 
 $Id$
 """
-import re, sys, Globals, App.Management, Acquisition, App.Undo
+
+import marshal, re, sys, time
+
+import Globals, App.Management, Acquisition, App.Undo
 import AccessControl.Role, AccessControl.Owned, App.Common
 from webdav.Resource import Resource
 from ExtensionClass import Base
-from CopySupport import CopySource
-from types import InstanceType, StringType
 from ComputedAttribute import ComputedAttribute
 from AccessControl import getSecurityManager, Unauthorized
-from Traversable import Traversable
+from AccessControl.ZopeSecurityPolicy import getRoles
 from Acquisition import aq_base, aq_parent, aq_inner, aq_acquire
 from DocumentTemplate.ustr import ustr
 from zExceptions.ExceptionFormatter import format_exception
 from zExceptions import Redirect
-import time
 from zLOG import LOG, BLATHER
-from AccessControl.ZopeSecurityPolicy import getRoles
 
-import marshal
+from CopySupport import CopySource
+from Traversable import Traversable
 import ZDOM
 
 HTML=Globals.HTML
-StringType=type('')
+
 
 class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
            ZDOM.Element,
            AccessControl.Owned.Owned,
            App.Undo.UndoSupport,
            ):
+
     """A common base class for simple, non-container objects."""
+
     isPrincipiaFolderish=0
     isTopLevelPrincipiaApplicationObject=0
 
-    def manage_afterAdd(self, item, container): pass
-    def manage_beforeDelete(self, item, container): pass
-    def manage_afterClone(self, item): pass
+    def manage_afterAdd(self, item, container):
+        pass
+
+    def manage_beforeDelete(self, item, container):
+        pass
+
+    def manage_afterClone(self, item):
+        pass
 
     # Direct use of the 'id' attribute is deprecated - use getId()
     id=''
 
     getId__roles__=None
     def getId(self):
-        """Return the id of the object as a string. This method
-           should be used in preference to accessing an id attribute
-           of an object directly. The getId method is public."""
+        """Return the id of the object as a string.
+
+        This method should be used in preference to accessing an id attribute
+        of an object directly. The getId method is public.
+        """
         name=getattr(self, 'id', None)
         if callable(name):
             return name()
@@ -99,11 +108,8 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
     # Allow (reluctantly) access to unprotected attributes
     __allow_access_to_unprotected_subobjects__=1
 
-
     def title_or_id(self):
-        """
-        Utility that returns the title if it is not blank and the id
-        otherwise.
+        """Return the title if it is not blank and the id otherwise.
         """
         title=self.title
         if callable(title):
@@ -112,10 +118,9 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
         return self.getId()
 
     def title_and_id(self):
-        """
-        Utility that returns the title if it is not blank and the id
-        otherwise.  If the title is not blank, then the id is included
-        in parens.
+        """Return the title if it is not blank and the id otherwise.
+
+        If the title is not blank, then the id is included in parens.
         """
         title=self.title
         if callable(title):
@@ -222,7 +227,8 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
             tb=None
 
     def manage(self, URL1):
-        " "
+        """
+        """
         raise Redirect, "%s/manage_main" % URL1
 
     # This keeps simple items from acquiring their parents
@@ -234,7 +240,8 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
     # FTP support methods
 
     def manage_FTPstat(self,REQUEST):
-        "psuedo stat, used by FTP for directory listings"
+        """Psuedo stat, used by FTP for directory listings.
+        """
         from AccessControl.User import nobody
         mode=0100000
 
@@ -245,7 +252,7 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
                     mode=mode | 0440
             except Unauthorized:
                 pass
-            
+
             if nobody.allowed(
                 self.manage_FTPget,
                 getRoles(self, 'manage_FTPget', self.manage_FTPget, ()),
@@ -288,8 +295,11 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
         return marshal.dumps((mode,0,0,1,owner,group,size,mtime,mtime,mtime))
 
     def manage_FTPlist(self,REQUEST):
-        """Directory listing for FTP. In the case of non-Foldoid objects,
-        the listing should contain one object, the object itself."""
+        """Directory listing for FTP.
+
+        In the case of non-Foldoid objects, the listing should contain one
+        object, the object itself.
+        """
         # check to see if we are being acquiring or not
         ob=self
         while 1:
@@ -306,25 +316,27 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
     def __len__(self):
         return 1
 
-
 Globals.default__class_init__(Item)
+
 
 class Item_w__name__(Item):
     """Mixin class to support common name/id functions"""
 
     def getId(self):
-        """Returns the id"""
+        """Return the id of the object as a string.
+        """
         return self.__name__
 
     def title_or_id(self):
-        """Utility that returns the title if it is not blank and the id
-        otherwise."""
+        """Return the title if it is not blank and the id otherwise.
+        """
         return self.title or self.__name__
 
     def title_and_id(self):
-        """Utility that returns the title if it is not blank and the id
-        otherwise.  If the title is not blank, then the id is included
-        in parens."""
+        """Return the title if it is not blank and the id otherwise.
+
+        If the title is not blank, then the id is included in parens.
+        """
         t=self.title
         return t and ("%s (%s)" % (t,self.__name__)) or self.__name__
 
@@ -332,11 +344,13 @@ class Item_w__name__(Item):
         self.__name__=id
 
     def getPhysicalPath(self):
-        '''Returns a path (an immutable sequence of strings)
-        that can be used to access this object again
-        later, for example in a copy/paste operation.  getPhysicalRoot()
-        and getPhysicalPath() are designed to operate together.
-        '''
+        """Get the physical path of the object.
+
+        Returns a path (an immutable sequence of strings) that can be used to
+        access this object again later, for example in a copy/paste operation.
+        getPhysicalRoot() and getPhysicalPath() are designed to operate
+        together.
+        """
         path = (self.__name__,)
 
         p = aq_parent(aq_inner(self))
@@ -356,6 +370,7 @@ class SimpleItem(Item, Globals.Persistent,
                  Acquisition.Implicit,
                  AccessControl.Role.RoleManager,
                  ):
+
     # Blue-plate special, Zope Masala
     """Mix-in class combining the most common set of basic mix-ins
     """

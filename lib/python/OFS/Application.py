@@ -15,33 +15,37 @@
 $Id$
 """
 
-import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
-import time, traceback, os,  Products
-from DateTime import DateTime
-from AccessControl.User import UserFolder
-from App.ApplicationManager import ApplicationManager
-from webdav.NullResource import NullResource
-from FindSupport import FindSupport
+import os, sys, traceback
 from cgi import escape
-from urllib import quote
 from StringIO import StringIO
-from AccessControl.PermissionRole import PermissionRole
-from App.ProductContext import ProductContext
-from misc_ import Misc_
-import ZDOM
-from zLOG import LOG, ERROR, WARNING, INFO
-from zExceptions import Redirect as RedirectException, Forbidden
-from HelpSys.HelpSys import HelpSys
-from Acquisition import aq_base
-from App.Product import doInstall
-from App.config import getConfiguration
+
+import Globals, Products, App.Product, App.ProductRegistry, misc_
 import transaction
+from AccessControl.User import UserFolder
+from Acquisition import aq_base
+from App.ApplicationManager import ApplicationManager
+from App.config import getConfiguration
+from App.Product import doInstall
+from App.ProductContext import ProductContext
+from DateTime import DateTime
+from HelpSys.HelpSys import HelpSys
+from misc_ import Misc_
+from webdav.NullResource import NullResource
+from zExceptions import Redirect as RedirectException, Forbidden
+from zLOG import LOG, ERROR, WARNING, INFO
+
+import Folder
+import ZDOM
+from FindSupport import FindSupport
+
 
 class Application(Globals.ApplicationDefaultPermissions,
                   ZDOM.Root, Folder.Folder,
                   App.ProductRegistry.ProductRegistry, FindSupport):
+
     """Top-level system object"""
-    title    ='Zope'
+
+    title ='Zope'
     #__roles__=['Manager', 'Anonymous']
     __defined_roles__=('Manager','Anonymous','Owner')
     web__form__method='GET'
@@ -70,9 +74,6 @@ class Application(Globals.ApplicationDefaultPermissions,
 
     _initializer_registry = None
 
-    def title_and_id(self): return self.title
-    def title_or_id(self): return self.title
-
     def __init__(self):
         # Initialize users
         uf=UserFolder()
@@ -89,14 +90,22 @@ class Application(Globals.ApplicationDefaultPermissions,
         try:    return self.REQUEST['SCRIPT_NAME'][1:]
         except: return self.title
 
-    def __class_init__(self): Globals.default__class_init__(self)
+    def title_and_id(self):
+        return self.title
 
-    def PrincipiaRedirect(self,destination,URL1):
+    def title_or_id(self):
+        return self.title
+
+    def __class_init__(self):
+        Globals.default__class_init__(self)
+
+    def PrincipiaRedirect(self, destination, URL1):
         """Utility function to allow user-controlled redirects"""
         if destination.find('//') >= 0:
             raise RedirectException, destination
         raise RedirectException, ("%s/%s" % (URL1, destination))
-    Redirect=ZopeRedirect=PrincipiaRedirect
+
+    Redirect = ZopeRedirect = PrincipiaRedirect
 
     def __bobo_traverse__(self, REQUEST, name=None):
 
@@ -117,7 +126,8 @@ class Application(Globals.ApplicationDefaultPermissions,
     def PrincipiaTime(self, *args):
         """Utility function to return current date/time"""
         return apply(DateTime, args)
-    ZopeTime=PrincipiaTime
+
+    ZopeTime = PrincipiaTime
 
     ZopeAttributionButton__roles__=None
     def ZopeAttributionButton(self):
@@ -139,10 +149,11 @@ class Application(Globals.ApplicationDefaultPermissions,
         raise Forbidden, 'This resource cannot be moved.'
 
     test_url___allow_groups__=None
-    test_url=ZopeAttributionButton
+    test_url = ZopeAttributionButton
 
     def absolute_url(self, relative=0):
-        '''The absolute URL of the root object is BASE1 or "/".'''
+        """The absolute URL of the root object is BASE1 or "/".
+        """
         if relative: return ''
         try:
             # Take advantage of computed URL cache
@@ -151,25 +162,31 @@ class Application(Globals.ApplicationDefaultPermissions,
             return '/'
 
     def absolute_url_path(self):
-        '''The absolute URL path of the root object is BASEPATH1 or "/".'''
+        """The absolute URL path of the root object is BASEPATH1 or "/".
+        """
         try:
             return self.REQUEST['BASEPATH1'] or '/'
         except (AttributeError, KeyError):
             return '/'
 
     def virtual_url_path(self):
-        '''The virtual URL path of the root object is empty.'''
+        """The virtual URL path of the root object is empty.
+        """
         return ''
 
+    def getPhysicalRoot(self):
+        return self
+
     def getPhysicalPath(self):
-        '''Returns a path that can be used to access this object again
-        later, for example in a copy/paste operation.  Designed to
-        be used with getPhysicalRoot().
-        '''
+        """Get the physical path of the object.
+
+        Returns a path (an immutable sequence of strings) that can be used to
+        access this object again later, for example in a copy/paste operation.
+        getPhysicalRoot() and getPhysicalPath() are designed to operate
+        together.
+        """
         # We're at the base of the path.
         return ('',)
-
-    def getPhysicalRoot(self): return self
 
     fixupZClassDependencies__roles__=()
     def fixupZClassDependencies(self, rebuild=0):
@@ -258,7 +275,9 @@ class Application(Globals.ApplicationDefaultPermissions,
             reg = {}
         return reg.get(flag)
 
+
 class Expired(Globals.Persistent):
+
     icon='p_/broken'
 
     def __setstate__(self, s={}):
@@ -279,7 +298,9 @@ def initialize(app):
     initializer = AppInitializer(app)
     initializer.initialize()
 
+
 class AppInitializer:
+
     """ Initialze an Application object (called at startup) """
 
     def __init__(self, app):
@@ -880,9 +901,8 @@ def reimport_product(product_name):
 
 
 def removeProductMetaTypes(pid):
-    '''
-    Unregisters the meta types registered by a product.
-    '''
+    """Unregisters the meta types registered by a product.
+    """
     meta_types = Products.meta_types
     new_mts = []
     changed = 0
