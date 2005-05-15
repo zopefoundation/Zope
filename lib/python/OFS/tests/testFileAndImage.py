@@ -1,9 +1,10 @@
+import unittest
+
 import Testing
 import Zope2
 Zope2.startup()
 
 import os, sys
-import unittest
 import time
 from cStringIO import StringIO
 
@@ -47,11 +48,11 @@ def aputrequest(file, content_type):
 class DummyCache:
     def __init__(self):
         self.clear()
-        
+
     def ZCache_set(self, ob, data, view_name='', keywords=None,
                    mtime_func=None):
         self.set = (ob, data)
-    
+
     def ZCache_get(self, ob, data, view_name='', keywords=None,
                    mtime_func=None):
         self.get = ob
@@ -69,14 +70,14 @@ class DummyCache:
 
     def setStreamIterator(self, si):
         self.si = si
-    
+
 
 ADummyCache=DummyCache()
 
 class DummyCacheManager(SimpleItem):
     def ZCacheManager_getCache(self):
         return ADummyCache
-    
+
 class FileTests(unittest.TestCase):
     data = open(filedata, 'rb').read()
     content_type = 'application/octet-stream'
@@ -152,7 +153,7 @@ class FileTests(unittest.TestCase):
         self.assertEqual(self.file.content_type, 'text/plain')
         self.failUnless(ADummyCache.invalidated)
         self.failUnless(ADummyCache.set)
-        
+
     def testManageEditWithoutFileData(self):
         self.file.manage_edit('foobar', 'text/plain')
         self.assertEqual(self.file.title, 'foobar')
@@ -242,6 +243,16 @@ class FileTests(unittest.TestCase):
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0][1], self.file)
 
+    def test_z2interfaces(self):
+        from Interface.Verify import verifyClass
+        from OFS.Image import File
+        from webdav.WriteLockInterface import WriteLockInterface
+        from ZPublisher.HTTPRangeSupport import HTTPRangeInterface
+
+        verifyClass(HTTPRangeInterface, File)
+        verifyClass(WriteLockInterface, File)
+
+
 class ImageTests(FileTests):
     data = open(filedata, 'rb').read()
     content_type = 'image/gif'
@@ -255,7 +266,7 @@ class ImageTests(FileTests):
         self.assertEqual(self.file.height, 16)
         self.failUnless(ADummyCache.invalidated)
         self.failUnless(ADummyCache.set)
-        
+
     def testStr(self):
         self.assertEqual(str(self.file),
           ('<img src="http://foo/file" alt="" title="" height="16" width="16" />'))
@@ -266,12 +277,20 @@ class ImageTests(FileTests):
 
     def testViewImageOrFile(self):
         pass # dtml method,screw it
-    
-def test_suite():
-    suite = unittest.TestSuite()
-    suite.addTest( unittest.makeSuite( FileTests ) )
-    suite.addTest( unittest.makeSuite( ImageTests ))
-    return suite
 
-if __name__ == "__main__":
-    unittest.main()
+    def test_z2interfaces(self):
+        from Interface.Verify import verifyClass
+        from OFS.Image import Image
+        from webdav.WriteLockInterface import WriteLockInterface
+
+        verifyClass(WriteLockInterface, Image)
+
+
+def test_suite():
+    return unittest.TestSuite((
+        unittest.makeSuite(FileTests),
+        unittest.makeSuite(ImageTests),
+        ))
+
+if __name__ == '__main__':
+    unittest.main(defaultTest='test_suite')

@@ -1,17 +1,12 @@
-from unittest import TestCase, TestSuite, makeSuite, main
-
-import Testing
-import Zope2
-Zope2.startup()
-from Interface.Verify import verifyClass
-
-from OFS.OrderedFolder import OrderedFolder
+import unittest
 
 
-class TestOrderedFolder(TestCase):
+class TestOrderedFolder(unittest.TestCase):
 
-    def test_interface(self):
+    def test_z2interfaces(self):
+        from Interface.Verify import verifyClass
         from OFS.IOrderSupport import IOrderedContainer
+        from OFS.OrderedFolder import OrderedFolder
         from webdav.WriteLockInterface import WriteLockInterface
 
         verifyClass(IOrderedContainer, OrderedFolder)
@@ -19,7 +14,9 @@ class TestOrderedFolder(TestCase):
 
 
 def test_suite():
-    return TestSuite( ( makeSuite(TestOrderedFolder), ) )
+    return unittest.TestSuite((
+        unittest.makeSuite(TestOrderedFolder),
+        ))
 
 if __name__ == '__main__':
-    main(defaultTest='test_suite')
+    unittest.main(defaultTest='test_suite')

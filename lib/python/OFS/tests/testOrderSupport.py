@@ -1,13 +1,12 @@
-from unittest import TestCase, TestSuite, makeSuite, main
+import unittest
 
 import Testing
 import Zope2
 Zope2.startup()
-from Interface.Verify import verifyClass
 
 from OFS.CopySupport import CopySource
 from OFS.ObjectManager import ObjectManager
-from OFS.OrderSupport import OrderSupport
+
 
 class DummyObject(CopySource):
     def __init__(self, id, meta_type):
@@ -22,15 +21,17 @@ class DummyObject(CopySource):
     def wl_isLocked(self):
         return 0
 
-class OrderedObjectManager(OrderSupport, ObjectManager):
-    # disable permission verification
-    def _verifyObjectPaste(self, object, validate_src=1):
-        return
 
-
-class TestOrderSupport(TestCase):
+class TestOrderSupport(unittest.TestCase):
 
     def _makeOne(self):
+        from OFS.OrderSupport import OrderSupport
+
+        class OrderedObjectManager(OrderSupport, ObjectManager):
+            # disable permission verification
+            def _verifyObjectPaste(self, object, validate_src=1):
+                return
+
         f = OrderedObjectManager()
         f._objects = ( {'id':'o1', 'meta_type':'mt1'}
                      , {'id':'o2', 'meta_type':'mt2'}
@@ -159,14 +160,18 @@ class TestOrderSupport(TestCase):
         f.setDefaultSorting('position', True)
         self.failUnlessEqual( f.tpValues(), [f.o4, f.o3, f.o2] )
 
-    def test_interface(self):
+    def test_z2interfaces(self):
+        from Interface.Verify import verifyClass
         from OFS.IOrderSupport import IOrderedContainer
+        from OFS.OrderSupport import OrderSupport
 
         verifyClass(IOrderedContainer, OrderSupport)
 
 
 def test_suite():
-    return TestSuite( ( makeSuite(TestOrderSupport), ) )
+    return unittest.TestSuite((
+        unittest.makeSuite(TestOrderSupport),
+        ))
 
 if __name__ == '__main__':
-    main(defaultTest='test_suite')
+    unittest.main(defaultTest='test_suite')
