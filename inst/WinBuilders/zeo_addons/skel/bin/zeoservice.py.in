@@ -95,15 +95,28 @@ PYTHONSERVICE_EXE=r'%s\bin\PythonService.exe' % ZEO_HOME
 
 sys.path.insert(0, SOFTWARE_HOME)
 
+# Setup the environment, so sub-processes see these variables
+os.environ["PYTHONPATH"] = os.environ.get("PYTHONPATH", "") + ";" + SOFTWARE_HOME
+os.environ["INSTANCE_HOME"] = INSTANCE_HOME
+
 from nt_svcutils import service
 
-servicename = 'ZEO_%s' % str(hash(INSTANCE_HOME))
+servicename = 'ZEO_%s' % str(hash(INSTANCE_HOME.lower()))
 
 class InstanceService(service.Service):
     start_cmd = '"%s" "%s" -C "%s"' % (PYTHON, ZEO_RUN, CONFIG_FILE)
     _svc_name_ = servicename
     _svc_display_name_ = 'ZEO instance at %s' % INSTANCE_HOME
-    _exe_name_ = PYTHONSERVICE_EXE
+    # If the exe we expect is not there, let the service framework search
+    # for it.  This will be true for people running from source builds and
+    # relying on pre-installed pythonservice.exe.
+    # Note this is only used at install time, not runtime.
+    if os.path.isfile(PYTHONSERVICE_EXE):
+        _exe_name_ = PYTHONSERVICE_EXE
+
+    process_runner = PYTHON
+    process_args = '"%s" -C "%s"' % (ZOPE_RUN, CONFIG_FILE)
+    evtlog_name = 'ZEO'
 
 if __name__ == '__main__':
     import win32serviceutil

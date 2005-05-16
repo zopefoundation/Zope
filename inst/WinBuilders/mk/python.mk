@@ -1,9 +1,12 @@
-# The Python and win32all versions.  For Python, both the source tarball
-# and the Windows installer must be in tmp/.  For win32all, the Windows
-# installer must be in tmp/.  Nothing beyond those is required to
-# build Python, and you don't even need a compiler for this part.
-PYVERSION=2.3.5
-W32ALLVERSION=163
+# The Python and pywin32 versions.  For Python, both the source tarball
+# and the Windows installer must be in tmp/.  For pywin32 (previously known 
+# as win32all), the Windows installer must be in tmp/.  Nothing beyond those
+# is required to build Python, and you don't even need a compiler.
+PYVERSION_MAJOR=2
+PYVERSION_MINOR=3
+PYVERSION_PATCH=5
+PYVERSION=$(PYVERSION_MAJOR).$(PYVERSION_MINOR).$(PYVERSION_PATCH)
+W32ALLVERSION=204
 
 # CAUTION:  Extracting files from Wise installers doesn't really do what
 # you expect.  While a Wise installer is a zip file, the zip file
@@ -21,16 +24,18 @@ W32ALLVERSION=163
 # use the Python source tarball to get all the non-executable parts we
 # need.
 #
-# For win32all, I'm not sure what all the consequences are.  Zope has
-# gotten away with it so far.  Favoring it, Zope makes little use of
-# win32all.  Against it, there's (as of the time of this writing) little
-# field experience with Windows Zope after Python 2.1.  Python and
-# win32all have both gotten hairier since then, and win32all has
-# significant package structure with many instances of files with the
-# same name in different subtrees.  For now it's poke-and-hope.
+# pywin32 doesn't have this problem as it now uses
+# a standard distutils 'bdist_wininst' installation .exe. These executables are
+# valid .zip files with a "PLATLIB" directory being the complete directory
+# structure as installed into "site-packages". These recent pywin32 builds have
+# no dependencies on registry settings etc so will work directly as copied out of
+# the .exe. The only concerns are the pywintypes/pythoncom dlls, which is
+# handled by the Inno installer
 
 PYDIRNAME=Python-$(PYVERSION)
-W32ALLDIRNAME=win32all-$(W32ALLVERSION)
+# Standard bdist_wininst name - eg: pywin32-203.win32-py2.3[.exe]
+W32ALLDIRNAME=pywin32-$(W32ALLVERSION).win32-py$(PYVERSION_MAJOR).$(PYVERSION_MINOR)
+W32EXCLUDE=*.chm
 
 # The Python tarball is extracted to PYSRCDIR.
 # The contents of the Python installer get extracted to PYEXTRACTDIR.
@@ -51,7 +56,7 @@ PYTHON_REQUIRED_FILES=tmp/$(W32ALLDIRNAME).exe \
 # targets to force them to get unpacked.
 ARB_PYSRCDIR=$(PYSRCDIR)/PCbuild/pcbuild.dsw
 ARB_PYEXTRACTDIR=$(PYEXTRACTDIR)/zlib.pyd
-ARB_W32EXTRACTDIR=$(W32EXTRACTDIR)/readme.txt
+ARB_W32EXTRACTDIR=$(W32EXTRACTDIR)/PLATLIB
 
 # Building Python just consists of extracting files.
 build_python: $(ARB_PYSRCDIR) $(ARB_PYEXTRACTDIR) $(ARB_W32EXTRACTDIR)
@@ -77,9 +82,11 @@ $(ARB_PYEXTRACTDIR): tmp/$(PYDIRNAME).exe
 	"tmp/$(PYDIRNAME).exe" /S /X "$(WIN_PYEXTRACTDIR)"
 	$(TOUCH) "$(ARB_PYEXTRACTDIR)"
 
+# unzip warns about .exe not being exactly a .zip, then succeeds in
+# extracting the files, then returns with exit != 0 - ignore exit code
 $(ARB_W32EXTRACTDIR): tmp/$(W32ALLDIRNAME).exe
-	$(MKDIR) "$(W32EXTRACTDIR)"
-	"tmp/$(W32ALLDIRNAME).exe" /S /X "$(WIN_W32EXTRACTDIR)"
+	-$(UNZIP) -o "-d$(W32EXTRACTDIR)" "tmp/$(W32ALLDIRNAME).exe"
+	cd "$(WIN_W32EXTRACTDIR)\PLATLIB" ; $(RMRF) $(W32EXCLUDE)
 	$(TOUCH) "$(ARB_W32EXTRACTDIR)"
 
 $(BUILD_DIR)/bin/python.exe:
@@ -89,8 +96,6 @@ $(BUILD_DIR)/bin/python.exe:
 	$(CP) "$(MAKEFILEDIR)/doc/ZC_PY_DIST_README.txt" "$(BUILD_DIR)/doc"
 	$(CP) "$(PYSRCDIR)/LICENSE" "$(BUILD_DIR)/doc/PYTHON_LICENSE.txt"
 	unix2dos "$(BUILD_DIR)/doc/PYTHON_LICENSE.txt"
-	$(CP) "$(SRC_DIR)/$(W32ALLDIRNAME)/License.txt" \
-	      "$(BUILD_DIR)/doc/WIN32ALL_LICENSE.txt"
 
 	$(MKDIR) "$(BUILD_DIR)/bin/DLLs"
 	$(XCOPY) "$(WIN_PYEXTRACTDIR)\*.pyd" "$(WIN_BUILD_DIR)\bin\DLLs"
@@ -100,14 +105,8 @@ $(BUILD_DIR)/bin/python.exe:
 	$(MKDIR) "$(BUILD_DIR)/bin/Lib/site-packages"
 	$(CP) "$(PYSRCDIR)/Lib/site-packages/README" \
 	      "$(BUILD_DIR)/bin/Lib/site-packages"
-	$(XCOPY) "$(WIN_W32EXTRACTDIR)\*.pyd" \
+	$(XCOPY) "$(WIN_W32EXTRACTDIR)\PLATLIB" \
 	         "$(WIN_BUILD_DIR)\bin\Lib\site-packages"
-	$(XCOPY) "$(WIN_W32EXTRACTDIR)\*.dll" \
-		 "$(WIN_BUILD_DIR)\bin\Lib\site-packages"
-	$(XCOPY) "$(WIN_W32EXTRACTDIR)\*.exe" \
-		 "$(WIN_BUILD_DIR)\bin\Lib\site-packages"
-	$(XCOPY) "$(WIN_W32EXTRACTDIR)\*.py" \
-		 "$(WIN_BUILD_DIR)\bin\Lib\site-packages"
 
 	$(CP) "$(MAKEFILEDIR)/etc/sitecustomize.py" \
 	      "$(BUILD_DIR)/bin/Lib/site-packages"

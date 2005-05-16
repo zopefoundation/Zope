@@ -30,6 +30,8 @@ CSCRIPT=cscript
 ECHO=echo
 ISS_DIR=$(CYGROOT)/Progra~1/Inno Setup 4
 ISS_COMPILER=$(ISS_DIR)/Compil32.exe
+# We need a version that understands cygwin paths, so /bin/
+UNZIP=/bin/unzip
 
 $(REQUIRED_FILES):
 	if [ -z "$(BASE_DIR)/$@" ]; then echo. &echo. & echo \

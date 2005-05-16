@@ -10,6 +10,7 @@ DefaultGroupName=Zope <<VERSION>>
 OutputBaseFilename=Zope-<<VERSION>>-win32
 WizardImageFile=<<MAKEFILEDIR>>\etc\zlogo_left.bmp
 WizardSmallImageFile=<<MAKEFILEDIR>>\etc\zlogo_top.bmp
+SolidCompression=yes
 
 SourceDir=.
 OutputDir=.
@@ -30,8 +31,9 @@ Source:"import\*.*"; DestDir: "{app}\import"; Flags: ignoreversion recursesubdir
 Source:"lib\*.*"; DestDir: "{app}\lib"; Flags: ignoreversion recursesubdirs
 Source:"skel\*.*"; DestDir: "{app}\skel"; Flags: ignoreversion recursesubdirs
 ; these are required to be put into the bin directory for proper function of NT services
-Source:"bin\Lib\site-packages\PythonService.exe"; DestDir: "{app}\bin"; Flags: ignoreversion
-Source:"bin\Lib\site-packages\PyWinTypes23.dll"; DestDir: "{app}\bin"; Flags: ignoreversion
+Source:"bin\Lib\site-packages\win32\PythonService.exe"; DestDir: "{app}\bin"; Flags: ignoreversion
+Source:"bin\Lib\site-packages\pywin32_system32\PyWinTypes23.dll"; DestDir: "{app}\bin"; Flags: ignoreversion
+Source:"bin\Lib\site-packages\pywin32_system32\PythonCOM23.dll"; DestDir: "{app}\bin"; Flags: ignoreversion
 ; This is a helper module for manging registry entries at uninstall time
 Source: "<<MAKEFILEDIR>>\bin\fixreg.py"; DestDir: "{app}\bin"; Flags: ignoreversion
 
@@ -49,7 +51,7 @@ Filename: "{app}\bin\pythonw.exe"; Parameters: """{code:GetDataDir}\bin\zopeserv
 Filename: "{code:GetDataDir}\bin\runzope.bat"; Description: "Launch Zope"; Flags: nowait postinstall skipifsilent; Check: DontDoService
 
 [UninstallRun]
-Filename: "{app}\bin\pythonw.exe"; Parameters: """{code:GetDataDir}\bin\zopeservice.py"" stop"; Check: DoService
+Filename: "{app}\bin\pythonw.exe"; Parameters: """{code:GetDataDir}\bin\zopeservice.py"" --wait=30 stop"; Check: DoService
 Filename: "{app}\bin\pythonw.exe"; Parameters: """{code:GetDataDir}\bin\zopeservice.py"" remove"; Check: DoService
 Filename: "{app}\bin\pythonw.exe"; Parameters: """{app}\bin\decompilezpy.py"" ""{app}"""
 Filename: "{app}\bin\pythonw.exe"; Parameters: """{app}\bin\fixreg.py"" ""<<VERSION>>"""
@@ -105,7 +107,7 @@ begin
 
 	{ Ask for a dir until the user has approved one or clicked Back or Cancel }
 	
-  Next:= InputDir(DataDirValues[0], DataDir);
+  Next:= InputDir(False, DataDirValues[0], DataDir);
 	
   if Next and FileOrDirExists(DataDir) then DirOk := False;
 
@@ -117,7 +119,7 @@ begin
   	if FileOrDirExists(DataDir) then begin
 	      DirOk := MsgBox('Directory Exists' #13#13 'The directory ' + DataDir + ' already exists.  Would you like to create instance files in that directory anyway?', mbConfirmation, MB_YESNO) = idYes;
 	  end;
-	  if not DirOk then Next := InputDir(DataDirValues[0], DataDir);
+	  if not DirOk then Next := InputDir(False, DataDirValues[0], DataDir);
   end;
 
 	Result:=Next;
@@ -128,7 +130,7 @@ function CollectPassword(): Boolean;
 var
   Next: Boolean;
 begin
-  ScriptDlgPageSetSubCaption1('Specify adminisrator password');
+  ScriptDlgPageSetSubCaption1('Specify administrator password');
 	ScriptDlgPageSetSubCaption2('The login name for your Zope administrator account is "admin". When you first connect to the Zope management interface, you will need to login using the "admin" username and the password you specify below.');
 	Next := InputQueryArrayEx(PasswordPrompts, PasswordChars, PasswordValues);
 	

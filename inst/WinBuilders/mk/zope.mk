@@ -16,8 +16,9 @@ test_zope:
 clean_zope:
 	$(RMRF) src/$(ZOPEDIRNAME)
 
-install_zope: src/$(ZOPEDIRNAME)/inst/configure.py install_python \
-              $(BUILD_DIR)/Zope-$(ZOPEVERSION)-win32.exe
+install_zope: src/$(ZOPEDIRNAME)/inst/configure.py \
+	$(BUILD_DIR)/lib/python/version.txt install_python \
+	$(BUILD_DIR)/Zope-$(ZOPEVERSION)-win32.exe
 
 ESCAPED=$(shell sh $(MAKEFILEDIR)/bin/escape.sh '$(WIN_MAKEFILEDIR)')
 SEDSCRIPT="s@<<VERSION>>@$(ZOPEVERSION)@g;s@<<MAKEFILEDIR>>@$(ESCAPED)@g"
