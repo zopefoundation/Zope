@@ -147,6 +147,7 @@ def appcall(function, *args, **kw):
     try:
         return function(*args, **kw)
     finally:
+        transaction.abort()
         close(app)
 
 
