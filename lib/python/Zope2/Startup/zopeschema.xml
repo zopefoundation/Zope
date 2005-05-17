@@ -362,7 +362,7 @@
     <metadefault>$clienthome/Z2.lock</metadefault>
   </key>
 
-  <key name="debug-mode" datatype="boolean" default="on">
+  <key name="debug-mode" datatype="boolean" default="off">
     <description>
     A switch which controls several aspects of Zope operation useful for
     developing under Zope.  When debug mode is on:
@@ -378,7 +378,7 @@
      Setting this to 'off' when Zope is in a production environment is
      encouraged, as it speeds execution (sometimes dramatically).
     </description>
-    <metadefault>on</metadefault>
+    <metadefault>off</metadefault>
   </key>
 
   <key name="effective-user">

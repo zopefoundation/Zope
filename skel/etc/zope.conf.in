@@ -124,11 +124,10 @@ instancehome $INSTANCE
 #       will detect these changes in real time.  When this switch is
 #       off, you must restart the server to see the changes.
 #
-#     Setting this to 'off' when Zope is in a
-#     production environment is encouraged, as it speeds execution (sometimes
-#     dramatically).
+#     Setting this to 'off' when Zope is in a production environment is
+#     encouraged, as it speeds execution (sometimes dramatically).
 #
-# Default: on
+# Default: off
 #
 # Example:
 #
