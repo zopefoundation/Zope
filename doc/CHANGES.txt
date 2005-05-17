@@ -31,6 +31,8 @@ Zope Changes
 
     Bugs fixed
 
+      - Collector #1784: fixed handling of multiple attributes in ZCTextIndex
+
       - Don't copy '.svn' directories from skeleton into an instance
         (thanks to Dale Hirt for the patch).
 

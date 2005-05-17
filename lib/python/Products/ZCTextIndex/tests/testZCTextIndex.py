@@ -39,6 +39,11 @@ class Indexable:
     def __init__(self, text):
         self.text = text
 
+class Indexable2:
+    def __init__(self, text1, text2):
+        self.text1 = text1
+        self.text2 = text2
+
 class LexiconHolder(Acquisition.Implicit):
     def __init__(self, lexicon):
         self.lexicon = lexicon
@@ -115,6 +120,7 @@ class ZCIndexTestsBase:
                                     'lexicon')
         self.index = self.zc_index.index
 
+
     def parserFailure(self, query):
         self.assertRaises(ParseError, self.zc_index.query, query)
 
@@ -123,6 +129,27 @@ class ZCIndexTestsBase:
         self.assertEqual(num, n)
         if n:
             self.assertEqual(r[0][0], 1)
+
+    def testMultipleAttributes(self):
+        lexicon = PLexicon('lexicon', '',
+                            Splitter(),
+                            CaseNormalizer(),
+                            StopWordRemover())
+        caller = LexiconHolder(self.lexicon)
+        zc_index = ZCTextIndex('name',
+                                None,
+                                caller,
+                                self.IndexFactory,
+                               'text1,text2',
+                               'lexicon')
+        doc = Indexable2('foo bar', 'alpha omega')
+        zc_index.index_object(1, doc)
+        nbest, total = zc_index.query('foo')
+        self.assertEqual(len(nbest), 1)
+        nbest, total = zc_index.query('foo alpha')
+        self.assertEqual(len(nbest), 1)
+        nbest, total = zc_index.query('foo alpha gamma')
+        self.assertEqual(len(nbest), 0)
 
     def testStopWords(self):
         # the only non-stopword is question

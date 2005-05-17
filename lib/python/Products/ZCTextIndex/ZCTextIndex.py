@@ -159,22 +159,21 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
         except: fields  = [ self._fieldname ]
 
         res = 0
+        all_texts = []
         for attr in fields:
-            res += self._index_object(documentId, obj, threshold, attr) 
+            text = getattr(obj, attr, None)
+            if text is None:
+                continue
+            if safe_callable(text):
+                text = text()
+            if text is None:
+                continue
+            all_texts.append(text)
 
-        return res
-
-    def _index_object(self, docid, obj, threshold=None, attr=None):
-        # XXX We currently ignore subtransaction threshold
-        text = getattr(obj, self._fieldname, None)
-        if text is None:
+        if all_texts:        
+            return self.index.index_doc(documentId, ' '.join(all_texts))
+        else:
             return 0
-        if safe_callable(text):
-            text = text()
-        if text is None:
-            return 0
-        count = self.index.index_doc(docid, text)
-        return count
 
     def unindex_object(self, docid):
         if self.index.has_doc(docid):
