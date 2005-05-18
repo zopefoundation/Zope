@@ -360,6 +360,20 @@ class DateTimeTests(unittest.TestCase):
         dt_localstring = dt_local.strftime(format)
         self.assertEqual(dt_string, dt_localstring)
 
+    def testStrftimeFarDates(self):
+        '''Checks strftime in dates <= 1900 or >= 2038'''
+        dt = DateTime('1900/01/30')
+        self.assertEqual(dt.strftime('%d/%m/%Y'), '30/01/1900')
+        dt = DateTime('2040/01/30')
+        self.assertEqual(dt.strftime('%d/%m/%Y'), '30/01/2040')
+
+    def testZoneInFarDates(self):
+        '''Checks time zone in dates <= 1900 or >= 2038'''
+        dt1 = DateTime('2040/01/30 14:33 GMT+1')
+        dt2 = DateTime('2040/01/30 11:33 GMT-2')
+        self.assertEqual(dt1.strftime('%d/%m/%Y %H:%M'), dt2.strftime('%d/%m/%Y %H:%M'))
+
+        
 
 def test_suite():
     return unittest.makeSuite(DateTimeTests)

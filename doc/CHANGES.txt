@@ -31,6 +31,11 @@ Zope Changes
 
     Bugs fixed
 
+      - Collector #1780: DateTime.strftime() now handles dates <= 1900 or
+        >= 2038
+
+      - Collector #1775: turning off debug mode by default
+
       - Collector #1784: fixed handling of multiple attributes in ZCTextIndex
 
       - Don't copy '.svn' directories from skeleton into an instance

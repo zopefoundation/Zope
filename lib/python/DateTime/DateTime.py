@@ -18,6 +18,7 @@ __version__='$Revision: 1.99 $'[11:-2]
 import re, math,  DateTimeZone
 from time import time, gmtime, localtime
 from time import daylight, timezone, altzone, strftime
+from datetime import datetime
 
 default_datefmt = None
 
@@ -1481,7 +1482,15 @@ class DateTime:
 
     def strftime(self, format):
         # Format the date/time using the *current timezone representation*.
-        return strftime(format, safelocaltime(self.timeTime()))
+        x      = _calcDependentSecond2(self._year, self._month, self._day, 
+                 self._hour, self._minute, self._second)
+        ltz    = self._calcTimezoneName(x, 0)
+        tzdiff = _tzoffset(ltz, self._t) - _tzoffset(self._tz, self._t)
+        zself  = self + tzdiff/86400.0
+        microseconds = int((zself._second - zself._nearsec) * 1000000)
+        return datetime(zself._year, zself._month, zself._day, zself._hour,  
+               zself._minute, int(zself._nearsec), 
+               microseconds).strftime(format) 
 
     # General formats from previous DateTime
     def Date(self):
