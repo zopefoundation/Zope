@@ -17,6 +17,8 @@
   Reusing the registry from other modules becomes a lot cleaner as a result.
 - Made sure to close the REQUEST so as not to leak REQUEST._held. Thanks
   to Sidnei da Silva.
+- Modified runalltests.py so it imports modules more like test.py, i.e.
+  without touching sys.path and without the help of imp.
 
 0.9.6
 - Dropped support for Zope 2.5 as it lacks the setSecurityManager() API.

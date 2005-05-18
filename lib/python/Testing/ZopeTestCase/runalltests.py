@@ -15,38 +15,34 @@
 Execute like:
   python runalltests.py [-R]
 
-$Id:$
+$Id$
 """
 
-__version__ = '0.2.1'
+__version__ = '0.3.1'
 
 import os, sys
 if __name__ == '__main__':
     execfile(os.path.join(sys.path[0], 'framework.py'))
 
-import unittest, imp
+import unittest
 TestRunner = unittest.TextTestRunner
 suite = unittest.TestSuite()
 
-def visitor(recursive, dir, names):
-    tests = [n[:-3] for n in names if n.startswith('test') and n.endswith('.py')]
-
-    for test in tests:
-        saved_syspath = sys.path[:]
-        sys.path.insert(0, dir)
-        try:
-            fp, path, desc = imp.find_module(test, [dir])
-            m = imp.load_module(test, fp, path, desc)
+def test_finder(recurse, dir, names):
+    if dir == os.curdir or '__init__.py' in names:
+        parts = [x for x in dir[len(os.curdir):].split(os.sep) if x]
+        tests = [x for x in names if x.startswith('test') and x.endswith('.py')]
+        for test in tests:
+            modpath = parts + [test[:-3]]
+            m = __import__('.'.join(modpath))
+            for part in modpath[1:]:
+                m = getattr(m, part)
             if hasattr(m, 'test_suite'):
                 suite.addTest(m.test_suite())
-        finally:
-            fp.close()
-            sys.path[:] = saved_syspath
-
-    if not recursive:
+    if not recurse:
         names[:] = []
 
 if __name__ == '__main__':
-    os.path.walk(os.curdir, visitor, '-R' in sys.argv)
+    os.path.walk(os.curdir, test_finder, '-R' in sys.argv)
     TestRunner().run(suite)
 
