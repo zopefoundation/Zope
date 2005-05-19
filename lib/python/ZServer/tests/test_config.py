@@ -25,10 +25,6 @@ import ZServer.datatypes
 
 TEMPFILENAME = tempfile.mktemp()
 
-# For address kinds of values that don't specify a hostname, ZConfig
-# supplies a platform-dependent default.
-#DEFAULT_HOSTNAME = ZConfig.datatypes.DEFAULT_HOST
-
 class BaseTest(unittest.TestCase):
     schema = None
 
