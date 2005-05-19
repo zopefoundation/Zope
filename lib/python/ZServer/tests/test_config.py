@@ -27,7 +27,7 @@ TEMPFILENAME = tempfile.mktemp()
 
 # For address kinds of values that don't specify a hostname, ZConfig
 # supplies a platform-dependent default.
-DEFAULT_HOSTNAME = ZConfig.datatypes.DEFAULT_HOST
+#DEFAULT_HOSTNAME = ZConfig.datatypes.DEFAULT_HOST
 
 class BaseTest(unittest.TestCase):
     schema = None
@@ -98,7 +98,7 @@ class ZServerConfigurationTestCase(BaseTest):
         self.assert_(isinstance(factory,
                                 ZServer.datatypes.HTTPServerFactory))
         self.assert_(factory.force_connection_close)
-        self.assertEqual(factory.host, DEFAULT_HOSTNAME)
+        self.assertEqual(factory.host, "")
         self.assertEqual(factory.port, 81)
         self.assertEqual(factory.webdav_source_clients, "cadaever")
         self.check_prepare(factory)
@@ -133,7 +133,7 @@ class ZServerConfigurationTestCase(BaseTest):
         self.assert_(isinstance(factory,
                                 ZServer.datatypes.WebDAVSourceServerFactory))
         self.assert_(factory.force_connection_close)
-        self.assertEqual(factory.host, DEFAULT_HOSTNAME)
+        self.assertEqual(factory.host, "")
         self.assertEqual(factory.port, 82)
         self.check_prepare(factory)
         server = factory.create()
@@ -158,7 +158,7 @@ class ZServerConfigurationTestCase(BaseTest):
             """)
         self.assert_(isinstance(factory,
                                 ZServer.datatypes.FCGIServerFactory))
-        self.assertEqual(factory.host, DEFAULT_HOSTNAME)
+        self.assertEqual(factory.host, "")
         self.assertEqual(factory.port, 83)
         self.assertEqual(factory.path, None)
         self.check_prepare(factory)
@@ -180,7 +180,7 @@ class ZServerConfigurationTestCase(BaseTest):
             """)
         self.assert_(isinstance(factory,
                                 ZServer.datatypes.FTPServerFactory))
-        self.assertEqual(factory.host, DEFAULT_HOSTNAME)
+        self.assertEqual(factory.host, "")
         self.assertEqual(factory.port, 84)
         self.check_prepare(factory)
         factory.create().close()
@@ -193,7 +193,7 @@ class ZServerConfigurationTestCase(BaseTest):
             """)
         self.assert_(isinstance(factory,
                                 ZServer.datatypes.ICPServerFactory))
-        self.assertEqual(factory.host, DEFAULT_HOSTNAME)
+        self.assertEqual(factory.host, "")
         self.assertEqual(factory.port, 86)
         self.check_prepare(factory)
         factory.create().close()
@@ -228,7 +228,7 @@ class MonitorServerConfigurationTestCase(BaseTest):
             """)
         self.assert_(isinstance(factory,
                                 ZServer.datatypes.MonitorServerFactory))
-        self.assertEqual(factory.host, DEFAULT_HOSTNAME)
+        self.assertEqual(factory.host, "")
         self.assertEqual(factory.port, 85)
         self.check_prepare(factory)
         return factory.create()
