@@ -538,7 +538,7 @@
 
   <key name="dns-server" datatype=".dns_resolver" attribute="dns_resolver">
     <description>
-     Specify the ip address of your DNS server in order to cause resolved
+     Specify the IP address of your DNS server in order to cause resolved
      hostnames to be written to Zope's access log. By default, Zope will
      not resolve hostnames unless this is set.
     </description>
