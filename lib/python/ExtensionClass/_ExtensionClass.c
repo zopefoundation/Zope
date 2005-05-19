@@ -27,8 +27,8 @@ static PyObject *str__bases__, *str__mro__, *str__new__;
 #define OBJECT(O) ((PyObject *)(O))
 #define TYPE(O) ((PyTypeObject *)(O))
 
-extern PyTypeObject ExtensionClassType;
-extern PyTypeObject BaseType;
+static PyTypeObject ExtensionClassType;
+static PyTypeObject BaseType;
 
 static PyObject *
 of_get(PyObject *self, PyObject *inst, PyObject *cls)
