@@ -37,7 +37,7 @@
   <sectiontype name="fast-cgi"
                datatype=".FCGIServerFactory"
                implements="ZServer.server">
-    <key name="address" datatype="socket-address"/>
+    <key name="address" datatype="socket-binding-address"/>
   </sectiontype>
 
   <sectiontype name="ftp-server"
