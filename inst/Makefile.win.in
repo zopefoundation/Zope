@@ -67,7 +67,7 @@ version_txt:
 clean: unbuild
 	$(CD) "$(BASE_DIR)
 	-$(RM) /s *.pyc *.pyo *.dll *.o *.obj *.pyd
-	-$(RM) (BASE_DIR)/lib/python/version.txt
+	-$(RM) (BASE_DIR)\lib\python\version.txt
 
 
 
