@@ -23,13 +23,16 @@ Zope Changes
    - Collector #1233: port ZOPE_CONFIG patch from Zope 2.7 to Zope 2.8
 
 
-  after Zope 2.8b1 
+  after Zope 2.8b1
 
     Features added
 
       - Included BTreeFolder2
 
     Bugs fixed
+
+      - Made WebDAV server distinguishable from the default HTTP
+        server both in the ZMI and in event.log.
 
       - Collector #1780: DateTime.strftime() now handles dates <= 1900 or
         >= 2038
@@ -47,7 +50,7 @@ Zope Changes
         should no longer be a need to update setup.py if modules or files are
         added or removed in lib/python.
 
-      - Collector #1751: Improved error reporting reporting during the 
+      - Collector #1751: Improved error reporting reporting during the
         startup phase
 
       - Collector #1745: Fixed ZSQL error KeyError 'query'
@@ -69,7 +72,7 @@ Zope Changes
         subtransactions.
 
     Bugs fixed
-  
+
       - Collector #1754: Fixed import of 'transaction' in
         'zopectl adduser' (which wasy dying with a NameError).
 
@@ -102,9 +105,9 @@ Zope Changes
 
       - PluginIndexes: the ZCatalog's "Indexes" tab now show the number of
         distinct values indexed by each index instead of a mixture of indexed
-        objects versus number of distinct values. Indexes derived from UnIndex 
-        show both values within their own ZMI screen. In addition most indexes 
-        have now a "Browse" tab to browse through the list of indexed 
+        objects versus number of distinct values. Indexes derived from UnIndex
+        show both values within their own ZMI screen. In addition most indexes
+        have now a "Browse" tab to browse through the list of indexed
         values and their occurrences.
 
       - FTPServer: a RNFR (rename from) request is now being responded
@@ -192,7 +195,7 @@ Zope Changes
         make the number of session objects unlimited, rather than falling
         back to the default).
 
-      - Collector: #1651: removed compiler warning 
+      - Collector: #1651: removed compiler warning
 
       - Collector #1661: make 'python-check-interval' setting in zope.conf
         actually work as documented.  This setting allows for important
@@ -212,7 +215,7 @@ Zope Changes
 
       - The REQUEST now contains a new entry ACTUAL_URL which contains the
         full URL without query string as it appears within the location bar of
-        the browser. The key has been added to provide a single key that is 
+        the browser. The key has been added to provide a single key that is
         available for vhosted and non-vhosted installations.
 
       - Collector #1605: VHM did not quote URLs
@@ -513,7 +516,7 @@ Zope Changes
 
      - Collector #1595: same as in Collector #1132 for indexes derived from
        UnIndex. Exisiting ZCatalog instances must be converted manually
-       by calling the "manage_convertIndexes" method through-the-web for 
+       by calling the "manage_convertIndexes" method through-the-web for
        every single ZCatalog instance. See also doc/FAQ.txt (Installation,
        question #4)
 
