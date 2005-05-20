@@ -380,8 +380,8 @@ class zhttp_channel(http_channel):
 class zhttp_server(http_server):
     "http server"
 
-    SERVER_IDENT='Zope/%s ZServer/%s' % (ZOPE_VERSION,ZSERVER_VERSION)
-
+    SERVER_IDENT = 'Zope/%s ZServer/%s' % (ZOPE_VERSION, ZSERVER_VERSION)
+    server_protocol = 'HTTP'
     channel_class = zhttp_channel
     shutup=0
 
@@ -389,16 +389,17 @@ class zhttp_server(http_server):
         self.shutup=1
         http_server.__init__(self, ip, port, resolver, logger_object)
         self.shutup=0
-        self.log_info('HTTP server started at %s\n'
+        self.log_info('%s server started at %s\n'
                       '\tHostname: %s\n\tPort: %d' % (
-                        time.ctime(time.time()),
-                        self.server_name,
-                        self.server_port
-                        ))
+            self.server_protocol,
+            time.ctime(time.time()),
+            self.server_name,
+            self.server_port
+            ))
 
     def clean_shutdown_control(self,phase,time_in_this_phase):
         if phase==2:
-            self.log_info('closing HTTP to new connections')
+            self.log_info('closing %s to new connections' % self.server_protocol)
             self.close()
 
     def log_info(self, message, type='info'):
@@ -418,3 +419,6 @@ class zhttp_server(http_server):
         # override asyncore limits for nt's listen queue size
         self.accepting = 1
         return self.socket.listen (num)
+
+class zwebdav_server(zhttp_server):
+    server_protocol = 'WebDAV'
