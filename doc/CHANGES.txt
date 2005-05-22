@@ -23,7 +23,7 @@ Zope Changes
    - Collector #1233: port ZOPE_CONFIG patch from Zope 2.7 to Zope 2.8
 
 
-  after Zope 2.8b1
+  Zope 2.8.0 b2 (2005/05/22)
 
     Features added
 
