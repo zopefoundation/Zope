@@ -27,12 +27,15 @@ Zope Changes
 
     Features added
 
+      - Made WebDAV server distinguishable from the default HTTP
+        server both in the ZMI and in event.log.
+
       - Included BTreeFolder2
 
     Bugs fixed
 
-      - Made WebDAV server distinguishable from the default HTTP
-        server both in the ZMI and in event.log.
+      - Collector #1781: made 'create_mount_points' ZConfig option actually
+        work (thanks to Dieter Maurer for the patch).
 
       - Collector #1780: DateTime.strftime() now handles dates <= 1900 or
         >= 2038

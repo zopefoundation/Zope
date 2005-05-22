@@ -117,7 +117,9 @@ class MountedObject(MountPoint, SimpleItem):
     '''
     meta_type = 'ZODB Mount Point'
     _isMountedObject = 1
-    _create_mount_points = 0
+    # DM 2005-05-17: default value change necessary after fix of '_create_mount_point' handling
+    #_create_mount_points = 0
+    _create_mount_points = True
 
     icon = 'p_/broken'
     manage_options = ({'label':'Traceback', 'action':'manage_traceback'},)
@@ -167,7 +169,9 @@ class MountedObject(MountPoint, SimpleItem):
         try:
             obj = root[real_root]
         except KeyError:
-            if container_class or self._create_mount_points:
+            # DM 2005-05-17: why should we require 'container_class'?
+            #if container_class or self._create_mount_points:
+            if self._create_mount_points:
                 # Create a database automatically.
                 from OFS.Application import Application
                 obj = Application()
@@ -183,7 +187,10 @@ class MountedObject(MountPoint, SimpleItem):
             try:
                 obj = obj.unrestrictedTraverse(real_path)
             except (KeyError, AttributeError):
-                if container_class or self._create_mount_points:
+                # DM 2005-05-13: obviously, we do not want automatic
+                #  construction when "_create_mount_points" is false
+                #if container_class or self._create_mount_points:
+                if container_class and self._create_mount_points:
                     blazer = CustomTrailblazer(obj, container_class)
                     obj = blazer.traverseOrConstruct(real_path)
                 else:
@@ -272,7 +279,10 @@ def manage_getMountStatus(dispatcher):
     return res
 
 
-def manage_addMounts(dispatcher, paths=(), create_mount_points=0,
+# DM 2005-05-17: change default for 'create_mount_points' as
+#  otherwise (after our fix) 'temp_folder' can no longer be mounted
+#def manage_addMounts(dispatcher, paths=(), create_mount_points=0,
+def manage_addMounts(dispatcher, paths=(), create_mount_points=True,
                      REQUEST=None):
     """Adds MountedObjects at the requested paths.
     """
@@ -295,7 +305,9 @@ def manage_addMounts(dispatcher, paths=(), create_mount_points=0,
         faux.id = mo.id
         faux.meta_type = loaded.meta_type
         container._setObject(faux.id, faux)
-        del mo._create_mount_points
+        # DM 2005-05-17: we want to keep our decision about automatic
+        #  mount point creation
+        #del mo._create_mount_points
         container._setOb(faux.id, mo)
         setMountPoint(container, faux.id, mo)
         count += 1
