@@ -1488,9 +1488,21 @@ class DateTime:
         tzdiff = _tzoffset(ltz, self._t) - _tzoffset(self._tz, self._t)
         zself  = self + tzdiff/86400.0
         microseconds = int((zself._second - zself._nearsec) * 1000000)
-        return datetime(zself._year, zself._month, zself._day, zself._hour,  
+
+        # Note: in older version strftime() accept also unicode strings
+        # as format strings (just because time.strftime() did not perform
+        # any type checking). So we convert unicode strings to utf8,
+        # pass them to strftime and convert them back to unicode if necessary
+
+        format_is_unicode = False
+        if isinstance(format, unicode):
+            format = format.encode('utf-8')
+            format_is_unicode = True
+        ds = datetime(zself._year, zself._month, zself._day, zself._hour,  
                zself._minute, int(zself._nearsec), 
                microseconds).strftime(format) 
+        return format_is_unicode and unicode(ds, 'utf-8') or ds
+
 
     # General formats from previous DateTime
     def Date(self):
