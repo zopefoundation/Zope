@@ -1489,10 +1489,10 @@ class DateTime:
         zself  = self + tzdiff/86400.0
         microseconds = int((zself._second - zself._nearsec) * 1000000)
 
-        # Note: in older version strftime() accept also unicode strings
+        # Note: in older versions strftime() accepted also unicode strings
         # as format strings (just because time.strftime() did not perform
         # any type checking). So we convert unicode strings to utf8,
-        # pass them to strftime and convert them back to unicode if necessary
+        # pass them to strftime and convert them back to unicode if necessary.
 
         format_is_unicode = False
         if isinstance(format, unicode):
