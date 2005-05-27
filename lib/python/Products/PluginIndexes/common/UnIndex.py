@@ -363,10 +363,11 @@ class UnIndex(SimpleItem):
         else: # not a range search
             for key in record.keys:
                 set=index.get(key, None)
-                if set is not None:
-                    if isinstance(set, int):
-                        set = IISet((set,))
-                    r = set_func(r, set)
+                if set is None:
+                    set = IISet(())
+                elif isinstance(set, int):
+                    set = IISet((set,))
+                r = set_func(r, set)
 
         if isinstance(r, int):  r=IISet((r,))
         if r is None:
