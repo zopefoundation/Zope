@@ -209,7 +209,7 @@ class ConnectionPatches:
                 # collector #1350: ensure that the connection is unregistered
                 # from the transaction manager (XXX API method?)
                 if conn._synch:
-                    conn._txn_mgr.unregisterSynch(conn)
+                    conn.transaction_manager.unregisterSynch(conn)
 
                 # The mounted connection keeps a reference to
                 # its database, but nothing else.

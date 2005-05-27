@@ -76,7 +76,7 @@ transaction manager so that we can use the second connection without
 creating a separate thread:
 
     >>> tm2 = transaction.TransactionManager()
-    >>> conn2 = some_database.open(txn_mgr=tm2)
+    >>> conn2 = some_database.open(transaction_manager=tm2)
     >>> app2 = conn2.root()['Application']
     >>> test2 = app2.Control_Panel.Products['test']
     >>> c2 = test2.C()
