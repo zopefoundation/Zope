@@ -221,6 +221,33 @@ class TestKeywordIndex( unittest.TestCase ):
         finally:
             self._ignore_log_errors()
 
+    def testCollectorIssue889(self) :
+        # Test that collector issue 889 is solved
+        values = self._values
+        nonexistent = 'foo-bar-baz'
+        self._populateIndex()
+        # make sure key is not indexed
+        result = self._index._index.get(nonexistent, self._marker)
+        assert result is self._marker
+        # patched _apply_index now works as expected
+        record = {'foo' : { 'query'    : [nonexistent]
+                          , 'operator' : 'and'}
+                 }
+        self._checkApply(record, [])
+        record = {'foo' : { 'query'    : [nonexistent, 'a']
+                          , 'operator' : 'and'}
+                 }
+        # and does not break anything
+        self._checkApply(record, [])
+        record = {'foo' : { 'query'    : ['d']
+                          , 'operator' : 'and'}
+                 }
+        self._checkApply(record, values[4:5])
+        record = {'foo' : { 'query'    : ['a', 'e']
+                          , 'operator' : 'and'}
+                 }
+        self._checkApply(record, values[5:7])
+
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest( unittest.makeSuite( TestKeywordIndex ) )
