@@ -34,6 +34,9 @@ Zope Changes
 
     Bugs fixed
 
+      - Collector #1507/1728: Server addresses are now handled the same way on
+        all platforms. This fixes the default binding on Windows.
+
       - Collector #1781: made 'create_mount_points' ZConfig option actually
         work (thanks to Dieter Maurer for the patch).
 
