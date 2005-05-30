@@ -39,7 +39,17 @@ Module Testing.ZopeTestCase
 
         _print(msg)
 
+        ZopeDocTestSuite(module=None, **kw)
+
+        ZopeDocFileSuite(*paths, **kw)
+
+        FunctionalDocTestSuite(module=None, **kw)
+
+        FunctionalDocFileSuite(*paths, **kw)
+
     Classes
+
+        TestCase
 
         ZopeTestCase
 
@@ -47,19 +57,23 @@ Module Testing.ZopeTestCase
 
         PortalTestCase
 
-        TestCase
-
         Profiled
 
         Sandboxed
 
         Functional
 
+        WarningsHook
+
     Modules
 
         ZopeLite as Zope
 
         utils
+
+        doctest
+
+        transaction
 
 
 

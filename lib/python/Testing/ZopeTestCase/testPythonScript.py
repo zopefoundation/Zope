@@ -30,10 +30,11 @@ if __name__ == '__main__':
     execfile(os.path.join(sys.path[0], 'framework.py'))
 
 from Testing import ZopeTestCase
-from AccessControl import Unauthorized
-from AccessControl import getSecurityManager
 
 ZopeTestCase.installProduct('PythonScripts')
+
+from AccessControl import Unauthorized
+from AccessControl import getSecurityManager
 
 access_permissions = ['View management screens']
 change_permissions = ['Change Python Scripts']

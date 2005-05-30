@@ -22,7 +22,7 @@ Typically used as in
   Zope2.installProduct('SomeProduct')
   app = Zope2.app()
 
-$Id: ZopeLite.py,v 1.24 2004/08/18 09:28:54 shh42 Exp $
+$Id$
 """
 
 import os, sys, time
@@ -182,6 +182,7 @@ debug = Zope2.debug
 DB = Zope2.DB
 configure = Zope2.configure
 def startup(): pass
+Zope = Zope2
 
 # ZODB sandbox factory
 from ZODB.DemoStorage import DemoStorage

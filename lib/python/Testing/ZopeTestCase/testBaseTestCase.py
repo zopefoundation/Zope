@@ -388,6 +388,7 @@ class TestRequestVariables(base.TestCase):
         self.failIfEqual(request.get('BASE0', ''), '')
         self.failIfEqual(request.get('BASE1', ''), '')
         self.failIfEqual(request.get('BASE2', ''), '')
+        self.failIfEqual(request.get('ACTUAL_URL', ''), '')
 
 
 import gc

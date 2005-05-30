@@ -96,7 +96,7 @@ class PortalTestCase(base.TestCase):
 
     def _refreshSkinData(self):
         '''Refreshes the skin cache.'''
-        if hasattr(self.portal, 'clearCurrentSkin'):
+        if hasattr(aq_base(self.portal), 'clearCurrentSkin'):
             self.portal.clearCurrentSkin()
         else: # CMF 1.4
             self.portal._v_skindata = None
@@ -119,7 +119,10 @@ class PortalTestCase(base.TestCase):
            or more lightweight version of the memberarea.
         '''
         pm = self.portal.portal_membership
-        pm.createMemberarea(name)
+        if hasattr(aq_base(pm), 'createMemberArea'):
+            pm.createMemberArea(name)
+        else: # CMF 1.4
+            pm.createMemberarea(name)
 
     # Security interface
 
