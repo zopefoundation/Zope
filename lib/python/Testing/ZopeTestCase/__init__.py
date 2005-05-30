@@ -12,7 +12,7 @@
 ##############################################################################
 """Names exported by the ZopeTestCase package
 
-$Id: __init__.py,v 1.25 2005/02/22 14:59:16 shh42 Exp $
+$Id$
 """
 
 import ZopeLite as Zope2
@@ -33,13 +33,13 @@ from ZopeTestCase import FunctionalTestCase
 from PortalTestCase import portal_name
 from PortalTestCase import PortalTestCase
 
-from base import TestCase
-from base import app
-from base import close
-
 from profiler import Profiled
 from sandbox import Sandboxed
 from functional import Functional
+
+from base import TestCase
+from base import app
+from base import close
 
 from ZODB.tests.warnhook import WarningsHook
 from unittest import main
@@ -48,4 +48,9 @@ from zopedoctest import ZopeDocTestSuite
 from zopedoctest import ZopeDocFileSuite
 from zopedoctest import FunctionalDocTestSuite
 from zopedoctest import FunctionalDocFileSuite
+
+import zopedoctest as doctest
+import transaction
+
+Zope = Zope2
 

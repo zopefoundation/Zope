@@ -26,7 +26,7 @@ need to URL-call back into the Zope server.
 If you want to write functional unit tests, see the testFunctional.py 
 example instead.
 
-$Id: testWebserver.py,v 1.16 2005/02/12 13:11:10 shh42 Exp $
+$Id$
 """
 
 import os, sys
@@ -38,10 +38,9 @@ if __name__ == '__main__':
 
 from Testing import ZopeTestCase
 
+from Testing.ZopeTestCase import transaction
 from AccessControl import Unauthorized
 import urllib
-
-import transaction
 
 # Create the error_log object
 ZopeTestCase.utils.setupSiteErrorLog()

@@ -1,6 +1,7 @@
-0.9.7 (Zope 2.8 edition)
+0.9.8 (Zope 2.8 edition)
 - Renamed 'doctest' package to 'zopedoctest' because of name-shadowing
-  issues discovered during integration into Zope 2.8.
+  issues discovered during integration into Zope 2.8. Tests may still use
+  'from Testing.ZopeTestCase import doctest' as the name is aliased there.
 - Greatly improved the doctest story. ZopeTestCase now implements four test
   suite factories: ZopeDocTestSuite, ZopeDocFileSuite, FunctionalDocTestSuite,
   and FunctionalDocFileSuite.
@@ -10,7 +11,8 @@
 - ZopeLite now takes care not to monkey patch an already started Zope.
 - PortalTestCase.setUp() no longer calls _refreshSkinData() as CMF is smart
   enough now.
-- Fixed _refreshSkinData() helper to work with CMF >= 1.5.
+- Fixed PortalTestCase._refreshSkinData() helper to work with CMF >= 1.5.
+- Made PortalTestCase.createMemberarea() work better with CMF >= 1.5.
 - Fixed a bug where using sessions in sandboxed (functional) tests would cause
   connection pool depletion and subsequent hangs. Thanks to Balazs Ree.
 - Encapsulated the ConnectionRegistry in its own module, connections.py.
@@ -19,6 +21,10 @@
   to Sidnei da Silva.
 - Modified runalltests.py so it imports modules more like test.py, i.e.
   without touching sys.path and without the help of imp.
+- The standalone version of ZopeTestCase gained a Zope 2.8-style transaction
+  module. Tests may now use 'from Testing.ZopeTestCase import transaction'
+  which is guaranteed to work across Zope versions.
+- The REQUEST now contains the ACTUAL_URL variable introduced in Zope 2.7.4.
 
 0.9.6
 - Dropped support for Zope 2.5 as it lacks the setSecurityManager() API.

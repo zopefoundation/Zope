@@ -61,12 +61,21 @@ class DummyPortal(Folder):
 
 class DummyMembershipTool(SimpleItem):
     id = 'portal_membership'
+    def __init__(self):
+        self._called = []
     def createMemberarea(self, member_id):
+        self._called.append('createMemberarea')
         portal = self.aq_inner.aq_parent
         portal.Members.manage_addFolder(member_id)
     def getHomeFolder(self, member_id):
         portal = self.aq_inner.aq_parent
         return getattr(portal.Members, member_id)
+
+class NewMembershipTool(DummyMembershipTool):
+    def createMemberArea(self, member_id):
+        self._called.append('createMemberArea')
+        portal = self.aq_inner.aq_parent
+        portal.Members.manage_addFolder(member_id)
 
 
 class TestPortalTestCase(ZopeTestCase.PortalTestCase):
@@ -105,7 +114,7 @@ class TestPortalTestCase(ZopeTestCase.PortalTestCase):
     def test_getPortal(self):
         # Portal should be set up
         self.app = self._app()
-        self.portal = self.getPortal()
+        self.portal = self._portal()
         self.failUnless(hasattr_(self.app, portal_name))
         self.failUnless(hasattr_(self.portal, 'Members'))
         self.failUnless(hasattr_(self.portal, 'portal_membership'))
@@ -114,7 +123,7 @@ class TestPortalTestCase(ZopeTestCase.PortalTestCase):
     def test_setupUserFolder(self):
         # User folder should be set up.
         self.app = self._app()
-        self.portal = self.getPortal()
+        self.portal = self._portal()
         self.failIf(hasattr_(self.portal, 'acl_users'))
         self._setupUserFolder()
         self.failUnless(hasattr_(self.portal, 'acl_users'))
@@ -124,7 +133,7 @@ class TestPortalTestCase(ZopeTestCase.PortalTestCase):
     def test_setupUser(self):
         # User should be set up
         self.app = self._app()
-        self.portal = self.getPortal()
+        self.portal = self._portal()
         self._setupUserFolder()
         self._setupUser()
         acl_user = self.portal.acl_users.getUserById(user_name)
@@ -135,7 +144,7 @@ class TestPortalTestCase(ZopeTestCase.PortalTestCase):
     def test_setupHomeFolder(self):
         # User's home folder should be set up
         self.app = self._app()
-        self.portal = self.getPortal()
+        self.portal = self._portal()
         self._setupUserFolder()
         self._setupUser()
         self.login()
@@ -151,14 +160,14 @@ class TestPortalTestCase(ZopeTestCase.PortalTestCase):
     def test_refreshSkinData(self):
         # The skin cache should be refreshed
         self.app = self._app()
-        self.portal = self.getPortal()
+        self.portal = self._portal()
         self._refreshSkinData()
         self.assertEqual(self.portal._called, ['clearCurrentSkin', 'setupCurrentSkin'])
 
     def test_setRoles(self):
         # Roles should be set for user
         self.app = self._app()
-        self.portal = self.getPortal()
+        self.portal = self._portal()
         self._setupUserFolder()
         self._setupUser()
         test_roles = ['Manager', 'Member']
@@ -169,7 +178,7 @@ class TestPortalTestCase(ZopeTestCase.PortalTestCase):
     def test_setRoles_2(self):
         # Roles should be set for logged in user
         self.app = self._app()
-        self.portal = self.getPortal()
+        self.portal = self._portal()
         self._setupUserFolder()
         self._setupUser()
         self.login()
@@ -181,7 +190,7 @@ class TestPortalTestCase(ZopeTestCase.PortalTestCase):
     def test_setRoles_3(self):
         # Roles should be set for a specified user
         self.app = self._app()
-        self.portal = self.getPortal()
+        self.portal = self._portal()
         self._setupUserFolder()
         self.portal.acl_users.userFolderAddUser('user_2', 'secret', [], [])
         test_roles = ['Manager', 'Member']
@@ -192,7 +201,7 @@ class TestPortalTestCase(ZopeTestCase.PortalTestCase):
     def test_setRoles_4(self):
         # Roles should be set from a tuple
         self.app = self._app()
-        self.portal = self.getPortal()
+        self.portal = self._portal()
         self._setupUserFolder()
         self._setupUser()
         test_roles = ['Manager', 'Member']
@@ -203,7 +212,7 @@ class TestPortalTestCase(ZopeTestCase.PortalTestCase):
     def test_setRoles_5(self):
         # Roles should be set from a string
         self.app = self._app()
-        self.portal = self.getPortal()
+        self.portal = self._portal()
         self._setupUserFolder()
         self._setupUser()
         test_roles = ['Manager']
@@ -214,7 +223,7 @@ class TestPortalTestCase(ZopeTestCase.PortalTestCase):
     def test_setPermissions(self):
         # Permissions should be set for user
         self.app = self._app()
-        self.portal = self.getPortal()
+        self.portal = self._portal()
         test_perms = ['Add Folders', 'Delete objects']
         self.setPermissions(test_perms)
         self.assertPermissionsOfRole(test_perms, 'Member')
@@ -222,7 +231,7 @@ class TestPortalTestCase(ZopeTestCase.PortalTestCase):
     def test_setPermissions_2(self):
         # Permissions should be set for specified role
         self.app = self._app()
-        self.portal = self.getPortal()
+        self.portal = self._portal()
         self.portal._addRole('role_2')
         test_perms = ['Add Folders', 'Delete objects']
         self.assertPermissionsOfRole([], 'role_2')
@@ -232,7 +241,7 @@ class TestPortalTestCase(ZopeTestCase.PortalTestCase):
     def test_setPermissions_3(self):
         # Permissions should be set from a tuple
         self.app = self._app()
-        self.portal = self.getPortal()
+        self.portal = self._portal()
         test_perms = ['Add Folders', 'Delete objects']
         self.setPermissions(tuple(test_perms))
         self.assertPermissionsOfRole(test_perms, 'Member')
@@ -240,7 +249,7 @@ class TestPortalTestCase(ZopeTestCase.PortalTestCase):
     def test_setPermissions_4(self):
         # Permissions should be set from a string
         self.app = self._app()
-        self.portal = self.getPortal()
+        self.portal = self._portal()
         test_perms = ['Add Folders']
         self.setPermissions('Add Folders')
         self.assertPermissionsOfRole(test_perms, 'Member')
@@ -248,7 +257,7 @@ class TestPortalTestCase(ZopeTestCase.PortalTestCase):
     def test_login(self):
         # User should be able to log in
         self.app = self._app()
-        self.portal = self.getPortal()
+        self.portal = self._portal()
         self._setupUserFolder()
         self._setupUser()
         auth_name = getSecurityManager().getUser().getUserName()
@@ -260,7 +269,7 @@ class TestPortalTestCase(ZopeTestCase.PortalTestCase):
     def test_login_2(self):
         # A specified user should be logged in
         self.app = self._app()
-        self.portal = self.getPortal()
+        self.portal = self._portal()
         self._setupUserFolder()
         self.portal.acl_users.userFolderAddUser('user_2', 'secret', [], [])
         auth_name = getSecurityManager().getUser().getUserName()
@@ -272,14 +281,14 @@ class TestPortalTestCase(ZopeTestCase.PortalTestCase):
     def test_login_3(self):
         # Unknown user should raise AttributeError
         self.app = self._app()
-        self.portal = self.getPortal()
+        self.portal = self._portal()
         self._setupUserFolder()
         self.assertRaises(AttributeError, self.login, 'user_3')
 
     def test_logout(self):
         # User should be able to log out
         self.app = self._app()
-        self.portal = self.getPortal()
+        self.portal = self._portal()
         self._setupUserFolder()
         self._setupUser()
         self.login()
@@ -290,7 +299,7 @@ class TestPortalTestCase(ZopeTestCase.PortalTestCase):
     def test_clear(self):
         # Everything should be removed
         self.app = self._app()
-        self.portal = self.getPortal()
+        self.portal = self._portal()
         self._setupUserFolder()
         self._setupUser()
         self._setupHomeFolder()
@@ -342,6 +351,30 @@ class TestPortalTestCase(ZopeTestCase.PortalTestCase):
         # XXX: Changed in 0.9.0
         #self.assertEqual(self._called, ['afterClear', 'beforeSetUp', 'afterSetUp'])
         self.assertEqual(self._called, ['beforeSetUp', 'afterSetUp'])
+
+    def test_createMemberarea(self):
+        # Should call the membership tool's createMemberarea
+        self.app = self._app()
+        self.portal = self._portal()
+        self._setupUserFolder()
+        self._setupUser()
+        self.login()
+        self.createMemberarea(user_name)
+        self.assertEqual(self.portal.portal_membership._called, ['createMemberarea'])
+        self.failUnless(hasattr_(self.portal.Members, user_name))
+
+    def test_createMemberarea_NewTool(self):
+        # Should call the membership tool's createMemberArea
+        self.app = self._app()
+        self.portal = self._portal()
+        self._setupUserFolder()
+        self._setupUser()
+        self.portal._delObject('portal_membership')
+        self.portal._setObject('portal_membership', NewMembershipTool())
+        self.login()
+        self.createMemberarea(user_name)
+        self.assertEqual(self.portal.portal_membership._called, ['createMemberArea'])
+        self.failUnless(hasattr_(self.portal.Members, user_name))
 
     # Helpers
 

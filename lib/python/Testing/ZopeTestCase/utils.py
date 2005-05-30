@@ -136,6 +136,7 @@ def makerequest(app, stdout=sys.stdout):
     environ['REQUEST_METHOD'] = 'GET'
     request = Request(sys.stdin, environ, response)
     request._steps = ['noobject'] # Fake a published object
+    request['ACTUAL_URL'] = request.get('URL') # Zope 2.7.4
     return app.__of__(RequestContainer(REQUEST=request))
 
 

@@ -28,16 +28,16 @@ if __name__ == '__main__':
 
 from Testing import ZopeTestCase
 
+from Testing.ZopeTestCase import folder_name
+from Testing.ZopeTestCase import user_name
+from Testing.ZopeTestCase import user_role
+from Testing.ZopeTestCase import standard_permissions
+
 from Acquisition import aq_base
 from AccessControl import getSecurityManager
 from types import ListType
 
 import transaction
-
-folder_name = ZopeTestCase.folder_name
-user_name = ZopeTestCase.user_name
-user_role = ZopeTestCase.user_role
-standard_permissions = ZopeTestCase.standard_permissions
 
 
 def hasattr_(ob, attr):
