@@ -213,7 +213,7 @@ class ZDCmd(cmd.Cmd):
             args += self._get_override("-f", "forever", flag=1)
             args += self._get_override("-s", "sockname")
             args += self._get_override("-u", "user")
-            args += self._get_override("-m", "umask")
+            args += self._get_override("-m", "umask", oct(self.options.umask))
             args += self._get_override(
                 "-x", "exitcodes", ",".join(map(str, self.options.exitcodes)))
             args += self._get_override("-z", "directory")
