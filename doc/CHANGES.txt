@@ -34,6 +34,8 @@ Zope Changes
 
     Bugs fixed
 
+      - Collector #1323: applied patch to fix umask problem in zdctl
+
       - Collector #1781: made 'create_mount_points' ZConfig option actually
         work (thanks to Dieter Maurer for the patch).
 
