@@ -54,7 +54,7 @@ Using Zope 3 Components in Zope 2 Applications
     work with Zope 2 interfaces. This means you can safely make a class
     declare both a Zope 2 and Zope 3 interface independently from each
     other. It's a rare case where you need this - you're usually better off 
-    just switching to ``implements()`` for your application possible.
+    just switching to ``implements()`` for your application if possible.
 
     Switching from Zope 2 interfaces to Zope 3 interfaces is easy -- just
     make your interfaces inherit from ``zope.interface.Interface`` instead
