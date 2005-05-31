@@ -373,7 +373,10 @@ class DateTimeTests(unittest.TestCase):
         dt2 = DateTime('2040/01/30 11:33 GMT-2')
         self.assertEqual(dt1.strftime('%d/%m/%Y %H:%M'), dt2.strftime('%d/%m/%Y %H:%M'))
 
-        
+    def testStrftimeUnicode(self):
+        dt = DateTime('2002-05-02T08:00:00+00:00')
+        self.assertEqual(dt.strftime(u'Le %d/%m/%Y \xe0 %Hh%M'),
+                         u'Le 02/05/2002 \xe0 10h00')
 
 def test_suite():
     return unittest.makeSuite(DateTimeTests)
