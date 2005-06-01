@@ -375,8 +375,8 @@ class DateTimeTests(unittest.TestCase):
 
     def testStrftimeUnicode(self):
         dt = DateTime('2002-05-02T08:00:00+00:00')
-        self.assertEqual(dt.strftime(u'Le %d/%m/%Y \xe0 %Hh%M'),
-                         u'Le 02/05/2002 \xe0 10h00')
+        ok = dt.strftime('Le %d/%m/%Y a %Hh%M').replace('a', u'\xe0')
+        self.assertEqual(dt.strftime(u'Le %d/%m/%Y \xe0 %Hh%M'), ok)
 
 def test_suite():
     return unittest.makeSuite(DateTimeTests)
