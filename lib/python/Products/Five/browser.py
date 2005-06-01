@@ -1,6 +1,7 @@
 ##############################################################################
 #
-# Copyright (c) 2005 Zope Corporation and Contributors. All Rights Reserved.
+# Copyright (c) 2004, 2005 Zope Corporation and Contributors.
+# All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
@@ -12,9 +13,8 @@
 ##############################################################################
 """Provide basic browser functionality
 
-$Id: browser.py 10829 2005-04-18 19:18:27Z philikon $
+$Id: browser.py 12915 2005-05-31 10:23:19Z philikon $
 """
-
 # python
 import sys
 from datetime import datetime
@@ -32,6 +32,9 @@ from interfaces import ITraversable
 from zope.interface import implements
 from zope.component import getViewProviding
 from zope.app.traversing.browser.interfaces import IAbsoluteURL
+from zope.publisher.browser import isCGI_NAME
+from zope.i18n.interfaces import IUserPreferredCharsets
+
 from zope.app.location.interfaces import ILocation
 from zope.app.location import LocationProxy
 from zope.app.form.utility import setUpEditWidgets, applyWidgetsChanges
@@ -128,6 +131,7 @@ class EditView(BrowserView):
     errors = ()
     update_status = None
     label = ''
+    charsets = None
 
     # Fall-back field names computes from schema
     fieldNames = property(lambda self: getFieldNamesInOrder(self.schema))
@@ -136,6 +140,8 @@ class EditView(BrowserView):
 
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
+        self._processInputs()
+        self._setPageEncoding()
         self._setUpWidgets()
 
     def _setUpWidgets(self):
@@ -147,6 +153,36 @@ class EditView(BrowserView):
         self.adapted = adapted
         setUpEditWidgets(self, self.schema, source=self.adapted,
                          names=self.fieldNames)
+
+    # taken from zope.publisher.browser.BrowserRequest
+    def _decode(self, text):
+        """Try to decode the text using one of the available charsets."""
+        if self.charsets is None:
+            envadapter = IUserPreferredCharsets(self.request)
+            self.charsets = envadapter.getPreferredCharsets() or ['utf-8']
+        for charset in self.charsets:
+            try:
+                text = unicode(text, charset)
+                break
+            except UnicodeError:
+                pass
+        return text
+
+    def _processInputs(self):
+        request = self.request
+        for name, value in request.form.items():
+            if (not (isCGI_NAME(name) or name.startswith('HTTP_'))
+                and isinstance(value, str)):
+                request.form[name] = self._decode(value)
+
+    def _setPageEncoding(self):
+        """Set the encoding of the form page via the Content-Type header.
+        ZPublisher uses the value of this header to determine how to
+        encode unicode data for the browser."""
+        envadapter = IUserPreferredCharsets(self.request)
+        charsets = envadapter.getPreferredCharsets() or ['utf-8']
+        self.request.RESPONSE.setHeader(
+            'Content-Type', 'text/html; charset=%s' % charsets[0])
 
     def setPrefix(self, prefix):
         for widget in self.widgets():
@@ -183,7 +219,7 @@ class EditView(BrowserView):
             except WidgetsError, errors:
                 self.errors = errors
                 status = "An error occured."
-                transaction.get().abort()
+                transaction.abort()
             else:
                 setUpEditWidgets(self, self.schema, source=self.adapted,
                                  ignoreStickyValues=True,

@@ -7,6 +7,7 @@
   <include file="interfaces.zcml" />
   <include file="permissions.zcml" />
   <include file="browser.zcml" />
+  <include file="i18n.zcml" />
 
   <include package="zope.app.traversing" />
   <include package="zope.app.form.browser" />

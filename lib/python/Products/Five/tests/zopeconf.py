@@ -1,6 +1,7 @@
 ##############################################################################
 #
-# Copyright (c) 2005 Zope Corporation and Contributors. All Rights Reserved.
+# Copyright (c) 2004, 2005 Zope Corporation and Contributors.
+# All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
@@ -10,10 +11,12 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+"""Load zope.conf for tests.
 
+$Id: zopeconf.py 12915 2005-05-31 10:23:19Z philikon $
+"""
 import os
 from os.path import join, abspath, dirname, split, exists
-
 
 def process():
     """Read in zope.conf configuration file.
@@ -35,5 +38,5 @@ def process():
     _config = join(_prefix, 'etc', 'zope.conf')
 
     if exists(_config):
-        from Zope2 import configure
+        from Zope import configure
         configure(_config)

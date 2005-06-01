@@ -1,6 +1,7 @@
 ##############################################################################
 #
-# Copyright (c) 2005 Zope Corporation and Contributors. All Rights Reserved.
+# Copyright (c) 2004, 2005 Zope Corporation and Contributors.
+# All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
@@ -12,7 +13,7 @@
 ##############################################################################
 """Machinery for making things traversable through adaptation
 
-$Id: traversable.py 9786 2005-03-15 12:53:39Z efge $
+$Id: traversable.py 12915 2005-05-31 10:23:19Z philikon $
 """
 from zExceptions import NotFound
 from zope.exceptions import NotFoundError

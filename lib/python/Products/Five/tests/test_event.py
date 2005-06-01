@@ -1,6 +1,7 @@
 ##############################################################################
 #
-# Copyright (c) 2005 Zope Corporation and Contributors. All Rights Reserved.
+# Copyright (c) 2004, 2005 Zope Corporation and Contributors.
+# All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
@@ -10,8 +11,10 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-# test events triggered by Five
+"""Test events triggered by Five
 
+$Id: test_event.py 12915 2005-05-31 10:23:19Z philikon $
+"""
 import os, sys
 if __name__ == '__main__':
     execfile(os.path.join(sys.path[0], 'framework.py'))
@@ -61,7 +64,7 @@ class EventTest(FiveTestCase):
         manage_addSimpleContent(self.folder, 'foo', 'Foo')
         # somehow we need to at least commit a subtransaction to make
         # renaming succeed
-        transaction.get().commit(1)
+        transaction.commit(1)
         self.folder.manage_renameObject('foo', 'bar')
         bar = self.folder.bar
         events = objectEventCatcher.getEvents()
@@ -95,7 +98,7 @@ class EventTest(FiveTestCase):
         manage_addSimpleContent(folder1, 'foo', 'Foo')
         foo = folder1.foo
         # need to trigger subtransaction before copy/paste can work
-        transaction.get().commit(1)
+        transaction.commit(1)
         cb = folder1.manage_cutObjects(['foo'])
         folder2.manage_pasteObjects(cb)
         newfoo = folder2.foo
@@ -125,7 +128,7 @@ class EventTest(FiveTestCase):
         manage_addNoVerifyPasteFolder(self.folder, 'folder1')
         folder1 = self.folder.folder1
         # need to trigger subtransaction before copy/paste can work
-        transaction.get().commit(1)
+        transaction.commit(1)
         cb = self.folder.manage_copyObjects(['foo'])
         folder1.manage_pasteObjects(cb)
         foo_copy = folder1.foo

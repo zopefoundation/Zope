@@ -1,0 +1,9 @@
+<configure xmlns="http://namespaces.zope.org/zope">
+
+  <adapter
+      factory="zope.publisher.http.HTTPCharsets"
+      for="zope.publisher.interfaces.http.IHTTPRequest"
+      provides="zope.i18n.interfaces.IUserPreferredCharsets"
+      />
+
+</configure>

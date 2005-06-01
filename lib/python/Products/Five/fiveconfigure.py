@@ -1,6 +1,7 @@
 ##############################################################################
 #
-# Copyright (c) 2005 Zope Corporation and Contributors. All Rights Reserved.
+# Copyright (c) 2004, 2005 Zope Corporation and Contributors.
+# All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
@@ -14,7 +15,7 @@
 
 These directives are specific to Five and have no equivalents in Zope 3.
 
-$Id: fiveconfigure.py 8255 2005-01-13 14:05:46Z regebro $
+$Id: fiveconfigure.py 12915 2005-05-31 10:23:19Z philikon $
 """
 
 import os

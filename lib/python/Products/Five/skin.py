@@ -1,6 +1,7 @@
 ##############################################################################
 #
-# Copyright (c) 2005 Zope Corporation and Contributors. All Rights Reserved.
+# Copyright (c) 2004, 2005 Zope Corporation and Contributors.
+# All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
@@ -12,7 +13,7 @@
 ##############################################################################
 """Mimick the Zope 3 skinning system in Five.
 
-$Id: skin.py 10830 2005-04-18 19:22:49Z philikon $
+$Id: skin.py 12915 2005-05-31 10:23:19Z philikon $
 """
 from zope.interface.common.mapping import IItemMapping
 from zope.interface import implements

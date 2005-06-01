@@ -1,6 +1,7 @@
 ##############################################################################
 #
-# Copyright (c) 2005 Zope Corporation and Contributors. All Rights Reserved.
+# Copyright (c) 2004, 2005 Zope Corporation and Contributors.
+# All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
@@ -12,7 +13,7 @@
 ##############################################################################
 """Five security handling
 
-$Id: security.py 8281 2005-01-14 18:20:18Z regebro $
+$Id: security.py 12915 2005-05-31 10:23:19Z philikon $
 """
 from zope.interface import implements
 from zope.component import queryUtility, getUtility

@@ -1,6 +1,7 @@
 ##############################################################################
 #
-# Copyright (c) 2005 Zope Corporation and Contributors. All Rights Reserved.
+# Copyright (c) 2004, 2005 Zope Corporation and Contributors.
+# All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
@@ -12,9 +13,8 @@
 ##############################################################################
 """ Z2 -> Z3 bridge utilities.
 
-$Id$
+$Id: bridge.py 12915 2005-05-31 10:23:19Z philikon $
 """
-
 from Interface._InterfaceClass import Interface as Z2_InterfaceClass
 from Interface import Interface as Z2_Interface
 from Interface import Attribute as Z2_Attribute

@@ -1,6 +1,7 @@
 ##############################################################################
 #
-# Copyright (c) 2005 Zope Corporation and Contributors. All Rights Reserved.
+# Copyright (c) 2004, 2005 Zope Corporation and Contributors.
+# All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
@@ -14,9 +15,8 @@
 Use 'structured monkey patching' to enable zope.app.container event sending for
 Zope 2 objects.
 
-$Id: eventconfigure.py 10337 2005-04-05 16:01:21Z philikon $
+$Id: eventconfigure.py 12915 2005-05-31 10:23:19Z philikon $
 """
-
 from Products.Five.fiveconfigure import isFiveMethod
 from zope.event import notify
 from zope.interface import implements
