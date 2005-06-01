@@ -1,6 +1,7 @@
 ##############################################################################
 #
-# Copyright (c) 2005 Zope Corporation and Contributors. All Rights Reserved.
+# Copyright (c) 2004, 2005 Zope Corporation and Contributors.
+# All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
@@ -15,7 +16,7 @@
 Directives to emulate the 'http://namespaces.zope.org/browser'
 namespace in ZCML known from zope.app.
 
-$Id: browserconfigure.py 11479 2005-04-26 13:47:37Z dreamcatcher $
+$Id: browserconfigure.py 12915 2005-05-31 10:23:19Z philikon $
 """
 import os
 

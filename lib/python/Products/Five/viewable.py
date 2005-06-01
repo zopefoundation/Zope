@@ -1,6 +1,7 @@
 ##############################################################################
 #
-# Copyright (c) 2005 Zope Corporation and Contributors. All Rights Reserved.
+# Copyright (c) 2004, 2005 Zope Corporation and Contributors.
+# All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
@@ -12,9 +13,8 @@
 ##############################################################################
 """Machinery for making things viewable
 
-$Id: traversable.py 5763 2004-07-28 20:15:11Z dreamcatcher $
+$Id: viewable.py 12915 2005-05-31 10:23:19Z philikon $
 """
-
 import inspect
 from zExceptions import NotFound
 from zope.exceptions import NotFoundError
@@ -104,9 +104,8 @@ class BrowserDefault(object):
 
     def defaultView(self, request):
         context = self.context
-        name = None
         try:
             name = getDefaultViewName(context, request)
+            return context, [name,]
         except ComponentLookupError:
-            pass
-        return context, [name,]
+            return context, None

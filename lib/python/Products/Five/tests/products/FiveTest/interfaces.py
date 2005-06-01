@@ -1,6 +1,7 @@
 ##############################################################################
 #
-# Copyright (c) 2005 Zope Corporation and Contributors. All Rights Reserved.
+# Copyright (c) 2004, 2005 Zope Corporation and Contributors.
+# All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
@@ -10,8 +11,12 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+"""Test product interfaces
+
+$Id: interfaces.py 12915 2005-05-31 10:23:19Z philikon $
+"""
 from zope.interface import Interface
-from zope.schema import Text, TextLine, Object
+from zope.schema import Text, TextLine, Object, Int, List
 
 class IAdaptable(Interface):
     """This is a Zope 3 interface.
@@ -50,19 +55,34 @@ class IFancyContent(Interface):
     pass
 
 class IFieldSimpleContent(ISimpleContent):
+
     title = TextLine(
         title=u"Title",
         description=u"A short description of the event.",
         default=u"",
-        required=True)
+        required=True
+        )
 
     description = Text(
         title=u"Description",
         description=u"A long description of the event.",
         default=u"",
-        required=False)
-    
-    
+        required=False
+        )
+
+    somenumber = Int(
+        title=u"Some number",
+        default=0,
+        required=False
+        )
+
+    somelist = List(
+        title=u"Some List",
+        value_type=TextLine(title=u"Some item"),
+        default=[],
+        required=False
+        )
+
 class IComplexSchemaContent(Interface):
     
     fishtype = TextLine(
@@ -76,4 +96,3 @@ class IComplexSchemaContent(Interface):
         schema=IFieldSimpleContent,
         description=u"The fishy object",
         required=True)
-

@@ -11,22 +11,20 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Utils to be reused
+"""Test adding views
 
-$Id: ReuseUtils.py 12912 2005-05-31 09:58:59Z philikon $
+$Id: test_adding.py 12915 2005-05-31 10:23:19Z philikon $
 """
-from new import function
+import os, sys
+if __name__ == '__main__':
+    execfile(os.path.join(sys.path[0], 'framework.py'))
 
-def rebindFunction(f,rebindDir=None,**rebinds):
-  '''return *f* with some globals rebound.'''
-  d= {}
-  if rebindDir : d.update(rebindDir)
-  if rebinds: d.update(rebinds)
-  if not d: return f
-  f= getattr(f,'im_func',f)
-  fd= f.func_globals.copy()
-  fd.update(d)
-  nf= function(f.func_code,fd,f.func_name,f.func_defaults or ())
-  nf.__doc__= f.__doc__
-  if f.__dict__ is not None: nf.__dict__= f.__dict__.copy()
-  return nf
+import Products.Five.tests.fivetest   # starts Zope, loads Five, etc.
+
+def test_suite():
+    from Testing.ZopeTestCase import ZopeDocFileSuite
+    return ZopeDocFileSuite('adding.txt',
+                            package="Products.Five.tests")
+
+if __name__ == '__main__':
+    framework()

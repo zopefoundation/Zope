@@ -355,7 +355,7 @@
   <browser:addform
      schema=".interfaces.IFieldSimpleContent"
      content_factory=".simplecontent.FieldSimpleContent"
-     name="addsimplecontent.html"
+     name="addfieldcontent.html"
      permission="zope2.Public"
      />
      

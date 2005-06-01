@@ -1,8 +1,6 @@
 ##############################################################################
 #
-# Copyright (c) 2000-2003 Zope Corporation and Contributors.
-# Copyright (c) 2004 Five Contributors.
-# All Rights Reserved.
+# Copyright (c) 2000-2005 Zope Corporation and Contributors.
 #
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
@@ -14,7 +12,7 @@
 ##############################################################################
 """Five interfaces
 
-$Id: interfaces.py 12029 2005-05-06 17:04:32Z yuppie $
+$Id: interfaces.py 12915 2005-05-31 10:23:19Z philikon $
 """
 from zope.interface import Interface, Attribute
 from zope.interface.interfaces import IInterface

@@ -27,6 +27,8 @@ Five contributors
 
 - Dieter Maurer (dieter@handshake.de)
 
+- Yvo Schubbe (y.2005-@wcm-solutions.de)
+
 Thank you
 ---------
 

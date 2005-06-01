@@ -1,6 +1,7 @@
 ##############################################################################
 #
-# Copyright (c) 2005 Zope Corporation and Contributors. All Rights Reserved.
+# Copyright (c) 2004, 2005 Zope Corporation and Contributors.
+# All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
@@ -14,7 +15,6 @@
 
 $Id: browser.py 5259 2004-06-23 15:59:52Z philikon $
 """
-
 import os
 import urllib
 

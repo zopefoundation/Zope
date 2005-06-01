@@ -1,6 +1,7 @@
 ##############################################################################
 #
-# Copyright (c) 2005 Zope Corporation and Contributors. All Rights Reserved.
+# Copyright (c) 2004, 2005 Zope Corporation and Contributors.
+# All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
@@ -14,7 +15,6 @@
 
 $Id: metaconfigure.py 5287 2004-06-25 11:42:27Z philikon $
 """
-
 from zope.interface import Interface
 from zope.configuration.fields import GlobalObject
 from zope.schema import TextLine

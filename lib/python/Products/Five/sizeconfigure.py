@@ -1,6 +1,7 @@
 ##############################################################################
 #
-# Copyright (c) 2005 Zope Corporation and Contributors. All Rights Reserved.
+# Copyright (c) 2004, 2005 Zope Corporation and Contributors.
+# All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
@@ -13,7 +14,7 @@
 """Use structured monkey-patching to enable ``ISized`` adapters for
 Zope 2 objects.
 
-$Id: sizeconfigure.py 10365 2005-04-06 13:24:16Z philikon $
+$Id: sizeconfigure.py 12915 2005-05-31 10:23:19Z philikon $
 """
 from zope.app.size.interfaces import ISized
 from Products.Five.fiveconfigure import isFiveMethod

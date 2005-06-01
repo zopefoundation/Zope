@@ -1,6 +1,7 @@
 ##############################################################################
 #
-# Copyright (c) 2005 Zope Corporation and Contributors. All Rights Reserved.
+# Copyright (c) 2004, 2005 Zope Corporation and Contributors.
+# All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
@@ -10,7 +11,10 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+"""Event test fixtures
 
+$Id: subscriber.py 12915 2005-05-31 10:23:19Z philikon $
+"""
 class EventCatcher:
     def __init__(self):
         self._events = []

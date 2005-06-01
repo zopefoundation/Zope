@@ -32,8 +32,12 @@ system for us all.
 Download 
 --------
 
-2005-04-27 -- We have released Five 1.0! This is also the version that
-will be included in Zope 2.8. Download it here:
+2005-05-31 -- We have released Five 1.0.1! This is also the version
+that will be included in Zope 2.8. Download it here:
+
+http://codespeak.net/z3/five/release/Five-1.0.1.tgz
+
+2005-04-27 -- We have released Five 1.0! Download it here:
 
 http://codespeak.net/z3/five/release/Five-1.0.tgz
 

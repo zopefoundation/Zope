@@ -43,7 +43,7 @@ For more information, see ``doc/features.txt``.
 How to install Five
 -------------------
 
-Five should already be installed in Zope 2.8.
+See ``INSTALL.txt``.
 
 How to use Five
 ---------------

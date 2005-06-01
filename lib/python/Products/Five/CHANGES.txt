@@ -2,10 +2,43 @@
 Five Changes
 ============
 
-Five 1.0 (2005-04-27)
-=====================
+Five 1.0.1 (2005-05-31)
+=======================
 
 This version is also included in Zope 2.8.
+
+* Changed license headers to the ones used in the Zope.org repository.
+  This makes merging between the main development line of Five (hosted
+  on codespeak.net) and the version integrated into Zope 2.8 much
+  easier.  The actual copyright ownership isn't affected because Five
+  had been contributed to the Zope project anyway (which was blessed
+  by all Five contributors).
+
+* Made automatically generated add and edit forms unicode-aware.
+  ZPublisher does not automatically decode incoming form values to
+  unicode, so AddView and EditView emulate this behaviour themselves
+  now.  They also take care of setting the right charset on the
+  outgoing form so that ZPublisher will encode it accordingly when
+  sending the response to the client.  (In Zope 3, all charset
+  negotation between the client and the server takes place in the
+  publisher.)
+
+* Added ``IHTTPCharset`` adapter for ``IHTTPRequest`` so that
+  application can find out the preferred character set of the HTTP
+  client (Zope 2 applications needs to take care of their own charset
+  header).  The adapter is used for the automatically-generated forms
+  when determining encodings for unicode field content.
+
+* Modified edit.pt to make sure editforms have only one body tag.
+
+* Fixed the ``INameChooser`` adapter for ObjectManagers (e.g. Zope 2
+  folders) and added unit tests.
+
+* Fixed small bug in BrowserDefault which caused an error if the class is
+  defaultViewable but the object's interfaces have no defaultView.
+
+Five 1.0 (2005-04-27)
+=====================
 
 Features
 --------
