@@ -122,12 +122,12 @@ if not Zope2._began_startup:
 
 # Allow test authors to install Zope products into the test environment. Note
 # that installProduct() must be called at module level -- never from tests.
-from OFS.Application import get_folder_permissions, get_products, install_product
+from OFS.Application import get_folder_permissions, get_products, \
+     install_product, _installedProducts
 from OFS.Folder import Folder
 import Products
 
 _theApp = Zope2.app()
-_installedProducts = {}
 
 def hasProduct(name):
     '''Checks if a product can be found along Products.__path__'''
