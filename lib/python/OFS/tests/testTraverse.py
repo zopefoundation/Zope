@@ -163,6 +163,13 @@ class TestTraverse( unittest.TestCase ):
         del self.root
         del self.connection
 
+    def test_z3interfaces(self):
+        from OFS.interfaces import ITraversable
+        from OFS.Traversable import Traversable
+        from zope.interface.verify import verifyClass
+
+        verifyClass(ITraversable, Traversable, 1)
+
     def testTraversePath( self ):
         self.failUnless( 'file' in self.folder1.objectIds() )
         self.failUnless( 
@@ -269,8 +276,5 @@ def test_suite():
     suite.addTest( unittest.makeSuite( TestTraverse ) )
     return suite
 
-def main():
-    unittest.main(defaultTest='test_suite')
-
 if __name__ == '__main__':
-    main()
+    unittest.main(defaultTest='test_suite')

@@ -10,18 +10,20 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-
 """Standard management interface support
 
 $Id$
 """
 
 import sys, Globals, ExtensionClass, urllib
-from Dialogs import MessageDialog
 from Globals import DTMLFile, HTMLFile
 from zExceptions import Redirect
 from AccessControl import getSecurityManager, Unauthorized
 from cgi import escape
+from zope.interface import implements
+
+from interfaces import INavigation
+
 
 class Tabs(ExtensionClass.Base):
     """Mix-in provides management folder tab support."""
@@ -153,6 +155,8 @@ Globals.default__class_init__(Tabs)
 
 class Navigation(ExtensionClass.Base):
     """Basic navigation UI support"""
+
+    implements(INavigation)
 
     __ac_permissions__=(
         ('View management screens',

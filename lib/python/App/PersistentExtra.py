@@ -10,17 +10,26 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
+"""Patch for Persistent to support IPersistentExtra.
 
-import ZODB
+$Id$
+"""
 
-from class_init import default__class_init__
-from Persistence import Persistent
 import Globals
 from DateTime import DateTime
+from Persistence import Persistent
+from zope.interface import classImplements
+from zope.interface import implements
+
+from class_init import default__class_init__
+from interfaces import IPersistentExtra
+
 
 Persistent.__class_init__ = default__class_init__
 
 class PersistentUtil:
+
+    implements(IPersistentExtra)
 
     def bobobase_modification_time(self):
         jar=self._p_jar
@@ -75,3 +84,4 @@ for k, v in PersistentUtil.__dict__.items():
     if k[0] != '_':
         setattr(Persistent, k, v)
 
+classImplements(Persistent, IPersistentExtra)

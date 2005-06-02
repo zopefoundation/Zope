@@ -23,12 +23,16 @@ from cgi import escape
 
 import ExtensionClass, Acquisition
 from Globals import InitializeClass
+from zope.interface import implements
 
+from interfaces import IPermissionMappingSupport
 from Owned import UnownableOwner
 from Permission import pname
 
 
 class RoleManager:
+
+    implements(IPermissionMappingSupport)
 
     def manage_getPermissionMapping(self):
         """Return the permission mapping for the object

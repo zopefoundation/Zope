@@ -20,7 +20,9 @@ from Globals import DTMLFile, MessageDialog, Dictionary
 from Acquisition import Implicit, Acquired, aq_get
 import Globals, ExtensionClass, PermissionMapping, Products
 from App.Common import aq_base
+from zope.interface import implements
 
+from interfaces import IRoleManager
 from Permission import Permission
 
 
@@ -36,6 +38,8 @@ def _isNotBeingUsedAsAMethod(self):
 class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
 
     """An object that has configurable permissions"""
+
+    implements(IRoleManager)
 
     __ac_permissions__=(
         ('Change permissions',

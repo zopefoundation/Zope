@@ -10,9 +10,10 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
+"""Undo support.
+
+$Id$
 """
-$Id$"""
-__version__='$Revision: 1.34 $'[11:-2]
 
 from Acquisition import aq_base, aq_parent, aq_inner
 from AccessControl import getSecurityManager
@@ -20,8 +21,14 @@ from DateTime import DateTime
 import Globals, ExtensionClass
 from ZopeUndo.Prefix import Prefix
 import transaction
+from zope.interface import implements
+
+from interfaces import IUndoSupport
+
 
 class UndoSupport(ExtensionClass.Base):
+
+    implements(IUndoSupport)
 
     __ac_permissions__=(
         ('Undo changes', (

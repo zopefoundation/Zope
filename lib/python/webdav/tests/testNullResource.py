@@ -1,4 +1,7 @@
 import unittest
+import Testing
+import Zope2
+Zope2.startup()
 
 
 class TestLockNullResource(unittest.TestCase):
@@ -10,6 +13,13 @@ class TestLockNullResource(unittest.TestCase):
 
         verifyClass(WriteLockInterface, LockNullResource)
 
+    def test_z3interfaces(self):
+        from webdav.interfaces import IWriteLock
+        from webdav.NullResource import LockNullResource
+        from zope.interface.verify import verifyClass
+
+        verifyClass(IWriteLock, LockNullResource, 1)
+
 
 class TestNullResource(unittest.TestCase):
 
@@ -19,6 +29,13 @@ class TestNullResource(unittest.TestCase):
         from webdav.WriteLockInterface import WriteLockInterface
 
         verifyClass(WriteLockInterface, NullResource)
+
+    def test_z3interfaces(self):
+        from webdav.interfaces import IWriteLock
+        from webdav.NullResource import NullResource
+        from zope.interface.verify import verifyClass
+
+        verifyClass(IWriteLock, NullResource, 1)
 
 
 def test_suite():

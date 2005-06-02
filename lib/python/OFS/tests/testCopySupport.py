@@ -1,4 +1,8 @@
 import unittest
+import Testing
+import Zope2
+Zope2.startup()
+
 import cStringIO
 from mimetools import Message
 from multifile import MultiFile
@@ -130,6 +134,16 @@ class TestCopySupport( CopySupportTestBase ):
         del self.folder1
 
         self._cleanApp()
+
+    def test_z3interfaces(self):
+        from OFS.CopySupport import CopyContainer
+        from OFS.CopySupport import CopySource
+        from OFS.interfaces import ICopyContainer
+        from OFS.interfaces import ICopySource
+        from zope.interface.verify import verifyClass
+
+        verifyClass(ICopyContainer, CopyContainer, 1)
+        verifyClass(ICopySource, CopySource, 1)
 
     def testRename( self ):
         self.failUnless( 'file' in self.folder1.objectIds() )
@@ -518,8 +532,5 @@ def test_suite():
     suite.addTest( unittest.makeSuite( TestCopySupportSecurity ) )
     return suite
 
-def main():
-    unittest.TextTestRunner().run(test_suite())
-
 if __name__ == '__main__':
-    main()
+    unittest.main(defaultTest='test_suite')

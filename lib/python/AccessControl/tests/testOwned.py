@@ -63,6 +63,13 @@ class OwnedTests(unittest.TestCase):
 
         return Dummy(*args, **kw)
 
+    def test_z3interfaces(self):
+        from AccessControl.interfaces import IOwned
+        from AccessControl.Owned import Owned
+        from zope.interface.verify import verifyClass
+
+        verifyClass(IOwned, Owned)
+
     def test_getOwnerTuple_unowned(self):
         owned = self._makeOne()
 
@@ -169,5 +176,9 @@ class OwnedTests(unittest.TestCase):
 
         self.assertEqual(wrapped_owner.getId(), 'user')
 
+
 def test_suite():
     return unittest.makeSuite(OwnedTests)
+
+if __name__ == '__main__':
+    unittest.main(defaultTest='test_suite')

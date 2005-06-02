@@ -1,5 +1,4 @@
 import unittest
-
 import Testing
 import Zope2
 Zope2.startup()
@@ -43,6 +42,20 @@ class TestOrderSupport(unittest.TestCase):
         f.o3 = DummyObject('o3', 'mt1')
         f.o4 = DummyObject('o4', 'mt2')
         return f
+
+    def test_z2interfaces(self):
+        from Interface.Verify import verifyClass
+        from OFS.IOrderSupport import IOrderedContainer
+        from OFS.OrderSupport import OrderSupport
+
+        verifyClass(IOrderedContainer, OrderSupport)
+
+    def test_z3interfaces(self):
+        from OFS.interfaces import IOrderedContainer
+        from OFS.OrderSupport import OrderSupport
+        from zope.interface.verify import verifyClass
+
+        verifyClass(IOrderedContainer, OrderSupport, 1)
 
     def _doCanonTest(self, methodname, table):
         for args, order, rval in table:
@@ -159,13 +172,6 @@ class TestOrderSupport(unittest.TestCase):
 
         f.setDefaultSorting('position', True)
         self.failUnlessEqual( f.tpValues(), [f.o4, f.o3, f.o2] )
-
-    def test_z2interfaces(self):
-        from Interface.Verify import verifyClass
-        from OFS.IOrderSupport import IOrderedContainer
-        from OFS.OrderSupport import OrderSupport
-
-        verifyClass(IOrderedContainer, OrderSupport)
 
 
 def test_suite():

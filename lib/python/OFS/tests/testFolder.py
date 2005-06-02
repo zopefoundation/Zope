@@ -10,6 +10,15 @@ class TestFolder(unittest.TestCase):
 
         verifyClass(WriteLockInterface, Folder)
 
+    def test_z3interfaces(self):
+        from OFS.Folder import Folder
+        from OFS.interfaces import IFolder
+        from webdav.interfaces import IWriteLock
+        from zope.interface.verify import verifyClass
+
+        verifyClass(IFolder, Folder, 1)
+        verifyClass(IWriteLock, Folder, 1)
+
 
 def test_suite():
     return unittest.TestSuite((

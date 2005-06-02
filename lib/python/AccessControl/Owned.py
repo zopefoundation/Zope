@@ -18,6 +18,9 @@ $Id$
 import Globals, urlparse, SpecialUsers, ExtensionClass
 from AccessControl import getSecurityManager, Unauthorized
 from Acquisition import aq_get, aq_parent, aq_base
+from zope.interface import implements
+
+from interfaces import IOwned
 
 
 UnownableOwner=[]
@@ -29,6 +32,8 @@ def ownableFilter(self):
 _mark=ownableFilter
 
 class Owned(ExtensionClass.Base):
+
+    implements(IOwned)
 
     __ac_permissions__=(
         ('View management screens',

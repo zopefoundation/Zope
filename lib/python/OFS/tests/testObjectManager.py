@@ -70,6 +70,13 @@ class ObjectManagerTests( unittest.TestCase ):
 
         return self._getTargetClass()( *args, **kw ).__of__( FauxRoot() )
 
+    def test_z3interfaces(self):
+        from OFS.interfaces import IObjectManager
+        from OFS.ObjectManager import ObjectManager
+        from zope.interface.verify import verifyClass
+
+        verifyClass(IObjectManager, ObjectManager, 1)
+
     def test_setObject_set_owner_with_no_user( self ):
 
         om = self._makeOne()

@@ -12,6 +12,17 @@ class TestOrderedFolder(unittest.TestCase):
         verifyClass(IOrderedContainer, OrderedFolder)
         verifyClass(WriteLockInterface, OrderedFolder)
 
+    def test_z3interfaces(self):
+        from OFS.interfaces import IOrderedContainer
+        from OFS.interfaces import IOrderedFolder
+        from OFS.OrderedFolder import OrderedFolder
+        from webdav.interfaces import IWriteLock
+        from zope.interface.verify import verifyClass
+
+        verifyClass(IOrderedContainer, OrderedFolder, 1)
+        verifyClass(IOrderedFolder, OrderedFolder, 1)
+        verifyClass(IWriteLock, OrderedFolder, 1)
+
 
 def test_suite():
     return unittest.TestSuite((

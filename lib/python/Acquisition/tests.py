@@ -1502,6 +1502,32 @@ def test_cant_pickle_acquisition_wrappers_newstyle():
     TypeError: Can't pickle objects in acquisition wrappers.
     """
 
+def test_z3interfaces():
+    """
+    >>> from zope.interface.verify import verifyClass
+
+    Explicit and Implicit implement IAcquirer:
+
+    >>> from Acquisition import Explicit
+    >>> from Acquisition import Implicit
+    >>> from Acquisition.interfaces import IAcquirer
+    >>> verifyClass(IAcquirer, Explicit)
+    True
+    >>> verifyClass(IAcquirer, Implicit)
+    True
+
+    ExplicitAcquisitionWrapper and ImplicitAcquisitionWrapper implement
+    IAcquisitionWrapper:
+
+    >>> from Acquisition import ExplicitAcquisitionWrapper
+    >>> from Acquisition import ImplicitAcquisitionWrapper
+    >>> from Acquisition.interfaces import IAcquisitionWrapper
+    >>> verifyClass(IAcquisitionWrapper, ExplicitAcquisitionWrapper)
+    True
+    >>> verifyClass(IAcquisitionWrapper, ImplicitAcquisitionWrapper)
+    True
+    """
+
 def show(x):
     print showaq(x).strip()
     
@@ -1604,4 +1630,5 @@ def test_suite():
         DocTestSuite(),
         ))
 
-if __name__ == '__main__': unittest.main()
+if __name__ == '__main__':
+    unittest.main(defaultTest='test_suite')
