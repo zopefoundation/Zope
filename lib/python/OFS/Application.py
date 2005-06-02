@@ -38,6 +38,8 @@ import Folder
 import ZDOM
 from FindSupport import FindSupport
 
+# Dictionary of installed products, mainly used by ZopeTestCase.
+_installedProducts = {}
 
 class Application(Globals.ApplicationDefaultPermissions,
                   ZDOM.Root, Folder.Folder,
@@ -622,7 +624,13 @@ def install_products(app):
         # together and do a default initialization.
         if done.has_key(product_name):
             continue
+        # We need to separately track what has been installed now, and
+        # what has been installed at a whole. This is because install_products
+        # should always install everything, but only once every time it's 
+        # called. The _installedProducts dictionary is later used by 
+        # ZopeTestCase to not install products twice.
         done[product_name]=1
+        _installedProducts[product_name]=1
         install_product(app, product_dir, product_name, meta_types,
                         folder_permissions, raise_exc=debug_mode)
 
