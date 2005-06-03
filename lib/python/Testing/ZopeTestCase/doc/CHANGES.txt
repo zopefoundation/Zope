@@ -1,3 +1,7 @@
+Unreleased
+- Functional.publish() would hang if it got a request_method argument other
+  than GET or HEAD while omitting the stdin argument.
+
 0.9.8 (Zope 2.8 edition)
 - Renamed 'doctest' package to 'zopedoctest' because of name-shadowing
   issues discovered during integration into Zope 2.8. Tests may still use

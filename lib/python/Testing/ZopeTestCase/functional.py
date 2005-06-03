@@ -72,7 +72,7 @@ class Functional(sandbox.Sandboxed):
             env['HTTP_AUTHORIZATION'] = "Basic %s" % base64.encodestring(basic)
 
         if stdin is None:
-            stdin = sys.stdin
+            stdin = StringIO()
 
         outstream = StringIO()
         response = Response(stdout=outstream, stderr=sys.stderr)
