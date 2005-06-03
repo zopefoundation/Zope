@@ -26,6 +26,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #1799: Avoid lying about parent's refcount when
+        calling back into Python code.
+
       - Collector #889:  made 'and' operator for KeywordIndexes actually
         restrict results as expected (thanks to 'aroda' for the patch!).
 
