@@ -155,9 +155,9 @@ __of__(PyObject *inst, PyObject *parent)
 
   UNLESS(r=PyObject_GetAttr(inst, py__of__)) return NULL;
   UNLESS(t=PyTuple_New(1)) goto err;
+  Py_INCREF(parent);
   PyTuple_SET_ITEM(t,0,parent);
   ASSIGN(r,PyObject_CallObject(r,t));
-  PyTuple_SET_ITEM(t,0,NULL);
   Py_DECREF(t);
 
   if (r != NULL
