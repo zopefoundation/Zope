@@ -37,6 +37,8 @@ Zope Changes
 
       - Collector #1323: applied patch to fix umask problem in zdctl
 
+      - Updated Five to bugfix release 1.0.1 (see Products/Five/CHANGES.txt)
+
   Zope 2.8.0 b2 (2005/05/22)
 
     Features added
