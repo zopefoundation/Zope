@@ -26,6 +26,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #1798, issue 1: ZopeTestCase no longer tries to 
+        install products that was installed by Zope during startup.
+
       - Collector #1799: Avoid lying about parent's refcount when
         calling back into Python code.
 
