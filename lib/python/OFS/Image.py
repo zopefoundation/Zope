@@ -365,6 +365,12 @@ class File(Persistent, Implicit, PropertyManager,
 
         if self._if_modified_since_request_handler(REQUEST, RESPONSE):
             # we were able to handle this by returning a 304
+            # unfortunately, because the HTTP cache manager uses the cache
+            # API, and because 304 responses are required to carry the Expires
+            # header for HTTP/1.1, we need to call ZCacheable_set here.
+            # This is nonsensical for caches other than the HTTP cache manager
+            # unfortunately.
+            self.ZCacheable_set(None)
             return ''
 
         if self.precondition and hasattr(self, str(self.precondition)):
