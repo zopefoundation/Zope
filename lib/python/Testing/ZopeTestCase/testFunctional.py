@@ -164,6 +164,32 @@ class TestFunctional(ZopeTestCase.FunctionalTestCase):
         self.assertEqual(self.folder.new_document.meta_type, 'DTML Document')
         self.assertEqual(self.folder.new_document(), 'foo')
 
+    def testPUTEmpty(self):
+        # PUT operation without passing stdin should result in empty content
+        self.setPermissions([change_dtml_documents])
+
+        response = self.publish(self.folder_path+'/index_html',
+                                request_method='PUT',
+                                basic=self.basic_auth)
+
+        self.assertEqual(response.getStatus(), 204)
+        self.assertEqual(self.folder.index_html(), '')
+
+    def testPROPFIND(self):
+        # PROPFIND should work without passing stdin
+        response = self.publish(self.folder_path+'/index_html',
+                                request_method='PROPFIND',
+                                basic=self.basic_auth)
+
+        self.assertEqual(response.getStatus(), 207)
+
+    def testHEAD(self):
+        # HEAD should work without passing stdin
+        response = self.publish(self.folder_path+'/index_html',
+                                request_method='HEAD')
+
+        self.assertEqual(response.getStatus(), 200)
+
     def testSecurityContext(self):
         # The authenticated user should not change as a result of publish
         self.assertEqual(getSecurityManager().getUser().getId(), user_name)
