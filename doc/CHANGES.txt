@@ -33,7 +33,9 @@ Zope Changes
       - Included BTreeFolder2
 
     Bugs fixed
-
+      - Collector #1798, issue1: ZopeTestCase no longer tries to 
+        install products that was installed by Zope during startup.
+	      
       - Collector #1323: applied patch to fix umask problem in zdctl
 
       - Collector #1781: made 'create_mount_points' ZConfig option actually
