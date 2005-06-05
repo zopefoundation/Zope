@@ -48,12 +48,17 @@ import asyncore
 import atexit
 import Lifetime
 
+# As at pywin32-204, we must ensure pywintypes is the first win32 module
+# imported in our process, otherwise we can end up with 2 pywintypesxx.dll
+# instances in our process resulting in:
+# TypeError: The object is not a PySECURITY_ATTRIBUTES object
+import pywintypes
+
 # SetConsoleCtrlHandler not in early pywin32 versions - Signals.py will
 # catch the import error.
 from win32api import SetConsoleCtrlHandler
 import win32con
 import win32event
-import pywintypes
 import ntsecuritycon
 
 import logging
