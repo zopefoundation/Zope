@@ -26,6 +26,8 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #1803: Fixed InitializeClass for some corner case.
+
       - Collector #1798, issue 1: ZopeTestCase no longer tries to 
         install products that was installed by Zope during startup.
 
