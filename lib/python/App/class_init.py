@@ -43,8 +43,8 @@ def default__class_init__(self):
             else:
                 # Supply a name implicitly so that the method can
                 # find the security assertions on its container.
-                d['_implicit__name__'] = 1
-                d['__name__']=name
+                v._implicit__name__ = 1
+                v.__name__ = name
             if name=='manage' or name[:7]=='manage_':
                 name=name+'__roles__'
                 if not have(name):
