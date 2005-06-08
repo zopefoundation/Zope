@@ -15,9 +15,11 @@
 """Windows Services installer/controller for Zope/ZEO/ZRS instance homes"""
 
 import sys, os, time, threading, signal
+
+import pywintypes
+import winerror, win32con
 import win32api, win32event, win32file, win32pipe, win32process, win32security
 import win32service, win32serviceutil, servicemanager
-import pywintypes, winerror, win32con
 
 # the max seconds we're allowed to spend backing off
 BACKOFF_MAX = 300
