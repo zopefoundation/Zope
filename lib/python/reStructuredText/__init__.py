@@ -139,16 +139,25 @@ def HTML(src,
                   'title': parts['title'],
              }
 
+    subheader = '<h%(level)s class="subtitle">%(subtitle)s</h%(level)s>\n' % {
+                  'level': initial_header_level+1,
+                  'subtitle': parts['subtitle'],
+             }
+    
     body = '%(docinfo)s%(body)s' % {
                   'docinfo': parts['docinfo'],
                   'body': parts['body'],
              }
 
-    if parts['title']:
-        output = header + body
-    else:
-        output = body
 
+    output = ''
+    if parts['title']:
+        output = output + header
+    if parts['subtitle']:
+        output = output + subheader
+    output = output + body
+
+    
     warnings = ''.join(warning_stream.messages)
 
     return output.encode(output_encoding)
