@@ -26,6 +26,10 @@ Zope Changes
 
     Bugs Fixed
 
+      - doc/FAQ.txt updated: should bear some resemblance to reality now.
+        (PCGI stuff removed; error information updated; PID information
+        updated; upgrade procedure added; some common version questions added.)
+
       - Collector #1770: Fixed RestructuredText subtitle
 
       - Collector #1803: Fixed InitializeClass for some corner case.
