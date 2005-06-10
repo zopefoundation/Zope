@@ -31,7 +31,7 @@ Zope Changes
       - Collector #1803: Fixed InitializeClass for some corner case.
 
       - Collector #1798, issue 1: ZopeTestCase no longer tries to 
-        install products that was installed by Zope during startup.
+        install products that were installed by Zope during startup.
 
       - Collector #1799: Avoid lying about parent's refcount when
         calling back into Python code.

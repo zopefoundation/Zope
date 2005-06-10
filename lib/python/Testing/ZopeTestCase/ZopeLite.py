@@ -99,6 +99,8 @@ import OFS.Application
 import App.ProductContext
 _write('.')
 
+_patched = False
+
 def _apply_patches():
     # Avoid expensive product import
     def null_import_products(): pass
@@ -116,18 +118,22 @@ def _apply_patches():
     def null_register_help(self,directory='',clear=1,title_re=None): pass
     App.ProductContext.ProductContext.registerHelp = null_register_help
 
+    # Note that we applied the monkey patches
+    global _patched
+    _patched = True
+
 # Do not patch a running Zope
 if not Zope2._began_startup:
     _apply_patches()
 
 # Allow test authors to install Zope products into the test environment. Note
 # that installProduct() must be called at module level -- never from tests.
-from OFS.Application import get_folder_permissions, get_products, \
-     install_product, _installedProducts
+from OFS.Application import get_folder_permissions, get_products, install_product
 from OFS.Folder import Folder
 import Products
 
 _theApp = Zope2.app()
+_installedProducts = {}
 
 def hasProduct(name):
     '''Checks if a product can be found along Products.__path__'''
@@ -137,7 +143,7 @@ def installProduct(name, quiet=0):
     '''Installs a Zope product.'''
     start = time.time()
     meta_types = []
-    if not _installedProducts.has_key(name):
+    if _patched and not _installedProducts.has_key(name):
         for priority, product_name, index, product_dir in get_products():
             if product_name == name:
                 if not quiet: _print('Installing %s ... ' % product_name)

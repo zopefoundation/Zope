@@ -1,6 +1,8 @@
 Unreleased
 - Functional.publish() would hang if it got a request_method argument other
   than GET or HEAD while omitting the stdin argument.
+- installProduct() now becomes a noop if ZopeTestCase did not apply its
+  patches.
 
 0.9.8 (Zope 2.8 edition)
 - Renamed 'doctest' package to 'zopedoctest' because of name-shadowing
