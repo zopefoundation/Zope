@@ -2,7 +2,7 @@ Using Zope 3 Components in Zope 2 Applications
 
   Background
 
-    Zope 3 is next major revision of Zope. It is designed to be more 
+    Zope 3 is the next major revision of Zope. It is designed to be more 
     'programmer-centric' and easier to learn, use and extend. Zope 3 
     introduces an interface-centric component architecture that makes 
     it easier to develop and deploy components without requiring 
@@ -12,7 +12,7 @@ Using Zope 3 Components in Zope 2 Applications
     of the zope.org Website at http://dev.zope.org/Zope3/.
 
     As of Zope 2.8, the "Five" project has been integrated into the 
-    Zope 2 core. The "Five" project implements a compatibily layer 
+    Zope 2 core. The "Five" project implements a compatibility layer 
     that allows many Zope 3 components and patterns to be used in 
     new and existing Zope 2 applications. This provides a number of 
     benefits::
@@ -34,7 +34,7 @@ Using Zope 3 Components in Zope 2 Applications
     Zope Configuration Markup Language (ZCML), adapters, views, 
     utilities, schema-driven content, and Zope 3 add and edit forms.
 
-    Note that the Five layer does *not* attempt provide a ZMI user 
+    Note that the Five layer does *not* attempt to provide a ZMI user 
     interface for Zope 3 components.
 
     Zope 2.8+ includes the essential Zope 3 packages, so it is not 
@@ -54,7 +54,7 @@ Using Zope 3 Components in Zope 2 Applications
     work with Zope 2 interfaces. This means you can safely make a class
     declare both a Zope 2 and Zope 3 interface independently from each
     other. It's a rare case where you need this - you're usually better off 
-    just switching to ``implements()`` for your application possible.
+    just switching to ``implements()`` for your application if possible.
 
     Switching from Zope 2 interfaces to Zope 3 interfaces is easy -- just
     make your interfaces inherit from ``zope.interface.Interface`` instead
@@ -165,6 +165,7 @@ Using Zope 3 Components in Zope 2 Applications
 
     interface
     ---------
+
     Define an interface in ZCML.
 
     layer
@@ -269,3 +270,4 @@ Using Zope 3 Components in Zope 2 Applications
     content classes. Note however that these permissions will be ignored by 
     views anyway, as they are trusted -- it only serves to protect directly 
     exposed methods on content classes (the python scripts and the ZPublisher).
+

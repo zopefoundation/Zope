@@ -198,7 +198,13 @@ Zope Installation Frequently Asked Questions
        "AttributeError, _length" when trying to use the ZCatalog?
 
        In Zope 2.8 we cleaned up the index implementations and therefore
-       you need to migrate every single ZCatalog manually:
+       you need to migrate every single ZCatalog manually.
+
+       Notice: **YOU SHOULD BACKUP YOUR var/Data.fs file before starting 
+       the migration**, see http://www.zope.org/Wikis/ZODB/FileStorageBackup 
+       for backup instructions.
+
+       To perform the migration:
 
         - go to the ZMI 
 
@@ -215,10 +221,7 @@ Zope Installation Frequently Asked Questions
           take a while
 
         - after the conversion a message will appear: "Indexes
-          converted and reindexes"
-
-        - Notice: **YOU SHOULD BACKUP YOUR var/Data.fs file before
-          starting the migration**
+          converted and reindexed"
 
 
   General
@@ -236,3 +239,4 @@ Zope Installation Frequently Asked Questions
        source will contain the last good HTML returned by the request
        before the error occurred. This is due to caching by the
        browser.  Clear your cache and view the HTML source again.
+
