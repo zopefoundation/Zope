@@ -114,7 +114,7 @@ Test Server Error
   ... GET /test_folder_1_/script?a=2 HTTP/1.1
   ... """, handle_errors=False)
   HTTP/1.1 500 Internal Server Error
-  ...Content-Type: text/html...exceptions.TypeError...
+  ...Content-Type: text/html...TypeError...
 
 Test Unauthorized
 

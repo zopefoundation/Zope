@@ -97,7 +97,8 @@ def setupSiteErrorLog(app=None):
 
 def importObjectFromFile(container, filename, quiet=0):
     '''Imports an object from a (.zexp) file into the given container.'''
-    from ZopeLite import _print
+    from ZopeLite import _print, _patched
+    quiet = quiet or not _patched
     start = time.time()
     if not quiet: _print("Importing %s ... " % os.path.basename(filename))
     container._importObjectFromFile(filename, verify=0)
