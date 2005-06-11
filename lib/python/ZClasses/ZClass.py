@@ -17,6 +17,7 @@ import Method, Basic, Property, AccessControl.Role, re
 
 from ZPublisher.mapply import mapply
 from ExtensionClass import Base
+from Acquisition import aq_base
 from App.FactoryDispatcher import FactoryDispatcher
 from ComputedAttribute import ComputedAttribute
 from Products.PythonScripts.PythonScript import PythonScript
@@ -388,7 +389,7 @@ class ZClass( Base
             product=product,
             id=self.id,
             meta_type=z.meta_type or '',
-            meta_class=self,
+            meta_class=aq_base(self),
             )
 
     def _unregister(self):
@@ -448,10 +449,7 @@ class ZClass( Base
         screen of the new instance's parent Folder. Otherwise,
         the instance will be returned.
         """
-        i=mapply(self._zclass_, (), REQUEST)
-        try: i._setId(id)
-        except AttributeError:
-            i.id=id
+        i = self.fromRequest(id, REQUEST)
         folder=durl=None
         if hasattr(self, 'Destination'):
             d=self.Destination
@@ -461,6 +459,8 @@ class ZClass( Base
         if not hasattr(folder,'_setObject'):
             folder=folder.aq_parent
 
+        # An object is not guarenteed to have the id we passed in.
+        id = i.getId()
         folder._setObject(id, i)
 
         if RESPONSE is not None:
@@ -468,16 +468,23 @@ class ZClass( Base
             except: durl=REQUEST['URL3']
             RESPONSE.redirect(durl+'/manage_workspace')
         else:
-            # An object is not guarenteed to have the id we passed in.
-            id = i.getId()
             return folder._getOb(id)
 
     index_html=createInObjectManager
 
     def fromRequest(self, id=None, REQUEST={}):
-        i=mapply(self._zclass_, (), REQUEST)
-        if id is not None and (not hasattr(i, 'id') or not i.id): i.id=id
-
+        if self._zclass_.__init__ is object.__init__:
+            # there is no user defined __init__, avoid calling
+            # mapply then, as it would fail while trying
+            # to figure out the function properties
+            i = self._zclass_()
+        else:
+            i = mapply(self._zclass_, (), REQUEST)
+        if id is not None:
+            try:
+                i._setId(id)
+            except AttributeError:
+                i.id = id
         return i
 
     def __call__(self, *args, **kw):

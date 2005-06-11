@@ -56,15 +56,20 @@ class ZClassPersistentMetaClass(ExtensionClass.ExtensionClass):
         ExtensionClass.pmc_init_of(result)
         return result
 
+    # copy_reg.py:_slotnames() tries to use this attribute as a cache.
+    # Dont allow this attribute to be written as it may cause us
+    # to register with the data_manager.
+    __slotnames__ = property(None)
+
     def __setattr__(self, name, v):
+        super(ZClassPersistentMetaClass, self).__setattr__(name, v)
         if not ((name.startswith('_p_') or name.startswith('_v'))):
             self._p_maybeupdate(name)
-        super(ZClassPersistentMetaClass, self).__setattr__(name, v)
 
     def __delattr__(self, name):
+        super(ZClassPersistentMetaClass, self).__delattr__(name)
         if not ((name.startswith('_p_') or name.startswith('_v'))):
             self._p_maybeupdate(name)
-        super(ZClassPersistentMetaClass, self).__delattr__(name)
     
     def __setstate__(self, state):
         try:
@@ -92,6 +97,11 @@ class ZClassPersistentMetaClass(ExtensionClass.ExtensionClass):
 
             for k in to_remove:
                 delattr(self, k)
+            
+            try:
+                del cdict['__slotnames__']
+            except KeyError:
+                pass
 
             for k, v in cdict.items():
                 setattr(self, k, v)

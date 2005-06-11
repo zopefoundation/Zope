@@ -18,6 +18,8 @@ To do anything, we need a working Zope object space:
     >>> conn.root()['Application'] = app
     >>> from OFS.Application import initialize
     >>> initialize(app)
+    >>> app.manage_addFolder('sandbox')
+    >>> sandbox = app.sandbox
 
 Once we have an object space, we need to create a product to hold the ZClass:
 
@@ -28,7 +30,90 @@ Then we can create the ZClass in the product:
 
     >>> test.manage_addZClass('C', zope_object=True,  CreateAFactory=True)
 
-Having created a ZClass, we can create an instance:
+Having created a ZClass, we can create an instance.
+
+When setting the 'CreateAFactory' flag, a factory will be created which
+can be called from the web to create a new instance of 'C'. It also places
+an option for adding 'C's in the Add-menu in the ZMI.
+
+    >>> factory = test.C_factory
+
+    >>> factory.__class__
+    <class 'App.Factory.Factory'>
+
+The other objects created are:
+
+    - a permission "C_add_permission" required to access the factory,
+    >>> test.C_add_permission.meta_type
+    'Zope Permission'
+
+    - an initial add-form "C_addForm" which calls
+    >>> test.C_addForm.meta_type
+    'DTML Method'
+
+    - the add-script "C_add" for creating a new 'C' instance
+    >>> test.C_add.meta_type
+    'Script (Python)'
+
+The factory stores the name of the initial page and its permission name:
+
+    >>> factory.initial, factory.permission
+    ('C_addForm', 'Add Cs')
+
+We only need a simple add-script in this scenario:
+
+    >>> factory.initial = 'C_add'
+
+    >>> test.C_add.ZPythonScript_edit('',
+    ...     '##parameters=dispatcher, request\n'
+    ...     'return container.C.createInObjectManager('
+    ...          'request["id"], request)\n')
+    ...
+
+Anonymous users are usually not allowed to create new content:
+
+    add a new user...
+    >>> app.acl_users._addUser('admin', 'pass', 'pass', (), ())
+    >>> user = app.acl_users.getUser('admin').__of__(app.acl_users)
+
+    log in as user 'admin'...
+    >>> from AccessControl.SecurityManagement import newSecurityManager
+    >>> newSecurityManager(None, user)
+
+Now simulate a browser request to add a 'C' instance with id 'z':
+
+    >>> request = {'id': 'z'}
+    >>> sandbox.manage_addProduct['test'].C_factory.index_html(request)
+    Traceback (most recent call last):
+    ...
+    Unauthorized: You are not allowed to access 'C' in this context
+
+All right, allow the admin user to 'Add Cs':
+
+    >>> bool(user.has_permission('Add Cs', sandbox))
+    False
+
+    >>> sandbox.manage_addLocalRoles('admin', ['Admin'])
+    >>> sandbox.manage_permission('Add Cs', roles=['Admin'])
+    
+    >>> bool(user.has_permission('Add Cs', sandbox))
+    True
+
+Try again:
+    
+    >>> request = {'id': 'z'}
+    >>> sandbox.manage_addProduct['test'].C_factory.index_html(request)
+    <C at /sandbox/z>
+    >>> app.sandbox.z
+    <C at /sandbox/z>
+
+Log out:
+
+    >>> from AccessControl.SecurityManagement import noSecurityManager
+    >>> noSecurityManager()
+
+
+From python there is a much simpler way for creating a ZClass instance:
 
     >>> c = test.C()
     >>> c._setId('c')
