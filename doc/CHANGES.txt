@@ -34,6 +34,8 @@ Zope Changes
 
     Bugs fixed
 
+      - Collector #1792: applied patch for broken ZClasses
+
       - Collector #1803: Fixed InitializeClass for some corner case.
 
       - Collector #1798, issue1: ZopeTestCase no longer tries to 

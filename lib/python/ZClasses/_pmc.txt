@@ -205,11 +205,37 @@ Lets create a persistent class that subclasses Persistent:
 
     >>> connection.root()['P'] = P
 
+    >>> tm.commit()
+
+The persistence variables are as expected:
+
+    >>> P._p_oid
+    '\x00\x00\x00\x00\x00\x00\x00\x02'
+    >>> P._p_jar is not None
+    True
+    >>> P._p_serial is not None
+    True
+    >>> P._p_changed
+    False
+
+    >>> initial_serial = P._p_serial
+
     >>> import persistent.mapping
     >>> connection.root()['obs'] = persistent.mapping.PersistentMapping()
     >>> p = P('p')
     >>> connection.root()['obs']['p'] = p
     >>> tm.commit()
+
+The class will be unaffected:
+
+    >>> P._p_oid
+    '\x00\x00\x00\x00\x00\x00\x00\x02'
+    >>> P._p_jar is not None
+    True
+    >>> P._p_serial == initial_serial
+    True
+    >>> P._p_changed
+    False
 
 You might be wondering why we didn't just stick 'p' into the root
 object. We created an intermediate persistent object instead.  We are

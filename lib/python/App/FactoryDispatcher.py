@@ -78,7 +78,7 @@ class FactoryDispatcher(Acquisition.Implicit):
             m=d[name]
             w=getattr(m, '_permissionMapper', None)
             if w is not None:
-                m=ofWrapper(aqwrap(m, getattr(w,'aq_base',w), self))
+                m=aqwrap(m, getattr(w,'aq_base',w), self)
 
             return m
 
@@ -102,10 +102,3 @@ class FactoryDispatcher(Acquisition.Implicit):
         d = update_menu and '/manage_main?update_menu=1' or '/manage_main'
         REQUEST['RESPONSE'].redirect(self.DestinationURL()+d)
 
-
-import ExtensionClass
-class ofWrapper(ExtensionClass.Base):
-    def __init__(self, o):
-        self._o=o
-
-    def __of__(self, parent): return self.__dict__['_o']
