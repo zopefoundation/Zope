@@ -141,8 +141,7 @@ class Function:
                 )
 
         try:
-            h=HTTP()
-            h.connect(self.host, self.port)
+            h=HTTP(self.host, self.port)
             h.putrequest(method, self.rurl)
             for hn,hv in headers.items():
                 h.putheader(translate(hn,dashtrans),hv)
