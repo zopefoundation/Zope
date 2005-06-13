@@ -34,6 +34,9 @@ Zope Changes
 
     Bugs fixed
 
+      - Collector #1808: manage_convertIndexes no longer tries to change the
+        index types causing some trouble with CMF.
+
       - Collector #1548: Fix 'httplib' usage in ZPublisher.Client.
 
       - Collector #1792: applied patch for broken ZClasses
