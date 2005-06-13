@@ -935,12 +935,6 @@ class ZCatalog(Folder, Persistent, Implicit):
                 idx_type = idx.meta_type
                 idx_id = idx.getId()
                 LOG.info('processing index %s' % idx_id)
-                if idx_type == 'FieldIndex' and idx_id in ('start', 'modified', 
-                                                           'end', 'created'):
-                    idx_type = 'DateIndex'
-                if idx_type == 'FieldIndex' and idx_id in ('effective', 
-                                                           'expires'):
-                    idx_type = 'DateRangeIndex'
                 indexed_attrs = getattr(idx, 'indexed_attrs', None)
                 self.delIndex(idx.getId())
                 self.addIndex(idx_id, idx_type)
