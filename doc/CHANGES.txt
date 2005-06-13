@@ -22,6 +22,12 @@ Zope Changes
 
    - Collector #1233: port ZOPE_CONFIG patch from Zope 2.7 to Zope 2.8
 
+  After Zope 2.8.0
+
+    Bugs Fixed
+
+      - Collector #1548: Fix 'httplib' usage in ZPublisher.Client.
+
   Zope 2.8.0 (2005/06/11)
 
     Bugs Fixed
