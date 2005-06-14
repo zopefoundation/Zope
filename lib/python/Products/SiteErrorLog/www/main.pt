@@ -1,5 +1,5 @@
-<h1 tal:replace="structure here/manage_page_header">Header</h1>
-<h1 tal:replace="structure here/manage_tabs">Tabs</h1>
+<h1 tal:replace="structure context/manage_page_header">Header</h1>
+<h1 tal:replace="structure context/manage_tabs">Tabs</h1>
 
 <p class="form-help">
 This page lists the exceptions that have occurred in this site
@@ -89,7 +89,11 @@ No exceptions logged.
       Application object has no attribute "zzope"</span>
    </a>
   </td>
-  <td><a href="#" tal:attributes="href string:${here/absolute_url}/forgetEntry?id=${entry/id}"><img title="Forget this entry" src="/misc_/SiteErrorLog/ok.gif" border="0"></a></td>
+  <td><a href="#"
+     tal:attributes="href string:${context/absolute_url}/forgetEntry?id=${entry/id}"
+  ><img title="Forget this entry" src="/misc_/SiteErrorLog/ok.gif" border="0"
+     tal:attributes="src string:${request/BASEPATH1}/misc_/SiteErrorLog/ok.gif"
+  ></a></td>
  </tr>
 </table>
 
@@ -103,5 +107,4 @@ No exceptions logged.
 </form>
 </p>
 
-<h1 tal:replace="structure here/manage_page_footer">Footer</h1>
-
+<h1 tal:replace="structure context/manage_page_footer">Footer</h1>
