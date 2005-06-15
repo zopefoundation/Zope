@@ -621,6 +621,18 @@
      <metadefault>off</metadefault>
   </key>
 
+  <key name="verbose-security" datatype="boolean"
+       default="off">
+     <description>
+     Set this directive to 'on' to enable verbose security exceptions.
+     This can help you track down the reason for Unauthorized exceptions,
+     but it is not suitable for public sites because it may reveal
+     unnecessary information about the structure of your site.  Only
+     works if security-policy-implementation is set to 'PYTHON'.
+     </description>
+     <metadefault>off</metadefault>
+  </key>
+
   <key name="maximum-number-of-session-objects" datatype="integer"
        default="1000" handler="maximum_number_of_session_objects">
      <description>

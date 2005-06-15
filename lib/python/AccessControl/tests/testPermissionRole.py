@@ -63,6 +63,11 @@ def assertPRoles(ob, permission, expect):
     assert roles == roles2 or tuple(roles) == tuple(roles2), (
         'Different methods of checking roles computed unequal results')
     same = 0
+    if roles:
+        # When verbose security is enabled, permission names are
+        # embedded in the computed roles.  Remove the permission
+        # names.
+        roles = [r for r in roles if not r.endswith('_Permission')]
     if roles is None or expect is None:
         if (roles is None or tuple(roles) == ('Anonymous',)) and (
             expect is None or tuple(expect) == ('Anonymous',)):

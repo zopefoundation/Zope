@@ -2254,9 +2254,18 @@ static PyObject *
 module_setDefaultBehaviors(PyObject *ignored, PyObject *args)
 {
   PyObject *result = NULL;
-  int own, auth;
+  int own, auth, verbose;
 
-  if (PyArg_ParseTuple(args, "ii:setDefaultBehaviors", &own, &auth)) {
+  if (PyArg_ParseTuple(args, "iii:setDefaultBehaviors", &own, &auth,
+                       &verbose)) {
+    if (verbose) {
+      PyErr_SetString(PyExc_NotImplementedError,
+                      "This security policy implementation does not implement "
+                      "the verbose option.  To enable verbose security "
+                      "exceptions, add 'security-policy-implementation "
+                      "python' to etc/zope.conf.");
+      return NULL;
+    }
     ownerous = own;
     authenticated = authenticated;
     result = Py_None;

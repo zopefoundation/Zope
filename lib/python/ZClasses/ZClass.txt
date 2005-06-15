@@ -83,10 +83,12 @@ Anonymous users are usually not allowed to create new content:
 Now simulate a browser request to add a 'C' instance with id 'z':
 
     >>> request = {'id': 'z'}
-    >>> sandbox.manage_addProduct['test'].C_factory.index_html(request)
-    Traceback (most recent call last):
-    ...
-    Unauthorized: You are not allowed to access 'C' in this context
+    >>> from zExceptions.unauthorized import Unauthorized
+    >>> try:
+    ...     sandbox.manage_addProduct['test'].C_factory.index_html(request)
+    ... except Unauthorized:
+    ...     print 'not authorized'
+    not authorized
 
 All right, allow the admin user to 'Add Cs':
 

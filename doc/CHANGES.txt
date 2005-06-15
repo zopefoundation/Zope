@@ -24,6 +24,12 @@ Zope Changes
 
   After Zope 2.8.0
 
+    Features Added
+
+      - Verbose security exception reporting has been folded into Zope,
+        removing the need for the VerboseSecurity product.  See the
+        documentation for the "verbose-security" option in zope.conf.
+
     Bugs Fixed
 
       - Collector #1548: Fix 'httplib' usage in ZPublisher.Client.

@@ -30,6 +30,19 @@ from Products.Five.tests.dummy import Dummy1, Dummy2
 from Globals import InitializeClass
 
 
+def assertRolesEqual(actual, expect):
+    if actual:
+        # filter out embedded permissions, which appear when
+        # verbose security is enabled
+        filtered = [r for r in actual if not r.endswith('_Permission')]
+        if isinstance(actual, tuple):
+            actual = tuple(filtered)
+        else:
+            actual = filtered
+    if actual != expect:
+        raise AssertionError('%s != %s' % (repr(actual), repr(expect)))
+
+
 class PageSecurityTest(FiveTestCase):
 
     def test_page_security(self):
@@ -65,7 +78,7 @@ class PageSecurityTest(FiveTestCase):
         view_roles = getattr(view, '__roles__', None)
         self.failIf(view_roles is None)
         self.failIf(view_roles == ())
-        self.assertEquals(view_roles, ('Manager',))
+        assertRolesEqual(view_roles, ('Manager',))
 
 
 class SecurityEquivalenceTest(FiveTestCase):
@@ -109,29 +122,29 @@ class SecurityEquivalenceTest(FiveTestCase):
         self.assertEquals(ac1, ac2)
 
         bar_roles1 = getattr(self.dummy1, 'bar__roles__').__of__(self.dummy1)
-        self.assertEquals(bar_roles1.__of__(self.dummy1), ('Manager',))
+        assertRolesEqual(bar_roles1.__of__(self.dummy1), ('Manager',))
 
         keg_roles1 = getattr(self.dummy1, 'keg__roles__').__of__(self.dummy1)
-        self.assertEquals(keg_roles1.__of__(self.dummy1), ('Manager',))
+        assertRolesEqual(keg_roles1.__of__(self.dummy1), ('Manager',))
 
         foo_roles1 = getattr(self.dummy1, 'foo__roles__')
-        self.assertEquals(foo_roles1, None)
+        assertRolesEqual(foo_roles1, None)
 
         # XXX Not yet supported.
         # baz_roles1 = getattr(self.dummy1, 'baz__roles__')
         # self.assertEquals(baz_roles1, ())
 
         bar_roles2 = getattr(self.dummy2, 'bar__roles__').__of__(self.dummy2)
-        self.assertEquals(bar_roles2.__of__(self.dummy2), ('Manager',))
+        assertRolesEqual(bar_roles2.__of__(self.dummy2), ('Manager',))
 
         keg_roles2 = getattr(self.dummy2, 'keg__roles__').__of__(self.dummy2)
-        self.assertEquals(keg_roles2.__of__(self.dummy2), ('Manager',))
+        assertRolesEqual(keg_roles2.__of__(self.dummy2), ('Manager',))
 
         foo_roles2 = getattr(self.dummy2, 'foo__roles__')
-        self.assertEquals(foo_roles2, None)
+        assertRolesEqual(foo_roles2, None)
 
         baz_roles2 = getattr(self.dummy2, 'baz__roles__')
-        self.assertEquals(baz_roles2, ())
+        assertRolesEqual(baz_roles2, ())
 
 
 class CheckPermissionTest(FiveTestCase):
