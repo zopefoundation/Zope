@@ -500,12 +500,11 @@ instancehome $INSTANCE
 # Directive: security-policy-implementation
 #
 # Description:
-#     The default Zope security machinery is implemented in C.
-#     Change this to "python" to use the Python version of the
-#     Zope security machinery.  This impacts performance but
-#     is useful for debugging purposes and required by Products such as
-#     VerboseSecurity, which need to "monkey-patch" the security
-#     machinery.
+#     The default Zope security machinery is implemented in C.  Change
+#     this to "python" to use the Python version of the Zope security
+#     machinery.  This setting may impact performance but is useful
+#     for debugging purposes.  See also the "verbose-security" option
+#     below.
 #
 # Default: C
 #
@@ -541,6 +540,24 @@ instancehome $INSTANCE
 # Example:
 #
 #    skip-ownership-checking on
+
+
+# Directive: verbose-security
+#
+# Description:
+#     By default, Zope reports authorization failures in a terse manner in
+#     order to avoid revealing unnecessary information.  This option
+#     modifies the Zope security policy to report more information about
+#     the reason for authorization failures.  It's designed for debugging.
+#     If you enable this option, you must also set the
+#     'security-policy-implementation' to 'python'.
+#
+# Default: off
+#
+# Example:
+#
+#    security-policy-implementation python
+#    verbose-security on
 
 
 # Directive: maximum-number-of-session-objects

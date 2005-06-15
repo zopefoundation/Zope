@@ -316,6 +316,28 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
     def __len__(self):
         return 1
 
+    def __repr__(self):
+        """Show the physical path of the object and its context if available.
+        """
+        try:
+            path = '/'.join(self.getPhysicalPath())
+        except:
+            return Base.__repr__(self)
+        context_path = None
+        context = aq_parent(self)
+        container = aq_parent(aq_inner(self))
+        if aq_base(context) is not aq_base(container):
+            try:
+                context_path = '/'.join(context.getPhysicalPath())
+            except:
+                context_path = None
+        res = '<%s' % self.__class__.__name__
+        res += ' at %s' % path
+        if context_path:
+            res += ' used for %s' % context_path
+        res += '>'
+        return res
+
 Globals.default__class_init__(Item)
 
 
@@ -383,27 +405,3 @@ class SimpleItem(Item, Globals.Persistent,
 
     __ac_permissions__=(('View', ()),)
 
-    def __repr__(self):
-        """Show the physical path of the object and its context if available.
-        """
-        try:
-            path = '/'.join(self.getPhysicalPath())
-        except:
-            path = None
-        context_path = None
-        context = aq_parent(self)
-        container = aq_parent(aq_inner(self))
-        if aq_base(context) is not aq_base(container):
-            try:
-                context_path = '/'.join(context.getPhysicalPath())
-            except:
-                context_path = None
-        res = '<%s' % self.__class__.__name__
-        if path:
-            res += ' at %s' % path
-        else:
-            res += ' at 0x%x' % id(self)
-        if context_path:
-            res += ' used for %s' % context_path
-        res += '>'
-        return res

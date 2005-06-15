@@ -21,7 +21,7 @@ from Acquisition import aq_parent
 from Acquisition import aq_inner
 from Acquisition import aq_acquire
 from ExtensionClass import Base
-from zLOG import LOG, PROBLEM
+from zLOG import LOG, BLATHER, PROBLEM
 
 # This is used when a permission maps explicitly to no permission.  We
 # try and get this from cAccessControl first to make sure that if both
@@ -47,6 +47,13 @@ name_trans = string.maketrans(''.join(name_trans), '_' * len(name_trans))
 
 _default_roles = ('Manager',)
 
+# If _embed_permission_in_roles is enabled, computed __roles__
+# attributes will often include a special role that encodes the name
+# of the permission from which the roles were derived.  This is useful
+# for verbose security exceptions.
+_embed_permission_in_roles = 0
+
+
 def rolesForPermissionOn(perm, object, default=_default_roles, n=None):
     """Return the roles that have the given permission on the given object
     """
@@ -57,14 +64,20 @@ def rolesForPermissionOn(perm, object, default=_default_roles, n=None):
         if hasattr(object, n):
             roles = getattr(object, n)
             if roles is None:
+                if _embed_permission_in_roles:
+                    return ('Anonymous', n)
                 return 'Anonymous',
 
             t = type(roles)
             if t is tuple:
                 # If we get a tuple, then we don't acquire
                 if r is None:
+                    if _embed_permission_in_roles:
+                        return roles + (n,)
                     return roles
-                return r+list(roles)
+                if _embed_permission_in_roles:
+                    return r + list(roles) + [n]
+                return r + list(roles)
 
             if t is str:
                 # We found roles set to a name.  Start over
@@ -78,7 +91,8 @@ def rolesForPermissionOn(perm, object, default=_default_roles, n=None):
             elif roles:
                 if r is None:
                     r = list(roles)
-                else: r = r + list(roles)
+                else:
+                    r = r + list(roles)
 
         object = getattr(object, 'aq_inner', None)
         if object is None:
@@ -86,8 +100,18 @@ def rolesForPermissionOn(perm, object, default=_default_roles, n=None):
         object = object.aq_parent
 
     if r is None:
+        if _embed_permission_in_roles:
+            if default:
+                if isinstance(default, tuple):
+                    return default + (n,)
+                else:
+                    return default + [n]
+            else:
+                return [n]
         return default
 
+    if _embed_permission_in_roles:
+        return r + [n]
     return r
 
 
@@ -173,10 +197,10 @@ from AccessControl.ZopeSecurityPolicy import getRoles  # XXX
 
 class ZopeSecurityPolicy:
 
-    def __init__(self, ownerous=1, authenticated=1):
+    def __init__(self, ownerous=1, authenticated=1, verbose=0):
         """Create a Zope security policy.
 
-        Two optional keyword arguments may be provided:
+        Optional arguments may be provided:
 
         ownerous -- Untrusted users can create code
                     (e.g. Python scripts or templates),
@@ -195,20 +219,28 @@ class ZopeSecurityPolicy:
                     scenario is a ZEO configuration in which some
                     clients allow only public access and other
                     clients allow full management.
+
+        verbose --  Include debugging information in Unauthorized
+                    exceptions.  Not suitable for public sites.
         """
         self._ownerous = ownerous
         self._authenticated = authenticated
+        self._verbose = verbose
 
     def validate(self, accessed, container, name, value, context,
                  roles=_noroles, getattr=getattr, _noroles=_noroles,
                  valid_aq_=('aq_parent','aq_inner', 'aq_explicit')):
 
-        # Note: accessed is not used.
-
         ############################################################
         # Provide special rules for the acquisition attributes
         if isinstance(name, str):
             if name.startswith('aq_') and name not in valid_aq_:
+                if self._verbose:
+                    raiseVerbose(
+                        'aq_* names (other than %s) are not allowed'
+                        % ', '.join(valid_aq_),
+                        accessed, container, name, value, context
+                        )
                 raise Unauthorized(name, value)
 
         containerbase = aq_base(container)
@@ -238,6 +270,10 @@ class ZopeSecurityPolicy:
                 # Either container or a list of roles is required
                 # for ZopeSecurityPolicy to know whether access is
                 # allowable.
+                if self._verbose:
+                    raiseVerbose(
+                        'No container provided',
+                        accessed, container, name, value, context)
                 raise Unauthorized(name, value)
 
             roles = getattr(container, '__roles__', roles)
@@ -245,12 +281,22 @@ class ZopeSecurityPolicy:
                 if containerbase is container:
                     # Container is not wrapped.
                     if containerbase is not accessedbase:
+                        if self._verbose:
+                            raiseVerbose(
+                                'Unable to find __roles__ in the container '
+                                'and the container is not wrapped',
+                                accessed, container, name, value, context)
                         raise Unauthorized(name, value)
                 else:
                     # Try to acquire roles
                     try: roles = container.aq_acquire('__roles__')
                     except AttributeError:
                         if containerbase is not accessedbase:
+                            if self._verbose:
+                                raiseVerbose(
+                                    'Unable to find or acquire __roles__ '
+                                    'from the container',
+                                    accessed, container, name, value, context)
                             raise Unauthorized(name, value)
 
             # We need to make sure that we are allowed to
@@ -276,6 +322,10 @@ class ZopeSecurityPolicy:
                         p = p(name, value)
 
             if not p:
+                if self._verbose:
+                    raiseVerbose(
+                        'The container has no security assertions',
+                        accessed, container, name, value, context)
                 raise Unauthorized(name, value)
 
             if roles is _noroles:
@@ -307,6 +357,26 @@ class ZopeSecurityPolicy:
                 if (owner is not None) and not owner.allowed(value, roles):
                     # We don't want someone to acquire if they can't
                     # get an unacquired!
+                    if self._verbose:
+                        if len(roles) < 1:
+                            raiseVerbose(
+                                "The object is marked as private",
+                                accessed, container, name, value, context)
+                        elif userHasRolesButNotInContext(owner, value, roles):
+                            raiseVerbose(
+                                "The owner of the executing script is defined "
+                                "outside the context of the object being "
+                                "accessed",
+                                accessed, container, name, value, context,
+                                required_roles=roles, eo_owner=owner, eo=eo)
+                        else:
+                            raiseVerbose(
+                                "The owner of the executing script does not "
+                                "have the required permission",
+                                accessed, container, name, value, context,
+                                required_roles=roles, eo_owner=owner, eo=eo,
+                                eo_owner_roles=getUserRolesInContext(
+                                owner, value))
                     raise Unauthorized(name, value)
 
             # Proxy roles, which are a lot safer now.
@@ -324,6 +394,16 @@ class ZopeSecurityPolicy:
                         if not owner._check_context(container):
                             # container is higher up than the owner,
                             # deny access
+                            if self._verbose:
+                                raiseVerbose(
+                                    "The owner of the executing script is "
+                                    "defined outside the context of the "
+                                    "object being accessed.  The script has "
+                                    "proxy roles, but they do not apply in "
+                                    "this context.",
+                                    accessed, container, name, value, context,
+                                    required_roles=roles, eo_owner=owner,
+                                    eo=eo)
                             raise Unauthorized(name, value)
 
                 for r in proxy_roles:
@@ -331,6 +411,18 @@ class ZopeSecurityPolicy:
                         return 1
 
                 # Proxy roles actually limit access!
+                if self._verbose:
+                    if len(roles) < 1:
+                        raiseVerbose(
+                            "The object is marked as private",
+                            accessed, container, name, value, context)
+                    else:
+                        raiseVerbose(
+                            "The proxy roles set on the executing script "
+                            "do not allow access",
+                            accessed, container, name, value, context,
+                            eo=eo, eo_proxy_roles=proxy_roles,
+                            required_roles=roles)
                 raise Unauthorized(name, value)
 
         try:
@@ -339,6 +431,29 @@ class ZopeSecurityPolicy:
         except AttributeError:
             pass
 
+        if self._verbose:
+            if len(roles) < 1:
+                raiseVerbose(
+                    "The object is marked as private",
+                    accessed, container, name, value, context)
+            elif not self._authenticated:
+                raiseVerbose(
+                    "Authenticated access is not allowed by this "
+                    "security policy",
+                    accessed, container, name, value, context)
+            elif userHasRolesButNotInContext(context.user, value, roles):
+                raiseVerbose(
+                    "Your user account is defined outside "
+                    "the context of the object being accessed",
+                    accessed, container, name, value, context,
+                    required_roles=roles, user=context.user)
+            else:
+                raiseVerbose(
+                    "Your user account does not "
+                    "have the required permission",
+                    accessed, container, name, value, context,
+                    required_roles=roles, user=context.user,
+                    user_roles=getUserRolesInContext(context.user, value))
         raise Unauthorized(name, value)
 
     def checkPermission(self, permission, object, context):
@@ -360,13 +475,16 @@ class ZopeSecurityPolicy:
 try: max_stack_size = int(os.environ.get('Z_MAX_STACK_SIZE','100'))
 except: max_stack_size = 100
 
-def setDefaultBehaviors(ownerous, authenticated):
+def setDefaultBehaviors(ownerous, authenticated, verbose):
     global _defaultPolicy
+    global _embed_permission_in_roles
     _defaultPolicy = ZopeSecurityPolicy(
         ownerous=ownerous,
-        authenticated=authenticated)
+        authenticated=authenticated,
+        verbose=verbose)
+    _embed_permission_in_roles = verbose
 
-setDefaultBehaviors(True, True)
+setDefaultBehaviors(True, True, False)
 
 
 class SecurityManager:
@@ -575,3 +693,139 @@ def guarded_getattr(inst, name, default=_marker):
     aq_acquire(inst, name, aq_validate, validate)
     
     return v
+
+
+# Helpers for verbose authorization exceptions
+# --------------------------------------------
+
+def item_repr(ob):
+    """Generates a repr without angle brackets (to avoid HTML quoting)"""
+    return repr(ob).replace('<', '(').replace('>', ')')
+
+def simplifyRoles(roles):
+    """Sorts and removes duplicates from a role list."""
+    d = {}
+    for r in roles:
+        d[r] = 1
+    lst = d.keys()
+    lst.sort()
+    return lst
+
+def raiseVerbose(msg, accessed, container, name, value, context,
+                 required_roles=None,
+                 user_roles=None,
+                 user=None,
+                 eo=None,
+                 eo_owner=None,
+                 eo_owner_roles=None,
+                 eo_proxy_roles=None,
+                 ):
+    """Raises an Unauthorized error with a verbose explanation."""
+
+    s = '%s.  Access to %s of %s' % (
+        msg, repr(name), item_repr(container))
+    if aq_base(container) is not aq_base(accessed):
+        s += ', acquired through %s,' % item_repr(accessed)
+    info = [s + ' denied.']
+
+    if user is not None:
+        try:
+            ufolder = '/'.join(aq_parent(aq_inner(user)).getPhysicalPath())
+        except:
+            ufolder = '(unknown)'
+        info.append('Your user account, %s, exists at %s.' % (
+            str(user), ufolder))
+
+    if required_roles is not None:
+        p = None
+        required_roles = list(required_roles)
+        for r in required_roles:
+            if r.startswith('_') and r.endswith('_Permission'):
+                p = r[1:]
+                required_roles.remove(r)
+                break
+        sr = simplifyRoles(required_roles)
+        if p:
+            # got a permission name
+            info.append('Access requires %s, '
+                        'granted to the following roles: %s.' %
+                        (p, sr))
+        else:
+            # permission name unknown
+            info.append('Access requires one of the following roles: %s.'
+                        % sr)
+
+    if user_roles is not None:
+        info.append(
+            'Your roles in this context are %s.' % simplifyRoles(user_roles))
+
+    if eo is not None:
+        s = 'The executing script is %s' % item_repr(eo)
+        if eo_proxy_roles is not None:
+            s += ', with proxy roles: %s' % simplifyRoles(eo_proxy_roles)
+        if eo_owner is not None:
+            s += ', owned by %s' % repr(eo_owner)
+        if eo_owner_roles is not None:
+            s += ', who has the roles %s' % simplifyRoles(eo_owner_roles)
+        info.append(s + '.')
+
+    text = ' '.join(info)
+    LOG('Zope Security Policy', BLATHER, 'Unauthorized: %s' % text)
+    raise Unauthorized(text)
+
+def getUserRolesInContext(user, context):
+    """Returns user roles for a context."""
+    if hasattr(aq_base(user), 'getRolesInContext'):
+        return user.getRolesInContext(context)
+    else:
+        return ()
+
+def userHasRolesButNotInContext(user, object, object_roles):
+    '''Returns 1 if the user has any of the listed roles but
+    is not defined in a context which is not an ancestor of object.
+    '''
+    if object_roles is None or 'Anonymous' in object_roles:
+        return 0
+    usr_roles = getUserRolesInContext(user, object)
+    for role in object_roles:
+        if role in usr_roles:
+            # User has the roles.
+            return (not verifyAcquisitionContext(
+                user, object, object_roles))
+    return 0
+
+def verifyAcquisitionContext(user, object, object_roles=None):
+    """Mimics the relevant section of User.allowed().
+
+    Returns true if the object is in the context of the user's user folder.
+    """
+    ufolder = aq_parent(user)
+    ucontext = aq_parent(ufolder)
+    if ucontext is not None:
+        if object is None:
+            # This is a strange rule, though
+            # it doesn't cause any security holes. SDH
+            return 1
+        if not hasattr(object, 'aq_inContextOf'):
+            if hasattr(object, 'im_self'):
+                # This is a method.  Grab its self.
+                object=object.im_self
+            if not hasattr(object, 'aq_inContextOf'):
+                # object is not wrapped, therefore we
+                # can't determine context.
+                # Fail the access attempt.  Otherwise
+                # this would be a security hole.
+                return None
+        if not object.aq_inContextOf(ucontext, 1):
+            if 'Shared' in object_roles:
+                # Old role setting. Waaa
+                object_roles=user._shared_roles(object)
+                if 'Anonymous' in object_roles:
+                    return 1
+            return None
+    # Note that if the user were not wrapped, it would
+    # not be possible to determine the user's context
+    # and this method would return 1.
+    # However, as long as user folders always return
+    # wrapped user objects, this is safe.
+    return 1

@@ -151,7 +151,8 @@ class ZopeStarter:
             self.cfg.security_policy_implementation)
         AccessControl.setDefaultBehaviors(
             not self.cfg.skip_ownership_checking,
-            not self.cfg.skip_authentication_checking)
+            not self.cfg.skip_authentication_checking,
+            self.cfg.verbose_security)
 
     def setupLocale(self):
         # set a locale if one has been specified in the config

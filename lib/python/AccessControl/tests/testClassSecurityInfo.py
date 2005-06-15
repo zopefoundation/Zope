@@ -61,7 +61,8 @@ class ClassSecurityInfoTests(unittest.TestCase):
         # correctly. Note that this uses carnal knowledge of the internal
         # structures used to store this information!
         object = Test()
-        imPermissionRole = object.foo__roles__
+        imPermissionRole = [r for r in object.foo__roles__
+                            if not r.endswith('_Permission')]
         self.failUnless(len(imPermissionRole) == 4)
 
         for item in ('Manager', 'Role A', 'Role B', 'Role C'):
