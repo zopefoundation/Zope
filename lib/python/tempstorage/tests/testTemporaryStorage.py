@@ -7,6 +7,11 @@ from ZODB.tests import StorageTestBase, BasicStorage, \
      Synchronization, ConflictResolution, \
      Corruption, RevisionStorage, MTStorage
 
+from persistent import Persistent
+import transaction
+from ZODB.DB import DB
+from ZODB.POSException import ReadConflictError
+
 class TemporaryStorageTests(
     StorageTestBase.StorageTestBase,
 ##    RevisionStorage.RevisionStorage, # not a revision storage, but passes
@@ -48,6 +53,48 @@ class TemporaryStorageTests(
         finally:
             TemporaryStorage.CONFLICT_CACHE_GCEVERY = old_gcevery
             TemporaryStorage.CONFLICT_CACHE_MAXAGE =  old_maxage
+
+    def doreadconflict(self, db, mvcc):
+        tm1 = transaction.TransactionManager()
+        conn = db.open(mvcc=mvcc, transaction_manager=tm1)
+        r1 = conn.root()
+        obj = MinPO('root')
+        r1["p"] = obj
+        obj = r1["p"]
+        obj.child1 = MinPO('child1')
+        tm1.get().commit()
+
+        # start a new transaction with a new connection
+        tm2 = transaction.TransactionManager()
+        cn2 = db.open(mvcc=mvcc, transaction_manager=tm2)
+        r2 = cn2.root()
+
+        self.assertEqual(r1._p_serial, r2._p_serial)
+
+        obj.child2 = MinPO('child2')
+        tm1.get().commit()
+
+        # resume the transaction using cn2
+        obj = r2["p"]
+
+        # An attempt to access obj.child1 should fail with an RCE
+        # below if conn isn't using mvcc, because r2 was read earlier
+        # in the transaction and obj was modified by the other
+        # transaction.
+
+        obj.child1 
+        return obj
+
+    def checkWithoutMVCCRaisesReadConflict(self):
+        db = DB(self._storage)
+        self.assertRaises(ReadConflictError, self.doreadconflict, db, False)
+
+    def checkWithMVCCDoesntRaiseReadConflict(self):
+        db = DB(self._storage)
+        ob = self.doreadconflict(db, True)
+        self.assertEquals(ob.__class__, MinPO)
+        self.assertEquals(getattr(ob, 'child1', MinPO()).value, 'child1')
+        self.failIf(getattr(ob, 'child2', None))
 
 def test_suite():
     suite = unittest.makeSuite(TemporaryStorageTests, 'check')
