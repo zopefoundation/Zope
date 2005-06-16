@@ -28,6 +28,7 @@ from ZODB import POSException
 from ZODB.BaseStorage import BaseStorage
 from ZODB.ConflictResolution import ConflictResolvingStorage, ResolvedSerial
 import time
+import bisect
 
 # keep old object revisions for CONFLICT_CACHE_MAXAGE seconds
 CONFLICT_CACHE_MAXAGE = 60
@@ -135,6 +136,31 @@ class TemporaryStorage(BaseStorage, ConflictResolvingStorage):
         finally:
             self._lock_release()
 
+    def loadBefore(self, oid, tid):
+        """Return most recent revision of oid before tid committed
+        (for MVCC)
+        ."""
+        # implementation stolen from ZODB.test_storage.MinimalMemoryStorage
+        self._lock_acquire()
+        try:
+            tids = [stid for soid, stid in self._conflict_cache if soid == oid]
+            if not tids:
+                raise KeyError, oid
+            tids.sort()
+            i = bisect.bisect_left(tids, tid) -1
+            if i == -1:
+                return None
+            start_tid = tids[i]
+            j = i + 1
+            if j == len(tids):
+                end_tid = None
+            else:
+                end_tid = tids[j]
+            data = self.loadSerial(oid, start_tid)
+            return data, start_tid, end_tid
+        finally:
+            self._lock_release()
+
     def store(self, oid, serial, data, version, transaction):
         if transaction is not self._transaction:
             raise POSException.StorageTransactionError(self, transaction)
@@ -163,8 +189,6 @@ class TemporaryStorage(BaseStorage, ConflictResolvingStorage):
                 oserial = serial
             newserial=self._tid
             self._tmp.append((oid, data))
-            now = time.time()
-            self._conflict_cache[(oid, newserial)] = data, now
             return serial == oserial and newserial or ResolvedSerial
         finally:
             self._lock_release()
@@ -238,6 +262,8 @@ class TemporaryStorage(BaseStorage, ConflictResolvingStorage):
 
             index[oid] =  serial
             opickle[oid] = data
+            now = time.time()
+            self._conflict_cache[(oid, serial)] = data, now
 
         if zeros:
             for oid in zeros.keys():
