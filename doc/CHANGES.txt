@@ -30,6 +30,10 @@ Zope Changes
         removing the need for the VerboseSecurity product.  See the
         documentation for the "verbose-security" option in zope.conf.
 
+      - "TemporaryStorage" (the storage that is used mainly to back the
+        default sessioning database) is now MVCC capable, which essentially
+        means that its usage will no longer generate ZODB ReadConflictErrors.
+
     Bugs Fixed
 
       - Collector #1548: Fix 'httplib' usage in ZPublisher.Client.
