@@ -128,7 +128,6 @@ th {
   margin-bottom: 6px;
   margin-top: 6px;
   padding: 4px;
-  width: 100%;
   color: #660033;
 }
 
