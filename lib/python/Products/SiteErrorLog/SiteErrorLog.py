@@ -22,7 +22,6 @@ import time
 import logging
 from random import random
 from thread import allocate_lock
-from types import StringType, UnicodeType
 
 import Globals
 from Acquisition import aq_base
@@ -117,9 +116,6 @@ class SiteErrorLog (SimpleItem):
             temp_logs[self._p_oid] = log
         return log
 
-    # Exceptions that happen all the time, so we dont need
-    # to log them. Eventually this should be configured
-    # through-the-web.
     security.declareProtected(use_error_logging, 'forgetEntry')
     def forgetEntry(self, id, REQUEST=None):
         """Removes an entry from the error log."""
@@ -132,10 +128,13 @@ class SiteErrorLog (SimpleItem):
             i += 1
         cleanup_lock.release()
         if REQUEST is not None:
-           return Globals.MessageDialog(title='Entry removed',
-                message='Error log entry was removed.',
-                action='./manage_main',)
+            REQUEST.RESPONSE.redirect(
+                '%s/manage_main?manage_tabs_message=Error+log+entry+was+removed.' %
+                self.absolute_url())
 
+    # Exceptions that happen all the time, so we dont need
+    # to log them. Eventually this should be configured
+    # through-the-web.
     _ignored_exceptions = ( 'Unauthorized', 'NotFound', 'Redirect' )
 
     security.declarePrivate('raising')
@@ -155,8 +154,7 @@ class SiteErrorLog (SimpleItem):
                 if strtype in self._ignored_exceptions:
                     return
 
-                if not isinstance(info[2], StringType) and not isinstance(
-                    info[2], UnicodeType):
+                if not isinstance(info[2], basestring):
                     tb_text = ''.join(
                         format_exception(*info, **{'as_html': 0}))
                     tb_html = ''.join(
