@@ -153,7 +153,7 @@ class TemporaryStorage(BaseStorage, ConflictResolvingStorage):
             start_tid = tids[i]
             j = i + 1
             if j == len(tids):
-                end_tid = None
+                return None # the caller can't deal with current data
             else:
                 end_tid = tids[j]
             data = self.loadSerial(oid, start_tid)
