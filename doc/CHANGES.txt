@@ -34,6 +34,8 @@ Zope Changes
 
     Bugs fixed
 
+      - Fixed CMFBTreeFolder for CMF 1.5+
+
       - Collector #1808: manage_convertIndexes no longer tries to change the
         index types causing some trouble with CMF.
 

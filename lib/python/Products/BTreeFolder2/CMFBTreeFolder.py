@@ -18,7 +18,10 @@ $Id: CMFBTreeFolder.py,v 1.2 2002/10/30 14:54:18 shane Exp $
 
 import Globals
 from BTreeFolder2 import BTreeFolder2Base
-from Products.CMFCore.PortalFolder import PortalFolder
+try:
+    from Products.CMFCore.PortalFolder import PortalFolderBase as PortalFolder
+except ImportError:
+    from Products.CMFCore.PortalFolder import PortalFolder
 import Products.CMFCore.PortalFolder
 
 
