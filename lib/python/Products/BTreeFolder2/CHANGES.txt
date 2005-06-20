@@ -1,3 +1,7 @@
+Version 1.0.2
+
+  - Made CMFBTreeFolder compatible with CMF 1.5+
+
 Version 1.0.1
 
   - ConflictError was swallowed by _delObject. This could break code

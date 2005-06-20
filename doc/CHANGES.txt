@@ -36,6 +36,8 @@ Zope Changes
 
     Bugs Fixed
 
+      - Fixed CMFBTreeFolder for CMF 1.5+
+
       - Collector #1548: Fix 'httplib' usage in ZPublisher.Client.
 
       - Collector #1808: manage_convertIndexes no longer tries to change the
