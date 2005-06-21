@@ -373,6 +373,7 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
             else:
                 raise Locked, 'Destination is locked.'
 
+        self._notifyOfCopyTo(parent, op=0)
         ob = self._getCopy(parent)
         ob._setId(name)
 
@@ -385,6 +386,7 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
             parent._delObject(name)
         parent._setObject(name, ob)
         ob = parent._getOb(name)
+        ob._postCopy(parent, op=0)
         ob.manage_afterClone(ob)
         # We remove any locks from the copied object because webdav clients
         # don't track the lock status and the lock token for copied resources
@@ -481,7 +483,12 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
                 raise PreconditionFailed, 'Source is locked and no '\
                       'condition was passed in.'
 
-        ob=aq_base(self._getCopy(parent))
+        # try to make ownership explicit so that it gets carried
+        # along to the new location if needed.
+        self.manage_changeOwnershipType(explicit=1)
+
+        self._notifyOfCopyTo(parent, op=1)
+        ob = aq_base(self._getCopy(parent))
         self.aq_parent._delObject(absattr(self.id))
         ob._setId(name)
         if existing:
@@ -489,6 +496,12 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
             self.dav__validate(object, 'DELETE', REQUEST)
             parent._delObject(name)
         parent._setObject(name, ob)
+        ob = parent._getOb(name)
+        ob._postCopy(parent, op=1)
+
+        # try to make ownership implicit if possible
+        ob.manage_changeOwnershipType(explicit=0)
+
         RESPONSE.setStatus(existing and 204 or 201)
         if not existing:
             RESPONSE.setHeader('Location', dest)
