@@ -383,10 +383,6 @@ class UnIndex(SimpleItem):
             return 0
 
     def getIndexSourceNames(self):
-        """ return name of indexed attributes """
-        return (self.id, )
-
-    def getIndexSourceNames(self):
         """ return sequence of indexed attributes """
         try:
             return self.indexed_attrs
