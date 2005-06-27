@@ -917,8 +917,7 @@ class ZCatalog(Folder, Persistent, Implicit):
            __len__ changed in Zope 2.8. Pre-Zope 2.7 installation used to implement
            __len__ as persistent attribute of the index instance which is totally
            incompatible with the new extension class implementation based on new-style
-           classes. CMF indexes on date fields will be converted to DateIndex and 
-           DateRangeIndex.
+           classes. 
         """
 
         LOG.info('Start migration of indexes for %s' % self.absolute_url(1))
@@ -935,12 +934,24 @@ class ZCatalog(Folder, Persistent, Implicit):
                 idx_type = idx.meta_type
                 idx_id = idx.getId()
                 LOG.info('processing index %s' % idx_id)
+
                 indexed_attrs = getattr(idx, 'indexed_attrs', None)
+
+                if idx.meta_type == 'DateRangeIndex':
+                    since_field = getattr(idx, '_since_field', None)
+                    until_field = getattr(idx, '_until_field', None)
+
                 self.delIndex(idx.getId())
                 self.addIndex(idx_id, idx_type)
                 new_idx = self.Indexes[idx_id]
+
                 if indexed_attrs:
                     setattr(new_idx, 'indexed_attrs', indexed_attrs)
+
+                if idx.meta_type == 'DateRangeIndex':
+                    setattr(new_idx, '_since_field',  since_field)
+                    setattr(new_idx, '_until_field', until_field)
+
                 self.manage_reindexIndex(idx_id, REQUEST)
 
         self._migrated_280 = True
