@@ -921,6 +921,8 @@ class ZCatalog(Folder, Persistent, Implicit):
         """
 
         LOG.info('Start migration of indexes for %s' % self.absolute_url(1))
+        
+        reindex_ids = []
 
         for idx in self.Indexes.objectValues():
             bases = [str(name) for name in idx.__class__.__bases__]
@@ -947,12 +949,14 @@ class ZCatalog(Folder, Persistent, Implicit):
 
                 if indexed_attrs:
                     setattr(new_idx, 'indexed_attrs', indexed_attrs)
-
                 if idx.meta_type == 'DateRangeIndex':
                     setattr(new_idx, '_since_field',  since_field)
                     setattr(new_idx, '_until_field', until_field)
-
-                self.manage_reindexIndex(idx_id, REQUEST)
+                reindex_ids.append(idx_id)
+        
+        if reindex_ids:
+            LOG.info('Reindexing %s' % ', '.join(reindex_ids))
+            self.manage_reindexIndex(reindex_ids, REQUEST)
 
         self._migrated_280 = True
         LOG.info('Finished migration of indexes for %s' % self.absolute_url(1))
