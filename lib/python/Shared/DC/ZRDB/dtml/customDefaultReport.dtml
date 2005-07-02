@@ -3,7 +3,7 @@
 
       <dtml-if previous-sequence>
 
-        <a href="&dtml-URL;&dtml-sequence-query;query_start=&dtml-previous-sequence-start-number;">
+        <a href="&dtml-URL;?query_start=&dtml-previous-sequence-start-number;&query=<dtml-var query url_quote missing=''>">
         (Previous <dtml-var previous-sequence-size> results)
         </a>
 
@@ -22,7 +22,8 @@
       %(else no_table)[</table>%(else)]
 
       <dtml-if next-sequence>
-        <a href="&dtml-URL;&dtml-sequence-query;query_start=&dtml-next-sequence-start-number;">
+         <a href="&dtml-URL;?query_start=&dtml-next-sequence-start-number;&query=<dtml-var query url_quote missing=''>">
+
          (Next <dtml-var next-sequence-size> results)
          </a>
 

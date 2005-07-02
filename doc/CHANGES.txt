@@ -34,6 +34,8 @@ Zope Changes
 
     Bugs fixed
 
+      - Collector #1812: Fixed key error in ZSQL ZMI/Test
+
       - Fixed CMFBTreeFolder for CMF 1.5+
 
       - Collector #1808: manage_convertIndexes no longer tries to change the
