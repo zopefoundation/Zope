@@ -38,18 +38,18 @@ Zope Changes
 
       - Fixed CMFBTreeFolder for CMF 1.5+
 
-      - WebDAV COPY and MOVE did not call '_notifyOfCopyTo' and
-        '_postCopy' hooks like it was done in
-        OFS.CopySupport. Additionally added
-        'manage_changeOwnershipType' to make MOVE behave even closer
-        to OFS.CopySupport.
+      - WebDAV COPY and MOVE did not call '_notifyOfCopyTo' and '_postCopy'
+        hooks like it was done in OFS.CopySupport. Additionally added
+        'manage_changeOwnershipType' to make MOVE behave even closer to
+        OFS.CopySupport.
 
       - Collector #1548: Fix 'httplib' usage in ZPublisher.Client.
 
       - Collector #1808: manage_convertIndexes no longer tries to change the
         index types causing some trouble with CMF.
 
-      - manage_convertIndexes did not treat DateRangeIndexes properly
+      - manage_convertIndexes did not treat DateRangeIndexes and PathIndexes 
+        properly.
 
   Zope 2.8.0 (2005/06/11)
 

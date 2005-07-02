@@ -927,10 +927,14 @@ class ZCatalog(Folder, Persistent, Implicit):
         for idx in self.Indexes.objectValues():
             bases = [str(name) for name in idx.__class__.__bases__]
             found = False
-            for base in bases:
-                if 'UnIndex' in base:
-                    found = True
-                    break
+
+            if idx.meta_type  == 'PathIndex':
+                found = True
+            else:
+                for base in bases:
+                    if 'UnIndex' in base:
+                        found = True
+                        break
 
             if found:
                 idx_type = idx.meta_type
