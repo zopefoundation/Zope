@@ -36,6 +36,8 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #1812: Fixed key error in ZSQL ZMI/Test
+
       - Fixed CMFBTreeFolder for CMF 1.5+
 
       - WebDAV COPY and MOVE did not call '_notifyOfCopyTo' and '_postCopy'
