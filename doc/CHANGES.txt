@@ -34,6 +34,9 @@ Zope Changes
 
     Bugs fixed
 
+      - Collector #1815: ZCTextIndex accepts (again) sequences of strings to 
+        be indexed.
+
       - Collector #1812: Fixed key error in ZSQL ZMI/Test
 
       - Fixed CMFBTreeFolder for CMF 1.5+

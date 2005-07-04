@@ -151,6 +151,29 @@ class ZCIndexTestsBase:
         nbest, total = zc_index.query('foo alpha gamma')
         self.assertEqual(len(nbest), 0)
 
+    def testListAttributes(self):
+        lexicon = PLexicon('lexicon', '',
+                            Splitter(),
+                            CaseNormalizer(),
+                            StopWordRemover())
+        caller = LexiconHolder(self.lexicon)
+        zc_index = ZCTextIndex('name',
+                                None,
+                                caller,
+                                self.IndexFactory,
+                               'text1,text2',
+                               'lexicon')
+        doc = Indexable2('Hello Tim', \
+                         ['Now is the winter of our discontent',
+                          'Made glorious summer by this sun of York', ])
+        zc_index.index_object(1, doc)
+        nbest, total = zc_index.query('glorious')
+        self.assertEqual(len(nbest), 1)
+        nbest, total = zc_index.query('York Tim')
+        self.assertEqual(len(nbest), 1)
+        nbest, total = zc_index.query('Tuesday Tim York')
+        self.assertEqual(len(nbest), 0)
+
     def testStopWords(self):
         # the only non-stopword is question
         text = ("to be or not to be "
