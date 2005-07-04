@@ -68,6 +68,9 @@ class IIndex(Interface.Base):
         """Add a document with the specified id and text to the index. If a
         document by that id already exists, replace its text with the new
         text provided
+        text  may be either a string (Unicode or otherwise) or a list
+        of strings from which to extract the terms under which to
+        index the source document.
         """
 
     def unindex_doc(docid):

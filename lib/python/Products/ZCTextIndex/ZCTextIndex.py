@@ -161,7 +161,14 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
     ## Pluggable Index APIs ##
 
     def index_object(self, documentId, obj, threshold=None):
-        """ wrapper to handle indexing of multiple attributes """
+        """Wrapper for  index_doc()  handling indexing of multiple attributes.
+
+        Enter the document with the specified documentId in the index
+        under the terms extracted from the indexed text attributes,
+        each of which should yield either a string or a list of
+        strings (Unicode or otherwise) to be passed to index_doc().
+        """
+        # XXX We currently ignore subtransaction threshold
 
         # needed for backward compatibility
         try: fields = self._indexed_attrs
@@ -177,12 +184,22 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
                 text = text()
             if text is None:
                 continue
-            all_texts.append(text)
+            # To index each attribute separately, we could use the
+            # following line, but we have preferred to make a single
+            # call to index_doc() for all attributes together.
+            # res += self.index.index_doc(documentId, text)
+            if text:
+                if isinstance(text, (list, tuple, )):
+                    all_texts.extend(text)
+                else:
+                    all_texts.append(text)
 
+        # Check that we're sending only strings
+        all_texts = filter(lambda text: isinstance(text, basestring), \
+                           all_texts)
         if all_texts:
-            return self.index.index_doc(documentId, ' '.join(all_texts))
-        else:
-            return 0
+            return self.index.index_doc(documentId, all_texts)
+        return res
 
     def unindex_object(self, docid):
         if self.index.has_doc(docid):
