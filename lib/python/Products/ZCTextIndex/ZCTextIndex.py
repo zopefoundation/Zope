@@ -186,7 +186,7 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
                 continue
             # To index each attribute separately, we could use the
             # following line, but we have preferred to make a single
-            # call to  index_doc()  for all attributes together.  
+            # call to index_doc() for all attributes together.
             # res += self.index.index_doc(documentId, text)
             if text:
                 if isinstance(text, (list, tuple, )):
@@ -198,7 +198,7 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
         all_texts = filter(lambda text: isinstance(text, basestring), \
                            all_texts)
         if all_texts:
-            return self.index.index_doc(documentId, all_texts)            
+            return self.index.index_doc(documentId, all_texts)
         return res
 
     def unindex_object(self, docid):
