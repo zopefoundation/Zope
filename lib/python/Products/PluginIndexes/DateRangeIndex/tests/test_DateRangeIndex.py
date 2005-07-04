@@ -7,15 +7,23 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+"""DateRangeIndex unit tests.
 
-import Zope2
+$Id$
+"""
+
 import unittest
+import Testing
+import Zope2
+Zope2.startup()
+
 import sys
 
 from Products.PluginIndexes.DateRangeIndex.DateRangeIndex import DateRangeIndex
+
 
 class Dummy:
 
@@ -63,6 +71,7 @@ def matchingDummies( value ):
 
     return result
 
+
 class DRI_Tests( unittest.TestCase ):
 
     def setUp( self ):
@@ -70,6 +79,18 @@ class DRI_Tests( unittest.TestCase ):
 
     def tearDown( self ):
         pass
+
+    def test_z3interfaces(self):
+        from Products.PluginIndexes.interfaces import IDateRangeIndex
+        from Products.PluginIndexes.interfaces import IPluggableIndex
+        from Products.PluginIndexes.interfaces import ISortIndex
+        from Products.PluginIndexes.interfaces import IUniqueValueIndex
+        from zope.interface.verify import verifyClass
+
+        verifyClass(IDateRangeIndex, DateRangeIndex)
+        verifyClass(IPluggableIndex, DateRangeIndex)
+        verifyClass(ISortIndex, DateRangeIndex)
+        verifyClass(IUniqueValueIndex, DateRangeIndex)
 
     def test_empty( self ):
 
@@ -120,13 +141,11 @@ class DRI_Tests( unittest.TestCase ):
         bad = Dummy( 'bad', long(sys.maxint) + 1, long(sys.maxint) + 1 )
         work.index_object( 0, bad )
 
+
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest( unittest.makeSuite( DRI_Tests ) )
     return suite
 
-def run():
-    unittest.TextTestRunner().run(test_suite())
-
 if __name__ == '__main__':
-    run()
+    unittest.main(defaultTest='test_suite')

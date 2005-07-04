@@ -7,13 +7,21 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+"""PathIndex unit tests.
+
+$Id$
+"""
 
 import unittest
+import Testing
+import Zope2
+Zope2.startup()
 
 from Products.PluginIndexes.PathIndex.PathIndex import PathIndex
+
 
 class Dummy:
 
@@ -30,7 +38,8 @@ class Dummy:
 
     __repr__ = __str__
 
-class TestCase( unittest.TestCase ):
+
+class PathIndexTests(unittest.TestCase):
     """ Test PathIndex objects """
 
     def setUp(self):
@@ -60,6 +69,14 @@ class TestCase( unittest.TestCase ):
         for k, v in self._values.items():
             self._index.index_object( k, v )
 
+    def test_z3interfaces(self):
+        from Products.PluginIndexes.interfaces import IPathIndex
+        from Products.PluginIndexes.interfaces import IUniqueValueIndex
+        from zope.interface.verify import verifyClass
+
+        verifyClass(IPathIndex, PathIndex)
+        verifyClass(IUniqueValueIndex, PathIndex)
+
     def testEmpty(self):
         self.assertEqual(self._index.numObjects() ,0)
         self.assertEqual(self._index.getEntryForObject(1234), None)
@@ -86,7 +103,6 @@ class TestCase( unittest.TestCase ):
         self.assertEqual(self._index.numObjects(), 19)
         self._index.index_object(19, o)
         self.assertEqual(self._index.numObjects(), 19)
-
 
     def testUnIndexError(self):
         self._populateIndex()
@@ -134,7 +150,6 @@ class TestCase( unittest.TestCase ):
                                     {"path":{'query':( (path,level),)}})
                 lst = list(res[0].keys())
                 self.assertEqual(lst,results)
-
 
     def testSimpleTests(self):
 
@@ -201,11 +216,11 @@ class TestCase( unittest.TestCase ):
             lst = list(res[0].keys())
             self.assertEqual(lst,results)
 
-def test_suite():
-    return unittest.makeSuite( TestCase )
 
-def main():
-    unittest.TextTestRunner().run(test_suite())
+def test_suite():
+    return unittest.TestSuite((
+        unittest.makeSuite(PathIndexTests),
+        ))
 
 if __name__ == '__main__':
-    main()
+    unittest.main(defaultTest='test_suite')

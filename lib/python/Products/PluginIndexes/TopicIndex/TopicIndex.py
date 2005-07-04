@@ -7,11 +7,13 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+"""Topic index.
 
-__version__ = '$Id$'
+$Id$
+"""
 
 from logging import getLogger
 
@@ -19,23 +21,29 @@ from Globals import Persistent, DTMLFile
 from OFS.SimpleItem import SimpleItem
 from BTrees.OOBTree import OOBTree
 from BTrees.IIBTree import IITreeSet,intersection,union
+from zope.interface import implements
 
-import FilteredSet
 from Products.PluginIndexes import PluggableIndex
 from Products.PluginIndexes.common.util import parseIndexRequest
+from Products.PluginIndexes.interfaces import IPluggableIndex
+from Products.PluginIndexes.interfaces import ITopicIndex
+
+import FilteredSet
 
 _marker = []
 LOG = getLogger('Zope.TopicIndex')
 
+
 class TopicIndex(Persistent, SimpleItem):
 
-    """ A TopicIndex maintains a set of FilteredSet objects.
-        Every FilteredSet object consists of an expression and
-        and IISet with all Ids of indexed objects that eval with
-        this expression to 1.
+    """A TopicIndex maintains a set of FilteredSet objects.
+
+    Every FilteredSet object consists of an expression and and IISet with all
+    Ids of indexed objects that eval with this expression to 1.
     """
 
     __implements__ = (PluggableIndex.PluggableIndexInterface,)
+    implements(ITopicIndex, IPluggableIndex)
 
     meta_type="TopicIndex"
     query_options = ('query','operator')
@@ -52,7 +60,8 @@ class TopicIndex(Persistent, SimpleItem):
         self.operators = ('or','and')
         self.defaultOperator = 'or'
 
-    def getId(self): return self.id
+    def getId(self):
+        return self.id
 
     def clear(self):
         for fs in self.filteredSets.values():
@@ -111,25 +120,27 @@ class TopicIndex(Persistent, SimpleItem):
 
     def getEntryForObject(self,docid, default=_marker):
         """ Takes a document ID and returns all the information we have
-            on that specific object. 
+            on that specific object.
         """
         return self.filteredSets.keys()
 
     def addFilteredSet(self, filter_id, typeFilteredSet, expr):
-
+        # Add a FilteredSet object.
         if self.filteredSets.has_key(filter_id):
             raise KeyError,\
                 'A FilteredSet with this name already exists: %s' % filter_id
         self.filteredSets[filter_id] = \
             FilteredSet.factory(filter_id, typeFilteredSet, expr)
 
-    def delFilteredSet(self,filter_id):
+    def delFilteredSet(self, filter_id):
+        # Delete the FilteredSet object specified by 'filter_id'.
         if not self.filteredSets.has_key(filter_id):
             raise KeyError,\
                 'no such FilteredSet:  %s' % filter_id
         del self.filteredSets[filter_id]
 
-    def clearFilteredSet(self,filter_id):
+    def clearFilteredSet(self, filter_id):
+        # Clear the FilteredSet object specified by 'filter_id'.
         if not self.filteredSets.has_key(filter_id):
             raise KeyError,\
                 'no such FilteredSet:  %s' % filter_id
@@ -183,7 +194,6 @@ class TopicIndex(Persistent, SimpleItem):
         if RESPONSE:
             RESPONSE.redirect(URL1+'/manage_workspace?'
              'manage_tabs_message=FilteredSet(s)%20cleared')
-
 
     index_html      = DTMLFile('dtml/index', globals())
     manage_workspace = DTMLFile('dtml/manageTopicIndex',globals())

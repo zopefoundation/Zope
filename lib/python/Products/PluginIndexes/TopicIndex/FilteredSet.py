@@ -7,11 +7,13 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+"""Filtered set.
 
-__version__ = '$Id$'
+$Id$
+"""
 
 import sys
 from logging import getLogger
@@ -19,12 +21,18 @@ from logging import getLogger
 from ZODB.POSException import ConflictError
 from BTrees.IIBTree import IITreeSet
 from Persistence import Persistent
-
 from RestrictedPython.Eval import RestrictionCapableEval
+from zope.interface import implements
+
+from Products.PluginIndexes.interfaces import IFilteredSet
 
 LOG = getLogger('Zope.TopicIndex.FilteredSet')
 
+
 class FilteredSetBase(Persistent):
+    # A pre-calculated result list based on an expression.
+
+    implements(IFilteredSet)
 
     def __init__(self, id, expr):
         self.id   = id
@@ -43,17 +51,21 @@ class FilteredSetBase(Persistent):
 
     def getId(self):
         return self.id
-        
+
     def getExpression(self):
+        # Get the expression.
         return self.expr
-        
+
     def getIds(self):
+        # Get the IDs of all objects for which the expression is True.
         return self.ids
-    
+
     def getType(self):
         return self.meta_type
 
-    def setExpression(self, expr): self.expr = expr
+    def setExpression(self, expr):
+        # Set the expression.
+        self.expr = expr
 
     def __repr__(self):
         return '%s: (%s) %s' % (self.id,self.expr,map(None,self.ids))
@@ -67,7 +79,7 @@ class PythonFilteredSet(FilteredSetBase):
 
     def index_object(self, documentId, o):
         try:
-            if RestrictionCapableEval(self.expr).eval({'o': o}): 
+            if RestrictionCapableEval(self.expr).eval({'o': o}):
                 self.ids.insert(documentId)
             else:
                 try:

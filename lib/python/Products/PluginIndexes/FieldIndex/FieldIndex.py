@@ -1,4 +1,4 @@
-#############################################################################
+##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
 #
@@ -7,24 +7,25 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+"""Simple column indices.
 
-"""Simple column indices
 $Id$
 """
 
-from Products.PluginIndexes import PluggableIndex
-from Products.PluginIndexes.common.UnIndex import UnIndex
-
 from Globals import DTMLFile
 
-class FieldIndex(UnIndex):
-    """Field Indexes"""
+from Products.PluginIndexes.common.UnIndex import UnIndex
 
-    __implements__ = (PluggableIndex.UniqueValueIndex,
-                      PluggableIndex.SortIndex)
+
+class FieldIndex(UnIndex):
+
+    """Index for simple fields.
+    """
+
+    __implements__ = UnIndex.__implements__
 
     meta_type="FieldIndex"
 

@@ -7,56 +7,58 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+"""Date range index.
 
-"""$Id$
+$Id$
 """
 
 import os
 
-from Products.PluginIndexes import PluggableIndex
+from AccessControl import ClassSecurityInfo
+from BTrees.IIBTree import IISet, IITreeSet, union, intersection, multiunion
+from BTrees.IOBTree import IOBTree
+import BTrees.Length
+from DateTime.DateTime import DateTime
+from Globals import package_home, DTMLFile, InitializeClass
+from zope.interface import implements
+
+from Products.PluginIndexes.common import safe_callable
 from Products.PluginIndexes.common.UnIndex import UnIndex
 from Products.PluginIndexes.common.util import parseIndexRequest
-from Products.PluginIndexes.common import safe_callable
-
-from BTrees.IOBTree import IOBTree
-from BTrees.IIBTree import IISet, IITreeSet, union, intersection, multiunion
-import BTrees.Length
-
-from Globals import package_home, DTMLFile, InitializeClass
-from AccessControl import ClassSecurityInfo
-from DateTime.DateTime import DateTime
+from Products.PluginIndexes.interfaces import IDateRangeIndex
 
 _dtmldir = os.path.join( package_home( globals() ), 'dtml' )
 
 VIEW_PERMISSION         = 'View'
 INDEX_MGMT_PERMISSION   = 'Manage ZCatalogIndex Entries'
 
+
 class DateRangeIndex(UnIndex):
+
+    """Index for date ranges, such as the "effective-expiration" range in CMF.
+
+    Any object may return None for either the start or the end date: for the
+    start date, this should be the logical equivalent of "since the beginning
+    of time"; for the end date, "until the end of time".
+
+    Therefore, divide the space of indexed objects into four containers:
+
+    - Objects which always match (i.e., they returned None for both);
+
+    - Objects which match after a given time (i.e., they returned None for the
+      end date);
+
+    - Objects which match until a given time (i.e., they returned None for the
+      start date);
+
+    - Objects which match only during a specific interval.
     """
-        Index a date range, such as the canonical "effective-expiration"
-        range in the CMF.  Any object may return None for either the
-        start or the end date:  for the start date, this should be
-        the logical equivalent of "since the beginning of time";  for the
-        end date, "until the end of time".
 
-        Therefore, divide the space of indexed objects into four containers:
-
-        - Objects which always match ( i.e., they returned None for both );
-
-        - Objects which match after a given time ( i.e., they returned None
-          for the end date );
-
-        - Objects which match until a given time ( i.e., they returned None
-          for the start date );
-
-        - Objects which match only during a specific interval.
-    """
-
-    __implements__ = (PluggableIndex.UniqueValueIndex,
-                      PluggableIndex.SortIndex)
+    __implements__ = UnIndex.__implements__
+    implements(IDateRangeIndex)
 
     security = ClassSecurityInfo()
 
@@ -83,27 +85,21 @@ class DateRangeIndex(UnIndex):
         self._edit(since_field, until_field)
         self.clear()
 
-    security.declareProtected( VIEW_PERMISSION
-                             , 'getSinceField'
-                             )
-    def getSinceField( self ):
-        """
+    security.declareProtected(VIEW_PERMISSION, 'getSinceField')
+    def getSinceField(self):
+        """Get the name of the attribute indexed as start date.
         """
         return self._since_field
 
-    security.declareProtected( VIEW_PERMISSION
-                             , 'getUntilField'
-                             )
-    def getUntilField( self ):
-        """
+    security.declareProtected(VIEW_PERMISSION, 'getUntilField')
+    def getUntilField(self):
+        """Get the name of the attribute indexed as end date.
         """
         return self._until_field
 
     manage_indexProperties = DTMLFile( 'manageDateRangeIndex', _dtmldir )
 
-    security.declareProtected( INDEX_MGMT_PERMISSION
-                             , 'manage_edit'
-                             )
+    security.declareProtected(INDEX_MGMT_PERMISSION, 'manage_edit')
     def manage_edit( self, since_field, until_field, REQUEST ):
         """
         """
@@ -113,7 +109,7 @@ class DateRangeIndex(UnIndex):
                                       % REQUEST.get('URL2')
                                       )
 
-    security.declarePrivate( '_edit' )
+    security.declarePrivate('_edit')
     def _edit( self, since_field, until_field ):
         """
             Update the fields used to compute the range.
@@ -121,10 +117,7 @@ class DateRangeIndex(UnIndex):
         self._since_field = since_field
         self._until_field = until_field
 
-
-    security.declareProtected( INDEX_MGMT_PERMISSION
-                             , 'clear'
-                             )
+    security.declareProtected(INDEX_MGMT_PERMISSION, 'clear')
     def clear( self ):
         """
             Start over fresh.
@@ -308,7 +301,7 @@ class DateRangeIndex(UnIndex):
     #
     #   ZCatalog needs this, although it isn't (yet) part of the interface.
     #
-    security.declareProtected( VIEW_PERMISSION , 'numObjects' )
+    security.declareProtected(VIEW_PERMISSION , 'numObjects')
     def numObjects( self ):
         """ """
         return len( self._unindex )

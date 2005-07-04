@@ -8,29 +8,30 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+"""Plug in text index for ZCatalog with relevance ranking.
 
-"""Plug in text index for ZCatalog with relevance ranking."""
+$Id$
+"""
 
 from cgi import escape
-from types import TupleType
 
-import ZODB
 from Persistence import Persistent
 import Acquisition
 from Acquisition import aq_base, aq_inner, aq_parent
 from OFS.SimpleItem import SimpleItem
-
 from Globals import DTMLFile, InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.Permissions import manage_zcatalog_indexes, search_zcatalog
+from zope.interface import implements
 
 from Products.PluginIndexes.common.PluggableIndex import \
      PluggableIndexInterface
 from Products.PluginIndexes.common.util import parseIndexRequest
 from Products.PluginIndexes.common import safe_callable
+from Products.PluginIndexes.interfaces import IPluggableIndex
 
 from Products.ZCTextIndex.ILexicon import ILexicon
 from Products.ZCTextIndex.Lexicon import \
@@ -38,16 +39,23 @@ from Products.ZCTextIndex.Lexicon import \
 from Products.ZCTextIndex.NBest import NBest
 from Products.ZCTextIndex.QueryParser import QueryParser
 from PipelineFactory import element_factory
+from interfaces import IZCLexicon
+from interfaces import IZCTextIndex
 
 from Products.ZCTextIndex.CosineIndex import CosineIndex
 from Products.ZCTextIndex.OkapiIndex import OkapiIndex
+
 index_types = {'Okapi BM25 Rank':OkapiIndex,
                'Cosine Measure':CosineIndex}
 
+
 class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
-    """Persistent TextIndex"""
+
+    """Persistent text index.
+    """
 
     __implements__ = PluggableIndexInterface
+    implements(IZCTextIndex, IPluggableIndex)
 
     ## Magic class attributes ##
 
@@ -72,7 +80,8 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
         # via the silly "extra" record.
         self._fieldname = field_name or getattr(extra, 'doc_attr', '') or id
         self._indexed_attrs = self._fieldname.split(',')
-        self._indexed_attrs = [ attr.strip() for attr in  self._indexed_attrs if attr ]
+        self._indexed_attrs = [ attr.strip()
+                                for attr in self._indexed_attrs if attr ]
 
         lexicon_id = lexicon_id or getattr(extra, 'lexicon_id', '')
         lexicon = getattr(caller, lexicon_id, None)
@@ -254,7 +263,7 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
     def getIndexSourceNames(self):
         """Return sequence of names of indexed attributes"""
         try:
-            return self._indexed_attrs 
+            return self._indexed_attrs
         except:
             return [self._fieldname]
 
@@ -270,7 +279,6 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
             return None
         else:
             return lex.absolute_url()
-            
 
 InitializeClass(ZCTextIndex)
 
@@ -314,8 +322,13 @@ def manage_addLexicon(self, id, title='', elements=[], REQUEST=None):
 LexiconQueryPerm = 'Query Vocabulary'
 LexiconMgmtPerm = 'Manage Vocabulary'
 
+
 class PLexicon(Lexicon, Acquisition.Implicit, SimpleItem):
-    """Lexicon for ZCTextIndex"""
+
+    """Lexicon for ZCTextIndex.
+    """
+
+    implements(IZCLexicon)
 
     meta_type = 'ZCTextIndex Lexicon'
 

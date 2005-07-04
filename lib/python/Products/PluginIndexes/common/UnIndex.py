@@ -4,33 +4,47 @@
 #
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
+# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Base for bi-directional indexes
+"""Base for bi-directional indexes.
 
-$Id$"""
+$Id$
+"""
 
 import sys
 from cgi import escape
 from logging import getLogger
 
-from BTrees.OOBTree import OOBTree 
-from BTrees.IOBTree import IOBTree
 from BTrees.IIBTree import IITreeSet, IISet, union, intersection
-from OFS.SimpleItem import SimpleItem
+from BTrees.IOBTree import IOBTree
 import BTrees.Length
+from BTrees.OOBTree import OOBTree
+from OFS.SimpleItem import SimpleItem
+from zope.interface import implements
 
-from Products.PluginIndexes.common.util import parseIndexRequest
+from Products.PluginIndexes import PluggableIndex
 from Products.PluginIndexes.common import safe_callable
+from Products.PluginIndexes.common.util import parseIndexRequest
+from Products.PluginIndexes.interfaces import IPluggableIndex
+from Products.PluginIndexes.interfaces import ISortIndex
+from Products.PluginIndexes.interfaces import IUniqueValueIndex
 
 _marker = []
 LOG = getLogger('Zope.UnIndex')
 
+
 class UnIndex(SimpleItem):
-    """Simple forward and reverse index"""
+
+    """Simple forward and reverse index.
+    """
+
+    __implements__ = (PluggableIndex.UniqueValueIndex,
+                      PluggableIndex.SortIndex)
+    implements(IPluggableIndex, IUniqueValueIndex, ISortIndex)
 
     def __init__(
         self, id, ignore_ex=None, call_methods=None, extra=None, caller=None):
@@ -93,7 +107,8 @@ class UnIndex(SimpleItem):
             self.indexed_attrs = ia.split(',')
         else:
             self.indexed_attrs = list(ia)
-        self.indexed_attrs = [ attr.strip() for attr in  self.indexed_attrs if attr ] 
+        self.indexed_attrs = [ attr.strip()
+                               for attr in self.indexed_attrs if attr ]
         if not self.indexed_attrs:
             self.indexed_attrs = [id]
 
@@ -133,7 +148,6 @@ class UnIndex(SimpleItem):
         """Generate a list of IDs for which we have referenced objects."""
         return self._unindex.keys()
 
-
     def getEntryForObject(self, documentId, default=_marker):
         """Takes a document ID and returns all the information we have
         on that specific object.
@@ -142,7 +156,6 @@ class UnIndex(SimpleItem):
             return self._unindex.get(documentId)
         else:
             return self._unindex.get(documentId, default)
-
 
     def removeForwardIndexEntry(self, entry, documentId):
         """Take the entry provided and remove any reference to documentId
@@ -173,7 +186,6 @@ class UnIndex(SimpleItem):
                       'should not happen.' % (self.__class__.__name__,
                       repr(entry), str(self.id)))
 
-
     def insertForwardIndexEntry(self, entry, documentId):
         """Take the entry provided and put it in the correct place
         in the forward index.
@@ -194,7 +206,6 @@ class UnIndex(SimpleItem):
                 indexRow=IITreeSet((indexRow, documentId))
                 self._index[entry] = indexRow
 
-
     def index_object(self, documentId, obj, threshold=None):
         """ wrapper to handle indexing of multiple attributes """
 
@@ -207,7 +218,6 @@ class UnIndex(SimpleItem):
             res += self._index_object(documentId, obj, threshold, attr)
 
         return res > 0
-
 
     def _index_object(self, documentId, obj, threshold=None, attr=''):
         """ index and object 'obj' with integer id 'documentId'"""
@@ -319,7 +329,6 @@ class UnIndex(SimpleItem):
         r     = None
         opr   = None
 
-
         # experimental code for specifing the operator
         operator = record.get('operator',self.useOperator)
         if not operator in self.operators :
@@ -339,12 +348,10 @@ class UnIndex(SimpleItem):
             if range_parm.find("max")>-1:
                 opr_args.append("max")
 
-
         if record.get('usage',None):
             # see if any usage params are sent to field
             opr = record.usage.lower().split(':')
             opr, opr_args=opr[0], opr[1:]
-
 
         if opr=="range":   # range search
             if 'min' in opr_args: lo = min(record.keys)
