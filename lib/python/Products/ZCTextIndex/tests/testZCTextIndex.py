@@ -11,13 +11,20 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+"""ZCTextIndex unit tests.
 
-from Interface.Verify import verifyClass
+$Id$
+"""
+
+import unittest
+import Testing
+import Zope2
+Zope2.startup()
+
+import re
+
 import Acquisition
 from zExceptions import NotFound
-
-from Products.PluginIndexes.common.PluggableIndex import \
-     PluggableIndexInterface
 
 from Products.ZCTextIndex.ZCTextIndex import ZCTextIndex, PLexicon
 from Products.ZCTextIndex.tests import \
@@ -32,8 +39,6 @@ from Products.ZCTextIndex.QueryParser import QueryParser
 from Products.ZCTextIndex.StopDict import get_stopdict
 from Products.ZCTextIndex.ParseTree import ParseError
 
-import re
-import unittest
 
 class Indexable:
     def __init__(self, text):
@@ -227,8 +232,20 @@ class CosineIndexTests(ZCIndexTestsBase, testIndex.CosineIndexTest):
     # Gigabytes, pp. 180-188.  This test peeks into many internals of the
     # cosine indexer.
 
-    def testInterface(self):
+    def test_z2interfaces(self):
+        from Interface.Verify import verifyClass
+        from Products.PluginIndexes.common.PluggableIndex \
+                import PluggableIndexInterface
+
         verifyClass(PluggableIndexInterface, ZCTextIndex)
+
+    def test_z3interfaces(self):
+        from Products.PluginIndexes.interfaces import IPluggableIndex
+        from Products.ZCTextIndex.interfaces import IZCTextIndex
+        from zope.interface.verify import verifyClass
+
+        verifyClass(IPluggableIndex, ZCTextIndex)
+        verifyClass(IZCTextIndex, ZCTextIndex)
 
     def testRanking(self):
         self.words = ["cold", "days", "eat", "hot", "lot", "nine", "old",
@@ -525,18 +542,28 @@ class QueryTestsBase(testQueryEngine.TestQueryEngine,
         dictkeys.sort()
         self.assertEqual(setkeys, dictkeys)
 
+
 class CosineQueryTests(QueryTestsBase):
     IndexFactory = CosineIndex
+
 
 class OkapiQueryTests(QueryTestsBase):
     IndexFactory = OkapiIndex
 
-############################################################################
+
+class PLexiconTests(unittest.TestCase):
+
+    def test_z3interfaces(self):
+        from Products.ZCTextIndex.interfaces import IZCLexicon
+        from zope.interface.verify import verifyClass
+
+        verifyClass(IZCLexicon, PLexicon)
+
 
 def test_suite():
     s = unittest.TestSuite()
     for klass in (CosineIndexTests, OkapiIndexTests,
-                  CosineQueryTests, OkapiQueryTests):
+                  CosineQueryTests, OkapiQueryTests, PLexiconTests):
         s.addTest(unittest.makeSuite(klass))
     return s
 

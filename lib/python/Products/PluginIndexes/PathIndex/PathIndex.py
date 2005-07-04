@@ -7,11 +7,13 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+"""Path index.
 
-__version__ = '$Id$'
+$Id$
+"""
 
 from types import StringType, ListType, TupleType
 from logging import getLogger
@@ -22,17 +24,23 @@ from BTrees.IOBTree import IOBTree
 from BTrees.OOBTree import OOBTree
 from BTrees.IIBTree import IITreeSet, IISet, intersection, union
 from BTrees.Length import Length
+from zope.interface import implements
 
 from Products.PluginIndexes import PluggableIndex
-from Products.PluginIndexes.common.util import parseIndexRequest
 from Products.PluginIndexes.common import safe_callable
+from Products.PluginIndexes.common.util import parseIndexRequest
+from Products.PluginIndexes.interfaces import IPathIndex
+from Products.PluginIndexes.interfaces import IUniqueValueIndex
 
 _marker = []
 LOG = getLogger('Zope.PathIndex')
 
+
 class PathIndex(Persistent, SimpleItem):
-    """ A path index stores all path components of the physical
-    path of an object:
+
+    """Index for paths returned by getPhysicalPath.
+
+    A path index stores all path components of the physical path of an object.
 
     Internal datastructure:
 
@@ -42,10 +50,10 @@ class PathIndex(Persistent, SimpleItem):
 
     - the value is a mapping 'level of the path component' to
       'all docids with this path component on this level'
-
     """
 
     __implements__ = (PluggableIndex.UniqueValueIndex,)
+    implements(IPathIndex, IUniqueValueIndex)
 
     meta_type="PathIndex"
 
@@ -72,7 +80,7 @@ class PathIndex(Persistent, SimpleItem):
     def insertEntry(self, comp, id, level):
         """Insert an entry.
 
-           comp is a path component 
+           comp is a path component
            id is the docid
            level is the level of the component inside the path
         """
@@ -111,7 +119,7 @@ class PathIndex(Persistent, SimpleItem):
         if isinstance(path, (ListType, TupleType)):
             path = '/'+ '/'.join(path[1:])
         comps = filter(None, path.split('/'))
-       
+
         if not self._unindex.has_key(docid):
             self._length.change(1)
 
@@ -250,8 +258,8 @@ class PathIndex(Persistent, SimpleItem):
         return ('getPhysicalPath', )
 
     def getEntryForObject(self, docid, default=_marker):
-        """ Takes a document ID and returns all the information 
-            we have on that specific object. 
+        """ Takes a document ID and returns all the information
+            we have on that specific object.
         """
         try:
             return self._unindex[docid]

@@ -12,14 +12,13 @@
 ##############################################################################
 """ Unittests for Catalog.
 
-$Id:$
+$Id$
 """
 
 import unittest
 import Testing
 import Zope2
 Zope2.startup()
-from Interface.Verify import verifyClass
 
 from itertools import chain
 import random
@@ -162,6 +161,7 @@ class zdummyFalse(zdummy):
 
 
 class TestZCatalog(unittest.TestCase):
+
     def setUp(self):
         from Products.ZCatalog.ZCatalog import ZCatalog
         self._catalog = ZCatalog('Catalog')
@@ -180,6 +180,20 @@ class TestZCatalog(unittest.TestCase):
         
     def _resolve_num(self, num):
         return self.d[num]
+
+    def test_z2interfaces(self):
+        from Interface.Verify import verifyClass
+        from Products.ZCatalog.IZCatalog import IZCatalog
+        from Products.ZCatalog.ZCatalog import ZCatalog
+
+        verifyClass(IZCatalog, ZCatalog)
+
+    def test_z3interfaces(self):
+        from Products.ZCatalog.interfaces import IZCatalog
+        from Products.ZCatalog.ZCatalog import ZCatalog
+        from zope.interface.verify import verifyClass
+
+        verifyClass(IZCatalog, ZCatalog)
 
     def testGetMetadataForUID(self):
         testNum = str(self.upper - 3) # as good as any..
@@ -231,12 +245,6 @@ class TestZCatalog(unittest.TestCase):
         self._catalog.reindexIndex('title', {})
         result = self._catalog(title='9999')
         self.assertEquals(1, len(result))
-
-    def test_interface(self):
-        from Products.ZCatalog.IZCatalog import IZCatalog
-        from Products.ZCatalog.ZCatalog import ZCatalog
-
-        verifyClass(IZCatalog, ZCatalog)
 
 
 class dummy(ExtensionClass.Base):

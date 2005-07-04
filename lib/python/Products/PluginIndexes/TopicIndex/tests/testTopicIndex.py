@@ -7,14 +7,21 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+"""TopicIndex unit tests.
+
+$Id$
+"""
 
 import unittest
+import Testing
+import Zope2
+Zope2.startup()
 
-import ZODB
 from Products.PluginIndexes.TopicIndex.TopicIndex import TopicIndex
+
 
 class Obj:
 
@@ -24,6 +31,7 @@ class Obj:
 
     def getId(self): return self.id
     def getPhysicalPath(self):  return self.id
+
 
 class TestBase(unittest.TestCase):
 
@@ -41,6 +49,7 @@ class TestBase(unittest.TestCase):
         self.assertEqual(rows,expected,query)
         return rows
 
+
 class TestTopicIndex(TestBase):
 
     def setUp(self):
@@ -56,6 +65,13 @@ class TestTopicIndex(TestBase):
         self.TI.index_object(5 , Obj('5','doc3'))
         self.TI.index_object(6 , Obj('6','doc3'))
 
+    def test_z3interfaces(self):
+        from Products.PluginIndexes.interfaces import ITopicIndex
+        from Products.PluginIndexes.interfaces import IPluggableIndex
+        from zope.interface.verify import verifyClass
+
+        verifyClass(ITopicIndex, TopicIndex)
+        verifyClass(IPluggableIndex, TopicIndex)
 
     def testOr(self):
         self._searchOr('doc1',[1,2])
@@ -64,28 +80,23 @@ class TestTopicIndex(TestBase):
         self._searchOr(['doc2'],[3,4])
         self._searchOr(['doc1','doc2'], [1,2,3,4])
 
-
     def testAnd(self):
         self._searchAnd('doc1',[1,2])
         self._searchAnd(['doc1'],[1,2])
         self._searchAnd('doc2',[3,4])
         self._searchAnd(['doc2'],[3,4])
         self._searchAnd(['doc1','doc2'],[])
-    
+
     def testRemoval(self):
         self.TI.index_object(1, Obj('1','doc2'))
         self._searchOr('doc1',[2])
         self._searchOr('doc2', [1,3,4])
 
-def test_suite():
 
-    return unittest.TestSuite( (
+def test_suite():
+    return unittest.TestSuite((
         unittest.makeSuite(TestTopicIndex),
         ))
 
-
-def main():
-    unittest.TextTestRunner().run(test_suite())
-
 if __name__ == '__main__':
-    main()
+    unittest.main(defaultTest='test_suite')

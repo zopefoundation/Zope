@@ -16,11 +16,10 @@ $Id$
 """
 
 from warnings import warn
-import urllib, time, sys, string,logging
+import urllib, time, sys, string, logging
 
 from Globals import DTMLFile, MessageDialog
 import Globals
-
 from OFS.Folder import Folder
 from OFS.ObjectManager import ObjectManager
 from DateTime import DateTime
@@ -29,19 +28,23 @@ from Persistence import Persistent
 from DocumentTemplate.DT_Util import InstanceDict, TemplateDict
 from DocumentTemplate.DT_Util import Eval
 from AccessControl.Permission import name_trans
-from Catalog import Catalog, CatalogError
 from AccessControl.DTML import RestrictedDTML
 from AccessControl.Permissions import \
     manage_zcatalog_entries, manage_zcatalog_indexes, search_zcatalog
-from ZCatalogIndexes import ZCatalogIndexes
 from ZODB.POSException import ConflictError
 import transaction
 from Products.PluginIndexes.common.PluggableIndex \
      import PluggableIndexInterface
 from Products.PluginIndexes.TextIndex import Splitter
-from IZCatalog import IZCatalog
+from zLOG import LOG
+from zope.interface import implements
+
+from Catalog import Catalog, CatalogError
+from interfaces import IZCatalog as z3IZCatalog
+from IZCatalog import IZCatalog as z2IZCatalog
 from ProgressHandler import ZLogHandler
-from zLOG import LOG, INFO
+from ZCatalogIndexes import ZCatalogIndexes
+
 
 LOG = logging.getLogger('Zope.ZCatalog')
 
@@ -79,7 +82,8 @@ class ZCatalog(Folder, Persistent, Implicit):
     Python program to catalog objects.
     """
 
-    __implements__ = IZCatalog
+    __implements__ = z2IZCatalog
+    implements(z3IZCatalog)
 
     meta_type = "ZCatalog"
     icon='misc_/ZCatalog/ZCatalog.gif'

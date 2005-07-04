@@ -7,28 +7,31 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+"""Date index.
 
-"""$Id$
+$Id$
 """
 
+import time
+from datetime import date, datetime
 from datetime import tzinfo, timedelta
 from types import StringType, FloatType, IntType
-from DateTime.DateTime import DateTime
-from OFS.PropertyManager import PropertyManager
-from datetime import date, datetime
-from Products.PluginIndexes import PluggableIndex
-from Products.PluginIndexes.common.UnIndex import UnIndex
-from Products.PluginIndexes.common.util import parseIndexRequest
-from Products.PluginIndexes.common import safe_callable
 
-from Globals import DTMLFile
+from BTrees.IIBTree import IISet, union, intersection, multiunion
 from BTrees.IOBTree import IOBTree
 from BTrees.OIBTree import OIBTree
-from BTrees.IIBTree import IISet, union, intersection, multiunion
-import time
+from DateTime.DateTime import DateTime
+from Globals import DTMLFile
+from OFS.PropertyManager import PropertyManager
+from zope.interface import implements
+
+from Products.PluginIndexes.common import safe_callable
+from Products.PluginIndexes.common.UnIndex import UnIndex
+from Products.PluginIndexes.common.util import parseIndexRequest
+from Products.PluginIndexes.interfaces import IDateIndex
 
 _marker = []
 
@@ -73,17 +76,20 @@ class LocalTimezone(tzinfo):
 Local = LocalTimezone()
 ###############################################################################
 
-class DateIndex(UnIndex, PropertyManager):
-    """ Index for Dates """
 
-    __implements__ = (PluggableIndex.UniqueValueIndex,
-                      PluggableIndex.SortIndex)
+class DateIndex(UnIndex, PropertyManager):
+
+    """Index for dates.
+    """
+
+    __implements__ = UnIndex.__implements__
+    implements(IDateIndex)
 
     meta_type = 'DateIndex'
     query_options = ['query', 'range']
-    
+
     index_naive_time_as_local = True # False means index as UTC
-    _properties=({'id':'index_naive_time_as_local', 
+    _properties=({'id':'index_naive_time_as_local',
                   'type':'boolean',
                   'mode':'w'},)
 
@@ -137,7 +143,6 @@ class DateIndex(UnIndex, PropertyManager):
             returnStatus = 1
 
         return returnStatus
-
 
     def _apply_index( self, request, cid='', type=type ):
         """Apply the index to query parameters given in the argument
@@ -219,7 +224,6 @@ class DateIndex(UnIndex, PropertyManager):
             return IISet(), (self.id,)
         else:
             return r, (self.id,)
-
 
     def _convert( self, value, default=None ):
         """Convert Date/Time value to our internal representation"""

@@ -7,26 +7,36 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+"""Keyword index.
+
+$Id$
+"""
 
 from types import StringType, UnicodeType
 from logging import getLogger
+
 from BTrees.OOBTree import OOSet, difference
-
 from Globals import DTMLFile
-from Products.PluginIndexes import PluggableIndex
 
-from Products.PluginIndexes.common.UnIndex import UnIndex
 from Products.PluginIndexes.common import safe_callable
+from Products.PluginIndexes.common.UnIndex import UnIndex
 
 LOG = getLogger('Zope.KeywordIndex')
 
+
 class KeywordIndex(UnIndex):
 
-    __implements__ = (PluggableIndex.UniqueValueIndex,
-                      PluggableIndex.SortIndex)
+    """Like an UnIndex only it indexes sequences of items.
+
+    Searches match any keyword.
+
+    This should have an _apply_index that returns a relevance score
+    """
+
+    __implements__ = UnIndex.__implements__
 
     meta_type="KeywordIndex"
 
@@ -40,14 +50,6 @@ class KeywordIndex(UnIndex):
     )
 
     query_options = ("query","operator", "range")
-
-
-    """Like an UnIndex only it indexes sequences of items
-
-    Searches match any keyword.
-
-    This should have an _apply_index that returns a relevance score
-    """
 
     def _index_object(self, documentId, obj, threshold=None, attr=''):
         """ index an object 'obj' with integer id 'i'
@@ -128,11 +130,9 @@ class KeywordIndex(UnIndex):
             LOG.error('Attempt to unindex nonexistent'
                       ' document id %s' % documentId)
 
-
     index_html = DTMLFile('dtml/index', globals())
     manage_workspace = DTMLFile('dtml/manageKeywordIndex', globals())
     manage_browse = DTMLFile('../dtml/browseIndex', globals())
-
 
 
 manage_addKeywordIndexForm = DTMLFile('dtml/addKeywordIndex', globals())

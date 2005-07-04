@@ -7,18 +7,27 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+"""DateIndex unit tests.
 
-import Zope2
+$Id$
+"""
+
 import unittest
+import Testing
+import Zope2
+Zope2.startup()
+
+from datetime import date, datetime, tzinfo, timedelta
+import time
+from types import IntType, FloatType
 
 from DateTime import DateTime
-from datetime import date, datetime, tzinfo, timedelta
+
 from Products.PluginIndexes.DateIndex.DateIndex import DateIndex, Local
-from types import IntType, FloatType
-import time
+
 
 class Dummy:
 
@@ -96,6 +105,7 @@ class USTimeZone(tzinfo):
 Eastern  = USTimeZone(-5, "Eastern",  "EST", "EDT")
 ###############################################################################
 
+
 class DI_Tests(unittest.TestCase):
     def setUp(self):
         self._values = (
@@ -109,13 +119,13 @@ class DI_Tests(unittest.TestCase):
             (7, Dummy('f', 1072742900)),                      # 1073545928
             (8, Dummy('g', date(2034,2,5))),                  # 1073599200
             (9, Dummy('h', datetime(2034,2,5,15,20,5))),      # (varies)
-            (10, Dummy('i', datetime(2034,2,5,10,17,5, 
+            (10, Dummy('i', datetime(2034,2,5,10,17,5,
                                      tzinfo=Eastern))),       # 1073600117
         )
         self._index = DateIndex('date')
         self._noop_req  = {'bar': 123}
         self._request   = {'date': DateTime(0)}
-        self._min_req   = {'date': {'query': DateTime('2032-05-08 15:16:17'),  
+        self._min_req   = {'date': {'query': DateTime('2032-05-08 15:16:17'),
             'range': 'min'}}
         self._max_req   = {'date': {'query': DateTime('2032-05-08 15:16:17'),
             'range': 'max'}}
@@ -153,6 +163,18 @@ class DI_Tests(unittest.TestCase):
         else:
             yr, mo, dy, hr, mn = dt.toZone('UTC').parts()[:5]
         return (((yr * 12 + mo) * 31 + dy) * 24 + hr) * 60 + mn
+
+    def test_z3interfaces(self):
+        from Products.PluginIndexes.interfaces import IDateIndex
+        from Products.PluginIndexes.interfaces import IPluggableIndex
+        from Products.PluginIndexes.interfaces import ISortIndex
+        from Products.PluginIndexes.interfaces import IUniqueValueIndex
+        from zope.interface.verify import verifyClass
+
+        verifyClass(IDateIndex, DateIndex)
+        verifyClass(IPluggableIndex, DateIndex)
+        verifyClass(ISortIndex, DateIndex)
+        verifyClass(IUniqueValueIndex, DateIndex)
 
     def test_empty(self):
         empty = self._index
@@ -204,28 +226,24 @@ class DI_Tests(unittest.TestCase):
         self._checkApply(self._range_req, values[2:] )
         self._checkApply(self._float_req, [values[6]] )
         self._checkApply(self._int_req, [values[7]] )
-    
+
     def test_naive_convert_to_utc(self):
         values = self._values
         index = self._index
         index.index_naive_time_as_local = False
         self._populateIndex()
-        for k, v in values[9:]: 
+        for k, v in values[9:]:
             # assert that the timezone is effectively UTC for item 9,
             # and still correct for item 10
             yr, mo, dy, hr, mn = v.date().utctimetuple()[:5]
             val = (((yr * 12 + mo) * 31 + dy) * 24 + hr) * 60 + mn
             self.failUnlessEqual(self._index.getEntryForObject(k), val)
-            
-        
+
 
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest( unittest.makeSuite( DI_Tests ) )
     return suite
 
-def run():
-    unittest.TextTestRunner().run(test_suite())
-
 if __name__ == '__main__':
-    run()
+    unittest.main(defaultTest='test_suite')

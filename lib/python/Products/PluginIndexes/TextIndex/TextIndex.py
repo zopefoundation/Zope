@@ -7,36 +7,38 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+"""Deprecated text index. Please use ZCTextIndex instead.
 
-"""Text Index
-
+$Id$
 """
-__version__ = '$Revision: 1.36 $'[11:-2]
 
+import operator, warnings
+import re
+from cgi import escape
+from types import *
 
-import  re
-import operator,warnings
-from Globals import Persistent,DTMLFile
+from Globals import Persistent, DTMLFile
 from zLOG import LOG, ERROR
 from Acquisition import Implicit
-from Products.PluginIndexes.common.ResultList import ResultList
-from Products.PluginIndexes import PluggableIndex
-from Products.PluginIndexes.common.util import parseIndexRequest
-
 from OFS.SimpleItem import SimpleItem
 from BTrees.IOBTree import IOBTree
-from BTrees.OIBTree import OIBTree
-from BTrees.IIBTree import IIBTree, IIBucket, IISet, IITreeSet
+from BTrees.IIBTree import IIBTree, IIBucket, IISet
 from BTrees.IIBTree import difference, weightedIntersection
+from BTrees.OIBTree import OIBTree
+from zope.interface import implements
+
+from Products.PluginIndexes import PluggableIndex
 from Products.PluginIndexes.common import safe_callable
+from Products.PluginIndexes.common.ResultList import ResultList
+from Products.PluginIndexes.common.util import parseIndexRequest
+from Products.PluginIndexes.interfaces import IPluggableIndex
+from Products.PluginIndexes.interfaces import ITextIndex
 
 from Lexicon import Lexicon
 
-from types import *
-from cgi import escape
 
 class Op:
     def __init__(self, name):
@@ -54,7 +56,9 @@ operator_dict = {'andnot': AndNot, 'and': And, 'or': Or,
                  '...': Near, 'near': Near,
                  AndNot: AndNot, And: And, Or: Or, Near: Near}
 
+
 class TextIndex(Persistent, Implicit, SimpleItem):
+
     """Full-text index.
 
     There is a ZCatalog UML model that sheds some light on what is
@@ -64,16 +68,17 @@ class TextIndex(Persistent, Implicit, SimpleItem):
       {'bob' : {1 : 5, 2 : 3, 42 : 9}}
       {'uncle' : {1 : 1}}
 
-
     The '_unindex' attribute is a mapping from document id to word
     ids.  This mapping allows the catalog to unindex an object:
 
       {42 : ('bob', 'is', 'your', 'uncle')
 
     This isn't exactly how things are represented in memory, many
-    optimizations happen along the way."""
+    optimizations happen along the way.
+    """
 
     __implements__ = (PluggableIndex.PluggableIndexInterface,)
+    implements(ITextIndex, IPluggableIndex)
 
     meta_type='TextIndex'
 
@@ -114,10 +119,8 @@ class TextIndex(Persistent, Implicit, SimpleItem):
         self.call_methods   = call_methods
         self.catalog        = caller
 
-
         # Default text index operator (should be visible to ZMI)
         self.useOperator  = 'or'
-
 
         if extra:   self.vocabulary_id = extra.vocabulary
         else:       self.vocabulary_id = "Vocabulary"
@@ -132,11 +135,12 @@ class TextIndex(Persistent, Implicit, SimpleItem):
             self._lexicon = lexicon
             self.vocabulary_id = '__userdefined__'
 
-
-    def getId(self): return self.id
+    def getId(self):
+        return self.id
 
     def getLexicon(self, vocab_id=None):
-        """Return the Lexicon in use. Removed lots of stinking code"""
+        """Get the Lexicon in use.
+        """
 
         if self._lexicon is None:
             ## if no lexicon is provided, create a default one
@@ -152,11 +156,8 @@ class TextIndex(Persistent, Implicit, SimpleItem):
 
         return self._lexicon
 
-
-
     def __nonzero__(self):
         return not not self._unindex
-
 
     def clear(self):
         """Reinitialize the text index."""
@@ -186,7 +187,6 @@ class TextIndex(Persistent, Implicit, SimpleItem):
                 scores=IIBTree(scores)
             return scores
 
-
         convert(_index, self._index, threshold, convertScores)
 
         _unindex=self._unindex
@@ -205,7 +205,6 @@ class TextIndex(Persistent, Implicit, SimpleItem):
 
         return histogram
 
-
     def getEntryForObject(self, rid, default=None):
         """Get all information contained for a specific object.
 
@@ -218,7 +217,6 @@ class TextIndex(Persistent, Implicit, SimpleItem):
         else:
             return tuple(map(self.getLexicon().getWord,
                              results))
-
 
     def insertForwardIndexEntry(self, entry, documentId, score=1):
         """Uses the information provided to update the indexes.
@@ -302,7 +300,6 @@ class TextIndex(Persistent, Implicit, SimpleItem):
                 encoding = str(encoding)
         except (AttributeError, TypeError):
             encoding = 'latin1'
-
 
         lexicon = self.getLexicon()
 
@@ -444,7 +441,6 @@ class TextIndex(Persistent, Implicit, SimpleItem):
 
             return r
 
-
     def _apply_index(self, request, cid=''):
         """ Apply the index to query parameters given in the argument,
         request
@@ -500,7 +496,6 @@ class TextIndex(Persistent, Implicit, SimpleItem):
 
         return (IIBucket(), (self.id,))
 
-
     def positions(self, docid, words,
                   # This was never tested: obj
                   ):
@@ -513,13 +508,11 @@ class TextIndex(Persistent, Implicit, SimpleItem):
         # The code below here is broken and requires an API change to fix
         # it. Waaaaa.
 
-
         if self._schema is None:
             f = getattr
         else:
             f = operator.__getitem__
             id = self._schema[self.id]
-
 
         if self.call_methods:
             doc = str(f(obj, self.id)())
@@ -530,8 +523,6 @@ class TextIndex(Persistent, Implicit, SimpleItem):
         for word in words:
             r = r+self.getLexicon().Splitter(doc).indexes(word)
         return r
-
-
 
     def query(self, s, default_operator=Or):
         """ Evaluate a query string.
@@ -566,7 +557,6 @@ class TextIndex(Persistent, Implicit, SimpleItem):
         # evalute the final 'expression'
         return self.evaluate(q)
 
-
     def get_operands(self, q, i):
         """Evaluate and return the left and right operands for an operator"""
         try:
@@ -592,8 +582,6 @@ class TextIndex(Persistent, Implicit, SimpleItem):
             right = self.evaluate(right)
 
         return (left, right)
-
-
 
     def evaluate(self, query):
         """Evaluate a parsed query"""
@@ -649,16 +637,13 @@ class TextIndex(Persistent, Implicit, SimpleItem):
         """ return name of indexed attributes """
         return (self.id, )
 
-
     def numObjects(self):
         """ return number of index objects """
         return len(self._index)
 
-
     def manage_setPreferences(self,vocabulary,
                                REQUEST=None,RESPONSE=None,URL2=None):
         """ preferences of TextIndex """
-
 
         if self.vocabulary_id != vocabulary:
             self.clear()
@@ -667,9 +652,9 @@ class TextIndex(Persistent, Implicit, SimpleItem):
         if RESPONSE:
             RESPONSE.redirect(URL2 + '/manage_main?manage_tabs_message=Preferences%20saved')
 
-
     manage_workspace  = DTMLFile("dtml/manageTextIndex",globals())
     manage_vocabulary = DTMLFile("dtml/manageVocabulary",globals())
+
 
 def parse(s):
     """Parse parentheses and quotes"""
@@ -713,7 +698,6 @@ def parse2(q, default_operator, operator_dict=operator_dict):
 
     return q
 
-
 def parens(s, parens_re=re.compile('[()]').search):
     mo = parens_re(s)
     if mo is None:
@@ -736,7 +720,6 @@ def parens(s, parens_re=re.compile('[()]').search):
         mo = parens_re(s, index + 1)
 
     raise QueryError, "Mismatched parentheses"
-
 
 def quotes(s):
 
@@ -765,7 +748,6 @@ def quotes(s):
         i = i - 2
 
     return filter(None, splitted)
-
 
 manage_addTextIndexForm = DTMLFile('dtml/addTextIndex', globals())
 

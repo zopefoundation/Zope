@@ -7,12 +7,23 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-import os, sys, unittest, zLOG
+"""KeywordIndex unit tests.
+
+$Id$
+"""
+
+import unittest
+import Testing
+import Zope2
+Zope2.startup()
+
+import zLOG
 
 from Products.PluginIndexes.KeywordIndex.KeywordIndex import KeywordIndex
+
 
 class Dummy:
 
@@ -34,6 +45,7 @@ def sortedUnique(seq):
     unique = unique.keys()
     unique.sort()
     return unique
+
 
 class TestKeywordIndex( unittest.TestCase ):
     """
@@ -101,6 +113,16 @@ class TestKeywordIndex( unittest.TestCase ):
         if hasattr(result, 'keys'): result=result.keys()
         for k, v in expectedValues:
             assert k in result
+
+    def test_z3interfaces(self):
+        from Products.PluginIndexes.interfaces import IPluggableIndex
+        from Products.PluginIndexes.interfaces import ISortIndex
+        from Products.PluginIndexes.interfaces import IUniqueValueIndex
+        from zope.interface.verify import verifyClass
+
+        verifyClass(IPluggableIndex, KeywordIndex)
+        verifyClass(ISortIndex, KeywordIndex)
+        verifyClass(IUniqueValueIndex, KeywordIndex)
 
     def testAddObjectWOKeywords(self):
 
@@ -212,7 +234,7 @@ class TestKeywordIndex( unittest.TestCase ):
         #
         record[ 'foo' ][ 'range' ] = 'min:max'
         self._checkApply( record, self._values[6:7] )
-        
+
     def testDuplicateKeywords(self):
         self._catch_log_errors()
         try:
@@ -248,14 +270,11 @@ class TestKeywordIndex( unittest.TestCase ):
                  }
         self._checkApply(record, values[5:7])
 
+
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest( unittest.makeSuite( TestKeywordIndex ) )
     return suite
-    
-def main():
-    unittest.main(defaultTest='test_suite')
 
 if __name__ == '__main__':
-    main()
-
+    unittest.main(defaultTest='test_suite')

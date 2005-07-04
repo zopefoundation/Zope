@@ -7,13 +7,21 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+"""FieldIndex unit tests.
 
-import os, sys, unittest
-import ZODB
+$Id$
+"""
+
+import unittest
+import Testing
+import Zope2
+Zope2.startup()
+
 from Products.PluginIndexes.FieldIndex.FieldIndex import FieldIndex
+
 
 class Dummy:
 
@@ -28,9 +36,9 @@ class Dummy:
 
     __repr__ = __str__
 
-class TestCase( unittest.TestCase ):
-    """
-        Test FieldIndex objects.
+
+class FieldIndexTests(unittest.TestCase):
+    """Test FieldIndex objects.
     """
 
     def setUp( self ):
@@ -68,7 +76,6 @@ class TestCase( unittest.TestCase ):
         self._zero_req  = { 'foo': 0 }
         self._none_req  = { 'foo': None }
 
-
     def tearDown( self ):
         """
         """
@@ -86,6 +93,16 @@ class TestCase( unittest.TestCase ):
           '%s | %s' % ( map( None, result ), expectedValues )
         for k, v in expectedValues:
             assert k in result
+
+    def test_z3interfaces(self):
+        from Products.PluginIndexes.interfaces import IPluggableIndex
+        from Products.PluginIndexes.interfaces import ISortIndex
+        from Products.PluginIndexes.interfaces import IUniqueValueIndex
+        from zope.interface.verify import verifyClass
+
+        verifyClass(IPluggableIndex, FieldIndex)
+        verifyClass(ISortIndex, FieldIndex)
+        verifyClass(IUniqueValueIndex, FieldIndex)
 
     def testEmpty( self ):
         "Test an empty FieldIndex."
@@ -205,11 +222,11 @@ class TestCase( unittest.TestCase ):
 
         assert r2 == r
 
-def test_suite():
-    return unittest.makeSuite( TestCase )
 
-def main():
-    unittest.TextTestRunner().run(test_suite())
+def test_suite():
+    return unittest.TestSuite((
+        unittest.makeSuite(FieldIndexTests),
+        ))
 
 if __name__ == '__main__':
-    main()
+    unittest.main(defaultTest='test_suite')

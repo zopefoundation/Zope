@@ -7,16 +7,22 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""ZCatalog product"""
+"""Vocabulary for deprecated text index.
+
+$Id$
+"""
 
 from Globals import DTMLFile, MessageDialog
 import Globals, AccessControl.Role
 from Acquisition import Implicit
 from Persistence import Persistent
 from OFS.SimpleItem import Item
+from zope.interface import implements
+
+from Products.PluginIndexes.interfaces import IVocabulary
 from Products.PluginIndexes.TextIndex import Lexicon, GlobbingLexicon
 from Products.PluginIndexes.TextIndex.Lexicon import stop_word_dict
 from Products.PluginIndexes.TextIndex import Splitter
@@ -39,17 +45,15 @@ def manage_addVocabulary(self, id, title, globbing=None, extra=None,
 class _extra: pass
 
 
-class Vocabulary(Item, Persistent, Implicit,
-                 AccessControl.Role.RoleManager,
-                 ):
-    """
-    A Vocabulary is a user-managable realization of a Lexicon object.
+class Vocabulary(Item, Persistent, Implicit, AccessControl.Role.RoleManager):
 
+    """A Vocabulary is a user-managable realization of a Lexicon object.
     """
+
+    implements(IVocabulary)
 
     meta_type = "Vocabulary"
     _isAVocabulary = 1
-
 
     manage_options=(
         (
@@ -72,8 +76,6 @@ class Vocabulary(Item, Persistent, Implicit,
          ['query',],
          ['Anonymous', 'Manager']),
         )
-
-
 
     manage_main = DTMLFile('dtml/manage_vocab', globals())
     manage_query = DTMLFile('dtml/vocab_query', globals())
@@ -114,7 +116,6 @@ class Vocabulary(Item, Persistent, Implicit,
                 result.append(pattern)
 
         return str(result)
-
 
     def manage_insert(self, word='', URL1=None, RESPONSE=None):
         """ doc string """
