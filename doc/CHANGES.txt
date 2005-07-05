@@ -38,6 +38,8 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #1832: UnIndex swallowed ConflictErrors.
+
       - Collector #1815: ZCTextIndex accepts (again) sequences of strings to 
         be indexed.
 

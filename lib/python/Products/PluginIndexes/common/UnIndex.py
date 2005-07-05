@@ -24,6 +24,7 @@ from BTrees.IOBTree import IOBTree
 import BTrees.Length
 from BTrees.OOBTree import OOBTree
 from OFS.SimpleItem import SimpleItem
+from ZODB.POSException import ConflictError
 from zope.interface import implements
 
 from Products.PluginIndexes import PluggableIndex
@@ -169,6 +170,9 @@ class UnIndex(SimpleItem):
                     del self._index[entry]
                     self._length.change(-1)
 
+            except ConflictError:
+                raise
+
             except AttributeError:
                 # index row is an int
                 del self._index[entry]
@@ -209,9 +213,7 @@ class UnIndex(SimpleItem):
     def index_object(self, documentId, obj, threshold=None):
         """ wrapper to handle indexing of multiple attributes """
 
-        # needed for backward compatibility
-        try: fields = self.indexed_attrs
-        except: fields  = [ self.id ]
+        fields = self.getIndexSourceNames()
 
         res = 0
         for attr in fields:
@@ -235,6 +237,8 @@ class UnIndex(SimpleItem):
                 if datum is _marker:
                     try:
                         del self._unindex[documentId]
+                    except ConflictError:
+                        raise
                     except:
                         LOG.error('Should not happen: oldDatum was there, now its not,'
                                   'for document with id %s' % documentId)
@@ -279,6 +283,8 @@ class UnIndex(SimpleItem):
 
         try:
             del self._unindex[documentId]
+        except ConflictError:
+            raise
         except:
             LOG.error('Attempt to unindex nonexistent document'
                       ' with id %s' % documentId)
@@ -391,10 +397,8 @@ class UnIndex(SimpleItem):
 
     def getIndexSourceNames(self):
         """ return sequence of indexed attributes """
-        try:
-            return self.indexed_attrs
-        except:
-            return [ self.id ]
+        # BBB:  older indexes didn't have 'indexed_attrs'
+        return getattr(self, 'indexed_attrs', [self.id])
 
     def uniqueValues(self, name=None, withLengths=0):
         """returns the unique values for name
