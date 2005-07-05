@@ -25,7 +25,6 @@ from zope.interface import implements
 
 from Products.PluginIndexes import PluggableIndex
 from Products.PluginIndexes.common.util import parseIndexRequest
-from Products.PluginIndexes.interfaces import IPluggableIndex
 from Products.PluginIndexes.interfaces import ITopicIndex
 
 import FilteredSet
@@ -43,7 +42,7 @@ class TopicIndex(Persistent, SimpleItem):
     """
 
     __implements__ = (PluggableIndex.PluggableIndexInterface,)
-    implements(ITopicIndex, IPluggableIndex)
+    implements(ITopicIndex)
 
     meta_type="TopicIndex"
     query_options = ('query','operator')

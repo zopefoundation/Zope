@@ -172,9 +172,9 @@ class DI_Tests(unittest.TestCase):
         from zope.interface.verify import verifyClass
 
         verifyClass(IDateIndex, DateIndex)
-        verifyClass(IPluggableIndex, DateIndex)
-        verifyClass(ISortIndex, DateIndex)
-        verifyClass(IUniqueValueIndex, DateIndex)
+        verifyClass(IPluggableIndex, DateIndex, 1)
+        verifyClass(ISortIndex, DateIndex, 1)
+        verifyClass(IUniqueValueIndex, DateIndex, 1)
 
     def test_empty(self):
         empty = self._index

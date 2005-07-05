@@ -193,7 +193,7 @@ class TestZCatalog(unittest.TestCase):
         from Products.ZCatalog.ZCatalog import ZCatalog
         from zope.interface.verify import verifyClass
 
-        verifyClass(IZCatalog, ZCatalog)
+        verifyClass(IZCatalog, ZCatalog, 1)
 
     def testGetMetadataForUID(self):
         testNum = str(self.upper - 3) # as good as any..

@@ -92,7 +92,7 @@ class Tests(unittest.TestCase):
         from Products.PluginIndexes.TextIndex.TextIndex import TextIndex
         from zope.interface.verify import verifyClass
 
-        verifyClass(IPluggableIndex, TextIndex)
+        verifyClass(IPluggableIndex, TextIndex, 1)
         verifyClass(ITextIndex, TextIndex)
 
     def test_SimpleAddDelete(self):

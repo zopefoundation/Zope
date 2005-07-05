@@ -34,7 +34,6 @@ from Products.PluginIndexes import PluggableIndex
 from Products.PluginIndexes.common import safe_callable
 from Products.PluginIndexes.common.ResultList import ResultList
 from Products.PluginIndexes.common.util import parseIndexRequest
-from Products.PluginIndexes.interfaces import IPluggableIndex
 from Products.PluginIndexes.interfaces import ITextIndex
 
 from Lexicon import Lexicon
@@ -78,7 +77,7 @@ class TextIndex(Persistent, Implicit, SimpleItem):
     """
 
     __implements__ = (PluggableIndex.PluggableIndexInterface,)
-    implements(ITextIndex, IPluggableIndex)
+    implements(ITextIndex)
 
     meta_type='TextIndex'
 

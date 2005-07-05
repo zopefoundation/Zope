@@ -71,7 +71,7 @@ class TestTopicIndex(TestBase):
         from zope.interface.verify import verifyClass
 
         verifyClass(ITopicIndex, TopicIndex)
-        verifyClass(IPluggableIndex, TopicIndex)
+        verifyClass(IPluggableIndex, TopicIndex, 1)
 
     def testOr(self):
         self._searchOr('doc1',[1,2])

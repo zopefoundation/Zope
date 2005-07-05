@@ -120,9 +120,9 @@ class TestKeywordIndex( unittest.TestCase ):
         from Products.PluginIndexes.interfaces import IUniqueValueIndex
         from zope.interface.verify import verifyClass
 
-        verifyClass(IPluggableIndex, KeywordIndex)
-        verifyClass(ISortIndex, KeywordIndex)
-        verifyClass(IUniqueValueIndex, KeywordIndex)
+        verifyClass(IPluggableIndex, KeywordIndex, 1)
+        verifyClass(ISortIndex, KeywordIndex, 1)
+        verifyClass(IUniqueValueIndex, KeywordIndex, 1)
 
     def testAddObjectWOKeywords(self):
 

@@ -267,7 +267,7 @@ class CosineIndexTests(ZCIndexTestsBase, testIndex.CosineIndexTest):
         from Products.ZCTextIndex.interfaces import IZCTextIndex
         from zope.interface.verify import verifyClass
 
-        verifyClass(IPluggableIndex, ZCTextIndex)
+        verifyClass(IPluggableIndex, ZCTextIndex, 1)
         verifyClass(IZCTextIndex, ZCTextIndex)
 
     def testRanking(self):

@@ -30,7 +30,6 @@ from Products.PluginIndexes import PluggableIndex
 from Products.PluginIndexes.common import safe_callable
 from Products.PluginIndexes.common.util import parseIndexRequest
 from Products.PluginIndexes.interfaces import IPathIndex
-from Products.PluginIndexes.interfaces import IUniqueValueIndex
 
 _marker = []
 LOG = getLogger('Zope.PathIndex')
@@ -53,7 +52,7 @@ class PathIndex(Persistent, SimpleItem):
     """
 
     __implements__ = (PluggableIndex.UniqueValueIndex,)
-    implements(IPathIndex, IUniqueValueIndex)
+    implements(IPathIndex)
 
     meta_type="PathIndex"
 
