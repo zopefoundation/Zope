@@ -19,22 +19,97 @@ from zope.interface import Interface
 from zope.schema import Bool
 
 
-# create IPluggableIndex, IUniqueValueIndex, ISortIndex
-from Products.Five.fiveconfigure import createZope2Bridge
-from common.PluggableIndex import PluggableIndexInterface
-from common.PluggableIndex import SortIndex
-from common.PluggableIndex import UniqueValueIndex
-import interfaces
+# XXX: copied from common.PluggableIndex.PluggableIndexInterface;
+#      should be bridged
+class IPluggableIndex(Interface):
 
-createZope2Bridge(PluggableIndexInterface, interfaces, 'IPluggableIndex')
-createZope2Bridge(SortIndex, interfaces, 'ISortIndex')
-createZope2Bridge(UniqueValueIndex, interfaces, 'IUniqueValueIndex')
+    def getId():
+        """Return Id of index."""
 
-del createZope2Bridge
-del PluggableIndexInterface
-del SortIndex
-del UniqueValueIndex
-del interfaces
+    def getEntryForObject(documentId, default=None):
+        """Get all information contained for 'documentId'."""
+
+    def getIndexSourceNames():
+        """ return a sequence of attribute names that are indexed 
+            by the index. 
+        """
+
+    def index_object(documentId, obj, threshold=None):
+        """Index an object.
+
+        'documentId' is the integer ID of the document.
+        'obj' is the object to be indexed.
+        'threshold' is the number of words to process between committing
+        subtransactions.  If None, subtransactions are disabled.
+        """
+
+    def unindex_object(documentId):
+        """Remove the documentId from the index."""
+
+    def _apply_index(request, cid=''):
+        """Apply the index to query parameters given in 'request'.
+
+        The argument should be a mapping object.
+
+        If the request does not contain the needed parametrs, then
+        None is returned.
+
+        If the request contains a parameter with the name of the column
+        + "_usage", it is sniffed for information on how to handle applying
+        the index. (Note: this style or parameters is deprecated)
+
+        If the request contains a parameter with the name of the
+        column and this parameter is either a Record or a class
+        instance then it is assumed that the parameters of this index
+        are passed as attribute (Note: this is the recommended way to
+        pass parameters since Zope 2.4)
+
+        Otherwise two objects are returned.  The first object is a
+        ResultSet containing the record numbers of the matching
+        records.  The second object is a tuple containing the names of
+        all data fields used.
+        """
+    
+    def numObjects():
+        """Return the number of indexed objects"""
+
+# XXX: this is currently broken
+#    def indexSize():
+#        """Return the size of the index in terms of distinct values"""
+    
+    def clear():
+        """Empty the index"""
+
+
+# XXX: copied from from common.PluggableIndex.UniqueValueIndex;
+#      should be bridged
+class IUniqueValueIndex(IPluggableIndex):
+    """An index which can return lists of unique values contained in it"""
+    
+    def hasUniqueValuesFor(name):
+        """Return true if the index can return the unique values for name"""
+        
+    def uniqueValues(name=None, withLengths=0):
+        """Return the unique values for name.
+
+        If 'withLengths' is true, returns a sequence of tuples of
+        (value, length)."""
+
+
+# XXX: copied from from common.PluggableIndex.SortIndex;
+#      should be bridged
+class ISortIndex(IPluggableIndex):
+    """An index which may be used to sort a set of document ids"""
+    
+    def keyForDocument(documentId):
+        """Return the sort key that cooresponds to the specified document id
+        
+        This method is no longer used by ZCatalog, but is left for backwards 
+        compatibility."""
+        
+    def documentToKeyMap():
+        """Return an object that supports __getitem__ and may be used to quickly
+        lookup the sort key given a document id"""
 
 
 class IDateIndex(Interface):

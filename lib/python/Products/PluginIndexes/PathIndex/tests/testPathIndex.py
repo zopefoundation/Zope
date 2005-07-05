@@ -75,7 +75,7 @@ class PathIndexTests(unittest.TestCase):
         from zope.interface.verify import verifyClass
 
         verifyClass(IPathIndex, PathIndex)
-        verifyClass(IUniqueValueIndex, PathIndex, 1)
+        verifyClass(IUniqueValueIndex, PathIndex)
 
     def testEmpty(self):
         self.assertEqual(self._index.numObjects() ,0)

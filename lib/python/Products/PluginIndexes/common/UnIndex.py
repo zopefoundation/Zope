@@ -24,10 +24,14 @@ from BTrees.IOBTree import IOBTree
 import BTrees.Length
 from BTrees.OOBTree import OOBTree
 from OFS.SimpleItem import SimpleItem
+from zope.interface import implements
 
 from Products.PluginIndexes import PluggableIndex
 from Products.PluginIndexes.common import safe_callable
 from Products.PluginIndexes.common.util import parseIndexRequest
+from Products.PluginIndexes.interfaces import IPluggableIndex
+from Products.PluginIndexes.interfaces import ISortIndex
+from Products.PluginIndexes.interfaces import IUniqueValueIndex
 
 _marker = []
 LOG = getLogger('Zope.UnIndex')
@@ -40,6 +44,7 @@ class UnIndex(SimpleItem):
 
     __implements__ = (PluggableIndex.UniqueValueIndex,
                       PluggableIndex.SortIndex)
+    implements(IPluggableIndex, IUniqueValueIndex, ISortIndex)
 
     def __init__(
         self, id, ignore_ex=None, call_methods=None, extra=None, caller=None):

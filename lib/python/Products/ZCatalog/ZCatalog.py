@@ -37,8 +37,10 @@ from Products.PluginIndexes.common.PluggableIndex \
      import PluggableIndexInterface
 from Products.PluginIndexes.TextIndex import Splitter
 from zLOG import LOG
+from zope.interface import implements
 
 from Catalog import Catalog, CatalogError
+from interfaces import IZCatalog as z3IZCatalog
 from IZCatalog import IZCatalog as z2IZCatalog
 from ProgressHandler import ZLogHandler
 from ZCatalogIndexes import ZCatalogIndexes
@@ -81,6 +83,7 @@ class ZCatalog(Folder, Persistent, Implicit):
     """
 
     __implements__ = z2IZCatalog
+    implements(z3IZCatalog)
 
     meta_type = "ZCatalog"
     icon='misc_/ZCatalog/ZCatalog.gif'

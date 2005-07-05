@@ -31,6 +31,7 @@ from Products.PluginIndexes.common.PluggableIndex import \
      PluggableIndexInterface
 from Products.PluginIndexes.common.util import parseIndexRequest
 from Products.PluginIndexes.common import safe_callable
+from Products.PluginIndexes.interfaces import IPluggableIndex
 
 from Products.ZCTextIndex.ILexicon import ILexicon
 from Products.ZCTextIndex.Lexicon import \
@@ -54,7 +55,7 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
     """
 
     __implements__ = PluggableIndexInterface
-    implements(IZCTextIndex)
+    implements(IZCTextIndex, IPluggableIndex)
 
     ## Magic class attributes ##
 

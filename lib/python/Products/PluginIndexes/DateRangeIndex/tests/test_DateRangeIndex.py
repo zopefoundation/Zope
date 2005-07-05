@@ -88,9 +88,9 @@ class DRI_Tests( unittest.TestCase ):
         from zope.interface.verify import verifyClass
 
         verifyClass(IDateRangeIndex, DateRangeIndex)
-        verifyClass(IPluggableIndex, DateRangeIndex, 1)
-        verifyClass(ISortIndex, DateRangeIndex, 1)
-        verifyClass(IUniqueValueIndex, DateRangeIndex, 1)
+        verifyClass(IPluggableIndex, DateRangeIndex)
+        verifyClass(ISortIndex, DateRangeIndex)
+        verifyClass(IUniqueValueIndex, DateRangeIndex)
 
     def test_empty( self ):
 

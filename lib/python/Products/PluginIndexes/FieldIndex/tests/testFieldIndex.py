@@ -100,9 +100,9 @@ class FieldIndexTests(unittest.TestCase):
         from Products.PluginIndexes.interfaces import IUniqueValueIndex
         from zope.interface.verify import verifyClass
 
-        verifyClass(IPluggableIndex, FieldIndex, 1)
-        verifyClass(ISortIndex, FieldIndex, 1)
-        verifyClass(IUniqueValueIndex, FieldIndex, 1)
+        verifyClass(IPluggableIndex, FieldIndex)
+        verifyClass(ISortIndex, FieldIndex)
+        verifyClass(IUniqueValueIndex, FieldIndex)
 
     def testEmpty( self ):
         "Test an empty FieldIndex."
