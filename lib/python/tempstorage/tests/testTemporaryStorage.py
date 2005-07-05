@@ -96,6 +96,16 @@ class TemporaryStorageTests(
         self.assertEquals(getattr(ob, 'child1', MinPO()).value, 'child1')
         self.failIf(getattr(ob, 'child2', None))
 
+    def checkLoadEx(self):
+        oid = self._storage.new_oid()
+        self._dostore(oid, data=MinPO(1))
+        loadp, loads  = self._storage.load(oid, 'whatever')
+        exp, exs, exv = self._storage.loadEx(oid, 'whatever')
+        self.assertEqual(loadp, exp)
+        self.assertEqual(loads, exs)
+        self.assertEqual(exv, '')
+        
+
 def test_suite():
     suite = unittest.makeSuite(TemporaryStorageTests, 'check')
     suite2 = unittest.makeSuite(Corruption.FileStorageCorruptTests, 'check')

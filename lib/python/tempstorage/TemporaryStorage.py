@@ -121,23 +121,19 @@ class TemporaryStorage(BaseStorage, ConflictResolvingStorage):
             self._lock_release()
 
     # Apparently loadEx is required to use this as a ZEO storage for
-    # ZODB 3.3.  There are no docs for loadEx, and the tests don't
-    # make it totally clear what it's meant to do.  In MappingStorage,
-    # it has the same argument signature and returns the same thing
-    # that load does, so we do the same here.  There is a comment in
-    # FileStorage about its loadEx method implementation that says "a
-    # variant of load that also returns a transaction id.  ZEO wants
-    # this for managing its cache".  But 'load' appears to do that
-    # too, so uh, who knows.  Apparently it also has something to do
-    # with the ZODB iteration interface, because it's tested within
-    # the IteratorStorage tests, although we don't need to support the
-    # iterator interface for ZEO to work, so we don't.  MVCC, despite
-    # descriptions to the contrary on the Wiki doesn't actually need
-    # the iterator interface either.  Just doing my duty to promote
-    # the lost art of voodoo programming here, there's no need to
-    # thank me! - CM
+    # ZODB 3.3.  The tests don't make it totally clear what it's meant
+    # to do.  There is a comment in FileStorage about its loadEx
+    # method implementation that says "a variant of load that also
+    # returns a transaction id.  ZEO wants this for managing its
+    # cache".  But 'load' appears to do that too, so uh, who knows.
+    # - CM
 
-    loadEx = load
+    def loadEx(self, oid, version):
+        data = self.load(oid, version)
+        # pickle, serial, version
+        # return an empty string for the version, as this is not a
+        # versioning storage, and it's what MappingStorage does.
+        return (data[0], data[1], "")
 
     def loadSerial(self, oid, serial, marker=[]):
         """ this is only useful to make conflict resolution work.  It
