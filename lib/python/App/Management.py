@@ -43,7 +43,7 @@ class Tabs(ExtensionClass.Base):
 
         try:
             options=tuple(self.manage_options)
-        except:
+        except TypeError:
             options=tuple(self.manage_options())
 
         for d in options:
@@ -74,7 +74,7 @@ class Tabs(ExtensionClass.Base):
             m=options[0]['action']
             if m=='manage_workspace':
                     raise TypeError
-        except:
+        except (IndexError, KeyError):
             raise Unauthorized, (
                 'You are not authorized to view this object.')
 
