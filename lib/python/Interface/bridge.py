@@ -24,7 +24,7 @@ from zope.interface.interface import Interface as Z3_Interface
 from zope.interface.interface import Attribute as Z3_Attribute
 from zope.interface.interface import Method as Z3_Method
 
-_bridges = {Z3_interface: Z2_Interface}
+_bridges = {Z3_Interface: Z2_Interface}
 
 def fromZ3Interface(z3i):
     """ Return a Zope 2 interface corresponding to 'z3i'.
