@@ -22,6 +22,13 @@ Zope Changes
 
    - Collector #1233: port ZOPE_CONFIG patch from Zope 2.7 to Zope 2.8
 
+  Trunk only (unreleased)
+
+    Features added
+
+      - Interface: Added Z3 -> Z2 bridge utilities.
+        This allows to migrate interfaces to Zope 3 style interfaces and
+        bridge them back to oldstyle interfaces for backwards compatibility.
 
   after Zope 2.8b1
 
