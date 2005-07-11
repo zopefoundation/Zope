@@ -38,7 +38,7 @@ def fromZ3Interface(z3i):
         return _bridges[z3i]
 
     name = z3i.getName()
-    bases = [fromZ3Interface(x) for x in z3i.getBases()]
+    bases = [ fromZ3Interface(x) for x in z3i.getBases() ]
     attrs = {}
 
     for k, v in z3i.namesAndDescriptions():
@@ -48,14 +48,12 @@ def fromZ3Interface(z3i):
         elif isinstance(v, Z3_Attribute):
             v = fromZ3Attribute(v)
 
-        #TODO bridge Fields to Attributes?
-
         attrs[k] = v
 
     # XXX: Note that we pass the original interface's __module__;
     #      we may live to regret that.
     z2i = Z2_InterfaceClass(name=name,
-                            bases=bases,
+                            bases=tuple(bases),
                             attrs=attrs,
                             __doc__=z3i.getDoc(),
                             __module__=z3i.__module__)
@@ -73,21 +71,21 @@ def fromZ3Attribute(z3a):
     return Z2_Attribute(z3a.getName(), z3a.getDoc())
 
 def fromZ3Method(z3m):
-    """ Return a Zope 2 interface method corresponding to 'z3a'.
+    """ Return a Zope 2 interface method corresponding to 'z3m'.
 
-    o 'z3a' must be a Zope 3 interface method.
+    o 'z3m' must be a Zope 3 interface method.
     """
     if not isinstance(z3m, Z3_Method):
         raise ValueError, 'Not a Zope 3 interface method!'
 
-    m = Z2_Method(z3m.getName(), z3m.getDoc())
+    z2m = Z2_Method(z3m.getName(), z3m.getDoc())
     sig = z3m.getSignatureInfo()
-    m.positional = sig['positional']
-    m.required = sig['required']
-    m.optional = sig['optional']
-    m.varargs = sig['varargs']
-    m.kwargs = sig['kwargs']
-    return m
+    z2m.positional = sig['positional']
+    z2m.required = sig['required']
+    z2m.optional = sig['optional']
+    z2m.varargs = sig['varargs']
+    z2m.kwargs = sig['kwargs']
+    return z2m
 
 def createZope3Bridge(zope3, package, name):
     # Map a Zope 3 interface into a Zope2 interface, seated within 'package'
