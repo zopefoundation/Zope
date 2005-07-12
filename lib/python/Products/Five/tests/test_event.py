@@ -64,7 +64,7 @@ class EventTest(FiveTestCase):
         manage_addSimpleContent(self.folder, 'foo', 'Foo')
         # somehow we need to at least commit a subtransaction to make
         # renaming succeed
-        transaction.commit(1)
+        transaction.savepoint()
         self.folder.manage_renameObject('foo', 'bar')
         bar = self.folder.bar
         events = objectEventCatcher.getEvents()
@@ -98,7 +98,7 @@ class EventTest(FiveTestCase):
         manage_addSimpleContent(folder1, 'foo', 'Foo')
         foo = folder1.foo
         # need to trigger subtransaction before copy/paste can work
-        transaction.commit(1)
+        transaction.savepoint()
         cb = folder1.manage_cutObjects(['foo'])
         folder2.manage_pasteObjects(cb)
         newfoo = folder2.foo
@@ -128,7 +128,7 @@ class EventTest(FiveTestCase):
         manage_addNoVerifyPasteFolder(self.folder, 'folder1')
         folder1 = self.folder.folder1
         # need to trigger subtransaction before copy/paste can work
-        transaction.commit(1)
+        transaction.savepoint()
         cb = self.folder.manage_copyObjects(['foo'])
         folder1.manage_pasteObjects(cb)
         foo_copy = folder1.foo

@@ -50,7 +50,7 @@ def _getDB():
         root = conn.root()
         app = Application()
         root['Application']= app
-        transaction.commit(1)
+        transaction.savepoint()
         _populate(app)
         stuff['db'] = db
         conn.close()
@@ -190,7 +190,9 @@ class TestSessionManager(TestBase):
         sd.set('foo', 'bar')
         # TODO: transaction.commit() always returns None.  Is that
         # all this is trying to test?
-        self.failUnless(transaction.commit(1) == None)
+        #self.failUnless(transaction.savepoint() == None)
+        # XXX: with savepoints this test makes even less sense
+        transaction.savepoint()
 
     def testForeignObject(self):
         self.assertRaises(InvalidObjectReference, self._foreignAdd)

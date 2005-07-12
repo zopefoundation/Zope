@@ -461,7 +461,7 @@ class CopySource(ExtensionClass.Base):
         # 1) Make sure the data about to be exported is current
         # 2) Ensure self._p_jar and container._p_jar are set even if
         #    either one is a new object
-        transaction.commit(1)
+        transaction.savepoint()
 
         if self._p_jar is None:
             raise CopyError, (

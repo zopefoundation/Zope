@@ -54,7 +54,7 @@ class SimpleTrailblazer:
         o = context.restrictedTraverse(id)
         # Commit a subtransaction to assign the new object to
         # the correct database.
-        transaction.commit(1)
+        transaction.savepoint()
         return o
 
     def traverseOrConstruct(self, path, omit_final=0):
@@ -107,7 +107,7 @@ class CustomTrailblazer (SimpleTrailblazer):
         obj = context.unrestrictedTraverse(id)
         # Commit a subtransaction to assign the new object to
         # the correct database.
-        transaction.commit(1)
+        transaction.savepoint()
         return obj
 
 
@@ -177,7 +177,7 @@ class MountedObject(MountPoint, SimpleItem):
                 obj = Application()
                 root[real_root] = obj
                 # Get it into the database
-                transaction.commit(1)
+                transaction.savepoint()
             else:
                 raise
 

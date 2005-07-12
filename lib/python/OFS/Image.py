@@ -516,7 +516,7 @@ class File(Persistent, Implicit, PropertyManager,
 
         # Make sure we have an _p_jar, even if we are a new object, by
         # doing a sub-transaction commit.
-        transaction.commit(1)
+        transaction.savepoint()
 
         if self._p_jar is None:
             # Ugh
@@ -542,7 +542,7 @@ class File(Persistent, Implicit, PropertyManager,
             data.next = next
 
             # Save the object so that we can release its memory.
-            transaction.commit(1)
+            transaction.savepoint()
             data._p_deactivate()
             # The object should be assigned an oid and be a ghost.
             assert data._p_oid is not None
