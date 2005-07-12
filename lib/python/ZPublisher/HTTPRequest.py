@@ -1346,6 +1346,8 @@ class HTTPRequest(BaseRequest):
         """see zope.publisher.interfaces.IPublicationRequest"""
         self._presentation_skin = skin
 
+    def getURL(self):
+        return self.URL
 
 class TaintRequestWrapper:
     def __init__(self, req):

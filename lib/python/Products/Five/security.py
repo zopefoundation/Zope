@@ -15,8 +15,11 @@
 
 $Id: security.py 12915 2005-05-31 10:23:19Z philikon $
 """
-from zope.interface import implements
+from zope.interface import implements, classProvides
 from zope.component import queryUtility, getUtility
+from zope.security.management import thread_local
+from zope.security.interfaces import IInteraction, ISecurityPolicy
+from zope.security.simplepolicies import ParanoidSecurityPolicy
 from zope.app.security.interfaces import IPermission
 from zope.app import zapi
 
@@ -73,6 +76,29 @@ def checkPermission(permission, object, interaction=None):
         return True
 
     return False
+
+class FiveSecurityPolicy(ParanoidSecurityPolicy):
+    """Security policy that bridges between Zope 3 security mechanisms and
+    Zope 2's security policy.
+
+    Don't let the name of the base class fool you... This really just
+    delegates to Zope 2's security manager."""
+    classProvides(ISecurityPolicy)
+    implements(IInteraction)
+
+    def checkPermission(self, permission, object):
+        return checkPermission(permission, object)
+
+def newInteraction():
+    """Con Zope 3 to use Zope 2's checkPermission.
+
+    Zope 3 when it does a checkPermission will turn around and
+    ask the thread local interaction for the checkPermission method.
+    By making the interaction *be* Zope 2's security manager, we can
+    con Zope 3 into using Zope 2's checker...
+    """
+    if getattr(thread_local, 'interaction', None) is None:
+        thread_local.interaction = FiveSecurityPolicy()
 
 def initializeClass(klass):
     InitializeClass(klass)

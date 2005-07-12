@@ -1,6 +1,17 @@
 <configure xmlns="http://namespaces.zope.org/zope"
            xmlns:browser="http://namespaces.zope.org/browser">
 
+  <serviceType
+      id="BrowserMenu"
+      interface="zope.app.publisher.interfaces.browser.IBrowserMenuService"
+      />
+
+  <service
+      serviceType="BrowserMenu"
+      permission="zope.Public"
+      component="zope.app.publisher.browser.globalbrowsermenuservice.globalBrowserMenuService"
+      />
+
   <browser:page
       for="*"
       name="absolute_url"
