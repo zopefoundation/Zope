@@ -38,7 +38,6 @@ _marker = []
 class Resource(Explicit):
     """A publishable resource
     """
-
     implements(IResource)
 
     def __init__(self, request):
@@ -55,7 +54,6 @@ class Resource(Explicit):
         return "%s/%s" % (url, name)
 
 class PageTemplateResource(BrowserView, Resource):
-
     #implements(IBrowserPublisher)
 
     def __browser_default__(self, request):
@@ -68,7 +66,6 @@ class PageTemplateResource(BrowserView, Resource):
 
 class FileResource(BrowserView, Resource):
     """A publishable file-based resource"""
-
     #implements(IBrowserPublisher)
 
     def __browser_default__(self, request):
@@ -76,7 +73,6 @@ class FileResource(BrowserView, Resource):
 
     def GET(self):
         """Default content"""
-
         file = self.context
         request = self.request
         response = request.response
@@ -175,7 +171,6 @@ class Directory:
         self.__name__ = name
 
 class DirectoryResource(BrowserView, Resource, OFSTraversable):
-
     #implements(IBrowserPublisher)
 
     resource_factories = {
@@ -188,6 +183,12 @@ class DirectoryResource(BrowserView, Resource, OFSTraversable):
         }
 
     default_factory = FileResourceFactory
+
+    def __init__(self, context, request):
+        BrowserView.__init__(self, context, request)
+        # OFSTraversable.absolute_url() assumes self.REQUEST being
+        # accessible:
+        self.REQUEST = request
 
     def getId(self):
         name = self.__name__
@@ -204,7 +205,6 @@ class DirectoryResource(BrowserView, Resource, OFSTraversable):
         if res is None:
             raise KeyError, name
         return res
-
 
     def get(self, name, default=_marker):
         path = self.context.path

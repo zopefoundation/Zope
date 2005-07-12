@@ -24,8 +24,8 @@ from zope.app.traversing.interfaces import ITraverser, ITraversable
 from zope.app.traversing.adapters import DefaultTraversable
 from zope.app.traversing.adapters import traversePathElement
 
-from zope.security.management import thread_local
 from AccessControl import getSecurityManager
+from Products.Five.security import newInteraction
 
 _marker = object
 
@@ -37,17 +37,6 @@ class FakeRequest:
 
     def has_key(self, key):
         return False
-
-def newInteraction():
-    """Con Zope 3 to use Zope 2's checkPermission.
-
-    Zope 3 when it does a checkPermission will turn around and
-    ask the thread local interaction for the checkPermission method.
-    By making the interaction *be* Zope 2's security manager, we can
-    con Zope 3 into using Zope 2's checker...
-    """
-    if getattr(thread_local, 'interaction', None) is None:
-        thread_local.interaction = getSecurityManager()
 
 class Traversable:
     """A mixin to make an object traversable using an ITraverser adapter.

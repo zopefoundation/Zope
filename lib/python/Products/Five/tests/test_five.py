@@ -218,16 +218,17 @@ class FiveTest(FiveTestCase):
 
     def test_resource_directory(self):
         base = 'testoid/++resource++fivetest_resources/%s'
-        base_url = 'test_folder_1_/%s' % base
+        base_url = 'http://nohost/test_folder_1_/' + base
+
+        abs_url = self.folder.unrestrictedTraverse(base % '')()
+        self.assertEquals(abs_url + '/', base_url % '')
+
         for r in dir_resource_names:
             resource = self.folder.unrestrictedTraverse(base % r)
             self.assert_(isinstance(resource, Resource))
             # PageTemplateResource's __call__ renders the template
             if not isinstance(resource, PageTemplateResource):
                 self.assertEquals(resource(), base_url % r)
-        abs_url = self.folder.unrestrictedTraverse(base % '')()
-        expected = 'http://nohost/test_folder_1_/testoid/++resource++fivetest_resources'
-        self.assertEquals(abs_url, expected)
 
     def test_breadcrumbs(self):
         view = self.folder.unrestrictedTraverse('testoid/@@absolute_url')
@@ -348,12 +349,20 @@ class PublishTest(Functional, FiveTestCase):
         url = '/test_folder_1_/testoid/++resource++cockatiel.html'
         response = self.publish(url, basic='manager:r00t')
         self.assertEquals(200, response.getStatus())
-        
     # Disabled __call__ overriding for now. Causes more trouble
     # than it fixes.
     # def test_existing_call(self):
     #     response = self.publish('/test_folder_1_/testcall')
     #     self.assertEquals("Default __call__ called", response.getBody())
+
+    def test_publish_resource_directory(self):
+        base_url = '/test_folder_1_/testoid/++resource++fivetest_resources/%s'
+        for r in dir_resource_names:
+            if r.endswith('.pt'):
+                # page templates aren't guaranteed to render
+                continue
+            response = self.publish(base_url % r, basic='manager:r00t')
+            self.assertEquals(200, response.getStatus())
 
     def test_existing_index(self):
         response = self.publish('/test_folder_1_/testindex')

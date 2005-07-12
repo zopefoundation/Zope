@@ -21,11 +21,14 @@ if __name__ == '__main__':
 
 from Products.Five.tests.fivetest import *
 
+import zope.security
 from zope.component import getView
 from zope.testing.cleanup import CleanUp
+
+import Products.Five.security
 from Products.Five import zcml
 from Products.Five.traversable import FakeRequest
-from Products.Five.security import clearSecurityInfo, checkPermission
+from Products.Five.security import clearSecurityInfo, newInteraction
 from Products.Five.tests.dummy import Dummy1, Dummy2
 from Globals import InitializeClass
 
@@ -147,29 +150,38 @@ class SecurityEquivalenceTest(FiveTestCase):
         assertRolesEqual(baz_roles2, ())
 
 
-class CheckPermissionTest(FiveTestCase):
+class FiveCheckPermissionTest(FiveTestCase):
+
+    def afterSetUp(self):
+        self.checkPermission = Products.Five.security.checkPermission
 
     def test_publicPermissionId(self):
-        self.failUnless(checkPermission('zope2.Public', self.folder))
+        self.failUnless(self.checkPermission('zope2.Public', self.folder))
 
     def test_privatePermissionId(self):
-        self.failIf(checkPermission('zope.Private', self.folder))
-        self.failIf(checkPermission('zope2.Private', self.folder))
+        self.failIf(self.checkPermission('zope.Private', self.folder))
+        self.failIf(self.checkPermission('zope2.Private', self.folder))
 
     def test_accessPermissionId(self):
-        self.failUnless(checkPermission('zope2.AccessContentsInformation',
-                                        self.folder))
+        self.failUnless(self.checkPermission('zope2.AccessContentsInformation',
+                                             self.folder))
 
     def test_invalidPermissionId(self):
-        self.failIf(checkPermission('notapermission', self.folder))
+        self.failIf(self.checkPermission('notapermission', self.folder))
 
+class Zope3CheckPermissionTest(FiveCheckPermissionTest):
+
+    def afterSetUp(self):
+        self.checkPermission = zope.security.checkPermission
+        newInteraction()
 
 def test_suite():
     from unittest import TestSuite, makeSuite
     suite = TestSuite()
     suite.addTest(makeSuite(SecurityEquivalenceTest))
     suite.addTest(makeSuite(PageSecurityTest))
-    suite.addTest(makeSuite(CheckPermissionTest))
+    suite.addTest(makeSuite(FiveCheckPermissionTest))
+    suite.addTest(makeSuite(Zope3CheckPermissionTest))
     return suite
 
 if __name__ == '__main__':
