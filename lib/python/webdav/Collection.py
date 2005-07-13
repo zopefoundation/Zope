@@ -7,7 +7,7 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
 """WebDAV support - collection objects.
@@ -15,21 +15,30 @@
 $Id$
 """
 
-import Globals, davcmds, Lockable
-from common import urlfix, rfc1123_date
-from Resource import Resource
-from AccessControl import getSecurityManager
 from urllib import unquote
+
+import Globals
+from AccessControl import getSecurityManager
 from zExceptions import MethodNotAllowed, NotFound
-from webdav.common import Locked, PreconditionFailed
+from zope.interface import implements
+
+import davcmds
+import Lockable
+from common import Locked, PreconditionFailed
+from common import urlfix, rfc1123_date
+from interfaces import IDAVCollection
+from Resource import Resource
 
 
 class Collection(Resource):
+
     """The Collection class provides basic WebDAV support for
     collection objects. It provides default implementations
     for all supported WebDAV HTTP methods. The behaviors of some
     WebDAV HTTP methods for collections are slightly different
     than those for non-collection resources."""
+
+    implements(IDAVCollection)
 
     __dav_collection__=1
 

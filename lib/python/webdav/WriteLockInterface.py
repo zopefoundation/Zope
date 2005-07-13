@@ -19,6 +19,7 @@ from Interface import Interface
 
 
 class LockItemInterface(Interface):
+
     """A LockItem contains information about a lock.
 
     This includes:
@@ -144,71 +145,12 @@ class LockItemInterface(Interface):
         used when returning the value of a newly created lock. """
 
 
-class WriteLockInterface(Interface):
-    """Basic protocol needed to support the write lock machinery.
+# create WriteLockInterface
+from Interface.bridge import createZope3Bridge
+from interfaces import IWriteLock
+import WriteLockInterface
 
-    It must be able to answer the questions:
+createZope3Bridge(IWriteLock, WriteLockInterface, 'WriteLockInterface')
 
-     o Is the object locked?
-
-     o Is the lock owned by the current user?
-
-     o What lock tokens are associated with the current object?
-
-     o What is their state (how long until they're supposed to time out?,
-       what is their depth?  what type are they?
-
-    And it must be able to do the following:
-
-     o Grant a write lock on the object to a specified user.
-
-       - *If lock depth is infinite, this must also grant locks on **all**
-         subobjects, or fail altogether*
-
-     o Revoke a lock on the object.
-
-       - *If lock depth is infinite, this must also revoke locks on all
-         subobjects*
-
-    **All methods in the WriteLock interface that deal with checking valid
-    locks MUST check the timeout values on the lockitem (ie, by calling
-    'lockitem.isValid()'), and DELETE the lock if it is no longer valid**
-    """
-
-    def wl_lockItems(killinvalids=0):
-        """ Returns (key, value) pairs of locktoken, lock.
-
-        if 'killinvalids' is true, invalid locks (locks whose timeout
-        has been exceeded) will be deleted"""
-
-    def wl_lockValues(killinvalids=0):
-        """ Returns a sequence of locks.  if 'killinvalids' is true,
-        invalid locks will be deleted"""
-
-    def wl_lockTokens(killinvalids=0):
-        """ Returns a sequence of lock tokens.  if 'killinvalids' is true,
-        invalid locks will be deleted"""
-
-    def wl_hasLock(token, killinvalids=0):
-        """ Returns true if the lock identified by the token is attached
-        to the object. """
-
-    def wl_isLocked():
-        """ Returns true if 'self' is locked at all.  If invalid locks
-        still exist, they should be deleted."""
-
-    def wl_setLock(locktoken, lock):
-        """ Store the LockItem, 'lock'.  The locktoken will be used to fetch
-        and delete the lock.  If the lock exists, this MUST
-        overwrite it if all of the values except for the 'timeout' on the
-        old and new lock are the same. """
-
-    def wl_getLock(locktoken):
-        """ Returns the locktoken identified by the locktokenuri """
-
-    def wl_delLock(locktoken):
-        """ Deletes the locktoken identified by the locktokenuri """
-
-    def wl_clearLocks():
-        """ Deletes ALL DAV locks on the object - should only be called
-        by lock management machinery. """
+del createZope3Bridge
+del IWriteLock

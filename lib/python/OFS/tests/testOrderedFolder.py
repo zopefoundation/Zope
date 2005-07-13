@@ -19,9 +19,9 @@ class TestOrderedFolder(unittest.TestCase):
         from webdav.interfaces import IWriteLock
         from zope.interface.verify import verifyClass
 
-        verifyClass(IOrderedContainer, OrderedFolder, 1)
-        verifyClass(IOrderedFolder, OrderedFolder, 1)
-        verifyClass(IWriteLock, OrderedFolder, 1)
+        verifyClass(IOrderedContainer, OrderedFolder)
+        verifyClass(IOrderedFolder, OrderedFolder)
+        verifyClass(IWriteLock, OrderedFolder)
 
 
 def test_suite():

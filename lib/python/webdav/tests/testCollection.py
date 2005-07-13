@@ -1,7 +1,4 @@
 import unittest
-import Testing
-import Zope2
-Zope2.startup()
 
 
 class TestCollection(unittest.TestCase):
@@ -11,7 +8,7 @@ class TestCollection(unittest.TestCase):
         from webdav.interfaces import IDAVCollection
         from zope.interface.verify import verifyClass
 
-        verifyClass(IDAVCollection, Collection, 1)
+        verifyClass(IDAVCollection, Collection)
 
 
 def test_suite():

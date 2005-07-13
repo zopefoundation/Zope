@@ -16,8 +16,8 @@ class TestFolder(unittest.TestCase):
         from webdav.interfaces import IWriteLock
         from zope.interface.verify import verifyClass
 
-        verifyClass(IFolder, Folder, 1)
-        verifyClass(IWriteLock, Folder, 1)
+        verifyClass(IFolder, Folder)
+        verifyClass(IWriteLock, Folder)
 
 
 def test_suite():

@@ -1,14 +1,15 @@
 import unittest
 
-from App.config import getConfiguration
-from Acquisition import Implicit, aq_base, aq_parent
+from AccessControl.Owned import EmergencyUserCannotOwn
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
-from AccessControl.User import User
 from AccessControl.SpecialUsers import emergency_user, nobody, system
-from AccessControl.Owned import EmergencyUserCannotOwn, Owned
+from AccessControl.User import User
+from Acquisition import Implicit
+from App.config import getConfiguration
 from OFS.ObjectManager import ObjectManager
 from OFS.SimpleItem import SimpleItem
+
 
 class FauxRoot( Implicit ):
 
@@ -75,7 +76,7 @@ class ObjectManagerTests( unittest.TestCase ):
         from OFS.ObjectManager import ObjectManager
         from zope.interface.verify import verifyClass
 
-        verifyClass(IObjectManager, ObjectManager, 1)
+        verifyClass(IObjectManager, ObjectManager)
 
     def test_setObject_set_owner_with_no_user( self ):
 
@@ -309,6 +310,7 @@ class ObjectManagerTests( unittest.TestCase ):
         om1._setObject('om2', om2, set_owner=False)
         om2._setObject(ob.getId(), ob)
         self.assertRaises(DeleteFailed, om1._delObject, 'om2')
+
 
 def test_suite():
     suite = unittest.TestSuite()

@@ -26,6 +26,10 @@ Zope Changes
 
     Features added
 
+      - AccessControl, Acquisition, App, OFS, webdav, PluginIndexes, ZCatalog
+        and ZCTextIndex: Added some Zope 3 style interfaces.
+        This makes the bridged interfaces shipped with Five obsolete.
+
       - Interface: Added Z3 -> Z2 bridge utilities.
         This allows to migrate interfaces to Zope 3 style interfaces and
         bridge them back to oldstyle interfaces for backwards compatibility.

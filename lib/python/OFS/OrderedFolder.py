@@ -7,7 +7,7 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
 """ 'Folder' with order support.
@@ -20,8 +20,10 @@ from AccessControl import Unauthorized
 from AccessControl.Permissions import add_page_templates
 from AccessControl.Permissions import add_user_folders
 from Globals import DTMLFile
+from zope.interface import implements
 
 from Folder import Folder
+from interfaces import IOrderedFolder
 from OrderSupport import OrderSupport
 
 manage_addOrderedFolderForm = DTMLFile('dtml/addOrderedFolder', globals())
@@ -61,10 +63,13 @@ def manage_addOrderedFolder(self, id, title='', createPublic=0, createUserF=0,
 
 
 class OrderedFolder(OrderSupport, Folder):
+
     """ Extends the default Folder by order support.
     """
+
     __implements__ = (OrderSupport.__implements__,
                       Folder.__implements__)
+    implements(IOrderedFolder)
     meta_type='Folder (Ordered)'
 
     manage_options = ( OrderSupport.manage_options +

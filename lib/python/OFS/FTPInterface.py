@@ -7,10 +7,9 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-
 """FTP Support for Zope classes.
 
 Preliminary FTP support interface. Note, most FTP functions are
@@ -19,10 +18,19 @@ provided by existing methods such as PUT and manage_delObjects.
 All FTP methods should be governed by a single permission:
 'FTP access'.
 
+$Id$
 """
 
+from zope.interface import implements
+
+from interfaces import IFTPAccess
+
+
 class FTPInterface:
+
     "Interface for FTP objects"
+
+    implements(IFTPAccess)
 
     # XXX The stat and list marshal format should probably
     #     be XML, not marshal, maybe Andrew K's xml-marshal.

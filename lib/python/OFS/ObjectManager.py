@@ -7,7 +7,7 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
 """Object Manager
@@ -15,31 +15,34 @@
 $Id$
 """
 
-import sys, fnmatch, copy, os, re
 import marshal
+import sys, fnmatch, copy, os, re
 from cgi import escape
 from cStringIO import StringIO
 from types import StringType, UnicodeType
 
-import App.Management, Acquisition, Globals, Products
+import App.Common
 import App.FactoryDispatcher, Products
+import App.Management, Acquisition, Globals, Products
+from AccessControl import getSecurityManager
+from AccessControl.ZopeSecurityPolicy import getRoles
+from Acquisition import aq_base
+from App.config import getConfiguration
 from Globals import DTMLFile, Persistent
 from Globals import MessageDialog, default__class_init__
 from Globals import REPLACEABLE, NOT_REPLACEABLE, UNIQUE
-from webdav.NullResource import NullResource
 from webdav.Collection import Collection
-from Acquisition import aq_base
 from webdav.Lockable import ResourceLockedError
-from ZODB.POSException import ConflictError
-import App.Common
-from App.config import getConfiguration
-from AccessControl import getSecurityManager
-from AccessControl.ZopeSecurityPolicy import getRoles
-from zLOG import LOG, ERROR
+from webdav.NullResource import NullResource
 from zExceptions import BadRequest
+from zLOG import LOG, ERROR
+from ZODB.POSException import ConflictError
+from zope.interface import implements
 
-from OFS.Traversable import Traversable
 import CopySupport
+from interfaces import IObjectManager
+from Traversable import Traversable
+
 
 # the name BadRequestException is relied upon by 3rd-party code
 BadRequestException = BadRequest
@@ -121,6 +124,8 @@ class ObjectManager(
 
     This class provides core behavior for collections of heterogeneous objects.
     """
+
+    implements(IObjectManager)
 
     __ac_permissions__=(
         ('View management screens', ('manage_main',)),
@@ -595,7 +600,7 @@ class ObjectManager(
             paths.append(cfg.instancehome)
         for impath in paths:
             directory = os.path.join(impath, 'import')
-            listing += [f for f in os.listdir(directory) 
+            listing += [f for f in os.listdir(directory)
                         if f.endswith('.zexp') or f.endswith('.xml')]
         return listing
 

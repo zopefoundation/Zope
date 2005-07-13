@@ -7,7 +7,7 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
 """Folder object
@@ -16,14 +16,20 @@ Folders are the basic container objects and are analogous to directories.
 
 $Id$
 """
-import Globals, SimpleItem, ObjectManager, PropertyManager
-import AccessControl.Role, webdav.Collection, FindSupport
-from webdav.WriteLockInterface import WriteLockInterface
+
+import AccessControl.Role, webdav.Collection
+import Globals
 from AccessControl import getSecurityManager
 from AccessControl import Unauthorized
 from AccessControl.Permissions import add_page_templates
 from AccessControl.Permissions import add_user_folders
 from Globals import DTMLFile
+from webdav.WriteLockInterface import WriteLockInterface
+from zope.interface import implements
+
+import FindSupport
+import SimpleItem, ObjectManager, PropertyManager
+from interfaces import IFolder
 
 
 manage_addFolderForm=DTMLFile('dtml/folderAdd', globals())
@@ -72,12 +78,14 @@ class Folder(
     SimpleItem.Item,
     FindSupport.FindSupport,
     ):
-    """
-    Folders are basic container objects that provide a standard
+
+    """Folders are basic container objects that provide a standard
     interface for object management. Folder objects also implement
     a management interface and can have arbitrary properties.
     """
+
     __implements__ = (WriteLockInterface,)
+    implements(IFolder)
     meta_type='Folder'
 
     _properties=({'id':'title', 'type': 'string','mode':'wd'},)

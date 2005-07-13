@@ -7,7 +7,7 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
 """This module implements a simple item mix-in for objects that have a
@@ -22,22 +22,27 @@ $Id$
 
 import marshal, re, sys, time
 
-import Globals, App.Management, Acquisition, App.Undo
 import AccessControl.Role, AccessControl.Owned, App.Common
-from webdav.Resource import Resource
-from ExtensionClass import Base
-from ComputedAttribute import ComputedAttribute
+import Globals, App.Management, Acquisition, App.Undo
 from AccessControl import getSecurityManager, Unauthorized
 from AccessControl.ZopeSecurityPolicy import getRoles
 from Acquisition import aq_base, aq_parent, aq_inner, aq_acquire
+from ComputedAttribute import ComputedAttribute
 from DocumentTemplate.ustr import ustr
-from zExceptions.ExceptionFormatter import format_exception
+from ExtensionClass import Base
+from webdav.Resource import Resource
 from zExceptions import Redirect
+from zExceptions.ExceptionFormatter import format_exception
 from zLOG import LOG, BLATHER
+from zope.interface import implements
 
-from CopySupport import CopySource
-from Traversable import Traversable
 import ZDOM
+from CopySupport import CopySource
+from interfaces import IItem
+from interfaces import IItemWithName
+from interfaces import IManageable
+from interfaces import ISimpleItem
+from Traversable import Traversable
 
 HTML=Globals.HTML
 
@@ -49,6 +54,8 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
            ):
 
     """A common base class for simple, non-container objects."""
+
+    implements(IItem, IManageable)
 
     isPrincipiaFolderish=0
     isTopLevelPrincipiaApplicationObject=0
@@ -216,7 +223,7 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
                 try:
                     strv = str(error_value)
                 except:
-                    strv = ('<unprintable %s object>' % 
+                    strv = ('<unprintable %s object>' %
                             str(type(error_value).__name__))
                 v = strv + (
                     " (Also, an error occurred while attempting "
@@ -342,7 +349,10 @@ Globals.default__class_init__(Item)
 
 
 class Item_w__name__(Item):
+
     """Mixin class to support common name/id functions"""
+
+    implements(IItemWithName)
 
     def getId(self):
         """Return the id of the object as a string.
@@ -396,6 +406,8 @@ class SimpleItem(Item, Globals.Persistent,
     # Blue-plate special, Zope Masala
     """Mix-in class combining the most common set of basic mix-ins
     """
+
+    implements(ISimpleItem)
 
     manage_options=Item.manage_options+(
         {'label':'Security',

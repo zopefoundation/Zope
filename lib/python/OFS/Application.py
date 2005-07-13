@@ -7,7 +7,7 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
 """Application support
@@ -19,7 +19,7 @@ import os, sys, traceback
 from cgi import escape
 from StringIO import StringIO
 
-import Globals, Products, App.Product, App.ProductRegistry, misc_
+import Globals, Products, App.Product, App.ProductRegistry
 import transaction
 from AccessControl.User import UserFolder
 from Acquisition import aq_base
@@ -29,20 +29,26 @@ from App.Product import doInstall
 from App.ProductContext import ProductContext
 from DateTime import DateTime
 from HelpSys.HelpSys import HelpSys
-from misc_ import Misc_
 from webdav.NullResource import NullResource
 from zExceptions import Redirect as RedirectException, Forbidden
 from zLOG import LOG, ERROR, WARNING, INFO
+from zope.interface import implements
 
 import Folder
+import misc_
 import ZDOM
 from FindSupport import FindSupport
+from interfaces import IApplication
+from misc_ import Misc_
+
 
 class Application(Globals.ApplicationDefaultPermissions,
                   ZDOM.Root, Folder.Folder,
                   App.ProductRegistry.ProductRegistry, FindSupport):
 
     """Top-level system object"""
+
+    implements(IApplication)
 
     title ='Zope'
     #__roles__=['Manager', 'Anonymous']
@@ -401,7 +407,7 @@ class AppInitializer:
             default_period_secs = 20
             default_timeout_mins = 20
 
-            limit = getattr(config, 'maximum_number_of_session_objects', 
+            limit = getattr(config, 'maximum_number_of_session_objects',
                             default_limit)
             timeout_spec = getattr(config, 'session_timeout_minutes',
                                    default_timeout_mins)

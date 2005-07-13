@@ -8,7 +8,7 @@ class TestApplication(unittest.TestCase):
         from OFS.Application import Application
         from zope.interface.verify import verifyClass
 
-        verifyClass(IApplication, Application, 1)
+        verifyClass(IApplication, Application)
 
 
 def test_suite():

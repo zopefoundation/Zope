@@ -8,7 +8,7 @@ class TestFindSupport(unittest.TestCase):
         from OFS.FindSupport import FindSupport
         from zope.interface.verify import verifyClass
 
-        verifyClass(IFindSupport, FindSupport, 1)
+        verifyClass(IFindSupport, FindSupport)
 
 
 def test_suite():

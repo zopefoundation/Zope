@@ -1,7 +1,6 @@
 ##############################################################################
 #
-# Copyright (c) 2001, 2002 Zope Corporation and Contributors.
-# All Rights Reserved.
+# Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
@@ -11,24 +10,26 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+"""Traverse unit tests.
 
-import os, sys, unittest
-import string, cStringIO, re
+$Id$
+"""
 
-import ZODB, Acquisition, transaction
+import unittest
+
+import cStringIO
+
 import transaction
+import ZODB, Acquisition, transaction
+from AccessControl import SecurityManager, Unauthorized
+from AccessControl.SecurityManagement import newSecurityManager
+from AccessControl.SecurityManagement import noSecurityManager
 from Acquisition import aq_base
 from OFS.Application import Application
 from OFS.Folder import manage_addFolder
 from OFS.Image import manage_addFile
 from OFS.SimpleItem import SimpleItem
 from Testing.makerequest import makerequest
-from AccessControl import SecurityManager, Unauthorized
-from AccessControl.SecurityManagement import newSecurityManager
-from AccessControl.SecurityManagement import noSecurityManager
-
-from mimetools import Message
-from multifile import MultiFile
 
 
 class UnitTestSecurityPolicy:
@@ -93,11 +94,11 @@ class BoboTraversable(SimpleItem):
             return 42
         else:
             raise KeyError
-    
+
     def bb_method(self):
         """Test Method"""
         pass
-        
+
     bb_status = 'screechy'
 
 
@@ -168,20 +169,20 @@ class TestTraverse( unittest.TestCase ):
         from OFS.Traversable import Traversable
         from zope.interface.verify import verifyClass
 
-        verifyClass(ITraversable, Traversable, 1)
+        verifyClass(ITraversable, Traversable)
 
     def testTraversePath( self ):
         self.failUnless( 'file' in self.folder1.objectIds() )
-        self.failUnless( 
+        self.failUnless(
             self.folder1.unrestrictedTraverse( ('', 'folder1', 'file' ) ))
-        self.failUnless( 
+        self.failUnless(
             self.folder1.unrestrictedTraverse( ('', 'folder1' ) ))
 
     def testTraverseURLNoSlash( self ):
         self.failUnless( 'file' in self.folder1.objectIds() )
-        self.failUnless( 
+        self.failUnless(
             self.folder1.unrestrictedTraverse( '/folder1/file' ))
-        self.failUnless( 
+        self.failUnless(
             self.folder1.unrestrictedTraverse( '/folder1' ))
 
     def testTraverseURLSlash( self ):
@@ -190,12 +191,12 @@ class TestTraverse( unittest.TestCase ):
         self.failUnless( self.folder1.unrestrictedTraverse( '/folder1/' ))
 
     def testTraverseToNone( self ):
-        self.failUnlessRaises( 
-            KeyError, 
+        self.failUnlessRaises(
+            KeyError,
             self.folder1.unrestrictedTraverse, ('', 'folder1', 'file2' ) )
-        self.failUnlessRaises( 
+        self.failUnlessRaises(
             KeyError, self.folder1.unrestrictedTraverse,  '/folder1/file2' )
-        self.failUnlessRaises( 
+        self.failUnlessRaises(
             KeyError, self.folder1.unrestrictedTraverse,  '/folder1/file2/' )
 
     def testBoboTraverseToWrappedSubObj(self):
@@ -245,7 +246,7 @@ class TestTraverse( unittest.TestCase ):
         self.root.stuff = 'stuff here'
         self.failUnlessRaises(Unauthorized,
                               self.root.folder1.restrictedTraverse, 'stuff')
-    
+
     def testDefaultValueWhenUnathorized(self):
         # Test that traversing to an unauthorized object returns
         # the default when provided
@@ -255,7 +256,7 @@ class TestTraverse( unittest.TestCase ):
         self.root.stuff = 'stuff here'
         self.assertEqual(
             self.root.folder1.restrictedTraverse('stuff', 42), 42)
-    
+
     def testDefaultValueWhenNotFound(self):
         # Test that traversing to a non-existent object returns
         # the default when provided
@@ -263,7 +264,7 @@ class TestTraverse( unittest.TestCase ):
         SecurityManager.setSecurityPolicy( self.oldPolicy )
         self.assertEqual(
             self.root.restrictedTraverse('happy/happy', 'joy'), 'joy')
-            
+
     def testTraverseUp(self):
         # Test that we can traverse upwards
         self.failUnless(

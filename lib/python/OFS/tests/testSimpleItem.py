@@ -9,8 +9,8 @@ class TestItem(unittest.TestCase):
         from OFS.SimpleItem import Item
         from zope.interface.verify import verifyClass
 
-        verifyClass(IItem, Item, 1)
-        verifyClass(IManageable, Item, 1)
+        verifyClass(IItem, Item)
+        verifyClass(IManageable, Item)
 
 
 class TestItem_w__name__(unittest.TestCase):
@@ -20,7 +20,7 @@ class TestItem_w__name__(unittest.TestCase):
         from OFS.SimpleItem import Item_w__name__
         from zope.interface.verify import verifyClass
 
-        verifyClass(IItemWithName, Item_w__name__, 1)
+        verifyClass(IItemWithName, Item_w__name__)
 
 
 class TestSimpleItem(unittest.TestCase):
@@ -30,7 +30,7 @@ class TestSimpleItem(unittest.TestCase):
         from OFS.SimpleItem import SimpleItem
         from zope.interface.verify import verifyClass
 
-        verifyClass(ISimpleItem, SimpleItem, 1)
+        verifyClass(ISimpleItem, SimpleItem)
 
 
 def test_suite():

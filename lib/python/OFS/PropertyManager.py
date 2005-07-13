@@ -7,7 +7,7 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
 """Property management
@@ -19,13 +19,15 @@ from cgi import escape
 from types import ListType
 
 import ExtensionClass, Globals
-from ZPublisher.Converters import type_converters
-from Globals import DTMLFile, MessageDialog
 from Acquisition import aq_base
+from Globals import DTMLFile, MessageDialog
 from Globals import Persistent
 from zExceptions import BadRequest
+from zope.interface import implements
+from ZPublisher.Converters import type_converters
 
 import ZDOM
+from interfaces import IPropertyManager
 from PropertySheets import DefaultPropertySheets, vps
 
 
@@ -92,6 +94,8 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
                              'manage_delProperties',
                              'manage_changeProperties',)),
     """
+
+    implements(IPropertyManager)
 
     manage_options=(
         {'label':'Properties', 'action':'manage_propertiesForm',

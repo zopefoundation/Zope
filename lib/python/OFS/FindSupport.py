@@ -7,25 +7,34 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
 """Find support
 
 $Id$
 """
-import sys, os, time, Globals, ExtensionClass
-from DocumentTemplate.DT_Util import Eval
-from AccessControl.Permission import name_trans
-from Globals import DTMLFile
-from DocumentTemplate.DT_Util import InstanceDict, TemplateDict
-from DateTime import DateTime
+
 from string import translate
-from AccessControl.DTML import RestrictedDTML
+
+import Globals, ExtensionClass
 from AccessControl import ClassSecurityInfo
+from AccessControl.DTML import RestrictedDTML
+from AccessControl.Permission import name_trans
+from DateTime import DateTime
+from DocumentTemplate.DT_Util import Eval
+from DocumentTemplate.DT_Util import InstanceDict, TemplateDict
+from Globals import DTMLFile
+from zope.interface import implements
+
+from interfaces import IFindSupport
+
 
 class FindSupport(ExtensionClass.Base):
+
     """Find support for Zope Folders"""
+
+    implements(IFindSupport)
 
 #findframe is deprecated
     manage_findFrame=DTMLFile('dtml/findFrame', globals())
@@ -250,7 +259,7 @@ class FindSupport(ExtensionClass.Base):
 
         return result
 
-
+Globals.InitializeClass(FindSupport)
 
 
 class td(RestrictedDTML, TemplateDict):
@@ -303,8 +312,6 @@ def role_match(ob, permission, roles, lt=type([]), tt=type(())):
             return 0
     return 1
 
-
-Globals.InitializeClass(FindSupport)
 
 # Helper functions
 

@@ -7,7 +7,7 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
 """Copy interface
@@ -23,12 +23,16 @@ from zlib import compress, decompress
 
 import Globals, Moniker, ExtensionClass
 import transaction
-from App.Dialogs import MessageDialog
 from AccessControl import getSecurityManager
 from AccessControl.Permissions import delete_objects as DeleteObjects
 from Acquisition import aq_base, aq_inner, aq_parent
-from zExceptions import Unauthorized, BadRequest
+from App.Dialogs import MessageDialog
 from webdav.Lockable import ResourceLockedError
+from zExceptions import Unauthorized, BadRequest
+from zope.interface import implements
+
+from OFS.interfaces import ICopyContainer
+from OFS.interfaces import ICopySource
 
 
 CopyError='Copy Error'
@@ -42,6 +46,8 @@ class CopyContainer(ExtensionClass.Base):
 
     """Interface for containerish objects which allow cut/copy/paste"""
 
+    implements(ICopyContainer)
+
     __ac_permissions__=(
         ('View management screens',
          ('manage_copyObjects', 'manage_pasteObjects',
@@ -49,7 +55,6 @@ class CopyContainer(ExtensionClass.Base):
         ('Delete objects',
          ('manage_cutObjects',)),
         )
-
 
     # The following three methods should be overridden to store sub-objects
     # as non-attributes.
@@ -240,7 +245,6 @@ class CopyContainer(ExtensionClass.Base):
                                         cb_dataValid=0)
         return result
 
-
     manage_renameForm=Globals.DTMLFile('dtml/renameForm', globals())
 
     def manage_renameObjects(self, ids=[], new_ids=[], REQUEST=None):
@@ -430,10 +434,11 @@ class CopyContainer(ExtensionClass.Base):
 Globals.default__class_init__(CopyContainer)
 
 
-
 class CopySource(ExtensionClass.Base):
 
     """Interface for objects which allow themselves to be copied."""
+
+    implements(ICopySource)
 
     # declare a dummy permission for Copy or Move here that we check
     # in cb_isCopyable.

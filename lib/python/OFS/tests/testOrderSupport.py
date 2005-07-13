@@ -1,7 +1,4 @@
 import unittest
-import Testing
-import Zope2
-Zope2.startup()
 
 from OFS.CopySupport import CopySource
 from OFS.ObjectManager import ObjectManager
@@ -55,7 +52,7 @@ class TestOrderSupport(unittest.TestCase):
         from OFS.OrderSupport import OrderSupport
         from zope.interface.verify import verifyClass
 
-        verifyClass(IOrderedContainer, OrderSupport, 1)
+        verifyClass(IOrderedContainer, OrderSupport)
 
     def _doCanonTest(self, methodname, table):
         for args, order, rval in table:

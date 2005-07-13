@@ -7,10 +7,9 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-
 """WebDAV support - resource objects.
 
 $Id$
@@ -20,28 +19,35 @@ import sys
 import mimetypes
 from urllib import unquote
 
-import Globals
 import ExtensionClass
-from Acquisition import aq_base
+import Globals
 from AccessControl import getSecurityManager
-from ZPublisher.HTTPRangeSupport import HTTPRangeInterface
+from Acquisition import aq_base
+from zExceptions import BadRequest, MethodNotAllowed
 from zExceptions import Unauthorized, Forbidden
-from zExceptions import BadRequest, MethodNotAllowed 
+from zope.interface import implements
+from ZPublisher.HTTPRangeSupport import HTTPRangeInterface
 
-from WriteLockInterface import WriteLockInterface
+import davcmds
 import Lockable
 from common import absattr, urlfix, rfc1123_date, tokenFinder, urlbase
 from common import IfParser
 from common import isDavCollection
 from common import Locked, Conflict, PreconditionFailed
-import davcmds
+from interfaces import IDAVResource
+from interfaces import IWriteLock
+from WriteLockInterface import WriteLockInterface
+
 
 class Resource(ExtensionClass.Base, Lockable.LockableItem):
+
     """The Resource mixin class provides basic WebDAV support for
     non-collection objects. It provides default implementations
     for most supported WebDAV HTTP methods, however certain methods
     such as PUT should be overridden to ensure correct behavior in
     the context of the object type."""
+
+    implements(IDAVResource, IWriteLock)
 
     __dav_resource__=1
 
@@ -598,5 +604,4 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
     def listDAVObjects(self):
         return []
 
-        
 Globals.default__class_init__(Resource)

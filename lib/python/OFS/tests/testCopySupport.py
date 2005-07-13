@@ -4,20 +4,17 @@ import Zope2
 Zope2.startup()
 
 import cStringIO
-from mimetools import Message
-from multifile import MultiFile
 
 import transaction
 from AccessControl import SecurityManager
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
-from Acquisition import Implicit
 from Acquisition import aq_base
+from Acquisition import Implicit
 from OFS.Application import Application
 from OFS.Folder import manage_addFolder
 from OFS.Image import manage_addFile
 from Testing.makerequest import makerequest
-from webdav.common import rfc1123_date
 
 
 ADD_IMAGES_AND_FILES = 'Add images and files'
@@ -142,8 +139,8 @@ class TestCopySupport( CopySupportTestBase ):
         from OFS.interfaces import ICopySource
         from zope.interface.verify import verifyClass
 
-        verifyClass(ICopyContainer, CopyContainer, 1)
-        verifyClass(ICopySource, CopySource, 1)
+        verifyClass(ICopyContainer, CopyContainer)
+        verifyClass(ICopySource, CopySource)
 
     def testRename( self ):
         self.failUnless( 'file' in self.folder1.objectIds() )
@@ -348,7 +345,7 @@ class TestCopySupportSecurity( CopySupportTestBase ):
         except CopyError, e:
 
             if ce_regex is not None:
-                
+
                 pattern = re.compile( ce_regex, re.DOTALL )
                 if pattern.search( e ) is None:
                     self.fail( "Paste failed; didn't match pattern:\n%s" % e )
@@ -362,7 +359,7 @@ class TestCopySupportSecurity( CopySupportTestBase ):
         else:
             self.fail( "Paste allowed unexpectedly." )
 
-    def _initPolicyAndUser( self    
+    def _initPolicyAndUser( self
                           , a_lambda=None
                           , v_lambda=None
                           , c_lambda=None
@@ -420,7 +417,7 @@ class TestCopySupportSecurity( CopySupportTestBase ):
                                    )
 
     def test_copy_cant_create_target_metatype_not_supported( self ):
-        
+
         from OFS.CopySupport import CopyError
 
         folder1, folder2 = self._initFolders()
@@ -451,7 +448,7 @@ class TestCopySupportSecurity( CopySupportTestBase ):
         self.failUnless( 'file' in folder2.objectIds() )
 
     def test_move_cant_read_source( self ):
-        
+
         from OFS.CopySupport import CopyError
 
         folder1, folder2 = self._initFolders()
@@ -471,7 +468,7 @@ class TestCopySupportSecurity( CopySupportTestBase ):
                                    )
 
     def test_move_cant_create_target_metatype_not_supported( self ):
-        
+
         from OFS.CopySupport import CopyError
 
         folder1, folder2 = self._initFolders()
@@ -486,7 +483,7 @@ class TestCopySupportSecurity( CopySupportTestBase ):
                                    )
 
     def test_move_cant_create_target_metatype_not_allowed( self ):
-        
+
         from OFS.CopySupport import CopyError
 
         folder1, folder2 = self._initFolders()
@@ -505,7 +502,7 @@ class TestCopySupportSecurity( CopySupportTestBase ):
                                    )
 
     def test_move_cant_delete_source( self ):
-        
+
         from OFS.CopySupport import CopyError
         from AccessControl.Permissions import delete_objects as DeleteObjects
 

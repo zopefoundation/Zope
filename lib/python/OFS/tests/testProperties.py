@@ -1,7 +1,6 @@
 ##############################################################################
 #
-# Copyright (c) 2001, 2002 Zope Corporation and Contributors.
-# All Rights Reserved.
+# Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
@@ -11,6 +10,10 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+"""Properties unit tests.
+
+$Id$
+"""
 
 import unittest
 
@@ -28,7 +31,7 @@ class TestPropertyManager(unittest.TestCase):
         from OFS.PropertyManager import PropertyManager
         from zope.interface.verify import verifyClass
 
-        verifyClass(IPropertyManager, PropertyManager, 1)
+        verifyClass(IPropertyManager, PropertyManager)
 
     def testLinesPropertyIsTuple( self ):
         inst = self._makeOne()

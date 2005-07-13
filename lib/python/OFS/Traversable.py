@@ -7,7 +7,7 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
 """This module implements a mix-in for traversable objects.
@@ -17,17 +17,22 @@ $Id$
 
 from urllib import quote
 
-from Acquisition import Acquired, aq_inner, aq_parent, aq_base
 from AccessControl import getSecurityManager
 from AccessControl import Unauthorized
 from AccessControl.ZopeGuards import guarded_getattr
-from ZODB.POSException import ConflictError
+from Acquisition import Acquired, aq_inner, aq_parent, aq_base
 from zExceptions import NotFound
+from ZODB.POSException import ConflictError
+from zope.interface import implements
+
+from interfaces import ITraversable
 
 _marker = object()
 
 
 class Traversable:
+
+    implements(ITraversable)
 
     absolute_url__roles__=None # Public
     def absolute_url(self, relative=0):
@@ -134,7 +139,7 @@ class Traversable:
         if isinstance(path, str):
             # Unicode paths are not allowed
             path = path.split('/')
-        else: 
+        else:
             path = list(path)
 
         REQUEST = {'TraversalRequestNameStack': path}
@@ -145,16 +150,16 @@ class Traversable:
             # Remove trailing slash
             path.pop(0)
 
-        if restricted: 
+        if restricted:
             securityManager = getSecurityManager()
-        else: 
+        else:
             securityManager = _none
 
         if not path[-1]:
             # If the path starts with an empty string, go to the root first.
             path_pop()
             self = self.getPhysicalRoot()
-            if (restricted 
+            if (restricted
                 and not securityManager.validate(None, None, None, self)):
                 raise Unauthorized, name
 

@@ -8,7 +8,7 @@ class TestFTPInterface(unittest.TestCase):
         from OFS.FTPInterface import FTPInterface
         from zope.interface.verify import verifyClass
 
-        verifyClass(IFTPAccess, FTPInterface, 1)
+        verifyClass(IFTPAccess, FTPInterface)
 
 
 def test_suite():

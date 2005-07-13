@@ -7,7 +7,7 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
 """ Order support for 'Object Manager'.
@@ -23,12 +23,15 @@ from AccessControl.Permissions import manage_properties
 from Acquisition import aq_base
 from DocumentTemplate.sequence import sort
 from Globals import InitializeClass
+from zope.interface import implements
 
-from IOrderSupport import IOrderedContainer
+from interfaces import IOrderedContainer as z3IOrderedContainer
+from IOrderSupport import IOrderedContainer as z2IOrderedContainer
 from ObjectManager import ObjectManager
 
 
 class OrderSupport:
+
     """ Ordered container mixin class.
 
     This is an extension to the regular ObjectManager. It saves the objects in
@@ -37,7 +40,8 @@ class OrderSupport:
     is totally user-specific.
     """
 
-    __implements__ = IOrderedContainer
+    __implements__ = z2IOrderedContainer
+    implements(z3IOrderedContainer)
     security = ClassSecurityInfo()
 
     has_order_support = 1

@@ -1,7 +1,4 @@
 import unittest
-import Testing
-import Zope2
-Zope2.startup()
 
 
 class TestLockNullResource(unittest.TestCase):
@@ -18,7 +15,7 @@ class TestLockNullResource(unittest.TestCase):
         from webdav.NullResource import LockNullResource
         from zope.interface.verify import verifyClass
 
-        verifyClass(IWriteLock, LockNullResource, 1)
+        verifyClass(IWriteLock, LockNullResource)
 
 
 class TestNullResource(unittest.TestCase):
@@ -35,7 +32,7 @@ class TestNullResource(unittest.TestCase):
         from webdav.NullResource import NullResource
         from zope.interface.verify import verifyClass
 
-        verifyClass(IWriteLock, NullResource, 1)
+        verifyClass(IWriteLock, NullResource)
 
 
 def test_suite():
