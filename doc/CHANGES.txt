@@ -38,6 +38,10 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #1813: removed spurious inclusion of CMFBTreeFolder.
+        in Products/BTreeFolder2 (CMFCore will include it after 1.5, with
+        an appropriate module alias for backward compatibility).
+
       - Replaced all transaction.commit(1) calls by  transaction.savepoint() 
 
       - Collector #1832: UnIndex swallowed ConflictErrors.
