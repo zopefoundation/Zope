@@ -30,22 +30,3 @@ def initialize(context):
     #context.registerHelpTitle('Zope Help')
 
     context.registerBaseClass(BTreeFolder2.BTreeFolder2)
-
-    try:
-        from Products.CMFCore import utils
-    except ImportError:
-        # CMF not installed
-        pass
-    else:
-        # CMF installed; make available a special folder type.
-        import CMFBTreeFolder
-        ADD_FOLDERS_PERMISSION = 'Add portal folders'
-
-        utils.ContentInit(
-            'CMF BTree Folder',
-            content_types=(CMFBTreeFolder.CMFBTreeFolder,),
-            permission=ADD_FOLDERS_PERMISSION,
-            extra_constructors=(CMFBTreeFolder.manage_addCMFBTreeFolder,),
-            fti=CMFBTreeFolder.factory_type_information
-            ).initialize(context)
-
