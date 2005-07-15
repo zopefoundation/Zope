@@ -118,13 +118,13 @@ sdist: clobber sdist_tgz
 sdist_tgz: ${BASE_DIR}/lib/python/version.txt
 	${MKDIR} ${TMPDIR}
 	${CD} ${TMPDIR} && ${LN} ${BASE_DIR} ${PACKAGE_NAME} && \
-          ${TAR} czfh ${BASE_DIR}/${PACKAGE_NAME}.tgz ${PACKAGE_NAME} \
+          ${TAR} czfh ${BASE_DIR}/${PACKAGE_NAME}.tgz \
            --exclude=${PACKAGE_NAME}.tgz\
            --exclude=.svn\
            --exclude=makefile \
            --exclude=build-base \
            --exclude=*~ \
-           --exclude=.#*
+           --exclude=.#* ${PACKAGE_NAME} 
 	${RMRF} ${TMPDIR}/${PACKAGE_NAME}
 
 # clobber:     Make the source tree 'pristine' again.
