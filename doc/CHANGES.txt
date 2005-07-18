@@ -38,6 +38,8 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #1844: fixed whitespace handling in the ZMI "Find" tab
+
       - Collector #1813: removed spurious inclusion of CMFBTreeFolder.
         in Products/BTreeFolder2 (CMFCore will include it after 1.5, with
         an appropriate module alias for backward compatibility).

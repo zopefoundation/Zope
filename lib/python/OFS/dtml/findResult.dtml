@@ -128,12 +128,7 @@ your search terms below.
   </div>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <INPUT TYPE="TEXT" NAME="obj_ids:tokens" SIZE="30" VALUE="<dtml-unless "REQUEST.obj_ids == []">
-<dtml-in expr="REQUEST.obj_ids">
-&dtml-sequence-item;&nbsp;
-
-</dtml-in>
-</dtml-unless>">
+  <INPUT TYPE="TEXT" NAME="obj_ids:tokens" SIZE="30" VALUE="<dtml-var "' '.join(obj_ids or [])">">
   </TD>
 </TR>
 
