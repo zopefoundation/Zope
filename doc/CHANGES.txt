@@ -45,6 +45,8 @@ Zope Changes
 
     Bugs fixed
 
+      - Collector #1844: fixed whitespace handling in the ZMI "Find" tab
+
       - Collector #1815: ZCTextIndex accepts (again) sequences of strings to 
         be indexed.
 
