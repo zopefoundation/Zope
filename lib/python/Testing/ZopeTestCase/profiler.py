@@ -12,14 +12,18 @@
 ##############################################################################
 """Profiling support for ZTC
 
-$Id: profiler.py,v 1.3 2005/01/01 14:02:44 shh42 Exp $
+$Id$
 """
 
 import os, sys
 import interfaces
 
-from profile import Profile
-from pstats import Stats
+# Some distros ship without profile
+try:
+    from profile import Profile
+    from pstats import Stats
+except ImportError:
+    def Profile(): pass
 
 _profile = Profile()
 _have_stats = 0
@@ -30,9 +34,12 @@ strip_dirs = 1
 
 
 def runcall(*args, **kw):
-    global _have_stats
-    _have_stats = 1
-    return apply(_profile.runcall, args, kw)
+    if _profile is None:
+        return apply(args[0], args[1:], kw)
+    else:
+        global _have_stats
+        _have_stats = 1
+        return apply(_profile.runcall, args, kw)
 
 
 def print_stats(limit=limit, sort=sort, strip_dirs=strip_dirs):
