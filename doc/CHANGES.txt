@@ -34,6 +34,14 @@ Zope Changes
         This allows to migrate interfaces to Zope 3 style interfaces and
         bridge them back to oldstyle interfaces for backwards compatibility.
 
+      - ZConfig extension, address now also accepts symbolic port names
+        from etc/services (unix) or etc\services (win32)
+
+      - ZPublisher.HTTPRequest.FileUpload now supports full file object interface.
+        This means Iterator support was added. (for line in fileobject: ...,
+        as well as fileobject.next() and fileobject.xreadlines() )
+        Collector #1837
+
   after Zope 2.8b1
 
     Features added
@@ -47,7 +55,7 @@ Zope Changes
 
       - Collector #1844: fixed whitespace handling in the ZMI "Find" tab
 
-      - Collector #1815: ZCTextIndex accepts (again) sequences of strings to 
+      - Collector #1815: ZCTextIndex accepts (again) sequences of strings to
         be indexed.
 
       - Collector #1812: Fixed key error in ZSQL ZMI/Test
@@ -71,9 +79,9 @@ Zope Changes
 
       - Collector #1803: Fixed InitializeClass for some corner case.
 
-      - Collector #1798, issue1: ZopeTestCase no longer tries to 
+      - Collector #1798, issue1: ZopeTestCase no longer tries to
         install products that was installed by Zope during startup.
-	      
+
       - Collector #1323: applied patch to fix umask problem in zdctl
 
       - Collector #1781: made 'create_mount_points' ZConfig option actually

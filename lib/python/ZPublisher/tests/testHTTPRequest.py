@@ -619,7 +619,7 @@ class RequestTests( unittest.TestCase ):
         req.close()
         self.assertEqual(start_count, sys.getrefcount(s))  # The test
 
-    def testFileIteator(self):
+    def testFileIterator(self):
         # checks fileupload object supports the iterator protocol
         # collector entry 1837
         import sys
@@ -629,7 +629,12 @@ class RequestTests( unittest.TestCase ):
         from ZPublisher.HTTPRequest import HTTPRequest
         req = HTTPRequest(s, env, None)
         req.processInputs()
-        self.assertEqual(list(req.form.get('file')),['test\n'])
+        f=req.form.get('file')
+        self.assertEqual(list(f),['test\n'])
+        f.seek(0)
+        self.assertEqual(f.next(),'test\n')
+        f.seek(0)
+        self.assertEqual(f.xreadlines(),f)
 
 def test_suite():
     suite = unittest.TestSuite()

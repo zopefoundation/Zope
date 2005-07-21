@@ -1423,7 +1423,7 @@ class FileUpload:
         else: methods= ['close', 'fileno', 'flush', 'isatty',
                         'read', 'readline', 'readlines', 'seek',
                         'tell', 'truncate', 'write', 'writelines',
-                        '__iter__'] # see Collector 1837
+                        '__iter__','next'] # see Collector 1837
 
         d=self.__dict__
         for m in methods:
@@ -1443,6 +1443,8 @@ class FileUpload:
         """
         return not not self.filename
 
+    def xreadlines(self):
+        return self
 
 parse_cookie_lock=allocate_lock()
 def parse_cookie(text,
