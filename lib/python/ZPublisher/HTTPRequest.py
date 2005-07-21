@@ -1422,7 +1422,8 @@ class FileUpload:
         if hasattr(file, '__methods__'): methods=file.__methods__
         else: methods= ['close', 'fileno', 'flush', 'isatty',
                         'read', 'readline', 'readlines', 'seek',
-                        'tell', 'truncate', 'write', 'writelines']
+                        'tell', 'truncate', 'write', 'writelines',
+                        '__iter__'] # see Collector 1837
 
         d=self.__dict__
         for m in methods:
@@ -1566,4 +1567,4 @@ def _filterPasswordFields(items):
 # if any trusted-proxies are defined in the configuration file.
 
 trusted_proxies = []
-    
+
