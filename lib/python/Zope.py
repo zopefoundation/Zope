@@ -20,8 +20,7 @@ import sys, Zope2
 sys.modules['Zope'] = Zope2
 
 import warnings
-warnings.warn("The Zope package has been renamed to Zope2.\n"
-              "Import of a package named 'Zope' is deprecated\n"
-              "and will be disabled starting in Zope 2.11.\n"
-              ,
+warnings.warn("The Zope package has been renamed to Zope2. "
+              "Import of a package named 'Zope' is deprecated "
+              "and will be disabled starting in Zope 2.11.",
               DeprecationWarning, stacklevel=2)
