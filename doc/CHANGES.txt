@@ -68,6 +68,8 @@ Zope Changes
       - manage_convertIndexes did not treat DateRangeIndexes and PathIndexes 
         properly.
 
+      - Updated Zope X3 to bugfix release 3.0.1
+
       - Updated Five to bugfix release 1.0.2 (see Products/Five/CHANGES.txt)
 
   Zope 2.8.0 (2005/06/11)
