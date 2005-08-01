@@ -82,7 +82,7 @@ class Owned(ExtensionClass.Base):
             import warnings
             warnings.warn('Owned.getOwner(1) is deprecated; '
                           'please use getOwnerTuple() instead.',
-                          DeprecationWarning)
+                          DeprecationWarning, stacklevel=2)
 
 
         owner=aq_get(self, '_owner', None, 1)
