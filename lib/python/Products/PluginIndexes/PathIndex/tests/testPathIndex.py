@@ -216,6 +216,17 @@ class PathIndexTests(unittest.TestCase):
             lst = list(res[0].keys())
             self.assertEqual(lst,results)
 
+    def testQueryPathReturnedInResult(self):
+
+        index = self._index
+        index.index_object(1, Dummy("/ff"))
+        index.index_object(2, Dummy("/ff/gg"))
+        index.index_object(3, Dummy("/ff/gg/3.html"))
+        index.index_object(4, Dummy("/ff/gg/4.html"))
+        res = index._apply_index({'path': {'query': '/ff/gg'}})
+        lst = list(res[0].keys())
+        self.assertEqual(lst, [2, 3, 4])
+
 
 def test_suite():
     return unittest.TestSuite((
