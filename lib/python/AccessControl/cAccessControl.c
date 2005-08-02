@@ -2198,7 +2198,10 @@ guarded_getattr(PyObject *inst, PyObject *name, PyObject *default_,
 
       t = aq_Acquire(inst, name, aq_validate, validate, 1, NULL, 0);
       if (t == NULL)
+        {
+        Py_DECREF(v);
         return NULL;
+        }
       Py_DECREF(t);
 
       return v;

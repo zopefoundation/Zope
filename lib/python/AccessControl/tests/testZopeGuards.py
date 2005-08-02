@@ -86,6 +86,16 @@ class TestGuardedGetattr(GuardTestCase):
     def tearDown(self):
         self.setSecurityManager(self.__old)
 
+    def test_unauthorized(self):
+        obj, name = Method(), 'args'
+        value = getattr(obj, name)
+        rc = sys.getrefcount(value)
+        self.__sm.reject = True
+        self.assertRaises(Unauthorized, guarded_getattr, obj, name)
+        self.assert_(self.__sm.calls)
+        del self.__sm.calls[:]
+        self.assertEqual(rc, sys.getrefcount(value))
+
     def test_calls_validate_for_unknown_type(self):
         guarded_getattr(self, 'test_calls_validate_for_unknown_type')
         self.assert_(self.__sm.calls)
