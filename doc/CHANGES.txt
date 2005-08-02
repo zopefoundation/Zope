@@ -26,6 +26,15 @@ Zope Changes
 
     Bugs Fixed
 
+      -  As developed in a long thread starting at
+         http://mail.zope.org/pipermail/zope/2005-July/160433.html
+         there appears to be a race bug in the Microsoft Windows socket
+         implementation, rarely visible in ZEO and/or in
+         ZServer/medusa/thread/select_trigger.py when multiple processes try
+         to create an "asyncore trigger" simultaneously, most often (in
+         stress tests) manifesting as a hung process.  Windows-specific
+         trigger code in both changed to work around this bug when it occurs.
+
       - Collector #1807: fixed memory leak in cAccessControl.guarded_getattr()
 
 

@@ -9,6 +9,7 @@ import os
 import socket
 import string
 import thread
+import errno
 
 if os.name == 'posix':
 
@@ -95,59 +96,82 @@ else:
     class BindError(Exception):
         pass
 
-    class trigger (asyncore.dispatcher):
+    class trigger(asyncore.dispatcher):
     
-        address = ('127.9.9.9', 19999)
-        
         def __init__ (self):
-            a = socket.socket (socket.AF_INET, socket.SOCK_STREAM)
-            w = socket.socket (socket.AF_INET, socket.SOCK_STREAM)
-            
-            # set TCP_NODELAY to true to avoid buffering
-            w.setsockopt(socket.IPPROTO_TCP, 1, 1)
-            
-            # tricky: get a pair of connected sockets
-            host='127.0.0.1'
-            port=19999
+            # The __init__ code is taken from ZODB 3.4.1's
+            # ZEO/zrpc/trigger.py, to worm around problems in the original
+            # Windows __init__ code.
+
+            # Get a pair of connected sockets.  The trigger is the 'w'
+            # end of the pair, which is connected to 'r'.  'r' is put
+            # in the asyncore socket map.  "pulling the trigger" then
+            # means writing something on w, which will wake up r.
+
+            w = socket.socket()
+            # Disable buffering -- pulling the trigger sends 1 byte,
+            # and we want that sent immediately, to wake up asyncore's
+            # select() ASAP.
+            w.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+
+            count = 0
             while 1:
-                try:
-                    self.address=(host, port)
-                    a.bind(self.address)
-                    break
-                except:
-                    if port <= 19950:
-                        raise BindError, 'Cannot bind trigger!'
-                    port=port - 1
-                    
-            a.listen (1)
-            w.setblocking (0)
-            try:
-                w.connect (self.address)
-            except:
-                pass
-            r, addr = a.accept()
+               count += 1
+               # Bind to a local port; for efficiency, let the OS pick
+               # a free port for us.
+               # Unfortunately, stress tests showed that we may not
+               # be able to connect to that port ("Address already in
+               # use") despite that the OS picked it.  This appears
+               # to be a race bug in the Windows socket implementation.
+               # So we loop until a connect() succeeds (almost always
+               # on the first try).  See the long thread at
+               # http://mail.zope.org/pipermail/zope/2005-July/160433.html
+               # for hideous details.
+               a = socket.socket()
+               a.bind(("127.0.0.1", 0))
+               connect_address = a.getsockname()  # assigned (host, port) pair
+               a.listen(1)
+               try:
+                   w.connect(connect_address)
+                   break    # success
+               except socket.error, detail:
+                   if detail[0] != errno.WSAEADDRINUSE:
+                       # "Address already in use" is the only error
+                       # I've seen on two WinXP Pro SP2 boxes, under
+                       # Pythons 2.3.5 and 2.4.1.
+                       raise
+                   # (10048, 'Address already in use')
+                   # assert count <= 2 # never triggered in Tim's tests
+                   if count >= 10:  # I've never seen it go above 2
+                       a.close()
+                       w.close()
+                       raise BindError("Cannot bind trigger!")
+                   # Close `a` and try again.  Note:  I originally put a short
+                   # sleep() here, but it didn't appear to help or hurt.
+                   a.close()
+
+            r, addr = a.accept()  # r becomes asyncore's (self.)socket
             a.close()
-            w.setblocking (1)
             self.trigger = w
-            
             asyncore.dispatcher.__init__ (self, r)
+
             self.lock = thread.allocate_lock()
             self.thunks = []
             self._trigger_connected = 0
             
-        def __repr__ (self):
+        def __repr__(self):
             return '<select-trigger (loopback) at %x>' % id(self)
             
-        def readable (self):
+        def readable(self):
             return 1
             
-        def writable (self):
+        def writable(self):
             return 0
             
-        def handle_connect (self):
+        def handle_connect(self):
             pass
             
-        def pull_trigger (self, thunk=None):
+        def pull_trigger(self, thunk=None):
             if thunk:
                 try:
                     self.lock.acquire()
@@ -156,8 +180,8 @@ else:
                     self.lock.release()
             self.trigger.send ('x')
             
-        def handle_read (self):
-            self.recv (8192)
+        def handle_read(self):
+            self.recv(8192)
             try:
                 self.lock.acquire()
                 for thunk in self.thunks:
