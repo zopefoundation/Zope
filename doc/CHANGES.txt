@@ -53,6 +53,8 @@ Zope Changes
 
     Bugs fixed
 
+      - Collector #1807: fixed memory leak in cAccessControl.guarded_getattr()
+
       - Collector #1852: fixed wrong URL construction in webdav.davcmds
 
       - Collector #1844: fixed whitespace handling in the ZMI "Find" tab
