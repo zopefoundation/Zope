@@ -450,7 +450,7 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
     isAUserFolder=1
     maxlistusers = DEFAULTMAXLISTUSERS
 
-    encrypt_passwords = 0
+    encrypt_passwords = 1
 
     manage_options=(
         (

@@ -53,6 +53,9 @@ Zope Changes
 
     Bugs fixed
 
+      - Collector #1773: by default user accounts are now encrypted for
+        security reasons
+
       -  As developed in a long thread starting at
          http://mail.zope.org/pipermail/zope/2005-July/160433.html
          there appears to be a race bug in the Microsoft Windows socket
