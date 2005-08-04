@@ -4,29 +4,32 @@
 # All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
-# Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
+# Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""
-Interpreter for a pre-compiled TAL program.
+"""Interpreter for a pre-compiled TAL program.
+
+$Id$
 """
 import cgi
 import sys
 import getopt
 import re
-from types import ListType
 from cgi import escape
+
 # Do not use cStringIO here!  It's not unicode aware. :(
 from StringIO import StringIO
 from DocumentTemplate.DT_Util import ustr
 from ZODB.POSException import ConflictError
 
-from TALDefs import TAL_VERSION, TALError, METALError, attrEscape
-from TALDefs import isCurrentVersion, getProgramVersion, getProgramMode
+from zope.i18nmessageid import MessageID
+from TALDefs import attrEscape, TAL_VERSION, METALError
+from TALDefs import isCurrentVersion
+from TALDefs import getProgramVersion, getProgramMode
 from TALGenerator import TALGenerator
 from TranslationContext import TranslationContext
 
@@ -41,11 +44,22 @@ BOOLEAN_HTML_ATTRS = [
     "defer"
 ]
 
+def _init():
+    d = {}
+    for s in BOOLEAN_HTML_ATTRS:
+        d[s] = 1
+    return d
+
+BOOLEAN_HTML_ATTRS = _init()
+
+_nulljoin = ''.join
+_spacejoin = ' '.join
+
 def normalize(text):
     # Now we need to normalize the whitespace in implicit message ids and
     # implicit $name substitution values by stripping leading and trailing
     # whitespace, and folding all internal whitespace to a single space.
-    return ' '.join(text.split())
+    return _spacejoin(text.split())
 
 
 NAME_RE = r"[a-zA-Z][a-zA-Z0-9_]*"
@@ -159,7 +173,8 @@ class TALInterpreter:
                 self.scopeLevel, self.level, self.i18nContext)
 
     def restoreState(self, state):
-        (self.position, self.col, self.stream, scopeLevel, level, i18n) = state
+        (self.position, self.col, self.stream,
+         scopeLevel, level, i18n) = state
         self._stream_write = self.stream.write
         assert self.level == level
         while self.scopeLevel > scopeLevel:
@@ -169,7 +184,8 @@ class TALInterpreter:
         self.i18nContext = i18n
 
     def restoreOutputState(self, state):
-        (dummy, self.col, self.stream, scopeLevel, level, i18n) = state
+        (dummy, self.col, self.stream,
+         scopeLevel, level, i18n) = state
         self._stream_write = self.stream.write
         assert self.level == level
         assert self.scopeLevel == scopeLevel
@@ -195,6 +211,16 @@ class TALInterpreter:
             self._stream_write("\n")
             self.col = 0
 
+    def interpretWithStream(self, program, stream):
+        oldstream = self.stream
+        self.stream = stream
+        self._stream_write = stream.write
+        try:
+            self.interpret(program)
+        finally:
+            self.stream = oldstream
+            self._stream_write = oldstream.write
+
     def stream_write(self, s,
                      len=len):
         self._stream_write(s)
@@ -205,16 +231,6 @@ class TALInterpreter:
             self.col = len(s) - (i + 1)
 
     bytecode_handlers = {}
-
-    def interpretWithStream(self, program, stream):
-        oldstream = self.stream
-        self.stream = stream
-        self._stream_write = stream.write
-        try:
-            self.interpret(program)
-        finally:
-            self.stream = oldstream
-            self._stream_write = oldstream.write
 
     def interpret(self, program):
         oldlevel = self.level
@@ -269,6 +285,7 @@ class TALInterpreter:
         # for start tags with no attributes; those are optimized down
         # to rawtext events.  Hence, there is no special "fast path"
         # for that case.
+        self._currentTag = name
         L = ["<", name]
         append = L.append
         col = self.col + _len(name) + 1
@@ -303,9 +320,9 @@ class TALInterpreter:
                     col = col + 1 + slen
                 append(s)
             append(end)
-            self._stream_write("".join(L))
             col = col + endlen
         finally:
+            self._stream_write(_nulljoin(L))
             self.col = col
     bytecode_handlers["startTag"] = do_startTag
 
@@ -487,6 +504,9 @@ class TALInterpreter:
         if text is self.Default:
             self.interpret(stuff[1])
             return
+        if isinstance(text, MessageID):
+            # Translate this now.
+            text = self.engine.translate(text.domain, text, text.mapping)
         s = escape(text)
         self._stream_write(s)
         i = s.rfind('\n')
@@ -505,7 +525,10 @@ class TALInterpreter:
             try:
                 tmpstream = self.StringIO()
                 self.interpretWithStream(program, tmpstream)
-                value = normalize(tmpstream.getvalue())
+                if self.html and self._currentTag == "pre":
+                    value = tmpstream.getvalue()
+                else:
+                    value = normalize(tmpstream.getvalue())
             finally:
                 self.restoreState(state)
         else:
@@ -516,8 +539,14 @@ class TALInterpreter:
             else:
                 value = self.engine.evaluate(expression)
 
+            # evaluate() does not do any I18n, so we do it here. 
+            if isinstance(value, MessageID):
+                # Translate this now.
+                value = self.engine.translate(value.domain, value,
+                                              value.mapping)
+
             if not structure:
-                value = cgi.escape(str(value))
+                value = cgi.escape(ustr(value))
 
         # Either the i18n:name tag is nested inside an i18n:translate in which
         # case the last item on the stack has the i18n dictionary and string
@@ -545,20 +574,29 @@ class TALInterpreter:
         #
         # Use a temporary stream to capture the interpretation of the
         # subnodes, which should /not/ go to the output stream.
+        currentTag = self._currentTag
         tmpstream = self.StringIO()
         self.interpretWithStream(stuff[1], tmpstream)
-        default = tmpstream.getvalue()
         # We only care about the evaluated contents if we need an implicit
         # message id.  All other useful information will be in the i18ndict on
         # the top of the i18nStack.
-        if msgid == '':
-            msgid = normalize(default)
+        default = tmpstream.getvalue()
+        if not msgid:
+            if self.html and currentTag == "pre":
+                msgid = default
+            else:
+                msgid = normalize(default)
         self.i18nStack.pop()
         # See if there is was an i18n:data for msgid
         if len(stuff) > 2:
             obj = self.engine.evaluate(stuff[2])
         xlated_msgid = self.translate(msgid, default, i18ndict, obj)
-        assert xlated_msgid is not None, self.position
+        # XXX I can't decide whether we want to cgi escape the translated
+        # string or not.  OT1H not doing this could introduce a cross-site
+        # scripting vector by allowing translators to sneak JavaScript into
+        # translations.  OTOH, for implicit interpolation values, we don't
+        # want to escape stuff like ${name} <= "<b>Timmy</b>".
+        assert xlated_msgid is not None
         self._stream_write(xlated_msgid)
     bytecode_handlers['insertTranslation'] = do_insertTranslation
 

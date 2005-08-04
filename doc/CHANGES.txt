@@ -26,6 +26,11 @@ Zope Changes
 
     Bugs Fixed
 
+      - TAL: MassageIDs are now handled the same way as in zope.tal.
+
+      - DocumentTemplate: ustr no longer mangles MassageIDs.
+        Custom string types are now returned unchanged.
+
       -  As developed in a long thread starting at
          http://mail.zope.org/pipermail/zope/2005-July/160433.html
          there appears to be a race bug in the Microsoft Windows socket
