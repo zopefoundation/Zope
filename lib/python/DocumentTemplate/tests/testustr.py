@@ -7,20 +7,18 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Document Template Tests
+"""ustr unit tests.
+
+$Id$
 """
 
-__rcs_id__='$Id$'
-__version__='$Revision: 1.3 $'[11:-2]
-
-import sys, os
 import unittest
 
 from DocumentTemplate.ustr import ustr
-from ExtensionClass import Base
+
 
 class force_str:
     # A class whose string representation is not always a plain string:
@@ -29,7 +27,18 @@ class force_str:
     def __str__(self):
         return self.s
 
-class UnicodeTests (unittest.TestCase):
+
+class Foo(str):
+
+    pass
+
+
+class Bar(unicode):
+
+    pass
+
+
+class UnicodeTests(unittest.TestCase):
 
     def testPlain(self):
         a = ustr('hello')
@@ -59,13 +68,17 @@ class UnicodeTests (unittest.TestCase):
         a = ustr(ValueError(unichr(200)))
         assert a==unichr(200), `a`
 
+    def testCustomStrings(self):
+        a = ustr(Foo('foo'))
+        self.failUnlessEqual(type(a), Foo)
+        a = ustr(Bar('bar'))
+        self.failUnlessEqual(type(a), Bar)
+
+
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest( unittest.makeSuite( UnicodeTests ) )
     return suite
 
-def main():
-    unittest.TextTestRunner().run(test_suite())
-
 if __name__ == '__main__':
-    main()
+    unittest.main(defaultTest='test_suite')

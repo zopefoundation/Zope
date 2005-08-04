@@ -7,11 +7,13 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+"""ustr function.
 
-from types import StringType, UnicodeType, InstanceType
+$Id$
+"""
 
 nasty_exception_str = Exception.__str__.im_func
 
@@ -20,8 +22,7 @@ def ustr(v):
     minimising the chance of raising a UnicodeError. This
     even works with uncooperative objects like Exceptions
     """
-    string_types = (StringType,UnicodeType)
-    if type(v) in string_types:
+    if isinstance(v, basestring):
         return v
     else:
         fn = getattr(v,'__str__',None)
@@ -41,7 +42,7 @@ def ustr(v):
             else:
                 # Trust the object to do this right
                 v = fn()
-                if type(v) in string_types:
+                if isinstance(v, basestring):
                     return v
                 else:
                     raise ValueError('__str__ returned wrong type')
@@ -59,4 +60,3 @@ def _exception_str(exc):
         else:
             return str(exc.args)
     return str(exc)
-
