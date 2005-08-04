@@ -259,7 +259,11 @@ class ZopeCmd(ZDCmd):
         args.insert(0, self.options.python)
 
         print 'Running tests via: %s' % ' '.join(args)
-        os.execv(self.options.python, args)
+        pid = os.fork()
+        if pid == 0:  # child
+            os.execv(self.options.python, args)
+        else:
+            os.waitpid(pid, 0)
 
     def help_test(self):
         print "test [args]+ -- run unit / functional tests."

@@ -26,6 +26,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Zope2.Startup.zopectl: fork before execv when running unit tests
+        (don't exit the shell, if run from there).
+
       - TAL: MassageIDs are now handled the same way as in zope.tal.
 
       - DocumentTemplate: ustr no longer mangles MassageIDs.
