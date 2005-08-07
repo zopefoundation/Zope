@@ -65,6 +65,8 @@ def generate_passwd(password, encoding):
         pw = '{CRYPT}' + crypt(password, generate_salt())
     elif encoding == 'CLEARTEXT':
         pw = password
+    else:
+        raise ValueError('Unsupported encoding: %s' % encoding)
 
     return pw
 
