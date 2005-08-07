@@ -1,0 +1,191 @@
+======
+Bridge
+======
+
+The ``bridge`` module provides functionality to convert a Zope 3
+interface into a Zope 2 one.  First we'll import all we know about
+interfaces from the two generations:
+
+  >>> from Interface import Interface as Z2_Interface
+  >>> from Interface import Attribute as Z2_Attribute
+  >>> from Interface.Method import Method as Z2_Method
+
+  >>> from zope.interface import Interface as Z3_Interface
+  >>> from zope.interface import Attribute as Z3_Attribute
+  >>> from zope.schema import List, TextLine
+
+
+An empty interface
+------------------
+
+  >>> class IEmpty(Z3_Interface):
+  ...     pass
+
+  >>> from Interface.bridge import fromZ3Interface
+  >>> IEmptyConverted = fromZ3Interface(IEmpty)
+
+  >>> Z2_Interface.isEqualOrExtendedBy(IEmptyConverted)
+  1
+  >>> len(IEmptyConverted.names())
+  0
+
+
+Bases
+-----
+
+  >>> class IBase(Z3_Interface):
+  ...     pass
+  >>> class IDerived(IBase):
+  ...     pass
+  >>> IBase.getBases() == (Z3_Interface,)
+  True
+  >>> IDerived.getBases() == (IBase,)
+  True
+  >>> IDerived.extends(IBase)
+  True
+  >>> IDerived.extends(IEmpty)
+  False
+
+  >>> IBaseConverted = fromZ3Interface(IBase)
+  >>> IDerivedConverted = fromZ3Interface(IDerived)
+  >>> IBaseConverted.getBases() == (Z2_Interface,)
+  True
+  >>> IDerivedConverted.getBases() == (IBaseConverted,)
+  True
+  >>> IDerivedConverted.extends(IBaseConverted)
+  1
+  >>> IDerivedConverted.extends(IEmptyConverted)
+  0
+
+
+Attributes
+----------
+
+  >>> class IAttributes(Z3_Interface):
+  ...     one = Z3_Attribute('one', 'One attribute')
+  ...     another = Z3_Attribute('another', 'Another attribute')
+
+  >>> converted = fromZ3Interface(IAttributes)
+
+  >>> Z2_Interface.isEqualOrExtendedBy(converted)
+  1
+  >>> len(converted.names())
+  2
+  >>> 'one' in converted.names()
+  True
+  >>> 'another' in converted.names()
+  True
+
+  >>> one = converted.getDescriptionFor('one')
+  >>> isinstance(one, Z2_Attribute)
+  True
+  >>> one.getName()
+  'one'
+  >>> one.getDoc()
+  'One attribute'
+
+  >>> another = converted.getDescriptionFor('another')
+  >>> isinstance(another, Z2_Attribute)
+  True
+  >>> another.getName() 
+  'another'
+  >>> another.getDoc()
+  'Another attribute'
+
+
+Fields
+------
+
+  >>> class IFields(Z3_Interface):
+  ...     one = TextLine(title=u'one', description=u'One field')
+  ...     another = List(title=u'another', description=u'Another field',
+  ...                    value_type = TextLine())
+
+  >>> converted = fromZ3Interface(IFields)
+
+  >>> Z2_Interface.isEqualOrExtendedBy(converted)
+  1
+  >>> len(converted.names())
+  2
+  >>> 'one' in converted.names()
+  True
+  >>> 'another' in converted.names()
+  True
+
+  >>> one = converted.getDescriptionFor('one')
+  >>> isinstance(one, Z2_Attribute)
+  True
+  >>> one.getName()
+  'one'
+  >>> one.getDoc()
+  u'one\n\nOne field'
+
+  >>> another = converted.getDescriptionFor('another')
+  >>> isinstance(another, Z2_Attribute)
+  True
+  >>> another.getName() 
+  'another'
+  >>> another.getDoc()
+  u'another\n\nAnother field'
+
+
+Methods
+-------
+
+  >>> class IMethods(Z3_Interface):
+  ...     def one():
+  ...         """One method."""
+  ...     def another(arg1, arg2):
+  ...         """Another method, taking arguments."""
+
+  >>> converted = fromZ3Interface(IMethods)
+
+  >>> Z2_Interface.isEqualOrExtendedBy(converted)
+  1
+  >>> len(converted.names())
+  2
+  >>> 'one' in converted.names()
+  True
+  >>> 'another' in converted.names()
+  True
+
+  >>> one = converted.getDescriptionFor('one')
+  >>> isinstance(one, Z2_Method)
+  True
+  >>> one.getName()
+  'one'
+  >>> one.getDoc()
+  'One method.'
+  >>> one.getSignatureString()
+  '()'
+
+  >>> another = converted.getDescriptionFor('another')
+  >>> isinstance(another, Z2_Method)
+  True
+  >>> another.getName()
+  'another'
+  >>> another.getDoc()
+  'Another method, taking arguments.'
+  >>> another.getSignatureString()
+  '(arg1, arg2)'
+
+
+Invalid parameters
+------------------
+
+  >>> fromZ3Interface(None)
+  Traceback (most recent call last):
+  ...
+  ValueError: Not a Zope 3 interface!
+
+  >>> fromZ3Interface(object())
+  Traceback (most recent call last):
+  ... 
+  ValueError: Not a Zope 3 interface!
+
+  >>> class IZ2_NotAllowed(Z2_Interface):
+  ...     pass
+  >>> fromZ3Interface(IZ2_NotAllowed)
+  Traceback (most recent call last):
+  ...
+  ValueError: Not a Zope 3 interface!

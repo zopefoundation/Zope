@@ -24,6 +24,12 @@ Zope Changes
 
   after Zope 2.8.1 b1 
 
+    Features added
+
+      - Interface: Added Z3 -> Z2 bridge utilities.
+        This allows to migrate interfaces to Zope 3 style interfaces and
+        bridge them back to oldstyle interfaces for backwards compatibility.
+
     Bugs Fixed
 
       - Zope2.Startup.zopectl: fork before execv when running unit tests
