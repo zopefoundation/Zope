@@ -30,10 +30,6 @@ Zope Changes
         and ZCTextIndex: Added some Zope 3 style interfaces.
         This makes the bridged interfaces shipped with Five obsolete.
 
-      - Interface: Added Z3 -> Z2 bridge utilities.
-        This allows to migrate interfaces to Zope 3 style interfaces and
-        bridge them back to oldstyle interfaces for backwards compatibility.
-
       - ZConfig extension, address now also accepts symbolic port names
         from etc/services (unix) or etc\services (win32)
 
