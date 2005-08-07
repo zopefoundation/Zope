@@ -211,6 +211,16 @@ class BasicTests(unittest.TestCase):
 
         self._test('"foo":http://www.zope.org/foo/bar?arg1=1&arg2=2',
                    '<p><a href="http://www.zope.org/foo/bar?arg1=1&arg2=2">foo</a></p>')
+
+        self._test('"foo bar":http://www.zope.org/foo/bar',
+                   '<p><a href="http://www.zope.org/foo/bar">foo bar</a></p>')
+
+        self._test('"[link goes here]":http://www.zope.org/foo/bar',
+                   '<p><a href="http://www.zope.org/foo/bar">[link goes here]</a></p>')
+
+        self._test('"[Dad\'s car]":http://www.zope.org/foo/bar',
+                   '<p><a href="http://www.zope.org/foo/bar">[Dad\'s car]</a></p>')
+
      
     def testImgLink(self):
         self._test('"foo":img:http://www.zope.org/bar.gif',
@@ -225,6 +235,14 @@ class BasicTests(unittest.TestCase):
         self._test('"foo":img:http://www.zope.org:8080/foo/b%20ar?arg=1',
                    '<img src="http://www.zope.org:8080/foo/b%20ar?arg=1" alt="foo" />')
 
+        self._test('"foo bar":img:http://www.zope.org:8080/foo/bar',
+                   '<img src="http://www.zope.org:8080/foo/bar" alt="foo bar" />')
+
+        self._test('"[link goes here]":img:http://www.zope.org:8080/foo/bar',
+                   '<img src="http://www.zope.org:8080/foo/bar" alt="[link goes here]" />')
+
+        self._test('"[Dad\'s new car]":img:http://www.zope.org:8080/foo/bar',
+                   '<img src="http://www.zope.org:8080/foo/bar" alt="[Dad\'s new car]" />')
 
     def XXXtestUnicodeContent(self):
         # This fails because ST uses the default locale to get "letters"
