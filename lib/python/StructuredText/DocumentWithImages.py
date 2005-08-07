@@ -27,7 +27,7 @@ class DocumentWithImages(DocumentClass):
 
     def doc_img(
         self, s,
-        expr1=re.compile('\"([ _a-zA-Z0-9*.:/;,\-\n\~]+)\":img:([a-zA-Z0-9%\_\-.:/\?=;,\n\~]+)').search,
+        expr1=re.compile('\"([ _a-zA-Z0-9*.:/;,\[\]\'\-\n\~]+)\":img:([a-zA-Z0-9%\_\-.:/\?=;,\n\~]+)').search,
         ):
 
 
