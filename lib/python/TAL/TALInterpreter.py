@@ -17,9 +17,7 @@ $Id$
 """
 import cgi
 import sys
-import getopt
 import re
-from cgi import escape
 
 # Do not use cStringIO here!  It's not unicode aware. :(
 from StringIO import StringIO
@@ -392,7 +390,7 @@ class TALInterpreter:
             elif evalue is self.Default:
                 value = attrEscape(value)
             else:
-                value = escape(value, quote=1)
+                value = cgi.escape(value, quote=1)
             value = '%s="%s"' % (name, value)
         return ok, name, value
     bytecode_handlers["<attrAction>"] = attrAction
@@ -507,7 +505,7 @@ class TALInterpreter:
         if isinstance(text, MessageID):
             # Translate this now.
             text = self.engine.translate(text.domain, text, text.mapping)
-        s = escape(text)
+        s = cgi.escape(text)
         self._stream_write(s)
         i = s.rfind('\n')
         if i < 0:
