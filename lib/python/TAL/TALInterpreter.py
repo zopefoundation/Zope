@@ -31,24 +31,20 @@ from TALDefs import getProgramVersion, getProgramMode
 from TALGenerator import TALGenerator
 from TranslationContext import TranslationContext
 
-BOOLEAN_HTML_ATTRS = [
+# This will become (MessageID, Message) when we use Zope 3.1 as a base:
+I18nMessageTypes = MessageID
+
+# TODO: In Python 2.4 we can use frozenset() instead of dict.fromkeys()
+BOOLEAN_HTML_ATTRS = dict.fromkeys([
     # List of Boolean attributes in HTML that should be rendered in
     # minimized form (e.g. <img ismap> rather than <img ismap="">)
     # From http://www.w3.org/TR/xhtml1/#guidelines (C.10)
-    # XXX The problem with this is that this is not valid XML and
+    # TODO: The problem with this is that this is not valid XML and
     # can't be parsed back!
     "compact", "nowrap", "ismap", "declare", "noshade", "checked",
     "disabled", "readonly", "multiple", "selected", "noresize",
     "defer"
-]
-
-def _init():
-    d = {}
-    for s in BOOLEAN_HTML_ATTRS:
-        d[s] = 1
-    return d
-
-BOOLEAN_HTML_ATTRS = _init()
+])
 
 _nulljoin = ''.join
 _spacejoin = ' '.join
@@ -502,7 +498,7 @@ class TALInterpreter:
         if text is self.Default:
             self.interpret(stuff[1])
             return
-        if isinstance(text, MessageID):
+        if isinstance(text, I18nMessageTypes):
             # Translate this now.
             text = self.engine.translate(text.domain, text, text.mapping)
         s = cgi.escape(text)
@@ -537,8 +533,8 @@ class TALInterpreter:
             else:
                 value = self.engine.evaluate(expression)
 
-            # evaluate() does not do any I18n, so we do it here. 
-            if isinstance(value, MessageID):
+            # evaluate() does not do any I18n, so we do it here.
+            if isinstance(value, I18nMessageTypes):
                 # Translate this now.
                 value = self.engine.translate(value.domain, value,
                                               value.mapping)
@@ -589,8 +585,8 @@ class TALInterpreter:
         if len(stuff) > 2:
             obj = self.engine.evaluate(stuff[2])
         xlated_msgid = self.translate(msgid, default, i18ndict, obj)
-        # XXX I can't decide whether we want to cgi escape the translated
-        # string or not.  OT1H not doing this could introduce a cross-site
+        # TODO: I can't decide whether we want to cgi escape the translated
+        # string or not.  OTOH not doing this could introduce a cross-site
         # scripting vector by allowing translators to sneak JavaScript into
         # translations.  OTOH, for implicit interpolation values, we don't
         # want to escape stuff like ${name} <= "<b>Timmy</b>".
@@ -654,7 +650,7 @@ class TALInterpreter:
             i18ndict.update(obj)
         if not self.i18nInterpolate:
             return msgid
-        # XXX We need to pass in one of context or target_language
+        # TODO: We need to pass in one of context or target_language
         return self.engine.translate(self.i18nContext.domain,
                                      msgid, i18ndict, default=default)
 
