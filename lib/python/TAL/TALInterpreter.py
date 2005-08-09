@@ -120,10 +120,42 @@ class AltTALGenerator(TALGenerator):
 
 
 class TALInterpreter:
+    """TAL interpreter.
+    """
 
     def __init__(self, program, macros, engine, stream=None,
                  debug=0, wrap=60, metal=1, tal=1, showtal=-1,
                  strictinsert=1, stackLimit=100, i18nInterpolate=1):
+        """Create a TAL interpreter.
+
+        Optional arguments:
+
+            stream -- output stream (defaults to sys.stdout).
+
+            debug -- enable debugging output to sys.stderr (off by default).
+
+            wrap -- try to wrap attributes on opening tags to this number of
+            column (default: 60).
+
+            metal -- enable METAL macro processing (on by default).
+
+            tal -- enable TAL processing (on by default).
+
+            showtal -- do not strip away TAL directives.  A special value of
+            -1 (which is the default setting) enables showtal when TAL
+            processing is disabled, and disables showtal when TAL processing is
+            enabled.  Note that you must use 0, 1, or -1; true boolean values
+            are not supported (TODO: why?).
+
+            strictinsert -- enable TAL processing and stricter HTML/XML
+            checking on text produced by structure inserts (on by default).
+            Note that Zope turns this value off by default.
+
+            stackLimit -- set macro nesting limit (default: 100).
+
+            i18nInterpolate -- enable i18n translations (default: on).
+
+        """
         self.program = program
         self.macros = macros
         self.engine = engine # Execution engine (aka context)
