@@ -160,8 +160,8 @@ class TALInterpreter:
         self.macros = macros
         self.engine = engine # Execution engine (aka context)
         self.Default = engine.getDefault()
-        self.stream = stream or sys.stdout
-        self._stream_write = self.stream.write
+        self._stream_stack = [stream or sys.stdout]
+        self.popStream()
         self.debug = debug
         self.wrap = wrap
         self.metal = metal
@@ -195,12 +195,12 @@ class TALInterpreter:
         return FasterStringIO()
 
     def saveState(self):
-        return (self.position, self.col, self.stream,
+        return (self.position, self.col, self.stream, self._stream_stack,
                 self.scopeLevel, self.level, self.i18nContext)
 
     def restoreState(self, state):
         (self.position, self.col, self.stream,
-         scopeLevel, level, i18n) = state
+         self._stream_stack, scopeLevel, level, i18n) = state
         self._stream_write = self.stream.write
         assert self.level == level
         while self.scopeLevel > scopeLevel:
@@ -211,7 +211,7 @@ class TALInterpreter:
 
     def restoreOutputState(self, state):
         (dummy, self.col, self.stream,
-         scopeLevel, level, i18n) = state
+         self._stream_stack, scopeLevel, level, i18n) = state
         self._stream_write = self.stream.write
         assert self.level == level
         assert self.scopeLevel == scopeLevel
@@ -237,15 +237,14 @@ class TALInterpreter:
             self._stream_write("\n")
             self.col = 0
 
-    def interpretWithStream(self, program, stream):
-        oldstream = self.stream
-        self.stream = stream
-        self._stream_write = stream.write
-        try:
-            self.interpret(program)
-        finally:
-            self.stream = oldstream
-            self._stream_write = oldstream.write
+    def pushStream(self, newstream):
+        self._stream_stack.append(self.stream)
+        self.stream = newstream
+        self._stream_write = self.stream.write
+
+    def popStream(self):
+        self.stream = self._stream_stack.pop()
+        self._stream_write = self.stream.write
 
     def stream_write(self, s,
                      len=len):
@@ -549,7 +548,11 @@ class TALInterpreter:
             state = self.saveState()
             try:
                 tmpstream = self.StringIO()
-                self.interpretWithStream(program, tmpstream)
+                self.pushStream(tmpstream)
+                try:
+                    self.interpret(program)
+                finally:
+                    self.popStream()
                 if self.html and self._currentTag == "pre":
                     value = tmpstream.getvalue()
                 else:
@@ -601,7 +604,11 @@ class TALInterpreter:
         # subnodes, which should /not/ go to the output stream.
         currentTag = self._currentTag
         tmpstream = self.StringIO()
-        self.interpretWithStream(stuff[1], tmpstream)
+        self.pushStream(tmpstream)
+        try:
+            self.interpret(stuff[1])
+        finally:
+            self.popStream()
         # We only care about the evaluated contents if we need an implicit
         # message id.  All other useful information will be in the i18ndict on
         # the top of the i18nStack.
