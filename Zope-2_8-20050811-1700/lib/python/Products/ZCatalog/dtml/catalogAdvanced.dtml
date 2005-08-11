@@ -1,0 +1,138 @@
+<dtml-var manage_page_header>
+<dtml-var manage_tabs>
+
+<br />
+<table width="100%" cellspacing="0" cellpadding="2" border="0">
+<tr class="section-bar">
+  <td colspan="2" align="left">
+  <div class="form-label">
+  Catalog Maintenance
+  </div>
+  </td>
+</tr>
+<tr>
+  <td align="left" valign="top">
+  <p class="form-help"> Updating the catalog will update all catalog
+  records and remove invalid records. It does this by clearing all
+  indexes and re-cataloging all currently indexed objects.
+  </p>
+  </td>
+  <td align="right" valign="top">
+<form action="&dtml-URL1;">
+<input class="form-element" type="submit" 
+ name="manage_catalogReindex:method" value=" Update Catalog ">
+</form>
+  </td>
+</tr>
+<tr>
+  <td align="left" valign="top">
+  <p class="form-help">Clearing the catalog will remove all entries.
+  </p>
+  </td>
+  <td align="right" valign="top">
+<form action="&dtml-URL1;">
+<input class="form-element" type="submit" 
+ name="manage_catalogClear:method" value=" Clear Catalog ">
+</form>
+  </td>
+</tr>
+<tr>
+  <td align="left" valign="top">
+  <p class="form-help">Log progress of reindexing every N objects to the Zope logger (set to 0 to disable logging)
+  </p>
+  </td>
+  <td align="right" valign="top">
+<form action="&dtml-URL1;">
+<input type="text" name="pgthreshold:int" value="<dtml-var pgthreshold missing="0">">
+<input class="form-element" type="submit" 
+ name="manage_setProgress:method" value=" Change ">
+</form>
+  </td>
+</tr>
+<tr>
+  <td>
+
+  </td>
+</tr>
+<tr class="section-bar">
+  <td colspan="2" align="left">
+  <div class="form-label">
+  Subtransactions
+  </div>
+  </td>
+</tr>
+<tr>
+  <td colspan="2" align="left" valign="top">
+
+    <p class="form-help"> Subtransactions allow Zope to commit small
+    parts of a transaction over a period of time instead of all at
+    once.  For ZCatalog, this means using subtransactions can
+    signficantly reduce the memory requirements needed to index huge
+    amounts of text all at once. Currently, subtransactions are only
+    applied to text indexes.</p>
+    
+    <p class="form-help"> If enabled, subtransactions will reduce the memory
+      requirements of ZCatalog, but <em>at the expense of speed</em>.
+      If you choose to enable subtransactions, you can adjust how often
+      ZCatalog commits a subtransactions by adjusting the
+      <em>threshold</em> below.</p>
+
+    <p class="form-help"> If you are using ZCatalog and ZSQL Methods
+    in the same transaction, you <em>must</em> disable
+    subtransactions, they are not compatible with ZSQL Methods.</p>
+    <br />
+  </td>
+</tr>
+<tr>
+  <td align="left" valign="top">
+     <p>Subtransactions are 
+      <dtml-if threshold>
+	<font color="green"><b>Enabled</b></font>
+      <dtml-else>
+	<font color="red"><b>Disabled</b></font>
+      </dtml-if></p>
+  </td>
+  <td align="right" valign="top">
+    <form action="&dtml-URL1;" method="POST">
+    <div class="form-element">
+      <dtml-if threshold>
+	<input class="form-element" type="submit" 
+         name="manage_subbingToggle:method"
+	 value="Disable" />
+      <dtml-else>
+	<input class="form-element" type="submit" 
+         name="manage_subbingToggle:method"
+	 value="Enable" />
+      </dtml-if>
+    </div>
+    </form>
+  </td>
+</tr>
+<dtml-if threshold>
+<tr>
+  <td align="left" valign="top">
+    <p class="form-help">The Subtransaction threshold is the number of
+      objects cataloged
+      in the context of a single transaction that the catalog
+      will index before it commits a subtransaction.  If this number
+      is low, the Catalog will take longer to index but consume less
+      memory.  If this number is higher, the Catalog will index
+      quickly but consume much more memory.</p>
+  </td>
+  <td align="right" valign="top">
+    <form action="manage_edit" method=POST>
+     <div class="form-element">
+      <input name="threshold:int" value="&dtml-threshold;" />
+      <input type="submit" name="submit" value="Set Threshold">
+      </div>
+    </form>
+    </dtml-if>
+  </td>
+</tr>
+</table>
+<dtml-var manage_page_footer>
+
+
+
+
+

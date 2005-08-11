@@ -1,0 +1,273 @@
+Using Zope 3 Components in Zope 2 Applications
+
+  Background
+
+    Zope 3 is the next major revision of Zope. It is designed to be more 
+    'programmer-centric' and easier to learn, use and extend. Zope 3 
+    introduces an interface-centric component architecture that makes 
+    it easier to develop and deploy components without requiring 
+    developers to learn and understand the entire Zope framework.
+
+    Much more information on Zope 3 is available on the Zope 3 area 
+    of the zope.org Website at http://dev.zope.org/Zope3/.
+
+    As of Zope 2.8, the "Five" project has been integrated into the 
+    Zope 2 core. The "Five" project implements a compatibility layer 
+    that allows many Zope 3 components and patterns to be used in 
+    new and existing Zope 2 applications. This provides a number of 
+    benefits::
+
+      - availability of Zope 3 technologies in Zope 2 like the 
+        component architecture and declarative configuration
+
+      - you can gradually evolve your Zope 2 projects to better plan 
+        for migration to Zope 3
+
+      - you start learning about Zope 3 right now, preparing yourself 
+        better for the future. Since Zope 3 is open to contributions, 
+        you could even influence your future for the better ;)
+
+
+  Features
+
+    The Five integration layer provides support for Zope 3 interfaces, 
+    Zope Configuration Markup Language (ZCML), adapters, views, 
+    utilities, schema-driven content, and Zope 3 add and edit forms.
+
+    Note that the Five layer does *not* attempt to provide a ZMI user 
+    interface for Zope 3 components.
+
+    Zope 2.8+ includes the essential Zope 3 packages, so it is not 
+    necessary to install Zope 3.
+
+
+  Zope 3 Interfaces
+
+    Everything in the zope.interface package should work. Zope 3 interfaces 
+    are the foundation of the component architecture, and also the foundation 
+    of schemas.
+
+    Historically, Zope 2 has used the ``__implements__`` class attribute for 
+    interface declarations. Zope 2 cannot detect Zope 3 interfaces and the 
+    Zope 3 machinery cannot detect Zope 2 interfaces. This is a good thing, 
+    as Zope 2 has no way to deal with Zope 3 interfaces, and Zope 3 cannot
+    work with Zope 2 interfaces. This means you can safely make a class
+    declare both a Zope 2 and Zope 3 interface independently from each
+    other. It's a rare case where you need this - you're usually better off 
+    just switching to ``implements()`` for your application if possible.
+
+    Switching from Zope 2 interfaces to Zope 3 interfaces is easy -- just
+    make your interfaces inherit from ``zope.interface.Interface`` instead
+    of ``Interface.Interface`` (or ``Interface.Base``). Next, change all
+    ``__implements__`` to ``implements()``.
+
+    You will also have to change any calls to ``isImplementedBy`` and such 
+    in your application to ``providedBy``, as ``isImplementedBy`` has been 
+    deprecated (you'll see the DeprecationWarnings in your Zope log).
+
+
+  ZCML
+
+    ZCML is the Zope Configuration Markup Language, an XML application. 
+    Zope 3 code consists of a lot of components that can be plugged together 
+    using ZCML.
+
+    If you put a 'site.zcml' in the home directory of your Zope instance, 
+    this is the root of the ZCML tree. An example of 'site.zcml' is in 
+    'site.zcml.in'. If you don't place a site.zcml, Five falls back on 
+    'fallback.zcml'.
+
+    ZCML in Zope 2 with Five has a special directive, 'five:loadProducts', 
+    to load the ZCML ('meta.zcml', 'configure.zcml') of all installed 
+    Zope 2 products, if available.
+
+    Another special directive, 'five:loadProductsOverrides' is available to 
+    load any overriding ZCML (overrides.zcml) in these products. In the 
+    'overrides.zcml' you can override existing views or adapters, in this 
+    or in other products.
+
+    The Five integration layer tries to use the Zope 3 ZCML directives where 
+    possible, though it does sometimes support only a subset of the possible 
+    attributes. It also introduces a few directives of its own under the 
+    ``five`` namespace. The supported directives are listed per namespace 
+    in alphabetic order below.
+
+    zope ``http://namespaces.zope.org/zope``
+    ========================================
+
+    adapter
+    -------
+    
+    Hook an adapter factory to an interface.
+    
+    content
+    -------
+
+    Declare interface and permissions on content object. Declares Zope 2
+    permissions.
+
+    permission
+    ----------
+
+    Way to make Zope 2 permissions available to Five, ``title`` is
+    permission name.
+
+    redefinePermission
+    ------------------
+
+    Redefine a permission in included ZCML as another one.
+
+    service
+    -------
+
+    Declare a global service
+
+    serviceType
+    -----------
+
+    Declare a type of service.
+    
+    skin
+    ----
+
+    Declare a skin, consisting of layers.
+
+    utility
+    -------
+
+    Declare a global utility.
+
+    browser ``http://namespaces.zope.org/browser``
+    ==============================================
+
+    page
+    ----
+
+    Declare a page view for an interface. Permission is a Zope 2
+    permission.
+
+    pages
+    -----
+
+    Declare multiple page views for an interface. Permissions are Zope 2
+    permissions.
+
+    defaultView
+    -----------
+
+    Declare the name of the view that should be used for the default when 
+    viewing the object; i.e. when the object is traversed to without a view.
+
+    defaultSkin
+    -----------
+
+    Declare the default skin used.
+
+    interface
+    ---------
+
+    Define an interface in ZCML.
+
+    layer
+    -----
+
+    Declare a layer.
+
+    menu
+    ----
+
+    Declare a menu
+
+    menuItem, menuItems
+    -------------------
+
+    Declare menuItems
+
+    five ``http://namespaces.zope.org/five``
+    ========================================
+
+    implements
+    ----------
+
+    Make a class declare it implements an interface.
+
+    loadProducts
+    ------------
+
+    Loads ZCML in all Zope 2 products. First processes all ``meta.zcml``
+    files, then processes all ``configure.zcml`` files.
+
+    loadProductsOverrides
+    ---------------------
+
+    Loads overriding ZCML in all products (``overrides.zcml``).
+
+    traversable
+    -----------
+
+    Make a Zope 2 content class traversable in the Zope 3 manner using
+    Five. This is used to attached views, resources and other things to
+    Zope 2 objects.
+
+    defaultViewable
+    ---------------
+
+    Make a Zope 2 content class use a Zope 3 default view when looking at
+    it without any paths appended to it. This works then instead of
+    ``index_html`` in Zope 2.
+
+    pagesFromDirectory
+    ------------------
+
+    Load all *.pt files in a directory as pages. Useful when you want to
+    share templates between Five and CMF, so you can declare pages like
+    this is a similar way to setting up skin folders in portal_skins.
+
+    browser:editform
+    ----------------
+
+    Create an edit form based on a schema.
+
+    browser:addform
+    ---------------
+
+    Create an add form based on a schema.
+
+
+  Adapters
+
+    Generally, adapters can now be used in Zope 2 just as they are used in 
+    Zope 3.
+
+
+  Zope 3 Views
+
+    Zope 3 views work in Zope 2 with Five, including layers and skins. To 
+    make them work however, you need to make a Zope 2 class "traversable". 
+    This can be done by using the 'five:traversable' directive in ZCML.
+
+
+  Schemas and Forms
+
+    With the Five layer, it is possible to use schema-based content using 
+    the standard Zope 3 patterns.
+  
+
+  Security declarations
+
+    Five aims to eradicate declareProtected, ClassSecurityInfo and 
+    initializeClass from your Zope 2 code.
+
+    In order to do this, Five provides the Zope 3 way of declaring 
+    permissions from ZCML, but uses the Zope 2 mechanisms to actually set 
+    them. To declare permissions for methods and templates on views you use 
+    the permission attribute on the browser:page directive, and specify a 
+    Zope 2 permission (given a Zope 3 name). You can find a list of these 
+    permissions in permissions.zcml in Five. The permission check takes 
+    place before the view is executed.
+
+    The content directive can also be used to declare permissions on Zope 2 
+    content classes. Note however that these permissions will be ignored by 
+    views anyway, as they are trusted -- it only serves to protect directly 
+    exposed methods on content classes (the python scripts and the ZPublisher).
+

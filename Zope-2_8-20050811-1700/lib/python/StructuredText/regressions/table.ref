@@ -1,0 +1,72 @@
+<html>
+<body>
+<table border="1" cellpadding="2">
+<tr>
+<th colspan="1" align="left" valign="middle"><p> Function  </p>
+</th>
+<th colspan="1" align="left" valign="middle"><p>  Documentation                       </p>
+</th>
+</tr>
+<tr>
+<td colspan="1" align="left" valign="top"><p> <code>__str__</code> </p>
+</td>
+<td colspan="1" align="left" valign="middle"><p>  This method converts the            
+   the object to a string.            </p>
+
+<ul>
+<li>Blah                              </li>
+<li>Blaf                              <table border="1" cellpadding="2">
+<tr>
+<th colspan="1" align="center" valign="top"><p>  Name   </p>
+</th>
+<th colspan="1" align="left" valign="middle"><p>  Favorite       
+  Color          </p>
+</th>
+</tr>
+<tr>
+<td colspan="1" align="left" valign="middle"><p> Jim     </p>
+</td>
+<td colspan="1" align="center" valign="middle"><p>   Red           </p>
+</td>
+</tr>
+<tr>
+<td colspan="1" align="left" valign="middle"><p> John    </p>
+</td>
+<td colspan="1" align="center" valign="middle"><p>   Blue          </p>
+</td>
+</tr>
+</table>
+</li>
+
+</ul>
+</td>
+</tr>
+</table>
+<table border="1" cellpadding="2">
+<tr>
+<td colspan="3" align="left" valign="middle"><p> This should give a row with colspan 3 </p>
+</td>
+</tr>
+<tr>
+<td colspan="1" align="left" valign="middle"><p> Col 1  </p>
+</td>
+<td colspan="1" align="center" valign="middle"><p>       Col 2  </p>
+</td>
+<td colspan="1" align="center" valign="middle"><p>        Col 3    </p>
+</td>
+</tr>
+<tr>
+<td colspan="1" align="left" valign="middle"><p> Col 1  </p>
+</td>
+<td colspan="2" align="center" valign="middle"><p>       Col 2                   </p>
+</td>
+</tr>
+<tr>
+<td colspan="2" align="left" valign="middle"><p> Col 1                </p>
+</td>
+<td colspan="1" align="center" valign="middle"><p>        Col 2    </p>
+</td>
+</tr>
+</table>
+</body>
+</html>

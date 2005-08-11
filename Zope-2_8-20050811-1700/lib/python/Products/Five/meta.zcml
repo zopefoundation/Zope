@@ -1,0 +1,289 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:meta="http://namespaces.zope.org/meta">
+
+  <meta:directives namespace="http://namespaces.zope.org/zope">
+
+    <meta:directive
+        name="permission"
+        schema="zope.app.security.metadirectives.IDefinePermissionDirective"
+        handler="zope.app.security.metaconfigure.definePermission"
+        />
+
+    <meta:directive
+        name="redefinePermission"
+        schema="zope.app.security.metadirectives.IRedefinePermission"
+        handler="zope.app.security.metaconfigure.redefinePermission"
+        />
+
+    <meta:directive
+        name="interface"
+        schema="zope.app.component.metadirectives.IInterfaceDirective"
+        handler="zope.app.component.metaconfigure.interface"
+        />
+
+    <meta:directive
+        name="view"
+        schema="zope.app.component.metadirectives.IViewDirective"
+        handler="zope.app.component.metaconfigure.view"
+        />
+
+    <meta:directive
+        name="adapter"
+        schema="zope.app.component.metadirectives.IAdapterDirective"
+        handler="zope.app.component.metaconfigure.adapter"
+        />
+
+    <meta:directive
+        name="subscriber"
+        schema="zope.app.component.metadirectives.ISubscriberDirective"
+        handler="zope.app.component.metaconfigure.subscriber"
+        />
+
+    <meta:directive
+        name="utility"
+        schema="zope.app.component.metadirectives.IUtilityDirective"
+        handler="zope.app.component.metaconfigure.utility"
+        />
+
+    <meta:directive
+        name="serviceType"
+        schema="zope.app.component.metadirectives.IServiceTypeDirective"
+        handler="zope.app.component.metaconfigure.serviceType"
+        />
+
+    <meta:directive
+        name="service"
+        schema="zope.app.component.metadirectives.IServiceDirective"
+        handler="zope.app.component.metaconfigure.service"
+        />
+
+    <meta:complexDirective
+        name="content"
+        schema="zope.app.component.metadirectives.IClassDirective"
+        handler=".metaconfigure.ContentDirective"
+        >
+
+      <meta:subdirective
+          name="implements"
+          schema="zope.app.component.metadirectives.IImplementsSubdirective"
+          />
+
+      <meta:subdirective
+          name="require"
+          schema="zope.app.component.metadirectives.IRequireSubdirective"
+          />
+
+      <meta:subdirective
+          name="allow"
+          schema="zope.app.component.metadirectives.IAllowSubdirective"
+          />
+
+    </meta:complexDirective>
+
+    <meta:directive
+        name="vocabulary"
+        schema="zope.app.schema.metadirectives.IVocabularyDirective"
+        handler="zope.app.schema.metaconfigure.vocabulary"
+        />
+
+  </meta:directives>
+
+  <meta:directives namespace="http://namespaces.zope.org/browser">
+
+    <meta:directive
+       name="layer"
+       schema="zope.app.publisher.browser.metadirectives.ILayerDirective"
+       handler="zope.app.publisher.browser.metaconfigure.layer"
+       />
+
+     <meta:directive
+       name="skin"
+       schema="zope.app.publisher.browser.metadirectives.ISkinDirective"
+       handler="zope.app.publisher.browser.metaconfigure.skin"
+       />
+
+     <meta:directive
+       name="defaultSkin"
+       schema="zope.app.publisher.browser.metadirectives.IDefaultSkinDirective"
+       handler="zope.app.publisher.browser.metaconfigure.defaultSkin"
+       />
+
+    <meta:directive
+        name="defaultView"
+        schema="zope.app.publisher.browser.metadirectives.IDefaultViewDirective"
+        handler=".browserconfigure.defaultView"
+        />
+
+    <meta:directive
+        name="page"
+        schema="zope.app.publisher.browser.metadirectives.IPageDirective"
+        handler=".browserconfigure.page"
+        />
+
+    <meta:complexDirective
+        name="pages"
+        schema="zope.app.publisher.browser.metadirectives.IPagesDirective"
+        handler=".browserconfigure.pages"
+        >
+
+      <meta:subdirective
+          name="page"
+          schema="zope.app.publisher.browser.metadirectives.IPagesPageSubdirective"
+          />
+
+    </meta:complexDirective>
+
+    <meta:directive
+        name="resource"
+        schema="zope.app.publisher.browser.metadirectives.IResourceDirective"
+        handler=".browserconfigure.resource"
+        />
+
+    <meta:directive
+        name="resourceDirectory"
+        schema="zope.app.publisher.browser.metadirectives.IResourceDirectoryDirective"
+        handler=".browserconfigure.resourceDirectory"
+        />
+
+    <meta:directive
+        name="menu"
+        schema="zope.app.publisher.browser.metadirectives.IMenuDirective"
+        handler="zope.app.publisher.browser.globalbrowsermenuservice.menuDirective"
+        />
+
+    <meta:directive
+        name="menuItem"
+        schema="zope.app.publisher.browser.metadirectives.IMenuItemDirective"
+        handler="zope.app.publisher.browser.globalbrowsermenuservice.menuItemDirective"
+        />
+
+    <meta:complexDirective
+        name="menuItems"
+        schema="zope.app.publisher.browser.metadirectives.IMenuItemsDirective"
+        handler="zope.app.publisher.browser.globalbrowsermenuservice.menuItemsDirective"
+        >
+
+      <meta:subdirective
+          name="menuItem"
+          schema="zope.app.publisher.browser.metadirectives.IMenuItemSubdirective"
+          />
+
+    </meta:complexDirective>
+
+    <meta:complexDirective
+        name="view"
+        schema="zope.app.publisher.browser.metadirectives.IViewDirective"
+        handler=".browserconfigure.view"
+        >
+
+      <meta:subdirective
+          name="page"
+          schema="zope.app.publisher.browser.metadirectives.IViewPageSubdirective"
+          />
+
+      <meta:subdirective
+          name="defaultPage"
+          schema="zope.app.publisher.browser.metadirectives.IViewDefaultPageSubdirective"
+          />
+
+    </meta:complexDirective>
+
+    <meta:complexDirective
+        name="editform"
+        schema="zope.app.form.browser.metadirectives.IEditFormDirective"
+        handler=".browserconfigure.EditFormDirective"
+        >
+
+      <meta:subdirective
+          name="widget"
+          schema="zope.app.form.browser.metadirectives.IWidgetSubdirective"
+          />
+
+    </meta:complexDirective>
+
+    <meta:complexDirective
+        name="addform"
+        schema="zope.app.form.browser.metadirectives.IAddFormDirective"
+        handler=".browserconfigure.AddFormDirective"
+        >
+
+      <meta:subdirective
+          name="widget"
+          schema="zope.app.form.browser.metadirectives.IWidgetSubdirective"
+          />
+
+    </meta:complexDirective>
+
+  </meta:directives>
+
+
+  <meta:directives namespace="http://namespaces.zope.org/five">
+
+    <!-- specific to Five -->
+
+    <meta:directive
+       name="loadProducts"
+       schema="zope.interface.Interface"
+       handler=".fiveconfigure.loadProducts"
+       />
+
+    <meta:directive
+       name="loadProductsOverrides"
+       schema="zope.interface.Interface"
+       handler=".fiveconfigure.loadProductsOverrides"
+       />
+
+    <meta:directive
+       name="implements"
+       schema=".fivedirectives.IImplementsDirective"
+       handler=".fiveconfigure.implements"
+       />
+
+    <meta:directive
+       name="defaultViewable"
+       schema=".fivedirectives.IDefaultViewableDirective"
+       handler=".fiveconfigure.defaultViewable"
+       />
+
+    <meta:directive
+       name="traversable"
+       schema=".fivedirectives.ITraversableDirective"
+       handler=".fiveconfigure.traversable"
+       />
+
+    <meta:directive
+       name="sendEvents"
+       schema=".fivedirectives.ISendEventsDirective"
+       handler=".eventconfigure.sendEvents"
+       />
+
+    <meta:directive
+       name="sizable"
+       schema=".fivedirectives.ISendEventsDirective"
+       handler=".sizeconfigure.sizable"
+       />
+
+    <meta:directive
+        name="pagesFromDirectory"
+        schema=".fivedirectives.IPagesFromDirectoryDirective"
+        handler=".fiveconfigure.pagesFromDirectory"
+        />
+
+    <!-- viewable is deprecated, use traversable instead -->
+
+    <meta:directive
+       name="viewable"
+       schema=".fivedirectives.ITraversableDirective"
+       handler=".fiveconfigure.viewable"
+       />
+
+    <meta:directive
+       name="bridge"
+       schema=".fivedirectives.IBridgeDirective"
+       handler=".fiveconfigure.bridge"
+       />
+
+  </meta:directives>
+
+</configure>

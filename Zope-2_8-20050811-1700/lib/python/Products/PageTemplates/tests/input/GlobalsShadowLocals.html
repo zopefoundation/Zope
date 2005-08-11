@@ -1,0 +1,14 @@
+<html tal:define="global x python:1">
+<head></head>
+<body>
+  <div tal:define="x python:2">
+    <span tal:content="x">Should be 2 here!</span>
+  </div>
+  <div>
+    <span tal:content="x">Should be 1 here!</span>
+  </div>
+  <div tal:define="global x python:3">
+    <span tal:content="x">Should be 3 here!</span>
+  </div>
+</body>
+</html>

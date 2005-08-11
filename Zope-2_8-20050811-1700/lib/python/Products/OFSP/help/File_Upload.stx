@@ -1,0 +1,13 @@
+File/Image - Upload: File upload.
+  
+  Description
+
+    Use this view to completely replace the File or Image with an
+    uploaded file from your local computer.
+
+  Controls
+
+    'Data' -- The file to upload. Use the 'Browse...' button to select
+    a local file.
+
+    'Change' -- Uploads the file.

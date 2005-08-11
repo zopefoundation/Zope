@@ -1,0 +1,175 @@
+============
+Five Changes
+============
+
+Five 1.0.2 (2005-07-12)
+=======================
+
+This version is also included in Zope 2.8.1
+
+* Fixed some issues with bridged interfaces: Bases and Methods were not
+  bridged correctly. extends() was never True.
+
+* zope.security.checkPermission now behaves exactly like
+  Five.security.checkPermission (in fact, the former now calls the
+  latter through the indirection of Zope 3 security policies).
+
+* Fixed a bug with resource directories.  Resources within those were
+  not rendering their absolute URL correctly.
+
+Five 1.0.1 (2005-05-31)
+=======================
+
+This version is also included in Zope 2.8.0
+
+* Changed license headers to the ones used in the Zope.org repository.
+  This makes merging between the main development line of Five (hosted
+  on codespeak.net) and the version integrated into Zope 2.8 much
+  easier.  The actual copyright ownership isn't affected because Five
+  had been contributed to the Zope project anyway (which was blessed
+  by all Five contributors).
+
+* Made automatically generated add and edit forms unicode-aware.
+  ZPublisher does not automatically decode incoming form values to
+  unicode, so AddView and EditView emulate this behaviour themselves
+  now.  They also take care of setting the right charset on the
+  outgoing form so that ZPublisher will encode it accordingly when
+  sending the response to the client.  (In Zope 3, all charset
+  negotation between the client and the server takes place in the
+  publisher.)
+
+* Added ``IHTTPCharset`` adapter for ``IHTTPRequest`` so that
+  application can find out the preferred character set of the HTTP
+  client (Zope 2 applications needs to take care of their own charset
+  header).  The adapter is used for the automatically-generated forms
+  when determining encodings for unicode field content.
+
+* Modified edit.pt to make sure editforms have only one body tag.
+
+* Fixed the ``INameChooser`` adapter for ObjectManagers (e.g. Zope 2
+  folders) and added unit tests.
+
+* Fixed small bug in BrowserDefault which caused an error if the class is
+  defaultViewable but the object's interfaces have no defaultView.
+
+Five 1.0 (2005-04-27)
+=====================
+
+Features
+--------
+
+* Zope 3 style ``ISized`` adapters for objects are now exposed to the
+  ZMI and other Zope 2 frameworks via the known ``get_size`` method,
+  provided this is turned for the class in question via the
+  five:sizable ZCML directive.
+
+* There is now a standard standard_macros. Five page templates can use
+  context/@@standard_macros/view to get the default site layout, and
+  people can register their own standard_macros in a skin.
+
+* The addform and editform directive now supports the widget ZCML
+  subdirective, which previously was ignored.
+
+* Five now supports the vocabulary ZCML directive.
+
+Bugfixes
+--------
+
+* Add and edit forms are now protected properly.
+
+* The checkbox widget did not work correctly in its off state, this
+  has been fixed.
+
+Five 0.3 (2005-03-11)
+=====================
+
+* Five now uses the Zope 2 page template engine, not the Zope 3
+  engine. This allows better integration with Zope 2-based page
+  templates, such as macros.
+
+  It uses TrustedExecutables technology (thanks to Dieter Maurer) to
+  turn off Zope 2 security in page templates, so Five's security
+  behavior is very similar to what it was before.
+
+* Five now supports the browser:menu, menuItem and menuItems
+  directives.
+
+* A new Five-specific directive has been added:
+  five:pagesFromDirectory.  This adds one page for each .pt file in a
+  directory to the specified interface. This is useful for Five
+  integration with CMF and other systems that have Page Templates
+  macros that need to be shared between Zope2 and Five.
+
+* Five.security.checkPermission has been changed from a (unused)
+  method for checking the existence of permissions. Use
+  zope.app.security.permission.checkPermission if you need that
+  functionality.
+
+  Instead Five.security.checkPermission is now a Five version of
+  zope.security.checkPermission, which checks if the current user has
+  a permission on an object.
+
+* Support for browser:editform. You can now use schemas for editing.
+
+* Support for browser:addform; add forms using '+'. You can now browse
+  to 'container/+/addsomething.html' to get to a schema-driven add
+  form.
+
+* Fixed a traversal bug which caused Zope to give the wrong error when
+  a page could not be found (missing docstring instead of not
+  found). Zope 2.7.4 (or higher) is required for this fix.
+
+Five 0.2b (2004-09-24)
+======================
+
+* Added utility module, 'bridge', allowing reuse of Zope 2 interfaces
+  (by introspecting them to create equivalent Zope 3 interfaces).
+
+* five:viewable was renamed to five:traversable, five:viewable still
+  works but is deprecated; a deprecation warning is emitted when it is
+  used.
+
+* like in Zope3, an ITraverser adapter is looked up to determine what
+  happens when traversing into a Five traversable object.
+
+* added five:defaultViewable to make instances of a class directly
+  viewable using browser:defaultView. This is hookable by the use of a
+  IBrowserDefault adapter
+
+* deprecated use of Products.Five.api as public API for other products
+  to use, instead import directly from Products.Five. Retired
+  Traversable and Viewable from the public API; use ZCML directives
+  (five:traversable, five:defaultView) instead of mixins to make
+  instances of classes work with Five.
+
+* classes that Five monkeypatches now have a __five_method__
+  attribute, making it easier for Five not to stomp on existing methods.
+
+* registered absolute_url view and IAbsoluteURL adapter for *
+
+* zope.app.traversing is registered by default, to make special
+  namespaces available (eg: @@, ++resource++)
+
+* we now have resources (FileResource, ImageResource,
+  PageTemplateResource) and directory resources.
+
+* Zope 3 'StandardMacros' now works with Five as well.
+
+* browser:page now correctly handles the allow_attributes and protects
+  the named attributes on the view with the same permission used for
+  the view.
+
+* zopeconf.py will try to find etc/zope.conf on INSTANCE_HOME. This
+  requires Zope 2.7.2, as earlier Zope versions have a bug in this
+  area which causes them to look in lib/python/Testing.
+
+* Exposed the Zope 3 event system to Five. A class can be made to send
+  out event notifications using the five:sendEvents directive. Events can
+  be subscribed to using the subscriber directive.
+
+* Change in findProducts so that non-filesystem products are skipped.
+
+Five 0.1 (2004-07-30)
+=====================
+
+Initial public release (mainly Martijn's work)

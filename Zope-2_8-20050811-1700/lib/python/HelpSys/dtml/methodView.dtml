@@ -1,0 +1,16 @@
+<a name="&dtml-name;"></a>
+<h2 class="method">&dtml-name;(<dtml-in required>&dtml-sequence-item;<dtml-if sequence-end>
+<dtml-if optional>, </dtml-if>
+<dtml-else>,
+</dtml-if>
+</dtml-in>
+<dtml-in optional>
+&dtml-sequence-key;=&dtml-sequence-item;<dtml-unless sequence-end>, </dtml-unless>
+</dtml-in>
+<dtml-if varargs>, *&dtml-varargs;</dtml-if>
+<dtml-if kwargs>, **&dtml-kwargs;</dtml-if>):
+</h2>
+
+<dl><dd>
+<dtml-var doc fmt="structured-text">
+</dd></dl>

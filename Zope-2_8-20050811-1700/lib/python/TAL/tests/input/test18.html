@@ -1,0 +1,16 @@
+<p tal:omit-tag="">Content</p>
+<p tal:omit-tag=""></p>
+<img tal:omit-tag="">
+
+<p tal:omit-tag="string:Yes">Content</p>
+<p tal:omit-tag="string:Yes"></p>
+<img tal:omit-tag="string:Yes">
+
+<p tal:omit-tag="nothing">Content</p>
+<p tal:omit-tag="nothing"></p>
+<img tal:omit-tag="nothing">
+
+<p tal:define="txt string:Yes" tal:omit-tag="" tal:content="txt">No</p>
+<p tal:define="txt string:Yes" tal:omit-tag="" tal:replace="txt">No</p>
+<p tal:omit-tag="" tal:content="default">Yes</p>
+<p tal:omit-tag="" tal:replace="default">Yes</p>

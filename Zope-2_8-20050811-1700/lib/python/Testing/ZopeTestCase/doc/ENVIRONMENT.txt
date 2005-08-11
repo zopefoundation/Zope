@@ -1,0 +1,48 @@
+
+ZTC makes the following assumptions about its environment:
+
+a) The 'ZopeTestCase' package is installed in the Zope "trunk" inside the
+   'Testing' module, which means: SOFTWARE_HOME/Testing/ZopeTestCase.
+
+b) A 'Products' directory exists inside SOFTWARE_HOME and INSTANCE_HOME.
+
+c) The tests (the 'tests' subdirectories) are located either below a 
+   SOFTWARE_HOME or INSTANCE_HOME, typically in Products/MyCoolProduct/tests.
+
+d) The somewhat weak assumption is that ZTC can walk up the directory tree from
+   'tests', and find a 'Products' directory. This is how INSTANCE_HOME 
+   detection works. It regrettably fails on some filesystems when symbolic 
+   links are involved (a solution is detailed below, so hang on).
+
+
+The non-trivial part is that INSTANCE_HOME has two distinct purposes:
+
+    1) INSTANCE_HOME/lib/python must be added to sys.path and 
+       INSTANCE_HOME/Products to Products.__path__.
+
+    2) INSTANCE_HOME/custom_zodb.py must be used to set up a ZODB.
+
+
+ZTC attempts to resolve this by detecting an INSTANCE_HOME for 1) but leaving
+the actual environment variable untouched so 2) works by still pointing into 
+SOFTWARE_HOME/Testing.
+
+As soon as I allow you to set INSTANCE_HOME yourself, I lose the ability to 
+distinguish whether you mean 1) or 2) or both. 
+
+Before ZTC 0.6.2 the code assumed "both" and did the magic ZEO dance. This was
+clearly too surprising.
+
+The behaviour has now been changed to 1). 
+
+That way, if your setup does not fit c) or you run into the symbolic link 
+problem d), you can solve it by setting INSTANCE_HOME prior to running the 
+tests.
+
+ZEO support ("both") is handled separately, through the new environment 
+variable ZEO_INSTANCE_HOME.
+
+
+You may want to consider using a testrunner to run your tests. You can find one 
+here: http://zope.org/Members/shh/TestRunner
+

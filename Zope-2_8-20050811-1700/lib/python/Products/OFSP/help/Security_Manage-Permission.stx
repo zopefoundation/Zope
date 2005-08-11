@@ -1,0 +1,14 @@
+Folder - Manage Permission: Assign roles to a permission.
+
+  Description
+    
+    This view allows you to assign roles to a permission.
+
+  Controls
+
+    '[Role List]' -- The roles assigned to the permission.
+      
+    'Also use roles acquired from folders containing this object' --
+    Whether or not to acquire permissions settings for the permission.
+      
+    'Change' -- Changes the security settings.

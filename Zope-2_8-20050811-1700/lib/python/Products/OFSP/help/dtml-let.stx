@@ -1,0 +1,49 @@
+let: Defines DTML variables
+
+  The 'let' tag defines variables in the DTML namespace.
+
+  Syntax
+
+    'let' tag syntax::
+
+      <dtml-let [Name=Variable][Name="Expression"]...>
+      </dtml-let>
+
+    The 'let' tag is a block tag. Variables are defined by tag
+    arguments. Defined variables are pushed onto the DTML namespace
+    while the 'let' block is executed.  Variables are defined by
+    attributes. The 'let' tag can have one or more attributes with
+    arbitrary names. If the attributes are defined with double quotes
+    they are considered expressions, otherwise they are looked up by
+    name.  Attributes are processed in order, so later attributes can
+    reference, and/or overwrite earlier ones.
+
+  Examples
+
+   Basic usage::
+
+    <dtml-let name="'Bob'" ids=objectIds>
+      name: <dtml-var name>
+      ids: <dtml-var ids>
+    </dtml-let>
+    
+   Using the 'let' tag with the 'in' tag::
+
+     <dtml-in expr="(1,2,3,4)">
+       <dtml-let num=sequence-item
+                 index=sequence-index
+                 result="num*index">
+         <dtml-var num> * <dtml-var index> = <dtml-var result>
+       </dtml-let>
+     </dtml-in>
+
+   This yields::
+
+      1 * 0 = 0
+      2 * 1 = 2
+      3 * 2 = 6
+      4 * 3 = 12
+
+  See Also
+
+    "with tag":dtml-with.stx

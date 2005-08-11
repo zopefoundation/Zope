@@ -1,0 +1,77 @@
+he purpose of a PathIndex is to index Zope objects
+based on their physical path. This is very similiar
+to a substring search on strings.
+ 
+ How it works
+ 
+   Assume we have to index an object with id=xxx and
+   the physical path '/zoo/animals/africa/tiger.doc'.
+ 
+   We split the path into its components and keep track
+   of the level of every component. Inside the index we
+   store pairs(component,level) and the ids of the
+   documents::
+ 
+        (component,level)     id of document
+        -----------------------------------------
+ 
+           ('zoo',0)           xxx
+           ('animals',1)       xxx
+           ('africa',2)        xxx
+ 
+ 
+   Note that we do not store the id of the objects itself
+   inside the path index.
+ 
+ 
+  Searching with the PathIndex
+ 
+   The PathIndex allows you to search for all object ids
+   whose objects match a physical path query. The query
+   is split into components and matched against the index.
+   E.g. '/zoo/animals' will match in the example above
+   but not '/zoo1/animals'. The default behaviour is to
+   start matching at level 0. To start matching on another
+   level on can specify an additional level parameter
+   (see API)
+
+  API
+ 
+   'query' -- A single or list of Path component(s) to 
+   be searched.
+
+   'level' -- level to start searching (optional,default: 0). 
+   If level=-1 we search through all levels.
+ 
+   'operator' -- either 'or' or 'and' (optional, default: 'or')
+ 
+  Example
+ 
+    Objects with the following ids and physical path should
+    be stored in the ZCatalog 'MyCAT'::
+ 
+ 
+       id         physical path
+     ----------------------------
+ 
+       1          /aa/bb/aa/1.txt
+       2          /aa/bb/bb/2.txt
+       3          /aa/bb/cc/3.txt
+       4          /bb/bb/aa/4.txt
+       5          /bb/bb/bb/5.txt
+       6          /bb/bb/cc/6.txt
+       7          /cc/bb/aa/7.txt
+       8          /cc/bb/bb/8.txt
+       9          /cc/bb/cc/9.txt
+ 
+ 
+ 
+     Query                        found ids
+     -------------------------------------------
+ 
+     query='/aa/bb',level=0        [1,2,3]
+     query='/bb/bb',level=0        [4,5,6]
+     query='/bb/bb',level=1        [2,5,8]
+     query='/bb/bb',level=-1       [2,4,5,6,8]
+     query='/xx'   ,level=-1       []
+

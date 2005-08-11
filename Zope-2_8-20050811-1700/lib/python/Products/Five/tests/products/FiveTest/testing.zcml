@@ -1,0 +1,10 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+	   xmlns:five="http://namespaces.zope.org/five">
+
+  <redefinePermission from="zope2.Public" to="zope.Public" />
+
+  <include file="meta.zcml" />
+  <include file="configure.zcml" />
+  <includeOverrides file="overrides.zcml" />
+
+</configure>

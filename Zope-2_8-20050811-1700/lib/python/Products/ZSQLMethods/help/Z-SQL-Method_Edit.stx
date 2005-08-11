@@ -1,0 +1,44 @@
+Z SQL Method - Edit: Change attributes of a SQL method
+  
+    Description
+
+        This view allows you to edit the attributes of a SQL method.
+  
+Controls
+
+    'ID' -- Specifies the id of the sql method.
+
+    'Title' -- Specifies the title of the sql method. 
+
+    'Connection id' -- Select list that specifies the database
+      connection on which the sql method operates.
+
+      **Note:** If you change the ID of your DB Connection object, all
+      the Z SQL Methods using this connection object will *NOT* be
+      updated. You have to update all Methods one by one.
+
+    'Arguments' -- Allows you to specify a list of arguments that the sql 
+      method takes. The arguments should be separated by spaces or
+      a newline in the field. Furthermore, you can specify the 
+      type of the argument as well as a default 
+      value.
+
+      **Example:** 'title:string="No title!"', where 'title' is the
+      attribute, 'string' is the type of the attribute, and '"No
+      title!"' is the default value.
+
+    'Query template' -- 
+
+      Text area that specifies the SQL query that will execute when
+      this method is called.  The query template can contain DTML
+      markup to tailor the SQL statement to the arguments.  There are
+      three additional DTML tags called 'SQLVAR', 'SQLTEST', and
+      'SQLGROUP'. Please refer to their references get more details on
+      how to use them in your SQL statement.
+
+      **Note:** the SQL statement need not be a 'SELECT' query, it may
+      be any valid SQL statement including an INSERT or UPDATE.
+
+      **Important:** You can have several SQL statements in one ZSQL
+      Method.
+

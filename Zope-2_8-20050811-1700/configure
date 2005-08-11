@@ -1,0 +1,208 @@
+#!/bin/sh
+
+# Zope configure script
+# $Id$
+
+#####################################################################
+#                    BEGIN EDITABLE PARAMETERS                      #
+#####################################################################
+
+# Place the Zope major version number below.
+ZOPE_VERS=2.8
+
+# Place the optimal target version number for Zope (as returned by sys.version)
+# below
+TARGET="2.3.5"
+
+# Order a list of "acceptable" python version numbers (as returned by
+# sys.version) below in "best" to "worst" order, not including the
+# target version.  Up to six acceptable python versions are allowed.
+# Do not include the target version number in this list!
+ACCEPTABLE=""
+
+# provide the executable names for all the acceptable versions
+# (and the target version) below
+EXENAMES="python python2 python2.3"
+
+#####################################################################
+#                    END EDITABLE PARAMETERS                        #
+#####################################################################
+
+# where are we?
+HERE=`dirname $0`
+
+# should we be quiet?
+QUIET=""
+
+usage()
+{
+    echo
+    echo "configure [--help] [--quiet] [--with-python=path] [--prefix=path] "
+    echo "          [--build-base=path] [--ignore-largefile] [--ignore-zlib]"
+    echo "          [--optimize]"
+    echo
+    echo " Creates a Makefile suitable for building and installing Zope"
+    echo
+    echo " Options: "
+    echo "  --help              shows usage and quits"
+    echo "  --quiet             suppress nonessential output"
+    echo "  --with-python       specify a path to a Python interpreter to use"
+    echo "  --prefix            specify an installation path for binary data"
+    echo "  --build-base        specify a temporary path for build files"
+    echo "  --ignore-largefile  ignore large file support warnings"
+    echo "  --ignore-expat      ignore warnings about expat/pyexpat"
+    echo "  --ignore-zlib       ignore warnings about zlib"
+    echo "  --optimize          optimize compiled Python bytecode"
+    echo "  --no-compile        Dont compile Python bytecode"
+    echo
+    echo " Given no options, configure will search your PATH for a suitable"
+    echo " Python interpreter and will use '/opt/Zope-$ZOPE_VERS' as a prefix."
+    echo
+}
+
+# bootstrap ourselves by finding a Python interpreter if necessary
+get_python() {
+    OLDIFS="$IFS"
+    IFS=":"
+    FOUND=""
+    VERSION=""
+    FOUNDLIST=""
+    out "Testing for an acceptable Python interpreter..."
+    out ""
+    for DIR in $PATH; do
+        IFS="$OLDIFS"
+        for EXECUTABLE in $EXENAMES; do
+            FULL="$DIR/$EXECUTABLE"
+            if [ -x "$FULL" -a ! -d "$FULL" ]; then
+                CMD="import string,sys;a=string.split(sys.version)[0]"
+		# Strip trailing + from version number
+		CMD="$CMD;a=(a[-1]=='+')and(a[:-1])or(a);print a"
+                VERSION=`"$FULL" -c "$CMD"`
+                out "  Python version $VERSION found at $FULL"
+                if [ "$VERSION" = "$TARGET" ]; then
+                    FOUND="$FULL"
+                    FOUNDVERSION=$VERSION
+                    break 2
+                else
+                    i=1;
+                    for ACC in $ACCEPTABLE; do
+                        i=`expr $i + 1`
+			for SLOT in $FOUNDLIST; do
+                            if [ $SLOT -eq $i ]; then
+                                # slot "i" already populated.  This means we've
+                                # already found this particular version of
+                                # python.  Continue the for ACC in 
+                                # $ACCEPTABLE loop and don't overwrite the
+                                # one we already found (interpreters first
+                                # on the path win).
+                                continue 2
+                            fi
+                        done
+                        if [ "$VERSION" = "$ACC" ]; then
+                            FOUNDLIST="$FOUNDLIST $i"
+                            eval "FOUND$i=$FULL"
+                            eval "FOUNDVERSION$i=$VERSION"
+                        fi
+                    done
+                fi
+            fi
+        done
+    done
+    if [ "$VERSION" = "$TARGET" ]; then
+        out ""
+        out "  The optimum Python version ($TARGET) was found at $FOUND."
+    elif [ -z "$FOUND1" ] && [ -z "$FOUND2" ] && [ -z "$FOUND3" ] &&
+         [ -z "$FOUND4" ] && [ -z "$FOUND5" ] && [ -z "$FOUND6" ] ; then
+        out ""
+        out "  No suitable Python version found.  You should install"
+        out "  Python version $TARGET before continuing."
+        if [ "$ACCEPTABLE" ]; then
+            out "  Versions $ACCEPTABLE also work, but not as optimally."
+        fi
+        exit 1
+    else
+        if   [ -n "$FOUND1" ]; then
+            FOUND=$FOUND1
+            FOUNDVERSION=$FOUNDVERSION1
+        elif [ -n "$FOUND2" ]; then
+            FOUND=$FOUND2
+            FOUNDVERSION=$FOUNDVERSION2
+        elif [ -n "$FOUND3" ]; then
+            FOUND=$FOUND3
+            FOUNDVERSION=$FOUNDVERSION3
+        elif [ -n "$FOUND4" ]; then
+            FOUND=$FOUND4
+            FOUNDVERSION=$FOUNDVERSION4
+        elif [ -n "$FOUND5" ]; then
+            FOUND=$FOUND5
+            FOUNDVERSION=$FOUNDVERSION5
+        elif [ -n "$FOUND6" ]; then
+            FOUND=$FOUND6
+            FOUNDVERSION=$FOUNDVERSION6
+        fi
+        out ""
+        out "  !! WARNING !! "
+        out "  An acceptable, but non-optimal Python version ($FOUNDVERSION) "
+        out "  was found at '$FOUND'."
+        out "  But consider installing version '$TARGET' before running "
+        out "  'make'.  If this isn't the Python version or interpreter "
+        out "  instance you wish to use, you may specify a Python interpreter"
+        out "  manually by rerunning the ./configure script with the "
+        out "  '--with-python' option."
+    fi
+    out ""
+}
+
+out() {
+    
+    if [ -z "$QUIET" ]; then
+        echo $1
+    fi
+}
+
+NEWOPTS=""
+
+for OPT in $@; do
+    case "$OPT" in
+    --h* | -h*)
+        usage
+        exit 0
+        ;;
+    --with-python=*)
+        # pop this argument from the arglist, it is not valid to
+        # pass this along to the Python configurator.
+        shift;
+        FOUND=`echo $OPT | sed -e 's/--with-python\=//'`
+        # use eval to do tilde expansion below
+        eval "FOUND='$FOUND'"
+        out ""
+        out "Using Python interpreter at $FOUND"
+        ;;
+    --with-python)
+	# in case someone passed in a --with-python without a value,
+        # we raise an error instead of passing it along to configure.py
+        # (which would raise an inscrutable error were it to receive this
+        # option).
+        out "--with-python argument requires an option"
+	exit 1
+        ;;
+    --quiet* | -q*)
+        QUIET="true"
+        NEWOPTS="$NEWOPTS $OPT"
+        ;;
+    *)
+        NEWOPTS="$NEWOPTS $OPT"
+        ;;
+    esac
+done
+
+out ""
+out "Configuring Zope installation"
+out ""
+
+if [ -z "$FOUND" ]; then
+    get_python
+fi
+
+# run the Python configurator
+"$FOUND" "$HERE/inst/configure.py" $NEWOPTS

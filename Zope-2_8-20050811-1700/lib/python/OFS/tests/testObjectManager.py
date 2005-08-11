@@ -1,0 +1,312 @@
+import unittest
+
+from App.config import getConfiguration
+from Acquisition import Implicit, aq_base, aq_parent
+from AccessControl.SecurityManagement import newSecurityManager
+from AccessControl.SecurityManagement import noSecurityManager
+from AccessControl.User import User
+from AccessControl.SpecialUsers import emergency_user, nobody, system
+from AccessControl.Owned import EmergencyUserCannotOwn, Owned
+from OFS.ObjectManager import ObjectManager
+from OFS.SimpleItem import SimpleItem
+
+class FauxRoot( Implicit ):
+
+    id = '/'
+
+    def getPhysicalRoot( self ):
+        return self
+
+    def getPhysicalPath( self ):
+        return ()
+
+class FauxUser( Implicit ):
+
+    def __init__( self, id, login ):
+
+        self._id = id
+        self._login = login
+
+    def getId( self ):
+
+        return self._id
+
+class DeleteFailed(Exception):
+    pass
+
+class ItemForDeletion(SimpleItem):
+
+    def __init__(self, fail_on_delete=False):
+        self.id = 'stuff'
+        self.before_delete_called = False
+        self.fail_on_delete = fail_on_delete
+
+    def manage_beforeDelete(self, item, container):
+        self.before_delete_called = True
+        if self.fail_on_delete:
+            raise DeleteFailed
+        return SimpleItem.manage_beforeDelete(self, item, container)
+
+
+class ObjectManagerTests( unittest.TestCase ):
+
+    def setUp(self):
+        self.saved_cfg_debug_mode = getConfiguration().debug_mode
+
+    def tearDown( self ):
+        noSecurityManager()
+        getConfiguration().debug_mode = self.saved_cfg_debug_mode
+
+    def setDebugMode(self, mode):
+        getConfiguration().debug_mode = mode
+
+    def _getTargetClass( self ):
+
+        from OFS.ObjectManager import ObjectManager
+
+        return ObjectManager
+
+    def _makeOne( self, *args, **kw ):
+
+        return self._getTargetClass()( *args, **kw ).__of__( FauxRoot() )
+
+    def test_setObject_set_owner_with_no_user( self ):
+
+        om = self._makeOne()
+
+        newSecurityManager( None, None )
+
+        si = SimpleItem( 'no_user' )
+
+        om._setObject( 'no_user', si )
+
+        self.assertEqual( si.__ac_local_roles__, None )
+
+    def test_setObject_set_owner_with_emergency_user( self ):
+
+        om = self._makeOne()
+
+        newSecurityManager( None, emergency_user )
+
+        si = SimpleItem( 'should_fail' )
+
+        self.assertEqual( si.__ac_local_roles__, None )
+
+        self.assertRaises( EmergencyUserCannotOwn
+                         , om._setObject, 'should_fail', si )
+
+    def test_setObject_set_owner_with_system_user( self ):
+
+        om = self._makeOne()
+
+        newSecurityManager( None, system )
+
+        si = SimpleItem( 'system' )
+
+        self.assertEqual( si.__ac_local_roles__, None )
+
+        om._setObject( 'system', si )
+
+        self.assertEqual( si.__ac_local_roles__, None )
+
+    def test_setObject_set_owner_with_anonymous_user( self ):
+
+        om = self._makeOne()
+
+        newSecurityManager( None, nobody )
+
+        si = SimpleItem( 'anon' )
+
+        self.assertEqual( si.__ac_local_roles__, None )
+
+        om._setObject( 'anon', si )
+
+        self.assertEqual( si.__ac_local_roles__, None )
+
+    def test_setObject_set_owner_with_user( self ):
+
+        om = self._makeOne()
+
+        user = User( 'user', '123', (), () ).__of__( FauxRoot() )
+
+        newSecurityManager( None, user )
+
+        si = SimpleItem( 'user_creation' )
+
+        self.assertEqual( si.__ac_local_roles__, None )
+
+        om._setObject( 'user_creation', si )
+
+        self.assertEqual( si.__ac_local_roles__, { 'user': ['Owner'] } )
+
+    def test_setObject_set_owner_with_faux_user( self ):
+
+        om = self._makeOne()
+
+        user = FauxUser( 'user_id', 'user_login' ).__of__( FauxRoot() )
+
+        newSecurityManager( None, user )
+
+        si = SimpleItem( 'faux_creation' )
+
+        self.assertEqual( si.__ac_local_roles__, None )
+
+        om._setObject( 'faux_creation', si )
+
+        self.assertEqual( si.__ac_local_roles__, { 'user_id': ['Owner'] } )
+
+    def test_setObject_no_set_owner_with_no_user( self ):
+
+        om = self._makeOne()
+
+        newSecurityManager( None, None )
+
+        si = SimpleItem( 'should_be_okay' )
+
+        self.assertEqual( si.__ac_local_roles__, None )
+
+        om._setObject( 'should_be_okay', si, set_owner=0 )
+
+        self.assertEqual( si.__ac_local_roles__, None )
+
+    def test_setObject_no_set_owner_with_emergency_user( self ):
+
+        om = self._makeOne()
+
+        newSecurityManager( None, emergency_user )
+
+        si = SimpleItem( 'should_be_okay' )
+
+        self.assertEqual( si.__ac_local_roles__, None )
+
+        om._setObject( 'should_be_okay', si, set_owner=0 )
+
+        self.assertEqual( si.__ac_local_roles__, None )
+
+    def test_setObject_no_set_owner_with_system_user( self ):
+
+        om = self._makeOne()
+
+        newSecurityManager( None, system )
+
+        si = SimpleItem( 'should_be_okay' )
+
+        self.assertEqual( si.__ac_local_roles__, None )
+
+        om._setObject( 'should_be_okay', si, set_owner=0 )
+
+        self.assertEqual( si.__ac_local_roles__, None )
+
+    def test_setObject_no_set_owner_with_anonymous_user( self ):
+
+        om = self._makeOne()
+
+        newSecurityManager( None, nobody )
+
+        si = SimpleItem( 'should_be_okay' )
+
+        self.assertEqual( si.__ac_local_roles__, None )
+
+        om._setObject( 'should_be_okay', si, set_owner=0 )
+
+        self.assertEqual( si.__ac_local_roles__, None )
+
+    def test_setObject_no_set_owner_with_user( self ):
+
+        om = self._makeOne()
+
+        user = User( 'user', '123', (), () ).__of__( FauxRoot() )
+
+        newSecurityManager( None, user )
+
+        si = SimpleItem( 'should_be_okay' )
+
+        self.assertEqual( si.__ac_local_roles__, None )
+
+        om._setObject( 'should_be_okay', si, set_owner=0 )
+
+        self.assertEqual( si.__ac_local_roles__, None )
+
+    def test_setObject_no_set_owner_with_faux_user( self ):
+
+        om = self._makeOne()
+
+        user = FauxUser( 'user_id', 'user_login' ).__of__( FauxRoot() )
+
+        newSecurityManager( None, user )
+
+        si = SimpleItem( 'should_be_okay' )
+
+        self.assertEqual( si.__ac_local_roles__, None )
+
+        om._setObject( 'should_be_okay', si, set_owner=0 )
+
+        self.assertEqual( si.__ac_local_roles__, None )
+
+    def test_delObject_before_delete(self):
+        # Test that manage_beforeDelete is called
+        om = self._makeOne()
+        ob = ItemForDeletion()
+        om._setObject(ob.getId(), ob)
+        self.assertEqual(ob.before_delete_called, False)
+        om._delObject(ob.getId())
+        self.assertEqual(ob.before_delete_called, True)
+
+    def test_delObject_exception_manager(self):
+        # Test exception behavior in manage_beforeDelete
+        # Manager user
+        self.setDebugMode(False)
+        newSecurityManager(None, system) # Manager
+        om = self._makeOne()
+        ob = ItemForDeletion(fail_on_delete=True)
+        om._setObject(ob.getId(), ob)
+        om._delObject(ob.getId())
+
+    def test_delObject_exception(self):
+        # Test exception behavior in manage_beforeDelete
+        # non-Manager user
+        self.setDebugMode(False)
+        om = self._makeOne()
+        ob = ItemForDeletion(fail_on_delete=True)
+        om._setObject(ob.getId(), ob)
+        om._delObject(ob.getId())
+
+    def test_delObject_exception_debug_manager(self):
+        # Test exception behavior in manage_beforeDelete in debug mode
+        # Manager user
+        self.setDebugMode(True)
+        newSecurityManager(None, system) # Manager
+        om = self._makeOne()
+        ob = ItemForDeletion(fail_on_delete=True)
+        om._setObject(ob.getId(), ob)
+        om._delObject(ob.getId())
+
+    def test_delObject_exception_debug(self):
+        # Test exception behavior in manage_beforeDelete in debug mode
+        # non-Manager user
+        # It's the only special case: we let exceptions propagate.
+        self.setDebugMode(True)
+        om = self._makeOne()
+        ob = ItemForDeletion(fail_on_delete=True)
+        om._setObject(ob.getId(), ob)
+        self.assertRaises(DeleteFailed, om._delObject, ob.getId())
+
+    def test_delObject_exception_debug_deep(self):
+        # Test exception behavior in manage_beforeDelete in debug mode
+        # non-Manager user
+        # Test for deep subobjects.
+        self.setDebugMode(True)
+        om1 = self._makeOne()
+        om2 = self._makeOne()
+        ob = ItemForDeletion(fail_on_delete=True)
+        om1._setObject('om2', om2, set_owner=False)
+        om2._setObject(ob.getId(), ob)
+        self.assertRaises(DeleteFailed, om1._delObject, 'om2')
+
+def test_suite():
+    suite = unittest.TestSuite()
+    suite.addTest( unittest.makeSuite( ObjectManagerTests ) )
+    return suite
+
+if __name__ == "__main__":
+    unittest.main()

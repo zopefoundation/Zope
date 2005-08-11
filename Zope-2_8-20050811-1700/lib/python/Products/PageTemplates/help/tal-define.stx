@@ -1,0 +1,46 @@
+define: Define variables
+
+  Syntax
+
+    'tal:define' syntax::
+
+      argument       ::= define_scope [';' define_scope]*
+      define_scope   ::= (['local'] | 'global') define_var
+      define_var     ::= variable_name expression
+      variable_name  ::= Name
+
+    *Note: If you want to include a semi-colon (;) in an 'expression',
+    it must be escaped by doubling it (;;).*
+
+  Description
+
+    The 'tal:define' statement defines variables.  You can define two
+    different kinds of TAL variables: local and global.  When you
+    define a local variable in a statement element, you can only use
+    that variable in that element and the elements it contains.  If
+    you redefine a local variable in a contained element, the new
+    definition hides the outer element's definition within the inner
+    element.  When you define a global variables, you can use it in
+    any element processed after the defining element.  If you redefine
+    a global variable, you replace its definition for the rest of the
+    template.
+
+    *Note: local variables are the default*
+
+    If the expression associated with a variable evaluates to
+    *nothing*, then that variable has the value *nothing*, and may be
+    used as such in further expressions. Likewise, if the expression
+    evaluates to *default*, then the variable has the value *default*,
+    and may be used as such in further expressions.
+
+  Examples
+
+    Defining a global variable::
+
+      tal:define="global company_name string:Zope Corp, Inc."
+
+    Defining two variables, where the second depends on the first::
+
+      tal:define="mytitle template/title; tlen python:len(mytitle)"
+
+

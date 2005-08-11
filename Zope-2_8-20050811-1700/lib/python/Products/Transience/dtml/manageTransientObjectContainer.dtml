@@ -1,0 +1,150 @@
+<dtml-var manage_page_header>
+<dtml-var "manage_tabs(this(), _,
+           form_title='Change Transient Object Container',
+           help_product='Transience',
+           help_topic='Transience-change.stx'
+	   )">
+
+<form action="manage_changeTransientObjectContainer" method="post">
+
+<p class="form-help">
+Transient Object Containers are used to store transient data.
+Transient data will persist, but only for a user-specified period of time
+(the "data object timeout") after which it will be flushed.
+</p>
+
+<dtml-call housekeep><!-- turn the buckets if necessary -->
+
+<p class="form-label">
+<font color="green">
+<dtml-let l=getLen>
+<dtml-if l>
+  <dtml-if "l == 1">1 item is in this transient object container.
+  <dtml-else>&dtml-l; items are in this transient object container.
+  </dtml-if>
+<dtml-else>
+  There are no items in this transient object container.
+</dtml-if>
+</dtml-let>
+</font>
+</p>
+
+
+<table cellspacing="2">
+<tr>
+  <td align="left" valign="top">
+    <div class="form-label">
+      Title
+    </div>
+  </td>
+  <td align="left" valign="top">
+    <input type="text" name="title" size=30 value="&dtml-title;">
+  </td>
+</tr>
+<tr>
+  <td align="left" valign="top">
+    <div class="form-label">
+     Data object timeout value (in minutes)
+    </div>
+    <div class="form-help">
+      ("0" means no expiration)
+    </div>
+  </td>
+  <td align="left" valign="top">
+    <input type="text" name="timeout_mins:int" size=10
+     value=&dtml-getTimeoutMinutes;>
+  </td>
+</tr>
+
+<tr>
+  <td align="left" valign="top">
+    <div class="form-label">
+     Timeout resolution (in seconds)
+    </div>
+    <div class="form-help">
+      Defines what the "resolution" of item timeout is. Setting this higher
+      allows the transience machinery to do fewer "writes" at the expense of
+      causing items to time out later than the "Data object timeout value" by
+      a factor of (at most) this many seconds.  This number must divide evenly
+      into the number of timeout seconds ("Data object timeout value" * 60)
+      and cannot be set higher than the timeout value in seconds.
+    </div>
+  </td>
+  <td align="left" valign="top">
+    <input type="text" name="period_secs:int" size=10
+     value=&dtml-getPeriodSeconds;>
+  </td>
+</tr>
+
+<tr>
+  <td align="left" valign="top">
+    <div class="form-label">
+     Maximum number of subobjects
+    </div>
+    <div class="form-help">
+      ("0" means infinite)
+    </div>
+  </td>
+  <td align="left" valign="top">
+    <input type="text" name="limit:int" size=10
+     value=&dtml-getSubobjectLimit;>
+  </td>
+</tr>
+
+<tr>
+  <td align="left" valign="top">
+    <div class="form-label">
+      Script to call when objects are added
+    </div>
+    <div class="form-help">
+      (e.g. "/somefolder/addScript")
+    </div>
+  </td>
+  <td align="left" valign="top">
+     <input type="text" name="addNotification"
+     	value="&dtml-getAddNotificationTarget;" size=40>
+  </td>
+</tr>
+
+<tr>
+  <td align="left" valign="top">
+    <div class="form-label">
+      Script to call when objects are deleted
+    </div>
+    <div class="form-help">
+      (e.g. "/somefolder/delScript")
+    </div>
+  </td>
+  <td align="left" valign="top">
+     <input type="text" name="delNotification"
+     	value="&dtml-getDelNotificationTarget;" size=40>
+  </td>
+</tr>
+
+<dtml-let l=getLen>
+<dtml-if l>
+<tr>
+<td colspan=2>
+<br/>
+<p class="form-label">
+<font color="red">WARNING!</font>
+All data objects existing in this transient object container
+will be deleted when the data object timeout or expiration resolution
+is changed.
+</p>
+</tr>
+</td>
+</dtml-if>
+</dtml-let>
+
+<tr>
+  <td></td>
+  <td>
+  <input class="form-element" type="submit" name="submit" value=" Change ">
+  </td>
+</tr>
+</table>
+</form>
+
+
+<dtml-var manage_page_footer>

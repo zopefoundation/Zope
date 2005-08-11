@@ -1,0 +1,114 @@
+Page Template history
+
+  This file contains change information for previous versions of
+  PageTemplates. Change information for the current release can be found
+  in the file CHANGES.txt.
+
+    Version 1.4.1
+
+      Bugs Fixed
+
+        - Tracebacks were often truncated.
+
+        - __bobo_traverse__ objects, such as the root, triggered
+          security incorrectly when traversed.
+
+        - If a PageTemplate was owned by a missing user, or one with
+          insufficient permissions, the editing form broke.
+
+        - PageTemplateFiles didn't bind 'user'.
+
+        - There was no help.
+
+    Version 1.4.0
+
+      Features Added
+
+        - ZPTs are now cache-enabled
+
+        - Added property sheet to ZPT
+
+      Bugs Fixed
+
+        - Expressions with embedded newlines were broken
+
+        - History comparison tried to expand macros
+
+        - Iterator exceptions weren't converted
+
+        - 'Unauthorized' exception couldn't be handled by on-error
+
+    Version 1.3.3
+
+      Features Added
+
+        - Allow any false value in tal:repeat to act as an empty sequence.
+        - manage_addPageTemplate accepts optional title and text
+          arguments, and returns the new object if REQUEST is None.
+
+      Bugs Fixed
+
+        - The various *Python modules failed to import CompilerError.
+        - Security machinery changes in Zope 2.4 broke ZRPythonExpr
+
+    Version 1.3.2
+
+      Features Added
+
+        - Adopted Zope-style CHANGES.txt and HISTORY.txt
+        - Improved execution performance
+        - nocall: paths are back in.
+
+      Bugs Fixed
+
+        - TALES expressions let any string exception through, not just
+          Redirect and Unauthorized.
+
+    Version 1.3.1
+
+      Features Added
+
+        - Added error logging to PageTemplateFiles.
+        - Refactored PythonExpr, and added support for Zope 2.4
+
+    Version 1.3.0
+
+      Features Added
+
+        - New builtin variables 'default', 'user', and 'attrs'.
+        - Removed path modifiers.
+        - Added '|' operator for paths.
+        - Tweaked parameters passed when calling DTML.
+        - Expression types now have corresponding builtin functions in
+          Python expressions.
+
+    Version 1.2.1
+
+      Bug Fixed
+
+        - 'repeat' variable access was broken.
+
+    Version 1.2.0
+
+      Features Added
+
+        - Depends on the new ZTUtils package, which adds batching and
+          tree widget capabilities.
+        - Path expressions now have optional path modifiers.  These
+          appear in parenthesis before the path, and include 'if',
+          'exists', and 'nocall'.
+        - Changed nocall: and exists: expressions types into path modifiers.
+        - The 'if' path modifier can cancel any TAL action.
+
+    Version 1.1.0
+
+      Features Added
+        - Changed tests to match TAL's omitted attributes.
+
+    Version 1.0.0
+
+        - Various minor bugs fixed
+
+    Version 1.0.0b1
+
+	- All functionality described in the Project Wiki is implemented

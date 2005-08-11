@@ -1,0 +1,10 @@
+Folder - Container object.
+  
+  Description
+
+    Folders allow you to organize Zope objects by grouping them together
+    inside Folders. Folder contain other Zope objects including other
+    Folders.
+
+    Folders behave like directories in a filesystem.
+

@@ -1,0 +1,63 @@
+<dtml-var manage_page_header>
+<dtml-with "_(management_view='Subobjects')">
+<dtml-var manage_tabs>
+</dtml-with>
+
+<form action="manage_edit" method="post">
+<table cellspacing="0" cellpadding="2" border="0">
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-label">
+    
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <input type="text" name="id" size="40" />
+    </td>
+  </tr>
+
+<table>
+<tr>
+  <td align="left" valign="top">
+    <div class="form-label">
+    Select the kinds of things<br>
+    that can be added to objects<br>
+    of this kind:
+    </div>
+  </td>
+  <td>
+    <div class="form-element">
+    <select name="meta_types:list" size=10 multiple>
+      <dtml-with "_(selected=selected_meta_types())">
+       <dtml-in possible_meta_types mapping>
+          <option
+            <dtml-if "name in selected">selected</dtml-if>
+          >&dtml-name;</option>
+       </dtml-in>
+      </dtml-with>
+    </select>
+    </div>
+  </td>
+</tr>
+<tr><td colspan=2>
+  <div class="form-label">
+  Objects should appear in folder lists?
+    <input type=checkbox name=isFolderish value="Y"
+      <dtml-if isFolderish>CHECKED</dtml-if>
+    >
+  </div>
+  </td>
+</tr>
+<tr>
+  <td align="left" valign="top" colspan="2">
+  <div class="form-element">
+  <input class="form-element" type="submit" name="submit" 
+   value="Save Changes" />
+  </div>
+  </td>
+</tr>
+</table>
+</form>
+
+<dtml-var manage_page_footer>
+

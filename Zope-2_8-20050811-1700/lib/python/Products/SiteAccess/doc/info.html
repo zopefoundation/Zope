@@ -1,0 +1,33 @@
+<dtml-comment>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+ <HEAD> <TITLE>All about SiteAccess</TITLE> </HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#000066" VLINK="#606060" TOPMARGIN="0" LEFTMARGIN="0" MARGINWIDTH="0" MARGINHEIGHT="0">
+</dtml-comment>
+<dtml-var doc_header>
+
+<h4>Basics</h4>
+<p>
+SiteAccess started as a Product to enable Zope Virtual Hosting, then became more
+generalized. Virtual Hosting is the ability to publish sub-objects of a Zope hierarchy
+as though they were the root of their own site.  For example, it allows
+'http:/www.silly-walks.org/current' to publish the Zope object 'silly-walks/current'
+instead of just 'current'.
+</p>
+<h4>Usage</h4>
+See:<ul>
+<li><a href="http://www.zope.org/Members/4am/SiteAccess2/vhosting">Virtual Site Hosting</a></li>
+<li><a href="http://www.zope.org/Members/4am/SiteAccess2/otheruse">Other Uses of Access Rules</a></li>
+</ul>
+<h4>What does SiteAccess do?</h4>
+<p>
+SiteAccess provides the ability to force ZPublisher to call objects
+of your choice as it enters any folder.  With this capability, you can designate a method
+in the Zope root to examine the request parameters and alter or replace the URL. 
+</p>
+<p>If an Access Rule is broken, and is preventing normal access, it can be disabled by
+restarting Zope with environment variable SUPPRESS_ACCESSRULE set.</p>
+<dtml-var doc_footer>
+<dtml-comment>
+</BODY></HTML>
+</dtml-comment>

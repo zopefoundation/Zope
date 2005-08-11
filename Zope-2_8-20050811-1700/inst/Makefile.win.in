@@ -1,0 +1,73 @@
+# Zope2 build and install Makefile for win32 (nmake-style).
+
+# We do as much as possible in Python in order to avoid needing to
+# learn autoconf or some other awful thing. ;-)
+
+NAME=Zope
+MAJOR_VERSION=<<ZOPE_MAJOR_VERSION>>
+MINOR_VERSION=<<ZOPE_MINOR_VERSION>>
+RELEASE_TAG=<<VERSION_RELEASE_TAG>>
+PACKAGE_NAME=$(NAME)-$(MAJOR_VERSION).$(MINOR_VERSION)-$(RELEASE_TAG)
+
+PYTHON="<<PYTHON>>"
+PREFIX=<<PREFIX>>
+BASE_DIR=<<BASE_DIR>>
+BUILD_BASE=<<BUILD_BASE>>
+DISTUTILS_OPTS=<<DISTUTILS_OPTS>>
+INSTALL_FLAGS=<<INSTALL_FLAGS>>
+TESTOPTS=-v
+BUILD_FLAGS=--build-base="$(BUILD_BASE)" \
+            --build-lib="$(BUILD_BASE)\build-lib" \
+            --build-scripts="$(BUILD_BASE)\build-scripts" \
+            --build-temp="$(BUILD_BASE)\build-temp"
+
+RM=del /f /q
+!IF ("$(OS)" == "Windows_NT")
+RMRF=rmdir /s /q
+!ELSE
+RMRF=deltree /y
+!ENDIF
+CD=cd
+XCOPY=xcopy /i /s /e /y
+COPY=copy
+
+default: build
+# default:     The default step (invoked when make is called without a target)
+	@ echo.
+	@ echo Zope built.  Next, do 'nmake install'.
+	@ echo.
+
+.PHONY: clean install build unbuild
+.PHONY: default
+
+# build:       Do whatever 'setup.py build' implies
+build:
+	$(PYTHON) "$(BASE_DIR)\setup.py" \
+            $(DISTUTILS_OPTS) build $(BUILD_FLAGS)
+
+# unbuild:     Remove the build directory (undo the make build step)
+unbuild:
+	-$(RMRF) $(BUILD_BASE)
+
+# install:     Install a software home.
+install: build version_txt
+	$(PYTHON) "$(BASE_DIR)\setup.py" $(DISTUTILS_OPTS) install \
+           --prefix="$(PREFIX)" $(BUILD_FLAGS) $(INSTALL_FLAGS)
+	@ echo.
+	@ echo Zope binaries installed successfully.
+	@ echo Now run '$(PYTHON) $(PREFIX)\bin\mkzopeinstance.py'
+
+# version_txt: create a version file in lib/python/version.txt
+version_txt:
+	echo Zope $(MAJOR_VERSION).$(MINOR_VERSION)-$(RELEASE_TAG) >\
+          "$(BASE_DIR)/lib/python/version.txt"
+
+# clean:       Delete the build files and any binaries/bytecode files in
+#              the source directory for good measure.
+clean: unbuild
+	$(CD) "$(BASE_DIR)
+	-$(RM) /s *.pyc *.pyo *.dll *.o *.obj *.pyd
+	-$(RM) (BASE_DIR)\lib\python\version.txt
+
+
+

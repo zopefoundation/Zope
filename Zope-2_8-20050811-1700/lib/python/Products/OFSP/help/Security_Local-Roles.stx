@@ -1,0 +1,24 @@
+Folder - Local Roles: Manage local roles.
+  
+  Description
+
+    Local roles allow you to give users additional roles in the
+    context of an object.
+
+  Controls
+
+    Editing local roles
+
+      '[Checkbox]' -- Select users. Click a user's name to edit their
+      local roles.
+
+      'Remove' -- Deletes local roles for the selected users.
+
+    Creating local roles
+
+      'User' -- The user for which you would like to define local
+      roles.
+
+      'Roles' -- The local roles you would like to assign to the user.
+
+      'Add' -- Adds the selected local roles for the selected user.

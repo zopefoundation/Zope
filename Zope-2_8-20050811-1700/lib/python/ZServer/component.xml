@@ -1,0 +1,61 @@
+<component prefix="ZServer.datatypes">
+
+  <abstracttype name="ZServer.server">
+    <description>
+      The "server" type is used to describe a single type of server
+      instance.  The value for a server section is an object with the
+      ServerFactory interface.
+    </description>
+  </abstracttype>
+
+  <sectiontype name="http-server"
+               datatype=".HTTPServerFactory"
+               implements="ZServer.server">
+     <key name="address" datatype="inet-binding-address"/>
+     <key name="force-connection-close" datatype="boolean" default="off"/>
+     <key name="webdav-source-clients">
+       <description>
+         Regular expression used to identify clients who should
+         receive WebDAV source responses to GET requests.
+       </description>
+     </key>
+  </sectiontype>
+
+  <sectiontype name="webdav-source-server"
+               datatype=".WebDAVSourceServerFactory"
+               implements="ZServer.server">
+     <key name="address" datatype="inet-binding-address"/>
+     <key name="force-connection-close" datatype="boolean" default="off"/>
+  </sectiontype>
+
+  <sectiontype name="persistent-cgi"
+               datatype=".PCGIServerFactory"
+               implements="ZServer.server">
+    <key name="path" datatype="existing-file"/>
+  </sectiontype>
+
+  <sectiontype name="fast-cgi"
+               datatype=".FCGIServerFactory"
+               implements="ZServer.server">
+    <key name="address" datatype="socket-binding-address"/>
+  </sectiontype>
+
+  <sectiontype name="ftp-server"
+               datatype=".FTPServerFactory"
+               implements="ZServer.server">
+     <key name="address" datatype="inet-binding-address"/>
+  </sectiontype>
+
+  <sectiontype name="monitor-server"
+               datatype=".MonitorServerFactory"
+               implements="ZServer.server">
+     <key name="address" datatype="inet-binding-address"/>
+  </sectiontype>
+
+  <sectiontype name="icp-server"
+               datatype=".ICPServerFactory"
+               implements="ZServer.server">
+     <key name="address" datatype="inet-binding-address"/>
+  </sectiontype>
+
+</component>

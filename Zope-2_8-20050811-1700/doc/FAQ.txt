@@ -1,0 +1,291 @@
+Zope Installation Frequently Asked Questions
+--------------------------------------------
+
+
+  Installing Zope
+
+    1. On certain Unix platforms (usually Solaris) I get a "checksum 
+       error" untarring the Zope distribution. Whats the deal?
+
+       Zope is built and distributed using GNU tar. Some vendor-supplied
+       tar implementations have problems with long path names as they 
+       appear in GNU tar created files. This is a problem that occurs in 
+       a number of software distributions created using GNU tar, not just 
+       Zope. We suggest that you install a GNU tar on your system to 
+       avoid this problem (not just with Zope, but with other software 
+       distributions as well).
+
+    2. I am trying to build Zope on my BSD based system, but I
+       keep getting "symbol not found" errors and the build
+       scripts stop. What do I do?
+
+       On some BSD based systems (BSDI, BSD/OS), you need to edit
+       the Makefile.pre.in files in your Zope installation to add
+       -rdynamic to the LDSHARED makefile variable. On some systems
+       it may also be necessary to change the file named 'do.py'
+       located in the 'inst' directory of your Zope installation,
+       changing the line: do('make')  to: do('make -k').
+
+    3. I am having trouble building Zope on my OpenBSD system.  I get
+       some wierd compilation errors.
+
+       Make sure you unpack Zope using GNU tar; you will not get any
+       error messages with OpenBSD's standard tar, but your installation
+       will be subtly broken due to problems with long path names.
+
+    4. I am having trouble building Zope on a libc 5 Linux machine.
+    
+       Zope requires Python be built with glibc 2.x (libc 6) on Linux.
+
+    5. I am trying to install Zope on a Windows NT/2000 machine, but
+       I keep getting a dialog saying "corrupt installation detected".
+       Is something wrong with the distribution file?
+
+       No, to install Windows NT / 2000 you should be logged in with 
+       "Administrator" privileges on the machine. If you are seeing
+       the "corrupt installation detected" dialog, you probably don't
+       have the required administrator privileges (your guess is as
+       good as ours as to why you get that particular error message).
+
+
+  Starting/Accessing your Zope installation
+
+    1. After installing Zope, I go to the URL in my web browser
+       but I get a "404 Not Found" or "Server Error" message
+
+       Is the URL really correct? Are you running Zope behind another
+       web server?  If so, this message is coming from your web server, 
+       not Zope.  It usually means that your web server is misconfigured.
+
+       Look in the error log for your web server for details of the error.
+
+
+    2. I have installed Zope, and when I go to the URL in my web
+       browser, I get a password prompt. Although I type in the correct
+       username and password, I keep getting prompted. What is going on?
+
+       Are you running another web server in front of Zope?
+       Zope manages access control internally, but it relies on your
+       web server software to relay any authentication information in
+       web requests. Some web servers automatically filter this information
+       out of requests passed to cgi programs. If you keep getting password
+       prompts that never accept your password, this means that your web
+       server is not properly configured to pass authentication info on to
+       Zope. See the doc/WEBVSERVER.txt file for information on correctly
+       configuring your web server to pass authentication information.
+
+
+    3. I have installed Zope, and when I go to the URL in my web
+       browser, I get a "Connection refused" error.
+
+       Probably this means that Zope has failed to start.  You should try 
+       to start Zope in the foreground and look for error messages.
+
+       On Linux / Unix / OSX, you can do this by giving the command
+       "./bin/runzope" or "./bin/zopectl fg"  in your zope instance
+       (they are equivalent).
+
+       On Windows, navigate to the Zope folder in your Start Menu and 
+       click on "Run Zope in Console". A console window with process 
+       startup information will be displayed.
+
+       If there are errors, the last error shown should explain
+       what went wrong.
+
+
+    4. When I go to a URL for an application that isn't running, it
+       takes quite a while to startup.  Why is that?
+
+       The application has to get into memory and then get 
+       the database loaded.  Depending on database file size, this might
+       take a while. Packing your Zope database at regular intervals
+       can reduce startup time.
+
+
+    5. I have Zope with the Oracle Database adapter installed, and can't
+       get it running. Why?
+
+       If you have Oracle installed, you need to ensure that the
+       environment variable "ORACLE_HOME" is in the environment of
+       the running application. You can do this by adding a line to 
+       the <environment> section of etc/zope.conf, such as:
+
+       <environment>
+           ORACLE_HOME /foo/bar/
+       </environment>
+
+
+    6. I have forgotten the only password used to access the site or
+       I have modified the security settings in such a way that even
+       I can't get access.  How do I fix it?
+
+       Assuming you have write access to the directory where Zope is
+       installed, you can create a temporary "emergency user" using
+       the 'zpasswd.py' script::
+
+           python bin/zpasswd.py access
+
+       Follow the prompts to enter a user name and password.
+       'zpasswd.py' will write the file named 'access'.  Zope will
+       look for this file the next time it starts.  After restarting,
+       browse to Zope's management interface and use the name and
+       password you entered.
+
+       As the emergency user, you are allowed to create user folders
+       and user accounts as well as adjust security settings but you
+       are not allowed to create objects like DTML methods or folders.
+       This is a safety precaution.
+
+       See more details in the file SECURITY.TXT.
+
+  Managing the Zope process
+
+    1. How do I find the application server in my process listing?
+
+       When running Zope, there will be a .pid file in var/Z2.pid
+       which contains two process IDs.
+
+    2. If I have more than one Zope process running on the same
+       machine, how do I tell them apart in "ps" listings?
+
+       When running under ZServer, the Zope processes will show up in
+       the listings with 'run.py'.  (You may need to do a long listing
+       to see it.)  Look for the pids listed in var/Z2.pid. 
+
+    3. Is it OK to use 'kill' to shut down the process?
+
+       If you started zope with the command "zopectl start", the command
+       "zopectl stop" will shut down Zope.
+
+       You can also shut down the process using the Shutdown button in
+       the Control Panel. Alternatively, the URL:
+
+          'Control_Panel/manage_shutdown'
+
+       will, with a suitable username and password, shutdown the
+       application. If you need a non-interactive way to shutdown your
+       application, e.g. from a script, then write a program that sends
+       a web request to that URL with the appropriate username and
+       password.
+
+       If you must, you can shut down the application by killing it.
+       The respective var/Z2.pid file will have the pids.
+
+
+  Upgrading from Earlier Versions of Zope
+
+    1. How can I upgrade to Zope 2.8?
+
+       The usual procedure when installing a new version of Zope is:
+
+       - Create a new instance (see doc/INSTALL.txt).
+
+       - Copy the var/Data.fs file from your old instance into your 
+         new instance's var/ directory. 
+
+         It is best to do this while the old instance is not running; 
+         alternatively, you can use repozo.py as described at 
+         http://www.zope.org/Wikis/ZODB/FileStorageBackup 
+         to make a live backup, then create a new Data.fs from that
+         backup in your new instance.
+
+         Keep your old Data.fs in the old instance as a backup.
+        
+       - Copy the Products and Extensions directories from your old 
+         instance into the new instance.
+
+         Leave the old instance directories intact as a backup.
+ 
+       - Update etc/zope.conf with any changes you made in your
+         old instance.  (Likewise for zeo.conf if you are using zeo.)
+
+       - Start the new instance. (Be sure the old instance is not running.)
+
+       - Update any ZCatalogs as described below. 
+
+       - Update any Python Scripts. This is not strictly necessary,
+         but it will make Zope restart somewhat faster.  Visit this URL 
+         in your browser:
+
+         http://.../manage_addProduct/PythonScripts/recompile
+
+
+    2. After moving my old Data.fs to Zope 2.8 I get an 
+       "AttributeError, _length" when trying to use the ZCatalog?
+
+       In Zope 2.8 we cleaned up the index implementations and therefore
+       you need to migrate every single ZCatalog manually.
+
+       Notice: **YOU SHOULD BACKUP YOUR var/Data.fs file before starting 
+       the migration**, see http://www.zope.org/Wikis/ZODB/FileStorageBackup 
+       for backup instructions.
+
+       To perform the migration:
+
+        - go to the ZMI 
+
+        - click on your ZCatalog instance (or portal_catalog inside
+          your CMF or Plone instance)
+
+        - you will get an "AttributeError, _length"...don't panic
+
+        - call the "manage_convertIndexes" method of the ZCatalog 
+          (by replacing the "manage_main" part of the URL with
+           "manage_convertIndexes")
+
+        - depending on the size of your ZCatalog the migration may
+          take a while
+
+        - after the conversion a message will appear: "Indexes
+          converted and reindexed"
+
+
+    3. CMF doesn't work!
+
+        Check that you have a recent stable version of CMF.
+        As of Zope 2.8.0, you need at least CMF-1.4.8.  
+        CMF is available at http://www.zope.org/Products/CMF/
+
+
+    4. Plone doesn't work!
+
+        As of the release of Zope 2.8.0, Plone does not support
+        Zope 2.8 yet.  Check http://www.plone.org for updates.
+
+
+  General
+
+
+    1. My browser is giving a message, 'Sorry, an error occurred.'
+       How do I find out what the real error is?
+
+       Step number one in these scenarios is to check the error log
+       on your server. The standard error page should provide you with a 
+       link directly to the log entry for that error.
+
+       If something has gone wrong with the standard error page itself, 
+       or if you are using a modified error page, this link may be 
+       missing. If this happens, you can visit /event_log/manage_main and 
+       browse the recent errors.
+
+       In general, error_log will show the *traceback* for errors.
+       This traceback explains the error message. 
+
+       Occassionally you won't see any error message. Rather, the HTML 
+       source will contain the last good HTML returned by the request
+       before the error occurred. This is due to caching by the
+       browser.  Clear your cache and view the HTML source again.
+
+
+    2. I'm using Python 2.4 and I'm having a problem ...
+
+       As of the release of Zope 2.8, Python 2.4 has not been approved for 
+       use with any version of Zope yet.  Please use Python 2.3. 
+
+       The correct version of Python should always be automatically detected
+       and used when you configure and install Zope. In general, you 
+       should let the configure script do its job and don't try to 
+       force an unsupported version of Python!
+
+
+

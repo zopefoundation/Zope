@@ -1,0 +1,15 @@
+<dtml-var standard_html_header>
+<dtml-call "REQUEST.set('MANAGE_TABS_NO_BANNER',1)">
+<dtml-call "REQUEST.set('management_view', 'Search')">
+<dtml-var manage_tabs>
+
+<p>Help topics matching <b>&dtml-SearchableText;</b>:</p>
+<p>
+<dtml-in "searchResults(REQUEST)">
+<a href="&dtml-BASEPATH1;&dtml-url;" target="help_main">&dtml-title_or_id;</a><br>
+<dtml-else>
+<em>No matches.</em>
+</dtml-in>
+</p>
+
+<dtml-var standard_html_footer>

@@ -1,0 +1,119 @@
+<dtml-var manage_page_header>
+<dtml-var manage_tabs>
+
+<p class="form-help">
+  Memory usage is approximate. It is based on the pickled value of the 
+  cached data. The cache is cleaned up by removing the least frequently 
+  accessed entries since the last cleanup operation. The determination 
+  is made using the <em>recent hits</em> counter.
+</p>
+
+<dtml-if getCacheReport>
+
+  <form method="post" action="manage_invalidate">
+
+    <table width="100%" cellspacing="0" cellpadding="2" border="0">
+    <tr class="list-header">
+      <td align="left" valign="top" class="list-nav" width="16">
+      </td>
+      <td align="left" valign="top">
+      <div class="list-nav">
+      <dtml-var expr="sort_link('Path', 'path')">
+      </div>
+      </td>
+      <td align="left" valign="top">
+      <div class="list-nav">
+      <dtml-var expr="sort_link('Hits', 'hits')">
+      </div>
+      </td>
+      <td align="left" valign="top">
+      <div class="list-nav">
+      <dtml-var expr="sort_link('Recent Hits', 'counter')">
+      </div>
+      </td>
+      <td align="left" valign="top">
+      <div class="list-nav">
+      <dtml-var expr="sort_link('Misses', 'misses')">
+      </div>
+      </td>
+      <td align="left" valign="top">
+      <div class="list-nav">
+      <dtml-var expr="sort_link('Memory', 'size')">
+      </div>
+      </td>
+      <td align="left" valign="top">
+      <div class="list-nav">
+      <dtml-var expr="sort_link('Views', 'views')">
+      </div>
+      </td>
+      <td align="left" valign="top">
+      <div class="list-nav">
+      <dtml-var expr="sort_link('Entries', 'entries')">
+      </div>
+      </td>
+    </tr>
+    <dtml-in getCacheReport mapping>
+    <dtml-if sequence-odd>
+    <tr class="row-normal">
+    <dtml-else>
+    <tr class="row-hilite">
+    </dtml-if>
+      <td align="left" valign="top" width="16">
+        <input type="checkbox" name="paths:list" value="&dtml-path;" />
+      </td>
+      <td align="left" valign="top">
+      <div class="list-item">
+      <a href="&dtml-path;/ZCacheable_manage">&dtml-path;</a>
+      </div>
+      </td>
+      <td align="left" valign="top">
+      <div class="list-item">
+      &dtml-hits;
+      </div>
+      </td>
+      <td align="left" valign="top">
+      <div class="list-item">
+      &dtml-counter;
+      </div>
+      </td>
+      <td align="left" valign="top">
+      <div class="list-item">
+      &dtml-misses;
+      </div>
+      </td>
+      <td align="left" valign="top">
+      <div class="list-item">
+      &dtml-size;
+      </div>
+      </td>
+      <td align="left" valign="top">
+      <div class="list-item">
+      <dtml-var expr="_.string.join(views, ', ')" html_quote>
+      </div>
+      </td>
+      <td align="left" valign="top">
+      <div class="list-item">
+      &dtml-entries;
+      </div>
+      </td>
+      </tr>
+    </dtml-in>
+    
+      <tr>
+        <td width="16"> </td>
+        <td colspan="7">
+          <input type="submit" value=" Remove " />
+        </td>
+      </tr>
+    
+    </table>
+
+  </form>
+
+<dtml-else>
+<p class="form-text">
+<strong>Nothing is in the cache.</strong>
+</p>
+</dtml-if>
+
+<dtml-var manage_page_footer>

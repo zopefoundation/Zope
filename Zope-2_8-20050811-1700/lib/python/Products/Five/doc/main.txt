@@ -1,0 +1,94 @@
+Five, the Zope 3 in Zope 2 project
+==================================
+       
+What is Five?
+-------------
+
+Five is a Zope 2 product that allows you to integrate Zope 3
+technologies into Zope 2, today. Five right now allows you to use the
+following Zope 3 technologies in Zope 2:
+
+* Zope 3 interfaces
+
+* adapters
+
+* pages (views), including skins and layers, and edit and add forms
+
+* ZCML
+
+It is possible to add Zope 3 style views to your own Zope 2 objects,
+or to existing ones, even normal Folders!
+
+Five works with a straight Zope 2.7 installation, as long as Zope 3
+has been installed. See Five's INSTALL.txt for more information on how
+to set it up.
+
+We're in the process of evaluating lots more Zope 3 technologies for
+integration into Zope 2. This is the right moment for interested Zope
+2 and Zope 3 developers to jump in. We're looking for cooperation
+between different Zope 2 projects so that this can be a foundational
+system for us all.
+
+Download 
+--------
+
+2005-07-12 -- We have released Five 1.0.2! This is also the version
+that will be included in Zope 2.8.1. Download it here:
+
+http://codespeak.net/z3/five/release/Five-1.0.2.tgz
+
+2005-05-31 -- We have released Five 1.0.1! This is also the version
+that will be included in Zope 2.8.0. Download it here:
+
+http://codespeak.net/z3/five/release/Five-1.0.1.tgz
+
+2005-04-27 -- We have released Five 1.0! Download it here:
+
+http://codespeak.net/z3/five/release/Five-1.0.tgz
+
+And view changes here:
+
+http://codespeak.net/z3/five/CHANGES.html
+
+2005-03-11 -- We have released Five 0.3! Download it here:
+
+http://codespeak.net/z3/five/release/Five-0.3.tgz
+
+2004-09-24 -- Five 0.2b is released. Download it here:
+
+http://codespeak.net/z3/five/release/Five-0.2b.tgz
+
+2004-07-30 -- We have released Five 0.1! Download it here:
+
+http://codespeak.net/z3/five/release/Five-0.1.tgz
+
+Joining the project
+-------------------
+
+Five is kindly hosted on codespeak.net, and is part of the larger
+*Zope 3 Base* project that offers an approachable area for
+developers of Zope 3 related software.
+
+Five has a mailing list: 
+
+http://codespeak.net/mailman/listinfo/z3-five
+
+We're also active on IRC, at ``#z3-base`` on freenode.
+ 
+Five is hosted in a subversion repository on codespeak.net. You can
+browse this on the web here:
+
+http://codespeak.net/svn/z3/Five/
+
+You can check out Five using the following subversion command::
+
+  svn co http://codespeak.net/svn/z3/Five/trunk Five
+
+There's also a checkins mailing list for the Z3 project, here:
+
+http://codespeak.net/mailman/listinfo/z3-checkins
+
+If you want checkin access, please join the z3-five mailing list or
+the ``#z3-base`` IRC channel, and ask us there.
+
+We hope to hear from you!

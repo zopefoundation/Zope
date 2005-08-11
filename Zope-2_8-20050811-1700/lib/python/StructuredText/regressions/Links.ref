@@ -1,0 +1,23 @@
+<html>
+<head>
+<title>This is LinkTest</title>
+</head>
+<body>
+<h1>This is LinkTest</h1>
+
+<ul>
+<li>please click <a href="/Members/Zope">here</a></li>
+<li>please click <a href="/Members/Zope?a=b&c=d%20blabla">here</a></li>
+<li>please click <a href="http://www.zope.org">here</a></li>
+<li>please click <a href="http://www.zope.org/members/">here</a></li>
+<li>please click <a href="http://www.zope.org:2001">here</a> </li>
+<li>please click <a href="http://www.zope.org:2001/members/">here</a></li>
+<li>please click <a href="http://www.zope.org:2001/%20/Members/zope?a=222&b=213&_xc=just%20a%20test">here</a> </li>
+<li>please click <a href="http://www.zope.org:2001/%20/Members/zope?a=222&b=213&_xc=just%20a%20test">here</a> </li>
+<li>please click <a href="http://www.zope.org:2001/%20/Members/zope?a=222&b=213&_xc=just%20a%20test">here</a> </li>
+
+</ul>
+<p>  And now a paragraph with <a href="http://www.zope-rocks.org">Link 1</a> and 
+  <a href="http://www.zope-is-kewl.com">Link 2</a>  and <a href="http://www.freshmeat.net">one more link - yeah.</a></p>
+</body>
+</html>

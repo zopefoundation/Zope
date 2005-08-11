@@ -1,0 +1,9 @@
+User Folder - Defines users.
+  
+  Description
+
+    User Folders define Zope users.
+
+    You can only have one User Folder per Folder. User Folders always
+    have 'acl_users' as an id.
+

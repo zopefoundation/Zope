@@ -1,0 +1,10 @@
+External Method - Try It: Test the external method.
+  
+  Description
+
+    This view executes the external method and returns the results if
+    any.  Only parameters from the web request are passed the the
+    external method.
+
+
+

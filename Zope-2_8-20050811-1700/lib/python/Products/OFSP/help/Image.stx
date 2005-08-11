@@ -1,0 +1,12 @@
+Image - Image object.
+  
+  Description
+
+    The Image object allows you to store image files in Zope.
+
+    Images can be displayed in DTML by calling them. For example,
+    &lt;dtml-var myImageId&gt;' The Image will generate an HTML 'IMG'
+    tag with all the correct attributes.
+
+
+

@@ -1,0 +1,123 @@
+##############################################################################
+#
+# Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
+#
+# This software is subject to the provisions of the Zope Public License,
+# Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
+# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
+# WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
+# FOR A PARTICULAR PURPOSE
+#
+##############################################################################
+"""
+A Windows NT service frontend.
+
+Usage:
+
+  Installation
+
+    The service should be installed by the Windows installer. You can
+    manually install, uninstall the service from the commandline.
+
+      ntservice.py [options] install|update|remove|start [...]
+           |stop|restart [...]|debug [...]
+
+    Options for 'install' and 'update' commands only:
+
+     --username domain\username : The Username the service is to run
+                                  under
+
+     --password password : The password for the username
+
+     --startup [manual|auto|disabled] : How the service starts,
+                                        default = manual
+
+    Commands
+
+      install : Installs the service
+
+      update : Updates the service, use this when you change
+               the service class implementation 
+
+      remove : Removes the service
+
+      start : Starts the service, this can also be done from the
+              services control panel
+
+      stop : Stops the service, this can also be done from the
+             services control panel
+
+      restart : Restarts the service
+
+      debug : Runs the service in debug mode
+
+    You can view the usage options by running ntservice.py without any
+    arguments.
+
+    Note: you may have to register the Python service program first,
+
+      win32\PythonService.exe /register
+
+  Starting
+
+    Start the service by clicking the 'start' button in the services
+    control panel. You can set the service to automatically start at boot
+    time by choosing 'Auto' startup by clicking the 'statup' button.
+
+  Stopping
+
+    Stop the service by clicking the 'stop' button in the services
+    control panel.
+
+  Event logging
+
+    Events are logged to the NT application event log. Use the event
+    viewer to keep track of events.
+
+Note: to successfully run this script, the software home needs to be
+on the PYTHONPATH.
+"""
+
+import os.path
+from os.path import dirname as dn
+import sys
+
+# these are replacements from mkzeoinstance
+PYTHON = r'<<PYTHON>>'
+SOFTWARE_HOME=r'<<SOFTWARE_HOME>>'
+INSTANCE_HOME = r'<<INSTANCE_HOME>>'
+ZEO_HOME = r'<<ZEO_HOME>>'
+
+ZEO_RUN = r'%s\ZEO\runzeo.py' % SOFTWARE_HOME
+CONFIG_FILE= os.path.join(INSTANCE_HOME, 'etc', 'zeo.conf')
+PYTHONSERVICE_EXE=r'%s\bin\PythonService.exe' % ZEO_HOME
+
+sys.path.insert(0, SOFTWARE_HOME)
+
+# Setup the environment, so sub-processes see these variables
+os.environ["PYTHONPATH"] = os.environ.get("PYTHONPATH", "") + ";" + SOFTWARE_HOME
+os.environ["INSTANCE_HOME"] = INSTANCE_HOME
+
+from nt_svcutils import service
+
+servicename = 'ZEO_%s' % str(hash(INSTANCE_HOME.lower()))
+
+class InstanceService(service.Service):
+    start_cmd = '"%s" "%s" -C "%s"' % (PYTHON, ZEO_RUN, CONFIG_FILE)
+    _svc_name_ = servicename
+    _svc_display_name_ = 'ZEO instance at %s' % INSTANCE_HOME
+    # If the exe we expect is not there, let the service framework search
+    # for it.  This will be true for people running from source builds and
+    # relying on pre-installed pythonservice.exe.
+    # Note this is only used at install time, not runtime.
+    if os.path.isfile(PYTHONSERVICE_EXE):
+        _exe_name_ = PYTHONSERVICE_EXE
+
+    process_runner = PYTHON
+    process_args = '"%s" -C "%s"' % (ZOPE_RUN, CONFIG_FILE)
+    evtlog_name = 'ZEO'
+
+if __name__ == '__main__':
+    import win32serviceutil
+    win32serviceutil.HandleCommandLine(InstanceService)

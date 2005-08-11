@@ -1,0 +1,41 @@
+<html>
+  <body tal:define="results  here/%(id)s;
+                    start request/start|python:0;
+                    batch python:modules['ZTUtils'].Batch(results, 
+                                                          size=20, 
+                                                          start=start);
+                    previous python:batch.previous;
+                    next python:batch.next">
+
+  <p>
+    <a tal:condition="previous"
+       tal:attributes="href string:${request/URL0}?start:int=${previous/first}"
+       href="previous_url">previous <span tal:replace="previous/length">20</span> results</a>
+    <a tal:condition="next"
+       tal:attributes="href string:${request/URL0}?start:int=${next/first}"
+       href="next_url">next <span tal:replace="next/length">20</span> results</a>
+  </p>
+
+  %(else no_table)[<table border>
+        %(heading)s
+      %(else)]
+ 
+  <tal:x repeat="result batch" >
+  
+    %(row)s
+
+  </tal:x>
+
+      %(else no_table)[</table>%(else)]
+
+  <p>
+    <a tal:condition="previous"
+       tal:attributes="href string:${request/URL0}?start:int=${previous/first}"
+       href="previous_url">previous <span tal:replace="previous/length">20</span> results</a>
+    <a tal:condition="next"
+       tal:attributes="href string:${request/URL0}?start:int=${next/first}"
+       href="next_url">next <span tal:replace="next/length">20</span> results</a>
+  </p>
+
+  </body>
+</html>

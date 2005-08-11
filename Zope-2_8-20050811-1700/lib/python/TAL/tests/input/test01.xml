@@ -1,0 +1,57 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html 
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "DTD/xhtml1-transitional.dtd">
+<html>
+
+  <head>dadada</head>
+
+  <body xmlns:z="http://xml.zope.org/namespaces/tal" z:define="foo python:1">
+<h1 z:condition="python:0">This title is not displayed</h1>
+    <h1 z:condition="python:1" z:content="str:This
+Is
+The
+Replaced
+Title">Title</h1>
+
+  <!-- test entity references -->
+  &nbsp;&HarryPotter;
+
+  <!-- examples adapted from TemplateAttributeLanguageSyntax -->
+
+    <span z:content="str:here/id"/>
+
+    <p z:define="x str:template/title; global five python:2+3;" z:content="text var:five"/>
+
+    <p z:repeat="car python:['honda', 'subaru', 'acura']">
+      <span z:replace="var:car"/>
+    </p>
+
+    <p xml:foo="bar">foo bar</p>
+
+  <!-- more examples -->
+
+    <ul>
+    <span z:repeat="car python:['honda', 'subaru', 'acura']">
+      <li z:content="var:car">Car Name</li>
+    </span>
+    </ul>
+
+  <!-- test attribute expansion -->
+
+    <a href="foo" z:attributes="href python:'http://python.org' ">python</a>
+    <a z:attributes="href python:'http://python.org' ">python</a>
+
+  <!-- test insert/replace structure -->
+    <span z:content="structure python:None" />
+    <span z:replace="structure python:None" />
+
+    <span z:define="global x str:&lt;h3&gt;Header Level 3&lt;/h3&gt;" />
+    <span z:define="global x python:'&amp;' + 'nbsp;;' + x" />
+
+    <span z:replace="structure x" />
+    <span z:content="structure x" />
+
+  </body>
+
+</html>

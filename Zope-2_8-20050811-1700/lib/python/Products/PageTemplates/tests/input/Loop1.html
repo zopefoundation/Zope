@@ -1,0 +1,15 @@
+<html>
+<head>
+<title>Loop doc</title>
+</head>
+<body>
+<p>Choose your type:</p>
+<ul>
+  <li tal:repeat="type python:'digital', 'analog', 'organic'">
+  <a href="dummy" tal:attributes="href string:/mach/$type">
+  <span tal:replace="repeat/type/number">1</span>.
+  <span tal:replace="type">selection</span></a>
+  </li>
+</ul>
+</body>
+</html>

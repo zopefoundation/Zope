@@ -1,0 +1,551 @@
+<HTML>
+<HEAD>
+  <TITLE>
+Chordate Solutions
+
+Gadfly FAQ
+
+</TITLE>
+</HEAD>
+<BODY>
+<TABLE width="700" BORDER="0" CELLSPACING="2" CELLPADDING="6">
+  <TR>
+    <TD VALIGN="TOP" rowspan="3">
+    <IMG SRC="gadfly.JPG" ALT="Chordate" WIDTH="143" HEIGHT="99"></TD>
+    <TD>
+    <B>Chordate Systems</B><BR>
+    Solutions
+    </TD> 
+    <td valign="TOP" rowspan="2" nowrap>
+      <a href="#General">General information</a><br>
+      <a href="#Installation">Installation</a><br>
+      <a href="#Use">Use</a><br>
+<a href="mailto:arw@ifu.net">feedback</a><br>
+<a href="../index.html">home</a><br>
+<a href="index.html">Gadfly home</a>
+    </td>
+  </tr><tr>
+    <TD>
+    <em>
+
+Gadfly FAQ (Frequently asked questions)<p>
+      <a href="#General">General information</a><br>
+      <UL>
+         <LI><a href="#what">What is gadfly?</a>
+         <LI><a href="#version">What is the current version?</a>
+         <LI><a href="#where">Where can I get it?</a>
+         <LI><a href="#whysql">Why SQL and the relational model?</a>
+         <LI><a href="#whypython">Why Python?</a>
+         <LI><a href="#free">What is the License? Is it Free? Why?</a>
+         <LI><a href="#bundle">You mean I can bundle it into my own product
+                               for free? Really?</a>
+         <LI><a href="#platform">Where does it run?</a>
+         <LI><a href="#req">What are the software/hardware requirements?</a>
+         <LI><a href="#opt">Is there a query optimizer?</a>
+         <LI><a href="#fast">Is it fast?</a>
+         <LI><a href="#limit">Are there data size limitations?</a>
+         <LI><a href="#recovery">What about recovery after crashes?</a>
+         <LI><a href="#server">What about client/server based access?</a>
+         <LI><a href="#concurrency">What about concurrency control?</a>
+         <LI><a href="#list">Is there a mailing list?</a>
+         <LI><a href="#who">Who uses it?</a>
+         <LI><a href="#support">Is support available?</a>
+         <LI><a href="#plan">What are the plans for Gadfly?</a>
+         <LI><a href="#code">How do I contribute some code that uses Gadfly?</a>
+      </UL>
+      <a href="#Installation">Installation</a><br>
+      <UL>
+         <LI><a href="#sqlwhere">Where is sqlwhere?</a>
+         <LI><a href="#importerror">I get an ImportError!</a>
+         <LI><a href="#module">Why not use hierarchical packages?</a>
+         <LI><a href="#ODBC">Does Gadfly support ODBC or JDBC?</a>
+         <LI><a href="#instance">How can I move a Gadfly database instance
+                      from one location/machine to another?</a>
+         <LI><a href="#api">How can I access gadfly from another program?</a>
+         <LI><a href="#size">What database size limits are there?</a>
+         <LI><a href="#ftypes">What are the file types in the gadfly database
+                    directory?</a>
+      </UL>
+      <a href="#Use">Use</a><br>
+      <UL>
+         <LI><a href="#neato">Does Gadfly support virtual tables (VIEWS)?
+               Quantifiers? EXISTS? Aggregates? Groupings? Indices?</a>
+         <LI><a href="#std">How standard is the SQL subset supported?</a>
+         <LI><a href="#blob">Are BLOBS (binary large objects) supported?</a>
+         <LI><a href="#star">How can I find the column names in a "select *"?</a>
+         <LI><a href="#remote">Can I add my own table implementation?</a>
+         <LI><a href="#noupdate">Why can't I update my own table implementation via SQL?</a>
+         <LI><a href="#key">How do you define a primary key?</a>
+         <LI><a href="#whynot">What about NULLs, Triggers and other missing stuff?</a>
+         <LI><a href="#like">Where is the LIKE predicate?</a>
+         <LI><a href="#crash">After a crash Gadfly won't recover!  Help!</a>
+      </UL>
+
+    </em>
+  </tr><tr>
+    <td colspan="2">
+
+<h3>Gadfly Frequently Asked Questions</h3>
+
+  </TD>
+  </TR>
+</TABLE>
+
+
+      <a name="General"><h3>General information</h3></a><br>
+<p>
+The following topics are of a general nature.
+<p>
+      <UL>
+         <LI><a name="what">What is gadfly?</a>
+<p>
+Gadfly is a relational database management system
+which uses a large subset of very standard SQL 
+as its query language and Python modules and optional
+Python/C extension modules as its underlying engine.  Gadfly
+stores the active database in memory, with recovery logging
+to a file system.  It supports an optional TCP/IP based
+client server mode and log based failure recovery for
+system or software failures (but not for disk failures).
+<p>
+         <LI><a name="version">What is the current version?</a>
+<p>
+The current version is Gadfly 1.0.  To be sure you have the
+current version, please consult the version number that comes
+in the documentation.
+<p>
+Gadfly 1.0 attempts to fix all known bugs in previous versions and adds
+a small number of features (hopefully without adding too many
+new bugs).
+<p>
+         <LI><a name="where">Where can I get it?</a>
+<p>
+Please get it from <a href="http://www.chordate.com">http://www.chordate.com</a>
+<p>
+         <LI><a name="whysql">Why SQL and the relational model?</a>
+<p>
+Gadfly is based in SQL and the relational model
+primarily because the SQL query language and the relational
+model have been highly successful, are highly standard, and
+are well understood by a large number of programmers.
+If you understand standard SQL you already know how to use
+Gadfly -- and this distinguishes Gadfly from many similar
+database systems out there -- even ones which aren't "really free."
+<p>
+         <LI><a name="whypython">Why Python?</a>
+<p>
+Gadfly is based in Python because Python made the development
+of such a relatively sophisticated and standard SQL implementation
+feasible for one programmer, in his spare time, and also because
+it automatically made Gadfly portable to almost any computing
+platform.  In addition, Gadfly can be used with Python to develop
+sophisticated data manipulation applications easily.
+<p>
+         <LI><a name="free">What is the License? Is it Free? Why?</a>
+<p>
+Gadfly can be used and modified in source form for any purpose,
+including commercial purposes.  There is no explicit or implied
+warrantee for Gadfly, even though it is intended to be useful.
+Gadfly is free because I wanted people to use it, and I suspected
+they wouldn't if it wasn't free and highly standard, and furthermore
+I didn't want to risk the possibility of legal responsibility
+if people did use it and had problems.
+<p>
+         <LI><a name="bundle">You mean I can bundle it into my own product
+                               for free? Really?</a>
+<p>
+Yes.  Please do.  Several organizations have done so already.
+<p>
+         <LI><a name="platform">Where does it run?</a>
+<p>
+To run Gadfly you need (1) a file system and (2) Python.
+If Python runs on your platform Gadfly should run there too.
+I have not been able to verify that this version runs on the
+Macintosh yet (since the Mac apparently has some fairly nonstandard
+file system conventions), but even if it doesn't it should
+run after a few trivial adjustments.  Please let me know if
+Gadfly doesn't run on any of your platforms.
+<p>
+Gadfly is expected to run "out of the box" on Windows 95/98, Windows NT,
+all Unices or unix like platforms (Solaris, IX, BSD, Irix, Linux) and
+anywhere else where Python runs and there is a filesystem
+(Windows CE, QNX, Mac, etcetera).
+<p>
+Furthermore the Gadfly database storage format (based in the Python
+marshal format) is binary compatible between all these systems -- you
+can create a database on any one of the systems and use a binary
+transfer mechanism to any other system and the database should load
+and run.
+<p>
+         <LI><a name="req">What are the software/hardware requirements?</a>
+<p>
+Gadfly requires a Python installation and sufficient memory and disk
+on the target machine to store the live databases in question.
+Since live Gadfly databases are kept in memory during active use
+Gadfly is not appropriate for databases that approach the size of
+virtual memory.  In practice this means that on modern inexpensive
+machines Gadfly can store and manipulate databases with tens
+of thousands of rows without difficulty.  Unless your machine is
+large databases with millions of rows might be infeasible -- and
+even if memory is sufficient the loading and storing of the database
+might make startup and shutdown speed an issue.  Many interesting
+database instances never approach this size.
+<p>
+         <LI><a name="opt">Is there a query optimizer?</a>
+<p>
+Yes, Gadfly automatically optimizes queries using some
+relatively sophisticated methods that attempt to take
+advantage of any available indices, among other methods.
+Technically all optimization uses only "equality predicates"
+at this time, so queries involving many inequalities (eg, BETWEEN)
+and few or no equalities might be slow, or might create very
+large intermediate results.  Most standard database applications
+use equality constraints extensively (eg, as foriegn keys or
+relationships) but if your application is, say, a scientific
+application that requires many inequality comparisons
+across multiple tables among
+floating point data, the Gadfly optimizer may not help much
+-- you may want to load the data into your own structures and
+hand optimize the access and combination methods.
+<P>
+On the other hand, if your application uses equality
+predicates often enough you may find that the Gadfly optimizer does pretty
+well, perhaps better than a "hand coded home grown database"
+would do without a lot of work.
+<p>
+         <LI><a name="fast">Is it fast?</a>
+<p>
+You probably want a benchmark comparison.  I have none to offer.
+The query evaluation and load/store facilities for Gadfly seem
+to be pretty fast for non-huge databases -- particularly if you
+make intelligent use of indices.  At this point the slowest part
+is the SQL parser itself.  If you use a lot of similar SQL statements
+please consult the documentation on how to avoid reparsing
+statements by use of multiple cursors and dynamic parameters.
+<p>
+Unverified anecdotal reports suggest that Gadfly is not
+noticably slower than other free or freeish portable database
+systems; some have suggested it can even be faster, at least
+for certain types of use.
+<p>
+The entire query engine is designed to use the kjbuckets Python
+C extension module, and use of kjbuckets should speed the performance
+of Gadfly considerably -- Gadfly will run without it, but noticably
+slower (2x slower for even small databases, more for larger ones).
+<p>
+         <LI><a name="limit">Are there data size limitations?</a>
+<p>
+There are no intrinsic limitations.  For example a "varchar"
+can be of any size.  That said, remember that a gadfly database,
+in the absense of hackery (eg, storing a filename instead of a
+value) stores all data in memory, so at some point large values
+may fill up virtual memory and the load/store operations can get
+slowish.
+<p>
+         <LI><a name="recovery">What about recovery after crashes?</a>
+<p>
+Gadfly supports a log with deferred updates recovery procedure,
+together with commits and rollbacks.  This means that if your program
+crashes or if your computer crashes it should be able to restore
+a Gadfly database to the state of the database at the point of the
+last "commit".  Any remaining bugs in this area are likely to have to do
+with data definition statements ("create" or "drop") so be careful
+to commit and checkpoint after modifying the data definitions.
+Of course, there are no known bugs, but it is possibly that not all
+possible combinations have been tested (this area is quite subtle,
+unfortunately :( ).  Please see the recovery documentation for more
+information.
+<p>
+         <LI><a name="server">What about client/server based access?</a>
+<p>
+Gadfly supports a TCP/IP based client/server mode, together with a
+non-standard but highly flexible security paradigm for the server.
+Please see the client/server mode documentation.
+<p>
+         <LI><a name="concurrency">What about concurrency control?</a>
+<p>
+Gadfly does not have true concurrency control.  The only safe
+way to allow two concurrent agents to modify a single database
+is to have both of them communicate with the database via a gadfly
+server that arbitrates database accesses.  The server will serve
+each agent serially -- one at a time -- in separate transactions
+each committed immediately.
+<p>
+Of course, two programs can have read-only access to the same
+database in separate memory instances without any problems.
+<p>
+         <LI><a name="list">Is there a mailing list?</a>
+<p>
+Yes.  Please go <a href="http://www.egroups.com/list/gadfly-rdbms/">
+http://www.egroups.com/list/gadfly-rdbms/</a> for more information on
+the gadfly-rdbms mailing list, hosted by egroups.com.
+<p>
+         <LI><a name="who">Who uses it?</a>
+<P>
+My email suggests that quite a few people have been using
+Gadfly, including professional and industrial organizations
+of various sorts.  From my vantage point it is not clear
+how serious all of these uses have been -- but some of them
+appear quite serious.  Gadfly has been included in a number
+of CD-rom publications, such as Linux distributions.
+<p>
+         <LI><a name="support">Is support available?</a>
+<p>
+Yes, please contact 
+<a href="http://www.chordate.com">Chordate</a>
+for paid support.  Unpaid support is more popular, but
+less reliable.  Please report bugs and suggestions
+even if you don't want to pay ;).
+<p>
+         <LI><a name="plan">What are the plans for Gadfly?</a>
+<p>
+At this point the current plan is to maintain the current
+implementation and fix any bugs that arise.  Some time in
+the distant future (several months maybe) a new release with
+major new features might arrive, but only if the new features
+allow existing applications to run.  Gadfly will support
+backwards compatibility of existing databases.
+<p>
+         <LI><a name="code">How do I contribute some code that uses Gadfly?</a>
+<p>
+There is no formal mechanism.  One possible approach would be to
+join the 
+<a href="http://www.python.org">Python Software Association</a>
+and then get a
+<a href="http://starship.skyport.net">starship account</a>
+and then put your contributed code there.  Chordate may add links
+to contributed code to the Gadfly documentation at their discretion.
+<p>
+      </UL>
+      <h3><a name="Installation">Installation</a><br></h3>
+<p>
+This section relates to the installation of Gadfly and connecting
+Gadfly to other software.
+<p>
+      <UL>
+         <LI><a name="sqlwhere">Where is sqlwhere?</a>
+<p>
+If you have problems with the sqlwhere module you probably have not
+installed gadfly or have installed it incorrectly.  Gadfly requires
+an installation procedure.  Please see the documentation.
+<p>
+         <LI><a name="importerror">I get an ImportError!</a>
+<p>
+The gadfly modules must all be on the Python Path for a given
+application to use gadfly.
+<pre>
+import sys
+gadflydirectory = "C:\\gadfly" # edit as appropriate
+sys.path.append(gadflydirectory)
+</pre>
+Or if you don't understand that please look to your Python
+documentation.
+<p>
+         <LI><a name="module">Why not use hierarchical packages?</a>
+<p>
+Gadfly doesn't use the standard Python package mechanism
+due to the need to support Python1.4 and to be backwards
+compatibly to existing applications.  Please suggest a way
+to use packages that won't break existing applications.
+<p>
+         <LI><a name="ODBC">Does Gadfly support ODBC or JDBC?</a>
+<p>
+Although the Gadfly SQL subset is based on the ODBC 2.0 SQL definition
+Gadfly does not support the C-level ODBC calling mechanism.
+All direct accesses to Gadfly must use Python modules at this time.
+<p>
+         <LI><a name="instance">How can I move a Gadfly database instance
+                      from one location/machine to another?</a>
+<p>
+A gadfly database instance as stored in a file system directory
+may be copied to another directory even on another machine using
+any binary file copy mechanism.  You must copy all files relating
+to the database instance in the
+gadfly database directory to the destination, and be sure that
+if you are copying across different platforms to use a <em>binary</em>
+copy mechanism (eg, ftp in binary mode).
+<p>
+         <LI><a name="api">How can I access gadfly from another program?</a>
+<p>
+The only supported API (applications program interface) for gadfly
+at this writing is the Python Database API either using direct access
+or via the client/server mechanism.  Although you must use Python
+to access a gadfly database at this time it is possible to embed
+a Python instance in another program.  Please see the Python documentation.
+<p>
+         <LI><a name="size">What database size limits are there?</a>
+<p>
+As mentioned there are no intrinsic limits (eg, a varchar can be of
+any size) except for the limitations of memory and the possibility
+that the load/store mechanism may get too slow if the database grows
+too large.
+<p>
+         <LI><a name="ftypes">What are the file types in the gadfly database
+                    directory?</a>
+<p>
+<pre>
+*.grl -- a relation representation where * is the relation name.
+*.brl -- a back-up relation representation (for possible recovery).
+*.gfd -- a data definitions file where * is the database name.
+*.bfd -- a back-up data definitions file (for possible recovery).
+*.gfl -- a log file where * is the database name
+*.glb -- a back-up log file (for possible recovery).
+</pre>
+<p>
+      </UL>
+      <a name="Use"><h3>Use</h3></a><br>
+<p>
+The following section relates to the use of gadfly.
+<p>
+      <UL>
+         <LI><a name="neato">Does Gadfly support virtual tables (VIEWS)?
+               Quantifiers? EXISTS? Aggregates? Groupings? Indices?</a>
+<p>
+Of course it does!  Gadfly supports a very large 
+SQL subset.  See the additional documentation for more detailed information.
+<p>
+         <LI><a name="std">How standard is the SQL subset supported?</a>
+<p>
+Gadfly SQL is based on ODBC 2.0 SQL which in turn is based on
+an SQL standard draft.  This means that Gadfly SQL adheres closely
+to the SQL you find in many other database products and documented
+in many books and other documentation.  A number of people have
+implemented Gadfly databases and transferred the SQL
+with few to no modifications from the implementation
+directly to Oracle or MS-Access, for example.
+<p>
+         <LI><a name="blob">Are BLOBS (binary large objects) 
+                             and arbitrary string values supported?</a>
+<p>
+Yes, varchars have no intrinsic size limit and can be used to store
+marshalled or pickled Python BLOBS -- but the application using gadfly
+will have to know when to "deserialize" the objects (using marshal
+or pickle or other mechanisms).  For example it is even possible to
+store Python byte code objects in a gadfly database in this way.
+In particular gadfly stores all strings, including strings with null
+bytes and newlines, but for such strings you <em>must</em> use
+dynamic parameters (or other mechanisms that avoid embedding the
+string directly into the SQL syntax), like:
+<pre>
+   s = chr(0)+chr(10)
+   cursor.insert("insert into table x(v) values (?)", (s,))
+</pre>
+NOT
+<pre>
+   s = chr(0)+chr(10)
+   cursor.insert("insert into table x(v) values ('%s')" % (s,))
+</pre>
+Since the SQL parser will choke on the latter.
+<p>
+         <LI><a name="star">How can I find the column names in a "select *"?</a>
+<p>
+The nasty answer is "don't use select *", but if you really want to you can get
+the order of names for the columns from the description attribute for
+a cursor.
+<pre>
+>>> from gadfly import gadfly
+>>> g = gadfly("test", "dbtest")
+>>> c = g.cursor()
+>>> c.execute("select * from work")
+>>> c.description
+(('RATE', None, None, None, None, None, None), ('NAME', None, None, None, None,
+None, None), ('HOURS', None, None, None, None, None, None))
+>>> print c.pp()
+RATE  | NAME    | HOURS
+=======================
+40.2  | sam     | 30
+10.2  | norm    | 45
+5.4   | woody   | 80
+4.4   | diane   | 3
+12.9  | rebecca | 120
+200.0 | cliff   | 26
+3.5   | carla   | 9
+</pre>
+IE, c.description[i][0] gives the name of the ith column.  The query
+mechanism essentially randomizes the order of the columns in a select
+* and you cannot rely on the engine producing columns in any specific
+order unless you specify the order in the query explicitly.
+<p>
+         <LI><a name="remote">Can I add my own table implementation?</a>
+<p>
+Yes you can, to a limited extent.  Use the remote view protocol in
+gfintrospect.py.  The table you add can extract information from any
+source <em>but must not recursively query the same
+database instance</em> (using a Python implementation)
+and place it into a Gadfly database either only once on first
+usage or once per query.  The table added cannot be updated via SQL
+and you cannot load "only the part of the table you need
+for this query."  The table
+added must be explicitly re-added during the database initialization
+on each usage, and if you implement the table incorrectly you may
+cause some gadfly queries to crash.  Use with caution: this is an
+advanced feature.  See remotetest.py.
+<p>
+         <LI><a name="noupdate">Why can't I update my own table implementation via SQL?</a>
+<p>
+Although it is possible to create a protocol which allows
+non standard table implementations to be updated and optimized
+via SQL,
+the implications to the query optimization mechanism 
+and the crash recovery strategy are not
+clear and may be quite subtle.  At this time the implementation
+opts to avoid possible bugs by not supporting such features,
+although programmers are welcome to experiment at their own
+risk, with the understanding that their experimental modifications
+may not be supported in future releases.
+<p>
+It is perfectly possible to change the number of rows
+or values in the rows of your own table implementations
+without using SQL or gadfly, however and have the updates
+automatically reflected in the table instance in the database.
+[You should not, however, change the number or names of the columns.]
+<p>
+For example gfintrospect.DictKeyValueView will "wrap" a Python dictionary
+as a gadfly table and automatically reflect modifications
+made by an external Python program to
+the dictionary.
+<p>
+         <LI><a name="key">How do you define a primary key?</a>
+<p>
+New in 1.0 you can get the effect of a primary key by defining
+a unique index on the primary key columns
+<pre>
+create unique index pkey on person(firstname, lastname)
+</pre>
+Effectively will enforce a primary key constraint for (firstname, lastname)
+on the person table.
+<p>
+         <LI><a name="whynot">What about NULLs, Triggers and other missing stuff?</a>
+<p>
+The present release opted not to add missing standard or non-standard
+features that were likely to cause major modifications to large sections
+of the implementation, and therefore were likely to introduce bugs.
+<p>
+         <LI><a name="like">Where is the LIKE predicate?</a>
+<p>
+The LIKE predicate for string matching is still not supported at the
+SQL level.  For what it's worth, it is easy to use Python's string matching
+(regex, re, string.search, etcetera)
+facilities on the result of a query.  Also, for what it's worth, since
+the gadfly optimizer won't easily be able to optimize for string matching
+the "by hand" method would essentially be what gadfly would do anyway,
+without major modifications to the implementation.
+<p>
+         <LI><a name="crash">After a crash Gadfly won't recover!  Help!</a>
+<p>
+This shouldn't happen, but did happen (at least once) for a previous
+release.  If it happens again, you can explicitly delete the log files
+from the database directory in order to recover the database to a state
+which may or may not correspond to the state of the database at the second
+to last commit/checkpoint operation.  It is possible, but not likely,
+that the database state will include some but not all updates from the
+last commit, but, to repeat, it shouldn't happen.  Please report the
+problem if it occurs again.
+<p>
+      </UL>
+
+<a href="mailto:arw@ifu.net">feedback</a><br>
+<a href="../index.html">home</a><br>
+<a href="index.html">Gadfly home</a>
+</BODY>
+</HTML>

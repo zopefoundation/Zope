@@ -1,0 +1,24 @@
+<dtml-var manage_page_header>
+<dtml-var manage_tabs>
+
+<p class="form-help">
+  The lexicon processes and stores the words found in objects indexed by one 
+  or more ZCTextIndexes.
+</p>
+
+<p class="section-bar">
+  <span class="form-label">Input Pipeline Stages</span>
+</p>
+
+<p class="form-help">
+  Text indexed through this lexicon is processed by the following pipeline 
+  stages
+</p>
+
+<ol class="form-help">
+  <dtml-in name="getPipelineNames">
+    <li>&dtml-sequence-item;</li>
+  </dtml-in>
+</ol>
+
+<dtml-var manage_page_footer>

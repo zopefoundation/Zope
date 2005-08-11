@@ -1,0 +1,14 @@
+<html xmlns:tal="http://xml.zope.org/namespaces/tal">
+  <p tal:replace="structure string:&lt;a&gt;bar&lt;/a&gt;"
+     tal:attributes="href string:http://www.python.org">dummy text</p>
+  <p tal:define="x python:1" tal:on-error="string:bad boy!">
+   <span tal:define="x python:2">
+    <span tal:define="x python:3">
+     <span tal:content="python:1/0"/>
+    </span>
+   </span>
+  </p>
+  <p tal:on-error="string:x undefined">
+    <span tal:content="x"/>
+  </p>
+</html>

@@ -1,0 +1,27 @@
+Page Template changes
+
+  This file contains change information for the current release. 
+  Change information for previous versions can be found in the
+  file HISTORY.txt.
+
+    Version 1.5.0
+
+      Features Added
+
+        - Error reporting is improved, with line numbers added.
+
+        - In the ZMI, errors are separated from the text and highlighted.
+
+        - A template can be marked explicitly as XML or HTML by giving
+        it a boolean 'is_html' property.
+
+        - New icon, provided by Michael R. Bernstein.
+
+      Bugs Fixed
+
+        - The starting properties could be deleted.  This is only
+        fixed for new templates.
+
+        - Collector 596 fixed; manage_addPageTemplate can now be
+          called with a text argument but no REQUEST.form['file'].
+          E.g. when called via ZPublisher.Client.

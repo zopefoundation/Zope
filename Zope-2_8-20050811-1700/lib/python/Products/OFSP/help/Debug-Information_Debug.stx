@@ -1,0 +1,78 @@
+Debug Information - Debugging Information: Online Zope debugging
+
+  Description
+
+    This view provides simple debugging information to help product
+    authors find memory leaks in their products as well as Zope
+    itself.
+
+    Debugging Information
+
+      * The Zope version
+
+      * The Python version
+
+      * The system platform name
+
+      * The filesystem path of the Zope core software, add-on software,
+        and data files.
+
+      * The ID number of the Zope process (if available on your platform)
+
+      * The length of time Zope has been running
+
+      * The Python module search paths (sys.path).
+
+      * The top refcounts, including a table listing the changes since
+      * the last snapshot
+
+      * The open object database connections
+
+      The Zope version, Python version, and system platform name are
+      used to verify compatibility between Zope, Python, and your
+      system.  On platforms where the process ID number is available,
+      the Zope process can be managed using a more forceful means than
+      is available through the web.
+
+    Refcounts
+
+      The top refcounts list lets you take a look at what is being
+      stored by Zope in memory.  The scrollable list shows how many
+      instances of each type of object are currently in memory.
+
+      If there are items in the list with a very high refcount, there
+      is a good chance there is a memory leak in a product or in Zope.
+      Using the snapshot and refresh options allow you to determine
+      which operations are causing memory leaks.
+
+    Open Connections
+
+      A database connection usually corresponds with an HTTP request.
+      The left column shows the time at which the connection was
+      opened.  If there is a request that has been running for a long
+      time you may need to restart Zope to kill the corresponding
+      thread. The middle column usually shows the state of the REQUEST
+      object with size of the cache for that connection in
+      parentheses.  The right column shows information about the
+      version the user is working in.
+
+  Controls
+
+    'Update Snapshot' -- Takes the current refcounts and store them in
+    memory.  Then each time the debugging page is reloaded, the table
+    will show the difference in refcounts between the snapshot and the
+    current state.
+
+    'Refresh' -- Reloads and updates the debugging information.
+
+    'Auto refresh interval' -- The number of seconds to wait before
+    automatically refreshing the debugging information.
+
+    'Start auto refresh' -- Begins automatically refreshing the
+    debugging information.
+
+    'Stop auto refresh' -- Ends automatic refreshing of the debugging
+    information.
+
+
+

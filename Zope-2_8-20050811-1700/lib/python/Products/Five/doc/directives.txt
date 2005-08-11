@@ -1,0 +1,163 @@
+=================================
+ZCML Directives supported by Five
+=================================
+
+Five tries to use the Zope 3 ZCML directives where possible, though
+does sometimes subset the possible attributes. It also introduces a
+few directives of its own under the ``five`` namespace.
+
+Directives are listed per namespace, in alphabetic order.
+
+zope ``http://namespaces.zope.org/zope``
+========================================
+
+adapter
+-------
+
+Hook an adapter factory to an interface.
+
+content
+-------
+
+Declare interface and permissions on content object. Declares Zope 2
+permissions.
+
+permission
+----------
+
+Way to make Zope 2 permissions available to Five, ``title`` is
+permission name.
+
+redefinePermission
+------------------
+
+Redefine a permission in included ZCML as another one.
+
+service
+-------
+
+Declare a global service
+
+serviceType
+-----------
+
+Declare a type of service.
+
+skin
+----
+
+Declare a skin, consisting of layers.
+
+utility
+-------
+
+Declare a global utility.
+
+interface
+---------
+Register an interface in ZCML.
+
+
+browser ``http://namespaces.zope.org/browser``
+==============================================
+
+page
+----
+
+Declare a page view for an interface. Permission is a Zope 2
+permission.
+
+pages
+-----
+
+Declare multiple page views for an interface. Permissions are Zope 2
+permissions.
+
+defaultView
+-----------
+
+Declare the name of the view that should be used for the default when viewing
+the object; i.e. when the object is traversed to without a view.
+
+defaultSkin
+-----------
+
+Declare the default skin used.
+
+editform
+--------
+
+Create an edit form based on a schema.
+
+addform
+--------
+
+Create an add form based on a schema.
+
+layer
+-----
+
+Declare a layer.
+
+menu
+----
+
+Declare a menu
+
+menuItem, menuItems
+-------------------
+
+Declare menuItems
+
+five ``http://namespaces.zope.org/five``
+========================================
+
+implements
+----------
+
+Make a class declare it implements an interface.
+
+loadProducts
+------------
+
+Loads ZCML in all Zope 2 products. First processes all ``meta.zcml``
+files, then processes all ``configure.zcml`` files.
+
+loadProductsOverrides
+---------------------
+
+Loads overriding ZCML in all products (``overrides.zcml``).
+
+traversable
+-----------
+
+Make a Zope 2 content class traversable in the Zope 3 manner using
+Five. This is used to attached views, resources and other things to
+Zope 2 objects.
+
+defaultViewable
+---------------
+
+Make a Zope 2 content class use a Zope 3 default view when looking at
+it without any paths appended to it. This works then instead of
+``index_html`` in Zope 2.
+
+sizable
+-------
+
+Retrieve size information for a Zope 2 content class via a Zope 3
+style ``ISized`` adapter.
+
+sendEvents
+----------
+
+Lets a Zope 2 content class send out Zope 3 object events that
+correspond to the Zope 2 methods ``manage_afterAdd`` and
+``manage_beforeDelete``.
+
+pagesFromDirectory
+------------------
+
+Load all *.pt files in a directory as pages. Useful when you want to
+share templates between Five and CMF, so you can declare pages like
+this is a similar way to setting up skin folders in portal_skins.

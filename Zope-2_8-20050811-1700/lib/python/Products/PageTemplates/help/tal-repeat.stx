@@ -1,0 +1,125 @@
+repeat: Repeat an element
+
+  Syntax
+  
+    'tal:repeat' syntax::
+
+      argument      ::= variable_name expression
+      variable_name ::= Name
+
+  Description
+
+    The 'tal:repeat' statement replicates a sub-tree of your document
+    once for each item in a sequence. The expression should evaluate
+    to a sequence. If the sequence is empty, then the statement
+    element is deleted, otherwise it is repeated for each value in the
+    sequence.  If the expression is *default*, then the element is
+    left unchanged, and no new variables are defined.
+
+    The 'variable_name' is used to define a local variable and a
+    repeat variable. For each repetition, the local variable is set to
+    the current sequence element, and the repeat variable is set to an
+    iteration object.
+
+  Repeat Variables
+
+    You use repeat variables to access information about the current
+    repetition (such as the repeat index).  The repeat variable has
+    the same name as the local variable, but is only accessible
+    through the built-in variable named 'repeat'.
+    
+    The following information is available from the repeat variable:
+
+      o *index* - repetition number, starting from zero.
+
+      o *number* - repetition number, starting from one.
+
+      o *even* - true for even-indexed repetitions (0, 2, 4, ...).
+
+      o *odd* - true for odd-indexed repetitions (1, 3, 5, ...).
+
+      o *start* - true for the starting repetition (index 0).
+
+      o *end* - true for the ending, or final, repetition.
+
+      o *first* - true for the first item in a group - see note below
+
+      o *last* - true for the last item in a group - see note below
+
+      o *length* - length of the sequence, which will be the total number
+        of repetitions.
+
+      o *letter* - repetition number as a lower-case letter: "a" -
+        "z", "aa" - "az", "ba" - "bz", ..., "za" - "zz", "aaa" - "aaz",
+        and so forth.
+
+      o *Letter* - upper-case version of *letter*.
+
+      o *roman* - repetition number as a lower-case roman numeral:
+        "i", "ii", "iii", "iv", "v", etc.
+
+      o *Roman* - upper-case version of *roman*.
+
+    You can access the contents of the repeat variable using path
+    expressions or Python expressions.  In path expressions, you write
+    a three-part path consisting of the name 'repeat', the statement
+    variable's name, and the name of the information you want, for
+    example, 'repeat/item/start'.  In Python expressions, you use
+    normal dictionary notation to get the repeat variable, then
+    attribute access to get the information, for example,
+    "python:repeat['item'].start".
+
+    Note that 'first' and 'last' are intended for use with sorted
+    sequences.  They try to divide the sequence into group of items
+    with the same value.  If you provide a path, then the value
+    obtained by following that path from a sequence item is used for
+    grouping, otherwise the value of the item is used.  You can
+    provide the path by passing it as a parameter, as in
+    "python:repeat['item'].first('color')", or by appending it to the
+    path from the repeat variable, as in "repeat/item/first/color".
+
+  Examples
+
+    Iterating over a sequence of strings::    
+
+      <p tal:repeat="txt python:'one', 'two', 'three'">
+         <span tal:replace="txt" />
+      </p>
+
+    Inserting a sequence of table rows, and using the repeat variable
+    to number the rows::
+
+      <table>
+        <tr tal:repeat="item here/cart">
+            <td tal:content="repeat/item/number">1</td>
+            <td tal:content="item/description">Widget</td>
+            <td tal:content="item/price">$1.50</td>
+        </tr>
+      </table>
+
+    Nested repeats::
+
+      <table border="1">
+        <tr tal:repeat="row python:range(10)">
+          <td tal:repeat="column python:range(10)">
+            <span tal:define="x repeat/row/number; 
+                              y repeat/column/number; 
+                              z python:x*y"
+                  tal:replace="string:$x * $y = $z">1 * 1 = 1</span>
+          </td>
+        </tr>
+      </table>
+
+    Insert objects. Seperates groups of objects by meta-type by
+    drawing a rule between them::
+
+
+      <div tal:repeat="object objects">
+        <h2 tal:condition="repeat/object/first/meta_type"
+	    tal:content="object/meta_type">Meta Type</h2>
+        <p tal:content="object/getId">Object ID</p>
+        <hr tal:condition="repeat/object/last/meta_type" />
+      </div>
+
+    Note, the objects in the above example should already be sorted by
+    meta-type.

@@ -1,0 +1,35 @@
+call: Call a method
+
+  The 'call' tag lets you call a method without inserting the results
+  into the DTML output.
+
+  Syntax
+
+    'call' tag syntax::
+
+      <dtml-call Variable|expr="Expression">
+
+    If the call tag uses a variable, the methods arguments are passed
+    automatically by DTML just as with the 'var' tag. If the method is
+    specified in a expression, then you must pass the arguments yourself.
+
+  Examples
+
+    Calling by variable name::
+
+      <dtml-call UpdateInfo>
+
+    This calls the 'UpdateInfo' object automatically passing arguments.
+
+    Calling by expression::
+
+      <dtml-call expr="RESPONSE.setHeader('content-type', 'text/plain')">
+
+  See Also
+
+    "var tag":dtml-var.stx
+
+
+
+
+

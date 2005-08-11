@@ -1,0 +1,3 @@
+*shared*
+stopper stopper.c
+okascore okascore.c

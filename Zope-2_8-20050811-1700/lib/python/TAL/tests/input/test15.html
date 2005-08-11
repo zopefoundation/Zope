@@ -1,0 +1,26 @@
+<span metal:define-macro="INNER">
+  <span metal:define-slot="INNERSLOT">INNERSLOT</span>
+</span>
+
+<xxx metal:use-macro="INNER">
+  <xxx metal:fill-slot="INNERSLOT">inner-argument</xxx>
+</xxx>
+
+<div metal:define-macro="OUTER">
+<div metal:use-macro="INNER">
+  <xxx metal:define-slot="OUTERSLOT" metal:fill-slot="INNERSLOT">
+    OUTERSLOT
+  </xxx>
+</div>
+</div>
+
+<div metal:use-macro="OUTER">
+<span>
+  <xxx>
+    <div metal:fill-slot="OUTERSLOT">outer-argument</div>
+  </xxx>
+</span>
+</div>
+
+<div metal:use-macro="OUTER">
+</div>

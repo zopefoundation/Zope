@@ -1,0 +1,22 @@
+ZClass - Permissions: Select ZClass permissions.
+  
+  Description
+
+    This view allows you to select permissions to be used by a ZClass.
+
+    When setting permissions for individual methods or property sheets
+    of a ZClass, you will be able to select from inherited permissions
+    and class permission which you set with this view.
+        
+  Controls
+
+    'Class permissions' -- The permissions available to your ZClass in
+    addition to inherited permissions.
+
+    'Inherited permissions' -- Indicates the inherited permissions of
+    your ZClass.
+
+    'Change' -- Change Class permissions.
+
+
+

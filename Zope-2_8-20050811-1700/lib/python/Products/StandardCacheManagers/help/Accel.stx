@@ -1,0 +1,66 @@
+  Accelerated HTTP Cache Managers
+
+    For background information, see the
+    <a href="../../OFSP/Help/Caching.stx">description of cache management</a>.
+
+    The HTTP protocol provides for headers that can indicate to
+    downstream proxy caches, browser caches, and dedicated caches that
+    certain documents and images are cacheable.  Most images, for example,
+    can safely be cached for a long time.  Anonymous visits to most
+    primary pages can be cached as well.
+
+    An accelerated HTTP cache manager lets you control the headers that
+    get sent with the responses to requests so that downstream caches
+    will know what to cache and for how long.  This allows you to reduce
+    the traffic to your site and handle larger loads than otherwise
+    possible.  You can associate accelerated HTTP cache managers with
+    any kind of cacheable object that can be viewed through the web.
+
+    The main risk in using an accelerated HTTP cache manager involves
+    a part of a page setting headers that apply to the whole response.
+    If, for example, your home page contains three parts that are
+    cacheable and one of those parts is associated with an accelerated
+    HTTP cache manager, Zope will return the headers set by the part of
+    the page, making downstream caches think that the whole page should
+    be cached.
+
+    The workaround is simple: don't use an accelerated HTTP cache manager
+    with objects that make up parts of a page unless you really know
+    what you're doing.
+
+    There are some parameters available for accelerated HTTP cache managers.
+    The interval is the number of seconds the downstream caches should
+    cache the object.  3600 seconds, or one hour, is a good default.
+    If you find that some objects need one interval and other objects
+    should be set to another interval, use multiple cache managers.
+
+    If you set the *cache anonymous connections only* checkbox, you
+    will reduce the possibility of caching private data.
+
+    The *notify URLs* parameter allows you to specify the URLs of
+    specific downstream caches so they can receive invalidation messages
+    as 'PURGE' directives.  Dedicated HTTP cache software such
+    as Squid will clear cached data for a given URL when receiving the
+    'PURGE' directive.  (More details below.)
+
+    Simple statistics are provided.  Remember that the only time Zope
+    receives a request that goes through an HTTP cache is when the
+    HTTP cache had a *miss*.  So the hits seen by Zope correspond to
+    misses seen by the HTTP cache.  To do traffic analysis, you should
+    consult the downstream HTTP caches.
+
+    When testing the accelerated HTTP cache manager, keep in mind that
+    the *reload* button on most browsers causes the 'Pragma: no-cache'
+    header to be sent, forcing HTTP caches to reload the page as well.
+    Try using telnet, netcat, or tcpwatch to observe the headers.
+
+    To allow Zope to execute the Squid PURGE directive, make sure the
+    following lines or the equivalent are in squid.conf (changing
+    'localhost' to the correct host name if Squid is on a different
+    machine)::
+
+      acl PURGE method purge
+      http_access allow localhost
+      http_access allow purge localhost
+      http_access deny purge
+      http_access deny all

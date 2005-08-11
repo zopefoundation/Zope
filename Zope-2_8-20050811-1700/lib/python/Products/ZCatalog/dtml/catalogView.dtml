@@ -1,0 +1,127 @@
+<dtml-var manage_page_header>
+<dtml-var manage_tabs>
+
+    <dtml-let filterpath="REQUEST.get('filterpath', '/')"
+              results="searchResults(path=filterpath)">
+<dtml-if results>
+
+<script type="text/javascript">
+<!-- 
+
+isSelected = false;
+
+function toggleSelect() {
+  if (isSelected == false) {
+    for (i = 0; i < document.objectItems.length; i++)
+      document.objectItems.elements[i].checked = true ;
+      isSelected = true;
+      document.objectItems.selectButton.value = "Deselect All";
+      return isSelected;
+  }
+  else {
+    for (i = 0; i < document.objectItems.length; i++)
+      document.objectItems.elements[i].checked = false ;
+      isSelected = false;
+      document.objectItems.selectButton.value = "Select All";
+      return isSelected;       
+  }
+}
+
+//-->
+</script>
+
+<h1 class="form-label section-bar">Path filter</h1>
+<dtml-if "'path' in this().Indexes.objectIds()">
+<form action="&dtml-URL;">
+    <p class="form-text">
+        Path: <input type="text" name="filterpath" value="&dtml-filterpath;"/> <input type="submit" value="Set Filter"/>
+    </p>
+</form>
+<dtml-else>
+    <p class="form-text">
+    The path filter is <span style="color:red;">disabled</span>. To enable the path filter, add a PathIndex called "path" to this catalog.
+    </p>
+</dtml-if>
+
+<h1 class="form-label section-bar">Objects in this catalog</h1>
+
+<form action="&dtml-URL1;" name="objectItems">
+<p class="form-text">
+The catalog "&dtml-id;" contains <dtml-var results fmt=collection-length thousands_commas> record(s) in the path "&dtml-filterpath;".
+</p>
+<div class="form-text">
+  <dtml-in results previous size=20 start=query_start >
+      <a href="&dtml-URL;?query_start=&dtml-previous-sequence-start-number;&filterpath=&dtml-filterpath;">
+      [Previous <dtml-var previous-sequence-size> entries]
+    </a>
+  </dtml-in>
+  <dtml-in results next size=20 start=query_start >
+    <a href="&dtml-URL;?query_start=&dtml-next-sequence-start-number;&filterpath=&dtml-filterpath;">
+      [Next <dtml-var next-sequence-size> entries]
+    </a>
+  </dtml-in>
+  </div>
+
+<table width="100%" cellspacing="0" cellpadding="2" border="0">
+<dtml-in results size=20 start=query_start >
+  <dtml-if name="sequence-start">
+  <tr class="list-header">
+    <td width="5%" align="right" colspan="2" valign="top">&nbsp;</td>
+    <td width="80%" align="left" valign="top">
+      <div class="list-item">Object Identifier</div></td>
+    <td width="15%" align="left" valign="top">
+      <div class="list-item">Type</div></td>
+  </tr>
+  </dtml-if>
+  <dtml-if name="sequence-odd"><tr class="row-normal">
+  <dtml-else><tr class="row-hilite"></dtml-if>
+    <td align="right" valign="top">
+    <input type="checkbox" NAME="urls:list" VALUE="&dtml-getPath;">
+    </td>
+    <td align="left" valign="top">&nbsp;</td>
+    <td align="left" valign="top">
+    <div class="form-text">
+    <a href="&dtml-URL1;/manage_objectInformation?rid=&dtml-getRID;"
+     target="_objectinfo_&dtml-getRID;">&dtml-getPath;</a>
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <div class="form-text">
+      <dtml-if expr="has_key('meta_type') and meta_type">
+        <dtml-var name="meta_type" size="15" html_quote>
+      <dtml-else>
+        <i>Unknown</i>
+      </dtml-if>
+    </div>
+    </td>
+  </tr>
+</dtml-in>
+</table>
+
+<div class="form-element">
+<input class="form-element" type="submit" value=" Remove " 
+ name="manage_uncatalogObject:method">
+<input class="form-element" type="submit" value=" Update " 
+ name="manage_catalogObject:method">
+<script type="text/javascript">
+<!-- 
+if (document.forms[0]) {
+  document.write('<input class="form-element" type="submit" name="selectButton" value="Select All" onClick="toggleSelect(); return false">')
+  }
+//-->
+</script>
+</div>
+</form>
+<dtml-else>
+<p class="form-text">
+There are no objects in the Catalog.
+</p>
+</dtml-if>
+</dtml-let>
+<dtml-var manage_page_footer>
+
+
+
+
+
+

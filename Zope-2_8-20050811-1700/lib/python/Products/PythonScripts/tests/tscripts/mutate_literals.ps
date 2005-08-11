@@ -1,0 +1,14 @@
+l1 = [1, 2, 3]
+l2 = [l1[0], l1[1]]
+l2.extend(l1)
+l2.append(4)
+del l2[:2]
+del l2[0]
+l2[-2:] = []
+
+d = {'a': 1, 'b': l2[0]}
+d['a'] = 0
+del d['a']
+
+return l2, d
+

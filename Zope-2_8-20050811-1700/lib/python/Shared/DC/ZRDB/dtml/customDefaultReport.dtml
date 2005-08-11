@@ -1,0 +1,37 @@
+<dtml-in %(id)s size=20 start=query_start>
+   <dtml-if sequence-start>
+
+      <dtml-if previous-sequence>
+
+        <a href="&dtml-URL;?query_start=&dtml-previous-sequence-start-number;&query=<dtml-var query url_quote missing=''>">
+        (Previous <dtml-var previous-sequence-size> results)
+        </a>
+
+      </dtml-if previous-sequence>
+
+      %(else no_table)[<table border>
+        %(heading)s
+      %(else)]
+
+   </dtml-if sequence-start>
+
+   %(row)s
+
+   <dtml-if sequence-end>
+
+      %(else no_table)[</table>%(else)]
+
+      <dtml-if next-sequence>
+         <a href="&dtml-URL;?query_start=&dtml-next-sequence-start-number;&query=<dtml-var query url_quote missing=''>">
+
+         (Next <dtml-var next-sequence-size> results)
+         </a>
+
+      </dtml-if next-sequence>
+   </dtml-if sequence-end>
+
+<dtml-else>
+
+  There was no data matching this &dtml-title_or_id; query.
+
+</dtml-in>

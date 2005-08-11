@@ -1,0 +1,13 @@
+Security - User local roles: Manage local roles.
+  
+  Description
+
+    This view allows you to manage a user's local roles.
+
+  Controls
+
+    'User' -- The user whose local roles you going to change.
+
+    'Roles' -- The user's local roles.
+
+    'Change' -- Change the local roles.

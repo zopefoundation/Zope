@@ -1,0 +1,49 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:browser="http://namespaces.zope.org/browser"
+           xmlns:five="http://namespaces.zope.org/five">
+
+  <include file="meta.zcml" />
+  <include file="services.zcml" />
+  <include file="interfaces.zcml" />
+  <include file="permissions.zcml" />
+  <include file="browser.zcml" />
+  <include file="i18n.zcml" />
+
+  <include package="zope.app.traversing" />
+  <include package="zope.app.form.browser" />
+
+  <!-- do 'traditional' traversing by default; needed by ZPT -->
+  <adapter
+      for="*"
+      factory=".traversable.FiveTraversable"
+      provides="zope.app.traversing.interfaces.ITraversable"
+      />
+
+  <adapter
+      for="*"
+      factory="zope.app.traversing.adapters.Traverser"
+      provides="zope.app.traversing.interfaces.ITraverser"
+      />
+
+  <adapter
+      for="*"
+      factory=".viewable.BrowserDefault"
+      provides=".interfaces.IBrowserDefault"
+      />
+
+  <adapter
+      for=".interfaces.IObjectManager"
+      factory=".adding.ObjectManagerNameChooser"
+      provides="zope.app.container.interfaces.INameChooser"
+      />
+
+  <!-- this is really lying, but it's to please checkContainer -->
+  <five:implements class="OFS.ObjectManager.ObjectManager"
+                   interface="zope.app.container.interfaces.IContainer" />
+
+  <!-- make Zope 2's REQUEST implement the right thing -->
+  <five:implements class="ZPublisher.HTTPRequest.HTTPRequest"
+                   interface="zope.publisher.interfaces.browser.IBrowserRequest"
+                   />
+
+</configure>

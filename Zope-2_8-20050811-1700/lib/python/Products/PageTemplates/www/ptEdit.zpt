@@ -1,0 +1,148 @@
+<h1 tal:replace="structure here/manage_page_header">Header</h1>
+<h2 tal:define="manage_tabs_message options/manage_tabs_message | nothing"
+    tal:replace="structure here/manage_tabs">Tabs</h2>
+
+<tal:block define="global body request/other/text | request/form/text
+| here/read" /> 
+<form action="" method="post" tal:attributes="action request/URL1">
+<input type="hidden" name=":default_method" value="pt_changePrefs">
+<table width="100%" cellspacing="0" cellpadding="2" border="0">
+  <tr>
+    <td align="left" valign="middle">
+    <div class="form-optional">
+    Title
+    </div>
+    </td>
+    <td align="left" valign="middle">
+    <input type="text" name="title" size="40" 
+           tal:attributes="value request/title | here/title" />
+    </td>
+    <td align="left" valign="middle">
+    <div class="form-optional">
+    Content-Type
+    </div>
+    </td>
+    <td align="left" valign="middle">
+    <input type="text" name="content_type" size="14" 
+           tal:attributes="value request/content_type | here/content_type" />
+    </td>
+  </tr>
+  <tr>
+    <td align="left" valign="middle">
+    <div class="form-label">
+    Last Modified
+    </div>
+    </td>
+    <td align="left" valign="middle">
+    <div class="form-text" 
+     tal:content="python:here.bobobase_modification_time().strftime('%Y-%m-%d %I:%M %p')">1/1/2000
+    </div>
+    </td>
+    <td align="left" valign="top" colspan=2>
+      <a href="source.html" tal:condition="here/html">Browse HTML source</a>
+      <a href="source.xml" tal:condition="not:here/html">Browse XML source</a>
+      <br>
+      <input type="hidden" name="expand:int:default" value="0">
+      <input type="checkbox" value="1" name="expand:int"
+       tal:attributes="checked request/expand | here/expand">
+      Expand macros when editing
+    </td>
+  </tr>
+
+  <tr tal:define="errors here/pt_errors" tal:condition="errors">
+    <tal:block define="global body python:here.document_src({'raw':1})"/>
+    <td align="left" valign="middle" class="form-label">Errors</td>
+    <td align="left" valign="middle" style="background-color: #FFDDDD"
+    colspan="3">
+<pre tal:content="python:modules['string'].join(errors, '\n')">errors</pre>
+    </td>
+  </tr>
+
+  <tr tal:define="warnings here/pt_warnings" tal:condition="warnings">
+    <td align="left" valign="middle" class="form-label">Warnings</td>
+    <td align="left" valign="middle" style="background-color: #FFEEDD"
+     colspan="3">
+<pre tal:content="python:modules['string'].join(warnings, '\n')">errors</pre>
+    </td>
+  </tr>
+
+  <tr>
+    <td align="left" valign="top" colspan="4"
+      tal:define="width request/dtpref_cols | string:100%;
+                  relative_width python:str(width).endswith('%')">
+      <textarea name="text:text" wrap="off" style="width: 100%;" rows="20"
+        tal:condition="relative_width"
+        tal:attributes="style string:width: $width;;;
+                        rows request/dtpref_rows | default"
+        tal:content="body">Template Body</textarea>
+      <textarea name="text:text" wrap="off" rows="20" cols="50"
+        tal:condition="not:relative_width"
+        tal:attributes="cols width; rows request/dtpref_rows | default"
+        tal:content="body">Template Body</textarea>
+    </td>
+  </tr>
+
+<tr>
+  <td align="left" valign="top" colspan="4">
+  <div class="form-element">
+    <em tal:condition="here/wl_isLocked">Locked by WebDAV</em>
+    <input tal:condition="not:here/wl_isLocked"
+     class="form-element" type="submit" 
+     name="pt_editAction:method" value="Save Changes">
+  &nbsp;&nbsp;
+  <input class="form-element" type="submit" name="height" value="Taller">
+  <input class="form-element" type="submit" name="height" value="Shorter">
+  <input class="form-element" type="submit" name="width" value="Wider">
+  <input class="form-element" type="submit" name="width" value="Narrower">
+  </div>
+  </td>
+</tr>
+</table>
+</form>
+
+<p class="form-help">
+You can upload the text for <span tal:replace="here/title_and_id" />
+using the following form.
+Choose an existing HTML or XML file from your local computer by clicking
+<em>browse</em>.  You can also <a href="document_src">click here</a>
+to view or download the current text.
+</p>
+
+<form action="pt_upload" method="post" 
+ enctype="multipart/form-data">
+<table cellpadding="2" cellspacing="0" border="0">
+<tr>
+  <td align="left" valign="top">
+  <div class="form-label">
+  File &nbsp;
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <input type="file" name="file" size="25" value="">
+  </td>
+</tr>
+<tr tal:condition="context/management_page_charset|nothing">
+  <td align="left" valign="top">
+    <div class="form-label">
+      Encoding &nbsp;
+    </div>
+  </td>
+  <td align="left" valign="top">
+    <input name="charset" value=""
+      tal:attributes="value here/management_page_charset|default" />
+  </td>
+</tr>
+<tr>
+  <td></td>
+  <td align="left" valign="top">
+  <div class="form-element">
+    <em tal:condition="here/wl_isLocked">Locked by WebDAV</em>
+    <input tal:condition="not:here/wl_isLocked"
+    class="form-element" type="submit" value="Upload File">
+  </div>
+  </td>
+</tr>
+</table>
+</form>
+
+<h1 tal:replace="structure here/manage_page_footer">Footer</h1>

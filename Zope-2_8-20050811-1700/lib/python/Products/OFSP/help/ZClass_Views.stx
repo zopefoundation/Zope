@@ -1,0 +1,51 @@
+ZClass - Views: Define management views.
+
+  Description
+
+    This view allows you to manage a ZClass's views.
+
+    Views are managements screens that are available as tabs while
+    managing a Zope object. To provides through the web management for
+    your ZClass you need to define management views. Each management
+    view consists of a name, a method, and a help topic. When the
+    management view is selected by the user the view's method is
+    executed. Typically view methods are edit forms. Help topics
+    provide help for views. If a view has an associated help topic, a
+    help button will appear on the management view.
+
+    **Note: A view will not be visible to a user unless they have
+    adequate permissions to execute the view method.**
+
+  Controls
+
+    Editing Views
+
+      Views are listed one per line.
+
+      '[Checkbox]' -- Selects a view.
+
+      'Method' -- The method of the view.
+
+      'Help Topic' -- The help topic associated with the view.
+
+      'Change' -- Change the views.
+
+      'Delete' -- Delete the selected views.
+
+      'First' -- Moves the selected view to the beginning of the view
+      list. This allows you to change the order of the views.
+
+    Creating Views
+
+      'New' -- Allows you to create a new view. In the 'Name' field you
+      will be able to specify the label name of the view. The 'Method'
+      and 'Help Topic' field are the same as above.
+
+      'Name' -- The name of the view.
+
+      'Method' -- The method of the view.
+
+      'Help Topic' -- The help topic associated with the view.
+
+      'Add' -- Create a new view.
+

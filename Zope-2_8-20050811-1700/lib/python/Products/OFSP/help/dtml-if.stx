@@ -1,0 +1,57 @@
+if: Tests Conditions
+
+  The 'if' tags allows you to test conditions and to take different
+  actions depending on the conditions. The 'if' tag mirrors Python's
+  'if/elif/else' condition testing statements.
+
+  Syntax
+
+    If tag syntax::
+
+      <dtml-if ConditionVariable|expr="ConditionExpression">
+	[<dtml-elif ConditionVariable|expr="ConditionExpression">]
+	 ...
+	[<dtml-else>]
+      </dtml-if>
+
+    The 'if' tag is a block tag. The 'if' tag and optional 'elif' tags
+    take a condition variable name or a condition expression, but not
+    both. If the condition name or expression evaluates to true then
+    the 'if' block is executed. True means not zero, an empty string
+    or an empty list.  If the condition variable is not found then the
+    condition is considered false.
+
+    If the initial condition is false, each 'elif' condition is tested
+    in turn. If any 'elif' condition is true, its block is
+    executed. Finally the optional 'else' block is executed if none of
+    the 'if' and 'elif' conditions were true. Only one block will be
+    executed.
+
+  Examples
+
+    Testing for a variable::
+
+      <dtml-if snake>
+        The snake variable is true
+      </dtml-if>
+
+    Testing for expression conditions::
+
+      <dtml-if expr="num > 5">
+        num is greater than five
+      <dtml-elif expr="num < 5">
+        num is less than five
+      <dtml-else>
+        num must be five
+      </dtml-if>
+
+  See Also
+
+    "Python Tutorial: If Statements":http://www.python.org/doc/current/tut/node6.html#SECTION006100000000000000000
+  
+
+
+
+
+
+

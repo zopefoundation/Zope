@@ -1,0 +1,51 @@
+use-macro: Use a macro
+
+  Syntax
+
+    'metal:use-macro' syntax::
+   
+      argument ::= expression
+
+  Description
+
+    The 'metal:use-macro' statement replaces the statement element
+    with a macro. The statement expression describes a macro
+    definition. 
+
+    In Zope the expression will generally be a path expression
+    referring to a macro defined in another template. See
+    "metal:define-macro" for more information.
+
+    The effect of expanding a macro is to graft a subtree from another
+    document (or from elsewhere in the current document) in place of
+    the statement element, replacing the existing sub-tree.  Parts of
+    the original subtree may remain, grafted onto the new subtree, if
+    the macro has *slots*. See
+    "metal:define-slot":metal-define-slot.stx for more information. If
+    the macro body uses any macros, they are expanded first.
+
+    When a macro is expanded, its 'metal:define-macro' attribute is
+    replaced with the 'metal:use-macro' attribute from the statement
+    element.  This makes the root of the expanded macro a valid
+    'use-macro' statement element.
+
+  Examples
+
+    Basic macro usage::
+
+      <p metal:use-macro="container/other.html/macros/header">
+        header macro from defined in other.html template
+      </p>
+
+    This example refers to the 'header' macro defined in the
+    'other.html' template which is in the same folder as the current
+    template. When the macro is expanded, the 'p' element and its
+    contents will be replaced by the macro. Note: there will still be
+    a 'metal:use-macro' attribute on the replacement element.
+
+  See Also
+
+    "metal:define-macro":metal-define-macro.stx
+
+    "metal:fill-slot":metal-fill-slot.stx
+

@@ -1,0 +1,55 @@
+<dtml-var manage_page_header>
+<dtml-var manage_tabs>
+
+<form action="manage_users" method="post">
+<dtml-if user_names>
+<p class="form-help">
+The following users have been defined. Click on the name of a 
+user to edit that user.
+</p>
+
+<table cellspacing="0" cellpadding="2" border="0">
+<dtml-in user_names>
+<dtml-if sequence-odd>
+<tr class="row-normal">
+<dtml-else>
+<tr class="row-hilite">
+</dtml-if>
+  <td align="left" valign="top">
+  <input type="checkbox" name="names:list" value="&dtml-sequence-item;" />
+  </td>
+  <td align="left" valign="top">
+  <div class="list-item">
+  <a href="manage_users?name=&dtml.url_quote-sequence-item;&submit=Edit"><img src="&dtml-BASEPATH1;/p_/User_icon"
+   alt="" border="0" /></a>
+  <a href="manage_users?name=&dtml.url_quote-sequence-item;&submit=Edit">&dtml-sequence-item;</a>
+  </div>
+  </td>
+</tr>
+</dtml-in user_names>
+<tr>
+  <td align="left" valign="top">&nbsp;
+  </td>
+  <td align="left" valign="top">
+  <div class="form-element">
+  <input class="form-element" type="submit" name="submit" value="Add..." />
+  <input class="form-element" type="submit" name="submit" value="Delete" />
+  </div>
+  </td>
+</tr>
+</table>
+<dtml-else user_names>
+<p class="std-text">
+There are no users defined.
+</p>
+
+<p>
+<div class="form-element">
+<input class="form-element" type="submit" name="submit" value="Add..." />
+</div>
+</p>
+</dtml-if user_names>
+</form>
+
+<dtml-var manage_page_footer>
+

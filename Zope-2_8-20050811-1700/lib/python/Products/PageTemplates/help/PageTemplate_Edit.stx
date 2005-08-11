@@ -1,0 +1,47 @@
+Edit View: Edit A Page Template
+  
+    Description
+
+        This view allows you to edit the template's text, upload new
+        text, or change the content type and title of the template.
+
+    Template Text
+
+        The text in a template must be well-formed HTML if the content
+        type is 'text/html'.  Otherwise, it must be well-formed XML.
+        Either way, it may include "TAL":tal.stx or "METAL":metal.stx
+        markup containing "TALES":tales.stx expressions.
+        
+    Controls
+
+        'Title' -- Allows you to specify the Zope title of the template.
+        
+        'Content-Type' -- Allows you to specify the content-type that
+        will be given to renderings of this template.  Also, if the
+        content type is 'text/html' (the default) then the template is
+        assumed to contain HTML, not XML.  This affects both parsing
+        and rendering of the template, and can be overridden by giving
+        the template an 'is_html' property. In HTML mode you don't
+        need to explicitly declare 'tal' and 'metal' XML namespaces. In
+        XML mode you must explicitly declare 'tal' and 'metal' XML
+        namespaces, and Zope assumes that your template contains
+        well-formed XML.
+
+        'Expand macros when editing' -- Allows you to turn the expansion
+        of METAL macros on or off.  This only affects viewing of the
+        source code, not rendering.
+        
+    Buttons and Other Form Elements
+
+        'Save Changes' -- saves changes you make to the body, title, or
+          content type.
+
+        'Taller'/'Shorter'/'Wider'/'Narrower' -- make the body textarea
+          taller, shorter, wider, or narrower.
+
+        'File' -- upload a file into this template.
+
+    File Upload Details
+
+        Files uploaded into a template must be valid HTML or XML text.
+
