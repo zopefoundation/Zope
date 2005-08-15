@@ -160,6 +160,7 @@ class TALInterpreter:
         self.macros = macros
         self.engine = engine # Execution engine (aka context)
         self.Default = engine.getDefault()
+        self._currentTag = ""
         self._stream_stack = [stream or sys.stdout]
         self.popStream()
         self.debug = debug
