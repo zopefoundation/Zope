@@ -78,7 +78,6 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         # object unique identifier to the rid, and self.paths is a
         # mapping of the rid to the unique identifier.
 
-        self._length = BTrees.Length.Length()
         self.clear()
 
         if brains is not None:
@@ -103,7 +102,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         self.data  = IOBTree()  # mapping of rid to meta_data
         self.uids  = OIBTree()  # mapping of uid to rid
         self.paths = IOBTree()  # mapping of rid to uid
-        self._length.set(0)
+        self._length = BTrees.Length.Length()
 
         for index in self.indexes.keys():
             self.getIndex(index).clear()
