@@ -49,6 +49,9 @@ Zope Changes
 
     Bugs fixed
 
+      - ZCatalog: refreshCatalog() could not be called safely from a ZEO
+        client script
+
       - Catalog.clear(): fixed handling of _length attribute (caused import
         problems for some .zexp files e.g. Squishdot instances)
 
