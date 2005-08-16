@@ -49,6 +49,9 @@ Zope Changes
 
     Bugs fixed
 
+      - Catalog.clear(): fixed handling of _length attribute (caused import
+        problems for some .zexp files e.g. Squishdot instances)
+
       - Collector #1773: by default user accounts are now encrypted for
         security reasons
 
