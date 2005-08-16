@@ -295,7 +295,8 @@ class ZCatalog(Folder, Persistent, Implicit):
 
             p = paths[i]
             obj = self.resolve_path(p)
-            if not obj:
+            
+            if not obj and hasattr(self, 'REQUEST'):
                 obj = self.resolve_url(p, self.REQUEST)
             if obj is not None:
                 try:
