@@ -26,6 +26,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #1871: Applied patch to support lists with records using 
+        ZTUtils.make_query()
+
       - AccessControl: creating a new user through "zpasswd inituser" did not
         work properly with a top-level user folder with enabled password
         encryption.
