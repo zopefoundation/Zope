@@ -49,6 +49,9 @@ Zope Changes
 
     Bugs fixed
 
+      - Collector #1871: Applied patch to support lists with records using 
+        ZTUtils.make_query()
+
       - ZCatalog: refreshCatalog() could not be called safely from a ZEO
         client script
 

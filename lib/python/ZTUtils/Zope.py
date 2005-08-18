@@ -235,8 +235,14 @@ def complex_marshal(pairs):
         elif hasattr(v, 'items'):
             sublist = []
             for sk, sv in v.items():
-                sm = simple_marshal(sv)
-                sublist.append(('%s.%s' % (k, sk), '%s:record' % sm,  sv))
+                if isinstance(sv, list):
+                    for ssv in sv:
+                        sm = simple_marshal(ssv)
+                        sublist.append(('%s.%s' % (k, sk), 
+                                            '%s:list:record' % sm, ssv))
+                else:
+                    sm = simple_marshal(sv)
+                    sublist.append(('%s.%s' % (k, sk), '%s:record' % sm,  sv))
         elif isinstance(v, list):
             sublist = []
             for sv in v:
