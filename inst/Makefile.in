@@ -51,12 +51,8 @@ build:
 unbuild:
 	${RMRF} ${BUILD_BASE}
 
-${BASE_DIR}/lib/python/version.txt:
-	printf "Zope ${MAJOR_VERSION}.${MINOR_VERSION}-${RELEASE_TAG}" >\
-          "${BASE_DIR}/lib/python/version.txt"
-
 # install:     Install a software home.
-install: build ${BASE_DIR}/lib/python/version.txt
+install: build version_txt
 	${PYTHON} "${BASE_DIR}/setup.py" ${DISTUTILS_OPTS} install \
 	   --home="${PREFIX}" ${BUILD_FLAGS} ${INSTALL_FLAGS}
 	[ -f ${PREFIX}/bin/python ] || ${LN} ${PYTHON} ${PREFIX}/bin/python
@@ -109,13 +105,18 @@ clean: unbuild
 	${FIND} "${BASE_DIR}" \
          -name '*.py[co]' -o -name '*.so' -o -name '*.o' | ${XARGS} ${RM}
 
+# version_txt: create a version file in lib/python/version.txt
+version_txt:
+	printf "Zope ${MAJOR_VERSION}.${MINOR_VERSION}-${RELEASE_TAG}" >\
+          "${BASE_DIR}/lib/python/version.txt"
+
 # sdist:       Create a source distribution file (implies clobber).
 #
 sdist: clobber sdist_tgz
 
 # sdist_tgz:   Create a tgz archive file as a source distribution.
 #
-sdist_tgz: ${BASE_DIR}/lib/python/version.txt
+sdist_tgz: version_txt
 	${MKDIR} ${TMPDIR}
 	${CD} ${TMPDIR} && ${LN} ${BASE_DIR} ${PACKAGE_NAME} && \
           ${TAR} czfh ${BASE_DIR}/${PACKAGE_NAME}.tgz \
