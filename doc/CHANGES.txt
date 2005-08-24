@@ -26,31 +26,28 @@ Zope Changes
 
     Features added
 
-      - AccessControl, Acquisition, App, OFS, webdav, PluginIndexes, ZCatalog
-        and ZCTextIndex: Added some Zope 3 style interfaces.
+      - AccessControl, Acquisition, App, OFS, webdav, PluginIndexes,
+        ZCatalog and ZCTextIndex: Added some Zope 3 style interfaces.
         This makes the bridged interfaces shipped with Five obsolete.
 
       - ZConfig extension, address now also accepts symbolic port names
         from etc/services (unix) or etc\services (win32)
 
-      - ZPublisher.HTTPRequest.FileUpload now supports full file object interface.
-        This means Iterator support was added. (for line in fileobject: ...,
-        as well as fileobject.next() and fileobject.xreadlines() )
-        Collector #1837
+      - ZPublisher.HTTPRequest.FileUpload now supports full file
+        object interface.  This means Iterator support was added. (for
+        line in fileobject: ..., as well as fileobject.next() and
+        fileobject.xreadlines() ) Collector #1837
 
-  after Zope 2.8b1
+  after Zope 2.8.1
 
-    Features added
+    Bugs Fixed
 
-      - Made WebDAV server distinguishable from the default HTTP
-        server both in the ZMI and in event.log.
-
-      - Included BTreeFolder2
-
-    Bugs fixed
-
-      - Collector #1871: Applied patch to support lists with records using 
+      - Collector #1871: Applied patch to support lists with records using
         ZTUtils.make_query()
+
+      - AccessControl: creating a new user through "zpasswd inituser" did not
+        work properly with a top-level user folder with enabled password
+        encryption.
 
       - ZCatalog: refreshCatalog() could not be called safely from a ZEO
         client script
@@ -58,8 +55,26 @@ Zope Changes
       - Catalog.clear(): fixed handling of _length attribute (caused import
         problems for some .zexp files e.g. Squishdot instances)
 
-      - Collector #1773: by default user accounts are now encrypted for
-        security reasons
+      - DateIndex now properly removes documents from both indexes if
+        the value is None
+
+  Zope 2.8.1 (2005/08/11)
+
+    Features added
+
+      - Interface: Added Z3 -> Z2 bridge utilities.
+        This allows to migrate interfaces to Zope 3 style interfaces and
+        bridge them back to oldstyle interfaces for backwards compatibility.
+
+    Bugs Fixed
+
+      - Zope2.Startup.zopectl: fork before execv when running unit tests
+        (don't exit the shell, if run from there).
+
+      - TAL: MassageIDs are now handled the same way as in zope.tal.
+
+      - DocumentTemplate: ustr no longer mangles MassageIDs.
+        Custom string types are now returned unchanged.
 
       -  As developed in a long thread starting at
          http://mail.zope.org/pipermail/zope/2005-July/160433.html
@@ -72,9 +87,34 @@ Zope Changes
 
       - Collector #1807: fixed memory leak in cAccessControl.guarded_getattr()
 
+
+  Zope 2.8.1 b1 (2005/07/28)
+
+    Features Added
+
+      - PluginIndexes, ZCTextIndex and ZCatalog: Added some z3 interfaces.
+
+      - Verbose security exception reporting has been folded into Zope,
+        removing the need for the VerboseSecurity product.  See the
+        documentation for the "verbose-security" option in zope.conf.
+
+      - "TemporaryStorage" (the storage that is used mainly to back the
+        default sessioning database) is now MVCC capable, which essentially
+        means that its usage will no longer generate ZODB ReadConflictErrors.
+
+    Bugs Fixed
+
       - Collector #1852: fixed wrong URL construction in webdav.davcmds
 
       - Collector #1844: fixed whitespace handling in the ZMI "Find" tab
+
+      - Collector #1813: removed spurious inclusion of CMFBTreeFolder.
+        in Products/BTreeFolder2 (CMFCore will include it after 1.5, with
+        an appropriate module alias for backward compatibility).
+
+      - Replaced all transaction.commit(1) calls by  transaction.savepoint()
+
+      - Collector #1832: UnIndex swallowed ConflictErrors.
 
       - Collector #1815: ZCTextIndex accepts (again) sequences of strings to
         be indexed.
@@ -83,27 +123,63 @@ Zope Changes
 
       - Fixed CMFBTreeFolder for CMF 1.5+
 
-      - Collector #1808: manage_convertIndexes no longer tries to change the
-        index types causing some trouble with CMF.
-
-      - manage_convertIndexes now handles DateRangeIndexes and PathIndexes properly
-
-      - WebDAV COPY and MOVE did not call '_notifyOfCopyTo' and
-        '_postCopy' hooks like it was done in
-        OFS.CopySupport. Additionally added
-        'manage_changeOwnershipType' to make MOVE behave even closer
-        to OFS.CopySupport.
+      - WebDAV COPY and MOVE did not call '_notifyOfCopyTo' and '_postCopy'
+        hooks like it was done in OFS.CopySupport. Additionally added
+        'manage_changeOwnershipType' to make MOVE behave even closer to
+        OFS.CopySupport.
 
       - Collector #1548: Fix 'httplib' usage in ZPublisher.Client.
 
+      - Collector #1808: manage_convertIndexes no longer tries to change the
+        index types causing some trouble with CMF.
+
+      - manage_convertIndexes did not treat DateRangeIndexes and PathIndexes
+        properly.
+
+      - Updated Zope X3 to bugfix release 3.0.1
+
+      - Updated Five to bugfix release 1.0.2 (see Products/Five/CHANGES.txt)
+
+  Zope 2.8.0 (2005/06/11)
+
+    Bugs Fixed
+
       - Collector #1792: applied patch for broken ZClasses
+
+      - doc/FAQ.txt updated: should bear some resemblance to reality now.
+        (PCGI stuff removed; error information updated; PID information
+        updated; upgrade procedure added; some common version questions added.)
+
+      - Collector #1770: Fixed RestructuredText subtitle
 
       - Collector #1803: Fixed InitializeClass for some corner case.
 
-      - Collector #1798, issue1: ZopeTestCase no longer tries to
-        install products that was installed by Zope during startup.
+      - Collector #1798, issue 1: ZopeTestCase no longer tries to
+        install products that were installed by Zope during startup.
+
+      - Collector #1799: Avoid lying about parent's refcount when
+        calling back into Python code.
+
+      - Collector #889:  made 'and' operator for KeywordIndexes actually
+        restrict results as expected (thanks to 'aroda' for the patch!).
 
       - Collector #1323: applied patch to fix umask problem in zdctl
+
+      - Updated Five to bugfix release 1.0.1 (see Products/Five/CHANGES.txt)
+
+  Zope 2.8.0 b2 (2005/05/22)
+
+    Features added
+
+      - Made WebDAV server distinguishable from the default HTTP
+        server both in the ZMI and in event.log.
+
+      - Included BTreeFolder2
+
+    Bugs fixed
+
+      - Collector #1507/1728: Server addresses are now handled the same way on
+        all platforms. This fixes the default binding on Windows.
 
       - Collector #1781: made 'create_mount_points' ZConfig option actually
         work (thanks to Dieter Maurer for the patch).
