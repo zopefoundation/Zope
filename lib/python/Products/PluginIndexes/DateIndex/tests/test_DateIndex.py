@@ -239,6 +239,20 @@ class DI_Tests(unittest.TestCase):
             val = (((yr * 12 + mo) * 31 + dy) * 24 + hr) * 60 + mn
             self.failUnlessEqual(self._index.getEntryForObject(k), val)
 
+    def test_removal(self):
+        """ DateIndex would hand back spurious entries when used as a
+            sort_index, because it previously was not removing entries
+            from the _unindex when indexing an object with a value of
+            None. The catalog consults a sort_index's
+            documentToKeyMap() to build the brains.
+        """
+        values = self._values
+        index = self._index
+        self._populateIndex()
+        self._checkApply(self._int_req, [values[7]])
+        index.index_object(7, None)
+        self.failIf(7 in index.documentToKeyMap().keys())
+
 
 def test_suite():
     suite = unittest.TestSuite()

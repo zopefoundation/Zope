@@ -26,6 +26,8 @@ from BTrees.OIBTree import OIBTree
 from DateTime.DateTime import DateTime
 from Globals import DTMLFile
 from OFS.PropertyManager import PropertyManager
+from ZODB.POSException import ConflictError
+from zLOG import LOG, ERROR
 from zope.interface import implements
 
 from Products.PluginIndexes.common import safe_callable
@@ -135,6 +137,16 @@ class DateIndex(UnIndex, PropertyManager):
         if ConvertedDate != oldConvertedDate:
             if oldConvertedDate is not _marker:
                 self.removeForwardIndexEntry(oldConvertedDate, documentId)
+                if ConvertedDate is _marker:
+                    try:
+                        del self._unindex[documentId]
+                    except ConflictError:
+                        raise
+                    except:
+                        LOG('UnIndex', ERROR,
+                            ("Should not happen: ConvertedDate was there,"
+                             " now it's not, for document with id %s" %
+                             documentId))
 
             if ConvertedDate is not _marker:
                 self.insertForwardIndexEntry( ConvertedDate, documentId )
