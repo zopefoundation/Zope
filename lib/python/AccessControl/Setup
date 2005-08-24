@@ -1,2 +1,0 @@
-*shared*
-cAccessControl cAccessControl.c -I../../Components/ExtensionClass/src
