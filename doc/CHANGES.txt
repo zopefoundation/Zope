@@ -39,6 +39,9 @@ Zope Changes
       - Catalog.clear(): fixed handling of _length attribute (caused import
         problems for some .zexp files e.g. Squishdot instances)
 
+      - DateIndex now properly removes documents from both indexes if
+        the value is None
+
   Zope 2.8.1 (2005/08/11)
 
     Features added
