@@ -15,7 +15,13 @@
 Generic expat-based XML parser base class.
 """
 
+import xml.parsers.expat
+
 import zLOG
+
+
+XMLParseError = xml.parsers.expat.ExpatError
+
 
 class XMLParser:
 
@@ -63,15 +69,7 @@ class XMLParser:
                              "Can't set expat handler %s" % name)
 
     def createParser(self, encoding=None):
-        global XMLParseError
-        try:
-            from Products.ParsedXML.Expat import pyexpat
-            XMLParseError = pyexpat.ExpatError
-            return pyexpat.ParserCreate(encoding, ' ')
-        except ImportError:
-            from xml.parsers import expat
-            XMLParseError = expat.ExpatError
-            return expat.ParserCreate(encoding, ' ')
+        return xml.parsers.expat.ParserCreate(encoding, ' ')
 
     def parseFile(self, filename):
         self.parseStream(open(filename))

@@ -10,36 +10,28 @@ if codedir not in sys.path:
     sys.path.append(codedir)
 
 import unittest
+import xml.parsers.expat
 
 
 # Set skipxml to true if an XML parser could not be found.
-pyexpat = None
-skipxml = 0
-try:
-    import pyexpat
-except ImportError:
-    try:
-        # the C extension in PyXML
-        import xml.parsers.pyexpat
-    except ImportError:
-        skipxml = 1
-    else:
-        pyexpat = xml.parsers.pyexpat
+# (But Python always includes one now.)
+skipxml = False
 
 
 # Set oldexpat if the StartDoctypeDeclHandler and XmlDeclHandler are
 # not supported.  The tests need to know whether the events reported
 # by those handlers should be expected, but need to make sure the
 # right thing is returned if they are.
-oldexpat = 0
-if pyexpat is not None:
-    p = pyexpat.ParserCreate()
-    # Can't use hasattr() since pyexpat supports the handler
-    # attributes in a broken way.
-    try:
-        p.StartDoctypeDeclHandler = None
-    except AttributeError:
-        oldexpat = 1
+#
+oldexpat = False
+p = xml.parsers.expat.ParserCreate()
+#
+# Can't use hasattr() since pyexpat supports the handler
+# attributes in a broken way.
+try:
+    p.StartDoctypeDeclHandler = None
+except AttributeError:
+    oldexpat = True
 
 
 def run_suite(suite, outf=None, errf=None):

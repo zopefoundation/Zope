@@ -750,7 +750,7 @@ def test1():
     print z, '\012'
 
 def test2():
-    import xml.parsers.pyexpat
+    import xml.parsers.expat
     c=C()
     c.foo=1
     c.bar=2
@@ -778,7 +778,7 @@ def test2():
     file=''
     F=xmlPickler()
     F.binary=0
-    p=xml.parsers.pyexpat.ParserCreate()
+    p=xml.parsers.expat.ParserCreate()
     p.CharacterDataHandler=F.handle_data
     p.StartElementHandler=F.unknown_starttag
     p.EndElementHandler=F.unknown_endtag
@@ -786,13 +786,13 @@ def test2():
     print r, '\012'
 
 def test3():
-    import xml.parsers.pyexpat
+    import xml.parsers.expat
     data=open('Data.xml').read()
     file=open('out','w'+'b')
     F=xmlPickler()
     F.file=file
     F.binary=1
-    p=xml.parsers.pyexpat.ParserCreate()
+    p=xml.parsers.expat.ParserCreate()
     p.CharacterDataHandler=F.handle_data
     p.StartElementHandler=F.unknown_starttag
     p.EndElementHandler=F.unknown_endtag
