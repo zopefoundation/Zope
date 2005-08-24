@@ -10,14 +10,12 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-import Shared.DC.xml.ppml
-ppml=Shared.DC.xml.ppml
 from base64 import encodestring
 from cStringIO import StringIO
 from ZODB.serialize import referencesf
 from ZODB.ExportImport import TemporaryFile, export_end_marker
+from Shared.DC.xml import ppml
 
-StringType=type('')
 
 magic='<?xm' # importXML(jar, file, clue)}
 
@@ -37,7 +35,7 @@ def XMLrecord(oid, len, p):
 def exportXML(jar, oid, file=None):
 
     if file is None: file=TemporaryFile()
-    elif type(file) is StringType: file=open(file,'w+b')
+    elif type(file) is str: file=open(file,'w+b')
     write=file.write
     write('<?xml version="1.0"?>\012<ZopeData>\012')
     version=jar._version
@@ -98,9 +96,8 @@ def save_record(parser, tag, data):
     return v
 
 def importXML(jar, file, clue=''):
-    import Shared.DC.xml.pyexpat.pyexpat
-    pyexpat=Shared.DC.xml.pyexpat.pyexpat
-    if type(file) is StringType:
+    import xml.parsers.expat
+    if type(file) is str:
         file=open(file)
     outfile=TemporaryFile()
     data=file.read()
@@ -110,7 +107,7 @@ def importXML(jar, file, clue=''):
     F.start_handlers['ZopeData'] = start_zopedata
     F.binary=1
     F.file=outfile
-    p=pyexpat.ParserCreate()
+    p=xml.parsers.expat.ParserCreate()
     p.CharacterDataHandler=F.handle_data
     p.StartElementHandler=F.unknown_starttag
     p.EndElementHandler=F.unknown_endtag

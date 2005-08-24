@@ -270,9 +270,6 @@ class MyDistribution(Distribution):
 
 
 EXTENSIONCLASS_INCLUDEDIRS = ['ExtensionClass']
-DCPYEXPAT_INCLUDEDIRS = ['Shared/DC/xml/pyexpat/expat/xmlparse',
-                         'Shared/DC/xml/pyexpat/expat/xmltok']
-DCPYEXPAT_DIR = 'Shared/DC/xml/pyexpat'
 
 # All extension modules must be listed here.
 ext_modules = [
@@ -348,16 +345,6 @@ ext_modules = [
               include_dirs=EXTENSIONCLASS_INCLUDEDIRS,
               sources=["ComputedAttribute/_ComputedAttribute.c"],
               depends=["ExtensionClass/ExtensionClass.h"]),
-
-    # dcpyexpat
-    Extension(name='Shared.DC.xml.pyexpat.dcpyexpat',
-              include_dirs=DCPYEXPAT_INCLUDEDIRS,
-              define_macros=[('XML_NS', None)],
-              sources=[DCPYEXPAT_DIR + '/expat/xmlparse/xmlparse.c',
-                       DCPYEXPAT_DIR + '/expat/xmlparse/hashtable.c',
-                       DCPYEXPAT_DIR + '/expat/xmltok/xmlrole.c',
-                       DCPYEXPAT_DIR + '/expat/xmltok/xmltok.c',
-                       DCPYEXPAT_DIR + '/dcpyexpat.c']),
 
     # initgroups
     Extension(name='initgroups',

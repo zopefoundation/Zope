@@ -20,73 +20,75 @@ Oh well.
 """
 
 import string
-import xmllib
+import xml.parsers.expat
 
 from pickle import *
-from types import ListType
 
 
 class xyap:
-    start_handlers={}
-    end_handlers={}
+    start_handlers = {}
+    end_handlers = {}
 
     def __init__(self):
-        top=[]
-        self._stack=_stack=[top]
-        self.push=_stack.append
-        self.append=top.append
+        top = []
+        self._stack = _stack = [top]
+        self.push = _stack.append
+        self.append = top.append
 
-    def handle_data(self, data): self.append(data)
+    def handle_data(self, data):
+        self.append(data)
 
     def unknown_starttag(self, tag, attrs):
-        if type(attrs) is ListType:
-            x=0
-            temp={}
-            while x<len(attrs):
-                temp[attrs[x]]=attrs[x+1]
-                x=x+2
-            attrs=temp
-        start=self.start_handlers
-        if start.has_key(tag): tag = start[tag](self, tag, attrs)
-        else:                  tag = [tag, attrs]
+        if isinstance(attrs, list):
+            attrs = dict(attrs)
+        start = self.start_handlers
+        if tag in start:
+            tag = start[tag](self, tag, attrs)
+        else:
+            tag = [tag, attrs]
         self.push(tag)
-        self.append=tag.append
+        self.append = tag.append
 
     def unknown_endtag(self, tag):
-        _stack=self._stack
-        top=_stack[-1]
-        del _stack[-1]
-        append=self.append=_stack[-1].append
-        end=self.end_handlers
-        if end.has_key(tag): top=end[tag](self, tag, top)
+        _stack = self._stack
+        top = _stack.pop()
+        append = self.append = _stack[-1].append
+        end = self.end_handlers
+        if tag in end:
+            top = end[tag](self, tag, top)
         append(top)
 
 class NoBlanks:
 
     def handle_data(self, data):
-        if string.strip(data): self.append(data)
+        if data.strip():
+            self.append(data)
 
 
 def struct(self, tag, data):
-    r={}
-    for k, v in data[2:]: r[k]=v
+    r = {}
+    for k, v in data[2:]:
+        r[k] = v
     return r
 
-def name(self, tag, data, join=string.join, strip=string.strip):
-    return strip(join(data[2:],''))
+_nulljoin = "".join
 
-def tuplef(self, tag, data): return tuple(data[2:])
+def name(self, tag, data):
+    return _nulljoin(data[2:]).strip()
 
-class XYap(xyap, xmllib.XMLParser):
+def tuplef(self, tag, data):
+    return tuple(data[2:])
+
+class XYap(xyap):
     def __init__(self):
-        xmllib.XMLParser.__init__(self)
-        top=[]
-        self._stack=_stack=[top]
-        self.push=_stack.append
-        self.append=top.append
+        self._parser = xml.parsers.expat.ParserCreate()
+        self._parser.StartElementHandler = self.unknown_starttag
+        self._parser.EndElementHandler = self.unknown_endtag
+        self._parser.CharacterDataHandler = self.handle_data
+        xyap.__init__(self)
 
-class xmlrpc(NoBlanks, XYap, xmllib.XMLParser):
-    end_handlers={
+class xmlrpc(NoBlanks, XYap):
+    end_handlers = {
         'methodCall': tuplef,
         'methodName': name,
         'params': tuplef,
@@ -118,7 +120,7 @@ class xmlrpc(NoBlanks, XYap, xmllib.XMLParser):
 
 def test():
 
-    data="""<?xml version="1.0"?>
+    data = """<?xml version="1.0"?>
     <methodCall>
              <methodName>examples.getStateName
              </methodName>
@@ -155,10 +157,10 @@ def test():
              </methodCall>
              """
 
-    data=string.split(data,'\n')
-    r=[]
+    data = data.split('\n')
+    r = []
     for C in XYap, xmlrpc:
-        p=C()
+        p = C()
         for l in data:
             p.feed(l)
         p.close()
@@ -167,4 +169,5 @@ def test():
     return r
 
 
-if __name__=='__main__': print test()
+if __name__=='__main__':
+    print test()
