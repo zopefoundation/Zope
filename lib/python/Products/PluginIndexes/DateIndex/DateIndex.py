@@ -144,8 +144,9 @@ class DateIndex(UnIndex, PropertyManager):
                         raise
                     except:
                         LOG('UnIndex', ERROR,
-                            'Should not happen: oldDatum was there, now its not,'
-                            'for document with id %s' % documentId)
+                            ("Should not happen: ConvertedDate was there,"
+                             " now it's not, for document with id %s" %
+                             documentId))
 
             if ConvertedDate is not _marker:
                 self.insertForwardIndexEntry( ConvertedDate, documentId )
