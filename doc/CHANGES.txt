@@ -26,6 +26,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #1877: skel/Products/README.txt inappropriately copied
+        from CMF.
+
       - Collector #1871: Applied patch to support lists with records using 
         ZTUtils.make_query()
 
