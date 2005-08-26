@@ -54,8 +54,8 @@ static PyMethodDef InitgroupsMethods[] = {
 #endif /* defined(__unix__) || defined(unix) */
 
 void
-initinitgroups(void)
+init_initgroups(void)
 {
-	Py_InitModule("initgroups", InitgroupsMethods);
+	Py_InitModule("_initgroups", InitgroupsMethods);
 }
 

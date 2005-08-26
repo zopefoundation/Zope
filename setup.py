@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python2.3
 
 ##############################################################################
@@ -347,8 +346,8 @@ ext_modules = [
               depends=["ExtensionClass/ExtensionClass.h"]),
 
     # initgroups
-    Extension(name='initgroups',
-              sources=['../Components/initgroups/initgroups.c']),
+    Extension(name='initgroups._initgroups',
+              sources=['initgroups/_initgroups.c']),
 
     # indexes
     Extension(name='Products.PluginIndexes.TextIndex.Splitter.ZopeSplitter.ZopeSplitter',
