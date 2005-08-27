@@ -26,6 +26,13 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #1182: BBB Forward port fix from 2.7 branch (19 months
+        ago!), reverting 'guarded_getitem' to pass the 'index' argument as
+        the name to 'validate'.  This change is *not* propagated to the
+        trunk, because the resolution of #1182 specifies that the reverted
+        behavior (i.e., passing None for item accces) is to become the
+        standard implementation as of 2.9.
+
       - Collector #1877: skel/Products/README.txt inappropriately copied
         from CMF.
 

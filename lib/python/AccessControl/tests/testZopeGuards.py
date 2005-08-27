@@ -119,6 +119,30 @@ class TestGuardedGetattr(GuardTestCase):
         finally:
             ContainerAssertions[_dict] = old
 
+class TestGuardedGetitem(GuardTestCase):
+
+    def setUp(self):
+        self.sm = SecurityManager()
+        self.old = self.setSecurityManager(self.sm)
+
+    def tearDown(self):
+        self.setSecurityManager(self.old)
+
+    def test_guarded_getitem_passes_index_to_validate(self):
+        # BBB:  collector #1182 specifies that guarded_getitem should be
+        #       passing the 'index' to validate, rather than 'None', 
+        #       until Zope 2.9.
+        from UserDict import UserDict
+        from AccessControl.ZopeGuards import guarded_getitem
+
+        foo = []
+        protected = UserDict(foo=foo)
+
+        value = guarded_getitem(protected, 'foo')
+        self.failUnless(value is foo)
+        self.assertEqual(len(self.sm.calls), 1)
+        self.assertEqual(self.sm.calls[0],
+                         ('validate', (protected, protected, 'foo', foo)))
 
 class TestDictGuards(GuardTestCase):
 
@@ -650,6 +674,7 @@ print foo(**kw)
 def test_suite():
     suite = unittest.TestSuite()
     for cls in (TestGuardedGetattr,
+                TestGuardedGetitem,
                 TestDictGuards,
                 TestBuiltinFunctionGuards,
                 TestListGuards,

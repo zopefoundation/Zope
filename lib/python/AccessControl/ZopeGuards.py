@@ -68,7 +68,7 @@ def guarded_getitem(object, index):
     if Containers(type(object)) and Containers(type(v)):
         # Simple type.  Short circuit.
         return v
-    if getSecurityManager().validate(object, object, None, v):
+    if getSecurityManager().validate(object, object, index, v):
         return v
     raise Unauthorized, 'unauthorized access to element %s' % `i`
 
