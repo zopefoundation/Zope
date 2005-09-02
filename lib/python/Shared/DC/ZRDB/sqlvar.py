@@ -98,6 +98,9 @@ class SQLVar:
                 raise
             raise ValueError, 'Missing input variable, <em>%s</em>' % name
 
+        if v is None:
+            return 'null'
+
         if t=='int':
             try:
                 if type(v) is StringType:
