@@ -70,6 +70,7 @@ class I18NCornerTestCase(TestCaseBase):
         self.engine.setLocal('foo', MessageID('FoOvAlUe', 'default'))
         self.engine.setLocal('bar', 'BaRvAlUe')
         self.engine.setLocal('raw', ' \tRaW\n ')
+        self.engine.setLocal('noxlt', MessageID("don't translate me"))
 
     def _check(self, program, expected):
         result = StringIO()
@@ -285,6 +286,17 @@ class I18NCornerTestCase(TestCaseBase):
             "<div i18n:translate='' tal:define='bar python:unichr(0xC0)'>"
             "Foo <span tal:replace='bar' i18n:name='bar' /></div>")
         self._check(program, u"<div>FOO \u00C0</div>\n")
+
+    def test_for_untranslated_messageid_simple(self):
+        program, macros = self._compile('<span tal:content="noxlt"/>')
+        self._check(program, "<span>don't translate me</span>\n")
+        
+    def test_for_untranslated_messageid_i18nname(self):
+        program, macros = self._compile(
+            '<div i18n:translate="" >'
+            '<span tal:replace="python: noxlt" i18n:name="foo_name"/>'
+            '</div>')
+        self._check(program, "<div>don't translate me</div>\n")
 
 
 class I18NErrorsTestCase(TestCaseBase):
