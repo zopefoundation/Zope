@@ -56,6 +56,11 @@ Zope Changes
       - DateIndex now properly removes documents from both indexes if
         the value is None
 
+      - Collector #1888: Some parts of the TALInterpreter would not pass a 
+        default when  translating, yet expect a string back. This would cause 
+        an error (usually "NoneType has no attribute 'replace'") in the case 
+        the message was not translated.
+        
   Zope 2.8.1 (2005/08/11)
 
     Features added

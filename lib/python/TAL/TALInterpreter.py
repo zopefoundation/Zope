@@ -506,7 +506,8 @@ class TALInterpreter:
             return
         if isinstance(text, MessageID):
             # Translate this now.
-            text = self.engine.translate(text.domain, text, text.mapping)
+            text = self.engine.translate(text.domain, text, 
+                                         text.mapping, text.default)
         s = escape(text)
         self._stream_write(s)
         i = s.rfind('\n')
@@ -542,8 +543,9 @@ class TALInterpreter:
             # evaluate() does not do any I18n, so we do it here. 
             if isinstance(value, MessageID):
                 # Translate this now.
+                # XXX
                 value = self.engine.translate(value.domain, value,
-                                              value.mapping)
+                                              value.mapping, value.default)
 
             if not structure:
                 value = cgi.escape(ustr(value))
