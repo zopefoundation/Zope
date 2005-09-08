@@ -26,6 +26,10 @@ Zope Changes
 
     Bugs Fixed
 
+      - 'ZPublisher.Test.publish' now takes a 'done_string' argument, which
+        is written to standard error when the request completes (forward
+        ported from Zope 2.7 branch).
+
       - Collector #556:  <dtml-sqlvar> now returns 'null' instead of 'None'
         for values which are None in Python (sponsored by a bounty from
         Logicalware).

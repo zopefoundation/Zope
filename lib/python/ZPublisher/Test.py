@@ -94,11 +94,12 @@ $Id$
 '''
 __version__='$Revision: 1.41 $'[11:-2]
 
+DONE_STRING_DEFAULT = '\n%s\n\n' % ('_'*60)
+
 import sys, traceback, profile, os, getopt
 from time import clock
 repeat_count=100
 TupleType=type(())
-
 
 def main():
     import sys, os, getopt
@@ -240,7 +241,7 @@ defaultModule='Main'
 def publish(script=None,path_info='/',
             u=None,p=None,d=None,t=None,e=None,s=None,pm=0,
             extra=None, request_method='GET',
-            fp=None,
+            fp=None, done_string=DONE_STRING_DEFAULT,
             stdin=sys.stdin):
 
     profile=p
@@ -367,7 +368,7 @@ def publish(script=None,path_info='/',
     elif pm:
         stdout=sys.stdout
         publish_module_pm(file, environ=env, stdout=stdout, extra=extra)
-        print '\n%s\n' % ('_'*60)
+        sys.stderr.write(done_string)
     else:
         if silent:
             stdout=open('/dev/null','w')
@@ -378,6 +379,6 @@ def publish(script=None,path_info='/',
                 stdout=sys.stdout
 
         publish_module(file, environ=env, stdout=stdout, extra=extra)
-        print '\n%s\n' % ('_'*60)
+        sys.stderr.write(done_string)
 
 if __name__ == "__main__": main()
