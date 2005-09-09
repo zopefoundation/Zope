@@ -184,10 +184,6 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
                 text = text()
             if text is None:
                 continue
-            # To index each attribute separately, we could use the
-            # following line, but we have preferred to make a single
-            # call to index_doc() for all attributes together.
-            # res += self.index.index_doc(documentId, text)
             if text:
                 if isinstance(text, (list, tuple, )):
                     all_texts.extend(text)
