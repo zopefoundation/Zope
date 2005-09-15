@@ -175,7 +175,15 @@ class UnIndex(SimpleItem):
 
             except AttributeError:
                 # index row is an int
-                del self._index[entry]
+                try:
+                    del self._index[entry]
+                except KeyError:
+                    # XXX swallow KeyError because it was probably
+                    # removed and then _length AttributeError raised
+                    pass 
+                if isinstance(self.__len__, BTrees.Length.Length):
+                    self._length = self.__len__
+                    del self.__len__ 
                 self._length.change(-1)
 
             except:
@@ -202,7 +210,14 @@ class UnIndex(SimpleItem):
         # an IntSet and stuff it in first.
         if indexRow is _marker:
             self._index[entry] = documentId
-            self._length.change(1)
+            # XXX _length needs to be migrated to Length object
+            try:
+                self._length.change(1)
+            except AttributeError:
+                if isinstance(self.__len__, BTrees.Length.Length):
+                    self._length = self.__len__
+                    del self.__len__
+                self._length.change(1)
         else:
             try: indexRow.insert(documentId)
             except AttributeError:

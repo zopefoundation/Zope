@@ -42,6 +42,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #1899: fixed migration issue when using export/import for
+        ZCatalog instances
+
       - Collector #1871: Applied patch to support lists with records using
         ZTUtils.make_query()
 
