@@ -26,6 +26,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #1899: fixed migration issue when using export/import for
+        ZCatalog instances
+
       - 'ZPublisher.Test.publish' now takes a 'done_string' argument, which
         is written to standard error when the request completes (forward
         ported from Zope 2.7 branch).
