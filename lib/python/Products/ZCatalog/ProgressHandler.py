@@ -96,7 +96,7 @@ class ZLogHandler(StdoutHandler):
         LOG(self._ident, INFO, text)
 
 
-class FilelogHandler(StdoutHandler)
+class FilelogHandler(StdoutHandler):
     """ Use a custom file for logging """
 
     __implements__ = IProgressHandler
