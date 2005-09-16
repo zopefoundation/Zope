@@ -95,3 +95,16 @@ class ZLogHandler(StdoutHandler):
     def output(self, text):
         LOG(self._ident, INFO, text)
 
+
+class FilelogHandler(StdoutHandler)
+    """ Use a custom file for logging """
+
+    __implements__ = IProgressHandler
+
+    def __init__(self, filename, steps=100):
+        StdoutHandler.__init__(self, steps)
+        self.filename = filename
+
+    def output(self, text):
+        open(self.filename, 'a').write(text + '\n')
+
