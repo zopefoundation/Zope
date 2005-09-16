@@ -24,6 +24,11 @@ Zope Changes
 
   after Zope 2.8.1 
 
+    Features added
+
+      - Collector #1118: Added syntax to dtml-sqlgroup to support flexible
+        generation of 'UPDATE' statements (bounty sponsored by Logicalware).
+
     Bugs Fixed
 
       - Collector #1899: fixed migration issue when using export/import for
