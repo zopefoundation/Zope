@@ -199,6 +199,8 @@ def publish_module(module_name,
             else: must_die=sys.exc_info()
             response.exception(1, v)
         except:
+            if debug:
+                raise
             response.exception()
             status=response.getStatus()
         if response:
