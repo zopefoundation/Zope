@@ -42,6 +42,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #1879: applied patch by Dieter Maurer to fix a bug in 
+        ac_aquire() ignoring the default argument
+
       - Collector #1864, #1906: fixed header normalization in appendHeader()
 
       - Collector #1899: fixed migration issue when using export/import for

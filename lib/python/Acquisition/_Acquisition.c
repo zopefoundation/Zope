@@ -1059,6 +1059,7 @@ Wrapper_acquire_method(Wrapper *self, PyObject *args, PyObject *kw)
   PyObject *expl=0, *defalt=0;
   int explicit=1;
   int containment=0;
+  PyObject *result; /* DM 2005-08-25: argument "default" ignored */
 
   UNLESS (PyArg_ParseTupleAndKeywords(
 	     args, kw, "O|OOOOi", acquire_args+1,
@@ -1070,11 +1071,33 @@ Wrapper_acquire_method(Wrapper *self, PyObject *args, PyObject *kw)
 
   if (filter==Py_None) filter=0;
 
+  /* DM 2005-08-25: argument "default" ignored -- fix it! */
+# if 0
   return Wrapper_findattr(self,name,filter,extra,OBJECT(self),1,
 			  explicit || 
 			  self->ob_type==(PyTypeObject*)&Wrappertype,
 			  explicit, containment);
+# else
+  result = Wrapper_findattr(self,name,filter,extra,OBJECT(self),1,
+			  explicit || 
+			  self->ob_type==(PyTypeObject*)&Wrappertype,
+			  explicit, containment);
+  if (result == NULL && defalt != NULL) {
+    /* as "Python/bltinmodule.c:builtin_getattr" turn
+       only 'AttributeError' into a default value, such
+       that e.g. "ConflictError" and errors raised by the filter
+       are not mapped to the default value.
+    */
+    if (PyErr_ExceptionMatches(PyExc_AttributeError)) {
+      PyErr_Clear();
+      Py_INCREF(defalt);
+      result = defalt;
+    }
+  }
+  return result;
+# endif
 }
+
 
 static PyObject *
 Wrapper_inContextOf(Wrapper *self, PyObject *args)
