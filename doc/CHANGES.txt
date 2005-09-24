@@ -31,6 +31,8 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #1864, #1906: fixed header normalization in appendHeader()
+
       - Collector #1899: fixed migration issue when using export/import for
         ZCatalog instances
 

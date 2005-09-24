@@ -65,6 +65,16 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(cookie.get('value'), 'bar:baz')
         self.assertEqual(cookie.get('path'), '/')
 
+    def test_appendHeader(self):
+        response = self._makeOne()
+        response.setHeader('foo', 'bar')
+        response.appendHeader('foo', 'foo')
+        self.assertEqual(response.headers.get('foo'), 'bar,\n\tfoo')
+        response.setHeader('xxx', 'bar')
+        response.appendHeader('XXX', 'foo')
+        self.assertEqual(response.headers.get('xxx'), 'bar,\n\tfoo')
+
+
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(HTTPResponseTests, 'test'))
