@@ -544,7 +544,7 @@ class HTTPResponse(BaseResponse):
         Sets an HTTP return header "name" with value "value",
         appending it following a comma if there was a previous value
         set for the header. '''
-        name = str(name)
+        name = str(name).lower()
         value = str(value)
 
         headers = self.headers
