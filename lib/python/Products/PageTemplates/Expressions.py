@@ -156,7 +156,9 @@ class PathExpr:
         return 0
 
     def _eval(self, econtext,
-              isinstance=isinstance, StringType=type(''), render=render):
+              isinstance=isinstance,
+              BasicTypes=(str, unicode, dict, list, tuple, bool),
+              render=render):
         for expr in self._subexprs[:-1]:
             # Try all but the last subexpression, skipping undefined ones.
             try:
@@ -172,7 +174,7 @@ class PathExpr:
             if self._hybrid:
                 return ob
 
-        if self._name == 'nocall' or isinstance(ob, StringType):
+        if self._name == 'nocall' or isinstance(ob, BasicTypes):
             return ob
         # Return the rendered object
         return render(ob, econtext.vars)

@@ -4,6 +4,11 @@ from Products.PageTemplates import Expressions
 from Products.PageTemplates.DeferExpr import LazyWrapper
 from Products.PageTemplates.DeferExpr import DeferWrapper
 
+class Dummy:
+    __allow_access_to_unprotected_subobjects__ = 1
+    def __call__(self):
+        return 'dummy'
+
 class ExpressionTests(unittest.TestCase):
 
     def setUp(self):
@@ -12,6 +17,7 @@ class ExpressionTests(unittest.TestCase):
             one = 1,
             d = {'one': 1, 'b': 'b', '': 'blank', '_': 'under'},
             blank = '',
+            dummy = Dummy()
             )
 
     def tearDown(self):
@@ -35,6 +41,10 @@ class ExpressionTests(unittest.TestCase):
         assert ec.evaluate('one') == 1
         assert ec.evaluate('d/one') == 1
         assert ec.evaluate('d/b') == 'b'
+
+    def testRenderedEval(self):
+        ec = self.ec
+        assert ec.evaluate('dummy') == 'dummy'
 
     def testEval1(self):
         '''Test advanced expression evaluation 1'''
