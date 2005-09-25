@@ -182,6 +182,7 @@ def http(request_string, handle_errors=True):
                   )
     header_output.setResponseStatus(response.getStatus(), response.errmsg)
     header_output.setResponseHeaders(response.headers)
+    header_output.appendResponseHeaders(response._cookie_list())
 
     # Restore previous security manager, which may have been changed
     # by calling the publish method above

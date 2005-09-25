@@ -12,7 +12,7 @@
 ##############################################################################
 """Example functional doctest
 
-$Id: testFunctionalDocTest.py,v 1.2 2005/03/26 18:07:08 shh42 Exp $
+$Id$
 """
 
 import os, sys
@@ -46,6 +46,14 @@ def setUp(self):
 
     change_title = '''<dtml-call "manage_changeProperties(title=REQUEST.get('title'))">'''
     self.folder.addDTMLMethod('change_title', file=change_title)
+
+    set_cookie = '''<dtml-call "REQUEST.RESPONSE.setCookie('cookie_test', 'OK')">'''
+    self.folder.addDTMLMethod('set_cookie', file=set_cookie)
+
+    show_cookies = '''<dtml-in "REQUEST.cookies.keys()">
+<dtml-var sequence-item>: <dtml-var "REQUEST.cookies[_['sequence-item']]">
+</dtml-in>'''
+    self.folder.addDTMLMethod('show_cookies', file=show_cookies)
 
 
 def test_suite():

@@ -155,3 +155,27 @@ Test passing in non-base64-encoded login/pass
   >>> self.folder.index_html.title_or_id()
   'Baz'
 
+Test setting cookies
+
+  >>> print http(r"""
+  ... GET /test_folder_1_/index_html/set_cookie HTTP/1.1
+  ... """, handle_errors=False)
+  HTTP/1.1 200 OK
+  Content-Length: 0
+  ...
+  Set-Cookie: cookie_test="OK"
+  <BLANKLINE>
+
+Test reading cookies
+
+  >>> print http(r"""
+  ... GET /test_folder_1_/index_html/show_cookies HTTP/1.1
+  ... Cookie: foo=bar; baz="oki doki"
+  ... """, handle_errors=False)
+  HTTP/1.1 200 OK
+  Content-Length: 23
+  Content-Type: text/plain
+  <BLANKLINE>
+  foo: bar
+  baz: oki doki
+  <BLANKLINE>
