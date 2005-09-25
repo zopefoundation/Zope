@@ -4,6 +4,7 @@ Unreleased
   than GET or HEAD while omitting the stdin argument.
 - installProduct() now becomes a noop if ZopeTestCase did not apply its
   patches.
+- Made the functional doc tests set the cookie related headers.
 
 0.9.8 (Zope 2.8 edition)
 - Renamed 'doctest' package to 'zopedoctest' because of name-shadowing
