@@ -33,7 +33,8 @@ class Functional(sandbox.Sandboxed):
 
     __implements__ = (interfaces.IFunctional,)
 
-    def publish(self, path, basic=None, env=None, extra=None, request_method='GET', stdin=None):
+    def publish(self, path, basic=None, env=None, extra=None,
+                request_method='GET', stdin=None, handle_errors=True):
         '''Publishes the object at 'path' returning a response object.'''
 
         from StringIO import StringIO
@@ -77,7 +78,13 @@ class Functional(sandbox.Sandboxed):
         outstream = StringIO()
         response = Response(stdout=outstream, stderr=sys.stderr)
 
-        publish_module('Zope2', response=response, stdin=stdin, environ=env, extra=extra)
+        publish_module('Zope2',
+                       response=response,
+                       stdin=stdin,
+                       environ=env,
+                       extra=extra,
+                       debug=not handle_errors,
+                      )
 
         # Restore security manager
         setSecurityManager(sm)

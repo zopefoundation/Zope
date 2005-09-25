@@ -42,6 +42,10 @@ Zope Changes
 
     Bugs Fixed
 
+      - Repaired 'handle_errors' usage for doctests, along with the
+        supporting 'debug' argument passed to
+        'ZPublisher.Test.publish_module'.
+
       - Collector #1879: applied patch by Dieter Maurer to fix a bug in 
         ac_aquire() ignoring the default argument
 

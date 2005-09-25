@@ -12,7 +12,7 @@
 ##############################################################################
 """Support for (functional) doc tests
 
-$Id: functional.py,v 1.2 2005/03/26 18:07:08 shh42 Exp $
+$Id$
 """
 
 import sys, re, base64
@@ -174,9 +174,12 @@ def http(request_string, handle_errors=True):
     outstream = StringIO()
     response = Response(stdout=outstream, stderr=sys.stderr)
 
-    publish_module('Zope2', stdin=instream,
+    publish_module('Zope2',
                    response=response,
-                   environ=env)
+                   stdin=instream,
+                   environ=env,
+                   debug=not handle_errors,
+                  )
     header_output.setResponseStatus(response.getStatus(), response.errmsg)
     header_output.setResponseHeaders(response.headers)
 
