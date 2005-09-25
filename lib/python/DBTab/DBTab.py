@@ -17,7 +17,6 @@ $Id$
 """
 
 import sys
-from thread import allocate_lock
 
 from ZODB.ActivityMonitor import ActivityMonitor
 import Globals
@@ -31,11 +30,10 @@ class DBTab:
 
     def __init__(self, db_factories, mount_paths):
         self._started = 0
-        self.opened = {}            # { name -> Database instance }
-        self.lock = allocate_lock()
 
         self.db_factories = db_factories  # { name -> DatabaseFactory }
         self.mount_paths = mount_paths    # { virtual path -> name }
+        self.databases = {}
 
     def startup(self):
         """Opens the databases set to open_at_startup."""
@@ -76,45 +74,25 @@ class DBTab:
     def getDatabase(self, mount_path=None, name=None, is_root=0):
         """Returns an opened database.  Requires either mount_path or name.
         """
-        self.startup()
+        self.startup() # XXX get rid of this
         if name is None:
-            if mount_path is None:
-                raise ValueError('Either mount_path or name is required')
-            name = self.mount_paths.get(mount_path)
-            if name is None:
-                self._mountPathError(mount_path)
-        db = self.opened.get(name)
+            name = self.getName(mount_path)
+        db = self.databases.get(name, None)
         if db is None:
-            if not self.db_factories.has_key(name):
-                raise KeyError('%s is not a configured database' % repr(name))
-            self.lock.acquire()
-            try:
-                # Check again, since the database may have been created
-                # by another thread before the lock was acquired.
-                db = self.opened.get(name)
-                if db is None:
-                    db = self._createDatabase(name, is_root)
-            finally:
-                self.lock.release()
+            factory = self.getDatabaseFactory(name=name)
+            db = factory.open(name, self.databases)
         return db
 
     def getDatabaseFactory(self, mount_path=None, name=None):
         if name is None:
-            if mount_path is None:
-                raise ValueError('Either mount_path or name is required')
-            name = self.mount_paths.get(mount_path)
-            if name is None:
-                self._mountPathError(mount_path)
+            name = self.getName(mount_path)
+        if not self.db_factories.has_key(name):
+            raise KeyError('%s is not a configured database' % repr(name))
         return self.db_factories[name]
 
-
-    def _createDatabase(self, name, is_root):
-        factory = self.db_factories[name]
-        db = factory.open()
-        self.opened[name] = db
-        if not is_root:
-            Globals.opened.append(db)
-        # If it is the root database, Zope will add the database to
-        # Globals.opened.  A database should not be listed twice.
-        return db
+    def getName(self, mount_path):
+        name = self.mount_paths.get(mount_path)
+        if name is None:
+            self._mountPathError(mount_path)
+        return name
 

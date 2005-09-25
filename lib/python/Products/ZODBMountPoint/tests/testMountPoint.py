@@ -107,7 +107,7 @@ class DBTabTests (unittest.TestCase):
         self.app._p_jar.close()
         del self.app
         del self.db
-        for db in self.conf.opened.values():
+        for db in self.conf.databases.values():
             db.close()
         del self.conf
 

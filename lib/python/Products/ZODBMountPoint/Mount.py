@@ -69,16 +69,8 @@ class MountPoint(Persistence.Persistent, Acquisition.Implicit):
 
     def _getMountedConnection(self, anyjar):
         db_name = self._getDBName()
-        conn = anyjar._getMountedConnection(db_name)
-        if conn is None:
-            root_conn = anyjar._getRootConnection()
-            if db_name == self._getRootDBName():
-                conn = root_conn
-            else:
-                conn = self._getDB().open(version=root_conn.getVersion())
-                root_conn._addMountedConnection(db_name, conn)
+        conn = anyjar.get_connection(db_name)
         return conn
-
 
     def _getOrOpenObject(self, parent):
         t = self._v_data
@@ -143,95 +135,3 @@ class MountPoint(Persistence.Persistent, Acquisition.Implicit):
         traceback.print_tb(exc[2], 100, f)
         self._v_connect_error = (exc[0], exc[1], f.getvalue())
         exc = None
-
-
-
-class ConnectionPatches:
-    # Changes to Connection.py that might fold into ZODB
-
-    _root_connection = None
-    _mounted_connections = None
-
-    def _getRootConnection(self):
-        root_conn = self._root_connection
-        if root_conn is None:
-            return self
-        else:
-            return root_conn
-
-    def _getMountedConnection(self, name):
-        conns = self._getRootConnection()._mounted_connections
-        if conns is None:
-            return None
-        else:
-            return conns.get(name)
-
-    def _addMountedConnection(self, name, conn):
-        if conn._root_connection is not None:
-            raise ValueError, 'Connection %s is already mounted' % repr(conn)
-        root_conn = self._getRootConnection()
-        conns = root_conn._mounted_connections
-        if conns is None:
-            conns = {}
-            root_conn._mounted_connections = conns
-        if conns.has_key(name):
-            raise KeyError, 'A connection named %s already exists' % repr(name)
-        conn._root_connection = root_conn
-        conns[name] = conn
-
-    def _setDB(self, odb, *args, **kw):
-        self._real_setDB(odb, *args, **kw)
-        conns = self._mounted_connections
-        if conns:
-            for conn in conns.values():
-                conn._setDB(conn._db, *args, **kw)
-
-    def close(self):
-        if self._root_connection is not None:
-            raise RuntimeError("Should not close mounted connections directly")
-        conns = self._mounted_connections
-        if conns:
-            for conn in conns.values():
-                # Notify the activity monitor
-                db = conn.db()
-                f = getattr(db, 'getActivityMonitor', None)
-                if f is not None:
-                    am = f()
-                    if am is not None:
-                        am.closedConnection(conn)
-                conn.cacheGC() # This is a good time to do some GC
-                # XXX maybe we ought to call the close callbacks.
-                conn._storage = conn._normal_storage = None
-                conn._savepoint_storage = None
-                conn.new_oid = conn._opened = None
-                conn._debug_info = ()
-
-                # collector #1350: ensure that the connection is unregistered
-                # from the transaction manager (XXX API method?)
-                if conn._synch:
-                    conn.transaction_manager.unregisterSynch(conn)
-
-                # The mounted connection keeps a reference to
-                # its database, but nothing else.
-                # Note that mounted connections can not operate
-                # independently, so don't use _closeConnection() to
-                # return them to the pool.  Only the root connection
-                # should be returned.
-
-        # Close this connection only after the mounted connections
-        # have been closed.  Otherwise, this connection gets returned
-        # to the pool too early and another thread might use this
-        # connection before the mounted connections have all been
-        # closed.
-        self._real_close()
-
-if 1:
-    # patch Connection.py.
-    from ZODB.Connection import Connection
-    Connection._real_setDB = Connection._setDB
-    Connection._real_close = Connection.close
-
-    for k, v in ConnectionPatches.__dict__.items():
-        if not k.startswith('__'):
-            setattr(Connection, k, v)
-

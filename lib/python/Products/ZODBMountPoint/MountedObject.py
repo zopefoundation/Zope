@@ -107,7 +107,7 @@ class CustomTrailblazer (SimpleTrailblazer):
         obj = context.unrestrictedTraverse(id)
         # Commit a subtransaction to assign the new object to
         # the correct database.
-        transaction.commit(1)
+        transaction.savepoint()
         return obj
 
 
@@ -132,6 +132,14 @@ class MountedObject(MountPoint, SimpleItem):
         self._path = path
         id = path.split('/')[-1]
         MountPoint.__init__(self, id)
+
+    def _getMountedConnection(self, anyjar):
+        db_name = self._getDBName()
+        try:
+            conn = anyjar.get_connection(db_name)
+        except KeyError:
+            conn = self._getDB().open()
+        return conn
 
     def mount_error_(self):
         return self._v_connect_error
@@ -177,7 +185,7 @@ class MountedObject(MountPoint, SimpleItem):
                 obj = Application()
                 root[real_root] = obj
                 # Get it into the database
-                transaction.commit(1)
+                transaction.savepoint()
             else:
                 raise
 

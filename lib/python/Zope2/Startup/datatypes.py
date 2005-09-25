@@ -149,18 +149,18 @@ def root_config(section):
             mount_points[point] = name
     from DBTab.DBTab import DBTab
     section.dbtab = DBTab(mount_factories, mount_points)
-
+    
     return section
 
 class ZopeDatabase(ZODBDatabase):
     """ A ZODB database datatype that can handle an extended set of
     attributes for use by DBTab """
 
-    def createDB(self):
-        return ZODBDatabase.open(self)
+    def createDB(self, database_name, databases):
+        return ZODBDatabase.open(self, database_name, databases)
 
-    def open(self):
-        DB = self.createDB()
+    def open(self, database_name, databases):
+        DB = self.createDB(database_name, databases)
         if self.config.connection_class:
             # set the connection class
             DB.klass = self.config.connection_class
