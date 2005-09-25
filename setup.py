@@ -268,7 +268,11 @@ class MyDistribution(Distribution):
         self.cmdclass['install_lib'] = MyLibInstaller
 
 
-EXTENSIONCLASS_INCLUDEDIRS = ['ExtensionClass']
+# added . to EXTENSIONCLASS_INCLUDEDIRS in order to be able to compile
+# ZODB HEAD code (which uses qualified paths to find header files).  This
+# should be a temporary change, thrown away once we use zpkg to package
+# Zope.
+EXTENSIONCLASS_INCLUDEDIRS = ['ExtensionClass', '.'] 
 
 # All extension modules must be listed here.
 ext_modules = [
