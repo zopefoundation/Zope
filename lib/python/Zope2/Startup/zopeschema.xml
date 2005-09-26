@@ -217,7 +217,7 @@
     </key>
 
    <key name="class-factory" datatype=".importable_name"
-        default="DBTab.ClassFactories.autoClassFactory">
+        default="Zope2.Startup.datatypes.zopeClassFactory">
       <description>
        Change the class factory function a database uses on a
        per-database basis to support different class factory policy.

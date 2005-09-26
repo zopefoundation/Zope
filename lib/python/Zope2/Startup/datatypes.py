@@ -18,6 +18,7 @@ import os
 
 from ZConfig.components.logger import logger
 from ZODB.config import ZODBDatabase
+import OFS.Uninstalled
 
 # generic datatypes
 
@@ -109,7 +110,7 @@ def python_dotted_path(name):
 
 # Datatype for the root configuration object
 # (adds the softwarehome and zopehome fields; default values for some
-#  computed paths, configures dbtab)
+#  computed paths, configures the dbtab)
 
 def root_config(section):
     from ZConfig import ConfigurationError
@@ -147,9 +148,7 @@ def root_config(section):
                 raise ConfigurationError(dup_err % (mount_points[point],
                                                     name, point))
             mount_points[point] = name
-    from DBTab.DBTab import DBTab
     section.dbtab = DBTab(mount_factories, mount_points)
-    
     return section
 
 class ZopeDatabase(ZODBDatabase):
@@ -172,10 +171,6 @@ class ZopeDatabase(ZODBDatabase):
 
     def getName(self):
         return self.name
-
-    def getOpenAtStartup(self):
-        # XXX implement
-        return 0
 
     def computeMountPaths(self):
         mps = []
@@ -211,3 +206,110 @@ class ZopeDatabase(ZODBDatabase):
                 return (real_root, real_path, container_class)
         raise LookupError('Nothing known about mount path %s' % mount_path)
     
+
+class DBTab:
+    """A Zope database configuration, similar in purpose to /etc/fstab.
+    """
+
+    def __init__(self, db_factories, mount_paths):
+        self.db_factories = db_factories  # { name -> DatabaseFactory }
+        self.mount_paths = mount_paths    # { virtual path -> name }
+        self.databases = {}               # { name -> DB instance }
+
+    def listMountPaths(self):
+        """Returns a sequence of (virtual_mount_path, database_name).
+        """
+        return self.mount_paths.items()
+
+
+    def listDatabaseNames(self):
+        """Returns a sequence of names.
+        """
+        return self.db_factories.keys()
+
+
+    def hasDatabase(self, name):
+        """Returns true if name is the name of a configured database."""
+        return self.db_factories.has_key(name)
+
+
+    def _mountPathError(self, mount_path):
+        from ZConfig import ConfigurationError
+        if mount_path == '/':
+            raise ConfigurationError(
+                "No root database configured")
+        else:
+            raise ConfigurationError(
+                "No database configured for mount point at %s"
+                % mount_path)
+
+    def getDatabase(self, mount_path=None, name=None, is_root=0):
+        """Returns an opened database.  Requires either mount_path or name.
+        """
+        if name is None:
+            name = self.getName(mount_path)
+        db = self.databases.get(name, None)
+        if db is None:
+            factory = self.getDatabaseFactory(name=name)
+            db = factory.open(name, self.databases)
+        return db
+
+    def getDatabaseFactory(self, mount_path=None, name=None):
+        if name is None:
+            name = self.getName(mount_path)
+        if not self.db_factories.has_key(name):
+            raise KeyError('%s is not a configured database' % repr(name))
+        return self.db_factories[name]
+
+    def getName(self, mount_path):
+        name = self.mount_paths.get(mount_path)
+        if name is None:
+            self._mountPathError(mount_path)
+        return name
+
+# class factories (potentially) used by the class-factory parameter in
+# zopeschema.xml
+
+def minimalClassFactory(jar, module, name,
+                        _silly=('__doc__',), _globals={},
+                        ):
+    """Minimal class factory.
+
+    If any class is not found, this class factory will propagate
+    the exception to the application, unlike the other class factories.
+    """
+    m = __import__(module, _globals, _globals, _silly)
+    return getattr(m, name)
+
+def simpleClassFactory(jar, module, name,
+                       _silly=('__doc__',), _globals={},
+                       ):
+    """Class factory without ZClass support.
+    """
+    try:
+        m = __import__(module, _globals, _globals, _silly)
+        return getattr(m, name)
+    except:
+        return OFS.Uninstalled.Broken(jar, None, (module, name))
+
+def zopeClassFactory(jar, module, name,
+                     _silly=('__doc__',), _globals={},
+                     ):
+    """Class factory with ZClass support.
+    """
+    try:
+        if module[:1]=='*':
+            # ZCLass! Yee ha!
+            return jar.root()['ZGlobals'][module]
+        else:
+            m=__import__(module, _globals, _globals, _silly)
+
+        return getattr(m, name)
+    except:
+        return OFS.Uninstalled.Broken(jar, None, (module, name))
+
+# There used to be an "autoClassFactory" whose docstring read "If not the root
+# connection, use the class factory from the root database, otherwise use the
+# Zope class factory."  This no longer works with the implementation of
+# mounted databases, so we just use the zopeClassFactory as the default
+

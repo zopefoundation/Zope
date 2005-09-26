@@ -11,23 +11,29 @@
 # FOR A PARTICULAR PURPOSE
 # 
 ##############################################################################
-"""DBTab mount point (stored in ZODB).
+"""Mount point (stored in ZODB).
 
 $Id$
 """
 
 import os
+import sys
+import traceback
+from cStringIO import StringIO
+from logging import getLogger
 
 import transaction
 
 import Globals
+import Acquisition
 from Acquisition import aq_base, aq_inner, aq_parent
 from AccessControl.ZopeGuards import guarded_getattr
 from OFS.SimpleItem import SimpleItem
 from OFS.Folder import Folder
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
-from Mount import MountPoint
+from ZODB.POSException import MountedStorageError, ConnectionStateError
 
+LOG = getLogger('Zope.ZODBMountPoint')
 
 _www = os.path.join(os.path.dirname(__file__), 'www')
 
@@ -111,8 +117,8 @@ class CustomTrailblazer (SimpleTrailblazer):
         return obj
 
 
-class MountedObject(MountPoint, SimpleItem):
-    '''A MountPoint with a basic interface for displaying the
+class MountedObject(SimpleItem):
+    '''A database mount point with a basic interface for displaying the
     reason the database did not connect.
     '''
     meta_type = 'ZODB Mount Point'
@@ -124,6 +130,8 @@ class MountedObject(MountPoint, SimpleItem):
     icon = 'p_/broken'
     manage_options = ({'label':'Traceback', 'action':'manage_traceback'},)
     _v_mount_params = None
+    _v_data = None
+    _v_connect_error = None
 
     manage_traceback = PageTemplateFile('mountfail.pt', _www)
 
@@ -131,7 +139,7 @@ class MountedObject(MountPoint, SimpleItem):
         path = str(path)
         self._path = path
         id = path.split('/')[-1]
-        MountPoint.__init__(self, id)
+        self.id = id
 
     def _getMountedConnection(self, anyjar):
         db_name = self._getDBName()
@@ -205,6 +213,73 @@ class MountedObject(MountPoint, SimpleItem):
                     raise
         return obj
 
+    def _logConnectException(self):
+        '''Records info about the exception that just occurred.
+        '''
+        try:
+            from cStringIO import StringIO
+        except:
+            from StringIO import StringIO
+        import traceback
+        exc = sys.exc_info()
+        LOG.error('Failed to mount database. %s (%s)' % exc[:2], exc_info=exc)
+        f=StringIO()
+        traceback.print_tb(exc[2], 100, f)
+        self._v_connect_error = (exc[0], exc[1], f.getvalue())
+        exc = None
+
+
+    def __of__(self, parent):
+        # Accesses the database, returning an acquisition
+        # wrapper around the connected object rather than around self.
+        try:
+            return self._getOrOpenObject(parent)
+        except:
+            return Acquisition.ImplicitAcquisitionWrapper(self, parent)
+
+
+    def _test(self, parent):
+        '''Tests the database connection.
+        '''
+        self._getOrOpenObject(parent)
+        return 1
+
+    def _getOrOpenObject(self, parent):
+        t = self._v_data
+        if t is not None:
+            data = t[0]
+        else:
+            self._v_connect_error = None
+            conn = None
+            try:
+                anyjar = self._p_jar
+                if anyjar is None:
+                    anyjar = parent._p_jar
+                conn = self._getMountedConnection(anyjar)
+                root = conn.root()
+                obj = self._traverseToMountedRoot(root, parent)
+                data = aq_base(obj)
+                # Store the data object in a tuple to hide from acquisition.
+                self._v_data = (data,)
+            except:
+                # Possibly broken database.
+                self._logConnectException()
+                raise
+
+            try:
+                # XXX This method of finding the mount point is deprecated.
+                # Do not use the _v_mount_point_ attribute.
+                data._v_mount_point_ = (aq_base(self),)
+            except:
+                # Might be a read-only object.
+                pass
+
+        return data.__of__(parent)
+
+    def __repr__(self):
+        return "%s(id=%s)" % (self.__class__.__name__, repr(self.id))
+
+
 Globals.InitializeClass(MountedObject)
 
 
@@ -239,7 +314,7 @@ def setMountPoint(container, id, mp):
 manage_addMountsForm = PageTemplateFile('addMountsForm.pt', _www)
 
 def manage_getMountStatus(dispatcher):
-    """Returns the status of each mount point specified by dbtab.conf.
+    """Returns the status of each mount point specified by zope.conf
     """
     res = []
     conf = getConfiguration()
@@ -323,4 +398,5 @@ def manage_addMounts(dispatcher, paths=(), create_mount_points=True,
         REQUEST['RESPONSE'].redirect(
             REQUEST['URL1'] + ('/manage_main?manage_tabs_message='
             'Added %d mount points.' % count))
+
 
