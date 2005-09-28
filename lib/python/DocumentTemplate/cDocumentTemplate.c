@@ -420,10 +420,11 @@ static struct PyMethodDef MM_methods[] = {
   {"_pop",  (PyCFunction) MM_pop,  0,
    "_pop() -- Remove and return the last data source added"}, 
   {"getitem",  (PyCFunction) MM_get,  METH_VARARGS,
-   "getitem(key[,call]) -- Get a value\n\n"
-   "Normally, callable objects that can be called without arguments are\n"
-   "called during retrieval. This can be suppressed by providing a\n"
-   "second argument that is false.\n"
+   "getitem(key[,call]) -- Get a value from the MultiDict\n\n"
+   "If call is true, callable objects that can be called without arguments are\n"
+   "called during retrieval.\n"
+   "If call is false, the object will be returns without any attempt to call it.\n"
+   "If not specified, call is false by default.\n"
   }, 
   {"has_key",  (PyCFunction) MM_has_key,  METH_VARARGS,
    "has_key(key) -- Test whether the mapping has the given key"
