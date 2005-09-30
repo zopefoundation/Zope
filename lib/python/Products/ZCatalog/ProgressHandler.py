@@ -7,12 +7,11 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-
 """
-$Id: ZCatalog.py 25050 2004-05-27 15:06:40Z chrisw $
+$Id$
 """
 
 import time, sys
@@ -107,4 +106,3 @@ class FilelogHandler(StdoutHandler):
 
     def output(self, text):
         open(self.filename, 'a').write(text + '\n')
-
