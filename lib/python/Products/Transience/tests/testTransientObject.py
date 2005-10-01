@@ -115,6 +115,15 @@ class TestTransientObject(TestCase):
         t.delete('foobie')
         self.assertEqual(t.get('foobie'), None)
 
+    def test_repr_leaking_information(self):
+        # __repr__ used to show all contents, which could lead to sensitive
+        # information being visible in e.g. the ErrorLog object.
+        t = self.t.new('password-storing-session')
+        t.set('__ac_password__', 'secret')
+        self.failIf( repr(t).find('secret') != -1
+                   , '__repr__ leaks: %s' % repr(t)
+                   )
+
 
 def test_suite():
     testsuite = makeSuite(TestTransientObject, 'test')

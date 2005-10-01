@@ -256,8 +256,8 @@ class TransientObject(Persistent, Implicit):
         return "%s%s" % (t, d)
 
     def __repr__(self):
-        return "id: %s, token: %s, contents: %s" % (
-            self.id, self.token, `self.items()`
+        return "id: %s, token: %s, content keys: %s" % (
+            self.id, self.token, `self.keys()`
             )
 
 def lastmodified_sort(d1, d2):
