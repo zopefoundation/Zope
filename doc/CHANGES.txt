@@ -31,6 +31,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #1863: Prevent possibly sensitive information to leak via
+        the TransientObject's __repr__ method.
+
       - Repaired 'handle_errors' usage for doctests, along with the
         supporting 'debug' argument passed to
         'ZPublisher.Test.publish_module'.
