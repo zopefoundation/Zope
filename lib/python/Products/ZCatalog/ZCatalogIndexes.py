@@ -7,13 +7,13 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+"""Virtual container for ZCatalog indexes.
 
-"""$Id$
+$Id$
 """
-
 
 from Acquisition import Implicit
 from Persistence import Persistent
@@ -21,19 +21,23 @@ from Globals import DTMLFile, InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.Permissions import manage_zcatalog_indexes
 from OFS.Folder import Folder
-from OFS.SimpleItem import SimpleItem
 from OFS.ObjectManager import IFAwareObjectManager
+from OFS.SimpleItem import SimpleItem
+from Products.PluginIndexes.common.PluggableIndex \
+        import PluggableIndexInterface
+from Products.PluginIndexes.interfaces import IPluggableIndex
 
-from Products.PluginIndexes.common.PluggableIndex import PluggableIndexInterface
 
 _marker = []
 
-class ZCatalogIndexes (IFAwareObjectManager, Folder, Persistent, Implicit):
+
+class ZCatalogIndexes(IFAwareObjectManager, Folder, Persistent, Implicit):
+
     """A mapping object, responding to getattr requests by looking up
     the requested indexes in an object manager."""
 
     # The interfaces we want to show up in our object manager
-    _product_interfaces = (PluggableIndexInterface, )
+    _product_interfaces = (PluggableIndexInterface, IPluggableIndex)
 
     meta_type = "ZCatalogIndex"
     manage_options = ()
@@ -112,6 +116,7 @@ class ZCatalogIndexes (IFAwareObjectManager, Folder, Persistent, Implicit):
         return getattr(self, name)
 
 InitializeClass(ZCatalogIndexes)
+
 
 class OldCatalogWrapperObject(SimpleItem, Implicit):
 
