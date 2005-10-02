@@ -619,7 +619,7 @@ def walk_with_symlinks(path, visit, arg):
     except os.error:
         return
     visit(arg, path, names)
-    exceptions = (os.curdir, os.pardir)
+    exceptions = (os.curdir, os.pardir, 'var')
     for name in names:
         if name not in exceptions:
             name = os.path.join(path, name)
