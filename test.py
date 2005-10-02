@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.3
+#!/home/fermigier/bin/python
 
 ##############################################################################
 #
@@ -120,6 +120,26 @@ named .testinfo, it will not be searched for tests.  Really.)
     works if trace.py is explicitly added to PYTHONPATH.  The current
     utility writes coverage files to a directory named `coverage' that
     is parallel to `build'.  It also prints a summary to stdout.
+
+--coverage
+    Use the coverage.py module from Gareth Rees
+    (http://www.nedbatchelder.com/code/modules/coverage.html) to collect data
+    for code coverage.  This will output trace data in a file called
+    '.coverage'. You will need to call coverage.py after the test run to
+    analyse the data (-r for a line count report, -a for annotated file).
+
+--profile
+    Use the profile module from the standard library to collect profiling data.
+    This will output data in a file called '.profile'. You will need to use the
+    pstats module from the standard library after the test run to analyse the
+    data.
+
+--hotshot
+    Use the hotshot module from the standard library to collect profiling data.
+    This will output data in a file called '.hotshot'. You will need to use the
+    hotshot.pstats module from the standard library after the test run to
+    analyse the data. You may also use the hotshot2cg script from the
+    KCacheGrind sources to create data suitable for analysis by KCacheGrind.
 
 -v
     Verbose output.  With one -v, unittest prints a dot (".") for each
@@ -619,7 +639,7 @@ def walk_with_symlinks(path, visit, arg):
     except os.error:
         return
     visit(arg, path, names)
-    exceptions = (os.curdir, os.pardir)
+    exceptions = (os.curdir, os.pardir, 'var')
     for name in names:
         if name not in exceptions:
             name = os.path.join(path, name)
@@ -749,6 +769,9 @@ def process_args(argv=None):
     LOOP = False
     GUI = False
     TRACE = False
+    COVERAGE = False
+    PROFILE = False
+    HOTSHOT = False
     REFCOUNT = False
     debug = False # Don't collect test results; simply let tests crash
     debugger = False
@@ -771,7 +794,8 @@ def process_args(argv=None):
         opts, args = getopt.getopt(argv[1:], "a:bcC:dDfg:G:hLmprtTuv",
                                    ["all", "help", "libdir=", "times=",
                                     "keepbytecode", "dir=", 
-                                    "config-file=", "import-testing"])
+                                    "config-file=", "import-testing",
+                                    "coverage", "profile", "hotshot"])
     except getopt.error, msg:
         print msg
         print "Try `python %s -h' for more information." % argv[0]
@@ -823,6 +847,12 @@ def process_args(argv=None):
                 print "-r ignored, because it needs a debug build of Python"
         elif k == "-T":
             TRACE = True
+        elif k == "--coverage":
+            COVERAGE = True
+        elif k == "--profile":
+            PROFILE = True
+        elif k == "--hotshot":
+            HOTSHOT = True
         elif k == "-t":
             if not timetests:
                 timetests = 50
@@ -903,6 +933,29 @@ def process_args(argv=None):
                           globals=globals(), locals=vars())
             r = tracer.results()
             r.write_results(show_missing=True, summary=True, coverdir=coverdir)
+
+        elif COVERAGE:
+            try:
+                from coverage import the_coverage
+            except:
+                print "You need to install coverage.py from "
+                print "http://www.nedbatchelder.com/code/modules/coverage.html"
+                sys.exit()
+            the_coverage.start()
+            main(module_filter, test_filter, libdir)
+
+        elif PROFILE:
+            import profile
+            profile.runctx("main(module_filter, test_filter, libdir)",
+                           globals=globals(), locals=vars(), 
+                           filename=".profile")
+
+        elif HOTSHOT:
+            import hotshot
+            profile = hotshot.Profile(".hotshot")
+            profile.runctx("main(module_filter, test_filter, libdir)",
+                           globals=globals(), locals=vars())
+
         else:
             bad = main(module_filter, test_filter, libdir)
             if bad:
