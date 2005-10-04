@@ -219,7 +219,7 @@ class File(Persistent, Implicit, PropertyManager,
                     return True
 
                 ranges = HTTPRangeSupport.expandRanges(ranges, self.size)
-                                
+
                 if len(ranges) == 1:
                     # Easy case, set extra header and return partial set.
                     start, end = ranges[0]
@@ -402,10 +402,10 @@ class File(Persistent, Implicit, PropertyManager,
                 return result
 
         self.ZCacheable_set(None)
-            
+
         data=self.data
         if type(data) is type(''):
-            RESPONSE.setBase(None) 
+            RESPONSE.setBase(None)
             return data
 
         while data is not None:
@@ -516,7 +516,7 @@ class File(Persistent, Implicit, PropertyManager,
 
         # Make sure we have an _p_jar, even if we are a new object, by
         # doing a sub-transaction commit.
-        transaction.savepoint()
+        transaction.savepoint(optimistic=True)
 
         if self._p_jar is None:
             # Ugh
@@ -533,7 +533,7 @@ class File(Persistent, Implicit, PropertyManager,
             if pos < n:
                 pos = 0 # we always want at least n bytes
             seek(pos)
-            
+
             # Create the object and assign it a next pointer
             # in the same transaction, so that there is only
             # a single database update for it.
@@ -542,7 +542,7 @@ class File(Persistent, Implicit, PropertyManager,
             data.next = next
 
             # Save the object so that we can release its memory.
-            transaction.savepoint()
+            transaction.savepoint(optimistic=True)
             data._p_deactivate()
             # The object should be assigned an oid and be a ghost.
             assert data._p_oid is not None
