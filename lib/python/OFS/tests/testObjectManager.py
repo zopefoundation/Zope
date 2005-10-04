@@ -312,6 +312,41 @@ class ObjectManagerTests( unittest.TestCase ):
         self.assertRaises(DeleteFailed, om1._delObject, 'om2')
 
 
+    def test_setObject_checkId_ok(self):
+        om = self._makeOne()
+        si = SimpleItem('1')
+        om._setObject('AB-dash_under0123', si)
+        si = SimpleItem('2')
+        om._setObject('ho.bak~', si)
+        si = SimpleItem('3')
+        om._setObject('dot.comma,dollar$(hi)hash# space', si)
+        si = SimpleItem('4')
+        om._setObject('b@r', si)
+        si = SimpleItem('5')
+        om._setObject('..haha', si)
+        si = SimpleItem('6')
+        om._setObject('.bashrc', si)
+
+    def test_setObject_checkId_bad(self):
+        from zExceptions import BadRequest
+        om = self._makeOne()
+        si = SimpleItem('111')
+        om._setObject('111', si)
+        si = SimpleItem('2')
+        self.assertRaises(BadRequest, om._setObject, 123, si)
+        self.assertRaises(BadRequest, om._setObject, 'a\x01b', si)
+        self.assertRaises(BadRequest, om._setObject, 'a\\b', si)
+        self.assertRaises(BadRequest, om._setObject, 'a:b', si)
+        self.assertRaises(BadRequest, om._setObject, 'a;b', si)
+        self.assertRaises(BadRequest, om._setObject, '.', si)
+        self.assertRaises(BadRequest, om._setObject, '..', si)
+        self.assertRaises(BadRequest, om._setObject, '_foo', si)
+        self.assertRaises(BadRequest, om._setObject, 'aq_me', si)
+        self.assertRaises(BadRequest, om._setObject, 'bah__', si)
+        self.assertRaises(BadRequest, om._setObject, '111', si)
+        self.assertRaises(BadRequest, om._setObject, 'REQUEST', si)
+        self.assertRaises(BadRequest, om._setObject, '/', si)
+
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest( unittest.makeSuite( ObjectManagerTests ) )

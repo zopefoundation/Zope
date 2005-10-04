@@ -52,7 +52,7 @@ customImporters={
     XMLExportImport.magic: XMLExportImport.importXML,
     }
 
-bad_id=re.compile(r'[^a-zA-Z0-9-_~,.$\(\)# ]').search #TS
+bad_id=re.compile(r'[^a-zA-Z0-9-_~,.$\(\)# @]').search
 
 def checkValidId(self, id, allow_dup=0):
     # If allow_dup is false, an error will be raised if an object
