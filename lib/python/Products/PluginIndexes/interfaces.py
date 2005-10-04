@@ -19,8 +19,6 @@ from zope.interface import Interface
 from zope.schema import Bool
 
 
-# XXX: copied from common.PluggableIndex.PluggableIndexInterface;
-#      should be bridged
 class IPluggableIndex(Interface):
 
     def getId():
@@ -30,8 +28,7 @@ class IPluggableIndex(Interface):
         """Get all information contained for 'documentId'."""
 
     def getIndexSourceNames():
-        """ return a sequence of attribute names that are indexed 
-            by the index. 
+        """Get a sequence of attribute names that are indexed by the index.
         """
 
     def index_object(documentId, obj, threshold=None):
@@ -69,26 +66,24 @@ class IPluggableIndex(Interface):
         records.  The second object is a tuple containing the names of
         all data fields used.
         """
-    
+
     def numObjects():
         """Return the number of indexed objects"""
 
-# XXX: this is currently broken
+# XXX: not implemented by TextIndex and TopicIndex
 #    def indexSize():
 #        """Return the size of the index in terms of distinct values"""
-    
+
     def clear():
         """Empty the index"""
 
 
-# XXX: copied from from common.PluggableIndex.UniqueValueIndex;
-#      should be bridged
 class IUniqueValueIndex(IPluggableIndex):
     """An index which can return lists of unique values contained in it"""
-    
+
     def hasUniqueValuesFor(name):
         """Return true if the index can return the unique values for name"""
-        
+
     def uniqueValues(name=None, withLengths=0):
         """Return the unique values for name.
 
@@ -96,17 +91,15 @@ class IUniqueValueIndex(IPluggableIndex):
         (value, length)."""
 
 
-# XXX: copied from from common.PluggableIndex.SortIndex;
-#      should be bridged
 class ISortIndex(IPluggableIndex):
     """An index which may be used to sort a set of document ids"""
-    
+
     def keyForDocument(documentId):
         """Return the sort key that cooresponds to the specified document id
-        
-        This method is no longer used by ZCatalog, but is left for backwards 
+
+        This method is no longer used by ZCatalog, but is left for backwards
         compatibility."""
-        
+
     def documentToKeyMap():
         """Return an object that supports __getitem__ and may be used to quickly
         lookup the sort key given a document id"""

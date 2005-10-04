@@ -18,8 +18,6 @@ $Id$
 from zope.interface import Interface
 
 
-# XXX: copied from IZCatalog.IZCatalog;
-#      should be bridged
 class IZCatalog(Interface):
     """ZCatalog object
 
@@ -66,7 +64,6 @@ class IZCatalog(Interface):
     object.  In Zope, this unique identifier is the object's relative
     path to the ZCatalog (since two Zope objects cannot have the same
     URL, this is an excellent unique qualifier in Zope).
-
     """
 
     def catalog_object(obj, uid, idxs=None, update_metadata=1):
@@ -111,7 +108,6 @@ class IZCatalog(Interface):
 
         Returns a sequence of names that correspond to columns in the
         meta-data table.
-
         """
 
     def indexes():
@@ -198,7 +194,6 @@ class IZCatalog(Interface):
         able to provide more advanced search parameters that can
         specify range searches or wildcards.  These features are
         documented in The Zope Book.
-
         """
 
     def __call__(REQUEST=None, **kw):
