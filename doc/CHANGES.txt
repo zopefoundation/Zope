@@ -29,6 +29,8 @@ Zope Changes
       - Collector #1118: Added syntax to dtml-sqlgroup to support flexible
         generation of 'UPDATE' statements (bounty sponsored by Logicalware).
 
+      - The '@' character is now allowed in object ids (RFC 1738 allows it).
+
     Bugs Fixed
 
       - Collector #1863: Prevent possibly sensitive information to leak via
