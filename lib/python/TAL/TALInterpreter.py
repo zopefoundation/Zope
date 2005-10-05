@@ -532,7 +532,7 @@ class TALInterpreter:
         if isinstance(text, I18nMessageTypes):
             # Translate this now.
             text = self.engine.translate(text.domain, text, 
-                                         text.mapping, text.default)
+                                         text.mapping, default=text.default)
         s = cgi.escape(text)
         self._stream_write(s)
         i = s.rfind('\n')
