@@ -33,6 +33,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #1888: Adjust call to 'engine.translate' to accomodate
+        change in its signature.
+
       - Collector #1863: Prevent possibly sensitive information to leak via
         the TransientObject's __repr__ method.
 
