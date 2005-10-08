@@ -17,10 +17,13 @@ from types import ListType, TupleType, UnicodeType
 from DateTime import DateTime
 from cgi import escape
 
+# This may get overwritten during configuration
+default_encoding = 'iso-8859-15'
+
 def field2string(v):
     if hasattr(v,'read'): return v.read()
-    elif isinstance(v,UnicodeType) :
-        return v.encode('iso-8859-15')
+    elif isinstance(v,UnicodeType):
+        return v.encode(default_encoding)
     else:
         return str(v)
 

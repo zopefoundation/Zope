@@ -848,6 +848,17 @@ instancehome $INSTANCE
 #
 #    large-file-threshold 1Mb
 
+# Directive: default_zpublisher_encoding
+#
+# Description:
+#     This controls what character set is used to encode unicode
+#     data that reaches ZPublisher without any other specified encoding.
+#
+# Default: iso-8859-15
+#
+# Example:
+#
+#    default_zpublisher_encoding utf-8
 
 # Directives: servers
 #

@@ -25,6 +25,9 @@ from TaintedString import TaintedString
 from maybe_lock import allocate_lock
 xmlrpc=None # Placeholder for module that we'll import if we have to.
 
+# This may get overwritten during configuration
+default_encoding = 'iso-8859-15'
+
 isCGI_NAME = {
         'SERVER_SOFTWARE' : 1,
         'SERVER_NAME' : 1,
@@ -522,7 +525,7 @@ class HTTPRequest(BaseRequest):
                                 if hasattr(converter,'convert_unicode'):
                                     item = converter.convert_unicode(item)
                                 else:
-                                    item = converter(item.encode('iso-8859-15'))
+                                    item = converter(item.encode(default_encoding))
                             else:
                                 item=converter(item)
 
