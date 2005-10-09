@@ -192,6 +192,9 @@ class ZReST(Item, PropertyManager, Historical, Implicit, Persistent):
         # set the reporting level to something sane
         pub.settings.report_level = int(self.report_level)
 
+        # Disallow inclusion of files for security reasons
+        pub.settings.file_insertion_enabled = 0
+
         # don't break if we get errors
         pub.settings.halt_level = 6
 
