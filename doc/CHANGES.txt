@@ -33,6 +33,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - disabled ".. include" directive for all the ZReST product and the 
+        reStructuredText package
+
       - Collector #1888: Adjust call to 'engine.translate' to accomodate
         change in its signature.
 
