@@ -813,5 +813,13 @@
 
   <section type="zoperunner" name="*" attribute="runner"/>
 
+  <key name="default-zpublisher-encoding" datatype=".default_zpublisher_encoding">
+     <description>
+       This key controls what character set is used to encode unicode
+       data that reaches ZPublisher without any other specified encoding.
+     </description>
+     <metadefault>iso-8859-15</metadefault>
+  </key>
+
 
 </schema>

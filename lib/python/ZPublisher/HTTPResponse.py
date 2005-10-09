@@ -26,6 +26,8 @@ from cgi import escape
 
 nl2sp = maketrans('\n',' ')
 
+# This may get overwritten during configuration
+default_encoding = 'iso-8859-15'
 
 # Enable APPEND_TRACEBACKS to make Zope append tracebacks like it used to,
 # but a better solution is to make standard_error_message display error_tb.
@@ -444,7 +446,7 @@ class HTTPResponse(BaseResponse):
                 encoding = match.group(1)
                 return body.encode(encoding)
         # Use the default character encoding
-        return body.encode('iso-8859-15','replace')
+        return body.encode(default_encoding,'replace')
 
     def setBase(self,base):
         """Set the base URL for the returned document.
