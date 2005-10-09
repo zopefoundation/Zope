@@ -74,6 +74,7 @@ def render(src,
     if language_code:
         settings['language_code'] = language_code
     settings['language_code'] = language_code
+    settings['file_insertion_enabled '] = 0
     # starting level for <H> elements:
     settings['initial_header_level'] = initial_header_level + 1
     # set the reporting level to something sane:
