@@ -1,7 +1,7 @@
 # Author: David Goodger
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.2.10.7 $
-# Date: $Date: 2005/01/07 13:26:02 $
+# Revision: $Revision: 3253 $
+# Date: $Date: 2005-04-25 17:08:01 +0200 (Mon, 25 Apr 2005) $
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -13,6 +13,7 @@ __docformat__ = 'reStructuredText'
 import sys
 import os
 import os.path
+import warnings
 from types import StringType, UnicodeType
 from docutils import ApplicationError, DataError
 from docutils import frontend, nodes
@@ -39,36 +40,20 @@ class Reporter:
     There is typically one Reporter object per process.  A Reporter object is
     instantiated with thresholds for reporting (generating warnings) and
     halting processing (raising exceptions), a switch to turn debug output on
-    or off, and an I/O stream for warnings.  These are stored in the default
-    reporting category, '' (zero-length string).
+    or off, and an I/O stream for warnings.  These are stored as instance
+    attributes.
 
-    Multiple reporting categories [#]_ may be set, each with its own reporting
-    and halting thresholds, debugging switch, and warning stream
-    (collectively a `ConditionSet`).  Categories are hierarchical dotted-name
-    strings that look like attribute references: 'spam', 'spam.eggs',
-    'neeeow.wum.ping'.  The 'spam' category is the ancestor of
-    'spam.bacon.eggs'.  Unset categories inherit stored conditions from their
-    closest ancestor category that has been set.
-
-    When a system message is generated, the stored conditions from its
-    category (or ancestor if unset) are retrieved.  The system message level
-    is compared to the thresholds stored in the category, and a warning or
-    error is generated as appropriate.  Debug messages are produced iff the
-    stored debug switch is on.  Message output is sent to the stored warning
-    stream if not set to ''.
-
-    The default category is '' (empty string).  By convention, Writers should
-    retrieve reporting conditions from the 'writer' category (which, unless
-    explicitly set, defaults to the conditions of the default category).
+    When a system message is generated, its level is compared to the stored
+    thresholds, and a warning or error is generated as appropriate.  Debug
+    messages are produced iff the stored debug switch is on, independently of
+    other thresholds.  Message output is sent to the stored warning stream if
+    not set to ''.
 
     The Reporter class also employs a modified form of the "Observer" pattern
     [GoF95]_ to track system messages generated.  The `attach_observer` method
     should be called before parsing, with a bound method or function which
     accepts system messages.  The observer can be removed with
     `detach_observer`, and another added in its place.
-
-    .. [#] The concept of "categories" was inspired by the log4j project:
-       http://jakarta.apache.org/log4j/.
 
     .. [GoF95] Gamma, Helm, Johnson, Vlissides. *Design Patterns: Elements of
        Reusable Object-Oriented Software*. Addison-Wesley, Reading, MA, USA,
@@ -81,10 +66,7 @@ class Reporter:
     def __init__(self, source, report_level, halt_level, stream=None,
                  debug=0, encoding='ascii', error_handler='replace'):
         """
-        Initialize the `ConditionSet` forthe `Reporter`'s default category.
-
         :Parameters:
-
             - `source`: The path to or description of the source data.
             - `report_level`: The level at or above which warning output will
               be sent to `stream`.
@@ -101,6 +83,23 @@ class Reporter:
         self.source = source
         """The path to or description of the source data."""
 
+        self.encoding = encoding
+        """The character encoding for the stderr output."""
+
+        self.error_handler = error_handler
+        """The character encoding error handler."""
+
+        self.debug_flag = debug
+        """Show debug (level=0) system messages?"""
+
+        self.report_level = report_level
+        """The level at or above which warning output will be sent
+        to `self.stream`."""
+
+        self.halt_level = halt_level
+        """The level at or above which `SystemMessage` exceptions
+        will be raised, halting execution."""
+
         if stream is None:
             stream = sys.stderr
         elif type(stream) in (StringType, UnicodeType):
@@ -111,15 +110,8 @@ class Reporter:
                 elif type(stream) == UnicodeType:
                     stream = open(stream.encode(), 'w')
 
-        self.encoding = encoding
-        """The character encoding for the stderr output."""
-
-        self.error_handler = error_handler
-        """The character encoding error handler."""
-
-        self.categories = {'': ConditionSet(debug, report_level, halt_level,
-                                            stream)}
-        """Mapping of category names to conditions. Default category is ''."""
+        self.stream = stream
+        """Where warning output is sent."""
 
         self.observers = []
         """List of bound methods or functions to call with each system_message
@@ -130,23 +122,15 @@ class Reporter:
 
     def set_conditions(self, category, report_level, halt_level,
                        stream=None, debug=0):
+        warnings.warn('docutils.utils.Reporter.set_conditions deprecated; '
+                      'set attributes via configuration settings or directly',
+                      DeprecationWarning, stacklevel=2)
+        self.report_level = report_level
+        self.halt_level = halt_level
         if stream is None:
             stream = sys.stderr
-        self.categories[category] = ConditionSet(debug, report_level,
-                                                 halt_level, stream)
-
-    def unset_conditions(self, category):
-        if category and self.categories.has_key(category):
-            del self.categories[category]
-
-    __delitem__ = unset_conditions
-
-    def get_conditions(self, category):
-        while not self.categories.has_key(category):
-            category = category[:category.rfind('.') + 1][:-1]
-        return self.categories[category]
-
-    __getitem__ = get_conditions
+        self.stream = stream
+        self.debug = debug
 
     def attach_observer(self, observer):
         """
@@ -169,9 +153,6 @@ class Reporter:
         Raise an exception or generate a warning if appropriate.
         """
         attributes = kwargs.copy()
-        category = kwargs.get('category', '')
-        if kwargs.has_key('category'):
-            del attributes['category']
         if kwargs.has_key('base_node'):
             source, line = get_source_line(kwargs['base_node'])
             del attributes['base_node']
@@ -183,16 +164,13 @@ class Reporter:
         msg = nodes.system_message(message, level=level,
                                    type=self.levels[level],
                                    *children, **attributes)
-        debug, report_level, halt_level, stream = self[category].astuple()
-        if (level >= report_level or debug and level == 0) and stream:
+        if self.stream and (level >= self.report_level
+                            or self.debug_flag and level == 0):
             msgtext = msg.astext().encode(self.encoding, self.error_handler)
-            if category:
-                print >>stream, msgtext, '[%s]' % category
-            else:
-                print >>stream, msgtext
-        if level >= halt_level:
+            print >>self.stream, msgtext
+        if level >= self.halt_level:
             raise SystemMessage(msg, level)
-        if level > 0 or debug:
+        if level > 0 or self.debug_flag:
             self.notify_observers(msg)
         self.max_level = max(level, self.max_level)
         return msg
@@ -203,7 +181,8 @@ class Reporter:
         effect on the processing. Level-0 system messages are handled
         separately from the others.
         """
-        return self.system_message(0, *args, **kwargs)
+        if self.debug_flag:
+            return self.system_message(0, *args, **kwargs)
 
     def info(self, *args, **kwargs):
         """
@@ -233,25 +212,6 @@ class Reporter:
         messages are turned into exceptions which halt processing.
         """
         return self.system_message(4, *args, **kwargs)
-
-
-class ConditionSet:
-
-    """
-    A set of two thresholds (`report_level` & `halt_level`), a switch
-    (`debug`), and an I/O stream (`stream`), corresponding to one `Reporter`
-    category.
-    """
-
-    def __init__(self, debug, report_level, halt_level, stream):
-        self.debug = debug
-        self.report_level = report_level
-        self.halt_level = halt_level
-        self.stream = stream
-
-    def astuple(self):
-        return (self.debug, self.report_level, self.halt_level,
-                self.stream)
 
 
 class ExtensionOptionError(DataError): pass
@@ -346,7 +306,7 @@ def assemble_option_dict(option_list, options_spec):
             options[name] = convertor(value)
         except (ValueError, TypeError), detail:
             raise detail.__class__('(option: "%s"; value: %r)\n%s'
-                                   % (name, value, detail))
+                                   % (name, value, ' '.join(detail.args)))
     return options
 
 

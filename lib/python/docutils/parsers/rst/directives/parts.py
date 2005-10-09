@@ -1,7 +1,7 @@
 # Author: David Goodger, Dmitry Jemerov
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.2.10.6 $
-# Date: $Date: 2005/01/07 13:26:04 $
+# Revision: $Revision: 3199 $
+# Date: $Date: 2005-04-09 03:32:29 +0200 (Sat, 09 Apr 2005) $
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -26,10 +26,24 @@ def backlinks(arg):
 
 def contents(name, arguments, options, content, lineno,
              content_offset, block_text, state, state_machine):
-    """Table of contents."""
+    """
+    Table of contents.
+
+    The table of contents is generated in two passes: initial parse and
+    transform.  During the initial parse, a 'pending' element is generated
+    which acts as a placeholder, storing the TOC title and any options
+    internally.  At a later stage in the processing, the 'pending' element is
+    replaced by a 'topic' element, a title and the table of contents proper.
+    """
+    if not (state_machine.match_titles
+            or isinstance(state_machine.node, nodes.sidebar)):
+        error = state_machine.reporter.error(
+              'The "%s" directive may not be used within topics '
+              'or body elements.' % name,
+              nodes.literal_block(block_text, block_text), line=lineno)
+        return [error]
     document = state_machine.document
     language = languages.get_language(document.settings.language_code)
-
     if arguments:
         title_text = arguments[0]
         text_nodes, messages = state.inline_text(title_text, lineno)
@@ -40,24 +54,17 @@ def contents(name, arguments, options, content, lineno,
             title = None
         else:
             title = nodes.title('', language.labels['contents'])
-
-    topic = nodes.topic(CLASS='contents')
-
-    cls = options.get('class')
-    if cls:
-        topic.set_class(cls)
-
+    topic = nodes.topic(classes=['contents'])
+    topic['classes'] += options.get('class', [])
     if title:
         name = title.astext()
         topic += title
     else:
         name = language.labels['contents']
-
     name = nodes.fully_normalize_name(name)
     if not document.has_name(name):
-        topic['name'] = name
+        topic['names'].append(name)
     document.note_implicit_target(topic)
-
     pending = nodes.pending(parts.Contents, rawsource=block_text)
     pending.details.update(options)
     document.note_pending(pending)
@@ -82,3 +89,36 @@ sectnum.options = {'depth': int,
                    'start': int,
                    'prefix': directives.unchanged_required,
                    'suffix': directives.unchanged_required}
+
+def header_footer(node, name, arguments, options, content, lineno,
+                  content_offset, block_text, state, state_machine):
+    """Contents of document header or footer."""
+    if not content:
+        warning = state_machine.reporter.warning(
+            'Content block expected for the "%s" directive; none found.'
+            % name, nodes.literal_block(block_text, block_text),
+            line=lineno)
+        node.append(nodes.paragraph(
+            '', 'Problem with the "%s" directive: no content supplied.' % name))
+        return [warning]
+    text = '\n'.join(content)
+    state.nested_parse(content, content_offset, node)
+    return []
+
+def header(name, arguments, options, content, lineno,
+           content_offset, block_text, state, state_machine):
+    decoration = state_machine.document.get_decoration()
+    node = decoration.get_header()
+    return header_footer(node, name, arguments, options, content, lineno,
+                         content_offset, block_text, state, state_machine)
+
+header.content = 1
+
+def footer(name, arguments, options, content, lineno,
+           content_offset, block_text, state, state_machine):
+    decoration = state_machine.document.get_decoration()
+    node = decoration.get_footer()
+    return header_footer(node, name, arguments, options, content, lineno,
+                         content_offset, block_text, state, state_machine)
+
+footer.content = 1

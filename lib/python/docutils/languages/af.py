@@ -1,7 +1,7 @@
 # Author: Jannie Hofmeyr
 # Contact: jhsh@sun.ac.za
-# Revision: $Revision: 1.1.2.7 $
-# Date: $Date: 2005/01/07 13:26:02 $
+# Revision: $Revision: 2224 $
+# Date: $Date: 2004-06-05 21:40:46 +0200 (Sat, 05 Jun 2004) $
 # Copyright: This module has been placed in the public domain.
 
 # New language mappings are welcome.  Before doing a new translation, please

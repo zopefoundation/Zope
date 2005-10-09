@@ -1,7 +1,7 @@
 # Author: Jannie Hofmeyr
 # Contact: jhsh@sun.ac.za
-# Revision: $Revision: 1.1.2.7 $
-# Date: $Date: 2005/01/07 13:26:04 $
+# Revision: $Revision: 3184 $
+# Date: $Date: 2005-04-07 21:36:11 +0200 (Thu, 07 Apr 2005) $
 # Copyright: This module has been placed in the public domain.
 
 # New language mappings are welcome.  Before doing a new translation, please
@@ -42,6 +42,7 @@ directives = {
       #'faq': 'questions',
       'table (translation required)': 'table',
       'csv-table (translation required)': 'csv-table',
+      'list-table (translation required)': 'list-table',
       'meta': 'meta',
       #'beeldkaart': 'imagemap',
       'beeld': 'image',
@@ -55,6 +56,8 @@ directives = {
       'inhoud': 'contents',
       'sectnum': 'sectnum',
       'section-numbering': 'sectnum',
+      u'header (translation required)': 'header',
+      u'footer (translation required)': 'footer',
       #'voetnote': 'footnotes',
       #'aanhalings': 'citations',
       'teikennotas': 'target-notes',

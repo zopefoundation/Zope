@@ -1,8 +1,8 @@
 # -*- coding: iso-8859-1 -*-
 # Author: Marcelo Huerta San Martín
 # Contact: richieadler@users.sourceforge.net
-# Revision: $Revision: 1.1.2.7 $
-# Date: $Date: 2005/01/07 13:26:04 $
+# Revision: $Revision: 3190 $
+# Date: $Date: 2005-04-08 05:06:12 +0200 (Fri, 08 Apr 2005) $
 # Copyright: This module has been placed in the public domain.
 
 # New language mappings are welcome.  Before doing a new translation, please
@@ -50,6 +50,7 @@ directives = {
       u'tabla': 'table',
       u'tabla-vsc': 'csv-table',
       u'tabla-csv': 'csv-table',
+      u'tabla-lista': 'list-table',
       u'meta': 'meta',
       #'imagemap': 'imagemap',
       u'imagen': 'image',
@@ -67,6 +68,8 @@ directives = {
       u'numeracion-seccion': 'sectnum',
       u'numeraci\u00f3n-secci\u00f3n': 'sectnum',
       u'notas-destino': 'target-notes',
+      u'cabecera': 'header',
+      u'pie': 'footer',
       #'footnotes': 'footnotes',
       #'citations': 'citations',
       u'restructuredtext-test-directive': 'restructuredtext-test-directive'}

@@ -1,7 +1,7 @@
 # Author: David Goodger
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.2.10.7 $
-# Date: $Date: 2005/01/07 13:26:03 $
+# Revision: $Revision: 3253 $
+# Date: $Date: 2005-04-25 17:08:01 +0200 (Mon, 25 Apr 2005) $
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -365,7 +365,7 @@ class RSTState(StateWS):
         textnodes, title_messages = self.inline_text(title, lineno)
         titlenode = nodes.title(title, '', *textnodes)
         name = normalize_name(titlenode.astext())
-        section_node['name'] = name
+        section_node['names'].append(name)
         section_node += titlenode
         section_node += messages
         section_node += title_messages
@@ -533,7 +533,7 @@ class Inliner:
     emailc = r"""[-_!~*'{|}/#?^`&=+$%a-zA-Z0-9\x00]"""
     email_pattern = r"""
           %(emailc)s+(?:\.%(emailc)s+)*   # name
-          @                               # at
+          (?<!\x00)@                      # at
           %(emailc)s+(?:\.%(emailc)s*)*   # host
           %(uri_end)s                     # final URI char
           """
@@ -787,7 +787,7 @@ class Inliner:
         else:
             if target:
                 reference['refuri'] = uri
-                target['name'] = refname
+                target['names'].append(refname)
                 self.document.note_external_target(target)
                 self.document.note_explicit_target(target, self.parent)
                 node_list.append(target)
@@ -829,7 +829,7 @@ class Inliner:
             assert len(inlines) == 1
             target = inlines[0]
             name = normalize_name(target.astext())
-            target['name'] = name
+            target['names'].append(name)
             self.document.note_explicit_target(target, self.parent)
         return before, inlines, remaining, sysmessages
 
@@ -1036,10 +1036,10 @@ class Body(RSTState):
     pats['alphanum'] = '[a-zA-Z0-9]'
     pats['alphanumplus'] = '[a-zA-Z0-9_-]'
     pats['enum'] = ('(%(arabic)s|%(loweralpha)s|%(upperalpha)s|%(lowerroman)s'
-                    '|%(upperroman)s)' % enum.sequencepats)
+                    '|%(upperroman)s|#)' % enum.sequencepats)
     pats['optname'] = '%(alphanum)s%(alphanumplus)s*' % pats
     # @@@ Loosen up the pattern?  Allow Unicode?
-    pats['optarg'] = '(%(alpha)s%(alphanumplus)s*|<%(alphanum)s[^ <>]+>)' % pats
+    pats['optarg'] = '(%(alpha)s%(alphanumplus)s*|<[^<>]+>)' % pats
     pats['shortopt'] = r'(-|\+)%(alphanum)s( ?%(optarg)s)?' % pats
     pats['longopt'] = r'(--|/)%(optname)s([ =]%(optarg)s)?' % pats
     pats['option'] = r'(%(shortopt)s|%(longopt)s)' % pats
@@ -1182,7 +1182,10 @@ class Body(RSTState):
             raise statemachine.TransitionCorrection('text')
         enumlist = nodes.enumerated_list()
         self.parent += enumlist
-        enumlist['enumtype'] = sequence
+        if sequence == '#':
+            enumlist['enumtype'] = 'arabic'
+        else:
+            enumlist['enumtype'] = sequence
         enumlist['prefix'] = self.enum.formatinfo[format].prefix
         enumlist['suffix'] = self.enum.formatinfo[format].suffix
         if ordinal != 1:
@@ -1199,7 +1202,9 @@ class Body(RSTState):
               input_offset=self.state_machine.abs_line_offset() + 1,
               node=enumlist, initial_state='EnumeratedList',
               blank_finish=blank_finish,
-              extra_settings={'lastordinal': ordinal, 'format': format})
+              extra_settings={'lastordinal': ordinal,
+                              'format': format,
+                              'auto': sequence == '#'})
         self.goto_line(newline_offset)
         if not blank_finish:
             self.parent += self.unindent_warning('Enumerated list')
@@ -1232,7 +1237,9 @@ class Body(RSTState):
             raise ParserError('enumerator format not matched')
         text = groupdict[format][self.enum.formatinfo[format].start
                                  :self.enum.formatinfo[format].end]
-        if expected_sequence:
+        if text == '#':
+            sequence = '#'
+        elif expected_sequence:
             try:
                 if self.enum.sequenceregexps[expected_sequence].match(text):
                     sequence = expected_sequence
@@ -1249,10 +1256,13 @@ class Body(RSTState):
                     break
             else:                       # shouldn't happen
                 raise ParserError('enumerator sequence not matched')
-        try:
-            ordinal = self.enum.converters[sequence](text)
-        except roman.InvalidRomanNumeralError:
-            ordinal = None
+        if sequence == '#':
+            ordinal = 1
+        else:
+            try:
+                ordinal = self.enum.converters[sequence](text)
+            except roman.InvalidRomanNumeralError:
+                ordinal = None
         return format, sequence, text, ordinal
 
     def is_enumerated_list_item(self, ordinal, sequence, format):
@@ -1260,7 +1270,7 @@ class Body(RSTState):
         Check validity based on the ordinal value and the second line.
 
         Return true iff the ordinal is valid and the second line is blank,
-        indented, or starts with the next enumerator.
+        indented, or starts with the next enumerator or an auto-enumerator.
         """
         if ordinal is None:
             return None
@@ -1273,9 +1283,11 @@ class Body(RSTState):
             self.state_machine.previous_line()
         if not next_line[:1].strip():   # blank or indented
             return 1
-        next_enumerator = self.make_enumerator(ordinal + 1, sequence, format)
+        next_enumerator, auto_enumerator = self.make_enumerator(
+            ordinal + 1, sequence, format)
         try:
-            if next_line.startswith(next_enumerator):
+            if ( next_line.startswith(next_enumerator) or
+                 next_line.startswith(auto_enumerator) ):
                 return 1
         except TypeError:
             pass
@@ -1283,11 +1295,14 @@ class Body(RSTState):
 
     def make_enumerator(self, ordinal, sequence, format):
         """
-        Construct and return an enumerated list item marker.
+        Construct and return the next enumerated list item marker, and an
+        auto-enumerator ("#" instead of the regular enumerator).
 
         Return ``None`` for invalid (out of range) ordinals.
-        """
-        if sequence == 'arabic':
+        """ #"
+        if sequence == '#':
+            enumerator = '#'
+        elif sequence == 'arabic':
             enumerator = str(ordinal)
         else:
             if sequence.endswith('alpha'):
@@ -1310,7 +1325,10 @@ class Body(RSTState):
                 raise ParserError('unknown enumerator sequence: "%s"'
                                   % sequence)
         formatinfo = self.enum.formatinfo[format]
-        return formatinfo.prefix + enumerator + formatinfo.suffix + ' '
+        next_enumerator = (formatinfo.prefix + enumerator + formatinfo.suffix
+                           + ' ')
+        auto_enumerator = formatinfo.prefix + '#' + formatinfo.suffix + ' '
+        return next_enumerator, auto_enumerator
 
     def field_marker(self, match, context, next_state):
         """Field list item."""
@@ -1415,14 +1433,20 @@ class Body(RSTState):
             delimiter = ' '
             firstopt = tokens[0].split('=')
             if len(firstopt) > 1:
+                # "--opt=value" form
                 tokens[:1] = firstopt
                 delimiter = '='
             elif (len(tokens[0]) > 2
                   and ((tokens[0].startswith('-')
                         and not tokens[0].startswith('--'))
                        or tokens[0].startswith('+'))):
+                # "-ovalue" form
                 tokens[:1] = [tokens[0][:2], tokens[0][2:]]
                 delimiter = ''
+            if len(tokens) > 1 and (tokens[1].startswith('<')
+                                    and tokens[-1].endswith('>')):
+                # "-o <value1 value2>" form; join all values into one token
+                tokens[1:] = [' '.join(tokens[1:])]
             if 0 < len(tokens) <= 2:
                 option = nodes.option(optionstring)
                 option += nodes.option_string(tokens[0], tokens[0])
@@ -1432,7 +1456,7 @@ class Body(RSTState):
                 optlist.append(option)
             else:
                 raise MarkupError(
-                    'wrong numer of option tokens (=%s), should be 1 or 2: '
+                    'wrong number of option tokens (=%s), should be 1 or 2: '
                     '"%s"' % (len(tokens), optionstring),
                     self.state_machine.abs_line_number() + 1)
         return optlist
@@ -1541,7 +1565,8 @@ class Body(RSTState):
                 table = self.build_table(tabledata, tableline)
                 nodelist = [table] + messages
             except tableparser.TableMarkupError, detail:
-                nodelist = self.malformed_table(block, str(detail)) + messages
+                nodelist = self.malformed_table(
+                    block, ' '.join(detail.args)) + messages
         else:
             nodelist = messages
         return nodelist, blank_finish
@@ -1633,13 +1658,17 @@ class Body(RSTState):
                                     line=lineno)
         return [error]
 
-    def build_table(self, tabledata, tableline):
-        colspecs, headrows, bodyrows = tabledata
+    def build_table(self, tabledata, tableline, stub_columns=0):
+        colwidths, headrows, bodyrows = tabledata
         table = nodes.table()
-        tgroup = nodes.tgroup(cols=len(colspecs))
+        tgroup = nodes.tgroup(cols=len(colwidths))
         table += tgroup
-        for colspec in colspecs:
-            tgroup += nodes.colspec(colwidth=colspec)
+        for colwidth in colwidths:
+            colspec = nodes.colspec(colwidth=colwidth)
+            if stub_columns:
+                colspec.attributes['stub'] = 1
+                stub_columns -= 1
+            tgroup += colspec
         if headrows:
             thead = nodes.thead()
             tgroup += thead
@@ -1727,7 +1756,7 @@ class Body(RSTState):
             name = name[1:]             # autonumber label
             footnote['auto'] = 1
             if name:
-                footnote['name'] = name
+                footnote['names'].append(name)
             self.document.note_autofootnote(footnote)
         elif name == '*':               # auto-symbol
             name = ''
@@ -1735,7 +1764,7 @@ class Body(RSTState):
             self.document.note_symbol_footnote(footnote)
         else:                           # manually numbered
             footnote += nodes.label('', label)
-            footnote['name'] = name
+            footnote['names'].append(name)
             self.document.note_footnote(footnote)
         if name:
             self.document.note_explicit_target(footnote, footnote)
@@ -1754,7 +1783,7 @@ class Body(RSTState):
         citation = nodes.citation('\n'.join(indented))
         citation.line = lineno
         citation += nodes.label('', label)
-        citation['name'] = name
+        citation['names'].append(name)
         self.document.note_citation(citation)
         self.document.note_explicit_target(citation, citation)
         if indented:
@@ -1790,7 +1819,6 @@ class Body(RSTState):
         target_type, data = self.parse_target(block, block_text, lineno)
         if target_type == 'refname':
             target = nodes.target(block_text, '', refname=normalize_name(data))
-            target.indirect_reference_name = data
             self.add_target(target_name, '', target, lineno)
             self.document.note_indirect_target(target)
             return target
@@ -1816,15 +1844,8 @@ class Body(RSTState):
             refname = self.is_reference(reference)
             if refname:
                 return 'refname', refname
-        reference = ''.join([line.strip() for line in block])
-        if reference.find(' ') == -1:
-            return 'refuri', unescape(reference)
-        else:
-            warning = self.reporter.warning(
-                  'Hyperlink target contains whitespace. Perhaps a footnote '
-                  'was intended?',
-                  nodes.literal_block(block_text, block_text), line=lineno)
-            return 'malformed', warning
+        reference = ''.join([''.join(line.split()) for line in block])
+        return 'refuri', unescape(reference)
 
     def is_reference(self, reference):
         match = self.explicit.patterns.reference.match(
@@ -1837,7 +1858,7 @@ class Body(RSTState):
         target.line = lineno
         if targetname:
             name = normalize_name(unescape(targetname))
-            target['name'] = name
+            target['names'].append(name)
             if refuri:
                 uri = self.inliner.adjust_uri(refuri)
                 if uri:
@@ -1851,6 +1872,8 @@ class Body(RSTState):
         else:                       # anonymous target
             if refuri:
                 target['refuri'] = refuri
+            else:
+                self.document.note_internal_target(target)
             target['anonymous'] = 1
             self.document.note_anonymous_target(target)
 
@@ -1960,7 +1983,8 @@ class Body(RSTState):
                                            directive_fn, option_presets))
         except MarkupError, detail:
             error = self.reporter.error(
-                'Error in "%s" directive:\n%s.' % (type_name, detail),
+                'Error in "%s" directive:\n%s.' % (type_name,
+                                                   ' '.join(detail.args)),
                 nodes.literal_block(block_text, block_text), line=lineno)
             return [error], blank_finish
         result = directive_fn(type_name, arguments, options, content, lineno,
@@ -2071,9 +2095,9 @@ class Body(RSTState):
         except KeyError, detail:
             return 0, ('unknown option: "%s"' % detail.args[0])
         except (ValueError, TypeError), detail:
-            return 0, ('invalid option value: %s' % detail)
+            return 0, ('invalid option value: %s' % ' '.join(detail.args))
         except utils.ExtensionOptionError, detail:
-            return 0, ('invalid option data: %s' % detail)
+            return 0, ('invalid option data: %s' % ' '.join(detail.args))
         if blank_finish:
             return 1, options
         else:
@@ -2127,13 +2151,13 @@ class Body(RSTState):
            re.compile(r"""
                       \.\.[ ]+          # explicit markup start
                       _                 # target indicator
-                      (?![ ])           # first char. not space
+                      (?![ ]|$)         # first char. not space or EOL
                       """, re.VERBOSE)),
           (substitution_def,
            re.compile(r"""
                       \.\.[ ]+          # explicit markup start
                       \|                # substitution indicator
-                      (?![ ])           # first char. not space
+                      (?![ ]|$)         # first char. not space or EOL
                       """, re.VERBOSE)),
           (directive,
            re.compile(r"""
@@ -2240,7 +2264,7 @@ class RFC2822Body(Body):
 
     def rfc2822(self, match, context, next_state):
         """RFC2822-style field list item."""
-        fieldlist = nodes.field_list(CLASS='rfc2822')
+        fieldlist = nodes.field_list(classes=['rfc2822'])
         self.parent += fieldlist
         field, blank_finish = self.rfc2822_field(match)
         fieldlist += field
@@ -2347,12 +2371,15 @@ class EnumeratedList(SpecializedBody):
         """Enumerated list item."""
         format, sequence, text, ordinal = self.parse_enumerator(
               match, self.parent['enumtype'])
-        if (sequence != self.parent['enumtype'] or
-            format != self.format or
-            ordinal != (self.lastordinal + 1) or
-            not self.is_enumerated_list_item(ordinal, sequence, format)):
+        if ( format != self.format
+             or (sequence != '#' and (sequence != self.parent['enumtype']
+                                      or self.auto
+                                      or ordinal != (self.lastordinal + 1)))
+             or not self.is_enumerated_list_item(ordinal, sequence, format)):
             # different enumeration: new list
             self.invalid_input()
+        if sequence == '#':
+            self.auto = 1
         listitem, blank_finish = self.list_item(match.end())
         self.parent += listitem
         self.blank_finish = blank_finish
@@ -2475,7 +2502,7 @@ class SubstitutionDef(Body):
 
     def embedded_directive(self, match, context, next_state):
         nodelist, blank_finish = self.directive(match,
-                                                alt=self.parent['name'])
+                                                alt=self.parent['names'][0])
         self.parent += nodelist
         if not self.state_machine.at_eof():
             self.blank_finish = blank_finish

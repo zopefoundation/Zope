@@ -1,7 +1,7 @@
 # Author: David Goodger
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.2.10.7 $
-# Date: $Date: 2005/01/07 13:26:02 $
+# Revision: $Revision: 3138 $
+# Date: $Date: 2005-03-27 17:05:34 +0200 (Sun, 27 Mar 2005) $
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -70,32 +70,42 @@ class Input(TransformSpec):
         if (self.encoding and self.encoding.lower() == 'unicode'
             or isinstance(data, UnicodeType)):
             return data
-        encodings = [self.encoding, 'utf-8']
-        try:
-            encodings.append(locale.nl_langinfo(locale.CODESET))
-        except:
-            pass
-        try:
-            encodings.append(locale.getlocale()[1])
-        except:
-            pass
-        try:
-            encodings.append(locale.getdefaultlocale()[1])
-        except:
-            pass
-        encodings.append('latin-1')
+        encodings = [self.encoding]
+        if not self.encoding:
+            # Apply heuristics only if no encoding is explicitly given.
+            encodings.append('utf-8')
+            try:
+                encodings.append(locale.nl_langinfo(locale.CODESET))
+            except:
+                pass
+            try:
+                encodings.append(locale.getlocale()[1])
+            except:
+                pass
+            try:
+                encodings.append(locale.getdefaultlocale()[1])
+            except:
+                pass
+            encodings.append('latin-1')
+        error = None
+        error_details = ''
         for enc in encodings:
             if not enc:
                 continue
             try:
                 decoded = unicode(data, enc, self.error_handler)
                 self.successful_encoding = enc
-                return decoded
-            except (UnicodeError, LookupError):
+                # Return decoded, removing BOMs.
+                return decoded.replace(u'\ufeff', u'')
+            except (UnicodeError, LookupError), error:
                 pass
+        if error is not None:
+            error_details = '\n(%s: %s)' % (error.__class__.__name__, error)
         raise UnicodeError(
-            'Unable to decode input data.  Tried the following encodings: %s.'
-            % ', '.join([repr(enc) for enc in encodings if enc]))
+            'Unable to decode input data.  Tried the following encodings: '
+            '%s.%s'
+            % (', '.join([repr(enc) for enc in encodings if enc]),
+               error_details))
 
 
 class Output(TransformSpec):

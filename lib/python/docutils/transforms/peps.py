@@ -1,7 +1,7 @@
 # Author: David Goodger
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.2.10.7 $
-# Date: $Date: 2005/01/07 13:26:06 $
+# Revision: $Revision: 3129 $
+# Date: $Date: 2005-03-26 17:21:28 +0100 (Sat, 26 Mar 2005) $
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -46,7 +46,7 @@ class Headers(Transform):
             raise DataError('Document tree is empty.')
         header = self.document[0]
         if not isinstance(header, nodes.field_list) or \
-              header.get('class') != 'rfc2822':
+              'rfc2822' not in header['classes']:
             raise DataError('Document does not begin with an RFC-2822 '
                             'header; it is not a PEP.')
         pep = None
@@ -149,10 +149,10 @@ class Contents(Transform):
         language = languages.get_language(self.document.settings.language_code)
         name = language.labels['contents']
         title = nodes.title('', name)
-        topic = nodes.topic('', title, CLASS='contents')
+        topic = nodes.topic('', title, classes=['contents'])
         name = nodes.fully_normalize_name(name)
         if not self.document.has_name(name):
-            topic['name'] = name
+            topic['names'].append(name)
         self.document.note_implicit_target(topic)
         pending = nodes.pending(parts.Contents)
         topic += pending
@@ -244,7 +244,7 @@ class PEPZeroSpecial(nodes.SparseNodeVisitor):
         node.parent.replace(node, mask_email(node))
 
     def visit_field_list(self, node):
-        if node.hasattr('class') and node['class'] == 'rfc2822':
+        if 'rfc2822' in node['classes']:
             raise nodes.SkipNode
 
     def visit_tgroup(self, node):
@@ -254,7 +254,7 @@ class PEPZeroSpecial(nodes.SparseNodeVisitor):
     def visit_colspec(self, node):
         self.entry += 1
         if self.pep_table and self.entry == 2:
-            node['class'] = 'num'
+            node['classes'].append('num')
 
     def visit_row(self, node):
         self.entry = 0
@@ -262,7 +262,7 @@ class PEPZeroSpecial(nodes.SparseNodeVisitor):
     def visit_entry(self, node):
         self.entry += 1
         if self.pep_table and self.entry == 2 and len(node) == 1:
-            node['class'] = 'num'
+            node['classes'].append('num')
             p = node[0]
             if isinstance(p, nodes.paragraph) and len(p) == 1:
                 text = p.astext()

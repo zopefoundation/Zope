@@ -1,7 +1,7 @@
 # Author: David Goodger
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.2.10.6 $
-# Date: $Date: 2005/01/07 13:26:04 $
+# Revision: $Revision: 3038 $
+# Date: $Date: 2005-03-14 17:16:57 +0100 (Mon, 14 Mar 2005) $
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -34,7 +34,7 @@ def meta(name, arguments, options, content, lineno,
             'Empty meta directive.',
             nodes.literal_block(block_text, block_text), line=lineno)
         node += error
-    return node.get_children()
+    return node.children
 
 meta.content = 1
 

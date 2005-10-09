@@ -1,7 +1,7 @@
 # Author: David Goodger
 # Contact: goodger@python.org
-# Revision: $Revision: 1.2.10.9 $
-# Date: $Date: 2005/01/07 13:26:01 $
+# Revision: $Revision: 3374 $
+# Date: $Date: 2005-05-26 23:21:48 +0200 (Thu, 26 May 2005) $
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -51,7 +51,7 @@ Subpackages:
 
 __docformat__ = 'reStructuredText'
 
-__version__ = '0.3.7'
+__version__ = '0.3.9'
 """``major.minor.micro`` version number.  The micro number is bumped for API
 changes, for new functionality, and for interim project releases.  The minor
 number is bumped whenever there is a significant project release.  The major

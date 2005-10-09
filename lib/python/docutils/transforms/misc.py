@@ -1,7 +1,7 @@
 # Author: David Goodger
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.2.10.6 $
-# Date: $Date: 2005/01/07 13:26:06 $
+# Revision: $Revision: 3155 $
+# Date: $Date: 2005-04-02 23:57:06 +0200 (Sat, 02 Apr 2005) $
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -45,7 +45,6 @@ class ClassAttribute(Transform):
 
     def apply(self):
         pending = self.startnode
-        class_value = pending.details['class']
         parent = pending.parent
         child = pending
         while parent:
@@ -55,7 +54,7 @@ class ClassAttribute(Transform):
                 if (isinstance(element, nodes.Invisible) or
                     isinstance(element, nodes.system_message)):
                     continue
-                element.set_class(class_value)
+                element['classes'] += pending.details['class']
                 pending.parent.remove(pending)
                 return
             else:

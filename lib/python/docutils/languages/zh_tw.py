@@ -1,7 +1,7 @@
 # Author: Joe YS Jaw
 # Contact: joeysj@users.sourceforge.net
-# Revision: $Revision: 1.1.2.1 $
-# Date: $Date: 2005/01/07 13:26:02 $
+# Revision: $Revision: 2608 $
+# Date: $Date: 2004-09-13 21:09:56 +0200 (Mon, 13 Sep 2004) $
 # Copyright: This module has been placed in the public domain.
 
 # New language mappings are welcome.  Before doing a new translation, please

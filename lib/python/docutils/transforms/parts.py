@@ -1,7 +1,7 @@
 # Authors: David Goodger, Ueli Schlaepfer, Dmitry Jemerov
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.2.10.6 $
-# Date: $Date: 2005/01/07 13:26:06 $
+# Revision: $Revision: 3199 $
+# Date: $Date: 2005-04-09 03:32:29 +0200 (Sat, 09 Apr 2005) $
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -54,7 +54,7 @@ class SectNum(Transform):
                 generated = nodes.generated(
                     '', (self.prefix + '.'.join(numbers) + self.suffix
                          +  u'\u00a0' * 3),
-                    CLASS='sectnum')
+                    classes=['sectnum'])
                 title.insert(0, generated)
                 title['auto'] = 1
                 if depth < self.maxdepth:
@@ -84,14 +84,13 @@ class Contents(Transform):
         details = self.startnode.details
         if details.has_key('local'):
             startnode = self.startnode.parent.parent
-            # @@@ generate an error if the startnode (directive) not at
-            # section/document top-level? Drag it up until it is?
-            while not isinstance(startnode, nodes.Structural):
+            while not (isinstance(startnode, nodes.section)
+                       or isinstance(startnode, nodes.document)):
+                # find the ToC root: a direct ancestor of startnode
                 startnode = startnode.parent
         else:
             startnode = self.document
-
-        self.toc_id = self.startnode.parent['id']
+        self.toc_id = self.startnode.parent['ids'][0]
         if details.has_key('backlinks'):
             self.backlinks = details['backlinks']
         else:
@@ -117,15 +116,17 @@ class Contents(Transform):
             title = section[0]
             auto = title.get('auto')    # May be set by SectNum.
             entrytext = self.copy_and_filter(title)
-            reference = nodes.reference('', '', refid=section['id'],
+            reference = nodes.reference('', '', refid=section['ids'][0],
                                         *entrytext)
             ref_id = self.document.set_id(reference)
             entry = nodes.paragraph('', '', reference)
             item = nodes.list_item('', entry)
-            if self.backlinks == 'entry':
-                title['refid'] = ref_id
-            elif self.backlinks == 'top':
-                title['refid'] = self.toc_id
+            if (self.backlinks in ('entry', 'top') and title.next_node(
+                lambda n: isinstance(n, nodes.reference)) is None):
+                if self.backlinks == 'entry':
+                    title['refid'] = ref_id
+                elif self.backlinks == 'top':
+                    title['refid'] = self.toc_id
             if level < depth:
                 subsects = self.build_contents(section, level)
                 item += subsects
@@ -133,7 +134,7 @@ class Contents(Transform):
         if entries:
             contents = nodes.bullet_list('', *entries)
             if auto:
-                contents.set_class('auto-toc')
+                contents['classes'].append('auto-toc')
             return contents
         else:
             return []
@@ -148,7 +149,7 @@ class Contents(Transform):
 class ContentsFilter(nodes.TreeCopyVisitor):
 
     def get_entry_text(self):
-        return self.get_tree_copy().get_children()
+        return self.get_tree_copy().children
 
     def visit_citation_reference(self, node):
         raise nodes.SkipNode

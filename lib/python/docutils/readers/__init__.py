@@ -1,7 +1,7 @@
 # Authors: David Goodger; Ueli Schlaepfer
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.2.10.6 $
-# Date: $Date: 2005/01/07 13:26:05 $
+# Revision: $Revision: 1645 $
+# Date: $Date: 2003-08-27 22:50:43 +0200 (Wed, 27 Aug 2003) $
 # Copyright: This module has been placed in the public domain.
 
 """

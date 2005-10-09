@@ -1,7 +1,7 @@
 # Author: David Goodger
 # Contact: goodger@python.org
-# Revision: $Revision: 1.2.10.8 $
-# Date: $Date: 2005/01/07 13:26:04 $
+# Revision: $Revision: 3184 $
+# Date: $Date: 2005-04-07 21:36:11 +0200 (Thu, 07 Apr 2005) $
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -113,10 +113,13 @@ _directive_registry = {
       #'questions': ('body', 'question_list'),
       'table': ('tables', 'table'),
       'csv-table': ('tables', 'csv_table'),
+      'list-table': ('tables', 'list_table'),
       'image': ('images', 'image'),
       'figure': ('images', 'figure'),
       'contents': ('parts', 'contents'),
       'sectnum': ('parts', 'sectnum'),
+      'header': ('parts', 'header'),
+      'footer': ('parts', 'footer'),
       #'footnotes': ('parts', 'footnotes'),
       #'citations': ('parts', 'citations'),
       'target-notes': ('references', 'target_notes'),
@@ -250,17 +253,26 @@ def path(argument):
     Return the path argument unwrapped (with newlines removed).
     (Directive option conversion function.)
 
-    Raise ``ValueError`` if no argument is found or if the path contains
-    internal whitespace.
+    Raise ``ValueError`` if no argument is found.
     """
     if argument is None:
         raise ValueError('argument required but none supplied')
     else:
         path = ''.join([s.strip() for s in argument.splitlines()])
-        if path.find(' ') == -1:
-            return path
-        else:
-            raise ValueError('path contains whitespace')
+        return path
+
+def uri(argument):
+    """
+    Return the URI argument with whitespace removed.
+    (Directive option conversion function.)
+
+    Raise ``ValueError`` if no argument is found.
+    """
+    if argument is None:
+        raise ValueError('argument required but none supplied')
+    else:
+        uri = ''.join(argument.split())
+        return uri
 
 def nonnegative_int(argument):
     """
@@ -274,7 +286,7 @@ def nonnegative_int(argument):
 
 def class_option(argument):
     """
-    Convert the argument into an ID-compatible string and return it.
+    Convert the argument into a list of ID-compatible strings and return it.
     (Directive option conversion function.)
 
     Raise ``ValueError`` if no argument is found.
@@ -288,7 +300,7 @@ def class_option(argument):
         if not class_name:
             raise ValueError('cannot make "%s" into a class name' % name)
         class_names.append(class_name)
-    return ' '.join(class_names)
+    return class_names
 
 unicode_pattern = re.compile(
     r'(?:0x|x|\\x|U\+?|\\u)([0-9a-f]+)$|&#x([0-9a-f]+);$', re.IGNORECASE)
@@ -296,10 +308,13 @@ unicode_pattern = re.compile(
 def unicode_code(code):
     r"""
     Convert a Unicode character code to a Unicode character.
+    (Directive option conversion function.)
 
     Codes may be decimal numbers, hexadecimal numbers (prefixed by ``0x``,
     ``x``, ``\x``, ``U+``, ``u``, or ``\u``; e.g. ``U+262E``), or XML-style
     numeric character entities (e.g. ``&#x262E;``).  Other text remains as-is.
+
+    Raise ValueError for illegal Unicode code values.
     """
     try:
         if code.isdigit():                  # decimal number
@@ -315,6 +330,10 @@ def unicode_code(code):
         raise ValueError('code too large (%s)' % detail)
 
 def single_char_or_unicode(argument):
+    """
+    A single character is returned as-is.  Unicode characters codes are
+    converted as in `unicode_code`.  (Directive option conversion function.)
+    """
     char = unicode_code(argument)
     if len(char) > 1:
         raise ValueError('%r invalid; must be a single character or '
@@ -322,6 +341,10 @@ def single_char_or_unicode(argument):
     return char
 
 def single_char_or_whitespace_or_unicode(argument):
+    """
+    As with `single_char_or_unicode`, but "tab" and "space" are also supported.
+    (Directive option conversion function.)
+    """
     if argument == 'tab':
         char = '\t'
     elif argument == 'space':
@@ -331,12 +354,23 @@ def single_char_or_whitespace_or_unicode(argument):
     return char
 
 def positive_int(argument):
+    """
+    Converts the argument into an integer.  Raises ValueError for negative,
+    zero, or non-integer values.  (Directive option conversion function.)
+    """
     value = int(argument)
     if value < 1:
         raise ValueError('negative or zero value; must be positive')
     return value
 
 def positive_int_list(argument):
+    """
+    Converts a space- or comma-separated list of values into a Python list
+    of integers.
+    (Directive option conversion function.)
+
+    Raises ValueError for non-positive-integer values.
+    """
     if ',' in argument:
         entries = argument.split(',')
     else:
@@ -344,6 +378,12 @@ def positive_int_list(argument):
     return [positive_int(entry) for entry in entries]
 
 def encoding(argument):
+    """
+    Verfies the encoding argument by lookup.
+    (Directive option conversion function.)
+
+    Raises ValueError for unknown encodings.
+    """
     try:
         codecs.lookup(argument)
     except LookupError:

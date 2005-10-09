@@ -1,7 +1,7 @@
 # Author: David Goodger
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.2.10.8 $
-# Date: $Date: 2005/01/07 13:26:02 $
+# Revision: $Revision: 3358 $
+# Date: $Date: 2005-05-21 02:00:25 +0200 (Sat, 21 May 2005) $
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -122,6 +122,13 @@ def validate_boolean(setting, value, option_parser,
         except KeyError:
             raise (LookupError('unknown boolean value: "%s"' % value),
                    None, sys.exc_info()[2])
+    return value
+
+def validate_nonnegative_int(setting, value, option_parser,
+                             config_parser=None, config_section=None):
+    value = int(value)
+    if value < 0:
+        raise ValueError('negative value; must be positive or zero')
     return value
 
 def validate_threshold(setting, value, option_parser,
@@ -333,10 +340,10 @@ class OptionParser(optparse.OptionParser, docutils.SettingsSpec):
                                'validator': validate_threshold}),
          ('Report all system messages, info-level and higher.  (Same as '
           '"--report=info".)',
-          ['--verbose', '-v'], {'action': 'store_const', 'const': 'info',
+          ['--verbose', '-v'], {'action': 'store_const', 'const': 1,
                                 'dest': 'report_level'}),
          ('Do not report any system messages.  (Same as "--report=none".)',
-          ['--quiet', '-q'], {'action': 'store_const', 'const': 'none',
+          ['--quiet', '-q'], {'action': 'store_const', 'const': 5,
                               'dest': 'report_level'}),
          ('Set the threshold (<level>) at or above which system messages are '
           'converted to exceptions, halting execution immediately by '
@@ -429,6 +436,9 @@ class OptionParser(optparse.OptionParser, docutils.SettingsSpec):
           ['--version', '-V'], {'action': 'version'}),
          ('Show this help message and exit.',
           ['--help', '-h'], {'action': 'help'}),
+         # Typically not useful for non-programmatical use.
+         (SUPPRESS_HELP, ['--id-prefix'], {'default': ''}),
+         (SUPPRESS_HELP, ['--auto-id-prefix'], {'default': 'id'}),
          # Hidden options, for development use only:
          (SUPPRESS_HELP, ['--dump-settings'], {'action': 'store_true'}),
          (SUPPRESS_HELP, ['--dump-internals'], {'action': 'store_true'}),

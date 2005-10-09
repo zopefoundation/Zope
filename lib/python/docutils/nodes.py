@@ -1,7 +1,7 @@
 # Author: David Goodger
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.2.10.7 $
-# Date: $Date: 2005/01/07 13:26:02 $
+# Revision: $Revision: 3358 $
+# Date: $Date: 2005-05-21 02:00:25 +0200 (Sat, 21 May 2005) $
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -26,6 +26,8 @@ __docformat__ = 'reStructuredText'
 import sys
 import os
 import re
+import copy
+import warnings
 import xml.dom.minidom
 from types import IntType, SliceType, StringType, UnicodeType, \
      TupleType, ListType
@@ -103,7 +105,7 @@ class Node:
         or replaced occurs after the current node, the old node will
         still be traversed, and any new nodes will not.
 
-        Within ``visit`` methods (and ``depart`` methods for 
+        Within ``visit`` methods (and ``depart`` methods for
         `walkabout()`), `TreePruningException` subclasses may be raised
         (`SkipChildren`, `SkipSiblings`, `SkipNode`, `SkipDeparture`).
 
@@ -111,15 +113,15 @@ class Node:
         ``visit`` implementation for each `Node` subclass encountered.
         """
         visitor.document.reporter.debug(
-            'calling dispatch_visit for %s' % self.__class__.__name__,
-            category='nodes.Node.walk')
+            'docutils.nodes.Node.walk calling dispatch_visit for %s'
+            % self.__class__.__name__)
         try:
             visitor.dispatch_visit(self)
         except (SkipChildren, SkipNode):
             return
         except SkipDeparture:           # not applicable; ignore
             pass
-        children = self.get_children()
+        children = self.children
         try:
             for child in children[:]:
                 child.walk(visitor)
@@ -138,8 +140,8 @@ class Node:
         """
         call_depart = 1
         visitor.document.reporter.debug(
-            'calling dispatch_visit for %s' % self.__class__.__name__,
-            category='nodes.Node.walkabout')
+            'docutils.nodes.Node.walkabout calling dispatch_visit for %s'
+            % self.__class__.__name__)
         try:
             try:
                 visitor.dispatch_visit(self)
@@ -147,7 +149,7 @@ class Node:
                 return
             except SkipDeparture:
                 call_depart = 0
-            children = self.get_children()
+            children = self.children
             try:
                 for child in children[:]:
                     child.walkabout(visitor)
@@ -157,10 +159,83 @@ class Node:
             pass
         if call_depart:
             visitor.document.reporter.debug(
-                'calling dispatch_departure for %s' % self.__class__.__name__,
-                category='nodes.Node.walkabout')
+                'docutils.nodes.Node.walkabout calling dispatch_departure '
+                'for %s' % self.__class__.__name__)
             visitor.dispatch_departure(self)
 
+    def traverse(self, condition=None,
+                 include_self=1, descend=1, siblings=0, ascend=0):
+        """
+        Return an iterable containing
+
+        * self (if include_self is true)
+        * all descendants in tree traversal order (if descend is true)
+        * all siblings (if siblings is true) and their descendants (if
+          also descend is true)
+        * the siblings of the parent (if ascend is true) and their
+          descendants (if also descend is true), and so on
+
+        If ascend is true, assume siblings to be true as well.
+
+        For example, given the following tree::
+
+            <paragraph>
+                <emphasis>      <--- emphasis.traverse() and
+                    <strong>    <--- strong.traverse() are called.
+                        Foo
+                    Bar
+                <reference name="Baz" refid="baz">
+                    Baz
+
+        Then list(emphasis.traverse()) equals ::
+
+            [<emphasis>, <strong>, <#text: Foo>, <#text: Bar>]
+
+        and list(strong.traverse(ascend=1)) equals ::
+
+            [<strong>, <#text: Foo>, <#text: Bar>, <reference>, <#text: Baz>]
+        """
+        r = []
+        if ascend:
+            siblings=1
+        if include_self and (condition is None or condition(self)):
+            r.append(self)
+        if descend and len(self.children):
+            for child in self:
+                r.extend(child.traverse(
+                    include_self=1, descend=1, siblings=0, ascend=0,
+                    condition=condition))
+        if siblings or ascend:
+            node = self
+            while node.parent:
+                index = node.parent.index(node)
+                for sibling in node.parent[index+1:]:
+                    r.extend(sibling.traverse(include_self=1, descend=descend,
+                                              siblings=0, ascend=0,
+                                              condition=condition))
+                if not ascend:
+                    break
+                else:
+                    node = node.parent
+        return r
+
+
+    def next_node(self, condition=None,
+                  include_self=0, descend=1, siblings=0, ascend=0):
+        """
+        Return the first node in the iterable returned by traverse(),
+        or None if the iterable is empty.
+
+        Parameter list is the same as of traverse.  Note that
+        include_self defaults to 0, though.
+        """
+        iterable = self.traverse(condition=condition,
+                                 include_self=include_self, descend=descend,
+                                 siblings=siblings, ascend=ascend)
+        try:
+            return iterable[0]
+        except IndexError:
+            return None
 
 class Text(Node, UserString):
 
@@ -171,6 +246,9 @@ class Text(Node, UserString):
     """
 
     tagname = '#text'
+
+    children = ()
+    """Text nodes have no children, and cannot have children."""
 
     def __init__(self, data, rawsource=''):
         UserString.__init__(self, data)
@@ -209,10 +287,6 @@ class Text(Node, UserString):
             result.append(indent + line + '\n')
         return ''.join(result)
 
-    def get_children(self):
-        """Text nodes have no children. Return []."""
-        return []
-
 
 class Element(Node):
 
@@ -224,6 +298,12 @@ class Element(Node):
     set the attribute 'att' to 'value', do::
 
         element['att'] = 'value'
+
+    There are two special attributes: 'ids' and 'names'.  Both are
+    lists of unique identifiers, and names serve as human interfaces
+    to IDs.  Names are case- and whitespace-normalized (see the
+    fully_normalize_name() function), and IDs conform to the regular
+    expression ``[a-z](-?[a-z0-9]+)*`` (see the make_id() function).
 
     Elements also emulate lists for child nodes (element nodes and/or text
     nodes), indexing by integer.  To get the first child node, use::
@@ -245,6 +325,10 @@ class Element(Node):
     This is equivalent to ``element.extend([node1, node2])``.
     """
 
+    attr_defaults = {'ids': [], 'classes': [], 'names': [],
+                     'dupnames': [], 'backrefs': []}
+    """Default attributes."""
+
     tagname = None
     """The element generic identifier. If None, it is set as an instance
     attribute to the name of the class."""
@@ -261,7 +345,7 @@ class Element(Node):
 
         self.extend(children)           # maintain parent info
 
-        self.attributes = {}
+        self.attributes = copy.deepcopy(self.attr_defaults)
         """Dictionary of attribute {name: value}."""
 
         for att, value in attributes.items():
@@ -272,7 +356,7 @@ class Element(Node):
 
     def _dom_node(self, domroot):
         element = domroot.createElement(self.tagname)
-        for attribute, value in self.attributes.items():
+        for attribute, value in self.attlist():
             if isinstance(value, ListType):
                 value = ' '.join(['%s' % v for v in value])
             element.setAttribute(attribute, '%s' % value)
@@ -287,16 +371,16 @@ class Element(Node):
             if len(data) > 60:
                 data = data[:56] + ' ...'
                 break
-        if self.hasattr('name'):
+        if self['names']:
             return '<%s "%s": %s>' % (self.__class__.__name__,
-                                      self.attributes['name'], data)
+                                      '; '.join(self['names']), data)
         else:
             return '<%s: %s>' % (self.__class__.__name__, data)
 
     def shortrepr(self):
-        if self.hasattr('name'):
+        if self['names']:
             return '<%s "%s"...>' % (self.__class__.__name__,
-                                      self.attributes['name'])
+                                     '; '.join(self['names']))
         else:
             return '<%s...>' % self.tagname
 
@@ -382,20 +466,24 @@ class Element(Node):
     def __iadd__(self, other):
         """Append a node or a list of nodes to `self.children`."""
         if isinstance(other, Node):
-            self.setup_child(other)
-            self.children.append(other)
+            self.append(other)
         elif other is not None:
-            for node in other:
-                self.setup_child(node)
-            self.children.extend(other)
+            self.extend(other)
         return self
 
     def astext(self):
         return self.child_text_separator.join(
               [child.astext() for child in self.children])
 
+    def non_default_attributes(self):
+        atts = {}
+        for key, value in self.attributes.items():
+            if self.is_not_default(key):
+                atts[key] = value
+        return atts
+
     def attlist(self):
-        attlist = self.attributes.items()
+        attlist = self.non_default_attributes().items()
         attlist.sort()
         return attlist
 
@@ -420,8 +508,7 @@ class Element(Node):
 
     def extend(self, item):
         for node in item:
-            self.setup_child(node)
-        self.children.extend(item)
+            self.append(node)
 
     def insert(self, index, item):
         if isinstance(item, Node):
@@ -438,6 +525,15 @@ class Element(Node):
 
     def index(self, item):
         return self.children.index(item)
+
+    def is_not_default(self, key):
+        try:
+            return self[key] != self.attr_defaults[key]
+        except KeyError:
+            return 1
+
+    def clear(self):
+        self.children = []
 
     def replace(self, old, new):
         """Replace one child `Node` with another child or children."""
@@ -482,12 +578,10 @@ class Element(Node):
         if not isinstance(childclass, TupleType):
             childclass = (childclass,)
         for index in range(start, min(len(self), end)):
-            match = 0
             for c in childclass:
                 if isinstance(self.children[index], c):
-                    match = 1
                     break
-            if not match:
+            else:
                 return index
         return None
 
@@ -496,17 +590,33 @@ class Element(Node):
                        [child.pformat(indent, level+1)
                         for child in self.children])
 
-    def get_children(self):
-        """Return this element's children."""
-        return self.children
-
     def copy(self):
         return self.__class__(**self.attributes)
 
     def set_class(self, name):
-        """Add a new name to the "class" attribute."""
-        self.attributes['class'] = (self.attributes.get('class', '') + ' '
-                                    + name.lower()).strip()
+        """Add a new class to the "classes" attribute."""
+        warnings.warn('docutils.nodes.Element.set_class deprecated; '
+                      "append to Element['classes'] list attribute directly",
+                      DeprecationWarning, stacklevel=2)
+        assert ' ' not in name
+        self['classes'].append(name.lower())
+
+    def note_referenced_by(self, name=None, id=None):
+        """Note that this Element has been referenced by its name
+        `name` or id `id`."""
+        self.referenced = 1
+        # Element.expect_referenced_by_* dictionaries map names or ids
+        # to nodes whose ``referenced`` attribute is set to true as
+        # soon as this node is referenced by the given name or id.
+        # Needed for target propagation.
+        by_name = getattr(self, 'expect_referenced_by_name', {}).get(name)
+        by_id = getattr(self, 'expect_referenced_by_id', {}).get(id)
+        if by_name:
+            assert name is not None
+            by_name.referenced = 1
+        if by_id:
+            assert id is not None
+            by_id.referenced = 1
 
 
 class TextElement(Element):
@@ -514,7 +624,7 @@ class TextElement(Element):
     """
     An element which directly contains text.
 
-    Its children are all `Text` or `TextElement` subclass nodes.  You can
+    Its children are all `Text` or `Inline` subclass nodes.  You can
     check whether an element's context is inline simply by checking whether
     its immediate parent is a `TextElement` instance (including subclasses).
     This is handy for nodes like `image` that can appear both inline and as
@@ -557,7 +667,7 @@ class Resolvable:
 class BackLinkable:
 
     def add_backref(self, refid):
-        self.setdefault('backrefs', []).append(refid)
+        self['backrefs'].append(refid)
 
 
 # ====================
@@ -568,15 +678,12 @@ class Root: pass
 
 class Titular: pass
 
-class PreDecorative:
-    """Category of Node which may occur before Decorative Nodes."""
-
-class PreBibliographic(PreDecorative):
+class PreBibliographic:
     """Category of Node which may occur before Bibliographic Nodes."""
 
-class Bibliographic(PreDecorative): pass
+class Bibliographic: pass
 
-class Decorative: pass
+class Decorative(PreBibliographic): pass
 
 class Structural: pass
 
@@ -584,7 +691,8 @@ class Body: pass
 
 class General(Body): pass
 
-class Sequential(Body): pass
+class Sequential(Body):
+    """List-like elements."""
 
 class Admonition(Body): pass
 
@@ -603,9 +711,6 @@ class Referential(Resolvable): pass
 class Targetable(Resolvable):
 
     referenced = 0
-
-    indirect_reference_name = None
-    """Holds the whitespace_normalized_name (contains mixed case) of a target"""
 
 class Labeled:
     """Contains a `label` as its first element."""
@@ -717,6 +822,9 @@ class document(Root, Structural, Element):
         self.transformer = docutils.transforms.Transformer(self)
         """Storage for transforms to be applied to this document."""
 
+        self.decoration = None
+        """Document's `decoration` node."""
+
         self.document = self
 
     def asdom(self, dom=xml.dom.minidom):
@@ -726,21 +834,23 @@ class document(Root, Structural, Element):
         return domroot
 
     def set_id(self, node, msgnode=None):
-        if node.has_key('id'):
-            id = node['id']
+        for id in node['ids']:
             if self.ids.has_key(id) and self.ids[id] is not node:
                 msg = self.reporter.severe('Duplicate ID: "%s".' % id)
                 if msgnode != None:
                     msgnode += msg
-        else:
-            if node.has_key('name'):
-                id = make_id(node['name'])
+        if not node['ids']:
+            for name in node['names']:
+                id = self.settings.id_prefix + make_id(name)
+                if id and not self.ids.has_key(id):
+                    break
             else:
                 id = ''
-            while not id or self.ids.has_key(id):
-                id = 'id%s' % self.id_start
-                self.id_start += 1
-            node['id'] = id
+                while not id or self.ids.has_key(id):
+                    id = (self.settings.id_prefix +
+                          self.settings.auto_id_prefix + str(self.id_start))
+                    self.id_start += 1
+            node['ids'].append(id)
         self.ids[id] = node
         return id
 
@@ -775,8 +885,7 @@ class document(Root, Structural, Element):
            both old and new targets are external and refer to identical URIs.
            The new target is invalidated regardless.
         """
-        if node.has_key('name'):
-            name = node['name']
+        for name in node['names']:
             if self.nameids.has_key(name):
                 self.set_duplicate_name_id(node, id, name, msgnode, explicit)
             else:
@@ -794,30 +903,30 @@ class document(Root, Structural, Element):
                     old_node = self.ids[old_id]
                     if node.has_key('refuri'):
                         refuri = node['refuri']
-                        if old_node.has_key('name') \
+                        if old_node['names'] \
                                and old_node.has_key('refuri') \
                                and old_node['refuri'] == refuri:
                             level = 1   # just inform if refuri's identical
                     if level > 1:
-                        dupname(old_node)
+                        dupname(old_node, name)
                         self.nameids[name] = None
                 msg = self.reporter.system_message(
                     level, 'Duplicate explicit target name: "%s".' % name,
                     backrefs=[id], base_node=node)
                 if msgnode != None:
                     msgnode += msg
-                dupname(node)
+                dupname(node, name)
             else:
                 self.nameids[name] = id
                 if old_id is not None:
                     old_node = self.ids[old_id]
-                    dupname(old_node)
+                    dupname(old_node, name)
         else:
             if old_id is not None and not old_explicit:
                 self.nameids[name] = None
                 old_node = self.ids[old_id]
-                dupname(old_node)
-            dupname(node)
+                dupname(old_node, name)
+            dupname(node, name)
         if not explicit or (not old_explicit and old_id is not None):
             msg = self.reporter.info(
                 'Duplicate implicit target name: "%s".' % name,
@@ -851,7 +960,7 @@ class document(Root, Structural, Element):
 
     def note_indirect_target(self, target):
         self.indirect_targets.append(target)
-        if target.has_key('name'):
+        if target['names']:
             self.note_refname(target)
 
     def note_anonymous_target(self, target):
@@ -895,7 +1004,8 @@ class document(Root, Structural, Element):
         self.note_refname(ref)
 
     def note_substitution_def(self, subdef, def_name, msgnode=None):
-        name = subdef['name'] = whitespace_normalize_name(def_name)
+        name = whitespace_normalize_name(def_name)
+        subdef['names'].append(name)
         if self.substitution_defs.has_key(name):
             msg = self.reporter.error(
                   'Duplicate substitution definition name: "%s".' % name,
@@ -903,7 +1013,7 @@ class document(Root, Structural, Element):
             if msgnode != None:
                 msgnode += msg
             oldnode = self.substitution_defs[name]
-            dupname(oldnode)
+            dupname(oldnode, name)
         # keep only the last definition:
         self.substitution_defs[name] = subdef
         # case-insensitive mapping:
@@ -932,6 +1042,16 @@ class document(Root, Structural, Element):
     def copy(self):
         return self.__class__(self.settings, self.reporter,
                               **self.attributes)
+
+    def get_decoration(self):
+        if not self.decoration:
+            self.decoration = decoration()
+            index = self.first_child_not_matching_class(Titular)
+            if index is None:
+                self.append(self.decoration)
+            else:
+                self.insert(index, self.decoration)
+        return self.decoration
 
 
 # ================
@@ -964,7 +1084,19 @@ class copyright(Bibliographic, TextElement): pass
 #  Decorative Elements
 # =====================
 
-class decoration(Decorative, Element): pass
+class decoration(Decorative, Element):
+
+    def get_header(self):
+        if not len(self.children) or not isinstance(self.children[0], header):
+            self.insert(0, header())
+        return self.children[0]
+
+    def get_footer(self):
+        if not len(self.children) or not isinstance(self.children[-1], footer):
+            self.append(footer())
+        return self.children[-1]
+
+
 class header(Decorative, Element): pass
 class footer(Decorative, Element): pass
 
@@ -1061,7 +1193,7 @@ class doctest_block(General, FixedTextElement): pass
 class line_block(General, Element): pass
 
 
-class line(General, TextElement):
+class line(Part, TextElement):
 
     indent = None
 
@@ -1081,8 +1213,8 @@ class admonition(Admonition, Element): pass
 class comment(Special, Invisible, FixedTextElement): pass
 class substitution_definition(Special, Invisible, TextElement): pass
 class target(Special, Invisible, Inline, TextElement, Targetable): pass
-class footnote(General, Element, Labeled, BackLinkable): pass
-class citation(General, Element, Labeled, BackLinkable): pass
+class footnote(General, BackLinkable, Element, Labeled, Targetable): pass
+class citation(General, BackLinkable, Element, Labeled, Targetable): pass
 class label(Part, TextElement): pass
 class figure(General, Element): pass
 class caption(Part, TextElement): pass
@@ -1096,7 +1228,7 @@ class row(Part, Element): pass
 class entry(Part, Element): pass
 
 
-class system_message(Special, PreBibliographic, Element, BackLinkable):
+class system_message(Special, BackLinkable, PreBibliographic, Element):
 
     def __init__(self, message=None, *children, **attributes):
         if message:
@@ -1210,7 +1342,7 @@ class superscript(Inline, TextElement): pass
 class subscript(Inline, TextElement): pass
 
 
-class image(General, Inline, TextElement):
+class image(General, Inline, Element):
 
     def astext(self):
         return self.get('alt', '')
@@ -1306,8 +1438,8 @@ class NodeVisitor:
         node_name = node.__class__.__name__
         method = getattr(self, 'visit_' + node_name, self.unknown_visit)
         self.document.reporter.debug(
-            'calling %s for %s' % (method.__name__, node_name),
-            category='nodes.NodeVisitor.dispatch_visit')
+            'docutils.nodes.NodeVisitor.dispatch_visit calling %s for %s'
+            % (method.__name__, node_name))
         return method(node)
 
     def dispatch_departure(self, node):
@@ -1319,8 +1451,8 @@ class NodeVisitor:
         node_name = node.__class__.__name__
         method = getattr(self, 'depart_' + node_name, self.unknown_departure)
         self.document.reporter.debug(
-            'calling %s for %s' % (method.__name__, node_name),
-            category='nodes.NodeVisitor.dispatch_departure')
+            'docutils.nodes.NodeVisitor.dispatch_departure calling %s for %s'
+            % (method.__name__, node_name))
         return method(node)
 
     def unknown_visit(self, node):
@@ -1356,6 +1488,7 @@ class SparseNodeVisitor(NodeVisitor):
     implemented for *all* node types (such as for `docutils.writers.Writer`
     subclasses), subclass `NodeVisitor` instead.
     """
+
 
 class GenericNodeVisitor(NodeVisitor):
 
@@ -1398,9 +1531,10 @@ def _add_node_class_names(names):
         setattr(GenericNodeVisitor, "visit_" + _name, _call_default_visit)
         setattr(GenericNodeVisitor, "depart_" + _name, _call_default_departure)
         setattr(SparseNodeVisitor, 'visit_' + _name, _nop)
-        setattr(SparseNodeVisitor, 'depart' + _name, _nop)
+        setattr(SparseNodeVisitor, 'depart_' + _name, _nop)
 
 _add_node_class_names(node_class_names)
+
 
 class TreeCopyVisitor(GenericNodeVisitor):
 
@@ -1534,9 +1668,12 @@ def make_id(string):
 _non_id_chars = re.compile('[^a-z0-9]+')
 _non_id_at_ends = re.compile('^[-0-9]+|-+$')
 
-def dupname(node):
-    node['dupname'] = node['name']
-    del node['name']
+def dupname(node, name):
+    node['dupnames'].append(name)
+    node['names'].remove(name)
+    # Assume that this method is referenced, even though it isn't; we
+    # don't want to throw unnecessary system_messages.
+    node.referenced = 1
 
 def fully_normalize_name(name):
     """Return a case- and whitespace-normalized name."""

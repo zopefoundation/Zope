@@ -1,7 +1,7 @@
 # Authors: David Goodger, David Priest
 # Contact: goodger@python.org
-# Revision: $Revision: 1.1.2.3 $
-# Date: $Date: 2005/01/07 13:26:04 $
+# Revision: $Revision: 3165 $
+# Date: $Date: 2005-04-05 04:55:06 +0200 (Tue, 05 Apr 2005) $
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -44,7 +44,6 @@ def table(name, arguments, options, content, lineno,
         return [warning]
     title, messages = make_title(arguments, state, lineno)
     node = nodes.Element()          # anonymous container for parsing
-    text = '\n'.join(content)
     state.nested_parse(content, content_offset, node)
     if len(node) != 1 or not isinstance(node[0], nodes.table):
         error = state_machine.reporter.error(
@@ -54,8 +53,7 @@ def table(name, arguments, options, content, lineno,
             line=lineno)
         return [error]
     table_node = node[0]
-    if options.has_key('class'):
-        table_node.set_class(options['class'])
+    table_node['classes'] += options.get('class', [])
     if title:
         table_node.insert(0, title)
     return [table_node] + messages
@@ -116,6 +114,12 @@ if csv:
 def csv_table(name, arguments, options, content, lineno,
              content_offset, block_text, state, state_machine):
     try:
+        if ( not state.document.settings.file_insertion_enabled
+             and (options.has_key('file') or options.has_key('url')) ):
+            warning = state_machine.reporter.warning(
+                '"%s" directive disabled.' % name,
+                nodes.literal_block(block_text, block_text), line=lineno)
+            return [warning]
         check_requirements(name, lineno, block_text, state_machine)
         title, messages = make_title(arguments, state, lineno)
         csv_data, source = get_csv_data(
@@ -126,8 +130,10 @@ def csv_table(name, arguments, options, content, lineno,
             csv_data, DocutilsDialect(options), source, options)
         max_cols = max(max_cols, max_header_cols)
         header_rows = options.get('header-rows', 0) # default 0
+        stub_columns = options.get('stub-columns', 0) # default 0
         check_table_dimensions(
-            rows, header_rows, name, lineno, block_text, state_machine)
+            rows, header_rows, stub_columns, name, lineno,
+            block_text, state_machine)
         table_head.extend(rows[:header_rows])
         table_body = rows[header_rows:]
         col_widths = get_column_widths(
@@ -141,19 +147,19 @@ def csv_table(name, arguments, options, content, lineno,
             nodes.literal_block(block_text, block_text), line=lineno)
         return [error]
     table = (col_widths, table_head, table_body)
-    table_node = state.build_table(table, content_offset)
-    if options.has_key('class'):
-        table_node.set_class(options['class'])
+    table_node = state.build_table(table, content_offset, stub_columns)
+    table_node['classes'] += options.get('class', [])
     if title:
         table_node.insert(0, title)
     return [table_node] + messages
 
 csv_table.arguments = (0, 1, 1)
 csv_table.options = {'header-rows': directives.nonnegative_int,
+                     'stub-columns': directives.nonnegative_int,
                      'header': directives.unchanged,
                      'widths': directives.positive_int_list,
                      'file': directives.path,
-                     'url': directives.path,
+                     'url': directives.uri,
                      'encoding': directives.encoding,
                      'class': directives.class_option,
                      # field delimiter char
@@ -206,7 +212,8 @@ def get_csv_data(name, options, content, lineno, block_text,
             state.document.settings.record_dependencies.add(source)
             csv_file = io.FileInput(
                 source_path=source, encoding=encoding,
-                error_handler=state.document.settings.input_encoding_error_handler,
+                error_handler
+                    =state.document.settings.input_encoding_error_handler,
                 handle_io_errors=None)
             csv_data = csv_file.read().splitlines()
         except IOError, error:
@@ -270,20 +277,34 @@ def parse_csv_data_into_rows(csv_data, dialect, source, options):
         max_cols = max(max_cols, len(row))
     return rows, max_cols
 
-def check_table_dimensions(rows, header_rows, name, lineno, block_text,
-                           state_machine):
+def check_table_dimensions(rows, header_rows, stub_columns, name, lineno,
+                           block_text, state_machine):
     if len(rows) < header_rows:
         error = state_machine.reporter.error(
             '%s header row(s) specified but only %s row(s) of data supplied '
             '("%s" directive).' % (header_rows, len(rows), name),
             nodes.literal_block(block_text, block_text), line=lineno)
         raise SystemMessagePropagation(error)
-    elif len(rows) == header_rows > 0:
+    if len(rows) == header_rows > 0:
         error = state_machine.reporter.error(
             'Insufficient data supplied (%s row(s)); no data remaining for '
             'table body, required by "%s" directive.' % (len(rows), name),
             nodes.literal_block(block_text, block_text), line=lineno)
         raise SystemMessagePropagation(error)
+    for row in rows:
+        if len(row) < stub_columns:
+            error = state_machine.reporter.error(
+                '%s stub column(s) specified but only %s columns(s) of data '
+                'supplied ("%s" directive).' % (stub_columns, len(row), name),
+                nodes.literal_block(block_text, block_text), line=lineno)
+            raise SystemMessagePropagation(error)
+        if len(row) == stub_columns > 0:
+            error = state_machine.reporter.error(
+                'Insufficient data supplied (%s columns(s)); no data remaining '
+                'for table body, required by "%s" directive.'
+                % (len(row), name),
+                nodes.literal_block(block_text, block_text), line=lineno)
+            raise SystemMessagePropagation(error)
 
 def get_column_widths(max_cols, name, options, lineno, block_text,
                       state_machine):
@@ -295,8 +316,13 @@ def get_column_widths(max_cols, name, options, lineno, block_text,
               % (name, max_cols),
               nodes.literal_block(block_text, block_text), line=lineno)
             raise SystemMessagePropagation(error)
-    else:
+    elif max_cols:
         col_widths = [100 / max_cols] * max_cols
+    else:
+        error = state_machine.reporter.error(
+            'No table data detected in CSV file.',
+            nodes.literal_block(block_text, block_text), line=lineno)
+        raise SystemMessagePropagation(error)
     return col_widths
 
 def extend_short_rows_with_empty_cells(columns, parts):
@@ -304,3 +330,112 @@ def extend_short_rows_with_empty_cells(columns, parts):
         for row in part:
             if len(row) < columns:
                 row.extend([(0, 0, 0, [])] * (columns - len(row)))
+
+def list_table(name, arguments, options, content, lineno,
+               content_offset, block_text, state, state_machine):
+    """
+    Implement tables whose data is encoded as a uniform two-level bullet list.
+    For further ideas, see
+    http://docutils.sf.net/docs/dev/rst/alternatives.html#list-driven-tables
+    """ 
+    if not content:
+        error = state_machine.reporter.error(
+            'The "%s" directive is empty; content required.' % name,
+            nodes.literal_block(block_text, block_text), line=lineno)
+        return [error]
+    title, messages = make_title(arguments, state, lineno)
+    node = nodes.Element()          # anonymous container for parsing
+    state.nested_parse(content, content_offset, node)
+    try:
+        num_cols, col_widths = check_list_content(
+            node, name, options, content, lineno, block_text, state_machine)
+        table_data = [[item.children for item in row_list[0]]
+                      for row_list in node[0]]
+        header_rows = options.get('header-rows', 0) # default 0
+        stub_columns = options.get('stub-columns', 0) # default 0
+        check_table_dimensions(
+            table_data, header_rows, stub_columns, name, lineno,
+            block_text, state_machine)
+    except SystemMessagePropagation, detail:
+        return [detail.args[0]]
+    table_node = build_table_from_list(table_data, col_widths,
+                                       header_rows, stub_columns)
+    table_node['classes'] += options.get('class', [])
+    if title:
+        table_node.insert(0, title)
+    return [table_node] + messages
+
+list_table.arguments = (0, 1, 1)
+list_table.options = {'header-rows': directives.nonnegative_int,
+                      'stub-columns': directives.nonnegative_int,
+                      'widths': directives.positive_int_list,
+                      'class': directives.class_option}
+list_table.content = 1
+
+def check_list_content(node, name, options, content, lineno, block_text,
+                       state_machine):
+    if len(node) != 1 or not isinstance(node[0], nodes.bullet_list):
+        error = state_machine.reporter.error(
+            'Error parsing content block for the "%s" directive: '
+            'exactly one bullet list expected.' % name,
+            nodes.literal_block(block_text, block_text), line=lineno)
+        raise SystemMessagePropagation(error)
+    list_node = node[0]
+    # Check for a uniform two-level bullet list:
+    for item_index in range(len(list_node)):
+        item = list_node[item_index]
+        if len(item) != 1 or not isinstance(item[0], nodes.bullet_list):
+            error = state_machine.reporter.error(
+                'Error parsing content block for the "%s" directive: '
+                'two-level bullet list expected, but row %s does not contain '
+                'a second-level bullet list.' % (name, item_index + 1),
+                nodes.literal_block(block_text, block_text), line=lineno)
+            raise SystemMessagePropagation(error)
+        elif item_index:
+            if len(item[0]) != num_cols:
+                error = state_machine.reporter.error(
+                    'Error parsing content block for the "%s" directive: '
+                    'uniform two-level bullet list expected, but row %s does '
+                    'not contain the same number of items as row 1 (%s vs %s).'
+                    % (name, item_index + 1, len(item[0]), num_cols),
+                    nodes.literal_block(block_text, block_text), line=lineno)
+                raise SystemMessagePropagation(error)
+        else:
+            num_cols = len(item[0])
+    col_widths = get_column_widths(
+        num_cols, name, options, lineno, block_text, state_machine)
+    if len(col_widths) != num_cols:
+        error = state_machine.reporter.error(
+            'Error parsing "widths" option of the "%s" directive: '
+            'number of columns does not match the table data (%s vs %s).'
+            % (name, len(col_widths), num_cols),
+            nodes.literal_block(block_text, block_text), line=lineno)
+        raise SystemMessagePropagation(error)
+    return num_cols, col_widths
+
+def build_table_from_list(table_data, col_widths, header_rows, stub_columns):
+    table = nodes.table()
+    tgroup = nodes.tgroup(cols=len(col_widths))
+    table += tgroup
+    for col_width in col_widths:
+        colspec = nodes.colspec(colwidth=col_width)
+        if stub_columns:
+            colspec.attributes['stub'] = 1
+            stub_columns -= 1
+        tgroup += colspec
+    rows = []
+    for row in table_data:
+        row_node = nodes.row()
+        for cell in row:
+            entry = nodes.entry()
+            entry += cell
+            row_node += entry
+        rows.append(row_node)
+    if header_rows:
+        thead = nodes.thead()
+        thead.extend(rows[:header_rows])
+        tgroup += thead
+    tbody = nodes.tbody()
+    tbody.extend(rows[header_rows:])
+    tgroup += tbody
+    return table

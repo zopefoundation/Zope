@@ -1,7 +1,7 @@
 # Authors: David Goodger
 # Contact: goodger@python.org
-# Revision: $Revision: 1.2.10.7 $
-# Date: $Date: 2005/01/07 13:26:01 $
+# Revision: $Revision: 2987 $
+# Date: $Date: 2005-02-26 19:17:59 +0100 (Sat, 26 Feb 2005) $
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -197,6 +197,7 @@ class Publisher:
             self.writer.assemble_parts()
         except Exception, error:
             if self.settings.traceback: # propagate exceptions?
+                self.debugging_dumps(document)                
                 raise
             self.report_Exception(error)
             exit = 1
@@ -210,6 +211,8 @@ class Publisher:
         return output
 
     def debugging_dumps(self, document):
+        if not document:
+            return
         if self.settings.dump_settings:
             print >>sys.stderr, '\n::: Runtime settings:'
             print >>sys.stderr, pprint.pformat(self.settings.__dict__)

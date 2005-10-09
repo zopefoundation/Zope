@@ -1,8 +1,8 @@
 """
 :Author: Engelbert Gruber
 :Contact: grubert@users.sourceforge.net
-:Revision: $Revision: 1.1.2.7 $
-:Date: $Date: 2005/01/07 13:26:06 $
+:Revision: $Revision: 3367 $
+:Date: $Date: 2005-05-26 02:44:13 +0200 (Thu, 26 May 2005) $
 :Copyright: This module has been placed in the public domain.
 
 LaTeX2e document tree Writer.
@@ -349,7 +349,7 @@ class DocumentClass:
             return self._deepest_section
 
 class Table:
-    """ Manage a table while traversing. 
+    """ Manage a table while traversing.
         Maybe change to a mixin defining the visit/departs, but then
         class Table internal variables are in the Translator.
     """
@@ -381,7 +381,7 @@ class Table:
         return ''
     def get_latex_type(self):
         return self._latex_type
-    
+
     def set(self,attr,value):
         self._attrs[attr] = value
     def get(self,attr):
@@ -442,7 +442,7 @@ class Table:
         return latex_table_spec+bar
 
     def get_column_width(self):
-        """ return columnwidth for current cell (not multicell) 
+        """ return columnwidth for current cell (not multicell)
         """
         return "%.2f\\locallinewidth" % self._col_width[self._cell_in_row-1]
 
@@ -471,7 +471,7 @@ class Table:
         for i in range(len(self._rowspan)):
             if (self._rowspan[i]>0):
                 self._rowspan[i] -= 1
-        
+
         if self._table_style == 'standard':
             rowspans = []
             for i in range(len(self._rowspan)):
@@ -507,7 +507,7 @@ class Table:
     def visit_entry(self):
         self._cell_in_row += 1
 
-        
+
 class LaTeXTranslator(nodes.NodeVisitor):
 
     # When options are given to the documentclass, latex will pass them
@@ -664,21 +664,24 @@ class LaTeXTranslator(nodes.NodeVisitor):
         # NOTE: Latex wants a date and an author, rst puts this into
         #   docinfo, so normally we donot want latex author/date handling.
         # latex article has its own handling of date and author, deactivate.
+        # So we always emit \title{...} \author{...} \date{...}, even if the
+        # "..." are empty strings.
         self.head = [ ]
-        if not self.use_latex_docinfo:
-            self.head.extend( [ '\\author{}\n', '\\date{}\n' ] )
-        self.body_prefix = ['\\raggedbottom\n']
         # separate title, so we can appen subtitle.
-        self.title = ""
+        self.title = ''
+        # if use_latex_docinfo: collects lists of author/organization/contact/address lines
+        self.author_stack = []
+        self.date = ''
+
+        self.body_prefix = ['\\raggedbottom\n']
         self.body = []
         self.body_suffix = ['\n']
         self.section_level = 0
         self.context = []
-        self.topic_class = ''
+        self.topic_classes = []
         # column specification for tables
         self.table_caption = None
-        # do we have one or more authors
-        self.author_stack = None
+        
         # Flags to encode
         # ---------------
         # verbatim: to tell encode not to encode.
@@ -878,15 +881,19 @@ class LaTeXTranslator(nodes.NodeVisitor):
         return self.encode(whitespace.sub(' ', text))
 
     def astext(self):
-        if self.pdfinfo:
+        if self.pdfinfo is not None:
             if self.pdfauthor:
                 self.pdfinfo.append('pdfauthor={%s}' % self.pdfauthor)
+        if self.pdfinfo:
             pdfinfo = '\\hypersetup{\n' + ',\n'.join(self.pdfinfo) + '\n}\n'
         else:
             pdfinfo = ''
-        title = '\\title{%s}\n' % self.title
-        return ''.join(self.head_prefix + [title]
-                        + self.head + [pdfinfo]
+        head = '\\title{%s}\n\\author{%s}\n\\date{%s}\n' % \
+               (self.title,
+                ' \\and\n'.join(['~\\\\\n'.join(author_lines)
+                                 for author_lines in self.author_stack]),
+                self.date)
+        return ''.join(self.head_prefix + [head] + self.head + [pdfinfo]
                         + self.body_prefix  + self.body + self.body_suffix)
 
     def visit_Text(self, node):
@@ -927,14 +934,10 @@ class LaTeXTranslator(nodes.NodeVisitor):
 
     def visit_authors(self, node):
         # not used: visit_author is called anyway for each author.
-        if self.use_latex_docinfo:
-            self.author_stack = []
+        pass
 
     def depart_authors(self, node):
-        if self.use_latex_docinfo:
-            self.head.append('\\author{%s}\n' % \
-                ' \\and '.join(self.author_stack) )
-            self.author_stack = None
+        pass
 
     def visit_block_quote(self, node):
         self.body.append( '\\begin{quote}\n')
@@ -943,14 +946,14 @@ class LaTeXTranslator(nodes.NodeVisitor):
         self.body.append( '\\end{quote}\n')
 
     def visit_bullet_list(self, node):
-        if self.topic_class == 'contents':
+        if self.topic_classes == ['contents']:
             if not self.use_latex_toc:
                 self.body.append( '\\begin{list}{}{}\n' )
         else:
             self.body.append( '\\begin{itemize}\n' )
 
     def depart_bullet_list(self, node):
-        if self.topic_class == 'contents':
+        if self.topic_classes == ['contents']:
             if not self.use_latex_toc:
                 self.body.append( '\\end{list}\n' )
         else:
@@ -998,7 +1001,8 @@ class LaTeXTranslator(nodes.NodeVisitor):
             self.context.append(len(self.body))
         else:
             self.body.append('\\begin{figure}[b]')
-            self.body.append('\\hypertarget{%s}' % node['id'])
+            for id in node['ids']:
+                self.body.append('\\hypertarget{%s}' % id)
 
     def depart_citation(self, node):
         if self._use_latex_citations:
@@ -1128,15 +1132,23 @@ class LaTeXTranslator(nodes.NodeVisitor):
                     self.pdfauthor = self.attval(node.astext())
                 else:
                     self.pdfauthor += self.author_separator + self.attval(node.astext())
-            if self.use_latex_docinfo:
-                if self.author_stack == None:
-                    self.head.append('\\author{%s}\n' % self.attval(node.astext()))
+        if self.use_latex_docinfo:
+            if name in ('author', 'organization', 'contact', 'address'):
+                # We attach these to the last author.  If any of them precedes
+                # the first author, put them in a separate "author" group (for
+                # no better semantics).
+                if name == 'author' or not self.author_stack:
+                    self.author_stack.append([])
+                if name == 'address':   # newlines are meaningful
+                    self.insert_newline = 1
+                    text = self.encode(node.astext())
+                    self.insert_newline = 0
                 else:
-                    self.author_stack.append( self.attval(node.astext()) )
+                    text = self.attval(node.astext())
+                self.author_stack[-1].append(text)
                 raise nodes.SkipNode
-        elif name == 'date':
-            if self.use_latex_docinfo:
-                self.head.append('\\date{%s}\n' % self.attval(node.astext()))
+            elif name == 'date':
+                self.date = self.attval(node.astext())
                 raise nodes.SkipNode
         self.docinfo.append('\\textbf{%s}: &\n\t' % self.language_label(name))
         if name == 'address':
@@ -1169,7 +1181,7 @@ class LaTeXTranslator(nodes.NodeVisitor):
     def visit_document(self, node):
         self.body_prefix.append('\\begin{document}\n')
         # titled document?
-        if len(node) and isinstance(node[0], nodes.title):
+        if self.use_latex_docinfo or len(node) and isinstance(node[0], nodes.title):
             self.body_prefix.append('\\maketitle\n\n')
             # alternative use titlepage environment.
             # \begin{titlepage}
@@ -1186,7 +1198,7 @@ class LaTeXTranslator(nodes.NodeVisitor):
             for bi in self._bibitems:
                 self.body.append('\\bibitem[%s]{%s}{%s}\n' % (bi[0], bi[0], bi[1]))
             self.body.append('\\end{thebibliography}\n')
-            
+
         self.body_suffix.append('\\end{document}\n')
 
     def visit_emphasis(self, node):
@@ -1204,7 +1216,10 @@ class LaTeXTranslator(nodes.NodeVisitor):
             # if the firstrow is a multirow, this actually is the second row.
             # this gets hairy if rowspans follow each other.
             if self.active_table.get_rowspan(0):
-                self.body.append(' & ')
+                count = 0
+                while self.active_table.get_rowspan(count):
+                    count += 1
+                    self.body.append(' & ')
                 self.active_table.visit_entry() # increment cell count
         else:
             self.body.append(' & ')
@@ -1384,7 +1399,8 @@ class LaTeXTranslator(nodes.NodeVisitor):
             self.body.append('{')
         else:
             self.body.append('\\begin{figure}[b]')
-            self.body.append('\\hypertarget{%s}' % node['id'])
+            for id in node['ids']:
+                self.body.append('\\hypertarget{%s}' % id)
 
     def depart_footnote(self, node):
         if self.use_latex_footnotes:
@@ -1692,7 +1708,7 @@ class LaTeXTranslator(nodes.NodeVisitor):
 
     def visit_paragraph(self, node):
         index = node.parent.index(node)
-        if not (self.topic_class == 'contents' or
+        if not (self.topic_classes == ['contents'] or
                 (isinstance(node.parent, nodes.compound) and
                  index > 0 and
                  not isinstance(node.parent[index - 1], nodes.paragraph) and
@@ -1799,17 +1815,19 @@ class LaTeXTranslator(nodes.NodeVisitor):
         if isinstance(node.parent, nodes.sidebar):
             self.body.append('~\\\\\n\\textbf{')
             self.context.append('}\n\\smallskip\n')
-        else:
+        elif isinstance(node.parent, nodes.document):
             self.title = self.title + \
                 '\\\\\n\\large{%s}\n' % self.encode(node.astext())
             raise nodes.SkipNode
+        elif isinstance(node.parent, nodes.section):
+            self.body.append('\\textbf{')
+            self.context.append('}\\vspace{0.2cm}\n\n\\noindent ')
 
     def depart_subtitle(self, node):
-        if isinstance(node.parent, nodes.sidebar):
-            self.body.append(self.context.pop())
+        self.body.append(self.context.pop())
 
     def visit_system_message(self, node):
-        if node['level'] < self.document.reporter['writer'].report_level:
+        if node['level'] < self.document.reporter.report_level:
             raise nodes.SkipNode
 
     def depart_system_message(self, node):
@@ -1830,8 +1848,9 @@ class LaTeXTranslator(nodes.NodeVisitor):
         # BUG: why not (refuri or refid or refname) means not footnote ?
         if not (node.has_key('refuri') or node.has_key('refid')
                 or node.has_key('refname')):
-            self.body.append('\\hypertarget{%s}{' % node['id'])
-            self.context.append('}')
+            for id in node['ids']:
+                self.body.append('\\hypertarget{%s}{' % id)
+            self.context.append('}' * len(node['ids']))
         else:
             self.context.append('')
 
@@ -1849,11 +1868,11 @@ class LaTeXTranslator(nodes.NodeVisitor):
         pass
 
     def visit_term(self, node):
-        self.body.append('\\item[')
+        self.body.append('\\item[{')
 
     def depart_term(self, node):
         # definition list term.
-        self.body.append('] ')
+        self.body.append('}] ')
 
     def visit_tgroup(self, node):
         #self.body.append(self.starttag(node, 'colgroup'))
@@ -1895,8 +1914,9 @@ class LaTeXTranslator(nodes.NodeVisitor):
     def bookmark(self, node):
         """Append latex href and pdfbookmarks for titles.
         """
-        if node.parent.hasattr('id'):
-            self.body.append('\\hypertarget{%s}{}\n' % node.parent['id'])
+        if node.parent['ids']:
+            for id in node.parent['ids']:
+                self.body.append('\\hypertarget{%s}{}\n' % id)
             if not self.use_latex_toc:
                 # BUG level depends on style. pdflatex allows level 0 to 3
                 # ToC would be the only on level 0 so i choose to decrement the rest.
@@ -1907,8 +1927,9 @@ class LaTeXTranslator(nodes.NodeVisitor):
                     l = l-1
                 # pdftex does not like "_" subscripts in titles
                 text = self.encode(node.astext())
-                self.body.append('\\pdfbookmark[%d]{%s}{%s}\n' % \
-                        (l,text,node.parent['id']))
+                for id in node.parent['ids']:
+                    self.body.append('\\pdfbookmark[%d]{%s}{%s}\n' % \
+                                     (l, text, id))
 
     def visit_title(self, node):
         """Only 3 section levels are supported by LaTeX article (AFAIR)."""
@@ -1957,10 +1978,10 @@ class LaTeXTranslator(nodes.NodeVisitor):
         self.body.append(self.context.pop())
 
     def visit_topic(self, node):
-        self.topic_class = node.get('class')
-        if self.use_latex_toc:
+        self.topic_classes = node['classes']
+        if 'contents' in node['classes'] and self.use_latex_toc:
             self.body.append('\\tableofcontents\n\n\\bigskip\n')
-            self.topic_class = ''
+            self.topic_classes = []
             raise nodes.SkipNode
 
     def visit_inline(self, node): # titlereference
@@ -1970,7 +1991,7 @@ class LaTeXTranslator(nodes.NodeVisitor):
         self.body.append( '}' )
 
     def depart_topic(self, node):
-        self.topic_class = ''
+        self.topic_classes = []
         self.body.append('\n')
 
     def visit_rubric(self, node):

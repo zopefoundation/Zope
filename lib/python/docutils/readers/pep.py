@@ -1,7 +1,7 @@
 # Author: David Goodger
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.2.10.7 $
-# Date: $Date: 2005/01/07 13:26:05 $
+# Revision: $Revision: 3129 $
+# Date: $Date: 2005-03-26 17:21:28 +0100 (Sat, 26 Mar 2005) $
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -31,9 +31,9 @@ class Reader(standalone.Reader):
     config_section_dependencies = ('readers', 'standalone reader')
 
     default_transforms = (references.Substitutions,
+                          references.PropagateTargets,
                           peps.Headers,
                           peps.Contents,
-                          references.ChainedTargets,
                           references.AnonymousHyperlinks,
                           references.IndirectHyperlinks,
                           peps.TargetNotes,
