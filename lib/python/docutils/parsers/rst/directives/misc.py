@@ -24,10 +24,6 @@ except ImportError:
 def include(name, arguments, options, content, lineno,
             content_offset, block_text, state, state_machine):
     """Include a reST file as part of the content of this reST file."""
-    import pdb
-    pdb.set_trace()
-
-    print '1'
     if not state.document.settings.file_insertion_enabled:
         warning = state_machine.reporter.warning(
               '"%s" directive disabled.' % name,
