@@ -62,8 +62,11 @@ class Rtd(RestrictedDTML, TemplateDict):
 
 def call_with_ns(f, ns, arg=1):
     td = Rtd()
-    td.this = ns['here']
-    td._push(ns['request'])
+    # prefer 'context' to 'here';  fall back to 'None'
+    this = ns.get('context', ns.get('here'))
+    td.this = this
+    request = ns.get('request', {})
+    td._push(request)
     td._push(InstanceDict(td.this, td))
     td._push(ns)
     try:
