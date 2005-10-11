@@ -91,7 +91,9 @@ class PageTemplate(Base):
         __traceback_supplement__ = (PageTemplateTracebackSupplement, self)
 
         if self._v_errors:
-            raise PTRuntimeError, 'Page Template %s has errors.' % self.id
+            e = str(self._v_errors)
+            raise PTRuntimeError, (
+                'Page Template %s has errors: %s' % (self.id, e))
         output = self.StringIO()
         c = self.pt_getContext()
         c.update(extra_context)
