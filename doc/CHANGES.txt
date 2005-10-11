@@ -33,6 +33,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - When PageTemplates have a syntax error, show the traceback output
+        in the rendered error message.
+
       - Collector #1914: Hardened 'call_with_ns' (in
         'Products.PageTemplates.ZRPythonExpr') against namespaces from other
         callers than page templates.
