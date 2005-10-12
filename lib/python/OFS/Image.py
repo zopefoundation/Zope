@@ -594,6 +594,8 @@ class File(Persistent, Implicit, PropertyManager,
 
     def manage_FTPget(self):
         """Return body for ftp."""
+        RESPONSE = self.REQUEST.RESPONSE
+
         if self.ZCacheable_isCachingEnabled():
             result = self.ZCacheable_get(default=None)
             if result is not None:
@@ -602,10 +604,19 @@ class File(Persistent, Implicit, PropertyManager,
                 # from FileCacheManager.
                 # the content-length is required here by HTTPResponse, even
                 # though FTP doesn't use it.
-                self.REQUEST.RESPONSE.setHeader('Content-Length', self.size)
+                RESPONSE.setHeader('Content-Length', self.size)
                 return result
-        return str(self.data)
 
+        data = self.data
+        if type(data) is type(''):
+            RESPONSE.setBase(None)
+            return data
+
+        while data is not None:
+            RESPONSE.write(data.data)
+            data = data.next
+
+        return ''
 
 manage_addImageForm=DTMLFile('dtml/imageAdd',globals(),
                              Kind='Image',kind='image')

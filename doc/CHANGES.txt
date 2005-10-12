@@ -22,7 +22,7 @@ Zope Changes
 
    - Collector #1233: port ZOPE_CONFIG patch from Zope 2.7 to Zope 2.8
 
-  after Zope 2.8.1 
+  after Zope 2.8.1
 
     Features added
 
@@ -32,6 +32,11 @@ Zope Changes
       - The '@' character is now allowed in object ids (RFC 1738 allows it).
 
     Bugs Fixed
+
+      - OFS.Image.manage_FTPget() would str() it's .data attribute,
+        potentially loading the whole file in memory as a
+        string. Changed to use RESPONSE.write() iterating through the
+        Pdata chain, just like index_html().
 
       - When PageTemplates have a syntax error, show the traceback output
         in the rendered error message.
@@ -44,7 +49,7 @@ Zope Changes
         character set used to encode unicode data that reaches
         ZPublisher without any specified encoding.
 
-      - disabled ".. include" directive for all the ZReST product and the 
+      - disabled ".. include" directive for all the ZReST product and the
         reStructuredText package
 
       - Collector #1888: Adjust call to 'engine.translate' to accomodate
@@ -57,7 +62,7 @@ Zope Changes
         supporting 'debug' argument passed to
         'ZPublisher.Test.publish_module'.
 
-      - Collector #1879: applied patch by Dieter Maurer to fix a bug in 
+      - Collector #1879: applied patch by Dieter Maurer to fix a bug in
         ac_aquire() ignoring the default argument
 
       - Collector #1864, #1906: fixed header normalization in appendHeader()
@@ -83,7 +88,7 @@ Zope Changes
       - Collector #1877: skel/Products/README.txt inappropriately copied
         from CMF.
 
-      - Collector #1871: Applied patch to support lists with records using 
+      - Collector #1871: Applied patch to support lists with records using
         ZTUtils.make_query()
 
       - AccessControl: creating a new user through "zpasswd inituser" did not
@@ -99,11 +104,11 @@ Zope Changes
       - DateIndex now properly removes documents from both indexes if
         the value is None
 
-      - Collector #1888: Some parts of the TALInterpreter would not pass a 
-        default when  translating, yet expect a string back. This would cause 
-        an error (usually "NoneType has no attribute 'replace'") in the case 
+      - Collector #1888: Some parts of the TALInterpreter would not pass a
+        default when  translating, yet expect a string back. This would cause
+        an error (usually "NoneType has no attribute 'replace'") in the case
         the message was not translated.
-        
+
   Zope 2.8.1 (2005/08/11)
 
     Features added
@@ -158,11 +163,11 @@ Zope Changes
         in Products/BTreeFolder2 (CMFCore will include it after 1.5, with
         an appropriate module alias for backward compatibility).
 
-      - Replaced all transaction.commit(1) calls by  transaction.savepoint() 
+      - Replaced all transaction.commit(1) calls by  transaction.savepoint()
 
       - Collector #1832: UnIndex swallowed ConflictErrors.
 
-      - Collector #1815: ZCTextIndex accepts (again) sequences of strings to 
+      - Collector #1815: ZCTextIndex accepts (again) sequences of strings to
         be indexed.
 
       - Collector #1812: Fixed key error in ZSQL ZMI/Test
@@ -179,7 +184,7 @@ Zope Changes
       - Collector #1808: manage_convertIndexes no longer tries to change the
         index types causing some trouble with CMF.
 
-      - manage_convertIndexes did not treat DateRangeIndexes and PathIndexes 
+      - manage_convertIndexes did not treat DateRangeIndexes and PathIndexes
         properly.
 
       - Updated Zope X3 to bugfix release 3.0.1
@@ -200,7 +205,7 @@ Zope Changes
 
       - Collector #1803: Fixed InitializeClass for some corner case.
 
-      - Collector #1798, issue 1: ZopeTestCase no longer tries to 
+      - Collector #1798, issue 1: ZopeTestCase no longer tries to
         install products that were installed by Zope during startup.
 
       - Collector #1799: Avoid lying about parent's refcount when
