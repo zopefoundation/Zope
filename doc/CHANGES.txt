@@ -48,6 +48,11 @@ Zope Changes
 
     Bugs Fixed
 
+      - OFS.Image.manage_FTPget() would str() it's .data attribute,
+        potentially loading the whole file in memory as a
+        string. Changed to use RESPONSE.write() iterating through the
+        Pdata chain, just like index_html().
+
       - Collector #1863: Prevent possibly sensitive information to leak via
         the TransientObject's __repr__ method.
 
