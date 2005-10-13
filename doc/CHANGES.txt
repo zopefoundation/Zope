@@ -49,6 +49,9 @@ Zope Changes
         character set used to encode unicode data that reaches
         ZPublisher without any specified encoding.
 
+      - Collector #1895: omit 'var' folder from recursive traversal causing
+        trouble with DirectoryStorage.
+
       - disabled ".. include" directive for all the ZReST product and the
         reStructuredText package
 
