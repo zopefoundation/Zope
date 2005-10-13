@@ -7,11 +7,14 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
 """Objects providing context for product initialization
+
+$Id$
 """
+
 from AccessControl.PermissionRole import PermissionRole
 import Globals, os, OFS.ObjectManager, OFS.misc_, Products
 import AccessControl.Permission
@@ -22,7 +25,6 @@ from zLOG import LOG, WARNING
 import os.path, re
 import stat
 from DateTime import DateTime
-from types import ListType, TupleType
 from Interface.Implements import instancesOfObjectImplements
 from App.Product import doInstall
 
@@ -101,7 +103,6 @@ class ProductContext:
         app=self.__app
         pack=self.__pack
         initial=constructors[0]
-        tt=type(())
         productObject=self.__prod
         pid=productObject.id
 
@@ -112,11 +113,11 @@ class ProductContext:
         OM=OFS.ObjectManager.ObjectManager
 
         if permissions:
-            if type(permissions) is type(''): # You goofed it!
+            if isinstance(permissions, basestring): # You goofed it!
                 raise TypeError, ('Product context permissions should be a '
                     'list of permissions not a string', permissions)
             for p in permissions:
-                if type(p) is tt:
+                if isinstance(p, tuple):
                     p, default= p
                     AccessControl.Permission.registerPermissions(
                         ((p, (), default),))
@@ -129,7 +130,7 @@ class ProductContext:
         if permission is None:
             permission="Add %ss" % (meta_type or instance_class.meta_type)
 
-        if type(permission) is tt:
+        if isinstance(permission, tuple):
             permission, default = permission
         else:
             default = ('Manager',)
@@ -140,7 +141,7 @@ class ProductContext:
         ############################################################
 
         for method in legacy:
-            if type(method) is tt:
+            if isinstance(method, tuple):
                 name, method = method
                 aliased = 1
             else:
@@ -156,8 +157,10 @@ class ProductContext:
                     setattr(OM, method.__name__, method)
                     setattr(OM, method.__name__+'__roles__', pr)
 
-        if type(initial) is tt: name, initial = initial
-        else: name=initial.__name__
+        if isinstance(initial, tuple):
+            name, initial = initial
+        else:
+            name = initial.__name__
 
         fd=getattr(pack, '__FactoryDispatcher__', None)
         if fd is None:
@@ -192,7 +195,8 @@ class ProductContext:
         m[name+'__roles__']=pr
 
         for method in constructors[1:]:
-            if type(method) is tt: name, method = method
+            if isinstance(method, tuple):
+                name, method = method
             else:
                 name=os.path.split(method.__name__)[-1]
             if not productObject.__dict__.has_key(name):
