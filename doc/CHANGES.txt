@@ -48,6 +48,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #1895: testrunner: omitting the 'var' from recursive
+        directory walking
+
       - OFS.Image.manage_FTPget() would str() it's .data attribute,
         potentially loading the whole file in memory as a
         string. Changed to use RESPONSE.write() iterating through the
