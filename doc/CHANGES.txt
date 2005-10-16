@@ -6,14 +6,14 @@ Zope Changes
 
   To-do
 
-   - Renable C permission roles by implementing recent Python
+   - Reenable C permission roles by implementing recent Python
      changes in C, brining the Python and C implementations back in
      sync.  See lib/python/AccessControl/PermissionRole.py.
 
    - Add cyclic-garbage collection support to C extension classes,
      especially to acquisition wrappers.
 
-   - Renable C Zope security policy by implementing recent Python
+   - Reenable C Zope security policy by implementing recent Python
      changes in C, bringing the Python and C implementations back in
      sync.  See lib/python/AccessControl/ZopeSecurityPolicy.py.
 
@@ -21,6 +21,14 @@ Zope Changes
      directly, thus speeding the use of the slot.
 
    - Collector #1233: port ZOPE_CONFIG patch from Zope 2.7 to Zope 2.8
+
+  After Zope 2.8.2
+
+    Other
+
+      - ZSQLMethod.manage_main: Moved the error message that warns of a 
+        non-existing or closed database connection next to the Connection ID
+        dropdown and present it using red to increase its visibility.
 
   Zope 2.8.2 (2005/10/13)
 

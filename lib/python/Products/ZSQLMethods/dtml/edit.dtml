@@ -2,16 +2,6 @@
 <dtml-var manage_tabs>
 
 <dtml-if SQLConnectionIDs>
-<dtml-if connectionIsValid>
-   <dtml-if connected><dtml-else>
-      <strong>Warning:</strong>
-      The database connection used by this method is currently not
-      open.
-   </dtml-if>
-<dtml-else>
-      <strong>Warning:</strong>
-      The database connection for this method cannot be found!
-</dtml-if>
 
 <form action="manage_edit" method="POST">
 <table cellpadding="2" cellspacing="0" width="100%" border="0">
@@ -42,6 +32,19 @@
                 &dtml-sequence-key;</option>
               </dtml-in>
     </select>
+    <dtml-if connectionIsValid>
+       <dtml-if connected><dtml-else>
+         <p style="{color:red;}">
+          <strong>Warning:</strong>
+          The database connection used by this method is closed.
+        </p>
+       </dtml-if>
+    <dtml-else>
+      <p style="{color:red;}">
+        <strong>Warning:</strong>
+        The database connection for this method cannot be found!
+      </p>
+    </dtml-if>
     </div>
     </td>
   </tr>
