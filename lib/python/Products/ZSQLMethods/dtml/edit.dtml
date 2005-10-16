@@ -42,7 +42,8 @@
     <dtml-else>
       <p style="{color:red;}">
         <strong>Warning:</strong>
-        The database connection for this method cannot be found!
+        The selected database connection (&dtml-connection_id;)
+        cannot be found!
       </p>
     </dtml-if>
     </div>
