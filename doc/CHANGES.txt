@@ -22,13 +22,15 @@ Zope Changes
 
    - Collector #1233: port ZOPE_CONFIG patch from Zope 2.7 to Zope 2.8
 
-  After Zope 2.8.2
+  After Zope 2.8.3
 
     Other
 
       - ZSQLMethod.manage_main: Moved the error message that warns of a 
         non-existing or closed database connection next to the Connection ID
         dropdown and present it using red to increase its visibility.
+
+      - Update to Docutils 0.3.9 (forgotten in Zope 2.8.2)
 
   Zope 2.8.2 (2005/10/13)
 
