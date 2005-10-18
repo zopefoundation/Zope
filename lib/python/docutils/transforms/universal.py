@@ -1,7 +1,7 @@
 # Authors: David Goodger, Ueli Schlaepfer
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.2.10.6 $
-# Date: $Date: 2005/01/07 13:26:06 $
+# Revision: $Revision: 3186 $
+# Date: $Date: 2005-04-07 21:51:45 +0200 (Thu, 07 Apr 2005) $
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -32,19 +32,16 @@ class Decorations(Transform):
     default_priority = 820
 
     def apply(self):
-        header = self.generate_header()
-        footer = self.generate_footer()
-        if header or footer:
-            decoration = nodes.decoration()
-            decoration += header
-            decoration += footer
-            document = self.document
-            index = document.first_child_not_matching_class(
-                nodes.PreDecorative)
-            if index is None:
-                document += decoration
-            else:
-                document[index:index] = [decoration]
+        header_nodes = self.generate_header()
+        if header_nodes:
+            decoration = self.document.get_decoration()
+            header = decoration.get_header()
+            header.extend(header_nodes)
+        footer_nodes = self.generate_footer()
+        if footer_nodes:
+            decoration = self.document.get_decoration()
+            footer = decoration.get_footer()
+            footer.extend(footer_nodes)
 
     def generate_header(self):
         return None
@@ -79,9 +76,7 @@ class Decorations(Transform):
                     nodes.reference('', 'reStructuredText', refuri='http://'
                                     'docutils.sourceforge.net/rst.html'),
                     nodes.Text(' source.\n')])
-            footer = nodes.footer()
-            footer += nodes.paragraph('', '', *text)
-            return footer
+            return [nodes.paragraph('', '', *text)]
         else:
             return None
 
@@ -97,13 +92,13 @@ class Messages(Transform):
 
     def apply(self):
         unfiltered = self.document.transform_messages
-        threshold = self.document.reporter['writer'].report_level
+        threshold = self.document.reporter.report_level
         messages = []
         for msg in unfiltered:
             if msg['level'] >= threshold and not msg.parent:
                 messages.append(msg)
         if messages:
-            section = nodes.section(CLASS='system-messages')
+            section = nodes.section(classes=['system-messages'])
             # @@@ get this from the language module?
             section += nodes.title('', 'Docutils System Messages')
             section += messages
@@ -130,7 +125,7 @@ class SystemMessageFilterVisitor(nodes.SparseNodeVisitor):
         pass
 
     def visit_system_message(self, node):
-        if node['level'] < self.document.reporter['writer'].report_level:
+        if node['level'] < self.document.reporter.report_level:
             node.parent.remove(node)
 
 
@@ -167,6 +162,21 @@ class FinalChecks(Transform):
         if self.document.settings.expose_internals:
             visitor = InternalAttributeExposer(self.document)
             self.document.walk(visitor)
+        # *After* resolving all references, check for unreferenced
+        # targets:
+        for target in self.document.traverse():
+            if isinstance(target, nodes.target) and not target.referenced:
+                if target['names']:
+                    naming = target['names'][0]
+                elif target['ids']:
+                    naming = target['ids'][0]
+                else:
+                    # Hack: Propagated targets always have their refid
+                    # attribute set.
+                    naming = target['refid']
+                self.document.reporter.info(
+                    'Hyperlink target "%s" is not referenced.'
+                    % naming, base_node=target)
 
 
 class FinalCheckVisitor(nodes.SparseNodeVisitor):
@@ -206,7 +216,7 @@ class FinalCheckVisitor(nodes.SparseNodeVisitor):
         else:
             del node['refname']
             node['refid'] = id
-            self.document.ids[id].referenced = 1
+            self.document.ids[id].note_referenced_by(id=id)
             node.resolved = 1
 
     visit_footnote_reference = visit_citation_reference = visit_reference

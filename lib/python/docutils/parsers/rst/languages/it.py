@@ -1,13 +1,13 @@
 # Author: Nicola Larosa, Lele Gaifax
 # Contact: docutils@tekNico.net, lele@seldati.it
-# Revision: $Revision: 1.2.10.7 $
-# Date: $Date: 2005/01/07 13:26:04 $
+# Revision: $Revision: 3184 $
+# Date: $Date: 2005-04-07 21:36:11 +0200 (Thu, 07 Apr 2005) $
 # Copyright: This module has been placed in the public domain.
 
-# New language mappings are welcome.  Before doing a new translation, please
-# read <http://docutils.sf.net/docs/howto/i18n.html>.  Two files must be
-# translated for each language: one in docutils/languages, the other in
-# docutils/parsers/rst/languages.
+# Beware: the italian translation of the reStructuredText documentation
+# at http://docit.bice.dyndns.org/static/ReST, in particular
+# http://docit.bice.dyndns.org/static/ReST/ref/rst/directives.html, needs
+# to be synced with the content of this file.
 
 """
 Italian-language mappings for language-dependent features of
@@ -34,14 +34,15 @@ directives = {
       'blocco-interpretato': 'parsed-literal',
       'rubrica': 'rubric',
       'epigrafe': 'epigraph',
-      'evidenzia': 'highlights',
-      'pull-quote (translation required)': 'pull-quote',
-      'compound (translation required)': 'compound',
+      'punti-salienti': 'highlights',
+      'estratto-evidenziato': 'pull-quote',
+      'composito': 'compound',
       #'questions': 'questions',
       #'qa': 'questions',
       #'faq': 'questions',
       'tabella': 'table',
-      'csv-table (translation required)': 'csv-table',
+      'tabella-csv': 'csv-table',
+      'tabella-elenco': 'list-table',
       'meta': 'meta',
       #'imagemap': 'imagemap',
       'immagine': 'image',
@@ -53,9 +54,12 @@ directives = {
       'classe': 'class',
       'ruolo': 'role',
       'indice': 'contents',
+      'contenuti': 'contents',
       'seznum': 'sectnum',
       'sezioni-autonumerate': 'sectnum',
       'annota-riferimenti-esterni': 'target-notes',
+      u'header (translation required)': 'header',
+      u'footer (translation required)': 'footer',
       #'footnotes': 'footnotes',
       #'citations': 'citations',
       'restructuredtext-test-directive': 'restructuredtext-test-directive'}

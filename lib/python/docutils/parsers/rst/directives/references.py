@@ -1,7 +1,7 @@
 # Author: David Goodger, Dmitry Jemerov
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.2.10.6 $
-# Date: $Date: 2005/01/07 13:26:04 $
+# Revision: $Revision: 856 $
+# Date: $Date: 2002-10-24 03:01:53 +0200 (Thu, 24 Oct 2002) $
 # Copyright: This module has been placed in the public domain.
 
 """

@@ -1,7 +1,7 @@
 # Authors: Engelbert Gruber; Felix Wiemann
 # Contact: grubert@users.sourceforge.net
-# Revision: $Revision: 1.2.10.7 $
-# Date: $Date: 2005/01/07 13:26:04 $
+# Revision: $Revision: 3184 $
+# Date: $Date: 2005-04-07 21:36:11 +0200 (Thu, 07 Apr 2005) $
 # Copyright: This module has been placed in the public domain.
 
 # New language mappings are welcome.  Before doing a new translation, please
@@ -42,6 +42,7 @@ directives = {
       #'fragen': 'questions',
       'tabelle': 'table',
       'csv-tabelle': 'csv-table',
+      'list-table (translation required)': 'list-table',
       'meta': 'meta',
       #'imagemap': 'imagemap',
       'bild': 'image',
@@ -59,6 +60,8 @@ directives = {
       'kapitel-nummerierung': 'sectnum',
       'abschnitts-nummerierung': 'sectnum',
       u'linkziel-fu\xdfnoten': 'target-notes',
+      u'header (translation required)': 'header',
+      u'footer (translation required)': 'footer',
       #u'fu\xdfnoten': 'footnotes',
       #'zitate': 'citations',
       }

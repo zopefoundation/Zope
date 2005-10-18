@@ -1,7 +1,7 @@
 # Author: David Goodger
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.2.10.6 $
-# Date: $Date: 2005/01/07 13:26:05 $
+# Revision: $Revision: 3353 $
+# Date: $Date: 2005-05-19 02:49:14 +0200 (Thu, 19 May 2005) $
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -37,15 +37,26 @@ class Reader(readers.Reader):
           'default).',
           ['--no-doc-info'],
           {'dest': 'docinfo_xform', 'action': 'store_false', 'default': 1,
-           'validator': frontend.validate_boolean}),))
+           'validator': frontend.validate_boolean}),
+         ('Activate the promotion of lone subsection titles to '
+          'section subtitles (disabled by default).',
+          ['--section-subtitles'],
+          {'dest': 'sectsubtitle_xform', 'action': 'store_true', 'default': 0,
+           'validator': frontend.validate_boolean}),
+         ('Deactivate the promotion of lone subsection titles.',
+          ['--no-section-subtitles'],
+          {'dest': 'sectsubtitle_xform', 'action': 'store_false',
+           'validator': frontend.validate_boolean}),
+         ))
 
     config_section = 'standalone reader'
     config_section_dependencies = ('readers',)
 
     default_transforms = (references.Substitutions,
+                          references.PropagateTargets,
                           frontmatter.DocTitle,
+                          frontmatter.SectionSubTitle,
                           frontmatter.DocInfo,
-                          references.ChainedTargets,
                           references.AnonymousHyperlinks,
                           references.IndirectHyperlinks,
                           references.Footnotes,

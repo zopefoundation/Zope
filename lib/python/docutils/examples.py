@@ -1,18 +1,19 @@
 # Authors: David Goodger
 # Contact: goodger@python.org
-# Revision: $Revision: 1.1.4.3 $
-# Date: $Date: 2005/01/07 13:26:02 $
+# Revision: $Revision: 3247 $
+# Date: $Date: 2005-04-23 21:23:57 +0200 (Sat, 23 Apr 2005) $
 # Copyright: This module has been placed in the public domain.
 
 """
 This module contains practical examples of Docutils client code.
 
-Importing this module is not recommended; its contents are subject to change
-in future Docutils releases.  Instead, it is recommended that you copy and
-paste the parts you need into your own code, modifying as necessary.
+Importing this module from client code is not recommended; its contents are
+subject to change in future Docutils releases.  Instead, it is recommended
+that you copy and paste the parts you need into your own code, modifying as
+necessary.
 """
 
-from docutils import core
+from docutils import core, io
 
 
 def html_parts(input_string, source_path=None, destination_path=None,
@@ -72,3 +73,23 @@ def html_fragment(input_string, source_path=None, destination_path=None,
     if output_encoding != 'unicode':
         fragment = fragment.encode(output_encoding)
     return fragment
+
+def internals(input_string, source_path=None, destination_path=None,
+              input_encoding='unicode'):
+    """
+    Return the document tree and publisher, for exploring Docutils internals.
+
+    Parameters: see `html_parts()`.
+    """
+    overrides = {'input_encoding': input_encoding}
+    output, pub = core.publish_programmatically(
+        source_class=io.StringInput, source=input_string,
+        source_path=source_path,
+        destination_class=io.NullOutput, destination=None,
+        destination_path=destination_path,
+        reader=None, reader_name='standalone',
+        parser=None, parser_name='restructuredtext',
+        writer=None, writer_name='null',
+        settings=None, settings_spec=None, settings_overrides=overrides,
+        config_section=None, enable_exit_status=None)
+    return pub.writer.document, pub

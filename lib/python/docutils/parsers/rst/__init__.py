@@ -1,7 +1,7 @@
 # Author: David Goodger
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.2.10.7 $
-# Date: $Date: 2005/01/07 13:26:03 $
+# Revision: $Revision: 3171 $
+# Date: $Date: 2005-04-05 17:26:16 +0200 (Tue, 05 Apr 2005) $
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -112,7 +112,23 @@ class Parser(docutils.parsers.Parser):
          ('Leave spaces before footnote references.',
           ['--leave-footnote-reference-space'],
           {'action': 'store_false', 'dest': 'trim_footnote_reference_space',
-           'validator': frontend.validate_boolean}),))
+           'validator': frontend.validate_boolean}),
+         ('Disable directives that insert the contents of external file '
+          '("include" & "raw"); replaced with a "warning" system message.',
+          ['--no-file-insertion'],
+          {'action': 'store_false', 'default': 1,
+           'dest': 'file_insertion_enabled'}),
+         ('Enable directives that insert the contents of external file '
+          '("include" & "raw").  Enabled by default.',
+          ['--file-insertion-enabled'],
+          {'action': 'store_true', 'dest': 'file_insertion_enabled'}),
+         ('Disable the "raw" directives; replaced with a "warning" '
+          'system message.',
+          ['--no-raw'],
+          {'action': 'store_false', 'default': 1, 'dest': 'raw_enabled'}),
+         ('Enable the "raw" directive.  Enabled by default.',
+          ['--raw-enabled'],
+          {'action': 'store_true', 'dest': 'raw_enabled'}),))
 
     config_section = 'restructuredtext parser'
     config_section_dependencies = ('parsers',)
@@ -128,11 +144,10 @@ class Parser(docutils.parsers.Parser):
     def parse(self, inputstring, document):
         """Parse `inputstring` and populate `document`, a document tree."""
         self.setup_parse(inputstring, document)
-        debug = document.reporter[''].debug
         self.statemachine = states.RSTStateMachine(
               state_classes=self.state_classes,
               initial_state=self.initial_state,
-              debug=debug)
+              debug=document.reporter.debug_flag)
         inputlines = docutils.statemachine.string2lines(
               inputstring, tab_width=document.settings.tab_width,
               convert_whitespace=1)

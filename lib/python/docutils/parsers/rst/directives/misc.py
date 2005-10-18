@@ -1,7 +1,7 @@
 # Authors: David Goodger, Dethe Elza
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.2.10.7 $
-# Date: $Date: 2005/01/07 13:26:04 $
+# Revision: $Revision: 3129 $
+# Date: $Date: 2005-03-26 17:21:28 +0100 (Sat, 26 Mar 2005) $
 # Copyright: This module has been placed in the public domain.
 
 """Miscellaneous directives."""
@@ -24,15 +24,15 @@ except ImportError:
 def include(name, arguments, options, content, lineno,
             content_offset, block_text, state, state_machine):
     """Include a reST file as part of the content of this reST file."""
+    if not state.document.settings.file_insertion_enabled:
+        warning = state_machine.reporter.warning(
+              '"%s" directive disabled.' % name,
+              nodes.literal_block(block_text, block_text), line=lineno)
+        return [warning]
     source = state_machine.input_lines.source(
         lineno - state_machine.input_offset - 1)
     source_dir = os.path.dirname(os.path.abspath(source))
-    path = ''.join(arguments[0].splitlines())
-    if path.find(' ') != -1:
-        error = state_machine.reporter.error(
-              '"%s" directive path contains whitespace.' % name,
-              nodes.literal_block(block_text, block_text), line=lineno)
-        return [error]
+    path = directives.path(arguments[0])
     path = os.path.normpath(os.path.join(source_dir, path))
     path = utils.relative_path(None, path)
     encoding = options.get('encoding', state.document.settings.input_encoding)
@@ -48,7 +48,14 @@ def include(name, arguments, options, content, lineno,
               % (name, error.__class__.__name__, error),
               nodes.literal_block(block_text, block_text), line=lineno)
         return [severe]
-    include_text = include_file.read()
+    try:
+        include_text = include_file.read()
+    except UnicodeError, error:
+        severe = state_machine.reporter.severe(
+              'Problem with "%s" directive:\n%s: %s'
+              % (name, error.__class__.__name__, error),
+              nodes.literal_block(block_text, block_text), line=lineno)
+        return [severe]
     if options.has_key('literal'):
         literal_block = nodes.literal_block(include_text, include_text,
                                             source=path)
@@ -74,6 +81,14 @@ def raw(name, arguments, options, content, lineno,
     Content may be included inline (content section of directive) or
     imported from a file or url.
     """
+    print 2
+    if ( not state.document.settings.raw_enabled
+         or (not state.document.settings.file_insertion_enabled
+             and (options.has_key('file') or options.has_key('url'))) ):
+        warning = state_machine.reporter.warning(
+              '"%s" directive disabled.' % name,
+              nodes.literal_block(block_text, block_text), line=lineno)
+        return [warning]
     attributes = {'format': ' '.join(arguments[0].lower().split())}
     encoding = options.get('encoding', state.document.settings.input_encoding)
     if content:
@@ -106,7 +121,14 @@ def raw(name, arguments, options, content, lineno,
                   'Problems with "%s" directive path:\n%s.' % (name, error),
                   nodes.literal_block(block_text, block_text), line=lineno)
             return [severe]
-        text = raw_file.read()
+        try:
+            text = raw_file.read()
+        except UnicodeError, error:
+            severe = state_machine.reporter.severe(
+                  'Problem with "%s" directive:\n%s: %s'
+                  % (name, error.__class__.__name__, error),
+                  nodes.literal_block(block_text, block_text), line=lineno)
+            return [severe]
         attributes['source'] = path
     elif options.has_key('url'):
         if not urllib2:
@@ -128,7 +150,14 @@ def raw(name, arguments, options, content, lineno,
         raw_file = io.StringInput(
             source=raw_text, source_path=source, encoding=encoding,
             error_handler=state.document.settings.input_encoding_error_handler)
-        text = raw_file.read()
+        try:
+            text = raw_file.read()
+        except UnicodeError, error:
+            severe = state_machine.reporter.severe(
+                  'Problem with "%s" directive:\n%s: %s'
+                  % (name, error.__class__.__name__, error),
+                  nodes.literal_block(block_text, block_text), line=lineno)
+            return [severe]
         attributes['source'] = source
     else:
         error = state_machine.reporter.warning(
@@ -140,7 +169,7 @@ def raw(name, arguments, options, content, lineno,
 
 raw.arguments = (1, 0, 1)
 raw.options = {'file': directives.path,
-               'url': directives.path,
+               'url': directives.uri,
                'encoding': directives.encoding}
 raw.content = 1
 
@@ -160,8 +189,7 @@ def replace(name, arguments, options, content, lineno,
             messages = []
             for node in element:
                 if isinstance(node, nodes.system_message):
-                    if node.has_key('backrefs'):
-                        del node['backrefs']
+                    node['backrefs'] = []
                     messages.append(node)
             error = state_machine.reporter.error(
                 'Error in "%s" directive: may contain a single paragraph '

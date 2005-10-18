@@ -1,7 +1,7 @@
 # Author: Marcelo Huerta San Martin
 # Contact: richieadler@users.sourceforge.net
-# Revision: $Revision: 1.1.2.5 $
-# Date: $Date: 2005/01/07 13:26:04 $
+# Revision: $Revision: 3189 $
+# Date: $Date: 2005-04-08 05:05:45 +0200 (Fri, 08 Apr 2005) $
 # Copyright: This module has been placed in the public domain.
 
 # New language mappings are welcome.  Before doing a new translation, please
@@ -48,6 +48,7 @@ directives = {
       u'tabelo': 'table',
       u'tabelo-vdk': 'csv-table', # "valoroj disigitaj per komoj"
       u'tabelo-csv': 'csv-table',
+      u'tabelo-lista': 'list-table',
       u'meta': 'meta',
       #'imagemap': 'imagemap',
       u'bildo': 'image',
@@ -62,6 +63,8 @@ directives = {
       u'enhavo': 'contents',
       u'seknum': 'sectnum',
       u'sekcia-numerado': 'sectnum',
+      u'kapsekcio': 'header',
+      u'piedsekcio': 'footer',
       #'footnotes': 'footnotes',
       #'citations': 'citations',
       u'celaj-notoj': 'target-notes',

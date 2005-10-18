@@ -1,7 +1,7 @@
 # Author: David Goodger
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.2.10.7 $
-# Date: $Date: 2005/01/07 13:26:06 $
+# Revision: $Revision: 3367 $
+# Date: $Date: 2005-05-26 02:44:13 +0200 (Thu, 26 May 2005) $
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -63,6 +63,20 @@ class Writer(writers.Writer):
           ['--initial-header-level'],
           {'choices': '1 2 3 4 5 6'.split(), 'default': '1',
            'metavar': '<level>'}),
+         ('Specify the maximum width (in characters) for one-column field '
+          'names.  Longer field names will span an entire row of the table '
+          'used to render the field list.  Default is 14 characters.  '
+          'Use 0 for "no limit".',
+          ['--field-name-limit'],
+          {'default': 14, 'metavar': '<level>',
+           'validator': frontend.validate_nonnegative_int}),
+         ('Specify the maximum width (in characters) for options in option '
+          'lists.  Longer options will span an entire row of the table used '
+          'to render the option list.  Default is 14 characters.  '
+          'Use 0 for "no limit".',
+          ['--option-limit'],
+          {'default': 14, 'metavar': '<level>',
+           'validator': frontend.validate_nonnegative_int}),
          ('Format for footnote references: one of "superscript" or '
           '"brackets".  Default is "brackets".',
           ['--footnote-references'],
@@ -87,7 +101,12 @@ class Writer(writers.Writer):
          ('Omit the XML declaration.  Use with caution.',
           ['--no-xml-declaration'],
           {'dest': 'xml_declaration', 'default': 1, 'action': 'store_false',
-           'validator': frontend.validate_boolean}),))
+           'validator': frontend.validate_boolean}),
+         ('Scramble email addresses to confuse harvesters.  '
+          'For example, "abc@example.org" will become '
+          '``<a href="mailto:%61%62%63%40...">abc at example dot org</a>``.',
+          ['--cloak-email-addresses'],
+          {'action': 'store_true', 'validator': frontend.validate_boolean}),))
 
     relative_path_settings = ('stylesheet_path',)
 
@@ -99,10 +118,9 @@ class Writer(writers.Writer):
         self.translator_class = HTMLTranslator
 
     def translate(self):
-        visitor = self.translator_class(self.document)
+        self.visitor = visitor = self.translator_class(self.document)
         self.document.walkabout(visitor)
         self.output = visitor.astext()
-        self.visitor = visitor
         for attr in ('head_prefix', 'stylesheet', 'head', 'body_prefix',
                      'body_pre_docinfo', 'docinfo', 'body', 'fragment',
                      'body_suffix'):
@@ -111,7 +129,9 @@ class Writer(writers.Writer):
     def assemble_parts(self):
         writers.Writer.assemble_parts(self)
         for part in ('title', 'subtitle', 'docinfo', 'body', 'header',
-                     'footer', 'meta', 'stylesheet', 'fragment'):
+                     'footer', 'meta', 'stylesheet', 'fragment',
+                     'html_prolog', 'html_head', 'html_title', 'html_subtitle',
+                     'html_body'):
             self.parts[part] = ''.join(getattr(self.visitor, part))
 
 
@@ -163,16 +183,15 @@ class HTMLTranslator(nodes.NodeVisitor):
                ' PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"'
                ' "http://www.w3.org/TR/xhtml1/DTD/'
                'xhtml1-transitional.dtd">\n')
-    html_head = ('<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="%s" '
-                 'lang="%s">\n<head>\n')
-    content_type = ('<meta http-equiv="Content-Type" content="text/html; '
-                    'charset=%s" />\n')
+    head_prefix_template = ('<html xmlns="http://www.w3.org/1999/xhtml"'
+                            ' xml:lang="%s" lang="%s">\n<head>\n')
+    content_type = ('<meta http-equiv="Content-Type"'
+                    ' content="text/html; charset=%s" />\n')
     generator = ('<meta name="generator" content="Docutils %s: '
                  'http://docutils.sourceforge.net/" />\n')
     stylesheet_link = '<link rel="stylesheet" href="%s" type="text/css" />\n'
     embedded_stylesheet = '<style type="text/css">\n\n%s\n</style>\n'
-    named_tags = {'a': 1, 'applet': 1, 'form': 1, 'frame': 1, 'iframe': 1,
-                  'img': 1, 'map': 1}
+    named_tags = ['a', 'applet', 'form', 'frame', 'iframe', 'img', 'map']
     words_and_spaces = re.compile(r'\S+| +|\n')
 
     def __init__(self, document):
@@ -182,14 +201,17 @@ class HTMLTranslator(nodes.NodeVisitor):
         self.language = languages.get_language(lcode)
         self.meta = [self.content_type % settings.output_encoding,
                      self.generator % docutils.__version__]
-        self.head_prefix = [
-              self.doctype,
-              self.html_head % (lcode, lcode)]
-        self.head_prefix.extend(self.meta)
+        self.head_prefix = []
+        self.html_prolog = []
         if settings.xml_declaration:
-            self.head_prefix.insert(0, self.xml_declaration
+            self.head_prefix.append(self.xml_declaration
                                     % settings.output_encoding)
-        self.head = []
+            # encoding not interpolated:
+            self.html_prolog.append(self.xml_declaration)
+        self.head_prefix.extend([self.doctype,
+                                 self.head_prefix_template % (lcode, lcode)])
+        self.html_prolog.append(self.doctype)
+        self.head = self.meta[:]
         if settings.embed_stylesheet:
             stylesheet = utils.get_stylesheet_reference(settings,
                 os.path.join(os.getcwd(), 'dummy'))
@@ -199,7 +221,8 @@ class HTMLTranslator(nodes.NodeVisitor):
         else:
             stylesheet = utils.get_stylesheet_reference(settings)
             if stylesheet:
-                self.stylesheet = [self.stylesheet_link % stylesheet]
+                self.stylesheet = [self.stylesheet_link
+                                   % self.encode(stylesheet)]
             else:
                 self.stylesheet = []
         self.body_prefix = ['</head>\n<body>\n']
@@ -215,7 +238,7 @@ class HTMLTranslator(nodes.NodeVisitor):
         # A heterogenous stack used in conjunction with the tree traversal.
         # Make sure that the pops correspond to the pushes:
         self.context = []
-        self.topic_class = ''
+        self.topic_classes = []
         self.colspecs = []
         self.compact_p = 1
         self.compact_simple = None
@@ -225,7 +248,12 @@ class HTMLTranslator(nodes.NodeVisitor):
         self.subtitle = []
         self.header = []
         self.footer = []
+        self.html_head = [self.content_type] # charset not interpolated
+        self.html_title = []
+        self.html_subtitle = []
+        self.html_body = []
         self.in_document_title = 0
+        self.in_mailto = 0
 
     def astext(self):
         return ''.join(self.head_prefix + self.head
@@ -245,6 +273,20 @@ class HTMLTranslator(nodes.NodeVisitor):
         text = text.replace(u'\u00a0', "&nbsp;")
         return text
 
+    def cloak_mailto(self, uri):
+        """Try to hide a mailto: URL from harvesters."""
+        addr = uri.split(':', 1)[1]
+        if '?' in addr:
+            addr, query = addr.split('?', 1)
+            query = '?' + query
+        else:
+            query = ''
+        escaped = ['%%%02X' % ord(c) for c in addr]
+        return 'mailto:%s%s' % (''.join(escaped), query)
+
+    def cloak_email(self, addr):
+        return addr.replace('@', ' at ').replace('.', ' dot ')
+
     def attval(self, text,
                whitespace=re.compile('[\n\r\t\v\f]')):
         """Cleanse, HTML encode, and return attribute value text."""
@@ -256,17 +298,21 @@ class HTMLTranslator(nodes.NodeVisitor):
         are extracted), tag name, and optional attributes.
         """
         tagname = tagname.lower()
+        prefix = []
         atts = {}
         for (name, value) in attributes.items():
             atts[name.lower()] = value
-        for att in ('class',):          # append to node attribute
-            if node.has_key(att) or atts.has_key(att):
-                atts[att] = \
-                      (node.get(att, '') + ' ' + atts.get(att, '')).strip()
-        for att in ('id',):             # node attribute overrides
-            if node.has_key(att):
-                atts[att] = node[att]
-        if atts.has_key('id') and self.named_tags.has_key(tagname):
+        classes = node.get('classes', [])
+        if atts.has_key('class'):
+            classes.append(atts['class'])
+        if classes:
+            atts['class'] = ' '.join(classes)
+        assert not atts.has_key('id')
+        if node.get('ids'):
+            atts['id'] = node['ids'][0]
+            for id in node['ids'][1:]:
+                prefix.append('<span id="%s"></span>' % id)
+        if atts.has_key('id') and tagname in self.named_tags:
             atts['name'] = atts['id']   # for compatibility with old browsers
         attlist = atts.items()
         attlist.sort()
@@ -285,19 +331,23 @@ class HTMLTranslator(nodes.NodeVisitor):
                 except TypeError:       # for Python 2.1 compatibility:
                     uval = unicode(str(value))
                 parts.append('%s="%s"' % (name.lower(), self.attval(uval)))
-        return '<%s%s>%s' % (' '.join(parts), infix, suffix)
+        return ''.join(prefix) + '<%s%s>' % (' '.join(parts), infix) + suffix
 
     def emptytag(self, node, tagname, suffix='\n', **attributes):
         """Construct and return an XML-compatible empty tag."""
         return self.starttag(node, tagname, suffix, infix=' /', **attributes)
 
     def set_first_last(self, node):
-        if len(node):
-            node[0].set_class('first')
-            node[-1].set_class('last')
+        children = [n for n in node if not isinstance(n, nodes.Invisible)]
+        if children:
+            children[0]['classes'].append('first')
+            children[-1]['classes'].append('last')
 
     def visit_Text(self, node):
-        self.body.append(self.encode(node.astext()))
+        text = node.astext()
+        if self.in_mailto and self.settings.cloak_email_addresses:
+            text = self.cloak_email(text)
+        self.body.append(self.encode(text))
 
     def depart_Text(self, node):
         pass
@@ -389,7 +439,7 @@ class HTMLTranslator(nodes.NodeVisitor):
         self.compact_p = None
         self.compact_simple = (self.settings.compact_lists and
                                (self.compact_simple
-                                or self.topic_class == 'contents'
+                                or self.topic_classes == ['contents']
                                 or self.check_simple_list(node)))
         if self.compact_simple and not old_compact_simple:
             atts['class'] = 'simple'
@@ -425,14 +475,9 @@ class HTMLTranslator(nodes.NodeVisitor):
                          '</tbody>\n</table>\n')
 
     def visit_citation_reference(self, node):
-        href = ''
-        if node.has_key('refid'):
-            href = '#' + node['refid']
-        elif node.has_key('refname'):
-            href = '#' + self.document.nameids[node['refname']]
-        self.body.append(self.starttag(node, 'a', '[',
-                                       CLASS='citation-reference',
-                                       **(href and {'href': href} or {})))
+        href = '#' + node['refid']
+        self.body.append(self.starttag(
+            node, 'a', '[', CLASS='citation-reference', href=href))
 
     def depart_citation_reference(self, node):
         self.body.append(']</a>')
@@ -446,6 +491,8 @@ class HTMLTranslator(nodes.NodeVisitor):
 
     def visit_colspec(self, node):
         self.colspecs.append(node)
+        # "stubs" list is an attribute of the tgroup element:
+        node.parent.stubs.append(node.attributes.get('stub'))
 
     def depart_colspec(self, node):
         pass
@@ -470,10 +517,10 @@ class HTMLTranslator(nodes.NodeVisitor):
     def visit_compound(self, node):
         self.body.append(self.starttag(node, 'div', CLASS='compound'))
         if len(node) > 1:
-            node[0].set_class('compound-first')
-            node[-1].set_class('compound-last')
+            node[0]['classes'].append('compound-first')
+            node[-1]['classes'].append('compound-last')
             for child in node[1:-1]:
-                child.set_class('compound-middle')
+                child['classes'].append('compound-middle')
 
     def depart_compound(self, node):
         self.body.append('</div>\n')
@@ -562,9 +609,9 @@ class HTMLTranslator(nodes.NodeVisitor):
                          % self.language.labels[name])
         if len(node):
             if isinstance(node[0], nodes.Element):
-                node[0].set_class('first')
+                node[0]['classes'].append('first')
             if isinstance(node[-1], nodes.Element):
-                node[-1].set_class('last')
+                node[-1]['classes'].append('last')
 
     def depart_docinfo_item(self):
         self.body.append('</td></tr>\n')
@@ -579,12 +626,17 @@ class HTMLTranslator(nodes.NodeVisitor):
         # empty or untitled document?
         if not len(node) or not isinstance(node[0], nodes.title):
             # for XHTML conformance, modulo IE6 appeasement:
-            self.head.insert(0, '<title></title>\n')
+            self.head.append('<title></title>\n')
 
     def depart_document(self, node):
         self.fragment.extend(self.body)
         self.body_prefix.append(self.starttag(node, 'div', CLASS='document'))
         self.body_suffix.insert(0, '</div>\n')
+        # skip content-type meta tag with interpolated charset value:
+        self.html_head.extend(self.head[1:])
+        self.html_body.extend(self.body_prefix[1:] + self.body_pre_docinfo
+                              + self.docinfo + self.body
+                              + self.body_suffix[:-1])
 
     def visit_emphasis(self, node):
         self.body.append('<em>')
@@ -593,15 +645,24 @@ class HTMLTranslator(nodes.NodeVisitor):
         self.body.append('</em>')
 
     def visit_entry(self, node):
+        atts = {'class': []}
         if isinstance(node.parent.parent, nodes.thead):
+            atts['class'].append('head')
+        if node.parent.parent.parent.stubs[node.parent.column]:
+            # "stubs" list is an attribute of the tgroup element
+            atts['class'].append('stub')
+        if atts['class']:
             tagname = 'th'
+            atts['class'] = ' '.join(atts['class'])
         else:
             tagname = 'td'
-        atts = {}
+            del atts['class']
+        node.parent.column += 1
         if node.has_key('morerows'):
             atts['rowspan'] = node['morerows'] + 1
         if node.has_key('morecols'):
             atts['colspan'] = node['morecols'] + 1
+            node.parent.column += node['morecols']
         self.body.append(self.starttag(node, tagname, '', **atts))
         self.context.append('</%s>\n' % tagname.lower())
         if len(node) == 0:              # empty cell
@@ -629,7 +690,7 @@ class HTMLTranslator(nodes.NodeVisitor):
         self.compact_p = None
         self.compact_simple = (self.settings.compact_lists and
                                (self.compact_simple
-                                or self.topic_class == 'contents'
+                                or self.topic_classes == ['contents']
                                 or self.check_simple_list(node)))
         if self.compact_simple and not old_compact_simple:
             atts['class'] = (atts.get('class', '') + ' simple').strip()
@@ -675,7 +736,8 @@ class HTMLTranslator(nodes.NodeVisitor):
             atts['class'] = 'docinfo-name'
         else:
             atts['class'] = 'field-name'
-        if len(node.astext()) > 14:
+        if ( self.settings.field_name_limit
+             and len(node.astext()) > self.settings.field_name_limit):
             atts['colspan'] = 2
             self.context.append('</tr>\n<tr><td>&nbsp;</td>')
         else:
@@ -690,6 +752,8 @@ class HTMLTranslator(nodes.NodeVisitor):
         atts = {'class': 'figure'}
         if node.get('width'):
             atts['style'] = 'width: %spx' % node['width']
+        if node.get('align'):
+            atts['align'] = node['align']
         self.body.append(self.starttag(node, 'div', **atts))
 
     def depart_figure(self, node):
@@ -700,9 +764,10 @@ class HTMLTranslator(nodes.NodeVisitor):
 
     def depart_footer(self, node):
         start = self.context.pop()
-        footer = (['<hr class="docutils footer" />\n',
-                   self.starttag(node, 'div', CLASS='footer')]
-                  + self.body[start:] + ['</div>\n'])
+        footer = [self.starttag(node, 'div', CLASS='footer'),
+                  '<hr class="footer" />\n']
+        footer.extend(self.body[start:])
+        footer.append('\n</div>\n')
         self.footer.extend(footer)
         self.body_suffix[:0] = footer
         del self.body[start:]
@@ -718,12 +783,13 @@ class HTMLTranslator(nodes.NodeVisitor):
 
     def footnote_backrefs(self, node):
         backlinks = []
-        if self.settings.footnote_backlinks and node.hasattr('backrefs'):
-            backrefs = node['backrefs']
+        backrefs = node['backrefs']
+        if self.settings.footnote_backlinks and backrefs:
             if len(backrefs) == 1:
                 self.context.append('')
-                self.context.append('<a class="fn-backref" href="#%s" '
-                                    'name="%s">' % (backrefs[0], node['id']))
+                self.context.append(
+                    '<a class="fn-backref" href="#%s" name="%s">'
+                    % (backrefs[0], node['ids'][0]))
             else:
                 i = 1
                 for backref in backrefs:
@@ -731,41 +797,34 @@ class HTMLTranslator(nodes.NodeVisitor):
                                      % (backref, i))
                     i += 1
                 self.context.append('<em>(%s)</em> ' % ', '.join(backlinks))
-                self.context.append('<a name="%s">' % node['id'])
+                self.context.append('<a name="%s">' % node['ids'][0])
         else:
             self.context.append('')
-            self.context.append('<a name="%s">' % node['id'])
+            self.context.append('<a name="%s">' % node['ids'][0])
         # If the node does not only consist of a label.
         if len(node) > 1:
             # If there are preceding backlinks, we do not set class
             # 'first', because we need to retain the top-margin.
             if not backlinks:
-                node[1].set_class('first')
-            node[-1].set_class('last')
+                node[1]['classes'].append('first')
+            node[-1]['classes'].append('last')
 
     def depart_footnote(self, node):
         self.body.append('</td></tr>\n'
                          '</tbody>\n</table>\n')
 
     def visit_footnote_reference(self, node):
-        href = ''
-        if node.has_key('refid'):
-            href = '#' + node['refid']
-        elif node.has_key('refname'):
-            href = '#' + self.document.nameids[node['refname']]
+        href = '#' + node['refid']
         format = self.settings.footnote_references
         if format == 'brackets':
             suffix = '['
             self.context.append(']')
-        elif format == 'superscript':
+        else:
+            assert format == 'superscript'
             suffix = '<sup>'
             self.context.append('</sup>')
-        else:                           # shouldn't happen
-            suffix = '???'
-            self.content.append('???')
         self.body.append(self.starttag(node, 'a', suffix,
-                                       CLASS='footnote-reference',
-                                       **(href and {'href': href} or {})))
+                                       CLASS='footnote-reference', href=href))
 
     def depart_footnote_reference(self, node):
         self.body.append(self.context.pop() + '</a>')
@@ -783,9 +842,9 @@ class HTMLTranslator(nodes.NodeVisitor):
         start = self.context.pop()
         header = [self.starttag(node, 'div', CLASS='header')]
         header.extend(self.body[start:])
-        header.append('<hr class="docutils header"/>\n</div>\n')
+        header.append('\n<hr class="header"/>\n</div>\n')
         self.body_prefix.extend(header)
-        self.header = header
+        self.header.extend(header)
         del self.body[start:]
 
     def visit_hint(self, node):
@@ -795,9 +854,9 @@ class HTMLTranslator(nodes.NodeVisitor):
         self.depart_admonition()
 
     def visit_image(self, node):
-        atts = node.attributes.copy()
-        if atts.has_key('class'):
-            del atts['class']           # prevent duplication with node attrs
+        atts = node.non_default_attributes()
+        if atts.has_key('classes'):
+            del atts['classes']         # prevent duplication with node attrs
         atts['src'] = atts['uri']
         del atts['uri']
         if atts.has_key('scale'):
@@ -832,9 +891,8 @@ class HTMLTranslator(nodes.NodeVisitor):
         self.body.append(self.emptytag(node, 'img', '', **atts))
 
     def image_div_atts(self, image_node):
-        div_atts = {'class': 'image'}
-        if image_node.attributes.has_key('class'):
-            div_atts['class'] += ' ' + image_node.attributes['class']
+        div_atts = {}
+        div_atts['class'] = ' '.join(['image'] + image_node['classes'])
         if image_node.attributes.has_key('align'):
             div_atts['align'] = self.attval(image_node.attributes['align'])
             div_atts['class'] += ' align-%s' % div_atts['align']
@@ -885,14 +943,15 @@ class HTMLTranslator(nodes.NodeVisitor):
     def visit_list_item(self, node):
         self.body.append(self.starttag(node, 'li', ''))
         if len(node):
-            node[0].set_class('first')
+            node[0]['classes'].append('first')
 
     def depart_list_item(self, node):
         self.body.append('</li>\n')
 
     def visit_literal(self, node):
         """Process text to prevent tokens from wrapping."""
-        self.body.append(self.starttag(node, 'tt', '', CLASS='docutils literal'))
+        self.body.append(
+            self.starttag(node, 'tt', '', CLASS='docutils literal'))
         text = node.astext()
         for token in self.words_and_spaces.findall(text):
             if token.strip():
@@ -916,7 +975,7 @@ class HTMLTranslator(nodes.NodeVisitor):
         self.body.append('\n</pre>\n')
 
     def visit_meta(self, node):
-        meta = self.emptytag(node, 'meta', **node.attributes)
+        meta = self.emptytag(node, 'meta', **node.non_default_attributes())
         self.add_meta(meta)
 
     def depart_meta(self, node):
@@ -935,8 +994,10 @@ class HTMLTranslator(nodes.NodeVisitor):
     def visit_option(self, node):
         if self.context[-1]:
             self.body.append(', ')
+        self.body.append(self.starttag(node, 'span', '', CLASS='option'))
 
     def depart_option(self, node):
+        self.body.append('</span>')
         self.context[-1] += 1
 
     def visit_option_argument(self, node):
@@ -948,12 +1009,14 @@ class HTMLTranslator(nodes.NodeVisitor):
 
     def visit_option_group(self, node):
         atts = {}
-        if len(node.astext()) > 14:
+        if ( self.settings.option_limit
+             and len(node.astext()) > self.settings.option_limit):
             atts['colspan'] = 2
             self.context.append('</tr>\n<tr><td>&nbsp;</td>')
         else:
             self.context.append('')
-        self.body.append(self.starttag(node, 'td', **atts))
+        self.body.append(
+            self.starttag(node, 'td', CLASS='option-group', **atts))
         self.body.append('<kbd>')
         self.context.append(0)          # count number of options
 
@@ -980,10 +1043,10 @@ class HTMLTranslator(nodes.NodeVisitor):
         self.body.append('</tr>\n')
 
     def visit_option_string(self, node):
-        self.body.append(self.starttag(node, 'span', '', CLASS='option'))
+        pass
 
     def depart_option_string(self, node):
-        self.body.append('</span>')
+        pass
 
     def visit_organization(self, node):
         self.visit_docinfo_item(node, 'organization')
@@ -999,12 +1062,16 @@ class HTMLTranslator(nodes.NodeVisitor):
             isinstance(node.parent, nodes.compound)):
             # Never compact paragraphs in document or compound.
             return 0
-        if ((node.attributes in ({}, {'class': 'first'}, {'class': 'last'},
-                                 {'class': 'first last'})) and
-            (self.compact_simple or
-             self.compact_p and (len(node.parent) == 1 or
-                                 len(node.parent) == 2 and
-                                 isinstance(node.parent[0], nodes.label)))):
+        for key, value in node.attlist():
+            if (node.is_not_default(key) and
+                not (key == 'classes' and value in
+                     ([], ['first'], ['last'], ['first', 'last']))):
+                # Attribute which needs to survive.
+                return 0
+        if (self.compact_simple or
+            self.compact_p and (len(node.parent) == 1 or
+                                len(node.parent) == 2 and
+                                isinstance(node.parent[0], nodes.label))):
             return 1
         return 0
 
@@ -1021,7 +1088,7 @@ class HTMLTranslator(nodes.NodeVisitor):
     def visit_problematic(self, node):
         if node.hasattr('refid'):
             self.body.append('<a href="#%s" name="%s">' % (node['refid'],
-                                                           node['id']))
+                                                           node['ids'][0]))
             self.context.append('</a>')
         else:
             self.context.append('')
@@ -1033,12 +1100,11 @@ class HTMLTranslator(nodes.NodeVisitor):
 
     def visit_raw(self, node):
         if 'html' in node.get('format', '').split():
-            add_class = node.attributes.get('class') is not None
             t = isinstance(node.parent, nodes.TextElement) and 'span' or 'div'
-            if add_class:
+            if node['classes']:
                 self.body.append(self.starttag(node, t, suffix=''))
             self.body.append(node.astext())
-            if add_class:
+            if node['classes']:
                 self.body.append('</%s>' % t)
         # Keep non-HTML raw text out of output:
         raise nodes.SkipNode
@@ -1052,19 +1118,23 @@ class HTMLTranslator(nodes.NodeVisitor):
             div_atts['class'] += ' image-reference'
             self.body.append(self.starttag({}, 'div', '', **div_atts))
             self.context.append('</div>\n')
-        href = ''
         if node.has_key('refuri'):
             href = node['refuri']
-        elif node.has_key('refid'):
+            if ( self.settings.cloak_email_addresses
+                 and href.startswith('mailto:')):
+                href = self.cloak_mailto(href)
+                self.in_mailto = 1
+        else:
+            assert node.has_key('refid'), \
+                   'References must have "refuri" or "refid" attribute.'
             href = '#' + node['refid']
-        elif node.has_key('refname'):
-            href = '#' + self.document.nameids[node['refname']]
         self.body.append(self.starttag(node, 'a', '', CLASS='reference',
-                                       **(href and {'href': href} or {})))
+                                       href=href))
 
     def depart_reference(self, node):
         self.body.append('</a>')
         self.body.append(self.context.pop())
+        self.in_mailto = 0
 
     def visit_revision(self, node):
         self.visit_docinfo_item(node, 'revision', meta=None)
@@ -1074,6 +1144,7 @@ class HTMLTranslator(nodes.NodeVisitor):
 
     def visit_row(self, node):
         self.body.append(self.starttag(node, 'tr', ''))
+        node.column = 0
 
     def depart_row(self, node):
         self.body.append('</tr>\n')
@@ -1135,6 +1206,12 @@ class HTMLTranslator(nodes.NodeVisitor):
             self.body.append(self.starttag(node, 'h2', '', CLASS='subtitle'))
             self.context.append('</h2>\n')
             self.in_document_title = len(self.body)
+        elif isinstance(node.parent, nodes.section):
+            tag = 'h%s' % (self.section_level + self.initial_header_level - 1)
+            self.body.append(
+                self.starttag(node, tag, '', CLASS='section-subtitle') +
+                self.starttag({}, 'span', '', CLASS='section-subtitle'))
+            self.context.append('</span></%s>\n' % tag)
 
     def depart_subtitle(self, node):
         self.body.append(self.context.pop())
@@ -1142,6 +1219,7 @@ class HTMLTranslator(nodes.NodeVisitor):
             self.subtitle = self.body[self.in_document_title:-1]
             self.in_document_title = 0
             self.body_pre_docinfo.extend(self.body)
+            self.html_subtitle.extend(self.body)
             del self.body[:]
 
     def visit_superscript(self, node):
@@ -1151,16 +1229,16 @@ class HTMLTranslator(nodes.NodeVisitor):
         self.body.append('</sup>')
 
     def visit_system_message(self, node):
-        if node['level'] < self.document.reporter['writer'].report_level:
+        if node['level'] < self.document.reporter.report_level:
             # Level is too low to display:
             raise nodes.SkipNode
         self.body.append(self.starttag(node, 'div', CLASS='system-message'))
         self.body.append('<p class="system-message-title">')
         attr = {}
         backref_text = ''
-        if node.hasattr('id'):
-            attr['name'] = node['id']
-        if node.hasattr('backrefs'):
+        if node['ids']:
+            attr['name'] = node['ids'][0]
+        if len(node['backrefs']):
             backrefs = node['backrefs']
             if len(backrefs) == 1:
                 backref_text = ('; <em><a href="#%s">backlink</a></em>'
@@ -1200,8 +1278,8 @@ class HTMLTranslator(nodes.NodeVisitor):
     def visit_target(self, node):
         if not (node.has_key('refuri') or node.has_key('refid')
                 or node.has_key('refname')):
-            self.body.append(self.starttag(node, 'a', '', CLASS='target'))
-            self.context.append('</a>')
+            self.body.append(self.starttag(node, 'span', '', CLASS='target'))
+            self.context.append('</span>')
         else:
             self.context.append('')
 
@@ -1231,6 +1309,7 @@ class HTMLTranslator(nodes.NodeVisitor):
         self.body.append(self.starttag(node, 'colgroup'))
         # Appended by thead or tbody:
         self.context.append('</colgroup>\n')
+        node.stubs = []
 
     def depart_tgroup(self, node):
         pass
@@ -1273,6 +1352,7 @@ class HTMLTranslator(nodes.NodeVisitor):
             check_id = 1
             close_tag = '</caption>\n'
         elif self.section_level == 0:
+            assert node.parent is self.document
             # document title
             self.head.append('<title>%s</title>\n'
                              % self.encode(node.astext()))
@@ -1280,21 +1360,26 @@ class HTMLTranslator(nodes.NodeVisitor):
             self.context.append('</h1>\n')
             self.in_document_title = len(self.body)
         else:
+            assert isinstance(node.parent, nodes.section)
             h_level = self.section_level + self.initial_header_level - 1
-            self.body.append(
-                  self.starttag(node, 'h%s' % h_level, ''))
             atts = {}
-            if node.parent.hasattr('id'):
-                atts['name'] = node.parent['id']
+            if (len(node.parent) >= 2 and
+                isinstance(node.parent[1], nodes.subtitle)):
+                atts['CLASS'] = 'with-subtitle'
+            self.body.append(
+                  self.starttag(node, 'h%s' % h_level, '', **atts))
+            atts = {}
+            if node.parent['ids']:
+                atts['name'] = node.parent['ids'][0]
             if node.hasattr('refid'):
                 atts['class'] = 'toc-backref'
                 atts['href'] = '#' + node['refid']
             self.body.append(self.starttag({}, 'a', '', **atts))
             self.context.append('</a></h%s>\n' % (h_level))
         if check_id:
-            if node.parent.hasattr('id'):
+            if node.parent['ids']:
                 self.body.append(
-                    self.starttag({}, 'a', '', name=node.parent['id']))
+                    self.starttag({}, 'a', '', name=node.parent['ids'][0]))
                 self.context.append('</a>' + close_tag)
             else:
                 self.context.append(close_tag)
@@ -1305,6 +1390,7 @@ class HTMLTranslator(nodes.NodeVisitor):
             self.title = self.body[self.in_document_title:-1]
             self.in_document_title = 0
             self.body_pre_docinfo.extend(self.body)
+            self.html_title.extend(self.body)
             del self.body[:]
 
     def visit_title_reference(self, node):
@@ -1315,11 +1401,11 @@ class HTMLTranslator(nodes.NodeVisitor):
 
     def visit_topic(self, node):
         self.body.append(self.starttag(node, 'div', CLASS='topic'))
-        self.topic_class = node.get('class')
+        self.topic_classes = node['classes']
 
     def depart_topic(self, node):
         self.body.append('</div>\n')
-        self.topic_class = ''
+        self.topic_classes = []
 
     def visit_transition(self, node):
         self.body.append(self.emptytag(node, 'hr', CLASS='docutils'))
@@ -1364,7 +1450,7 @@ class SimpleListChecker(nodes.GenericNodeVisitor):
 
     def visit_list_item(self, node):
         children = []
-        for child in node.get_children():
+        for child in node.children:
             if not isinstance(child, nodes.Invisible):
                 children.append(child)
         if (children and isinstance(children[0], nodes.paragraph)

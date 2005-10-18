@@ -1,7 +1,7 @@
 # Author: David Goodger
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.2.10.6 $
-# Date: $Date: 2005/01/07 13:26:06 $
+# Revision: $Revision: 3129 $
+# Date: $Date: 2005-03-26 17:21:28 +0100 (Sat, 26 Mar 2005) $
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -11,7 +11,6 @@ PEP HTML Writer.
 __docformat__ = 'reStructuredText'
 
 
-import random
 import sys
 import docutils
 from docutils import frontend, nodes, utils
@@ -22,8 +21,7 @@ class Writer(html4css1.Writer):
 
     settings_spec = html4css1.Writer.settings_spec + (
         'PEP/HTML-Specific Options',
-        """The HTML --footnote-references option's default is set to """
-        '"brackets".',
+        None,
         (('Specify a template file.  Default is "pep-html-template".',
           ['--template'],
           {'default': 'pep-html-template', 'metavar': '<file>'}),
@@ -32,9 +30,11 @@ class Writer(html4css1.Writer):
           {'default': '..', 'metavar': '<URL>'}),
          ('Home URL prefix for PEPs.  Default is "." (current directory).',
           ['--pep-home'],
-          {'default': '.', 'metavar': '<URL>'}),))
-
-    settings_default_overrides = {'footnote_references': 'brackets'}
+          {'default': '.', 'metavar': '<URL>'}),
+         # For testing.
+         (frontend.SUPPRESS_HELP,
+          ['--no-random'],
+          {'action': 'store_true', 'validator': frontend.validate_boolean}),))
 
     relative_path_settings = (html4css1.Writer.relative_path_settings
                               + ('template',))
@@ -66,7 +66,11 @@ class Writer(html4css1.Writer):
         header = self.document[index]
         pepnum = header[0][1].astext()
         subs['pep'] = pepnum
-        subs['banner'] = random.randrange(64)
+        if settings.no_random:
+            subs['banner'] = 0
+        else:
+            import random
+            subs['banner'] = random.randrange(64)
         try:
             subs['pepnum'] = '%04i' % int(pepnum)
         except ValueError:
@@ -82,5 +86,5 @@ class HTMLTranslator(html4css1.HTMLTranslator):
 
     def depart_field_list(self, node):
         html4css1.HTMLTranslator.depart_field_list(self, node)
-        if node.get('class') == 'rfc2822':
+        if 'rfc2822' in node['classes']:
              self.body.append('<hr />\n')

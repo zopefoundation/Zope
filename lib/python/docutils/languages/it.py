@@ -1,7 +1,7 @@
 # Author: Nicola Larosa
 # Contact: docutils@tekNico.net
-# Revision: $Revision: 1.2.10.7 $
-# Date: $Date: 2005/01/07 13:26:02 $
+# Revision: $Revision: 2944 $
+# Date: $Date: 2005-01-20 13:11:50 +0100 (Thu, 20 Jan 2005) $
 # Copyright: This module has been placed in the public domain.
 
 # New language mappings are welcome.  Before doing a new translation, please
@@ -45,7 +45,7 @@ bibliographic_fields = {
       'autori': 'authors',
       'organizzazione': 'organization',
       'indirizzo': 'address',
-      'contatti': 'contact',
+      'contatto': 'contact',
       'versione': 'version',
       'revisione': 'revision',
       'status': 'status',

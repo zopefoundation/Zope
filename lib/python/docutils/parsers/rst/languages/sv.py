@@ -1,7 +1,7 @@
 # Author:    Adam Chodorowski
 # Contact:   chodorowski@users.sourceforge.net
-# Revision:  $Revision: 1.2.10.7 $
-# Date:      $Date: 2005/01/07 13:26:04 $
+# Revision:  $Revision: 3184 $
+# Date:      $Date: 2005-04-07 21:36:11 +0200 (Thu, 07 Apr 2005) $
 # Copyright: This module has been placed in the public domain.
 
 # New language mappings are welcome.  Before doing a new translation, please
@@ -42,6 +42,7 @@ directives = {
       # u'vanliga-fr\u00e5gor': 'questions',  
       u'table (translation required)': 'table',
       u'csv-table (translation required)': 'csv-table',
+      u'list-table (translation required)': 'list-table',
       u'meta': 'meta',
       # u'bildkarta': 'imagemap',   # FIXME: Translation might be too literal.
       u'bild': 'image',
@@ -55,6 +56,8 @@ directives = {
       u'inneh\u00e5ll': 'contents',
       u'sektionsnumrering': 'sectnum',
       u'target-notes (translation required)': 'target-notes',
+      u'header (translation required)': 'header',
+      u'footer (translation required)': 'footer',
       # u'fotnoter': 'footnotes',
       # u'citeringar': 'citations',
       }

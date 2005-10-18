@@ -1,7 +1,7 @@
 # Author: Asko Soukka
 # Contact: asko.soukka@iki.fi
-# Revision: $Revision: 1.1.2.1 $
-# Date: $Date: 2005/01/07 13:26:04 $
+# Revision: $Revision: 3184 $
+# Date: $Date: 2005-04-07 21:36:11 +0200 (Thu, 07 Apr 2005) $
 # Copyright: This module has been placed in the public domain.
 
 # New language mappings are welcome.  Before doing a new translation, please
@@ -39,6 +39,7 @@ directives = {
       u'lainaus': u'pull-quote',
       u'taulukko': u'table',
       u'csv-taulukko': u'csv-table',
+      u'list-table (translation required)': 'list-table',
       u'compound (translation required)': 'compound',
       #u'kysymykset': u'questions',
       u'meta': u'meta',
@@ -53,6 +54,8 @@ directives = {
       u'rooli': u'role',
       u'sis\u00e4llys': u'contents',
       u'kappale': u'sectnum',
+      u'header (translation required)': 'header',
+      u'footer (translation required)': 'footer',
       #u'alaviitteet': u'footnotes',
       #u'viitaukset': u'citations',
       u'target-notes (translation required)': u'target-notes'}

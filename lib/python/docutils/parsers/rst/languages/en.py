@@ -1,7 +1,7 @@
 # Author: David Goodger
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.2.10.7 $
-# Date: $Date: 2005/01/07 13:26:04 $
+# Revision: $Revision: 3184 $
+# Date: $Date: 2005-04-07 21:36:11 +0200 (Thu, 07 Apr 2005) $
 # Copyright: This module has been placed in the public domain.
 
 # New language mappings are welcome.  Before doing a new translation, please
@@ -41,6 +41,7 @@ directives = {
       #'questions': 'questions',
       'table': 'table',
       'csv-table': 'csv-table',
+      'list-table': 'list-table',
       #'qa': 'questions',
       #'faq': 'questions',
       'meta': 'meta',
@@ -56,6 +57,8 @@ directives = {
       'contents': 'contents',
       'sectnum': 'sectnum',
       'section-numbering': 'sectnum',
+      'header': 'header',
+      'footer': 'footer',
       #'footnotes': 'footnotes',
       #'citations': 'citations',
       'target-notes': 'target-notes',

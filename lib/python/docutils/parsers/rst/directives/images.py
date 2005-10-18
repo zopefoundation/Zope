@@ -1,7 +1,7 @@
 # Author: David Goodger
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.2.10.7 $
-# Date: $Date: 2005/01/07 13:26:04 $
+# Revision: $Revision: 3347 $
+# Date: $Date: 2005-05-18 20:17:33 +0200 (Wed, 18 May 2005) $
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -14,27 +14,43 @@ __docformat__ = 'reStructuredText'
 import sys
 from docutils import nodes, utils
 from docutils.parsers.rst import directives, states
-from docutils.nodes import whitespace_normalize_name
+from docutils.nodes import fully_normalize_name
+from docutils.parsers.rst.roles import set_classes
 
 try:
     import Image                        # PIL
 except ImportError:
     Image = None
 
-align_values = ('top', 'middle', 'bottom', 'left', 'center', 'right')
+align_h_values = ('left', 'center', 'right')
+align_v_values = ('top', 'middle', 'bottom')
+align_values = align_v_values + align_h_values
 
 def align(argument):
     return directives.choice(argument, align_values)
 
 def image(name, arguments, options, content, lineno,
           content_offset, block_text, state, state_machine):
+    if options.has_key('align'):
+        # check for align_v values only
+        if isinstance(state, states.SubstitutionDef):
+            if options['align'] not in align_v_values:
+                error = state_machine.reporter.error(
+                    'Error in "%s" directive: "%s" is not a valid value for '
+                    'the "align" option within a substitution definition.  '
+                    'Valid values for "align" are: "%s".'
+                    % (name, options['align'], '", "'.join(align_v_values)),
+                    nodes.literal_block(block_text, block_text), line=lineno)
+                return [error]
+        elif options['align'] not in align_h_values:
+            error = state_machine.reporter.error(
+                'Error in "%s" directive: "%s" is not a valid value for '
+                'the "align" option.  Valid values for "align" are: "%s".'
+                % (name, options['align'], '", "'.join(align_h_values)),
+                nodes.literal_block(block_text, block_text), line=lineno)
+            return [error]
     messages = []
-    reference = ''.join(arguments[0].split('\n'))
-    if reference.find(' ') != -1:
-        error = state_machine.reporter.error(
-              'Image URI contains whitespace.',
-              nodes.literal_block(block_text, block_text), line=lineno)
-        return [error]
+    reference = directives.uri(arguments[0])
     options['uri'] = reference
     reference_node = None
     if options.has_key('target'):
@@ -44,12 +60,13 @@ def image(name, arguments, options, content, lineno,
         if target_type == 'refuri':
             reference_node = nodes.reference(refuri=data)
         elif target_type == 'refname':
-            reference_node = nodes.reference(
-                refname=data, name=whitespace_normalize_name(options['target']))
+            reference_node = nodes.reference(refname=data,
+                name=fully_normalize_name(options['target']))
             state.document.note_refname(reference_node)
         else:                           # malformed target
             messages.append(data)       # data is a system message
         del options['target']
+    set_classes(options)
     image_node = nodes.image(block_text, **options)
     if reference_node:
         reference_node += image_node
@@ -66,31 +83,38 @@ image.options = {'alt': directives.unchanged,
                  'target': directives.unchanged_required,
                  'class': directives.class_option}
 
+def figure_align(argument):
+    return directives.choice(argument, align_h_values)
+
 def figure(name, arguments, options, content, lineno,
            content_offset, block_text, state, state_machine):
     figwidth = options.setdefault('figwidth')
-    figclass = options.setdefault('figclass')
+    figclasses = options.setdefault('figclass')
+    align = options.setdefault('align')
     del options['figwidth']
     del options['figclass']
+    del options['align']
     (image_node,) = image(name, arguments, options, content, lineno,
                          content_offset, block_text, state, state_machine)
     if isinstance(image_node, nodes.system_message):
         return [image_node]
     figure_node = nodes.figure('', image_node)
     if figwidth == 'image':
-        if Image:
+        if Image and state.document.settings.file_insertion_enabled:
             # PIL doesn't like Unicode paths:
             try:
                 i = Image.open(str(image_node['uri']))
             except (IOError, UnicodeError):
                 pass
             else:
-                state.document.settings.record_dependencies.add(reference)
+                state.document.settings.record_dependencies.add(image_node['uri'])
                 figure_node['width'] = i.size[0]
     elif figwidth is not None:
         figure_node['width'] = figwidth
-    if figclass:
-        figure_node.set_class(figclass)
+    if figclasses:
+        figure_node['classes'] += figclasses
+    if align:
+        figure_node['align'] = align
     if content:
         node = nodes.Element()          # anonymous container for parsing
         state.nested_parse(content, content_offset, node)
@@ -119,4 +143,5 @@ figure.arguments = (1, 0, 1)
 figure.options = {'figwidth': figwidth_value,
                   'figclass': directives.class_option}
 figure.options.update(image.options)
+figure.options['align'] = figure_align
 figure.content = 1

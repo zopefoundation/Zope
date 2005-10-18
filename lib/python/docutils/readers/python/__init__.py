@@ -1,7 +1,7 @@
 # Author: David Goodger
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.3.2.5 $
-# Date: $Date: 2005/01/07 13:26:05 $
+# Revision: $Revision: 3038 $
+# Date: $Date: 2005-03-14 17:16:57 +0100 (Mon, 14 Mar 2005) $
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -88,7 +88,7 @@ class DocstringFormattingVisitor(nodes.SparseNodeVisitor):
         node['docformat'] = docformat
         parser = self.get_parser(docformat)
         parser.parse(text, self.document)
-        for child in self.document.get_children():
+        for child in self.document.children:
             node.append(child)
         self.document.current_source = self.document.current_line = None
         del self.document[:]

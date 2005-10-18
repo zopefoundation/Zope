@@ -1,7 +1,7 @@
 # Authors: David Goodger, Ueli Schlaepfer
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.2.10.6 $
-# Date: $Date: 2005/01/07 13:26:05 $
+# Revision: $Revision: 3066 $
+# Date: $Date: 2005-03-21 18:33:42 +0100 (Mon, 21 Mar 2005) $
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -59,7 +59,7 @@ class Transform:
         self.language = languages.get_language(
             document.settings.language_code)
         """Language module local to this document."""
-        
+
 
     def apply(self):
         """Override to apply the transform to the document tree."""
@@ -163,7 +163,6 @@ class Transformer(TransformSpec):
         decorated_list = [(f.priority, f) for f in unknown_reference_resolvers]
         decorated_list.sort()
         self.unknown_reference_resolvers.extend([f[1] for f in decorated_list])
-
 
     def apply_transforms(self):
         """Apply all of the stored transforms, in priority order."""
