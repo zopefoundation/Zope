@@ -26,6 +26,10 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #1927:  Modified ZReST not to store rendered / warnings
+        as persistent attributes, using volatile attributes instead as
+        a cache.
+
       - Collector #1926: fixed a typo in _doAddUser when password
         encryption is enabled.
 
