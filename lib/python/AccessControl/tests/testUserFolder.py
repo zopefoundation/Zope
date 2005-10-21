@@ -206,6 +206,38 @@ class UserFolderTests(unittest.TestCase):
         except OverflowError:
             assert 0, "Raised overflow error erroneously"
 
+    def test__doAddUser_with_not_yet_encrypted_passwords(self):
+        # See collector #1869 && #1926
+        from AccessControl.AuthEncoding import pw_validate
+
+        USER_ID = 'not_yet_encrypted'
+        PASSWORD = 'password'
+
+        uf = UserFolder().__of__(self.app)    
+        uf.encrypt_passwords = True
+        self.failIf(uf._isPasswordEncrypted(PASSWORD))
+
+        uf._doAddUser(USER_ID, PASSWORD, [], [])
+        user = uf.getUserById(USER_ID)
+        self.failUnless(uf._isPasswordEncrypted(user.__))
+        self.failUnless(pw_validate(user.__, PASSWORD))
+
+    def test__doAddUser_with_preencrypted_passwords(self):
+        # See collector #1869 && #1926
+        from AccessControl.AuthEncoding import pw_validate
+
+        USER_ID = 'already_encrypted'
+        PASSWORD = 'password'
+
+        uf = UserFolder().__of__(self.app)    
+        uf.encrypt_passwords = True
+        ENCRYPTED = uf._encryptPassword(PASSWORD)
+
+        uf._doAddUser(USER_ID, ENCRYPTED, [], [])
+        user = uf.getUserById(USER_ID)
+        self.assertEqual(user.__, ENCRYPTED)
+        self.failUnless(uf._isPasswordEncrypted(user.__))
+        self.failUnless(pw_validate(user.__, PASSWORD))
 
 class UserTests(unittest.TestCase):
 
