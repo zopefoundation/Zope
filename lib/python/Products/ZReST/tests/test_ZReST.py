@@ -21,7 +21,7 @@ class TestZReST(unittest.TestCase):
         self.assertRaises(AttributeError, lambda: empty.warnings)
 
         self.assertEqual(empty._v_formatted, None)
-        self.assertEqual(empty._v_formatted, None)
+        self.assertEqual(empty._v_warnings, None)
 
     def test_formatted_ignored(self):
         resty = self._makeOne()
