@@ -47,7 +47,6 @@ class ZReST(Item, PropertyManager, Historical, Implicit, Persistent):
     '''
     meta_type =  'ReStructuredText Document'
     security = ClassSecurityInfo()
-    _v_formatted = _v_warnings = None
 
     def __init__(self, id,output_encoding=None,
                  input_encoding=None):
@@ -55,7 +54,7 @@ class ZReST(Item, PropertyManager, Historical, Implicit, Persistent):
         self.title = id
         self.stylesheet = 'default.css'
         self.report_level = '2'
-        self.source = ''
+        self.source = self.formatted = ''
 
         from reStructuredText import default_output_encoding, \
                                      default_input_encoding
@@ -90,7 +89,7 @@ class ZReST(Item, PropertyManager, Historical, Implicit, Persistent):
         '''
         if REQUEST is not None:
             REQUEST.RESPONSE.setHeader('content-type', 'text/html; charset=%s' % self.output_encoding)
-        return self.render()
+        return self.formatted
 
     security.declareProtected('View', 'source_txt')
     def source_txt(self, REQUEST=None):
@@ -114,7 +113,7 @@ class ZReST(Item, PropertyManager, Historical, Implicit, Persistent):
             return self._er(data, SUBMIT, dtpref_cols, dtpref_rows, REQUEST)
         if data != self.source:
             self.source = data
-            self._clear_cache()
+            self.render()
 
         if REQUEST is not None:
             message="Saved changes."
@@ -143,7 +142,6 @@ class ZReST(Item, PropertyManager, Historical, Implicit, Persistent):
         setCookie("dtpref_cols", cols, path='/', expires=e)
         REQUEST.other.update({"dtpref_cols":cols, "dtpref_rows":rows})
         return self.manage_main(self, REQUEST, __str__=self.quotedHTML(data))
-
     security.declarePrivate('quotedHTML')
     def quotedHTML(self,
                    text=None,
@@ -157,18 +155,6 @@ class ZReST(Item, PropertyManager, Historical, Implicit, Persistent):
             if text.find(re) >= 0: text=name.join(text.split(re))
         return text
 
-    security.declarePrivate('_clear_cache')
-    def _clear_cache(self):
-        """ Forget results of rendering.
-        """
-        try:
-            del self._v_formatted
-        except AttributeError:
-            pass
-        try:
-            del self._v_warnings
-        except AttributeError:
-            pass
 
     # handle uploads too
     security.declareProtected('Edit ReStructuredText', 'manage_upload')
@@ -179,7 +165,7 @@ class ZReST(Item, PropertyManager, Historical, Implicit, Persistent):
             self.source = file
         else:
             self.source = file.read()
-        self._clear_cache()
+        self.render()
 
         if REQUEST is not None:
             message="Saved changes."
@@ -189,58 +175,55 @@ class ZReST(Item, PropertyManager, Historical, Implicit, Persistent):
     def render(self):
         ''' Render the source to HTML
         '''
-        if self._v_formatted is None:
-            # format with strings
-            pub = docutils.core.Publisher()
-            pub.set_reader('standalone', None, 'restructuredtext')
-            pub.set_writer('html')
+        # format with strings
+        pub = docutils.core.Publisher()
+        pub.set_reader('standalone', None, 'restructuredtext')
+        pub.set_writer('html')
 
-            # go with the defaults
-            pub.get_settings()
+        # go with the defaults
+        pub.get_settings()
 
-            # this is needed, but doesn't seem to do anything
-            pub.settings._destination = ''
+        # this is needed, but doesn't seem to do anything
+        pub.settings._destination = ''
 
-            # use the stylesheet chosen by the user
-            pub.settings.stylesheet = self.stylesheet
+        # use the stylesheet chosen by the user
+        pub.settings.stylesheet = self.stylesheet
 
-            # set the reporting level to something sane
-            pub.settings.report_level = int(self.report_level)
+        # set the reporting level to something sane
+        pub.settings.report_level = int(self.report_level)
 
-            # disallow use of the .. include directive for security reasons
-            pub.settings.file_insertion_enabled = 0
+        # disallow use of the .. include directive for security reasons
+        pub.settings.file_insertion_enabled = 0
 
-            # don't break if we get errors
-            pub.settings.halt_level = 6
+        # don't break if we get errors
+        pub.settings.halt_level = 6
 
-            # remember warnings
-            pub.settings.warning_stream = Warnings()
+        # remember warnings
+        pub.settings.warning_stream = Warnings()
 
-            pub.source = docutils.io.StringInput(
-                source=self.source, encoding=self.input_encoding)
+        pub.source = docutils.io.StringInput(
+            source=self.source, encoding=self.input_encoding)
 
-            # output - not that it's needed
-            pub.settings.output_encoding = self.output_encoding
-            pub.destination = docutils.io.StringOutput(
-                encoding=self.output_encoding)
+        # output - not that it's needed
+        pub.settings.output_encoding = self.output_encoding
+        pub.destination = docutils.io.StringOutput(
+            encoding=self.output_encoding)
 
-            # parse!
-            document = pub.reader.read(pub.source, pub.parser, pub.settings)
+        # parse!
+        document = pub.reader.read(pub.source, pub.parser, pub.settings)
 
-            # transform
-            pub.apply_transforms(document)
+        # transform
+        pub.apply_transforms(document)
 
-            self._v_warnings = ''.join(pub.settings.warning_stream.messages)
+        self.warnings = ''.join(pub.settings.warning_stream.messages)
 
-            if document.children:
-                item = document.children[0]
-                if item.tagname == 'title':
-                    self.title = item.children[0].astext()
+        if document.children:
+            item = document.children[0]
+            if item.tagname == 'title':
+                self.title = item.children[0].astext()
 
-            # do the format
-            self._v_formatted = pub.writer.write(document, pub.destination)
-
-        return self._v_formatted
+        # do the format
+        self.formatted = pub.writer.write(document, pub.destination)
 
 
     security.declareProtected('Edit ReStructuredText', 'PUT', 'manage_FTPput')
@@ -264,6 +247,7 @@ class ZReST(Item, PropertyManager, Historical, Implicit, Persistent):
                         pass # ignore
                 data = '\n'.join(new) + '\n'.join(data[i:])
             self.source = data
+            self.render()
         RESPONSE.setStatus(204)
         return RESPONSE        
 
@@ -279,9 +263,9 @@ class ZReST(Item, PropertyManager, Historical, Implicit, Persistent):
             '.. stylesheet='+self.stylesheet,
             '.. report_level='+self.report_level
         ]
-        if self._v_warnings:
+        if self.warnings:
             s.append('.. ')
-            s.append('.. ' + '\n.. '.join(self._v_warnings.splitlines()))
+            s.append('.. ' + '\n.. '.join(self.warnings.splitlines()))
         s.append('.. ')
         return '\n'.join(s) + '\n' + self.source
 
@@ -306,7 +290,7 @@ class ZReST(Item, PropertyManager, Historical, Implicit, Persistent):
     def manage_editProperties(self, REQUEST):
         """ re-render the page after changing the properties (encodings!!!) """
         result = PropertyManager.manage_editProperties(self, REQUEST)        
-        self._clear_cache()
+        self.render()
         return result
 
 
