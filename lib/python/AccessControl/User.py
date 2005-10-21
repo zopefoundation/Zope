@@ -1045,7 +1045,7 @@ class UserFolder(BasicUserFolder):
     def _doAddUser(self, name, password, roles, domains, **kw):
         """Create a new user"""
         if password is not None and self.encrypt_passwords \
-                   and not self._isPasswordEncrypted(pw):
+                   and not self._isPasswordEncrypted(password):
             password = self._encryptPassword(password)
         self.data[name]=User(name,password,roles,domains)
 
