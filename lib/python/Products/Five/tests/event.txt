@@ -1,0 +1,295 @@
+Test events
+===========
+
+Before we can start, we need to set up an event subscriber that allows
+us to inspect events that will be thrown during the test:
+
+  >>> from zope.app.tests.placelesssetup import setUp, tearDown
+  >>> setUp()
+
+Add a folder that doesn't verify objects on paste.  We use it as a
+test sandbox:
+
+  >>> from Products.Five.testing import manage_addNoVerifyPasteFolder
+  >>> manage_addNoVerifyPasteFolder(self.folder, 'npvf')
+  >>> folder = self.folder.npvf
+
+Finally add a manager user login, give it the right permissions and
+log in using it:
+
+  >>> uf = self.folder.acl_users
+  >>> uf._doAddUser('manager', 'r00t', ['Manager'], [])
+  >>> self.setPermissions(standard_permissions + ['Copy or Move'], 'Manager')
+  >>> self.login('manager')
+
+  >>> from zope.app.event.tests.placelesssetup import getEvents, clearEvents
+
+
+Sending events
+--------------
+
+Zope 2 classes need to be modified so that they send Zope 3 style
+events.  Our stub class here is such a case.  We can add it to a
+folder, for example, ...
+
+  >>> from Products.Five.testing.simplecontent import manage_addSimpleContent
+  >>> manage_addSimpleContent(folder, 'foo', 'Foo')
+
+and no event will have been triggered:
+
+  >>> len(getEvents())
+  0
+
+Clean up:
+
+  >>> folder.manage_delObjects(['foo'])
+
+Now make the class send events:
+
+  >>> from Products.Five.eventconfigure import classSendEvents
+  >>> from Products.Five.testing.simplecontent import SimpleContent
+  >>> classSendEvents(SimpleContent)
+
+
+Added event
+------------
+
+Let's add an object to a folder:
+
+  >>> manage_addSimpleContent(folder, 'foo', 'Foo')
+
+One object event should have been sent with the event's object being
+our foo object:
+
+  >>> events = getEvents()
+  >>> len(events)
+  1
+  >>> foo = folder.foo
+  >>> events[0].object == foo
+  True
+
+That object event should have been an object added event:
+
+  >>> from zope.app.container.interfaces import IObjectAddedEvent
+  >>> events = getEvents(IObjectAddedEvent)
+  >>> len(events)
+  1
+  >>> events[0].object == foo
+  True
+  >>> events[0].newParent == foo.aq_parent
+  True
+
+Check that the object's original manage_afterAdd method was also called:
+
+  >>> foo.afterAdd_called
+  True
+
+Now clean up:
+
+  >>> clearEvents()
+
+
+Moved event (I) -- Renaming
+--------------------------
+
+Somehow we need to at least commit a subtransaction to make renaming
+succeed:
+
+  >>> import transaction
+  >>> transaction.commit(1)
+
+Let's rename the object we created before:
+
+  >>> folder.manage_renameObject('foo', 'bar')
+
+We should get two events...
+
+  >>> events = getEvents()
+  >>> len(events)
+  2
+
+the removed event...
+
+  >>> event = events[0]
+  >>> from zope.app.container.interfaces import IObjectRemovedEvent
+  >>> IObjectRemovedEvent.providedBy(event)
+  True
+  >>> event.object == foo
+  True
+  >>> event.oldName, event.newName
+  ('foo', None)
+  >>> event.oldParent == folder
+  True
+  >>> event.newParent is None
+  True
+
+and the moved event:
+
+  >>> event = events[1]
+  >>> event.object == foo
+  True
+  >>> event.oldName, event.newName
+  ('foo', 'bar')
+  >>> event.oldParent == folder
+  True
+  >>> event.newParent == folder
+  True
+
+Now clean up:
+
+  >>> folder.manage_delObjects(['bar'])
+  >>> clearEvents()
+
+We don't delete the stub object just yet because it's being used in
+the next part of the test.
+
+
+Moved event (II) -- Cut and paste
+---------------------------------
+
+Let's move from one folder to another:
+
+  >>> manage_addNoVerifyPasteFolder(folder, 'folder1', 'Folder1')
+  >>> folder1 = folder.folder1
+  >>> manage_addNoVerifyPasteFolder(folder, 'folder2', 'Folder2')
+  >>> folder2 = folder.folder2
+  >>> manage_addSimpleContent(folder1, 'foo', 'Foo')
+  >>> foo = folder1.foo
+
+We need to trigger a subtransaction before cut/paste can work:
+
+  >>> transaction.commit(1)
+  >>> cb = folder1.manage_cutObjects(['foo'])
+  >>> info = folder2.manage_pasteObjects(cb)
+
+Apart from the added event we triggerred when we added the stub object
+to the folder, we expect two events...
+
+  >>> events = getEvents()
+  >>> len(events)
+  3
+  >>> len(getEvents(IObjectAddedEvent))
+  1
+
+a removed event...
+
+  >>> event = events[1]
+  >>> from zope.app.container.interfaces import IObjectRemovedEvent
+  >>> IObjectRemovedEvent.providedBy(event)
+  True
+  >>> event.oldParent == folder1
+  True
+  >>> event.newParent is None
+  True
+
+and a moved event:
+
+  >>> event = events[2]
+  >>> event.object == foo
+  True
+  >>> event.oldName, event.newName
+  ('foo', 'foo')
+  >>> event.oldParent == folder1
+  True
+  >>> event.newParent == folder2
+  True
+
+Now clean up:
+
+  >>> folder.manage_delObjects(['folder1'])
+  >>> folder.manage_delObjects(['folder2'])
+  >>> clearEvents()
+
+
+Copied event
+------------
+
+  >>> manage_addSimpleContent(folder, 'foo', 'Foo')
+  >>> manage_addNoVerifyPasteFolder(folder, 'folder1')
+  >>> folder1 = folder.folder1
+
+We need to trigger subtransaction before copy/paste can work
+
+  >>> transaction.commit(1)
+  >>> cb = folder.manage_copyObjects(['foo'])
+  >>> info = folder1.manage_pasteObjects(cb)
+  >>> foo = folder1.foo
+
+Apart from the added event we triggerred when we added the stub object
+to the folder, we expect two events...
+
+  >>> events = getEvents()
+  >>> len(events)
+  3
+
+a copied event...
+
+  >>> event = events[1]
+  >>> from zope.app.event.interfaces import IObjectCopiedEvent
+  >>> IObjectCopiedEvent.providedBy(event)
+  True
+  >>> events[1].object == foo
+  True
+
+and an added event:
+
+  >>> event = events[2]
+  >>> IObjectAddedEvent.providedBy(event)
+  True
+  >>> event.object == foo
+  True
+  >>> event.newName
+  'foo'
+  >>> event.newParent == folder1
+  True
+
+Now clean up:
+
+  >>> folder.manage_delObjects(['folder1'])
+  >>> folder.manage_delObjects(['foo'])
+  >>> clearEvents()
+
+
+Removed event
+-------------
+
+  >>> manage_addSimpleContent(folder, 'foo', 'Foo')
+  >>> foo = folder.foo
+  >>> foo.beforeDelete_called
+  False
+  >>> folder.manage_delObjects(['foo'])
+
+  >>> events = getEvents()
+  >>> len(events)
+  2
+
+  >>> events[1].object.id
+  'foo'
+
+Check that the object's original manage_beforeDelete method was also called:
+
+  >>> foo.beforeDelete_called
+  True
+
+  >>> clearEvents()
+
+
+Clean up
+--------
+
+Finally, we need to put our stub class back the way it was before we
+monkeyed with it:
+
+  >>> from Products.Five.eventconfigure import cleanUp
+  >>> cleanUp()
+
+Now adding an object won't trigger an event anymore:
+
+  >>> from Products.Five.testing.simplecontent import manage_addSimpleContent
+  >>> manage_addSimpleContent(folder, 'foo', 'Foo')
+  >>> len(getEvents())
+  0
+
+Finally, we need to tear down everything else (services, etc.)
+
+  >>> tearDown()

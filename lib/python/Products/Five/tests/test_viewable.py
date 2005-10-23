@@ -13,57 +13,70 @@
 ##############################################################################
 """Unit tests for the viewable module.
 
-$Id: test_viewable.py 12948 2005-05-31 20:24:58Z philikon $
+$Id: test_viewable.py 14595 2005-07-12 21:26:12Z philikon $
 """
 import os, sys
 if __name__ == '__main__':
     execfile(os.path.join(sys.path[0], 'framework.py'))
 
-import Products.Five.tests.fivetest   # starts Zope, loads Five, etc.
-
 def test_defaultView():
     """
-    Take a class Foo and an interface I1::
+    Testing default view functionality
+
+      >>> from zope.app.tests.placelesssetup import setUp, tearDown
+      >>> setUp()
+
+    Take a class Foo and an interface IFoo:
 
       >>> class Foo:
       ...     pass
 
       >>> from zope.interface import Interface
-      >>> class I1(Interface):
+      >>> class IFoo(Interface):
       ...     pass
 
-    Set up a default view for I1::
+    Set up a default view for IFoo:
 
       >>> from zope.app import zapi
       >>> pres = zapi.getGlobalService('Presentation')
       >>> from zope.publisher.interfaces.browser import IBrowserRequest
-      >>> pres.setDefaultViewName(I1, IBrowserRequest, 'foo.html')
 
-    and a BrowserDefault for an instance of Foo::
+    and default view names for everything and IFoo objects in particular:
+
+      >>> pres.setDefaultViewName(None, IBrowserRequest, u'index.html')
+      >>> pres.setDefaultViewName(IFoo, IBrowserRequest, u'foo.html')
+
+    Now take a BrowserDefault for an instance of Foo::
 
       >>> foo = Foo()
       >>> from Products.Five.viewable import BrowserDefault
       >>> bd = BrowserDefault(foo)
 
-    You'll see that no default view is returned::
+    For now the default view name is index.html, like we set above:
 
-      >>> request = self.app.REQUEST
-      >>> obj, path = bd.defaultView(request)
-      >>> obj is foo
-      True
-      >>> path is None
-      True
+      >>> from Products.Five.traversable import FakeRequest
+      >>> request = FakeRequest()
 
-    unless you mark the object with I1::
-
-      >>> from zope.interface import directlyProvides
-      >>> directlyProvides(foo, I1)
       >>> obj, path = bd.defaultView(request)
       >>> obj is foo
       True
       >>> path
-      ['foo.html']
+      [u'index.html']
 
+    until we mark the object with IFoo:
+
+      >>> from zope.interface import directlyProvides
+      >>> directlyProvides(foo, IFoo)
+      >>> obj, path = bd.defaultView(request)
+      >>> obj is foo
+      True
+      >>> path
+      [u'foo.html']
+
+
+    Clean up:
+
+      >>> tearDown()
     """
 
 def test_suite():

@@ -6,135 +6,135 @@
 
   <implements
       class="Acquisition.ImplicitAcquisitionWrapper"
-      interface=".interfaces.IAcquisitionWrapper"
+      interface="Acquisition.interfaces.IAcquisitionWrapper"
       />
 
   <implements
       class="Acquisition.ExplicitAcquisitionWrapper"
-      interface=".interfaces.IAcquisitionWrapper"
+      interface="Acquisition.interfaces.IAcquisitionWrapper"
       />
 
   <implements
       class="Acquisition.Implicit"
-      interface=".interfaces.IAcquisition"
+      interface="Acquisition.interfaces.IAcquirer"
       />
 
   <implements
       class="Acquisition.Explicit"
-      interface=".interfaces.IAcquisition"
+      interface="Acquisition.interfaces.IAcquirer"
       />
 
   <!-- DAV -->
 
   <implements
       class="webdav.Lockable.LockableItem"
-      interface=".interfaces.IWriteLock"
+      interface="webdav.interfaces.IWriteLock"
       />
 
   <implements
       class="webdav.Resource.Resource"
-      interface=".interfaces.IDAVResource"
+      interface="webdav.interfaces.IDAVResource"
       />
 
   <implements
       class="webdav.Collection.Collection"
-      interface=".interfaces.IDAVCollection"
+      interface="webdav.interfaces.IDAVCollection"
       />
 
   <!-- OFS -->
 
   <implements
       class="OFS.CopySupport.CopySource"
-      interface=".interfaces.ICopySource"
+      interface="OFS.interfaces.ICopySource"
       />
 
   <implements
       class="OFS.CopySupport.CopyContainer"
-      interface=".interfaces.ICopyContainer"
+      interface="OFS.interfaces.ICopyContainer"
       />
 
   <implements
       class="OFS.Traversable.Traversable"
-      interface=".interfaces.ITraversable"
+      interface="OFS.interfaces.ITraversable"
       />
 
   <implements
       class="OFS.SimpleItem.Item"
-      interface=".interfaces.IItem"
+      interface="OFS.interfaces.IItem"
       />
 
   <implements
       class="OFS.SimpleItem.Item_w__name__"
-      interface=".interfaces.IItemWithName"
+      interface="OFS.interfaces.IItemWithName"
       />
 
   <implements
       class="OFS.SimpleItem.SimpleItem"
-      interface=".interfaces.ISimpleItem"
+      interface="OFS.interfaces.ISimpleItem"
       />
 
   <implements
       class="OFS.ObjectManager.ObjectManager"
-      interface=".interfaces.IObjectManager"
+      interface="OFS.interfaces.IObjectManager"
       />
 
   <implements
       class="OFS.PropertyManager.PropertyManager"
-      interface=".interfaces.IPropertyManager"
+      interface="OFS.interfaces.IPropertyManager"
       />
 
   <implements
       class="OFS.FindSupport.FindSupport"
-      interface=".interfaces.IFindSupport"
+      interface="OFS.interfaces.IFindSupport"
       />
 
   <implements
       class="OFS.Folder.Folder"
-      interface=".interfaces.IFolder"
+      interface="OFS.interfaces.IFolder"
       />
 
   <implements
       class="OFS.OrderSupport.OrderSupport"
-      interface=".interfaces.IOrderedContainer"
+      interface="OFS.interfaces.IOrderedContainer"
       />
 
   <implements
       class="OFS.OrderedFolder.OrderedFolder"
-      interface=".interfaces.IOrderedFolder"
+      interface="OFS.interfaces.IOrderedFolder"
       />
 
   <implements
       class="OFS.Application.Application"
-      interface=".interfaces.IApplication"
+      interface="OFS.interfaces.IApplication"
       />
 
  <!-- App -->
 
   <implements
       class="App.Undo.UndoSupport"
-      interface=".interfaces.IUndoSupport"
+      interface="App.interfaces.IUndoSupport"
       />
 
   <implements
       class="App.Management.Navigation"
-      interface=".interfaces.INavigation"
+      interface="App.interfaces.INavigation"
       />
 
   <!-- AccessControl -->
 
   <implements
       class="AccessControl.Owned.Owned"
-      interface=".interfaces.IOwned"
+      interface="AccessControl.interfaces.IOwned"
       />
 
   <implements
       class="AccessControl.PermissionMapping.RoleManager"
-      interface=".interfaces.IPermissionMapping"
+      interface="AccessControl.interfaces.IPermissionMappingSupport"
       />
 
   <implements
       class="AccessControl.Role.RoleManager"
-      interface=".interfaces.IRoleManager"
+      interface="AccessControl.interfaces.IRoleManager"
       />
 
 </configure>

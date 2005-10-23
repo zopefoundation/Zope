@@ -1,0 +1,10 @@
+<configure xmlns="http://namespaces.zope.org/zope">
+
+  <!-- OverrideAdapter instead of OriginalAdapter -->
+  <adapter
+    for=".adapters.IOrigin"
+    provides=".adapters.IDestination"
+    factory=".adapters.OverrideAdapter"
+    />
+
+</configure>

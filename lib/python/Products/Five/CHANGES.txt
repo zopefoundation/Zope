@@ -2,6 +2,126 @@
 Five Changes
 ============
 
+Five 1.1 (2005-10-04)
+=====================
+
+Features
+--------
+
+* When Zope was not in debug mode, an error in a ZCML file would cause Five to
+  stop loading ZCML completely, making all subsequent products "dead". The
+  effect would typically be that objects appeared to have no views at all. 
+  Now a ZCML error will only stop the ZCML loading for that product, but the 
+  rest of the products will load as usual. A traceback will still be printed 
+  in the event log.
+
+  In debug mode the behaviour has not changed; a ZCML error will stop Zope 
+  startup completely, and print a traceback if running in foreground mode.
+  
+Restructuring
+-------------
+
+* The deprecated FivePageTemplateFile was removed, and the erroneous use of 
+  this by EditView was changed.
+
+Bugfixes
+--------
+
+* Repaired 'forms.txt' test which expected an error page when passing
+  'handle_errors' as False;  it now expects an Unauthorized traceback.
+  Note that this test fails on Zope 2.8.1, which incorrectly ignored
+  'handle_errors'.
+
+* FiveTraversable should only do a view lookup and not call the traverse 
+  method of its superclass.
+
+* Fixed manage_beforeDelete triggering for classes using five:sendEvents.
+
+* The redefinePermission directive was falsely registered under the
+  ``zope`` namespace, not the ``meta`` namespace as it is in Zope 3.
+
+* Some parts of add.pt and edit.pt were not translated correctly or not
+  translated at all. The fix depends on TAL changes in Zope 2.8.1 and changes
+  in Zope X3-3.0.1 (shipped with 2.8.1). Form i18n is still broken with older
+  Zope versions.
+
+* 'zope' domain translations are now set up by default. Form i18n needs them.
+
+* Added backwards compatibility for some moved classes (AddForm, EditForm, 
+  ContentAdding)
+
+* The ZPT variable 'container' makes little sense in Zope3/Five, but is now
+  always set to be the same as 'here' which is normal Zope2 behaviour.
+  It is in Five 1.0.x set to be the same as 'view' which breaks some templates.
+  
+* In some hard to replicate cases, using the "modules" variable in ZPT cause
+  an AuthenticationError. Using the secure module importer fixes this.
+
+* If you used some parts of Zope 3 (for example the mail delivery) Five 1.1
+  transaction backport would conflict with Zope 3s transaction module.
+  This is now solved.
+
+Five 1.1b (2005-07-13)
+======================
+
+Features
+--------
+
+* Zope 3-style i18n support has been provided.  Apart from being able
+  to register translations through ZCML, Five now lets Zope 2 ZPTs
+  automatically use Zope 3 translation domains.  Fallback to an
+  old-style translation service (e.g. Localizer or PTS) is supported.
+  This also includes the detection of preferred languages.  See
+  ``doc/i18n.txt`` for more information.
+
+* Added support for Zope 3 -> Zope 2 interface bridging.  This
+  functionality will be part of Zope 2.9, with Five you can already
+  use it in Zope 2.7/2.8.  Since Zope 2 interfaces are rarely used and
+  their Zope 3 equivalents are more meaningful (for the Component
+  Architecture), the preferred way of dealing with interface migration
+  is to write Zope 3 interfaces and bridge them to Zope 2 ones as
+  needed.  To bridge, use the ``Interface.bridge.fromZ3Interface()``
+  function.
+
+* Support for the standard <factory />, <modulealias /> and <hook />
+  ZCML directives was added.
+
+* The default browser view name for all objects is now 'index.html',
+  just as it is in Zope 3.  This means that a view by that name will
+  be looked up if no specific view name is given in the URL.
+
+Restructuring
+-------------
+
+* Restructured the Five source code to be easier to navigate in.
+  Three subpackages were created, Five.browser, Five.form and
+  Five.skin.
+
+* The former test product, ``FiveTest``, was converted into separate
+  modules that provide the mock objects for the corresponding tests
+  and are located right next to them.  Common test helpers have been
+  moved to the Five.testing package.  Overall, the testing framework
+  was much simplified and the individual tests clean up after
+  themselves much like they do in Zope 3.
+
+* Relocated Zope core interfaces. Future Zope versions will ship with their
+  own z3 interfaces. Five now patches the older Zope versions to make sure
+  you can always find the interfaces in 'AccessControl.interfaces',
+  'Acquisition.interfaces', 'App.interfaces', 'OFS.interfaces' and
+  'webdav.interfaces'. Please don't use the aliases in 'Five.interfaces' or
+  'Five.bbb.*interfaces' - they are only provided for backwards
+  compatibility.
+
+* Zope 2.8 HTTPRequest is no longer patched. It has the required methods.
+
+Bugfixes
+--------
+
+* The ZPT variable 'container' did not always contain the parent object
+  of the context.
+
+* The deprecated get_transaction method is no longer used in Zope 2.8.
+
 Five 1.0.2 (2005-07-12)
 =======================
 

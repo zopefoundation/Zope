@@ -1,10 +1,11 @@
 <configure xmlns="http://namespaces.zope.org/zope"
-	   xmlns:five="http://namespaces.zope.org/five">
+	       xmlns:meta="http://namespaces.zope.org/meta"
+           xmlns:five="http://namespaces.zope.org/five">
 
   <!-- Copy this file to your ``INSTANCE_HOME/etc`` directory -->
 
   <include package="Products.Five" />
-  <redefinePermission from="zope2.Public" to="zope.Public" />
+  <meta:redefinePermission from="zope2.Public" to="zope.Public" />
 
   <include files="package-includes/*-meta.zcml" />
   <include files="package-includes/*-configure.zcml" />

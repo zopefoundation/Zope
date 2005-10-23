@@ -13,7 +13,7 @@
 ##############################################################################
 """Five ZCML directive schemas
 
-$Id: fivedirectives.py 12915 2005-05-31 10:23:19Z philikon $
+$Id: fivedirectives.py 12884 2005-05-30 13:10:41Z philikon $
 """
 from zope.interface import Interface
 from zope.app.publisher.browser.metadirectives import IBasicResourceInformation

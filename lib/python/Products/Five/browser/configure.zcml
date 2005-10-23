@@ -1,0 +1,76 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:browser="http://namespaces.zope.org/browser">
+
+  <serviceType
+      id="BrowserMenu"
+      interface="zope.app.publisher.interfaces.browser.IBrowserMenuService"
+      />
+
+  <service
+      serviceType="BrowserMenu"
+      permission="zope.Public"
+      component="zope.app.publisher.browser.globalbrowsermenuservice.globalBrowserMenuService"
+      />
+
+  <browser:defaultView name="index.html" />
+
+  <browser:page
+      for="*"
+      name="absolute_url"
+      class=".absoluteurl.AbsoluteURL"
+      permission="zope.Public"
+      allowed_interface="zope.app.traversing.browser.interfaces.IAbsoluteURL"
+      />
+
+  <view
+      for="*"
+      factory=".absoluteurl.AbsoluteURL"
+      type="zope.publisher.interfaces.http.IHTTPRequest"
+      permission="zope.Public"
+      provides="zope.app.traversing.browser.interfaces.IAbsoluteURL"
+      />
+
+  <browser:page
+      for="zope.app.traversing.interfaces.IContainmentRoot"
+      name="absolute_url"
+      class=".absoluteurl.SiteAbsoluteURL"
+      permission="zope.Public"
+      allowed_interface="zope.app.traversing.browser.interfaces.IAbsoluteURL"
+      />
+
+  <view
+      for="zope.app.traversing.interfaces.IContainmentRoot"
+      factory=".absoluteurl.SiteAbsoluteURL"
+      type="zope.publisher.interfaces.http.IHTTPRequest"
+      permission="zope.Public"
+      provides="zope.app.traversing.browser.interfaces.IAbsoluteURL"
+      />
+
+  <browser:view
+      for="OFS.interfaces.IObjectManager"
+      name="+"
+      class=".adding.ContentAdding"
+      permission="zope2.ViewManagementScreens"
+      >
+
+    <browser:page name="index.html"  template="adding.pt" />
+    <browser:page name="action.html" attribute="action" />
+
+  </browser:view>
+
+  <adapter
+      for="OFS.interfaces.IObjectManager"
+      factory=".adding.ObjectManagerNameChooser"
+      provides="zope.app.container.interfaces.INameChooser"
+      />
+
+  <!-- Menu access -->
+  <browser:page
+      for="*"
+      name="view_get_menu"
+      permission="zope.Public"
+      class=".menu.MenuAccessView"
+      allowed_interface="zope.app.publisher.interfaces.browser.IMenuAccessView"
+      />
+
+</configure>

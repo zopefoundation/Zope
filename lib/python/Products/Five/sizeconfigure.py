@@ -14,10 +14,13 @@
 """Use structured monkey-patching to enable ``ISized`` adapters for
 Zope 2 objects.
 
-$Id: sizeconfigure.py 12915 2005-05-31 10:23:19Z philikon $
+$Id: sizeconfigure.py 14449 2005-07-09 21:12:22Z philikon $
 """
 from zope.app.size.interfaces import ISized
 from Products.Five.fiveconfigure import isFiveMethod
+
+# holds classes that were monkeyed with; for clean up
+_monkied = []
 
 def get_size(self):
     size = ISized(self, None)
@@ -37,6 +40,8 @@ def classSizable(class_):
     if hasattr(class_, "get_size") and not isFiveMethod(class_.get_size):
 	class_.__five_original_get_size = class_.get_size
     class_.get_size = get_size
+    # remember class for clean up
+    _monkied.append(class_)
     
 def sizable(_context, class_):
     _context.action(
@@ -44,3 +49,18 @@ def sizable(_context, class_):
         callable = classSizable,
         args=(class_,)
         )
+
+# clean up code
+from Products.Five.fiveconfigure import killMonkey
+from zope.testing.cleanup import addCleanUp
+
+def unsizable(class_):
+    """Restore class's initial state with respect to being sizable"""
+    killMonkey(class_, 'get_size', '__five_original_get_size')
+
+def cleanUp():
+    for class_ in _monkied:
+        unsizable(class_)
+
+addCleanUp(cleanUp)
+del addCleanUp

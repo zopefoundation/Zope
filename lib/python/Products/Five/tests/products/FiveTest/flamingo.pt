@@ -1,1 +1,0 @@
-<p tal:content="python:context.mymethod()">Replaced</p>

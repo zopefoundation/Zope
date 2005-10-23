@@ -1,0 +1,86 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:meta="http://namespaces.zope.org/meta"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:five="http://namespaces.zope.org/five"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    i18n_domain="formtest">
+
+  <!-- make the zope2.Public permission work -->
+  <meta:redefinePermission from="zope2.Public" to="zope.Public" />
+
+  <!-- browser forms -->
+  <five:traversable class=".schemacontent.FieldContent" />
+
+  <browser:editform
+      schema=".schemacontent.IFieldContent"
+      for=".schemacontent.IFieldContent"
+      name="edit.html"
+      label="Edit Field Content"
+      permission="zope2.Public"
+      />
+
+  <five:traversable class=".schemacontent.ComplexSchemaContent" />
+
+  <browser:editform
+      schema=".schemacontent.IComplexSchemaContent"
+      for=".schemacontent.IComplexSchemaContent"
+      name="edit.html"
+      permission="zope2.Public"
+      class=".schemacontent.ComplexSchemaView"
+      />
+
+  <view
+      type="zope.publisher.interfaces.browser.IBrowserRequest"
+      for="zope.schema.interfaces.IObject"
+      provides="zope.app.form.interfaces.IInputWidget"
+      factory="zope.app.form.browser.objectwidget.ObjectWidget"
+      permission="zope.Public"
+      />
+
+  <!-- With a widget override -->
+  <browser:editform
+      schema=".schemacontent.IFieldContent"
+      for=".schemacontent.IFieldContent"
+      name="widgetoverride.html"
+      permission="zope2.Public"
+      >
+
+      <widget
+         field="description"
+         class="zope.app.form.browser.TextAreaWidget"
+         />
+
+  </browser:editform>
+
+  <browser:addform
+     schema=".schemacontent.IFieldContent"
+     content_factory=".schemacontent.FieldContent"
+     name="addfieldcontent.html"
+     label="Add Field Content"
+     permission="zope2.Public"
+     />
+
+  <browser:addform
+     schema=".schemacontent.IFieldContent"
+     content_factory=".schemacontent.FieldContent"
+     name="addwidgetoverride.html"
+     permission="zope2.Public">
+
+     <widget
+         field="description"
+         class="zope.app.form.browser.TextAreaWidget"
+         />
+
+  </browser:addform>
+
+  <browser:addform
+     schema=".schemacontent.IFieldContent"
+     content_factory=".schemacontent.FieldContent"
+     name="protectedaddform.html"
+     permission="zope2.ViewManagementScreens"
+     />
+
+  <i18n:registerTranslations directory="locales"/>
+
+</configure>

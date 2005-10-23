@@ -13,7 +13,7 @@
 ##############################################################################
 """ZCML machinery
 
-$Id: zcml.py 12915 2005-05-31 10:23:19Z philikon $
+$Id: zcml.py 14452 2005-07-09 21:15:33Z philikon $
 """
 import os
 from zope.configuration import xmlconfig
@@ -23,12 +23,8 @@ _context = None
 
 
 def load_site():
-    """Load the appropriate ZCML file.
-
-    Note that this can be called multiple times, unlike in Zope 3. This
-    is needed because in Zope 2 we don't (yet) have a master ZCML file
-    which can include all the others.
-    """
+    """Load a Five/Zope site by finding and loading the appropriate site
+    configuration file."""
     global _initialized
     if _initialized:
         return
@@ -61,3 +57,12 @@ def load_string(s):
     global _context
     _context = xmlconfig.string(s, _context)
 
+# clean up code
+
+def cleanUp():
+    global _context
+    _context = None
+
+from zope.testing.cleanup import addCleanUp
+addCleanUp(cleanUp)
+del addCleanUp

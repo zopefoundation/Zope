@@ -13,7 +13,7 @@
 ##############################################################################
 """Generic Components ZCML Handlers
 
-$Id: metaconfigure.py 12915 2005-05-31 10:23:19Z philikon $
+$Id: metaconfigure.py 12884 2005-05-30 13:10:41Z philikon $
 """
 from types import ModuleType
 

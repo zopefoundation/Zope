@@ -1,1 +1,0 @@
-<html metal:use-macro="context/@@fivetest_macros/birdmacro"><head><title>bird macro</title></head><body><metal:block fill-slot="color">green</metal:block><metal:block fill-slot="birdinfo"><img alt="" src="" tal:attributes="src context/++resource++pattern.png" /></metal:block></body></html>

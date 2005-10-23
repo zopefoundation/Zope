@@ -1,0 +1,79 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:meta="http://namespaces.zope.org/meta"
+           xmlns:browser="http://namespaces.zope.org/browser"
+           i18n_domain="fivetest">
+
+  <!-- make the zope2.Public permission work -->
+  <meta:redefinePermission from="zope2.Public" to="zope.Public" />
+
+  <!-- browser menu support -->
+  <browser:menu
+      id="testmenu"
+      title="Test menu"
+      />
+
+  <browser:menuItem
+      for="OFS.interfaces.IFolder"
+      menu="testmenu"
+      title="Test Menu Item"
+      action="seagull.html"
+      description="This is a test menu item"
+      permission="zope2.Public"
+      />
+
+  <browser:menuItem
+      for="OFS.interfaces.IFolder"
+      menu="testmenu"
+      title="Protected Test Menu Item"
+      action="seagull.html"
+      description="This is a protected test menu item"
+      permission="zope2.ViewManagementScreens"
+      />
+
+  <browser:menuItems
+      for="OFS.interfaces.IFolder"
+      menu="testmenu">
+
+      <menuItem
+          title="Test Menu Item 2"
+          action="parakeet.html"
+          description="This is a test menu item"
+          permission="zope2.Public"
+          />
+
+      <menuItem
+          title="Test Menu Item 3"
+          action="falcon.html"
+          description="This is a test menu item"
+          permission="zope2.Public"
+          />
+
+      <menuItem
+          title="Protected Test Menu Item 2"
+          action="falcon.html"
+          description="This is a protected test menu item"
+          permission="zope2.ViewManagementScreens"
+          />
+
+  </browser:menuItems>
+
+  <!-- page in a menu -->
+  <browser:page
+      for="OFS.interfaces.IFolder"
+      template="cockatiel.pt"
+      name="cockatiel_menu_public.html"
+      permission="zope2.Public"
+      title="Page in a menu (public)"
+      menu="testmenu"
+      />
+
+  <browser:page
+      for="OFS.interfaces.IFolder"
+      template="cockatiel.pt"
+      name="cockatiel_menu_protected.html"
+      permission="zope2.ViewManagementScreens"
+      title="Page in a menu (protected)"
+      menu="testmenu"
+      />
+
+</configure>

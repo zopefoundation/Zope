@@ -13,7 +13,7 @@
 ##############################################################################
 """Five security handling
 
-$Id: security.py 12915 2005-05-31 10:23:19Z philikon $
+$Id: security.py 14595 2005-07-12 21:26:12Z philikon $
 """
 from zope.interface import implements, classProvides
 from zope.component import queryUtility, getUtility
@@ -62,7 +62,6 @@ def checkPermission(permission, object, interaction=None):
     checkPermission is guaranteed to return True if permission is
     CheckerPublic or None.
     """
-
     if (permission in ('zope.Public', 'zope2.Public') or
         permission is None or permission is CheckerPublic):
         return True

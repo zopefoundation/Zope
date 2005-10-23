@@ -13,7 +13,7 @@
 ##############################################################################
 """Initialize the Five product
 
-$Id: __init__.py 12915 2005-05-31 10:23:19Z philikon $
+$Id: __init__.py 12884 2005-05-30 13:10:41Z philikon $
 """
 import Acquisition
 from Globals import INSTANCE_HOME
@@ -23,7 +23,7 @@ import zcml
 # public API provided by Five
 # usage: from Products.Five import <something>
 from browser import BrowserView
-from skin import StandardMacros
+from skin.standardmacros import StandardMacros
 
 def initialize(context):
     zcml.load_site()

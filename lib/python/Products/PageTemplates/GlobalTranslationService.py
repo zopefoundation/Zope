@@ -17,6 +17,7 @@ $Id$
 """
 
 import re
+import Products.Five.i18n
 
 from DocumentTemplate.DT_Util import ustr
 from TAL.TALDefs import NAME_RE
@@ -31,15 +32,19 @@ class DummyTranslationService:
         return cre.sub(repl, default or msgid)
     # XXX Not all of Zope2.I18n.ITranslationService is implemented.
 
-translationService = DummyTranslationService()
+#
+# As of Five 1.1, we're by default using Zope 3 Message Catalogs for
+# translation, but we allow fallback translation services such as PTS
+# and Localizer
+#
 
-def setGlobalTranslationService(service):
-    """Sets the global translation service, and returns the previous one."""
-    global translationService
-    old_service = translationService
-    translationService = service
-    return old_service
+Products.Five.i18n._fallback_translation_service = DummyTranslationService()
+fiveTranslationService = Products.Five.i18n.FiveTranslationService()
 
 def getGlobalTranslationService():
-    """Returns the global translation service."""
-    return translationService
+    return fiveTranslationService
+
+def setGlobalTranslationService(newservice):
+    oldservice, Products.Five.i18n._fallback_translation_service = \
+        Products.Five.i18n._fallback_translation_service, newservice
+    return oldservice

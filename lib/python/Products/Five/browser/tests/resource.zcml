@@ -1,0 +1,29 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:browser="http://namespaces.zope.org/browser">
+
+  <!-- a couple simple resources -->
+  <browser:resource
+      template="cockatiel.pt"
+      name="cockatiel.html"
+      permission="zope2.ViewManagementScreens"
+      />
+
+  <browser:resource
+      file="style.css"
+      name="style.css"
+      permission="zope2.ViewManagementScreens"
+      />
+
+  <browser:resource
+      image="pattern.png"
+      name="pattern.png"
+      permission="zope2.ViewManagementScreens"
+      />
+
+  <browser:resourceDirectory
+      name="fivetest_resources"
+      directory="."
+      permission="zope2.ViewManagementScreens"
+      />
+
+</configure>

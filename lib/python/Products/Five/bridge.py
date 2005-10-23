@@ -13,7 +13,7 @@
 ##############################################################################
 """ Z2 -> Z3 bridge utilities.
 
-$Id: bridge.py 12915 2005-05-31 10:23:19Z philikon $
+$Id: bridge.py 14504 2005-07-11 15:49:59Z yuppie $
 """
 from Interface._InterfaceClass import Interface as Z2_InterfaceClass
 from Interface import Interface as Z2_Interface
@@ -39,9 +39,7 @@ def fromZ2Interface(z2i):
         return _bridges[z2i]
 
     name = z2i.getName()
-
     bases = [ fromZ2Interface(x) for x in z2i.getBases() ]
-
     attrs = {}
 
     for k, v in z2i.namesAndDescriptions():

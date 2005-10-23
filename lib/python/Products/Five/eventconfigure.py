@@ -15,7 +15,7 @@
 Use 'structured monkey patching' to enable zope.app.container event sending for
 Zope 2 objects.
 
-$Id: eventconfigure.py 12915 2005-05-31 10:23:19Z philikon $
+$Id: eventconfigure.py 17810 2005-09-24 09:12:59Z efge $
 """
 from Products.Five.fiveconfigure import isFiveMethod
 from zope.event import notify
@@ -24,6 +24,9 @@ from zope.app.container.interfaces import IObjectAddedEvent,\
      IObjectRemovedEvent
 from zope.app.container.contained import ObjectMovedEvent
 from zope.app.event.objectevent import ObjectCopiedEvent
+
+# holds classes that were monkeyed with; for clean up
+_monkied = []
 
 # ObjectAddedEvent and ObjectRemovedEvent are different in Zope 2
 class ObjectAddedEvent(ObjectMovedEvent):
@@ -76,15 +79,14 @@ manage_afterAdd.__five_method__ = True
 def manage_beforeDelete(self, item, container):
     notify(ObjectRemovedEvent(self))
     # call original
-    method = getattr(self, '__five_manage_beforeDelete', None)
+    method = getattr(self, '__five_original_manage_beforeDelete', None)
     if method is not None:
-        self._five_original_manage_beforeDelete(item, container)
+        self.__five_original_manage_beforeDelete(item, container)
 
 manage_beforeDelete.__five_method__ = True
 
 def classSendEvents(class_):
-    """Make instances of the class send Object*Event.
-    """
+    """Make instances of the class send Object*Event."""
     # tuck away original methods if necessary
     for name in ['manage_afterAdd', 'manage_beforeDelete']:
         method = getattr(class_, name, None)
@@ -94,6 +96,8 @@ def classSendEvents(class_):
 
     class_.manage_afterAdd = manage_afterAdd
     class_.manage_beforeDelete = manage_beforeDelete
+    # remember class for clean up
+    _monkied.append(class_)
     
 def sendEvents(_context, class_):
     _context.action(
@@ -101,3 +105,19 @@ def sendEvents(_context, class_):
         callable = classSendEvents,
         args=(class_,)
         )
+
+# clean up code
+from Products.Five.fiveconfigure import killMonkey
+from zope.testing.cleanup import addCleanUp
+
+def unsendEvents(class_):
+    """Restore class's initial state with respect to sending events"""
+    for name in ['manage_afterAdd', 'manage_beforeDelete']:
+        killMonkey(class_, name, '__five_original_'+name)
+
+def cleanUp():
+    for class_ in _monkied:
+        unsendEvents(class_)
+
+addCleanUp(cleanUp)
+del addCleanUp

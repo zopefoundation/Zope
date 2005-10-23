@@ -29,6 +29,10 @@ Five contributors
 
 - Yvo Schubbe (y.2005-@wcm-solutions.de)
 
+- Malcolm Cleaton (malcolm@jamkit.com)
+
+- Tarek Ziadé (tziade@nuxeo.com)
+
 Thank you
 ---------
 

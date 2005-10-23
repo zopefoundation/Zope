@@ -13,15 +13,14 @@
 ##############################################################################
 """ Unit tests for Z2 -> Z3 bridge utilities.
 
-$Id$
+$Id: test_bridge.py 14595 2005-07-12 21:26:12Z philikon $
 """
 import os, sys
 if __name__ == '__main__':
     execfile(os.path.join(sys.path[0], 'framework.py'))
 
 def test_suite():
-    from Testing.ZopeTestCase import installProduct, ZopeDocFileSuite
-    installProduct('Five')
+    from Testing.ZopeTestCase import ZopeDocFileSuite
     return ZopeDocFileSuite('bridge.txt', package="Products.Five.tests")
 
 if __name__ == '__main__':

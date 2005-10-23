@@ -13,7 +13,7 @@
 ##############################################################################
 """Machinery for making things traversable through adaptation
 
-$Id: traversable.py 12915 2005-05-31 10:23:19Z philikon $
+$Id: traversable.py 18841 2005-10-23 09:57:38Z philikon $
 """
 from zExceptions import NotFound
 from zope.exceptions import NotFoundError
@@ -37,6 +37,9 @@ class FakeRequest:
 
     def has_key(self, key):
         return False
+
+    def getURL(self):
+        return "http://codespeak.net/z3/five"
 
 class Traversable:
     """A mixin to make an object traversable using an ITraverser adapter.
@@ -68,12 +71,14 @@ class Traversable:
                 REQUEST = FakeRequest()
         # con Zope 3 into using Zope 2's checkPermission
         newInteraction()
+
         try:
             return ITraverser(self).traverse(
                 path=[name], request=REQUEST).__of__(self)
         except (ComponentLookupError, NotFoundError,
                 AttributeError, KeyError, NotFound):
             pass
+
         try:
             return getattr(self, name)
         except AttributeError:
@@ -100,5 +105,3 @@ class FiveTraversable(DefaultTraversable):
             return getView(context, name, REQUEST)
         except ComponentLookupError:
             pass
-        # If a view can't be found, then use default traversable
-        return super(FiveTraversable, self).traverse(name, furtherPath)
