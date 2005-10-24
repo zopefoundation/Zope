@@ -156,7 +156,8 @@ class ZopeDatabase(ZODBDatabase):
     attributes for use by DBTab """
 
     def createDB(self, database_name, databases):
-        return ZODBDatabase.open(self, database_name, databases)
+        self.config.database_name = database_name
+        return ZODBDatabase.open(self, databases)
 
     def open(self, database_name, databases):
         DB = self.createDB(database_name, databases)
