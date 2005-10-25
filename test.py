@@ -66,10 +66,10 @@ def load_config_file(option, opt, config_file, *ignored):
     Zope2.configure(config_file)
 
 testrunner.setup.add_option(
-    '--config-file', action="callback", type="string",
+    '--config-file', action="callback", type="string", dest='config_file',
     callback=load_config_file,
     help="""\
-Initialize Zope with the given config file.
+Initialize Zope with the given configuration file.
 """)
 
 sys.exit(testrunner.run(defaults))
