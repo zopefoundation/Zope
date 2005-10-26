@@ -14,7 +14,6 @@
 
 $Id$
 """
-
 from zope.interface import Attribute
 from zope.interface import Interface
 from zope.schema import Bool, BytesLine, Tuple
@@ -28,6 +27,7 @@ from persistent.interfaces import IPersistent
 from webdav.interfaces import IDAVCollection
 from webdav.interfaces import IDAVResource
 
+from zope.app.traversing.interfaces import IContainmentRoot
 
 class IOrderedContainer(Interface):
 
@@ -837,7 +837,7 @@ class IOrderedFolder(IOrderedContainer, IFolder):
 # XXX: might contain non-API methods and outdated comments;
 #      not synced with ZopeBook API Reference;
 #      based on OFS.Application.Application
-class IApplication(IFolder):
+class IApplication(IFolder, IContainmentRoot):
 
     """Top-level system object"""
 
