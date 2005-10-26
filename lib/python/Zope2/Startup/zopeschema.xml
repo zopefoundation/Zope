@@ -821,7 +821,18 @@
      <metadefault>iso-8859-15</metadefault>
   </key>
 
-  <sectiontype name="product-config">
+  <abstracttype name="zope.product.base">
+    <description>
+      Base type for product-specific configuration sections.
+
+      Specific products should implement configuration sections by
+      defining section types that implement this abstract type and
+      using their own schema component to define meaningful settings.
+
+    </description>
+  </abstracttype>
+
+  <sectiontype name="product-config" implements="zope.product.base">
     <description>
     Product-specific configuration, expressed as arbitrary name-value pairs.
     </description>
@@ -832,12 +843,17 @@
          />
   </sectiontype>
 
-  <multisection type="product-config" name="+"
+  <multisection type="zope.product.base" name="+"
                 attribute="product_config">
    <description>
-    Product-specific configuration, expressed as arbitrary name-value pairs.
+    Product-specific configuration stanzas.
+
+    Products may use the &lt;product-config&gt; section type, or may supply
+    a component.xml which defines section types with their own schemas.
+
+    All sections for this multisection will be collected into the
+    'product_config' attribute of the configuration object.
    </description>
   </multisection>
-
 
 </schema>

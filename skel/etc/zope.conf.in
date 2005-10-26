@@ -983,8 +983,37 @@ instancehome $INSTANCE
 #    parsed into a dict, {'bar': 'baz'}, available as
 #    config.product_config['foo']
 #
+#    Products may also register their own section types, extending
+#    
+#
 # Example: 
 #
-# <product-config foo>
-#    bar baz
-# </product-config>
+# 1. Simple "bag of strings" section:
+#
+#    <product-config foo>
+#       bar baz
+#    </product-config>
+#
+# 2. Custom section type
+#
+#    Products/Foo/component.xml:
+#
+#    <component>
+#     <description>
+#       Some product-specific hackery.
+#     </description>
+#     <sectiontype name="myproduct" implements="zope.product.base">
+#      <description>
+#       Product-specific configuration.
+#      </description>
+#      <key name="foo" />
+#     </sectiontype>
+#    </component>
+#
+#    In zope.conf:
+#
+#    %import Products.Foo
+#
+#    <myproduct bar>
+#      foo qux
+#    </myproduct>

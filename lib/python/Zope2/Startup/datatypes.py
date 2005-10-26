@@ -113,6 +113,7 @@ def python_dotted_path(name):
 
 def root_config(section):
     from ZConfig import ConfigurationError
+    from ZConfig.matcher import SectionValue
     here = os.path.dirname(os.path.abspath(__file__))
     swhome = os.path.dirname(os.path.dirname(here))
     section.softwarehome = swhome
@@ -152,7 +153,15 @@ def root_config(section):
 
     pconfigs = {}
     for pconfig in section.product_config:
-        pconfigs[pconfig.getSectionName()] = pconfig.mapping
+        section_name = pconfig.getSectionName()
+        if isinstance(pconfig, SectionValue):
+            section_type = pconfig.getSectionType()
+            if section_type == 'product-config':
+                pconfigs[section_name] = pconfig.mapping
+            else:
+                pconfigs[section_name] = pconfig
+        else:
+            pconfigs[section_name] = pconfig
 
     section.product_config = pconfigs
 
@@ -227,6 +236,3 @@ def default_zpublisher_encoding(value):
     Converters.default_encoding = value
     HTTPRequest.default_encoding = value
     HTTPResponse.default_encoding = value
-
-class ProductConfig(dict):
-    pass

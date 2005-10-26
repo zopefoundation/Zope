@@ -28,9 +28,10 @@ Zope Changes
 
       - Added a 'product-config' section type to zope.conf, allowing
         arbitrary key-value mappings.  Products can look for such
-        confgiurations to set product-specific options (see the
-        example '<product-config>' section in skel/etc/zope.conf.in
-        for sample usage).
+        confgiurations to set product-specific options.  Products mwy
+        also register their own section types, extending the
+        'zope.product.base' type. (see the example '<product-config>'
+        section in skel/etc/zope.conf.in for sample usage).
 
       - Collector #1490: Added a new zope.conf option to control the
         character set used to encode unicode data that reaches
