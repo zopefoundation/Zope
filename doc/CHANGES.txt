@@ -24,7 +24,7 @@ Zope Changes
 
   
 
-  Zope 2.8.4
+  Zope 2.8.4 (2005/10/26)
 
     Bugs Fixed
 
