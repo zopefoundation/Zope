@@ -821,5 +821,23 @@
      <metadefault>iso-8859-15</metadefault>
   </key>
 
+  <sectiontype name="product-config">
+    <description>
+    Product-specific configuration, expressed as arbitrary name-value pairs.
+    </description>
+
+    <key name="+"
+         attribute="mapping"
+         required="no"
+         />
+  </sectiontype>
+
+  <multisection type="product-config" name="+"
+                attribute="product_config">
+   <description>
+    Product-specific configuration, expressed as arbitrary name-value pairs.
+   </description>
+  </multisection>
+
 
 </schema>

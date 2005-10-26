@@ -150,6 +150,12 @@ def root_config(section):
     from DBTab.DBTab import DBTab
     section.dbtab = DBTab(mount_factories, mount_points)
 
+    pconfigs = {}
+    for pconfig in section.product_config:
+        pconfigs[pconfig.getSectionName()] = pconfig.mapping
+
+    section.product_config = pconfigs
+
     return section
 
 class ZopeDatabase(ZODBDatabase):
@@ -221,3 +227,6 @@ def default_zpublisher_encoding(value):
     Converters.default_encoding = value
     HTTPRequest.default_encoding = value
     HTTPResponse.default_encoding = value
+
+class ProductConfig(dict):
+    pass

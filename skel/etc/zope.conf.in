@@ -969,3 +969,22 @@ instancehome $INSTANCE
 #     #client zeo1
 #   </zeoclient>
 # </zodb_db>
+
+# Product configuration (product-config) section(s)
+#
+# Description:
+#    Add-on products may need to allow the user to specify policy /
+#    configuration.  Such policies may be expressed as a set of
+#    name-value pairs, grouped into a named section (there may
+#    be many such sections, typically one per product).
+#    These sections will be captured in an attribute, 'product_config'
+#    of the top-level config object, under the key corresponding to
+#    the section name.  E.g., the sample section below would be
+#    parsed into a dict, {'bar': 'baz'}, available as
+#    config.product_config['foo']
+#
+# Example: 
+#
+# <product-config foo>
+#    bar baz
+# </product-config>
