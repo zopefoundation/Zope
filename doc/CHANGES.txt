@@ -22,7 +22,9 @@ Zope Changes
 
    - Collector #1233: port ZOPE_CONFIG patch from Zope 2.7 to Zope 2.8
 
-  After Zope 2.8.3
+  
+
+  Zope 2.8.4
 
     Bugs Fixed
 
@@ -32,6 +34,13 @@ Zope Changes
 
       - Collector #1926: fixed a typo in _doAddUser when password
         encryption is enabled.
+
+      - If a content object implemented any in-place numeric operators, 
+        untrusted code could call them, thus modifying the content.
+
+      - If Python 2.4 is used, despite the fact that Python 2.4 is
+        unsupported, untrusted code could use generator expressions to
+        gain access to container items.
 
   Zope 2.8.3 (2005/10/18)
 
