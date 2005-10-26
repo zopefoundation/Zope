@@ -157,3 +157,9 @@ f9()
 def f10():
     assert iter(enumerate(iter(iter(range(9))))).next() == (0, 0)
 f10()
+
+def f11():
+    x = 1
+    x += 1
+f11()
+

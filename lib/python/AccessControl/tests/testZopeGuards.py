@@ -20,6 +20,7 @@ $Id$
 
 import os, sys
 import unittest
+from zope.testing import doctest
 import ZODB
 import AccessControl.SecurityManagement
 from AccessControl.SimpleObjectPolicies import ContainerAssertions
@@ -671,8 +672,90 @@ print foo(**kw)
             if callable(v) and v is not getattr(__builtin__, k, None):
                 d[k] = FuncWrapper(k, v)
 
+def test_inplacevar():
+    """
+Verify the correct behavior of protected_inplacevar.
+
+    >>> from AccessControl.ZopeGuards import protected_inplacevar
+
+Basic operations on objects without inplace slots work as expected:
+
+    >>> protected_inplacevar('+=', 1, 2)
+    3
+    >>> protected_inplacevar('-=', 5, 2)
+    3
+    >>> protected_inplacevar('*=', 5, 2)
+    10
+    >>> protected_inplacevar('/=', 6, 2)
+    3
+    >>> protected_inplacevar('%=', 5, 2)
+    1
+    >>> protected_inplacevar('**=', 5, 2)
+    25
+    >>> protected_inplacevar('<<=', 5, 2)
+    20
+    >>> protected_inplacevar('>>=', 5, 2)
+    1
+    >>> protected_inplacevar('&=', 5, 2)
+    0
+    >>> protected_inplacevar('^=', 7, 2)
+    5
+    >>> protected_inplacevar('|=', 5, 2)
+    7
+
+Inplace operations are allowed on lists:
+
+    >>> protected_inplacevar('+=', [1], [2])
+    [1, 2]
+
+    >>> protected_inplacevar('*=', [1], 2)
+    [1, 1]
+
+But not on custom objects:
+
+    >>> class C:
+    ...     def __iadd__(self, other):
+    ...         return 42
+    >>> protected_inplacevar('+=', C(), 2)    # doctest: +NORMALIZE_WHITESPACE
+    Traceback (most recent call last):
+    ...
+    TypeError: Augmented assignment to C objects is not allowed in
+    untrusted code
+"""
+
+if sys.version_info[:2] >= (2, 4):
+    def test_inplacevar_for_py24():
+        """
+protected_inplacevar allows inplce ops on sets:
+
+    >>> from AccessControl.ZopeGuards import protected_inplacevar
+    >>> s = set((1,2,3,4))
+    >>> sorted(protected_inplacevar('-=', s, set((1, 3))))
+    [2, 4]
+    >>> sorted(s)
+    [2, 4]
+    
+    >>> sorted(protected_inplacevar('|=', s, set((1, 3, 9))))
+    [1, 2, 3, 4, 9]
+    >>> sorted(s)
+    [1, 2, 3, 4, 9]
+
+    >>> sorted(protected_inplacevar('&=', s, set((1, 2, 3, 9))))
+    [1, 2, 3, 9]
+    >>> sorted(s)
+    [1, 2, 3, 9]
+
+    >>> sorted(protected_inplacevar('^=', s, set((1, 3, 7, 8))))
+    [2, 7, 8, 9]
+    >>> sorted(s)
+    [2, 7, 8, 9]
+
+"""
+
 def test_suite():
-    suite = unittest.TestSuite()
+    suite = unittest.TestSuite([
+        doctest.DocTestSuite(),
+        ])
     for cls in (TestGuardedGetattr,
                 TestGuardedGetitem,
                 TestDictGuards,
