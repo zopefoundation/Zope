@@ -27,7 +27,7 @@ directory.  At the time of this writing, this includes:
 
   - Python-2.3.5.tgz
   - Python-2.3.5.exe (used for binary modules)
-  - pywin32-204.win32-py2.3.exe (extracts binaries and sources)
+  - pywin32-205.win32-py2.3.exe (extracts binaries and sources)
   - Zope.tgz
 
 As time marches on, these version numbers will obviously change.  See/edit
