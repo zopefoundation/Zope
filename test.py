@@ -33,10 +33,7 @@ if zhome:
         shome = os.path.join(zhome, 'lib/python')
 elif shome:
     shome = os.path.abspath(shome)
-    if zhome:
-        zhome = os.path.abspath(zhome)
-    else:
-        zhome = os.path.dirname(os.path.dirname(shome))
+    zhome = os.path.dirname(os.path.dirname(shome))
 elif ihome:
     print >> sys.stderr, '''
     If INSTANCE_HOME is set, then at least one of SOFTWARE_HOME or ZOPE_HOME
