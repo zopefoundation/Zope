@@ -40,7 +40,7 @@ function toggleSelect() {
      onChange="location.href='&dtml-URL1;/'+this.options[this.selectedIndex].value">
     <option value="manage_workspace" disabled>Select type to add...</option>
     <dtml-in filtered_meta_types mapping sort=name>
-    <option value="&dtml.url_quote-action;">&dtml-name;</option>
+    <option value="&dtml.html_quote-action;">&dtml-name;</option>
     </dtml-in>
     </select>
     <input class="form-element" type="submit" name="submit" value=" Add " />
