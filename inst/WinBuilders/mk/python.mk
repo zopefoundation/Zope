@@ -6,7 +6,7 @@ PYVERSION_MAJOR=2
 PYVERSION_MINOR=3
 PYVERSION_PATCH=5
 PYVERSION=$(PYVERSION_MAJOR).$(PYVERSION_MINOR).$(PYVERSION_PATCH)
-W32ALLVERSION=204
+W32ALLVERSION=205
 
 # CAUTION:  Extracting files from Wise installers doesn't really do what
 # you expect.  While a Wise installer is a zip file, the zip file
