@@ -24,7 +24,7 @@ from OFS.Application import Application
 from OFS.Folder import Folder
 import App.config
 from Products.ZODBMountPoint.MountedObject import manage_addMounts, getMountPoint
-from DBTab.DBTab import DBTab
+from Zope2.Startup.datatypes import DBTab
 
 try:
     __file__
@@ -63,8 +63,6 @@ class TestDBConfig:
 original_config = None
 
 class DBTabTests (unittest.TestCase):
-
-    
 
     def setUp(self):
         global original_config
@@ -107,14 +105,13 @@ class DBTabTests (unittest.TestCase):
         self.app._p_jar.close()
         del self.app
         del self.db
-        for db in self.conf.opened.values():
+        for db in self.conf.databases.values():
             db.close()
         del self.conf
 
     def testRead(self):
         self.assertEqual(self.app.mount1.id, 'mount1')
         self.assertEqual(self.app.mount2.id, 'mount2')
-
 
     def testWrite(self):
         app = self.app
@@ -129,41 +126,6 @@ class DBTabTests (unittest.TestCase):
         self.assertEqual(app.mount2._p_changed, 0)
         self.assertEqual(app._p_changed, 0)
 
-
-    def testRaceOnClose(self):
-        # There used to be a race condition in
-        # ConnectionPatches.close().  The root connection was returned
-        # to the pool before the mounted connections were closed.  If
-        # another thread pulled the root connection out of the pool
-        # before the original thread finished closing mounted
-        # connections, when the original thread got control back it
-        # closed the mounted connections even though the new thread
-        # was using them.
-
-        # Test by patching to watch for a vulnerable moment.
-
-        from ZODB.DB import DB
-
-        def _closeConnection(self, connection):
-            self._real_closeConnection(connection)
-            mc = connection._mounted_connections
-            if mc is not None:
-                for c in mc.values():
-                    if c._storage is not None:
-                        raise AssertionError, "Connection remained partly open"
-
-        DB._real_closeConnection = DB._closeConnection
-        DB._closeConnection = _closeConnection
-        try:
-            conn = self.db.open()
-            conn.root()['Application']['mount1']
-            conn.root()['Application']['mount2']
-            conn.close()
-        finally:
-            DB._closeConnection = DB._real_closeConnection
-            del DB._real_closeConnection
-
-
     def testGetMountPoint(self):
         self.assert_(getMountPoint(self.app) is None)
         self.assert_(getMountPoint(self.app.mount1) is not None)
@@ -176,7 +138,6 @@ class DBTabTests (unittest.TestCase):
         self.assert_(getMountPoint(self.app.mount2) is None)
         transaction.commit()
         self.assert_(getMountPoint(self.app.mount2) is None)
-
 
 def test_suite():
     return unittest.makeSuite(DBTabTests, 'test')
