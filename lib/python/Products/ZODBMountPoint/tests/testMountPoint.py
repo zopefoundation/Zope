@@ -11,7 +11,7 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-"""Tests of DBTab and ZODBMountPoint
+"""Tests of ZODBMountPoint
 """
 
 import os
@@ -23,7 +23,9 @@ import transaction
 from OFS.Application import Application
 from OFS.Folder import Folder
 import App.config
-from Products.ZODBMountPoint.MountedObject import manage_addMounts, getMountPoint
+from Products.ZODBMountPoint.MountedObject import manage_addMounts
+from Products.ZODBMountPoint.MountedObject import getMountPoint
+from Products.ZODBMountPoint.MountedObject import manage_getMountStatus
 from Zope2.Startup.datatypes import DBTab
 
 try:
@@ -62,7 +64,7 @@ class TestDBConfig:
 
 original_config = None
 
-class DBTabTests (unittest.TestCase):
+class MountingTests(unittest.TestCase):
 
     def setUp(self):
         global original_config
@@ -88,7 +90,6 @@ class DBTabTests (unittest.TestCase):
         App.config.setConfiguration(d)
         self.conf = conf
         db = conf.getDatabase('/')
-        self.db = db
         conn = db.open()
         root = conn.root()
         root['Application'] = app = Application()
@@ -104,7 +105,6 @@ class DBTabTests (unittest.TestCase):
         transaction.abort()
         self.app._p_jar.close()
         del self.app
-        del self.db
         for db in self.conf.databases.values():
             db.close()
         del self.conf
@@ -126,6 +126,10 @@ class DBTabTests (unittest.TestCase):
         self.assertEqual(app.mount2._p_changed, 0)
         self.assertEqual(app._p_changed, 0)
 
+        self.assertEqual(app.mount1.a1, '1')
+        self.assertEqual(app.mount2.a2, '2')
+        self.assertEqual(app.a3, '3')
+
     def testGetMountPoint(self):
         self.assert_(getMountPoint(self.app) is None)
         self.assert_(getMountPoint(self.app.mount1) is not None)
@@ -139,8 +143,43 @@ class DBTabTests (unittest.TestCase):
         transaction.commit()
         self.assert_(getMountPoint(self.app.mount2) is None)
 
+    def test_manage_getMountStatus(self):
+        status = manage_getMountStatus(self.app)
+        expected = [{'status': 'Ok',
+                     'path': '/mount1',
+                     'name': 'test_mount1.fs',
+                     'exists': 1},
+                    {'status': 'Ok',
+                     'path': '/mount2',
+                     'name': 'test_mount2.fs',
+                     'exists': 1}]
+        self.assertEqual(expected, status)
+        del self.app.mount2
+        status = manage_getMountStatus(self.app)
+        expected = [{'status': 'Ok',
+                     'path': '/mount1',
+                     'name': 'test_mount1.fs',
+                     'exists': 1},
+                    {'status': 'Ready to create',
+                     'path': '/mount2',
+                     'name': 'test_mount2.fs',
+                     'exists': 0}]
+        self.assertEqual(expected, status)
+        self.app.mount2 = Folder('mount2')
+        status = manage_getMountStatus(self.app)
+        expected = [{'status': 'Ok',
+                     'path': '/mount1',
+                     'name': 'test_mount1.fs',
+                     'exists': 1},
+                    {'status': '** Something is in the way **',
+                     'path': '/mount2',
+                     'name': 'test_mount2.fs',
+                     'exists': 1}]
+        self.assertEqual(expected, status)
+        
+
 def test_suite():
-    return unittest.makeSuite(DBTabTests, 'test')
+    return unittest.makeSuite(MountingTests, 'test')
 
 if __name__ == '__main__':
     unittest.main()

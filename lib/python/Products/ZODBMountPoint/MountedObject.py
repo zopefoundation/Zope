@@ -82,7 +82,6 @@ class SimpleTrailblazer:
                 container = self._construct(container, part)
         return container
 
-    
 class CustomTrailblazer (SimpleTrailblazer):
     """Like SimpleTrailblazer but creates custom objects.
 
@@ -113,7 +112,7 @@ class CustomTrailblazer (SimpleTrailblazer):
         obj = context.unrestrictedTraverse(id)
         # Commit a subtransaction to assign the new object to
         # the correct database.
-        transaction.savepoint()
+        transaction.savepoint(optimistic=True)
         return obj
 
 
@@ -123,7 +122,8 @@ class MountedObject(SimpleItem):
     '''
     meta_type = 'ZODB Mount Point'
     _isMountedObject = 1
-    # DM 2005-05-17: default value change necessary after fix of '_create_mount_point' handling
+    # DM 2005-05-17: default value change necessary after fix of
+    # '_create_mount_point' handling
     #_create_mount_points = 0
     _create_mount_points = True
 
@@ -193,7 +193,7 @@ class MountedObject(SimpleItem):
                 obj = Application()
                 root[real_root] = obj
                 # Get it into the database
-                transaction.savepoint()
+                transaction.savepoint(optimistic=True)
             else:
                 raise
 
