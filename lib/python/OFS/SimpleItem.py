@@ -40,7 +40,6 @@ import ZDOM
 from CopySupport import CopySource
 from interfaces import IItem
 from interfaces import IItemWithName
-from interfaces import IManageable
 from interfaces import ISimpleItem
 from Traversable import Traversable
 
@@ -55,7 +54,7 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
 
     """A common base class for simple, non-container objects."""
 
-    implements(IItem, IManageable)
+    implements(IItem)
 
     isPrincipiaFolderish=0
     isTopLevelPrincipiaApplicationObject=0
