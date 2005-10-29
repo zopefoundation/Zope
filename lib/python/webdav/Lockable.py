@@ -19,11 +19,13 @@ from AccessControl import ClassSecurityInfo
 from Globals import InitializeClass
 from Globals import PersistentMapping
 import Acquisition
+from zope.interface import implements
 
 from EtagSupport import EtagSupport
 from WriteLockInterface import LockItemInterface
 from WriteLockInterface import WriteLockInterface
 
+from interfaces import IWriteLock
 
 class ResourceLockedError(Exception): pass
 
@@ -36,6 +38,7 @@ class LockableItem(EtagSupport):
 
     __implements__ = (WriteLockInterface,)
     """
+    implements(IWriteLock)
 
     # Protect methods using declarative security
     security = ClassSecurityInfo()

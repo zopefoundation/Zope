@@ -35,7 +35,6 @@ from common import IfParser
 from common import isDavCollection
 from common import Locked, Conflict, PreconditionFailed
 from interfaces import IDAVResource
-from interfaces import IWriteLock
 from WriteLockInterface import WriteLockInterface
 
 
@@ -47,7 +46,7 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
     such as PUT should be overridden to ensure correct behavior in
     the context of the object type."""
 
-    implements(IDAVResource, IWriteLock)
+    implements(IDAVResource)
 
     __dav_resource__=1
 
