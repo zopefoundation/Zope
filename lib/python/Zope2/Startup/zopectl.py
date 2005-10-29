@@ -240,12 +240,6 @@ class ZopeCmd(ZDCmd):
         script = os.path.join(zope_home, 'bin', 'test.py')
         assert os.path.exists(script)
 
-        # If --libdir is not supplied, use $INSTANCE_HOME/Products
-        # (rather than $INSTANCE_HOME/lib/python)
-        if '--libdir' not in args:
-            args.insert(0, 'Products')
-            args.insert(0, '--package')
-
         # Supply our config file by default.
         if '--config-file' not in args and '-C' not in args:
             args.insert(0, self.options.configfile)

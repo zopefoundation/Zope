@@ -49,8 +49,10 @@ sys.path.insert(0, shome)
 defaults = '--tests-pattern ^tests$ -v'.split()
 if ihome:
     ihome = os.path.abspath(ihome)
-    sys.path.insert(0, os.path.join(ihome, 'lib', 'python'))
-    defaults += ['--test-path', ihome, '--package', 'Products']
+    defaults += ['--path', os.path.join(ihome, 'lib', 'python')]
+    products = os.path.join(ihome, 'Products')
+    if os.path.exists(products):
+        defaults += ['--package-path', products, 'Products']
 else:
     defaults += ['--test-path', shome]
 
