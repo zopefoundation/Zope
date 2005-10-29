@@ -26,6 +26,11 @@ Zope Changes
 
     Features added
 
+      - Zope now utilizes ZODB 3.6.  It had previously used
+        ZODB 3.4.  As a result, the DBTab package was removed, as
+        ZODB 3.6 has multidatabase support that makes DBTab
+        unnecessary.
+
       - Added a 'product-config' section type to zope.conf, allowing
         arbitrary key-value mappings.  Products can look for such
         confgiurations to set product-specific options.  Products mwy
