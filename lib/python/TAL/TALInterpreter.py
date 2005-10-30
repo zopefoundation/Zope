@@ -24,7 +24,12 @@ from StringIO import StringIO
 from DocumentTemplate.DT_Util import ustr
 from ZODB.POSException import ConflictError
 
-from zope.i18nmessageid import MessageID
+# BBB 2005/10/10 -- MessageIDs are to be removed for Zope 3.3
+import zope.deprecation
+zope.deprecation.__show__.off()
+from zope.i18nmessageid import Message, MessageID
+zope.deprecation.__show__.on()
+
 from TALDefs import attrEscape, TAL_VERSION, METALError
 from TALDefs import isCurrentVersion
 from TALDefs import getProgramVersion, getProgramMode
@@ -32,7 +37,7 @@ from TALGenerator import TALGenerator
 from TranslationContext import TranslationContext
 
 # This will become (MessageID, Message) when we use Zope 3.1 as a base:
-I18nMessageTypes = MessageID
+I18nMessageTypes = Message, MessageID
 
 # TODO: In Python 2.4 we can use frozenset() instead of dict.fromkeys()
 BOOLEAN_HTML_ATTRS = dict.fromkeys([
