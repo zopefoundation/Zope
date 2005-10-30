@@ -54,6 +54,8 @@ Zope Changes
         line in fileobject: ..., as well as fileobject.next() and
         fileobject.xreadlines() ) Collector #1837
 
+      - Improved test runner.  Run test.py with -h to find out more.
+
     Other
 
       - ZSQLMethod.manage_main: Moved the error message that warns of a
