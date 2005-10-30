@@ -1,6 +1,6 @@
 #############################################################################
 #
-# Copyright (c) 2002 Zope Corporation and Contributors.
+# Copyright (c) 2005 Zope Corporation and Contributors.
 # All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
@@ -41,5 +41,5 @@ context.load_metadata(
     os.path.join(here, "releases", "Zope2",
                  zpkgsetup.publication.PUBLICATION_CONF))
 
-context.walk_packages("src")
+context.walk_packages("lib/python")
 context.setup()
