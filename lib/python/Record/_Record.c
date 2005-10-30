@@ -17,7 +17,7 @@ static char Record_module_documentation[] =
 "\n$Id: _Record.c,v 1.2 2003/11/28 16:46:36 jim Exp $"
 ;
 
-#include "ExtensionClass.h"
+#include "ExtensionClass/ExtensionClass.h"
 
 /* ----------------------------------------------------- */
 

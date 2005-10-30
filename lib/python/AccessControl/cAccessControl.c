@@ -48,8 +48,8 @@
 
 */
 
-#include "ExtensionClass.h"
-#include "Acquisition.h"
+#include "ExtensionClass/ExtensionClass.h"
+#include "Acquisition/Acquisition.h"
 
 #include <stdio.h>
 #include <stdlib.h>

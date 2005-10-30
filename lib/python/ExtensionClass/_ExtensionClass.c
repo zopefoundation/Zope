@@ -17,7 +17,7 @@ static char _extensionclass_module_documentation[] =
 "$Id$\n"
 ;
 
-#include "ExtensionClass.h"
+#include "ExtensionClass/ExtensionClass.h"
 
 #define EC PyTypeObject
 
