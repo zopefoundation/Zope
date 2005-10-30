@@ -13,8 +13,9 @@
 import sys, os, time
 
 from Testing import makerequest
-import ZODB # in order to get Persistence.Persistent working
+import ZODB
 from ZODB.POSException import InvalidObjectReference, ConflictError
+from Persistence import Persistent
 from ZODB.DemoStorage import DemoStorage
 import transaction
 from OFS.DTMLMethod import DTMLMethod
@@ -60,7 +61,11 @@ def _delDB():
     transaction.abort()
     del stuff['db']
 
-class Foo(Acquisition.Implicit): pass
+class DummyAqImplicit(Acquisition.Implicit):
+    pass
+
+class DummyPersistent(Persistent):
+    pass
 
 def _populate(app):
     bidmgr = BrowserIdManager(idmgr_name)
@@ -185,13 +190,13 @@ class TestSessionManager(TestBase):
         transaction.commit()
         self.failUnless(sdm.getSessionData().get('foo') == 'bar')
 
-    def testSubcommit(self):
+    def testSubcommitAssignsPJar(self):
         sd = self.app.session_data_manager.getSessionData()
-        sd.set('foo', 'bar')
-        # TODO: this is used to test that transaction.commit(1) returned
-        # None, but transaction.commit(whatever) always returns None (unless
-        # there's an exception).  What is this really trying to test?
+        dummy = DummyPersistent()
+        sd.set('dp', dummy)
+        self.failUnless(sd['dp']._p_jar is None)
         transaction.savepoint(optimistic=True)
+        self.failIf(sd['dp']._p_jar is None)
 
     def testForeignObject(self):
         self.assertRaises(InvalidObjectReference, self._foreignAdd)
@@ -208,8 +213,8 @@ class TestSessionManager(TestBase):
         transaction.commit()
 
     def testAqWrappedObjectsFail(self):
-        a = Foo()
-        b = Foo()
+        a = DummyAqImplicit()
+        b = DummyAqImplicit()
         aq_wrapped = a.__of__(b)
         sd = self.app.session_data_manager.getSessionData()
         sd.set('foo', aq_wrapped)
