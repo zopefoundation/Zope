@@ -38,8 +38,7 @@ usage()
 {
     echo
     echo "configure [--help] [--quiet] [--with-python=path] [--prefix=path] "
-    echo "          [--build-base=path] [--ignore-largefile] [--ignore-zlib]"
-    echo "          [--optimize]"
+    echo "          [--ignore-largefile] [--ignore-zlib] [--optimize]"
     echo
     echo " Creates a Makefile suitable for building and installing Zope"
     echo
@@ -48,7 +47,6 @@ usage()
     echo "  --quiet             suppress nonessential output"
     echo "  --with-python       specify a path to a Python interpreter to use"
     echo "  --prefix            specify an installation path for binary data"
-    echo "  --build-base        specify a temporary path for build files"
     echo "  --ignore-largefile  ignore large file support warnings"
     echo "  --ignore-expat      ignore warnings about expat/pyexpat"
     echo "  --ignore-zlib       ignore warnings about zlib"
