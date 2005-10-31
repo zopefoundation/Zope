@@ -25,9 +25,16 @@ import unittest, warnings
 
 class DeprecatedAPI(unittest.TestCase):
     def setUp(self):
+        # There is no official API to restore warning filters to a previous
+        # state.  Here we cheat.
+        self.original_warning_filters = warnings.filters[:]
+
         # We test for warnings by turning them into exceptions
         warnings.filterwarnings('error', category=DeprecationWarning,
             module='AccessControl')
+
+    def tearDown(self):
+        warnings.filters[:] = self.original_warning_filters
 
     def testDeprecatedHasRole(self):
         # hasRole has been deprecated, we expect a warning.
@@ -47,11 +54,6 @@ class DeprecatedAPI(unittest.TestCase):
                 'no warnings expected here')
         else:
             pass
-
-    def tearDown(self):
-        warnings.resetwarnings()
-        warnings.simplefilter("ignore", category=PendingDeprecationWarning)
-        warnings.simplefilter("ignore", category=OverflowWarning)
 
 class BasicUser(DeprecatedAPI):
     userObject = User.SimpleUser('JoeBloke', '123', [], [])

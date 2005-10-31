@@ -46,11 +46,12 @@ class TestWarnFilter(unittest.TestCase):
     def setUp(self):
         if self.schema is None:
             TestWarnFilter.schema = getSchema()
+        # There is no official API to restore warning filters to a previous
+        # state.  Here we cheat.
+        self.original_warning_filters = warnings.filters[:]
 
     def tearDown(self):
-        warnings.resetwarnings()
-        warnings.simplefilter("ignore", category=PendingDeprecationWarning)
-        warnings.simplefilter("ignore", category=OverflowWarning)
+        warnings.filters[:] = self.original_warning_filters
 
     def load_config_text(self, text):
         # We have to create a directory of our own since the existence
