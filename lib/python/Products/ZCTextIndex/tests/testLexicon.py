@@ -8,12 +8,17 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+"""Lexicon unit tests.
+
+$Id$
+"""
+
+import unittest
 
 import os, sys
-from unittest import TestCase, TestSuite, main, makeSuite
 
 import ZODB
 import transaction
@@ -64,7 +69,20 @@ class StopWordPipelineElement:
         return res
 
 
-class Test(TestCase):
+class Test(unittest.TestCase):
+
+    def test_z2interfaces(self):
+        from Interface.Verify import verifyClass
+        from Products.ZCTextIndex.ILexicon import ILexicon
+
+        verifyClass(ILexicon, Lexicon)
+
+    def test_z3interfaces(self):
+        from Products.ZCTextIndex.interfaces import ILexicon
+        from zope.interface.verify import verifyClass
+
+        verifyClass(ILexicon, Lexicon)
+
     def testSourceToWordIds(self):
         lexicon = Lexicon(Splitter())
         wids = lexicon.sourceToWordIds('cats and dogs')
@@ -145,7 +163,7 @@ class Test(TestCase):
         lexicon.sourceToWordIds('how now brown cow')
         self.assert_(lexicon.length.__class__ is Length)        
         
-class TestLexiconConflict(TestCase):
+class TestLexiconConflict(unittest.TestCase):
     
     db = None
 
@@ -186,11 +204,12 @@ class TestLexiconConflict(TestCase):
         self.assertEqual(copy.length(), 11)
         self.assertEqual(copy.length(), len(copy._words))
 
+
 def test_suite():
-    suite = TestSuite()
-    suite.addTest(makeSuite(Test))
-    suite.addTest(makeSuite(TestLexiconConflict))
+    suite = unittest.TestSuite()
+    suite.addTest(unittest.makeSuite(Test))
+    suite.addTest(unittest.makeSuite(TestLexiconConflict))
     return suite
 
 if __name__=='__main__':
-    main(defaultTest='test_suite')
+    unittest.main(defaultTest='test_suite')

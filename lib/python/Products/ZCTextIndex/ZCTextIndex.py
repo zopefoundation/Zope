@@ -33,17 +33,18 @@ from Products.PluginIndexes.common.util import parseIndexRequest
 from Products.PluginIndexes.common import safe_callable
 from Products.PluginIndexes.interfaces import IPluggableIndex
 
-from Products.ZCTextIndex.ILexicon import ILexicon
 from Products.ZCTextIndex.Lexicon import \
      Lexicon, Splitter, CaseNormalizer, StopWordRemover
 from Products.ZCTextIndex.NBest import NBest
 from Products.ZCTextIndex.QueryParser import QueryParser
-from PipelineFactory import element_factory
+from CosineIndex import CosineIndex
+from ILexicon import ILexicon as z2ILexicon
+from interfaces import ILexicon
 from interfaces import IZCLexicon
 from interfaces import IZCTextIndex
+from OkapiIndex import OkapiIndex
+from PipelineFactory import element_factory
 
-from Products.ZCTextIndex.CosineIndex import CosineIndex
-from Products.ZCTextIndex.OkapiIndex import OkapiIndex
 
 index_types = {'Okapi BM25 Rank':OkapiIndex,
                'Cosine Measure':CosineIndex}
@@ -89,7 +90,8 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
         if lexicon is None:
             raise LookupError, 'Lexicon "%s" not found' % escape(lexicon_id)
 
-        if not ILexicon.isImplementedBy(lexicon):
+        if not (ILexicon.providedBy(lexicon) or
+                z2ILexicon.isImplementedBy(lexicon)):
             raise ValueError('Object "%s" does not implement '
                              'ZCTextIndex Lexicon interface'
                              % lexicon.getId())
@@ -134,7 +136,8 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
             return self._v_lexicon
         except AttributeError:
             lexicon = getattr(aq_parent(aq_inner(self)), self.lexicon_id)
-            if not ILexicon.isImplementedBy(lexicon):
+            if not (ILexicon.providedBy(lexicon) or
+                    z2ILexicon.isImplementedBy(lexicon)):
                 raise TypeError('Object "%s" is not a ZCTextIndex Lexicon'
                                 % repr(lexicon))
             self._v_lexicon = lexicon
