@@ -58,6 +58,9 @@ Zope Changes
 
     Other
 
+      - OFS Application: Removed support for long deprecated old-style product
+        metadata in the __init__.py of products.
+
       - ZSQLMethod.manage_main: Moved the error message that warns of a
         non-existing or closed database connection next to the Connection ID
         dropdown and present it using red to increase its visibility.

@@ -7,13 +7,13 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-__doc__='''Generic Database Adapter Package Registration
+"""Generic Database Adapter Package Registration.
 
-$Id$'''
-__version__='$Revision: 1.16 $'[11:-2]
+$Id$
+"""
 
 import Globals, os
 
@@ -33,12 +33,6 @@ for icon in ('table', 'view', 'stable', 'what',
              'field', 'text','bin','int','float',
              'date','time','datetime'):
     misc_[icon]=Globals.ImageFile('icons/%s.gif' % icon, globals())
-
-meta_types=(
-    {'name':'Z %s Database Connection' % database_type,
-     'action':'manage_addZ%sConnectionForm' % database_type,
-     },
-    )
 
 DA=None
 def getDA():
@@ -70,19 +64,16 @@ def manage_addZGadflyConnection(
     return getDA().manage_addZGadflyConnection(
         self, id, title, connection, check, REQUEST)
 
-methods={
-    'manage_addZGadflyConnection':
-    manage_addZGadflyConnection,
-    'manage_addZGadflyConnectionForm':
-    manage_addZGadflyConnectionForm,
-    }
+def initialize(context):
 
-__ac_permissions__=(
-    ('Add Z Gadfly Database Connections',
-     ('manage_addZGadflyConnectionForm',
-      'manage_addZGadflyConnection')),
+    context.registerClass(
+        DA.Connection,
+        permission='Add Z Gadfly Database Connections',
+        constructors=(manage_addZGadflyConnectionForm,
+                      manage_addZGadflyConnection),
+        legacy=(manage_addZGadflyConnectionForm,
+                manage_addZGadflyConnection),
     )
-
 
 # from App.config import getConfiguration
 # j=os.path.join

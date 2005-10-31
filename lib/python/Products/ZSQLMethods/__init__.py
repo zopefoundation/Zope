@@ -7,21 +7,19 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-__doc__='''SQL Method Product
+"""SQL Method Product.
 
+$Id$
+"""
 
-$Id$'''
-__version__='$Revision: 1.18 $'[11:-2]
 import Shared.DC.ZRDB.Search, Shared.DC.ZRDB.Aqueduct, SQL
 import Shared.DC.ZRDB.RDB
 import Shared.DC.ZRDB.sqlvar, Shared.DC.ZRDB.sqlgroup, Shared.DC.ZRDB.sqltest
 
 
-# This is the new way to initialize products.  It is hoped
-# that this more direct mechanism will be more understandable.
 def initialize(context):
 
     context.registerClass(
@@ -29,6 +27,9 @@ def initialize(context):
         permission='Add Database Methods',
         constructors=(SQL.manage_addZSQLMethodForm, SQL.manage_addZSQLMethod),
         icon='sqlmethod.gif',
+        # XXX: can this permission be removed?
+        permissions=('Open/Close Database Connections',),
+        legacy=(SQL.SQLConnectionIDs,)
         )
 
     context.registerClass(
@@ -36,24 +37,12 @@ def initialize(context):
         permission='Add Documents, Images, and Files',
         constructors=(Shared.DC.ZRDB.Search.addForm,
                       Shared.DC.ZRDB.Search.manage_addZSearch),
+        legacy=(Shared.DC.ZRDB.Search.ZQueryIds,)
         )
 
     context.registerHelp()
     context.registerHelpTitle('Zope Help')
 
-methods={
-    # We still need this one, at least for now, for both editing and
-    # adding.  Ugh.
-    'SQLConnectionIDs': SQL.SQLConnectionIDs,
-
-    # Oh please!
-    'ZQueryIds':             Shared.DC.ZRDB.Search.ZQueryIds,
-    }
-
-__ac_permissions__=(
-    # Ugh.  We should get rid of this, but we'll have to revisit connections
-    ('Open/Close Database Connections',   ()),
-    )
 
 __module_aliases__=(
     ('Products.AqueductSQLMethods','Products.ZSQLMethods'),

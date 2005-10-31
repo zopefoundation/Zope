@@ -44,16 +44,18 @@ products <<PRODUCTS2>>
 # backslashes, the backslashes get treated *as* backslashes instead of as
 # string escape codes.
 dummy_product_init = """
+misc_ = {'a':1}
+def amethod(self):
+    pass
 def initialize(context):
     f=open(r'%s', 'w')
     f.write('didit')
     f.close()
-misc_ = {'a':1}
-def amethod(self):
-    pass
-methods = {'amethod':amethod}
-__ac_permissions__ = ( ('aPermission', (), () ), )
-meta_types = ( {'name':'grabass', 'action':'amethod'}, )
+    context.registerClass(
+        meta_type='grabass',
+        permission='aPermission',
+        constructors=(amethod,),
+        legacy=(amethod,))
 """
 
 def getSchema():
@@ -195,13 +197,18 @@ class TestProductInit( unittest.TestCase ):
         self.assert_(os.path.exists(doneflag))
         # Methods installed into folder
         self.assert_(hasattr(Folder, 'amethod'))
-        # __ac_permissions__ put into folder
-        self.assert_( ('aPermission', (),)  in
-                       Folder.__ac_permissions__)
+        # permission roles put into folder
+        self.assert_(hasattr(Folder, 'amethod__roles__'))
         # Products.meta_types updated
-        self.assert_( {'action': 'amethod', 'product': 'abaz',
-                       'name': 'grabass', 'visibility': 'Global'}
-                      in meta_types)
+        self.assert_( {'name': 'grabass',
+                       'action': 'manage_addProduct/abaz/amethod',
+                       'product': 'abaz',
+                       'permission': 'aPermission',
+                       'visibility': 'Global',
+                       'interfaces': (),
+                       'instance': None,
+                       'container_filter': None}
+                      in Products.meta_types)
 
     def test_install_products(self):
         self.makeFakeProducts()
