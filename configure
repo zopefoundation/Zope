@@ -8,11 +8,11 @@
 #####################################################################
 
 # Place the Zope major version number below.
-ZOPE_VERS=2.8
+ZOPE_VERS=2.9
 
 # Place the optimal target version number for Zope (as returned by sys.version)
 # below
-TARGET="2.3.5"
+TARGET="2.4.1"
 
 # Order a list of "acceptable" python version numbers (as returned by
 # sys.version) below in "best" to "worst" order, not including the
@@ -22,7 +22,7 @@ ACCEPTABLE=""
 
 # provide the executable names for all the acceptable versions
 # (and the target version) below
-EXENAMES="python python2 python2.3"
+EXENAMES="python python2 python2.4"
 
 #####################################################################
 #                    END EDITABLE PARAMETERS                        #
