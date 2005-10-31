@@ -7,7 +7,7 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
 """Application support
@@ -18,6 +18,7 @@ $Id$
 import os, sys, traceback
 from cgi import escape
 from StringIO import StringIO
+from warnings import warn
 
 import Globals, Products, App.Product, App.ProductRegistry, misc_
 import transaction
@@ -401,7 +402,7 @@ class AppInitializer:
             default_period_secs = 20
             default_timeout_mins = 20
 
-            limit = getattr(config, 'maximum_number_of_session_objects', 
+            limit = getattr(config, 'maximum_number_of_session_objects',
                             default_limit)
             timeout_spec = getattr(config, 'session_timeout_minutes',
                                    default_timeout_mins)
@@ -777,6 +778,13 @@ def install_product(app, product_dir, product_name, meta_types,
             # constructors, etc.
             permissions={}
             new_permissions={}
+            if pgetattr(product, '__ac_permissions__', None) is not None:
+                warn('__init__.py of %s has a long deprecated '
+                     '\'__ac_permissions__\' attribute. '
+                     '\'__ac_permissions__\' will be ignored by '
+                     'install_product in Zope 2.9. Please use registerClass '
+                     'instead.' % product.__name__,
+                     DeprecationWarning)
             for p in pgetattr(product, '__ac_permissions__', ()):
                 permission, names, default = (
                     tuple(p)+('Manager',))[:3]
@@ -786,6 +794,12 @@ def install_product(app, product_dir, product_name, meta_types,
                 elif not folder_permissions.has_key(permission):
                     new_permissions[permission]=()
 
+            if pgetattr(product, 'meta_types', None) is not None:
+                warn('__init__.py of %s has a long deprecated \'meta_types\' '
+                     'attribute. \'meta_types\' will be ignored by '
+                     'install_product in Zope 2.9. Please use registerClass '
+                     'instead.' % product.__name__,
+                     DeprecationWarning)
             for meta_type in pgetattr(product, 'meta_types', ()):
                 # Modern product initialization via a ProductContext
                 # adds 'product' and 'permission' keys to the meta_type
@@ -797,6 +811,12 @@ def install_product(app, product_dir, product_name, meta_types,
                 meta_type['visibility'] = 'Global'
                 meta_types.append(meta_type)
 
+            if pgetattr(product, 'methods', None) is not None:
+                warn('__init__.py of %s has a long deprecated \'methods\' '
+                     'attribute. \'methods\' will be ignored by '
+                     'install_product in Zope 2.9. Please use registerClass '
+                     'instead.' % product.__name__,
+                     DeprecationWarning)
             for name,method in pgetattr(
                 product, 'methods', {}).items():
                 if not hasattr(Folder.Folder, name):
