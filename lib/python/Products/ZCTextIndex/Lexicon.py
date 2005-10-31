@@ -8,9 +8,13 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+"""Lexicon.
+
+$Id$
+"""
 
 import re
 
@@ -20,15 +24,19 @@ from BTrees.Length import Length
 
 import ZODB
 from Persistence import Persistent
+from zope.interface import implements
 
-from Products.ZCTextIndex.ILexicon import ILexicon
 from Products.ZCTextIndex.StopDict import get_stopdict
 from Products.ZCTextIndex.ParseTree import QueryError
 from Products.ZCTextIndex.PipelineFactory import element_factory
+from ILexicon import ILexicon as z2ILexicon
+from interfaces import ILexicon
+
 
 class Lexicon(Persistent):
 
-    __implements__ = ILexicon
+    __implements__ = z2ILexicon
+    implements(ILexicon)
 
     def __init__(self, *pipeline):
         self._wids = OIBTree()  # word -> wid

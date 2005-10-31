@@ -17,9 +17,6 @@ $Id$
 """
 
 import unittest
-import Testing
-import Zope2
-Zope2.startup()
 
 import re
 
@@ -577,9 +574,11 @@ class OkapiQueryTests(QueryTestsBase):
 class PLexiconTests(unittest.TestCase):
 
     def test_z3interfaces(self):
+        from Products.ZCTextIndex.interfaces import ILexicon
         from Products.ZCTextIndex.interfaces import IZCLexicon
         from zope.interface.verify import verifyClass
 
+        verifyClass(ILexicon, PLexicon)
         verifyClass(IZCLexicon, PLexicon)
 
 

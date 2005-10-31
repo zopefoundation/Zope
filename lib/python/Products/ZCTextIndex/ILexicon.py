@@ -8,68 +8,21 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+"""Lexicon z2 interfaces.
 
-from Interface import Interface
+$Id$
+"""
 
-class ILexicon(Interface):
-    """Object responsible for converting text to word identifiers."""
 
-    def termToWordIds(text):
-        """Return a sequence of ids of the words parsed from the text.
+# create ILexicon
+from Interface.bridge import createZope3Bridge
+from interfaces import ILexicon as z3ILexicon
+import ILexicon
 
-        The input text may be either a string or a list of strings.
+createZope3Bridge(z3ILexicon, ILexicon, 'ILexicon')
 
-        Parse the text as if they are search terms, and skips words
-        that aren't in the lexicon.
-        """
-
-    def sourceToWordIds(text):
-        """Return a sequence of ids of the words parsed from the text.
-
-        The input text may be either a string or a list of strings.
-
-        Parse the text as if they come from a source document, and
-        creates new word ids for words that aren't (yet) in the
-        lexicon.
-        """
-
-    def globToWordIds(pattern):
-        """Return a sequence of ids of words matching the pattern.
-
-        The argument should be a single word using globbing syntax,
-        e.g. 'foo*' meaning anything starting with 'foo'.
-
-        Return the wids for all words in the lexicon that match the
-        pattern.
-        """
-
-    def length():
-        """Return the number of unique term in the lexicon."""
-
-    def get_word(wid):
-        """Return the word for the given word id.
-
-        Raise KeyError if the word id is not in the lexicon.
-        """
-
-    def get_wid(word):
-        """Return the wird id for the given word.
-
-        Return 0 of the word is not in the lexicon.
-        """
-
-    def parseTerms(text):
-        """Pass the text through the pipeline.
-
-        Return a list of words, normalized by the pipeline
-        (e.g. stopwords removed, case normalized etc.).
-        """
-
-    def isGlob(word):
-        """Return true if the word is a globbing pattern.
-
-        The word should be one of the words returned by parseTerm().
-        """
+del createZope3Bridge
+del z3ILexicon
