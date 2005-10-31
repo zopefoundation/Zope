@@ -35,6 +35,7 @@ from ZODB.POSException import ConflictError
 import transaction
 from Products.PluginIndexes.common.PluggableIndex \
      import PluggableIndexInterface
+from Products.PluginIndexes.interfaces import IPluggableIndex
 from Products.PluginIndexes.TextIndex import Splitter
 from zLOG import LOG
 from zope.interface import implements
@@ -979,7 +980,7 @@ class ZCatalog(Folder, Persistent, Implicit):
         # this interface by that name.  Bleah
 
         products = ObjectManager.all_meta_types(self, interfaces=(
-            PluggableIndexInterface,))
+            PluggableIndexInterface, IPluggableIndex))
 
         p = None
 
