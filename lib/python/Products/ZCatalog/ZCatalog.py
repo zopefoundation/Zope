@@ -35,6 +35,7 @@ from ZODB.POSException import ConflictError
 import transaction
 from Products.PluginIndexes.common.PluggableIndex \
      import PluggableIndexInterface
+from Products.PluginIndexes.interfaces import IPluggableIndex
 from Products.PluginIndexes.TextIndex import Splitter
 from zLOG import LOG
 from zope.interface import implements
@@ -933,7 +934,7 @@ class ZCatalog(Folder, Persistent, Implicit):
             bases = [str(name) for name in idx.__class__.__bases__]
             found = False
 
-            if idx.meta_type  == 'PathIndex':
+            if idx.meta_type == 'PathIndex':
                 found = True
             else:
                 for base in bases:
@@ -958,6 +959,7 @@ class ZCatalog(Folder, Persistent, Implicit):
 
                 if indexed_attrs:
                     setattr(new_idx, 'indexed_attrs', indexed_attrs)
+
                 if idx.meta_type == 'DateRangeIndex':
                     setattr(new_idx, '_since_field',  since_field)
                     setattr(new_idx, '_until_field', until_field)
@@ -984,7 +986,7 @@ class ZCatalog(Folder, Persistent, Implicit):
         # this interface by that name.  Bleah
 
         products = ObjectManager.all_meta_types(self, interfaces=(
-            PluggableIndexInterface,))
+            PluggableIndexInterface, IPluggableIndex))
 
         p = None
 
