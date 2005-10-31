@@ -15,6 +15,7 @@
 $Id$
 """
 
+import warnings
 import marshal
 import sys, fnmatch, copy, os, re
 from cgi import escape
@@ -42,6 +43,11 @@ from zope.interface import implements
 import CopySupport
 from interfaces import IObjectManager
 from Traversable import Traversable
+from zope.event import notify
+from zope.app.container.contained import ObjectAddedEvent
+from zope.app.container.contained import ObjectRemovedEvent
+from Products.Five.event import ObjectWillBeAddedEvent
+from Products.Five.event import ObjectWillBeRemovedEvent
 
 
 # the name BadRequestException is relied upon by 3rd-party code
@@ -266,11 +272,20 @@ class ObjectManager(
             raise AttributeError, id
         return default
 
-    def _setObject(self, id, object, roles=None, user=None, set_owner=1):
-        v=self._checkId(id)
-        if v is not None: id=v
-        try:    t=object.meta_type
-        except: t=None
+    def _setObject(self, id, object, roles=None, user=None, set_owner=1,
+                   suppress_events=False):
+        """Set an object into this container.
+
+        Also sends IObjectWillBeAddedEvent and IObjectAddedEvent.
+        """
+        # Done here to avoid circular imports
+        from Products.Five.subscribers import maybeCallDeprecated
+
+        ob = object # better name, keep original function signature
+        v = self._checkId(id)
+        if v is not None:
+            id = v
+        t = getattr(ob, 'meta_type', None)
 
         # If an object by the given id already exists, remove it.
         for object_info in self._objects:
@@ -278,78 +293,78 @@ class ObjectManager(
                 self._delObject(id)
                 break
 
-        self._objects=self._objects+({'id':id,'meta_type':t},)
-        self._setOb(id,object)
-        object=self._getOb(id)
+        if not suppress_events:
+            notify(ObjectWillBeAddedEvent(ob, self, id))
+
+        self._objects = self._objects + ({'id': id, 'meta_type': t},)
+        self._setOb(id, ob)
+        ob = self._getOb(id)
 
         if set_owner:
-            object.manage_fixupOwnershipAfterAdd()
+            # TODO: eventify manage_fixupOwnershipAfterAdd
+            # This will be called for a copy/clone, or a normal _setObject.
+            ob.manage_fixupOwnershipAfterAdd()
 
             # Try to give user the local role "Owner", but only if
             # no local roles have been set on the object yet.
-            if hasattr(object, '__ac_local_roles__'):
-                if object.__ac_local_roles__ is None:
-                    user=getSecurityManager().getUser()
-                    if user is not None:
-                        userid=user.getId()
-                        if userid is not None:
-                            object.manage_setLocalRoles(userid, ['Owner'])
+            if getattr(ob, '__ac_local_roles__', _marker) is None:
+                user = getSecurityManager().getUser()
+                if user is not None:
+                    userid = user.getId()
+                    if userid is not None:
+                        ob.manage_setLocalRoles(userid, ['Owner'])
 
-        object.manage_afterAdd(object, self)
+        if not suppress_events:
+            notify(ObjectAddedEvent(ob, self, id))
+
+        maybeCallDeprecated('manage_afterAdd', ob, self)
+
         return id
 
     def manage_afterAdd(self, item, container):
-        for object in self.objectValues():
-            try: s=object._p_changed
-            except: s=0
-            if hasattr(aq_base(object), 'manage_afterAdd'):
-                object.manage_afterAdd(item, container)
-            if s is None: object._p_deactivate()
+        # Don't do recursion anymore, a subscriber does that.
+        warnings.warn(
+            "%s.manage_afterAdd is deprecated and will be removed in "
+            "Zope 2.11, you should use an IObjectAddedEvent "
+            "subscriber instead." % self.__class__.__name__,
+            DeprecationWarning, stacklevel=2)
+    manage_afterAdd.__five_method__ = True
 
     def manage_afterClone(self, item):
-        for object in self.objectValues():
-            try: s=object._p_changed
-            except: s=0
-            if hasattr(aq_base(object), 'manage_afterClone'):
-                object.manage_afterClone(item)
-            if s is None: object._p_deactivate()
+        # Don't do recursion anymore, a subscriber does that.
+        warnings.warn(
+            "%s.manage_afterClone is deprecated and will be removed in "
+            "Zope 2.11, you should use an IFiveObjectClonedEvent "
+            "subscriber instead." % self.__class__.__name__,
+            DeprecationWarning, stacklevel=2)
+    manage_afterClone.__five_method__ = True
 
     def manage_beforeDelete(self, item, container):
-        for object in self.objectValues():
-            try: s=object._p_changed
-            except: s=0
-            try:
-                if hasattr(aq_base(object), 'manage_beforeDelete'):
-                    object.manage_beforeDelete(item, container)
-            except BeforeDeleteException, ob:
-                raise
-            except ConflictError:
-                raise
-            except:
-                LOG('Zope',ERROR,'manage_beforeDelete() threw',
-                    error=sys.exc_info())
-                # In debug mode when non-Manager, let exceptions propagate.
-                if getConfiguration().debug_mode:
-                    if not getSecurityManager().getUser().has_role('Manager'):
-                        raise
-            if s is None: object._p_deactivate()
+        # Don't do recursion anymore, a subscriber does that.
+        warnings.warn(
+            "%s.manage_beforeDelete is deprecated and will be removed in "
+            "Zope 2.11, you should use an IObjectWillBeRemovedEvent "
+            "subscriber instead." % self.__class__.__name__,
+            DeprecationWarning, stacklevel=2)
+    manage_beforeDelete.__five_method__ = True
 
-    def _delObject(self, id, dp=1):
-        object=self._getOb(id)
-        try:
-            object.manage_beforeDelete(object, self)
-        except BeforeDeleteException, ob:
-            raise
-        except ConflictError:
-            raise
-        except:
-            LOG('Zope', ERROR, '_delObject() threw',
-                error=sys.exc_info())
-            # In debug mode when non-Manager, let exceptions propagate.
-            if getConfiguration().debug_mode:
-                if not getSecurityManager().getUser().has_role('Manager'):
-                    raise
-        self._objects=tuple(filter(lambda i,n=id: i['id']!=n, self._objects))
+    def _delObject(self, id, dp=1, suppress_events=False):
+        """Delete an object from this container.
+
+        Also sends IObjectWillBeRemovedEvent and IObjectRemovedEvent.
+        """
+        # Done here to avoid circular imports
+        from Products.Five.subscribers import maybeCallDeprecated
+
+        ob = self._getOb(id)
+
+        maybeCallDeprecated('manage_beforeDelete', ob, self)
+
+        if not suppress_events:
+            notify(ObjectWillBeRemovedEvent(ob, self, id))
+
+        self._objects = tuple([i for i in self._objects
+                               if i['id'] != id])
         self._delOb(id)
 
         # Indicate to the object that it has been deleted. This is
@@ -357,8 +372,13 @@ class ObjectManager(
         # tolerate failure here because the object being deleted could
         # be a Broken object, and it is not possible to set attributes
         # on Broken objects.
-        try:    object._v__object_deleted__ = 1
-        except: pass
+        try:
+            ob._v__object_deleted__ = 1
+        except:
+            pass
+
+        if not suppress_events:
+            notify(ObjectRemovedEvent(ob, self, id))
 
     def objectIds(self, spec=None):
         # Returns a list of subobject ids of the current object.

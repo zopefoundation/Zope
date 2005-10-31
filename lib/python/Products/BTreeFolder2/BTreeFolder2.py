@@ -37,6 +37,11 @@ from AccessControl.Permissions import access_contents_information, \
      view_management_screens
 from zLOG import LOG, INFO, ERROR, WARNING
 from Products.ZCatalog.Lazy import LazyMap
+from zope.event import notify
+from zope.app.container.contained import ObjectAddedEvent
+from zope.app.container.contained import ObjectRemovedEvent
+from Products.Five.event import ObjectWillBeAddedEvent
+from Products.Five.event import ObjectWillBeRemovedEvent
 
 
 manage_addBTreeFolderForm = DTMLFile('folderAdd', globals())
@@ -404,46 +409,63 @@ class BTreeFolder2Base (Persistent):
                                         'it is already in use.' % id)
 
 
-    def _setObject(self, id, object, roles=None, user=None, set_owner=1):
-        v=self._checkId(id)
-        if v is not None: id=v
+    def _setObject(self, id, object, roles=None, user=None, set_owner=1,
+                   suppress_events=False):
+        # Done here to avoid circular imports
+        from Products.Five.subscribers import maybeCallDeprecated
+
+        ob = object # better name, keep original function signature
+        v = self._checkId(id)
+        if v is not None:
+            id = v
 
         # If an object by the given id already exists, remove it.
         if self.has_key(id):
             self._delObject(id)
 
-        self._setOb(id, object)
-        object = self._getOb(id)
+        if not suppress_events:
+            notify(ObjectWillBeAddedEvent(ob, self, id))
+
+        self._setOb(id, ob)
+        ob = self._getOb(id)
 
         if set_owner:
-            object.manage_fixupOwnershipAfterAdd()
+            # TODO: eventify manage_fixupOwnershipAfterAdd
+            # This will be called for a copy/clone, or a normal _setObject.
+            ob.manage_fixupOwnershipAfterAdd()
 
             # Try to give user the local role "Owner", but only if
             # no local roles have been set on the object yet.
-            if hasattr(object, '__ac_local_roles__'):
-                if object.__ac_local_roles__ is None:
-                    user=getSecurityManager().getUser()
-                    if user is not None:
-                        userid=user.getId()
-                        if userid is not None:
-                            object.manage_setLocalRoles(userid, ['Owner'])
+            if getattr(ob, '__ac_local_roles__', _marker) is None:
+                user = getSecurityManager().getUser()
+                if user is not None:
+                    userid = user.getId()
+                    if userid is not None:
+                        ob.manage_setLocalRoles(userid, ['Owner'])
 
-        object.manage_afterAdd(object, self)
+        if not suppress_events:
+            notify(ObjectAddedEvent(ob, self, id))
+
+        maybeCallDeprecated('manage_afterAdd', ob, self)
+
         return id
 
 
-    def _delObject(self, id, dp=1):
-        object = self._getOb(id)
-        try:
-            object.manage_beforeDelete(object, self)
-        except BeforeDeleteException, ob:
-            raise
-        except ConflictError:
-            raise
-        except:
-            LOG('Zope', ERROR, 'manage_beforeDelete() threw',
-                error=sys.exc_info())
+    def _delObject(self, id, dp=1, suppress_events=False):
+        # Done here to avoid circular imports
+        from Products.Five.subscribers import maybeCallDeprecated
+
+        ob = self._getOb(id)
+
+        maybeCallDeprecated('manage_beforeDelete', ob, self)
+
+        if not suppress_events:
+            notify(ObjectWillBeRemovedEvent(ob, self, id))
+
         self._delOb(id)
+
+        if not suppress_events:
+            notify(ObjectRemovedEvent(ob, self, id))
 
 
     # Aliases for mapping-like access.

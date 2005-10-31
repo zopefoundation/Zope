@@ -30,6 +30,11 @@ from App.Dialogs import MessageDialog
 from webdav.Lockable import ResourceLockedError
 from zExceptions import Unauthorized, BadRequest
 from zope.interface import implements
+from zope.event import notify
+from zope.app.event.objectevent import ObjectCopiedEvent
+from zope.app.container.contained import ObjectMovedEvent
+from Products.Five.event import ObjectWillBeMovedEvent
+from Products.Five.event import FiveObjectClonedEvent
 
 from OFS.interfaces import ICopyContainer
 from OFS.interfaces import ICopySource
@@ -154,85 +159,123 @@ class CopyContainer(ExtensionClass.Base):
         If calling manage_pasteObjects from python code, pass the result of a
         previous call to manage_cutObjects or manage_copyObjects as the first
         argument.
+
+        Also sends IObjectCopiedEvent and IFiveObjectClonedEvent
+        or IObjectWillBeMovedEvent and IObjectMovedEvent.
         """
-        cp=None
+        # Done here to avoid circular imports
+        from Products.Five.subscribers import maybeCallDeprecated
+
         if cb_copy_data is not None:
-            cp=cb_copy_data
+            cp = cb_copy_data
+        elif REQUEST is not None and REQUEST.has_key('__cp'):
+            cp = REQUEST['__cp']
         else:
-            if REQUEST and REQUEST.has_key('__cp'):
-                cp=REQUEST['__cp']
+            cp = None
         if cp is None:
             raise CopyError, eNoData
 
-        try:    cp=_cb_decode(cp)
-        except: raise CopyError, eInvalid
+        try:
+            op, mdatas = _cb_decode(cp)
+        except:
+            raise CopyError, eInvalid
 
-        oblist=[]
-        op=cp[0]
+        oblist = []
         app = self.getPhysicalRoot()
-        result = []
-
-        for mdata in cp[1]:
+        for mdata in mdatas:
             m = Moniker.loadMoniker(mdata)
-            try: ob = m.bind(app)
-            except: raise CopyError, eNotFound
+            try:
+                ob = m.bind(app)
+            except ConflictError:
+                raise
+            except:
+                raise CopyError, eNotFound
             self._verifyObjectPaste(ob, validate_src=op+1)
             oblist.append(ob)
 
-        if op==0:
+        result = []
+        if op == 0:
             # Copy operation
             for ob in oblist:
+                orig_id = ob.getId()
                 if not ob.cb_isCopyable():
-                    raise CopyError, eNotSupported % escape(ob.getId())
-                try:    ob._notifyOfCopyTo(self, op=0)
-                except: raise CopyError, MessageDialog(
-                    title='Copy Error',
-                    message=sys.exc_info()[1],
-                    action ='manage_main')
-                ob=ob._getCopy(self)
-                orig_id=ob.getId()
-                id=self._get_id(ob.getId())
-                result.append({'id':orig_id, 'new_id':id})
+                    raise CopyError, eNotSupported % escape(orig_id)
+
+                try:
+                    ob._notifyOfCopyTo(self, op=0)
+                except ConflictError:
+                    raise
+                except:
+                    raise CopyError, MessageDialog(
+                        title="Copy Error",
+                        message=sys.exc_info()[1],
+                        action='manage_main')
+
+                id = self._get_id(orig_id)
+                result.append({'id': orig_id, 'new_id': id})
+
+                ob = ob._getCopy(self)
                 ob._setId(id)
+                notify(ObjectCopiedEvent(ob))
+
                 self._setObject(id, ob)
                 ob = self._getOb(id)
-                ob._postCopy(self, op=0)
-                ob.manage_afterClone(ob)
                 ob.wl_clearLocks()
+
+                ob._postCopy(self, op=0)
+
+                maybeCallDeprecated('manage_afterClone', ob)
+
+                notify(FiveObjectClonedEvent(ob))
 
             if REQUEST is not None:
                 return self.manage_main(self, REQUEST, update_menu=1,
                                         cb_dataValid=1)
 
-        if op==1:
+        elif op == 1:
             # Move operation
             for ob in oblist:
-                id=ob.getId()
+                orig_id = ob.getId()
                 if not ob.cb_isMoveable():
-                    raise CopyError, eNotSupported % escape(id)
-                try:    ob._notifyOfCopyTo(self, op=1)
-                except: raise CopyError, MessageDialog(
-                    title='Move Error',
-                    message=sys.exc_info()[1],
-                    action ='manage_main')
+                    raise CopyError, eNotSupported % escape(orig_id)
+
+                try:
+                    ob._notifyOfCopyTo(self, op=1)
+                except ConflictError:
+                    raise
+                except:
+                    raise CopyError, MessageDialog(
+                        title="Move Error",
+                        message=sys.exc_info()[1],
+                        action='manage_main')
+
                 if not sanity_check(self, ob):
-                    raise CopyError, 'This object cannot be pasted into itself'
+                    raise CopyError, "This object cannot be pasted into itself"
+
+                orig_container = aq_parent(aq_inner(ob))
+                if aq_base(orig_container) is aq_base(self):
+                    id = orig_id
+                else:
+                    id = self._get_id(orig_id)
+                result.append({'id': orig_id, 'new_id': id})
+
+                notify(ObjectWillBeMovedEvent(ob, orig_container, orig_id,
+                                              self, id))
 
                 # try to make ownership explicit so that it gets carried
                 # along to the new location if needed.
                 ob.manage_changeOwnershipType(explicit=1)
 
-                aq_parent(aq_inner(ob))._delObject(id)
+                orig_container._delObject(orig_id, suppress_events=True)
                 ob = aq_base(ob)
-                orig_id=id
-                id=self._get_id(id)
-                result.append({'id':orig_id, 'new_id':id })
-
                 ob._setId(id)
-                self._setObject(id, ob, set_owner=0)
-                ob=self._getOb(id)
-                ob._postCopy(self, op=1)
 
+                self._setObject(id, ob, set_owner=0, suppress_events=True)
+                ob = self._getOb(id)
+
+                notify(ObjectMovedEvent(ob, orig_container, orig_id, self, id))
+
+                ob._postCopy(self, op=1)
                 # try to make ownership implicit if possible
                 ob.manage_changeOwnershipType(explicit=0)
 
@@ -243,6 +286,7 @@ class CopyContainer(ExtensionClass.Base):
                 REQUEST['__cp'] = None
                 return self.manage_main(self, REQUEST, update_menu=1,
                                         cb_dataValid=0)
+
         return result
 
     manage_renameForm=Globals.DTMLFile('dtml/renameForm', globals())
@@ -259,31 +303,48 @@ class CopyContainer(ExtensionClass.Base):
         return None
 
     def manage_renameObject(self, id, new_id, REQUEST=None):
-        """Rename a particular sub-object"""
-        try: self._checkId(new_id)
-        except: raise CopyError, MessageDialog(
-                      title='Invalid Id',
-                      message=sys.exc_info()[1],
-                      action ='manage_main')
-        ob=self._getOb(id)
+        """Rename a particular sub-object.
+        """
+        try:
+            self._checkId(new_id)
+        except:
+            raise CopyError, MessageDialog(
+                title='Invalid Id',
+                message=sys.exc_info()[1],
+                action ='manage_main')
+
+        ob = self._getOb(id)
+
         if ob.wl_isLocked():
-            raise ResourceLockedError, 'Object "%s" is locked via WebDAV' % ob.getId()
+            raise ResourceLockedError, ('Object "%s" is locked via WebDAV'
+                                        % ob.getId())
         if not ob.cb_isMoveable():
             raise CopyError, eNotSupported % escape(id)
         self._verifyObjectPaste(ob)
-        try:    ob._notifyOfCopyTo(self, op=1)
-        except: raise CopyError, MessageDialog(
-                      title='Rename Error',
-                      message=sys.exc_info()[1],
-                      action ='manage_main')
-        self._delObject(id)
+
+        try:
+            ob._notifyOfCopyTo(self, op=1)
+        except ConflictError:
+            raise
+        except:
+            raise CopyError, MessageDialog(
+                title="Rename Error",
+                message=sys.exc_info()[1],
+                action ='manage_main')
+
+        notify(ObjectWillBeMovedEvent(ob, self, id, self, new_id))
+
+        self._delObject(id, suppress_events=True)
         ob = aq_base(ob)
         ob._setId(new_id)
 
         # Note - because a rename always keeps the same context, we
         # can just leave the ownership info unchanged.
-        self._setObject(new_id, ob, set_owner=0)
+        self._setObject(new_id, ob, set_owner=0, suppress_events=True)
         ob = self._getOb(new_id)
+
+        notify(ObjectMovedEvent(ob, self, id, self, new_id))
+
         ob._postCopy(self, op=1)
 
         if REQUEST is not None:
@@ -296,26 +357,46 @@ class CopyContainer(ExtensionClass.Base):
     # Because it's still a "management" function.
     manage_clone__roles__=None
     def manage_clone(self, ob, id, REQUEST=None):
-        # Clone an object, creating a new object with the given id.
+        """Clone an object, creating a new object with the given id.
+        """
+        # Done here to avoid circular imports
+        from Products.Five.subscribers import maybeCallDeprecated
+
         if not ob.cb_isCopyable():
             raise CopyError, eNotSupported % escape(ob.getId())
-        try: self._checkId(id)
-        except: raise CopyError, MessageDialog(
-                      title='Invalid Id',
-                      message=sys.exc_info()[1],
-                      action ='manage_main')
+        try:
+            self._checkId(id)
+        except:
+            raise CopyError, MessageDialog(
+                title='Invalid Id',
+                message=sys.exc_info()[1],
+                action ='manage_main')
+
         self._verifyObjectPaste(ob)
-        try:    ob._notifyOfCopyTo(self, op=0)
-        except: raise CopyError, MessageDialog(
-                      title='Clone Error',
-                      message=sys.exc_info()[1],
-                      action ='manage_main')
-        ob=ob._getCopy(self)
+
+        try:
+            ob._notifyOfCopyTo(self, op=0)
+        except ConflictError:
+            raise
+        except:
+            raise CopyError, MessageDialog(
+                title="Clone Error",
+                message=sys.exc_info()[1],
+                action='manage_main')
+
+        ob = ob._getCopy(self)
         ob._setId(id)
+        notify(ObjectCopiedEvent(ob))
+
         self._setObject(id, ob)
-        ob=self._getOb(id)
+        ob = self._getOb(id)
+
         ob._postCopy(self, op=0)
-        ob.manage_afterClone(ob)
+
+        maybeCallDeprecated('manage_afterClone', ob)
+
+        notify(FiveObjectClonedEvent(ob))
+
         return ob
 
     def cb_dataValid(self):

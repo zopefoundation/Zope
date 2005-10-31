@@ -30,7 +30,7 @@ from IOrderSupport import IOrderedContainer as z2IOrderedContainer
 from ObjectManager import ObjectManager
 
 
-class OrderSupport:
+class OrderSupport(object):
 
     """ Ordered container mixin class.
 
@@ -251,13 +251,12 @@ class OrderSupport:
     #   Override Inherited Method of ObjectManager Subclass
     #
 
-    _old_manage_renameObject = ObjectManager.inheritedAttribute(
-                                                        'manage_renameObject')
     def manage_renameObject(self, id, new_id, REQUEST=None):
         """ Rename a particular sub-object without changing its position.
         """
         old_position = self.getObjectPosition(id)
-        result = self._old_manage_renameObject(id, new_id, REQUEST)
+        result = super(OrderSupport, self).manage_renameObject(id, new_id,
+                                                               REQUEST)
         self.moveObjectToPosition(new_id, old_position)
         return result
 
