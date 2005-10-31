@@ -71,6 +71,13 @@ Zope Changes
 
     Bugs Fixed
 
+      - If a content object implemented any in-place numeric operators, 
+        untrusted code could call them, thus modifying the content.
+
+      - If Python 2.4 is used, despite the fact that Python 2.4 is
+        unsupported, untrusted code could use generator expressions to
+        gain access to container items.
+
       - Collector #1895: testrunner: omitting the 'var' from recursive
         directory walking
 
