@@ -15,27 +15,31 @@
 $Id$
 """
 
+import os.path, re
+import stat
+
 from AccessControl.PermissionRole import PermissionRole
 import Globals, os, OFS.ObjectManager, OFS.misc_, Products
 import AccessControl.Permission
+from App.Product import doInstall
 from HelpSys import HelpTopic, APIHelpTopic
 from HelpSys.HelpSys import ProductHelp
 from FactoryDispatcher import FactoryDispatcher
 from zLOG import LOG, WARNING
-import os.path, re
-import stat
 from DateTime import DateTime
 from Interface.Implements import instancesOfObjectImplements
-from App.Product import doInstall
+from zope.interface import implementedBy
 
 import ZClasses # to enable 'PC.registerBaseClass()'
 
-if not hasattr(Products, 'meta_types'): Products.meta_types=()
+if not hasattr(Products, 'meta_types'):
+    Products.meta_types=()
 if not hasattr(Products, 'meta_classes'):
     Products.meta_classes={}
     Products.meta_class_info={}
 
 _marker = []  # Create a new marker object
+
 
 class ProductContext:
 
@@ -100,7 +104,6 @@ class ProductContext:
            before calling an object's constructor.
 
         """
-        app=self.__app
         pack=self.__pack
         initial=constructors[0]
         productObject=self.__prod
@@ -109,8 +112,6 @@ class ProductContext:
         if icon and instance_class is not None:
             setattr(instance_class, 'icon', 'misc_/%s/%s' %
                     (pid, os.path.split(icon)[1]))
-
-        OM=OFS.ObjectManager.ObjectManager
 
         if permissions:
             if isinstance(permissions, basestring): # You goofed it!
@@ -139,6 +140,8 @@ class ProductContext:
         AccessControl.Permission.registerPermissions(
             ((permission, (), default),))
         ############################################################
+
+        OM=OFS.ObjectManager.ObjectManager
 
         for method in legacy:
             if isinstance(method, tuple):
@@ -178,14 +181,26 @@ class ProductContext:
             if instance_class is None:
                 interfaces = ()
             else:
-                interfaces = instancesOfObjectImplements(instance_class)
+                interfaces = tuple(implementedBy(instance_class))
+                # BBB: Will be removed in Zope 2.11.
+                interfaces += tuple(instancesOfObjectImplements(instance_class))
 
         Products.meta_types=Products.meta_types+(
             { 'name': meta_type or instance_class.meta_type,
+              # 'action': The action in the add drop down in the ZMI. This is
+              #           currently also required by the _verifyObjectPaste
+              #           method of CopyContainers like Folders.
               'action': ('manage_addProduct/%s/%s' % (pid, name)),
+              # 'product': Used by ProductRegistry for TTW products and by
+              #            OFS.Application for refreshing products.
+              #            This key might not be available.
               'product': pid,
+              # 'permission': Guards the add action.
               'permission': permission,
+              # 'visibility': A silly name. Doesn't have much to do with
+              #               visibility. Allowed values: 'Global', None
               'visibility': visibility,
+              # 'interfaces': A tuple of oldstyle and/or newstyle interfaces.
               'interfaces': interfaces,
               'instance': instance_class,
               'container_filter': container_filter
@@ -210,7 +225,6 @@ class ProductContext:
             if not hasattr(OFS.misc_.misc_, pid):
                 setattr(OFS.misc_.misc_, pid, OFS.misc_.Misc_(pid, {}))
             getattr(OFS.misc_.misc_, pid)[name]=icon
-
 
     def registerZClass(self, Z, meta_type=None):
         #
@@ -237,8 +251,6 @@ class ProductContext:
         Products.meta_class_info[key]=info # meta_type
         Products.meta_classes[key]=Z
 
-
-
     def registerBaseClass(self, base_class, meta_type=None):
         #
         #   Convenience method, now deprecated -- clients should
@@ -248,7 +260,6 @@ class ProductContext:
         #
         Z = ZClasses.createZClassForBase( base_class, self.__pack )
         return Z
-
 
     def getProductHelp(self):
         """
@@ -347,6 +358,7 @@ class ProductContext:
                     continue
                 ht=APIHelpTopic.APIHelpTopic(file, '', os.path.join(path, file))
                 self.registerHelpTopic(file, ht)
+
 
 class AttrDict:
 
