@@ -48,6 +48,14 @@ class ItemForDeletion(SimpleItem):
             raise DeleteFailed
         return SimpleItem.manage_beforeDelete(self, item, container)
 
+from Products.Five.eventconfigure import setDeprecatedManageAddDelete
+setDeprecatedManageAddDelete(ItemForDeletion)
+
+from zope.interface import implements
+from OFS.interfaces import IItem
+class ObjectManagerWithIItem(ObjectManager):
+    """The event subscribers work on IItem."""
+    implements(IItem)
 
 class ObjectManagerTests( unittest.TestCase ):
 
@@ -62,10 +70,7 @@ class ObjectManagerTests( unittest.TestCase ):
         getConfiguration().debug_mode = mode
 
     def _getTargetClass( self ):
-
-        from OFS.ObjectManager import ObjectManager
-
-        return ObjectManager
+        return ObjectManagerWithIItem
 
     def _makeOne( self, *args, **kw ):
 
