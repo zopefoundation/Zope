@@ -491,6 +491,8 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         elif rs:
             # We got some results from the indexes.
             # Sort and convert to sequences.
+            # XXX: The check for 'values' is really stupid since we call
+            # items() and *not* values()
             if sort_index is None and hasattr(rs, 'values'):
                 # having a 'values' means we have a data structure with
                 # scores.  Build a new result set, sort it by score, reverse
