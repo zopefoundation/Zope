@@ -21,6 +21,10 @@ class SiteErrorLogTests(unittest.TestCase):
     def setUp(self):
         transaction.begin()
         self.app = makerequest(Zope2.app())
+        if not hasattr(self.app, 'error_log'):
+            # If ZopeLite was imported, we have no default error_log
+            from Products.SiteErrorLog.SiteErrorLog import SiteErrorLog
+            self.app._setObject('error_log', SiteErrorLog())
         try:
             self.app.manage_addDTMLMethod('doc', '')
         except:
