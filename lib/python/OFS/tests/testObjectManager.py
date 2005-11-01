@@ -46,7 +46,12 @@ class ItemForDeletion(SimpleItem):
         self.before_delete_called = True
         if self.fail_on_delete:
             raise DeleteFailed
-        return SimpleItem.manage_beforeDelete(self, item, container)
+
+    def manage_afterAdd(self, item, container):
+        pass
+
+    def manage_afterClone(self, item):
+        pass
 
 from Products.Five.eventconfigure import setDeprecatedManageAddDelete
 setDeprecatedManageAddDelete(ItemForDeletion)
