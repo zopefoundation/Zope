@@ -1,4 +1,5 @@
 Unreleased
+- transaction.commit(1) is deprecated in favor of transaction.savepoint().
 - Don't break if Python distros ship without profile support (Debian, Ubuntu).
 - Functional.publish() would hang if it got a request_method argument other
   than GET or HEAD while omitting the stdin argument.

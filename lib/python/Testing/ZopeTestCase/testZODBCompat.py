@@ -42,7 +42,7 @@ class TestCopyPaste(ZopeTestCase.ZopeTestCase):
         self.folder.addDTMLMethod('doc', file='foo')
         # _p_oids are None until we commit a subtransaction
         self.assertEqual(self.folder._p_oid, None)
-        transaction.commit(1)
+        transaction.savepoint()
         self.failIfEqual(self.folder._p_oid, None)
 
     def testCutPaste(self):
@@ -93,7 +93,7 @@ class TestImportExport(ZopeTestCase.ZopeTestCase):
         self.folder.addDTMLMethod('doc', file='foo')
         # _p_oids are None until we commit a subtransaction
         self.assertEqual(self.folder._p_oid, None)
-        transaction.commit(1)
+        transaction.savepoint()
         self.failIfEqual(self.folder._p_oid, None)
 
     def testExport(self):
@@ -315,7 +315,7 @@ class TestTransactionAbort(ZopeTestCase.ZopeTestCase):
     def testSubTransactionAbort(self):
         self.folder.foo = 1
         self.failUnless(hasattr(self.folder, 'foo'))
-        transaction.commit(1)
+        transaction.savepoint()
         transaction.abort()
         # This time the abort nukes the foo attribute...
         self.failIf(hasattr(self.folder, 'foo'))
@@ -330,7 +330,7 @@ class TestTransactionAbort(ZopeTestCase.ZopeTestCase):
     def testSubTransactionAbortPersistent(self):
         self.folder._p_foo = 1
         self.failUnless(hasattr(self.folder, '_p_foo'))
-        transaction.commit(1)
+        transaction.savepoint()
         transaction.abort()
         # This time the abort nukes the _p_foo attribute...
         self.failIf(hasattr(self.folder, '_p_foo'))
@@ -345,7 +345,7 @@ class TestTransactionAbort(ZopeTestCase.ZopeTestCase):
     def testSubTransactionAbortVolatile(self):
         self.folder._v_foo = 1
         self.failUnless(hasattr(self.folder, '_v_foo'))
-        transaction.commit(1)
+        transaction.savepoint()
         transaction.abort()
         # This time the abort nukes the _v_foo attribute...
         self.failIf(hasattr(self.folder, '_v_foo'))
