@@ -51,7 +51,7 @@ TreeDisplay       ../lib/python/TreeDisplay
 ZClasses          ../lib/python/ZClasses
 ZPublisher        ../lib/python/ZPublisher
 ZServer           ../lib/python/ZServer
-ZTUtils           ../lib/python/ZTUtils         
+ZTUtils           ../lib/python/ZTUtils
 Zope              ../lib/python/Zope
 Zope2             ../lib/python/Zope2
 ZopeUndo          ../lib/python/ZopeUndo
