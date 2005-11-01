@@ -52,8 +52,8 @@ ZClasses          ../lib/python/ZClasses
 ZPublisher        ../lib/python/ZPublisher
 ZServer           ../lib/python/ZServer
 ZTUtils           ../lib/python/ZTUtils
-Zope              ../lib/python/Zope
-Zope2             ../lib/python/Zope2.py
+Zope              ../lib/python/Zope.py
+Zope2             ../lib/python/Zope2
 ZopeUndo          ../lib/python/ZopeUndo
 initgroups        ../lib/python/initgroups
 nt_svcutils       ../lib/python/nt_svcutils
