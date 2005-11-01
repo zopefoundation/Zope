@@ -1,4 +1,4 @@
-# These packages are the Zope 3 components.
+# These packages are the Zope 2 components.
 #
 docutils       ../lib/python/docutils
 pytz           ../lib/python/pytz
@@ -18,51 +18,50 @@ ThreadedAsync   ../lib/python/ThreadedAsync
 ZEO             ../lib/python/ZEO
 ZODB            ../lib/python/ZODB
 
-RestrictedPython ../lib/python/RestrictedPython
-ZConfig          ../lib/python/ZConfig
-zdaemon          ../lib/python/zdaemon
+RestrictedPython  ../lib/python/RestrictedPython
+ZConfig           ../lib/python/ZConfig
+zdaemon           ../lib/python/zdaemon
 
-AccessControl   ../lib/python/AccessControl
-Acquisition     ../lib/python/Acquisition
-App             ../lib/python/App
-ComputedAttribute../lib/python/ComputedAttribute
-DateTime        ../lib/python/DateTime
-DocumentTemplate../lib/python/DocumentTemplate
-ExtensionClass  ../lib/python/ExtensionClass
-Globals         ../lib/python/Globals
-HelpSys         ../lib/python/HelpSys
-ImageFile       ../lib/python/ImageFile
-Interface       ../lib/python/Interface
-Lifetime        ../lib/python/Lifetime
-MethodObject    ../lib/python/MethodObject
-Missing         ../lib/python/Missing
-MultiMapping    ../lib/python/MultiMapping
-OFS             ../lib/python/OFS
-Persistence     ../lib/python/Persistence
-Products        ../lib/python/Products
-Record          ../lib/python/Record
-Shared          ../lib/python/Shared
-Signals         ../lib/python/Signals
-StructuredText  ../lib/python/StructuredText
-TAL             ../lib/python/TAL
-Testing         ../lib/python/Testing
-ThreadLock      ../lib/python/ThreadLock
-TreeDisplay     ../lib/python/TreeDisplay
-ZClasses        ../lib/python/ZClasses
-ZPublisher      ../lib/python/ZPublisher
-ZServer         ../lib/python/ZServer
-ZTUtils         ../lib/python/ZTUtils         
-Zope            ../lib/python/Zope
-Zope2           ../lib/python/Zope2
-ZopeUndo        ../lib/python/ZopeUndo
-docutils        ../lib/python/docutils
-initgroups      ../lib/python/initgroups
-nt_svcutils     ../lib/python/nt_svcutils
-reStructuredText../lib/python/reStructuredText
-tempstorage     ../lib/python/tempstorage
-webdav          ../lib/python/webdav
-zExceptions     ../lib/python/zExceptions
-zLOG            ../lib/python/zLOG
+AccessControl     ../lib/python/AccessControl
+Acquisition       ../lib/python/Acquisition
+App               ../lib/python/App
+ComputedAttribute ../lib/python/ComputedAttribute
+DateTime          ../lib/python/DateTime
+DocumentTemplate  ../lib/python/DocumentTemplate
+ExtensionClass    ../lib/python/ExtensionClass
+Globals           ../lib/python/Globals
+HelpSys           ../lib/python/HelpSys
+ImageFile         ../lib/python/ImageFile
+Interface         ../lib/python/Interface
+Lifetime          ../lib/python/Lifetime
+MethodObject      ../lib/python/MethodObject
+Missing           ../lib/python/Missing
+MultiMapping      ../lib/python/MultiMapping
+OFS               ../lib/python/OFS
+Persistence       ../lib/python/Persistence
+Products          ../lib/python/Products
+Record            ../lib/python/Record
+Shared            ../lib/python/Shared
+Signals           ../lib/python/Signals
+StructuredText    ../lib/python/StructuredText
+TAL               ../lib/python/TAL
+Testing           ../lib/python/Testing
+ThreadLock        ../lib/python/ThreadLock
+TreeDisplay       ../lib/python/TreeDisplay
+ZClasses          ../lib/python/ZClasses
+ZPublisher        ../lib/python/ZPublisher
+ZServer           ../lib/python/ZServer
+ZTUtils           ../lib/python/ZTUtils         
+Zope              ../lib/python/Zope
+Zope2             ../lib/python/Zope2
+ZopeUndo          ../lib/python/ZopeUndo
+initgroups        ../lib/python/initgroups
+nt_svcutils       ../lib/python/nt_svcutils
+reStructuredText  ../lib/python/reStructuredText
+tempstorage       ../lib/python/tempstorage
+webdav            ../lib/python/webdav
+zExceptions       ../lib/python/zExceptions
+zLOG              ../lib/python/zLOG
 
 # These packages are the release collections based on the Zope 2
 # project; they define what goes into the Zope 2 and related
