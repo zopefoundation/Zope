@@ -7,7 +7,7 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
 """WebDAV support - lockable item.
@@ -15,17 +15,17 @@
 $Id$
 """
 
+import Acquisition
 from AccessControl import ClassSecurityInfo
 from Globals import InitializeClass
 from Globals import PersistentMapping
-import Acquisition
 from zope.interface import implements
 
 from EtagSupport import EtagSupport
+from interfaces import IWriteLock
 from WriteLockInterface import LockItemInterface
 from WriteLockInterface import WriteLockInterface
 
-from interfaces import IWriteLock
 
 class ResourceLockedError(Exception): pass
 
@@ -132,8 +132,10 @@ class LockableItem(EtagSupport):
         except:
             # The locks may be totally messed up, so we'll just delete
             # and replace.
-            if hasattr(self, '_dav_writelocks'): del self._dav_writelocks
-            if WriteLockInterface.isImplementedBy(self):
+            if hasattr(self, '_dav_writelocks'):
+                del self._dav_writelocks
+            if IWriteLock.providedBy(self) or \
+                    WriteLockInterface.isImplementedBy(self):
                 self._dav_writelocks = PersistentMapping()
 
         # Call into a special hook used by LockNullResources to delete
@@ -150,4 +152,5 @@ InitializeClass(LockableItem)
 def wl_isLocked(ob):
     """ Returns true if the object is locked, returns 0 if the object
     is not locked or does not implement the WriteLockInterface """
-    return WriteLockInterface.isImplementedBy(ob) and ob.wl_isLocked()
+    return (IWriteLock.providedBy(ob) or
+            WriteLockInterface.isImplementedBy(ob)) and ob.wl_isLocked()

@@ -15,8 +15,8 @@
 $Id$
 """
 
-import sys
 import mimetypes
+import sys
 from urllib import unquote
 
 import ExtensionClass
@@ -35,6 +35,7 @@ from common import IfParser
 from common import isDavCollection
 from common import Locked, Conflict, PreconditionFailed
 from interfaces import IDAVResource
+from interfaces import IWriteLock
 from WriteLockInterface import WriteLockInterface
 
 
@@ -233,8 +234,9 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
                 # We're locked, and no if header was passed in, so
                 # the client doesn't own a lock.
                 raise Locked, 'Resource is locked.'
-        elif WriteLockInterface.isImplementedBy(parent) and \
-             parent.wl_isLocked():
+        elif (IWriteLock.providedBy(parent) or
+                WriteLockInterface.isImplementedBy(parent)) and \
+                parent.wl_isLocked():
             if ifhdr:
                 parent.dav__simpleifhandler(REQUEST, RESPONSE, 'DELETE', col=1)
             else:
@@ -361,8 +363,9 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
         if existing:
             # The destination itself exists, so we need to check its locks
             destob = aq_base(parent)._getOb(name)
-            if WriteLockInterface.isImplementedBy(destob) and \
-               destob.wl_isLocked():
+            if (IWriteLock.providedBy(destob) or
+                    WriteLockInterface.isImplementedBy(destob)) and \
+                    destob.wl_isLocked():
                 if ifhdr:
                     itrue = destob.dav__simpleifhandler(
                         REQUEST, RESPONSE, 'COPY', refresh=1)
@@ -370,8 +373,9 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
                         raise PreconditonFailed
                 else:
                     raise Locked, 'Destination is locked.'
-        elif WriteLockInterface.isImplementedBy(parent) and \
-             parent.wl_isLocked():
+        elif (IWriteLock.providedBy(parent) or
+                WriteLockInterface.isImplementedBy(parent)) and \
+                parent.wl_isLocked():
             if ifhdr:
                 parent.dav__simpleifhandler(REQUEST, RESPONSE, 'COPY',
                                             refresh=1)
@@ -456,8 +460,9 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
         if existing:
             # The destination itself exists, so we need to check its locks
             destob = aq_base(parent)._getOb(name)
-            if WriteLockInterface.isImplementedBy(destob) and \
-               destob.wl_isLocked():
+            if (IWriteLock.providedBy(destob) or
+                    WriteLockInterface.isImplementedBy(destob)) and \
+                    destob.wl_isLocked():
                 if ifhdr:
                     itrue = destob.dav__simpleifhandler(
                         REQUEST, RESPONSE, 'MOVE', url=dest, refresh=1)
@@ -465,8 +470,9 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
                         raise PreconditionFailed
                 else:
                     raise Locked, 'Destination is locked.'
-        elif WriteLockInterface.isImplementedBy(parent) and \
-             parent.wl_isLocked():
+        elif (IWriteLock.providedBy(parent) or
+                WriteLockInterface.isImplementedBy(parent)) and \
+                parent.wl_isLocked():
             # There's no existing object in the destination folder, so
             # we need to check the folders locks since we're changing its
             # member list

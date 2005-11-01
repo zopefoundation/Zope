@@ -7,51 +7,58 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-
 """WebDAV xml request objects.
 
 $Id$
 """
 
 import sys
-from common import absattr, aq_base, urlfix, urlbase
-from OFS.PropertySheets import DAVProperties
-from LockItem import LockItem
-from WriteLockInterface import WriteLockInterface
-from Acquisition import aq_parent
-from xmltools import XmlParser
 from cStringIO import StringIO
 from urllib import quote
+
+import transaction
 from AccessControl import getSecurityManager
+from Acquisition import aq_parent
+from OFS.PropertySheets import DAVProperties
+from ZConfig.url import urljoin
 from zExceptions import BadRequest, Forbidden
+
+from common import absattr, aq_base, urlfix, urlbase
 from common import isDavCollection
 from common import PreconditionFailed
-from ZConfig.url import urljoin
-import transaction
+from interfaces import IWriteLock
+from LockItem import LockItem
+from WriteLockInterface import WriteLockInterface
+from xmltools import XmlParser
+
 
 def safe_quote(url, mark=r'%'):
     if url.find(mark) > -1:
         return url
     return quote(url)
 
+
 class DAVProps(DAVProperties):
     """Emulate required DAV properties for objects which do
        not themselves support properties. This is mainly so
        that non-PropertyManagers can appear to support DAV
        PROPFIND requests."""
+
     def __init__(self, obj):
         self.__obj__=obj
+
     def v_self(self):
         return self.__obj__
-    p_self=v_self
 
+    p_self=v_self
 
 
 class PropFind:
     """Model a PROPFIND request."""
+
     def __init__(self, request):
         self.request=request
         self.depth='infinity'
@@ -175,9 +182,9 @@ class PropFind:
         return result.getvalue()
 
 
-
 class PropPatch:
     """Model a PROPPATCH request."""
+
     def __init__(self, request):
         self.request=request
         self.values=[]
@@ -295,11 +302,9 @@ class PropPatch:
         return result
 
 
-
-
-
 class Lock:
     """Model a LOCK request."""
+
     def __init__(self, request):
         self.request = request
         data = request.get('BODY', '')
@@ -365,7 +370,8 @@ class Lock:
             errmsg = "403 Forbidden"
 
         try:
-            if not WriteLockInterface.isImplementedBy(obj):
+            if not (IWriteLock.providedBy(obj) or
+                    WriteLockInterface.isImplementedBy(obj)):
                 if top:
                     # This is the top level object in the apply, so we
                     # do want an error
@@ -429,7 +435,8 @@ class Unlock:
             url = url + '/'
         errmsg = None
 
-        islockable = WriteLockInterface.isImplementedBy(obj)
+        islockable = IWriteLock.providedBy(obj) or \
+                     WriteLockInterface.isImplementedBy(obj)
 
         if islockable and obj.wl_hasLock(token):
             method = getattr(obj, 'wl_delLock')
@@ -465,7 +472,8 @@ class Unlock:
         if iscol:
             for ob in obj.objectValues():
                 if hasattr(ob, '__dav_resource__') and \
-                   WriteLockInterface.isImplementedBy(ob):
+                        (IWriteLock.providedBy(ob) or
+                         WriteLockInterface.isImplementedBy(ob)):
                     uri = urljoin(url, absattr(ob.id))
                     self.apply(ob, token, uri, result, top=0)
         if not top:
@@ -492,7 +500,8 @@ class DeleteCollection:
         errmsg = None
         parent = aq_parent(obj)
 
-        islockable = WriteLockInterface.isImplementedBy(obj)
+        islockable = IWriteLock.providedBy(obj) or \
+                     WriteLockInterface.isImplementedBy(obj)
         if parent and (not user.has_permission('Delete objects', parent)):
             # User doesn't have permission to delete this object
             errmsg = "403 Forbidden"

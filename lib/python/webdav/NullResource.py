@@ -7,29 +7,36 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+"""WebDAV support - null resource objects.
 
-"""WebDAV support - null resource objects."""
+$Id$
+"""
 
-__version__='$Revision: 1.43 $'[11:-2]
+import sys
 
-import sys, Globals, davcmds
 import Acquisition, OFS.content_types
-from common import aq_base, tokenFinder, IfParser
-from AccessControl import getSecurityManager
-from Resource import Resource
-from Globals import Persistent, DTMLFile
-from WriteLockInterface import WriteLockInterface
+import Globals
 import OFS.SimpleItem
-from zExceptions import Unauthorized, NotFound, Forbidden, BadRequest
+from AccessControl import getSecurityManager
+from Globals import Persistent, DTMLFile
+from OFS.CopySupport import CopyError
 from zExceptions import MethodNotAllowed
+from zExceptions import Unauthorized, NotFound, Forbidden, BadRequest
+
+import davcmds
+from common import aq_base, tokenFinder, IfParser
 from common import isDavCollection
 from common import Locked, Conflict, PreconditionFailed, UnsupportedMediaType
-from OFS.CopySupport import CopyError
+from interfaces import IWriteLock
+from Resource import Resource
+from WriteLockInterface import WriteLockInterface
+
 
 class NullResource(Persistent, Acquisition.Implicit, Resource):
+
     """Null resources are used to handle HTTP method calls on
     objects which do not yet exist in the url namespace."""
 
@@ -94,7 +101,9 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
         parent = self.__parent__
 
         ifhdr = REQUEST.get_header('If', '')
-        if WriteLockInterface.isImplementedBy(parent) and parent.wl_isLocked():
+        if (IWriteLock.providedBy(parent) or
+                WriteLockInterface.isImplementedBy(parent)) and \
+                parent.wl_isLocked():
             if ifhdr:
                 parent.dav__simpleifhandler(REQUEST, RESPONSE, col=1)
             else:
@@ -172,7 +181,9 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
             raise Forbidden, 'Cannot create collection at this location.'
 
         ifhdr = REQUEST.get_header('If', '')
-        if WriteLockInterface.isImplementedBy(parent) and parent.wl_isLocked():
+        if (IWriteLock.providedBy(parent) or
+                WriteLockInterface.isImplementedBy(parent)) and \
+                parent.wl_isLocked():
             if ifhdr:
                 parent.dav__simpleifhandler(REQUEST, RESPONSE, col=1)
             else:
@@ -202,7 +213,9 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
         name = self.__name__
         parent = self.__parent__
 
-        if WriteLockInterface.isImplementedBy(parent) and parent.wl_isLocked():
+        if (IWriteLock.providedBy(parent) or
+                WriteLockInterface.isImplementedBy(parent)) and \
+                parent.wl_isLocked():
             if ifhdr:
                 parent.dav__simpleifhandler(REQUEST, RESPONSE, col=1)
             else:
@@ -234,7 +247,7 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
         else:
             # The command was succesful
             lock = locknull.wl_getLock(token)
-            RESPONSE.setStatus(200)                         
+            RESPONSE.setStatus(200)
             RESPONSE.setHeader('Content-Type', 'text/xml; charset="utf-8"')
             RESPONSE.setHeader('Lock-Token', 'opaquelocktoken:' + token)
             RESPONSE.setBody(lock.asXML())
@@ -369,7 +382,9 @@ class LockNullResource(NullResource, OFS.SimpleItem.Item_w__name__):
         # First we need to see if the parent of the locknull is locked, and
         # if the user owns that lock (checked by handling the information in
         # the If header).
-        if WriteLockInterface.isImplementedBy(parent) and parent.wl_isLocked():
+        if (IWriteLock.providedBy(parent) or
+                WriteLockInterface.isImplementedBy(parent)) and \
+                parent.wl_isLocked():
             itrue = parent.dav__simpleifhandler(REQUEST, RESPONSE, 'PUT',
                                                 col=1, url=parenturl,
                                                 refresh=1)
@@ -407,7 +422,8 @@ class LockNullResource(NullResource, OFS.SimpleItem.Item_w__name__):
             raise Forbidden, sys.exc_info()[1]
 
         # Put the locks on the new object
-        if not WriteLockInterface.isImplementedBy(ob):
+        if not (IWriteLock.providedBy(ob) or
+                WriteLockInterface.isImplementedBy(ob)):
             raise MethodNotAllowed, (
                 'The target object type cannot be locked')
         for token, lock in locks:
@@ -439,7 +455,9 @@ class LockNullResource(NullResource, OFS.SimpleItem.Item_w__name__):
 
         # If the parent object is locked, that information should be in the
         # if-header if the user owns a lock on the parent
-        if WriteLockInterface.isImplementedBy(parent) and parent.wl_isLocked():
+        if (IWriteLock.providedBy(parent) or
+                WriteLockInterface.isImplementedBy(parent)) and \
+                parent.wl_isLocked():
             itrue = parent.dav__simpleifhandler(REQUEST, RESPONSE, 'MKCOL',
                                                 col=1, url=parenturl,
                                                 refresh=1)
@@ -465,6 +483,5 @@ class LockNullResource(NullResource, OFS.SimpleItem.Item_w__name__):
         RESPONSE.setStatus(201)
         RESPONSE.setBody('')
         return RESPONSE
-
 
 Globals.default__class_init__(LockNullResource)
