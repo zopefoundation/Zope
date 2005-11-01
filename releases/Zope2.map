@@ -29,11 +29,11 @@ ComputedAttribute ../lib/python/ComputedAttribute
 DateTime          ../lib/python/DateTime
 DocumentTemplate  ../lib/python/DocumentTemplate
 ExtensionClass    ../lib/python/ExtensionClass
-Globals           ../lib/python/Globals
+Globals           ../lib/python/Globals.py
 HelpSys           ../lib/python/HelpSys
-ImageFile         ../lib/python/ImageFile
+ImageFile         ../lib/python/ImageFile.py
 Interface         ../lib/python/Interface
-Lifetime          ../lib/python/Lifetime
+Lifetime          ../lib/python/Lifetime.py
 MethodObject      ../lib/python/MethodObject
 Missing           ../lib/python/Missing
 MultiMapping      ../lib/python/MultiMapping
@@ -53,7 +53,7 @@ ZPublisher        ../lib/python/ZPublisher
 ZServer           ../lib/python/ZServer
 ZTUtils           ../lib/python/ZTUtils
 Zope              ../lib/python/Zope
-Zope2             ../lib/python/Zope2
+Zope2             ../lib/python/Zope2.py
 ZopeUndo          ../lib/python/ZopeUndo
 initgroups        ../lib/python/initgroups
 nt_svcutils       ../lib/python/nt_svcutils
