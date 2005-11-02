@@ -42,7 +42,7 @@ the PTS languagees adapter and 3) register our test page:
 Finally, we need a traversable folder so that the test page we
 registered is found:
 
-  >>> from Products.Five.testing import manage_addFiveTraversableFolder
+  >>> from Products.Five.tests.testing import manage_addFiveTraversableFolder
   >>> manage_addFiveTraversableFolder(self.folder, 'ftf')
 
 Now for some actual testing... Our test page is a simple ZPT

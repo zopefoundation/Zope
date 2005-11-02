@@ -13,28 +13,29 @@
 ##############################################################################
 """Edit form directives
 
-$Id: metaconfigure.py 12884 2005-05-30 13:10:41Z philikon $
+$Id: metaconfigure.py 19283 2005-10-31 17:43:51Z philikon $
 """
 import ExtensionClass
+from Globals import InitializeClass as initializeClass
 
-from zope.component import getGlobalService
-from zope.component.servicenames import Presentation
+from zope.interface import Interface
 from zope.publisher.interfaces.browser import IBrowserRequest
-from zope.app.publisher.browser.globalbrowsermenuservice import \
-     menuItemDirective
+
+from zope.app import zapi
+from zope.app.publisher.browser.menumeta import menuItemDirective
 from zope.app.form.browser.metaconfigure import BaseFormDirective
 from zope.app.container.interfaces import IAdding
+from zope.app.i18n import ZopeMessageFactory as _
 
 from Products.Five.form import EditView, AddView
 from Products.Five.metaclass import makeClass
-from Products.Five.security import protectClass, initializeClass
+from Products.Five.security import protectClass
 from Products.Five.browser.pagetemplatefile import ZopeTwoPageTemplateFile
 from Products.Five.browser.metaconfigure import makeClassForTemplate
 
 def EditViewFactory(name, schema, label, permission, layer,
                     template, default_template, bases, for_, fields,
                     fulledit_path=None, fulledit_label=None, menu=u''):
-    s = getGlobalService(Presentation)
     class_ = makeClassForTemplate(template, globals(), used_for=schema,
                                   bases=bases)
     class_.schema = schema
@@ -49,8 +50,15 @@ def EditViewFactory(name, schema, label, permission, layer,
 
     class_.generated_form = ZopeTwoPageTemplateFile(default_template)
 
+    if layer is None:
+        layer = IDefaultBrowserLayer
 
-    s.provideView(for_, name, IBrowserRequest, class_, layer)
+    s = zapi.getGlobalSiteManager()
+    s.provideAdapter((for_, layer), Interface, name, class_)
+
+    # Reminder: the permission we got has already been processed by
+    # BaseFormDirective, that means that zope.Public has been
+    # translated to the CheckerPublic object
     protectClass(class_, permission)
     initializeClass(class_)
 
@@ -58,20 +66,22 @@ class FiveFormDirective(BaseFormDirective):
 
     def _processWidgets(self):
         if self._widgets:
-            customWidgetsObject = makeClass('CustomWidgetsMixin', (ExtensionClass.Base,), self._widgets)
+            customWidgetsObject = makeClass(
+                'CustomWidgetsMixin', (ExtensionClass.Base,), self._widgets)
             self.bases = self.bases + (customWidgetsObject,)
 
 class EditFormDirective(FiveFormDirective):
 
     view = EditView
     default_template = 'edit.pt'
-    title = 'Edit'
+    title = _('Edit')
 
     def _handle_menu(self):
         if self.menu:
             menuItemDirective(
                 self._context, self.menu, self.for_ or self.schema,
-                '@@' + self.name, self.title, permission=self.permission)
+                '@@' + self.name, self.title, permission=self.permission,
+                layer=self.layer)
 
     def __call__(self):
         self._processWidgets()
@@ -89,8 +99,6 @@ def AddViewFactory(name, schema, label, permission, layer,
                    fields, content_factory, arguments,
                    keyword_arguments, set_before_add, set_after_add,
                    menu=u''):
-
-    s = getGlobalService(Presentation)
     class_ = makeClassForTemplate(template, globals(), used_for=schema,
                                   bases=bases)
 
@@ -105,7 +113,15 @@ def AddViewFactory(name, schema, label, permission, layer,
 
     class_.generated_form = ZopeTwoPageTemplateFile(default_template)
 
-    s.provideView(for_, name, IBrowserRequest, class_, layer)
+    if layer is None:
+        layer = IDefaultBrowserLayer
+
+    s = zapi.getGlobalSiteManager()
+    s.provideAdapter((for_, layer), Interface, name, class_)
+
+    # Reminder: the permission we got has already been processed by
+    # BaseFormDirective, that means that zope.Public has been
+    # translated to the CheckerPublic object
     protectClass(class_, permission)
     initializeClass(class_)
 
@@ -132,7 +148,7 @@ class AddFormDirective(FiveFormDirective):
             # for=self.schema.
             menuItemDirective(
                 self._context, self.menu, self.for_, '@@' + self.name,
-                self.title, permission=self.permission,
+                self.title, permission=self.permission, layer=self.layer,
                 description=self.description)
 
     def _handle_arguments(self, leftover=None):

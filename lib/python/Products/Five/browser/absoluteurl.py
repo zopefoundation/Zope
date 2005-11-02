@@ -52,7 +52,7 @@ class AbsoluteURL(BrowserView):
             return (
                 {'name': name, 'url': context.absolute_url()},)
 
-        view = zapi.getViewProviding(container, IAbsoluteURL, request)
+        view = zapi.getMultiAdapter((container, request), IAbsoluteURL)
         base = tuple(view.breadcrumbs())
         base += (
             {'name': name, 'url': ("%s/%s" % (base[-1]['url'], name))},)

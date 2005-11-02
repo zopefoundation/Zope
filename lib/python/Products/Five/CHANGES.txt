@@ -2,6 +2,95 @@
 Five Changes
 ============
 
+Five 1.3b (2005-11-02)
+======================
+
+This version is also included in Zope 2.9b1.
+
+Restructuring
+-------------
+
+* Support for Zope 3.2 was added. Five now requires Zope 2.9 (which
+  ships with Zope 3.2).
+
+* As scheduled, the temporary fork of the new test runner
+  (``zope.testing``) at ``Five.testing`` was removed.  So was the
+  ``runtests.py`` script.  Use the regular Zope test runner
+  (``test.py`` or ``bin/zopectl test``) to run tests.
+
+* To reflect the Component Architecture simplification in Zope 3 since
+  the X3 3.0 release, ``IFiveUtilityService`` was renamed to
+  ``IFiveUtilityRegistry`` and ``SimpleLocalUtilityService`` was
+  renamed to ``SimpleLocalUtilityRegistry``.  The old names are still
+  available for a short period of time.
+
+* Event support: ``<five:containerEvents/>`` is the default.
+
+* Due to an incompatability with Zope 3.2's ObjectWidget and Zope 2's
+  Page Templates, Five now ships with its own ObjectWidget
+  implementation (which is just a thin wrapper around Zope's one to
+  make it work in Zope 2).  If you use the ObjectWidget, please change
+  your imports to ``Products.Five.form.objectwidget.ObjectWidget``.
+
+* Backwards compatability for Zope 3-style interfaces of Zope 2
+  components has been removed as that functionality is now in the Zope
+  2 core as of Zope 2.9.
+
+Five 1.2b (2005-11-02)
+======================
+
+Features
+--------
+
+* Added IMarkerInterfaces adapter: This adapter provides methods for
+  inspecting and assigning marker interfaces. 'edit-markers.html' (or
+  'manage_interfaces' in the ZMI) allows to change the behavior of specific
+  objects by adding or removing marker interfaces TTW.
+
+* Added the five:registerClass directive: This does the necessary Zope 2
+  registration for Five-based content. It is no longer necessary to add an
+  ``initialize()`` function to the product's __init__ in order to register
+  a meta type to be addable through the ZMI. See doc/products/ViewsTutorial
+  for an example how to use the directive.
+
+* Local site support: Five has now support for creating local sites
+  and thereby local utilities. This is mostly needed for allowing CMF
+  to convert it's portal tools into local utilities.  See
+  doc/localsite.txt for more information
+
+* Event support: When ``<five:containerEvents/>`` is specified, Five
+  makes the standard Zope 2 containers send events instead of using
+  manage_afterAdd, manage_beforeDelete and manage_afterClone. These
+  methods are still called for a class declared
+  ``<five:deprecatedManageAddDelete class=.../>``, and are called in
+  compatibility mode with a deprecation warning for classes that don't
+  use this directive.
+
+Restructuring
+-------------
+
+* Removed backwards compatibility for Five 1.0 Zope core interfaces.
+
+* Removed backwards compatibility for Zope 2.7 and 2.8.0.
+
+* Added a (temporarily) forked copy of the "new-and-improved" test
+  runner and supporting 'zope.testing' package, lifted from
+  http://svn.zope.org/zope.testing.  This code should be removed for
+  Five 1.3, which will use the updated version of 'zope.testing' in
+  the Zope 2.9 / Zope 3.2 tree.
+
+  There is a test runner invoking script in the ``Five`` package.  For
+  example, to run the Five tests with the new test runner, simply
+  execute the following command line from your instance home::
+
+    $ bin/zopectl run Products/Five/runtests.py -v -s Products.Five
+
+* Moved the 'Five.testing' package down to 'Five.tests.testing', in
+  order to make room for the 'zope.testing' code.
+
+* Removed backwards compatibility for some moved classes (AddForm,
+  EditForm, ContentAdding)
+
 Five 1.1 (2005-10-04)
 =====================
 
@@ -100,7 +189,7 @@ Restructuring
 * The former test product, ``FiveTest``, was converted into separate
   modules that provide the mock objects for the corresponding tests
   and are located right next to them.  Common test helpers have been
-  moved to the Five.testing package.  Overall, the testing framework
+  moved to the Five.tests.testing package.  Overall, the testing framework
   was much simplified and the individual tests clean up after
   themselves much like they do in Zope 3.
 

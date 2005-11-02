@@ -13,14 +13,20 @@
 ##############################################################################
 """Mimick Zope3 i18n machinery for Zope 2
 
-$Id: i18n.py 14400 2005-07-07 17:55:08Z philikon $
+$Id: i18n.py 19435 2005-11-02 16:34:58Z philikon $
 """
+from Acquisition import aq_acquire
 from zope.interface import implements
 from zope.i18n import interpolate
 from zope.i18n.interfaces import ITranslationDomain, IUserPreferredLanguages
-from zope.i18nmessageid import MessageID
 from zope.app import zapi
 from zope.publisher.browser import BrowserLanguages
+
+# BBB 2005/10/10 -- MessageIDs are to be removed for Zope 3.3
+import zope.deprecation
+zope.deprecation.__show__.off()
+from zope.i18nmessageid import MessageID, Message
+zope.deprecation.__show__.on()
 
 class FiveTranslationService:
     """Translation service that delegates to ``zope.i18n`` machinery.
@@ -29,7 +35,7 @@ class FiveTranslationService:
     # regarding fallback and Zope 2 compatability
     def translate(self, domain, msgid, mapping=None,
                   context=None, target_language=None, default=None):
-        if isinstance(msgid, MessageID):
+        if isinstance(msgid, (Message, MessageID)):
             domain = msgid.domain
             default = msgid.default
             mapping = msgid.mapping
@@ -46,7 +52,7 @@ class FiveTranslationService:
         # in Zope3, context is adapted to IUserPreferredLanguages,
         # which means context should be the request in this case.
         if context is not None:
-            context = context.REQUEST
+            context = aq_acquire(context, 'REQUEST', None)
         return util.translate(msgid, mapping=mapping, context=context,
                               target_language=target_language, default=default)
 

@@ -2,12 +2,9 @@
     xmlns="http://namespaces.zope.org/zope"
     xmlns:meta="http://namespaces.zope.org/meta">
 
+  <include package=".site" file="meta.zcml" />
   <include package=".browser" file="meta.zcml" />
   <include package=".form" file="meta.zcml" />
-
-  <!-- load the zope:modulealias and zope:hook directives -->
-  <include package="zope.modulealias" file="meta.zcml" />
-  <include package="zope.configuration" file="meta.zcml" />
 
   <meta:directives namespace="http://namespaces.zope.org/zope">
 
@@ -51,18 +48,6 @@
         name="factory"
         schema="zope.app.component.metadirectives.IFactoryDirective"
         handler="zope.app.component.metaconfigure.factory"
-        />
-
-    <meta:directive
-        name="serviceType"
-        schema="zope.app.component.metadirectives.IServiceTypeDirective"
-        handler="zope.app.component.metaconfigure.serviceType"
-        />
-
-    <meta:directive
-        name="service"
-        schema="zope.app.component.metadirectives.IServiceDirective"
-        handler="zope.app.component.metaconfigure.service"
         />
 
     <meta:complexDirective
@@ -131,14 +116,20 @@
        />
 
     <meta:directive
-       name="sendEvents"
-       schema=".fivedirectives.ISendEventsDirective"
-       handler=".eventconfigure.sendEvents"
+       name="containerEvents"
+       schema=".fivedirectives.IContainerEventsDirective"
+       handler=".eventconfigure.containerEvents"
+       />
+
+    <meta:directive
+       name="deprecatedManageAddDelete"
+       schema=".fivedirectives.IDeprecatedManageAddDeleteDirective"
+       handler=".eventconfigure.deprecatedManageAddDelete"
        />
 
     <meta:directive
        name="sizable"
-       schema=".fivedirectives.ISendEventsDirective"
+       schema=".fivedirectives.ISizableDirective"
        handler=".sizeconfigure.sizable"
        />
 
@@ -148,18 +139,16 @@
         handler=".fiveconfigure.pagesFromDirectory"
         />
 
-    <!-- viewable is deprecated, use traversable instead -->
-
-    <meta:directive
-       name="viewable"
-       schema=".fivedirectives.ITraversableDirective"
-       handler=".fiveconfigure.viewable"
-       />
-
     <meta:directive
        name="bridge"
        schema=".fivedirectives.IBridgeDirective"
        handler=".fiveconfigure.bridge"
+       />
+
+    <meta:directive
+       name="registerClass"
+       schema=".fivedirectives.IRegisterClassDirective"
+       handler=".fiveconfigure.registerClass"
        />
 
   </meta:directives>
@@ -170,6 +159,9 @@
       schema="zope.app.security.metadirectives.IRedefinePermission"
       handler="zope.app.security.metaconfigure.redefinePermission"
       />
+
+  <!-- load the zope:modulealias directive -->
+  <include package="zope.modulealias" file="meta.zcml" />
 
   <!-- load the i18n:registerTranslations directive -->
   <include package="zope.app.i18n" file="meta.zcml" />

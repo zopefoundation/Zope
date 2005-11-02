@@ -33,7 +33,7 @@ def test_traversable():
     the wrong reason: None doesn't have a docstring so BaseRequest
     raises NotFoundError.)
 
-      >>> from Products.Five.testing.simplecontent import manage_addSimpleContent
+      >>> from Products.Five.tests.testing.simplecontent import manage_addSimpleContent
       >>> manage_addSimpleContent(self.folder, 'testoid', 'Testoid')
       >>> print http(r'''
       ... GET /test_folder_1_/testoid/doesntexist HTTP/1.1
@@ -54,21 +54,21 @@ def test_traversable():
       ... <meta:redefinePermission from="zope2.Public" to="zope.Public" />
       ... 
       ... <five:traversable
-      ...     class="Products.Five.testing.fancycontent.FancyContent"
+      ...     class="Products.Five.tests.testing.fancycontent.FancyContent"
       ...     />
       ... 
       ... <browser:page
-      ...     for="Products.Five.testing.fancycontent.IFancyContent"
+      ...     for="Products.Five.tests.testing.fancycontent.IFancyContent"
       ...     class="Products.Five.browser.tests.pages.FancyView"
       ...     attribute="view"
-      ...     name="fancy"
+      ...     name="fancyview"
       ...     permission="zope2.Public"
       ...     />
       ... 
       ... </configure>'''
       >>> zcml.load_string(configure_zcml)
 
-      >>> from Products.Five.testing.fancycontent import manage_addFancyContent
+      >>> from Products.Five.tests.testing.fancycontent import manage_addFancyContent
       >>> info = manage_addFancyContent(self.folder, 'fancy', '')
 
     In the following test we let the original __bobo_traverse__ method
@@ -85,7 +85,7 @@ def test_traversable():
     actually works:
 
       >>> print http(r'''
-      ... GET /test_folder_1_/fancy/fancy HTTP/1.1
+      ... GET /test_folder_1_/fancy/fancyview HTTP/1.1
       ... ''')
       HTTP/1.1 200 OK
       ...
@@ -94,7 +94,7 @@ def test_traversable():
 
     Clean up:
 
-      >>> from zope.app.tests.placelesssetup import tearDown
+      >>> from zope.app.testing.placelesssetup import tearDown
       >>> tearDown()
     """
 

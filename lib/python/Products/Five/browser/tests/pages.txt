@@ -10,7 +10,7 @@ Let's register a quite large amount of test pages:
 
 Let's add a test object that we view most of the pages off of:
 
-  >>> from Products.Five.testing.simplecontent import manage_addSimpleContent
+  >>> from Products.Five.tests.testing.simplecontent import manage_addSimpleContent
   >>> manage_addSimpleContent(self.folder, 'testoid', 'Testoid')
 
 We also need to create a stub user account and login; otherwise we
@@ -29,7 +29,7 @@ Simple pages
 A browser page that is a view class's attribute (method):
 
   >>> view = self.folder.unrestrictedTraverse('testoid/eagle.txt')
-  >>> view != None
+  >>> view is not None
   True
   >>> from Products.Five.browser.tests.pages import SimpleView
   >>> isinstance(view, SimpleView)
@@ -196,8 +196,10 @@ high-level security tests).  Let's manually look up a protected view:
 
   >>> from Products.Five.traversable import FakeRequest
   >>> from zope.app import zapi
+  >>> from zope.app.publication.browser import setDefaultSkin
   >>> request = FakeRequest()
-  >>> view = zapi.getView(self.folder.testoid, 'eagle.txt', request)
+  >>> setDefaultSkin(request)
+  >>> view = zapi.getMultiAdapter((self.folder.testoid, request), name=u'eagle.txt')
 
 It's protecting the object with the permission, and not the attribute,
 so we get ('',) instead of ('eagle',):
@@ -213,7 +215,7 @@ evaluated. __roles__ is a imPermissionRole object:
   >>> view_roles
   ('Manager',)
 
-Check to see if view's context properly acquires it's true
+Check to see if view's context properly acquires its true
 parent
 
   >>> from Acquisition import aq_parent, aq_base, aq_inner
@@ -255,8 +257,8 @@ High-level security
   ...     'nodoc-method', 'nodoc-function', 'nodoc-object',
   ...     'dirpage1', 'dirpage2']
 
-  >>> from Products.Five.testing.restricted import checkRestricted
-  >>> from Products.Five.testing.restricted import checkUnauthorized
+  >>> from Products.Five.tests.testing.restricted import checkRestricted
+  >>> from Products.Five.tests.testing.restricted import checkUnauthorized
 
 As long as we're not authenticated, we should get Unauthorized for
 protected views, but we should be able to view the public ones:
@@ -312,5 +314,5 @@ Test traversal to resources from within ZPT pages:
 Clean up
 --------
 
-  >>> from zope.app.tests.placelesssetup import tearDown
+  >>> from zope.app.testing.placelesssetup import tearDown
   >>> tearDown()

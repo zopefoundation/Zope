@@ -1,0 +1,107 @@
+===============================
+Porting Five to Zope 3.1+ notes
+===============================
+
+Introduction
+------------
+
+Five needs to work in Zope 2.9. Zope 2.9 will ship with Zope 3.2. This
+means Five will need to work with Zope 3.2. Since Zope 3.2 doesn't
+truly exist yet we'll target Zope 3.1 for now.
+
+A Five Roadmap
+--------------
+
+Here is a tentative Five roadmap:
+
+Five 1.1 is to be released shortly, and its main feature is a
+refactored directory structure and Zope 3 i18n for Zope 2. It's still
+targeting the Zope X3.0 that's in Zope 2.8.
+
+Five 1.2 is still targetting Zope 2.8, and its main expected feature
+is support for local utilities.
+
+Five 1.3 is targetting Zope 2.9 and thus Zope 3.2. We're talking about
+this release of Five in this document.
+
+Main problem
+------------
+
+Zope 3.1 has internal changes that Five needs to support. Five works
+by reimplementing ZCML statements it supplies in the context of Zope
+2. This reimplementation is hard to maintain, as for each Zope 3
+upgrade we need to review all these ZCML statements and port them into
+Five again.
+
+The straightforward way to start supporting Zope 3.1+ with Five would
+be to review all the ZCML statements in Five and update them to work
+with Zope 3.1+.
+
+A more ambitious but nicer solution would be if we could reuse the
+Zope 3 ZCML statements directly. If we could accomplish this,
+maintainability of Five would be improved by a lot. Far less review of
+Five would be necessary for each Zope 3 upgrade. In the rest of this
+document we'll be discussing this scenario.
+
+Reasons for Five's modified ZCML statements
+-------------------------------------------
+
+Five ships with modified implementations of Zope 3 ZCML statements for
+a number of reasons:
+
+* could not use new-style classes that are in Zope 3 due to
+  ExtensionClass.
+
+* Five views need to work with the Zope 2 publisher, and this expects 
+  different things than the Zope 3 publisher.
+
+* cannot use the Zope 3 security system, while the Zope 3 ZCML calls
+  into this to configure it.
+
+* Five views need to work with the Zope 2 security system. This means
+  Five needs to issue Zope 2 style security declarations for views.
+
+We'll go into more detail about each of these points below.
+
+New-style ExtensionClass
+========================
+
+Five needed to be compatible with Zope 2.7, which uses old-style
+ExtensionClass. This made life difficult for Five, as Zope 3 uses
+new-style Python classes in many places. It's not easy to mix the two.
+
+Zope 2.8 changed to allow new-style ExtensionClasses, which are
+compatible with new-style Python classes. This means Five can
+hopefully be simplified as we can forget about old-style
+ExtensionClasses.
+
+Five views need to work with the Zope 2 publisher
+=================================================
+
+The Zope 2 publisher expects something quite different than the Zope 3
+publisher. 
+
+* does what is returned to the publisher need to inherit from
+  Acquisition.Explicit? (security reasons?)
+
+* we may need something that calls the right methods on the Zope 3
+  view (such as browserDefault, __call__ and publishTraverse)
+
+Cannot use the Zope 3 security system
+=====================================
+
+Do the Zope 3 security calls get in the way? Five currently removes
+these calls, but perhaps doing the calls does not harm.
+
+If they do interface, we could perhaps still trick things into
+working harmlessly.
+
+Five must issue Zope 2 security declarations for views
+======================================================
+
+This cannot be done by the ZCML implementation of Zope 3. We could
+hopefully do this by following the following pattern::
+
+  def our_directive_implementation(...):
+      original_directive_implementation(...)
+      do_the_zope2_work(...)

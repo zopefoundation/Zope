@@ -13,20 +13,13 @@
 ##############################################################################
 """Provide basic browser functionality
 
-$Id: __init__.py 18841 2005-10-23 09:57:38Z philikon $
+$Id: __init__.py 19283 2005-10-31 17:43:51Z philikon $
 """
 import Acquisition
-from AccessControl import ClassSecurityInfo
-from Globals import InitializeClass
+import zope.app.publisher.browser
 
-class BrowserView(Acquisition.Explicit):
-    security = ClassSecurityInfo()
+class BrowserView(Acquisition.Explicit, zope.app.publisher.browser.BrowserView):
+    """Five browser view
 
-    def __init__(self, context, request):
-        self.context = context
-        self.request = request
-    
-    # XXX do not create any methods on the subclass called index_html,
-    # as this makes Zope 2 traverse into that first!
-
-InitializeClass(BrowserView)
+    Mixes in explicit acquisition so that security can be acquired for
+    views"""

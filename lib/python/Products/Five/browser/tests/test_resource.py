@@ -23,7 +23,7 @@ def test_suite():
     import unittest
     from Testing.ZopeTestCase import installProduct, ZopeDocFileSuite
     from Testing.ZopeTestCase import FunctionalDocFileSuite
-    installProduct('PythonScripts')  # for Five.testing.restricted
+    installProduct('PythonScripts')  # for Five.tests.testing.restricted
     return unittest.TestSuite((
             ZopeDocFileSuite('resource.txt',
                              package='Products.Five.browser.tests'),

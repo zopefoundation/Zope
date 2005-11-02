@@ -17,7 +17,10 @@ $Id: fivedirectives.py 12884 2005-05-30 13:10:41Z philikon $
 """
 from zope.interface import Interface
 from zope.app.publisher.browser.metadirectives import IBasicResourceInformation
+from zope.app.security.fields import Permission
 from zope.configuration.fields import GlobalObject, Tokens, PythonIdentifier
+from zope.configuration.fields import Bool
+from zope.schema import ASCII
 from zope.schema import TextLine
 
 class IImplementsDirective(Interface):
@@ -56,7 +59,7 @@ class IDefaultViewableDirective(Interface):
         required=True
         )
 
-class ISendEventsDirective(Interface):
+class ISizableDirective(Interface):
     """Make instances of class send events.
     """
 
@@ -64,6 +67,19 @@ class ISendEventsDirective(Interface):
         title=u"Class",
         required=True
         )
+
+class IContainerEventsDirective(Interface):
+    """Global switch to enable container events
+    """
+
+class IDeprecatedManageAddDeleteDirective(Interface):
+    """Call manage_afterAdd & co for these contained content classes.
+    """
+    class_ = GlobalObject(
+        title=u"Class",
+        required=True,
+        )
+
 
 class IBridgeDirective(Interface):
     """Bridge from a Zope 2 interface to an equivalent Zope3 interface.
@@ -103,4 +119,52 @@ class IPagesFromDirectoryDirective(IBasicResourceInformation):
         title=u"Directory",
         description=u"The directory containing the resource data.",
         required=True
+        )
+
+class IRegisterClassDirective(Interface):
+
+    """registerClass directive schema.
+
+    Register Five content with Zope 2.
+    """
+
+    class_ = GlobalObject(
+        title=u'Instance Class',
+        description=u'Dotted name of the class that is registered.',
+        required=True
+        )
+
+    meta_type = ASCII(
+        title=u'Meta Type',
+        description=u'A human readable unique identifier for the class.',
+        required=True
+        )
+
+    permission = Permission(
+        title=u'Add Permission',
+        description=u'The permission for adding objects of this class.',
+        required=True
+        )
+
+    addview = ASCII(
+        title=u'Add View ID',
+        description=u'The ID of the add view used in the ZMI. Consider this '
+                    u'required unless you know exactly what you do.',
+        default=None,
+        required=False
+        )
+
+    icon = ASCII(
+        title=u'Icon ID',
+        description=u'The ID of the icon used in the ZMI.',
+        default=None,
+        required=False
+        )
+
+    global_ = Bool(
+        title=u'Global scope?',
+        description=u'If "global" is False the class is only available in '
+                    u'containers that explicitly allow one of its interfaces.',
+        default=True,
+        required=False
         )

@@ -13,7 +13,7 @@
 ##############################################################################
 """Test folders
 
-$Id: folder.py 14468 2005-07-10 11:39:32Z philikon $
+$Id$
 """
 from OFS.Folder import Folder
 from OFS.interfaces import IFolder

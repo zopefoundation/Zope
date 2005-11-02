@@ -54,21 +54,21 @@ def test_size():
 
     Set up:
 
-      >>> from zope.app.tests.placelesssetup import setUp, tearDown
+      >>> from zope.app.testing.placelesssetup import setUp, tearDown
       >>> setUp()
 
       >>> configure_zcml = '''
       ... <configure xmlns="http://namespaces.zope.org/zope"
       ...            xmlns:five="http://namespaces.zope.org/five">
-      ...   <five:sizable class="Products.Five.testing.simplecontent.SimpleContent" />
-      ...   <five:sizable class="Products.Five.testing.fancycontent.FancyContent" />
+      ...   <five:sizable class="Products.Five.tests.testing.simplecontent.SimpleContent" />
+      ...   <five:sizable class="Products.Five.tests.testing.fancycontent.FancyContent" />
       ...   <adapter
-      ...       for="Products.Five.testing.simplecontent.ISimpleContent"
+      ...       for="Products.Five.tests.testing.simplecontent.ISimpleContent"
       ...       provides="zope.app.size.interfaces.ISized"
       ...       factory="Products.Five.tests.test_size.SimpleContentSize"
       ...       />
       ...   <adapter
-      ...       for="Products.Five.testing.fancycontent.IFancyContent"
+      ...       for="Products.Five.tests.testing.fancycontent.IFancyContent"
       ...       provides="zope.app.size.interfaces.ISized"
       ...       factory="Products.Five.tests.test_size.FancyContentSize"
       ...       />
@@ -79,8 +79,8 @@ def test_size():
       >>> zcml.load_config('meta.zcml', Products.Five)
       >>> zcml.load_string(configure_zcml)
 
-      >>> from Products.Five.testing.simplecontent import manage_addSimpleContent
-      >>> from Products.Five.testing.fancycontent import manage_addFancyContent
+      >>> from Products.Five.tests.testing.simplecontent import manage_addSimpleContent
+      >>> from Products.Five.tests.testing.fancycontent import manage_addFancyContent
 
     We have registered an ``ISized`` adapter for SimpleContent:
 

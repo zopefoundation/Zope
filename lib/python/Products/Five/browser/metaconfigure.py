@@ -21,18 +21,16 @@ $Id: metaconfigure.py 13257 2005-06-09 21:56:39Z philikon $
 import os
 
 from zope.interface import Interface
-from zope.component import getGlobalService, ComponentLookupError
 from zope.configuration.exceptions import ConfigurationError
-from zope.component.servicenames import Presentation
-from zope.publisher.interfaces.browser import IBrowserRequest
+from zope.publisher.interfaces.browser import IBrowserRequest, \
+     IDefaultBrowserLayer
+
 from zope.app.publisher.browser.viewmeta import pages as zope_app_pages
 from zope.app.publisher.browser.viewmeta import view as zope_app_view
-from zope.app.publisher.browser.viewmeta import providesCallable
-from zope.app.publisher.browser.globalbrowsermenuservice import\
-     menuItemDirective
+from zope.app.publisher.browser.viewmeta import providesCallable, \
+     _handle_menu, _handle_for
 from zope.app.component.metaconfigure import handler
 from zope.app.component.interface import provideInterface
-from zope.app.container.interfaces import IAdding
 
 from Products.Five.browser import BrowserView
 from Products.Five.browser.resource import FileResourceFactory, ImageResourceFactory
@@ -40,21 +38,15 @@ from Products.Five.browser.resource import PageTemplateResourceFactory
 from Products.Five.browser.resource import DirectoryResourceFactory
 from Products.Five.browser.pagetemplatefile import ZopeTwoPageTemplateFile
 from Products.Five.metaclass import makeClass
-from Products.Five.security import getSecurityInfo, protectClass, \
-    protectName, initializeClass
+from Products.Five.security import getSecurityInfo, protectClass, protectName
 
-import ExtensionClass
+from Globals import InitializeClass as initializeClass
 
 def page(_context, name, permission, for_,
-         layer='default', template=None, class_=None,
+         layer=IDefaultBrowserLayer, template=None, class_=None,
          allowed_interface=None, allowed_attributes=None,
          attribute='__call__', menu=None, title=None,
          ):
-
-    try:
-        s = getGlobalService(Presentation)
-    except ComponentLookupError, err:
-        pass
 
     _handle_menu(_context, menu, title, [for_], name, permission)
 
@@ -64,8 +56,7 @@ def page(_context, name, permission, for_,
         allowed_attributes = []
     if allowed_interface is not None:
         for interface in allowed_interface:
-            attrs = [n for n, d in interface.namesAndDescriptions(1)]
-            allowed_attributes.extend(attrs)
+            allowed_attributes.extend(interface.names())
 
     if attribute != '__call__':
         if template:
@@ -92,9 +83,10 @@ def page(_context, name, permission, for_,
                     "The provided class doesn't have the specified attribute "
                     )
         cdict = getSecurityInfo(class_)
+        cdict['__name__'] = name
         if template:
             new_class = makeClassForTemplate(template, bases=(class_, ),
-                                             cdict=cdict)
+                                             cdict=cdict, name=name)
         elif attribute != "__call__":
             # we're supposed to make a page for an attribute (read:
             # method) and it's not __call__.  We thus need to create a
@@ -125,16 +117,15 @@ def page(_context, name, permission, for_,
 
     else:
         # template
-        new_class = makeClassForTemplate(template)
+        new_class = makeClassForTemplate(template, name=name)
 
     _handle_for(_context, for_)
 
     _context.action(
         discriminator = ('view', for_, name, IBrowserRequest, layer),
         callable = handler,
-        args = (Presentation, 'provideAdapter',
-                IBrowserRequest, new_class, name, [for_], Interface, layer,
-                _context.info),
+        args = ('provideAdapter',
+                (for_, layer), Interface, name, new_class, _context.info),
         )
     _context.action(
         discriminator = ('five:protectClass', new_class),
@@ -165,19 +156,6 @@ class pages(zope_app_pages):
                     menu=menu, title=title,
                     **(self.opts))
 
-def defaultView(_context, name, for_=None):
-
-    type = IBrowserRequest
-
-    _context.action(
-        discriminator = ('defaultViewName', for_, type, name),
-        callable = handler,
-        args = (Presentation,
-                'setDefaultViewName', for_, type, name),
-        )
-
-    _handle_for(_context, for_)
-
 # view (named view with pages)
 
 class view(zope_app_view):
@@ -192,11 +170,6 @@ class view(zope_app_view):
         pages = {}
 
         for pname, attribute, template in self.pages:
-            try:
-                s = getGlobalService(Presentation)
-            except ComponentLookupError, err:
-                pass
-
             if template:
                 cdict[pname] = ZopeTwoPageTemplateFile(template)
                 if attribute and attribute != name:
@@ -255,7 +228,7 @@ class view(zope_app_view):
         if class_ is not None:
             bases = (class_, ViewMixinForTemplates)
         else:
-            bases = (ViewMixinForTemplates)
+            bases = (ViewMixinForTemplates,)
 
         try:
             cname = str(name)
@@ -277,36 +250,10 @@ class view(zope_app_view):
             discriminator = ('view', for_, name, IBrowserRequest, layer,
                              self.provides),
             callable = handler,
-            args = (Presentation, 'provideAdapter',
-                    IBrowserRequest, newclass, name, [for_],  self.provides,
-                    layer, _context.info),
+            args = ('provideAdapter',
+                    (for_, layer), self.provides, name, newclass,
+                    _context.info),
             )
-
-def _handle_for(_context, for_):
-    if for_ is not None:
-        _context.action(
-            discriminator = None,
-            callable = provideInterface,
-            args = ('', for_)
-            )
-
-def _handle_menu(_context, menu, title, for_, name, permission):
-    if menu or title:
-        if not (menu and title):
-            raise ConfigurationError(
-                "If either menu or title are specified, they must "
-                "both be specified.")
-
-        if len(for_) != 1:
-            raise ConfigurationError(
-                "Menus can be specified only for single-view, not for "
-                "multi-views.")
-
-        return menuItemDirective(
-            _context, menu, for_[0], '@@' + str(name), title,
-            permission=permission)
-
-    return []
 
 _factory_map = {'image':{'prefix':'ImageResource',
                          'count':0,
@@ -319,7 +266,7 @@ _factory_map = {'image':{'prefix':'ImageResource',
                             'factory':PageTemplateResourceFactory}
                 }
 
-def resource(_context, name, layer='default', permission='zope.Public',
+def resource(_context, name, layer=IDefaultBrowserLayer, permission='zope.Public',
              file=None, image=None, template=None):
 
     if ((file and image) or (file and template) or
@@ -343,8 +290,8 @@ def resource(_context, name, layer='default', permission='zope.Public',
     _context.action(
         discriminator = ('resource', name, IBrowserRequest, layer),
         callable = handler,
-        args = (Presentation, 'provideResource',
-                name, IBrowserRequest, factory, layer),
+        args = ('provideAdapter',
+                (layer,), Interface, name, factory, _context.info),
         )
     _context.action(
         discriminator = ('five:protectClass', new_class),
@@ -367,7 +314,7 @@ _rd_map = {ImageResourceFactory:{'prefix':'DirContainedImageResource',
                                      'count':0}
            }
 
-def resourceDirectory(_context, name, directory, layer='default',
+def resourceDirectory(_context, name, directory, layer=IDefaultBrowserLayer,
                       permission='zope.Public'):
 
     if not os.path.isdir(directory):
@@ -410,8 +357,8 @@ def resourceDirectory(_context, name, directory, layer='default',
     _context.action(
         discriminator = ('resource', name, IBrowserRequest, layer),
         callable = handler,
-        args = (Presentation, 'provideResource',
-                name, IBrowserRequest, factory, layer),
+        args = ('provideAdapter',
+                (layer,), Interface, name, factory, _context.info),
         )
     for new_class in new_classes:
         _context.action(
@@ -456,11 +403,12 @@ class ViewMixinForTemplates(BrowserView):
         return self.index(self, *args, **kw)
 
 def makeClassForTemplate(filename, globals=None, used_for=None,
-                         bases=(), cdict=None):
+                         bases=(), cdict=None, name=u''):
     # XXX needs to deal with security from the bases?
     if cdict is None:
         cdict = {}
-    cdict.update({'index': ZopeTwoPageTemplateFile(filename, globals)})
+    cdict.update({'index': ZopeTwoPageTemplateFile(filename, globals),
+                  '__name__': name})
     bases += (ViewMixinForTemplates,)
     class_ = makeClass("SimpleViewClass from %s" % filename, bases, cdict)
 

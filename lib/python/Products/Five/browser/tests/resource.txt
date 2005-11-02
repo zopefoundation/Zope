@@ -8,7 +8,7 @@ Set up the test fixtures:
   >>> zcml.load_config("configure.zcml", Products.Five)
   >>> zcml.load_config('resource.zcml', package=Products.Five.browser.tests)
 
-  >>> from Products.Five.testing import manage_addFiveTraversableFolder
+  >>> from Products.Five.tests.testing import manage_addFiveTraversableFolder
   >>> manage_addFiveTraversableFolder(self.folder, 'testoid', 'Testoid')
 
   >>> import os, glob
@@ -73,8 +73,8 @@ PageTemplateResource's __call__ renders the template
 Security
 --------
 
-  >>> from Products.Five.testing.restricted import checkRestricted
-  >>> from Products.Five.testing.restricted import checkUnauthorized
+  >>> from Products.Five.tests.testing.restricted import checkRestricted
+  >>> from Products.Five.tests.testing.restricted import checkUnauthorized
 
   >>> resource_names = ['cockatiel.html', 'style.css', 'pattern.png']
 
@@ -112,5 +112,5 @@ We can now view them all:
 Clean up
 --------
 
-  >>> from zope.app.tests.placelesssetup import tearDown
+  >>> from zope.app.testing.placelesssetup import tearDown
   >>> tearDown()

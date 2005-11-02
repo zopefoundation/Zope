@@ -1,6 +1,6 @@
 ##############################################################################
 #
-# Copyright (c) 2004, 2005 Zope Corporation and Contributors.
+# Copyright (c) 2005 Zope Corporation and Contributors.
 # All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
@@ -11,30 +11,18 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Test import conflicts
+"""Test Five site manager
 
-$Id: test_import_conflicts.py 18150 2005-10-04 16:19:49Z philikon $
+$Id$
 """
 import os, sys
+
 if __name__ == '__main__':
     execfile(os.path.join(sys.path[0], 'framework.py'))
 
-def testImportConflicts():
-    """
-    In a Five environment, importing Zope 3 packages that would use
-    interfaces from the Zope 3 transaction module would lead to an
-    error, because of the monkey patching.  The zope.app.mail package
-    makes use of transaction interfaces, for example the following
-    class:
-
-      >>> from zope.app.mail.delivery import QueueProcessorThread
-
-    Note that this only concerns Zope 2.7 and Zope X3 3.0.
-    """
-
 def test_suite():
-    from Testing.ZopeTestCase import ZopeDocTestSuite
-    return ZopeDocTestSuite()
+    from Testing.ZopeTestCase import ZopeDocFileSuite
+    return ZopeDocFileSuite('sitemanager.txt', package="Products.Five.site.tests")
 
 if __name__ == '__main__':
     framework()

@@ -26,7 +26,7 @@ def test_ViewAcquisitionWrapping():
       >>> zcml.load_config("configure.zcml", Products.Five)
       >>> zcml.load_config('pages.zcml', package=Products.Five.browser.tests)
 
-      >>> from Products.Five.testing.simplecontent import manage_addSimpleContent
+      >>> from Products.Five.tests.testing.simplecontent import manage_addSimpleContent
       >>> manage_addSimpleContent(self.folder, 'testoid', 'Testoid')
       >>> uf = self.folder.acl_users
       >>> uf._doAddUser('manager', 'r00t', ['Manager'], [])
@@ -56,7 +56,7 @@ def test_ViewAcquisitionWrapping():
 
     Clean up:
 
-      >>> from zope.app.tests.placelesssetup import tearDown
+      >>> from zope.app.testing.placelesssetup import tearDown
       >>> tearDown()
     """
 
@@ -65,11 +65,10 @@ def test_suite():
     from Testing.ZopeTestCase import installProduct, ZopeDocTestSuite
     from Testing.ZopeTestCase import ZopeDocFileSuite
     from Testing.ZopeTestCase import FunctionalDocFileSuite
-    installProduct('PythonScripts')  # for Five.testing.restricted
+    installProduct('PythonScripts')  # for Five.tests.testing.restricted
     return unittest.TestSuite((
         ZopeDocTestSuite(),
-        ZopeDocFileSuite('pages.txt',
-                         package='Products.Five.browser.tests'),
+        ZopeDocFileSuite('pages.txt', package='Products.Five.browser.tests'),
         FunctionalDocFileSuite('pages_ftest.txt',
                                package='Products.Five.browser.tests')
         ))

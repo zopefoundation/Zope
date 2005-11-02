@@ -28,6 +28,8 @@ from zope.app.container.interfaces import IAdding, INameChooser
 from zope.app.container.interfaces import IContainerNamesContainer
 from zope.app.container.constraints import checkFactory, checkObject
 
+from zope.app.publisher.browser.menu import getMenu
+
 from zope.app import zapi
 from zope.app.event.objectevent import ObjectCreatedEvent
 from zope.event import notify
@@ -84,8 +86,8 @@ class BasicAdding(Implicit, BrowserView):
         # XXX this is definitely not right for all or even most uses
         # of Five, but can be overridden by an AddView subclass, using
         # the class attribute of a zcml:addform directive
-        return (str(zapi.getView(self.context, "absolute_url", self.request))
-                + '/manage_main')
+        return str(zapi.getMultiAdapter((self.context, self.request),
+                                        name=u"absolute_url")) + '/manage_main'
 
     # set in BrowserView.__init__
     request = None 
@@ -104,7 +106,7 @@ class BasicAdding(Implicit, BrowserView):
 
             if view_name.startswith('@@'):
                 view_name = view_name[2:]
-            return zapi.getView(self, view_name, request)
+            return zapi.getMultiAdapter((self, request), name=view_name)
 
         if name.startswith('@@'):
             view_name = name[2:]
@@ -135,7 +137,7 @@ class BasicAdding(Implicit, BrowserView):
 
         if zapi.queryView(self, view_name, self.request) is not None:
             url = "%s/%s=%s" % (
-                zapi.getView(self, "absolute_url", self.request),
+                zapi.getMultiAdapter((self, self.request), name=u"absolute_url"),
                 type_name, id)
             self.request.response.redirect(url)
             return
@@ -169,12 +171,11 @@ class Adding(BasicAdding):
         This is sorted by title.
         """
         container = self.context
-        menu_service = zapi.getService("BrowserMenu")
         result = []
         for menu_id in (self.menu_id, 'zope.app.container.add'):
             if not menu_id:
                 continue
-            for item in menu_service.getMenu(menu_id, self, self.request):
+            for item in getMenu(menu_id, self, self.request):
                 extra = item.get('extra')
                 if extra:
                     factory = extra.get('factory')

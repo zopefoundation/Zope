@@ -9,7 +9,7 @@ Five contributors
 
 - Lennart Regebro (regebro@nuxeo.com)
 
-- Tres Seaver (tres@zope.com)
+- Tres Seaver (tseaver@palladion.com)
 
 - Jan-Wijbrand Kolman (jw@infrae.com)
 
@@ -32,6 +32,9 @@ Five contributors
 - Malcolm Cleaton (malcolm@jamkit.com)
 
 - Tarek Ziadé (tziade@nuxeo.com)
+
+- Whit Morriss (whit@longnow.org)
+
 
 Thank you
 ---------

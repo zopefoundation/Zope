@@ -11,7 +11,7 @@ some:
 
 Let's also add one of our stub objects to play with:
 
-  >>> from Products.Five.testing.simplecontent import manage_addSimpleContent
+  >>> from Products.Five.tests.testing.simplecontent import manage_addSimpleContent
   >>> manage_addSimpleContent(self.folder, 'testoid', 'Testoid')
 
 
@@ -122,8 +122,23 @@ All public views should always be accessible by anyone:
   ...     self.failUnless(status == 200, (status, 200, view_name))
 
 
+Miscellaneous
+-------------
+
+Zope 2 always wants objects in the traversal graph to have a __name__.
+That is also true for views, e.g. a view constructed from a simple
+class bearing only a __call__ method:
+
+  >>> print http(r'''
+  ... GET /test_folder_1_/testoid/callview.html HTTP/1.1
+  ... ''')
+  HTTP/1.1 200 OK
+  ...
+  I was __call__()'ed
+
+
 Clean up
 --------
 
-  >>> from zope.app.tests.placelesssetup import tearDown
+  >>> from zope.app.testing.placelesssetup import tearDown
   >>> tearDown()

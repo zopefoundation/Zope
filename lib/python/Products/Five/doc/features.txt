@@ -8,7 +8,7 @@ and some limitations.
 Zope 3 interfaces
 =================
 
-Everything in the ``zope.interface`` package should work. Zope 3
+Everything from the ``zope.interface`` package works.  Zope 3
 interfaces are the foundation of the component architecture, and also
 the foundation of schemas.
 
@@ -84,3 +84,18 @@ Zope 2 content classes. Note however that these permissions will be
 ignored by views anyway, as they are trusted -- it only serves to
 protect directly exposed methods on content classes (the python
 scripts and the ZPublisher).
+
+Local Sites
+===========
+
+Five supports the concept of a local sites and local site managers.
+See localsite.txt_ for more information.
+
+.. _localsite.txt: localsite.html
+
+Object events
+=============
+
+Five supports sending Zope 3 object events when objects are added,
+moved, renamed, copied and deleted. The use of ``manage_afterAdd`` & co
+methods is deprecated.

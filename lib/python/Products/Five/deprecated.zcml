@@ -1,0 +1,51 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:five="http://namespaces.zope.org/five">
+
+  <!-- deprecated in core Zope, should be fixed there in Zope 2.9 -->
+
+  <five:deprecatedManageAddDelete
+      class="AccessControl.User.BasicUserFolder"/>
+
+  <five:deprecatedManageAddDelete
+      class="App.Factory.Factory"/>
+  <five:deprecatedManageAddDelete
+      class="App.Permission.Permission"/>
+
+  <five:deprecatedManageAddDelete
+      class="HelpSys.HelpTopic.HelpTopicBase"/>
+
+  <five:deprecatedManageAddDelete
+      class="OFS.Cache.CacheManager"/>
+
+  <five:deprecatedManageAddDelete
+      class="Products.OFSP.Draft.Draft"/>
+  <five:deprecatedManageAddDelete
+      class="Products.OFSP.Version.Version"/>
+
+  <five:deprecatedManageAddDelete
+      class="Products.PythonScripts.PythonScript.PythonScript"/>
+
+  <five:deprecatedManageAddDelete
+      class="Products.Sessions.BrowserIdManager.BrowserIdManager"/>
+  <five:deprecatedManageAddDelete
+      class="Products.Sessions.SessionDataManager.SessionDataManager"/>
+
+  <five:deprecatedManageAddDelete
+      class="Products.SiteAccess.VirtualHostMonster.VirtualHostMonster"/>
+  <five:deprecatedManageAddDelete
+      class="Products.SiteAccess.SiteRoot.Traverser"/>
+
+  <five:deprecatedManageAddDelete
+      class="Products.SiteErrorLog.SiteErrorLog.SiteErrorLog"/>
+
+  <five:deprecatedManageAddDelete
+      class="Products.ZCatalog.CatalogAwareness.CatalogAware"/>
+  <five:deprecatedManageAddDelete
+      class="Products.ZCatalog.CatalogPathAwareness.CatalogAware"/>
+
+  <five:deprecatedManageAddDelete
+      class="ZClasses.Property.ZCommonSheet"/>
+  <five:deprecatedManageAddDelete
+      class="ZClasses.ZClass.ZClass"/>
+
+</configure>

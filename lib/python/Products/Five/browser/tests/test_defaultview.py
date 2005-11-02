@@ -33,9 +33,9 @@ def test_default_view():
 
     Now let's add a couple of stub objects:
 
-      >>> from Products.Five.testing.simplecontent import manage_addSimpleContent
-      >>> from Products.Five.testing.simplecontent import manage_addCallableSimpleContent
-      >>> from Products.Five.testing.simplecontent import manage_addIndexSimpleContent
+      >>> from Products.Five.tests.testing.simplecontent import manage_addSimpleContent
+      >>> from Products.Five.tests.testing.simplecontent import manage_addCallableSimpleContent
+      >>> from Products.Five.tests.testing.simplecontent import manage_addIndexSimpleContent
 
       >>> manage_addSimpleContent(self.folder, 'testoid', 'Testoid')
       >>> manage_addCallableSimpleContent(self.folder, 'testcall', 'TestCall')
@@ -79,7 +79,7 @@ def test_default_view():
 
     Clean up:
 
-      >>> from zope.app.tests.placelesssetup import tearDown
+      >>> from zope.app.testing.placelesssetup import tearDown
       >>> tearDown()
     """
 

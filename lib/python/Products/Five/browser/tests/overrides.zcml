@@ -3,7 +3,7 @@
 
   <!-- mouse instead of eagle -->
   <browser:page
-    for="Products.Five.testing.simplecontent.ISimpleContent"
+    for="Products.Five.tests.testing.simplecontent.ISimpleContent"
     class=".pages.SimpleView"
     attribute="mouse"
     name="overridden_view"
