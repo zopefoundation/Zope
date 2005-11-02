@@ -23,9 +23,6 @@ def test_directives():
     """
     Test ZCML directives
 
-      >>> from zope.app.tests.placelesssetup import setUp, tearDown
-      >>> setUp()
-
     There isn't much to test here since the actual directive handlers
     are either tested in other, more specific tests, or they're
     already tested in Zope 3.  We'll just do a symbolic test of
@@ -62,9 +59,10 @@ def test_directives():
       >>> dest.method()
       'Overridden'
 
-    Clean up:
+    Clean up adapter registry and others:
 
-      >>> tearDown()
+      >>> from zope.testing.cleanup import cleanUp
+      >>> cleanUp()
     """
 
 def test_suite():

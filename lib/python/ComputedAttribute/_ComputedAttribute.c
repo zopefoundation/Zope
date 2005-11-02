@@ -11,7 +11,7 @@
   FOR A PARTICULAR PURPOSE
 
  ****************************************************************************/
-#include "ExtensionClass.h"
+#include "ExtensionClass/ExtensionClass.h"
 
 #define UNLESS(E) if(!(E))
 #define OBJECT(O) ((PyObject*)(O))

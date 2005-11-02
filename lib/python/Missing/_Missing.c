@@ -17,7 +17,7 @@ static char Missing_module_documentation[] =
 "\n$Id$"
 ;
 
-#include "ExtensionClass.h"
+#include "ExtensionClass/ExtensionClass.h"
 
 /* Declarations for objects of type Missing */
 

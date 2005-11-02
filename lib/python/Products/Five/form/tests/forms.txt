@@ -17,7 +17,7 @@ We need to configure all of Five for the functional test:
 Finally, we need to setup a traversable folder.  Otherwise, Five won't
 get to to do its view lookup:
 
-  >>> from Products.Five.testing import manage_addFiveTraversableFolder
+  >>> from Products.Five.tests.testing import manage_addFiveTraversableFolder
   >>> manage_addFiveTraversableFolder(self.folder, 'ftf')
 
 
@@ -47,9 +47,10 @@ which incorrectly ignored its 'handle_errors' argument):
 
   >>> print http(r"""
   ... GET /test_folder_1_/ftf/+/protectedaddform.html HTTP/1.1
-  ... """, handle_errors=True)
-  HTTP/1.1 401 Unauthorized
+  ... """, handle_errors=False)
+  Traceback (most recent call last):
   ...
+  Unauthorized: ...
 
 Now let's add a piece of our sample content object to test more things
 on it:
@@ -372,7 +373,11 @@ element to the list:
   ... -----------------------------968064918930967154199105236
   ... Content-Disposition: form-data; name="field.somelist.add"
   ... 
-  ... Add
+  ... Add Some item
+  ... -----------------------------968064918930967154199105236
+  ... Content-Disposition: form-data; name="field.somelist.count"
+  ... 
+  ... 0
   ... -----------------------------968064918930967154199105236--
   ... """ % (wo_hen_hao, ni_hao), handle_errors=False)
   HTTP/1.1 200 OK
@@ -407,6 +412,10 @@ Now, let's enter some more Chinese:
   ... Content-Disposition: form-data; name="field.somelist.0."
   ... 
   ... %s
+  ... -----------------------------968064918930967154199105236
+  ... Content-Disposition: form-data; name="field.somelist.count"
+  ... 
+  ... 1
   ... -----------------------------968064918930967154199105236
   ... Content-Disposition: form-data; name="UPDATE_SUBMIT"
   ... 
@@ -572,5 +581,5 @@ Clean up
 
 Finally, we need to clean up:
 
-  >>> from zope.app.tests.placelesssetup import tearDown
+  >>> from zope.app.testing.placelesssetup import tearDown
   >>> tearDown()

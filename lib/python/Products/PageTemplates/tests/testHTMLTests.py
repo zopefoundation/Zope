@@ -13,11 +13,6 @@
 
 import os, sys, unittest
 
-#XXX utility service needed for Zope X3 3.0.  This will go away before
-# when we switch to Zope 3.2 and thus be removed before the release --
-# philiKON
-import zope.app.tests.placelesssetup
-
 from Products.PageTemplates.tests import util
 from Products.PageTemplates.PageTemplate import PageTemplate
 from Products.PageTemplates.GlobalTranslationService import \
@@ -154,22 +149,12 @@ class HTMLTests(unittest.TestCase):
         self.assert_expected_unicode(self.folder.t, 'CheckUnicodeInserts.html')
 
     def checkI18nTranslate(self):
-        #XXX utility service needed for Zope X3 3.0.  This will go
-        # away before when we switch to Zope 3.2 and thus be removed
-        # before the release -- philiKON
-        zope.app.tests.placelesssetup.setUp()
         self.assert_expected(self.folder.t, 'CheckI18nTranslate.html')
-        zope.app.tests.placelesssetup.tearDown()
 
     def checkI18nTranslateHooked(self):
-        #XXX utility service needed for Zope X3 3.0.  This will go
-        # away before when we switch to Zope 3.2 and thus be removed
-        # before the release -- philiKON
-        zope.app.tests.placelesssetup.setUp()
         old_ts = setGlobalTranslationService(TestTranslationService())
         self.assert_expected(self.folder.t, 'CheckI18nTranslateHooked.html')
         setGlobalTranslationService(old_ts)
-        zope.app.tests.placelesssetup.tearDown()
 
 def test_suite():
     return unittest.makeSuite(HTMLTests, 'check')

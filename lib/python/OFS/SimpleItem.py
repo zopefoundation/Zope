@@ -20,6 +20,7 @@ item types.
 $Id$
 """
 
+import warnings
 import marshal, re, sys, time
 
 import AccessControl.Role, AccessControl.Owned, App.Common
@@ -60,13 +61,28 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
     isTopLevelPrincipiaApplicationObject=0
 
     def manage_afterAdd(self, item, container):
-        pass
+        warnings.warn(
+            "%s.manage_afterAdd is deprecated and will be removed in "
+            "Zope 2.11, you should use an IObjectAddedEvent "
+            "subscriber instead." % self.__class__.__name__,
+            DeprecationWarning, stacklevel=2)
+    manage_afterAdd.__five_method__ = True
 
     def manage_beforeDelete(self, item, container):
-        pass
+        warnings.warn(
+            "%s.manage_beforeDelete is deprecated and will be removed in "
+            "Zope 2.11, you should use an IObjectWillBeRemovedEvent "
+            "subscriber instead." % self.__class__.__name__,
+            DeprecationWarning, stacklevel=2)
+    manage_beforeDelete.__five_method__ = True
 
     def manage_afterClone(self, item):
-        pass
+        warnings.warn(
+            "%s.manage_afterClone is deprecated and will be removed in "
+            "Zope 2.11, you should use an IObjectClonedEvent "
+            "subscriber instead." % self.__class__.__name__,
+            DeprecationWarning, stacklevel=2)
+    manage_afterClone.__five_method__ = True
 
     # Direct use of the 'id' attribute is deprecated - use getId()
     id=''

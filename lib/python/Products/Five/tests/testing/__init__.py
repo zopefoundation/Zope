@@ -11,16 +11,13 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-""" Z2 -> Z3 bridge utilities.
+"""Test helpers
 
-$Id: adding.py 15515 2005-08-02 17:42:08Z yuppie $
+$Id$
 """
+from Products.Five.tests.testing.restricted import RestrictedPythonTestCase
 
-# BBB: This file will be removed in future versions of Five.
-from browser.adding import ContentAdding
-
-import warnings
-warnings.warn("\nThe Products.Five.adding module has been renamed to "
-              "Products.Five.browser.adding \n"
-              "and will be disabled starting in Five 1.2.\n",
-              DeprecationWarning, stacklevel=2)
+from Products.Five.tests.testing.folder import FiveTraversableFolder
+from Products.Five.tests.testing.folder import manage_addFiveTraversableFolder
+from Products.Five.tests.testing.folder import NoVerifyPasteFolder
+from Products.Five.tests.testing.folder import manage_addNoVerifyPasteFolder

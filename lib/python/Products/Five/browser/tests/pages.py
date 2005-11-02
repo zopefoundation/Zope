@@ -34,6 +34,11 @@ class FancyView(BrowserView):
     def view(self):
         return "Fancy, fancy"
 
+class CallView(BrowserView):
+
+    def __call__(self):
+        return "I was __call__()'ed"
+
 class CallableNoDocstring:
 
     def __call__(self):

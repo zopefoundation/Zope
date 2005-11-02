@@ -16,7 +16,7 @@
 Based on Plone's RestrictedPythonTestCase, with kind permission by the
 Plone developers.
 
-$Id: restricted.py 14473 2005-07-10 13:02:21Z philikon $
+$Id$
 """
 from AccessControl import Unauthorized
 from Testing.ZopeTestCase import ZopeTestCase

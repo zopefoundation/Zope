@@ -459,6 +459,10 @@ class AppInitializer:
             from Products.Sessions.BrowserIdManager import BrowserIdManager
             bid = BrowserIdManager('browser_id_manager', 'Browser Id Manager')
             app._setObject('browser_id_manager', bid)
+            # FIXME explicitely call manage_afterAdd, as sometimes
+            # events are initialized too late
+            browser_id_manager = app.browser_id_manager
+            browser_id_manager.manage_afterAdd(browser_id_manager, app)
             app._setInitializerFlag('browser_id_manager')
             self.commit('Added browser_id_manager')
 
@@ -475,6 +479,10 @@ class AppInitializer:
                 path='/temp_folder/session_data',
                 requestName='SESSION')
             app._setObject('session_data_manager', sdm)
+            # FIXME explicitely call manage_afterAdd, as sometimes
+            # events are initialized too late
+            session_data_manager = app.session_data_manager
+            session_data_manager.manage_afterAdd(session_data_manager, app)
             app._setInitializerFlag('session_data_manager')
             self.commit('Added session_data_manager')
 
@@ -523,6 +531,10 @@ class AppInitializer:
             from Products.SiteErrorLog.SiteErrorLog import SiteErrorLog
             error_log = SiteErrorLog()
             app._setObject('error_log', error_log)
+            # FIXME explicitely call manage_afterAdd, as sometimes
+            # events are initialized too late
+            error_log = app.error_log
+            error_log.manage_afterAdd(error_log, app)
             app._setInitializerFlag('error_log')
             self.commit('Added site error_log at /error_log')
 

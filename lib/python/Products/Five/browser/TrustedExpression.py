@@ -70,7 +70,7 @@ def trustedTraverse(ob, path, ignored,):
       o = get(object, name, M)
       if o is M:
         try: o = object[name]
-        except AttributeError: # better exception
+        except (AttributeError, TypeError): # better exception
           raise AttributeError(name)
     object = o
 

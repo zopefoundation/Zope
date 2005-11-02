@@ -25,7 +25,7 @@
     <meta:directive
         name="defaultView"
         schema="zope.app.publisher.browser.metadirectives.IDefaultViewDirective"
-        handler=".metaconfigure.defaultView"
+        handler="zope.app.publisher.browser.metaconfigure.defaultView"
         />
 
     <meta:directive
@@ -62,19 +62,19 @@
     <meta:directive
         name="menu"
         schema="zope.app.publisher.browser.metadirectives.IMenuDirective"
-        handler="zope.app.publisher.browser.globalbrowsermenuservice.menuDirective"
+        handler="zope.app.publisher.browser.menumeta.menuDirective"
         />
 
     <meta:directive
         name="menuItem"
         schema="zope.app.publisher.browser.metadirectives.IMenuItemDirective"
-        handler="zope.app.publisher.browser.globalbrowsermenuservice.menuItemDirective"
+        handler="zope.app.publisher.browser.menumeta.menuItemDirective"
         />
 
     <meta:complexDirective
         name="menuItems"
         schema="zope.app.publisher.browser.metadirectives.IMenuItemsDirective"
-        handler="zope.app.publisher.browser.globalbrowsermenuservice.menuItemsDirective"
+        handler="zope.app.publisher.browser.menumeta.menuItemsDirective"
         >
 
       <meta:subdirective

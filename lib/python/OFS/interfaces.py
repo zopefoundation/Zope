@@ -894,3 +894,33 @@ class IApplication(IFolder, IContainmentRoot):
         """Check the global (zclass) registry for problems, which can
         be caused by things like disk-based products being deleted.
         Return true if a problem is found"""
+
+
+##################################################
+# Event interfaces
+
+from zope.app.event.interfaces import IObjectEvent
+
+class IObjectWillBeMovedEvent(IObjectEvent):
+    """An object will be moved."""
+    oldParent = Attribute("The old location parent for the object.")
+    oldName = Attribute("The old location name for the object.")
+    newParent = Attribute("The new location parent for the object.")
+    newName = Attribute("The new location name for the object.")
+
+class IObjectWillBeAddedEvent(IObjectWillBeMovedEvent):
+    """An object will be added to a container."""
+
+class IObjectWillBeRemovedEvent(IObjectWillBeMovedEvent):
+    """An object will be removed from a container"""
+
+class IObjectClonedEvent(IObjectEvent):
+    """An object has been cloned (a la Zope 2).
+
+    This is for Zope 2 compatibility, subscribers should really use
+    IObjectCopiedEvent or IObjectAddedEvent, depending on their use
+    cases.
+
+    event.object is the copied object, already added to its container.
+    Note that this event is dispatched to all sublocations.
+    """

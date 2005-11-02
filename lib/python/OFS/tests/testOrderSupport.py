@@ -14,6 +14,8 @@ class DummyObject(CopySource):
         return
     def manage_beforeDelete(self, item, container):
         return
+    manage_afterAdd.__five_method__ = True
+    manage_beforeDelete.__five_method__ = True
     def wl_isLocked(self):
         return 0
 

@@ -26,8 +26,10 @@ class VHMRegressions(unittest.TestCase):
         transaction.begin()
         self.app = makerequest(Zope2.app())
         try:
-            #self.app.manage_addProduct['SiteAccess'].manage_addVirtualHostMonster('VHM')
-            # now we have a VHM as virtual_hosting per default
+            if not hasattr(self.app, 'virtual_hosting'):
+                # If ZopeLite was imported, we have no default virtual host monster
+                from Products.SiteAccess.VirtualHostMonster import manage_addVirtualHostMonster
+                manage_addVirtualHostMonster(self.app, 'virtual_hosting')
             self.app.manage_addFolder('folder')
             self.app.folder.manage_addDTMLMethod('doc', '')
             self.app.REQUEST.set('PARENTS', [self.app])

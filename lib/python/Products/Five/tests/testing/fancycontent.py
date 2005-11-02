@@ -13,7 +13,7 @@
 ##############################################################################
 """Test content objects.
 
-$Id: fancycontent.py 14470 2005-07-10 11:57:49Z philikon $
+$Id$
 """
 import Acquisition
 from AccessControl import ClassSecurityInfo

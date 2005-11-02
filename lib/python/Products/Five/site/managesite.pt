@@ -1,0 +1,25 @@
+<tal:tag condition="view/update"/>
+<html metal:use-macro="context/@@standard_macros/view"
+      i18n:domain="zope">
+  <body>
+  <div metal:fill-slot="body">
+
+  <form action="." tal:attributes="action request/URL" method="POST"
+        enctype="multipart/form-data">
+      <div class="row">
+        <div class="controls">
+          <input type="submit" value="Make site" name="UPDATE_MAKESITE"
+              i18n:attributes="value" 
+              tal:attributes="disabled view/isSite"/>
+          <input type="submit" value="Unmake site" name="UPDATE_UNMAKESITE" 
+              i18n:attributes="value"
+              tal:attributes="disabled not:view/isSite"/>
+
+        </div>
+      </div>
+  </form>
+
+  </div>
+  </body>
+
+</html>

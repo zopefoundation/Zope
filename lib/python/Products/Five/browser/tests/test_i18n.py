@@ -33,7 +33,7 @@ def test_zpt_i18n():
       ...   </configure>
       ...   <configure package="Products.Five.browser.tests">
       ...     <browser:page
-      ...         for="Products.Five.interfaces.IFolder"
+      ...         for="OFS.interfaces.IFolder"
       ...         template="i18n.pt"
       ...         name="i18n.html"
       ...         permission="zope2.View"
@@ -49,7 +49,7 @@ def test_zpt_i18n():
     In order to be able to traverse to the PageTemplate view, we need
     a traversable object:
 
-      >>> from Products.Five.testing import manage_addFiveTraversableFolder
+      >>> from Products.Five.tests.testing import manage_addFiveTraversableFolder
       >>> manage_addFiveTraversableFolder(self.folder, 'testoid', 'Testoid')
 
     We tell Zope to translate the messages by passing the
@@ -80,7 +80,7 @@ def test_zpt_i18n():
 
     Clean up:
 
-      >>> from zope.app.tests.placelesssetup import tearDown
+      >>> from zope.app.testing.placelesssetup import tearDown
       >>> tearDown()
     """
 

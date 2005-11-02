@@ -21,16 +21,16 @@ if __name__ == '__main__':
 
 def test_boilerplate():
     """
-      >>> from zope.app.tests.placelesssetup import setUp, tearDown
+      >>> from zope.app.testing.placelesssetup import setUp, tearDown
       >>> setUp()
 
       >>> import Products.Five.tests
       >>> from Products.Five import zcml
       >>> zcml.load_config('boilerplate.zcml', Products.Five.tests)
 
-      >>> from Products.Five.testing import manage_addFiveTraversableFolder
-      >>> from Products.Five.testing.simplecontent import manage_addSimpleContent
-      >>> from Products.Five.testing.fancycontent import manage_addFancyContent
+      >>> from Products.Five.tests.testing import manage_addFiveTraversableFolder
+      >>> from Products.Five.tests.testing.simplecontent import manage_addSimpleContent
+      >>> from Products.Five.tests.testing.fancycontent import manage_addFancyContent
 
       >>> tearDown()
     """

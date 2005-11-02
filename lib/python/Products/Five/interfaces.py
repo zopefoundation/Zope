@@ -13,7 +13,7 @@
 ##############################################################################
 """Five interfaces
 
-$Id: interfaces.py 14613 2005-07-13 10:39:05Z philikon $
+$Id: interfaces.py 19283 2005-10-31 17:43:51Z philikon $
 """
 from zope.interface import Interface
 from zope.interface.interfaces import IInterface
@@ -33,23 +33,3 @@ class IMenuItemType(IInterface):
     Menu item types are interfaces that define classes of
     menu items.
     """
-
-
-#
-# BBB: Zope core interfaces
-#
-# The interfaces here are only provided for backwards compatibility and will
-# be removed in Five 1.2. Please import interfaces from the corresponding Zope
-# package instead.
-#
-
-from persistent.interfaces import IPersistent
-from AccessControl.interfaces import *
-from Acquisition.interfaces import *
-from App.interfaces import *
-from OFS.interfaces import *
-from webdav.interfaces import *
-
-# BBB: for old names used in Five 1.0
-IAcquisition = IAcquirer
-IPermissionMapping = IPermissionMappingSupport

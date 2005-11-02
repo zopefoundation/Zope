@@ -22,12 +22,20 @@ import sys
 import glob
 import warnings
 
-import App
+import App.config
+import Products
 from zLOG import LOG, ERROR
 
-from zope.interface import classImplements
+from zope.interface import classImplements, classImplementsOnly, implementedBy
+from zope.interface.interface import InterfaceClass
 from zope.configuration import xmlconfig
+from zope.configuration.exceptions import ConfigurationError
+from zope.publisher.interfaces.browser import IDefaultBrowserLayer
+
+from zope.app import zapi
 from zope.app.component.interface import provideInterface
+from zope.app.component.metaconfigure import adapter
+from zope.app.security.interfaces import IPermission
 
 from viewable import Viewable
 from traversable import Traversable
@@ -55,7 +63,7 @@ def handleBrokenProduct(product):
     # in the control panel. However, all attempts to do so has failed from my 
     # side. //regebro
     exc = sys.exc_info()
-    LOG('Five', ERROR, 'Could not import Product %s' % name, error=exc)
+    LOG('Five', ERROR, 'Could not import Product %s' % product.__name__, error=exc)
 
 def loadProducts(_context):
     products = findProducts()
@@ -177,20 +185,6 @@ def defaultViewable(_context, class_):
         args = (class_,)
         )
 
-def viewable(_context, class_):
-    # XXX do not need to mark where this is used, as simple search
-    # should find all instances easily
-    warnings.warn(
-        'The five:viewable directive has been deprecated. '
-        'Please use the five:traversable directive instead.',
-        DeprecationWarning)
-
-    _context.action(
-        discriminator = None,
-        callable = classTraversable,
-        args=(class_,)
-        )
-
 def createZope2Bridge(zope2, package, name):
     # Map a Zope 2 interface into a Zope3 interface, seated within 'package'
     # as 'name'.
@@ -215,7 +209,7 @@ def bridge(_context, zope2, package, name=None):
         )
 
 def pagesFromDirectory(_context, directory, module, for_=None,
-                  layer='default', permission='zope.Public'):
+                       layer=IDefaultBrowserLayer, permission='zope.Public'):
 
     if isinstance(module, basestring):
         module = _context.resolve(module)
@@ -232,6 +226,41 @@ def pagesFromDirectory(_context, directory, module, for_=None,
         name = os.path.splitext(os.path.basename(fname))[0]
         page(_context, name=name, permission=permission,
              layer=layer, for_=for_, template=fname)
+
+
+_register_monkies = []
+_meta_type_regs = []
+def _registerClass(class_, meta_type, permission, addview, icon, global_):
+    setattr(class_, 'meta_type', meta_type)
+
+    permission_obj = zapi.getUtility(IPermission, permission)
+
+    if icon:
+        setattr(class_, 'icon', '++resource++%s' % icon)
+
+    interfaces = tuple(implementedBy(class_))
+
+    info = {'name': meta_type,
+            'action': addview and ('+/%s' % addview) or '',
+            'product': 'Five',
+            'permission': str(permission_obj.title),
+            'visibility': global_ and 'Global' or None,
+            'interfaces': interfaces,
+            'instance': class_,
+            'container_filter': None}
+
+    Products.meta_types += (info,)
+
+    _register_monkies.append(class_)
+    _meta_type_regs.append(meta_type)
+
+def registerClass(_context, class_, meta_type, permission, addview=None,
+                  icon=None, global_=True):
+    _context.action(
+        discriminator = ('registerClass', meta_type),
+        callable = _registerClass,
+        args = (class_, meta_type, permission, addview, icon, global_)
+        )
 
 # clean up code
 
@@ -265,11 +294,33 @@ def undefaultViewable(class_):
     killMonkey(class_, '__browser_default__', '__fallback_default__',
                '__five_viewable__')
 
+def unregisterClass(class_):
+    delattr(class_, 'meta_type')
+    try:
+        delattr(class_, 'icon')
+    except AttributeError:
+        pass
+
 def cleanUp():
+    global _traversable_monkies
     for class_ in _traversable_monkies:
         untraversable(class_)
+    _traversable_monkies = []
+
+    global _defaultviewable_monkies
     for class_ in _defaultviewable_monkies:
         undefaultViewable(class_)
+    _defaultviewable_monkies = []
+
+    global _register_monkies
+    for class_ in _register_monkies:
+        unregisterClass(class_)
+    _register_monkies = []
+
+    global _meta_type_regs
+    Products.meta_types = tuple([ info for info in Products.meta_types
+                                  if info['name'] not in _meta_type_regs ])
+    _meta_type_regs = []
 
 from zope.testing.cleanup import addCleanUp
 addCleanUp(cleanUp)

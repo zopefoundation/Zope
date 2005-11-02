@@ -45,7 +45,7 @@ def test_security_equivalence():
     Zope 2 can be replaced by ZCML statements without any loss of
     information.
 
-      >>> from zope.app.tests.placelesssetup import setUp, tearDown
+      >>> from zope.app.testing.placelesssetup import setUp, tearDown
       >>> setUp()
 
     We start out with two classes, ``Dummy1`` and ``Dummy2``.  They
@@ -141,7 +141,7 @@ def test_checkPermission():
     """
     Test checkPermission
 
-      >>> from zope.app.tests.placelesssetup import setUp, tearDown
+      >>> from zope.app.testing.placelesssetup import setUp, tearDown
       >>> setUp()
 
     Zope 3 has a function zope.security.checkPermission which provides

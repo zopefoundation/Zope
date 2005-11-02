@@ -12,10 +12,10 @@
 
  ****************************************************************************/
 
-#include "ExtensionClass.h"
+#include "ExtensionClass/ExtensionClass.h"
 
 #define _IN_ACQUISITION_C
-#include "Acquisition.h"
+#include "Acquisition/Acquisition.h"
 
 static ACQUISITIONCAPI AcquisitionCAPI;
 

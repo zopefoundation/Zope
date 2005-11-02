@@ -23,9 +23,6 @@ def test_recursion():
     """
     Test recursion
 
-      >>> from zope.app.tests.placelesssetup import setUp, tearDown
-      >>> setUp()
-
     This test makes sure that recursion is avoided for view lookup.
     First, we need to set up a stub interface...
 
@@ -51,10 +48,10 @@ def test_recursion():
       >>> from Products.Five.fiveconfigure import classDefaultViewable
       >>> classDefaultViewable(Recurse)
 
-      >>> from zope.app import zapi
+      >>> from zope.component import provideAdapter
       >>> from zope.publisher.interfaces.browser import IBrowserRequest
-      >>> pres = zapi.getGlobalService('Presentation')
-      >>> pres.setDefaultViewName(IRecurse, IBrowserRequest, 'view')
+      >>> from zope.component.interfaces import IDefaultViewName
+      >>> provideAdapter(u'view', (IRecurse, IBrowserRequest), IDefaultViewName)
 
     Here comes the actual test:
 
@@ -65,9 +62,10 @@ def test_recursion():
       'foo'
 
 
-    Clean up:
+    Clean up adapter registry and monkey patches to classes:
 
-      >>> tearDown()
+      >>> from zope.testing.cleanup import cleanUp
+      >>> cleanUp()
     """
 
 def test_suite():

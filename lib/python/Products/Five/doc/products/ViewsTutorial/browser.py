@@ -1,20 +1,12 @@
-##############################################################################
-#
-# Copyright (c) 2005 Zope Corporation and Contributors. All Rights Reserved.
-#
-# This software is subject to the provisions of the Zope Public License,
-# Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
-# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
-# WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-# WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE.
-#
-##############################################################################
-
-from Products.Five import BrowserView
 import random
+from democontent import DemoContent
 
-class Overview(BrowserView):
+
+class Overview:
+
+    """View for overview.
+    """
+
     def reversedIds(self):
         result = []
         for id in self.context.objectIds():
@@ -27,9 +19,28 @@ class Overview(BrowserView):
     def directlyPublished(self):
         return "This is directly published"
 
-class NewExample(BrowserView):
+
+class NewExample:
+
+    """View for new example.
+    """
+
     def helpsWithOne(self):
         return random.randrange(10)
-    
+
     def two(self):
         return "Two got called"
+
+
+class DemoContentAddView:
+
+    """Add view for demo content.
+    """
+
+    def __call__(self, add_input_name='', title='', submit_add=''):
+        if submit_add:
+            obj = DemoContent(add_input_name, title)
+            self.context.add(obj)
+            self.request.response.redirect(self.context.nextURL())
+            return ''
+        return self.index()

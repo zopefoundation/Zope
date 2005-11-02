@@ -3,12 +3,16 @@ import unittest
 from AccessControl.Owned import EmergencyUserCannotOwn
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
+from AccessControl.User import User # before SpecialUsers
 from AccessControl.SpecialUsers import emergency_user, nobody, system
-from AccessControl.User import User
 from Acquisition import Implicit
 from App.config import getConfiguration
 from OFS.ObjectManager import ObjectManager
 from OFS.SimpleItem import SimpleItem
+from zope.app.testing.placelesssetup import PlacelessSetup
+import Products.Five
+from Products.Five import zcml
+from Products.Five.eventconfigure import setDeprecatedManageAddDelete
 
 
 class FauxRoot( Implicit ):
@@ -46,26 +50,39 @@ class ItemForDeletion(SimpleItem):
         self.before_delete_called = True
         if self.fail_on_delete:
             raise DeleteFailed
-        return SimpleItem.manage_beforeDelete(self, item, container)
 
+    def manage_afterAdd(self, item, container):
+        pass
 
-class ObjectManagerTests( unittest.TestCase ):
+    def manage_afterClone(self, item):
+        pass
+
+from zope.interface import implements
+from OFS.interfaces import IItem
+class ObjectManagerWithIItem(ObjectManager):
+    """The event subscribers work on IItem."""
+    implements(IItem)
+
+class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
 
     def setUp(self):
+        super(ObjectManagerTests, self).setUp()
         self.saved_cfg_debug_mode = getConfiguration().debug_mode
+        zcml.load_config('meta.zcml', Products.Five)
+        zcml.load_config('event.zcml', Products.Five)
+        zcml.load_config('deprecated.zcml', Products.Five)
+        setDeprecatedManageAddDelete(ItemForDeletion)
 
     def tearDown( self ):
         noSecurityManager()
         getConfiguration().debug_mode = self.saved_cfg_debug_mode
+        super(ObjectManagerTests, self).tearDown()
 
     def setDebugMode(self, mode):
         getConfiguration().debug_mode = mode
 
     def _getTargetClass( self ):
-
-        from OFS.ObjectManager import ObjectManager
-
-        return ObjectManager
+        return ObjectManagerWithIItem
 
     def _makeOne( self, *args, **kw ):
 

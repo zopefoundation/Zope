@@ -12,7 +12,7 @@
 
  ****************************************************************************/
 
-#include "ExtensionClass.h"
+#include "ExtensionClass/ExtensionClass.h"
 
 #define UNLESS(E) if(!(E))
 

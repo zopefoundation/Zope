@@ -26,6 +26,11 @@ Zope Changes
 
     Features added
 
+      - Zope now sends Zope 3 events when objects are added or removed
+        from standard containers. manage_afterAdd, manage_beforeDelete
+        and manage_afterClone are now deprecated. See
+        lib/python/Products/Five/tests/event.txt for details.
+
       - Zope now utilizes ZODB 3.6.  It had previously used
         ZODB 3.4.  As a result, the DBTab package was removed, as
         ZODB 3.6 has multidatabase support that makes DBTab

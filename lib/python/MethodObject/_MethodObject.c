@@ -12,7 +12,7 @@
 
  ****************************************************************************/
 
-#include "ExtensionClass.h"
+#include "ExtensionClass/ExtensionClass.h"
 
 static PyObject *
 of(PyObject *self, PyObject *args)

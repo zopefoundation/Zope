@@ -2,13 +2,15 @@
            xmlns:five="http://namespaces.zope.org/five">
 
   <include file="meta.zcml" />
-  <include file="services.zcml" />
-  <include file="interfaces.zcml" />
   <include file="permissions.zcml" />
   <include file="i18n.zcml" />
+  <include file="event.zcml"/>
+  <include file="deprecated.zcml"/>
+  <include package=".site" />
   <include package=".browser" />
   <include package=".form" />
   <include package=".skin" />
+  <include package=".utilities" />
 
   <include package="zope.app.event" />
   <include package="zope.app.traversing" />

@@ -13,17 +13,15 @@
 ##############################################################################
 """Some menu code
 
-$Id: menu.py 14512 2005-07-11 18:40:51Z philikon $
+$Id: menu.py 19283 2005-10-31 17:43:51Z philikon $
 """
 from zope.interface import implements
-from zope.app import zapi
 from zope.app.publisher.interfaces.browser import IMenuAccessView
-from zope.app.servicenames import BrowserMenu
+from zope.app.publisher.browser.menu import getMenu
 from Products.Five import BrowserView
 
 class MenuAccessView(BrowserView):
     implements(IMenuAccessView)
 
     def __getitem__(self, menu_id):
-        browser_menu_service = zapi.getService(BrowserMenu)
-        return browser_menu_service.getMenu(menu_id, self.context, self.request)
+        return getMenu(menu_id, self.context, self.request)

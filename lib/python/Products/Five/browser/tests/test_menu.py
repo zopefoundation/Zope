@@ -28,7 +28,8 @@ def test_menu():
 
       >>> import Products.Five.browser.tests
       >>> from Products.Five import zcml
-      >>> zcml.load_config("configure.zcml", Products.Five)
+      >>> zcml.load_config("meta.zcml", Products.Five)
+      >>> zcml.load_config("permissions.zcml", Products.Five)
       >>> zcml.load_config('menu.zcml', package=Products.Five.browser.tests)
 
       >>> from Products.Five.security import newInteraction
@@ -37,12 +38,12 @@ def test_menu():
     Now for some actual testing... Let's look up the menu we registered:
 
       >>> from Products.Five.traversable import FakeRequest
-      >>> from zope.app.publisher.browser.globalbrowsermenuservice import \\
-      ...     globalBrowserMenuService
+      >>> from zope.app.publication.browser import setDefaultSkin
+      >>> from zope.app.publisher.browser.menu import getMenu
 
       >>> request = FakeRequest()
-      >>> menu = globalBrowserMenuService.getMenu(
-      ...     'testmenu', self.folder, request)
+      >>> setDefaultSkin(request)
+      >>> menu = getMenu('testmenu', self.folder, request)
 
     It should have 
 
@@ -53,27 +54,41 @@ def test_menu():
 
       >>> menu.sort(lambda x, y: cmp(x['title'], y['title']))
       >>> from pprint import pprint
-      >>> pprint(menu)
-      [{'action': '@@cockatiel_menu_public.html',
-        'description': '',
-        'extra': None,
-        'selected': '',
-        'title': u'Page in a menu (public)'},
-       {'action': u'seagull.html',
-        'description': u'This is a test menu item',
-        'extra': None,
-        'selected': '',
-        'title': u'Test Menu Item'},
-       {'action': u'parakeet.html',
-        'description': u'This is a test menu item',
-        'extra': None,
-        'selected': '',
-        'title': u'Test Menu Item 2'},
-       {'action': u'falcon.html',
-        'description': u'This is a test menu item',
-        'extra': None,
-        'selected': '',
-        'title': u'Test Menu Item 3'}]
+      >>> pprint(menu[0])
+      {'action': u'@@cockatiel_menu_public.html',
+       'description': u'',
+       'extra': None,
+       'icon': None,
+       'selected': u'',
+       'submenu': None,
+       'title': u'Page in a menu (public)'}
+
+      >>> pprint(menu[1])
+      {'action': u'seagull.html',
+       'description': u'This is a test menu item',
+       'extra': None,
+       'icon': None,
+       'selected': u'',
+       'submenu': None,
+       'title': u'Test Menu Item'}
+
+      >>> pprint(menu[2])
+      {'action': u'parakeet.html',
+       'description': u'This is a test menu item',
+       'extra': None,
+       'icon': None,
+       'selected': u'',
+       'submenu': None,
+       'title': u'Test Menu Item 2'}
+
+      >>> pprint(menu[3])
+      {'action': u'falcon.html',
+       'description': u'This is a test menu item',
+       'extra': None,
+       'icon': None,
+       'selected': u'',
+       'submenu': None,
+       'title': u'Test Menu Item 3'}
 
     Let's create a manager user account and log in.
 
@@ -82,8 +97,7 @@ def test_menu():
       >>> self.login('manager')
       >>> newInteraction()
 
-      >>> menu = globalBrowserMenuService.getMenu(
-      ...     'testmenu', self.folder, request)
+      >>> menu = getMenu('testmenu', self.folder, request)
 
     We should get the protected menu items now:
 
@@ -91,47 +105,73 @@ def test_menu():
       7
 
       >>> menu.sort(lambda x, y: cmp(x['title'], y['title']))
-      >>> pprint(menu)
-      [{'action': '@@cockatiel_menu_protected.html',
-        'description': '',
-        'extra': None,
-        'selected': '',
-        'title': u'Page in a menu (protected)'},
-       {'action': '@@cockatiel_menu_public.html',
-       'description': '',
+      >>> pprint(menu[0])
+      {'action': u'@@cockatiel_menu_protected.html',
+       'description': u'',
        'extra': None,
-       'selected': '',
-       'title': u'Page in a menu (public)'},
+       'icon': None,
+       'selected': u'',
+       'submenu': None,
+       'title': u'Page in a menu (protected)'}
+
+      >>> pprint(menu[1])
+      {'action': u'@@cockatiel_menu_public.html',
+       'description': u'',
+       'extra': None,
+       'icon': None,
+       'selected': u'',
+       'submenu': None,
+       'title': u'Page in a menu (public)'}
+
+      >>> pprint(menu[2])
       {'action': u'seagull.html',
        'description': u'This is a protected test menu item',
        'extra': None,
-       'selected': '',
-       'title': u'Protected Test Menu Item'},
+       'icon': None,
+       'selected': u'',
+       'submenu': None,
+       'title': u'Protected Test Menu Item'}
+
+      >>> pprint(menu[3])
       {'action': u'falcon.html',
        'description': u'This is a protected test menu item',
        'extra': None,
-       'selected': '',
-       'title': u'Protected Test Menu Item 2'},
+       'icon': None,
+       'selected': u'',
+       'submenu': None,
+       'title': u'Protected Test Menu Item 2'}
+
+      >>> pprint(menu[4])
       {'action': u'seagull.html',
        'description': u'This is a test menu item',
        'extra': None,
-       'selected': '',
-       'title': u'Test Menu Item'},
+       'icon': None,
+       'selected': u'',
+       'submenu': None,
+       'title': u'Test Menu Item'}
+
+      >>> pprint(menu[5])
       {'action': u'parakeet.html',
        'description': u'This is a test menu item',
        'extra': None,
-       'selected': '',
-        'title': u'Test Menu Item 2'},
+       'icon': None,
+       'selected': u'', 
+       'submenu': None,
+       'title': u'Test Menu Item 2'}
+
+      >>> pprint(menu[6])
       {'action': u'falcon.html',
        'description': u'This is a test menu item',
        'extra': None,
-       'selected': '',
-       'title': u'Test Menu Item 3'}]
+       'icon': None,
+       'selected': u'',
+       'submenu': None,
+       'title': u'Test Menu Item 3'}
 
 
     Clean up:
 
-      >>> from zope.app.tests.placelesssetup import tearDown
+      >>> from zope.app.testing.placelesssetup import tearDown
       >>> tearDown()
     """
 

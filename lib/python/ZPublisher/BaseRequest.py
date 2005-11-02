@@ -14,10 +14,12 @@
 
 $Id$
 """
-
 from urllib import quote
 import xmlrpc
 from zExceptions import Forbidden
+
+from zope.event import notify
+from zope.app.publication.interfaces import EndRequestEvent
 
 UNSPECIFIED_ROLES=''
 
@@ -83,6 +85,7 @@ class BaseRequest:
     def close(self):
         self.other.clear()
         self._held=None
+        notify(EndRequestEvent(None, self))
 
     def processInputs(self):
         """Do any input processing that could raise errors

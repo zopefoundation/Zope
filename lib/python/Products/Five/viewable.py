@@ -17,10 +17,10 @@ $Id: viewable.py 14595 2005-07-12 21:26:12Z philikon $
 """
 import inspect
 from zExceptions import NotFound
-from zope.exceptions import NotFoundError
-from zope.component import getView, getDefaultViewName, ComponentLookupError
+from zope.component import ComponentLookupError
 from zope.interface import implements
 from zope.publisher.interfaces.browser import IBrowserRequest
+from zope.app.zapi import getDefaultViewName
 
 from Products.Five.traversable import FakeRequest
 from Products.Five.interfaces import IBrowserDefault

@@ -11,13 +11,26 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Test helpers
+"""Site support ZCML directive schemas
 
-$Id: __init__.py 14470 2005-07-10 11:57:49Z philikon $
+$Id: fivedirectives.py 18581 2005-10-14 16:54:25Z regebro $
 """
-from Products.Five.testing.restricted import RestrictedPythonTestCase
+from zope.interface import Interface
+from zope.configuration.fields import GlobalObject
 
-from Products.Five.testing.folder import FiveTraversableFolder
-from Products.Five.testing.folder import manage_addFiveTraversableFolder
-from Products.Five.testing.folder import NoVerifyPasteFolder
-from Products.Five.testing.folder import manage_addNoVerifyPasteFolder
+class ILocalSiteDirective(Interface):
+    """Make instances of class hookable for Site.
+
+    site_class is an implementation of ISite, which will have it's methods
+    monkey_patched into the the class. If not given a default implementation
+    will be used.
+    """
+    class_ = GlobalObject(
+        title=u"Class",
+        required=True
+        )
+
+    site_class = GlobalObject(
+        title=u"Site Class",
+        required=False
+        )

@@ -17,8 +17,8 @@ static char _Persistence_module_documentation[] =
 "$Id$\n"
 ;
 
-#include "ExtensionClass.h"
-#include "cPersistence.h"
+#include "ExtensionClass/ExtensionClass.h"
+#include "persistent/cPersistence.h"
 
 
 /* convert_name() returns a new reference to a string name

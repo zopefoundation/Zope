@@ -15,7 +15,7 @@ static char cDocumentTemplate_module_documentation[] =
 "\n$Id$"
 ;
 
-#include "ExtensionClass.h"
+#include "ExtensionClass/ExtensionClass.h"
 
 static PyObject *py_isDocTemp=0, *py_blocks=0, *py_=0, *join=0, *py_acquire;
 static PyObject *py___call__, *py___roles__, *py_AUTHENTICATED_USER;

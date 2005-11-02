@@ -24,7 +24,7 @@ from zope.app.security.interfaces import IPermission
 from zope.app import zapi
 
 from AccessControl import ClassSecurityInfo, getSecurityManager
-from Globals import InitializeClass
+from Globals import InitializeClass as initializeClass
 from types import StringTypes
 
 CheckerPublicId = 'zope.Public'
@@ -99,9 +99,6 @@ def newInteraction():
     if getattr(thread_local, 'interaction', None) is None:
         thread_local.interaction = FiveSecurityPolicy()
 
-def initializeClass(klass):
-    InitializeClass(klass)
-
 def _getSecurity(klass):
     # a Zope 2 class can contain some attribute that is an instance
     # of ClassSecurityInfo. Zope 2 scans through things looking for
@@ -121,15 +118,12 @@ def protectName(klass, name, permission_id):
     """Protect the attribute 'name' on 'klass' using the given
        permission"""
     security = _getSecurity(klass)
-    # XXX: Sometimes, the object CheckerPublic is used instead of the
-    # string zope.Public. I haven't ben able to figure out why, or if
-    # it is correct, or a bug. So this is a workaround.
-    if permission_id is CheckerPublic:
-        security.declarePublic(name)
-        return
     # Zope 2 uses string, not unicode yet
     name = str(name)
-    if permission_id == CheckerPublicId:
+    if permission_id == CheckerPublicId or permission_id is CheckerPublic:
+        # Sometimes, we already get a processed permission id, which
+        # can mean that 'zope.Public' has been interchanged for the
+        # CheckerPublic object
         security.declarePublic(name)
     elif permission_id == CheckerPrivateId:
         security.declarePrivate(name)
@@ -142,7 +136,10 @@ def protectName(klass, name, permission_id):
 def protectClass(klass, permission_id):
     """Protect the whole class with the given permission"""
     security = _getSecurity(klass)
-    if permission_id == CheckerPublicId:
+    if permission_id == CheckerPublicId or permission_id is CheckerPublic:
+        # Sometimes, we already get a processed permission id, which
+        # can mean that 'zope.Public' has been interchanged for the
+        # CheckerPublic object
         security.declareObjectPublic()
     elif permission_id == CheckerPrivateId:
         security.declareObjectPrivate()

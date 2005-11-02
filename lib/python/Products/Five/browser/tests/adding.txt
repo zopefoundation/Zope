@@ -7,7 +7,7 @@ ObjectManagerNameChooser
 
 First we need to import and setup some prerequisites:
 
-  >>> from Products.Five.testing import manage_addFiveTraversableFolder
+  >>> from Products.Five.tests.testing import manage_addFiveTraversableFolder
   >>> from Products.Five.browser.adding import ObjectManagerNameChooser
 
   >>> manage_addFiveTraversableFolder(self.folder, 'testoid', 'Testoid')

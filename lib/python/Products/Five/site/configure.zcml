@@ -1,0 +1,35 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:browser="http://namespaces.zope.org/browser">
+
+  <adapter
+      for="*"
+      provides="zope.component.interfaces.ISiteManager"
+      factory=".localsite.siteManagerAdapter"
+      />
+
+  <adapter
+      for="zope.app.site.interfaces.ISite"
+      provides=".interfaces.IFiveUtilityRegistry"
+      factory=".utility.SimpleLocalUtilityRegistry"
+      />
+
+  <subscriber
+      for="zope.app.component.interfaces.ISite
+           zope.app.publication.interfaces.IBeforeTraverseEvent"
+      handler="zope.app.component.site.threadSiteSubscriber"
+      />
+
+  <subscriber
+      for="zope.app.publication.interfaces.IEndRequestEvent"
+      handler="zope.app.component.site.clearThreadSiteSubscriber"
+      />
+
+  <browser:page
+      for="zope.app.component.interfaces.IPossibleSite"
+      name="manage_site.html"
+      permission="five.ManageSite"
+      class=".browser.LocalSiteView"
+      template="managesite.pt"
+      />
+
+</configure>

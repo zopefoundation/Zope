@@ -33,7 +33,6 @@ def main():
     # below assumes this script is in the BASE_DIR/inst directory
     global PREFIX
     BASE_DIR=os.path.abspath(os.path.dirname(os.path.dirname(sys.argv[0])))
-    BUILD_BASE=os.path.join(os.getcwd(), 'build-base', 'python-%s.%s' % sys.version_info[:2])
     PYTHON=sys.executable
     MAKEFILE=open(os.path.join(BASE_DIR, 'inst', IN_MAKEFILE)).read()
     REQUIRE_LF_ENABLED = 1
@@ -66,8 +65,6 @@ def main():
             INSTALL_FLAGS = '--optimize=1 --no-compile'
         if o == '--no-compile':
             INSTALL_FLAGS = '--no-compile'
-        if o == '--build-base':
-            BUILD_BASE = a
         if o == '--quiet':
             DISTUTILS_OPTS = '-q'
             global QUIET
@@ -85,7 +82,6 @@ def main():
         '<<PYTHON>>':PYTHON,
         '<<PREFIX>>':PREFIX,
         '<<BASE_DIR>>':BASE_DIR,
-        '<<BUILD_BASE>>':BUILD_BASE,
         '<<INSTALL_FLAGS>>':INSTALL_FLAGS,
         '<<ZOPE_MAJOR_VERSION>>':versions.ZOPE_MAJOR_VERSION,
         '<<ZOPE_MINOR_VERSION>>':versions.ZOPE_MINOR_VERSION,

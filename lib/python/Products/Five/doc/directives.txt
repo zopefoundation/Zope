@@ -33,16 +33,6 @@ redefinePermission
 
 Redefine a permission in included ZCML as another one.
 
-service
--------
-
-Declare a global service
-
-serviceType
------------
-
-Declare a type of service.
-
 skin
 ----
 
@@ -55,8 +45,24 @@ Declare a global utility.
 
 interface
 ---------
+
 Register an interface in ZCML.
 
+factory
+-------
+
+Register an object factory.
+
+modulealias
+-----------
+
+Provide a module under an alias name, e.g. for persistent backward
+compatability.
+
+hook
+----
+
+Install a hook on a hookable object.
 
 browser ``http://namespaces.zope.org/browser``
 ==============================================
@@ -148,16 +154,34 @@ sizable
 Retrieve size information for a Zope 2 content class via a Zope 3
 style ``ISized`` adapter.
 
-sendEvents
-----------
+containerEvents
+---------------
 
-Lets a Zope 2 content class send out Zope 3 object events that
-correspond to the Zope 2 methods ``manage_afterAdd`` and
-``manage_beforeDelete``.
+Make events be sent for Zope 2 container objects, instead of calling old
+methods like ``manage_afterAdd``. These old methods will still be called
+for classes specified in a ``deprecatedManageAddDelete`` directive.
+
+deprecatedManageAddDelete
+-------------------------
+
+Specify a class that needs its old deprecated methods like
+``manage_afterAdd``, ``manage_beforeDelete`` and ``manage_afterClone``
+to be called. Modern classes should use event subscribers instead.
 
 pagesFromDirectory
 ------------------
 
-Load all *.pt files in a directory as pages. Useful when you want to
-share templates between Five and CMF, so you can declare pages like
-this is a similar way to setting up skin folders in portal_skins.
+Loads all files with .pt extension in a directory as pages.
+
+registerClass
+-------------
+
+Registers Five content with Zope 2.
+
+localsite
+---------
+
+Turns a class into an implementation of ``IPossibleSite`` so that its
+instances can be serve as local sites.  Unless otherwise specified, a
+default implementation's methods will be used to make the class comply
+with the ``IPossibleSite`` interface.

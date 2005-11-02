@@ -26,7 +26,7 @@ def test_standard_macros():
       >>> uf._doAddUser('manager', 'r00t', ['Manager'], [])
       >>> self.login('manager')
 
-      >>> from Products.Five.testing import manage_addFiveTraversableFolder
+      >>> from Products.Five.tests.testing import manage_addFiveTraversableFolder
       >>> manage_addFiveTraversableFolder(self.folder, 'testoid', 'Testoid')
 
       >>> import Products.Five.skin.tests
@@ -72,7 +72,7 @@ def test_standard_macros():
 
     Clean up:
 
-      >>> from zope.app.tests.placelesssetup import tearDown
+      >>> from zope.app.testing.placelesssetup import tearDown
       >>> tearDown()
     """
 

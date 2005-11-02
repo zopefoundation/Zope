@@ -11,17 +11,17 @@
        once on a class; SimpleContent inherits from Traversable, so
        one directive suffices here -->
 
-  <five:traversable class="Products.Five.testing.simplecontent.SimpleContent" />
+  <five:traversable class="Products.Five.tests.testing.simplecontent.SimpleContent" />
 
   <!-- this is a test whether the *directive* can be called more than
        once without raising a conflicting configuration exception -->
 
-  <five:traversable class="Products.Five.testing.simplecontent.SimpleContent" />
+  <five:traversable class="Products.Five.tests.testing.simplecontent.SimpleContent" />
 
   <!-- this tests whether five:traversable can be called on a class that
        already provides __bobo_traverse__, such as our FancyContent -->
 
-  <five:traversable class="Products.Five.testing.fancycontent.FancyContent" />
+  <five:traversable class="Products.Five.tests.testing.fancycontent.FancyContent" />
 
   <!-- Testing the vocabulary directive -->
 

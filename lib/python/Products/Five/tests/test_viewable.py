@@ -23,9 +23,6 @@ def test_defaultView():
     """
     Testing default view functionality
 
-      >>> from zope.app.tests.placelesssetup import setUp, tearDown
-      >>> setUp()
-
     Take a class Foo and an interface IFoo:
 
       >>> class Foo:
@@ -37,14 +34,14 @@ def test_defaultView():
 
     Set up a default view for IFoo:
 
-      >>> from zope.app import zapi
-      >>> pres = zapi.getGlobalService('Presentation')
+      >>> from zope.component import provideAdapter
+      >>> from zope.component.interfaces import IDefaultViewName
       >>> from zope.publisher.interfaces.browser import IBrowserRequest
 
     and default view names for everything and IFoo objects in particular:
 
-      >>> pres.setDefaultViewName(None, IBrowserRequest, u'index.html')
-      >>> pres.setDefaultViewName(IFoo, IBrowserRequest, u'foo.html')
+      >>> provideAdapter(u'index.html', (None, IBrowserRequest), IDefaultViewName)
+      >>> provideAdapter(u'foo.html', (IFoo, IBrowserRequest), IDefaultViewName)
 
     Now take a BrowserDefault for an instance of Foo::
 
@@ -73,10 +70,10 @@ def test_defaultView():
       >>> path
       [u'foo.html']
 
+    Clean up adapter registry:
 
-    Clean up:
-
-      >>> tearDown()
+      >>> from zope.testing.cleanup import cleanUp
+      >>> cleanUp()
     """
 
 def test_suite():

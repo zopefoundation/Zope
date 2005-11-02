@@ -330,6 +330,14 @@ class PythonScript(Script, Historical, Cacheable):
         if item is self:
             self._filepath = self.get_filepath()
 
+    def manage_beforeDelete(self, item, container):
+        # shut up deprecation warnings
+        pass
+
+    def manage_afterClone(self, item):
+        # shut up deprecation warnings
+        pass
+
     def get_filepath(self):
         return self.meta_type + ':' + '/'.join(self.getPhysicalPath())
 

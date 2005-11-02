@@ -34,7 +34,7 @@
       type="zope.publisher.interfaces.browser.IBrowserRequest"
       for="zope.schema.interfaces.IObject"
       provides="zope.app.form.interfaces.IInputWidget"
-      factory="zope.app.form.browser.objectwidget.ObjectWidget"
+      factory="Products.Five.form.objectwidget.ObjectWidget"
       permission="zope.Public"
       />
 
