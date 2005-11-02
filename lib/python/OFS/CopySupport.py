@@ -33,8 +33,9 @@ from zope.interface import implements
 from zope.event import notify
 from zope.app.event.objectevent import ObjectCopiedEvent
 from zope.app.container.contained import ObjectMovedEvent
-from Products.Five.event import ObjectWillBeMovedEvent
-from Products.Five.event import FiveObjectClonedEvent
+from OFS.event import ObjectWillBeMovedEvent
+from OFS.event import ObjectClonedEvent
+import OFS.subscribers
 
 from OFS.interfaces import ICopyContainer
 from OFS.interfaces import ICopySource
@@ -160,12 +161,9 @@ class CopyContainer(ExtensionClass.Base):
         previous call to manage_cutObjects or manage_copyObjects as the first
         argument.
 
-        Also sends IObjectCopiedEvent and IFiveObjectClonedEvent
+        Also sends IObjectCopiedEvent and IObjectClonedEvent
         or IObjectWillBeMovedEvent and IObjectMovedEvent.
         """
-        # Done here to avoid circular imports
-        from Products.Five.subscribers import maybeCallDeprecated
-
         if cb_copy_data is not None:
             cp = cb_copy_data
         elif REQUEST is not None and REQUEST.has_key('__cp'):
@@ -224,9 +222,9 @@ class CopyContainer(ExtensionClass.Base):
 
                 ob._postCopy(self, op=0)
 
-                maybeCallDeprecated('manage_afterClone', ob)
+                OFS.subscribers.maybeCallDeprecated('manage_afterClone', ob)
 
-                notify(FiveObjectClonedEvent(ob))
+                notify(ObjectClonedEvent(ob))
 
             if REQUEST is not None:
                 return self.manage_main(self, REQUEST, update_menu=1,
@@ -359,9 +357,6 @@ class CopyContainer(ExtensionClass.Base):
     def manage_clone(self, ob, id, REQUEST=None):
         """Clone an object, creating a new object with the given id.
         """
-        # Done here to avoid circular imports
-        from Products.Five.subscribers import maybeCallDeprecated
-
         if not ob.cb_isCopyable():
             raise CopyError, eNotSupported % escape(ob.getId())
         try:
@@ -393,9 +388,9 @@ class CopyContainer(ExtensionClass.Base):
 
         ob._postCopy(self, op=0)
 
-        maybeCallDeprecated('manage_afterClone', ob)
+        OFS.subscribers.maybeCallDeprecated('manage_afterClone', ob)
 
-        notify(FiveObjectClonedEvent(ob))
+        notify(ObjectClonedEvent(ob))
 
         return ob
 

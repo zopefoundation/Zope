@@ -40,8 +40,9 @@ from Products.ZCatalog.Lazy import LazyMap
 from zope.event import notify
 from zope.app.container.contained import ObjectAddedEvent
 from zope.app.container.contained import ObjectRemovedEvent
-from Products.Five.event import ObjectWillBeAddedEvent
-from Products.Five.event import ObjectWillBeRemovedEvent
+from OFS.event import ObjectWillBeAddedEvent
+from OFS.event import ObjectWillBeRemovedEvent
+import OFS.subscribers
 
 
 manage_addBTreeFolderForm = DTMLFile('folderAdd', globals())
@@ -411,9 +412,6 @@ class BTreeFolder2Base (Persistent):
 
     def _setObject(self, id, object, roles=None, user=None, set_owner=1,
                    suppress_events=False):
-        # Done here to avoid circular imports
-        from Products.Five.subscribers import maybeCallDeprecated
-
         ob = object # better name, keep original function signature
         v = self._checkId(id)
         if v is not None:
@@ -446,18 +444,15 @@ class BTreeFolder2Base (Persistent):
         if not suppress_events:
             notify(ObjectAddedEvent(ob, self, id))
 
-        maybeCallDeprecated('manage_afterAdd', ob, self)
+        OFS.subscribers.maybeCallDeprecated('manage_afterAdd', ob, self)
 
         return id
 
 
     def _delObject(self, id, dp=1, suppress_events=False):
-        # Done here to avoid circular imports
-        from Products.Five.subscribers import maybeCallDeprecated
-
         ob = self._getOb(id)
 
-        maybeCallDeprecated('manage_beforeDelete', ob, self)
+        OFS.subscribers.maybeCallDeprecated('manage_beforeDelete', ob, self)
 
         if not suppress_events:
             notify(ObjectWillBeRemovedEvent(ob, self, id))

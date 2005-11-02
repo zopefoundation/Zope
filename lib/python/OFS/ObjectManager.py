@@ -46,8 +46,9 @@ from Traversable import Traversable
 from zope.event import notify
 from zope.app.container.contained import ObjectAddedEvent
 from zope.app.container.contained import ObjectRemovedEvent
-from Products.Five.event import ObjectWillBeAddedEvent
-from Products.Five.event import ObjectWillBeRemovedEvent
+from OFS.event import ObjectWillBeAddedEvent
+from OFS.event import ObjectWillBeRemovedEvent
+import OFS.subscribers
 
 
 # the name BadRequestException is relied upon by 3rd-party code
@@ -278,9 +279,6 @@ class ObjectManager(
 
         Also sends IObjectWillBeAddedEvent and IObjectAddedEvent.
         """
-        # Done here to avoid circular imports
-        from Products.Five.subscribers import maybeCallDeprecated
-
         ob = object # better name, keep original function signature
         v = self._checkId(id)
         if v is not None:
@@ -317,7 +315,7 @@ class ObjectManager(
         if not suppress_events:
             notify(ObjectAddedEvent(ob, self, id))
 
-        maybeCallDeprecated('manage_afterAdd', ob, self)
+        OFS.subscribers.maybeCallDeprecated('manage_afterAdd', ob, self)
 
         return id
 
@@ -334,7 +332,7 @@ class ObjectManager(
         # Don't do recursion anymore, a subscriber does that.
         warnings.warn(
             "%s.manage_afterClone is deprecated and will be removed in "
-            "Zope 2.11, you should use an IFiveObjectClonedEvent "
+            "Zope 2.11, you should use an IObjectClonedEvent "
             "subscriber instead." % self.__class__.__name__,
             DeprecationWarning, stacklevel=2)
     manage_afterClone.__five_method__ = True
@@ -353,12 +351,9 @@ class ObjectManager(
 
         Also sends IObjectWillBeRemovedEvent and IObjectRemovedEvent.
         """
-        # Done here to avoid circular imports
-        from Products.Five.subscribers import maybeCallDeprecated
-
         ob = self._getOb(id)
 
-        maybeCallDeprecated('manage_beforeDelete', ob, self)
+        OFS.subscribers.maybeCallDeprecated('manage_beforeDelete', ob, self)
 
         if not suppress_events:
             notify(ObjectWillBeRemovedEvent(ob, self, id))

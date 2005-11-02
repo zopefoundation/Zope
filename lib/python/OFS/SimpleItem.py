@@ -79,7 +79,7 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
     def manage_afterClone(self, item):
         warnings.warn(
             "%s.manage_afterClone is deprecated and will be removed in "
-            "Zope 2.11, you should use an IFiveObjectClonedEvent "
+            "Zope 2.11, you should use an IObjectClonedEvent "
             "subscriber instead." % self.__class__.__name__,
             DeprecationWarning, stacklevel=2)
     manage_afterClone.__five_method__ = True
