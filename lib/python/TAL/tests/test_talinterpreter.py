@@ -28,7 +28,7 @@ from TAL.TALInterpreter import TALInterpreter
 from TAL.DummyEngine import DummyEngine, DummyTranslationService
 from TAL.TALInterpreter import interpolate
 from TAL.tests import utils
-from zope.i18nmessageid import MessageID
+from zope.i18nmessageid import Message
 
 class TestCaseBase(unittest.TestCase):
 
@@ -67,10 +67,10 @@ class I18NCornerTestCase(TestCaseBase):
 
     def setUp(self):
         self.engine = DummyEngine()
-        self.engine.setLocal('foo', MessageID('FoOvAlUe', 'default'))
+        self.engine.setLocal('foo', Message('FoOvAlUe', 'default'))
         self.engine.setLocal('bar', 'BaRvAlUe')
         self.engine.setLocal('raw', ' \tRaW\n ')
-        self.engine.setLocal('noxlt', MessageID("don't translate me"))
+        self.engine.setLocal('noxlt', Message("don't translate me"))
 
     def _check(self, program, expected):
         result = StringIO()
