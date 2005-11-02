@@ -47,6 +47,26 @@ else:
 sys.path.insert(0, shome)
 
 defaults = '--tests-pattern ^tests$ -v'.split()
+defaults += ['-m',
+             '!^('
+             'ZConfig'
+             '|'
+             'BTrees'
+             '|'
+             'persistentThreadedAsync'
+             '|'
+             'transaction'
+             '|'
+             'ZEO'
+             '|'
+             'ZODB'
+             '|'
+             'ZopeUndo'
+             '|'
+             'zdaemon'
+             '|'
+             'zope[.]testing'
+             ')[.]']
 if ihome:
     ihome = os.path.abspath(ihome)
     defaults += ['--path', os.path.join(ihome, 'lib', 'python')]
