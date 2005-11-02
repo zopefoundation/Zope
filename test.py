@@ -66,6 +66,8 @@ defaults += ['-m',
              'zdaemon'
              '|'
              'zope[.]testing'
+             '|'
+             'zope[.]app'
              ')[.]']
 if ihome:
     ihome = os.path.abspath(ihome)
