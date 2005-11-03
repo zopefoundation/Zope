@@ -22,6 +22,7 @@ from Globals import PersistentMapping
 from zope.interface import implements
 
 from EtagSupport import EtagSupport
+from interfaces import ILockItem
 from interfaces import IWriteLock
 from WriteLockInterface import LockItemInterface
 from WriteLockInterface import WriteLockInterface
@@ -30,14 +31,13 @@ from WriteLockInterface import WriteLockInterface
 class ResourceLockedError(Exception): pass
 
 class LockableItem(EtagSupport):
-    """\
-    Implements the WriteLockInterface, and is inherited by Resource which
-    is then inherited by the majority of Zope objects.  For an object to
-    be lockable, however, it should have the WriteLockInterface in its
-    __implements__ list, ie:
 
-    __implements__ = (WriteLockInterface,)
+    """Implements the WriteLock interface.
+
+    This class is inherited by Resource which is then inherited by the
+    majority of Zope objects.
     """
+
     implements(IWriteLock)
 
     # Protect methods using declarative security
@@ -106,7 +106,8 @@ class LockableItem(EtagSupport):
 
     def wl_setLock(self, locktoken, lock):
         locks = self.wl_lockmapping(create=1)
-        if LockItemInterface.isImplementedBy(lock):
+        if ILockItem.providedBy(lock) or \
+                LockItemInterface.isImplementedBy(lock):
             if locktoken == lock.getLockToken():
                 locks[locktoken] = lock
             else:

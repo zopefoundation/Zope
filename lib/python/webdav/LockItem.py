@@ -7,18 +7,24 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+"""WebDAV support - lock item.
 
-__version__ = "$Revision: 1.7 $"[11:-2]
+$Id$
+"""
 
-from Globals import Persistent
-from WriteLockInterface import LockItemInterface
+import time
+
 from AccessControl import ClassSecurityInfo
 from AccessControl.Owned import ownerInfo
+from Globals import Persistent
+from zope.interface import implements
+
 from common import generateLockToken
-import time
+from interfaces import ILockItem
+from WriteLockInterface import LockItemInterface
 
 MAXTIMEOUT = (2L**32)-1                 # Maximum timeout time
 DEFAULTTIMEOUT = 12 * 60L               # Default timeout
@@ -40,6 +46,8 @@ def validateTimeout(timeout):
 
 
 class LockItem(Persistent):
+
+    implements(ILockItem)
     __implements__ = (LockItemInterface,)
 
     # Use the Zope 2.3 declarative security to manage access
