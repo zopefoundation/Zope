@@ -1,4 +1,4 @@
-ZOPE_MAJOR_VERSION  = '2.8'
+ZOPE_MAJOR_VERSION  = '2.9'
 ZOPE_MINOR_VERSION  = '0'
 ZOPE_BRANCH_NAME    = '$Name$'[6:] or 'no-branch'
 
