@@ -26,6 +26,18 @@ Zope Changes
 
     Features added
 
+      - webdav: Added support for the z3 WriteLock interface.
+        It is no longer necessary to have the WriteLockInterface in the
+        __implements__ list of lockable objects. All classes inheriting from
+        LockableItem inherit also the IWriteLock interface. Note that this
+        enables webdav locking for all subclasses by default even if they
+        don't specify the WriteLockInterface explicitly.
+
+      - App ProductContext: Made registerClass aware of z3 interfaces.
+        Z2 and z3 interfaces are registered side by side in the same tuple in
+        Products.meta_types. IFAwareObjectManagers like the ZCatalog work now
+        with z3 interfaces as well.
+
       - Zope now sends Zope 3 events when objects are added or removed
         from standard containers. manage_afterAdd, manage_beforeDelete
         and manage_afterClone are now deprecated. See
