@@ -52,7 +52,12 @@ ZClasses          ../lib/python/ZClasses
 ZPublisher        ../lib/python/ZPublisher
 ZServer           ../lib/python/ZServer
 ZTUtils           ../lib/python/ZTUtils
-Zope              ../lib/python/Zope.py
+# we can't call the following item "Zope" because zpkg is
+# case-ignorant for collection names and it would conflict with "zope"
+# (the items listed here are collections, not packages, although most
+# of the times they're the same; here the collection represents a
+# top-level module, though)
+Zopepy            ../lib/python/Zope.py
 Zope2             ../lib/python/Zope2
 ZopeUndo          ../lib/python/ZopeUndo
 initgroups        ../lib/python/initgroups
