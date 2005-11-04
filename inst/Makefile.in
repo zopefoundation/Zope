@@ -54,14 +54,13 @@ install: version_txt
 	@echo Zope binaries installed successfully.
 	@echo Now run \'${PREFIX}/bin/mkzopeinstance.py\'
 
-# inplace:     Install a software home into to the source directory.
-inplace: PREFIX=${BASE_DIR}
-inplace: install
+# inplace:     Do an in-place build
+inplace: build
 
 # instance:    Do an inplace build and create an instance home in the resulting
 #              software home.
-instance: inplace
-	${PYTHON} "${BASE_DIR}/bin/mkzopeinstance.py" ${MKZ_FLAGS} \
+instance: build
+	${PYTHON} "${BASE_DIR}/utilities/mkzopeinstance.py" ${MKZ_FLAGS} \
            --dir="${BASE_DIR}" 
 
 # uninstance:  Remove the instance files made by make instance (w/ prejudice)
