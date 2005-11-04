@@ -7,7 +7,7 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
 """Property sheets
@@ -533,8 +533,7 @@ class DAVProperties(Virtual, PropertySheet, View):
 
     def dav__resourcetype(self):
         vself=self.v_self()
-        if (isDavCollection(vself) or
-            getattr(aq_base(vself), 'isAnObjectManager', None)):
+        if isDavCollection(vself):
             return '<n:collection/>'
         return ''
 

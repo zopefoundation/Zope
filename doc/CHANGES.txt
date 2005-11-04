@@ -73,6 +73,12 @@ Zope Changes
 
       - Improved test runner.  Run test.py with -h to find out more.
 
+    Bugs Fixed
+
+      - OFS PropertySheets / webdav: Fixed dav__resourcetype.
+        __dav_collection__ with a false value was overridden by
+        isAnObjectManager.
+
     Other
 
       - ZSQLMethod.manage_main: Moved the error message that warns of a
