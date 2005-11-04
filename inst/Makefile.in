@@ -67,6 +67,7 @@ instance: build
 uninstance:
 	${RMRF} "${BASE_DIR}/bin"
 	${RMRF} "${BASE_DIR}/etc"
+	${RMRF} "${BASE_DIR}/import"
 	${RMRF} "${BASE_DIR}/log"
 	${RMRF} "${BASE_DIR}/var"
 	${RMRF} "${BASE_DIR}/Products"
