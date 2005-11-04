@@ -26,6 +26,11 @@ Zope Changes
 
     Features added
 
+      - interfaces: Added 'Interfaces' tab to basic core objects.
+        This is a Five feature and only available if the classes are made
+        five:traversable. It allows to inspect interfaces and to assign
+        marker interfaces through the ZMI.
+
       - webdav: Added support for the z3 WriteLock interface.
         It is no longer necessary to have the WriteLockInterface in the
         __implements__ list of lockable objects. All classes inheriting from

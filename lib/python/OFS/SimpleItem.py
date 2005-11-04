@@ -122,6 +122,8 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
     manage_options=(
         App.Undo.UndoSupport.manage_options
         +AccessControl.Owned.Owned.manage_options
+        +({'label': 'Interfaces',
+           'action': 'manage_interfaces'},)
         )
 
     # Attributes that must be acquired
