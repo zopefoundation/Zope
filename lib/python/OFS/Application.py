@@ -20,7 +20,7 @@ from cgi import escape
 from StringIO import StringIO
 from warnings import warn
 
-import Globals, Products, App.Product, App.ProductRegistry, misc_
+import Globals, Products, App.Product, App.ProductRegistry
 import transaction
 from AccessControl.User import UserFolder
 from Acquisition import aq_base
@@ -30,14 +30,16 @@ from App.Product import doInstall
 from App.ProductContext import ProductContext
 from DateTime import DateTime
 from HelpSys.HelpSys import HelpSys
-from misc_ import Misc_
 from webdav.NullResource import NullResource
 from zExceptions import Redirect as RedirectException, Forbidden
 from zLOG import LOG, ERROR, WARNING, INFO
 
 import Folder
+import misc_
 import ZDOM
 from FindSupport import FindSupport
+from misc_ import Misc_
+
 
 class Application(Globals.ApplicationDefaultPermissions,
                   ZDOM.Root, Folder.Folder,
@@ -729,7 +731,6 @@ def install_product(app, product_dir, product_name, meta_types,
     path_join=os.path.join
     isdir=os.path.isdir
     exists=os.path.exists
-    DictType=type({})
     global_dict=globals()
     silly=('__doc__',)
 
@@ -750,7 +751,7 @@ def install_product(app, product_dir, product_name, meta_types,
             # like icon images.
             misc_=pgetattr(product, 'misc_', {})
             if misc_:
-                if type(misc_) is DictType:
+                if isinstance(misc_, dict):
                     misc_=Misc_(product_name, misc_)
                 Application.misc_.__dict__[product_name]=misc_
 
@@ -782,7 +783,7 @@ def install_product(app, product_dir, product_name, meta_types,
                 warn('__init__.py of %s has a long deprecated '
                      '\'__ac_permissions__\' attribute. '
                      '\'__ac_permissions__\' will be ignored by '
-                     'install_product in Zope 2.9. Please use registerClass '
+                     'install_product in Zope 2.10. Please use registerClass '
                      'instead.' % product.__name__,
                      DeprecationWarning)
             for p in pgetattr(product, '__ac_permissions__', ()):
@@ -797,7 +798,7 @@ def install_product(app, product_dir, product_name, meta_types,
             if pgetattr(product, 'meta_types', None) is not None:
                 warn('__init__.py of %s has a long deprecated \'meta_types\' '
                      'attribute. \'meta_types\' will be ignored by '
-                     'install_product in Zope 2.9. Please use registerClass '
+                     'install_product in Zope 2.10. Please use registerClass '
                      'instead.' % product.__name__,
                      DeprecationWarning)
             for meta_type in pgetattr(product, 'meta_types', ()):
@@ -814,7 +815,7 @@ def install_product(app, product_dir, product_name, meta_types,
             if pgetattr(product, 'methods', None) is not None:
                 warn('__init__.py of %s has a long deprecated \'methods\' '
                      'attribute. \'methods\' will be ignored by '
-                     'install_product in Zope 2.9. Please use registerClass '
+                     'install_product in Zope 2.10. Please use registerClass '
                      'instead.' % product.__name__,
                      DeprecationWarning)
             for name,method in pgetattr(
