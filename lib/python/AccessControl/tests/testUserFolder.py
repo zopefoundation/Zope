@@ -7,23 +7,23 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""User folder tests
+"""User folder tests.
+
+$Id$
 """
 
-__rcs_id__='$Id$'
-__version__='$Revision: 1.10 $'[11:-2]
-
-import os, sys, base64, unittest
-
-from Testing.makerequest import makerequest
-
-import transaction
-
+import unittest
+import Testing
 import Zope2
 Zope2.startup()
+
+import os, sys, base64
+
+import transaction
+from Testing.makerequest import makerequest
 
 from AccessControl import Unauthorized
 from AccessControl.SecurityManagement import newSecurityManager
@@ -64,6 +64,13 @@ class UserFolderTests(unittest.TestCase):
         user = self.uf.getUserById(name)
         user = user.__of__(self.uf)
         newSecurityManager(None, user)
+
+    def test_z3interfaces(self):
+        from AccessControl.interfaces import IStandardUserFolder
+        from AccessControl.User import UserFolder
+        from zope.interface.verify import verifyClass
+
+        verifyClass(IStandardUserFolder, UserFolder)
 
     def testGetUser(self):
         self.failIfEqual(self.uf.getUser('user1'), None)
@@ -238,6 +245,7 @@ class UserFolderTests(unittest.TestCase):
         self.assertEqual(user.__, ENCRYPTED)
         self.failUnless(uf._isPasswordEncrypted(user.__))
         self.failUnless(pw_validate(user.__, PASSWORD))
+
 
 class UserTests(unittest.TestCase):
 

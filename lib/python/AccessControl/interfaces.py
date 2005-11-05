@@ -263,3 +263,20 @@ class IRoleManager(IPermissionMappingSupport):
     def possible_permissions():
         """
         """
+
+
+class IStandardUserFolder(Interface):
+
+    def getUser(name):
+        """Get the user object specified by name.
+
+        If there is no user named 'name' in the user folder, return None.
+        """
+
+    def getUsers():
+        """Get a sequence of all user objects which reside in the user folder.
+        """
+
+    def getUserNames():
+        """Get a sequence of names of the users which reside in the user folder.
+        """

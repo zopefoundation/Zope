@@ -7,30 +7,36 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Access control package"""
+"""Access control package.
 
-__version__='$Revision: 1.182 $'[11:-2]
+$Id$
+"""
 
 import os
-
-import Globals, socket, SpecialUsers,re
-from Globals import DTMLFile, MessageDialog, Persistent, PersistentMapping
-from App.Management import Navigation, Tabs
-from Acquisition import Implicit
-from OFS.SimpleItem import Item
+import re
+import socket
 from base64 import decodestring
-from App.ImageFile import ImageFile
-from Role import RoleManager, DEFAULTMAXLISTUSERS
-from PermissionRole import _what_not_even_god_should_do, rolesForPermissionOn
-import AuthEncoding
-from AccessControl import getSecurityManager
+
+import Globals
+from Acquisition import Implicit
+from App.Management import Navigation, Tabs
+from Globals import DTMLFile, MessageDialog, Persistent, PersistentMapping
+from OFS.SimpleItem import Item
 from zExceptions import Unauthorized, BadRequest
-from AccessControl.SecurityManagement import newSecurityManager
-from AccessControl.SecurityManagement import noSecurityManager
-from AccessControl.ZopeSecurityPolicy import _noroles
+from zope.interface import implements
+
+import AuthEncoding
+import SpecialUsers
+from interfaces import IStandardUserFolder
+from PermissionRole import _what_not_even_god_should_do, rolesForPermissionOn
+from Role import RoleManager, DEFAULTMAXLISTUSERS
+from SecurityManagement import getSecurityManager
+from SecurityManagement import newSecurityManager
+from SecurityManagement import noSecurityManager
+from ZopeSecurityPolicy import _noroles
 
 
 _marker=[]
@@ -978,7 +984,7 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
 
     def _setId(self, id):
         if id != self.id:
-            raise Globals.MessageDialog(
+            raise MessageDialog(
                 title='Invalid Id',
                 message='Cannot change the id of a UserFolder',
                 action ='./manage_main',)
@@ -1001,13 +1007,17 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
         """ returns true if domain auth mode is set to true"""
         return getattr(self, '_domain_auth_mode', None)
 
+
 class UserFolder(BasicUserFolder):
+
     """Standard UserFolder object
 
     A UserFolder holds User objects which contain information
     about users including name, password domain, and roles.
     UserFolders function chiefly to control access by authenticating
     users and binding them to a collection of roles."""
+
+    implements(IStandardUserFolder)
 
     meta_type='User Folder'
     id       ='acl_users'
@@ -1090,10 +1100,6 @@ class UserFolder(BasicUserFolder):
 Globals.default__class_init__(UserFolder)
 
 
-
-
-
-
 def manage_addUserFolder(self,dtself=None,REQUEST=None,**ignored):
     """ """
     f=UserFolder()
@@ -1120,7 +1126,6 @@ def rolejoin(roles, other):
 
 addr_match=re.compile(r'((\d{1,3}\.){1,3}\*)|((\d{1,3}\.){3}\d{1,3})').match
 host_match=re.compile(r'(([\_0-9a-zA-Z\-]*\.)*[0-9a-zA-Z\-]*)').match
-
 
 
 def domainSpecMatch(spec, request):
