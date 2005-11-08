@@ -588,7 +588,7 @@ class ZCatalog(Folder, Persistent, Implicit):
             # we should commit a subtransaction if our threshhold is
             # exceeded within the boundaries of the current transaction.
             if self._v_total > self.threshold:
-                transaction.savepoint()
+                transaction.savepoint(optimistic=True)
                 self._p_jar.cacheGC()
                 self._v_total = 0
                 if pghandler:
