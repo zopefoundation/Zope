@@ -86,6 +86,8 @@ Zope Changes
 
     Other
 
+      - AccessControl.User: Use a better __repr__.
+
       - ZSQLMethod.manage_main: Moved the error message that warns of a
         non-existing or closed database connection next to the Connection ID
         dropdown and present it using red to increase its visibility.

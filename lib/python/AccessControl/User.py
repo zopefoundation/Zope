@@ -276,7 +276,8 @@ class BasicUser(Implicit):
 
     def __len__(self): return 1
     def __str__(self): return self.getUserName()
-    __repr__=__str__
+    def __repr__(self):
+        return '<%s %r>' % (self.__class__.__name__, self.getUserName())
 
 
 class SimpleUser(BasicUser):

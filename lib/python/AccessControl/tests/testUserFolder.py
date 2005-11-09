@@ -275,6 +275,21 @@ class UserTests(unittest.TestCase):
         f = User('chris', '123', ['Manager'], [])
         self.assertEqual(f.getDomains(), ())
 
+    def testRepr(self):
+        f = User('flo', '123', ['Manager'], [])
+        self.assertEqual(repr(f), "<User 'flo'>")
+
+    def testReprSpecial(self):
+        from AccessControl.User import NullUnrestrictedUser
+        from AccessControl.User import nobody
+        from AccessControl.User import system
+        # NullUnrestrictedUser is used when there is no emergency user
+        self.assertEqual(repr(NullUnrestrictedUser()),
+                         "<NullUnrestrictedUser (None, None)>")
+        self.assertEqual(repr(nobody),
+                         "<SpecialUser 'Anonymous User'>")
+        self.assertEqual(repr(system),
+                         "<UnrestrictedUser 'System Processes'>")
 
 def test_suite():
     suite = unittest.TestSuite()
