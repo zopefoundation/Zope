@@ -13,7 +13,7 @@
 ##############################################################################
 """Test events triggered by Five
 
-$Id: test_event.py 14595 2005-07-12 21:26:12Z philikon $
+$Id: test_event.py 19706 2005-11-10 14:05:16Z efge $
 """
 import os, sys
 if __name__ == '__main__':
@@ -40,11 +40,17 @@ class NotifyBase(DontComplain):
     def manage_afterAdd(self, item, container):
         print 'old manage_afterAdd %s %s %s' % (self.getId(), item.getId(),
                                                 container.getId())
+        super(NotifyBase, self).manage_afterAdd(item, container)
+    manage_afterAdd.__five_method__ = True # Shut up deprecation warnings
     def manage_beforeDelete(self, item, container):
+        super(NotifyBase, self).manage_beforeDelete(item, container)
         print 'old manage_beforeDelete %s %s %s' % (self.getId(), item.getId(),
                                                     container.getId())
+    manage_beforeDelete.__five_method__ = True # Shut up deprecation warnings
     def manage_afterClone(self, item):
         print 'old manage_afterClone %s %s' % (self.getId(), item.getId())
+        super(NotifyBase, self).manage_afterClone(item)
+    manage_afterClone.__five_method__ = True # Shut up deprecation warnings
 
 class MyApp(Folder):
     def getPhysicalRoot(self):

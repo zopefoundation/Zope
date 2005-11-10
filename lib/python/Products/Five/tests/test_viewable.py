@@ -13,7 +13,7 @@
 ##############################################################################
 """Unit tests for the viewable module.
 
-$Id: test_viewable.py 14595 2005-07-12 21:26:12Z philikon $
+$Id: test_viewable.py 19646 2005-11-08 15:46:36Z yuppie $
 """
 import os, sys
 if __name__ == '__main__':
@@ -77,8 +77,14 @@ def test_defaultView():
     """
 
 def test_suite():
-    from Testing.ZopeTestCase import ZopeDocTestSuite
-    return ZopeDocTestSuite()
+    import unittest
+    from zope.testing.doctest import DocTestSuite
+    from Testing.ZopeTestCase import FunctionalDocFileSuite
+    return unittest.TestSuite((
+            DocTestSuite(),
+            FunctionalDocFileSuite('viewable.txt',
+                                   package="Products.Five.tests",),
+            ))
 
 if __name__ == '__main__':
     framework()

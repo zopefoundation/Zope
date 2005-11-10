@@ -86,38 +86,69 @@ Finally we need to load the subscribers configuration::
   >>> zcml.load_config('meta.zcml', zope.app.component)
   >>> zcml.load_config('event.zcml', Products.Five)
 
+We need at least one fake deprecated method to tell the compatibility
+framework that component architecture is initialized::
+
+  >>> from Products.Five.eventconfigure import setDeprecatedManageAddDelete
+  >>> class C(object): pass
+  >>> setDeprecatedManageAddDelete(C)
+
 Old class
 =========
 
 If we use an instance of an old class for which we haven't specified
 anything, events are sent and the manage_afterAdd & co methods are
-called but in a "compatibility" way.
+called, but with a deprecation warning::
 
-Because the bases classes of Zope have been changed to not recurse
-except through the event framework, unexpected behavior may happen
-(however a warning will be sent)::
-
+  >>> sub = MyFolder('sub')
+  >>> folder._setObject('sub', sub)
+  ObjectWillBeAddedEvent sub
+  ObjectAddedEvent sub
+  old manage_afterAdd sub sub folder
+  'sub'
+  >>> sub = folder.sub
   >>> ob = MyContent('dog')
-  >>> folder._setObject('dog', ob)
+  >>> sub._setObject('dog', ob)
   ObjectWillBeAddedEvent dog
   ObjectAddedEvent dog
-  old manage_afterAdd dog dog folder
+  old manage_afterAdd dog dog sub
   'dog'
 
-And when we delete the object, manage_beforeDelete is also called and
-events are sent::
+And when we rename the subfolder, manage_beforeDelete is also called
+bottom-up and events are sent::
 
-  >>> folder.manage_delObjects('dog')
-  old manage_beforeDelete dog dog folder
-  ObjectWillBeRemovedEvent dog
-  ObjectRemovedEvent dog
+  >>> folder.manage_renameObject('sub', 'marine')
+  ObjectWillBeMovedEvent sub
+  ObjectWillBeMovedEvent dog
+  old manage_beforeDelete dog sub folder
+  old manage_beforeDelete sub sub folder
+  ObjectMovedEvent marine
+  old manage_afterAdd marine marine folder
+  ObjectMovedEvent dog
+  old manage_afterAdd dog marine folder
+
+Same thing for clone::
+
+  >>> res = folder.manage_clone(folder.marine, 'tank')
+  ObjectCopiedEvent tank
+  ObjectWillBeAddedEvent tank
+  ObjectWillBeAddedEvent dog
+  ObjectAddedEvent tank
+  old manage_afterAdd tank tank folder
+  ObjectAddedEvent dog
+  old manage_afterAdd dog tank folder
+  ObjectClonedEvent tank
+  old manage_afterClone tank tank
+  ObjectClonedEvent dog
+  old manage_afterClone dog tank
+  >>> res.getId()
+  'tank'
 
 Old class with deprecatedManageAddDelete
 ========================================
 
 We specifiy that our class is deprecated (using zcml in real life)::
 
-  >>> from Products.Five.eventconfigure import setDeprecatedManageAddDelete
   >>> setDeprecatedManageAddDelete(MyContent)
   >>> setDeprecatedManageAddDelete(MyFolder)
   >>> setDeprecatedManageAddDelete(MyOrderedFolder)

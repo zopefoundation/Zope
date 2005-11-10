@@ -13,7 +13,7 @@
 ##############################################################################
 """Machinery for making things viewable
 
-$Id: viewable.py 14595 2005-07-12 21:26:12Z philikon $
+$Id: viewable.py 19646 2005-11-08 15:46:36Z yuppie $
 """
 import inspect
 from zExceptions import NotFound
@@ -48,6 +48,8 @@ class Viewable:
     def __browser_default__(self, request):
         obj = self
         path = None
+        if request['REQUEST_METHOD'] not in ('GET', 'POST'):
+            return obj, [request['REQUEST_METHOD']]
         try:
             obj, path = IBrowserDefault(self).defaultView(request)
         except ComponentLookupError:

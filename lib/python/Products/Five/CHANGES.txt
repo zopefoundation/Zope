@@ -2,6 +2,11 @@
 Five Changes
 ============
 
+Five 1.3b2 (2005-11-10)
+=======================
+
+This version is included in Zope 2 trunk as of this date.
+
 Five 1.3b (2005-11-02)
 ======================
 
@@ -35,6 +40,17 @@ Restructuring
 * Backwards compatability for Zope 3-style interfaces of Zope 2
   components has been removed as that functionality is now in the Zope
   2 core as of Zope 2.9.
+
+Five 1.2 (unreleased)
+=====================
+
+Bugfixes
+--------
+
+* Fixed bug that broke WebDAV access for five:defaultViewable objects. The
+  __browser_default__ now modifies only GET and POST requests.
+
+* Fixed some event recursion compatibility modes.
 
 Five 1.2b (2005-11-02)
 ======================
@@ -74,9 +90,9 @@ Restructuring
 * Removed backwards compatibility for Zope 2.7 and 2.8.0.
 
 * Added a (temporarily) forked copy of the "new-and-improved" test
-  runner and supporting 'zope.testing' package, lifted from
+  runner and supporting ``zope.testing`` package, lifted from
   http://svn.zope.org/zope.testing.  This code should be removed for
-  Five 1.3, which will use the updated version of 'zope.testing' in
+  Five 1.3, which will use the updated version of ``zope.testing`` in
   the Zope 2.9 / Zope 3.2 tree.
 
   There is a test runner invoking script in the ``Five`` package.  For
@@ -85,8 +101,8 @@ Restructuring
 
     $ bin/zopectl run Products/Five/runtests.py -v -s Products.Five
 
-* Moved the 'Five.testing' package down to 'Five.tests.testing', in
-  order to make room for the 'zope.testing' code.
+* Moved the ``Five.testing`` package down to ``Five.tests.testing``,
+  in order to make room for the 'zope.testing' code.
 
 * Removed backwards compatibility for some moved classes (AddForm,
   EditForm, ContentAdding)
@@ -189,7 +205,7 @@ Restructuring
 * The former test product, ``FiveTest``, was converted into separate
   modules that provide the mock objects for the corresponding tests
   and are located right next to them.  Common test helpers have been
-  moved to the Five.tests.testing package.  Overall, the testing framework
+  moved to the Five.testing package.  Overall, the testing framework
   was much simplified and the individual tests clean up after
   themselves much like they do in Zope 3.
 
