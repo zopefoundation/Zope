@@ -50,7 +50,6 @@ from OFS.event import ObjectWillBeAddedEvent
 from OFS.event import ObjectWillBeRemovedEvent
 import OFS.subscribers
 
-
 # the name BadRequestException is relied upon by 3rd-party code
 BadRequestException = BadRequest
 
@@ -315,35 +314,23 @@ class ObjectManager(
         if not suppress_events:
             notify(ObjectAddedEvent(ob, self, id))
 
-        OFS.subscribers.maybeCallDeprecated('manage_afterAdd', ob, self)
+        OFS.subscribers.compatibilityCall('manage_afterAdd', ob, ob, self)
 
         return id
 
     def manage_afterAdd(self, item, container):
         # Don't do recursion anymore, a subscriber does that.
-        warnings.warn(
-            "%s.manage_afterAdd is deprecated and will be removed in "
-            "Zope 2.11, you should use an IObjectAddedEvent "
-            "subscriber instead." % self.__class__.__name__,
-            DeprecationWarning, stacklevel=2)
+        pass
     manage_afterAdd.__five_method__ = True
 
     def manage_afterClone(self, item):
         # Don't do recursion anymore, a subscriber does that.
-        warnings.warn(
-            "%s.manage_afterClone is deprecated and will be removed in "
-            "Zope 2.11, you should use an IObjectClonedEvent "
-            "subscriber instead." % self.__class__.__name__,
-            DeprecationWarning, stacklevel=2)
+        pass
     manage_afterClone.__five_method__ = True
 
     def manage_beforeDelete(self, item, container):
         # Don't do recursion anymore, a subscriber does that.
-        warnings.warn(
-            "%s.manage_beforeDelete is deprecated and will be removed in "
-            "Zope 2.11, you should use an IObjectWillBeRemovedEvent "
-            "subscriber instead." % self.__class__.__name__,
-            DeprecationWarning, stacklevel=2)
+        pass
     manage_beforeDelete.__five_method__ = True
 
     def _delObject(self, id, dp=1, suppress_events=False):
@@ -353,7 +340,7 @@ class ObjectManager(
         """
         ob = self._getOb(id)
 
-        OFS.subscribers.maybeCallDeprecated('manage_beforeDelete', ob, self)
+        OFS.subscribers.compatibilityCall('manage_beforeDelete', ob, ob, self)
 
         if not suppress_events:
             notify(ObjectWillBeRemovedEvent(ob, self, id))

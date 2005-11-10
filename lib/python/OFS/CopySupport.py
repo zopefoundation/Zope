@@ -222,7 +222,7 @@ class CopyContainer(ExtensionClass.Base):
 
                 ob._postCopy(self, op=0)
 
-                OFS.subscribers.maybeCallDeprecated('manage_afterClone', ob)
+                OFS.subscribers.compatibilityCall('manage_afterClone', ob, ob)
 
                 notify(ObjectClonedEvent(ob))
 
@@ -388,7 +388,7 @@ class CopyContainer(ExtensionClass.Base):
 
         ob._postCopy(self, op=0)
 
-        OFS.subscribers.maybeCallDeprecated('manage_afterClone', ob)
+        OFS.subscribers.compatibilityCall('manage_afterClone', ob, ob)
 
         notify(ObjectClonedEvent(ob))
 

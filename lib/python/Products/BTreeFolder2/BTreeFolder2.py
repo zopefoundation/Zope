@@ -444,7 +444,7 @@ class BTreeFolder2Base (Persistent):
         if not suppress_events:
             notify(ObjectAddedEvent(ob, self, id))
 
-        OFS.subscribers.maybeCallDeprecated('manage_afterAdd', ob, self)
+        OFS.subscribers.compatibilityCall('manage_afterAdd', ob, ob, self)
 
         return id
 
@@ -452,7 +452,7 @@ class BTreeFolder2Base (Persistent):
     def _delObject(self, id, dp=1, suppress_events=False):
         ob = self._getOb(id)
 
-        OFS.subscribers.maybeCallDeprecated('manage_beforeDelete', ob, self)
+        OFS.subscribers.compatibilityCall('manage_beforeDelete', ob, ob, self)
 
         if not suppress_events:
             notify(ObjectWillBeRemovedEvent(ob, self, id))
