@@ -139,12 +139,12 @@ def callManageAfterAdd(ob, item, container):
 def callManageBeforeDelete(ob, item, container):
     """Compatibility subscriber for manage_beforeDelete.
     """
-    if getattr(aq_base(ob), 'manage_beforeDelete', None) is None:
-        return
     if container is None:
         return
-    import OFS.ObjectManager # avoid circular imports
+    if getattr(aq_base(ob), 'manage_beforeDelete', None) is None:
+        return
     maybeWarnDeprecated(ob, 'manage_beforeDelete')
+    import OFS.ObjectManager # avoid circular imports
     try:
         ob.manage_beforeDelete(item, container)
     except OFS.ObjectManager.BeforeDeleteException:
