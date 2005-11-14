@@ -30,7 +30,7 @@ if zhome:
     if shome:
         shome = os.path.abspath(shome)
     else:
-        shome = os.path.join(zhome, 'lib/python')
+        shome = os.path.join(zhome, 'lib', 'python')
 elif shome:
     shome = os.path.abspath(shome)
     zhome = os.path.dirname(os.path.dirname(shome))
@@ -42,7 +42,7 @@ elif ihome:
 else:
     # No zope home, assume that it is the script directory
     zhome = os.path.abspath(os.path.dirname(sys.argv[0]))
-    shome = os.path.join(zhome, 'lib/python')
+    shome = os.path.join(zhome, 'lib', 'python')
 
 sys.path.insert(0, shome)
 
