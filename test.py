@@ -30,7 +30,7 @@ if zhome:
     if shome:
         shome = os.path.abspath(shome)
     else:
-        shome = os.path.join(zhome, 'lib/python')
+        shome = os.path.join(zhome, 'lib', 'python')
 elif shome:
     shome = os.path.abspath(shome)
     zhome = os.path.dirname(os.path.dirname(shome))
