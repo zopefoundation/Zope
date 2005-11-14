@@ -67,6 +67,8 @@ tempstorage       ../lib/python/tempstorage
 webdav            ../lib/python/webdav
 zExceptions       ../lib/python/zExceptions
 zLOG              ../lib/python/zLOG
+mechanize         ../lib/python/mechanize
+ClientCookie      ../lib/python/ClientCookie
 
 # These packages are the release collections based on the Zope 2
 # project; they define what goes into the Zope 2 and related
