@@ -177,33 +177,24 @@ class PathIndex(Persistent, SimpleItem):
         if len(comps) == 0:
             return IISet(self._unindex.keys())
 
+        results = None
         if level >= 0:
-            results = []
-            for i in range(len(comps)):
-                comp = comps[i]
+            for i, comp in enumerate(comps):
                 if not self._index.has_key(comp): return IISet()
                 if not self._index[comp].has_key(level+i): return IISet()
-                results.append( self._index[comp][level+i] )
-
-            res = results[0]
-            for i in range(1,len(results)):
-                res = intersection(res,results[i])
-            return res
+                results = intersection(results, self._index[comp][level+i])
 
         else:
-            results = IISet()
-            for level in range(0,self._depth + 1):
+            for level in range(self._depth + 1):
                 ids = None
-                error = 0
-                for cn in range(0,len(comps)):
-                    comp = comps[cn]
+                for i, comp in enumerate(comps):
                     try:
-                        ids = intersection(ids,self._index[comp][level+cn])
+                        ids = intersection(ids, self._index[comp][level+i])
                     except KeyError:
-                        error = 1
-                if error==0:
-                    results = union(results,ids)
-            return results
+                        break
+                else:    
+                    results = union(results, ids)
+        return results
 
     def numObjects(self):
         """ return the number distinct values """
