@@ -74,4 +74,4 @@ ClientCookie      ../lib/python/ClientCookie
 # project; they define what goes into the Zope 2 and related
 # releases.
 #
-Zope2-src      ../releases/Zope2
+Zope              ../releases/Zope2
