@@ -40,9 +40,8 @@ class FieldIndex(UnIndex):
 
     query_options = ["query","range"]
 
-    index_html = DTMLFile('dtml/index', globals())
-
-    manage_workspace = DTMLFile('dtml/manageFieldIndex', globals())
+    manage = manage_main = DTMLFile('dtml/manageFieldIndex', globals())
+    manage_main._setName('manage_main')
     manage_browse = DTMLFile('../dtml/browseIndex', globals())
 
 

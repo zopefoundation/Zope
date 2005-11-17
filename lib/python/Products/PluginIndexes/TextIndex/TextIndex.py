@@ -652,7 +652,8 @@ class TextIndex(Persistent, Implicit, SimpleItem):
         if RESPONSE:
             RESPONSE.redirect(URL2 + '/manage_main?manage_tabs_message=Preferences%20saved')
 
-    manage_workspace  = DTMLFile("dtml/manageTextIndex",globals())
+    manage = manage_main = DTMLFile("dtml/manageTextIndex",globals())
+    manage_main._setName('manage_main')
     manage_vocabulary = DTMLFile("dtml/manageVocabulary",globals())
 
 
