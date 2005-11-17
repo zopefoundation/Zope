@@ -50,7 +50,7 @@ class TopicIndex(Persistent, SimpleItem):
 
     manage_options= (
         {'label': 'FilteredSets',
-         'action': 'manage_workspace',
+         'action': 'manage_main',
          'help': ('TopicIndex','TopicIndex_searchResults.stx')},
     )
 
@@ -195,8 +195,8 @@ class TopicIndex(Persistent, SimpleItem):
             RESPONSE.redirect(URL1+'/manage_workspace?'
              'manage_tabs_message=FilteredSet(s)%20cleared')
 
-    index_html      = DTMLFile('dtml/index', globals())
-    manage_workspace = DTMLFile('dtml/manageTopicIndex',globals())
+    manage = manage_main = DTMLFile('dtml/manageTopicIndex',globals())
+    manage_main._setName('manage_main')
     editFilteredSet = DTMLFile('dtml/editFilteredSet',globals())
 
 

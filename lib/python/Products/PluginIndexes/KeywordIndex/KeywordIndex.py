@@ -130,8 +130,8 @@ class KeywordIndex(UnIndex):
             LOG.error('Attempt to unindex nonexistent'
                       ' document id %s' % documentId)
 
-    index_html = DTMLFile('dtml/index', globals())
-    manage_workspace = DTMLFile('dtml/manageKeywordIndex', globals())
+    manage = manage_main = DTMLFile('dtml/manageKeywordIndex', globals())
+    manage_main._setName('manage_main')
     manage_browse = DTMLFile('../dtml/browseIndex', globals())
 
 
