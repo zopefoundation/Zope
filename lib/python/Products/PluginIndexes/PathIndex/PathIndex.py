@@ -267,8 +267,8 @@ class PathIndex(Persistent, SimpleItem):
             # XXX Why is default ignored?
             return None
 
-    index_html = DTMLFile('dtml/index', globals())
-    manage_workspace = DTMLFile('dtml/managePathIndex', globals())
+    manage = manage_main = DTMLFile('dtml/managePathIndex', globals())
+    manage_main._setName('manage_main')
 
 
 manage_addPathIndexForm = DTMLFile('dtml/addPathIndex', globals())
