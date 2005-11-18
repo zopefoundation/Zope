@@ -92,6 +92,9 @@ Zope Changes
         non-existing or closed database connection next to the Connection ID
         dropdown and present it using red to increase its visibility.
 
+      - The ImageFile module has finally been deprecated for good and
+        will be removed in Zope 2.11.  Use App.ImageFile instead.
+
   after Zope 2.8.1
 
       - The '@' character is now allowed in object ids (RFC 1738 allows it).
