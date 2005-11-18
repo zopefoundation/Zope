@@ -17,7 +17,7 @@ $Id$
 """
 
 import SiteErrorLog
-from ImageFile import ImageFile
+from App.ImageFile import ImageFile
 
 misc_={
     'ok.gif': ImageFile('www/ok.gif', globals()),

@@ -22,7 +22,7 @@ import ZClasses.ObjectManager
 from AccessControl.Permissions import add_documents_images_and_files
 from AccessControl.Permissions import add_folders
 from ZClasses import createZClassForBase
-from ImageFile import ImageFile
+from App.ImageFile import ImageFile
 
 createZClassForBase( OFS.DTMLMethod.DTMLMethod, globals()
                    , 'ZDTMLMethod', 'DTML Method' )

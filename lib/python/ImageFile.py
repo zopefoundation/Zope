@@ -14,12 +14,10 @@
 
 __version__='$Revision: 1.13 $'[11:-2]
 
-
 ############################################################
+# BBB 2005/11/18 -- This module will be removed in Zope 2.11
 #
-# Eventually this module will go away!
-#
-############################################################
-
-
 from App.ImageFile import ImageFile
+import warnings
+warnings.warn("The ImageFile module will be removed in Zope 2.11. "
+              "Use App.ImageFile instead.", DeprecationWarning, stacklevel=2)
