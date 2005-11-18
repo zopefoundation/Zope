@@ -17,7 +17,7 @@ This file must be called from framework.py like so
   execfile(os.path.join(os.path.dirname(Testing.__file__),
            'ZopeTestCase', 'ztc_common.py'))
 
-$Id: ztc_common.py,v 1.14 2004/05/27 15:06:24 shh42 Exp $
+$Id$
 """
 
 # Overwrites the default framework() method to expose the
