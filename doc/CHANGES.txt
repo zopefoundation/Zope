@@ -26,6 +26,8 @@ Zope Changes
 
     Features added
 
+      - updated to ZPL 2.1
+
       - interfaces: Added 'Interfaces' tab to basic core objects.
         This is a Five feature and only available if the classes are made
         five:traversable. It allows to inspect interfaces and to assign
