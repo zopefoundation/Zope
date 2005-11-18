@@ -17,8 +17,8 @@ for dirpath, dirnames, filenames in os.walk('.'):
             data = data.replace('Version 2.0 (ZPL)', 'Version 2.1 (ZPL)')
             changed = True
 
-        if '(c) 2002 Zope Corporation' in data:
-            data = data.replace('(c) 2002 Zope Corporation', '(c) 2002 Zope Corporation')
+        if '(c) 2001 Zope Corporation' in data:
+            data = data.replace('(c) 2001 Zope Corporation', '(c) 2002 Zope Corporation')
             changed = True
 
         print fullname, changed
