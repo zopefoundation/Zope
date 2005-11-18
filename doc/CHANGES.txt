@@ -76,7 +76,17 @@ Zope Changes
         line in fileobject: ..., as well as fileobject.next() and
         fileobject.xreadlines() ) Collector #1837
 
-      - Improved test runner.  Run test.py with -h to find out more.
+      - Switched the bundled Zope 3 to release 3.2 and upgraded the
+        Five product to version 1.3 (see Products/Five/CHANGES.txt).
+
+      - The PageTemplate implementation now uses Zope 3 message
+        catalogs by default for translation.  Old-style translation
+        services such as Localizer or PlacelessTranslationService are
+        still supported as fall-backs.  See Products/Five/doc/i18n.txt
+        for more information.
+
+      - Switched to the new improved test runner from Zope 3.  Run
+        test.py with -h to find out more.
 
     Bugs Fixed
 
