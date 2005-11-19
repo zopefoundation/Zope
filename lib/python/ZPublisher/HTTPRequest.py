@@ -1349,6 +1349,10 @@ class HTTPRequest(BaseRequest):
         """see zope.publisher.interfaces.IPublicationRequest"""
         self._presentation_skin = skin
 
+    def shiftNameToApplication(self):
+        """see zope.publisher.interfaces.http.IVirtualHostRequest"""
+        # this is needed for ++skin++
+
     def getURL(self):
         return self.URL
 
