@@ -41,13 +41,13 @@ def load_site():
     _context = xmlconfig.file(file)
 
 
-def load_config(file, package=None):
+def load_config(file, package=None, execute=True):
     """Load an additional ZCML file into the context.
 
     Use with extreme care.
     """
     global _context
-    _context = xmlconfig.file(file, package, _context)
+    _context = xmlconfig.file(file, package, _context, execute=execute)
 
 def load_string(s):
     """Load a snipped of ZCML into the context.
