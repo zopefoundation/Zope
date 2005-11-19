@@ -3,6 +3,28 @@
 
   <browser:defaultView name="index.html" />
 
+  <interface
+      interface="zope.publisher.interfaces.browser.ILayer"
+      />
+
+  <interface
+      interface="zope.publisher.interfaces.browser.ISkin"
+      />
+
+  <interface
+      interface="zope.app.publisher.interfaces.browser.IMenuItemType"
+      />
+
+  <browser:layer
+      name="default"
+      interface="zope.publisher.interfaces.browser.IDefaultBrowserLayer"
+      />
+
+  <defaultLayer
+      type="zope.publisher.interfaces.browser.IBrowserRequest"
+      layer="zope.publisher.interfaces.browser.IDefaultBrowserLayer"
+      />
+
   <browser:page
       for="*"
       name="absolute_url"
