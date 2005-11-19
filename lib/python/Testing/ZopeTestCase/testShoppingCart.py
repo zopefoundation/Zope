@@ -31,7 +31,7 @@ if __name__ == '__main__':
 from Testing import ZopeTestCase
 
 from Globals import SOFTWARE_HOME
-examples_path = os.path.join(SOFTWARE_HOME, '..', '..', 'import', 'Examples.zexp')
+examples_path = os.path.join(SOFTWARE_HOME, '..', '..', 'skel', 'import', 'Examples.zexp')
 examples_path = os.path.abspath(examples_path)
 
 
