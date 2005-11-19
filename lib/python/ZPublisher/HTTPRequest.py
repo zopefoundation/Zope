@@ -1339,6 +1339,10 @@ class HTTPRequest(BaseRequest):
     def taintWrapper(self, enabled=TAINTING_ENABLED):
         return enabled and TaintRequestWrapper(self) or self
 
+    def shiftNameToApplication(self):
+        """see zope.publisher.interfaces.http.IVirtualHostRequest"""
+        # this is needed for ++skin++
+
     def getURL(self):
         return self.URL
 
