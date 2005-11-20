@@ -29,11 +29,11 @@ ComputedAttribute ../lib/python/ComputedAttribute
 DateTime          ../lib/python/DateTime
 DocumentTemplate  ../lib/python/DocumentTemplate
 ExtensionClass    ../lib/python/ExtensionClass
-Globals           ../lib/python/Globals.py
+Globals           ../lib/python/Globals
 HelpSys           ../lib/python/HelpSys
 ImageFile         ../lib/python/ImageFile.py
 Interface         ../lib/python/Interface
-Lifetime          ../lib/python/Lifetime.py
+Lifetime          ../lib/python/Lifetime
 MethodObject      ../lib/python/MethodObject
 Missing           ../lib/python/Missing
 MultiMapping      ../lib/python/MultiMapping
