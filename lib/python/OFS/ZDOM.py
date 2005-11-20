@@ -234,7 +234,7 @@ class DOMImplementation:
 
     __ac_permissions__=(
         ('Access contents information',
-            ('hasFeature'),
+            ('hasFeature',),
         ),
     )
 

@@ -26,6 +26,9 @@ Zope Changes
 
     Features added
 
+      - Fixed unclear security declarations. Warn when an attempt is
+        made to have a security declaration on a nonexistent method.
+
       - updated to ZPL 2.1
 
       - interfaces: Added 'Interfaces' tab to basic core objects.
