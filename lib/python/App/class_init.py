@@ -11,6 +11,7 @@
 #
 ##############################################################################
 
+import logging
 from AccessControl.PermissionRole import PermissionRole
 import AccessControl.Permission
 
@@ -36,7 +37,6 @@ def default__class_init__(self):
                     try: classname = '%s.%s' % (
                         self.__module__, self.__name__)
                     except AttributeError: classname = `self`
-                    import logging
                     logging.getLogger("Init").warning(
                         'Ambiguous name for method of %s: %r != %r',
                         classname, d['__name__'], name)
@@ -76,3 +76,8 @@ def default__class_init__(self):
                 pr=PermissionRole(pname)
             for mname in mnames:
                 setattr(self, mname+'__roles__', pr)
+                if mname and not hasattr(self, mname):
+                    logging.getLogger("Init").warning(
+                        "Class %s.%s has a security declaration for "
+                        "nonexistent method %r", self.__module__,
+                        self.__name__, mname)
