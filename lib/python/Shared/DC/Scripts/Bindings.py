@@ -13,8 +13,10 @@
 
 __version__='$Revision$'[11:-2]
 
-import Globals
+from Globals import InitializeClass
+from AccessControl import ClassSecurityInfo
 from AccessControl import getSecurityManager
+from AccessControl.Permissions import view_management_screens
 from AccessControl.PermissionRole import _what_not_even_god_should_do
 from AccessControl.ZopeGuards import guarded_getattr
 from Persistence import Persistent
@@ -190,18 +192,17 @@ class UnauthorizedBinding:
 
 class Bindings:
 
-    __ac_permissions__ = (
-        ('View management screens', ('getBindingAssignments',)),
-        ('Change bindings', ('ZBindings_edit', 'ZBindings_setClient')),
-        )
+    security = ClassSecurityInfo()
 
     _Bindings_client = None
 
+    security.declareProtected('Change bindings', 'ZBindings_edit')
     def ZBindings_edit(self, mapping):
         names = self._setupBindings(mapping)
         self._prepareBindCode()
         self._editedBindings()
 
+    security.declareProtected('Change bindings', 'ZBindings_setClient')
     def ZBindings_setClient(self, clientname):
         '''Name the binding to be used as the "client".
 
@@ -217,6 +218,7 @@ class Bindings:
         self._bind_names = names = NameAssignments(names)
         return names
 
+    security.declareProtected(view_management_screens, 'getBindingAssignments')
     def getBindingAssignments(self):
         if not hasattr(self, '_bind_names'):
             self._setupBindings()
@@ -348,3 +350,5 @@ class Bindings:
             return self._exec(bound_data, args, kw)
         finally:
             security.removeContext(self)
+
+InitializeClass(Bindings)

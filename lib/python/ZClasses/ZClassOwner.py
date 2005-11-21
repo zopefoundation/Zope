@@ -13,6 +13,7 @@
 """Zope Classes
 """
 import ExtensionClass, Globals, ZClass, Products
+from Globals import InitializeClass
 
 def manage_subclassableClassNames(self):
     r={}
@@ -43,5 +44,4 @@ class ZClassOwner(ExtensionClass.Base):
 
     manage_subclassableClassNames=manage_subclassableClassNames
 
-
-Globals.default__class_init__(ZClassOwner)
+InitializeClass(ZClassOwner)

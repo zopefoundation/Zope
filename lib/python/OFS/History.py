@@ -15,11 +15,14 @@
 $Id$
 """
 import Globals, ExtensionClass, difflib
+from Globals import InitializeClass
 from DateTime import DateTime
 from Acquisition import Implicit, aq_base
 from struct import pack, unpack
 from cgi import escape
 from zExceptions import Redirect
+from AccessControl import ClassSecurityInfo
+from AccessControl.Permissions import view_history
 
 class TemporalParadox(Exception): pass
 
@@ -84,26 +87,22 @@ class Historical(ExtensionClass.Base):
     they don't have persistent sub-objects.
     """
 
-    HistoricalRevisions=Historian()
+    security = ClassSecurityInfo()
 
-    __ac_permissions__=(
-        ('View History',
-         ('manage_change_history_page','manage_change_history',
-          'manage_historyCompare', 'manage_historicalComparison',
-          )
-         ),
-        )
+    HistoricalRevisions=Historian()
 
     manage_options=({'label':'History', 'action':'manage_change_history_page',
                      'help':('OFSP','History.stx')
                      },
                    )
 
+    security.declareProtected(view_history, 'manage_change_history_page')
     manage_change_history_page=Globals.DTMLFile(
         'dtml/history', globals(),
         HistoryBatchSize=20,
         first_transaction=0, last_transaction=20)
 
+    security.declareProtected(view_history, 'manage_change_history')
     def manage_change_history(self):
         first=0
         last=20
@@ -161,6 +160,7 @@ class Historical(ExtensionClass.Base):
 
     _manage_historyComparePage=Globals.DTMLFile(
         'dtml/historyCompare', globals(), management_view='History')
+    security.declareProtected(view_history, 'manage_historyCompare')
     def manage_historyCompare(self, rev1, rev2, REQUEST,
                               historyComparisonResults=''):
         dt1=DateTime(rev1._p_mtime)
@@ -170,6 +170,7 @@ class Historical(ExtensionClass.Base):
             dt1=dt1, dt2=dt2,
             historyComparisonResults=historyComparisonResults)
 
+    security.declareProtected(view_history, 'manage_historicalComparison')
     def manage_historicalComparison(self, REQUEST, keys=[]):
         "Compare two selected revisions"
         if not keys:
@@ -192,7 +193,8 @@ class Historical(ExtensionClass.Base):
 
         return self.manage_historyCompare(rev1, rev2, REQUEST)
 
-Globals.default__class_init__(Historical)
+InitializeClass(Historical)
+
 
 def dump(tag, x, lo, hi, r):
     r1=[]

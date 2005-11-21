@@ -20,10 +20,12 @@ import re
 import socket
 from base64 import decodestring
 
-import Globals
 from Acquisition import Implicit
 from App.Management import Navigation, Tabs
 from Globals import DTMLFile, MessageDialog, Persistent, PersistentMapping
+from Globals import InitializeClass
+from AccessControl import ClassSecurityInfo
+from AccessControl.Permissions import manage_users as ManageUsers
 from OFS.SimpleItem import Item
 from zExceptions import Unauthorized, BadRequest
 from zope.interface import implements
@@ -459,6 +461,8 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
 
     encrypt_passwords = 1
 
+    security = ClassSecurityInfo()
+
     manage_options=(
         (
         {'label':'Contents', 'action':'manage_main',
@@ -470,32 +474,26 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
         +Item.manage_options
         )
 
-    __ac_permissions__=(
-        ('Manage users',
-         ('manage_users','getUserNames', 'getUser', 'getUsers',
-          'getUserById', 'user_names', 'setDomainAuthenticationMode',
-          'userFolderAddUser', 'userFolderEditUser', 'userFolderDelUsers',
-          )
-         ),
-        )
-
-
     # ----------------------------------
     # Public UserFolder object interface
     # ----------------------------------
 
+    security.declareProtected(ManageUsers, 'getUserNames')
     def getUserNames(self):
         """Return a list of usernames"""
         raise NotImplementedError
 
+    security.declareProtected(ManageUsers, 'getUsers')
     def getUsers(self):
         """Return a list of user objects"""
         raise NotImplementedError
 
+    security.declareProtected(ManageUsers, 'getUser')
     def getUser(self, name):
         """Return the named user object or None"""
         raise NotImplementedError
 
+    security.declareProtected(ManageUsers, 'getUserById')
     def getUserById(self, id, default=None):
         """Return the user corresponding to the given id.
         """
@@ -534,6 +532,8 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
     # Authors of custom user folders don't need to do anything special to
     # support these - they will just call the appropriate '_' methods that
     # user folder subclasses already implement.
+
+    security.declareProtected(ManageUsers, 'userFolderAddUser')
     def userFolderAddUser(self, name, password, roles, domains, **kw):
         """API method for creating a new user object. Note that not all
            user folder implementations support dynamic creation of user
@@ -542,6 +542,7 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
             return self._doAddUser(name, password, roles, domains, **kw)
         raise NotImplementedError
 
+    security.declareProtected(ManageUsers, 'userFolderEditUser')
     def userFolderEditUser(self, name, password, roles, domains, **kw):
         """API method for changing user object attributes. Note that not
            all user folder implementations support changing of user object
@@ -550,6 +551,7 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
             return self._doChangeUser(name, password, roles, domains, **kw)
         raise NotImplementedError
 
+    security.declareProtected(ManageUsers, 'userFolderDelUsers')
     def userFolderDelUsers(self, names):
         """API method for deleting one or more user objects. Note that not
            all user folder implementations support deletion of user objects."""
@@ -929,6 +931,7 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
         self._doDelUsers(names)
         if REQUEST: return self._mainUser(self, REQUEST)
 
+    security.declareProtected(ManageUsers, 'manage_users')
     def manage_users(self,submit=None,REQUEST=None,RESPONSE=None):
         """This method handles operations on users for the web based forms
            of the ZMI. Application code (code that is outside of the forms
@@ -968,6 +971,7 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
 
         return self._mainUser(self, REQUEST)
 
+    security.declareProtected(ManageUsers, 'user_names')
     def user_names(self):
         return self.getUserNames()
 
@@ -994,6 +998,7 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
     # Domain authentication support. This is a good candidate to
     # become deprecated in future Zope versions.
 
+    security.declareProtected(ManageUsers, 'setDomainAuthenticationMode')
     def setDomainAuthenticationMode(self, domain_auth_mode):
         """Set the domain-based authentication mode. By default, this
            mode is off due to the high overhead of the operation that
@@ -1098,7 +1103,7 @@ class UserFolder(BasicUserFolder):
                     pass
 
 
-Globals.default__class_init__(UserFolder)
+InitializeClass(UserFolder)
 
 
 def manage_addUserFolder(self,dtself=None,REQUEST=None,**ignored):

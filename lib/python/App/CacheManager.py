@@ -20,6 +20,7 @@ __version__='$Revision: 1.31 $'[11:-2]
 import time
 
 import Globals
+from Globals import InitializeClass
 from DateTime import DateTime
 
 class CacheManager:
@@ -294,5 +295,4 @@ class CacheManager:
                }
         return res
 
-
-Globals.default__class_init__(CacheManager)
+InitializeClass(CacheManager)

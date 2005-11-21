@@ -26,6 +26,11 @@ Zope Changes
 
     Features added
 
+      - Use new-style security declarations everywhere possible. This
+        means remove the use of __ac_permissions__, foo__roles__ and
+        default__class_init__. A few corner cases can't be converted
+        because of circular imports.
+
       - Fixed unclear security declarations. Warn when an attempt is
         made to have a security declaration on a nonexistent method.
 

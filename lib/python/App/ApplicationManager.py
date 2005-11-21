@@ -15,6 +15,7 @@ __doc__="""System management components"""
 __version__='$Revision: 1.94 $'[11:-2]
 
 import sys,os,time,Globals, Acquisition, os, Undo
+from Globals import InitializeClass
 from Globals import DTMLFile
 from OFS.ObjectManager import ObjectManager
 from OFS.Folder import Folder
@@ -69,8 +70,8 @@ class DatabaseManager(Fake, SimpleItem.Item, Acquisition.Implicit):
     manage_cacheParameters=Globals.DTMLFile('dtml/cacheParameters', globals())
     manage_cacheGC=Globals.DTMLFile('dtml/cacheGC', globals())
 
+InitializeClass(DatabaseManager)
 
-Globals.default__class_init__(DatabaseManager)
 
 class FakeConnection:
     # Supports the methods of Connection that CacheManager needs
@@ -133,7 +134,7 @@ class DatabaseChooser (SimpleItem.SimpleItem):
             res.append(m.__of__(self))
         return res
 
-Globals.InitializeClass(DatabaseChooser)
+InitializeClass(DatabaseChooser)
 
 
 class VersionManager(Fake, SimpleItem.Item, Acquisition.Implicit):
@@ -152,7 +153,7 @@ class VersionManager(Fake, SimpleItem.Item, Acquisition.Implicit):
         )
         )
 
-Globals.default__class_init__(VersionManager)
+InitializeClass(VersionManager)
 
 
 
@@ -264,7 +265,7 @@ class DebugManager(Fake, SimpleItem.Item, Acquisition.Implicit):
     def manage_getSysPath(self):
         return list(sys.path)
 
-Globals.default__class_init__(DebugManager)
+InitializeClass(DebugManager)
 
 
 

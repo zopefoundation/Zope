@@ -22,6 +22,8 @@ from warnings import warn
 
 import Globals, Products, App.Product, App.ProductRegistry
 import transaction
+from Globals import InitializeClass
+from AccessControl import ClassSecurityInfo
 from AccessControl.User import UserFolder
 from Acquisition import aq_base
 from App.ApplicationManager import ApplicationManager
@@ -51,8 +53,9 @@ class Application(Globals.ApplicationDefaultPermissions,
 
     implements(IApplication)
 
+    security = ClassSecurityInfo()
+
     title ='Zope'
-    #__roles__=['Manager', 'Anonymous']
     __defined_roles__=('Manager','Anonymous','Owner')
     web__form__method='GET'
     isTopLevelPrincipiaApplicationObject=1
@@ -103,7 +106,7 @@ class Application(Globals.ApplicationDefaultPermissions,
         return self.title
 
     def __class_init__(self):
-        Globals.default__class_init__(self)
+        InitializeClass(self)
 
     def PrincipiaRedirect(self, destination, URL1):
         """Utility function to allow user-controlled redirects"""
@@ -135,7 +138,7 @@ class Application(Globals.ApplicationDefaultPermissions,
 
     ZopeTime = PrincipiaTime
 
-    ZopeAttributionButton__roles__=None
+    security.declarePublic('ZopeAttributionButton')
     def ZopeAttributionButton(self):
         """Returns an HTML fragment that displays the 'powered by zope'
         button along with a link to the Zope site."""
@@ -194,7 +197,7 @@ class Application(Globals.ApplicationDefaultPermissions,
         # We're at the base of the path.
         return ('',)
 
-    fixupZClassDependencies__roles__=()
+    security.declarePrivate('fixupZClassDependencies')
     def fixupZClassDependencies(self, rebuild=0):
         # Note that callers should not catch exceptions from this method
         # to ensure that the transaction gets aborted if the registry
@@ -252,7 +255,7 @@ class Application(Globals.ApplicationDefaultPermissions,
 
         return result
 
-    checkGlobalRegistry__roles__=()
+    security.declarePrivate('checkGlobalRegistry')
     def checkGlobalRegistry(self):
         """Check the global (zclass) registry for problems, which can
         be caused by things like disk-based products being deleted.
@@ -268,18 +271,20 @@ class Application(Globals.ApplicationDefaultPermissions,
             return 1
         return 0
 
-    _setInitializerRegistry__roles__ = ()
+    security.declarePrivate('_setInitializerFlag')
     def _setInitializerFlag(self, flag):
         if self._initializer_registry is None:
             self._initializer_registry = {}
         self._initializer_registry[flag] = 1
 
-    _getInitializerRegistry__roles__ = ()
+    security.declarePrivate('_getInitializerFlag')
     def _getInitializerFlag(self, flag):
         reg = self._initializer_registry
         if reg is None:
             reg = {}
         return reg.get(flag)
+
+InitializeClass(Application)
 
 
 class Expired(Globals.Persistent):
@@ -645,7 +650,7 @@ def install_products(app):
                         folder_permissions, raise_exc=debug_mode)
 
     Products.meta_types=Products.meta_types+tuple(meta_types)
-    Globals.default__class_init__(Folder.Folder)
+    InitializeClass(Folder.Folder)
 
 def get_products():
     """ Return a list of tuples in the form:
@@ -923,7 +928,7 @@ def reinstall_product(app, product_name):
             break
 
     Products.meta_types=Products.meta_types+tuple(meta_types)
-    Globals.default__class_init__(Folder.Folder)
+    InitializeClass(Folder.Folder)
 
 
 def reimport_product(product_name):

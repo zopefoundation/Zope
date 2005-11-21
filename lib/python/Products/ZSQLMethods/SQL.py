@@ -18,6 +18,9 @@ __version__='$Revision: 1.21 $'[11:-2]
 
 import Shared.DC.ZRDB.DA
 from Globals import DTMLFile
+from Globals import InitializeClass
+from AccessControl import ClassSecurityInfo
+from AccessControl.Permissions import change_database_methods
 from webdav.WriteLockInterface import WriteLockInterface
 
 def SQLConnectionIDs(self):
@@ -120,12 +123,11 @@ class SQL(Shared.DC.ZRDB.DA.DA):
     __implements__ = (WriteLockInterface,)
     meta_type='Z SQL Method'
 
+    security = ClassSecurityInfo()
+
+    security.declareProtected(change_database_methods, 'manage')
+    security.declareProtected(change_database_methods, 'manage_main')
     manage=manage_main=DTMLFile('dtml/edit', globals())
     manage_main._setName('manage_main')
 
-    __ac_permissions__=(
-        ('Change Database Methods', ('manage', 'manage_main')),
-    )
-
-import Globals
-Globals.InitializeClass(SQL)
+InitializeClass(SQL)

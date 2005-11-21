@@ -14,6 +14,7 @@
 
 $Id$
 """
+from Globals import InitializeClass
 from ZPublisher.Converters import type_converters
 from Globals import HTML, DTMLFile, MessageDialog
 from OFS.content_types import guess_content_type
@@ -24,8 +25,9 @@ from webdav.Lockable import ResourceLockedError
 from webdav.WriteLockInterface import WriteLockInterface
 from sgmllib import SGMLParser
 from urllib import quote
-import Globals
 from AccessControl import getSecurityManager
+from AccessControl.Permissions import change_dtml_methods
+from AccessControl.Permissions import change_dtml_documents
 from zExceptions.TracebackSupplement import PathTracebackSupplement
 
 done='done'
@@ -45,11 +47,13 @@ class DTMLDocument(PropertyManager, DTMLMethod):
         PropertyManager.manage_options +
         DTMLMethod.manage_options[2:]
         )
-    
-    ps = DTMLMethod.__ac_permissions__
-    __ac_permissions__=(
-        ps[0], ('Change DTML Documents', ps[1][1]), ps[2], ps[3], ps[4])
-    del ps
+
+    # Replace change_dtml_methods by change_dtml_documents
+    __ac_permissions__ = tuple([
+        (perms[0] == change_dtml_methods)
+            and (change_dtml_documents, perms[1])
+            or perms
+        for perms in DTMLMethod.__ac_permissions__])
 
     def manage_edit(self,data,title,SUBMIT='Change',dtpref_cols='100%',
                     dtpref_rows='20',REQUEST=None):
@@ -146,7 +150,7 @@ class DTMLDocument(PropertyManager, DTMLMethod):
         return result
 
 
-Globals.default__class_init__(DTMLDocument)
+InitializeClass(DTMLDocument)
 
 
 default_dd_html="""<dtml-var standard_html_header>

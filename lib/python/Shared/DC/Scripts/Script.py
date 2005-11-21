@@ -18,7 +18,10 @@ This provides generic script support
 
 __version__='$Revision$'[11:-2]
 
+from Globals import InitializeClass
 from Globals import DTMLFile
+from AccessControl import ClassSecurityInfo
+from AccessControl.Permissions import view_management_screens
 from OFS.SimpleItem import SimpleItem
 from string import join
 from urllib import quote
@@ -34,17 +37,17 @@ class Script(SimpleItem, BindingsUI):
     """Web-callable script mixin
     """
 
+    security = ClassSecurityInfo()
+
     index_html = None
     func_defaults=()
     func_code=None
 
     _Bindings_ns_class = TemplateDict
 
-    __ac_permissions__ = (
-        ('View management screens', ('ZScriptHTML_tryForm',)),
-        )
-
+    security.declareProtected(view_management_screens, 'ZScriptHTML_tryForm')
     ZScriptHTML_tryForm = DTMLFile('dtml/scriptTry', globals())
+
     def ZScriptHTML_tryAction(self, REQUEST, argvars):
         """Apply the test parameters.
         """
@@ -55,3 +58,5 @@ class Script(SimpleItem, BindingsUI):
         raise Redirect, "%s?%s" % (REQUEST['URL1'], join(vv, '&'))
 
     from Signature import _setFuncSignature
+
+InitializeClass(Script)

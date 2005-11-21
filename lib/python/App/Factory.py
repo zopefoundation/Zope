@@ -16,6 +16,10 @@ $Id$'''
 __version__='$Revision: 1.27 $'[11:-2]
 
 import OFS.SimpleItem, Acquisition, Globals, AccessControl.Role
+from Globals import InitializeClass
+from AccessControl import ClassSecurityInfo
+from AccessControl.Permissions import edit_factories
+from AccessControl.Permissions import use_factories
 
 class Factory(
     AccessControl.Role.RoleManager,
@@ -25,14 +29,12 @@ class Factory(
     meta_type='Zope Factory'
     icon='p_/Factory_icon'
 
+    security = ClassSecurityInfo()
+    security.declareObjectProtected(use_factories)
+
     permission='' # Waaaa
 
     _setObject=_getOb=Acquisition.Acquired
-
-    __ac_permissions__=(
-        ('Edit Factories', ('manage_edit','manage_main')),
-        ('Use Factories', ('index_html','')),
-        )
 
     manage_options=(
         (
@@ -50,11 +52,12 @@ class Factory(
         self.initial=initial
         self.permission=permission
 
-    initializePermission__roles__ = ()
+    security.declarePrivate('initializePermission')
     def initializePermission(self):
-        self.manage_setPermissionMapping(('Use Factories',),
+        self.manage_setPermissionMapping((use_factories,),
                                          (self.permission,))
 
+    security.declareProtected(edit_factories, 'manage_edit')
     def manage_edit(self, title, object_type, initial, permission='',
                     REQUEST=None):
         "Modify factory properties."
@@ -63,7 +66,7 @@ class Factory(
         self.object_type=object_type
         self.initial=initial
         self.permission=permission
-        self.manage_setPermissionMapping(('Use Factories',), (permission,))
+        self.manage_setPermissionMapping((use_factories,), (permission,))
         self._register()
         if REQUEST is not None: return self.manage_main(self, REQUEST)
 
@@ -100,8 +103,10 @@ class Factory(
         product.aq_acquire('_manage_remove_product_meta_type')(
             product, self.id, self.object_type)
 
+    security.declareProtected(edit_factories, 'manage_main')
     manage_main=Globals.DTMLFile('dtml/editFactory',globals())
 
+    security.declareProtected(use_factories, 'index_html')
     def index_html(self, REQUEST):
         " "
         return getattr(self, self.initial)(self.aq_parent, REQUEST)
@@ -111,5 +116,8 @@ class Factory(
             lambda id, myid=self.id: id != myid,
             self.aq_parent.objectIds()
             )
+
+InitializeClass(Factory)
+
 
 class ProductFactory(Factory): pass

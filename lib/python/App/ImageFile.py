@@ -17,6 +17,8 @@ __version__='$Revision: 1.20 $'[11:-2]
 import os
 import time
 
+from Globals import InitializeClass
+from AccessControl import ClassSecurityInfo
 from App.config import getConfiguration
 from OFS.content_types import guess_content_type
 from Globals import package_home
@@ -27,6 +29,8 @@ import Globals
 
 class ImageFile(Acquisition.Explicit):
     """Image objects stored in external files."""
+
+    security = ClassSecurityInfo()
 
     def __init__(self,path,_prefix=None):
         if _prefix is None:
@@ -84,7 +88,7 @@ class ImageFile(Acquisition.Explicit):
 
         return open(self.path,'rb').read()
 
-    HEAD__roles__=None
+    security.declarePublic('HEAD')
     def HEAD(self, REQUEST, RESPONSE):
         """ """
         RESPONSE.setHeader('Content-Type', self.content_type)
@@ -97,3 +101,5 @@ class ImageFile(Acquisition.Explicit):
 
     def __str__(self):
         return '<img src="%s" alt="" />' % self.__name__
+
+InitializeClass(ImageFile)

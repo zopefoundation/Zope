@@ -15,10 +15,13 @@
 $Id$
 """
 
-import sys, Globals, ExtensionClass, urllib
+import sys, ExtensionClass, urllib
 from Globals import DTMLFile, HTMLFile
+from Globals import InitializeClass
 from zExceptions import Redirect
 from AccessControl import getSecurityManager, Unauthorized
+from AccessControl import ClassSecurityInfo
+from AccessControl.Permissions import view_management_screens
 from cgi import escape
 from zope.interface import implements
 
@@ -28,13 +31,15 @@ from interfaces import INavigation
 class Tabs(ExtensionClass.Base):
     """Mix-in provides management folder tab support."""
 
-    manage_tabs__roles__=('Anonymous',)
+    security = ClassSecurityInfo()
+
+    security.declarePublic('manage_tabs')
     manage_tabs=DTMLFile('dtml/manage_tabs', globals())
 
 
     manage_options  =()
 
-    filtered_manage_options__roles__=None
+    security.declarePublic('filtered_manage_options')
     def filtered_manage_options(self, REQUEST=None):
 
         validate=getSecurityManager().validate
@@ -131,7 +136,7 @@ class Tabs(ExtensionClass.Base):
         out.append(last)
         return '/'.join(out)
 
-    class_manage_path__roles__=None
+    security.declarePublic('class_manage_path')
     def class_manage_path(self):
         if self.__class__.__module__[:1] != '*':
             return
@@ -150,7 +155,7 @@ class Tabs(ExtensionClass.Base):
         if path:
             return '/Control_Panel/Products/%s/manage_workspace' % path
 
-Globals.default__class_init__(Tabs)
+InitializeClass(Tabs)
 
 
 class Navigation(ExtensionClass.Base):
@@ -158,36 +163,38 @@ class Navigation(ExtensionClass.Base):
 
     implements(INavigation)
 
-    __ac_permissions__=(
-        ('View management screens',
-         ('manage', 'manage_menu', 'manage_top_frame',
-          'manage_page_header',
-          'manage_page_footer',
-          )),
-        )
+    security = ClassSecurityInfo()
 
+    security.declareProtected(view_management_screens, 'manage')
     manage            =DTMLFile('dtml/manage', globals())
+
+    security.declareProtected(view_management_screens, 'manage_menu')
     manage_menu       =DTMLFile('dtml/menu', globals())
 
+    security.declareProtected(view_management_screens, 'manage_top_frame')
     manage_top_frame  =DTMLFile('dtml/manage_top_frame', globals())
+
+    security.declareProtected(view_management_screens, 'manage_page_header')
     manage_page_header=DTMLFile('dtml/manage_page_header', globals())
+
+    security.declareProtected(view_management_screens, 'manage_page_footer')
     manage_page_footer=DTMLFile('dtml/manage_page_footer', globals())
 
+    security.declarePublic('manage_form_title')
     manage_form_title =DTMLFile('dtml/manage_form_title', globals(),
                                 form_title='Add Form',
                                 help_product=None,
                                 help_topic=None)
     manage_form_title._setFuncSignature(
         varnames=('form_title', 'help_product', 'help_topic') )
-    manage_form_title__roles__ = None
 
+    security.declarePublic('zope_quick_start')
     zope_quick_start=DTMLFile('dtml/zope_quick_start', globals())
-    zope_quick_start__roles__=None
 
+    security.declarePublic('manage_copyright')
     manage_copyright=DTMLFile('dtml/copyright', globals())
-    manage_copyright__roles__ = None
 
-    manage_zmi_logout__roles__ = None
+    security.declarePublic('manage_zmi_logout')
     def manage_zmi_logout(self, REQUEST, RESPONSE):
         """Logout current user"""
         p = getattr(REQUEST, '_logout_path', None)
@@ -207,12 +214,14 @@ You have been logged out.
 </html>""")
         return
 
-
+    security.declarePublic('manage_zmi_prefs')
     manage_zmi_prefs=DTMLFile('dtml/manage_zmi_prefs', globals())
-    manage_zmi_prefs__roles__ = None
+
+# Navigation doesn't have an inherited __class_init__ so doesn't get
+# initialized automatically.
 
 file = DTMLFile('dtml/manage_page_style.css', globals())
+Navigation.security.declarePublic('manage_page_style.css')
 setattr(Navigation, 'manage_page_style.css', file)
-setattr(Navigation, 'manage_page_style.css__roles__', None)
 
-Globals.default__class_init__(Navigation)
+InitializeClass(Navigation)

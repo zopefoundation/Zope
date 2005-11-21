@@ -15,12 +15,16 @@ import Acquisition
 from OFS.SimpleItem import Item
 from OFS.ObjectManager import ObjectManager
 from Globals import Persistent, DTMLFile, HTML
+from Globals import InitializeClass
+from AccessControl import ClassSecurityInfo
+from AccessControl.Permissions import access_contents_information
+from AccessControl.Permissions import add_documents_images_and_files
+from AccessControl.Permissions import view as View
 from Products.ZCatalog.ZCatalog import ZCatalog
 from Products.ZCatalog.Lazy import LazyCat
 from cgi import escape
 import Products
 import HelpTopic
-import Globals
 
 class HelpSys(Acquisition.Implicit, ObjectManager, Item, Persistent):
     """
@@ -30,22 +34,18 @@ class HelpSys(Acquisition.Implicit, ObjectManager, Item, Persistent):
     """
     meta_type='Help System'
 
+    security = ClassSecurityInfo()
+    security.declareObjectProtected(View)
+
     manage_options=(
         {'label' : 'Contents', 'action' : 'menu'},
         {'label' : 'Search', 'action' : 'search'},
     )
 
-    __ac_permissions__=(
-        ('View',
-         ('__call__', 'searchResults', 'HelpButton', '',
-          'index_html', 'menu', 'search', 'results', 'main',
-          'helpLink')),
-        ('Access contents information', ('helpValues',)),
-        )
-
     def __init__(self, id='HelpSys'):
         self.id=id
 
+    security.declareProtected(access_contents_information, 'helpValues')
     def helpValues(self, spec=None):
         "ProductHelp objects of all Products that have help"
         hv=[]
@@ -59,6 +59,8 @@ class HelpSys(Acquisition.Implicit, ObjectManager, Item, Persistent):
     # Seaching does an aggregated search of all ProductHelp
     # objects. Only Help Topics for which the user has permissions
     # are returned.
+
+    security.declareProtected(View, '__call__')
     def __call__(self, REQUEST=None, **kw):
         "Searchable interface"
         if REQUEST is not None:
@@ -73,18 +75,29 @@ class HelpSys(Acquisition.Implicit, ObjectManager, Item, Persistent):
             results.append(apply(getattr(ph, '__call__'), (REQUEST,) , kw))
         return LazyCat(results)
 
+    security.declareProtected(View, 'searchResults')
     searchResults=__call__
 
+    security.declareProtected(View, 'index_html')
     index_html=DTMLFile('dtml/frame', globals())
+
+    security.declareProtected(View, 'menu')
     menu=DTMLFile('dtml/menu', globals())
+
+    security.declareProtected(View, 'search')
     search=DTMLFile('dtml/search', globals())
+
+    security.declareProtected(View, 'results')
     results=DTMLFile('dtml/results', globals())
+
+    security.declareProtected(View, 'main')
     main=HTML("""<html></html>""")
     standard_html_header=DTMLFile('dtml/menu_header', globals())
     standard_html_footer=DTMLFile('dtml/menu_footer', globals())
 
     button=DTMLFile('dtml/button', globals())
 
+    security.declareProtected(View, 'HelpButton')
     def HelpButton(self, topic, product):
         """
         Insert a help button linked to a help topic.
@@ -93,6 +106,7 @@ class HelpSys(Acquisition.Implicit, ObjectManager, Item, Persistent):
 
     helpURL=DTMLFile('dtml/helpURL',globals())
 
+    security.declareProtected(View, 'helpLink')
     def helpLink(self, product='OFSP', topic='ObjectManager_Contents.stx'):
         # Generate an <a href...> tag linking to a help topic. This
         # is a little lighter weight than the help button approach.
@@ -133,7 +147,7 @@ class HelpSys(Acquisition.Implicit, ObjectManager, Item, Persistent):
             cols.append(TreeCollection(k,v,0))
         return cols
 
-Globals.default__class_init__(HelpSys)
+InitializeClass(HelpSys)
 
 
 class TreeCollection:
@@ -188,6 +202,8 @@ class ProductHelp(Acquisition.Implicit, ObjectManager, Item, Persistent):
     meta_type='Product Help'
     icon='p_/ProductHelp_icon'
 
+    security = ClassSecurityInfo()
+
     lastRegistered=None
 
     meta_types=({'name':'Help Topic',
@@ -198,10 +214,6 @@ class ProductHelp(Acquisition.Implicit, ObjectManager, Item, Persistent):
     manage_options=(
         ObjectManager.manage_options +
         Item.manage_options
-        )
-
-    __ac_permissions__=(
-        ('Add Documents, Images, and Files', ('addTopicForm', 'addTopic')),
         )
 
     def __init__(self, id='Help', title=''):
@@ -222,8 +234,10 @@ class ProductHelp(Acquisition.Implicit, ObjectManager, Item, Persistent):
         c.addColumn('url')
         c.addColumn('id')
 
+    security.declareProtected(add_documents_images_and_files, 'addTopicForm')
     addTopicForm=DTMLFile('dtml/addTopic', globals())
 
+    security.declareProtected(add_documents_images_and_files, 'addTopic')
     def addTopic(self, id, title, REQUEST=None):
         "Add a Help Topic"
         topic=HelpTopic.DTMLDocumentTopic(
@@ -295,5 +309,4 @@ class ProductHelp(Acquisition.Implicit, ObjectManager, Item, Persistent):
     standard_html_header=DTMLFile('dtml/topic_header', globals())
     standard_html_footer=DTMLFile('dtml/topic_footer', globals())
 
-
-Globals.default__class_init__(ProductHelp)
+InitializeClass(ProductHelp)

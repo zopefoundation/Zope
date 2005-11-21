@@ -14,6 +14,8 @@
 
 # Implement the manage_addProduct method of object managers
 import Acquisition, sys, Products
+from Globals import InitializeClass
+from AccessControl import ClassSecurityInfo
 from AccessControl.PermissionMapping import aqwrap
 from AccessControl.Owned import UnownableOwner
 
@@ -41,6 +43,8 @@ class FactoryDispatcher(Acquisition.Implicit):
     """Provide a namespace for product "methods"
     """
 
+    security = ClassSecurityInfo()
+
     _owner=UnownableOwner
 
     def __init__(self, product, dest, REQUEST=None):
@@ -55,21 +59,21 @@ class FactoryDispatcher(Acquisition.Implicit):
                 v=v[:v.rfind('/')]
                 self._u=v[:v.rfind('/')]
 
+    security.declarePublic('Destination')
     def Destination(self):
         "Return the destination for factory output"
         return self.__dict__['_d'] # we don't want to wrap the result!
+
+    security.declarePublic('this')
     this=Destination
-    this__roles__=Destination__roles__=None
 
-
+    security.declarePublic('DestinationURL')
     def DestinationURL(self):
         "Return the URL for the destination for factory output"
         url=getattr(self, '_u', None)
         if url is None:
             url=self.Destination().absolute_url()
         return url
-
-    DestinationURL__roles__=None
 
     def __getattr__(self, name):
         p=self.__dict__['_product']
@@ -102,3 +106,4 @@ class FactoryDispatcher(Acquisition.Implicit):
         d = update_menu and '/manage_main?update_menu=1' or '/manage_main'
         REQUEST['RESPONSE'].redirect(self.DestinationURL()+d)
 
+InitializeClass(FactoryDispatcher)

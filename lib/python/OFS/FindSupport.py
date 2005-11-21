@@ -17,14 +17,16 @@ $Id$
 
 from string import translate
 
-import Globals, ExtensionClass
+import ExtensionClass
 from AccessControl import ClassSecurityInfo
 from AccessControl.DTML import RestrictedDTML
 from AccessControl.Permission import name_trans
+from AccessControl.Permissions import view_management_screens
 from DateTime import DateTime
 from DocumentTemplate.DT_Util import Eval
 from DocumentTemplate.DT_Util import InstanceDict, TemplateDict
 from Globals import DTMLFile
+from Globals import InitializeClass
 from zope.interface import implements
 
 from interfaces import IFindSupport
@@ -36,31 +38,32 @@ class FindSupport(ExtensionClass.Base):
 
     implements(IFindSupport)
 
-#findframe is deprecated
+    security = ClassSecurityInfo()
+
+    #findframe is deprecated
+    security.declareProtected(view_management_screens, 'manage_findFrame')
     manage_findFrame=DTMLFile('dtml/findFrame', globals())
+
+    security.declareProtected(view_management_screens, 'manage_findForm')
     manage_findForm=DTMLFile('dtml/findForm', globals(),
                              management_view='Find')
+
+    security.declareProtected(view_management_screens, 'manage_findAdv')
     manage_findAdv=DTMLFile('dtml/findAdv', globals(),
                             management_view='Find',
                             help_topic='Find_Advanced.stx',
                             help_product='OFSP')
+
+    security.declareProtected(view_management_screens, 'manage_findResult')
     manage_findResult=DTMLFile('dtml/findResult', globals(),
                                management_view='Find')
-
-    __ac_permissions__=(
-        ('View management screens',
-         ('manage_findFrame', 'manage_findForm', 'manage_findAdv',
-          'manage_findResult')),
-        )
 
     manage_options=(
         {'label':'Find', 'action':'manage_findForm',
          'help':('OFSP','Find.stx')},
         )
 
-    security = ClassSecurityInfo()
-
-    security.declareProtected('View management screens', 'ZopeFind')
+    security.declareProtected(view_management_screens, 'ZopeFind')
     def ZopeFind(self, obj, obj_ids=None, obj_metatypes=None,
                  obj_searchterm=None, obj_expr=None,
                  obj_mtime=None, obj_mspec=None,
@@ -164,10 +167,10 @@ class FindSupport(ExtensionClass.Base):
 
 
 
-    security.declareProtected('View management screens', 'PrincipiaFind')
+    security.declareProtected(view_management_screens, 'PrincipiaFind')
     PrincipiaFind=ZopeFind
 
-    security.declareProtected('View management screens', 'ZopeFindAndApply')
+    security.declareProtected(view_management_screens, 'ZopeFindAndApply')
     def ZopeFindAndApply(self, obj, obj_ids=None, obj_metatypes=None,
                          obj_searchterm=None, obj_expr=None,
                          obj_mtime=None, obj_mspec=None,
@@ -259,7 +262,7 @@ class FindSupport(ExtensionClass.Base):
 
         return result
 
-Globals.InitializeClass(FindSupport)
+InitializeClass(FindSupport)
 
 
 class td(RestrictedDTML, TemplateDict):

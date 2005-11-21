@@ -16,7 +16,11 @@ $Id$
 """
 
 import Globals, urlparse, SpecialUsers, ExtensionClass
+from Globals import InitializeClass
+from AccessControl import ClassSecurityInfo
 from AccessControl import getSecurityManager, Unauthorized
+from AccessControl.Permissions import view_management_screens
+from AccessControl.Permissions import take_ownership
 from Acquisition import aq_get, aq_parent, aq_base
 from zope.interface import implements
 
@@ -35,13 +39,8 @@ class Owned(ExtensionClass.Base):
 
     implements(IOwned)
 
-    __ac_permissions__=(
-        ('View management screens',
-         ('manage_owner', 'owner_info')),
-        ('Take ownership',
-         ('manage_takeOwnership','manage_changeOwnershipType'),
-         ("Owner",)),
-        )
+    security = ClassSecurityInfo()
+    security.setPermissionDefault(take_ownership, ('Owner',))
 
     manage_options=({'label':  'Ownership',
                      'action': 'manage_owner',
@@ -50,8 +49,10 @@ class Owned(ExtensionClass.Base):
                      },
                    )
 
+    security.declareProtected(view_management_screens, 'manage_owner')
     manage_owner=Globals.DTMLFile('dtml/owner', globals())
 
+    security.declareProtected(view_management_screens, 'owner_info')
     def owner_info(self):
         """Get ownership info for display
         """
@@ -67,7 +68,7 @@ class Owned(ExtensionClass.Base):
            }
         return d
 
-    getOwner__roles__=()
+    security.declarePrivate('getOwner')
     def getOwner(self, info=0,
                  aq_get=aq_get,
                  UnownableOwner=UnownableOwner,
@@ -101,7 +102,7 @@ class Owned(ExtensionClass.Base):
             if user is None: user = SpecialUsers.nobody
         return user
 
-    getOwnerTuple__roles__=()
+    security.declarePrivate('getOwnerTuple')
     def getOwnerTuple(self):
         """Return a tuple, (userdb_path, user_id) for the owner.
 
@@ -111,7 +112,7 @@ class Owned(ExtensionClass.Base):
         """
         return aq_get(self, '_owner', None, 1)
 
-    getWrappedOwner__roles__=()
+    security.declarePrivate('getWrappedOwner')
     def getWrappedOwner(self):
         """Get the owner, modestly wrapped in the user folder.
 
@@ -141,7 +142,7 @@ class Owned(ExtensionClass.Base):
 
         return user.__of__(udb)
 
-    changeOwnership__roles__=()
+    security.declarePrivate('changeOwnership')
     def changeOwnership(self, user, recursive=0):
         """Change the ownership to the given user.
 
@@ -174,6 +175,7 @@ class Owned(ExtensionClass.Base):
         if owner == info: return 0
         return security.checkPermission('Take ownership', self)
 
+    security.declareProtected(take_ownership, 'manage_takeOwnership')
     def manage_takeOwnership(self, REQUEST, RESPONSE, recursive=0):
         """Take ownership (responsibility) for an object.
 
@@ -193,6 +195,7 @@ class Owned(ExtensionClass.Base):
 
         RESPONSE.redirect(REQUEST['HTTP_REFERER'])
 
+    security.declareProtected(take_ownership, 'manage_changeOwnershipType')
     def manage_changeOwnershipType(self, explicit=1,
                                    RESPONSE=None, REQUEST=None):
         """Change the type (implicit or explicit) of ownership.
@@ -269,7 +272,7 @@ class Owned(ExtensionClass.Base):
             except: pass
             if s is None: object._p_deactivate()
 
-Globals.default__class_init__(Owned)
+InitializeClass(Owned)
 
 
 class EmergencyUserCannotOwn(Exception):

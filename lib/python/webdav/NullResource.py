@@ -18,9 +18,14 @@ $Id$
 import sys
 
 import Acquisition, OFS.content_types
-import Globals
+from Globals import InitializeClass
 import OFS.SimpleItem
 from AccessControl import getSecurityManager
+from AccessControl import ClassSecurityInfo
+from AccessControl.Permissions import view as View
+from AccessControl.Permissions import add_folders
+from AccessControl.Permissions import webdav_lock_items
+from AccessControl.Permissions import webdav_unlock_items
 from Globals import Persistent, DTMLFile
 from OFS.CopySupport import CopyError
 from zExceptions import MethodNotAllowed
@@ -43,11 +48,7 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
     __implements__ = (WriteLockInterface,)
     __null_resource__=1
 
-    __ac_permissions__=(
-        ('View',                             ('HEAD',)),
-        ('Add Folders',                      ('MKCOL',)),
-        ('WebDAV Lock items',                ('LOCK',)),
-    )
+    security = ClassSecurityInfo()
 
     def __init__(self, parent, name, request=None):
         self.__name__=name
@@ -64,6 +65,7 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
             raise Conflict, 'Collection ancestors must already exist.'
         raise NotFound, 'The requested resource was not found.'
 
+    security.declareProtected(View, 'HEAD')
     def HEAD(self, REQUEST, RESPONSE):
         """Retrieve resource information without a response message body."""
         self.dav__init(REQUEST, RESPONSE)
@@ -89,7 +91,7 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
             ob=File(name, '', body, content_type=typ)
         return ob
 
-    PUT__roles__ = ('Anonymous',)
+    security.declarePublic('PUT')
     def PUT(self, REQUEST, RESPONSE):
         """Create a new non-collection resource.
         """
@@ -166,6 +168,7 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
         RESPONSE.setBody('')
         return RESPONSE
 
+    security.declareProtected(add_folders, 'MKCOL')
     def MKCOL(self, REQUEST, RESPONSE):
         """Create a new collection resource."""
         self.dav__init(REQUEST, RESPONSE)
@@ -201,6 +204,7 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
         RESPONSE.setBody('')
         return RESPONSE
 
+    security.declareProtected(webdav_lock_items, 'LOCK')
     def LOCK(self, REQUEST, RESPONSE):
         """ LOCK on a Null Resource makes a LockNullResource instance """
         self.dav__init(REQUEST, RESPONSE)
@@ -252,8 +256,7 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
             RESPONSE.setHeader('Lock-Token', 'opaquelocktoken:' + token)
             RESPONSE.setBody(lock.asXML())
 
-
-Globals.default__class_init__(NullResource)
+InitializeClass(NullResource)
 
 
 class LockNullResource(NullResource, OFS.SimpleItem.Item_w__name__):
@@ -266,17 +269,14 @@ class LockNullResource(NullResource, OFS.SimpleItem.Item_w__name__):
     __locknull_resource__ = 1
     meta_type = 'WebDAV LockNull Resource'
 
-    __ac_permissions__ = (
-        ('WebDAV Unlock items',              ('UNLOCK',)),
-        ('View',                             ('manage_main',
-                                              'manage_workspace', 'manage')),
-        ('Add Folders',                      ('MKCOL',)),
-        ('WebDAV Lock items',                ('LOCK',)),
-        )
+    security = ClassSecurityInfo()
 
     manage_options = ({'label': 'Info', 'action': 'manage_main'},)
 
+    security.declareProtected(View, 'manage')
+    security.declareProtected(View, 'manage_main')
     manage = manage_main = DTMLFile('dtml/locknullmain', globals())
+    security.declareProtected(View, 'manage_workspace')
     manage_workspace = manage
     manage_main._setName('manage_main')  # explicit
 
@@ -291,7 +291,7 @@ class LockNullResource(NullResource, OFS.SimpleItem.Item_w__name__):
         self.id = self.__name__ = name
         self.title = "LockNull Resource '%s'" % name
 
-    title_or_id__roles__=None
+    security.declarePublic('title_or_id')
     def title_or_id(self):
         return 'Foo'
 
@@ -299,6 +299,7 @@ class LockNullResource(NullResource, OFS.SimpleItem.Item_w__name__):
         """Retrieve properties defined on the resource."""
         return Resource.PROPFIND(self, REQUEST, RESPONSE)
 
+    security.declareProtected(webdav_lock_items, 'LOCK')
     def LOCK(self, REQUEST, RESPONSE):
         """ A Lock command on a LockNull resource should only be a
         refresh request (one without a body) """
@@ -336,6 +337,7 @@ class LockNullResource(NullResource, OFS.SimpleItem.Item_w__name__):
         return RESPONSE
 
 
+    security.declareProtected(webdav_unlock_items, 'UNLOCK')
     def UNLOCK(self, REQUEST, RESPONSE):
         """ Unlocking a Null Resource removes it from its parent """
         self.dav__init(REQUEST, RESPONSE)
@@ -362,7 +364,7 @@ class LockNullResource(NullResource, OFS.SimpleItem.Item_w__name__):
             RESPONSE.setStatus(204)
         return RESPONSE
 
-    PUT__roles__ = ('Anonymous',)
+    security.declarePublic('PUT')
     def PUT(self, REQUEST, RESPONSE):
         """ Create a new non-collection resource, deleting the LockNull
         object from the container before putting the new object in. """
@@ -437,6 +439,7 @@ class LockNullResource(NullResource, OFS.SimpleItem.Item_w__name__):
         RESPONSE.setBody('')
         return RESPONSE
 
+    security.declareProtected(add_folders, 'MKCOL')
     def MKCOL(self, REQUEST, RESPONSE):
         """ Create a new Collection (folder) resource.  Since this is being
         done on a LockNull resource, this also involves removing the LockNull
@@ -484,4 +487,4 @@ class LockNullResource(NullResource, OFS.SimpleItem.Item_w__name__):
         RESPONSE.setBody('')
         return RESPONSE
 
-Globals.default__class_init__(LockNullResource)
+InitializeClass(LockNullResource)

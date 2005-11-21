@@ -19,6 +19,12 @@ import Globals, OFS.SimpleItem, AccessControl.Role, Acquisition, sys
 from DateTime import DateTime
 from App.Dialogs import MessageDialog
 from Globals import DTMLFile
+from Globals import InitializeClass
+from AccessControl import ClassSecurityInfo
+from AccessControl.Permissions import view_management_screens
+from AccessControl.Permissions import change_database_connections
+from AccessControl.Permissions import test_database_connections
+from AccessControl.Permissions import open_close_database_connection
 from string import find, join, split
 from Aqueduct import custom_default_report
 from cStringIO import StringIO
@@ -36,6 +42,8 @@ class Connection(
     Acquisition.Implicit,
     ):
 
+    security = ClassSecurityInfo()
+
     # Specify definitions for tabs:
     manage_options=(
         (
@@ -45,15 +53,6 @@ class Connection(
         )
         +AccessControl.Role.RoleManager.manage_options
         +OFS.SimpleItem.Item.manage_options
-        )
-
-    # Specify how individual operations add up to "permissions":
-    __ac_permissions__=(
-        ('View management screens', ('manage_main',)),
-        ('Change Database Connections', ('manage_edit',)),
-        ('Test Database Connections', ('manage_testForm','manage_test')),
-        ('Open/Close Database Connection',
-         ('manage_open_connection', 'manage_close_connection')),
         )
 
     _v_connected=''
@@ -97,6 +96,8 @@ class Connection(
         if check: self.connect(connection_string)
 
     manage_properties=DTMLFile('dtml/connectionEdit', globals())
+
+    security.declareProtected(change_database_connections, 'manage_edit')
     def manage_edit(self, title, connection_string, check=None, REQUEST=None):
         """Change connection
         """
@@ -108,7 +109,10 @@ class Connection(
                 action ='./manage_main',
                 )
 
+    security.declareProtected(test_database_connections, 'manage_testForm')
     manage_testForm=DTMLFile('dtml/connectionTestForm', globals())
+
+    security.declareProtected(test_database_connections, 'manage_test')
     def manage_test(self, query, REQUEST=None):
         "Executes the SQL in parameter 'query' and returns results"
         dbc=self()      #get our connection
@@ -142,8 +146,11 @@ class Connection(
         return report
 
 
+    security.declareProtected(view_management_screens, 'manage_main')
     manage_main=DTMLFile('dtml/connectionStatus', globals())
 
+    security.declareProtected(open_close_database_connection,
+                              'manage_close_connection')
     def manage_close_connection(self, REQUEST=None):
         " "
         try: 
@@ -158,6 +165,8 @@ class Connection(
         if REQUEST is not None:
             return self.manage_main(self, REQUEST)
 
+    security.declareProtected(open_close_database_connection,
+                              'manage_open_connection')
     def manage_open_connection(self, REQUEST=None):
         " "
         self.connect(self.connection_string)
@@ -193,3 +202,5 @@ class Connection(
     def sql_quote__(self, v):
         if find(v,"\'") >= 0: v=join(split(v,"\'"),"''")
         return "'%s'" % v
+
+InitializeClass(Connection)

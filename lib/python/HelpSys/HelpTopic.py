@@ -15,6 +15,10 @@ import Acquisition
 from ComputedAttribute import ComputedAttribute
 from OFS.SimpleItem import Item
 from Globals import Persistent, HTML, DTMLFile, ImageFile
+from Globals import InitializeClass
+from AccessControl import ClassSecurityInfo
+from AccessControl.Permissions import access_contents_information
+from AccessControl.Permissions import view as View
 from OFS.DTMLDocument import DTMLDocument
 from OFS.PropertyManager import PropertyManager
 import os.path
@@ -115,15 +119,18 @@ class HelpTopic(Acquisition.Implicit, HelpTopicBase, Item, PropertyManager, Pers
     icon='p_/HelpTopic_icon'
     _v_last_read = 0
 
+    security = ClassSecurityInfo()
+
     manage_options=(
         {'label':'Properties', 'action':'manage_propertiesForm'},
         {'label':'View', 'action':'index_html'},
         )
 
-    __ac_permissions__=(
-        ('View', ('index_html', 'SearchableText', 'url')),
-        ('Access contents information', ('helpValues',)),
-        )
+    security.declareProtected(View, 'SearchableText')
+
+    security.declareProtected(View, 'url')
+
+    security.declareProtected(access_contents_information, 'helpValues')
 
     def _set_last_read(self, filepath):
         try:    mtime = os.stat(filepath)[8]
@@ -141,9 +148,12 @@ class HelpTopic(Acquisition.Implicit, HelpTopicBase, Item, PropertyManager, Pers
                 self._v_last_read=mtime
                 self.reindex_object()
 
+    security.declareProtected(View, 'index_html')
     def index_html(self, REQUEST, RESPONSE):
         "View the Help Topic"
         raise NotImplementedError
+
+InitializeClass(HelpTopic)
 
 
 class DTMLDocumentTopic(HelpTopicBase, DTMLDocument):

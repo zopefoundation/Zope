@@ -34,7 +34,12 @@ import DocumentTemplate.DT_Util
 from cPickle import dumps, loads
 from Results import Results
 from App.Extensions import getBrain
+from Globals import InitializeClass
+from AccessControl import ClassSecurityInfo
 from AccessControl import getSecurityManager
+from AccessControl.Permissions import change_database_methods
+from AccessControl.Permissions import use_database_methods
+from AccessControl.Permissions import view_management_screens
 from AccessControl.DTML import RestrictedDTML
 from webdav.Resource import Resource
 from webdav.Lockable import ResourceLockedError
@@ -73,6 +78,11 @@ class DA(
     ):
     'Database Adapter'
 
+    security = ClassSecurityInfo()
+    security.declareObjectProtected(use_database_methods)
+    security.setPermissionDefault(use_database_methods,
+                                  ('Anonymous', 'Manager'))
+
     _col=None
     max_rows_=1000
     cache_time_=0
@@ -96,27 +106,14 @@ class DA(
         +OFS.SimpleItem.Item.manage_options
         )
 
-    # Specify how individual operations add up to "permissions":
-    __ac_permissions__=(
-        ('View management screens',
-         (
-        'index_html',
-        'manage_advancedForm', 'PrincipiaSearchSource', 'document_src'
-        )),
-        ('Change Database Methods',
-         ('manage_edit','manage_advanced', 'manage_testForm','manage_test',
-          'manage_product_zclass_info', 'PUT')),
-        ('Use Database Methods', ('__call__',''), ('Anonymous','Manager')),
-        )
-
-
     def __init__(self, id, title, connection_id, arguments, template):
         self.id=str(id)
         self.manage_edit(title, connection_id, arguments, template)
 
+    security.declareProtected(view_management_screens, 'manage_advancedForm')
     manage_advancedForm=DTMLFile('dtml/advanced', globals())
 
-    test_url___roles__=None
+    security.declarePublic('test_url')
     def test_url_(self):
         'Method for testing server connection information'
         return 'PING'
@@ -148,6 +145,7 @@ class DA(
                                 arguments_src=arguments,
                                 connection_id=connection_id, src=template)
 
+    security.declareProtected(change_database_methods, 'manage_edit')
     def manage_edit(self,title,connection_id,arguments,template,
                     SUBMIT='Change', dtpref_cols='100%', dtpref_rows='20',
                     REQUEST=None):
@@ -189,6 +187,7 @@ class DA(
         return ''
 
 
+    security.declareProtected(change_database_methods, 'manage_advanced')
     def manage_advanced(self, max_rows, max_cache, cache_time,
                         class_name, class_file, direct=None,
                         REQUEST=None, zclass='', connection_hook=None):
@@ -256,6 +255,7 @@ class DA(
     #    """Return content for use by the Find machinery."""
     #    return '%s\n%s' % (self.arguments_src, self.src)
 
+    security.declareProtected(view_management_screens, 'PrincipiaSearchSource')
     def PrincipiaSearchSource(self):
         """Return content for use by the Find machinery."""
         return '%s\n%s' % (self.arguments_src, self.src)
@@ -265,6 +265,7 @@ class DA(
 
     default_content_type = 'text/plain'
 
+    security.declareProtected(view_management_screens, 'document_src')
     def document_src(self, REQUEST=None, RESPONSE=None):
         """Return unprocessed document source."""
         if RESPONSE is not None:
@@ -278,6 +279,7 @@ class DA(
 
     def get_size(self): return len(self.document_src())
 
+    security.declareProtected(change_database_methods, 'PUT')
     def PUT(self, REQUEST, RESPONSE):
         """Handle put requests"""
         self.dav__init(REQUEST, RESPONSE)
@@ -297,6 +299,7 @@ class DA(
         return RESPONSE
 
 
+    security.declareProtected(change_database_methods, 'manage_testForm')
     def manage_testForm(self, REQUEST):
         " "
         input_src=default_input_form(self.title_or_id(),
@@ -304,6 +307,7 @@ class DA(
                                      '<dtml-var manage_tabs>')
         return DocumentTemplate.HTML(input_src)(self, REQUEST, HTTP_REFERER='')
 
+    security.declareProtected(change_database_methods, 'manage_test')
     def manage_test(self, REQUEST):
         """Test an SQL method."""
         # Try to render the query template first so that the rendered
@@ -344,6 +348,7 @@ class DA(
 
         finally: tb=None
 
+    security.declareProtected(view_management_screens, 'index_html')
     def index_html(self, REQUEST):
         """ """
         REQUEST.RESPONSE.redirect("%s/manage_testForm" % REQUEST['URL1'])
@@ -388,6 +393,7 @@ class DA(
 
         return result
 
+    security.declareProtected(use_database_methods, '__call__')
     def __call__(self, REQUEST=None, __ick__=None, src__=0, test__=0, **kw):
         """Call the database method
 
@@ -500,6 +506,8 @@ class DA(
         return getattr(getattr(self, self.connection_id), 'connected')()
 
 
+    security.declareProtected(change_database_methods,
+                              'manage_product_zclass_info')
     def manage_product_zclass_info(self):
         r=[]
         Z=self._zclass
@@ -517,9 +525,7 @@ class DA(
 
         return r
 
-
-
-Globals.default__class_init__(DA)
+InitializeClass(DA)
 
 
 
@@ -586,4 +592,3 @@ class SQLMethodTracebackSupplement:
     #__implements__ = ITracebackSupplement
     def __init__(self, sql):
         self.object = sql
-

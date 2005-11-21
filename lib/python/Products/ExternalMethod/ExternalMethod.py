@@ -19,6 +19,11 @@ domain-specific customization of web environments.
 __version__='$Revision: 1.52 $'[11:-2]
 from Globals import Persistent, DTMLFile, MessageDialog, HTML
 import OFS.SimpleItem, Acquisition
+from Globals import InitializeClass
+from AccessControl import ClassSecurityInfo
+from AccessControl.Permissions import change_external_methods
+from AccessControl.Permissions import view_management_screens
+from AccessControl.Permissions import view as View
 import AccessControl.Role, sys, os, stat, traceback
 from OFS.SimpleItem import pretty_tb
 from App.Extensions import getObject, getPath, FuncCode
@@ -81,6 +86,9 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, Acquisition.Explicit,
 
     meta_type = 'External Method'
 
+    security = ClassSecurityInfo()
+    security.declareObjectProtected(View)
+
     func_defaults = ComputedAttribute(lambda self: self.getFuncDefaults())
     func_code = ComputedAttribute(lambda self: self.getFuncCode())
 
@@ -100,17 +108,14 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, Acquisition.Explicit,
         +AccessControl.Role.RoleManager.manage_options
         )
 
-    __ac_permissions__=(
-        ('View management screens', ('manage_main',)),
-        ('Change External Methods', ('manage_edit',)),
-        ('View', ('__call__','')),
-        )
-
     def __init__(self, id, title, module, function):
         self.id=id
         self.manage_edit(title, module, function)
 
+    security.declareProtected(view_management_screens, 'manage_main')
     manage_main=DTMLFile('dtml/methodEdit', globals())
+
+    security.declareProtected(change_external_methods, 'manage_edit')
     def manage_edit(self, title, module, function, REQUEST=None):
         """Change the external method
 
@@ -182,6 +187,7 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, Acquisition.Explicit,
                 self._v_f = self.getFunction()
             return self._v_func_code
 
+    security.declareProtected(View, '__call__')
     def __call__(self, *args, **kw):
         """Call an ExternalMethod
 
@@ -243,3 +249,5 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, Acquisition.Explicit,
             self._v_filepath=getPath('Extensions', self._module,
                                      suffixes=('','py','pyc','pyp'))
         return self._v_filepath
+
+InitializeClass(ExternalMethod)

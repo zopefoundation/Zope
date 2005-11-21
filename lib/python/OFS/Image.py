@@ -14,11 +14,18 @@
 
 $Id$
 """
-import Globals, struct
+import struct
 from OFS.content_types import guess_content_type
 from Globals import DTMLFile
+from Globals import InitializeClass
 from PropertyManager import PropertyManager
+from AccessControl import ClassSecurityInfo
 from AccessControl.Role import RoleManager
+from AccessControl.Permissions import change_images_and_files
+from AccessControl.Permissions import view_management_screens
+from AccessControl.Permissions import view as View
+from AccessControl.Permissions import ftp_access
+from AccessControl.Permissions import delete_objects
 from webdav.common import rfc1123_date
 from webdav.Lockable import ResourceLockedError
 from webdav.WriteLockInterface import WriteLockInterface
@@ -74,6 +81,8 @@ class File(Persistent, Implicit, PropertyManager,
     __implements__ = (WriteLockInterface, HTTPRangeSupport.HTTPRangeInterface)
     meta_type='File'
 
+    security = ClassSecurityInfo()
+    security.declareObjectProtected(View)
 
     precondition=''
     size=None
@@ -82,6 +91,9 @@ class File(Persistent, Implicit, PropertyManager,
     manage_editForm  =DTMLFile('dtml/fileEdit',globals(),
                                Kind='File',kind='file')
     manage_editForm._setName('manage_editForm')
+
+    security.declareProtected(view_management_screens, 'manage')
+    security.declareProtected(view_management_screens, 'manage_main')
     manage=manage_main=manage_editForm
     manage_uploadForm=manage_editForm
 
@@ -97,22 +109,6 @@ class File(Persistent, Implicit, PropertyManager,
         + Item_w__name__.manage_options
         + Cacheable.manage_options
         )
-
-
-    __ac_permissions__=(
-        ('View management screens',
-         ('manage', 'manage_main',)),
-        ('Change Images and Files',
-         ('manage_edit','manage_upload','PUT')),
-        ('View',
-         ('index_html', 'view_image_or_file', 'get_size',
-          'getContentType', 'PrincipiaSearchSource', '')),
-        ('FTP access',
-         ('manage_FTPstat','manage_FTPget','manage_FTPlist')),
-        ('Delete objects',
-         ('DELETE',)),
-        )
-
 
     _properties=({'id':'title', 'type': 'string'},
                  {'id':'alt', 'type':'string'},
@@ -355,6 +351,7 @@ class File(Persistent, Implicit, PropertyManager,
                     RESPONSE.write('\r\n--%s--\r\n' % boundary)
                     return True
 
+    security.declareProtected(View, 'index_html')
     def index_html(self, REQUEST, RESPONSE):
         """
         The default view of the contents of a File or Image.
@@ -414,12 +411,14 @@ class File(Persistent, Implicit, PropertyManager,
 
         return ''
 
+    security.declareProtected(View, 'view_image_or_file')
     def view_image_or_file(self, URL1):
         """
         The default view of the contents of the File or Image.
         """
         raise Redirect, URL1
 
+    security.declareProtected(View, 'PrincipiaSearchSource')
     def PrincipiaSearchSource(self):
         """ Allow file objects to be searched.
         """
@@ -427,8 +426,7 @@ class File(Persistent, Implicit, PropertyManager,
             return str(self.data)
         return ''
 
-    # private
-    update_data__roles__=()
+    security.declarePrivate('update_data')
     def update_data(self, data, content_type=None, size=None):
         if content_type is not None: self.content_type=content_type
         if size is None: size=len(data)
@@ -438,6 +436,7 @@ class File(Persistent, Implicit, PropertyManager,
         self.ZCacheable_set(None)
         self.http__refreshEtag()
 
+    security.declareProtected(change_images_and_files, 'manage_edit')
     def manage_edit(self, title, content_type, precondition='',
                     filedata=None, REQUEST=None):
         """
@@ -458,6 +457,7 @@ class File(Persistent, Implicit, PropertyManager,
             message="Saved changes."
             return self.manage_main(self,REQUEST,manage_tabs_message=message)
 
+    security.declareProtected(change_images_and_files, 'manage_upload')
     def manage_upload(self,file='',REQUEST=None):
         """
         Replaces the current contents of the File or Image object with file.
@@ -553,6 +553,9 @@ class File(Persistent, Implicit, PropertyManager,
 
         return next, size
 
+    security.declareProtected(delete_objects, 'DELETE')
+
+    security.declareProtected(change_images_and_files, 'PUT')
     def PUT(self, REQUEST, RESPONSE):
         """Handle HTTP PUT requests"""
         self.dav__init(REQUEST, RESPONSE)
@@ -569,6 +572,7 @@ class File(Persistent, Implicit, PropertyManager,
         RESPONSE.setStatus(204)
         return RESPONSE
 
+    security.declareProtected(View, 'get_size')
     def get_size(self):
         """Get the size of a file or image.
 
@@ -581,6 +585,7 @@ class File(Persistent, Implicit, PropertyManager,
     # deprecated; use get_size!
     getSize=get_size
 
+    security.declareProtected(View, 'getContentType')
     def getContentType(self):
         """Get the content type of a file or image.
 
@@ -592,6 +597,10 @@ class File(Persistent, Implicit, PropertyManager,
     def __str__(self): return str(self.data)
     def __len__(self): return 1
 
+    security.declareProtected(ftp_access, 'manage_FTPstat')
+    security.declareProtected(ftp_access, 'manage_FTPlist')
+
+    security.declareProtected(ftp_access, 'manage_FTPget')
     def manage_FTPget(self):
         """Return body for ftp."""
         RESPONSE = self.REQUEST.RESPONSE
@@ -719,23 +728,23 @@ class Image(File):
     __implements__ = (WriteLockInterface,)
     meta_type='Image'
 
+    security = ClassSecurityInfo()
+    security.declareObjectProtected(View)
 
     height=''
     width=''
 
-    __ac_permissions__=(
-        ('View management screens',
-         ('manage', 'manage_main',)),
-        ('Change Images and Files',
-         ('manage_edit','manage_upload','PUT')),
-        ('View',
-         ('index_html', 'tag', 'view_image_or_file', 'get_size',
-          'getContentType', '')),
-        ('FTP access',
-         ('manage_FTPstat','manage_FTPget','manage_FTPlist')),
-        ('Delete objects',
-         ('DELETE',)),
-        )
+    # FIXME: Redundant, already in base class
+    security.declareProtected(change_images_and_files, 'manage_edit')
+    security.declareProtected(change_images_and_files, 'manage_upload')
+    security.declareProtected(change_images_and_files, 'PUT')
+    security.declareProtected(View, 'index_html')
+    security.declareProtected(View, 'get_size')
+    security.declareProtected(View, 'getContentType')
+    security.declareProtected(ftp_access, 'manage_FTPstat')
+    security.declareProtected(ftp_access, 'manage_FTPlist')
+    security.declareProtected(ftp_access, 'manage_FTPget')
+    security.declareProtected(delete_objects, 'DELETE')
 
     _properties=({'id':'title', 'type': 'string'},
                  {'id':'content_type', 'type':'string','mode':'w'},
@@ -756,13 +765,17 @@ class Image(File):
 
     manage_editForm  =DTMLFile('dtml/imageEdit',globals(),
                                Kind='Image',kind='image')
-    view_image_or_file =DTMLFile('dtml/imageView',globals())
     manage_editForm._setName('manage_editForm')
+
+    security.declareProtected(View, 'view_image_or_file')
+    view_image_or_file =DTMLFile('dtml/imageView',globals())
+
+    security.declareProtected(view_management_screens, 'manage')
+    security.declareProtected(view_management_screens, 'manage_main')
     manage=manage_main=manage_editForm
     manage_uploadForm=manage_editForm
 
-    # private
-    update_data__roles__=()
+    security.declarePrivate('update_data')
     def update_data(self, data, content_type=None, size=None):
         if size is None: size=len(data)
 
@@ -785,6 +798,7 @@ class Image(File):
     def __str__(self):
         return self.tag()
 
+    security.declareProtected(View, 'tag')
     def tag(self, height=None, width=None, alt=None,
             scale=0, xscale=0, yscale=0, css_class=None, title=None, **args):
         """

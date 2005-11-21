@@ -12,6 +12,8 @@
 ##############################################################################
 import Globals, AccessControl.User
 from Globals import Persistent
+from Globals import InitializeClass
+from AccessControl import ClassSecurityInfo
 from Acquisition import Implicit
 from OFS import SimpleItem
 
@@ -27,12 +29,7 @@ class Draft(Persistent, Implicit, SimpleItem.Item):
     _version='/version'
     meta_type='Zope Draft'
 
-    __ac_permissions__=(
-        ('Approve draft changes',
-         ('manage_approve__draft__',
-          'manage_Save__draft__','manage_Discard__draft__')
-         ),
-    )
+    security = ClassSecurityInfo()
 
     def __init__(self, id, baseid, PATH_INFO):
         self.id=id
@@ -102,8 +99,12 @@ class Draft(Persistent, Implicit, SimpleItem.Item):
             # ZODB 3
             return not db.versionEmpty(self._version)
 
+    security.declareProtected('Approve draft changes',
+                              'manage_approve__draft__')
     manage_approve__draft__=Globals.HTMLFile('dtml/draftApprove', globals())
 
+    security.declareProtected('Approve draft changes',
+                              'manage_Save__draft__')
     def manage_Save__draft__(self, remark, REQUEST=None):
         """Make version changes permanent"""
         try: db=self._p_jar.db()
@@ -120,6 +121,8 @@ class Draft(Persistent, Implicit, SimpleItem.Item):
         if REQUEST:
             REQUEST['RESPONSE'].redirect(REQUEST['URL2']+'/manage_main')
 
+    security.declareProtected('Approve draft changes',
+                              'manage_Discard__draft__')
     def manage_Discard__draft__(self, REQUEST=None):
         'Discard changes made during the version'
         try: db=self._p_jar.db()
@@ -146,7 +149,8 @@ class Draft(Persistent, Implicit, SimpleItem.Item):
                 'Attempt to %sdelete a non-empty version.<p>'
                 ((self is not item) and 'indirectly ' or ''))
 
-Globals.default__class_init__(Draft)
+InitializeClass(Draft)
+
 
 def getdraft(ob, jar):
 

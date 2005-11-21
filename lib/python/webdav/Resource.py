@@ -20,8 +20,15 @@ import sys
 from urllib import unquote
 
 import ExtensionClass
-import Globals
+from Globals import InitializeClass
 from AccessControl import getSecurityManager
+from AccessControl import ClassSecurityInfo
+from AccessControl.Permissions import delete_objects
+from AccessControl.Permissions import manage_properties
+from AccessControl.Permissions import view as View
+from AccessControl.Permissions import webdav_lock_items
+from AccessControl.Permissions import webdav_unlock_items
+from AccessControl.Permissions import webdav_access
 from Acquisition import aq_base
 from zExceptions import BadRequest, MethodNotAllowed
 from zExceptions import Unauthorized, Forbidden
@@ -56,16 +63,8 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
                       'MOVE', 'LOCK', 'UNLOCK',
                       )
 
-    __ac_permissions__=(
-        ('View',                             ('HEAD',)),
-        ('WebDAV access',                    ('PROPFIND', 'manage_DAVget',
-                                              'listDAVObjects'),
-         ('Authenticated', 'Manager')),
-        ('Manage properties',                ('PROPPATCH',)),
-        ('Delete objects',                   ('DELETE',)),
-        ('WebDAV Lock items',                ('LOCK',)),
-        ('WebDAV Unlock items',              ('UNLOCK',)),
-    )
+    security = ClassSecurityInfo()
+    security.setPermissionDefault(webdav_access, ('Authenticated', 'Manager'))
 
     def dav__init(self, request, response):
         # Init expected HTTP 1.1 / WebDAV headers which are not
@@ -158,6 +157,7 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
 
 
     # WebDAV class 1 support
+    security.declareProtected(View, 'HEAD')
     def HEAD(self, REQUEST, RESPONSE):
         """Retrieve resource information without a response body."""
         self.dav__init(REQUEST, RESPONSE)
@@ -197,7 +197,7 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
         self.dav__init(REQUEST, RESPONSE)
         raise MethodNotAllowed, 'Method not supported for this resource.'
 
-    OPTIONS__roles__=None
+    security.declarePublic('OPTIONS')
     def OPTIONS(self, REQUEST, RESPONSE):
         """Retrieve communication options."""
         self.dav__init(REQUEST, RESPONSE)
@@ -207,7 +207,7 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
         RESPONSE.setStatus(200)
         return RESPONSE
 
-    TRACE__roles__=None
+    security.declarePublic('TRACE')
     def TRACE(self, REQUEST, RESPONSE):
         """Return the HTTP message received back to the client as the
         entity-body of a 200 (OK) response. This will often usually
@@ -218,6 +218,7 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
         self.dav__init(REQUEST, RESPONSE)
         raise MethodNotAllowed, 'Method not supported for this resource.'
 
+    security.declareProtected(delete_objects, 'DELETE')
     def DELETE(self, REQUEST, RESPONSE):
         """Delete a resource. For non-collection resources, DELETE may
         return either 200 or 204 (No Content) to indicate success."""
@@ -256,6 +257,7 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
 
         return RESPONSE
 
+    security.declareProtected(webdav_access, 'PROPFIND')
     def PROPFIND(self, REQUEST, RESPONSE):
         """Retrieve properties defined on the resource."""
         self.dav__init(REQUEST, RESPONSE)
@@ -273,6 +275,7 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
         RESPONSE.setBody(result)
         return RESPONSE
 
+    security.declareProtected(manage_properties, 'PROPPATCH')
     def PROPPATCH(self, REQUEST, RESPONSE):
         """Set and/or remove properties defined on the resource."""
         self.dav__init(REQUEST, RESPONSE)
@@ -300,7 +303,7 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
         self.dav__init(REQUEST, RESPONSE)
         raise MethodNotAllowed, 'The resource already exists.'
 
-    COPY__roles__=('Anonymous',)
+    security.declarePublic('COPY')
     def COPY(self, REQUEST, RESPONSE):
         """Create a duplicate of the source resource whose state
         and behavior match that of the source resource as closely
@@ -406,7 +409,7 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
         RESPONSE.setBody('')
         return RESPONSE
 
-    MOVE__roles__=('Anonymous',)
+    security.declarePublic('MOVE')
     def MOVE(self, REQUEST, RESPONSE):
         """Move a resource to a new location. Though we may later try to
         make a move appear seamless across namespaces (e.g. from Zope
@@ -522,6 +525,7 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
 
     # WebDAV Class 2, Lock and Unlock
 
+    security.declareProtected(webdav_lock_items, 'LOCK')
     def LOCK(self, REQUEST, RESPONSE):
         """Lock a resource"""
         self.dav__init(REQUEST, RESPONSE)
@@ -581,6 +585,7 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
 
         return RESPONSE
 
+    security.declareProtected(webdav_unlock_items, 'UNLOCK')
     def UNLOCK(self, REQUEST, RESPONSE):
         """Remove an existing lock on a resource."""
         self.dav__init(REQUEST, RESPONSE)
@@ -601,12 +606,14 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
         return RESPONSE
 
 
+    security.declareProtected(webdav_access, 'manage_DAVget')
     def manage_DAVget(self):
         """Gets the document source"""
         # The default implementation calls manage_FTPget
         return self.manage_FTPget()
 
+    security.declareProtected(webdav_access, 'listDAVObjects')
     def listDAVObjects(self):
         return []
 
-Globals.default__class_init__(Resource)
+InitializeClass(Resource)

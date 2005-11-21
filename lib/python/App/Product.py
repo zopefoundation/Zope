@@ -41,10 +41,12 @@ from urllib import quote
 import transaction
 
 import Globals, OFS.Folder, OFS.SimpleItem,  Acquisition, Products
+from Globals import InitializeClass
 import ZClasses, AccessControl.Owned
 from OFS.Folder import Folder
 from HelpSys.HelpSys import ProductHelp
 from AccessControl import Unauthorized
+from AccessControl import ClassSecurityInfo
 
 from Factory import Factory
 from Permission import PermissionManager
@@ -79,12 +81,15 @@ class ProductFolder(Folder):
     def _canCopy(self, op=0):
         return 0
 
-Globals.InitializeClass(ProductFolder)
+InitializeClass(ProductFolder)
 
 
 class Product(Folder, PermissionManager):
     """Model a product that can be created through the web.
     """
+
+    security =  ClassSecurityInfo()
+
     meta_type='Product'
     icon='p_/Product_icon'
     version=''
@@ -171,15 +176,15 @@ class Product(Folder, PermissionManager):
         except:
             pass
 
+    security.declarePublic('Destination')
     def Destination(self):
         "Return the destination for factory output"
         return self
-    Destination__roles__=None
 
+    security.declarePublic('DestinationURL')
     def DestinationURL(self):
         "Return the URL for the destination for factory output"
         return self.REQUEST['BASE4']
-    DestinationURL__roles__=None
 
     def manage_distribute(self, version, RESPONSE, configurable_objects=[],
                           redistributable=0):
@@ -419,7 +424,7 @@ class Product(Folder, PermissionManager):
         if REQUEST is not None:
             return self.manage_refresh(REQUEST)
 
-Globals.InitializeClass(Product)
+InitializeClass(Product)
 
 
 class CompressedOutputFile:

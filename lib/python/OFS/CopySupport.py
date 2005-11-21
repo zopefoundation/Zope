@@ -23,8 +23,12 @@ from zlib import compress, decompress
 
 import Globals, Moniker, ExtensionClass
 import transaction
+from Globals import InitializeClass
+from AccessControl import ClassSecurityInfo
 from AccessControl import getSecurityManager
-from AccessControl.Permissions import delete_objects as DeleteObjects
+from AccessControl.Permissions import view_management_screens
+from AccessControl.Permissions import copy_or_move
+from AccessControl.Permissions import delete_objects
 from Acquisition import aq_base, aq_inner, aq_parent
 from App.Dialogs import MessageDialog
 from webdav.Lockable import ResourceLockedError
@@ -54,13 +58,7 @@ class CopyContainer(ExtensionClass.Base):
 
     implements(ICopyContainer)
 
-    __ac_permissions__=(
-        ('View management screens',
-         ('manage_copyObjects', 'manage_pasteObjects',
-          'manage_renameForm', 'manage_renameObject', 'manage_renameObjects',)),
-        ('Delete objects',
-         ('manage_cutObjects',)),
-        )
+    security = ClassSecurityInfo()
 
     # The following three methods should be overridden to store sub-objects
     # as non-attributes.
@@ -83,6 +81,7 @@ class CopyContainer(ExtensionClass.Base):
     def manage_CopyContainerAllItems(self, REQUEST):
         return map(lambda i, s=self: s._getOb(i), tuple(REQUEST['ids']))
 
+    security.declareProtected(delete_objects, 'manage_cutObjects')
     def manage_cutObjects(self, ids=None, REQUEST=None):
         """Put a reference to the objects named in ids in the clip board"""
         if ids is None and REQUEST is not None:
@@ -112,6 +111,7 @@ class CopyContainer(ExtensionClass.Base):
             return self.manage_main(self, REQUEST)
         return cp
 
+    security.declareProtected(view_management_screens, 'manage_copyObjects')
     def manage_copyObjects(self, ids=None, REQUEST=None, RESPONSE=None):
         """Put a reference to the objects named in ids in the clip board"""
         if ids is None and REQUEST is not None:
@@ -154,6 +154,7 @@ class CopyContainer(ExtensionClass.Base):
             id='copy%s_of_%s' % (n and n+1 or '', orig_id)
             n=n+1
 
+    security.declareProtected(view_management_screens, 'manage_pasteObjects')
     def manage_pasteObjects(self, cb_copy_data=None, REQUEST=None):
         """Paste previously copied objects into the current object.
 
@@ -287,8 +288,10 @@ class CopyContainer(ExtensionClass.Base):
 
         return result
 
+    security.declareProtected(view_management_screens, 'manage_renameForm')
     manage_renameForm=Globals.DTMLFile('dtml/renameForm', globals())
 
+    security.declareProtected(view_management_screens, 'manage_renameObjects')
     def manage_renameObjects(self, ids=[], new_ids=[], REQUEST=None):
         """Rename several sub-objects"""
         if len(ids) != len(new_ids):
@@ -300,6 +303,7 @@ class CopyContainer(ExtensionClass.Base):
             return self.manage_main(self, REQUEST, update_menu=1)
         return None
 
+    security.declareProtected(view_management_screens, 'manage_renameObject')
     def manage_renameObject(self, id, new_id, REQUEST=None):
         """Rename a particular sub-object.
         """
@@ -353,7 +357,8 @@ class CopyContainer(ExtensionClass.Base):
     # supposed to be public since it does its own auth ?
     #
     # Because it's still a "management" function.
-    manage_clone__roles__=None
+
+    security.declarePublic('manage_clone')
     def manage_clone(self, ob, id, REQUEST=None):
         """Clone an object, creating a new object with the given id.
         """
@@ -497,7 +502,7 @@ class CopyContainer(ExtensionClass.Base):
                     raise Unauthorized, absattr(object.id)
 
                 if validate_src == 2: # moving
-                    if not sm.checkPermission(DeleteObjects, parent):
+                    if not sm.checkPermission(delete_objects, parent):
                         raise Unauthorized, 'Delete not allowed.'
 
         else: # /if method_name
@@ -507,7 +512,7 @@ class CopyContainer(ExtensionClass.Base):
                              'operation.' % escape(absattr(object.id))),
                   action  = 'manage_main')
 
-Globals.default__class_init__(CopyContainer)
+InitializeClass(CopyContainer)
 
 
 class CopySource(ExtensionClass.Base):
@@ -518,9 +523,8 @@ class CopySource(ExtensionClass.Base):
 
     # declare a dummy permission for Copy or Move here that we check
     # in cb_isCopyable.
-    __ac_permissions__=(
-        ('Copy or Move', (), ('Anonymous', 'Manager',)),
-        )
+    security = ClassSecurityInfo()
+    security.setPermissionDefault(copy_or_move, ('Anonymous', 'Manager'))
 
     def _canCopy(self, op=0):
         """Called to make sure this object is copyable.
@@ -593,10 +597,10 @@ class CopySource(ExtensionClass.Base):
         return 1
 
     def cb_userHasCopyOrMovePermission(self):
-        if getSecurityManager().checkPermission('Copy or Move', self):
+        if getSecurityManager().checkPermission(copy_or_move, self):
             return 1
 
-Globals.default__class_init__(CopySource)
+InitializeClass(CopySource)
 
 
 def sanity_check(c, ob):

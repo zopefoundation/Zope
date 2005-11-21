@@ -18,6 +18,7 @@ import time,  App.Management, Globals, sys
 from webdav.interfaces import IWriteLock
 from webdav.WriteLockInterface import WriteLockInterface
 from ZPublisher.Converters import type_converters
+from Globals import InitializeClass
 from Globals import DTMLFile, MessageDialog
 from Acquisition import Implicit, Explicit
 from App.Common import rfc1123_date, iso8601_date
@@ -26,6 +27,10 @@ from ExtensionClass import Base
 from Globals import Persistent
 from Traversable import Traversable
 from Acquisition import aq_base
+from AccessControl import ClassSecurityInfo
+from AccessControl.Permissions import access_contents_information
+from AccessControl.Permissions import manage_properties
+from AccessControl.Permissions import view_management_screens
 from AccessControl import getSecurityManager
 from webdav.common import isDavCollection
 from zExceptions import BadRequest, Redirect
@@ -100,20 +105,10 @@ class PropertySheet(Traversable, Persistent, Implicit):
     _extensible=1
     icon='p_/Properties_icon'
 
-    __ac_permissions__=(
-        ('Manage properties', ('manage_addProperty',
-                               'manage_editProperties',
-                               'manage_delProperties',
-                               'manage_changeProperties',
-                               'manage_propertiesForm',
-                               )),
-        ('Access contents information',
-         ('xml_namespace', 'hasProperty', 'getProperty', 'getPropertyType',
-          'propertyIds', 'propertyValues','propertyItems', 'propertyInfo',
-          'propertyMap', ''),
-         ('Anonymous', 'Manager'),
-         ),
-        )
+    security = ClassSecurityInfo()
+    security.declareObjectProtected(access_contents_information)
+    security.setPermissionDefault(access_contents_information,
+                                  ('Anonymous', 'Manager'))
 
     __reserved_ids= ('values','items')
 
@@ -139,6 +134,7 @@ class PropertySheet(Traversable, Persistent, Implicit):
     def getId(self):
         return self.id
 
+    security.declareProtected(access_contents_information, 'xml_namespace')
     def xml_namespace(self):
         # Return a namespace string usable as an xml namespace
         # for this property set.
@@ -156,6 +152,7 @@ class PropertySheet(Traversable, Persistent, Implicit):
             return 0
         return 1
 
+    security.declareProtected(access_contents_information, 'hasProperty')
     def hasProperty(self, id):
         # Return a true value if a property exists with the given id.
         for prop in self._propertyMap():
@@ -163,6 +160,7 @@ class PropertySheet(Traversable, Persistent, Implicit):
                 return 1
         return 0
 
+    security.declareProtected(access_contents_information, 'getProperty')
     def getProperty(self, id, default=None):
         # Return the property with the given id, returning the optional
         # second argument or None if no such property is found.
@@ -170,6 +168,7 @@ class PropertySheet(Traversable, Persistent, Implicit):
             return getattr(self.v_self(), id)
         return default
 
+    security.declareProtected(access_contents_information, 'getPropertyType')
     def getPropertyType(self, id):
         """Get the type of property 'id', returning None if no
            such property exists"""
@@ -263,20 +262,24 @@ class PropertySheet(Traversable, Persistent, Implicit):
         pself._properties=tuple(filter(lambda i, n=id: i['id'] != n,
                                        pself._properties))
 
+    security.declareProtected(access_contents_information, 'propertyIds')
     def propertyIds(self):
         # Return a list of property ids.
         return map(lambda i: i['id'], self._propertyMap())
 
+    security.declareProtected(access_contents_information, 'propertyValues')
     def propertyValues(self):
         # Return a list of property values.
         return map(lambda i, s=self: s.getProperty(i['id']),
                    self._propertyMap())
 
+    security.declareProtected(access_contents_information, 'propertyItems')
     def propertyItems(self):
         # Return a list of (id, property) tuples.
         return map(lambda i, s=self: (i['id'], s.getProperty(i['id'])),
                    self._propertyMap())
 
+    security.declareProtected(access_contents_information, 'propertyInfo')
     def propertyInfo(self, id):
         # Return a mapping containing property meta-data
         for p in self._propertyMap():
@@ -289,6 +292,7 @@ class PropertySheet(Traversable, Persistent, Implicit):
         # we have to fake it...
         return self.p_self()._properties
 
+    security.declareProtected(access_contents_information, 'propertyMap')
     def propertyMap(self):
         # Returns a secure copy of the property definitions.
         return tuple(map(lambda dict: dict.copy(), self._propertyMap()))
@@ -399,10 +403,13 @@ class PropertySheet(Traversable, Persistent, Implicit):
     # Web interface
 
     manage=DTMLFile('dtml/properties', globals())
+
+    security.declareProtected(manage_properties, 'manage_propertiesForm')
     def manage_propertiesForm(self, URL1):
         " "
         raise Redirect, URL1+'/manage'
 
+    security.declareProtected(manage_properties, 'manage_addProperty')
     def manage_addProperty(self, id, value, type, REQUEST=None):
         """Add a new property via the web. Sets a new property with
         the given id, type, and value."""
@@ -412,6 +419,7 @@ class PropertySheet(Traversable, Persistent, Implicit):
         if REQUEST is not None:
             return self.manage(self, REQUEST)
 
+    security.declareProtected(manage_properties, 'manage_editProperties')
     def manage_editProperties(self, REQUEST):
         """Edit object properties via the web."""
         for prop in self._propertyMap():
@@ -424,6 +432,7 @@ class PropertySheet(Traversable, Persistent, Implicit):
                message='Your changes have been saved',
                action ='manage')
 
+    security.declareProtected(manage_properties, 'manage_changeProperties')
     def manage_changeProperties(self, REQUEST=None, **kw):
         """Change existing object properties by passing either a mapping
            object of name:value pairs {'foo':6} or passing name=value
@@ -446,6 +455,7 @@ class PropertySheet(Traversable, Persistent, Implicit):
                 message='Your changes have been saved.',
                 action ='manage')
 
+    security.declareProtected(manage_properties, 'manage_delProperties')
     def manage_delProperties(self, ids=None, REQUEST=None):
         """Delete one or more properties specified by 'ids'."""
         if REQUEST:
@@ -462,7 +472,7 @@ class PropertySheet(Traversable, Persistent, Implicit):
         if REQUEST is not None:
             return self.manage(self, REQUEST)
 
-Globals.default__class_init__(PropertySheet)
+InitializeClass(PropertySheet)
 
 
 class Virtual:
@@ -483,7 +493,7 @@ class DefaultProperties(Virtual, PropertySheet, View):
     id='default'
     _md={'xmlns': 'http://www.zope.org/propsets/default'}
 
-Globals.default__class_init__(DefaultProperties)
+InitializeClass(DefaultProperties)
 
 
 class DAVProperties(Virtual, PropertySheet, View):
@@ -596,7 +606,7 @@ class DAVProperties(Virtual, PropertySheet, View):
 
         return out
 
-Globals.default__class_init__(DAVProperties)
+InitializeClass(DAVProperties)
 
 
 class PropertySheets(Traversable, Implicit, App.Management.Tabs):
@@ -605,18 +615,10 @@ class PropertySheets(Traversable, Implicit, App.Management.Tabs):
 
     id='propertysheets'
 
-    __ac_permissions__=(
-        ('Manage properties', ('manage_addPropertySheet',
-                               'addPropertySheet',
-                               'delPropertySheet'
-                               )),
-        ('Access contents information',
-         ('items', 'values', 'get', ''),
-         ('Anonymous', 'Manager'),
-         ),
-        ('View management screens', ('manage',)),
-        )
-
+    security = ClassSecurityInfo()
+    security.declareObjectProtected(access_contents_information)
+    security.setPermissionDefault(access_contents_information,
+                                  ('Anonymous', 'Manager'))
 
     # optionally to be overridden by derived classes
     PropertySheetClass= PropertySheet
@@ -639,10 +641,12 @@ class PropertySheets(Traversable, Implicit, App.Management.Tabs):
     def __getitem__(self, n):
         return self.__propsets__()[n].__of__(self)
 
+    security.declareProtected(access_contents_information, 'values')
     def values(self):
         propsets=self.__propsets__()
         return map(lambda n, s=self: n.__of__(s), propsets)
 
+    security.declareProtected(access_contents_information, 'items')
     def items(self):
         propsets=self.__propsets__()
         r=[]
@@ -653,6 +657,7 @@ class PropertySheets(Traversable, Implicit, App.Management.Tabs):
 
         return r
 
+    security.declareProtected(access_contents_information, 'get')
     def get(self, name, default=None):
         for propset in self.__propsets__():
             if propset.id==name or (hasattr(propset, 'xml_namespace') and \
@@ -660,6 +665,7 @@ class PropertySheets(Traversable, Implicit, App.Management.Tabs):
                 return propset.__of__(self)
         return default
 
+    security.declareProtected(manage_properties, 'manage_addPropertySheet')
     def manage_addPropertySheet(self, id, ns, REQUEST=None):
         """ """
         md={'xmlns':ns}
@@ -669,11 +675,13 @@ class PropertySheets(Traversable, Implicit, App.Management.Tabs):
         ps= self.get(id)
         REQUEST.RESPONSE.redirect('%s/manage' % ps.absolute_url())
 
+    security.declareProtected(manage_properties, 'addPropertySheet')
     def addPropertySheet(self, propset):
         propsets=self.aq_parent.__propsets__
         propsets=propsets+(propset,)
         self.aq_parent.__propsets__=propsets
 
+    security.declareProtected(manage_properties, 'delPropertySheet')
     def delPropertySheet(self, name):
         result=[]
         for propset in self.aq_parent.__propsets__:
@@ -709,6 +717,7 @@ class PropertySheets(Traversable, Implicit, App.Management.Tabs):
 
     # Management interface:
 
+    security.declareProtected(view_management_screens, 'manage')
     manage=Globals.DTMLFile('dtml/propertysheets', globals())
 
     def manage_options(self):
@@ -737,7 +746,7 @@ class PropertySheets(Traversable, Implicit, App.Management.Tabs):
         return PropertySheets.inheritedAttribute('tabs_path_info')(
             self, script, path)
 
-Globals.default__class_init__(PropertySheets)
+InitializeClass(PropertySheets)
 
 
 class DefaultPropertySheets(PropertySheets):
@@ -749,7 +758,7 @@ class DefaultPropertySheets(PropertySheets):
     def _get_defaults(self):
         return (self.default, self.webdav)
 
-Globals.default__class_init__(DefaultPropertySheets)
+InitializeClass(DefaultPropertySheets)
 
 
 class FixedSchema(PropertySheet):
@@ -786,7 +795,7 @@ class FixedSchema(PropertySheet):
         return 0
         return self._base._extensible
 
-Globals.default__class_init__(FixedSchema)
+InitializeClass(FixedSchema)
 
 
 class vps(Base):

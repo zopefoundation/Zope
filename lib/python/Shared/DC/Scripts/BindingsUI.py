@@ -14,9 +14,14 @@
 __version__='$Revision$'[11:-2]
 
 import Globals
+from Globals import InitializeClass
+from AccessControl import ClassSecurityInfo
+from AccessControl.Permissions import view_management_screens
 from Bindings import Bindings
 
 class BindingsUI(Bindings):
+
+    security = ClassSecurityInfo()
 
     manage_options = (
         {'label':'Bindings',
@@ -24,13 +29,11 @@ class BindingsUI(Bindings):
          'help':('PythonScripts', 'Bindings.stx')},
         )
 
-    __ac_permissions__ = (
-        ('View management screens', ('ZBindingsHTML_editForm',)),
-        ('Change bindings', ('ZBindingsHTML_editAction',)),
-        )
-
+    security.declareProtected(view_management_screens,
+                              'ZBindingsHTML_editForm')
     ZBindingsHTML_editForm = Globals.DTMLFile('dtml/scriptBindings', globals())
 
+    security.declareProtected('Change bindings', 'ZBindingsHTML_editAction')
     def ZBindingsHTML_editAction(self, REQUEST):
         '''Changes binding names.
         '''
@@ -38,4 +41,4 @@ class BindingsUI(Bindings):
         message = "Bindings changed."
         return self.manage_main(self, REQUEST, manage_tabs_message=message)
 
-Globals.default__class_init__(BindingsUI)
+InitializeClass(BindingsUI)

@@ -14,6 +14,7 @@
 __version__ = "$Revision: 1.8 $"[11:-2]
 
 import OFS, Acquisition, Globals
+from Globals import InitializeClass
 from AccessControl import getSecurityManager, ClassSecurityInfo
 from webdav.Lockable import wl_isLocked
 
@@ -104,5 +105,4 @@ class DavLockManager(OFS.SimpleItem.Item, Acquisition.Implicit):
 
         return result
 
-
-Globals.default__class_init__(DavLockManager)
+InitializeClass(DavLockManager)

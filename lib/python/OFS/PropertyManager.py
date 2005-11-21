@@ -18,7 +18,11 @@ $Id$
 from cgi import escape
 from types import ListType
 
-import ExtensionClass, Globals
+import ExtensionClass
+from Globals import InitializeClass
+from AccessControl import ClassSecurityInfo
+from AccessControl.Permissions import access_contents_information
+from AccessControl.Permissions import manage_properties
 from Acquisition import aq_base
 from Globals import DTMLFile, MessageDialog
 from Globals import Persistent
@@ -97,34 +101,25 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
 
     implements(IPropertyManager)
 
+    security = ClassSecurityInfo()
+    security.declareObjectProtected(access_contents_information)
+    security.setPermissionDefault(access_contents_information,
+                                  ('Anonymous', 'Manager'))
+
     manage_options=(
         {'label':'Properties', 'action':'manage_propertiesForm',
          'help':('OFSP','Properties.stx')},
         )
 
+    security.declareProtected(manage_properties, 'manage_propertiesForm')
     manage_propertiesForm=DTMLFile('dtml/properties', globals(),
                                    property_extensible_schema__=1)
+    security.declareProtected(manage_properties, 'manage_propertyTypeForm')
     manage_propertyTypeForm=DTMLFile('dtml/propertyType', globals())
 
     title=''
     _properties=({'id':'title', 'type': 'string', 'mode':'wd'},)
     _reserved_names=()
-
-    __ac_permissions__=(
-        ('Manage properties', ('manage_addProperty',
-                               'manage_editProperties',
-                               'manage_delProperties',
-                               'manage_changeProperties',
-                               'manage_propertiesForm',
-                               'manage_propertyTypeForm',
-                               'manage_changePropertyTypes',
-                               )),
-        ('Access contents information',
-         ('hasProperty', 'propertyIds', 'propertyValues','propertyItems',
-          'getProperty', 'getPropertyType', 'propertyMap', ''),
-         ('Anonymous', 'Manager'),
-         ),
-        )
 
     __propsets__=()
     propertysheets=vps(DefaultPropertySheets)
@@ -135,6 +130,7 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
             return 0
         return 1
 
+    security.declareProtected(access_contents_information, 'hasProperty')
     def hasProperty(self, id):
         """Return true if object has a property 'id'.
         """
@@ -143,6 +139,7 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
                 return 1
         return 0
 
+    security.declareProtected(access_contents_information, 'getProperty')
     def getProperty(self, id, d=None):
         """Get the property 'id'.
 
@@ -153,6 +150,7 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
             return getattr(self, id)
         return d
 
+    security.declareProtected(access_contents_information, 'getPropertyType')
     def getPropertyType(self, id):
         """Get the type of property 'id'.
 
@@ -220,16 +218,19 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
         self._properties=tuple(filter(lambda i, n=id: i['id'] != n,
                                       self._properties))
 
+    security.declareProtected(access_contents_information, 'propertyIds')
     def propertyIds(self):
         """Return a list of property ids.
         """
         return map(lambda i: i['id'], self._properties)
 
+    security.declareProtected(access_contents_information, 'propertyValues')
     def propertyValues(self):
         """Return a list of actual property objects.
         """
         return map(lambda i,s=self: getattr(s,i['id']), self._properties)
 
+    security.declareProtected(access_contents_information, 'propertyItems')
     def propertyItems(self):
         """Return a list of (id,property) tuples.
         """
@@ -240,6 +241,7 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
         """
         return self._properties
 
+    security.declareProtected(access_contents_information, 'propertyMap')
     def propertyMap(self):
         """Return a tuple of mappings, giving meta-data for properties.
 
@@ -264,6 +266,7 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
 
     # Web interface
 
+    security.declareProtected(manage_properties, 'manage_addProperty')
     def manage_addProperty(self, id, value, type, REQUEST=None):
         """Add a new property via the web.
 
@@ -275,6 +278,7 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
         if REQUEST is not None:
             return self.manage_propertiesForm(self, REQUEST)
 
+    security.declareProtected(manage_properties, 'manage_editProperties')
     def manage_editProperties(self, REQUEST):
         """Edit object properties via the web.
 
@@ -296,6 +300,7 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
             return self.manage_propertiesForm(self,REQUEST,
                                               manage_tabs_message=message)
 
+    security.declareProtected(manage_properties, 'manage_changeProperties')
     def manage_changeProperties(self, REQUEST=None, **kw):
         """Change existing object properties.
 
@@ -321,6 +326,7 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
 
     # Note - this is experimental, pending some community input.
 
+    security.declareProtected(manage_properties, 'manage_changePropertyTypes')
     def manage_changePropertyTypes(self, old_ids, props, REQUEST=None):
         """Replace one set of properties with another
 
@@ -340,6 +346,7 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
             return self.manage_propertiesForm(self, REQUEST)
 
 
+    security.declareProtected(manage_properties, 'manage_delProperties')
     def manage_delProperties(self, ids=None, REQUEST=None):
         """Delete one or more properties specified by 'ids'."""
         if REQUEST:
@@ -367,4 +374,4 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
         if REQUEST is not None:
             return self.manage_propertiesForm(self, REQUEST)
 
-Globals.default__class_init__(PropertyManager)
+InitializeClass(PropertyManager)

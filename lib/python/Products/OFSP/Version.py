@@ -18,6 +18,12 @@ import Globals, time
 from AccessControl.Role import RoleManager
 from Globals import MessageDialog
 from Globals import Persistent
+from Globals import InitializeClass
+from AccessControl import ClassSecurityInfo
+from AccessControl.Permissions import change_versions
+from AccessControl.Permissions import join_leave_versions
+from AccessControl.Permissions import save_discard_version_changes
+from AccessControl.Permissions import view_management_screens
 from Acquisition import Implicit
 from OFS.SimpleItem import Item
 from Globals import HTML
@@ -44,6 +50,9 @@ class Version(Persistent,Implicit,RoleManager,Item):
     """ """
     meta_type='Version'
 
+    security = ClassSecurityInfo()
+    security.declareObjectProtected(view_management_screens)
+
     manage_options=(
         (
         {'label':'Join/Leave', 'action':'manage_main',
@@ -57,14 +66,7 @@ class Version(Persistent,Implicit,RoleManager,Item):
         +Item.manage_options
         )
 
-    __ac_permissions__=(
-        ('View management screens', ('manage','manage_editForm', '')),
-        ('Change Versions', ('manage_edit',)),
-        ('Join/leave Versions',
-         ('manage_main', 'enter','leave','leave_another')),
-        ('Save/discard Version changes',
-         ('manage_end', 'save','discard')),
-        )
+    security.declareProtected(view_management_screens, 'manage')
 
     cookie=''
 
@@ -74,8 +76,13 @@ class Version(Persistent,Implicit,RoleManager,Item):
         self.id=id
         self.title=title
 
+    security.declareProtected(join_leave_versions, 'manage_main')
     manage_main=Globals.DTMLFile('dtml/version', globals())
+
+    security.declareProtected(save_discard_version_changes, 'manage_end')
     manage_end=Globals.DTMLFile('dtml/versionEnd', globals())
+
+    security.declareProtected(view_management_screens, 'manage_editForm')
     manage_editForm   =Globals.DTMLFile('dtml/versionEdit', globals())
 
     def title_and_id(self):
@@ -98,6 +105,7 @@ class Version(Persistent,Implicit,RoleManager,Item):
                           'alt': 'Deprecated object',
                           'title': 'Version objects are deprecated and should not be used anyore.'},)
 
+    security.declareProtected(change_versions, 'manage_edit')
     def manage_edit(self, title, REQUEST=None):
         """ """
         self.title=title
@@ -106,6 +114,7 @@ class Version(Persistent,Implicit,RoleManager,Item):
                     message='Your changes have been saved',
                     action ='manage_main')
 
+    security.declareProtected(join_leave_versions, 'enter')
     def enter(self, REQUEST, RESPONSE):
         """Begin working in a version"""
         RESPONSE.setCookie(
@@ -123,6 +132,7 @@ class Version(Persistent,Implicit,RoleManager,Item):
                 )
         return RESPONSE.redirect(REQUEST['URL1']+'/manage_main')
 
+    security.declareProtected(join_leave_versions, 'leave')
     def leave(self, REQUEST, RESPONSE):
         """Temporarily stop working in a version"""
         RESPONSE.setCookie(
@@ -141,10 +151,12 @@ class Version(Persistent,Implicit,RoleManager,Item):
                 )
         return RESPONSE.redirect(REQUEST['URL1']+'/manage_main')
 
+    security.declareProtected(join_leave_versions, 'leave_another')
     def leave_another(self, REQUEST, RESPONSE):
         """Leave a version that may not be the current version"""
         return self.leave(REQUEST, RESPONSE)
 
+    security.declareProtected(save_discard_version_changes, 'save')
     def save(self, remark, REQUEST=None):
         """Make version changes permanent"""
         try: db=self._p_jar.db()
@@ -162,6 +174,7 @@ class Version(Persistent,Implicit,RoleManager,Item):
         if REQUEST is not None:
             REQUEST['RESPONSE'].redirect(REQUEST['URL1']+'/manage_main')
 
+    security.declareProtected(save_discard_version_changes, 'discard')
     def discard(self, remark='', REQUEST=None):
         'Discard changes made during the version'
         try: db=self._p_jar.db()
@@ -219,3 +232,5 @@ class Version(Persistent,Implicit,RoleManager,Item):
                     'version, because the version would no longer\n'
                     'be accessable.<p>\n'
                     % (v,v,v))
+
+InitializeClass(Version)

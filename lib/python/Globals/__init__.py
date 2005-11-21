@@ -26,12 +26,12 @@ import TreeDisplay
 from App.Common import package_home, attrget, Dictionary
 from App.config import getConfiguration as _getConfiguration
 from Persistence import Persistent, PersistentMapping
-from App.special_dtml import HTML, HTMLFile, DTMLFile
 from App.class_init import default__class_init__, ApplicationDefaultPermissions
 
 # Nicer alias for class initializer.
 InitializeClass = default__class_init__
 
+from App.special_dtml import HTML, HTMLFile, DTMLFile
 from App.Dialogs import MessageDialog
 from App.ImageFile import ImageFile
 

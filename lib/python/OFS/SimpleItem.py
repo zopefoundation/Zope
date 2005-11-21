@@ -25,7 +25,10 @@ import marshal, re, sys, time
 
 import AccessControl.Role, AccessControl.Owned, App.Common
 import Globals, App.Management, Acquisition, App.Undo
+from Globals import InitializeClass
+from AccessControl import ClassSecurityInfo
 from AccessControl import getSecurityManager, Unauthorized
+from AccessControl.Permissions import view as View
 from AccessControl.ZopeSecurityPolicy import getRoles
 from Acquisition import aq_base, aq_parent, aq_inner, aq_acquire
 from ComputedAttribute import ComputedAttribute
@@ -52,10 +55,11 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
            AccessControl.Owned.Owned,
            App.Undo.UndoSupport,
            ):
-
     """A common base class for simple, non-container objects."""
 
     implements(IItem)
+
+    security = ClassSecurityInfo()
 
     isPrincipiaFolderish=0
     isTopLevelPrincipiaApplicationObject=0
@@ -75,7 +79,7 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
     # Direct use of the 'id' attribute is deprecated - use getId()
     id=''
 
-    getId__roles__=None
+    security.declarePublic('getId')
     def getId(self):
         """Return the id of the object as a string.
 
@@ -350,7 +354,7 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
         res += '>'
         return res
 
-Globals.default__class_init__(Item)
+InitializeClass(Item)
 
 
 class Item_w__name__(Item):
@@ -414,11 +418,13 @@ class SimpleItem(Item, Globals.Persistent,
 
     implements(ISimpleItem)
 
+    security = ClassSecurityInfo()
+    security.setPermissionDefault(View, ('Manager',))
+
     manage_options=Item.manage_options+(
         {'label':'Security',
          'action':'manage_access',
          'help':('OFSP', 'Security.stx')},
         )
 
-    __ac_permissions__=(('View', ()),)
-
+InitializeClass(SimpleItem)

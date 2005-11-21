@@ -16,7 +16,11 @@ $Id$
 """
 
 from Globals import DTMLFile, MessageDialog
-import Globals, AccessControl.Role
+import AccessControl.Role
+from Globals import InitializeClass
+from AccessControl import ClassSecurityInfo
+from AccessControl.Permissions import manage_vocabulary
+from AccessControl.Permissions import query_vocabulary
 from Acquisition import Implicit
 from Persistence import Persistent
 from OFS.SimpleItem import Item
@@ -52,6 +56,10 @@ class Vocabulary(Item, Persistent, Implicit, AccessControl.Role.RoleManager):
 
     implements(IVocabulary)
 
+    security = ClassSecurityInfo()
+    security.setPermissionDefault(manage_vocabulary, ('Manager',))
+    security.setPermissionDefault(query_vocabulary, ('Anonymous', 'Manager',))
+
     meta_type = "Vocabulary"
     _isAVocabulary = 1
 
@@ -66,18 +74,10 @@ class Vocabulary(Item, Persistent, Implicit, AccessControl.Role.RoleManager):
         +AccessControl.Role.RoleManager.manage_options
         )
 
-    __ac_permissions__=(
-
-        ('Manage Vocabulary',
-         ['manage_main', 'manage_query'],
-         ['Manager']),
-
-        ('Query Vocabulary',
-         ['query',],
-         ['Anonymous', 'Manager']),
-        )
-
+    security.declareProtected(manage_vocabulary, 'manage_main')
     manage_main = DTMLFile('dtml/manage_vocab', globals())
+
+    security.declareProtected(manage_vocabulary, 'manage_query')
     manage_query = DTMLFile('dtml/vocab_query', globals())
 
     def __init__(self, id, title='', globbing=None,splitter=None,extra=None):
@@ -106,6 +106,7 @@ class Vocabulary(Item, Persistent, Implicit, AccessControl.Role.RoleManager):
     def getLexicon(self):
         return self.lexicon
 
+    security.declareProtected(query_vocabulary, 'query')
     def query(self, pattern):
         """ """
         result = []
@@ -132,3 +133,5 @@ class Vocabulary(Item, Persistent, Implicit, AccessControl.Role.RoleManager):
 
     def words(self):
         return self.lexicon._lexicon.items()
+
+InitializeClass(Vocabulary)

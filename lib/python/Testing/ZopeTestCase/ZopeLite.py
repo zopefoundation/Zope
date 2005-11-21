@@ -153,7 +153,7 @@ def installProduct(name, quiet=0):
                                 get_folder_permissions(), raise_exc=1)
                 _installedProducts[product_name] = 1
                 Products.meta_types = Products.meta_types + tuple(meta_types)
-                Globals.default__class_init__(Folder)
+                Globals.InitializeClass(Folder)
                 if not quiet: _print('done (%.3fs)\n' % (time.time() - start))
                 break
         else:

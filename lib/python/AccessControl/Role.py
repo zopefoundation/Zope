@@ -18,7 +18,10 @@ from cgi import escape
 
 from Globals import DTMLFile, MessageDialog, Dictionary
 from Acquisition import Implicit, Acquired, aq_get
-import Globals, ExtensionClass, PermissionMapping, Products
+from Globals import InitializeClass
+from AccessControl import ClassSecurityInfo
+from AccessControl.Permissions import change_permissions
+import ExtensionClass, PermissionMapping, Products
 from App.Common import aq_base
 from zope.interface import implements
 
@@ -41,21 +44,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
 
     implements(IRoleManager)
 
-    __ac_permissions__=(
-        ('Change permissions',
-         ('manage_access', 'permission_settings',
-          'ac_inherited_permissions',
-          'manage_roleForm', 'manage_role',
-          'manage_acquiredForm', 'manage_acquiredPermissions',
-          'manage_permissionForm', 'manage_permission',
-          'manage_changePermissions', 'permissionsOfRole',
-          'rolesOfPermission', 'acquiredRolesAreUsedBy',
-          'manage_defined_roles', 'userdefined_roles',
-          'manage_listLocalRoles', 'manage_editLocalRoles',
-          'manage_setLocalRoles', 'manage_addLocalRoles',
-          'manage_delLocalRoles'
-          )),
-        )
+    security = ClassSecurityInfo()
 
     manage_options=(
         {'label':'Security', 'action':'manage_access',
@@ -74,6 +63,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
 
     #------------------------------------------------------------
 
+    security.declareProtected(change_permissions, 'ac_inherited_permissions')
     def ac_inherited_permissions(self, all=0):
         # Get all permissions not defined in ourself that are inherited
         # This will be a sequence of tuples with a name as the first item and
@@ -96,6 +86,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
 
         return tuple(r)
 
+    security.declareProtected(change_permissions, 'permission_settings')
     def permission_settings(self, permission=None):
         """Return user-role permission settings.
 
@@ -130,11 +121,13 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
             result.append(d)
         return result
 
+    security.declareProtected(change_permissions, 'manage_roleForm')
     manage_roleForm=DTMLFile('dtml/roleEdit', globals(),
                              management_view='Security',
                              help_topic='Security_Manage-Role.stx',
                              help_product='OFSP')
 
+    security.declareProtected(change_permissions, 'manage_role')
     def manage_role(self, role_to_manage, permissions=[], REQUEST=None):
         """Change the permissions given to the given role.
         """
@@ -146,11 +139,13 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
 
         if REQUEST is not None: return self.manage_access(REQUEST)
 
+    security.declareProtected(change_permissions, 'manage_acquiredForm')
     manage_acquiredForm=DTMLFile('dtml/acquiredEdit', globals(),
                                  management_view='Security',
                                  help_topic='Security_Manage-Acquisition.stx',
                                  help_product='OFSP')
 
+    security.declareProtected(change_permissions, 'manage_acquiredPermissions')
     def manage_acquiredPermissions(self, permissions=[], REQUEST=None):
         """Change the permissions that acquire.
         """
@@ -165,11 +160,13 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
 
         if REQUEST is not None: return self.manage_access(REQUEST)
 
+    security.declareProtected(change_permissions, 'manage_permissionForm')
     manage_permissionForm=DTMLFile('dtml/permissionEdit', globals(),
                                    management_view='Security',
                                    help_topic='Security_Manage-Permission.stx',
                                    help_product='OFSP')
 
+    security.declareProtected(change_permissions, 'manage_permission')
     def manage_permission(self, permission_to_manage,
                           roles=[], acquire=0, REQUEST=None):
         """Change the settings for the given permission.
@@ -197,6 +194,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
 
     _method_manage_access=DTMLFile('dtml/methodAccess', globals())
 
+    security.declareProtected(change_permissions, 'manage_access')
     def manage_access(self, REQUEST, **kw):
         """Return an interface for making permissions settings.
         """
@@ -206,6 +204,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
         else:
             return apply(self._normal_manage_access,(), kw)
 
+    security.declareProtected(change_permissions, 'manage_changePermissions')
     def manage_changePermissions(self, REQUEST):
         """Change all permissions settings, called by management screen.
         """
@@ -237,6 +236,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
             message='Your changes have been saved',
             action ='manage_access')
 
+    security.declareProtected(change_permissions, 'permissionsOfRole')
     def permissionsOfRole(self, role):
         """Used by management screen.
         """
@@ -250,6 +250,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
                       })
         return r
 
+    security.declareProtected(change_permissions, 'rolesOfPermission')
     def rolesOfPermission(self, permission):
         """Used by management screen.
         """
@@ -269,6 +270,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
         raise ValueError, (
             "The permission <em>%s</em> is invalid." % escape(permission))
 
+    security.declareProtected(change_permissions, 'acquiredRolesAreUsedBy')
     def acquiredRolesAreUsedBy(self, permission):
         """Used by management screen.
         """
@@ -293,11 +295,13 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
 
     __ac_local_roles__=None
 
+    security.declareProtected(change_permissions, 'manage_listLocalRoles')
     manage_listLocalRoles=DTMLFile('dtml/listLocalRoles', globals(),
                                    management_view='Security',
                                    help_topic='Security_Local-Roles.stx',
                                    help_product='OFSP')
 
+    security.declareProtected(change_permissions, 'manage_editLocalRoles')
     manage_editLocalRoles=DTMLFile('dtml/editLocalRoles', globals(),
                                    management_view='Security',
                                    help_topic='Security_User-Local-Roles.stx',
@@ -353,6 +357,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
         dict=self.__ac_local_roles__ or {}
         return tuple(dict.get(userid, []))
 
+    security.declareProtected(change_permissions, 'manage_addLocalRoles')
     def manage_addLocalRoles(self, userid, roles, REQUEST=None):
         """Set local roles for a user."""
         if not roles:
@@ -370,6 +375,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
             stat='Your changes have been saved.'
             return self.manage_listLocalRoles(self, REQUEST, stat=stat)
 
+    security.declareProtected(change_permissions, 'manage_setLocalRoles')
     def manage_setLocalRoles(self, userid, roles, REQUEST=None):
         """Set local roles for a user."""
         if not roles:
@@ -383,6 +389,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
             stat='Your changes have been saved.'
             return self.manage_listLocalRoles(self, REQUEST, stat=stat)
 
+    security.declareProtected(change_permissions, 'manage_delLocalRoles')
     def manage_delLocalRoles(self, userids, REQUEST=None):
         """Remove all local roles for a user."""
         dict=self.__ac_local_roles__
@@ -398,7 +405,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
 
     #------------------------------------------------------------
 
-    access_debug_info__roles__=()
+    security.declarePrivate('access_debug_info')
     def access_debug_info(self):
         """Return debug info.
         """
@@ -450,6 +457,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
                 return 0
         return 1
 
+    security.declareProtected(change_permissions, 'userdefined_roles')
     def userdefined_roles(self):
         """Return list of user-defined roles.
         """
@@ -459,6 +467,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
             except: pass
         return tuple(roles)
 
+    security.declareProtected(change_permissions, 'manage_defined_roles')
     def manage_defined_roles(self, submit=None, REQUEST=None):
         """Called by management screen.
         """
@@ -534,7 +543,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
 
         return d
 
-Globals.default__class_init__(RoleManager)
+InitializeClass(RoleManager)
 
 
 def reqattr(request, attr):

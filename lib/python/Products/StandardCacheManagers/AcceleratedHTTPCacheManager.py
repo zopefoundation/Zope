@@ -21,8 +21,10 @@ $Id$
 from OFS.Cache import Cache, CacheManager
 from OFS.SimpleItem import SimpleItem
 import time
-import Globals
+from Globals import InitializeClass
 from Globals import DTMLFile
+from AccessControl import ClassSecurityInfo
+from AccessControl.Permissions import view_management_screens
 import urlparse, httplib
 from cgi import escape
 from urllib import quote
@@ -108,14 +110,8 @@ PRODUCT_DIR = __name__.split('.')[-2]
 class AcceleratedHTTPCacheManager (CacheManager, SimpleItem):
     ' '
 
-    __ac_permissions__ = (
-        ('View management screens', ('getSettings',
-                                     'manage_main',
-                                     'manage_stats',
-                                     'getCacheReport',
-                                     'sort_link')),
-        ('Change cache managers', ('manage_editProps',), ('Manager',)),
-        )
+    security = ClassSecurityInfo()
+    security.setPermissionDefault('Change cache managers', ('Manager',))
 
     manage_options = (
         {'label':'Properties', 'action':'manage_main',
@@ -138,7 +134,7 @@ class AcceleratedHTTPCacheManager (CacheManager, SimpleItem):
         ' '
         return self.id
 
-    ZCacheManager_getCache__roles__ = ()
+    security.declarePrivate('ZCacheManager_getCache')
     def ZCacheManager_getCache(self):
         cacheid = self.__cacheid
         try:
@@ -149,12 +145,15 @@ class AcceleratedHTTPCacheManager (CacheManager, SimpleItem):
             caches[cacheid] = cache
             return cache
 
+    security.declareProtected(view_management_screens, 'getSettings')
     def getSettings(self):
         ' '
         return self._settings.copy()  # Don't let DTML modify it.
 
+    security.declareProtected(view_management_screens, 'manage_main')
     manage_main = DTMLFile('dtml/propsAccel', globals())
 
+    security.declareProtected('Change cache managers', 'manage_editProps')
     def manage_editProps(self, title, settings=None, REQUEST=None):
         ' '
         if settings is None:
@@ -170,6 +169,7 @@ class AcceleratedHTTPCacheManager (CacheManager, SimpleItem):
             return self.manage_main(
                 self, REQUEST, manage_tabs_message='Properties changed.')
 
+    security.declareProtected(view_management_screens, 'manage_stats')
     manage_stats = DTMLFile('dtml/statsAccel', globals())
 
     def _getSortInfo(self):
@@ -182,6 +182,7 @@ class AcceleratedHTTPCacheManager (CacheManager, SimpleItem):
         sort_reverse = int(req.get('sort_reverse', 1))
         return sort_by, sort_reverse
 
+    security.declareProtected(view_management_screens, 'getCacheReport')
     def getCacheReport(self):
         """
         Returns the list of objects in the cache, sorted according to
@@ -201,6 +202,7 @@ class AcceleratedHTTPCacheManager (CacheManager, SimpleItem):
                 rval.reverse()
         return rval
 
+    security.declareProtected(view_management_screens, 'sort_link')
     def sort_link(self, name, id):
         """
         Utility for generating a sort link.
@@ -215,7 +217,7 @@ class AcceleratedHTTPCacheManager (CacheManager, SimpleItem):
         return '<a href="%s">%s</a>' % (escape(url, 1), escape(name))
 
 
-Globals.default__class_init__(AcceleratedHTTPCacheManager)
+InitializeClass(AcceleratedHTTPCacheManager)
 
 
 manage_addAcceleratedHTTPCacheManagerForm = DTMLFile('dtml/addAccel',

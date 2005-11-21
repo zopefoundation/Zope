@@ -17,7 +17,12 @@ import transaction
 
 import OFS.PropertySheets, Globals, OFS.SimpleItem, OFS.PropertyManager
 import Acquisition
+from Globals import InitializeClass
+from AccessControl import ClassSecurityInfo
 from AccessControl.Permission import pname
+from AccessControl.Permissions import manage_zclasses
+from AccessControl.Permissions import manage_properties
+from AccessControl.Permissions import access_contents_information
 
 class ClassCaretaker:
     def __init__(self, klass): self.__dict__['_k']=klass
@@ -48,9 +53,10 @@ class ZCommonSheet(OFS.PropertySheets.PropertySheet, OFS.SimpleItem.Item):
          'help':('OFSP','Security_Define-Permissions.stx')},
         )
 
-    __ac_permissions__=(
-        ('Manage Z Classes', ('', 'manage')),
-        )
+    security = ClassSecurityInfo()
+    security.declareObjectProtected(manage_zclasses)
+
+    security.declareProtected(manage_zclasses, 'manage')
 
     def __init__(self, id, title):
         self.id=id
@@ -238,7 +244,8 @@ class ZCommonSheet(OFS.PropertySheets.PropertySheet, OFS.SimpleItem.Item):
                 self, REQUEST,
                 manage_tabs_message='The permission mapping has been updated')
 
-Globals.default__class_init__(ZCommonSheet)
+InitializeClass(ZCommonSheet)
+
 
 property_sheet_permissions=(
     # 'Access contents information',
@@ -250,26 +257,28 @@ class ZInstanceSheet(OFS.PropertySheets.FixedSchema,
                     ):
     "Waaa this is too hard"
 
+    security = ClassSecurityInfo()
+    security.declareObjectProtected(access_contents_information)
+
+    security.declareProtected(access_contents_information, 'hasProperty')
+    security.declareProtected(access_contents_information, 'propertyIds')
+    security.declareProtected(access_contents_information, 'propertyValues')
+    security.declareProtected(access_contents_information, 'propertyItems')
+    security.declareProtected(access_contents_information, 'propertyMap')
+    security.declareProtected(manage_properties, 'manage')
+    security.declareProtected(manage_properties, 'manage_addProperty')
+    security.declareProtected(manage_properties, 'manage_editProperties')
+    security.declareProtected(manage_properties, 'manage_delProperties')
+    security.declareProtected(manage_properties, 'manage_changeProperties')
+
     _Manage_properties_Permission='_Manage_properties_Permission'
     _Access_contents_information_Permission='_View_Permission'
-
-    __ac_permissions__=(
-        ('Manage properties', ('manage_addProperty',
-                               'manage_editProperties',
-                               'manage_delProperties',
-                               'manage_changeProperties',
-                               'manage',
-                               )),
-        ('Access contents information', ('hasProperty', 'propertyIds',
-                                         'propertyValues','propertyItems',
-                                         'propertyMap', ''),
-         ),
-        )
 
     def v_self(self):
         return self.aq_inner.aq_parent.aq_parent
 
-Globals.default__class_init__(ZInstanceSheet)
+InitializeClass(ZInstanceSheet)
+
 
 def rclass(klass):
     if not getattr(klass, '_p_changed', 0) and klass._p_jar is not None:
@@ -348,5 +357,4 @@ class ZInstanceSheets(OFS.PropertySheets.PropertySheets, Globals.Persistent):
             r.append(getattr(self, id))
         return propsets+tuple(r)
 
-
-Globals.default__class_init__(ZInstanceSheets)
+InitializeClass(ZInstanceSheets)

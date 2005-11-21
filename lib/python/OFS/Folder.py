@@ -18,7 +18,7 @@ $Id$
 """
 
 import AccessControl.Role, webdav.Collection
-import Globals
+from Globals import InitializeClass
 from AccessControl import getSecurityManager
 from AccessControl import Unauthorized
 from AccessControl.Permissions import add_page_templates
@@ -108,4 +108,4 @@ class Folder(
         if id is not None:
             self.id = str(id)
 
-Globals.default__class_init__(Folder)
+InitializeClass(Folder)

@@ -15,6 +15,8 @@
 __version__='$Revision: 1.10 $'[11:-2]
 
 
+from Globals import InitializeClass
+from AccessControl import ClassSecurityInfo
 import sys, os,  Globals, Acquisition
 from HelpUtil import HelpBase, classobject
 from HelpUtil import is_class, is_module
@@ -26,7 +28,8 @@ from urllib import quote
 
 class ObjectItem(HelpBase, classobject):
     """ """
-    __roles__=None
+    security = ClassSecurityInfo()
+    security.declareObjectPublic()
 
     hs_main=DTMLFile('dtml/objectitem', globals())
 
@@ -75,16 +78,19 @@ class ObjectItem(HelpBase, classobject):
         del mdict
         return mlist
 
-    hs_objectvalues__roles__=None
+    security.declarePublic('hs_objectvalues')
     def hs_objectvalues(self):
         return []
 
+InitializeClass(ObjectItem)
 
 
 class ObjectRef(HelpBase):
     """ """
+    security = ClassSecurityInfo()
+    security.declareObjectPublic()
+
     __names__=None
-    __roles__=None
 
     hs_main=DTMLFile('dtml/objectref', globals())
 
@@ -129,7 +135,7 @@ class ObjectRef(HelpBase):
                 dict=self.hs_search_mod(v, dict)
         return dict
 
-    hs_objectvalues__roles__=None
+    security.declarePublic('hs_objectvalues')
     def hs_objectvalues(self):
         if self.__names__ is None:
             self.hs_deferred__init__()
@@ -140,3 +146,5 @@ class ObjectRef(HelpBase):
 
     def __getitem__(self, key):
         return self.__dict__[key].__of__(self)
+
+InitializeClass(ObjectRef)

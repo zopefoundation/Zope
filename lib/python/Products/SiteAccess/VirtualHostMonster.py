@@ -4,6 +4,9 @@ Defines the VirtualHostMonster class
 """
 
 from Globals import DTMLFile, MessageDialog, Persistent
+from Globals import InitializeClass
+from AccessControl import ClassSecurityInfo
+from AccessControl.Permissions import view as View
 from OFS.SimpleItem import Item
 from Acquisition import Implicit, aq_inner, aq_parent
 from ZPublisher import BeforeTraverse
@@ -24,15 +27,19 @@ class VirtualHostMonster(Persistent, Item, Implicit):
     lines = ()
     have_map = 0
 
-    __ac_permissions__=(('View', ('manage_main',)),('Add Site Roots', ('manage_edit', 'set_map')))
+    security = ClassSecurityInfo()
 
     manage_options=({'label':'About', 'action':'manage_main'},
                     {'label':'Mappings', 'action':'manage_edit'})
 
+    security.declareProtected(View, 'manage_main')
     manage_main = DTMLFile('www/VirtualHostMonster', globals(),
                            __name__='manage_main')
+
+    security.declareProtected('Add Site Roots', 'manage_edit')
     manage_edit = DTMLFile('www/manage_edit', globals())
 
+    security.declareProtected('Add Site Roots', 'set_map')
     def set_map(self, map_text, RESPONSE=None):
         "Set domain to path mappings."
         lines = map_text.split('\n')
@@ -237,6 +244,9 @@ class VirtualHostMonster(Persistent, Item, Implicit):
         else:
             request.setVirtualRoot([])
         return parents.pop() # He'll get put back on
+
+InitializeClass(VirtualHostMonster)
+
 
 def manage_addVirtualHostMonster(self, id, REQUEST=None, **ignored):
     """ """

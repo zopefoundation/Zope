@@ -23,8 +23,10 @@ from OFS.SimpleItem import SimpleItem
 from thread import allocate_lock
 from cgi import escape
 import time
-import Globals
+from Globals import InitializeClass
 from Globals import DTMLFile
+from AccessControl import ClassSecurityInfo
+from AccessControl.Permissions import view_management_screens
 
 try: from cPickle import Pickler, HIGHEST_PROTOCOL
 except: from pickle import Pickler, HIGHEST_PROTOCOL
@@ -347,14 +349,8 @@ class RAMCacheManager (CacheManager, SimpleItem):
     caching.
     """
 
-    __ac_permissions__ = (
-        ('View management screens', ('getSettings',
-                                     'manage_main',
-                                     'manage_stats',
-                                     'getCacheReport',
-                                     'sort_link',)),
-        ('Change cache managers', ('manage_editProps','manage_invalidate'), ('Manager',)),
-        )
+    security = ClassSecurityInfo()
+    security.setPermissionDefault('Change cache managers', ('Manager',))
 
     manage_options = (
         {'label':'Properties', 'action':'manage_main',
@@ -391,6 +387,7 @@ class RAMCacheManager (CacheManager, SimpleItem):
             caches[cacheid] = cache
             return cache
 
+    security.declareProtected(view_management_screens, 'getSettings')
     def getSettings(self):
         'Returns the current cache settings.'
         res = self._settings.copy()
@@ -398,8 +395,10 @@ class RAMCacheManager (CacheManager, SimpleItem):
             res['max_age'] = 0
         return res
 
+    security.declareProtected(view_management_screens, 'manage_main')
     manage_main = DTMLFile('dtml/propsRCM', globals())
 
+    security.declareProtected('Change cache managers', 'manage_editProps')
     def manage_editProps(self, title, settings=None, REQUEST=None):
         'Changes the cache settings.'
         if settings is None:
@@ -419,6 +418,7 @@ class RAMCacheManager (CacheManager, SimpleItem):
             return self.manage_main(
                 self, REQUEST, manage_tabs_message='Properties changed.')
 
+    security.declareProtected(view_management_screens, 'manage_stats')
     manage_stats = DTMLFile('dtml/statsRCM', globals())
 
     def _getSortInfo(self):
@@ -431,6 +431,7 @@ class RAMCacheManager (CacheManager, SimpleItem):
         sort_reverse = int(req.get('sort_reverse', 1))
         return sort_by, sort_reverse
 
+    security.declareProtected(view_management_screens, 'getCacheReport')
     def getCacheReport(self):
         """
         Returns the list of objects in the cache, sorted according to
@@ -446,6 +447,7 @@ class RAMCacheManager (CacheManager, SimpleItem):
                 rval.reverse()
         return rval
 
+    security.declareProtected(view_management_screens, 'sort_link')
     def sort_link(self, name, id):
         """
         Utility for generating a sort link.
@@ -458,6 +460,7 @@ class RAMCacheManager (CacheManager, SimpleItem):
         url = url + '&sort_reverse=' + (newsr and '1' or '0')
         return '<a href="%s">%s</a>' % (escape(url, 1), escape(name))
 
+    security.declareProtected('Change cache managers', 'manage_invalidate')
     def manage_invalidate(self, paths, REQUEST=None):
         """ ZMI helper to invalidate an entry """
         for path in paths:
@@ -472,7 +475,7 @@ class RAMCacheManager (CacheManager, SimpleItem):
             msg = 'Cache entries invalidated'
             return self.manage_stats(manage_tabs_message=msg)
 
-Globals.default__class_init__(RAMCacheManager)
+InitializeClass(RAMCacheManager)
 
 
 class _ByteCounter:

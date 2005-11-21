@@ -16,6 +16,9 @@ DOM implementation in ZOPE : Read-Only methods
 All standard Zope objects support DOM to a limited extent.
 """
 import Acquisition
+from Globals import InitializeClass
+from AccessControl import ClassSecurityInfo
+from AccessControl.Permissions import access_contents_information
 
 
 # Node type codes
@@ -82,61 +85,65 @@ class Node:
     Node Interface
     """
 
-    __ac_permissions__=(
-        ('Access contents information',
-            ('getNodeName', 'getNodeValue', 'getParentNode',
-            'getChildNodes', 'getFirstChild', 'getLastChild',
-            'getPreviousSibling', 'getNextSibling', 'getOwnerDocument',
-            'getAttributes', 'hasChildNodes'),
-        ),
-    )
+    security = ClassSecurityInfo()
 
     # DOM attributes
     # --------------
 
+    security.declareProtected(access_contents_information, 'getNodeName')
     def getNodeName(self):
         """The name of this node, depending on its type"""
         return None
 
+    security.declareProtected(access_contents_information, 'getNodeValue')
     def getNodeValue(self):
         """The value of this node, depending on its type"""
         return None
 
+    security.declareProtected(access_contents_information, 'getParentNode')
     def getParentNode(self):
         """The parent of this node.  All nodes except Document
         DocumentFragment and Attr may have a parent"""
         return None
 
+    security.declareProtected(access_contents_information, 'getChildNodes')
     def getChildNodes(self):
         """Returns a NodeList that contains all children of this node.
         If there are no children, this is a empty NodeList"""
         return NodeList()
 
+    security.declareProtected(access_contents_information, 'getFirstChild')
     def getFirstChild(self):
         """The first child of this node. If there is no such node
         this returns None."""
         return None
 
+    security.declareProtected(access_contents_information, 'getLastChild')
     def getLastChild(self):
         """The last child of this node. If there is no such node
         this returns None."""
         return None
 
+    security.declareProtected(access_contents_information,
+                              'getPreviousSibling')
     def getPreviousSibling(self):
         """The node immediately preceding this node.  If
         there is no such node, this returns None."""
         return None
 
+    security.declareProtected(access_contents_information, 'getNextSibling')
     def getNextSibling(self):
         """The node immediately preceding this node.  If
         there is no such node, this returns None."""
         return None
 
+    security.declareProtected(access_contents_information, 'getAttributes')
     def getAttributes(self):
         """Returns a NamedNodeMap containing the attributes
         of this node (if it is an element) or None otherwise."""
         return None
 
+    security.declareProtected(access_contents_information, 'getOwnerDocument')
     def getOwnerDocument(self):
         """The Document object associated with this node.
         When this is a document this is None"""
@@ -149,10 +156,13 @@ class Node:
     # DOM Methods
     # -----------
 
+    security.declareProtected(access_contents_information, 'hasChildNodes')
     def hasChildNodes(self):
         """Returns true if the node has any children, false
         if it doesn't. """
         return len(self.objectIds())
+
+InitializeClass(Node)
 
 
 class Document(Acquisition.Explicit, Node):
@@ -160,21 +170,19 @@ class Document(Acquisition.Explicit, Node):
     Document Interface
     """
 
-    __ac_permissions__=(
-        ('Access contents information',
-            ('getImplementation', 'getDoctype', 'getDocumentElement'),
-        ),
-    )
+    security = ClassSecurityInfo()
 
     # Document Methods
     # ----------------
 
+    security.declareProtected(access_contents_information, 'getImplementation')
     def getImplementation(self):
         """
         The DOMImplementation object that handles this document.
         """
         return DOMImplementation()
 
+    security.declareProtected(access_contents_information, 'getDoctype')
     def getDoctype(self):
         """
         The Document Type Declaration associated with this document.
@@ -183,6 +191,8 @@ class Document(Acquisition.Explicit, Node):
         """
         return None
 
+    security.declareProtected(access_contents_information,
+                              'getDocumentElement')
     def getDocumentElement(self):
         """
         This is a convenience attribute that allows direct access to
@@ -226,18 +236,17 @@ class Document(Acquisition.Explicit, Node):
         if it doesn't. """
         return 1
 
+InitializeClass(Document)
+
 
 class DOMImplementation:
     """
     DOMImplementation Interface
     """
 
-    __ac_permissions__=(
-        ('Access contents information',
-            ('hasFeature',),
-        ),
-    )
+    security = ClassSecurityInfo()
 
+    security.declareProtected(access_contents_information, 'hasFeature')
     def hasFeature(self, feature, version = None):
         """
         hasFeature - Test if the DOM implementation implements a specific
@@ -256,22 +265,20 @@ class DOMImplementation:
             if version == '1.0': return 1
             return 0
 
+InitializeClass(DOMImplementation)
+
 
 class Element(Node):
     """
     Element interface
     """
 
-    __ac_permissions__=(
-        ('Access contents information',
-            ('getTagName', 'getAttribute', 'getAttributeNode',
-            'getElementsByTagName'),
-        ),
-    )
+    security = ClassSecurityInfo()
 
     # Element Attributes
     # ------------------
 
+    security.declareProtected(access_contents_information, 'getTagName')
     def getTagName(self):
         """The name of the element"""
         return self.__class__.__name__
@@ -344,15 +351,19 @@ class Element(Node):
     # Element Methods
     # ---------------
 
+    security.declareProtected(access_contents_information, 'getAttribute')
     def getAttribute(self, name):
         """Retrieves an attribute value by name."""
         return None
 
+    security.declareProtected(access_contents_information, 'getAttributeNode')
     def getAttributeNode(self, name):
         """ Retrieves an Attr node by name or None if
         there is no such attribute. """
         return None
 
+    security.declareProtected(access_contents_information,
+                              'getElementsByTagName')
     def getElementsByTagName(self, tagname):
         """ Returns a NodeList of all the Elements with a given tag
         name in the order in which they would be encountered in a
@@ -369,6 +380,8 @@ class Element(Node):
                 n1 = child.getElementsByTagName(tagname)
                 nodeList = nodeList + n1._data
         return NodeList(nodeList)
+
+InitializeClass(Element)
 
 
 class ElementWithAttributes(Element):

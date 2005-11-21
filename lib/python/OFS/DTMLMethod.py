@@ -16,9 +16,11 @@ $Id$
 """
 import History
 from Globals import HTML, DTMLFile, MessageDialog
+from Globals import InitializeClass
 from SimpleItem import Item_w__name__, pretty_tb
 from OFS.content_types import guess_content_type
 from PropertyManager import PropertyManager
+from AccessControl import ClassSecurityInfo
 from AccessControl.Role import RoleManager
 from webdav.common import rfc1123_date
 from webdav.Lockable import ResourceLockedError
@@ -28,6 +30,11 @@ from DateTime.DateTime import DateTime
 from urllib import quote
 import  Globals, sys, Acquisition
 from AccessControl import getSecurityManager
+from AccessControl.Permissions import change_dtml_methods
+from AccessControl.Permissions import view_management_screens
+from AccessControl.Permissions import change_proxy_roles
+from AccessControl.Permissions import view as View
+from AccessControl.Permissions import ftp_access
 from AccessControl.DTML import RestrictedDTML
 from Cache import Cacheable
 from zExceptions import Forbidden
@@ -49,6 +56,9 @@ class DTMLMethod(RestrictedDTML, HTML, Acquisition.Implicit, RoleManager,
     _cache_namespace_keys=()
 
     __implements__ = (WriteLockInterface,)
+
+    security = ClassSecurityInfo()
+    security.declareObjectProtected(View)
 
     # Documents masquerade as functions:
     class func_code: pass
@@ -74,28 +84,17 @@ class DTMLMethod(RestrictedDTML, HTML, Acquisition.Implicit, RoleManager,
         +Cacheable.manage_options
         )
 
-    # Careful in changes--used by DTMLDocument!
-    __ac_permissions__=(
-    ('View management screens',
-     ('document_src', 'PrincipiaSearchSource')),
-    ('Change DTML Methods',
-     ('manage_editForm', 'manage', 'manage_main',
-      'manage_edit', 'manage_upload', 'PUT',
-      'manage_historyCopy',
-      'manage_beforeHistoryCopy', 'manage_afterHistoryCopy',
-      'ZCacheable_configHTML', 'getCacheNamespaceKeys',
-      'setCacheNamespaceKeys',
-      )
-     ),
-    ('Change proxy roles', ('manage_proxyForm', 'manage_proxy')),
-    ('View', ('__call__', 'get_size', '')),
-    ('FTP access', ('manage_FTPstat','manage_FTPget','manage_FTPlist')),
-    )
+    # Careful in permissiong changes--used by DTMLDocument!
+
+    security.declareProtected(change_dtml_methods, 'manage_historyCopy')
+    security.declareProtected(change_dtml_methods, 'manage_beforeHistoryCopy')
+    security.declareProtected(change_dtml_methods, 'manage_afterHistoryCopy')
 
     # support a more reasonable default for content-type
     # for http HEAD requests.
     default_content_type='text/html'
 
+    security.declareProtected(View, '__call__')
     def __call__(self, client=None, REQUEST={}, RESPONSE=None, **kw):
         """Render the document given a client object, REQUEST mapping,
         Response, and key word arguments."""
@@ -190,14 +189,17 @@ class DTMLMethod(RestrictedDTML, HTML, Acquisition.Implicit, RoleManager,
                 kw[key] = val
             self.ZCacheable_set(result, keywords=kw)
 
+    security.declareProtected(change_dtml_methods, 'ZCacheable_configHTML')
     ZCacheable_configHTML = DTMLFile('dtml/cacheNamespaceKeys', globals())
 
+    security.declareProtected(change_dtml_methods, 'getCacheNamespaceKeys')
     def getCacheNamespaceKeys(self):
         '''
         Returns the cacheNamespaceKeys.
         '''
         return self._cache_namespace_keys
 
+    security.declareProtected(change_dtml_methods, 'setCacheNamespaceKeys')
     def setCacheNamespaceKeys(self, keys, REQUEST=None):
         '''
         Sets the list of names that should be looked up in the
@@ -212,19 +214,26 @@ class DTMLMethod(RestrictedDTML, HTML, Acquisition.Implicit, RoleManager,
         if REQUEST is not None:
             return self.ZCacheable_manage(self, REQUEST)
 
+    security.declareProtected(View, 'get_size')
     def get_size(self):
         return len(self.raw)
 
     # deprecated; use get_size!
     getSize=get_size
 
+    security.declareProtected(change_dtml_methods, 'manage')
+
+    security.declareProtected(change_dtml_methods, 'manage_editForm')
     manage_editForm=DTMLFile('dtml/documentEdit', globals())
     manage_editForm._setName('manage_editForm')
 
     # deprecated!
     manage_uploadForm=manage_editForm
 
+    security.declareProtected(change_dtml_methods, 'manage_main')
     manage=manage_main=manage_editDocument=manage_editForm
+
+    security.declareProtected(change_proxy_roles, 'manage_proxyForm')
     manage_proxyForm=DTMLFile('dtml/documentProxy', globals())
 
     _size_changes={
@@ -252,6 +261,7 @@ class DTMLMethod(RestrictedDTML, HTML, Acquisition.Implicit, RoleManager,
         return self.manage_main(self, REQUEST, title=title,
                                 __str__=self.quotedHTML(data))
 
+    security.declareProtected(change_dtml_methods, 'manage_edit')
     def manage_edit(self,data,title,SUBMIT='Change',dtpref_cols='100%',
                     dtpref_rows='20',REQUEST=None):
         """
@@ -277,6 +287,7 @@ class DTMLMethod(RestrictedDTML, HTML, Acquisition.Implicit, RoleManager,
             message="Saved changes."
             return self.manage_main(self,REQUEST,manage_tabs_message=message)
 
+    security.declareProtected(change_dtml_methods, 'manage_upload')
     def manage_upload(self,file='', REQUEST=None):
         """Replace the contents of the document with the text in file."""
         self._validateProxy(REQUEST)
@@ -315,6 +326,7 @@ class DTMLMethod(RestrictedDTML, HTML, Acquisition.Implicit, RoleManager,
             'do not have proxy roles.\n<!--%s, %s-->' % (self.__name__, u, roles))
 
 
+    security.declareProtected(change_proxy_roles, 'manage_proxy')
     def manage_proxy(self, roles=(), REQUEST=None):
         "Change Proxy Roles"
         self._validateProxy(REQUEST, roles)
@@ -325,10 +337,12 @@ class DTMLMethod(RestrictedDTML, HTML, Acquisition.Implicit, RoleManager,
             message="Saved changes."
             return self.manage_proxyForm(self,REQUEST,manage_tabs_message=message)
 
+    security.declareProtected(view_management_screens, 'PrincipiaSearchSource')
     def PrincipiaSearchSource(self):
         "Support for searching - the document's contents are searched."
         return self.read()
 
+    security.declareProtected(view_management_screens, 'document_src')
     def document_src(self, REQUEST=None, RESPONSE=None):
         """Return unprocessed document source."""
         if RESPONSE is not None:
@@ -337,6 +351,7 @@ class DTMLMethod(RestrictedDTML, HTML, Acquisition.Implicit, RoleManager,
 
     ## Protocol handlers
 
+    security.declareProtected(change_dtml_methods, 'PUT')
     def PUT(self, REQUEST, RESPONSE):
         """Handle HTTP PUT requests."""
         self.dav__init(REQUEST, RESPONSE)
@@ -348,6 +363,10 @@ class DTMLMethod(RestrictedDTML, HTML, Acquisition.Implicit, RoleManager,
         RESPONSE.setStatus(204)
         return RESPONSE
 
+    security.declareProtected(ftp_access, 'manage_FTPstat')
+    security.declareProtected(ftp_access, 'manage_FTPlist')
+
+    security.declareProtected(ftp_access, 'manage_FTPget')
     def manage_FTPget(self):
         "Get source for FTP download"
         return self.read()
@@ -360,6 +379,8 @@ class DTMLMethod(RestrictedDTML, HTML, Acquisition.Implicit, RoleManager,
             historyComparisonResults=History.html_diff(
                 rev1.read(), rev2.read()
                 ))
+
+InitializeClass(DTMLMethod)
 
 import re
 token = "[a-zA-Z0-9!#$%&'*+\-.\\\\^_`|~]+"

@@ -17,6 +17,8 @@ $Id$
 
 from urllib import quote
 
+from Globals import InitializeClass
+from AccessControl import ClassSecurityInfo
 from AccessControl import getSecurityManager
 from AccessControl import Unauthorized
 from AccessControl.ZopeGuards import guarded_getattr
@@ -34,7 +36,9 @@ class Traversable:
 
     implements(ITraversable)
 
-    absolute_url__roles__=None # Public
+    security = ClassSecurityInfo()
+
+    security.declarePublic('absolute_url')
     def absolute_url(self, relative=0):
         """Return the absolute URL of the object.
 
@@ -61,7 +65,7 @@ class Traversable:
             return path2url(spp[1:])
         return toUrl(spp)
 
-    absolute_url_path__roles__=None # Public
+    security.declarePublic('absolute_url_path')
     def absolute_url_path(self):
         """Return the path portion of the absolute URL of the object.
 
@@ -75,7 +79,7 @@ class Traversable:
             return path2url(spp) or '/'
         return toUrl(spp, relative=1) or '/'
 
-    virtual_url_path__roles__=None # Public
+    security.declarePublic('virtual_url_path')
     def virtual_url_path(self):
         """Return a URL for the object, relative to the site root.
 
@@ -90,10 +94,10 @@ class Traversable:
             return path2url(spp[1:])
         return path2url(toVirt(spp))
 
-    getPhysicalRoot__roles__=() # Private
+    security.declarePrivate('getPhysicalRoot')
     getPhysicalRoot=Acquired
 
-    getPhysicalPath__roles__=None # Public
+    security.declarePublic('getPhysicalPath')
     def getPhysicalPath(self):
         """Get the physical path of the object.
 
@@ -110,7 +114,7 @@ class Traversable:
 
         return path
 
-    unrestrictedTraverse__roles__=() # Private
+    security.declarePrivate('unrestrictedTraverse')
     def unrestrictedTraverse(self, path, default=_marker, restricted=0):
         """Lookup an object by path.
 
@@ -232,10 +236,13 @@ class Traversable:
             else:
                 raise
 
-    restrictedTraverse__roles__=None # Public
+    security.declarePublic('restrictedTraverse')
     def restrictedTraverse(self, path, default=_marker):
         # Trusted code traversal code, always enforces security
         return self.unrestrictedTraverse(path, default, restricted=1)
+
+InitializeClass(Traversable)
+
 
 def path2url(path):
     return '/'.join(map(quote, path))

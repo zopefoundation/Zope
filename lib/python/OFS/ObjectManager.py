@@ -24,13 +24,20 @@ from types import StringType, UnicodeType
 
 import App.Common
 import App.FactoryDispatcher, Products
-import App.Management, Acquisition, Globals, Products
+import App.Management, Acquisition
+from AccessControl import ClassSecurityInfo
+from AccessControl.Permissions import view_management_screens
+from AccessControl.Permissions import access_contents_information
+from AccessControl.Permissions import delete_objects
+from AccessControl.Permissions import ftp_access
+from AccessControl.Permissions import import_export_objects
 from AccessControl import getSecurityManager
 from AccessControl.ZopeSecurityPolicy import getRoles
 from Acquisition import aq_base
 from App.config import getConfiguration
+from Globals import InitializeClass
 from Globals import DTMLFile, Persistent
-from Globals import MessageDialog, default__class_init__
+from Globals import MessageDialog
 from Globals import REPLACEABLE, NOT_REPLACEABLE, UNIQUE
 from webdav.Collection import Collection
 from webdav.Lockable import ResourceLockedError
@@ -133,20 +140,10 @@ class ObjectManager(
 
     implements(IObjectManager)
 
-    __ac_permissions__=(
-        ('View management screens', ('manage_main',)),
-        ('Access contents information',
-         ('objectIds', 'objectValues', 'objectItems',''),
-         ('Anonymous', 'Manager'),
-         ),
-        ('Delete objects',     ('manage_delObjects',)),
-        ('FTP access',         ('manage_FTPstat','manage_FTPlist')),
-        ('Import/Export objects',
-         ('manage_importObject','manage_importExportForm',
-          'manage_exportObject')
-         ),
-    )
-
+    security = ClassSecurityInfo()
+    security.declareObjectProtected(access_contents_information)
+    security.setPermissionDefault(access_contents_information,
+                                  ('Anonymous', 'Manager'))
 
     meta_type = 'Object Manager'
 
@@ -154,7 +151,9 @@ class ObjectManager(
 
     _objects = ()
 
+    security.declareProtected(view_management_screens, 'manage_main')
     manage_main=DTMLFile('dtml/main', globals())
+
     manage_index_main=DTMLFile('dtml/index_main', globals())
 
     manage_options=(
@@ -177,7 +176,7 @@ class ObjectManager(
         mt.sort()
         self.meta_types=tuple(mt)
 
-        default__class_init__(self)
+        InitializeClass(self) # default__class_init__
 
     def all_meta_types(self, interfaces=None):
         # A list of products registered elsewhere
@@ -362,6 +361,7 @@ class ObjectManager(
         if not suppress_events:
             notify(ObjectRemovedEvent(ob, self, id))
 
+    security.declareProtected(access_contents_information, 'objectIds')
     def objectIds(self, spec=None):
         # Returns a list of subobject ids of the current object.
         # If 'spec' is specified, returns objects whose meta_type
@@ -376,12 +376,14 @@ class ObjectManager(
             return set
         return [ o['id']  for o in self._objects ]
 
+    security.declareProtected(access_contents_information, 'objectValues')
     def objectValues(self, spec=None):
         # Returns a list of actual subobjects of the current object.
         # If 'spec' is specified, returns only objects whose meta_type
         # match 'spec'.
         return [ self._getOb(id) for id in self.objectIds(spec) ]
 
+    security.declareProtected(access_contents_information, 'objectItems')
     def objectItems(self, spec=None):
         # Returns a list of (id, subobject) tuples of the current object.
         # If 'spec' is specified, returns only objects whose meta_type match
@@ -456,6 +458,7 @@ class ObjectManager(
 
     manage_addProduct=App.FactoryDispatcher.ProductDispatcher()
 
+    security.declareProtected(delete_objects, 'manage_delObjects')
     def manage_delObjects(self, ids=[], REQUEST=None):
         """Delete a subordinate object
 
@@ -512,6 +515,7 @@ class ObjectManager(
                     r.append(o)
         return r
 
+    security.declareProtected(import_export_objects, 'manage_exportObject')
     def manage_exportObject(self, id='', download=None, toxml=None,
                             RESPONSE=None,REQUEST=None):
         """Exports an object to a file and returns that file."""
@@ -548,8 +552,10 @@ class ObjectManager(
                 title = 'Object exported')
 
 
+    security.declareProtected(import_export_objects, 'manage_importExportForm')
     manage_importExportForm=DTMLFile('dtml/importExport',globals())
 
+    security.declareProtected(import_export_objects, 'manage_importObject')
     def manage_importObject(self, file, REQUEST=None, set_owner=1):
         """Import an object from a file"""
         dirname, file=os.path.split(file)
@@ -608,6 +614,7 @@ class ObjectManager(
 
     # FTP support methods
 
+    security.declareProtected(ftp_access, 'manage_FTPlist')
     def manage_FTPlist(self, REQUEST):
         """Directory listing for FTP.
         """
@@ -672,6 +679,7 @@ class ObjectManager(
         if not REQUEST['id'] in self.objectIds():
             raise KeyError(REQUEST['id'])
 
+    security.declareProtected(ftp_access, 'manage_FTPstat')
     def manage_FTPstat(self,REQUEST):
         """Psuedo stat, used by FTP for directory listings.
         """
@@ -710,6 +718,9 @@ class ObjectManager(
                 return NullResource(self, key, request).__of__(self)
         raise KeyError, key
 
+# Don't InitializeClass, there is a specific __class_init__ on ObjectManager
+# InitializeClass(ObjectManager)
+
 
 def findChildren(obj,dirname=''):
     """ recursive walk through the object hierarchy to
@@ -738,5 +749,3 @@ class IFAwareObjectManager:
                 except: pass    # Bleah generic pass is bad
 
         return ObjectManager.all_meta_types(self, interfaces)
-
-Globals.default__class_init__(ObjectManager)

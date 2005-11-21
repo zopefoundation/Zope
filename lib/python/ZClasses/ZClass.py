@@ -13,7 +13,10 @@
 """Zope Classes
 """
 import Globals,  OFS.SimpleItem, OFS.PropertySheets, Products
+from Globals import InitializeClass
 import Method, Basic, Property, AccessControl.Role, re
+from AccessControl import ClassSecurityInfo
+from AccessControl.Permissions import create_class_instances
 
 from ZPublisher.mapply import mapply
 from ExtensionClass import Base
@@ -220,10 +223,8 @@ class ZClass( Base
     __propsets__=()
     isPrincipiaFolderish=1
 
-    __ac_permissions__=(
-        ('Create class instances',
-         ('', '__call__', 'index_html', 'createInObjectManager')),
-        )
+    security = ClassSecurityInfo()
+    security.declareObjectProtected(create_class_instances)
 
     def __init__(self, id, title, bases, zope_object=1):
         """Build a Zope class
@@ -343,7 +344,7 @@ class ZClass( Base
 
         return '*'+id
 
-    changeClassId__roles__ = ()  # Private
+    security.declarePrivate('changeClassId')
     def changeClassId(self, newid=None):
         if newid is None: newid=self._new_class_id()
         self._unregister()
@@ -442,6 +443,7 @@ class ZClass( Base
 
     manage_options=ComputedAttribute(manage_options)
 
+    security.declareProtected(create_class_instances, 'createInObjectManager')
     def createInObjectManager(self, id, REQUEST, RESPONSE=None):
         """
         Create Z instance. If called with a RESPONSE,
@@ -470,6 +472,7 @@ class ZClass( Base
         else:
             return folder._getOb(id)
 
+    security.declareProtected(create_class_instances, 'index_html')
     index_html=createInObjectManager
 
     def fromRequest(self, id=None, REQUEST={}):
@@ -487,6 +490,7 @@ class ZClass( Base
                 i.id = id
         return i
 
+    security.declareProtected(create_class_instances, '__call__')
     def __call__(self, *args, **kw):
         return apply(self._zclass_, args, kw)
 
@@ -511,7 +515,7 @@ class ZClass( Base
         r.sort()
         return r
 
-    getClassAttr__roles__ = ()  # Private
+    security.declarePrivate('getClassAttr')
     def getClassAttr(self, name, default=_marker, inherit=0):
         if default is _marker:
             if inherit: return getattr(self._zclass_, name)
@@ -521,7 +525,7 @@ class ZClass( Base
             else: return self._zclass_.__dict__[name]
         except: return default
 
-    setClassAttr__roles__ = ()  # Private
+    security.declarePrivate('setClassAttr')
     def setClassAttr(self, name, value):
         c=self._zclass_
         setattr(c, name, value)
@@ -529,7 +533,7 @@ class ZClass( Base
             transaction.get().register(c)
             c._p_changed=1
 
-    delClassAttr__roles__ = ()  # Private
+    security.declarePrivate('delClassAttr')
     def delClassAttr(self, name):
         c=self._zclass_
         delattr(c, name)
@@ -559,11 +563,10 @@ class ZClass( Base
         return (self.classDefinedPermissions()+
                 self.classInheritedPermissions())
 
+    security.declarePublic('ziconImage')
     def ziconImage(self, REQUEST, RESPONSE):
         "Display a class icon"
         return self._zclass_.ziconImage.index_html(REQUEST, RESPONSE)
-
-    ziconImage__roles__=None
 
     def tpValues(self):
         return self.propertysheets.common, self.propertysheets.methods
@@ -618,6 +621,9 @@ class ZClass( Base
                 if not self.propertysheets.meta_type in filter:
                     values.remove( value )
         return values
+
+InitializeClass(ZClass)
+
 
 class ZClassSheets(OFS.PropertySheets.PropertySheets):
     "Manage a collection of property sheets that provide ZClass management"

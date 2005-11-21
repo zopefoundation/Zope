@@ -16,7 +16,10 @@ $Id$
 """
 
 from Acquisition import aq_base, aq_parent, aq_inner
+from Globals import InitializeClass
 from AccessControl import getSecurityManager
+from AccessControl import ClassSecurityInfo
+from AccessControl.Permissions import undo_changes
 from DateTime import DateTime
 import Globals, ExtensionClass
 from ZopeUndo.Prefix import Prefix
@@ -30,19 +33,14 @@ class UndoSupport(ExtensionClass.Base):
 
     implements(IUndoSupport)
 
-    __ac_permissions__=(
-        ('Undo changes', (
-            'manage_undo_transactions',
-            'undoable_transactions',
-            'manage_UndoForm',
-            )),
-        )
+    security = ClassSecurityInfo()
 
     manage_options=(
         {'label':'Undo', 'action':'manage_UndoForm',
          'help':('OFSP','Undo.stx')},
         )
 
+    security.declareProtected(undo_changes, 'manage_UndoForm')
     manage_UndoForm=Globals.DTMLFile(
         'dtml/undo',
         globals(),
@@ -64,6 +62,7 @@ class UndoSupport(ExtensionClass.Base):
             else: v=default
             return v
 
+    security.declareProtected(undo_changes, 'undoable_transactions')
     def undoable_transactions(self, first_transaction=None,
                               last_transaction=None,
                               PrincipiaUndoBatchSize=None):
@@ -123,6 +122,7 @@ class UndoSupport(ExtensionClass.Base):
 
         return r
 
+    security.declareProtected(undo_changes, 'manage_undo_transactions')
     def manage_undo_transactions(self, transaction_info=(), REQUEST=None):
         """
         """
@@ -139,7 +139,7 @@ class UndoSupport(ExtensionClass.Base):
         REQUEST['RESPONSE'].redirect("%s/manage_UndoForm" % REQUEST['URL1'])
         return ''
 
-Globals.default__class_init__(UndoSupport)
+InitializeClass(UndoSupport)
 
 ########################################################################
 # Blech, need this cause binascii.b2a_base64 is too pickly

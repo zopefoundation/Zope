@@ -11,16 +11,22 @@
 #
 ##############################################################################
 
+from Globals import InitializeClass
+from AccessControl import ClassSecurityInfo
 from App.ImageFile import ImageFile
 
 
 class misc_:
     "Miscellaneous product information"
-    __roles__=None
+    security = ClassSecurityInfo()
+    security.declareObjectPublic()
+
+InitializeClass(misc_)
 
 class p_:
     "Shared system information"
-    __roles__=None
+    security = ClassSecurityInfo()
+    security.declareObjectPublic()
 
     broken=ImageFile('www/broken.gif', globals())
 
@@ -63,10 +69,12 @@ class p_:
     ProductHelp_icon=ImageFile('HelpSys/images/productHelp.gif')
     HelpTopic_icon=ImageFile('HelpSys/images/helpTopic.gif')
 
+InitializeClass(p_)
+
 class Misc_:
     "Miscellaneous product information"
-
-    __roles__=None
+    security = ClassSecurityInfo()
+    security.declareObjectPublic()
 
     def __init__(self, name, dict):
         self._d=dict
@@ -75,3 +83,5 @@ class Misc_:
     def __str__(self): return self.__name__
     def __getitem__(self, name): return self._d[name]
     def __setitem__(self, name, v): self._d[name]=v
+
+InitializeClass(Misc_)

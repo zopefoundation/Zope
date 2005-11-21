@@ -17,7 +17,7 @@ $Id$
 
 from urllib import unquote
 
-import Globals
+from Globals import InitializeClass
 from AccessControl import getSecurityManager
 from zExceptions import MethodNotAllowed, NotFound
 from zope.interface import implements
@@ -142,4 +142,4 @@ class Collection(Resource):
             return objectValues()
         return []
 
-Globals.default__class_init__(Collection)
+InitializeClass(Collection)
