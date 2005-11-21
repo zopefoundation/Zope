@@ -26,6 +26,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Fixed unclear security declarations. Warn when an attempt is
+        made to have a security declaration on a nonexistent method.
+
       - OFS Application: While deprecated since years, old-style product
         metadata in the __init__.py did not show deprecation warnings. Added
         warnings and converted ZGadflyDA/__init__.py and

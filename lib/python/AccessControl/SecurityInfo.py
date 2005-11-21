@@ -67,9 +67,6 @@ class SecurityInfo(Acquisition.Implicit):
         self.roles = {}
 
     def _setaccess(self, names, access):
-        # Empty names list sets access to the class itself, named ''
-        if not len(names):
-            names = ('',)
         for name in names:
             if self.names.get(name, access) != access:
                 LOG('SecurityInfo', WARNING, 'Conflicting security '
@@ -78,14 +75,14 @@ class SecurityInfo(Acquisition.Implicit):
             self.names[name] = access
 
     declarePublic__roles__=ACCESS_PRIVATE
-    def declarePublic(self, *names):
+    def declarePublic(self, name, *names):
         """Declare names to be publicly accessible."""
-        self._setaccess(names, ACCESS_PUBLIC)
+        self._setaccess((name,) + names, ACCESS_PUBLIC)
 
     declarePrivate__roles__=ACCESS_PRIVATE
-    def declarePrivate(self, *names):
+    def declarePrivate(self, name, *names):
         """Declare names to be inaccessible to restricted code."""
-        self._setaccess(names, ACCESS_PRIVATE)
+        self._setaccess((name,) + names, ACCESS_PRIVATE)
 
     declareProtected__roles__=ACCESS_PRIVATE
     def declareProtected(self, permission_name, name, *names):
@@ -95,17 +92,17 @@ class SecurityInfo(Acquisition.Implicit):
     declareObjectPublic__roles__=ACCESS_PRIVATE
     def declareObjectPublic(self):
         """Declare the object to be publicly accessible."""
-        self._setaccess((), ACCESS_PUBLIC)
+        self._setaccess(('',), ACCESS_PUBLIC)
 
     declareObjectPrivate__roles__=ACCESS_PRIVATE
     def declareObjectPrivate(self):
         """Declare the object to be inaccessible to restricted code."""
-        self._setaccess((), ACCESS_PRIVATE)
+        self._setaccess(('',), ACCESS_PRIVATE)
 
     declareObjectProtected__roles__=ACCESS_PRIVATE
     def declareObjectProtected(self, permission_name):
         """Declare the object to be associated with a permission."""
-        self._setaccess((), permission_name)
+        self._setaccess(('',), permission_name)
 
     setPermissionDefault__roles__=ACCESS_PRIVATE
     def setPermissionDefault(self, permission_name, roles):
