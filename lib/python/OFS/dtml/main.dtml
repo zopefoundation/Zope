@@ -48,7 +48,7 @@ function toggleSelect() {
     <input class="form-element" type="submit" name="submit" value=" Add " />
   <dtml-else>
     <dtml-in filtered_meta_types mapping sort=name>
-    <input type="hidden" name=":method" value="&dtml.url_quote-action;" />
+    <input type="hidden" name=":method" value="&dtml.html_quote-action;" />
     <input class="form-element" type="submit" name="submit" value="Add &dtml-name;" />
     </dtml-in>
   </dtml-if>
