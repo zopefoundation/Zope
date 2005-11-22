@@ -57,7 +57,7 @@ class String:
 
     parse_error__roles__=()
     def parse_error(self, mess, tag, text, start):
-        raise ParseError, "%s, for tag %s, on line %s of %s<p>" % (
+        raise ParseError, "%s, for tag %s, on line %s of %s" % (
             mess, self.errQuote(tag), len(text[:start].split('\n')),
             self.errQuote(self.__name__))
 
