@@ -44,6 +44,11 @@ Zope Changes
         warnings and converted ZGadflyDA/__init__.py and
         ZSQLMethods/__init__.py to use registerClass instead.
 
+    Other
+
+      - Suppressed output of deprecation warning in 'filepath' test
+        for PythonScripts.
+
   Zope 2.8.4 (2005/10/26)
 
     Bugs Fixed
