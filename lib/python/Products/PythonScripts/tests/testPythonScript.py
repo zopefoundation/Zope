@@ -25,6 +25,30 @@ else:
     if not here:
         here = os.getcwd()
 
+class WarningInterceptor:
+
+    _old_stderr = None
+    _our_stderr_stream = None
+
+    def _trap_warning_output( self ):
+
+        if self._old_stderr is not None:
+            return
+
+        import sys
+        from StringIO import StringIO
+
+        self._old_stderr = sys.stderr
+        self._our_stderr_stream = sys.stderr = StringIO()
+
+    def _free_warning_output( self ):
+
+        if self._old_stderr is None:
+            return
+
+        import sys
+        sys.stderr = self._old_stderr
+
 # Test Classes
 
 def readf(name):
@@ -219,7 +243,7 @@ class TestPythonScriptErrors(PythonScriptTestBase):
                 f = self._newPS(defn + "\n" + asn % name)
                 self.assertRaises(TypeError, f)
 
-class TestPythonScriptGlobals(PythonScriptTestBase):
+class TestPythonScriptGlobals(PythonScriptTestBase, WarningInterceptor):
     def _exec(self, script, bound_names=None, args=None, kws=None):
         if args is None:
             args = ()
@@ -241,8 +265,10 @@ class TestPythonScriptGlobals(PythonScriptTestBase):
     def test_filepath(self):
         # This test is meant to raise a deprecation warning.
         # It used to fail mysteriously instead.
+        self._trap_warning_output()
         f = self._filePS('filepath')
         self.assertEqual(f(), [0])
+        self._free_warning_output()
 
 def test_suite():
     suite = unittest.TestSuite()
