@@ -15,10 +15,12 @@
 $Id$
 """
 from DocumentTemplate import DT_Util
-import SecurityManagement, string, math, whrandom, random
+import SecurityManagement, string, math, random
 import DocumentTemplate.sequence
 
 from ZopeGuards import safe_builtins
+
+whrandom = random  # BBB: will be removed in Zope 2.10
 
 # RestrictedDTML is inserted by AccessControl.Implementation.
 
@@ -27,7 +29,6 @@ from ZopeGuards import safe_builtins
 DT_Util.TemplateDict.__allow_access_to_unprotected_subobjects__=1
 string.__allow_access_to_unprotected_subobjects__=1
 math.__allow_access_to_unprotected_subobjects__=1
-whrandom.__allow_access_to_unprotected_subobjects__=1
 random.__allow_access_to_unprotected_subobjects__=1
 
 DocumentTemplate.sequence.__allow_access_to_unprotected_subobjects__=1

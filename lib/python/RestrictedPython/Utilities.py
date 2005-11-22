@@ -13,7 +13,7 @@
 
 __version__='$Revision: 1.7 $'[11:-2]
 
-import string, math, random, whrandom
+import string, math, random
 import DocumentTemplate.sequence
 
 utility_builtins = {}
@@ -21,7 +21,7 @@ utility_builtins = {}
 utility_builtins['string'] = string
 utility_builtins['math'] = math
 utility_builtins['random'] = random
-utility_builtins['whrandom'] = whrandom
+utility_builtins['whrandom'] = random # BBB:  will be removed in Zope 2.10
 utility_builtins['sequence'] = DocumentTemplate.sequence
 
 try:
