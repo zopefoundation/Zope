@@ -116,8 +116,7 @@ import getopt
 import mailbox, time, sys, os, string
 sys.path.insert(0, '.')
 
-import whrandom
-whrandom.seed(1,2,3)
+import random
 
 from string import strip, find, split, lower, atoi
 from urllib import quote
@@ -208,7 +207,7 @@ def loadmail(dest, name, mbox, max=-1):
 def loadinc(name, mb, f, max=99999999, wait=1):
     from ZODB.POSException import ConflictError
     from time import sleep
-    from whrandom import uniform
+    from random import uniform
     import Zope2, sys
     rconflicts=wconflicts=0
 
@@ -607,28 +606,28 @@ words=['banishment', 'indirectly', 'imprecise', 'peeks',
 from ZODB.utils import u64
 
 def incedit(edits, wait, ndel=20, nins=20):
-    import Zope2, whrandom, string, time
+    import Zope2, random, string, time
     from ZODB.POSException import ConflictError
 
     rconflicts=wconflicts=0
     did=str(edits.pop())
     while edits:
-        if wait: time.sleep(whrandom.uniform(0,wait))
+        if wait: time.sleep(random.uniform(0,wait))
         jar=Zope2.DB.open()
         app=jar.root()['Application']
         doc=getattr(app.mail, did)
 
         text=string.split(doc.raw)
 
-        n=whrandom.randint(0,ndel*2)
+        n=random.randint(0,ndel*2)
         for j in range(n):
             if len(text) < 2: break
-            j=whrandom.randint(0,len(text)-1)
+            j=random.randint(0,len(text)-1)
             #del text[j]
 
-        n=whrandom.randint(0,nins*2)
+        n=random.randint(0,nins*2)
         for j in range(n):
-            word=whrandom.choice(words)
+            word=random.choice(words)
             text.append(word)
 
         doc.raw=string.join(text)
@@ -690,7 +689,7 @@ def edit():
                 print c, r
         edits=[0]
         while len(edits) <= nedit:
-            edit=whrandom.randint(0, number_of_messages)
+            edit=random.randint(0, number_of_messages)
             if not alledits.has_key(edit):
                 alledits[edit]=1
                 edits.append(edit)

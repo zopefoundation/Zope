@@ -26,6 +26,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #1891:  Backported changes to ZCatalog regression
+        tests, removing use of 'whrandom' (and its 'seed' function).
+
       - Collector #1621, #1894:  Added BBB alias for 'whrandom'
         in AccessControl/DTML.py and RestrictedPython/Utilities.py.  The
         alias will be removed in Zope 2.10.

@@ -28,7 +28,7 @@ from Testing import dispatcher
 import keywords
 
 
-import getopt,whrandom,time,string,mailbox,rfc822
+import getopt,random,time,string,mailbox,rfc822
 import unittest_patched as unittest
 
 # maximum number of files to read for the test suite
@@ -380,7 +380,7 @@ class testSearches(dispatcher.Dispatcher,unittest.TestCase):
 
         rg = []
         for i in range(searchIterations):
-            m = whrandom.randint(0,10000)
+            m = random.randint(0,10000)
             n = m + 200
             rg.append((m,n))
 
@@ -412,7 +412,7 @@ class testSearches(dispatcher.Dispatcher,unittest.TestCase):
 
         rg = []
         for i in range(len(self.keywords)):
-            m = whrandom.randint(0,10000)
+            m = random.randint(0,10000)
             n = m + 200
             rg.append( (m,n) )
 
@@ -448,8 +448,7 @@ class testSearches(dispatcher.Dispatcher,unittest.TestCase):
         msgs = self.setupUpdatesMethod(kw["numUpdates"])
         keys = msgs.keys()
 
-        rdgen = whrandom.whrandom()
-        rdgen.seed(int(time.time()) % 256,int(time.time()) % 256,int(time.time()) % 256)
+        rdgen = random.Random()
 
         env = self.th_setup()
 
