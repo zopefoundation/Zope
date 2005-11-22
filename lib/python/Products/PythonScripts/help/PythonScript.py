@@ -54,7 +54,7 @@ class PythonScript:
 
           o math
 
-          o whrandom and random
+          o random
 
           o Products.PythonScripts.standard
 

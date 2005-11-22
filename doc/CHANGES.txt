@@ -100,6 +100,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #1621, 1894:  Removed support for use of long-deprecated
+        'whrandom' module.
+
       - OFS PropertySheets / webdav: Fixed dav__resourcetype.
         __dav_collection__ with a false value was overridden by
         isAnObjectManager.

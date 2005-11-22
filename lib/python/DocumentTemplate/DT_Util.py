@@ -315,7 +315,7 @@ Python expression support
 
   - Special security-aware versions of 'getattr' and 'hasattr',
 
-  - The Python 'string', 'math', and 'whrandom' modules, and
+  - The Python 'string', 'math', and 'random' modules, and
 
   - A special function, 'test', that supports if-then expressions.
     The 'test' function accepts any number of arguments.  If the
