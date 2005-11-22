@@ -54,7 +54,10 @@ class PythonScript:
 
           o math
 
-          o whrandom and random
+          o random
+          
+          o whrandom (deprecated in Python; aliased BBB support will be
+            removed in Zope 2.10).
 
           o Products.PythonScripts.standard
 

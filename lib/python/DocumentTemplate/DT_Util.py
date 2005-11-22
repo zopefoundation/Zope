@@ -315,7 +315,10 @@ Python expression support
 
   - Special security-aware versions of 'getattr' and 'hasattr',
 
-  - The Python 'string', 'math', and 'whrandom' modules, and
+  - The Python 'string', 'math', modules,
+
+  - BBB alias for the Python 'whrandom' module (will be removed in
+    Zope 2.10),
 
   - A special function, 'test', that supports if-then expressions.
     The 'test' function accepts any number of arguments.  If the
