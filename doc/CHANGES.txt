@@ -26,6 +26,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #1957:  Made ZPublisher.HTTPResponse._error_html
+        return conformant XHTML.
+
       - Collector #1891:  Backported changes to ZCatalog regression
         tests, removing use of 'whrandom' (and its 'seed' function).
 

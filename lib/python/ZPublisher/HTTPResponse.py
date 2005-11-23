@@ -599,42 +599,43 @@ class HTTPResponse(BaseResponse):
     def _error_html(self,title,body):
         # XXX could this try to use standard_error_message somehow?
         return ("""\
-<TABLE BORDER="0" WIDTH="100%">
-<TR VALIGN="TOP">
+<table border="0" width="100%">
+<tr valign="top">
 
-<TD WIDTH="10%" ALIGN="CENTER">
+<td width="10%" align="center">
 &nbsp;
-</TD>
+</td>
 
-<TD WIDTH="90%">
-  <H2>Site Error</H2>
-  <P>An error was encountered while publishing this resource.
-  </P>""" + \
+<td width="90%">
+  <h2>Site Error</h2>
+  <p>An error was encountered while publishing this resource.
+  </p>""" + \
   """
-  <P><STRONG>%s</STRONG></P>
+  <p><strong>%s</strong></p>
 
   %s""" %(title,body) + \
   """
-  <HR NOSHADE>
+  <hr noshade="noshade"/>
 
-  <P>Troubleshooting Suggestions</P>
+  <p>Troubleshooting Suggestions</p>
 
-  <UL>
-  <LI>The URL may be incorrect.</LI>
-  <LI>The parameters passed to this resource may be incorrect.</LI>
-  <LI>A resource that this resource relies on may be
-      encountering an error.</LI>
-  </UL>
+  <ul>
+  <li>The URL may be incorrect.</li>
+  <li>The parameters passed to this resource may be incorrect.</li>
+  <li>A resource that this resource relies on may be
+      encountering an error.</li>
+  </ul>
 
-  <P>For more detailed information about the error, please
+  <p>For more detailed information about the error, please
   refer to error log.
-  </P>
+  </p>
 
-  <P>If the error persists please contact the site maintainer.
+  <p>If the error persists please contact the site maintainer.
   Thank you for your patience.
-  </P>
-</TD></TR>
-</TABLE>""")
+  </p>
+</td></tr>
+</table>""")
+
 
     def notFoundError(self,entry='Unknown'):
         self.setStatus(404)
