@@ -244,6 +244,14 @@ class TestPythonScriptErrors(PythonScriptTestBase):
                 self.assertRaises(TypeError, f)
 
 class TestPythonScriptGlobals(PythonScriptTestBase, WarningInterceptor):
+
+    def setUp(self):
+        PythonScriptTestBase.setUp(self)
+
+    def tearDown(self):
+        self._free_warning_output()
+        PythonScriptTestBase.tearDown(self)
+
     def _exec(self, script, bound_names=None, args=None, kws=None):
         if args is None:
             args = ()
