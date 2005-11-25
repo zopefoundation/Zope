@@ -2,6 +2,16 @@
 Five Changes
 ============
 
+Five 1.3b4 (2005-11-25)
+=======================
+
+Restructuring
+-------------
+
+* Cleaned up security test.
+
+* Made Five send a ContainerModifiedEvent when appropriate.
+
 Five 1.3b3 (2005-11-19)
 =======================
 

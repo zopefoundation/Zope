@@ -95,38 +95,35 @@ def test_security_equivalence():
 
     Now we look at the individual permissions:
 
-      >>> bar_roles1 = getattr(Dummy1, 'bar__roles__').__of__(Dummy1)
-      >>> bar_roles1.__of__(Dummy1)
+      >>> from AccessControl.ZopeSecurityPolicy import getRoles
+      >>> from AccessControl import ACCESS_PUBLIC
+      >>> from AccessControl import ACCESS_PRIVATE
+
+      >>> dummy1 = Dummy1()
+      >>> getRoles(dummy1, 'bar', dummy1.bar, ('Def',))
       ('Manager',)
 
-      >>> keg_roles1 = getattr(Dummy1, 'keg__roles__').__of__(Dummy1)
-      >>> keg_roles1.__of__(Dummy1)
+      >>> getRoles(dummy1, 'keg', dummy1.keg, ('Def',))
       ('Manager',)
 
-      >>> foo_roles1 = getattr(Dummy1, 'foo__roles__')
-      >>> foo_roles1 is None
+      >>> getRoles(dummy1, 'foo', dummy1.foo, ('Def',)) is ACCESS_PUBLIC
       True
 
-      >>> # XXX Not yet supported.
-      >>> # baz_roles1 = getattr(Dummy1, 'baz__roles__')
-      >>> # baz_roles1
-      ()
-        
-      >>> bar_roles2 = getattr(Dummy2, 'bar__roles__').__of__(Dummy2)
-      >>> bar_roles2.__of__(Dummy2)
+      #>>> getRoles(dummy1, 'baz', dummy1.baz, ('Def',)) is ACCESS_PRIVATE
+      #True XXX Not yet supported.
+
+      >>> dummy2 = Dummy2()
+      >>> getRoles(dummy2, 'bar', dummy2.bar, ('Def',))
       ('Manager',)
 
-      >>> keg_roles2 = getattr(Dummy2, 'keg__roles__').__of__(Dummy2)
-      >>> keg_roles2.__of__(Dummy2)
+      >>> getRoles(dummy2, 'keg', dummy2.keg, ('Def',))
       ('Manager',)
 
-      >>> foo_roles2 = getattr(Dummy2, 'foo__roles__')
-      >>> foo_roles2 is None
+      >>> getRoles(dummy2, 'foo', dummy2.foo, ('Def',)) is ACCESS_PUBLIC
       True
 
-      >>> baz_roles2 = getattr(Dummy2, 'baz__roles__')
-      >>> baz_roles2
-      ()
+      >>> getRoles(dummy2, 'baz', dummy2.baz, ('Def',)) is ACCESS_PRIVATE
+      True
 
     Before we end we should clean up after ourselves:
 
