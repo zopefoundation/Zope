@@ -33,6 +33,8 @@ from zope.interface import implements
 from zope.event import notify
 from zope.app.event.objectevent import ObjectCopiedEvent
 from zope.app.container.contained import ObjectMovedEvent
+import Products.Five # BBB: until Zope 3.2 >= r40368 is stiched in
+from zope.app.container.contained import notifyContainerModified
 from OFS.event import ObjectWillBeMovedEvent
 from OFS.event import ObjectClonedEvent
 import OFS.subscribers
@@ -272,6 +274,9 @@ class CopyContainer(ExtensionClass.Base):
                 ob = self._getOb(id)
 
                 notify(ObjectMovedEvent(ob, orig_container, orig_id, self, id))
+                notifyContainerModified(orig_container)
+                if aq_base(orig_container) is not aq_base(self):
+                    notifyContainerModified(self)
 
                 ob._postCopy(self, op=1)
                 # try to make ownership implicit if possible
@@ -342,6 +347,7 @@ class CopyContainer(ExtensionClass.Base):
         ob = self._getOb(new_id)
 
         notify(ObjectMovedEvent(ob, self, id, self, new_id))
+        notifyContainerModified(self)
 
         ob._postCopy(self, op=1)
 
