@@ -40,6 +40,7 @@ from Products.ZCatalog.Lazy import LazyMap
 from zope.event import notify
 from zope.app.container.contained import ObjectAddedEvent
 from zope.app.container.contained import ObjectRemovedEvent
+from zope.app.container.contained import notifyContainerModified
 from OFS.event import ObjectWillBeAddedEvent
 from OFS.event import ObjectWillBeRemovedEvent
 import OFS.subscribers
@@ -443,6 +444,7 @@ class BTreeFolder2Base (Persistent):
 
         if not suppress_events:
             notify(ObjectAddedEvent(ob, self, id))
+            notifyContainerModified(self)
 
         OFS.subscribers.compatibilityCall('manage_afterAdd', ob, ob, self)
 
@@ -461,6 +463,7 @@ class BTreeFolder2Base (Persistent):
 
         if not suppress_events:
             notify(ObjectRemovedEvent(ob, self, id))
+            notifyContainerModified(self)
 
 
     # Aliases for mapping-like access.

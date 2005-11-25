@@ -53,6 +53,8 @@ from Traversable import Traversable
 from zope.event import notify
 from zope.app.container.contained import ObjectAddedEvent
 from zope.app.container.contained import ObjectRemovedEvent
+import Products.Five # BBB: until Zope 3.2 >= r40368 is stiched in
+from zope.app.container.contained import notifyContainerModified
 from OFS.event import ObjectWillBeAddedEvent
 from OFS.event import ObjectWillBeRemovedEvent
 import OFS.subscribers
@@ -312,6 +314,7 @@ class ObjectManager(
 
         if not suppress_events:
             notify(ObjectAddedEvent(ob, self, id))
+            notifyContainerModified(self)
 
         OFS.subscribers.compatibilityCall('manage_afterAdd', ob, ob, self)
 
@@ -360,6 +363,7 @@ class ObjectManager(
 
         if not suppress_events:
             notify(ObjectRemovedEvent(ob, self, id))
+            notifyContainerModified(self)
 
     security.declareProtected(access_contents_information, 'objectIds')
     def objectIds(self, spec=None):

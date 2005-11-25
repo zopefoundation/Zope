@@ -24,6 +24,8 @@ from Acquisition import aq_base
 from DocumentTemplate.sequence import sort
 from Globals import InitializeClass
 from zope.interface import implements
+import Products.Five # BBB: until Zope 3.2 >= r40368 is stiched in
+from zope.app.container.contained import notifyContainerModified
 
 from interfaces import IOrderedContainer as z3IOrderedContainer
 from IOrderSupport import IOrderedContainer as z2IOrderedContainer
@@ -135,7 +137,8 @@ class OrderSupport(object):
     #
 
     security.declareProtected(manage_properties, 'moveObjectsByDelta')
-    def moveObjectsByDelta(self, ids, delta, subset_ids=None):
+    def moveObjectsByDelta(self, ids, delta, subset_ids=None,
+                           suppress_events=False):
         """ Move specified sub-objects by delta.
         """
         if type(ids) is StringType:
@@ -179,6 +182,9 @@ class OrderSupport(object):
                         raise ValueError('The object with the id "%s" does '
                                          'not exist.' % subset_ids[pos])
             self._objects = tuple(objects)
+
+        if not suppress_events:
+            notifyContainerModified(self)
 
         return counter
 
@@ -227,11 +233,12 @@ class OrderSupport(object):
         raise ValueError('The object with the id "%s" does not exist.' % id)
 
     security.declareProtected(manage_properties, 'moveObjectToPosition')
-    def moveObjectToPosition(self, id, position):
+    def moveObjectToPosition(self, id, position, suppress_events=False):
         """ Move specified object to absolute position.
         """
         delta = position - self.getObjectPosition(id)
-        return self.moveObjectsByDelta(id, delta)
+        return self.moveObjectsByDelta(id, delta,
+                                       suppress_events=suppress_events)
 
     security.declareProtected(access_contents_information, 'getDefaultSorting')
     def getDefaultSorting(self):
@@ -257,7 +264,7 @@ class OrderSupport(object):
         old_position = self.getObjectPosition(id)
         result = super(OrderSupport, self).manage_renameObject(id, new_id,
                                                                REQUEST)
-        self.moveObjectToPosition(new_id, old_position)
+        self.moveObjectToPosition(new_id, old_position, suppress_events=True)
         return result
 
     def tpValues(self):
