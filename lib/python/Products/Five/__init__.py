@@ -13,12 +13,16 @@
 ##############################################################################
 """Initialize the Five product
 
-$Id: __init__.py 12884 2005-05-30 13:10:41Z philikon $
+$Id: __init__.py 20254 2005-11-25 18:45:08Z efge $
 """
 import Acquisition
 from Globals import INSTANCE_HOME
 
+import monkey # BBB: goes away when Zope 3.2 >= r40368 is stiched in
 import zcml
+
+# trigger monkey patches
+monkey.monkeyPatch()
 
 # public API provided by Five
 # usage: from Products.Five import <something>
