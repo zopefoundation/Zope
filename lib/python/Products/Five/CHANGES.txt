@@ -2,39 +2,29 @@
 Five Changes
 ============
 
-Five 1.3b4 (2005-11-25)
-=======================
+Five 1.3c (unreleased)
+======================
+
+This version is also included in Zope 2.9b1.
 
 Restructuring
 -------------
 
-* Cleaned up security test.
+* (b4) Cleaned up security test.
 
-* Made Five send a ContainerModifiedEvent when appropriate.
-
-Five 1.3b3 (2005-11-19)
-=======================
-
-This version is also included in Zope 2.9b1.
+* (b4) Made Five send a ContainerModifiedEvent when appropriate.
 
 Bugfixes
 --------
 
-* Made the creation of custom skins work again.  It was broken in the
-  port to Zope 3.2.
+* (b3) Made the creation of custom skins work again.  It was broken in
+  the port to Zope 3.2.
 
-Five 1.3b2 (2005-11-10)
-=======================
+* (b2) Fixed bug that broke WebDAV access for five:defaultViewable
+  objects. The __browser_default__ now modifies only GET and POST
+  requests.
 
-Changes compared to Five 1.3b:
-
-Bugfixes
---------
-
-* Fixed bug that broke WebDAV access for five:defaultViewable objects. The
-  __browser_default__ now modifies only GET and POST requests.
-
-* Fixed some event recursion compatibility modes.
+* (b2) Fixed some event recursion compatibility modes.
 
 Five 1.3b (2005-11-02)
 ======================
@@ -78,6 +68,13 @@ Bugfixes
   __browser_default__ now modifies only GET and POST requests.
 
 * Fixed some event recursion compatibility modes.
+
+* Fixed loops in zcml loading due to events in some cases.
+
+Restructuring
+-------------
+
+* Cleaned up security test.
 
 Five 1.2b (2005-11-02)
 ======================
