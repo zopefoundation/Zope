@@ -19,6 +19,9 @@ import re, math,  DateTimeZone
 from time import time, gmtime, localtime
 from time import daylight, timezone, altzone, strftime
 from datetime import datetime
+from interfaces import IDateTime
+from interfaces import DateTimeError, SyntaxError, DateError, TimeError
+from zope.interface import implements
 
 default_datefmt = None
 
@@ -39,19 +42,6 @@ try:
     from time import tzname
 except:
     tzname=('UNKNOWN','UNKNOWN')
-
-class DateTimeError( Exception ):
-    pass
-
-class SyntaxError( DateTimeError ):
-    pass
-
-class DateError( DateTimeError ):
-    pass
-
-class TimeError( DateTimeError ):
-    pass
-
 
 # To control rounding errors, we round system time to the nearest
 # millisecond.  Then delicate calculations can rely on that the
@@ -491,6 +481,8 @@ class DateTime:
         A DateTime object should be considered immutable; all conversion
         and numeric operations return a new DateTime object rather than
         modify the current object."""
+
+    implements(IDateTime)
 
     # For security machinery:
     __roles__=None
