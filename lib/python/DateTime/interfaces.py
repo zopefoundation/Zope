@@ -32,6 +32,7 @@ class IDateTime(Interface):
 
     # Conversion and comparison methods
 
+    #TODO determine whether this method really is part of the public API
     def localZone(ltm=None):
         '''Returns the time zone on the given date.  The time zone
         can change according to daylight savings.'''
@@ -78,6 +79,10 @@ class IDateTime(Interface):
         """Return true if this object represents a date/time that
         falls within the current minute, in the context of this
         object's timezone representation"""
+
+    def isLeapYear():
+        """Return true if the current year (in the context of the
+        object's timezone) is a leap year"""
 
     def earliestTime():
         """Return a new DateTime object that represents the earliest
@@ -148,10 +153,6 @@ class IDateTime(Interface):
         through comparison of long integer milliseconds."""
 
     __le__ = lessThanEqualTo
-
-    def isLeapYear():
-        """Return true if the current year (in the context of the
-        object's timezone) is a leap year"""
 
     def dayOfYear():
         """Return the day of the year, in context of the timezone
@@ -277,29 +278,28 @@ class IDateTime(Interface):
     # New formats
 
     def fCommon():
-        """Return a string representing the object\'s value in the
+        """Return a string representing the object's value in the
         format: March 1, 1997 1:45 pm"""
 
     def fCommonZ():
-        """Return a string representing the object\'s value in the
+        """Return a string representing the object's value in the
         format: March 1, 1997 1:45 pm US/Eastern"""
 
     def aCommon():
-        """Return a string representing the object\'s value in the
+        """Return a string representing the object's value in the
         format: Mar 1, 1997 1:45 pm"""
 
     def aCommonZ():
-        """Return a string representing the object\'s value in the
+        """Return a string representing the object's value in the
         format: Mar 1, 1997 1:45 pm US/Eastern"""
 
     def pCommon():
-        """Return a string representing the object\'s value in the
+        """Return a string representing the object's value in the
         format: Mar. 1, 1997 1:45 pm"""
 
     def pCommonZ():
-        """Return a string representing the object\'s value
+        """Return a string representing the object's value
            in the format: Mar. 1, 1997 1:45 pm US/Eastern"""
-
 
     def ISO():
         """Return the object in ISO standard format. Note: this is
@@ -331,6 +331,18 @@ class IDateTime(Interface):
            T, Z are literal characters.
            The time is in UTC.
         """
+
+    def JulianDay():
+        """Return the Julian day according to
+        http://www.tondering.dk/claus/cal/node3.html#sec-calcjd
+        """
+
+    def week():
+        """Return the week number according to ISO
+        see http://www.tondering.dk/claus/cal/node6.html#SECTION00670000000000000000
+        """
+
+    # Python operator and conversion API
 
     def __add__(other):
         """A DateTime may be added to a number and a number may be
@@ -371,13 +383,3 @@ class IDateTime(Interface):
 
     def __float__():
         """Convert to floating-point number of seconds since the epoch (gmt)"""
-
-    def JulianDay():
-        """Return the Julian day according to
-        http://www.tondering.dk/claus/cal/node3.html#sec-calcjd
-        """
-
-    def week():
-        """Return the week number according to ISO
-        see http://www.tondering.dk/claus/cal/node6.html#SECTION00670000000000000000
-        """
