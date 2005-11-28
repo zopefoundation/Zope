@@ -46,7 +46,6 @@ from Traversable import Traversable
 from zope.event import notify
 from zope.app.container.contained import ObjectAddedEvent
 from zope.app.container.contained import ObjectRemovedEvent
-import Products.Five # BBB: until Zope 3.2 >= r40368 is stiched in
 from zope.app.container.contained import notifyContainerModified
 from OFS.event import ObjectWillBeAddedEvent
 from OFS.event import ObjectWillBeRemovedEvent

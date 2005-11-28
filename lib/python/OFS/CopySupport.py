@@ -33,7 +33,6 @@ from zope.interface import implements
 from zope.event import notify
 from zope.app.event.objectevent import ObjectCopiedEvent
 from zope.app.container.contained import ObjectMovedEvent
-import Products.Five # BBB: until Zope 3.2 >= r40368 is stiched in
 from zope.app.container.contained import notifyContainerModified
 from OFS.event import ObjectWillBeMovedEvent
 from OFS.event import ObjectClonedEvent
@@ -214,9 +213,10 @@ class CopyContainer(ExtensionClass.Base):
                 id = self._get_id(orig_id)
                 result.append({'id': orig_id, 'new_id': id})
 
+                orig_ob = ob
                 ob = ob._getCopy(self)
                 ob._setId(id)
-                notify(ObjectCopiedEvent(ob))
+                notify(ObjectCopiedEvent(ob, orig_ob))
 
                 self._setObject(id, ob)
                 ob = self._getOb(id)
@@ -385,9 +385,10 @@ class CopyContainer(ExtensionClass.Base):
                 message=sys.exc_info()[1],
                 action='manage_main')
 
+        orig_ob = ob
         ob = ob._getCopy(self)
         ob._setId(id)
-        notify(ObjectCopiedEvent(ob))
+        notify(ObjectCopiedEvent(ob, orig_ob))
 
         self._setObject(id, ob)
         ob = self._getOb(id)
