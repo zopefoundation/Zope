@@ -24,7 +24,6 @@ from Acquisition import aq_base
 from DocumentTemplate.sequence import sort
 from Globals import InitializeClass
 from zope.interface import implements
-import Products.Five # BBB: until Zope 3.2 >= r40368 is stiched in
 from zope.app.container.contained import notifyContainerModified
 
 from interfaces import IOrderedContainer as z3IOrderedContainer
