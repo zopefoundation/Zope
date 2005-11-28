@@ -154,10 +154,6 @@ class IDateTime(Interface):
 
     __le__ = lessThanEqualTo
 
-    def dayOfYear():
-        """Return the day of the year, in context of the timezone
-        representation of the object"""
-
     # Component access
 
     def parts():
@@ -199,6 +195,10 @@ class IDateTime(Interface):
 
     def DayOfWeek():
         """Compatibility: see Day"""
+
+    def dayOfYear():
+        """Return the day of the year, in context of the timezone
+        representation of the object"""
 
     def aDay():
         """Return the abreviated name of the day of the week"""
@@ -348,7 +348,7 @@ class IDateTime(Interface):
         """A DateTime may be added to a number and a number may be
         added to a DateTime; two DateTimes cannot be added."""
 
-    __radd__=__add__
+    __radd__ = __add__
 
     def __sub__(other):
         """Either a DateTime or a number may be subtracted from a
