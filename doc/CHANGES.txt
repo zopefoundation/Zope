@@ -26,6 +26,10 @@ Zope Changes
 
     Bugs Fixed
 
+      - AccessControl.SecurityInfo: Fixed problem with
+        setPermissionDefault when the permission wasn't used anywhere
+        else in the class to protect methods.
+
       - Collector #1957:  Made ZPublisher.HTTPResponse._error_html
         return conformant XHTML.
 

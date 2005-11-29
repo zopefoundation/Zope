@@ -180,6 +180,10 @@ class ClassSecurityInfo(SecurityInfo):
             else:
                 entry = (permission_name, tuple(names))
             __ac_permissions__.append(entry)
+        for permission_name, roles in self.roles.items():
+            if permission_name not in ac_permissions:
+                entry = (permission_name, (), tuple(roles.keys()))
+                __ac_permissions__.append(entry)
         setattr(classobj, '__ac_permissions__', tuple(__ac_permissions__))
 
         # Take care of default attribute access policy

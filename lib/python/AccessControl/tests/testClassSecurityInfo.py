@@ -44,6 +44,8 @@ class ClassSecurityInfoTests(unittest.TestCase):
 
             security = ClassSecurityInfo()
 
+            security.setPermissionDefault('Make food', ('Chef',))
+
             security.setPermissionDefault(
                 'Test permission',
                 ('Manager', 'Role A', 'Role B', 'Role C')
@@ -67,6 +69,11 @@ class ClassSecurityInfoTests(unittest.TestCase):
 
         for item in ('Manager', 'Role A', 'Role B', 'Role C'):
             self.failUnless(item in imPermissionRole)
+
+        # Make sure that a permission defined without accompanying method
+        # is still reflected in __ac_permissions__
+        self.assertEquals([t for t in Test.__ac_permissions__ if not t[1]],
+                          [('Make food', (), ('Chef',))])
 
 
 def test_suite():
