@@ -16,7 +16,7 @@ $Id$
 """
 
 from types import StringType
-
+import warnings
 from AccessControl import ClassSecurityInfo
 from AccessControl.Permissions import access_contents_information
 from AccessControl.Permissions import manage_properties
@@ -263,7 +263,16 @@ class OrderSupport(object):
         old_position = self.getObjectPosition(id)
         result = super(OrderSupport, self).manage_renameObject(id, new_id,
                                                                REQUEST)
-        self.moveObjectToPosition(new_id, old_position, suppress_events=True)
+        try:
+            self.moveObjectToPosition(new_id, old_position,
+                                      suppress_events=True)
+        except TypeError:
+            # BBB: removed in Zope 2.11
+            self.moveObjectToPosition(new_id, old_position)
+            warnings.warn(
+                "%s.moveObjectToPosition without suppress_events is "
+                "deprecated and will be removed in Zope 2.11." %
+                self.__class__.__name__, DeprecationWarning)
         return result
 
     def tpValues(self):
