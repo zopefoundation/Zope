@@ -95,6 +95,10 @@ Zope Changes
 
     Bugs Fixed
 
+      - AccessControl.SecurityInfo: Fixed problem with
+        setPermissionDefault when the permission wasn't used anywhere
+        else in the class to protect methods.
+
       - OFS PropertySheets / webdav: Fixed dav__resourcetype.
         __dav_collection__ with a false value was overridden by
         isAnObjectManager.
