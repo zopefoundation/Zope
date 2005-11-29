@@ -219,11 +219,11 @@ Conversion and comparison methods
     >>> dt.timeTime()
     857933100.0
 
-    >>> DateTime('2040/01/01').timeTime()
-    2208985200.0
+    >>> DateTime('2040/01/01 UTC').timeTime()
+    2208988800.0
 
-    >>> DateTime('1900/01/01').timeTime()
-    -2208992400.0
+    >>> DateTime('1900/01/01 UTC').timeTime()
+    -2208988800.0
 
 * ``toZone(z)`` returns a DateTime with the value as the current
   object, represented in the indicated timezone:
