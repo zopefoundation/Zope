@@ -379,7 +379,11 @@ class DateTimeTests(unittest.TestCase):
         self.assertEqual(dt.strftime(u'Le %d/%m/%Y \xe0 %Hh%M'), ok)
 
 def test_suite():
-    return unittest.makeSuite(DateTimeTests)
+    from zope.testing import doctest
+    return unittest.TestSuite([
+        unittest.makeSuite(DateTimeTests),
+        doctest.DocFileSuite('DateTime.txt', package='DateTime')
+        ])
 
 if __name__=="__main__":
     unittest.main(defaultTest='test_suite')
