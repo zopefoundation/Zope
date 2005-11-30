@@ -465,25 +465,37 @@ class ZopeSecurityPolicy:
         roles = rolesForPermissionOn(permission, object)
         if isinstance(roles, basestring):
             roles = [roles]
-        result = context.user.allowed(object, roles)
 
         # check executable owner and proxy roles
         stack = context.stack
         if stack:
             eo = stack[-1]
+            # If the executable had an owner, can it execute?
             if self._ownerous:
                 owner = eo.getOwner()
                 if (owner is not None) and not owner.allowed(object, roles):
+                    # We don't want someone to acquire if they can't 
+                    # get an unacquired!
                     return 0
             proxy_roles = getattr(eo, '_proxy_roles', None)
             if proxy_roles:
-                if object is not aq_base(object):
-                    if not owner._check_context(object):
-                        return 0
+                # Verify that the owner actually can state the proxy role
+                # in the context of the accessed item; users in subfolders
+                # should not be able to use proxy roles to access items 
+                # above their subfolder!
+                owner = eo.getWrappedOwner()
+                if owner is not None:
+                    if object is not aq_base(object):
+                        if not owner._check_context(object):
+                            # object is higher up than the owner, 
+                            # deny access
+                            return 0
                 for r in proxy_roles:
                     if r in roles:
                         return 1
-        return result
+                return 0
+
+        return context.user.allowed(object, roles)
 
 # AccessControl.SecurityManager
 # -----------------------------
