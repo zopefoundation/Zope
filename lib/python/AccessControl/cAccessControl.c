@@ -1292,61 +1292,200 @@ static PyObject *ZopeSecurityPolicy_validate(PyObject *self, PyObject *args) {
 */
 
 static PyObject *ZopeSecurityPolicy_checkPermission(PyObject *self,
-	PyObject *args) {
+                                                    PyObject *args) {
 
-	PyObject *permission = NULL;
-	PyObject *object = NULL;
-	PyObject *context = NULL;
-	PyObject *roles;
-	PyObject *result = NULL;
-	PyObject *user;
+    /* return value */
+    PyObject *rval = NULL;
 
-	/*| def checkPermission(self, permission, object, context)
-	*/
+    /* arguments, not increfe'd */
+    PyObject *permission = NULL;
+    PyObject *object = NULL;
+    PyObject *context = NULL;
 
-	if (unpacktuple3(args, "checkPermission", 3, 
+    /* locals, XDECREF at exit */
+    PyObject *roles = NULL;
+    PyObject *user = NULL;
+    PyObject *stack = NULL;
+    PyObject *eo = NULL;
+    PyObject *owner = NULL;
+    PyObject *proxy_roles = NULL;
+    PyObject *method = NULL;
+    PyObject *wrappedowner = NULL;
+    PyObject *objectbase = NULL;
+    PyObject *incontext = NULL;
+
+    int contains = 0;
+    int iRole;
+    int length;
+
+    /*| def checkPermission(self, permission, object, context)
+    */
+
+    if (unpacktuple3(args, "checkPermission", 3, 
                          &permission, &object, &context) < 0)
-		return NULL;
+        return NULL;
 
-	/*| roles = rolesForPermissionOn(permission, object)
-	*/
+    /*| roles = rolesForPermissionOn(permission, object)
+    */
 
-	roles = c_rolesForPermissionOn(permission, object, NULL, NULL);
-	if (roles == NULL)
+    roles = c_rolesForPermissionOn(permission, object, NULL, NULL);
+    if (roles == NULL)
           return NULL;
 
-	/*| if type(roles) in (StringType, UnicodeType):
-	**|	roles = [roles]
-	*/
+    /*| if type(roles) in (StringType, UnicodeType):
+    **|     roles = [roles]
+    */
 
-	if ( PyString_Check(roles) || PyUnicode_Check(roles) ) {
-          PyObject *r;
+    if ( PyString_Check(roles) || PyUnicode_Check(roles) ) {
+          PyObject *role_list;
 
-          r = PyList_New(1);
-          if (r == NULL) {
-            Py_DECREF(roles);
-            return NULL;
-          }
+          role_list = PyList_New(1);
+          if (role_list == NULL) goto cP_done;
           /* Note: ref to roles is passed to the list object. */
-          PyList_SET_ITEM(r, 0, roles);
-          roles = r;
-	}
+          PyList_SET_ITEM(role_list, 0, roles);
+          roles = role_list;
+    }
 
-	/*| return context.user.allowed(object, roles)
-	*/
+    /*| result = context.user.allowed(object, roles)
+    */
 
-	user = PyObject_GetAttr(context, user_str);
-	if (user != NULL) {
-          ASSIGN(user, PyObject_GetAttr(user, allowed_str));
-          if (user != NULL) {
-            result = callfunction2(user, object, roles);
-            Py_DECREF(user);
-          }
-	}
+    user = PyObject_GetAttr(context, user_str);
+    if (user != NULL) {
+        ASSIGN(user, PyObject_GetAttr(user, allowed_str));
+        if (user != NULL) {
+            rval = callfunction2(user, object, roles);
+        }
+    }
 
-	Py_DECREF(roles);
+  
+    /*| # Check executable security
+    **| stack = context.stack
+    **| if stack:
+    */
+ 
+    stack = PyObject_GetAttr(context, stack_str);
+    if (stack == NULL) goto cP_done;
+ 
+    if (PyObject_IsTrue(stack)) {
+ 
+    /*|    eo = stack[-1]
+    **|    # If the executable had an owner, can it execute?
+    **|    owner = eo.getOwner()
+    **|    if (owner is not None) and not owner.allowed(object, roles)
+    **|       # We don't want someone to acquire if they can't 
+    **|       # get an unacquired!
+    **|       return 0
+    */
+ 
+        eo = PySequence_GetItem(stack, -1);
+        if (eo == NULL) goto cP_done;
+ 
+        if (ownerous) {
+            owner = PyObject_GetAttr(eo, getOwner_str);
+            if (owner) ASSIGN(owner, PyObject_CallObject(owner, NULL));
+            if (owner == NULL) goto cP_done;
+ 
+            if (owner != Py_None) {
+                ASSIGN(owner, PyObject_GetAttr(owner, allowed_str));
+                if (owner) ASSIGN(owner, callfunction2(owner, object, roles));
+                if (owner == NULL) goto cP_done;
+ 
+                if (! PyObject_IsTrue(owner)) {
+                   rval = 0;
+                   goto cP_done;
+                }
+            }
+        }
+ 
+    /*|    # Proxy roles, which are a lot safer now
+    **|    proxy_roles = getattr(eo, "_proxy_roles", None)
+    **|    if proxy_roles:
+    **|        # Verify that the owner actually can state the proxy role
+    **|        # in the context of the accessed item; users in subfolders
+    **|        # should not be able to use proxy roles to access items 
+    **|        # above their subfolder!
+    **|        owner = eo.getWrappedOwner()
+    **|                        
+    **|        if owner is not None:
+    **|            if object is not aq_base(object):
+    **|                if not owner._check_context(object):
+    **|                    # object is higher up than the owner, 
+    **|                    # deny access
+    **|                    return 0
+    **|
+    **|        for r in proxy_roles:
+    **|            if r in roles:
+    **|                return 1
+    **|
+    **|    return result
+    */
+        proxy_roles = PyObject_GetAttr(eo, _proxy_roles_str);
+ 
+        if (proxy_roles == NULL) {
+            PyErr_Clear();
+            goto cP_done;
+        }
 
-	return result;
+        if (PyObject_IsTrue(proxy_roles)) {
+            method = PyObject_GetAttr(eo, getWrappedOwner_str);
+            if (method == NULL) goto cP_done;
+ 
+            wrappedowner = PyObject_CallObject(method, NULL);
+            if (wrappedowner == NULL) goto cP_done;
+ 
+            if (wrappedowner != Py_None) {
+                objectbase = aq_base(object);
+ 
+                if (object != objectbase) {
+ 
+                    incontext = callmethod1(wrappedowner,
+                                            _check_context_str, object);
+                    if (incontext == NULL) goto cP_done;
+                }
+ 
+                if ( ! PyObject_IsTrue(incontext)) goto cP_done;
+            }
+        }
+ 
+        if (PyTuple_Check(proxy_roles)) {
+            PyObject *proxy_role;
+            length = PyTuple_GET_SIZE(proxy_roles);
+            for (iRole=0; iRole < length; iRole++) {
+                proxy_role = PyTuple_GET_ITEM(proxy_roles, iRole);
+                /* proxy_role is not increfed */
+                if ((contains = PySequence_Contains(roles, proxy_role)))
+                    break;
+            }
+        } else {
+            PyObject *proxy_role;
+            length = PySequence_Size(proxy_roles);
+            if (length < 0) contains = -1;
+            for (iRole=0; contains == 0 && iRole < length; iRole++) {
+                proxy_role = PySequence_GetItem(proxy_roles, iRole);
+                if (proxy_role == NULL) goto cP_done;
+                /* proxy_role is increfed */
+                contains = PySequence_Contains(roles, proxy_role);
+                Py_DECREF(proxy_role);
+            }
+        }
+ 
+        if (contains > 0)
+            rval = PyInt_FromLong(contains);
+    } /* End of stack check */
+
+cP_done:
+    Py_XDECREF(roles);
+    Py_XDECREF(user);
+    Py_XDECREF(stack);
+    Py_XDECREF(eo);
+    Py_XDECREF(owner);
+    Py_XDECREF(proxy_roles);
+    Py_XDECREF(method);
+    Py_XDECREF(wrappedowner);
+    Py_XDECREF(objectbase);
+    Py_XDECREF(incontext);
+
+    return rval;
 }
 
 /*

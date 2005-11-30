@@ -23,7 +23,6 @@ try:
     from zExceptions import Unauthorized
 except ImportError:
     Unauthorized = 'Unauthorized'
-from AccessControl.ZopeSecurityPolicy import ZopeSecurityPolicy
 from AccessControl.User import UserFolder
 from AccessControl.SecurityManagement import SecurityContext
 from Acquisition import Implicit, Explicit, aq_base
@@ -152,9 +151,7 @@ class SimpleClass:
     attr = 1
 
 
-class ZopeSecurityPolicyTests (unittest.TestCase):
-
-    policy = ZopeSecurityPolicy()
+class ZopeSecurityPolicyTestBase(unittest.TestCase):
 
     def setUp(self):
         a = App()
@@ -174,6 +171,10 @@ class ZopeSecurityPolicyTests (unittest.TestCase):
         self.user = user
         context = SecurityContext(user)
         self.context = context
+        self.policy = self._makeOne()
+
+    def _makeOne(self, *args, **kw):
+        return self._getTargetClass()(*args, **kw)
 
     def assertPolicyAllows(self, ob, attrname):
         res = self.policy.validate(ob, ob, attrname, getattr(ob, attrname),
@@ -276,6 +277,17 @@ class ZopeSecurityPolicyTests (unittest.TestCase):
         v = self.policy.checkPermission('View', r_item, o_context)
         self.assert_(v, '_View_Permission should grant access to theowner')
 
+    def test_checkPermission_respects_proxy_roles(self):
+        r_item = self.a.r_item
+        context = self.context
+        self.failIf(self.policy.checkPermission('View', r_item, context))
+        o_context = SecurityContext(self.uf.getUserById('joe'))
+        # Push an executable with proxy roles on the stack
+        eo = OwnedSetuidMethod().__of__(r_item)
+        eo._proxy_roles = eo_roles
+        context.stack.append(eo)
+        self.failUnless(self.policy.checkPermission('View', r_item, context))
+
     def testUnicodeRolesForPermission(self):
         r_item = self.a.r_item
         context = self.context
@@ -350,6 +362,27 @@ class ZopeSecurityPolicyTests (unittest.TestCase):
             else:
                 self.fail('Policy accepted bad __roles__')
 
+
+class ISecurityPolicyConformance:
+
+    def test_conforms_to_ISecurityPolicy(self):
+        from AccessControl.interfaces import ISecurityPolicy
+        from zope.interface.verify import verifyClass
+        verifyClass(ISecurityPolicy, self._getTargetClass())
+
+class Python_ZSPTests(ZopeSecurityPolicyTestBase,
+                      ISecurityPolicyConformance,
+                     ):
+    def _getTargetClass(self):
+        from AccessControl.ImplPython import ZopeSecurityPolicy
+        return ZopeSecurityPolicy
+
+class C_ZSPTests(ZopeSecurityPolicyTestBase,
+               # ISecurityPolicyConformance, #XXX C version, how?
+                ):
+    def _getTargetClass(self):
+        from AccessControl.ImplC import ZopeSecurityPolicy
+        return ZopeSecurityPolicy
 
 def test_getRoles():
     """
@@ -445,6 +478,7 @@ def test_getRoles():
 
 def test_zsp_gets_right_roles_for_methods():
     """
+    >>> from AccessControl.ZopeSecurityPolicy import ZopeSecurityPolicy
     >>> zsp = ZopeSecurityPolicy()
     >>> from ExtensionClass import Base
     >>> class C(Base):
@@ -499,7 +533,8 @@ from zope.testing.doctest import DocTestSuite
 
 def test_suite():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(ZopeSecurityPolicyTests, 'test'))
+    suite.addTest(unittest.makeSuite(Python_ZSPTests, 'test'))
+    suite.addTest(unittest.makeSuite(C_ZSPTests, 'test'))
     suite.addTest(DocTestSuite())
     return suite
 
