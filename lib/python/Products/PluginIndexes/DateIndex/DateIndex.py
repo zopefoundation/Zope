@@ -20,6 +20,7 @@ from datetime import date, datetime
 from datetime import tzinfo, timedelta
 from types import StringType, FloatType, IntType
 
+import BTrees.Length
 from BTrees.IIBTree import IISet, union, intersection, multiunion
 from BTrees.IOBTree import IOBTree
 from BTrees.OIBTree import OIBTree
@@ -111,7 +112,7 @@ class DateIndex(UnIndex, PropertyManager):
         """ Complete reset """
         self._index = IOBTree()
         self._unindex = OIBTree()
-        self._length.set(0)
+        self._length = BTrees.Length.Length()
 
     def index_object( self, documentId, obj, threshold=None ):
         """index an object, normalizing the indexed value to an integer
