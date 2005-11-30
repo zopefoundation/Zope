@@ -125,6 +125,8 @@ class RestrictedSimpleItem (SimpleItemish):
 
     __allow_access_to_unprotected_subobjects__ = 0
 
+    _Foo_Permission = user_roles + eo_roles
+    _Kill_Permission = sysadmin_roles
     _View_Permission = eo_roles
 
 
@@ -287,6 +289,41 @@ class ZopeSecurityPolicyTestBase(unittest.TestCase):
         eo._proxy_roles = eo_roles
         context.stack.append(eo)
         self.failUnless(self.policy.checkPermission('View', r_item, context))
+
+    def test_checkPermission_proxy_roles_limit_access(self):
+        r_item = self.a.r_item
+        context = self.context
+        self.failUnless(self.policy.checkPermission('Foo', r_item, context))
+        o_context = SecurityContext(self.uf.getUserById('joe'))
+        # Push an executable with proxy roles on the stack
+        eo = OwnedSetuidMethod().__of__(r_item)
+        eo._proxy_roles = sysadmin_roles
+        context.stack.append(eo)
+        self.failIf(self.policy.checkPermission('Foo', r_item, context))
+
+    def test_checkPermission_proxy_role_scope(self):
+        self.a.subobject = ImplictAcqObject()
+        subobject = self.a.subobject
+        subobject.acl_users = UserFolder()
+        subobject.acl_users._addUser('theowner', 'password', 'password', 
+                                      eo_roles + sysadmin_roles, ())
+        subobject.r_item = RestrictedSimpleItem()
+        r_subitem = subobject.r_item
+        r_subitem.owned_setuid_m = OwnedSetuidMethod()
+        r_subitem.getPhysicalRoot = lambda root=self.a: root
+
+        r_item = self.a.r_item
+        r_item.getPhysicalRoot = lambda root=self.a: root
+        context = self.context
+        context.stack.append(r_subitem.owned_setuid_m.__of__(r_subitem))
+
+        # Out of owner context
+        self.failIf(self.policy.checkPermission('View', r_item, context))
+        self.failIf(self.policy.checkPermission('Kill', r_item, context))
+
+        # Inside owner context
+        self.failIf(self.policy.checkPermission('View', r_subitem, context))
+        self.failUnless(self.policy.checkPermission('Kill', r_subitem, context))
 
     def testUnicodeRolesForPermission(self):
         r_item = self.a.r_item
