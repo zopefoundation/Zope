@@ -98,9 +98,7 @@ class SiteRoot(Traverser, Implicit):
         self.__init__(title, base, path)
         if REQUEST:
             return MessageDialog(title='SiteRoot changed.',
-              message='The title is now "%s"<br>'
-                      'The base is now "%s"<br>'
-                      'The path is now "%s"<br>' % map(escape, (title, base, path)),
+              message='SiteRoot changed.',
               action='%s/manage_main' % REQUEST['URL1'])
 
     def __call__(self, client, request, response=None):
