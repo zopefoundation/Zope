@@ -490,6 +490,7 @@ class ZopeSecurityPolicy:
                             # object is higher up than the owner, 
                             # deny access
                             return 0
+
                 for r in proxy_roles:
                     if r in roles:
                         return 1

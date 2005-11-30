@@ -1295,7 +1295,7 @@ static PyObject *ZopeSecurityPolicy_checkPermission(PyObject *self,
                                                     PyObject *args) {
 
     /* return value */
-    PyObject *rval = NULL;
+    PyObject *result = NULL;
 
     /* arguments, not increfe'd */
     PyObject *permission = NULL;
@@ -1346,17 +1346,6 @@ static PyObject *ZopeSecurityPolicy_checkPermission(PyObject *self,
           roles = role_list;
     }
 
-    /*| result = context.user.allowed(object, roles)
-    */
-
-    user = PyObject_GetAttr(context, user_str);
-    if (user != NULL) {
-        ASSIGN(user, PyObject_GetAttr(user, allowed_str));
-        if (user != NULL) {
-            rval = callfunction2(user, object, roles);
-        }
-    }
-
   
     /*| # Check executable security
     **| stack = context.stack
@@ -1391,7 +1380,7 @@ static PyObject *ZopeSecurityPolicy_checkPermission(PyObject *self,
                 if (owner == NULL) goto cP_done;
  
                 if (! PyObject_IsTrue(owner)) {
-                   rval = 0;
+                   result = PyInt_FromLong(0);
                    goto cP_done;
                 }
             }
@@ -1405,7 +1394,6 @@ static PyObject *ZopeSecurityPolicy_checkPermission(PyObject *self,
     **|        # should not be able to use proxy roles to access items 
     **|        # above their subfolder!
     **|        owner = eo.getWrappedOwner()
-    **|                        
     **|        if owner is not None:
     **|            if object is not aq_base(object):
     **|                if not owner._check_context(object):
@@ -1416,19 +1404,18 @@ static PyObject *ZopeSecurityPolicy_checkPermission(PyObject *self,
     **|        for r in proxy_roles:
     **|            if r in roles:
     **|                return 1
-    **|
-    **|    return result
+    **|         return 0
     */
         proxy_roles = PyObject_GetAttr(eo, _proxy_roles_str);
  
         if (proxy_roles == NULL) {
             PyErr_Clear();
-            goto cP_done;
+            goto cP_check_user;
         }
 
         if (PyObject_IsTrue(proxy_roles)) {
             method = PyObject_GetAttr(eo, getWrappedOwner_str);
-            if (method == NULL) goto cP_done;
+            if (method == NULL)  goto cP_done;
  
             wrappedowner = PyObject_CallObject(method, NULL);
             if (wrappedowner == NULL) goto cP_done;
@@ -1441,9 +1428,12 @@ static PyObject *ZopeSecurityPolicy_checkPermission(PyObject *self,
                     incontext = callmethod1(wrappedowner,
                                             _check_context_str, object);
                     if (incontext == NULL) goto cP_done;
-                }
  
-                if ( ! PyObject_IsTrue(incontext)) goto cP_done;
+                    if ( ! PyObject_IsTrue(incontext)) {
+                        ASSIGN(result, PyInt_FromLong(0));
+                        goto cP_done;
+                    }
+                }
             }
         }
  
@@ -1459,7 +1449,7 @@ static PyObject *ZopeSecurityPolicy_checkPermission(PyObject *self,
         } else {
             PyObject *proxy_role;
             length = PySequence_Size(proxy_roles);
-            if (length < 0) contains = -1;
+            if (length < 0) goto cP_done;
             for (iRole=0; contains == 0 && iRole < length; iRole++) {
                 proxy_role = PySequence_GetItem(proxy_roles, iRole);
                 if (proxy_role == NULL) goto cP_done;
@@ -1469,9 +1459,26 @@ static PyObject *ZopeSecurityPolicy_checkPermission(PyObject *self,
             }
         }
  
-        if (contains > 0)
-            rval = PyInt_FromLong(contains);
+        /* If we have proxy roles, and they don't match, then lose
+         * (don't even check user roles at that point)
+         */
+        if (contains < 0) contains = 0;
+        ASSIGN(result, PyInt_FromLong(contains));
+        goto cP_done;
     } /* End of stack check */
+
+cP_check_user:
+
+    /*| return context.user.allowed(object, roles)
+    */
+    user = PyObject_GetAttr(context, user_str);
+    if (user != NULL) {
+        ASSIGN(user, PyObject_GetAttr(user, allowed_str));
+        if (user != NULL) {
+            result = callfunction2(user, object, roles);
+            if (result == NULL) goto cP_done;
+        }
+    }
 
 cP_done:
     Py_XDECREF(roles);
@@ -1485,7 +1492,7 @@ cP_done:
     Py_XDECREF(objectbase);
     Py_XDECREF(incontext);
 
-    return rval;
+    return result;
 }
 
 /*
