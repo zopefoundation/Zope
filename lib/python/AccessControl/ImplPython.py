@@ -22,6 +22,7 @@ from Acquisition import aq_inner
 from Acquisition import aq_acquire
 from ExtensionClass import Base
 from zLOG import LOG, BLATHER, PROBLEM
+from zope.interface import implements
 
 # This is used when a permission maps explicitly to no permission.  We
 # try and get this from cAccessControl first to make sure that if both
@@ -33,6 +34,7 @@ except ImportError:
 
 from AccessControl import SecurityManagement
 from AccessControl import Unauthorized
+from AccessControl.interfaces import ISecurityManager
 from AccessControl.SimpleObjectPolicies import Containers, _noroles
 from AccessControl.ZopeGuards import guarded_getitem
 
@@ -491,7 +493,7 @@ class SecurityManager:
     """A security manager provides methods for checking access and managing
     executable context and policies
     """
-
+    implements(ISecurityManager)
     __allow_access_to_unprotected_subobjects__ = {
         'validate': 1, 'checkPermission': 1,
         'getUser': 1, 'calledByExecutable': 1
