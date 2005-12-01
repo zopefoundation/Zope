@@ -26,6 +26,12 @@ Zope Changes
 
     Features added
 
+      - Improved logging of ConflictErrors. Now a log is made at level
+        BLATHER with traceback for any conflict retried. In addition, a
+        log is made at level ERROR for a conflict that can't be retried
+        anymore and is returned to the browser as an error. Nothing is
+        logged anymore at level INFO.
+
       - Use new-style security declarations everywhere possible. This
         means remove the use of __ac_permissions__, foo__roles__ and
         default__class_init__. A few corner cases can't be converted

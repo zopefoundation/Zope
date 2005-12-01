@@ -20,7 +20,7 @@ from Acquisition import aq_acquire
 from App.config import getConfiguration
 from types import StringType, ListType
 from zExceptions import Unauthorized
-from zLOG import LOG, WARNING, INFO, BLATHER, log_time
+from zLOG import LOG, ERROR, WARNING, INFO, BLATHER, log_time
 from ZODB.POSException import ConflictError
 import transaction
 import AccessControl.User
@@ -142,20 +142,25 @@ def zpublisher_exception_hook(published, REQUEST, t, v, traceback):
             if t is SystemExit:
                 raise
             if issubclass(t, ConflictError):
-                # First, we need to close the current connection. We'll
-                # do this by releasing the hold on it. There should be
-                # some sane protocol for this, but for now we'll use
-                # brute force:
                 global conflict_errors
                 conflict_errors = conflict_errors + 1
                 method_name = REQUEST.get('PATH_INFO', '')
-                err = ('ZODB conflict error at %s '
-                       '(%s conflicts since startup at %s)')
-                LOG(err % (method_name, conflict_errors, startup_time),
-                    INFO, '')
-                LOG('Conflict traceback', BLATHER, '', error=sys.exc_info())
+                LOG('ZODB', BLATHER, "%s at %s: %s"
+                    " (%s conflicts since startup at %s)"
+                    % (v.__class__.__name__, method_name, v,
+                       conflict_errors, startup_time),
+                    error=(t, v, traceback))
                 raise ZPublisher.Retry(t, v, traceback)
-            if t is ZPublisher.Retry: v.reraise()
+            if t is ZPublisher.Retry:
+                # An exception that can't be retried anymore
+                # Retrieve the original exception
+                try: v.reraise()
+                except: t, v, traceback = sys.exc_info()
+                # Log it as ERROR
+                method_name = REQUEST.get('PATH_INFO', '')
+                LOG('Publisher', ERROR, "Unhandled %s at %s: %s"
+                    % (v.__class__.__name__, method_name, v))
+                # Then fall through to display the error to the user
 
         try:
             log = aq_acquire(published, '__error_log__', containment=1)
