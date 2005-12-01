@@ -17,8 +17,37 @@ from AccessControl.SimpleObjectPolicies import _noroles
 from zope.interface import Interface
 from zope.interface import Attribute
 
+class ISecurityPolicy(Interface):
+    """Plug-in policy for checking access to objects within untrusted code.
+    """
+    def validate(accessed, container, name, value, context, roles=_noroles):
+        """Check that the current user (from context) has access.
+
+        o Raise Unauthorized if access is not allowed;  otherwise, return
+          a true value.
+
+        Arguments:
+
+        accessed -- the object that was being accessed
+
+        container -- the object the value was found in
+
+        name -- The name used to access the value
+
+        value -- The value retrieved though the access.
+
+        context -- the security context (normally supplied by the security
+                   manager).
+
+        roles -- The roles of the object if already known.
+        """
+
+    def checkPermission(permission, object, context):
+        """Check whether the current user has a permission w.r.t. an object.
+        """
+
 class ISecurityManager(Interface):
-    """Checks access and manages executable context and policies.
+    """Check access and manages executable context and policies.
     """
     _policy = Attribute(u'Current Security Policy')
 

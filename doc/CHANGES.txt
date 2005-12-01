@@ -26,6 +26,11 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #1774:  Harmonize the implemtnation of
+        AccessControl.ZopeSecurityPolicy.checkPermission
+        with 'validate', checking ownership and proxy roles if an
+        executable object is on the stack.
+
       - AccessControl.SecurityInfo: Fixed problem with
         setPermissionDefault when the permission wasn't used anywhere
         else in the class to protect methods.
