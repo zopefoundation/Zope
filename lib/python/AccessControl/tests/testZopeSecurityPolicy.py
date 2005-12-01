@@ -415,7 +415,7 @@ class Python_ZSPTests(ZopeSecurityPolicyTestBase,
         return ZopeSecurityPolicy
 
 class C_ZSPTests(ZopeSecurityPolicyTestBase,
-               # ISecurityPolicyConformance, #XXX C version, how?
+                 ISecurityPolicyConformance,
                 ):
     def _getTargetClass(self):
         from AccessControl.ImplC import ZopeSecurityPolicy

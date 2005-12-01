@@ -18,7 +18,8 @@ try:
     from cAccessControl import rolesForPermissionOn, \
          PermissionRole, imPermissionRole, _what_not_even_god_should_do, \
          RestrictedDTMLMixin, aq_validate, guarded_getattr, \
-         ZopeSecurityPolicy, setDefaultBehaviors
+         setDefaultBehaviors
+    from cAccessControl import ZopeSecurityPolicy as cZopeSecurityPolicy
     from cAccessControl import SecurityManager as cSecurityManager
 except ImportError:
     import sys
@@ -26,11 +27,16 @@ except ImportError:
     del sys.modules[__name__]
 
 
-from ImplPython import RestrictedDTML, SecurityManager
+from ImplPython import RestrictedDTML, SecurityManager, ZopeSecurityPolicy
 
 
 class RestrictedDTML(RestrictedDTMLMixin, RestrictedDTML):
     """A mix-in for derivatives of DT_String.String that adds Zope security."""
+
+class ZopeSecurityPolicy(cZopeSecurityPolicy, ZopeSecurityPolicy):
+    """A security manager provides methods for checking access and managing
+    executable context and policies
+    """
 
 class SecurityManager(cSecurityManager, SecurityManager):
     """A security manager provides methods for checking access and managing
