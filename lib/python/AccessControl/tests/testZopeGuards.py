@@ -395,10 +395,13 @@ class TestActualPython(GuardTestCase):
     _old_mgr = _old_policy = _marker = []
 
     def setUp(self):
-        pass
+        self._wrapped_dicts = []
 
     def tearDown( self ):
         self._restorePolicyAndManager()
+        for munged, orig in self._wrapped_dicts:
+            munged.update(orig)
+        del self._wrapped_dicts
 
     def _initPolicyAndManager(self, manager=None):
         from AccessControl.SecurityManagement import get_ident
@@ -644,6 +647,8 @@ print foo(**kw)
     # tell whether they're executed.
     def _wrap_replaced_dict_callables(self, d):
         import __builtin__
+        orig = d.copy()
+        self._wrapped_dicts.append((d, orig))
         for k, v in d.items():
             if callable(v) and v is not getattr(__builtin__, k, None):
                 d[k] = FuncWrapper(k, v)
