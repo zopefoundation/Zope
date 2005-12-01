@@ -337,8 +337,6 @@ typedef struct {
 */
 
 static PyObject *ZopeSecurityPolicy_validate(PyObject *self, PyObject *args);
-static PyObject *ZopeSecurityPolicy_checkPermission(PyObject *self,
-	PyObject *args);
 static void ZopeSecurityPolicy_dealloc(ZopeSecurityPolicy *self);
 
 
@@ -415,11 +413,6 @@ static char ZopeSecurityPolicy__doc__[] = "ZopeSecurityPolicy C implementation";
 static PyMethodDef ZopeSecurityPolicy_methods[] = {
 	{"validate",
 		(PyCFunction)ZopeSecurityPolicy_validate,
-		METH_VARARGS,
-		""
-	},
-	{"checkPermission",
-		(PyCFunction)ZopeSecurityPolicy_checkPermission,
 		METH_VARARGS,
 		""
 	},
@@ -1285,69 +1278,6 @@ static PyObject *ZopeSecurityPolicy_validate(PyObject *self, PyObject *args) {
 	return rval;
 }
 
-
-/*
-** ZopeSecurityPolicy_checkPermission
-**
-*/
-
-static PyObject *ZopeSecurityPolicy_checkPermission(PyObject *self,
-	PyObject *args) {
-
-	PyObject *permission = NULL;
-	PyObject *object = NULL;
-	PyObject *context = NULL;
-	PyObject *roles;
-	PyObject *result = NULL;
-	PyObject *user;
-
-	/*| def checkPermission(self, permission, object, context)
-	*/
-
-	if (unpacktuple3(args, "checkPermission", 3, 
-                         &permission, &object, &context) < 0)
-		return NULL;
-
-	/*| roles = rolesForPermissionOn(permission, object)
-	*/
-
-	roles = c_rolesForPermissionOn(permission, object, NULL, NULL);
-	if (roles == NULL)
-          return NULL;
-
-	/*| if type(roles) in (StringType, UnicodeType):
-	**|	roles = [roles]
-	*/
-
-	if ( PyString_Check(roles) || PyUnicode_Check(roles) ) {
-          PyObject *r;
-
-          r = PyList_New(1);
-          if (r == NULL) {
-            Py_DECREF(roles);
-            return NULL;
-          }
-          /* Note: ref to roles is passed to the list object. */
-          PyList_SET_ITEM(r, 0, roles);
-          roles = r;
-	}
-
-	/*| return context.user.allowed(object, roles)
-	*/
-
-	user = PyObject_GetAttr(context, user_str);
-	if (user != NULL) {
-          ASSIGN(user, PyObject_GetAttr(user, allowed_str));
-          if (user != NULL) {
-            result = callfunction2(user, object, roles);
-            Py_DECREF(user);
-          }
-	}
-
-	Py_DECREF(roles);
-
-	return result;
-}
 
 /*
 ** ZopeSecurityPolicy_dealloc
