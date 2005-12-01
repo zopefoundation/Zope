@@ -24,7 +24,13 @@ Zope Changes
 
   Trunk only (unreleased)
 
-    Features added  
+    Features added
+
+      - Improved logging of ConflictErrors. Now a log is made at level
+        BLATHER with traceback for any conflict retried. In addition, a
+        log is made at level ERROR for a conflict that can't be retried
+        anymore and is returned to the browser as an error. Nothing is
+        logged anymore at level INFO.
 
       - Fixed unclear security declarations. Warn when an attempt is
         made to have a security declaration on a nonexistent method.
