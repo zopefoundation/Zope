@@ -238,6 +238,8 @@ class ZopeCmd(ZDCmd):
             return
 
         script = os.path.join(zope_home, 'bin', 'test.py')
+        if not os.path.exists(script):
+            script = os.path.join(zope_home, 'test.py') # no inplace build!
         assert os.path.exists(script)
 
         # Supply our config file by default.
