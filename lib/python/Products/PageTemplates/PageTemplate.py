@@ -131,7 +131,11 @@ class PageTemplate(Base):
             self._cook()
         if self._v_errors:
             __traceback_supplement__ = (PageTemplateTracebackSupplement, self)
-            raise PTRuntimeError, 'Page Template %s has errors.' % self.id
+            raise PTRuntimeError, (
+                'Page Template %s has errors: %s' % (
+                self.id,
+                self._v_errors
+                ))
         return self._v_macros
 
     def pt_source_file(self):
