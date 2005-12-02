@@ -26,7 +26,7 @@ Zope Changes
 
     Bugs Fixed
 
-      - Collector #1774:  Harmonize the implemtnation of
+      - Collector #1774:  Harmonize the implementation of
         AccessControl.ZopeSecurityPolicy.checkPermission
         with 'validate', checking ownership and proxy roles if an
         executable object is on the stack.
