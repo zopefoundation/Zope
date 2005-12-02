@@ -58,6 +58,13 @@ Zope Changes
 
     Other
 
+      - Improved logging of ConflictErrors. All conflict errors are
+        logged at INFO, with counts of how many occurred and how many
+        were resolved. Tracebacks for all conflicts are logged a DEBUG
+        level, although these won't help anyone much. If a conflict
+        error is unresolved, it will now bubble up to error_log and
+        standard_error_message.
+
       - Suppressed output of deprecation warning in 'filepath' test
         for PythonScripts.
 
