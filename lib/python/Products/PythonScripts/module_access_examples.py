@@ -33,8 +33,7 @@ NB:  Placing security assestions within the package/module you are trying
 '''
 
 from AccessControl import allow_module, allow_class, allow_type
-from AccessControl import ModuleSecurityInfo, ClassSecurityInfo
-from Globals import InitializeClass
+from AccessControl import ModuleSecurityInfo
 
 
 # These modules are pretty safe
