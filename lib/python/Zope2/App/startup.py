@@ -221,6 +221,7 @@ def zpublisher_exception_hook(published, REQUEST, t, v, traceback):
     finally:
         traceback=None
 
+ac_logger = logging.getLogger('event.AccessControl')
 
 class TransactionsManager:
     def begin(self,
@@ -237,7 +238,7 @@ class TransactionsManager:
     def recordMetaData(self, object, request,
                        # Optimize global var lookups:
                        hasattr=hasattr, getattr=getattr,
-                       LOG=LOG, WARNING=WARNING,
+                       logger=ac_logger,
                        ):
         request_get = request.get
         if hasattr(object, 'getPhysicalPath'):
