@@ -32,12 +32,12 @@ from AccessControl.Permissions import view as View
 from AccessControl.ZopeSecurityPolicy import getRoles
 from Acquisition import aq_base, aq_parent, aq_inner, aq_acquire
 from ComputedAttribute import ComputedAttribute
+from DocumentTemplate.html_quote import html_quote
 from DocumentTemplate.ustr import ustr
 from ExtensionClass import Base
 from webdav.Resource import Resource
 from zExceptions import Redirect
 from zExceptions.ExceptionFormatter import format_exception
-from zLOG import LOG, BLATHER
 from zope.interface import implements
 
 import ZDOM
@@ -49,6 +49,8 @@ from Traversable import Traversable
 
 HTML=Globals.HTML
 
+import logging
+logger = logging.getLogger()
 
 class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
            ZDOM.Element,
@@ -226,17 +228,21 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
                 else:
                     v = HTML.__call__(s, client, REQUEST, **kwargs)
             except:
-                LOG('OFS', BLATHER,
+                logger.error(
                     'Exception while rendering an error message',
-                    error=sys.exc_info())
+                    exc_info=True
+                    )
                 try:
                     strv = str(error_value)
                 except:
-                    strv = ('<unprintable %s object>' %
+                    strv = ('<unprintable %s object>' % 
                             str(type(error_value).__name__))
                 v = strv + (
-                    " (Also, an error occurred while attempting "
-                    "to render the standard error message.)")
+                    (" (Also, the following error occurred while attempting "
+                     "to render the standard error message, please see the "
+                     "event log for full details: %s)")%(
+                    html_quote(sys.exc_info()[1]),
+                    ))
             raise error_type, v, tb
         finally:
             if hasattr(self, '_v_eek'): del self._v_eek
