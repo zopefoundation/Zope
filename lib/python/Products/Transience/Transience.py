@@ -36,7 +36,6 @@ from BTrees.IOBTree import IOBTree
 
 from Persistence import Persistent
 from OFS.SimpleItem import SimpleItem
-from ZPublisher.Publish import Retry
 from AccessControl import ClassSecurityInfo, getSecurityManager
 from AccessControl.SecurityManagement import newSecurityManager, \
      setSecurityManager
