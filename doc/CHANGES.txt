@@ -58,6 +58,10 @@ Zope Changes
 
     Other
 
+      - Made 'zopectl test' work for software homes which do not have
+        an "inplace" build (it used to require that test.py be in
+        $ZOPE_HOME/bin/;  now it will use $ZOPE_HOME as a fallback).
+
       - Improved logging of ConflictErrors. All conflict errors are
         logged at INFO, with counts of how many occurred and how many
         were resolved. Tracebacks for all conflicts are logged a DEBUG
