@@ -132,6 +132,11 @@ class PCGIServerFactory(ServerFactory):
 
 class FCGIServerFactory(ServerFactory):
     def __init__(self, section):
+
+        import warnings
+        warnings.warn("Using FastCGI is deprecated. You should use mod_proxy " 
+                      "to run Zope with Apache", DeprecationWarning)
+
         import socket
         if section.address.family == socket.AF_INET:
             address = section.address.address

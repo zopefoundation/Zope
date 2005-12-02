@@ -110,6 +110,8 @@ Using Zope in multi-threaded mode with ZServer
 
  FastCGI
 
+  FastCGI is deprecated and should not be used anymore.
+
   FastCGI is relatively easy to set up if you have installed an Apache
   module before.  If you haven't, don't worry, it isn't difficult.  It
   comes with straightforward instructions.  You will need to download

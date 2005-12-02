@@ -26,6 +26,8 @@ Zope Changes
 
     Features added
 
+      - Using FastCGI is officially deprecated
+
       - Improved logging of ConflictErrors. Now a log is made at level
         BLATHER with traceback for any conflict retried. In addition, a
         log is made at level ERROR for a conflict that can't be retried
