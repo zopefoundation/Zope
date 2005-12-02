@@ -48,6 +48,10 @@ import socket, string, os, sys, time
 import thread
 from types import StringTypes
 
+import warnings
+warnings.warn("Using FastCGI is deprecated. You should use mod_proxy " +
+              "to run Zope with Apache", DeprecationWarning)
+
 tz_for_log = compute_timezone_for_log()
 
 #----------------------------------------------------------------------
