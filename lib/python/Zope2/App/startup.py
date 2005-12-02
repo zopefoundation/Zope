@@ -18,9 +18,9 @@ from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
 from Acquisition import aq_acquire
 from App.config import getConfiguration
+from time import asctime
 from types import StringType, ListType
 from zExceptions import Unauthorized
-from zLOG import LOG, ERROR, WARNING, INFO, BLATHER, log_time
 from ZODB.POSException import ConflictError
 import transaction
 import AccessControl.User
@@ -28,6 +28,7 @@ import App.FindHomes
 import ExtensionClass
 import Globals
 import imp
+import logging
 import OFS.Application
 import os
 import sys
@@ -103,7 +104,7 @@ def startup():
     noSecurityManager()
 
     global startup_time
-    startup_time = log_time()
+    startup_time = asctime()
 
     Zope2.zpublisher_transactions_manager = TransactionsManager()
     Zope2.zpublisher_exception_hook = zpublisher_exception_hook
@@ -132,8 +133,13 @@ class RequestContainer(ExtensionClass.Base):
     def __init__(self,r): self.REQUEST=r
 
 conflict_errors = 0
+unresolved_conflict_errors = 0
+
+conflict_logger = logging.getLogger('ZODB.Conflict')
 
 def zpublisher_exception_hook(published, REQUEST, t, v, traceback):
+    global unresolved_conflict_errors
+    global conflict_errors
     try:
         if isinstance(t, StringType):
             if t.lower() in ('unauthorized', 'redirect'):
@@ -142,25 +148,31 @@ def zpublisher_exception_hook(published, REQUEST, t, v, traceback):
             if t is SystemExit:
                 raise
             if issubclass(t, ConflictError):
-                global conflict_errors
                 conflict_errors = conflict_errors + 1
-                method_name = REQUEST.get('PATH_INFO', '')
-                LOG('ZODB', BLATHER, "%s at %s: %s"
-                    " (%s conflicts since startup at %s)"
-                    % (v.__class__.__name__, method_name, v,
-                       conflict_errors, startup_time),
-                    error=(t, v, traceback))
+                # This logs _all_ conflict errors
+                conflict_logger.info(
+                    '%s at %s (%i conflicts, of which %i'
+                    ' were unresolved, since startup at %s)',
+                    v,
+                    REQUEST.get('PATH_INFO', '<unknown>'),
+                    conflict_errors,
+                    unresolved_conflict_errors,
+                    startup_time
+                    )
+                # This debug logging really doesn't help a lot...
+                conflict_logger.debug('Conflict traceback',exc_info=True)
                 raise ZPublisher.Retry(t, v, traceback)
             if t is ZPublisher.Retry:
-                # An exception that can't be retried anymore
-                # Retrieve the original exception
-                try: v.reraise()
-                except: t, v, traceback = sys.exc_info()
-                # Log it as ERROR
-                method_name = REQUEST.get('PATH_INFO', '')
-                LOG('Publisher', ERROR, "Unhandled %s at %s: %s"
-                    % (v.__class__.__name__, method_name, v))
-                # Then fall through to display the error to the user
+                try:
+                    v.reraise()
+                except:
+                    # we catch the re-raised exception so that it gets
+                    # stored in the error log and gets rendered with
+                    # standard_error_message
+                    t, v, traceback = sys.exc_info()
+                if issubclass(t, ConflictError):
+                    # ouch, a user saw this conflict error :-(
+                    unresolved_conflict_errors += 1
 
         try:
             log = aq_acquire(published, '__error_log__', containment=1)
