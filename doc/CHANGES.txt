@@ -28,11 +28,12 @@ Zope Changes
 
       - Using FastCGI is officially deprecated
 
-      - Improved logging of ConflictErrors. Now a log is made at level
-        BLATHER with traceback for any conflict retried. In addition, a
-        log is made at level ERROR for a conflict that can't be retried
-        anymore and is returned to the browser as an error. Nothing is
-        logged anymore at level INFO.
+      - Improved logging of ConflictErrors. All conflict errors are
+        logged at INFO, with counts of how many occurred and how many
+        were resolved. Tracebacks for all conflicts are logged a DEBUG
+        level, although these won't help anyone much. If a conflict
+        error is unresolved, it will now bubble up to error_log and
+        standard_error_message.
 
       - Fixed unclear security declarations. Warn when an attempt is
         made to have a security declaration on a nonexistent method.
