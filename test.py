@@ -104,6 +104,9 @@ named .testinfo, it will not be searched for tests.  Really.)
     Keep running the selected tests in a loop.  You may experience
     memory leakage.
 
+--nowarnings
+    Install a filter to suppress warnings emitted by code.
+
 -t
     Time the individual tests and print a list of the top 50, sorted from
     longest to shortest.
@@ -759,6 +762,7 @@ def process_args(argv=None):
     global test_dir
     global config_file
     global import_testing
+    global no_warnings
 
     if argv is None:
         argv = sys.argv
@@ -789,11 +793,12 @@ def process_args(argv=None):
     test_dir = None
     config_file = None
     import_testing = False
+    no_warnings = False
 
     try:
         opts, args = getopt.getopt(argv[1:], "a:bcC:dDfg:G:hLmprtTuv",
                                    ["all", "help", "libdir=", "times=",
-                                    "keepbytecode", "dir=", 
+                                    "keepbytecode", "nowarnings", "dir=",
                                     "config-file=", "import-testing",
                                     "coverage", "profile", "hotshot"])
     except getopt.error, msg:
@@ -872,6 +877,12 @@ def process_args(argv=None):
             config_file = v
         elif k == '--import-testing':
             import_testing = True
+        elif k == '--nowarnings':
+            no_warnings = True
+
+    if no_warnings:
+        import warnings
+        warnings.simplefilter('ignore', Warning, append=1)
 
     if gcthresh is not None:
         if gcthresh == 0:
