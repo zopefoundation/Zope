@@ -104,3 +104,6 @@ Zope Changes
 
       - Switched to the new improved test runner from Zope 3.  Run
         test.py with -h to find out more.
+
+      - Collector #1904: On Mac OS X avoid a spurious OSError when
+        zopectl exits.
