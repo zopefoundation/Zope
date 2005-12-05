@@ -1,19 +1,16 @@
 import unittest
 import cStringIO
-from mimetools import Message
-from multifile import MultiFile
 
 import transaction
 from AccessControl import SecurityManager
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
-from Acquisition import Implicit
 from Acquisition import aq_base
+from Acquisition import Implicit
 from OFS.Application import Application
 from OFS.Folder import manage_addFolder
 from OFS.Image import manage_addFile
 from Testing.makerequest import makerequest
-from webdav.common import rfc1123_date
 
 
 ADD_IMAGES_AND_FILES = 'Add images and files'
@@ -334,7 +331,7 @@ class TestCopySupportSecurity( CopySupportTestBase ):
         except CopyError, e:
 
             if ce_regex is not None:
-                
+
                 pattern = re.compile( ce_regex, re.DOTALL )
                 if pattern.search( e ) is None:
                     self.fail( "Paste failed; didn't match pattern:\n%s" % e )
@@ -348,7 +345,7 @@ class TestCopySupportSecurity( CopySupportTestBase ):
         else:
             self.fail( "Paste allowed unexpectedly." )
 
-    def _initPolicyAndUser( self    
+    def _initPolicyAndUser( self
                           , a_lambda=None
                           , v_lambda=None
                           , c_lambda=None
@@ -406,7 +403,7 @@ class TestCopySupportSecurity( CopySupportTestBase ):
                                    )
 
     def test_copy_cant_create_target_metatype_not_supported( self ):
-        
+
         from OFS.CopySupport import CopyError
 
         folder1, folder2 = self._initFolders()
@@ -437,7 +434,7 @@ class TestCopySupportSecurity( CopySupportTestBase ):
         self.failUnless( 'file' in folder2.objectIds() )
 
     def test_move_cant_read_source( self ):
-        
+
         from OFS.CopySupport import CopyError
 
         folder1, folder2 = self._initFolders()
@@ -457,7 +454,7 @@ class TestCopySupportSecurity( CopySupportTestBase ):
                                    )
 
     def test_move_cant_create_target_metatype_not_supported( self ):
-        
+
         from OFS.CopySupport import CopyError
 
         folder1, folder2 = self._initFolders()
@@ -472,16 +469,16 @@ class TestCopySupportSecurity( CopySupportTestBase ):
                                    )
 
     def test_move_cant_create_target_metatype_not_allowed( self ):
-        
+
         from OFS.CopySupport import CopyError
 
         folder1, folder2 = self._initFolders()
         folder2.all_meta_types = FILE_META_TYPES
 
-        def _no_manage_addFile( a, c, n, v, *args, **kw ):
-            return n != 'manage_addFile'
+        def _no_add_images_and_files(permission, object, context):
+            return permission != ADD_IMAGES_AND_FILES
 
-        self._initPolicyAndUser( v_lambda=_no_manage_addFile )
+        self._initPolicyAndUser( c_lambda=_no_add_images_and_files )
 
         cookie = folder1.manage_cutObjects( ids=( 'file', ) )
         self._assertCopyErrorUnauth( folder2.manage_pasteObjects
@@ -491,7 +488,7 @@ class TestCopySupportSecurity( CopySupportTestBase ):
                                    )
 
     def test_move_cant_delete_source( self ):
-        
+
         from OFS.CopySupport import CopyError
         from AccessControl.Permissions import delete_objects as DeleteObjects
 
@@ -518,8 +515,5 @@ def test_suite():
     suite.addTest( unittest.makeSuite( TestCopySupportSecurity ) )
     return suite
 
-def main():
-    unittest.TextTestRunner().run(test_suite())
-
 if __name__ == '__main__':
-    main()
+    unittest.main(defaultTest='test_suite')

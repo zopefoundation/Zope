@@ -19,6 +19,7 @@ import re, sys, tempfile
 from cgi import escape
 from marshal import loads, dumps
 from urllib import quote, unquote
+from warnings import warn
 from zlib import compress, decompress
 
 import Globals, Moniker, ExtensionClass
@@ -352,7 +353,7 @@ class CopyContainer(ExtensionClass.Base):
         if not hasattr(object, 'meta_type'):
             raise CopyError, MessageDialog(
                   title   = 'Not Supported',
-                  message = ('The object <EM>%s</EM> does not support this' \
+                  message = ('The object <em>%s</em> does not support this' \
                              ' operation' % escape(absattr(object.id))),
                   action  = 'manage_main')
 
@@ -372,35 +373,49 @@ class CopyContainer(ExtensionClass.Base):
                 mt_permission = d.get('permission')
                 break
 
-        if method_name:
-            try:
-                method = self.restrictedTraverse(method_name)
-                # method_name is e.g.
-                # "manage_addProduct/PageTemplates/manage_addPageTemplateForm".
-                # restrictedTraverse will raise Unauthorized if it
-                # can't obtain the factory method by name due to a
-                # security restriction.  We depend on this side effect
-                # here!  Note that we use restrictedTraverse as
-                # opposed to checkPermission to take into account the
-                # special security circumstances related to proxy
-                # roles.  See collector #78.
+        if mt_permission is not None:
+            sm = getSecurityManager()
 
-            except Unauthorized:
-                if mt_permission:
+            if sm.checkPermission(mt_permission, self):
+                if validate_src:
+                    # Ensure the user is allowed to access the object on the
+                    # clipboard.
+                    try:
+                        parent = aq_parent(aq_inner(object))
+                    except:
+                        parent = None
+
+                    if not sm.validate(None, parent, None, object):
+                        raise Unauthorized(absattr(object.id))
+
+                    if validate_src == 2: # moving
+                        if not sm.checkPermission(DeleteObjects, parent):
+                            raise Unauthorized('Delete not allowed.')
+            else:
+                raise CopyError, MessageDialog(
+                    title = 'Insufficient Privileges',
                     message = ('You do not possess the %s permission in the '
                                'context of the container into which you are '
                                'pasting, thus you are not able to perform '
-                               'this operation.' % mt_permission)
-                else:
+                               'this operation.' % mt_permission),
+                    action = 'manage_main')
+        elif method_name:
+            # BBB: fallback for missing or None permission
+            warn("The required 'permission' key is not set or None for meta "
+                 "type '%s'. This fallback will be removed in Zope 2.9."
+                 % object.meta_type,
+                 DeprecationWarning)
+            try:
+                method = self.restrictedTraverse(method_name)
+            except Unauthorized:
+                raise CopyError, MessageDialog(
+                    title = 'Insufficient Privileges',
                     message = ('You do not possess the permission required '
                                'to call %s in the context of the container '
                                'into which you are pasting, thus you are not '
-                               'able to perform this operation.' % method_name)
-
-                raise CopyError, MessageDialog(
-                  title = 'Insufficient Privileges',
-                  message = message,
-                  action = 'manage_main')
+                               'able to perform this operation.'
+                               % method_name),
+                    action = 'manage_main')
 
             if validate_src:
 
@@ -420,12 +435,12 @@ class CopyContainer(ExtensionClass.Base):
                     if not sm.checkPermission(DeleteObjects, parent):
                         raise Unauthorized, 'Delete not allowed.'
 
-        else: # /if method_name
+        else:
             raise CopyError, MessageDialog(
-                  title   = 'Not Supported',
-                  message = ('The object <EM>%s</EM> does not support this '
-                             'operation.' % escape(absattr(object.id))),
-                  action  = 'manage_main')
+                title = 'Not Supported',
+                message = ('The object <em>%s</em> does not support this '
+                           'operation.' % escape(absattr(object.id))),
+                action = 'manage_main')
 
 Globals.default__class_init__(CopyContainer)
 

@@ -26,6 +26,11 @@ Zope Changes
 
     Bugs Fixed
 
+      - CopySupport: Reverted workaround in '_verifyObjectPaste'.
+        'checkPermission' now respects proxy roles, so the warkaround
+        introduced to fix http://www.zope.org/Collectors/Zope/78 is no longer
+        needed. Meta types listed in all_meta_types need a 'permission' key.
+
       - Collector #1774:  Harmonize the implementation of
         AccessControl.ZopeSecurityPolicy.checkPermission
         with 'validate', checking ownership and proxy roles if an
