@@ -261,6 +261,20 @@ class ObjectManager(
             raise AttributeError, id
         return default
 
+    def hasObject(self, id):
+        """Indicate whether the folder has an item by ID.
+
+        This doesn't try to be more intelligent than _getOb, and doesn't
+        consult _objects (for performance reasons). The common use case
+        is to check that an object does *not* exist.
+        """
+        if (id in ('.', '..') or
+            id.startswith('_') or
+            id.startswith('aq_') or
+            id.endswith('__')):
+            return False
+        return getattr(aq_base(self), id, None) is not None
+
     def _setObject(self, id, object, roles=None, user=None, set_owner=1):
         v=self._checkId(id)
         if v is not None: id=v

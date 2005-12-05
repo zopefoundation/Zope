@@ -58,6 +58,9 @@ Zope Changes
 
     Other
 
+      - ObjectManager now has an hasObject method to test presence. This
+        brings it in line with BTreeFolder.
+
       - Made 'zopectl test' work for software homes which do not have
         an "inplace" build (it used to require that test.py be in
         $ZOPE_HOME/bin/;  now it will use $ZOPE_HOME as a fallback).

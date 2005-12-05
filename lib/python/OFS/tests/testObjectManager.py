@@ -303,6 +303,23 @@ class ObjectManagerTests( unittest.TestCase ):
         om2._setObject(ob.getId(), ob)
         self.assertRaises(DeleteFailed, om1._delObject, 'om2')
 
+    def test_hasObject(self):
+        om = self._makeOne()
+        self.failIf(om.hasObject('_properties'))
+        self.failIf(om.hasObject('_getOb'))
+        self.failIf(om.hasObject('__of__'))
+        self.failIf(om.hasObject('.'))
+        self.failIf(om.hasObject('..'))
+        self.failIf(om.hasObject('aq_base'))
+        om.zap__ = True
+        self.failIf(om.hasObject('zap__'))
+        self.failIf(om.hasObject('foo'))
+        si = SimpleItem('foo')
+        om._setObject('foo', si)
+        self.assert_(om.hasObject('foo'))
+        om._delObject('foo')
+        self.failIf(om.hasObject('foo'))
+
     def test_setObject_checkId_ok(self):
         om = self._makeOne()
         si = SimpleItem('1')
