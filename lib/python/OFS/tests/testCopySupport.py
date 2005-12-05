@@ -489,10 +489,10 @@ class TestCopySupportSecurity( CopySupportTestBase ):
         folder1, folder2 = self._initFolders()
         folder2.all_meta_types = FILE_META_TYPES
 
-        def _no_manage_addFile( a, c, n, v, *args, **kw ):
-            return n != 'manage_addFile'
+        def _no_add_images_and_files(permission, object, context):
+            return permission != ADD_IMAGES_AND_FILES
 
-        self._initPolicyAndUser( v_lambda=_no_manage_addFile )
+        self._initPolicyAndUser( c_lambda=_no_add_images_and_files )
 
         cookie = folder1.manage_cutObjects( ids=( 'file', ) )
         self._assertCopyErrorUnauth( folder2.manage_pasteObjects
