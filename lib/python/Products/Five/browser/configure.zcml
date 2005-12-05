@@ -20,11 +20,6 @@
       interface="zope.publisher.interfaces.browser.IDefaultBrowserLayer"
       />
 
-  <defaultLayer
-      type="zope.publisher.interfaces.browser.IBrowserRequest"
-      layer="zope.publisher.interfaces.browser.IDefaultBrowserLayer"
-      />
-
   <browser:page
       for="*"
       name="absolute_url"
