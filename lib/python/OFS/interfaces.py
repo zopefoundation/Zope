@@ -531,6 +531,10 @@ class IObjectManager(IZopeObject, ICopyContainer, INavigation, IManageable,
         """
         """
 
+    def hasObject(id):
+        """Indicate whether the folder has an item by ID.
+        """
+
     def objectIds(spec=None):
         """List the IDs of the subobjects of the current object.
 

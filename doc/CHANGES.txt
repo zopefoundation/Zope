@@ -26,6 +26,9 @@ Zope Changes
 
     Features added
 
+      - ObjectManager now has an hasObject method to test presence. This
+        brings it in line with BTreeFolder.
+
       - Using FastCGI is offically deprecated.
 
       - Improved logging of ConflictErrors. All conflict errors are
