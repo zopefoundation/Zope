@@ -310,5 +310,13 @@ if __name__ == "__main__":
     #   If it is not reset, 'os.wait[pid]' can non-deterministically fail.
     #   Thus, use a way such that "SIGCHLD" is definitely reset in children.
     #signal.signal(signal.SIGCHLD, signal.SIG_IGN)
-    signal.signal(signal.SIGCHLD, _ignoreSIGCHLD)
+    if os.uname()[0] != 'Darwin':
+        # On Mac OS X, setting up a signal handler causes waitpid to
+        # raise EINTR, which is not preventable via the Python signal
+        # handler API and can't be dealt with properly as we can't pass
+        # the SA_RESTART to the signal API. Since Mac OS X doesn't
+        # appear to clutter up the process table with zombies if
+        # SIGCHILD is unset, just don't bother registering a SIGCHILD
+        # signal handler at all.
+        signal.signal(signal.SIGCHLD, _ignoreSIGCHLD)
     main()
