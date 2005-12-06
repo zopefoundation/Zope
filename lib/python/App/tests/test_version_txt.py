@@ -11,23 +11,19 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+"""Tests of the version number extraction.
 
-"""Tests of the version number extraction."""
-
+$Id$
+"""
 import os
 import unittest
-
-import App.config
+import Zope2
 import App.version_txt
-
 
 class VersionTextTestCase(unittest.TestCase):
 
     def setUp(self):
-        self.cfg = App.config.getConfiguration()
-        self.old_swhome = self.cfg.softwarehome
-        self.cfg.softwarehome = os.path.dirname(__file__)
-        self.fn = os.path.join(self.cfg.softwarehome, "version.txt")
+        self.fn = os.path.join(os.path.dirname(Zope2.__file__), "version.txt")
         App.version_txt._test_reset()
 
     def tearDown(self):
@@ -35,8 +31,6 @@ class VersionTextTestCase(unittest.TestCase):
             os.unlink(self.fn)
         except OSError:
             pass
-        self.cfg.softwarehome = self.old_swhome
-        App.config.setConfiguration(self.cfg)
 
     def writeVersion(self, s):
         f = open(self.fn, 'w')

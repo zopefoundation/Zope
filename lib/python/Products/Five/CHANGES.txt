@@ -2,7 +2,7 @@
 Five Changes
 ============
 
-Five 1.3c (unreleased)
+Five 1.3c (2005-12-06)
 ======================
 
 This version is also included in Zope 2.9b1.
@@ -10,12 +10,16 @@ This version is also included in Zope 2.9b1.
 Restructuring
 -------------
 
+* (b6) No longer use the ``defaultLayer`` directive, it's been deprecated.
+
 * (b4) Cleaned up security test.
 
 * (b4) Made Five send a ContainerModifiedEvent when appropriate.
 
 Bugfixes
 --------
+
+* (b6) Fixed the form i18n messages to work with Zope 3.2 beta 1.
 
 * (b3) Made the creation of custom skins work again.  It was broken in
   the port to Zope 3.2.
