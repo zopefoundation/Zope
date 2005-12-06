@@ -95,7 +95,7 @@ version_txt:
 
 # Building a source distribution requires that zpkg be available:
 sdist: version_txt
-	${ZPKG} -C ${BASE_DIR}/releases/Zope2.cfg -r `basename ${BASE_DIR}`
+	${ZPKG} -C ${BASE_DIR}/releases/Zope2.cfg -r ${MAJOR_VERSION}${MINOR_VERSION}${RELEASE_TAG}
 
 # clobber:     Make the source tree 'pristine' again.
 clobber: clean uninstance
