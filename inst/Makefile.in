@@ -45,7 +45,7 @@ build:
            ${DISTUTILS_OPTS} build_ext ${BUILD_FLAGS}
 
 # install:     Install a software home.
-install: version_txt
+install:
 	${PYTHON} "${BASE_DIR}/setup.py" ${DISTUTILS_OPTS} \
 	   build_ext ${BUILD_FLAGS} \
 	   install --home="${PREFIX}" ${INSTALL_FLAGS}
@@ -91,10 +91,10 @@ clean:
 # version_txt: create a version file in lib/python/version.txt
 version_txt:
 	printf "Zope ${MAJOR_VERSION}.${MINOR_VERSION}-${RELEASE_TAG}" >\
-          "${BASE_DIR}/lib/python/version.txt"
+          "${BASE_DIR}/lib/python/Zope2/version.txt"
 
 # Building a source distribution requires that zpkg be available:
-sdist:
+sdist: version_txt
 	${ZPKG} -C ${BASE_DIR}/releases/Zope2.cfg
 
 # clobber:     Make the source tree 'pristine' again.

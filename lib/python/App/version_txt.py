@@ -10,10 +10,12 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
+"""Extract Zope 2 version information
 
-import os,sys,re
-
-from App.config import getConfiguration
+$id$
+"""
+import os, sys, re
+import Zope2
 
 _version_string = None
 _zope_version = None
@@ -29,8 +31,7 @@ def _prep_version_data():
     if _version_string is None:
         v = sys.version_info
         pyver = "python %d.%d.%d, %s" % (v[0], v[1], v[2], sys.platform)
-        cfg = getConfiguration()
-        fn = os.path.join(cfg.softwarehome, 'version.txt')
+        fn = os.path.join(os.path.dirname(Zope2.__file__), 'version.txt')
         expr = re.compile(
             r'(?P<product>[A-Za-z0-9]+) +(?P<major>[0-9]+)'
             '\.(?P<minor>[0-9]+)\.(?P<micro>[0-9]+)'
