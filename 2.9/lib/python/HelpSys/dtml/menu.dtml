@@ -1,0 +1,15 @@
+<dtml-var standard_html_header>
+<dtml-call "REQUEST.set('MANAGE_TABS_NO_BANNER',1)">
+<dtml-var manage_tabs>
+
+<dtml-tree sort=id>
+<dtml-if "meta_type =='Help Topic'">
+  <a href="&dtml-absolute_url;" target="help_main">&dtml-title_or_id;</a>
+<dtml-else>
+  &dtml-title;
+</dtml-if>
+</dtml-tree>
+
+<dtml-var standard_html_footer>
+
+

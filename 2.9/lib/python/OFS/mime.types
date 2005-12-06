@@ -1,0 +1,19 @@
+application-x-cdf               cdf
+application/msword              doc dot wiz
+application/pdf                 pdf
+application/pkcs7-mime          p7c
+application/vnd.mozilla.xul+xml xul
+application/vnd.ms-excel        xlb xls
+application/vnd.ms-powerpoint   pot ppa pps ppt pwz
+application/x-javascript        js
+application/x-pkcs12            p12 pfx
+application/x-pn-realaudio      ram
+audio/mpeg                      mp3
+audio/x-pn-realaudio            ra
+image/pict                      pct pic pict
+message/rfc822                  eml nws mht mhtml
+text/css                        css
+text/plain                      bat c h pl ksh
+text/x-vcard                    vcf
+text/xml                        xml xsl
+video/mpeg                      m1v mpa

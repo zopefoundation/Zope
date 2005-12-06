@@ -1,0 +1,39 @@
+<a name="&dtml-name;"></a>
+<h2 class="api">class
+  &dtml-name;<dtml-if extends>
+(<dtml-in extends>
+<a href="/Control_Panel/Products/&dtml-sequence-item;">&dtml-sequence-key;</a><dtml-unless sequence-end>, </dtml-unless>
+</dtml-in>)
+</dtml-if>
+</h2>
+
+<dl>
+<dd>
+<dtml-var doc fmt="structured-text">
+</dd>
+</dl>
+
+<dtml-if constructor>
+<hr>
+<h3>Product Constructor</h3>
+  <dtml-with constructor>
+    <dtml-var view>
+  </dtml-with>
+</dtml-if>
+
+<dtml-if "attributes or methods">
+<hr>
+</dtml-if>
+
+<dtml-in attributes>
+  <dtml-var view>
+</dtml-in>
+
+<dtml-if methods>
+<h3>Methods</h3>
+<dtml-in methods>
+  <dtml-var view>
+</dtml-in>
+</dtml-if>
+
+

@@ -1,0 +1,89 @@
+<style type="text/css"> <!-- li { margin: 1em } --> </style>
+
+ZopeTestCase Readme
+
+    The ZopeTestCase package has been developed in the hope that it will make
+    testing Zope packages more convenient. It has features to support various 
+    scenarios from unit-testing individual components inside a "toy" environment 
+    to running regression tests against live ZEO servers.
+
+    To add a test suite to a Zope package:
+
+        1. Make a 'tests' subdirectory.
+
+        2. Create an (empty) '__init__.py' in 'tests' to make it a package.
+
+        3. Copy 'framework.py' from the 'ZopeTestCase' package into 'tests'.
+
+    Once a test suite has been set up, you can add test modules:
+
+        1. Create a file with a name matching 'test*.py'.
+
+        2. Import the 'ZopeTestCase' package as in 'from Testing import ZopeTestCase'
+           and define one or more subclasses of 'ZopeTestCase.ZopeTestCase'.
+
+        3. Define methods for the test classes.  Each method's name must start
+           with 'test'.  It should test one small case, preferably using a PyUnit 
+           assertion method.  Here's a minimal example::
+
+             class ExampleTest(ZopeTestCase.ZopeTestCase):
+                 def testAddition(self):
+                     self.assertEqual(1+1, 2)
+
+        4. You can add 'afterSetUp' and 'beforeTearDown' methods that are automatically
+           called after the fixture has been set up and before the fixture is destroyed
+           respectively. 
+
+        5. Follow the instructions in 'framework.py' about adding lines to the
+           top and bottom of the file.
+
+    Now you can run the test as 'python path/to/tests/testName.py', or
+    simply go to the 'tests' directory and type 'python testName.py'.
+
+    Note that there is a skeleton test suite named 'testSkeleton.py' that you 
+    may copy into your 'tests' directory and take it from there.
+
+    Note also that when the tests are run in an INSTANCE_HOME installation of 
+    Zope, you must set the SOFTWARE_HOME environment variable for the 'Testing' 
+    and 'ZopeTestCase' packages to be found.
+
+    See the sample tests in the 'ZopeTestCase' directory for details on writing 
+    your own tests.
+
+framework.py
+
+    1. Uses SOFTWARE_HOME (if set) to locate the Testing package.
+
+    2. Detects and handles INSTANCE_HOME installations of Zope. Please
+       see ENVIRONMENT.txt for the assumptions ZTC makes about its
+       environment.
+
+    3. Supports setting up a ZODB from a 'custom_zodb.py' file in
+       the 'tests' directory.
+
+    4. Allows to connect to a running ZEO server by setting the
+       ZEO_INSTANCE_HOME environment variable.
+
+testrunner.py
+
+    Alternatively, you may use Zope's testrunner utility to run your tests 
+    ('testrunner.py' can be found in the 'utilities' directory of your Zope 
+    installation). If you do so, you will have to define a 'test_suite' method 
+    in your modules (see examples). 
+
+    There is no need to set SOFTWARE_HOME when using the testrunner but you may
+    have to provide the -i flag when testing in an INSTANCE_HOME setup.
+
+    Example: 'python /path/to/Zope/utilities/testrunner.py -q -i -a'
+
+    If your testrunner does not appear to support the -i flag get the one from
+    'http://zope.org/Members/shh/TestRunner'
+
+    Note that the 'custom_zodb.py' magic (3. + 4.) is not available when using
+    the testrunner.
+
+    If you have tests that should not be picked up by the testrunner, make a
+    'test_suite' method that returns an empty TestSuite.
+
+    Note that in Zope 2.7 the testrunner lives in '/path/to/Zope/bin'.
+

@@ -1,0 +1,126 @@
+Zope Help System
+
+  The Zope Help System provides context-sensitive on-line help for
+  Zope users. The system is flexible and can provide help for
+  Python and ZClass-based Zope Products.
+  
+  In the future the Help System will be expanded to provide additional
+  help including API documentation.
+  
+Using the Help System
+
+  Every standard Zope management screen should include a help button
+  which provides access to help for that screen.
+
+  Additionally all the installed help topics can be browsed and
+  searched.
+  
+Architecture
+
+  The Help System is based around Zope Products. When a product is
+  installed, its help objects are installed along with it. All help
+  content is associated with a product.
+  
+  Help content is provided by 'Help Topic' objects. These objects live
+  inside Product folders within a special container object called a
+  'Product Help' object. When you browse a Product folder in the
+  Control Panel you will see these 'Product Help' objects and their
+  'Help Topics'.
+
+  In general you get access to the Help System through the help system
+  object which has methods for drawing help buttons. This object lives
+  in the Zope application object and has an id of 'HelpSys'.
+  
+Writing Help for ZClasses
+
+  Suppose you've created an addable type of object with ZClasses.
+  You'd like the management screens of your objects to have help
+  buttons just like the standard Zope management screens.
+  
+  First create some Help Topics though the web which document your
+  management screens. Do this by going to your ZClass's Product and
+  creating new Help Topics inside the Product Help object.
+  
+  Next go to your ZClass and click on the 'Views' management tab. On
+  this screen you define your object's management views. Each view has
+  a name, a method, and optionally a help topic. If you select a help
+  topic for a view, a help button will be drawn on that management
+  view and it will be linked to the help topic you select.
+  
+Writing Help for Python Products
+
+  To support help your Python product needs to register help topics
+  during product registration, and it needs to indicate which help
+  topics should be associated with which management screens.
+  
+  Registering Help Topics
+
+    To register help topics use the 'registerHelp' method on the
+    ProductContext object. For example::
+
+      def initialize(context):
+        ...
+        context.registerHelp()
+
+    This method will create help topics for all files found in the
+    'help' subdirectory of the product. Supported file types include:
+    .html, .htm, .txt, .stx, .dtml, .gif, .jpg, .png. Appropriate
+    classes of help topics are used depending on the suffix of the
+    help files.
+
+    If you want more control over how your help topics are created you
+    can use the 'registerHelpTopic' method that takes an id and a help
+    topic object as arguments. For example::
+
+      from mySpecialHelpTopics import MyTopic
+
+      def initialize(context):
+        ...
+        context.registerHelpTopic('myTopic', MyTopic())
+  
+  Associating Help Topics with Management Screens      
+    
+    The chief way to bind a help topic to a management screen is to
+    include information about the help topic in the class's
+    'manage_options' structure. For example::
+    
+      manage_options=(
+        {'label':'Edit', 
+         'action':'editMethod',
+         'help':('productId','topicId')},
+        )
+
+    In this example, 'productId' refers to the name of the Zope
+    Product in which the class is defined, and 'topicId' refers to the
+    id of the Help Topic associated with this management view.
+    
+    When Zope draws the management view it will automatically include
+    a help button pointing to the right help topic if you provide this
+    information in the 'manage_options' structure. 
+    
+    Note: sometimes Zope gets confused and defaults to highlighting
+    the first management tab in place of the correct one. To fix this,
+    set the 'management_view' variable to the name of the correct
+    view. If the wrong view is hilighted, then the wrong help button
+    will be drawn.
+
+    To draw a help button on a management screen that is not a view,
+    use the 'HelpButton' method of the 'HelpSys' object like so::
+    
+      <dtml-var "HelpSys.HelpButton('productId', 'topicId')">
+      
+    This will draw a help button linked to the specified help topic.
+    If you prefer to draw your own help button you can use the helpURL
+    method instead like so::
+
+      <dtml-var "HelpSys.helpURL(
+        topic='productId',
+        product='topicId')">
+      
+    This will give you a URL to the help topic. You can choose to draw
+    whatever sort of button or link you wish.
+    
+    
+      
+      
+      

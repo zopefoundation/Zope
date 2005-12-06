@@ -1,0 +1,59 @@
+<dtml-var manage_page_header>
+
+<dtml-let form_title="'Set Access Rule'">
+  <dtml-var manage_form_title>
+</dtml-let>
+
+<p class="form-help">
+<strong>
+WARNING: Access Rules are powerful, and can temporarily disable
+Zope access! Don't use them unless you have read all about them and
+know how to recover from mistakes!
+</strong>
+</p>
+
+<p class="form-help">
+In the form below <em>rule id</em> is the id of an object in this 
+Zope Folder which will be called whenever the Folder is published.  
+It can implement rewrite rules, preload request variables, etc.
+</p>
+
+<dtml-if manage_getAccessRule>
+<p class="form-text">
+The current Access Rule is
+<a href="&dtml-absolute_url;/&dtml-manage_getAccessRule;/manage_workspace">
+"&dtml-manage_getAccessRule;"</a>.
+</p>
+<dtml-else>
+<p class="form-text">
+No Access Rule is currently set.
+</p>
+</dtml-if>
+
+<form action="manage_addAccessRule" method="post">
+<table cellspacing="0" cellpadding="2" border="0">
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-label">
+    Rule Id
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <input type="text" name="method_id" size="40" />
+    </td>
+  </tr>
+  <tr>
+    <td align="left" valign="top">
+    </td>
+    <td align="left" valign="top">
+    <div class="form-element">
+<input class="form-element" type="SUBMIT" name="submit" value=" Set Rule ">
+<input class="form-element" type="SUBMIT" name="none" value=" No Access Rule ">
+    </div>
+    </td>
+  </tr>
+</table>
+</form>
+
+<dtml-var manage_page_footer>
+

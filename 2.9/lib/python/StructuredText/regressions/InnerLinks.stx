@@ -1,0 +1,10 @@
+This is the InnerLinkTest
+
+
+  see also [1] and [2]
+
+
+  .. [1] "Zope Book" by Amos Lattmeier and Michel Pelletier
+
+  .. [2] "Python Book" by Guido van Rossum
+  

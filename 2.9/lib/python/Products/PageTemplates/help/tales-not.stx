@@ -1,0 +1,40 @@
+TALES Not expressions
+
+  Syntax
+
+    Not expression syntax::
+
+      not_expression ::= 'not:' expression
+
+  Description
+
+    Not expression evaluate the expression string (recursively) as a
+    full expression, and returns the boolean negation of its value. If
+    the expression supplied does not evaluate to a boolean value,
+    *not* will issue a warning and *coerce* the expression's value
+    into a boolean type based on the following rules:
+
+    1. the number 0 is *false*
+
+    2. numbers > 0 are *true*
+
+    3. an empty string or other sequence is *false*
+
+    4. a non-empty string or other sequence is *true*
+
+    5. a *non-value* (e.g. void, None, Nil, NULL, etc) is *false*
+
+    6. all other values are implementation-dependent.
+
+    If no expression string is supplied, an error should be generated.
+
+    Zope considers all objects not specifically listed above as
+    *false* (including negative numbers) to be *true*.
+
+  Examples
+
+    Testing a sequence::
+
+      <p tal:condition="not:here/objectIds">
+        There are no contained objects.
+      </p>

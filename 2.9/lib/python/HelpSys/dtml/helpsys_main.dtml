@@ -1,0 +1,61 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html lang="en">
+<head>
+<title>
+Z Object Publishing Environment Help
+</title>
+</head>
+<body bgcolor="#ffffff" link="#000099" vlink="#555555">
+
+<h2>Z Object Publishing Environment Help</h2>
+
+<p>
+The Z online help system provides links to in-depth product guides, 
+programming references and other resources.
+</p>
+
+<h3>General Documentation</h3>
+<p>
+General documentation for the use and management of built-in and 
+add-on products, as well as an extensive DTML manual are available 
+on the Zope website at 
+<a href="http://www.zope.org" target="_top">http://www.zope.org</a>.
+</p>
+<p>The <a href="http://www.zope.org/Documentation/Guides" target="_top">Zope Guides</a> are a great place to start learning Zope.
+<ul>
+<li><a href="http://www.zope.org/Documentation/Guides/ZCMG">Zope Content Manager's Guide</a></li>
+<li><a href="http://www.zope.org/Documentation/Guides/DTML">Z Document Template User's Guide</a></li>
+<li><a href="http://www.zope.org/Documentation/Guides/ZSQL">Z SQL Methods User's Guide</a></li>
+</ul>
+</p>
+
+<h3>Programming References</h3>
+<p>
+There is currently an online object reference that documents the 
+services provided by high-level objects such as Documents 
+and Folders. Other references will be added soon.
+</p>
+<ul>
+<li> <a href="&dtml-BASE1;/HelpSys/ObjectRef/hs_main">
+     Object Reference
+     </a>
+
+</ul>
+
+
+<h3>Other Resources</h3>
+<p>
+One of the best resources available is the
+<a href="http://www.zope.org/mailman/listinfo/zope" target="_top">Zope mailing list</a>.
+You can subscribe to the mailing list by sending an 
+email to <a href="mailto:zope-request@zope.org">zope-request@zope.org</a> 
+and including the word &quot;subscribe&quot; in the subject line.
+</p>
+
+<p>
+There is also a <a href="http://zdp.zope.org/" target="_top">Zope documentation project</a> working on a Zope FAQ
+</p>
+
+
+</body>
+</html>

@@ -1,0 +1,27 @@
+Dummy Test
+==========
+
+This dummy test is used to verify that passing in a ``test_class``
+that doesn't subclass ``ZopeTestCase.Functional`` still works but
+issues a warning.
+
+  >>> from Testing import ZopeTestCase as zopetest
+  >>> hook = zopetest.WarningsHook()
+  >>> hook.install()
+  >>> suite = zopetest.FunctionalDocFileSuite('WarningsTest.txt',
+  ...                                         package=zopetest.zopedoctest,
+  ...                                         test_class=zopetest.ZopeTestCase)
+
+  >>> len(hook.warnings)
+  1
+
+  >>> message, category, filename, lineno = hook.warnings[0]
+  >>> message
+  "The test_class you are using doesn't subclass from ZopeTestCase.Functional. Please fix that."
+  >>> category.__name__
+  'UserWarning'
+
+We have to uninstall the hook so that other warnings don't get lost.
+
+  >>> hook.uninstall()
+

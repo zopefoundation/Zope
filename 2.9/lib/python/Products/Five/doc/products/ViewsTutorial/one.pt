@@ -1,0 +1,5 @@
+<html>
+<body>
+<p>The random number is <span tal:replace="view/helpsWithOne">0</span></p>
+</body>
+</html>

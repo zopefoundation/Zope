@@ -1,0 +1,79 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html lang="en">
+<head>
+<title>
+Object Reference
+</title>
+</head>
+<body bgcolor="#ffffff" link="#000099" vlink="#555555">
+
+<a name="top">
+
+<h2><a href="../hs_main">Object Reference</a></h2>
+
+
+
+<h3><dtml-if icon><img src="&dtml-BASEPATH1;/&dtml-icon;" height="16" width="16" alt=""></dtml-if> &dtml-meta_type;</h3>
+
+<code>
+<dtml-var get_docstring_html>
+</code>
+
+
+<h3>&dtml-meta_type; methods</h3>
+
+<dtml-call "REQUEST.set('cached_method_list', get_method_list())">
+<dtml-call "REQUEST.set('row_max', _.len(cached_method_list)/2)">
+<dtml-if "_.len(cached_method_list) % 2">
+<dtml-call "REQUEST.set('row_max', row_max+1)">
+</dtml-if>
+
+<table width="100%" border="0">
+<tr>
+<td align="left" valign="top">
+<code>
+<dtml-in "cached_method_list[:row_max]">
+<a href="#&dtml.url_quote-get_name;">&dtml-get_name;</a><br>
+</dtml-in>
+</code>
+</td>
+<td align="left" valign="top">
+<code>
+<dtml-in "cached_method_list[row_max:]">
+<a href="#&dtml.url_quote-get_name;">&dtml-get_name;</a><br>
+</dtml-in>
+</code>
+</td>
+</tr>
+</table>
+
+
+<dl>
+<dtml-in cached_method_list>
+<dt><code>
+    <a name="&dtml-get_name;">
+    <strong>&dtml-get_signature;</strong>
+    </code>
+</dt>
+<dd><code>
+<dtml-if permission>
+    <strong>Permission:</strong> &dtml-permission;<br><br>
+</dtml-if>
+
+<dtml-if get_docstring_html>
+    <dtml-var get_docstring_html>
+<dtml-else>
+    <p>No documentation for this method</p>
+</dtml-if>
+    <a href="#top"><img src="&dtml-BASEPATH1;/HelpSys/hs_uarrow" height="9" width="9" border="0" valign="bottom" alt=""> top</a><br><br>
+    </code>
+</dd>
+</dtml-in>
+</dl>
+
+<p>
+<a href="../hs_main">
+<img src="&dtml-BASEPATH1;/HelpSys/hs_larrow" height="9" width="9" border="0" valign="bottom" alt=""> Back to Object Reference</a>
+</p>
+</body>
+</html>

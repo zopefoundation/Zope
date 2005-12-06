@@ -1,0 +1,26 @@
+<dtml-var manage_page_header>
+<dtml-var manage_tabs>
+
+<p class="form-help">
+  Name(s) of attribute(s) indexed: 
+  <em><dtml-var "', '.join(getIndexSourceNames())"></em>
+</p>
+<p class="form-help">
+  Index type: 
+  <em>&dtml-getIndexType;</em>
+</p>
+<p class="form-help">
+  ZCTextIndex Lexicon used: 
+  <dtml-if getLexiconURL>
+    <a href="&dtml-getLexiconURL;/manage_main"
+    >&dtml-getLexiconURL;</a>
+  <dtml-else>
+    <em>(Lexicon Not Found)</em>
+  </dtml-if>
+</p>
+<p class="form-help">
+  <em>Note:</em> The lexicon assigned to the index cannot be changed. To replace
+  the existing lexicon, create a new lexicon in the same place and clear the
+  index. This will make the index use the replacement lexicon.
+</p>
+<dtml-var manage_page_footer>

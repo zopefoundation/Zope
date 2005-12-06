@@ -1,0 +1,1 @@
+<html metal:use-macro="context/@@bird.html/birdmacro"><metal:block fill-slot="color">gray</metal:block></html>

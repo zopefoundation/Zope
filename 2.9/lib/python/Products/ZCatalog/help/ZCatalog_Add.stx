@@ -1,0 +1,17 @@
+ZCatalog - Add: Create new ZCatalog
+  
+    Description
+
+        This view allows you to create a new ZCatalog.
+        
+    Controls
+
+        'Id' -- Allows you to specify the id of the ZCatalog.
+        
+        'Title' -- Allows you to specify the title of the ZCatalog.
+        
+        'Vocabulary' -- Allows you to select whether or not you 
+        would like to use a 'Vocabulary' and then choose the 
+        Vocabulary from the selection list.
+        
+        'Add' -- Create a new and empty Catalog.

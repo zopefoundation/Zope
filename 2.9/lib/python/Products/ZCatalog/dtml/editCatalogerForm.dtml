@@ -1,0 +1,28 @@
+<dtml-var manage_page_header>
+<dtml-var manage_tabs>
+
+<form action="manage_editCataloger">
+<p class="form-help">
+This element controls which Catalog this object will try index and
+unindex itself to.
+</p>
+
+<p>
+
+<span class="form-label">
+Use Catalog: 
+</span>
+<input name="default" value="&dtml-default_catalog;">
+<br>
+<div class="form-element">
+<input class="form-element" type="submit" value="Save Changes">
+</div>
+</form>
+
+<dtml-var manage_page_footer>
+
+
+
+
+
+

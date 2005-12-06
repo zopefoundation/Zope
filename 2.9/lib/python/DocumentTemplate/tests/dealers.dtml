@@ -1,0 +1,37 @@
+<html><head><title>Inventory by Dealer</title></head><body>
+<dl>
+<dtml-in inventory mapping size=5 start=first_ad orphan=3>
+<dtml-if previous-sequence>
+<dtml-in previous-batches mapping>
+(<dtml-var batch-start-var-dealer> <dtml-var
+batch-start-var-year> <dtml-var
+batch-start-var-make> <dtml-var
+batch-start-var-model> - <dtml-var
+batch-end-var-dealer> <dtml-var
+batch-end-var-year> <dtml-var
+batch-end-var-make> <dtml-var
+batch-end-var-model>)
+</dtml-in previous-batches>
+</dtml-if previous-sequence>
+<dtml-if first-dealer>
+<dt><dtml-var dealer></dt><dd>
+</dtml-if first-dealer>
+<dtml-var year> <dtml-var make> <dtml-var model> <p>
+<dtml-if last-dealer>
+</dd>
+</dtml-if last-dealer>
+<dtml-if next-sequence>
+<dtml-in next-batches mapping>
+(<dtml-var batch-start-var-dealer> <dtml-var
+batch-start-var-year> <dtml-var
+batch-start-var-make> <dtml-var
+batch-start-var-model> - <dtml-var
+batch-end-var-dealer> <dtml-var
+batch-end-var-year> <dtml-var
+batch-end-var-make> <dtml-var
+batch-end-var-model>)
+</dtml-in next-batches>
+</dtml-if next-sequence>
+</dtml-in inventory>
+</dl>
+</body></html>

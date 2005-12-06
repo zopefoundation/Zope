@@ -1,0 +1,77 @@
+<dtml-var manage_page_header>
+
+<dtml-var "manage_form_title(this(), _,
+           form_title='Add ZCTextIndex Lexicon',
+           help_product='ZCTextIndex',
+           help_topic='Lexicon_Add.stx'
+	   )">
+     
+<p class="form-help">
+  A ZCTextIndex Lexicon processes and stores the words of documents indexed
+  with a ZCTextIndex. Multiple ZCTextIndexes can share the same lexicon.
+</p>
+
+<form action="manage_addLexicon" method="POST">
+<table cellspacing="0" cellpadding="2" border="0">
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-label">
+    Id
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <input type="text" name="id" size="40" />
+    </td>
+  </tr>
+  
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-optional">
+    Title
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <input type="text" name="title" size="40" />
+    </td>
+  </tr>
+
+  <dtml-in name="getElementGroups" prefix="group">
+    <dtml-let elements="getElementNames(group_item)">
+      <tr>
+        <td align="left" valign="top">
+          <div class="form-label">&dtml-group_item;</div>
+        </td>
+        <td align="left" valign="top">
+          <input type="hidden" name="elements.group:records" 
+                 value="&dtml-group_item;" />
+          <dtml-if expr="_.len(elements) > 1">
+            <select name="elements.name:records">
+              <dtml-in name="elements">
+                <option value="&dtml-sequence-item;"
+                >&dtml-sequence-item;</option>
+              </dtml-in>
+            </select>
+          <dtml-else>
+            <input type="checkbox" name="elements.name:records" 
+                   value="<dtml-var expr="elements[0]" html_quote>" checked />
+          </dtml-if>
+        </td>
+      </tr>
+    </dtml-let>
+  </dtml-in>
+
+  <tr>
+    <td align="left" valign="top">
+    </td>
+    <td align="left" valign="top">
+    <div class="form-element">
+    <input class="form-element" type="submit" name="submit" 
+     value=" Add " /> 
+    </div>
+    </td>
+  </tr>
+</table>
+</form>
+
+
+<dtml-var manage_page_footer>

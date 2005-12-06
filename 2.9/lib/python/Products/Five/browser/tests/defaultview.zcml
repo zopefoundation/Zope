@@ -1,0 +1,38 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:browser="http://namespaces.zope.org/browser"
+           xmlns:five="http://namespaces.zope.org/five">
+
+  <five:defaultViewable
+      class="Products.Five.tests.testing.simplecontent.SimpleContent" />
+
+  <browser:defaultView
+      for="Products.Five.tests.testing.simplecontent.ISimpleContent"
+      name="eagledefaultview.txt"
+      />
+
+  <browser:page
+      for="Products.Five.tests.testing.simplecontent.ISimpleContent"
+      name="eagledefaultview.txt"
+      class=".pages.SimpleView"
+      attribute="eagle"
+      permission="zope2.Public"
+      />
+
+  <!-- this tests whether five:defaultViewable can be called on a class that
+       already provides __call__, such as our CallableSimpleContent -->
+
+  <five:defaultViewable
+      class="Products.Five.tests.testing.simplecontent.CallableSimpleContent" />
+
+  <!-- this tests whether five:defaultViewable can be called on a class that
+       already provides index_html, such as our IndexSimpleContent -->
+
+  <five:defaultViewable
+      class="Products.Five.tests.testing.simplecontent.IndexSimpleContent" />
+
+  <browser:defaultView
+      for="Products.Five.tests.testing.simplecontent.IIndexSimpleContent"
+      name="index_html"
+      />
+
+</configure>

@@ -1,0 +1,46 @@
+Manifest and description of included files
+
+|-- Makefile.python: the Makefile used to create a Python binary from source
+|-- Makefile.zeo: the Makefile used to create a ZEO installer package
+|-- Makefile.zope: the Makefile used to create a Zope installer package
+|-- README.txt
+|-- bin
+|   |-- compilezpy.py: compiles a tree of Python scripts into .pyc bytecode
+|   |-- decompilezpy.py: deletes a tree full of .pyc bytecode files
+|   |-- escape.sh: utility script that converts backslashes between unix & win
+|   |-- fixreg.py: utility to manage Zope Corporation Win registry entries
+|   |-- makezope.bat: utility script to build Zope, getting around NMAKE "bug"
+|   `-- runzeo.bat: script which starts a ZEO instance
+|-- buildout: the main script used to build Zope and/or ZEO installers
+|-- doc
+|   `-- ZC_PY_DIST_README.txt: readme for the Zope Corp. Python distro
+|-- etc
+|   |-- README.html: custom template used for Zope Quick Start page.
+|   |-- sitecustomize.py: adds Zope dirs to sys.path automagically in distro
+|   |-- zeo.iss.in: the Innosetup file to create a ZEO installer
+|   |-- zlogo_left.bmp: used by Innosetup
+|   |-- zlogo_top.bmp: used by Innosetup
+|   `-- zope.iss.in: the Innosetup file to create a Zope installer
+|-- mk
+|   |-- common.mk: common make routines
+|   |-- python.mk: routines for creating a Python distro
+|   |-- zeo.mk: routines for creating a ZEO server distro
+|   `-- zope.mk: routines for creating a Zope distro
+`-- zeo_addons: a custom INSTANCE_HOME for ZEO
+    |-- skel
+    |   |-- README.txt
+    |   |-- bin
+    |   |   |-- runzeo.bat.in
+    |   |   `-- zeoservice.py.in
+    |   |-- etc
+    |   |   |-- zeo.conf.in
+    |   |   `-- zeoctl.conf.in
+    |   |-- log
+    |   |   `-- README.txt
+    |   `-- var
+    |       `-- README.txt
+    `-- utilities
+        |-- compilezpy.py
+        |-- copyskel.py
+        |-- decompilezpy.py
+        `-- mkzeoinstance.py

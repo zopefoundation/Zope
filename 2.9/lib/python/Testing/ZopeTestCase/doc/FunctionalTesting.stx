@@ -1,0 +1,47 @@
+<style type="text/css"> <!-- li { margin: 1em } --> </style>
+
+Functional Testing Readme
+
+    The functional testing support of ZopeTestCase was inspired by
+    Marius Gedminas' work for Zope 3.
+
+    Deriving from the 'Functional' mix-in (and an xTestCase) adds a
+    'publish' method to your test case class. Tests can call
+    'self.publish(path, basic=None, env=None, extra=None, request_method='GET', stdin=None)', 
+    passing a path and, optionally, basic-auth info and form data. 
+    The path may contain a query string.
+
+    'publish' returns an enhanced Response object, that can be queried
+    for status, response body, headers, etc.
+
+    'publish' invokes the ZPublisher machinery just as if the request 
+    had come in through ZServer. This allows for high-level testing
+    of things like argument marshalling, form validation, and traversal.
+
+    Note that the tests have *full access to the ZODB*. This means you
+    can easily prepare a fixture for 'publish' and/or check the impact
+    of a publication on the database. This represents a major advantage 
+    over purely URL-based test environments!
+
+    Please see the 'testFunctional.py' example test for more.
+
+    While the modules are called 'functional.py' in both Zope 3 and 
+    ZopeTestCase, it is current wisdom that such tests are not truly
+    "functional tests", but rather "integration tests".
+
+    True functional tests, in their most-helpful guise as "acceptance
+    tests", must be able to test the end-user experience. For web 
+    applications this means: browser simulation.
+
+    Plone 2 comes with an 'ftests' package combining the functional
+    testing support of ZopeTestCase with the "mechanize" browser 
+    simulator library: http://wwwsearch.sourceforge.net/mechanize/
+    (For some version of 2, currently only available from the Plone
+    CVS HEAD.)
+
+Read the Source
+
+    Amen. Read 'functional.py' and 'sandbox.py' if you want to know
+    what's going on behind the scenes.
+
+

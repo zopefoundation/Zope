@@ -1,0 +1,27 @@
+History: Object history.
+
+  Description
+
+    DTML Documents and Methods keep a history of their contents. This
+    view allows you to browse, compare, and revert to old versions.
+
+  Controls
+
+    Historical revisions are described by a date, a user and a
+    URL. This describes at what time by whom and at what URL the
+    object was changed.
+
+    Click on a historical version to view the object as it existed at
+    a given point in history.
+
+    '[Checkbox]' -- Select a historical revision.
+
+    'Copy to present' -- Changes the object to the same state as the
+    selected historical revision.
+
+    'Compare' -- Summarizes the difference between two historical
+    revisions. If you select one historical revision it will be
+    compared to the current state.
+
+      The comparison shows the changes needed to change the older
+      revision to match the newer revision.

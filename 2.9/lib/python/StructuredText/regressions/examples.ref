@@ -1,0 +1,48 @@
+<html>
+<head>
+<title>Small Trials for Structured Text Formatting</title>
+</head>
+<body>
+<h1>Small Trials for Structured Text Formatting</h1>
+<p>  This paragraph should be preceded by a level 1 header.  It should
+  not, itself, be made into a header, just a regular paragraph.</p>
+<p>  Here are a few presentation styles, in a list <a href="#ref1">[1]</a>:</p>
+
+<ul>
+<li>A word: <em>emphasized</em>.</li>
+<li>A word: <u>underlined</u>.</li>
+<li>A word <strong>strong</strong>.</li>
+<li>An inline example: <code>1+2</code>.</li>
+<li>Another example with a different format:
+    ``x='spam''' or ``y='spam''' or ``<dtml-var spam>'<code>.</code><p>    We can use expressions in the DTML var tag as 
+    in ``<dtml-var "x+'.txt'">''</p>
+</li>
+<li>A mult-line example:
+<pre>
+     blah
+
+     *foo bar*
+
+     &lt;dtml-var yeha&gt;
+</pre>
+</li>
+
+</ul>
+<p><a name="ref1">[1]</a> (The referring text should be a paragraph, not a header, and
+should contain a reference to this footnote, footnote "<a href="#ref1">[1]</a>".)<p>  Some hrefs, in a definition list:</p>
+<dl>
+<dt>  <u>Regular</u></dt>
+<dd><a href="http://www.zope.org">http://www.zope.org/</a></dd>
+<dt>  <u>W/trailing punctuation</u></dt>
+<dd><a href="http://www.zope.org">http://www.zope.org/</a>.</dd>
+<dt>  <u>W protocol implicit</u></dt>
+<dd><a href=":locallink">locallink</a></dd>
+<dt>  <u>W protocol implicit</u>, alternate</dt>
+<dd>"locallink", :locallink</dd>
+</dl>
+<p>  |||| A Simple Two-column Table ||
+  || Column A || Column B ||
+  || Apples   || Oranges  ||</p>
+</p>
+</body>
+</html>

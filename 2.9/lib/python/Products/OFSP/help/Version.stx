@@ -1,0 +1,18 @@
+Version - Private session.
+  
+  Description
+
+    A Version allows you to make changes to Zope in a private session.
+
+    No one else can see changes you make in a Version. Later you can
+    make your changes public or discard them.
+
+    Objects changed in a Version are locked.
+
+
+
+
+
+
+
+

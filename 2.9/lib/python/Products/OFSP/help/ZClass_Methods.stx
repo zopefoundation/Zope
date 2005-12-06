@@ -1,0 +1,25 @@
+ZClass - Methods: Manage ZClass methods.
+  
+  Description
+
+    This view allows you to manage ZClass methods.
+
+    A ZClass inherits methods from its base classes. It can also
+    contain methods which are managed through the web. This view
+    allows you to create and edit methods such as DTML Methods, ZSQL
+    Methods, and External Methods though the web. Methods that you
+    create through the web will be accessible as methods on instances
+    of the ZClass.
+
+    The creation and management of methods proceeds exactly like the
+    management of a Folder's contents. See "Folder - Contents".  The
+    main difference between editing method objects and normal objects
+    is that methods have a 'Define Permissions' view in place of a
+    'Security' view. See "Security - Define Permissions".
+
+    If you create ZClasses inside the Methods view of a ZClass
+    instances of the inner class will be addable to instances of the
+    outer class. Typically the outer class will subclass
+    'ObjectManager' and the inner class will be only relevant inside
+    the outer class.
+

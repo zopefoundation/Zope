@@ -1,0 +1,19 @@
+<html xmlns:tal="http://xml.zope.org/namespaces/tal">
+  <head><title>Test of documentation templates</title></head>
+  <body>
+      <span tal:replace="nothing"> blah </span>
+      <dl tal:condition="context/args">
+        <dt>The arguments to this test program were:</dt>
+        <dd>
+          <ul>
+            <li tal:repeat="arg context/args">
+              Argument number <span tal:replace="arg/num">99</span>
+              is <span tal:replace="arg/arg">default</span>
+            </li>
+          </ul>
+        </dd>
+      </dl>
+      <p tal:condition="not:context/args">No arguments were given.</p>
+      And thats da trooth.
+  </body>
+</html>

@@ -1,0 +1,14 @@
+<component prefix="tempstorage.config">
+
+  <sectiontype name="temporarystorage" datatype=".TemporaryStorage"
+               implements="ZODB.storage">
+     <description>
+       A nonundoing storage which keeps data in RAM and which does
+       not need to be packed unless cyclic references are kept.
+     </description>
+    <key name="name" default="Temporary Storage"/>
+  </sectiontype>
+
+</component>
+
+

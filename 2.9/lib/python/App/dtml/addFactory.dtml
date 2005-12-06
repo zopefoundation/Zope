@@ -1,0 +1,92 @@
+<dtml-var manage_page_header>
+
+<dtml-var "manage_form_title(this(), _,
+           form_title='Add Object Factory',
+           help_product='OFSP',
+           help_topic='Zope-Factory_Add.stx'
+	   )">
+
+<p class="form-help">
+A Factory allows you to place entries in the Zope Product add list. In the 
+form below the <em>add list name</em> is the name under which your entry will 
+appear in the Zope Product add list. The <em>method</em> is the method that 
+will be invoked when a user adds a new object.  This must be one of the 
+objects in the product, typically a Python Script or DTML object.
+</p>
+
+<dtml-if objectIds>
+<form action="manage_addPrincipiaFactory" method="post">
+<table cellspacing="0" cellpadding="2" border="0">
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-label">
+    Id
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <input type="text" name="id" size="40" />
+    </td>
+  </tr>
+
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-optional">
+    Title
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <input type="text" name="title" size="40" />
+    </td>
+  </tr>
+
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-label">
+    Add list name
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <input type="text" name="object_type" size="40" />
+    </td>
+  </tr>
+  
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-label">
+    Method
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <div class="form-element">
+    <select name="initial">
+<dtml-in objectItems>
+<dtml-if "meta_type != 'Principia Factory'">
+    <option>&dtml-sequence-key;</option>
+</dtml-if>
+</dtml-in>
+     </select>
+  </div>
+  </td>
+  </tr>
+
+  <tr>
+  <td></td>
+  <td align="left" valign="top">
+  <div class="form-element">
+  <br />
+  <input type="submit" name="submit" value="Generate" />
+  </div>
+  </td>
+  </tr>
+</table>
+</form>
+      
+<dtml-else>
+<p class="form-help">
+Before you can define a factory, you have to define one or more "methods", 
+such as Document or other objects that do the factory's work.
+</p>
+</dtml-if>
+
+<dtml-var manage_page_footer>
+

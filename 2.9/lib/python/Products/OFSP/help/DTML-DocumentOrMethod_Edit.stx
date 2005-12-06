@@ -1,0 +1,38 @@
+DTML Document/Method - Edit: Edit contents.
+
+  Description
+
+    This view allows you to edit the contents of a DTML Document or
+    Method.
+
+    Information
+
+      'Id' -- The id of the DTML Document or Method.
+
+      'Size' -- The size of the contents.
+
+      'Last modified' -- The time the object was last changed.
+
+  Controls
+
+    'Title' -- The optional title.
+
+    '[Text area]' -- The contents of the DTML Document or Method.
+
+    'Taller' and 'Shorter' -- Allows to adjust the height of the
+    contents text area.
+
+    'Wider' and 'Narrower' -- Allows to adjust the width of the
+    contents text area.
+
+    'Save Changes' -- Changes the contents.
+
+      **Note: When you change the contents it is parsed for correct
+      DTML syntax. If there is a syntax error, the contents will not
+      be changed.**
+
+    'File' -- Indicates a file to be uploaded to replace the contents
+    of the current object. Use the 'Browse ...' button to select a
+    local file.
+
+    'Upload File' -- Upload the file and change the contents.

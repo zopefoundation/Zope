@@ -1,0 +1,3 @@
+<p tal:content="context/mymethod">Alpha</p>
+<p tal:content="view/eagle">Beta</p>
+<div tal:replace="structure context/@@flamingo.html">Gamma</div>

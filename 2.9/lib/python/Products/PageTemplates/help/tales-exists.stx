@@ -1,0 +1,27 @@
+TALES Exists expressions
+
+  Syntax
+
+    Exists expression syntax::
+
+      exists_expressions ::= 'exists:' path_expression
+
+  Description
+
+    Exists expressions test for the existence of paths.  An exists
+    expression returns true when the path expressions following it
+    expression returns a value. It is false when the path expression
+    cannot locate an object.
+
+  Examples
+
+    Testing for the existence of a form variable::
+
+      <p tal:condition="not:exists:request/form/number">
+        Please enter a number between 0 and 5
+      </p>
+
+    Note that in this case you can't use the expression,
+    'not:request/form/number', since that expression will be true if
+    the 'number' variable exists and is zero.
+    

@@ -1,0 +1,53 @@
+External Method Changes
+
+  External Method 1.3
+  
+    Features
+  
+     - Permissions have been updated to work with the Principia 1.2 and
+       later permission-management enhancements.
+  
+  
+  External Method 1.2
+  
+    Bug Fixes
+  
+      - TypeError exceptions in external methods were reported
+	incorrectly. 
+  
+    Features
+  
+      - ExternalMethods now use standard_error_message to report errors.
+  
+  
+  External Method 1.1
+  
+    This release changes the way that ExternalMethods are bound to 
+    folders.  ExternalMethods now bind themselves to their acquisition
+    parents, rather than to REQUEST['PARENTS'][0].  This is needed to
+    make ExternalMethods useful in trees and exprs.  The 1.1 release of
+    Principia is needed for this release of ExternalMethod to
+    function correctly.
+  
+
+  External Method 1.0.3
+  
+    Bugs Fixed
+  
+     - A new copy of an external method was written the first time
+       it was used after being loaded from the database.  In addition to
+       database bloat, this could also cause strange session/locking behavior.
+  
+  
+  External Method 1.0.2
+  
+    Bugs Fixed
+  
+      - Add permissions were not editable.
+  
+    Features
+	
+      - If an ExternalMethod takes a single argument, named self, and is
+	called with no arguments, then the folder in which the method
+	is accessed is passed.  This is handy when the method is called 
+	from a document.

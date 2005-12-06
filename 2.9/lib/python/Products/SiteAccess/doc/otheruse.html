@@ -1,0 +1,48 @@
+<dtml-comment>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+ <HEAD> <TITLE>Other Uses of Access Rules</TITLE> </HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#000066" VLINK="#606060" TOPMARGIN="0" LEFTMARGIN="0" MARGINWIDTH="0" MARGINHEIGHT="0">
+</dtml-comment>
+<dtml-var doc_header>
+
+<h4>Embedded Session Values</h4>
+Sometimes it would be nice to be able to embed a variable/value in the middle of a URL,
+rather than having to tack a query string onto the end.  It can be essential, such as
+when you want parameterized pages to be spiderable (spiders don't like query strings).
+<br><br>
+One way to accomplish this is with an Access Rule.  For example, suppose we created a
+Zope folder called 'Session', containing the following DTML Method Access Rule:
+<pre>
+&lt;dtml-let stack=&quot;REQUEST['TraversalRequestNameStack']&quot;&gt;
+Don't intercept management requests
+&lt;dtml-unless &quot;stack[0][:6]=='manage'&quot;&gt;
+  Is the next path segment a positive integer?
+  &lt;dtml-if &quot;_.int(stack[-1])&gt;0&quot;&gt;
+    Save it and remove it from the path
+    &lt;dtml-call &quot;REQUEST.set('SessionID', stack.pop())&quot;&gt;
+    Add it back into the logical path
+    &lt;dtml-call &quot;REQUEST.setVirtualRoot(REQUEST.steps+[SessionID])&quot;&gt;
+  &lt;dtml-else&gt;
+    &lt;dtml-raise type=&quot;Invalid&quot;&gt;Invalid Session ID!&lt;/dtml-raise&gt;
+  &lt;/dtml-if&gt;
+&lt;/dtml-unless&gt;
+&lt;/dtml-let&gt;
+</pre>
+Then the request URI 'http://www.mysite.com/foo/Session/84076/step3' will publish the
+Zope object at '/foo/Session/step3', with variable 'SessionID' set to '84076'.  Thanks
+to acquisition, 'step3' doesn't need to be in 'Session'. 'Session' may be empty
+except for the Access Rule, or it may contain session-management objects.
+<br><br>
+When writing this kind of Access Rule, it is useful to remember the following:
+<ul>
+<li>REQUEST['TraversalRequestNameStack'] is the stack of Ids yet to be traversed.</li>
+<li>REQUEST.steps is the list of Ids already traversed.</li>
+<li>You can manipulate the path stack with append, insert, pop, and similar list operations.</li>
+<li>You should not manipulate 'steps', instead using REQUEST.setVirtualRoot('path') to alter the
+apparent traversal history and URL generation.</li>
+</ul>
+<dtml-var doc_footer>
+<dtml-comment>
+</BODY></HTML>
+</dtml-comment>

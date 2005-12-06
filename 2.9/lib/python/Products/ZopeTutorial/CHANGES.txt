@@ -1,0 +1,119 @@
+Zope Tutorial 1.2
+
+  Bug Fixes
+
+    * Fix niglet in step 7.
+
+Zope Tutorial 1.1
+
+  Features
+
+    * Updates lessions to use ZPT in place of DTML. This required
+      extensive reworking in some lessons.
+
+    * Update the examples .zexp file.
+
+    * Updated likes to the Zope book to refer to the current online
+      version.
+
+    * Updated the glossary.
+
+    * Added a ZPT reference link feature for the glossary.
+
+Zope Tutorial 1.0a6
+
+  Bug Fixes
+  
+    * Rearranged things a bit for 2.2 release.
+  
+    * Improved missing cookie behavior.
+    
+    * Improved descriptions of management screen navigation.
+    
+    * Many typos and nits fixed in lessons and examples.
+  
+  Known Limitations
+  
+    * Requires Zope 2.1.6 or higher.
+    
+    * Works better with HTTP cookies.
+    
+Zope Tutorial 1.0a5
+
+  Features
+  
+    * Changed the way examples are installed. Now the examples are
+    installed by adding a Zope object. This resolves a lot of security
+    issues.
+    
+    * Added some preliminary API docs, and an API documentation
+    infrastructure.
+    
+  Bug Fixes
+  
+    * Miscellaneous restructuring and fixing.
+  
+  Known Limitations
+  
+    * Requires Zope 2.1.6 or higher.
+    
+    * Requires HTTP cookies.
+    
+Zope Tutorial 1.0a4
+
+  Features
+  
+    * Added an introduction.
+    
+    * Improved installation location and verification.
+    
+  Bug Fixes
+  
+    * More information about how to navigate between management
+    screens.
+
+    * Many typos fixed thanks to Karl Ulbrich.
+  
+  Known Bugs
+  
+    * Requires Zope 2.1.6 or higher.
+    
+Zope Tutorial 1.0a3
+
+  Features
+  
+    * Glossary greatly improved and linked into lessons.
+
+  Bug Fixes
+
+    * Install now correctly sets up gadfly database.
+
+    * Some DTML typos fixed thanks to Didier Georgieff.
+  
+  Known Bugs
+  
+    * Requires Zope 2.1.6 or higher.
+    
+Zope Tutorial 1.0a2
+
+  Features
+  
+    * Improved PRE formatting. Examples now look nice.
+  
+    * Improved examples navigation, no longer requires Javascript.
+
+    * Added more information to the glossary.
+    
+    * Added feedback link.
+
+  Bug Fixes
+  
+    * Grammar and typo fixes. 
+
+  Known Bugs
+  
+    * Requires Zope 2.1.6 or higher.
+
+Zope Tutorial 1.0a1
+  
+  Initial preview release.

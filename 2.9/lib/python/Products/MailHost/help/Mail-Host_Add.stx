@@ -1,0 +1,18 @@
+MailHost - Add: Create a new MailHost
+
+  Description
+
+    Create a new MailHost object.
+
+  Controls
+
+    'ID' -- The id of the MailHost object.
+
+    'Title' -- The title of the MailHost.
+
+    'SMTP host' -- The domain name or address of the SMTP mail server
+      to relay mail through.
+
+    'SMTP port' -- The port of the SMTP mail server to relay mail
+    through.
+

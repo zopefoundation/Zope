@@ -1,0 +1,27 @@
+ZClass - Basic: Basic class attributes.
+  
+  Description
+
+    This view allows you to manage the basic attributes of a ZClass.
+
+  Controls
+
+    'Title' -- The title of the ZClass.
+
+    'Meta type' -- The name of the ZClass as it appears in the product
+    add list.
+
+    'class id' -- The unique class identifier for the ZClass.
+
+    'icon' -- The path to the ZClass's icon.
+
+    'Icon image' -- Upload a new image file to sever as the ZClass's
+    icon. Use the 'Browse...' button to local a file to upload.
+ 
+      The uploaded icon file should be a 16x16 pixel GIF file.
+
+    'Change' -- Change the ZClass.
+
+
+
+

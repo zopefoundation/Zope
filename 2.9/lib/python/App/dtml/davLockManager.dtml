@@ -1,0 +1,99 @@
+<dtml-var manage_page_header>
+<dtml-var manage_tabs>
+<script type="text/javascript">
+<!-- 
+
+isSelected = false;
+
+function toggleSelect() {
+  if (isSelected == false) {
+    for (i = 0; i < document.objectItems.length; i++)
+      document.objectItems.elements[i].checked = true ;
+      isSelected = true;
+      document.objectItems.selectButton.value = "Deselect All";
+      return isSelected;
+  }
+  else {
+    for (i = 0; i < document.objectItems.length; i++)
+      document.objectItems.elements[i].checked = false ;
+      isSelected = false;
+      document.objectItems.selectButton.value = "Select All";
+      return isSelected;       
+  }
+}
+
+//-->
+</script>
+
+<dtml-let from_path="REQUEST.form.get('frompath',None)"
+          lockedobjs="from_path and findLockedObjects(frompath=from_path) or []">
+
+<dtml-if lockedobjs>
+ <p class="std-text">All locked objects
+ <dtml-if frompath>from path <em>&dtml-frompath;</em></dtml-if>
+ are listed below.</p>
+<dtml-else>
+ <p class="std-text">No locked objects
+ <dtml-if frompath>from path <em>&dtml-frompath;</em></dtml-if>
+ were found.</p>
+</dtml-if>
+
+<form action="&dtml-URL0;" name="finderform">
+<p class="std-text">Search for locked objects starting from path:
+<input type="text" size="14" name="frompath" value="&dtml.missing-frompath;" 
+ class="form-element" />
+<input type="submit" value="Go" class="form-element" />
+</p>
+</form>
+
+<form action="manage_unlockObjects" name="objectItems" method="post">
+<dtml-if lockedobjs>
+<table width="100%" cellspacing="0" cellpadding="2" border="0">
+ <tr class="list-header">
+  <td width="60%" class="list-item">Locked Item</td>
+  <td width="40%" class="list-item">Lock Info</td>
+ </tr>
+</table>
+
+<table width="100%" cellspacing="0" cellpadding="2" border="0">
+ <dtml-in lockedobjs>
+ <dtml-if sequence-odd>
+  <tr class="row-normal">
+ <dtml-else>
+  <tr class="row-hilite">
+ </dtml-if sequence-odd>
+
+ <td align="left" valign="top" width="16">
+  <input type="checkbox" name="paths:list" value="&dtml-sequence-key;"
+   id="cb_&dtml-sequence-index;" />
+ </td>
+ <td align="left" valign="top" width="16">
+  <dtml-if icon>
+  <img src="&dtml-BASEPATH1;/&dtml-icon;" alt="[&dtml-meta_type;]"
+   title="[&dtml-meta_type;]" />
+  </dtml-if icon>
+ </td>
+ <td align="left" valign="top" class="list-item">
+  <label for="cb_&dtml-sequence-index;">&dtml-sequence-key;</label>
+ </td>
+ <td align="left" valign="top" width="40%" class="list-item">
+  <dtml-in sequence-item mapping>
+   <strong>Owner:</strong> &dtml-owner;,
+   <strong>Token:</strong> &dtml-token;<br />
+  </dtml-in>
+ </td>
+ </tr>
+ </dtml-in lockedobjs>
+</table>
+<input type="hidden" name="frompath" value="&dtml.missing-frompath;" />
+<script type="text/javascript">
+<!-- 
+ document.write('<input class="form-element" type="button" name="selectButton" value="Select All" onClick="toggleSelect(); return false">')
+//-->
+</script>
+&nbsp; <input class="form-element" type="submit" value="Unlock objects" />
+</dtml-if>
+</form>
+</dtml-let>
+
+<dtml-var manage_page_footer>

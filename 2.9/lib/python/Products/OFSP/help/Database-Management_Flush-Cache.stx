@@ -1,0 +1,12 @@
+Database Management - Flush Cache: Zope Database cache flush.
+  
+  Description
+
+    This view allows you to flush the Zope database cache.
+
+  Controls
+
+    'Minimize' -- Allows you to remove all persistent objects from
+    memory. They will be reloaded again on demand, when they
+    are next accessed.
+

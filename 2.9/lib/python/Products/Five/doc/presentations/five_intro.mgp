@@ -1,0 +1,243 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%deffont "standard" xfont "helvetica-medium-r"
+%deffont "thick" xfont "helvetica-bold-r"
+%deffont "typewriter" xfont "courier-medium-r"
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%% Default settings per each line numbers.
+%%
+%default 1 area 90 90, leftfill, size 2, fore "gray20", back "white", font "standard", hgap 0
+%default 2 size 7, vgap 10, prefix " ", ccolor "blue"
+%default 3 size 2, bar "gray70", vgap 10
+%default 4 size 5, fore "gray20", vgap 30, prefix " ", font "standard"
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%% Default settings that are applied to TAB-indented lines.
+%%
+%tab 1 size 5, vgap 40, prefix "  ", icon box "red" 50
+%tab 2 size 4, vgap 40, prefix "      ", icon arc "yellow" 50
+%tab 3 size 3, vgap 40, prefix "            ", icon delta3 "white" 40
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%page
+
+Five - Zope 3 in Zope 2
+
+
+
+
+%center
+Martijn Faassen, Infrae
+faassen@infrae.com
+Five developer
+
+%page
+
+An Introduction to Five
+
+
+	Why Five?
+
+	What is Five?
+
+	Where are we, where are we going?
+
+%page
+
+Motto
+
+
+It was the dawn of the third age of Zope. The Five project was a dream given form. Its goal: to use Zope 3 technologies in Zope 2.7 by creating a Zope 2 product where Zope 3 and Zope 2 could work out their differences peacefully.
+
+(Babylon 5 season 1 intro, creatively quoted)
+
+%page
+
+Motto 2
+
+
+The Law of Fives states simply that: ALL THINGS HAPPEN IN FIVES, OR ARE DIVISIBLE BY OR ARE MULTIPLES OF FIVE, OR ARE SOMEHOW DIRECTLY OR INDIRECTLY RELATED TO FIVE.
+
+THE LAW OF FIVES IS NEVER WRONG. 
+
+(Principia Discordia)
+
+%page
+
+The problem
+        
+
+	We're using Zope 2 in production
+
+	Zope 2 is showing its age
+
+	Zope 3 has better ways to do things
+
+	But can't just switch, we have codebases, customers!
+
+%page
+
+Benefits of using Zope 3 in Zope 2
+
+
+	Able to use Zope 3 technologies right away
+
+	Don't reinvent the wheel/APIs
+
+	Better prepared for Zope 3 transition
+
+	Evolution, not revolution
+
+	Convergence, not divergence (this is important)
+
+%page
+
+Divergence
+
+
+	Infrae created Silva, Nuxeo CPS, etc
+
+	Everybody else started using Plone (why?!)
+
+	I want to use cool Plone technology
+
+	Silva is cool too, you may want to use it
+
+	I don't want to have to reinvent every wheel (just some)
+
+%page
+
+What's stopping us from sharing?
+
+
+	Zope 2 components are hard to share between apps
+
+	Even CMF components need work to share
+
+	Especially if you don't use CMF... (Silva)
+
+	Zope 2 framework burden is making it hard
+
+	Clean Python code is easier to share
+
+%page
+
+Convergence
+
+
+	Unify our diverse efforts
+
+	Zope 3 allows you to write Python, less framework sacrifices
+
+	Zope 3 allows the glueing of components
+
+	Zope 3 is the future
+
+	Five makes some of the future available today
+
+%page
+
+What works now? - an overview
+
+
+	Interfaces
+
+	Schema
+
+	ZCML
+
+	Adapters
+
+	Views, including layers, skins
+
+%page
+
+What works now, continued
+
+
+	Zope 3 page template engine
+
+	Traversal, resources
+
+	Zope 2 security from ZCML
+
+	Events
+
+	Beginnings of forms machinery
+
+%page
+
+Progress made since June
+
+
+	Initial announcement at Europython
+
+	As promised, moved to SVN at codespeak.net
+
+	Got website, mailing list
+
+	People joined the project
+
+%page
+
+Progress made since June, continued
+
+
+	Lots of excellent contributions!
+
+	Much better view infrastructure (traversal)
+
+	ZCML's interaction with Zope 2 products much improved
+
+	UnionCMS and other projects are starting to use it!
+
+%page
+
+The Zope 3 Base
+
+
+	Five is part of the Zope 3 Base
+
+	Zope 3 Base - All Your Bobobase Are Belong To Us
+
+	Possibly the cutest Zope 3 website anywhere
+
+	http://codespeak.net/z3
+
+%page
+
+Zope 3 Base
+
+
+
+
+
+
+%center 
+%image "z3-banner.png"
+
+%page
+
+Zope 3 Base, continued
+
+
+	Second area of Zope 3 related development
+
+	Equivalent of Plone collective, for Zope 3
+
+	More freewheeling than dev.zope.org
+
+	Less freewheeling than Plone collective, however
+
+	Cuter than both
+
+%page
+
+Evolution: Five-ification
+
+
+	Five is not just for new Zope 2 projects
+
+	Five can interoperate with existing Zope 2 applications
+
+	Five in Plone - Flon
+

@@ -1,0 +1,25 @@
+User Folder - Properties: Change properties of the user folder.
+  
+  Description
+
+    This view allows you to change settings of a user folder.
+
+  Controls
+
+    The 'Encrypt user passwords' checkbox controls whether user passwords
+    are stored encrypted.  If passwords are stored encrypted, users can
+    still use their password to log in but it is very difficult for anyone,
+    especially intruders, to decrypt the passwords.  It also prevents
+    system administrators from telling users what their current
+    password is, although system administrators can still reset user
+    passwords.
+
+    If you click the 'Update existing passwords' button while the
+    'Encrypt user passwords' checkbox is on, Zope will encrypt all the
+    unencrypted passwords of the users in the folder.  Zope uses the
+    Secure Hash Algorithm so the encryption is irreversible.
+
+    Note that you can still undo after updating the existing passwords
+    because the unencrypted passwords are stored in the history in ZODB.
+    After encrypting the passwords, you should pack the database then
+    delete the temporary storage files created during packing.

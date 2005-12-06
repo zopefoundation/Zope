@@ -1,0 +1,36 @@
+Bindings View: View/Change Script Bindings
+
+    Description
+
+        This view allows you to set "bindings" (associations between a
+        name and a Zope object) in the context of a single Script.
+        These names can be used within the Script to refer to objects
+        outside the script.
+        
+    Controls
+
+        'Context' -- associate a name with the acqusition parent of
+         the script when it is invoked.  The default name for this
+         binding is "context".
+
+        'Container' -- associate a name with the physical parent
+         container of the script when it is invoked.  The default name
+         for this binding is "container".
+
+        'Script' -- associate a name with the script object itself.
+        There is no default name for this binding.
+
+        'Namespace' -- associate a name with the DTML "namespace"
+        object.  When this script is called from DTML, the namespace
+        name will be bound to the DTML namespace object, otherwise it
+        will be bound to an empty namespace.  There is no default name
+        for this binding.
+
+        'Subpath' -- associate a name with the portion of the URL path
+        after the script's name if the script is called directly via a
+        URL.  The subpath is represented as a list of strings split a
+        slash separators if the script is called directly from a URL.
+        Otherwise, the subpath is an empty list.  The default name for
+        this binding is "traverse_subpath".
+
+        'Save Changes' -- saves changes made to the elements of this form.

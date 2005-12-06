@@ -1,0 +1,148 @@
+var: Inserts a variable
+
+  The 'var' tags allows you insert variables into
+  DTML output.
+
+  Syntax
+
+    'var' tag syntax::
+
+      <dtml-var Variable|expr="Expression">
+
+    The 'var' tag is a singleton tag.  The 'var' tag finds a variable
+    by searching the DTML namespace which usually consists of current
+    object, the current object's containers, and finally the web
+    request.  If the variable is found, it is inserted into the DTML
+    output. If not found, Zope raises an error.
+
+    'var' tag entity syntax::
+
+      &dtml-variableName;
+
+    Entity syntax is a short cut which inserts and HTML quotes the
+    variable. It is useful when inserting variables into HTML
+    tags.
+
+    'var' tag entity syntax with attributes::
+
+      &dtml.attribute1[.attribute2]...-variableName;
+
+    To a limited degree you may specify attributes with the entity
+    syntax. You may include zero or more attributes delimited by
+    periods. You cannot provide arguments for attributes using the
+    entity syntax. If you provide zero or more attributes, then the
+    variable is not automatically HTML quoted. Thus you can avoid HTML
+    quoting with this syntax, '&dtml.-variableName;'.
+
+  Attributes
+
+    html_quote -- Convert characters that have special meaning in
+    HTML to HTML character entities.
+
+    missing=string -- Specify a default value in case Zope cannot find
+    the variable.
+
+    fmt=string -- Format a variable. Zope provides a few built-in
+    formats including C-style format strings. For more information on
+    C-style format strings see the "Python Library
+    Reference":http://www.python.org/doc/current/lib/typesseq-strings.html
+    If the format string is not a built-in format, then it is assumed
+    to be a method of the object, and it called.
+
+      whole-dollars -- Formats the variable as dollars.
+
+      dollars-and-cents -- Formats the variable as dollars and cents.
+
+      collection-length -- The length of the variable, assuming it is
+      a sequence.
+
+      structured-text -- Formats the variable as Structured Text. For
+      more information on Structured Text see "Structured Text
+      How-To":http://www.zope.org/Members/millejoh/structuredText on
+      the Zope.org web site.
+
+    null=string -- A default value to use if the variable is None.
+
+    lower -- Converts upper-case letters to lower case. 
+
+    upper -- Converts lower-case letters to upper case. 
+
+    capitalize -- Capitalizes the first character of the inserted
+    word. 
+
+    spacify -- Changes underscores in the inserted value to spaces.
+
+    thousands_commas -- Inserts commas every three
+    digits to the left of a decimal point in values containing
+    numbers for example '12000' becomes '12,000'.
+
+    url -- Inserts the URL of the object, by calling its
+    'absolute_url' method.
+
+    url_quote -- Converts characters that have special meaning in
+    URLs to HTML character entities.
+
+    url_quote_plus -- URL quotes character, like 'url_quote' but also
+    converts spaces to plus signs.
+
+    url_unquote -- Converts HTML '%xx' escapes into their single
+    character values (ie: undoes the effects of url_quote).
+
+    url_unquote_plus -- Like url_unquote, but also replaces '+'
+    characters with spaces (ie: undoes the effects of url_quote_plus).
+
+    sql_quote -- Converts single quotes to pairs of single
+    quotes. This is needed to safely include values in SQL strings.
+
+    newline_to_br -- Convert newlines (including carriage returns) to
+    HTML break tags.
+
+    size=arg -- Truncates the variable at the given length
+    (Note: if a space occurs in the second half of the truncated
+    string, then the string is further truncated to the right-most space).
+
+    etc=arg -- Specifies a string to add to the end of a string
+    which has been truncated (by setting the 'size' attribute listed
+    above).  By default, this is '...'
+
+  Examples
+
+    Inserting a simple variable into a document::
+
+      <dtml-var standard_html_header>
+
+    Truncation::
+
+      <dtml-var colors size=10 etc=", etc.">
+
+    will produce the following output if *colors* is the string 'red
+    yellow green'::
+
+      red yellow, etc.
+
+    C-style string formatting::
+
+      <dtml-var expr="23432.2323" fmt="%.2f">
+
+    renders to::
+     
+      23432.23
+      
+    Inserting a variable, *link*, inside an HTML 'A' tag with the entity
+    syntax::
+
+      <a href="&dtml-link;">Link</a>
+
+    Inserting a link to a document 'doc', using entity syntax with
+    attributes::
+
+      <a href="&dtml.url-doc;"><dtml-var doc fmt="title_or_id"></a>
+
+    This creates an HTML link to an object using its URL and
+    title. This example calls the object's 'absolute_url' method for
+    the URL (using the 'url' attribute) and its 'title_or_id' method
+    for the title.
+
+
+
+

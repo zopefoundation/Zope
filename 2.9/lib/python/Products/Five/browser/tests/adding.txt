@@ -1,0 +1,53 @@
+============
+Adding tests
+============
+
+ObjectManagerNameChooser
+------------------------
+
+First we need to import and setup some prerequisites:
+
+  >>> from Products.Five.tests.testing import manage_addFiveTraversableFolder
+  >>> from Products.Five.browser.adding import ObjectManagerNameChooser
+
+  >>> manage_addFiveTraversableFolder(self.folder, 'testoid', 'Testoid')
+  >>> chooser = ObjectManagerNameChooser(self.folder)
+
+Now we can start.  ``INameChooser`` defines a ``checkName()`` method
+that checks whether a given name is valid in the container or not.
+Under the hood, ``ObjectManagerNameChooser`` calls ``_checkId()`` of
+the object manager.  Valid names/ids are those that aren't in use yet
+and don't contain invalid characters.
+
+  >>> chooser.checkName('abc', object())
+
+  >>> chooser.checkName('testoid', object())
+  Traceback (most recent call last):
+  ...
+  UserError: The id "testoid" is invalid - it is already in use.
+
+  >>> chooser.checkName('slash/slash', object())
+  Traceback (most recent call last):
+  ...
+  UserError: The id "slash/slash" contains characters illegal in URLs.
+
+``INameChooser`` also promises us a ``chooseName()`` method that
+chooses a name for us in case we don't have one or that chooses a
+different name in case the one we chose was invalid.
+
+  >>> chooser.chooseName('', self.folder.testoid)
+  'FiveTraversableFolder'
+
+  >>> chooser.chooseName('abc', self.folder.testoid)
+  'abc'
+
+  >>> chooser.chooseName('testoid', self.folder.testoid)
+  'testoid-1'
+
+Of course, if we start out with something bad, it isn't going to
+become good automagically:
+
+  >>> chooser.chooseName('slash/slash', object())
+  Traceback (most recent call last):
+  ...
+  UserError: The id "slash/slash" contains characters illegal in URLs.

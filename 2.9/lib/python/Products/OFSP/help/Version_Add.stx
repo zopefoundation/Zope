@@ -1,0 +1,17 @@
+Version - Add: Create a new Version
+
+  Description
+
+    This view allows you to create a new Version.
+
+  Controls
+
+    'Id' -- The id of the Version.
+
+    'Title' -- The optional title of the Version.
+
+    'Add' -- Creates a new Version.
+
+
+
+

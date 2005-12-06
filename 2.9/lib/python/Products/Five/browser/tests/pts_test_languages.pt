@@ -1,0 +1,7 @@
+<html>
+<body>
+<!-- fivetest is a Zope 3 style i18n domain, default is a PTS domain -->
+<p i18n:domain="fivetest" i18n:translate="">This is a message</p>
+<p i18n:domain="PlacelessTranslationService" i18n:translate="">Reload this catalog</p>
+</body>
+</html>

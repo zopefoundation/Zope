@@ -1,0 +1,76 @@
+<dtml-var manage_page_header>
+
+<dtml-var "manage_form_title(this(), _,
+           form_title='Add Session Data Manager',
+           help_product='Sessions',
+           help_topic='session-add.stx'
+	   )">
+
+<FORM ACTION="constructSessionDataManager" METHOD="POST">
+<TABLE CELLSPACING="2">
+<tr>
+<div class="form-help">
+Zope Session Data Managers objects keep track of your users' session data
+objects.  Developers interact with a Session Data Manager in order to store
+and retrieve information during a user session.  A Session Data Manager
+communicates with a Browser Id Manager to determine the session information
+for the current user, and hands out Session Data Objects related to that
+user.
+</div>
+</tr>
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <div class="form-label">
+      Id
+    </div>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <INPUT TYPE="TEXT" NAME="id" SIZE="20">
+  </TD>
+</TR>
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <div class="form-label">
+     Title
+    </div>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <INPUT TYPE="TEXT" NAME="title" SIZE="40">
+  </TD>
+</TR>
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <div class="form-label">
+    Transient Object Container Path
+    </div>
+    <div class="form-help">e.g. '/temp_folder/session_data'.</div>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <INPUT TYPE="TEXT" NAME="path" SIZE="60" value="">
+  </TD>
+</TR>
+
+<tr>
+  <td align="LEFT" valign="TOP">
+    <div class="form-label">
+    Place SESSION in REQUEST object as
+    </div>
+  </td>
+  <td align="LEFT" valign="TOP">
+  	<input class="form-element" type="TEXT" name="requestName"
+         value="SESSION">
+  </td>
+</tr>
+
+<tr>
+</TR> 
+
+<TR> 
+  <TD>
+  </TD> 
+  <TD> <BR><INPUT class="form-element" TYPE="SUBMIT" VALUE=" Add "> </TD> 
+</TR> 
+</TABLE> 
+</FORM> 
+<dtml-var manage_page_footer>
+

@@ -1,0 +1,35 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:browser="http://namespaces.zope.org/browser">
+
+  <!-- macro aggregation page -->
+  <browser:page
+      for="*"
+      name="fivetest_macros"
+      permission="zope2.View"
+      class=".demomacros.StandardMacros"
+      allowed_interface="zope.interface.common.mapping.IItemMapping"
+      />
+
+  <!-- macro pages -->
+  <browser:page
+      for="OFS.interfaces.IFolder"
+      template="bird.pt"
+      name="bird.pt"
+      permission="zope2.ViewManagementScreens"
+      />
+
+  <browser:page
+      for="OFS.interfaces.IFolder"
+      template="bird.pt"
+      name="bird_macros"
+      permission="zope2.ViewManagementScreens"
+      />
+
+  <browser:page
+      for="OFS.interfaces.IFolder"
+      template="dog.pt"
+      name="dog_macros"
+      permission="zope2.ViewManagementScreens"
+      />
+
+</configure>

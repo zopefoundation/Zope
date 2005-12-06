@@ -1,0 +1,11 @@
+<div metal:define-macro="OUTER">
+  OUTER
+  <span metal:define-macro="INNER">INNER</span>
+  OUTER
+</div>
+
+<div metal:use-macro="OUTER">
+  OUTER
+  <span>INNER</span>
+  OUTER
+</div>

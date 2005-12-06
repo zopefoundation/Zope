@@ -1,0 +1,33 @@
+<html>
+<head>
+<title>&dtml-title;</title>
+
+<style type="text/css">
+
+.instructions{
+background: #FFFFAA;
+border-width: thin;
+border-style: solid;
+padding: 10pt;
+}
+
+.explanation{
+border-width: thin;
+border-style: solid;
+padding: 10pt;
+}
+
+.api{
+font-size: 14pt;
+font-family : "Courier New", Courier, monospace;
+}
+
+.attribute, .method{
+font-size: 12pt;
+font-family : "Courier New", Courier, monospace;
+}
+
+</style>
+
+</head>
+<body bgcolor="#FFFFFF">

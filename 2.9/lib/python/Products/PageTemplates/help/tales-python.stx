@@ -1,0 +1,128 @@
+TALES Python expressions
+
+  Syntax
+
+    Python expression syntax::
+
+      Any valid Python language expression
+
+  Description
+  
+    Python expressions evaluate Python code in a security-restricted
+    environment. Python expressions offer the same facilities as those
+    available in Python-based Scripts and DTML variable expressions.
+
+    Security Restrictions
+
+      Python expressions are subject to the same security restrictions
+      as Python-based scripts. These restrictions include:
+
+      access limits -- Python expressions are subject to Zope
+      permission and role security restrictions. In addition,
+      expressions cannot access objects whose names begin with
+      underscore.
+
+      write limits -- Python expressions cannot change attributes of
+      Zope objects.
+
+      Despite these limits malicious Python expressions can cause
+      problems.  See The Zope Book for more information.
+
+    Built-in Functions
+
+      Python expressions have the same built-ins as Python-based
+      Scripts with a few additions.
+
+      These standard Python built-ins are available: 'None', 'abs',
+      'apply', 'callable', 'chr', 'cmp', 'complex', 'delattr',
+      'divmod', 'filter', 'float', 'getattr', 'hash', 'hex', 'int',
+      'isinstance', 'issubclass', 'list', 'len', 'long', 'map', 'max',
+      'min', 'oct', 'ord', 'repr', 'round', 'setattr', 'str', 'tuple'.
+
+      The 'range' and 'pow' functions are available and work the same
+      way they do in standard Python; however, they are limited to
+      keep them from generating very large numbers and sequences. This
+      limitation helps protect against denial of service attacks.
+
+      In addition, these utility functions are available: 'DateTime',
+      'test', and 'same_type'. See "DTML
+      functions":../../OFSP/Help/dtml-funcs.stx for more
+      information on these functions.
+
+      Finally, these functions are available in Python expressions,
+      but not in Python-based scripts:
+
+      'path(string)' -- Evaluate a TALES "path":tales-path.stx
+      expression.
+
+      'string(string)' -- Evaluate a TALES "string":tales-string.stx
+      expression.
+
+      'exists(string)' -- Evaluates a TALES "exists":tales-exists.stx
+      expression.
+
+      'nocall(string)' -- Evaluates a TALES "nocall":tales-nocall.stx
+      expression.
+
+    Python Modules
+
+      A number of Python modules are available by default. You can
+      make more modules available. You can access modules either via
+      path expressions (for example 'modules/string/join') or in
+      Python with the 'modules' mapping object (for example
+      'modules["string"].join'). Here are the default modules:
+
+      'string' -- The standard "Python string
+      module":http://www.python.org/doc/current/lib/module-string.html. Note:
+      most of the functions in the module are also available as
+      methods on string objects.
+
+      'random' -- The standard "Python random
+      module":http://www.python.org/doc/current/lib/module-random.html.
+
+      'math' -- The standard "Python math
+      module":http://www.python.org/doc/current/lib/module-math.html.
+
+      'sequence' -- A module with a powerful sorting function. See
+      "sequence":../../OFSP/Help/sequence.py for more information.
+
+      'Products.PythonScripts.standard' -- Various HTML formatting
+      functions available in DTML. See
+      "Products.PythonScripts.standard":../../PythonScripts/Help/standard.py
+      for more information.
+
+      'ZTUtils' -- Batch processing facilities similar to those
+      offered by 'dtml-in'. See "ZTUtils":ZTUtils.py
+      for more information.
+
+      'AccessControl' -- Security and access checking facilities. See
+      "AccessControl":../../OFSP/Help/AccessControl.py for more
+      information.
+
+  Examples
+
+    Using a module usage (pick a random choice from a list)::
+
+      <span tal:replace="python:modules['random'].choice(['one', 
+                           'two', 'three', 'four', 'five'])">
+        a random number between one and five
+      </span>
+
+    String processing (capitalize the user name)::
+
+      <p tal:content="python:user.getUserName().capitalize()">
+        User Name
+      </p>
+
+    Basic math (convert an image size to megabytes)::
+
+      <p tal:content="python:image.getSize() / 1048576.0">
+        12.2323
+      </p>
+
+    String formatting (format a float to two decimal places)::
+
+      <p tal:content="python:'%0.2f' % size">
+        13.56
+      </p>
+

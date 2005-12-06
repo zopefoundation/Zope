@@ -1,0 +1,115 @@
+Localizer languages
+===================
+
+Before we start, we need to set up a manager user to be able to create
+the portal:
+
+  >>> uf = self.folder.acl_users
+  >>> uf._doAddUser('manager', 'r00t', ['Manager'], [])
+
+We need to 1) configure the Zope 3 i18n message catalogs, 2) make the
+CPS portal traversable, 3) register the Localizer languagees adapter
+and 4) register our test page:
+
+  >>> configure_zcml = """
+  ... <configure 
+  ...     xmlns="http://namespaces.zope.org/zope"
+  ...     xmlns:browser="http://namespaces.zope.org/browser"
+  ...     xmlns:five="http://namespaces.zope.org/five"
+  ...     xmlns:i18n="http://namespaces.zope.org/i18n"
+  ...     >
+  ...   <configure package="Products.Five.tests">
+  ...     <i18n:registerTranslations directory="locales" />
+  ...   </configure>
+  ... 
+  ...   <five:traversable class="Products.CPSDefault.Portal.CPSDefaultSite" />
+  ... 
+  ...   <adapter
+  ...       for="zope.publisher.interfaces.http.IHTTPRequest"
+  ...       provides="zope.i18n.interfaces.IUserPreferredLanguages"
+  ...       factory="Products.Five.i18n.LocalizerLanguages"
+  ...       />
+  ... 
+  ...   <configure package="Products.Five.browser.tests">
+  ...     <browser:page
+  ...         for="*"
+  ...         template="cps_test_localizer.pt"
+  ...         name="cps_test_localizer.html"
+  ...         permission="zope2.View"
+  ...         />
+  ...   </configure>
+  ... </configure>
+  ... """
+  >>> from Products.Five import zcml
+  >>> zcml.load_string(configure_zcml)
+
+Create a CPS portal.  We print an additional line before creating it
+because PortalTransforms might print stuff to stdout and doctest
+doesn't allow us to ellide a first line.
+
+  >>> print "Ignore lines after me"; print http(r"""
+  ... POST /test_folder_1_/manage_addProduct/CPSDefault/manage_addCPSDefaultSite HTTP/1.1
+  ... Authorization: Basic manager:r00t
+  ... Content-Length: 269
+  ... Content-Type: application/x-www-form-urlencoded
+  ... 
+  ... id=cps&title=CPS+Portal&description=&manager_id=manager&manager_sn=CPS+manager&manager_givenName=Manager&manager_email=root%40localhost&manager_password=root&manager_password_confirmation=root&langs_list%3Alist=en&langs_list%3Alist=fr&langs_list%3Alist=de&submit=Create""")
+  Ignore lines after me
+  ...
+  HTTP/1.1 200 OK
+  ...
+
+Now for some actual testing... Our test page is a simple ZPT
+translating two messages from different domains.  The first domain is
+a Zope 3 style one, the second one comes from Localizer.
+
+Both systems should yield the same default language (English) when no
+language is specified whatsoever:
+
+  >>> print http(r"""
+  ... GET /test_folder_1_/cps/cps_test_localizer.html HTTP/1.1
+  ... """)
+  HTTP/1.1 200 OK
+  ...
+  <html>
+  <body>
+  <!-- fivetest is a Zope 3 style i18n domain, default is a Localizer domain -->
+  <p>This is a message</p>
+  <p>Object actions</p>
+  </body>
+  </html>
+
+Both systems should honour the HTTP ``Accept-Language`` header in the
+same way:
+
+  >>> print http(r"""
+  ... GET /test_folder_1_/cps/cps_test_localizer.html HTTP/1.1
+  ... Accept-Language: de
+  ... """)
+  HTTP/1.1 200 OK
+  ...
+  <html>
+  <body>
+  <!-- fivetest is a Zope 3 style i18n domain, default is a Localizer domain -->
+  <p>Dies ist eine Nachricht</p>
+  <p>Objekt Aktionen</p>
+  </body>
+  </html>
+
+Both systems should also honour Localizer-specific ways of determining
+the language, for example the ``LOCALIZER_LANGUAGE`` cookie:
+
+  >>> print http(r"""
+  ... GET /test_folder_1_/cps/cps_test_localizer.html HTTP/1.1
+  ... Accept-Language: de
+  ... Cookie: LOCALIZER_LANGUAGE=en
+  ... """)
+  HTTP/1.1 200 OK
+  ...
+  <html>
+  <body>
+  <!-- fivetest is a Zope 3 style i18n domain, default is a Localizer domain -->
+  <p>This is a message</p>
+  <p>Object actions</p>
+  </body>
+  </html>

@@ -1,0 +1,38 @@
+unless: Tests a condition
+
+  The 'unless' tag provides a shortcut for testing negative
+  conditions. For more complete condition testing use the 'if' tag. 
+
+  Syntax
+
+    'unless' tag syntax::
+
+      <dtml-unless ConditionVariable|expr="ConditionExpression">
+      </dtml-unless>
+
+    The 'unless' tag is a block tag. If the condition variable or
+    expression evaluates to false, then the contained block is
+    executed. Like the 'if' tag, variables that are not present are
+    considered false.
+
+  Examples
+
+    Testing a variable::
+
+      <dtml-unless testMode>
+        <dtml-call dangerousOperation>
+      </dtml-unless>
+
+    The block will be executed if 'testMode' does not exist, or exists
+    but is false.
+
+  See Also
+
+    "if tag":dtml-if.stx
+
+
+
+
+
+
+

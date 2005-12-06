@@ -1,0 +1,16 @@
+# Zope2 build and install Makefile for win32 (gnumake-style).
+# Creates an installable executable for the Python Spread wrapper module.
+
+# See README.txt for system requirements.
+
+# See spreadwrapper.mk for the input files required in tmp/.
+
+default: install
+
+build: build_spreadwrapper
+
+install: install_spreadwrapper
+
+
+include mk/common.mk
+include mk/spreadwrapper.mk
