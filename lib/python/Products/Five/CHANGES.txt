@@ -19,6 +19,8 @@ Restructuring
 Bugfixes
 --------
 
+* (b6) Fixed the form i18n messages to work with Zope 3.2 beta 1.
+
 * (b3) Made the creation of custom skins work again.  It was broken in
   the port to Zope 3.2.
 
