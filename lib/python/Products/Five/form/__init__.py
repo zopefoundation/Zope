@@ -135,7 +135,7 @@ class EditView(BrowserView):
                     notify(ObjectModifiedEvent(content))
             except WidgetsError, errors:
                 self.errors = errors
-                status = _("An error occured.")
+                status = _("An error occurred.")
                 transaction.abort()
             else:
                 setUpEditWidgets(self, self.schema, source=self.adapted,
@@ -178,7 +178,7 @@ class AddView(EditView):
                 self.createAndAdd(data)
             except WidgetsError, errors:
                 self.errors = errors
-                self.update_status = _("An error occured.")
+                self.update_status = _("An error occurred.")
                 return self.update_status
 
             self.request.response.redirect(self.nextURL())
