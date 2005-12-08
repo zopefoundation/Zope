@@ -39,8 +39,10 @@
     </div>
     </td>
     <td align="left" valign="top" colspan=2>
+<!--
       <a href="source.html" tal:condition="here/html">Browse HTML source</a>
       <a href="source.xml" tal:condition="not:here/html">Browse XML source</a>
+-->
       <br>
       <input type="hidden" name="expand:int:default" value="0">
       <input type="checkbox" value="1" name="expand:int"
@@ -49,6 +51,8 @@
     </td>
   </tr>
 
+  <span tal:content="python: context.pt_errors(None)" />
+<!--
   <tr tal:define="errors here/pt_errors" tal:condition="errors">
     <tal:block define="global body python:here.document_src({'raw':1})"/>
     <td align="left" valign="middle" class="form-label">Errors</td>
@@ -57,6 +61,7 @@
 <pre tal:content="python:modules['string'].join(errors, '\n')">errors</pre>
     </td>
   </tr>
+-->
 
   <tr tal:define="warnings here/pt_warnings" tal:condition="warnings">
     <td align="left" valign="middle" class="form-label">Warnings</td>

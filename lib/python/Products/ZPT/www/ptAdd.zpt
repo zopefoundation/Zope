@@ -10,7 +10,7 @@ from a local file by typing the file name or using the <em>browse</em>
 button.
 </p>
 
-<form action="manage_addPageTemplate" method="post" 
+<form action="manage_addZPT" method="post" 
  enctype="multipart/form-data">
 <table cellspacing="0" cellpadding="2" border="0">
   <tr>
