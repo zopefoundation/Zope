@@ -39,10 +39,9 @@
     </div>
     </td>
     <td align="left" valign="top" colspan=2>
-<!--
       <a href="source.html" tal:condition="context/html">Browse HTML source</a>
       <a href="source.xml" tal:condition="not:context/html">Browse XML source</a>
--->
+
       <br>
       <input type="hidden" name="expand:int:default" value="0">
       <input type="checkbox" value="1" name="expand:int"

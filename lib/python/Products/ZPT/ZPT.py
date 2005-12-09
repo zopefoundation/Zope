@@ -81,7 +81,7 @@ class ZPT(Script, PageTemplate, Historical, Cacheable,
         + Cacheable.manage_options
 
 
-    _properties=({'id':'title', 'type': 'string', 'mode': 'wd'},
+    _properties=({'id':'title', 'type': 'ustring', 'mode': 'w'},
                  {'id':'content_type', 'type':'string', 'mode': 'w'},
                  {'id':'expand', 'type':'boolean', 'mode': 'w'},
                  )
@@ -281,6 +281,10 @@ class ZPT(Script, PageTemplate, Historical, Cacheable,
         self.REQUEST.RESPONSE.setHeader('Content-Type', self.content_type)
         return self.read()
 
+    security.declareProtected(view_manage_screens, 'html')
+    def html(self):
+        return self.content_type == 'text/html'
+        
     security.declareProtected(view_management_screens, 'get_size')
     def get_size(self):
         return len(self.read())
@@ -315,6 +319,7 @@ class ZPT(Script, PageTemplate, Historical, Cacheable,
                               'title': 'This template has an error'},)
         return icons
 
+    security.declareProtected(view, 'pt_source_file')
     def pt_source_file(self):
         """Returns a file name to be compiled into the TAL code."""
         try:
