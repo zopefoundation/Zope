@@ -40,7 +40,8 @@ from AccessControl.Permissions import view, ftp_access, change_page_templates, v
 from webdav.Lockable import ResourceLockedError
 from webdav.WriteLockInterface import WriteLockInterface
 
-from zope.pagetemplate.pagetemplate import PageTemplate
+from zope.pagetemplate.pagetemplate import PageTemplate 
+#from zope.pagetemplate.pagetemplatefile import PageTemplateFile
 
 class Src(Acquisition.Explicit):
     """ I am scary code """
@@ -55,6 +56,8 @@ class Src(Acquisition.Explicit):
     def __call__(self, REQUEST, RESPONSE):
         " "
         return self.document_src(REQUEST)
+
+
 
 
 class ZPT(Script, PageTemplate, Historical, Cacheable,
@@ -131,16 +134,10 @@ class ZPT(Script, PageTemplate, Historical, Cacheable,
 
 
     security.declareProtected(change_page_templates, 'pt_setTitle')
-    def pt_setTitle(self, title):
-        charset = getattr(self, 'management_page_charset', None)
-        if isinstance(title, str) and charset:
-            try:
-                title.decode('us-ascii')
-                title = str(title)
-            except UnicodeError:
-                title = unicode(title, charset)
-        elif not isinstance(title, unicode):
-            title = str(title)
+    def pt_setTitle(self, title, encoding='utf-8'):
+        
+        if not isinstance(title, unicode):
+            title = unicode(title, encoding)
         self._setPropValue('title', title)
 
     security.declareProtected(change_page_templates, 'pt_upload')
@@ -349,9 +346,8 @@ class ZPT(Script, PageTemplate, Historical, Cacheable,
     source_dot_xml = Src()
 
     security.declareProtected(view_management_screens, 'pt_editForm')
-    pt_editForm = PageTemplateFile('pt/ptEdit', globals(),
-                                   __name__='pt_editForm')
-    pt_editForm._owner = None
+    pt_editForm = PageTemplateFile('pt/ptEdit.pt', globals())
+    pt_editForm.__name__ = 'pt_editForm'
     manage = manage_main = pt_editForm
 
 
@@ -361,9 +357,22 @@ InitializeClass(ZPT)
 setattr(ZPT, 'source.xml',  ZPT.source_dot_xml)
 setattr(ZPT, 'source.html', ZPT.source_dot_xml)
 
+
+
+class FSZPT(ZPT):
+
+    def __init__(self, filename, name):
+        self.__name__= name
+        PageTemplate.__init__(self, open(filename).read(), 'text/html')
+
+InitializeClass(FSZPT)
+
+
 # Product registration and Add support
-manage_addZPTForm= PageTemplateFile(
-    'pt/ptAdd', globals(), __name__='manage_addPageTemplateForm')
+manage_addZPTForm= PageTemplateFile('pt/ptAdd.pt', globals())
+manage_addZPTForm.__name__ = 'manage_addZPTForm'
+#manage_addZPTForm= FSZPT(os.path.join(package_home(globals()), 'pt', 'ptAdd.pt'), 'manage_addZPTForm')
+#manage_addZPTForm.__name__ = 'manage_addZPTForm'
 
 
 def manage_addZPT(self, id, title=None, text=None,
