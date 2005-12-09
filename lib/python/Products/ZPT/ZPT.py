@@ -20,6 +20,7 @@ from urllib import quote
 import os, AccessControl, Acquisition 
 from Globals import ImageFile, package_home, InitializeClass
 from OFS.SimpleItem import SimpleItem
+from OFS.content_types import guess_content_type
 from DateTime.DateTime import DateTime
 from Shared.DC.Scripts.Script import Script 
 from Shared.DC.Scripts.Signature import FuncCode
@@ -63,6 +64,7 @@ class ZPT(Script, PageTemplate, Historical, Cacheable,
     __implements__ = (WriteLockInterface,)
 
     meta_type = 'ZPT'
+    management_page_charset = 'utf-8'
 
     func_defaults = None
     func_code = FuncCode((), 0)
@@ -90,12 +92,12 @@ class ZPT(Script, PageTemplate, Historical, Cacheable,
     security.declareObjectProtected(view)
     security.declareProtected(view, '__call__')
 
-    def __init__(self, id, text=None, content_type=None):
+    def __init__(self, id, text=None, content_type=None, encoding='utf-8'):
         self.id = str(id)
         self.ZBindings_edit(self._default_bindings)
         if text is None:
             text = open(self._default_content_fn).read()
-        self.pt_edit(text, content_type)
+        self.pt_edit(text, content_type, encoding)
 
     def _setPropValue(self, id, value):
         PropertyManager._setPropValue(self, id, value)
@@ -104,7 +106,11 @@ class ZPT(Script, PageTemplate, Historical, Cacheable,
 
 
     security.declareProtected(change_page_templates, 'pt_edit')
-    def pt_edit(self, text, content_type):
+    def pt_edit(self, text, content_type, encoding='utf-8'):
+        if not isinstance(text, unicode):
+            text = unicode(text, encoding, 'strict')
+        assert isinstance(text, unicode)
+        self.ZCacheable_invalidate()
         PageTemplate.pt_edit(self, text, content_type)
 
     security.declareProtected(change_page_templates, 'pt_editAction')
@@ -143,16 +149,22 @@ class ZPT(Script, PageTemplate, Historical, Cacheable,
         if self.wl_isLocked():
             raise ResourceLockedError("File is locked via WebDAV")
 
+        filename = None
         if not isinstance(file, str):
             if not file: raise ValueError('File not specified')
+            filename = file.filename
             file = file.read()
-        if charset:
-            try:
-                unicode(file, 'us-ascii')
-                file = str(file)
-            except UnicodeDecodeError:
-                file = unicode(file, charset)
-        self.write(file)
+
+        ct, dummy = guess_content_type(filename, file)   
+        if not ct in ('text/html', 'text/xml'):
+            raise ValueError('Unsupported mimetype: %s' % ct)
+
+        if not isinstance(file, unicode):
+            if not charset:
+                raise ValueError('No encoding specified for non-unicode content')
+            file = unicode(file, charset)
+
+        self.pt_edit(file, ct)
         message = 'Saved changes.'
         return self.pt_editForm(manage_tabs_message=message)
 
@@ -205,10 +217,9 @@ class ZPT(Script, PageTemplate, Historical, Cacheable,
              }
         return c
 
-    security.declareProtected(change_page_templates, 'write')
-    def write(self, text):
-        self.ZCacheable_invalidate()
-        PageTemplate.write(self, text)
+#    security.declareProtected(change_page_templates, 'write')
+#    def write(self, text):
+#        PageTemplate.write(self, text)
 
     security.declareProtected(view_management_screens, 'manage_main', 'read',
       'ZScriptHTML_tryForm')
@@ -248,6 +259,7 @@ class ZPT(Script, PageTemplate, Historical, Cacheable,
         try:
             # XXX: check the parameters for pt_render()! (aj)
             result = self.pt_render(self.pt_getContext())
+            assert isinstance(result, unicode)
 
 #            result = self.pt_render(extra_context=bound_names)
             if keyset is not None:
@@ -266,7 +278,8 @@ class ZPT(Script, PageTemplate, Historical, Cacheable,
         """ Handle HTTP PUT requests """
         self.dav__init(REQUEST, RESPONSE)
         self.dav__simpleifhandler(REQUEST, RESPONSE, refresh=1)
-        self.write(REQUEST.get('BODY', ''))
+        ## XXX:this should be unicode or we must pass an encoding
+        self.pt_edit(REQUEST.get('BODY', ''))
         RESPONSE.setStatus(204)
         return RESPONSE
 
@@ -281,7 +294,7 @@ class ZPT(Script, PageTemplate, Historical, Cacheable,
         self.REQUEST.RESPONSE.setHeader('Content-Type', self.content_type)
         return self.read()
 
-    security.declareProtected(view_manage_screens, 'html')
+    security.declareProtected(view_management_screens, 'html')
     def html(self):
         return self.content_type == 'text/html'
         

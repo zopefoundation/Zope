@@ -123,15 +123,14 @@ to view or download the current text.
   <input type="file" name="file" size="25" value="">
   </td>
 </tr>
-<tr tal:condition="context/management_page_charset|nothing">
+<tr>
   <td align="left" valign="top">
     <div class="form-label">
       Encoding &nbsp;
     </div>
   </td>
   <td align="left" valign="top">
-    <input name="charset" value=""
-      tal:attributes="value context/management_page_charset|default" />
+    <input name="charset" value="utf-8"/>
   </td>
 </tr>
 <tr>
