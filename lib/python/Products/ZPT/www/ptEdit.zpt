@@ -1,9 +1,9 @@
-<h1 tal:replace="structure here/manage_page_header">Header</h1>
+<h1 tal:replace="structure context/manage_page_header">Header</h1>
 <h2 tal:define="manage_tabs_message options/manage_tabs_message | nothing"
-    tal:replace="structure here/manage_tabs">Tabs</h2>
+    tal:replace="structure context/manage_tabs">Tabs</h2>
 
 <tal:block define="global body request/other/text | request/form/text
-| here/read" /> 
+| context/read" /> 
 <form action="" method="post" tal:attributes="action request/URL1">
 <input type="hidden" name=":default_method" value="pt_changePrefs">
 <table width="100%" cellspacing="0" cellpadding="2" border="0">
@@ -15,7 +15,7 @@
     </td>
     <td align="left" valign="middle">
     <input type="text" name="title" size="40" 
-           tal:attributes="value request/title | here/title" />
+           tal:attributes="value request/title | context/title" />
     </td>
     <td align="left" valign="middle">
     <div class="form-optional">
@@ -24,7 +24,7 @@
     </td>
     <td align="left" valign="middle">
     <input type="text" name="content_type" size="14" 
-           tal:attributes="value request/content_type | here/content_type" />
+           tal:attributes="value request/content_type | context/content_type" />
     </td>
   </tr>
   <tr>
@@ -35,35 +35,33 @@
     </td>
     <td align="left" valign="middle">
     <div class="form-text" 
-     tal:content="python:here.bobobase_modification_time().strftime('%Y-%m-%d %I:%M %p')">1/1/2000
+     tal:content="python:context.bobobase_modification_time().strftime('%Y-%m-%d %I:%M %p')">1/1/2000
     </div>
     </td>
     <td align="left" valign="top" colspan=2>
 <!--
-      <a href="source.html" tal:condition="here/html">Browse HTML source</a>
-      <a href="source.xml" tal:condition="not:here/html">Browse XML source</a>
+      <a href="source.html" tal:condition="context/html">Browse HTML source</a>
+      <a href="source.xml" tal:condition="not:context/html">Browse XML source</a>
 -->
       <br>
       <input type="hidden" name="expand:int:default" value="0">
       <input type="checkbox" value="1" name="expand:int"
-       tal:attributes="checked request/expand | here/expand">
+       tal:attributes="checked request/expand | context/expand">
       Expand macros when editing
     </td>
   </tr>
 
-  <span tal:content="python: context.pt_errors(None)" />
-<!--
-  <tr tal:define="errors here/pt_errors" tal:condition="errors">
-    <tal:block define="global body python:here.document_src({'raw':1})"/>
+  <!-- XXX: check if 'None' is a proper argument for 'namespace' -->
+  <tr tal:define="errors python: context.pt_errors(None)" tal:condition="errors">
+    <tal:block define="global body python:context.document_src({'raw':1})"/>
     <td align="left" valign="middle" class="form-label">Errors</td>
     <td align="left" valign="middle" style="background-color: #FFDDDD"
     colspan="3">
 <pre tal:content="python:modules['string'].join(errors, '\n')">errors</pre>
     </td>
   </tr>
--->
 
-  <tr tal:define="warnings here/pt_warnings" tal:condition="warnings">
+  <tr tal:define="warnings context/pt_warnings" tal:condition="warnings">
     <td align="left" valign="middle" class="form-label">Warnings</td>
     <td align="left" valign="middle" style="background-color: #FFEEDD"
      colspan="3">
@@ -90,8 +88,8 @@
 <tr>
   <td align="left" valign="top" colspan="4">
   <div class="form-element">
-    <em tal:condition="here/wl_isLocked">Locked by WebDAV</em>
-    <input tal:condition="not:here/wl_isLocked"
+    <em tal:condition="context/wl_isLocked">Locked by WebDAV</em>
+    <input tal:condition="not:context/wl_isLocked"
      class="form-element" type="submit" 
      name="pt_editAction:method" value="Save Changes">
   &nbsp;&nbsp;
@@ -106,10 +104,10 @@
 </form>
 
 <p class="form-help">
-You can upload the text for <span tal:replace="here/title_and_id" />
+You can upload the text for <span tal:replace="context/title_and_id" />
 using the following form.
 Choose an existing HTML or XML file from your local computer by clicking
-<em>browse</em>.  You can also <a href="document_src">click here</a>
+<em>browse</em>.  You can also <a href="document_src">click context</a>
 to view or download the current text.
 </p>
 
@@ -134,15 +132,15 @@ to view or download the current text.
   </td>
   <td align="left" valign="top">
     <input name="charset" value=""
-      tal:attributes="value here/management_page_charset|default" />
+      tal:attributes="value context/management_page_charset|default" />
   </td>
 </tr>
 <tr>
   <td></td>
   <td align="left" valign="top">
   <div class="form-element">
-    <em tal:condition="here/wl_isLocked">Locked by WebDAV</em>
-    <input tal:condition="not:here/wl_isLocked"
+    <em tal:condition="context/wl_isLocked">Locked by WebDAV</em>
+    <input tal:condition="not:context/wl_isLocked"
     class="form-element" type="submit" value="Upload File">
   </div>
   </td>
@@ -150,4 +148,4 @@ to view or download the current text.
 </table>
 </form>
 
-<h1 tal:replace="structure here/manage_page_footer">Footer</h1>
+<h1 tal:replace="structure context/manage_page_footer">Footer</h1>
