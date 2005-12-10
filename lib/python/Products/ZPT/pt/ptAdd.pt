@@ -35,6 +35,17 @@ button.
   </tr>
   <tr>
     <td align="left" valign="top">
+    <div class="form-optional">
+    Encoding
+    </div>
+    </td>
+    <td align="left" valign="top">
+      <input type="text" name="encoding" size="25" value="utf-8" />
+      <em>(only used for non-XML and non-HTML content)</em>
+    </td>
+  </tr>
+  <tr>
+    <td align="left" valign="top">
     </td>
     <td align="left" valign="top">
     <div class="form-element">

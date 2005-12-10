@@ -11,11 +11,11 @@
 #
 ##############################################################################
 
-
 """ Zope Page Template module (wrapper for the Zope 3 ZPT implementation) """
 
 __version__='$Revision: 1.48 $'[11:-2]
 
+import re
 from urllib import quote
 import os, AccessControl, Acquisition 
 from Globals import ImageFile, package_home, InitializeClass
@@ -43,6 +43,9 @@ from webdav.WriteLockInterface import WriteLockInterface
 from zope.pagetemplate.pagetemplate import PageTemplate 
 #from zope.pagetemplate.pagetemplatefile import PageTemplateFile
 
+# regular expression to extract the encoding from the XML preamble
+encoding_reg= re.compile('<\?xml.*?encoding="(.*?)".*?\?>', re.M)
+
 class Src(Acquisition.Explicit):
     """ I am scary code """
 
@@ -58,6 +61,16 @@ class Src(Acquisition.Explicit):
         return self.document_src(REQUEST)
 
 
+def sniffEncoding(text, default_encoding='utf-8'):
+    """ try to determine the encoding from html or xml """
+
+    if text.startswith('<?xml'):
+        mo = encoding_reg.search(text)
+        if mo:
+            return mo.group(1)
+    return default_encoding
+
+_default_content_fn = os.path.join(package_home(globals()), 'pt', 'default.html')
 
 
 class ZPT(Script, PageTemplate, Historical, Cacheable,
@@ -67,14 +80,11 @@ class ZPT(Script, PageTemplate, Historical, Cacheable,
     __implements__ = (WriteLockInterface,)
 
     meta_type = 'ZPT'
-    management_page_charset = 'utf-8'
 
     func_defaults = None
     func_code = FuncCode((), 0)
 
     _default_bindings = {'name_subpath': 'traverse_subpath'}
-    _default_content_fn = os.path.join(package_home(globals()),
-                                       'pt', 'default.html')
 
     manage_options = (
         {'label':'Edit', 'action':'pt_editForm',
@@ -96,34 +106,47 @@ class ZPT(Script, PageTemplate, Historical, Cacheable,
     security.declareProtected(view, '__call__')
 
     def __init__(self, id, text=None, content_type=None, encoding='utf-8'):
-        self.id = str(id)
+        self.id = id
         self.ZBindings_edit(self._default_bindings)
-        if text is None:
-            text = open(self._default_content_fn).read()
         self.pt_edit(text, content_type, encoding)
 
-    def _setPropValue(self, id, value):
-        PropertyManager._setPropValue(self, id, value)
-        self.ZCacheable_invalidate()
+    security.declareProtected(change_page_templates, 'pt_encoding')
+    def pt_encoding(self):
+        encoding = sniffEncoding(self.read())
+        return encoding                
 
-
+    # Use the encoding of the document as encoding for the ZMI to 
+    # avoid any kind of encoding troubles
+    from ComputedAttribute import ComputedAttribute
+    management_page_charset = ComputedAttribute(pt_encoding, 1)
 
     security.declareProtected(change_page_templates, 'pt_edit')
     def pt_edit(self, text, content_type, encoding='utf-8'):
+
+        text = text.strip()
+#        if content_type == 'text/html':
+#            if not text.startswith('<?xml'):
+#                # not XHTML -> convert it to unicode
+#                text = unicode(text, encoding)
+
         if not isinstance(text, unicode):
-            text = unicode(text, encoding, 'strict')
-        assert isinstance(text, unicode)
+            text = unicode(text, encoding)
+
+        print content_type, type(text),repr(text)
         self.ZCacheable_invalidate()
         PageTemplate.pt_edit(self, text, content_type)
 
     security.declareProtected(change_page_templates, 'pt_editAction')
-    def pt_editAction(self, REQUEST, title, text, content_type, expand):
+    def pt_editAction(self, REQUEST, title, text, content_type, encoding, expand):
         """Change the title and document."""
+
         if self.wl_isLocked():
             raise ResourceLockedError("File is locked via WebDAV")
-        self.expand=expand
-        self.pt_setTitle(title)
-        self.pt_edit(text, content_type)
+
+        self.expand = expand
+        self.pt_setTitle(title, encoding)
+
+        self.pt_edit(text, content_type, encoding)
         REQUEST.set('text', self.read()) # May not equal 'text'!
         REQUEST.set('title', self.title)
         message = "Saved changes."
@@ -135,35 +158,40 @@ class ZPT(Script, PageTemplate, Historical, Cacheable,
 
     security.declareProtected(change_page_templates, 'pt_setTitle')
     def pt_setTitle(self, title, encoding='utf-8'):
-        
         if not isinstance(title, unicode):
             title = unicode(title, encoding)
         self._setPropValue('title', title)
 
+
+    def _setPropValue(self, id, value):
+        """ set a property and invalidate the cache """
+        PropertyManager._setPropValue(self, id, value)
+        self.ZCacheable_invalidate()
+
+
     security.declareProtected(change_page_templates, 'pt_upload')
-    def pt_upload(self, REQUEST, file='', charset=None):
+    def pt_upload(self, REQUEST, file='', encoding='utf-8'):
         """Replace the document with the text in file."""
+
         if self.wl_isLocked():
             raise ResourceLockedError("File is locked via WebDAV")
 
-        filename = None
-        if not isinstance(file, str):
-            if not file: raise ValueError('File not specified')
+        if isinstance(file, str):
+            filename = None
+            text = file
+        else:
+            if not file: 
+                raise ValueError('File not specified')
             filename = file.filename
-            file = file.read()
+            text = file.read()
 
-        ct, dummy = guess_content_type(filename, file)   
-        if not ct in ('text/html', 'text/xml'):
-            raise ValueError('Unsupported mimetype: %s' % ct)
+        content_type, dummy = guess_content_type(filename, text)   
+        if not content_type in ('text/html', 'text/xml'):
+            raise ValueError('Unsupported mimetype: %s' % content_type)
 
-        if not isinstance(file, unicode):
-            if not charset:
-                raise ValueError('No encoding specified for non-unicode content')
-            file = unicode(file, charset)
-
-        self.pt_edit(file, ct)
-        message = 'Saved changes.'
-        return self.pt_editForm(manage_tabs_message=message)
+        encoding = sniffEncoding(text, encoding)
+        self.pt_edit(text, content_type, encoding)
+        return self.pt_editForm(manage_tabs_message='Saved changes')
 
     security.declareProtected(change_page_templates, 'pt_changePrefs')
     def pt_changePrefs(self, REQUEST, height=None, width=None,
@@ -199,7 +227,7 @@ class ZPT(Script, PageTemplate, Historical, Cacheable,
 #            self, rev1, rev2, REQUEST,
 #            historyComparisonResults=html_diff(rev1._text, rev2._text) )
 
-    def pt_getContext(self, **kw):
+    def pt_getContext(self, *args, **kw):
         root = self.getPhysicalRoot()
         context = self._getContext()
         c = {'template': self,
@@ -214,14 +242,8 @@ class ZPT(Script, PageTemplate, Historical, Cacheable,
              }
         return c
 
-#    security.declareProtected(change_page_templates, 'write')
-#    def write(self, text):
-#        PageTemplate.write(self, text)
-
     security.declareProtected(view_management_screens, 'manage_main', 'read',
       'ZScriptHTML_tryForm')
-
-
 
     def _exec(self, bound_names, args, kw):
         """Call a Page Template"""
@@ -256,7 +278,6 @@ class ZPT(Script, PageTemplate, Historical, Cacheable,
         try:
             # XXX: check the parameters for pt_render()! (aj)
             result = self.pt_render(self.pt_getContext())
-            assert isinstance(result, unicode)
 
 #            result = self.pt_render(extra_context=bound_names)
             if keyset is not None:
@@ -375,41 +396,31 @@ manage_addZPTForm.__name__ = 'manage_addZPTForm'
 #manage_addZPTForm.__name__ = 'manage_addZPTForm'
 
 
-def manage_addZPT(self, id, title=None, text=None,
-                           REQUEST=None, submit=None):
+def manage_addZPT(self, id, title='', file=None, encoding='utf-8', submit=None, RESPONSE=None):
     "Add a Page Template with optional file content."
 
-    id = str(id)
-    if REQUEST is None:
-        self._setObject(id, ZPT(id, text))
-        ob = getattr(self, id)
-        if title:
-            ob.pt_setTitle(title)
-        return ob
+    if file:
+        filename = file.filename
+        text = file.read()
+        encoding = sniffEncoding(text)
+        content_type, dummy = guess_content_type(filename, text) 
     else:
-        file = REQUEST.form.get('file')
-        headers = getattr(file, 'headers', None)
-        if headers is None or not file.filename:
-            zpt = ZPT(id, text) # collector 596
-        else:
-            zpt = ZPT(id, file, headers.get('content_type'))
+        text = open(_default_content_fn).read()
+        encoding = 'utf-8'
+        content_type = 'text/html'
 
-        self._setObject(id, zpt)
+    zpt = ZPT(id, text, content_type, encoding)
+    zpt.pt_setTitle(title, encoding)
+    self._setObject(id, zpt)
+    zpt = getattr(self, id)
 
-        # collector 596
-        if title:
-            ob = getattr(self, id)
-            ob.pt_setTitle(title)
-
-        try:
-            u = self.DestinationURL()
-        except AttributeError:
-            u = REQUEST['URL1']
-
+    if RESPONSE:    
         if submit == " Add and Edit ":
-            u = "%s/%s" % (u, quote(id))
-        REQUEST.RESPONSE.redirect(u+'/manage_main')
-    return ''
+            RESPONSE.redirect(zpt.absolute_url() + '/manage_main')
+        else:
+            RESPONSE.redirect(self.absolute_url() + '/manage_main')
+    else:        
+        return zpt
 
 from Products.PageTemplates import misc_
 misc_['exclamation.gif'] = ImageFile('pt/exclamation.gif', globals())

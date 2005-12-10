@@ -18,35 +18,42 @@
            tal:attributes="value request/title | context/title" />
     </td>
     <td align="left" valign="middle">
-    <div class="form-optional">
-    Content-Type
-    </div>
+    <div class="form-label"> Last Modified </div>
     </td>
     <td align="left" valign="middle">
-    <input type="text" name="content_type" size="14" 
-           tal:attributes="value request/content_type | context/content_type" />
+      <div class="form-text" 
+       tal:content="python:context.bobobase_modification_time().strftime('%Y-%m-%d %I:%M %p')">1/1/2000
+      </div>
     </td>
   </tr>
   <tr>
     <td align="left" valign="middle">
     <div class="form-label">
-    Last Modified
+    Content-Type
     </div>
     </td>
     <td align="left" valign="middle">
-    <div class="form-text" 
-     tal:content="python:context.bobobase_modification_time().strftime('%Y-%m-%d %I:%M %p')">1/1/2000
-    </div>
+      <select name="content_type" size="1" tal:define="ct context/content_type">
+        <option value="text/html" tal:attributes="SELECTED python: ct == 'text/html'">text/html</option>
+        <option value="text/xml" tal:attributes="SELECTED python: ct == 'text/xml'">text/xml</option>
+      </select>
     </td>
     <td align="left" valign="top" colspan=2>
       <a href="source.html" tal:condition="context/html">Browse HTML source</a>
       <a href="source.xml" tal:condition="not:context/html">Browse XML source</a>
-
       <br>
       <input type="hidden" name="expand:int:default" value="0">
       <input type="checkbox" value="1" name="expand:int"
        tal:attributes="checked request/expand | context/expand">
       Expand macros when editing
+    </td>
+  </tr>
+
+
+  <tr> 
+    <td align="left" valign="middle" class="form-label">Encoding</td>
+    <td>
+      <input type="text" readonly name="encoding" tal:attributes="value context/pt_encoding"/>
     </td>
   </tr>
 
@@ -56,7 +63,7 @@
     <td align="left" valign="middle" class="form-label">Errors</td>
     <td align="left" valign="middle" style="background-color: #FFDDDD"
     colspan="3">
-<pre tal:content="python:modules['string'].join(errors, '\n')">errors</pre>
+<pre tal:content="python: '\n'.join(errors)">errors</pre>
     </td>
   </tr>
 
@@ -64,9 +71,11 @@
     <td align="left" valign="middle" class="form-label">Warnings</td>
     <td align="left" valign="middle" style="background-color: #FFEEDD"
      colspan="3">
-<pre tal:content="python:modules['string'].join(warnings, '\n')">errors</pre>
+<pre tal:content="python: '\n'.join(warnings)">errors</pre>
     </td>
   </tr>
+
+
 
   <tr>
     <td align="left" valign="top" colspan="4"
@@ -120,7 +129,7 @@ to view or download the current text.
   </div>
   </td>
   <td align="left" valign="top">
-  <input type="file" name="file" size="25" value="">
+  <input type="file" name="file" size="40" value="">
   </td>
 </tr>
 <tr>
@@ -129,8 +138,11 @@ to view or download the current text.
       Encoding &nbsp;
     </div>
   </td>
-  <td align="left" valign="top">
-    <input name="charset" value="utf-8"/>
+  <td align="left" valign="top" colspan="2">
+    <input name="encoding" value="utf-8"/>
+  </td>
+  <td align="left" valign="top" colspan="1">
+    <em>(only used for non-XML and non-XHTML content)</em>
   </td>
 </tr>
 <tr>
