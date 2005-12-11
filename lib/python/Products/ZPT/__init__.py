@@ -11,13 +11,9 @@
 #
 ##############################################################################
 
-__doc__='''Package wrapper for Page Templates
-
-This wrapper allows the Page Template modules to be segregated in a
-separate package.
-
-$Id: __init__.py 40218 2005-11-18 14:39:19Z andreasjung $'''
-__version__='$$'[11:-2]
+__doc__= """ Zope Page Templates (mostly a wrapper around the Zope 3
+             ZPT implementation.
+         """
 
 # Placeholder for Zope Product data
 misc_ = {}
