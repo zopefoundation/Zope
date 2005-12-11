@@ -214,7 +214,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         setCookie("dtpref_rows", rows, path='/', expires=e)
         setCookie("dtpref_cols", cols, path='/', expires=e)
         REQUEST.other.update({"dtpref_cols":cols, "dtpref_rows":rows})
-        return self.manage_main()
+        return self.pt_editForm()
 
     def ZScriptHTML_tryParams(self):
         """Parameters to test the script with."""
@@ -242,7 +242,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
              }
         return c
 
-    security.declareProtected(view_management_screens, 'manage_main', 'read',
+    security.declareProtected(view_management_screens, 'read',
       'ZScriptHTML_tryForm')
 
     def _exec(self, bound_names, args, kw):
@@ -331,10 +331,6 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
     security.declareProtected(view_management_screens, 'document_src')
     def document_src(self, REQUEST=None, RESPONSE=None):
         """Return expanded document source."""
-
-        print 'src', self.read()
-
-
         if RESPONSE is not None:
             RESPONSE.setHeader('Content-Type', 'text/plain')
         if REQUEST is not None and REQUEST.get('raw'):
@@ -399,11 +395,11 @@ InitializeClass(FSZPT)
 
 ZopePageTemplate.pt_editForm = FSZPT('pt_editForm', os.path.join(package_home(globals()),'pt', 'ptEdit.pt'))
 # this is scary, do we need this?
-ZopePageTemplate.manage = ZopePageTemplate.manage_main = ZopePageTemplate.pt_editForm
+ZopePageTemplate.manage = ZopePageTemplate.pt_editForm
 
 manage_addPageTemplateForm= FSZPT('manage_addPageTemplateForm', os.path.join(package_home(globals()), 'pt', 'ptAdd.pt'))
 
-def manage_addPageTemplate(self, id, title='', file=None, encoding='utf-8', submit=None, RESPONSE=None):
+def manage_addPageTemplate(self, id, title='', text=None, file=None, encoding='utf-8', submit=None, REQUEST=None, RESPONSE=None):
     "Add a Page Template with optional file content."
 
     if file:
@@ -411,8 +407,23 @@ def manage_addPageTemplate(self, id, title='', file=None, encoding='utf-8', subm
         text = file.read()
         encoding = sniffEncoding(text)
         content_type, dummy = guess_content_type(filename, text) 
+    elif REQUEST and REQUEST.has_key('file'):
+        f = REQUEST['file']
+        filename = f.filename
+        text = f.read()
+        encoding = sniffEncoding(text)
+        headers = getattr(f, 'headers')
+        if headers.has_key('content_type'):
+            content_type = headers['content_type']
+        else:
+            content_type, dummy = guess_content_type(filename, text) 
+    
     else:
-        text = open(_default_content_fn).read()
+        if hasattr(text, 'read'):  # assume file
+            text= text.read()
+        if text is None:
+            text = ''
+        text = text or open(_default_content_fn).read()
         encoding = 'utf-8'
         content_type = 'text/html'
 
@@ -423,7 +434,7 @@ def manage_addPageTemplate(self, id, title='', file=None, encoding='utf-8', subm
 
     if RESPONSE:    
         if submit == " Add and Edit ":
-            RESPONSE.redirect(zpt.absolute_url() + '/manage_main')
+            RESPONSE.redirect(zpt.absolute_url() + '/pt_editForm')
         else:
             RESPONSE.redirect(self.absolute_url() + '/manage_main')
     else:        
