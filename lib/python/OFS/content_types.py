@@ -15,4 +15,4 @@
 $Id$
 """
 
-from zope.app.content_types import text_type, guess_content_type
+from zope.app.content_types import text_type, guess_content_type, add_files
