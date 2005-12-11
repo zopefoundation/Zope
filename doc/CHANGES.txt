@@ -26,6 +26,9 @@ Zope Changes
 
     Features added
 
+      - OFS.content_types: moved code to zope.app.content_types and added
+        method aliases
+
       - ObjectManager now has an hasObject method to test presence. This
         brings it in line with BTreeFolder.
 
