@@ -1,8 +1,25 @@
+##############################################################################
+#
+# Copyright (c) 2002 Zope Corporation and Contributors. All Rights Reserved.
+#
+# This software is subject to the provisions of the Zope Public License,
+# Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
+# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
+# WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
+# FOR A PARTICULAR PURPOSE
+#
+##############################################################################
 
 import os
 
 from Globals import package_home, InitializeClass
+from App.config import getConfiguration
 from ZopePageTemplate import ZopePageTemplate
+
+# XXX: this needs some more work..this class is *not* used by the
+# ZopePageTemplate implementation but most likely only for class
+# using PTs for edit/add forms etc. Also the tests don't pass
 
 class PageTemplateFile(ZopePageTemplate):
 
