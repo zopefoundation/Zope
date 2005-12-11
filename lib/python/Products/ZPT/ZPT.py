@@ -16,35 +16,40 @@
 __version__='$Revision: 1.48 $'[11:-2]
 
 import re
-from urllib import quote
-import os, AccessControl, Acquisition 
+import os
+import Acquisition 
 from Globals import ImageFile, package_home, InitializeClass
 from OFS.SimpleItem import SimpleItem
 from OFS.content_types import guess_content_type
 from DateTime.DateTime import DateTime
 from Shared.DC.Scripts.Script import Script 
 from Shared.DC.Scripts.Signature import FuncCode
-from AccessControl import getSecurityManager
 
 from OFS.History import Historical, html_diff
 from OFS.Cache import Cacheable
 from OFS.Traversable import Traversable
 from OFS.PropertyManager import PropertyManager
 
-from Products.PageTemplates.Expressions import SecureModuleImporter
-from Products.PageTemplates.PageTemplateFile import PageTemplateFile
-
-from AccessControl import Unauthorized
+from AccessControl import getSecurityManager, safe_builtins, ClassSecurityInfo
 from AccessControl.Permissions import view, ftp_access, change_page_templates, view_management_screens
 
 from webdav.Lockable import ResourceLockedError
 from webdav.WriteLockInterface import WriteLockInterface
-
 from zope.pagetemplate.pagetemplate import PageTemplate 
-#from zope.pagetemplate.pagetemplatefile import PageTemplateFile
 
 # regular expression to extract the encoding from the XML preamble
 encoding_reg= re.compile('<\?xml.*?encoding="(.*?)".*?\?>', re.M)
+
+
+class SecureModuleImporter:
+    __allow_access_to_unprotected_subobjects__ = 1
+    def __getitem__(self, module):
+        mod = safe_builtins['__import__'](module)
+        path = module.split('.')
+        for name in path[1:]:
+            mod = getattr(mod, name)
+        return mod
+
 
 class Src(Acquisition.Explicit):
     """ I am scary code """
@@ -64,6 +69,7 @@ class Src(Acquisition.Explicit):
 def sniffEncoding(text, default_encoding='utf-8'):
     """ try to determine the encoding from html or xml """
 
+    # XXX: look at pagetemplates.py (BOM!!!)
     if text.startswith('<?xml'):
         mo = encoding_reg.search(text)
         if mo:
@@ -101,12 +107,13 @@ class ZPT(Script, PageTemplate, Historical, Cacheable,
                  {'id':'expand', 'type':'boolean', 'mode': 'w'},
                  )
 
-    security = AccessControl.ClassSecurityInfo()
+    security = ClassSecurityInfo()
     security.declareObjectProtected(view)
     security.declareProtected(view, '__call__')
 
     def __init__(self, id, text=None, content_type=None, encoding='utf-8'):
         self.id = id
+        self.expand = 0
         self.ZBindings_edit(self._default_bindings)
         self.pt_edit(text, content_type, encoding)
 
@@ -124,15 +131,8 @@ class ZPT(Script, PageTemplate, Historical, Cacheable,
     def pt_edit(self, text, content_type, encoding='utf-8'):
 
         text = text.strip()
-#        if content_type == 'text/html':
-#            if not text.startswith('<?xml'):
-#                # not XHTML -> convert it to unicode
-#                text = unicode(text, encoding)
-
         if not isinstance(text, unicode):
             text = unicode(text, encoding)
-
-        print content_type, type(text),repr(text)
         self.ZCacheable_invalidate()
         PageTemplate.pt_edit(self, text, content_type)
 
@@ -238,7 +238,7 @@ class ZPT(Script, PageTemplate, Historical, Cacheable,
              'options': {},
              'root': root,
              'request': getattr(root, 'REQUEST', None),
-             'modules': SecureModuleImporter,
+             'modules': SecureModuleImporter(),
              }
         return c
 
@@ -258,7 +258,7 @@ class ZPT(Script, PageTemplate, Historical, Cacheable,
         except AttributeError:
             pass
 
-        security=getSecurityManager()
+        security = AccessControl.getSecurityManager()
         bound_names['user'] = security.getUser()
 
         # Retrieve the value from the cache.
@@ -332,6 +332,9 @@ class ZPT(Script, PageTemplate, Historical, Cacheable,
     def document_src(self, REQUEST=None, RESPONSE=None):
         """Return expanded document source."""
 
+        print 'src', self.read()
+
+
         if RESPONSE is not None:
             RESPONSE.setHeader('Content-Type', 'text/plain')
         if REQUEST is not None and REQUEST.get('raw'):
@@ -363,14 +366,9 @@ class ZPT(Script, PageTemplate, Historical, Cacheable,
     def wl_isLocked(self):
         return 0
 
-    security.declareProtected(view_management_screens, 'source_dot_xml')
+    security.declareProtected(view_management_screens, 'getSource')
+    getSource = Src()
     source_dot_xml = Src()
-
-    security.declareProtected(view_management_screens, 'pt_editForm')
-    pt_editForm = PageTemplateFile('pt/ptEdit.pt', globals())
-    pt_editForm.__name__ = 'pt_editForm'
-    manage = manage_main = pt_editForm
-
 
 InitializeClass(ZPT)
 
@@ -379,22 +377,31 @@ setattr(ZPT, 'source.xml',  ZPT.source_dot_xml)
 setattr(ZPT, 'source.html', ZPT.source_dot_xml)
 
 
+def _newZPT(id, filename):
+    """ factory to generate ZPT instances from the file-system
+        based templates (basically for internal purposes)
+    """
+    zpt = ZPT(id, open(filename).read(), 'text/html')
+    zpt.__name__= id
+    return zpt
 
 class FSZPT(ZPT):
+    """ factory to generate ZPT instances from the file-system
+        based templates (basically for internal purposes)
+    """
 
-    def __init__(self, filename, name):
-        self.__name__= name
-        PageTemplate.__init__(self, open(filename).read(), 'text/html')
+    def __init__(self, id, filename):
+        ZPT.__init__(self, id, open(filename).read(), 'text/html')
+        self.__name__= id
 
 InitializeClass(FSZPT)
 
 
-# Product registration and Add support
-manage_addZPTForm= PageTemplateFile('pt/ptAdd.pt', globals())
-manage_addZPTForm.__name__ = 'manage_addZPTForm'
-#manage_addZPTForm= FSZPT(os.path.join(package_home(globals()), 'pt', 'ptAdd.pt'), 'manage_addZPTForm')
-#manage_addZPTForm.__name__ = 'manage_addZPTForm'
+ZPT.pt_editForm = FSZPT('pt_editForm', os.path.join(package_home(globals()),'pt', 'ptEdit.pt'))
+# this is scary, do we need this?
+ZPT.manage = ZPT.manage_main = ZPT.pt_editForm
 
+manage_addZPTForm= FSZPT('manage_addZPTForm', os.path.join(package_home(globals()), 'pt', 'ptAdd.pt'))
 
 def manage_addZPT(self, id, title='', file=None, encoding='utf-8', submit=None, RESPONSE=None):
     "Add a Page Template with optional file content."
@@ -422,7 +429,7 @@ def manage_addZPT(self, id, title='', file=None, encoding='utf-8', submit=None, 
     else:        
         return zpt
 
-from Products.PageTemplates import misc_
+from Products.ZPT import misc_
 misc_['exclamation.gif'] = ImageFile('pt/exclamation.gif', globals())
 
 def initialize(context):
