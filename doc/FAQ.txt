@@ -277,15 +277,11 @@ Zope Installation Frequently Asked Questions
        browser.  Clear your cache and view the HTML source again.
 
 
-    2. I'm using Python 2.4 and I'm having a problem ...
-
-       As of the release of Zope 2.8, Python 2.4 has not been approved for 
-       use with any version of Zope yet.  Please use Python 2.3. 
+    2. I'm using Python 2.x and I'm having a problem ...
 
        The correct version of Python should always be automatically detected
        and used when you configure and install Zope. In general, you 
        should let the configure script do its job and don't try to 
        force an unsupported version of Python!
-
 
 
