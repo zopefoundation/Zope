@@ -304,7 +304,8 @@ get_transaction().  transaction.commit() is a shortcut spelling of
 transaction.get().commit(), and transaction.abort() of
 transaction.get().abort().
 """
-    warnings.warn(_GET_TRANSACTION_DEPRECATED, DeprecationWarning)
+    warnings.warn(_GET_TRANSACTION_DEPRECATED, DeprecationWarning,
+                  stacklevel=2)
     return transaction.get()
 
 import __builtin__
