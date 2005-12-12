@@ -181,7 +181,7 @@ Integrating Zope With An Existing Webserver
 
   Zope doesn't require any existing webserver to run, but you can
   integrate it with other webservers as necessary.  See the
-  WEBSERVERS.txt file for more information about configuring Zope with
+  WEBSERVER.txt file for more information about configuring Zope with
   an existing web server.  There is also information about integrating
   Zope with existing webservers on the Zope.org website.
 
