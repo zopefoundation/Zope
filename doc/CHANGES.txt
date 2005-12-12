@@ -27,6 +27,9 @@ Zope Changes
 
     Bugs fixed
 
+     - OFS ObjectManager: Fixed list_imports() to tolerate missing
+       import directories.
+
      - Collector #1965: 'get_transaction' missing from builtins without
        sufficient deprecation notice (ZODB 3.6 properly removed it, but
        Zope needs to keep it for another release).

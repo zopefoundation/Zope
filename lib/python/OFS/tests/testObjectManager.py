@@ -108,7 +108,6 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         self.assertEqual( si.__ac_local_roles__, None )
 
     def test_setObject_set_owner_with_emergency_user( self ):
-
         om = self._makeOne()
 
         newSecurityManager( None, emergency_user )
@@ -379,6 +378,16 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         self.assertRaises(BadRequest, om._setObject, '111', si)
         self.assertRaises(BadRequest, om._setObject, 'REQUEST', si)
         self.assertRaises(BadRequest, om._setObject, '/', si)
+
+    def test_list_imports(self):
+        om = self._makeOne()
+        # This must work whether we've done "make instance" or not.
+        # So list_imports() may return an empty list, or whatever's
+        # in skel/import. Tolerate both cases.
+        self.failUnless(isinstance(om.list_imports(), list))
+        for filename in om.list_imports():
+            self.failUnless(filename.endswith('.zexp') or
+                            filename.endswith('.xml'))
 
 def test_suite():
     suite = unittest.TestSuite()
