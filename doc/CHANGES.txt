@@ -115,6 +115,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - OFS ObjectManager: Fixed list_imports() to tolerate missing
+        import directories.
+
       - Collector #1621, 1894:  Removed support for use of long-deprecated
         'whrandom' module.
 

@@ -625,6 +625,8 @@ class ObjectManager(
             paths.append(cfg.instancehome)
         for impath in paths:
             directory = os.path.join(impath, 'import')
+            if not os.path.isdir(directory):
+                continue
             listing += [f for f in os.listdir(directory)
                         if f.endswith('.zexp') or f.endswith('.xml')]
         return listing
