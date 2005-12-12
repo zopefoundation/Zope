@@ -27,7 +27,8 @@ Zope Changes
 
     Bugs fixed
 
-     
+     - Several zope.app packages were forgotten to be included in the
+       first beta due to the now zpkg-based build and release process.
 
     Features added
 
