@@ -12,6 +12,7 @@
 ##############################################################################
 """Initialize the Zope2 Package and provide a published module
 """
+import warnings
 
 from AccessControl.SecurityManagement import getSecurityManager
 from AccessControl.SecurityManagement import newSecurityManager
@@ -223,6 +224,7 @@ def zpublisher_exception_hook(published, REQUEST, t, v, traceback):
 
 ac_logger = logging.getLogger('event.AccessControl')
 
+
 class TransactionsManager:
     def begin(self,
               # Optimize global var lookups:
@@ -290,4 +292,22 @@ class TransactionsManager:
             T.setUser(auth_user.getId(), auth_path)
 
 
+# BBB:  older code expects 'get_transaction' to be available in __builtin__.
 
+def get_transaction():
+    _GET_TRANSACTION_DEPRECATED = """\
+The 'get_transaction' utility function in __builtin__ is deprecated, and
+will be removed in Zope 2.10 (May 2006).
+
+Please import the transaction module, and use transaction.get() instead of
+get_transaction().  transaction.commit() is a shortcut spelling of
+transaction.get().commit(), and transaction.abort() of
+transaction.get().abort().
+"""
+    warnings.warn(_GET_TRANSACTION_DEPRECATED, DeprecationWarning)
+    return transaction.get()
+
+import __builtin__
+__builtin__.get_transaction = get_transaction
+del __builtin__
+del get_transaction

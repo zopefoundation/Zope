@@ -27,6 +27,10 @@ Zope Changes
 
     Bugs fixed
 
+     - Collector #1965: 'get_transaction' missing from builtins without
+       sufficient deprecation notice (ZODB 3.6 properly removed it, but
+       Zope needs to keep it for another release).
+
      - Several zope.app packages were forgotten to be included in the
        first beta due to the now zpkg-based build and release process.
 
