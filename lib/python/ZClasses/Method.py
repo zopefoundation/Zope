@@ -19,13 +19,13 @@ import App.Dialogs, ZClasses, App.Factory, App.ProductRegistry
 import ZClassOwner
 from AccessControl.PermissionMapping import aqwrap, PermissionMapper
 
-import OFS.content_types
 from OFS.DTMLMethod import DTMLMethod
 from Products.PythonScripts.PythonScript import PythonScript
 from zExceptions import BadRequest
 
 import marshal
 from cgi import escape
+from zope.app.content_types import guess_content_type
 
 _marker=[]
 class ZClassMethodsSheet(
@@ -189,7 +189,7 @@ class ZClassMethodsSheet(
             new item uploaded via FTP/WebDAV.
         """
         if typ is None:
-            typ, enc = OFS.content_types.guess_content_type()
+            typ, enc = guess_content_type()
         if typ == 'text/x-python':
             return PythonScript( name )
         if typ[ :4 ] == 'text':

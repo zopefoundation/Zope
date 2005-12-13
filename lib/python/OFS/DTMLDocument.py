@@ -17,7 +17,7 @@ $Id$
 from Globals import InitializeClass
 from ZPublisher.Converters import type_converters
 from Globals import HTML, DTMLFile, MessageDialog
-from OFS.content_types import guess_content_type
+from zope.app.content_types import guess_content_type
 from DTMLMethod import DTMLMethod, decapitate
 from PropertyManager import PropertyManager
 from webdav.common import rfc1123_date

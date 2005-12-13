@@ -18,7 +18,7 @@ import History
 from Globals import HTML, DTMLFile, MessageDialog
 from Globals import InitializeClass
 from SimpleItem import Item_w__name__, pretty_tb
-from OFS.content_types import guess_content_type
+from zope.app.content_types import guess_content_type
 from PropertyManager import PropertyManager
 from AccessControl import ClassSecurityInfo
 from AccessControl.Role import RoleManager

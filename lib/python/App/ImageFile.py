@@ -17,15 +17,16 @@ __version__='$Revision: 1.20 $'[11:-2]
 import os
 import time
 
+import Acquisition
+import Globals
 from Globals import InitializeClass
 from AccessControl import ClassSecurityInfo
 from App.config import getConfiguration
-from OFS.content_types import guess_content_type
 from Globals import package_home
 from Common import rfc1123_date
 from DateTime import DateTime
-import Acquisition
-import Globals
+
+from zope.app.content_types import guess_content_type
 
 class ImageFile(Acquisition.Explicit):
     """Image objects stored in external files."""

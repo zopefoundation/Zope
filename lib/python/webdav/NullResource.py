@@ -17,9 +17,9 @@ $Id$
 
 import sys
 
-import Acquisition, OFS.content_types
-from Globals import InitializeClass
+import Acquisition 
 import OFS.SimpleItem
+from Globals import InitializeClass
 from AccessControl import getSecurityManager
 from AccessControl import ClassSecurityInfo
 from AccessControl.Permissions import view as View
@@ -38,6 +38,8 @@ from common import Locked, Conflict, PreconditionFailed, UnsupportedMediaType
 from interfaces import IWriteLock
 from Resource import Resource
 from WriteLockInterface import WriteLockInterface
+
+from zope.app.content_types import guess_content_type
 
 
 class NullResource(Persistent, Acquisition.Implicit, Resource):
@@ -143,7 +145,7 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
 
         typ=REQUEST.get_header('content-type', None)
         if typ is None:
-            typ, enc=OFS.content_types.guess_content_type(name, body)
+            typ, enc=guess_content_type(name, body)
 
         factory = getattr(parent, 'PUT_factory', self._default_PUT_factory )
         ob = factory(name, typ, body)
@@ -409,7 +411,7 @@ class LockNullResource(NullResource, OFS.SimpleItem.Item_w__name__):
         body = REQUEST.get('BODY', '')
         typ = REQUEST.get_header('content-type', None)
         if typ is None:
-            typ, enc = OFS.content_types.guess_content_type(name, body)
+            typ, enc = guess_content_type(name, body)
 
         factory = getattr(parent, 'PUT_factory', self._default_PUT_factory)
         ob = (factory(name, typ, body) or

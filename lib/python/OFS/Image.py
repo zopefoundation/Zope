@@ -15,7 +15,7 @@
 $Id$
 """
 import struct
-from OFS.content_types import guess_content_type
+from zope.app.content_types import guess_content_type
 from Globals import DTMLFile
 from Globals import InitializeClass
 from PropertyManager import PropertyManager
