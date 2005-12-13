@@ -66,6 +66,8 @@ Zope Changes
 
     Other
 
+      - The SiteErrorLog now copies exceptions to the event log by default.
+
       - ObjectManager now has an hasObject method to test presence. This
         brings it in line with BTreeFolder.
 

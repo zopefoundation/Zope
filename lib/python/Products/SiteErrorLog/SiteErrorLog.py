@@ -71,7 +71,7 @@ class SiteErrorLog (SimpleItem):
     id = 'error_log'
 
     keep_entries = 20
-    copy_to_zlog = 0
+    copy_to_zlog = True
 
     security = ClassSecurityInfo()
 
