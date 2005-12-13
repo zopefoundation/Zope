@@ -39,7 +39,7 @@ Zope Changes
 
     Features added
 
-     - none, feature freeze :-)
+     - The SiteErrorLog now copies exceptions to the event log by default.
 
   Zope 2.9.0 beta 1 (2005/12/06)
 
