@@ -26,6 +26,8 @@ Zope Changes
 
     Features added
 
+      - The SiteErrorLog now copies exceptions to the event log by default.
+
       - deprecated OFS.content_types (to be removed in Zope 2.11) and
         replaced all occurences with zope.app.content_types 
 
