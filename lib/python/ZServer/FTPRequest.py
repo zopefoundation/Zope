@@ -27,7 +27,7 @@ import re
 class FTPRequest(HTTPRequest):
 
     def __init__(self, path, command, channel, response, stdin=None,
-                 environ=None,globbing=None,recursive=0):
+                 environ=None, globbing=None, recursive=0, size=None):
 
         # we need to store the globbing information to pass it
         # to the ZPublisher and the manage_FTPlist function
@@ -35,9 +35,12 @@ class FTPRequest(HTTPRequest):
         self.globbing = globbing
         self.recursive= recursive
 
-        if stdin is None: stdin=StringIO()
+        if stdin is None:
+            size = 0
+            stdin = StringIO()
+
         if environ is None:
-            environ=self._get_env(path, command, channel, stdin)
+            environ = self._get_env(path, command, channel, stdin, size)
 
         self._orig_env=environ
         HTTPRequest.__init__(self, stdin, environ, response, clean=1)
@@ -61,7 +64,7 @@ class FTPRequest(HTTPRequest):
                          )
         return r
 
-    def _get_env(self, path, command, channel, stdin):
+    def _get_env(self, path, command, channel, stdin, size):
         "Returns a CGI style environment"
         env={}
         env['SCRIPT_NAME']='/%s' % channel.module
@@ -109,9 +112,10 @@ class FTPRequest(HTTPRequest):
             env['QUERY_STRING']='id=%s&new_id=%s' % (args[0],args[1])
 
         elif command=='STOR':
-            env['PATH_INFO']=self._join_paths(channel.path, path)
-            env['REQUEST_METHOD']='PUT'
-            env['CONTENT_LENGTH']=len(stdin.getvalue())
+            env['PATH_INFO'] = self._join_paths(channel.path, path)
+            env['REQUEST_METHOD'] = 'PUT'
+            env['CONTENT_LENGTH'] = long(size)
+
         else:
             env['PATH_INFO']=self._join_paths(channel.path, path, command)
 
