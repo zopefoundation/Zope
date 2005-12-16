@@ -130,7 +130,6 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
     security.declareProtected(change_page_templates, 'pt_encoding')
     def pt_encoding(self):
         encoding = sniffEncoding(self.read())
-        print encoding
         return encoding                
 
     from ComputedAttribute import ComputedAttribute
@@ -142,6 +141,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         text = text.strip()
         if not isinstance(text, unicode):
             text = unicode(text, encoding)
+
         self.ZCacheable_invalidate()
         PageTemplate.pt_edit(self, text, content_type)
 
