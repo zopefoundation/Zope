@@ -54,7 +54,7 @@
   <tr> 
     <td align="left" valign="middle" class="form-label">Encoding</td>
     <td>
-      <input type="text" readonly name="encoding" tal:attributes="value context/pt_encoding" style="background-color: #bbbbbb; "/>
+      <input type="hidden" name="encoding" tal:attributes="value context/pt_encoding" />
     </td>
   </tr>
 
