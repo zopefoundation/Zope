@@ -36,6 +36,7 @@ from AccessControl.Permissions import view, ftp_access, change_page_templates, v
 from webdav.Lockable import ResourceLockedError
 from webdav.WriteLockInterface import WriteLockInterface
 from zope.pagetemplate.pagetemplate import PageTemplate 
+from zope.pagetemplate.pagetemplatefile import sniff_type
 
 # regular expression to extract the encoding from the XML preamble
 encoding_reg= re.compile('<\?xml.*?encoding="(.*?)".*?\?>', re.M)
@@ -69,12 +70,21 @@ class Src(Acquisition.Explicit):
 def sniffEncoding(text, default_encoding='utf-8'):
     """ try to determine the encoding from html or xml """
 
-    # XXX: look at pagetemplates.py (BOM!!!)
     if text.startswith('<?xml'):
         mo = encoding_reg.search(text)
         if mo:
             return mo.group(1)
     return default_encoding
+
+
+def guess_type(filename, text):
+
+    content_type, dummy = guess_content_type(filename, text)
+    if content_type in ('text/html', 'text/xml'):
+        return content_type
+
+    return sniff_type(text) or 'text/html'
+
 
 _default_content_fn = os.path.join(package_home(globals()), 'pt', 'default.html')
 
@@ -120,10 +130,9 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
     security.declareProtected(change_page_templates, 'pt_encoding')
     def pt_encoding(self):
         encoding = sniffEncoding(self.read())
+        print encoding
         return encoding                
 
-    # Use the encoding of the document as encoding for the ZMI to 
-    # avoid any kind of encoding troubles
     from ComputedAttribute import ComputedAttribute
     management_page_charset = ComputedAttribute(pt_encoding, 1)
 
@@ -185,7 +194,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
             filename = file.filename
             text = file.read()
 
-        content_type, dummy = guess_content_type(filename, text)   
+        content_type = guess_type(filename, text)   
         if not content_type in ('text/html', 'text/xml'):
             raise ValueError('Unsupported mimetype: %s' % content_type)
 
@@ -413,11 +422,10 @@ def manage_addPageTemplate(self, id, title='', text=None, encoding='utf-8', subm
         if headers and headers.has_key('content_type'):
             content_type = headers['content_type']
         else:
-            content_type, dummy = guess_content_type(filename, text) 
+            content_type = guess_type(filename, text) 
         encoding = sniffEncoding(text)
 
     else:
-
         if hasattr(text, 'read'):
             filename = getattr(text, 'filename', '')
             headers = getattr(text, 'headers', None)
@@ -425,7 +433,7 @@ def manage_addPageTemplate(self, id, title='', text=None, encoding='utf-8', subm
             if headers and headers.has_key('content_type'):
                 content_type = headers['content_type']
             else:
-                content_type, dummy = guess_content_type(filename, text) 
+                content_type = guess_type(filename, text) 
 
     if not text:
         text = open(_default_content_fn).read()
