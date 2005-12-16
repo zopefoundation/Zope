@@ -16,33 +16,26 @@ import os
 from Globals import package_home, InitializeClass
 from App.config import getConfiguration
 from ZopePageTemplate import ZopePageTemplate
+from zope.app.content_types import guess_content_type
 
-# XXX: this needs some more work..this class is *not* used by the
-# ZopePageTemplate implementation but most likely only for class
-# using PTs for edit/add forms etc. Also the tests don't pass
+from OFS.SimpleItem import SimpleItem
+from zope.pagetemplate.pagetemplatefile import PageTemplateFile as PTF
 
-class PageTemplateFile(ZopePageTemplate):
+
+class PageTemplateFile(SimpleItem, PTF):
 
     def __init__(self, filename, _prefix=None, **kw):
-        self.ZBindings_edit(self._default_bindings)
-        if _prefix is None:
-            _prefix = getConfiguration().softwarehome
-        elif not isinstance(_prefix, str):
-            _prefix = package_home(_prefix)
-        name = kw.get('__name__')
+        name = None
+        if kw.has_key('__name__'):
+            name = kw['__name__']
+            del kw['__name__'] 
+
+        PTF.__init__(self, filename, _prefix, **kw)
+
         basepath, ext = os.path.splitext(filename)
         if name:
-            self._need__name__ = 0
-            self.__name__ = name
+            self.id = self.__name__ = name
         else:
-            self.__name__ = os.path.basename(basepath)
-        if not ext:
-            # XXX This is pretty bogus, but can't be removed since
-            # it's been released this way.
-            filename = filename + '.zpt'
-        self.filename = os.path.join(_prefix, filename)
-
-        ZopePageTemplate.__init__(self, os.path.basename(self.filename), open(self.filename).read(), 'text/html')
-        
+            self.id = self.__name__ = os.path.basename(basepath)
 
 InitializeClass(PageTemplateFile)
