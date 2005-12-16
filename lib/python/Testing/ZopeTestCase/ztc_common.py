@@ -62,11 +62,13 @@ class Configurator:
             return
         if self.zeo_instance_home:
             self.setup_zeo_instance_home()
+            self.setup_logging()
         else:
             if self.instance_home:
                 self.setup_instance_home()
             else:
                 self.detect_and_setup_instance_home()
+            self.setup_logging()
             self.setup_custom_zodb()
     
     def setup_zeo_instance_home(self):
@@ -127,6 +129,13 @@ class Configurator:
             else:
                 os.environ['INSTANCE_HOME'] = INSTANCE_HOME = self.cwd
                 self.setconfig(instancehome=self.cwd)
+
+    def setup_logging(self):
+        '''If $INSTANCE_HOME/log.ini exists, load it.'''
+        logini = os.path.join(self.getconfig('instancehome'), 'log.ini')
+        if os.path.exists(logini):
+            import logging.config
+            logging.config.fileConfig(logini)
 
     def add_instance(self, p):
         '''Adds an INSTANCE_HOME directory to Products.__path__ and sys.path.'''
