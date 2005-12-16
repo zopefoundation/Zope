@@ -17,7 +17,7 @@ This file must be called from framework.py like so
   execfile(os.path.join(os.path.dirname(Testing.__file__),
            'ZopeTestCase', 'ztc_common.py'))
 
-$Id: ztc_common.py,v 1.14 2004/05/27 15:06:24 shh42 Exp $
+$Id$
 """
 
 # Overwrites the default framework() method to expose the
@@ -62,11 +62,13 @@ class Configurator:
             return
         if self.zeo_instance_home:
             self.setup_zeo_instance_home()
+            self.setup_logging()
         else:
             if self.instance_home:
                 self.setup_instance_home()
             else:
                 self.detect_and_setup_instance_home()
+            self.setup_logging()
             self.setup_custom_zodb()
     
     def setup_zeo_instance_home(self):
@@ -127,6 +129,13 @@ class Configurator:
             else:
                 os.environ['INSTANCE_HOME'] = INSTANCE_HOME = self.cwd
                 self.setconfig(instancehome=self.cwd)
+
+    def setup_logging(self):
+        '''If $INSTANCE_HOME/log.ini exists, load it.'''
+        logini = os.path.join(self.getconfig('instancehome'), 'log.ini')
+        if os.path.exists(logini):
+            import logging.config
+            logging.config.fileConfig(logini)
 
     def add_instance(self, p):
         '''Adds an INSTANCE_HOME directory to Products.__path__ and sys.path.'''

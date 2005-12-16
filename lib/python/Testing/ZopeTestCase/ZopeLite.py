@@ -58,8 +58,9 @@ _start = time.time()
 
 def _configure_logging():
     # Initialize the logging module
-    if not sys.modules.has_key('logging'):
-        import logging
+    import logging
+    root = logging.getLogger()
+    if not root.handlers:
         logging.basicConfig()
 
 def _configure_debug_mode():
