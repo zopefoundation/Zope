@@ -7,6 +7,7 @@
 | context/read" /> 
 <form action="" method="post" tal:attributes="action request/URL1">
 <input type="hidden" name=":default_method" value="pt_changePrefs">
+<input type="hidden" name="encoding" tal:attributes="value context/pt_encoding" />
 <table width="100%" cellspacing="0" cellpadding="2" border="0">
   <tr>
     <td align="left" valign="middle">
@@ -50,13 +51,6 @@
     </td>
   </tr>
 
-
-  <tr> 
-    <td align="left" valign="middle" class="form-label">Encoding</td>
-    <td>
-      <input type="hidden" name="encoding" tal:attributes="value context/pt_encoding" />
-    </td>
-  </tr>
 
   <!-- XXX: check if 'None' is a proper argument for 'namespace' -->
   <tr tal:define="errors python: context.pt_errors(None)" tal:condition="errors">
