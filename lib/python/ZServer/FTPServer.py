@@ -352,7 +352,7 @@ class zope_ftp_channel(ftp_channel):
         #     Right now we are limited in the errors we can issue, since
         #     we agree to accept the file before checking authorization
 
-        fd=ContentReceiver(self.stor_callback, line[1])
+        fd = ContentReceiver(self.stor_callback, line[1])
         self.respond (
             '150 Opening %s connection for %s' % (
                 self.type_map[self.current_mode],
@@ -361,14 +361,15 @@ class zope_ftp_channel(ftp_channel):
             )
         self.make_recv_channel(fd)
 
-    def stor_callback(self,path,data):
+    def stor_callback(self, path, data, size):
         'callback to do the STOR, after we have the input'
-        response=make_response(self, self.stor_completion)
-        request=FTPRequest(path,'STOR',self,response,stdin=data)
-        handle(self.module,request,response)
+        response = make_response(self, self.stor_completion)
+        request = FTPRequest(path, 'STOR', self, response,
+                             stdin=data, size=size)
+        handle(self.module, request, response)
 
-    def stor_completion(self,response):
-        status=response.getStatus()
+    def stor_completion(self, response):
+        status = response.getStatus()
 
         if status in (200, 201, 204, 302):
             self.client_dc.channel.respond('226 Transfer complete.')
@@ -559,19 +560,21 @@ class ContentReceiver:
     "Write-only file object used to receive data from FTP"
 
     def __init__(self,callback,*args):
-        self.data=StringIO()
-        self.callback=callback
-        self.args=args
+        from tempfile import TemporaryFile
+        self.data = TemporaryFile('w+b')
+        self.callback = callback
+        self.args = args
 
     def write(self,data):
         self.data.write(data)
 
     def close(self):
+        size = self.data.tell()
         self.data.seek(0)
-        args=self.args+(self.data,)
-        c=self.callback
-        self.callback=None
-        self.args=None
+        args = self.args + (self.data, size)
+        c = self.callback
+        self.callback = None
+        self.args = None
         c(*args)
 
 
