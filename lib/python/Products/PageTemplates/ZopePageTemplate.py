@@ -127,14 +127,6 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         self.ZBindings_edit(self._default_bindings)
         self.pt_edit(text, content_type, encoding)
 
-    security.declareProtected(change_page_templates, 'pt_encoding')
-    def pt_encoding(self):
-        encoding = sniffEncoding(self.read())
-        return encoding                
-
-    from ComputedAttribute import ComputedAttribute
-    management_page_charset = ComputedAttribute(pt_encoding, 1)
-
     security.declareProtected(change_page_templates, 'pt_edit')
     def pt_edit(self, text, content_type, encoding='utf-8'):
 
@@ -423,7 +415,7 @@ def manage_addPageTemplate(self, id, title='', text=None, encoding='utf-8', subm
             content_type = headers['content_type']
         else:
             content_type = guess_type(filename, text) 
-        encoding = sniffEncoding(text)
+        encoding = sniffEncoding(text, encoding)
 
     else:
         if hasattr(text, 'read'):
@@ -434,6 +426,7 @@ def manage_addPageTemplate(self, id, title='', text=None, encoding='utf-8', subm
                 content_type = headers['content_type']
             else:
                 content_type = guess_type(filename, text) 
+        encoding = sniffEncoding(text, encoding)
 
     if not text:
         text = open(_default_content_fn).read()

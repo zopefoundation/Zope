@@ -1,5 +1,5 @@
 
-<h1 tal:replace="structure python: context.manage_page_header(management_page_charset=context.pt_encoding())">Header</h1>
+<h1 tal:replace="structure python: context.manage_page_header(management_page_charset='utf-8')">Header</h1>
 <h2 tal:define="manage_tabs_message options/manage_tabs_message | nothing"
     tal:replace="structure context/manage_tabs">Tabs</h2>
 
@@ -7,7 +7,7 @@
 | context/read" /> 
 <form action="" method="post" tal:attributes="action request/URL1">
 <input type="hidden" name=":default_method" value="pt_changePrefs">
-<input type="hidden" name="encoding" tal:attributes="value context/pt_encoding" />
+<input type="hidden" name="encoding" value="utf-8"/>
 <table width="100%" cellspacing="0" cellpadding="2" border="0">
   <tr>
     <td align="left" valign="middle">
