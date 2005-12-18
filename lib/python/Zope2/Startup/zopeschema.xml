@@ -760,6 +760,20 @@
     </description>
   </section>
 
+  <key name="conflict-error-log-level"
+       datatype="ZConfig.components.logger.datatypes.logging_level"
+       default="info">
+     <description>
+       Specifies at which level conflict errors are logged. Conflict
+       errors, when occuring in small numbers, are a normal part of the
+       Zope optimistic transaction conflict resolution algorithms. They
+       are retried automatically a few times, and are therefore usually
+       not visible by the user. You can specify 'notset' if you don't
+       want them logged, or use any other logger level.
+     </description>
+     <metadefault>info</metadefault>
+  </key>
+
   <!-- max-listen-sockets and large-file-threshold should really go
        into the ZServer package, but I can't quite figure out how to
        put it there -->

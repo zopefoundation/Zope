@@ -44,6 +44,10 @@ Zope Changes
 
      - The SiteErrorLog now copies exceptions to the event log by default.
 
+     - Added a 'conflict-error-log-level' directive to zope.conf, to set
+       the level at which conflict errors (which are normally retried
+       automatically) are logged. The default is 'info'.
+
   Zope 2.9.0 beta 1 (2005/12/06)
 
     Features added

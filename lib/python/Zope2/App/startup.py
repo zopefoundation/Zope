@@ -136,7 +136,7 @@ class RequestContainer(ExtensionClass.Base):
 conflict_errors = 0
 unresolved_conflict_errors = 0
 
-conflict_logger = logging.getLogger('ZODB.Conflict')
+conflict_logger = logging.getLogger('ZPublisher.Conflict')
 
 def zpublisher_exception_hook(published, REQUEST, t, v, traceback):
     global unresolved_conflict_errors
@@ -149,19 +149,18 @@ def zpublisher_exception_hook(published, REQUEST, t, v, traceback):
             if t is SystemExit:
                 raise
             if issubclass(t, ConflictError):
-                conflict_errors = conflict_errors + 1
-                # This logs _all_ conflict errors
-                conflict_logger.info(
-                    '%s at %s (%i conflicts, of which %i'
-                    ' were unresolved, since startup at %s)',
-                    v,
-                    REQUEST.get('PATH_INFO', '<unknown>'),
-                    conflict_errors,
-                    unresolved_conflict_errors,
-                    startup_time
-                    )
-                # This debug logging really doesn't help a lot...
-                conflict_logger.debug('Conflict traceback',exc_info=True)
+                conflict_errors += 1
+                level = getConfiguration().conflict_error_log_level
+                if level:
+                    conflict_logger.log(level,
+                        "%s at %s: %s (%d conflicts (%d unresolved) "
+                        "since startup at %s)",
+                        v.__class__.__name__,
+                        REQUEST.get('PATH_INFO', '<unknown>'),
+                        v,
+                        conflict_errors,
+                        unresolved_conflict_errors,
+                        startup_time)
                 raise ZPublisher.Retry(t, v, traceback)
             if t is ZPublisher.Retry:
                 try:
