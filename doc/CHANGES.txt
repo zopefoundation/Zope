@@ -26,6 +26,10 @@ Zope Changes
 
     Features added
 
+      - Added a 'conflict-error-log-level' directive to zope.conf, to set
+        the level at which conflict errors (which are normally retried
+        automatically) are logged. The default is 'info'.
+
       - The SiteErrorLog now copies exceptions to the event log by default.
 
       - deprecated OFS.content_types (to be removed in Zope 2.11) and

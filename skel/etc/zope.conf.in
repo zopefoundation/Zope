@@ -759,6 +759,24 @@ instancehome $INSTANCE
 #   </logfile>
 # </logger>
 
+
+# Directive: conflict-error-log-level
+#
+# Description:
+#     Specifies at which level conflict errors are logged. Conflict
+#     errors, when occuring in small numbers, are a normal part of the
+#     Zope optimistic transaction conflict resolution algorithms. They
+#     are retried automatically a few times, and are therefore usually
+#     not visible by the user. You can specify 'notset' if you don't
+#     want them logged, or use any other logger level (see above).
+#
+# Default: info
+#
+# Example:
+#
+#    conflict-error-log-level blather
+
+
 # Directive: warnfilter
 #
 # Description:
