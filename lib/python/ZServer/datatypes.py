@@ -135,7 +135,8 @@ class FCGIServerFactory(ServerFactory):
 
         import warnings
         warnings.warn("Using FastCGI is deprecated. You should use mod_proxy " 
-                      "to run Zope with Apache", DeprecationWarning)
+                      "to run Zope with Apache", DeprecationWarning,
+                      stacklevel=2)
 
         import socket
         if section.address.family == socket.AF_INET:

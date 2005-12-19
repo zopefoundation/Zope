@@ -68,7 +68,38 @@ class BaseTest(unittest.TestCase):
             self.assertEqual(factory.port, 9300 + port)
 
 
-class ZServerConfigurationTestCase(BaseTest):
+class WarningInterceptor:
+
+    _old_stderr = None
+    _our_stderr_stream = None
+
+    def _trap_warning_output( self ):
+
+        if self._old_stderr is not None:
+            return
+
+        import sys
+        from StringIO import StringIO
+
+        self._old_stderr = sys.stderr
+        self._our_stderr_stream = sys.stderr = StringIO()
+
+    def _free_warning_output( self ):
+
+        if self._old_stderr is None:
+            return
+
+        import sys
+        sys.stderr = self._old_stderr
+
+class ZServerConfigurationTestCase(BaseTest, WarningInterceptor):
+
+    def setUp(self):
+        BaseTest.setUp(self)
+
+    def tearDown(self):
+        self._free_warning_output()
+        BaseTest.tearDown(self)
 
     def load_unix_domain_factory(self, text):
         fn = TEMPFILENAME
@@ -147,6 +178,7 @@ class ZServerConfigurationTestCase(BaseTest):
                                 ZServer.datatypes.PCGIServerFactory))
 
     def test_fcgi_factory(self):
+        self._trap_warning_output()
         factory = self.load_factory("""\
             <fast-cgi>
               address 83
