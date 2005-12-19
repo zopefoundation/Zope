@@ -134,8 +134,9 @@ class FCGIServerFactory(ServerFactory):
     def __init__(self, section):
 
         import warnings
-        warnings.warn("Using FastCGI is deprecated. You should use mod_proxy " +
-                      "to run Zope with Apache", DeprecationWarning)
+        warnings.warn("Using FastCGI is deprecated. You should use mod_proxy " 
+                      "to run Zope with Apache", DeprecationWarning,
+                      stacklevel=2)
 
 
         import socket
