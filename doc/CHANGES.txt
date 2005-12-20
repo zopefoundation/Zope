@@ -27,6 +27,12 @@ Zope Changes
 
     Bugs fixed
 
+     - For content-type HTTP headers starting with 'text/' or 'application/'
+       the 'charset' field is automatically if not specified by the
+       application. The 'charset' is determined by the content-type header
+       specified by the application (if available) or from the
+       zpublisher_default_encoding value as configured in etc/zope.conf
+
      - Collector #1976: FTP STOR command would load the file being
        uploaded in memory. Changed to use a TemporaryFile.
 

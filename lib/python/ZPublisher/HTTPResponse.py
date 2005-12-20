@@ -1,9 +1,9 @@
 #############################################################################
 #
-# Copyright (c) 2002 Zope Corporation and Contributors. All Rights Reserved.
+# Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
-# Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
+# Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
@@ -336,9 +336,9 @@ class HTTPResponse(BaseResponse):
         if not self.headers.has_key('content-type'):
             isHTML = self.isHTML(self.body)
             if isHTML:
-                c = 'text/html'
+                c = 'text/html; charset=%s' % default_encoding
             else:
-                c = 'text/plain'
+                c = 'text/plain; charset=%s' % default_encoding
             self.setHeader('content-type', c)
 
         # Some browsers interpret certain characters in Latin 1 as html
@@ -440,11 +440,18 @@ class HTTPResponse(BaseResponse):
                                               r')(?:(?:\s*;)|\Z)',
                                               re.IGNORECASE)):
         # Encode the Unicode data as requested
+
         if self.headers.has_key('content-type'):
             match = charset_re.match(self.headers['content-type'])
             if match:
                 encoding = match.group(1)
                 return body.encode(encoding)
+            else:
+
+                ct = self.headers['content-type']
+                if ct.startswith('text/') or ct.startswith('application/'):
+                    self.headers['content-type'] = '%s; charset=%s' % (ct, default_encoding)
+
         # Use the default character encoding
         return body.encode(default_encoding,'replace')
 
