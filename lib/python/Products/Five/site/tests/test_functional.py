@@ -31,15 +31,13 @@ class CheckSiteManagerView(BrowserView):
 
     def __call__(self):
         sm = zapi.getSiteManager()
-        result = {
-            'zapi.getSiteManager() is zapi.getGlobalSiteManager()':
-            sm is zapi.getGlobalSiteManager(),
-            'IFiveUtilityRegistry.providedBy(utility_service)':
-            IFiveUtilityRegistry.providedBy(sm.utilities),
-            'isinstance(zapi.getSiteManager(), FiveSiteManager)':
-            isinstance(sm, FiveSiteManager),
-            }
-        return pprint.pformat(result)
+        result = ('zapi.getSiteManager() is zapi.getGlobalSiteManager(): %s\n'
+                  'IFiveUtilityRegistry.providedBy(utility_service): %s\n'
+                  'isinstance(zapi.getSiteManager(), FiveSiteManager): %s'
+                  % (sm is zapi.getGlobalSiteManager(),
+                     IFiveUtilityRegistry.providedBy(sm.utilities),
+                     isinstance(sm, FiveSiteManager)))
+        return result
 
 class LookupUtilitiesView(BrowserView):
 
@@ -50,10 +48,8 @@ class LookupUtilitiesView(BrowserView):
 
 def test_suite():
     from Testing.ZopeTestCase import FunctionalDocFileSuite
-    suite = FunctionalDocFileSuite('functional.txt',
-                                   package='Products.Five.site.tests')
-    suite.level = 2
-    return suite
+    return FunctionalDocFileSuite('functional.txt',
+                                  package='Products.Five.site.tests')
 
 if __name__ == '__main__':
     framework()
