@@ -1,13 +1,25 @@
 Functional test for local sites
 ===============================
 
-Set up all of Five:
+This tests how local site managers are found during traversal and how
+that affects component lookup (depending on whether a site is
+traversed or not, local components might or might not be found).
+
+First, we set up all of Five:
 
   >>> import Products.Five
   >>> from Products.Five import zcml
   >>> zcml.load_config("configure.zcml", Products.Five)
 
-First we turn our DummySite class into a site in ZCML (and register
+Then we hook up the custom component architecture calls; we need to do
+this here because zope.app.component.hooks registers a cleanup with
+the testing cleanup framework, so the hooks get torn down by
+placelesssetup each time.
+
+  >>> from zope.app.component.hooks import setHooks
+  >>> setHooks()
+
+Next we turn our DummySite class into a site in ZCML (and register
 some views that will provide us with some test info),
 
   >>> zcml_text = """
@@ -50,9 +62,9 @@ Now we check what the info view tells us about local component lookup:
   ... ''')
   HTTP/1.1 200 OK
   ...
-  {'IFiveUtilityRegistry.providedBy(utility_service)': False,
-   'isinstance(zapi.getSiteManager(), FiveSiteManager)': False,
-   'zapi.getSiteManager() is zapi.getGlobalSiteManager()': True}
+  zapi.getSiteManager() is zapi.getGlobalSiteManager(): True
+  IFiveUtilityRegistry.providedBy(utility_service): False
+  isinstance(zapi.getSiteManager(), FiveSiteManager): False
 
 We see that we have no local component lookup yet, because we haven't
 set the site.  Therefore, enable the traversal hook by using the view
@@ -79,9 +91,9 @@ is working:
   ... ''')
   HTTP/1.1 200 OK
   ...
-  {'IFiveUtilityRegistry.providedBy(utility_service)': True,
-   'isinstance(zapi.getSiteManager(), FiveSiteManager)': True,
-   'zapi.getSiteManager() is zapi.getGlobalSiteManager()': False}
+  zapi.getSiteManager() is zapi.getGlobalSiteManager(): False
+  IFiveUtilityRegistry.providedBy(utility_service): True
+  isinstance(zapi.getSiteManager(), FiveSiteManager): True
 
 Of course, sites are only active *during* traversal; after traversal
 they're gone:
@@ -137,9 +149,9 @@ lookup:
   ... ''')
   HTTP/1.1 200 OK
   ...
-  {'IFiveUtilityRegistry.providedBy(utility_service)': False,
-   'isinstance(zapi.getSiteManager(), FiveSiteManager)': False,
-   'zapi.getSiteManager() is zapi.getGlobalSiteManager()': True}
+  zapi.getSiteManager() is zapi.getGlobalSiteManager(): True
+  IFiveUtilityRegistry.providedBy(utility_service): False
+  isinstance(zapi.getSiteManager(), FiveSiteManager): False
 
 Finally, global services and the monkeys:
 
