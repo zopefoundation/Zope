@@ -39,7 +39,7 @@ Building Zope
   interpreter to use.  Run './configure --help' to see other
   command-line options available via the configure script.
 
-  Optional:  Building and Installing Zope 'In-Place'
+  Optional:  Building and Installing Zope 'In-Place' (SVN checkouts only)
 
     Older versions of Zope were typically run directly from the
     'source' directory itself.  This is useful for development
