@@ -198,3 +198,20 @@ class ICPServerFactory(ServerFactory):
     def create(self):
         from ZServer.ICPServer import ICPServer
         return ICPServer(self.ip, self.port)
+
+class ClockServerFactory(ServerFactory):
+    def __init__(self, section):
+        ServerFactory.__init__(self)
+        self.method = section.method
+        self.period = section.period
+        self.user = section.user
+        self.password = section.password
+        self.hostheader = section.host
+        self.host = None # appease configuration machinery
+
+    def create(self):
+        from ZServer.ClockServer import ClockServer
+        from ZServer.AccessLogger import access_logger
+        return ClockServer(self.method, self.period, self.user,
+                           self.password, self.hostheader, access_logger)
+    

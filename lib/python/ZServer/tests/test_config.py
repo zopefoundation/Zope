@@ -61,8 +61,8 @@ class BaseTest(unittest.TestCase):
         self.assertEqual(factory.module, "module")
         self.assertEqual(factory.cgienv.items(), [("key", "value")])
         if port is None:
-            self.assert_(factory.host is None)
-            self.assert_(factory.port is None)
+            self.assert_(factory.host is None, factory.host)
+            self.assert_(factory.port is None, factory.port)
         else:
             self.assertEqual(factory.host, expected_factory_host)
             self.assertEqual(factory.port, 9300 + port)
@@ -224,6 +224,25 @@ class ZServerConfigurationTestCase(BaseTest, WarningInterceptor):
         self.assertEqual(factory.host, "")
         self.assertEqual(factory.port, 86)
         self.check_prepare(factory)
+        factory.create().close()
+
+    def test_clockserver_factory(self):
+        factory = self.load_factory("""\
+            <clock-server>
+              method /foo/bar
+              period 30
+              user chrism
+              password 123
+              host www.example.com
+            </clock-server>
+            """)
+        self.assert_(isinstance(factory,
+                                ZServer.datatypes.ClockServerFactory))
+        self.assertEqual(factory.method, '/foo/bar')
+        self.assertEqual(factory.period, 30)
+        self.assertEqual(factory.user, 'chrism')
+        self.assertEqual(factory.password, '123')
+        self.assertEqual(factory.hostheader, 'www.example.com')
         factory.create().close()
 
 

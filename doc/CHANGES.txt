@@ -26,6 +26,58 @@ Zope Changes
 
     Features added
 
+      - Added a "clock server" servertype which allows users to
+        configure methods that should be called periodically as if
+        they were being called by a remote user agent on one of Zope's
+        HTTP ports.  This is meant to replace wget+cron for some class
+        of periodic callables.
+
+        To use, create a "clock-server" directive section anywhere
+        in your zope.conf file, like so:
+
+         <clock-server>
+            method /do_stuff
+            period 60
+            user admin
+            password 123
+            host localhost
+         </clock-server>
+
+        Any number of clock-server sections may be defined within a
+        single zope.conf.  Note that you must specify a
+        username/password combination with the appropriate level of
+        access to call the method you've defined.  You can omit the
+        username and password if the method is anonymously callable.
+        Obviously the password is stored in the clear in the config
+        file, so you need to protect the config file with filesystem
+        security if the Zope account is privileged and those who have
+        filesystem access should not see the password.
+
+        Descriptions of the values within the clock-server section
+        follow::
+
+          method -- the traversal path (from the Zope root) to an
+          executable Zope method (Python Script, external method,
+          product method, etc).  The method must take no arguments or
+          must obtain its arguments from a query string.
+
+          period -- the number of seconds between each clock "tick" (and
+          thus each call to the above "method").  The lowest number
+          providable here is typically 30 (this is the asyncore mainloop
+          "timeout" value).
+
+          user -- a zope username.
+
+          password -- the password for the zope username provided above.
+
+          host -- the hostname passed in via the "Host:" header in the
+          faux request.  Could be useful if you have virtual host rules
+          set up inside Zope itself.
+
+        To make sure the clock is working, examine your Z2.log file.  It
+        should show requests incoming via a "Zope Clock Server"
+        useragent.
+
       - Added a 'conflict-error-log-level' directive to zope.conf, to set
         the level at which conflict errors (which are normally retried
         automatically) are logged. The default is 'info'.

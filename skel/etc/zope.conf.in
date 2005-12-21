@@ -882,10 +882,10 @@ instancehome $INSTANCE
 #
 # Description:
 #     A set of sections which allow the specification of Zope's various
-#     ZServer servers.  7 different server types may be defined:
+#     ZServer servers.  8 different server types may be defined:
 #     http-server, ftp-server, webdav-source-server, persistent-cgi,
-#     fast-cgi, monitor-server, and icp-server.  If no servers are
-#     defined, the default servers are used.
+#     fast-cgi, monitor-server, icp-server, and clock-server.  If no servers
+#     are defined, the default servers are used.
 #
 #     Ports may be specified using the 'address' directive either in simple
 #     form (80) or in complex form including hostname 127.0.0.1:80.  If the
@@ -939,6 +939,14 @@ instancehome $INSTANCE
 #    # valid key is "address"
 #    address 888
 #  </icp-server>
+#
+#  <clock-server>
+#    # starts a clock which calls /foo/bar every 30 seconds
+#    method /foo/bar
+#    period 30
+#    user admin
+#    password 123
+#  </clock-server>
 
 
 # Database (zodb_db) section
