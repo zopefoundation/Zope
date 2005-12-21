@@ -14,6 +14,7 @@
 """ Zope clock server.  Generate a faux HTTP request on a regular basis
 by coopting the asyncore API. """
 
+import posixpath
 import os
 import socket
 import time
@@ -118,8 +119,8 @@ class ClockServer(asyncore.dispatcher):
             # ZPublisher doesn't want the leading '?'
             query = query[1:]
         env['PATH_INFO']= '/' + path
-        env['PATH_TRANSLATED']= os.path.normpath(
-            os.path.join(os.getcwd(), env['PATH_INFO']))
+        env['PATH_TRANSLATED']= posixpath.normpath(
+            posixpath.join(os.getcwd(), env['PATH_INFO']))
         if query:
             env['QUERY_STRING'] = query
         env['channel.creation_time']=time.time()
