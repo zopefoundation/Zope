@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.4
+#!/usr/bin/env python
 ##############################################################################
 #
 # Copyright (c) 2004 Zope Corporation and Contributors.
@@ -12,25 +12,87 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Test script for running unit tests in a distribution root.
+"""Zope 2 test script
 
-The functional tests can't be run since we don't have enough of the
-package configuration in a usable state.  The functional tests can be
-run from an installation.
+see zope.testing testrunner.txt
 
-$Id$
+$Id: test.py 33303 2005-07-13 22:28:33Z jim $
 """
-import sys, os
-from distutils.util import get_platform
 
-PLAT_SPEC = "%s-%s" % (get_platform(), sys.version[0:3])
+import os.path, sys
 
-here = os.path.dirname(os.path.realpath(__file__))
-lib = os.path.join(here, "build", "lib." + PLAT_SPEC)
-sys.path.append(lib)
+shome = os.environ.get('SOFTWARE_HOME')
+zhome = os.environ.get('ZOPE_HOME')
+ihome = os.environ.get('INSTANCE_HOME')
 
-import zope.app.testing.test
+if zhome:
+    zhome = os.path.abspath(zhome)
+    if shome:
+        shome = os.path.abspath(shome)
+    else:
+        shome = os.path.join(zhome, 'lib', 'python')
+elif shome:
+    shome = os.path.abspath(shome)
+    zhome = os.path.dirname(os.path.dirname(shome))
+elif ihome:
+    print >> sys.stderr, '''
+    If INSTANCE_HOME is set, then at least one of SOFTWARE_HOME or ZOPE_HOME
+    must be set
+    '''
+else:
+    # No zope home, assume that it is the script directory
+    zhome = os.path.abspath(os.path.dirname(sys.argv[0]))
+    shome = os.path.join(zhome, 'lib', 'python')
 
-if __name__ == '__main__':
-    args = sys.argv[:1] + ["-ul", lib] + sys.argv[1:]
-    zope.app.testing.test.process_args(args)
+sys.path.insert(0, shome)
+
+defaults = '--tests-pattern ^tests$ -v'.split()
+defaults += ['-m',
+             '!^('
+             'ZConfig'
+             '|'
+             'BTrees'
+             '|'
+             'persistent'
+             '|'
+             'ThreadedAsync'
+             '|'
+             'transaction'
+             '|'
+             'ZEO'
+             '|'
+             'ZODB'
+             '|'
+             'ZopeUndo'
+             '|'
+             'zdaemon'
+             '|'
+             'zope[.]testing'
+             '|'
+             'zope[.]app'
+             ')[.]']
+if ihome:
+    ihome = os.path.abspath(ihome)
+    defaults += ['--path', os.path.join(ihome, 'lib', 'python')]
+    products = os.path.join(ihome, 'Products')
+    if os.path.exists(products):
+        defaults += ['--package-path', products, 'Products']
+else:
+    defaults += ['--test-path', shome]
+
+from zope.testing import testrunner
+
+def load_config_file(option, opt, config_file, *ignored):
+    config_file = os.path.abspath(config_file)
+    print "Parsing %s" % config_file
+    import Zope2
+    Zope2.configure(config_file)
+
+testrunner.setup.add_option(
+    '--config-file', action="callback", type="string", dest='config_file',
+    callback=load_config_file,
+    help="""\
+Initialize Zope with the given configuration file.
+""")
+
+sys.exit(testrunner.run(defaults))
