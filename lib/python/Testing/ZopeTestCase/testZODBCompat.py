@@ -27,6 +27,7 @@ from Testing import ZopeTestCase
 
 import transaction
 
+from Acquisition import aq_base
 from AccessControl.Permissions import add_documents_images_and_files
 from AccessControl.Permissions import delete_objects
 import tempfile
@@ -349,6 +350,23 @@ class TestTransactionAbort(ZopeTestCase.ZopeTestCase):
         transaction.abort()
         # This time the abort nukes the _v_foo attribute...
         self.failIf(hasattr(self.folder, '_v_foo'))
+
+    def testTransactionAbortClassAttribute(self):
+        self.folder.id = 'bar'
+        self.failUnless(hasattr(aq_base(self.folder), 'id'))
+        transaction.abort()
+        # The id attribute is still present
+        self.assertEqual(getattr(aq_base(self.folder), 'id', None), 'bar')
+
+    def testSubTransactionAbortClassAttribute(self):
+        self.folder.id = 'bar'
+        self.failUnless(hasattr(aq_base(self.folder), 'id'))
+        transaction.commit(1)
+        transaction.abort()
+        # The id attribute is still present but has been
+        # reset to the class default
+        self.failUnless(hasattr(aq_base(self.folder), 'id'))
+        self.assertEqual(getattr(aq_base(self.folder), 'id', None), '')
 
 
 def test_suite():
