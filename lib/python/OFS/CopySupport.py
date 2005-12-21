@@ -34,6 +34,7 @@ from Acquisition import aq_base, aq_inner, aq_parent
 from App.Dialogs import MessageDialog
 from webdav.Lockable import ResourceLockedError
 from zExceptions import Unauthorized, BadRequest
+from ZODB.POSException import ConflictError
 from zope.interface import implements
 from zope.event import notify
 from zope.app.event.objectevent import ObjectCopiedEvent
