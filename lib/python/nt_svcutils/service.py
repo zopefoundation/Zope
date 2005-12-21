@@ -36,8 +36,10 @@ BACKOFF_INITIAL_INTERVAL = 5
 # (except obviously via the event log entry)
 # Size of the blocks we read from the child process's output.
 CHILDCAPTURE_BLOCK_SIZE = 80
-# The number of BLOCKSIZE blocks we keep as process output.
-CHILDCAPTURE_MAX_BLOCKS = 200
+# The number of BLOCKSIZE blocks we keep as process output.  This gives
+# is 4k, which should be enough to see any tracebacks etc, but not so
+# large as to prematurely fill the event log.
+CHILDCAPTURE_MAX_BLOCKS = 50
 
 class Service(win32serviceutil.ServiceFramework):
     """Base class for a Windows Server to manage an external process.
@@ -108,7 +110,10 @@ class Service(win32serviceutil.ServiceFramework):
         except win32api.error, details:
             # Failed to write a log entry - most likely problem is
             # that the event log is full.  We don't want this to kill us
-            print "FAILED to write INFO event", event, ":", details
+            try:
+                print "FAILED to write INFO event", event, ":", details
+            except IOError:
+                pass
 
     def _dolog(self, func, msg):
         try:
@@ -118,8 +123,13 @@ class Service(win32serviceutil.ServiceFramework):
         except win32api.error, details:
             # Failed to write a log entry - most likely problem is
             # that the event log is full.  We don't want this to kill us
-            print "FAILED to write event log entry:", details
-            print msg
+            try:
+                print "FAILED to write event log entry:", details
+                print msg
+            except IOError:
+                # And if running as a service, its likely our sys.stdout
+                # is invalid
+                pass
 
     def info(self, s):
         self._dolog(servicemanager.LogInfoMsg, s)
