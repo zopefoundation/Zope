@@ -98,6 +98,14 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(response.headers.get('content-type'), 'application/foo; charset=utf-8')
         self.assertEqual(response.body, unicode('ärger', 'iso-8859-15').encode('utf-8'))
 
+    def test_XMLEncodingRecoding(self):
+        xml = u'<?xml version="1.0" encoding="iso-8859-15" ?>\n<foo><bar/></foo>'
+        response = self._makeOne(body=xml, headers={'content-type': 'application/foo; charset=utf-8'})
+        self.assertEqual('encoding="utf-8"' in response.body, True)
+        response = self._makeOne(body=xml, headers={'content-type': 'application/foo; charset=iso-8859-15'})
+        self.assertEqual('encoding="iso-8859-15"' in response.body, True)
+
+
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(HTTPResponseTests, 'test'))

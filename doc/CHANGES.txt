@@ -176,6 +176,12 @@ Zope Changes
 
     Bugs Fixed
 
+      - HTTPResponse: for XML content the encoding specified within
+        the XML preamble is adjusted to the real encoding of the content
+        as specified through the 'charset' within the content-type
+        property.
+
+
       - Collector #1939: When running as a service, Zope could
         potentially collect too much log output filling the NT Event
         Log. When that happened, a 'print' during exception handling

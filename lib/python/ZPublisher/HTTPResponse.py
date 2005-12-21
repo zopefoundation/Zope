@@ -444,13 +444,26 @@ class HTTPResponse(BaseResponse):
                                               r'charset=([-_0-9a-z]+' +
                                               r')(?:(?:\s*;)|\Z)',
                                               re.IGNORECASE)):
+
+        def fix_xml_preamble(body, encoding):
+            """ fixes the encoding in the XML preamble according
+                to the charset specified in the content-type header.
+            """
+
+            if body.startswith('<?xml'):
+                pos_right = body.find('?>')  # right end of the XML preamble
+                body = ('<?xml version="1.0" encoding="%s" ?>' % encoding) + body[pos_right+2:]
+            return body
+
         # Encode the Unicode data as requested
 
         if self.headers.has_key('content-type'):
             match = charset_re.match(self.headers['content-type'])
             if match:
                 encoding = match.group(1)
-                return body.encode(encoding)
+                body = body.encode(encoding)
+                body = fix_xml_preamble(body, encoding)
+                return body
             else:
 
                 ct = self.headers['content-type']
@@ -458,7 +471,9 @@ class HTTPResponse(BaseResponse):
                     self.headers['content-type'] = '%s; charset=%s' % (ct, default_encoding)
 
         # Use the default character encoding
-        return body.encode(default_encoding,'replace')
+        body = body.encode(default_encoding,'replace')
+        body = fix_xml_preamble(body, default_encoding)
+        return body
 
     def setBase(self,base):
         """Set the base URL for the returned document.
