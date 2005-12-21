@@ -333,13 +333,18 @@ class HTTPResponse(BaseResponse):
                 self.body = body
 
 
+        isHTML = self.isHTML(self.body)
         if not self.headers.has_key('content-type'):
-            isHTML = self.isHTML(self.body)
             if isHTML:
                 c = 'text/html; charset=%s' % default_encoding
             else:
                 c = 'text/plain; charset=%s' % default_encoding
             self.setHeader('content-type', c)
+        else:
+            c = self.headers['content-type']
+            if not 'charset=' in  c:
+                c = '%s; charset=%s' % (c, default_encoding)                
+                self.setHeader('content-type', c)
 
         # Some browsers interpret certain characters in Latin 1 as html
         # special characters. These cannot be removed by html_quote,

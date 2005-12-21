@@ -74,6 +74,17 @@ class HTTPResponseTests(unittest.TestCase):
         response.appendHeader('XXX', 'foo')
         self.assertEqual(response.headers.get('xxx'), 'bar,\n\tfoo')
 
+    def test_CharsetNoHeader(self):
+        response = self._makeOne(body='foo')
+        self.assertEqual(response.headers.get('content-type'), 'text/plain; charset=iso-8859-15')
+
+    def test_CharsetTextHeader(self):
+        response = self._makeOne(body='foo', headers={'content-type': 'text/plain'})
+        self.assertEqual(response.headers.get('content-type'), 'text/plain; charset=iso-8859-15')
+
+    def test_CharsetApplicationHeader(self):
+        response = self._makeOne(body='foo', headers={'content-type': 'application/foo'})
+        self.assertEqual(response.headers.get('content-type'), 'application/foo; charset=iso-8859-15')
 
 def test_suite():
     suite = unittest.TestSuite()
