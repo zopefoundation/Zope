@@ -124,6 +124,19 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #1939: When running as a service, Zope could
+        potentially collect too much log output filling the NT Event
+        Log. When that happened, a 'print' during exception handling
+        would cause an IOError in the restart code causing the service
+        not to restart automatically.
+
+        Problem is that a service/pythonw.exe process *always* has an
+        invalid sys.stdout.  But due to the magic of buffering, small
+        "print" statements would not fail - but once the file actually
+        got written to, the error happened.  Never a problem when
+        debugging, as the process has a console, and hence a valid
+        stdout.
+
       - For content-type HTTP headers starting with 'text/' or 'application/'
         the 'charset' field is automatically if not specified by the
         application. The 'charset' is determined by the content-type header
