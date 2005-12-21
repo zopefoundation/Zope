@@ -35,7 +35,7 @@ def setUp(self):
     ... """)
     HTTP/1.1 200 OK
     Content-Length: 5
-    Content-Type: text/plain
+    Content-Type: text/plain; charset=...
     <BLANKLINE>
     index
     '''
