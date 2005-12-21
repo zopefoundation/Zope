@@ -1,3 +1,5 @@
+# -*- coding: iso-8859-15 -*-
+
 import unittest
 
 class HTTPResponseTests(unittest.TestCase):
@@ -85,6 +87,16 @@ class HTTPResponseTests(unittest.TestCase):
     def test_CharsetApplicationHeader(self):
         response = self._makeOne(body='foo', headers={'content-type': 'application/foo'})
         self.assertEqual(response.headers.get('content-type'), 'application/foo; charset=iso-8859-15')
+    
+    def test_CharsetApplicationHeaderUnicode(self):
+        response = self._makeOne(body=unicode('ärger', 'iso-8859-15'), headers={'content-type': 'application/foo'})
+        self.assertEqual(response.headers.get('content-type'), 'application/foo; charset=iso-8859-15')
+        self.assertEqual(response.body, 'ärger')
+
+    def test_CharsetApplicationHeader1Unicode(self):
+        response = self._makeOne(body=unicode('ärger', 'iso-8859-15'), headers={'content-type': 'application/foo; charset=utf-8'})
+        self.assertEqual(response.headers.get('content-type'), 'application/foo; charset=utf-8')
+        self.assertEqual(response.body, unicode('ärger', 'iso-8859-15').encode('utf-8'))
 
 def test_suite():
     suite = unittest.TestSuite()
