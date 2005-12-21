@@ -18,7 +18,6 @@ import os
 import socket
 import time
 import StringIO
-import base64
 import asyncore
 
 from ZServer.medusa.http_server import http_request
@@ -27,7 +26,9 @@ from ZServer.PubCore import handle
 from ZServer.HTTPResponse import make_response
 from ZPublisher.HTTPRequest import HTTPRequest
 
-def timeslice(period, when=0):
+def timeslice(period, when=None, t=time.time):
+    if when is None:
+        when =  t()
     return when - (when % period)
 
 class LogHelper:
@@ -66,7 +67,7 @@ class ClockServer(asyncore.dispatcher):
     SERVER_IDENT = 'Zope Clock' 
 
     def __init__ (self, method, period=60, user=None, password=None,
-                  host=None, logger=None):
+                  host=None, logger=None, handler=None):
         self.period = period
         self.method = method
 
@@ -80,8 +81,7 @@ class ClockServer(asyncore.dispatcher):
         h.append('Host: %s' % host)
         auth = False
         if user and password:
-            encoded = base64.encodestring('%s:%s' % (user, password))
-            encoded = encoded.replace('\012', '')
+            encoded = ('%s:%s' % (user, password)).encode('base64')
             h.append('Authorization: Basic %s' % encoded)
             auth = True
 
@@ -90,6 +90,10 @@ class ClockServer(asyncore.dispatcher):
         self.logger = LogHelper(logger)
         self.log_info('Clock server for "%s" started (user: %s, period: %s)'
                       % (method, auth and user or 'Anonymous', self.period))
+        if handler is None:
+            # for unit testing
+            handler = handle
+        self.zhandler = handler
 
     def get_requests_and_response(self):
         out = StringIO.StringIO()
@@ -120,10 +124,10 @@ class ClockServer(asyncore.dispatcher):
             env['QUERY_STRING'] = query
         env['channel.creation_time']=time.time()
         for header in req.header:
-            key,value=header.split(":",1)
-            key=key.upper()
-            value=value.strip()
-            key='HTTP_%s' % ("_".join(key.split( "-")))
+            key,value = header.split(":",1)
+            key = key.upper()
+            value = value.strip()
+            key = 'HTTP_%s' % ("_".join(key.split( "-")))
             if value:
                 env[key]=value
         return env
@@ -135,17 +139,18 @@ class ClockServer(asyncore.dispatcher):
             # no need for threadsafety here, as we're only ever in one thread
             self.last_slice = slice
             req, zreq, resp = self.get_requests_and_response()
-            handle('Zope', zreq, resp)
-        return 0
+            self.zhandler('Zope2', zreq, resp)
+        return False
 
     def handle_read(self):
-        pass
+        return True
 
     def handle_write (self):
-        self.log_info ('unexpected write event', 'warning')
+        self.log_info('unexpected write event', 'warning')
+        return True
 
     def writable(self):
-        return 0
+        return False
 
     def handle_error (self):      # don't close the socket on error
         (file,fun,line), t, v, tbinfo = asyncore.compact_traceback()
