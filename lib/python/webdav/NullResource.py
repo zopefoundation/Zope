@@ -39,7 +39,7 @@ from interfaces import IWriteLock
 from Resource import Resource
 from WriteLockInterface import WriteLockInterface
 
-from zope.app.content_types import guess_content_type
+from zope.app.contenttypes import guess_content_type
 
 
 class NullResource(Persistent, Acquisition.Implicit, Resource):
