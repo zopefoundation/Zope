@@ -1293,7 +1293,7 @@ class HTTPRequest(BaseRequest):
         return result+"</table>"
 
     def __repr__(self):
-        return "<%s, URL=%s>" % (self.__class__.__name__, self['URL'])
+        return "<%s, URL=%s>" % (self.__class__.__name__, self.get('URL'))
 
     def text(self):
         result="FORM\n\n"
