@@ -101,9 +101,9 @@ class HTTPResponseTests(unittest.TestCase):
     def test_XMLEncodingRecoding(self):
         xml = u'<?xml version="1.0" encoding="iso-8859-15" ?>\n<foo><bar/></foo>'
         response = self._makeOne(body=xml, headers={'content-type': 'application/foo; charset=utf-8'})
-        self.assertEqual('encoding="utf-8"' in response.body, True)
+        self.assertEqual(xml.replace('iso-8859-15', 'utf-8')==response.body, True)
         response = self._makeOne(body=xml, headers={'content-type': 'application/foo; charset=iso-8859-15'})
-        self.assertEqual('encoding="iso-8859-15"' in response.body, True)
+        self.assertEqual(xml==response.body, True)
 
 
 def test_suite():
