@@ -21,6 +21,14 @@
                  and   selected or [])
        ),
     )">
+
+<div style="border: 1pt solid red;margin-top: 1em; margin-bottom: 1em; padding: 1em;">
+ZClasses are a deprecated feature and should no longer be used for new projects.
+<br/>
+Instead use either through-the-web scripting with Zope Page Templates,
+PythonScripts etc. or write a Zope product.
+</div>
+
 <dtml-with "_(unselected=_.reorder(all, without=selected))">
 <form action="&dtml-URL1;" method="get">
 <table cellspacing="0" cellpadding="2" border="0">
