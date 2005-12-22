@@ -69,17 +69,6 @@ web applications.
 
 <li>
 <p>
-There is a built-in interactive <strong>Zope Tutorial</strong> which 
-gets you started with some simple tasks using the Zope managment 
-interface. To use the tutorial, go to any Folder and select 
-<em>Zope Tutorial</em> from the add list and click the <em>Add</em> 
-button. Provide a name for the tutorial and click <em>Add</em> to 
-begin working with the tutorial.
-</p>
-</li>
-
-<li>
-<p>
 <a href="manage_importObject?file=Examples.zexp&amp;set_owner:int=1">Import</a>
 and then check out the <b>new</b> <a href="Examples">example Zope
 applications</a>. These examples show you simple working Zope
@@ -90,8 +79,8 @@ applications that you can copy and modify.
 <li>
 <p>
 Go to the main <a href="http://www.zope.org/Documentation/" target="_new">
-Documentation Overview</a> on Zope.org.  Here you will find pointers to 
-official and community contributed documentation.
+Documentation Overview</a> on <a href="http://www.zope.org" target="_new">Zope.org</a>.  
+Here you will find pointers to official and community contributed documentation.
 </p>
 </li>
 

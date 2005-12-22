@@ -26,6 +26,8 @@ Zope Changes
 
     Features added
 
+      - removed ZopeTutorial (Elvis is now really dead)
+
       - ZClasses are deprecated and should no longer be used.
 
       - ZGadyFlyDA/Gadfly is deprecated
