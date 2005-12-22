@@ -17,6 +17,12 @@ This sample product publishes a folder-ish and a simple object.
 $Id$'''
 __version__='$Revision: 1.7 $'[11:-2]
 
+
+import warnings
+warnings.warn('ZClasses are deprecated, unmaintained and should no longer be used',
+              DeprecationWarning,
+              stacklevel=2) 
+
 import ZClass
 import ZClassOwner
 
