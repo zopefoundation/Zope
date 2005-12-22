@@ -28,6 +28,8 @@ Zope Changes
 
       - ZClasses are deprecated and should no longer be used.
 
+      - ZGadyFlyDA/Gadfly is deprecated
+
       - Added a "clock server" servertype which allows users to
         configure methods that should be called periodically as if
         they were being called by a remote user agent on one of Zope's

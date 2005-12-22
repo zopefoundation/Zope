@@ -15,6 +15,12 @@
 $Id$
 """
 
+import warnings
+warnings.warn('Using Gadfly and ZGadflyDA is deprecated. The module will be '
+              'removed in Zope 2.11)', 
+              DeprecationWarning,
+              stacklevel=2) 
+
 import Globals, os
 
 classes=('DA.Connection',)
