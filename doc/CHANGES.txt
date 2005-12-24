@@ -22,6 +22,11 @@ Zope Changes
 
    - Collector #1233: port ZOPE_CONFIG patch from Zope 2.7 to Zope 2.8
 
+  after Zope 2.9.0 beta 2 
+
+    Bugs fixed
+
+      - deprecated OFS.content_types
 
   Zope 2.9.0 beta 2 (2005/12/24)
 
