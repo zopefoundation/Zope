@@ -609,6 +609,8 @@ class TrackRefs:
 def runner(files, test_filter, debug):
     runner = ImmediateTestRunner(verbosity=VERBOSE, debug=debug,
                                  progress=progress)
+    result = runner.result
+    
     suite = unittest.TestSuite()
     for file in files:
         s = get_suite(file, runner.result)
@@ -625,6 +627,8 @@ def runner(files, test_filter, debug):
                 print "Wrote timing data to", timesfn
         if timetests:
             r.print_times(sys.stdout, timetests)
+        numbad = len(result.failures) + len(result.errors)
+        return numbad
     except:
         if debugger:
             pdb.post_mortem(sys.exc_info()[2])
@@ -706,7 +710,7 @@ def main(module_filter, test_filter, libdir):
             rc = sys.gettotalrefcount()
             track = TrackRefs()
         while True:
-            runner(files, test_filter, debug)
+            numbad = runner(files, test_filter, debug)
             gc.collect()
             if gc.garbage:
                 print "GARBAGE:", len(gc.garbage), gc.garbage
@@ -717,8 +721,9 @@ def main(module_filter, test_filter, libdir):
                 print "totalrefcount=%-8d change=%-6d" % (rc, rc - prev)
                 track.update()
     else:
-        runner(files, test_filter, debug)
+        numbad = runner(files, test_filter, debug)
 
+    return numbad
 
 def configure_logging():
     """Initialize the logging module."""
