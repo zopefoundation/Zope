@@ -180,6 +180,9 @@ Zope Changes
       - Switched to the new improved test runner from Zope 3.  Run
         test.py with -h to find out more.
 
+      - lib/python/docutils is now a reference to docutils package
+        from the Zope 3 source tree (to get rid of redundant packages)
+
     Bugs Fixed
 
       - HTTPResponse: for XML content the encoding specified within
