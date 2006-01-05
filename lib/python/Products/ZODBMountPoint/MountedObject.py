@@ -147,6 +147,10 @@ class MountedObject(SimpleItem):
             conn = anyjar.get_connection(db_name)
         except KeyError:
             conn = self._getDB().open()
+            # FIXME: The following should be done by ZODB's multidatabase
+            # code, it does it correctly for get_connection().
+            anyjar.connections.update(conn.connections)
+            conn.connections = anyjar.connections
         return conn
 
     def mount_error_(self):

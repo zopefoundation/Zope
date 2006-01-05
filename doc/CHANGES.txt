@@ -28,6 +28,8 @@ Zope Changes
 
       - deprecated OFS.content_types
 
+      - Fixed ConflictError when using sessions.
+
   Zope 2.9.0 beta 2 (2005/12/24)
 
     Bugs fixed
