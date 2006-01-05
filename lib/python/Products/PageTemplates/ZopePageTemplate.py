@@ -279,6 +279,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         try:
             # XXX: check the parameters for pt_render()! (aj)
             result = self.pt_render(self.pt_getContext())
+        
 
 #            result = self.pt_render(extra_context=bound_names)
             if keyset is not None:
@@ -350,6 +351,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
                               'title': 'This template has an error'},)
         return icons
 
+
     security.declareProtected(view, 'pt_source_file')
     def pt_source_file(self):
         """Returns a file name to be compiled into the TAL code."""
@@ -362,6 +364,24 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
 
     def wl_isLocked(self):
         return 0
+
+
+    def __setstate__(self, state):
+        """ convert non-unicode templates to unicode """
+        text = state['_text']
+        if not isinstance(text, unicode):
+
+            # ATT: the encoding guessing should be made more flexible
+            for encoding in ('iso-8859-15', 'utf-8'):
+                try:
+                    state['_text'] = unicode(text, encoding)
+                    self.__dict__.update(state)
+                    return
+                except UnicodeDecodeError:
+                    pass
+
+        raise RuntimeError('Pagetemplate could not be converted to unicode')
+                    
 
     security.declareProtected(view_management_screens, 'getSource')
     getSource = Src()
