@@ -41,6 +41,9 @@ from zope.pagetemplate.pagetemplatefile import sniff_type
 # regular expression to extract the encoding from the XML preamble
 encoding_reg= re.compile('<\?xml.*?encoding="(.*?)".*?\?>', re.M)
 
+preferred_encodings = ['utf-8', 'iso-8859-15']
+if os.environ.has_key('ZPT_PREFERRED_ENCODING'):
+    preferred_encodings.insert(0, os.environ['ZPT_PREFERRED_ENCODING'])
 
 class SecureModuleImporter:
     __allow_access_to_unprotected_subobjects__ = 1
@@ -372,7 +375,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         if not isinstance(text, unicode):
 
             # ATT: the encoding guessing should be made more flexible
-            for encoding in ('iso-8859-15', 'utf-8'):
+            for encoding in preferred_encodings:
                 try:
                     state['_text'] = unicode(text, encoding)
                     self.__dict__.update(state)
