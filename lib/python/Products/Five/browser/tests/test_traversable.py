@@ -19,6 +19,11 @@ import os, sys
 if __name__ == '__main__':
     execfile(os.path.join(sys.path[0], 'framework.py'))
 
+
+class SimpleClass(object):
+    """Class with no __bobo_traverse__."""
+
+
 def test_traversable():
     """
     Test the behaviour of Five-traversable classes.
@@ -55,6 +60,9 @@ def test_traversable():
       ... 
       ... <five:traversable
       ...     class="Products.Five.tests.testing.fancycontent.FancyContent"
+      ...     />
+      ... <five:traversable
+      ...     class="Products.Five.browser.tests.test_traversable.SimpleClass"
       ...     />
       ... 
       ... <browser:page
@@ -96,6 +104,22 @@ def test_traversable():
 
       >>> from zope.app.testing.placelesssetup import tearDown
       >>> tearDown()
+
+    Verify that after cleanup, there's no cruft left from five:traversable::
+
+      >>> from Products.Five.browser.tests.test_traversable import SimpleClass
+      >>> hasattr(SimpleClass, '__bobo_traverse__')
+      False
+      >>> hasattr(SimpleClass, '__fallback_traverse__')
+      False
+
+      >>> from Products.Five.tests.testing.fancycontent import FancyContent
+      >>> hasattr(FancyContent, '__bobo_traverse__')
+      True
+      >>> hasattr(FancyContent.__bobo_traverse__, '__five_method__')
+      False
+      >>> hasattr(FancyContent, '__fallback_traverse__')
+      False
     """
 
 def test_suite():

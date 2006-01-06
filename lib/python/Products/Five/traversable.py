@@ -57,6 +57,7 @@ class Traversable:
         and let Zope do it's job.
         """
         raise AttributeError, name
+    __fallback_traverse__.__five_method__ = True
 
     def __bobo_traverse__(self, REQUEST, name):
         """Hook for Zope 2 traversal

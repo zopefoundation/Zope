@@ -25,13 +25,14 @@ from zope.app.component.interfaces import IPossibleSite
 
 from Products.Five.site.localsite import FiveSite
 
+_localsite_monkies = []
 def classSiteHook(class_, site_class):
     setattr(class_, 'getSiteManager',
             site_class.getSiteManager.im_func)
     setattr(class_, 'setSiteManager',
             site_class.setSiteManager.im_func)
+    _localsite_monkies.append(class_)
 
-_localsite_monkies = []
 def installSiteHook(_context, class_, site_class=None):
     if site_class is None:
         if not IPossibleSite.implementedBy(class_):
@@ -53,7 +54,6 @@ def installSiteHook(_context, class_, site_class=None):
             callable = classImplements,
             args=(class_, IPossibleSite)
             )
-    _localsite_monkies.append(class_)
 
 # clean up code
 
