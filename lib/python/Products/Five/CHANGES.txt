@@ -11,6 +11,12 @@ Bugfixes
 * Fix functional test for local sites and re-enable it for standard
   test runs.
 
+* If one class was set to have a localsite hook twice, removing the hook
+  would be attempted twice during the cleanup of unit tests, and the
+  tests would fail.
+
+* Fix cleanup of five:traversable.
+
 Five 1.3c (2005-12-06)
 ======================
 
