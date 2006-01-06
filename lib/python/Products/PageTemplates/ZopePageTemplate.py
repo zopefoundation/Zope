@@ -369,22 +369,29 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         return 0
 
 
-    def __setstate__(self, state):
+    def manage_convertUnicode(self, preferred_encodings=preferred_encodings, RESPONSE=None):
         """ convert non-unicode templates to unicode """
-        text = state['_text']
-        if not isinstance(text, unicode):
 
-            # ATT: the encoding guessing should be made more flexible
+        if not isinstance(self._text, unicode):
+
             for encoding in preferred_encodings:
                 try:
-                    state['_text'] = unicode(text, encoding)
-                    self.__dict__.update(state)
-                    return
+                    self._text = unicode(self._text, encoding)
+                    if RESPONSE:
+                        return RESPONSE.redirect(self.absolute_url() + '/pt_editForm?manage_tabs_message=ZPT+successfully+converted')
+                    else:
+                        return
                 except UnicodeDecodeError:
                     pass
 
-        raise RuntimeError('Pagetemplate could not be converted to unicode')
-                    
+            raise RuntimeError('Pagetemplate could not be converted to unicode')
+
+        else:
+            if RESPONSE:
+                return RESPONSE.redirect(self.absolute_url() + '/pt_editForm?manage_tabs_message=ZPT+already+converted')
+            else:
+                return
+
 
     security.declareProtected(view_management_screens, 'getSource')
     getSource = Src()
