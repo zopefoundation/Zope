@@ -126,7 +126,6 @@ class APIDoc(Persistent):
         # Get info on methods and attributes, ignore special items
         self.attributes=[]
         self.methods=[]
-        from Interface.Method import Method
         for k,v in klass.namesAndDescriptions():
             if hasattr(v, 'getSignatureInfo'):
                 self.methods.append(MethodDoc(v, 1))

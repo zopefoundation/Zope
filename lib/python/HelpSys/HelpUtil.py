@@ -15,12 +15,10 @@
 __version__='$Revision: 1.12 $'[11:-2]
 
 
+import sys, re
 import Globals, Acquisition
-import StructuredText.StructuredText
-import sys, os,  re
-
-
-stx_class=StructuredText.StructuredText.HTML
+from zope.structuredtext.html import HTMLWithImages 
+from zope.structuredtext.document import DocumentWithImages
 
 
 class HelpBase(Acquisition.Implicit):
@@ -76,7 +74,10 @@ class object(Acquisition.Implicit):
                 doc[1]=doc[1].strip()
             doc='\n\n'.join(doc)
 
-        return str(stx_class(doc))
+
+        doc = DocumentWithImages()(doc)
+        return HTMLWithImages()(doc)
+
 
     def version(self):
         if hasattr(self._obj_, '__version__'):

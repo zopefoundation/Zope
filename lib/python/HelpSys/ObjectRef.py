@@ -17,7 +17,7 @@ __version__='$Revision: 1.10 $'[11:-2]
 
 from Globals import InitializeClass
 from AccessControl import ClassSecurityInfo
-import sys, os,  Globals, Acquisition
+import sys, Globals
 from HelpUtil import HelpBase, classobject
 from HelpUtil import is_class, is_module
 from Globals import DTMLFile
