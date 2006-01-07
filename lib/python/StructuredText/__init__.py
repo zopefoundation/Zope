@@ -11,6 +11,13 @@
 #
 ##############################################################################
 
+
+import warnings
+warnings.warn('Using StructuredText is deprecated (will be removed in Zope '
+              '2.12). Instead use zope.structuredtext.', 
+              DeprecationWarning,
+              stacklevel=2) 
+
 import HTMLClass, DocumentClass
 import ClassicDocumentClass
 from StructuredText import html_with_references, HTML, html_quote

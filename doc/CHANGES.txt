@@ -26,6 +26,9 @@ Zope Changes
 
     Features added
 
+      - the 'StructuredText' module is deprecated. Use zope.structuredtext
+        instead
+
       - removed ZopeTutorial (Elvis is now really dead)
 
       - ZClasses are deprecated and should no longer be used.
