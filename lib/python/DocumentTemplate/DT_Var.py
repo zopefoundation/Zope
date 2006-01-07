@@ -154,14 +154,17 @@ Evaluating expressions without rendering results
 __rcs_id__='$Id$'
 __version__='$Revision: 1.60 $'[11:-2]
 
-from DT_Util import parse_params, name_param, str, ustr
-import os, string, re,  sys
-from urllib import quote, quote_plus, unquote, unquote_plus
 from cgi import escape
+import string, re,  sys
+from urllib import quote, quote_plus, unquote, unquote_plus
+from DT_Util import parse_params, name_param, str, ustr
 from html_quote import html_quote # for import by other modules, dont remove!
-from types import StringType
 from Acquisition import aq_base
 from ZPublisher.TaintedString import TaintedString
+from zope.structuredtext.html import HTMLWithImages, HTML
+from zope.structuredtext.document import DocumentWithImages
+from App.config import getConfiguration
+
 
 class Var:
     name='var'
@@ -400,30 +403,28 @@ def restructured_text(v, name='(Unknown name)', md={}):
 
     from reStructuredText import HTML
 
-    if isinstance(v,StringType): txt = v
+    if isinstance(v, str): 
+        txt = v
     elif aq_base(v).meta_type in ['DTML Document','DTML Method']:
         txt = aq_base(v).read_raw()
-    else: txt = str(v)
+    else: 
+        txt = str(v)
 
     return HTML(txt)
 
 
-StructuredText=None
 def structured_text(v, name='(Unknown name)', md={}):
-    global StructuredText
-    if StructuredText is None:
-        from StructuredText.StructuredText import HTML
 
-    if isinstance(v,StringType): txt = v
-
+    if isinstance(v, str): 
+        txt = v
     elif aq_base(v).meta_type in ['DTML Document','DTML Method']:
         txt = aq_base(v).read_raw()
+    else: 
+        txt = str(v)
 
-    else: txt = str(v)
-
-    return HTML(txt,
-                level=int(os.environ.get('STX_DEFAULT_LEVEL',3)),
-                header=0)
+    level = getConfiguration().structured_text_header_level
+    doc = DocumentWithImages()(txt)
+    return HTML()(doc, level, header=False)
 
 
 def sql_quote(v, name='(Unknown name)', md={}):
