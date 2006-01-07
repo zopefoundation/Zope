@@ -26,6 +26,8 @@ Zope Changes
 
     Features added
 
+      - PluginIndexes/TextIndex is deprecated. Use ZCTextIndex instead
+
       - the 'StructuredText' module is deprecated. Use zope.structuredtext
         instead
 
