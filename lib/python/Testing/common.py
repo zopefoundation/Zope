@@ -42,31 +42,6 @@ class Dummy:
 
     __repr__ = __str__
 
-def catch_log_errors():
-    import zLOG
-
-    if hasattr(zLOG, 'old_log_write'):
-        return
-
-    def log_write(subsystem, severity, summary, detail, error,
-                  PROBLEM=zLOG.PROBLEM):
-        # we are logging an exception - lets assume that the last exception
-        # raised was the one we're interested in, so re-raise it rather
-        # than the less-than-useful assert below
-        if error is not None:
-            raise
-        if severity > PROBLEM:
-            assert 0, "%s(%s): %s" % (subsystem, severity, summary)
-
-    zLOG.old_log_write = zLOG.log_write
-    zLOG.log_write = log_write
-
-def ignore_log_errors():
-    import zLOG
-
-    if hasattr(zLOG, 'old_log_write'):
-        zLOG.log_write = zLOG.old_log_write
-        del zLOG.old_log_write
 
 def Testing_file(*args):
     dir = os.path.split(Testing.__file__)[0]
