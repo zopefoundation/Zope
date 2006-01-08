@@ -16,6 +16,7 @@ $Id$
 """
 
 import os, sys, traceback
+from logging import getLogger
 from cgi import escape
 from StringIO import StringIO
 from warnings import warn
@@ -34,7 +35,7 @@ from DateTime import DateTime
 from HelpSys.HelpSys import HelpSys
 from webdav.NullResource import NullResource
 from zExceptions import Redirect as RedirectException, Forbidden
-from zLOG import LOG, ERROR, WARNING, INFO
+
 from zope.interface import implements
 
 import Folder
@@ -44,6 +45,7 @@ from FindSupport import FindSupport
 from interfaces import IApplication
 from misc_ import Misc_
 
+LOG = getLogger('Application')
 
 class Application(Globals.ApplicationDefaultPermissions,
                   ZDOM.Root, Folder.Folder,
@@ -234,9 +236,7 @@ class Application(Globals.ApplicationDefaultPermissions,
                             ob._register()
                             result=1
                             if not rebuild:
-                                LOG('Zope', INFO,
-                                    'Registered ZClass: %s' % ob.id
-                                    )
+                                LOG.info('Registered ZClass: %s' % ob.id)
                     # Include subobjects.
                     if hasattr(base, 'objectItems'):
                         m = list(ob.objectItems())
@@ -249,9 +249,8 @@ class Application(Globals.ApplicationDefaultPermissions,
                             m = list(ps.methods.objectItems())
                             items.extend(m)
                 except:
-                    LOG('Zope', WARNING,
-                        'Broken objects exist in product %s.' % product.id,
-                        error=sys.exc_info())
+                    LOG.warn('Broken objects exist in product %s.' % product.id,
+                             exc_info=sys.exc_info())
 
         return result
 
@@ -263,11 +262,11 @@ class Application(Globals.ApplicationDefaultPermissions,
         try:
             keys=list(self._p_jar.root()['ZGlobals'].keys())
         except:
-            LOG('Zope', ERROR,
+            LOG.error(
                 'A problem was found when checking the global product '\
                 'registry.  This is probably due to a Product being '\
                 'uninstalled or renamed.  The traceback follows.',
-                error=sys.exc_info())
+                exc_info=sys.exc_info())
             return 1
         return 0
 
@@ -384,10 +383,9 @@ class AppInitializer:
                 mount_paths = [ x[0] for x in dbtab_config.listMountPaths() ]
                 if not '/temp_folder' in mount_paths:
                     # we won't be able to create the mount point properly
-                    LOG('Zope Default Object Creation', ERROR,
-                        ('Could not initialze a Temporary Folder because '
-                         'a database was not configured to be mounted at '
-                         'the /temp_folder mount point'))
+                    LOG.error('Could not initialze a Temporary Folder because '
+                              'a database was not configured to be mounted at '
+                              'the /temp_folder mount point')
                     return
                 try:
                     manage_addMounts(app, ('/temp_folder',))
@@ -395,10 +393,8 @@ class AppInitializer:
                     self.commit('Added temp_folder')
                     tf = app.temp_folder
                 except:
-                    LOG('Zope Default Object Creation', ERROR,
-                        ('Could not add a /temp_folder mount point due to an '
-                        'error.'),
-                        error=sys.exc_info())
+                    LOG.error('Could not add a /temp_folder mount point due to an '
+                              'error.', exc_info=sys.exc_info())
                     return
 
         # Ensure that there is a transient object container in the temp folder
@@ -421,15 +417,13 @@ class AppInitializer:
                                   default_period_secs)
 
             if addnotify and app.unrestrictedTraverse(addnotify, None) is None:
-                LOG('Zope Default Object Creation', WARNING,
-                    ('failed to use nonexistent "%s" script as '
-                     'session-add-notify-script-path' % addnotify))
+                LOG.warn('failed to use nonexistent "%s" script as '
+                         'session-add-notify-script-path' % addnotify)
                 addnotify=None
 
             if delnotify and app.unrestrictedTraverse(delnotify, None) is None:
-                LOG('Zope Default Object Creation', WARNING,
-                    ('failed to use nonexistent "%s" script as '
-                     'session-delete-notify-script-path' % delnotify))
+                LOG.warn('failed to use nonexistent "%s" script as '
+                         'session-delete-notify-script-path' % delnotify)
                 delnotify=None
 
             toc = TransientObjectContainer(
@@ -572,17 +566,17 @@ class AppInitializer:
         bad_things=0
         try:
             if app.checkGlobalRegistry():
-                LOG('Zope', INFO,
+                LOG.info(
                     'Beginning attempt to rebuild the global ZClass registry.')
                 app.fixupZClassDependencies(rebuild=1)
                 did_fixups=1
-                LOG('Zope', INFO,
+                LOG.info(
                     'The global ZClass registry has successfully been rebuilt.')
                 transaction.get().note('Rebuilt global product registry')
                 transaction.commit()
         except:
             bad_things=1
-            LOG('Zope', ERROR, 'The attempt to rebuild the registry failed.',
+            LOG.error('The attempt to rebuild the registry failed.',
                 error=sys.exc_info())
             transaction.abort()
 
@@ -599,18 +593,15 @@ class AppInitializer:
             # product was added or updated and we are not a ZEO client.
             if getattr(Globals, '__disk_product_installed__', None):
                 try:
-                    LOG('Zope', INFO,
-                        ('New disk product detected, determining if we need '
-                        'to fix up any ZClasses.'))
+                    LOG.info('New disk product detected, determining if we need '
+                             'to fix up any ZClasses.')
                     if app.fixupZClassDependencies():
-                        LOG('Zope',INFO,
-                            'Repaired broken ZClass dependencies.')
+                        LOG.info('Repaired broken ZClass dependencies.')
                         self.commit('Repaired broked ZClass dependencies')
                 except:
-                    LOG('Zope', ERROR,
-                        ('Attempt to fixup ZClass dependencies after '
-                         'detecting an updated disk-based product failed.'),
-                        error=sys.exc_info())
+                    LOG.error('Attempt to fixup ZClass dependencies after '
+                              'detecting an updated disk-based product failed.',
+                              exc_info=sys.exc_info())
                     transaction.abort()
 
     def install_products(self):
@@ -687,10 +678,10 @@ def import_products():
 
     for priority, product_name, index, product_dir in products:
         if done.has_key(product_name):
-            LOG('OFS.Application', WARNING, 'Duplicate Product name',
-                'After loading Product %s from %s,\n'
-                'I skipped the one in %s.\n' % (
-                `product_name`, `done[product_name]`, `product_dir`) )
+            LOG.warn('Duplicate Product name',
+                     'After loading Product %s from %s,\n'
+                     'I skipped the one in %s.\n' % (
+                    `product_name`, `done[product_name]`, `product_dir`) )
             continue
         done[product_name]=product_dir
         import_product(product_dir, product_name, raise_exc=debug_mode)
@@ -725,8 +716,8 @@ def import_product(product_dir, product_name, raise_exc=0, log_exc=1):
         except:
             exc = sys.exc_info()
             if log_exc:
-                LOG('Zope', ERROR, 'Could not import %s' % pname,
-                    error=exc)
+                LOG.error('Could not import %s' % pname,
+                          exc_info=exc)
             f=StringIO()
             traceback.print_exc(100,f)
             f=f.getvalue()
@@ -869,8 +860,8 @@ def install_product(app, product_dir, product_name, meta_types,
 
         except:
             if log_exc:
-                LOG('Zope',ERROR,'Couldn\'t install %s' % product_name,
-                    error=sys.exc_info())
+                LOG.error('Couldn\'t install %s' % product_name,
+                           exc_info=sys.exc_info())
             transaction.abort()
             if raise_exc:
                 raise

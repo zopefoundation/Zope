@@ -685,8 +685,8 @@ class ObjectManager(
             try:
                 stat=marshal.loads(v.manage_FTPstat(REQUEST))
             except:
-                LOG("FTP", ERROR, "Failed to stat file '%s'" % k,
-                    error=sys.exc_info())
+                LOG.error("Failed to stat file '%s'" % k,
+                          exc_info=sys.exc_info())
                 stat=None
             if stat is not None:
                 out=out+((k,stat),)

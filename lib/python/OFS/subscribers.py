@@ -19,8 +19,8 @@ $Id$
 
 import warnings
 import sys
+from logging import getLogger
 
-from zLOG import LOG, ERROR
 from Acquisition import aq_base
 from App.config import getConfiguration
 from AccessControl import getSecurityManager
@@ -35,6 +35,7 @@ from zope.app.location.interfaces import ISublocations
 
 deprecatedManageAddDeleteClasses = []
 
+LOG = getLogger('OFS.subscribers')
 
 def compatibilityCall(method_name, *args):
     """Call a method if events have not been setup yet.
@@ -152,7 +153,7 @@ def callManageBeforeDelete(ob, item, container):
     except ConflictError:
         raise
     except:
-        LOG('Zope', ERROR, '_delObject() threw', error=sys.exc_info())
+        LOG.error('_delObject() threw', exc_info=sys.exc_info())
         # In debug mode when non-Manager, let exceptions propagate.
         if getConfiguration().debug_mode:
             if not getSecurityManager().getUser().has_role('Manager'):

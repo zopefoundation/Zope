@@ -15,11 +15,12 @@
 $Id$
 """
 import time, sys
+from logging import getLogger
 import Globals
 from Globals import InitializeClass
 from Globals import DTMLFile
 from Acquisition import aq_get, aq_acquire, aq_inner, aq_parent, aq_base
-from zLOG import LOG, WARNING
+
 from AccessControl import ClassSecurityInfo
 from AccessControl import getSecurityManager
 from AccessControl.Role import _isBeingUsedAsAMethod
@@ -30,6 +31,7 @@ ZCM_MANAGERS = '__ZCacheManager_ids__'
 
 ViewManagementScreensPermission = view_management_screens
 ChangeCacheSettingsPermission = 'Change cache settings'
+LOG = getLogger('Cache')
 
 
 def isCacheable(ob):
@@ -186,8 +188,8 @@ class Cacheable:
                                    mtime_func, default)
                 return val
             except:
-                LOG('Cache', WARNING, 'ZCache_get() exception',
-                    error=sys.exc_info())
+                LOG.warn('ZCache_get() exception',
+                    exc_info=sys.exc_info())
                 return default
         return default
 
@@ -204,8 +206,8 @@ class Cacheable:
                 c.ZCache_set(ob, data, view_name, keywords,
                              mtime_func)
             except:
-                LOG('Cache', WARNING, 'ZCache_set() exception',
-                    error=sys.exc_info())
+                LOG.warn('ZCache_set() exception',
+                    exc_info=sys.exc_info())
 
     security.declareProtected(ViewManagementScreensPermission,
                               'ZCacheable_invalidate')
@@ -224,8 +226,8 @@ class Cacheable:
             except:
                 exc = sys.exc_info()
                 try:
-                    LOG('Cache', WARNING, 'ZCache_invalidate() exception',
-                        error=exc)
+                    LOG.warn('ZCache_invalidate() exception',
+                        exc_info=exc)
                     message = 'An exception occurred: %s: %s' % exc[:2]
                 finally:
                     exc = None
