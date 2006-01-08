@@ -24,7 +24,6 @@ def patchAsyncoreLogger():
 
     from logging import getLogger
     LOG = getLogger('ZServer')
-    register_subsystem('ZServer')
 
     def log_info(self, message, type='info'):
         if message[:14]=='adding channel' or \
@@ -32,7 +31,7 @@ def patchAsyncoreLogger():
            message == 'Computing default hostname':
             LOG.debug(message)
         else:
-            getattr(LOG, severity)(message)
+            getattr(LOG, type)(message)
 
     import asyncore
     asyncore.dispatcher.log_info=log_info

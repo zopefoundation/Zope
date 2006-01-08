@@ -58,7 +58,6 @@ from ZServer import requestCloseOnExec
 import DebugLogger
 from medusa import logger
 
-register_subsystem('ZServer HTTPServer')
 
 CONTENT_LENGTH  = re.compile('Content-Length: ([0-9]+)',re.I)
 CONNECTION      = re.compile('Connection: (.*)', re.I)
