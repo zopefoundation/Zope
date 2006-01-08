@@ -12,7 +12,10 @@
 ##############################################################################
 
 from version_txt import getZopeVersion
-from zLOG import LOG, INFO, WARNING
+from logging import getLogger
+
+
+LOG = getLogger('Hotfixes')
 
 merged_hotfixes = {
     'Hotfix_2001-09-28': 1,
@@ -33,13 +36,13 @@ def isMerged(name):
 
 def logHotfix(id, apply_hotfix):
     if apply_hotfix:
-        LOG('Hotfixes', INFO, 'Applying %s' % id)
+        LOG.info('Applying %s' % id)
     elif apply_hotfix is OUTDATED_ZOPE:
-        LOG('Hotfixes', WARNING, 'Not applying %s.  It is not designed for '
+        LOG.warn('Not applying %s.  It is not designed for '
             'this version of Zope.  Please uninstall the hotfix product.'
             % id)
     else:  # ALREADY_MERGED
-        LOG('Hotfixes', WARNING, 'Not applying %s.  The fix has already been '
+        LOG.warn('Not applying %s.  The fix has already been '
             'merged into Zope.  Please uninstall the hotfix product.'
             % id)
 

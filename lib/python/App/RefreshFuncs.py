@@ -17,12 +17,14 @@ $Id$
 
 import os, sys
 from time import time
+from traceback import format_exception
+from logging import getLogger
 import transaction
 import Products
 from ExtensionClass import Base
 from Globals import PersistentMapping
-from zLOG import format_exception, LOG, ERROR, INFO
 
+LOG = getLogger('RefreshFuncs')
 global_classes_timestamp = 0
 products_mod_times = {}
 
@@ -136,8 +138,7 @@ def listRefreshableModules(productid):
 def logBadRefresh(productid):
     exc = sys.exc_info()
     try:
-        LOG('Refresh', ERROR, 'Exception while refreshing %s'
-            % productid, error=exc)
+        LOG.error('Exception while refreshing %s' % productid, exc_info=exc)
         if hasattr(exc[0], '__name__'):
             error_type = exc[0].__name__
         else:
@@ -179,7 +180,7 @@ def performRefresh(jar, productid):
 
 def performSafeRefresh(jar, productid):
     try:
-        LOG('Refresh', INFO, 'Refreshing product %s' % productid)
+        LOG.info('Refreshing product %s' % productid)
         if not performRefresh(jar, productid):
             return 0
     except:

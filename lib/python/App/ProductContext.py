@@ -15,8 +15,9 @@
 $Id$
 """
 
-import os.path, re
 import stat
+import os.path, re
+from logging import getLogger
 
 from AccessControl.PermissionRole import PermissionRole
 import Globals, os, OFS.ObjectManager, OFS.misc_, Products
@@ -25,7 +26,7 @@ from App.Product import doInstall
 from HelpSys import HelpTopic, APIHelpTopic
 from HelpSys.HelpSys import ProductHelp
 from FactoryDispatcher import FactoryDispatcher
-from zLOG import LOG, WARNING
+
 from DateTime import DateTime
 from Interface.Implements import instancesOfObjectImplements
 from zope.interface import implementedBy
@@ -39,7 +40,7 @@ if not hasattr(Products, 'meta_classes'):
     Products.meta_class_info={}
 
 _marker = []  # Create a new marker object
-
+LOG = getLogger('ProductContext')
 
 class ProductContext:
 
@@ -312,7 +313,7 @@ class ProductContext:
         try:
             dir_mod_time=DateTime(os.stat(path)[stat.ST_MTIME])
         except OSError, (errno, text):
-            LOG("Zope", WARNING, '%s: %s' % (text, path))
+            LOG.warn('%s: %s' % (text, path))
             return
 
         # test to see if nothing has changed since last registration

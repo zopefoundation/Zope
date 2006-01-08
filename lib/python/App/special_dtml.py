@@ -13,8 +13,11 @@
 
 import DocumentTemplate, Common, Persistence, MethodObject, Globals, os, sys
 from types import InstanceType
-from zLOG import LOG,WARNING
+from logging import getLogger
 from App.config import getConfiguration
+
+
+LOG = getLogger('special_dtml')
 
 class HTML(DocumentTemplate.HTML,Persistence.Persistent,):
     "Persistent HTML Document Templates"
@@ -176,7 +179,7 @@ class DTMLFile(Bindings, Explicit, ClassicHTMLFile):
                 except DTReturn, v: result = v.v
                 except AttributeError:
                     if type(sys.exc_value)==InstanceType and sys.exc_value.args[0]=="_v_blocks":
-                        LOG("ZPublisher",WARNING,"DTML file '%s' could not be read" % self.raw)
+                        LOG.warn("DTML file '%s' could not be read" % self.raw)
                         raise ValueError, ("DTML file error: "
                                            "Check logfile for details")
                     else:
