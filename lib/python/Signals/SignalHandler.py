@@ -16,7 +16,10 @@
 __version__='$Revision: 1.2 $'[11:-2]
 
 import sys, os
-import signal, zLOG
+import signal
+from logging import getLogger
+
+LOG = getLogger('SignalHandler') 
 
 class SignalHandler:
 
@@ -36,9 +39,7 @@ class SignalHandler:
             items = self.registry[signum] = []
             signal.signal(signum, self.signalHandler)
             signame = get_signal_name(signum)
-            zLOG.LOG('Z2', zLOG.BLATHER, "Installed sighandler for %s" % (
-                      signame
-                      ))
+            LOG.debug("Installed sighandler for %s" % signame)
         items.insert(0, handler)
 
     def getRegisteredSignals(self):
@@ -49,7 +50,7 @@ class SignalHandler:
     def signalHandler(self, signum, frame):
         """Meta signal handler that dispatches to registered handlers."""
         signame = get_signal_name(signum)
-        zLOG.LOG('Z2', zLOG.INFO , "Caught signal %s" % signame)
+        LOG.info("Caught signal %s" % signame)
 
         for handler in self.registry.get(signum, []):
             # Never let a bad handler prevent the standard signal
@@ -59,9 +60,8 @@ class SignalHandler:
                 # if we trap SystemExit, we can't restart
                 raise
             except:
-                zLOG.LOG('Z2', zLOG.WARNING,
-                         'A handler for %s failed!' % signame,
-                         error=sys.exc_info())
+                LOG.warn('A handler for %s failed!' % signame,
+                         exc_info=sys.exc_info())
 
 _signals = None
 
