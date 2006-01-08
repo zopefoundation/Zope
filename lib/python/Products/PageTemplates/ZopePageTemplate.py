@@ -37,7 +37,8 @@ from PageTemplate import PageTemplate
 from Expressions import SecureModuleImporter
 from PageTemplateFile import PageTemplateFile
 
-SUPPORTS_WEBDAV_LOCKS = 1
+from webdav.Lockable import ResourceLockedError
+from webdav.WriteLockInterface import WriteLockInterface
 
 class Src(Acquisition.Explicit):
     " "
@@ -58,8 +59,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
                        Traversable, PropertyManager):
     "Zope wrapper for Page Template using TAL, TALES, and METAL"
 
-    if SUPPORTS_WEBDAV_LOCKS:
-        __implements__ = (WriteLockInterface,)
+    __implements__ = (WriteLockInterface,)
 
     meta_type = 'Page Template'
 
@@ -120,7 +120,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
       'pt_upload', 'pt_changePrefs')
     def pt_editAction(self, REQUEST, title, text, content_type, expand):
         """Change the title and document."""
-        if SUPPORTS_WEBDAV_LOCKS and self.wl_isLocked():
+        if self.wl_isLocked():
             raise ResourceLockedError, "File is locked via WebDAV"
         self.expand=expand
         self.pt_setTitle(title)
@@ -147,7 +147,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
 
     def pt_upload(self, REQUEST, file='', charset=None):
         """Replace the document with the text in file."""
-        if SUPPORTS_WEBDAV_LOCKS and self.wl_isLocked():
+        if self.wl_isLocked():
             raise ResourceLockedError, "File is locked via WebDAV"
 
         if type(file) is not StringType:
@@ -261,8 +261,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
     def PUT(self, REQUEST, RESPONSE):
         """ Handle HTTP PUT requests """
         self.dav__init(REQUEST, RESPONSE)
-        if SUPPORTS_WEBDAV_LOCKS:
-            self.dav__simpleifhandler(REQUEST, RESPONSE, refresh=1)
+        self.dav__simpleifhandler(REQUEST, RESPONSE, refresh=1)
         self.write(REQUEST.get('BODY', ''))
         RESPONSE.setStatus(204)
         return RESPONSE
@@ -315,10 +314,6 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
             # This page template is being compiled without an
             # acquisition context, so we don't know where it is. :-(
             return None
-
-    if not SUPPORTS_WEBDAV_LOCKS:
-        def wl_isLocked(self):
-            return 0
 
 setattr(ZopePageTemplate, 'source.xml',  ZopePageTemplate.source_dot_xml)
 setattr(ZopePageTemplate, 'source.html', ZopePageTemplate.source_dot_xml)
