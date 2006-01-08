@@ -435,10 +435,9 @@ class TransientObjectContainer(SimpleItem):
             length = self._length() # XXX ReadConflictError hotspot
 
             if self._limit and length >= self._limit:
-                LOG('Transience', WARNING,
-                    ('Transient object container %s max subobjects '
-                     'reached' % self.getId())
-                    )
+                LOG.warn('Transient object container %s max subobjects '
+                         'reached' % self.getId())
+                    
                 raise MaxTransientObjectsExceeded, (
                  "%s exceeds maximum number of subobjects %s" %
                  (length, self._limit))
@@ -797,11 +796,8 @@ class TransientObjectContainer(SimpleItem):
             except (KeyError, AttributeError):
                 path = self.getPhysicalPath()
                 err = 'No such onAdd/onDelete method %s referenced via %s'
-                LOG('Transience',
-                    WARNING,
-                    err % (callback, '/'.join(path)),
-                    error=sys.exc_info()
-                    )
+                LOG.warn(err % (callback, '/'.join(path)),
+                         exc_info=sys.exc_info())
                 return
         else:
             method = callback
@@ -818,22 +814,16 @@ class TransientObjectContainer(SimpleItem):
                 except:
                     # dont raise, just log
                     path = self.getPhysicalPath()
-                    LOG('Transience',
-                        WARNING,
-                        '%s failed when calling %s in %s' % (name,callback,
-                                                        '/'.join(path)),
-                        error=sys.exc_info()
-                        )
+                    LOG.warn('%s failed when calling %s in %s' % (name,callback,
+                                                                 '/'.join(path)),
+                             exc_info=sys.exc_info())
             finally:
                 setSecurityManager(sm)
         else:
             err = '%s in %s attempted to call non-callable %s'
             path = self.getPhysicalPath()
-            LOG('Transience',
-                WARNING,
-                err % (name, '/'.join(path), callback),
-                error=sys.exc_info()
-                )
+            LOG.warn(err % (name, '/'.join(path), callback),
+                     exc_info=sys.exc_info())
 
     def getId(self):
         return self.id
