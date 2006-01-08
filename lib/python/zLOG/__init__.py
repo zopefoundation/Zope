@@ -77,6 +77,8 @@ back-end; configuration of the logging module must be handled
 somewhere else.
 
 """
+
+import warnings
 from EventLogger import log_write, log_time, severity_string
 from traceback import format_exception
 
@@ -131,6 +133,13 @@ def LOG(subsystem, severity, summary, detail='', error=None, reraise=None):
                  error is reraised.
 
     """
+
+    warnings.warn('The zLOG package is deprecated and will be removed in '
+                  'Zope 2.11. Use the Python logging module instead.',
+                  DeprecationWarning,
+                  stacklevel=2) 
+
+
     log_write(subsystem, severity, summary, detail, error)
     if reraise and error:
         raise error[0], error[1], error[2]
