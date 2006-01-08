@@ -39,11 +39,13 @@
 """
 
 import sys
+from logging import getLogger
 
 import Acquisition
 
 from AccessControl.ImplPython import _what_not_even_god_should_do
-from zLOG import LOG, WARNING
+
+LOG = getLogger('SecurityInfo')
 
 
 # Security constants - these are imported into the AccessControl
@@ -69,8 +71,7 @@ class SecurityInfo(Acquisition.Implicit):
     def _setaccess(self, names, access):
         for name in names:
             if self.names.get(name, access) != access:
-                LOG('SecurityInfo', WARNING, 'Conflicting security '
-                    'declarations for "%s"' % name)
+                LOG.warn('Conflicting security declarations for "%s"' % name)
                 self._warnings = 1
             self.names[name] = access
 
@@ -111,7 +112,7 @@ class SecurityInfo(Acquisition.Implicit):
         for role in roles:
             rdict[role] = 1
         if self.roles.get(permission_name, rdict) != rdict:
-            LOG('SecurityInfo', WARNING, 'Conflicting default role'
+            LOG.warn('Conflicting default role'
                 'declarations for permission "%s"' % permission_name)
             self._warnings = 1
         self.roles[permission_name] = rdict
@@ -193,7 +194,7 @@ class ClassSecurityInfo(SecurityInfo):
                     access)
 
         if getattr(self, '_warnings', None):
-            LOG('SecurityInfo', WARNING, 'Class "%s" had conflicting '
+            LOG.warn('Class "%s" had conflicting '
                 'security declarations' % classobj.__name__)
 
 class ClassSecurityInformation(ClassSecurityInfo):
@@ -273,7 +274,7 @@ class _ModuleSecurityInfo(SecurityInfo):
             dict['__allow_access_to_unprotected_subobjects__'] = self
 
         if getattr(self, '_warnings', None):
-            LOG('SecurityInfo', WARNING, 'Module "%s" had conflicting '
+            LOG.warn('Module "%s" had conflicting '
                 'security declarations' % dict['__name__'])
 
     declareProtected__roles__=ACCESS_PRIVATE

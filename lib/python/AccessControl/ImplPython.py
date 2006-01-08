@@ -15,13 +15,13 @@
 
 import os
 import string
+from logging import getLogger
 
 from Acquisition import aq_base
 from Acquisition import aq_parent
 from Acquisition import aq_inner
 from Acquisition import aq_acquire
 from ExtensionClass import Base
-from zLOG import LOG, BLATHER, PROBLEM
 from zope.interface import implements
 
 # This is used when a permission maps explicitly to no permission.  We
@@ -39,6 +39,7 @@ from AccessControl.interfaces import ISecurityManager
 from AccessControl.SimpleObjectPolicies import Containers, _noroles
 from AccessControl.ZopeGuards import guarded_getitem
 
+LOG = getLogger('ImplPython')
 
 # AccessControl.PermissionRole
 # ----------------------------
@@ -346,7 +347,7 @@ class ZopeSecurityPolicy:
                 return 1
         except TypeError:
             # 'roles' isn't a sequence
-            LOG('Zope Security Policy', PROBLEM, "'%s' passed as roles"
+            LOG.error("'%s' passed as roles"
                 " during validation of '%s' is not a sequence." % (
                 `roles`, name))
             raise
@@ -804,7 +805,7 @@ def raiseVerbose(msg, accessed, container, name, value, context,
         info.append(s + '.')
 
     text = ' '.join(info)
-    LOG('Zope Security Policy', BLATHER, 'Unauthorized: %s' % text)
+    LOG.debug('Unauthorized: %s' % text)
     raise Unauthorized(text)
 
 def getUserRolesInContext(user, context):
