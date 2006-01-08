@@ -15,6 +15,7 @@ __doc__='''Generic Database Connection Support
 $Id$'''
 __version__='$Revision: 1.39 $'[11:-2]
 
+from logging import getLogger
 import Globals, OFS.SimpleItem, AccessControl.Role, Acquisition, sys
 from DateTime import DateTime
 from App.Dialogs import MessageDialog
@@ -30,10 +31,13 @@ from Aqueduct import custom_default_report
 from cStringIO import StringIO
 from Results import Results
 from sys import exc_info
-from zLOG import LOG, ERROR
+
 from cgi import escape
 import DocumentTemplate, RDB
 from zExceptions import BadRequest
+
+
+LOG = getLogger('ZRDB.Connection')
 
 class Connection(
     Globals.Persistent,
@@ -67,10 +71,8 @@ class Connection(
         if self.connection_string:
             try: self.connect(self.connection_string)
             except:
-                LOG('Shared.DC.ZRDB.Connection',
-                    ERROR,
-                    'Error connecting to relational database.',
-                    error=exc_info())
+                LOG.error('Error connecting to relational database.',
+                          exc_info=exc_info())
 
     def title_and_id(self):
         s=Connection.inheritedAttribute('title_and_id')(self)
@@ -157,10 +159,8 @@ class Connection(
             if hasattr(self,'_v_database_connection'):
                 self._v_database_connection.close()
         except:
-            LOG('Shared.DC.ZRDB.Connection',
-                ERROR,
-                'Error closing relational database connection.',
-                error=exc_info())
+            LOG.error('Error closing relational database connection.',
+                      exc_info=exc_info())
         self._v_connected=''
         if REQUEST is not None:
             return self.manage_main(self, REQUEST)
