@@ -85,9 +85,27 @@ The utility registry, however, is an ``IFiveUtilityRegistry``:
   True
 
 The methods on registering and looking up utilities are covered by the
-utility tests in depth.  The methods on adapter look up are indirectly
-covered in the functional test; view look up, for example, is adapter
-look up.
+utility tests in depth.
+
+We test some adapter look-up here.  It is also indirectly covered in
+the functional test; view look up, for example, is adapter look up.
+
+First we provide an adapter:
+
+  >>> from Products.Five.tests.adapters import Adaptable, Adapter, IAdapted
+  >>> import zope.component
+  >>> zope.component.provideAdapter(Adapter)
+
+Now let's check for a simple adaption:
+
+  >>> adaptable = Adaptable()
+  >>> IAdapted(adaptable) #doctest: +ELLIPSIS
+  <Products.Five.tests.adapters.Adapter instance at ...>
+
+Let's get all the adapters for ``adaptable``:
+
+  >>> zapi.getAdapters((adaptable,), IAdapted) #doctest: +ELLIPSIS
+  [(u'', <Products.Five.tests.adapters.Adapter instance at ...>)]
 
 
 Nesting sites
@@ -118,6 +136,10 @@ The Zope 3 API for this agrees with that:
   >>> getNextSiteManager(subsite.getSiteManager()).context == dummysite
   True
 
+The adapters is registry is passed through to the global one:
+
+  >>> subsite.getSiteManager().adapters is zapi.getGlobalSiteManager().adapters
+  True
 
 Finally, some clean up:
 

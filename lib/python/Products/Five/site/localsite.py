@@ -111,7 +111,10 @@ class FiveSiteManager(object):
 
     @property
     def adapters(self):
-        return getGlobalSiteManager().adapters #XXX wrong
+        next = self.next
+        if next is None:
+            next = getGlobalSiteManager()
+        return next.adapters
 
     @property
     def utilities(self):
@@ -124,7 +127,10 @@ class FiveSiteManager(object):
         return self.adapters.queryMultiAdapter(objects, interface, name, default)
 
     def getAdapters(self, objects, provided):
-        return self.adapters.getAdapters(objects, provided)
+        next = self.next
+        if next is None:
+            next = getGlobalSiteManager()
+        return next.getAdapters(objects, provided)
 
     def subscribers(self, required, provided):
         return self.adapters.subscribers(required, provided)

@@ -16,6 +16,7 @@
 $Id: adapters.py 12884 2005-05-30 13:10:41Z philikon $
 """
 from zope.interface import implements, Interface
+from zope.component import adapts
 
 class IAdaptable(Interface):
     """This is a Zope 3 interface.
@@ -49,6 +50,7 @@ class Adaptable:
 
 class Adapter:
     implements(IAdapted)
+    adapts(IAdaptable)
 
     def __init__(self, context):
         self.context = context
