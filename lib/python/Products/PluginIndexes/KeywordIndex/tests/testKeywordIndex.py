@@ -20,8 +20,6 @@ import Testing
 import Zope2
 Zope2.startup()
 
-import zLOG
-
 from Products.PluginIndexes.KeywordIndex.KeywordIndex import KeywordIndex
 
 
@@ -78,27 +76,6 @@ class TestKeywordIndex( unittest.TestCase ):
         """
         """
 
-    def _catch_log_errors( self ):
-
-        if self._old_log_write is not None:
-            return
-
-        def log_write(subsystem, severity, summary, detail, error,
-                    PROBLEM=zLOG.PROBLEM):
-            if severity > PROBLEM:
-                assert 0, "%s(%s): %s" % (subsystem, severity, summary)
-
-        self._old_log_write = zLOG.log_write
-        zLOG.log_write = log_write
-
-    def _ignore_log_errors( self ):
-
-        if self._old_log_write is None:
-            return
-
-        zLOG.log_write = self._old_log_write
-        del self._old_log_write
-
     def _populateIndex( self ):
         for k, v in self._values:
             self._index.index_object( k, v )
@@ -126,12 +103,11 @@ class TestKeywordIndex( unittest.TestCase ):
 
     def testAddObjectWOKeywords(self):
 
-        self._catch_log_errors()
         try:
             self._populateIndex()
             self._index.index_object(999, None)
         finally:
-            self._ignore_log_errors()
+            pass
 
     def testEmpty( self ):
         assert len( self._index ) == 0
@@ -236,12 +212,11 @@ class TestKeywordIndex( unittest.TestCase ):
         self._checkApply( record, self._values[6:7] )
 
     def testDuplicateKeywords(self):
-        self._catch_log_errors()
         try:
             self._index.index_object(0, Dummy(['a', 'a', 'b', 'b']))
             self._index.unindex_object(0)
         finally:
-            self._ignore_log_errors()
+            pass
 
     def testCollectorIssue889(self) :
         # Test that collector issue 889 is solved

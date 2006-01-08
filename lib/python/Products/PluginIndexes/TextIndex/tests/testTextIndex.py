@@ -20,12 +20,6 @@ import Testing
 import Zope2
 Zope2.startup()
 
-import zLOG
-
-def log_write(subsystem, severity, summary, detail, error):
-    if severity >= zLOG.PROBLEM:
-        assert 0, "%s(%s): %s" % (subsystem, severity, summary)
-
 import ZODB
 from ZODB.MappingStorage import MappingStorage
 import transaction
@@ -56,8 +50,6 @@ class Tests(unittest.TestCase):
     def setUp(self):
         self.index=TextIndex.TextIndex('text')
         self.doc=Dummy(text='this is the time, when all good zopes')
-        self.old_log_write = zLOG.log_write
-        zLOG.log_write=log_write
 
     def dbopen(self):
         if self.db is None:
@@ -84,7 +76,6 @@ class Tests(unittest.TestCase):
         if self.db is not None:
             self.db.close()
             self.db = None
-        zLOG.log_write=self.old_log_write
 
     def test_z3interfaces(self):
         from Products.PluginIndexes.interfaces import IPluggableIndex
