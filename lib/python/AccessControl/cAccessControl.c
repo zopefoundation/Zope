@@ -658,8 +658,7 @@ static PyExtensionClass imPermissionRoleType = {
 static PyObject *Containers = NULL;
 static PyObject *ContainerAssertions = NULL;
 static PyObject *Unauthorized = NULL;
-static PyObject *LOG = NULL;
-static PyObject *PROBLEM = NULL;
+static PyObject *warn= NULL;
 static PyObject *NoSequenceFormat = NULL;
 static PyObject *_what_not_even_god_should_do = NULL;
 static PyObject *Anonymous = NULL;
@@ -1052,8 +1051,7 @@ static PyObject *ZopeSecurityPolicy_validate(PyObject *self, PyObject *args) {
               m=PyObject_Repr(roles);
               if (m) ASSIGN(m, Py_BuildValue("OO", m, name));
               if (m) ASSIGN(m, PyString_Format(NoSequenceFormat, m));
-              if (m) ASSIGN(m, PyObject_CallFunction(LOG, "sOO",
-                     "Zope Security Policy", PROBLEM, m)); 
+              if (m) ASSIGN(m, PyObject_CallFunction(warn, "O", m));
               Py_XDECREF(m);
               PyErr_Restore(t, v, tb);
               goto err;
@@ -2176,7 +2174,7 @@ module_guarded_getattr(PyObject *ignored, PyObject *args)
 static PyObject *
 module_aq_validate(PyObject *ignored, PyObject *args)
 {
-  PyObject *inst, *obj, *name, *v, *validate;
+  PyObject *inst=NULL, *obj=NULL, *name=NULL, *v=NULL, *validate=NULL;
 
   if (unpacktuple5(args, "validate", 0,
                    &inst, &obj, &name, &v, &validate) < 0) return NULL;
@@ -2331,9 +2329,8 @@ void initcAccessControl(void) {
 	/*| from zLOG import LOG, PROBLEM
 	*/
 
-	IMPORT(module, "zLOG");
-	GETATTR(module, LOG);
-	GETATTR(module, PROBLEM);
+	IMPORT(module, "logger_wrapper");
+	GETATTR(module, warn);
 	Py_DECREF(module);
 	module = NULL;
 }
