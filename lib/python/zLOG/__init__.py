@@ -134,7 +134,7 @@ def LOG(subsystem, severity, summary, detail='', error=None, reraise=None):
 
     """
     warnings.warn('The zLOG package is deprecated and will be removed in '
-                  'Zope 2.12. Use the Python logging module instead.',
+                  'Zope 2.11. Use the Python logging module instead.',
                   DeprecationWarning,
                   stacklevel=2) 
 
