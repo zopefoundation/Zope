@@ -43,7 +43,7 @@ from webdav.Collection import Collection
 from webdav.Lockable import ResourceLockedError
 from webdav.NullResource import NullResource
 from zExceptions import BadRequest
-from zLOG import LOG, ERROR
+
 from ZODB.POSException import ConflictError
 from zope.interface import implements
 
@@ -67,6 +67,7 @@ customImporters={
     }
 
 bad_id=re.compile(r'[^a-zA-Z0-9-_~,.$\(\)# @]').search
+LOG = getLogger('OFS.ObjectManager')
 
 def checkValidId(self, id, allow_dup=0):
     # If allow_dup is false, an error will be raised if an object

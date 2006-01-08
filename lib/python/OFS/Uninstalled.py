@@ -17,11 +17,13 @@ import  SimpleItem, Globals, Acquisition
 from Acquisition import Acquired
 import Persistence
 from thread import allocate_lock
-from zLOG import LOG, WARNING
+
 from cgi import escape
+from logging import getLogger
 
 broken_klasses={}
 broken_klasses_lock = allocate_lock()
+LOG = getLogger('OFS.Uninstalled')
 
 class BrokenClass(Acquisition.Explicit, SimpleItem.Item,
                   Persistence.Overridable):
@@ -71,8 +73,8 @@ def Broken(self, oid, pair):
             klass.info=(
                 'This object\'s class was %s in module %s.' %
                 (klass.__name__, klass.__module__))
-            LOG('ZODB', WARNING, 'Could not import class %s '
-                'from module %s' % (`klass.__name__`, `klass.__module__`))
+            LOG.warning('Could not import class %s '
+                    'from module %s' % (`klass.__name__`, `klass.__module__`))
     finally:
         broken_klasses_lock.release()
     if oid is None: return klass
