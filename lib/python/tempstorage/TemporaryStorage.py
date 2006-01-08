@@ -22,7 +22,7 @@ $Id$
 
 __version__ ='$Revision: 1.1.2.2 $'[11:-2]
 
-from zLOG import LOG, BLATHER
+from logging import getLogger
 from ZODB.serialize import referencesf
 from ZODB import POSException
 from ZODB.BaseStorage import BaseStorage
@@ -36,6 +36,8 @@ CONFLICT_CACHE_MAXAGE = 60
 CONFLICT_CACHE_GCEVERY = 60
 # keep history of recently gc'ed oids of length RECENTLY_GC_OIDS_LEN
 RECENTLY_GC_OIDS_LEN = 200
+
+LOG = getLogger('TemporaryStorage')
 
 class ReferenceCountError(POSException.POSError):
     """ An error occured while decrementing a reference to an object in
@@ -182,10 +184,9 @@ class TemporaryStorage(BaseStorage, ConflictResolvingStorage):
         if version:
             # we allow a version to be in use although we don't
             # support versions in the storage.
-            LOG('TemporaryStorage', BLATHER,
-                ('versions in use with TemporaryStorage although Temporary'
-                 'Storage doesnt support versions'),
-                )
+            LOG.debug('versions in use with TemporaryStorage although Temporary '
+                      'Storage doesnt support versions')
+
         self._lock_acquire()
         try:
             if self._index.has_key(oid):
