@@ -38,7 +38,6 @@ from Products.PluginIndexes.common.PluggableIndex \
      import PluggableIndexInterface
 from Products.PluginIndexes.interfaces import IPluggableIndex
 from Products.PluginIndexes.TextIndex import Splitter
-from zLOG import LOG
 from zope.interface import implements
 
 from Catalog import Catalog, CatalogError

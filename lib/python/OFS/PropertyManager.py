@@ -180,7 +180,6 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
         # for selection and multiple selection properties
         # the value argument indicates the select variable
         # of the property
-
         self._wrapperCheck(value)
         if not self.valid_property_id(id):
             raise BadRequest, 'Invalid or duplicate property id'

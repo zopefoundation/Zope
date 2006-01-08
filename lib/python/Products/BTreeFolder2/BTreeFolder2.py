@@ -21,6 +21,7 @@ from cgi import escape
 from urllib import quote
 from random import randint
 from types import StringType
+from logging import getLogger
 
 import Globals
 from Globals import DTMLFile
@@ -35,7 +36,6 @@ from OFS.Folder import Folder
 from AccessControl import getSecurityManager, ClassSecurityInfo
 from AccessControl.Permissions import access_contents_information, \
      view_management_screens
-from zLOG import LOG, INFO, ERROR, WARNING
 from Products.ZCatalog.Lazy import LazyMap
 from zope.event import notify
 from zope.app.container.contained import ObjectAddedEvent
@@ -45,6 +45,8 @@ from OFS.event import ObjectWillBeAddedEvent
 from OFS.event import ObjectWillBeRemovedEvent
 import OFS.subscribers
 
+
+LOG = getLogger('BTreeFolder2')
 
 manage_addBTreeFolderForm = DTMLFile('folderAdd', globals())
 
@@ -191,9 +193,8 @@ class BTreeFolder2Base (Persistent):
                             % repr(key))
             return 1
         except AssertionError:
-            LOG('BTreeFolder2', WARNING,
-                'Detected damage to %s. Fixing now.' % path,
-                error=sys.exc_info())
+            LOG.warn('Detected damage to %s. Fixing now.' % path,
+                     exc_info=sys.exc_info())
             try:
                 self._tree = OOBTree(self._tree)
                 mt_index = OOBTree()
@@ -201,11 +202,11 @@ class BTreeFolder2Base (Persistent):
                     mt_index[key] = OIBTree(value)
                 self._mt_index = mt_index
             except:
-                LOG('BTreeFolder2', ERROR, 'Failed to fix %s.' % path,
-                    error=sys.exc_info())
+                LOG.error('Failed to fix %s.' % path,
+                    exc_info=sys.exc_info())
                 raise
             else:
-                LOG('BTreeFolder2', INFO, 'Fixed %s.' % path)
+                LOG.info('Fixed %s.' % path)
             return 0
 
 

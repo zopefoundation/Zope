@@ -40,7 +40,7 @@ from AccessControl import ClassSecurityInfo, getSecurityManager
 from AccessControl.SecurityManagement import newSecurityManager, \
      setSecurityManager
 from AccessControl.User import nobody
-from zLOG import LOG, WARNING, INFO
+from logging import getLogger
 
 from TransientObject import TransientObject
 from Fake import FakeIOBTree
@@ -59,6 +59,7 @@ STRICT = os.environ.get('Z_TOC_STRICT', '')
 DEBUG = int(os.environ.get('Z_TOC_DEBUG', 0))
 
 _marker = []
+LOG = getLogger('Transience')
 
 def setStrict(on=''):
     """ Turn on assertions (which may cause conflicts) """
@@ -72,7 +73,7 @@ def TLOG(*args):
     for arg in args:
         sargs.append(str(arg))
     msg = ' '.join(sargs)
-    LOG('Transience', INFO, msg)
+    LOG.info(msg)
 
 constructTransientObjectContainerForm = HTMLFile(
     'dtml/addTransientObjectContainer', globals())
