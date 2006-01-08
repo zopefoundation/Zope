@@ -87,7 +87,7 @@ class StdoutHandler:
 
 
 class ZLogHandler(StdoutHandler):
-    """ Use zLOG """
+    """ Use Zope logger"""
 
     __implements__ = IProgressHandler
 
