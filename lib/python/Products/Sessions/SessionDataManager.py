@@ -12,6 +12,7 @@
 ############################################################################
 
 import re, time, sys
+from logging import getLogger
 import Globals
 from OFS.SimpleItem import Item
 from Acquisition import Implicit, Explicit, aq_base
@@ -19,7 +20,6 @@ from Persistence import Persistent
 from AccessControl.Owned import Owned
 from AccessControl.Role import RoleManager
 from App.Management import Tabs
-from zLOG import LOG, WARNING, BLATHER
 from AccessControl import ClassSecurityInfo
 import SessionInterfaces
 from SessionPermissions import *
@@ -30,6 +30,7 @@ from ZPublisher.BeforeTraverse import registerBeforeTraverse, \
     unregisterBeforeTraverse
 
 bad_path_chars_in=re.compile('[^a-zA-Z0-9-_~\,\. \/]').search
+LOG = getLogger('SessionDataManager')
 
 class SessionDataManagerErr(Exception): pass
 
@@ -205,7 +206,7 @@ class SessionDataManager(Item, Implicit, Persistent, RoleManager, Owned, Tabs):
         transactions for mounted storages. """
         if self.obpath is None:
             err = 'Session data container is unspecified in %s' % self.getId()
-            LOG('Session Tracking', WARNING, err)
+            LOG.warn(err)
             raise SessionIdManagerErr, err
         try:
             # This should arguably use restrictedTraverse, but it
@@ -215,8 +216,7 @@ class SessionDataManager(Item, Implicit, Persistent, RoleManager, Owned, Tabs):
             # hasattr hides conflicts
             if DEBUG and not getattr(self, '_v_wrote_dc_type', None):
                 args = '/'.join(self.obpath)
-                LOG('Session Tracking', BLATHER,
-                    'External data container at %s in use' % args)
+                LOG.debug('External data container at %s in use' % args)
                 self._v_wrote_dc_type = 1
             return self.unrestrictedTraverse(self.obpath)
         except:
@@ -281,7 +281,7 @@ class SessionDataManagerTraverser(Persistent):
             getSessionData = sdm.getSessionData
         except:
             msg = 'Session automatic traversal failed to get session data'
-            LOG('Session Tracking', WARNING, msg, error=sys.exc_info())
+            LOG.warn(msg, exc_info=sys.exc_info())
             return
 
         # set the getSessionData method in the "lazy" namespace

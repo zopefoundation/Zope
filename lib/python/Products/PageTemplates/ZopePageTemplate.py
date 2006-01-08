@@ -20,7 +20,6 @@ __version__='$Revision: 1.48 $'[11:-2]
 import os, AccessControl, Acquisition, sys, types
 from types import StringType
 from Globals import DTMLFile, ImageFile, MessageDialog, package_home
-from zLOG import LOG, ERROR, INFO
 from OFS.SimpleItem import SimpleItem
 from DateTime.DateTime import DateTime
 from Shared.DC.Scripts.Script import Script, BindingsUI
@@ -38,14 +37,7 @@ from PageTemplate import PageTemplate
 from Expressions import SecureModuleImporter
 from PageTemplateFile import PageTemplateFile
 
-try:
-    from webdav.Lockable import ResourceLockedError
-    from webdav.WriteLockInterface import WriteLockInterface
-    SUPPORTS_WEBDAV_LOCKS = 1
-except ImportError:
-    SUPPORTS_WEBDAV_LOCKS = 0
-
-
+SUPPORTS_WEBDAV_LOCKS = 1
 
 class Src(Acquisition.Explicit):
     " "
