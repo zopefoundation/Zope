@@ -15,10 +15,12 @@ __version__='$Revision: 1.12 $'[11:-2]
 """BeforeTraverse interface and helper classes"""
 
 from Acquisition import aq_base
-from zLOG import LOG, ERROR
+from logging import getLogger
 import sys
 
 # Interface
+
+LOG = getLogger('ZPublisher')
 
 def registerBeforeTraverse(container, object, app_handle, priority=99):
     """Register an object to be called before a container is traversed.
@@ -103,8 +105,8 @@ class MultiHook:
             try:
                 cob(container, request)
             except TypeError:
-                LOG('MultiHook', ERROR, '%s call %s failed.' % (
-                    `self._hookname`, `cob`), error=sys.exc_info())
+                LOG.error('%s call %s failed.' % (
+                    `self._hookname`, `cob`), exc_info=sys.exc_info())
 
     def add(self, cob):
         self._list.append(cob)
@@ -149,8 +151,6 @@ class NameCaller:
             # Only catch exceptions that are likely to be logic errors.
             # We shouldn't catch Redirects, Unauthorizeds, etc. since
             # the programmer may want to raise them deliberately.
-            from zLOG import LOG, ERROR
-            import sys
-            LOG('BeforeTraverse', ERROR,
-                'Error while invoking hook: "%s"' % self.name, error=
-                sys.exc_info())
+            
+            LOG.error('BeforeTraverse: Error while invoking hook: "%s"' % self.name, 
+                      exc_info=sys.exc_info())
