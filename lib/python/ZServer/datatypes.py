@@ -171,8 +171,9 @@ class MonitorServerFactory(ServerFactory):
         if password is None:
             msg = ('Monitor server not started because no emergency user '
                    'exists.')
-            import zLOG
-            zLOG.LOG("Zope", zLOG.ERROR, msg)
+            import logging
+            LOG = logging.getLogger('Zope')
+            LOG.error(msg)
             return
         from ZServer.medusa.monitor import secure_monitor_server
         return secure_monitor_server(hostname=self.host, port=self.port,
