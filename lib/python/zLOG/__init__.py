@@ -133,9 +133,7 @@ def LOG(subsystem, severity, summary, detail='', error=None, reraise=None):
                  error is reraised.
 
     """
-
-
-    warnings.warn('Using the zLOG module is deprecated (to be removed in '
+    warnings.warn('The zLOG package is deprecated and will be removed in '
                   'Zope 2.12. Use the Python logging module instead.',
                   DeprecationWarning,
                   stacklevel=2) 
