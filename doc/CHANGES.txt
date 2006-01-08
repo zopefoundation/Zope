@@ -24,7 +24,7 @@ Zope Changes
 
   Trunk only (unreleased)
 
-    Features added
+    Restructuring
 
       - deprecated the zLOG module. Use Pythons 'logging' module instead.
 
@@ -41,6 +41,16 @@ Zope Changes
       - ZClasses are deprecated and should no longer be used.
 
       - ZGadyFlyDA/Gadfly is deprecated
+
+      - deprecated OFS.content_types (to be removed in Zope 2.11) and
+        replaced all occurences with zope.app.content_types 
+
+      - OFS.content_types: moved code to zope.app.content_types and added
+        method aliases
+
+      - Using FastCGI is offically deprecated.
+
+    Features added
 
       - Added a "clock server" servertype which allows users to
         configure methods that should be called periodically as if
@@ -100,16 +110,8 @@ Zope Changes
 
       - The SiteErrorLog now copies exceptions to the event log by default.
 
-      - deprecated OFS.content_types (to be removed in Zope 2.11) and
-        replaced all occurences with zope.app.content_types 
-
-      - OFS.content_types: moved code to zope.app.content_types and added
-        method aliases
-
       - ObjectManager now has an hasObject method to test presence. This
         brings it in line with BTreeFolder.
-
-      - Using FastCGI is offically deprecated.
 
       - Improved logging of ConflictErrors. All conflict errors are
         logged at INFO, with counts of how many occurred and how many
