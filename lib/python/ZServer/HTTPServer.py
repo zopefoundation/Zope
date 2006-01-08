@@ -55,7 +55,6 @@ from asyncore import compact_traceback, dispatcher
 
 from ZServer import ZOPE_VERSION, ZSERVER_VERSION
 from ZServer import requestCloseOnExec
-from zLOG import LOG, register_subsystem, BLATHER, INFO, WARNING, ERROR
 import DebugLogger
 from medusa import logger
 
