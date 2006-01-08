@@ -1021,7 +1021,7 @@ static PyObject *ZopeSecurityPolicy_validate(PyObject *self, PyObject *args) {
 	**| try:
 	**|    if roles is None or 'Anonymous' in roles: return 1
 	**| except TypeError:
-	**|     LOG("Zope Security Policy", PROBLEM, '"%s' passed as roles"
+	**|     LOG.warn('"%s' passed as roles"
 	**|		" during validation of '%s' is not a sequence." % 
 	**|		('roles', name))
 	**|	raise
