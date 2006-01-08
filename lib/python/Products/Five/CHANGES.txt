@@ -2,6 +2,15 @@
 Five Changes
 ============
 
+Five 1.3.1 (2006-01-08)
+=======================
+
+Bugfixes
+--------
+
+* Fix an adapter look-up bug in the local site implementation that was
+  due to an oversight during the port to Zope 3.2.
+
 Five 1.3 (2006-01-07)
 =====================
 
