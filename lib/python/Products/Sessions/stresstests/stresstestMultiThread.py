@@ -40,8 +40,8 @@ from tempstorage.TemporaryStorage import TemporaryStorage
 from OFS.Application import Application
 from OFS.Folder import Folder
 import sys
+import time
 import traceback
-from zLOG import log_time
 sys.setcheckinterval(200)
 
 from Products.Transience.tests import fauxtime
@@ -56,6 +56,12 @@ toc_name = 'temp_transient_container'
 sdm_name = 'session_data_manager'
 
 stuff = {}
+
+def log_time():
+    """Return a simple time string without spaces suitable for logging."""
+    return ("%4.4d-%2.2d-%2.2dT%2.2d:%2.2d:%2.2d"
+            % time.localtime()[:6])
+
 
 def _getDB():
     db = stuff.get('db')
