@@ -19,9 +19,9 @@ import operator, warnings
 import re
 from cgi import escape
 from types import *
-
+from logging import getLogger
 from Globals import Persistent, DTMLFile
-from zLOG import LOG, ERROR
+
 from Acquisition import Implicit
 from OFS.SimpleItem import SimpleItem
 from BTrees.IOBTree import IOBTree
@@ -39,6 +39,7 @@ from Products.PluginIndexes.interfaces import ITextIndex
 
 from Lexicon import Lexicon
 
+LOG = getLogger('TextIndex')
 
 class Op:
     def __init__(self, name):
@@ -376,9 +377,8 @@ class TextIndex(Persistent, Implicit, SimpleItem):
         for wid in wids:
             widScores = get(wid, None)
             if widScores is None:
-                LOG('TextIndex', ERROR,
-                    'unindex_object tried to unindex nonexistent'
-                    ' document, wid  %s, %s' % (i,wid))
+                LOG.error('unindex_object tried to unindex nonexistent'
+                          ' document, wid  %s, %s' % (i,wid))
                 continue
             if type(widScores) is TupleType:
                 del index[wid]
@@ -394,9 +394,8 @@ class TextIndex(Persistent, Implicit, SimpleItem):
                     else:
                         del index[wid]
                 except (KeyError, IndexError, TypeError):
-                    LOG('TextIndex', ERROR,
-                        'unindex_object tried to unindex nonexistent'
-                        ' document %s' % str(i))
+                    LOG.error('unindex_object tried to unindex nonexistent'
+                              ' document %s' % str(i))
 
     def __getitem__(self, word):
         """Return an InvertedIndex-style result "list"

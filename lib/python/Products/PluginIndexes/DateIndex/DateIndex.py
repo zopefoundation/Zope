@@ -16,6 +16,7 @@ $Id$
 """
 
 import time
+from logging import getLogger
 from datetime import date, datetime
 from datetime import tzinfo, timedelta
 from types import StringType, FloatType, IntType
@@ -28,7 +29,6 @@ from DateTime.DateTime import DateTime
 from Globals import DTMLFile
 from OFS.PropertyManager import PropertyManager
 from ZODB.POSException import ConflictError
-from zLOG import LOG, ERROR
 from zope.interface import implements
 
 from Products.PluginIndexes.common import safe_callable
@@ -36,6 +36,7 @@ from Products.PluginIndexes.common.UnIndex import UnIndex
 from Products.PluginIndexes.common.util import parseIndexRequest
 from Products.PluginIndexes.interfaces import IDateIndex
 
+LOG = getLogger('DateIndex')
 _marker = []
 
 ###############################################################################
@@ -144,10 +145,9 @@ class DateIndex(UnIndex, PropertyManager):
                     except ConflictError:
                         raise
                     except:
-                        LOG('UnIndex', ERROR,
-                            ("Should not happen: ConvertedDate was there,"
-                             " now it's not, for document with id %s" %
-                             documentId))
+                        LOG.error("Should not happen: ConvertedDate was there,"
+                                  " now it's not, for document with id %s" %
+                                  documentId)
 
             if ConvertedDate is not _marker:
                 self.insertForwardIndexEntry( ConvertedDate, documentId )

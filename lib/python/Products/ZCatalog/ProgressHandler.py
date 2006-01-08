@@ -15,12 +15,12 @@ $Id$
 """
 
 import time, sys
-from zLOG import LOG, INFO
+from logging import getLogger
 
 from DateTime.DateTime import DateTime
-
 from Interface import Interface
 
+LOG = getLogger('ProgressHandler')
 
 class IProgressHandler(Interface):
     """ A handler to log progress informations for long running 
@@ -92,7 +92,7 @@ class ZLogHandler(StdoutHandler):
     __implements__ = IProgressHandler
 
     def output(self, text):
-        LOG(self._ident, INFO, text)
+        LOG.info(text)
 
 
 class FilelogHandler(StdoutHandler):
