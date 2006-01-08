@@ -2326,7 +2326,7 @@ void initcAccessControl(void) {
 	Py_DECREF(module);
 	module = NULL;
 
-	/*| from zLOG import LOG, PROBLEM
+	/*| from logger_wrapper import warn
 	*/
 
 	IMPORT(module, "logger_wrapper");
