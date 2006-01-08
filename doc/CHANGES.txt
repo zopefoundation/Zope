@@ -26,7 +26,10 @@ Zope Changes
 
     Features added
 
-      - deprecated the zLOG module. Use Pythons 'logging' module instead
+      - deprecated the zLOG module. Use Pythons 'logging' module instead.
+
+      - replaced all zLOG occurences (expect the zLOG module itself) with 
+        the 'logging' module
 
       - PluginIndexes/TextIndex is deprecated. Use ZCTextIndex instead
 
