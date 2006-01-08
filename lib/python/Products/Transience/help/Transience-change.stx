@@ -99,8 +99,9 @@ TransientObjectContainer - Manage
         An example of an External Method used as a delete script::
   
              def deleteScript(item, container):
-                 from zLOG import LOG
-                 LOG(100, 'test', 'id: %s' % item.getId())
+                 from logging import getLogger
+                 LOG = getLogger('test')
+                 LOG.info('id: %s' % item.getId())
 
   See Also
 
