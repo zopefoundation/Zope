@@ -11,8 +11,10 @@
 #
 ##############################################################################
 
-import re, ST, STDOM
-from STletters import letters
+import re
+from zope.structuredtext import stng as ST
+from zope.structuredtext import stdom as STDOM
+from zope.structuredtext.stletters import letters
 
 from types import StringType, UnicodeType, ListType
 StringTypes = (StringType, UnicodeType)

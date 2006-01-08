@@ -11,6 +11,7 @@
 #
 ##############################################################################
 
+import zope.deprecation
 from StructuredText import ST
 from StructuredText import DocumentClass
 from StructuredText import ClassicDocumentClass
@@ -45,6 +46,12 @@ def readFile(dirname,fname):
 
 
 class StructuredTextTests(unittest.TestCase):
+
+    def setUp(self):
+        zope.deprecation.__show__.off()
+
+    def tearDown(self):
+        zope.deprecation.__show__.on()
 
     def testStructuredText(self):
         """ testing StructuredText """
@@ -133,6 +140,12 @@ class StructuredTextTests(unittest.TestCase):
 
 
 class BasicTests(unittest.TestCase):
+
+    def setUp(self):
+        zope.deprecation.__show__.off()
+
+    def tearDown(self):
+        zope.deprecation.__show__.on()
 
     def _test(self,stxtxt , expected):
 

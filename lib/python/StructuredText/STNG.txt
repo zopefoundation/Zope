@@ -1,5 +1,8 @@
 Using Structured Text
 
+  WARNING! The 'StructuredText' package has been deprecated and will
+  be removed in Zope 2.12.  Use 'zope.structuredtext' instead.
+
   The goal of StructuredText is to make it possible to express
   structured text using a relatively simple plain text format. Simple
   structures, like bullets or headings are indicated through
@@ -108,9 +111,3 @@ Example: adding wiki links
   We want to add support for Wiki links. A Wiki link is a string of
   text containing mixed-case letters, such that at least two of the
   letters are upper case and such that the first letter is upper case.
-
-  
-
-     
-
-     

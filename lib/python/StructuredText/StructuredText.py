@@ -10,49 +10,21 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
+"""Alias module for StructuredTextClassic compatibility which makes
+use of StructuredTextNG"""
+import re
+from zope.structuredtext import stx2html as HTML
+from zope.structuredtext import stx2htmlWithReferences as html_with_references
+StructuredText = HTML
 
-""" Alias module for StructuredTextClassic compatibility which makes
-use of StructuredTextNG """
-
-
-import HTMLClass, DocumentClass 
-import DocumentWithImages, HTMLWithImages
-from ST import Basic
-
-import re, sys
-from STletters import letters
-
-Document = DocumentClass.DocumentClass()
-HTMLNG = HTMLClass.HTMLClass()
-
-DocumentImages = DocumentWithImages.DocumentWithImages()
-HTMLNGImages = HTMLWithImages.HTMLWithImages()
-
-def HTML(aStructuredString, level=1, header=1):
-    st = Basic(aStructuredString)
-    doc = DocumentImages(st)
-    return HTMLNGImages(doc,header=header,level=level)
-
-def StructuredText(aStructuredString, level=1):
-    return HTML(aStructuredString,level)
-
-def html_with_references(text, level=1, header=1):
-    text = re.sub(
-        r'[\000\n]\.\. \[([0-9_%s-]+)\]' % letters,
-        r'\n  <a name="\1">[\1]</a>',
-        text)
-
-    text = re.sub(
-        r'([\000- ,])\[(?P<ref>[0-9_%s-]+)\]([\000- ,.:])'   % letters,
-        r'\1<a href="#\2">[\2]</a>\3',
-        text)
-
-    text = re.sub(
-        r'([\000- ,])\[([^]]+)\.html\]([\000- ,.:])',
-        r'\1<a href="\2.html">[\2]</a>\3',
-        text)
-
-    return HTML(text,level=level,header=header)
+from zope.deprecation import deprecated
+deprecated(("HTML, StructuredText"),
+           'The StructuredText package is deprecated and will be removed '
+           'in Zope 2.12. Use zope.structuredtext.stx2html instead.')
+deprecated("html_with_references",
+           'The StructuredText package is deprecated and will be removed '
+           'in Zope 2.12. Use zope.structuredtext.stx2htmlWithReferences '
+           'instead.')
 
 def html_quote(v,
                character_entities=(
@@ -65,7 +37,6 @@ def html_quote(v,
     for re,name in character_entities:
         text=re.sub(name,text)
     return text
-
 
 if __name__=='__main__':
     import getopt

@@ -11,36 +11,35 @@
 #
 ##############################################################################
 
+from zope.structuredtext import html, document, docbook
+from zope.structuredtext.stng import structurize as Basic
 
-import warnings
-warnings.warn('Using StructuredText is deprecated (will be removed in Zope '
-              '2.12). Instead use zope.structuredtext.', 
-              DeprecationWarning,
-              stacklevel=2) 
-
-import HTMLClass, DocumentClass
-import ClassicDocumentClass
-from StructuredText import html_with_references, HTML, html_quote
-from ST import Basic
-import DocBookClass
-import HTMLWithImages
+from StructuredText import html_quote
+from zope.structuredtext import stx2html as HTML
+from zope.structuredtext import stx2htmlWithReferences as html_with_references
 from types import StringType, UnicodeType
-import DocumentWithImages
 
-ClassicHTML=HTML
-HTMLNG=HTMLClass.HTMLClass()
+# BBB -- 2006/01/08 -- Remove in Zope 2.12
+import sys
+import zope.structuredtext.stletters
+import zope.structuredtext.stdom
+sys.modules['StructuredText.STletters'] = zope.structuredtext.stletters
+sys.modules['StructuredText.STDOM'] = zope.structuredtext.stdom
+
+import ClassicDocumentClass
+Classic = ClassicDocumentClass.DocumentClass()
+Document = document.Document()
+DocumentWithImages = document.DocumentWithImages()
+HTMLWithImages = html.HTMLWithImages()
+ClassicHTML = html.HTML
+HTMLNG = html.HTML()
+
+DocBookBook = docbook.DocBookBook()
+DocBookChapter = docbook.DocBookChapter()
+DocBookChapterWithFigures = docbook.DocBookChapterWithFigures()
+DocBookArticle = docbook.DocBookArticle()
 
 def HTML(src, level=1):
-    if isinstance(src, StringType) or isinstance(src, UnicodeType):
+    if isinstance(src, basestring):
         return ClassicHTML(src, level)
     return HTMLNG(src, level)
-
-Classic=ClassicDocumentClass.DocumentClass()
-Document=DocumentClass.DocumentClass()
-DocumentWithImages=DocumentWithImages.DocumentWithImages()
-HTMLWithImages=HTMLWithImages.HTMLWithImages()
-
-DocBookBook=DocBookClass.DocBookBook()
-DocBookChapter=DocBookClass.DocBookChapter()
-DocBookChapterWithFigures=DocBookClass.DocBookChapterWithFigures()
-DocBookArticle=DocBookClass.DocBookArticle()

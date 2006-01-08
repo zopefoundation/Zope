@@ -11,20 +11,9 @@
 #
 ##############################################################################
 
-
-from HTMLClass import HTMLClass
-
-ets = HTMLClass.element_types
-ets.update({'StructuredTextImage': 'image'})
-
-class HTMLWithImages(HTMLClass):
-
-    element_types = ets
-
-
-    def image(self, doc, level, output):
-        if hasattr(doc, 'key'):
-            output('<a name="%s"></a>\n' % doc.key)
-        output('<img src="%s" alt="%s" />\n' % (doc.href, doc.getNodeValue()))
-        if doc.getNodeValue() and hasattr(doc, 'key'):
-            output('<p><b>Figure %s</b> %s</p>\n' % (doc.key, doc.getNodeValue()))
+from zope.structuredtext.html import HTMLWithImages
+from zope.deprecation import deprecated
+deprecated("HTMLWithImages",
+           'The StructuredText package is deprecated and will be removed '
+           'in Zope 2.12. Use zope.structuredtext.html.HTMLWithImages '
+           'instead.')

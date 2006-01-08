@@ -133,6 +133,12 @@ Special symbology is used to indicate special constructs:
 
 '''
 
+import warnings
+warnings.warn('The StructuredText package is deprecated and will be removed '
+              'in Zope 2.12. Use zope.structuredtext instead.',
+              DeprecationWarning, stacklevel=2)
+
+
 import ts_regex
 import string, re
 

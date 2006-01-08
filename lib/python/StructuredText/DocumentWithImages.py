@@ -11,32 +11,15 @@
 #
 ##############################################################################
 
-import re
-from DocumentClass import *
+from zope.structuredtext.stng import StructuredTextImage
+from zope.structuredtext.document import DocumentWithImages
 
-class StructuredTextImage(StructuredTextMarkup):
-    "A simple embedded image"
-
-class DocumentWithImages(DocumentClass):
-    """ Document with images """
-
-    text_types = [
-       'doc_img',
-       ] + DocumentClass.text_types
-
-
-    def doc_img(
-        self, s,
-        expr1=re.compile('\"([ _a-zA-Z0-9*.:/;,\[\]\'\-\n\~]+)\":img:([a-zA-Z0-9%\_\-.:/\?=;,\n\~]+)').search,
-        ):
-
-
-        r=expr1(s)
-        if r:
-            startt, endt = r.span(1)
-            starth, endh = r.span(2)
-            start, end = r.span()
-            return (StructuredTextImage(s[startt:endt], href=s[starth:endh]),
-                    start, end)
-
-        return None
+from zope.deprecation import deprecated
+deprecated("StructuredTextImage",
+           'The StructuredText package is deprecated and will be removed '
+           'in Zope 2.12. Use zope.structuredtext.stng.StructuredTextImage '
+           'instead.')
+deprecated("DocumentWithImages",
+           'The StructuredText package is deprecated and will be removed '
+           'in Zope 2.12. Use zope.structuredtext.document.DocumentWithImages '
+           'instead.')
