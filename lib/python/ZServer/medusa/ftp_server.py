@@ -705,7 +705,7 @@ class ftp_server (asyncore.dispatcher):
         self.ip = ip
         self.port = port
         self.authorizer = authorizer
-        
+
         if hostname is None:
             self.hostname = socket.gethostname()
         else:

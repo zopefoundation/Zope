@@ -13,24 +13,26 @@
 
 """ A set of utility routines used by asyncore initialization """
 
+
 def getZopeVersion():
     import App.version_txt
     return App.version_txt.version_txt()
 
 def patchAsyncoreLogger():
-    # Poke zLOG default logging into asyncore to send
-    # messages to zLOG instead of medusa logger
-    from zLOG import LOG, register_subsystem, BLATHER, INFO, WARNING, ERROR
+    # Poke the Python logging module into asyncore to send messages to logging
+    # instead of medusa logger
+
+    from logging import getLogger
+    LOG = getLogger('ZServer')
     register_subsystem('ZServer')
-    severity={'info':INFO, 'warning':WARNING, 'error': ERROR}
 
     def log_info(self, message, type='info'):
         if message[:14]=='adding channel' or \
            message[:15]=='closing channel' or \
            message == 'Computing default hostname':
-            LOG('ZServer', BLATHER, message)
+            LOG.debug(message)
         else:
-            LOG('ZServer', severity[type], message)
+            getattr(LOG, severity)(message)
 
     import asyncore
     asyncore.dispatcher.log_info=log_info
