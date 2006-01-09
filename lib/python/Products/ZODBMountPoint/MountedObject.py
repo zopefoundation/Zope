@@ -142,12 +142,11 @@ class MountedObject(SimpleItem):
         self.id = id
 
     def _getMountedConnection(self, anyjar):
-        db_name = self._getDBName()
-        try:
-            conn = anyjar.get_connection(db_name)
-        except KeyError:
-            conn = self._getDB().open()
-        return conn
+        # This creates the DB if it doesn't exist yet and adds it
+        # to the multidatabase
+        self._getDB()
+        # Return a new or existing connection linked to the multidatabase set
+        return anyjar.get_connection(self._getDBName())
 
     def mount_error_(self):
         return self._v_connect_error

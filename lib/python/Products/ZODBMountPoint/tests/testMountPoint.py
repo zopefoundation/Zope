@@ -176,7 +176,22 @@ class MountingTests(unittest.TestCase):
                      'name': 'test_mount2.fs',
                      'exists': 1}]
         self.assertEqual(expected, status)
-        
+
+    def test_close(self):
+        app = self.app
+        app.mount1.a1 = '1'
+        app.mount2.a2 = '2'
+        app.a3 = '3'
+        conn1 = app.mount1._p_jar
+        conn2 = app.mount2._p_jar
+        transaction.abort()
+        # Close the main connection
+        app._p_jar.close()
+        self.assertEqual(app._p_jar._opened, None)
+        # Check that secondary connections have been closed too
+        self.assertEqual(conn1._opened, None)
+        self.assertEqual(conn2._opened, None)
+
 
 def test_suite():
     return unittest.makeSuite(MountingTests, 'test')
