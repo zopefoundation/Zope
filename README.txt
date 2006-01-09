@@ -6,7 +6,7 @@ Zope is an open-source web application server.
 This document provides some general information about the Zope source
 release and provides links to other documents.
 
-Installation information can be found in ``doc/INSTALL.txt``.  Other
+Installation information can be found in ``Zope/doc/INSTALL.txt``.  Other
 documentation is also in the "doc" directory and in the Zope.org
 documentation section at http://www.zope.org/Documentation/.
 
