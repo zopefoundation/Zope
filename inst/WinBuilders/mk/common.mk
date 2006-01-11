@@ -1,12 +1,13 @@
-BASE_DIR=$(shell pwd)
-WIN_BASE_DIR=$(shell cygpath -w $(BASE_DIR))
-BUILD_DIR=$(BASE_DIR)/build
-WIN_BUILD_DIR=$(shell cygpath -w $(BUILD_DIR))
-SRC_DIR=$(BASE_DIR)/src
-WIN_SRC_DIR=$(shell cygpath -w $(SRC_DIR))
-TMP_DIR=$(BASE_DIR)/tmp
-WIN_TMP_DIR=$(shell cygpath -w $(TMP_DIR))
-WIN_MAKEFILEDIR=$(shell cygpath -w $(MAKEFILEDIR))
+# Use immediate assignment to avoid calling out to the shell a zillion times.
+BASE_DIR := $(shell pwd)
+WIN_BASE_DIR := $(shell cygpath -w $(BASE_DIR))
+BUILD_DIR := $(BASE_DIR)/build
+WIN_BUILD_DIR := $(shell cygpath -w $(BUILD_DIR))
+SRC_DIR := $(BASE_DIR)/src
+WIN_SRC_DIR := $(shell cygpath -w $(SRC_DIR))
+TMP_DIR := $(BASE_DIR)/tmp
+WIN_TMP_DIR := $(shell cygpath -w $(TMP_DIR))
+WIN_MAKEFILEDIR := $(shell cygpath -w $(MAKEFILEDIR))
 
 # Root of the Windows drive you're working on.  The setting here is for
 # the C: drive and using a default out-of-the-box Cygwin.
