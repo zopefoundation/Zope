@@ -1,7 +1,6 @@
 Quick instructions:
 
-The buildout has been tested under Windows 2K and XP Pro SP2.  It "almost
-works" on Win98SE (see bottom of file for discussion).
+The buildout has been tested under Windows 2K and XP Pro SP2.
 
 
 Setup Environment
@@ -50,7 +49,7 @@ There doesn't appear to be a sane way to extract binaries (.exe, .pyd,
 & messy process on Windows.  So python.mk just copies them from an installed
 Python instead.  Cautions:
 
-- If you didn't accept the Python's installer's default directory, or if
+- If you didn't accept the Python installer's default directory, or if
   you did but it's on a different drive, you'll need to change
   WIN_PYINSTALLEDDIR in python.mk.
 
@@ -142,24 +141,3 @@ All platform notes
     root of your Cygwin installation -- the same thing the Cygwin shell
     desktop shortcut resolves to, so you can get the exact path by looking
     at the icon's Properties).
-
-
-Win98SE notes
--------------
-
-- Every time a makefile runs xcopy, there's a segfault in kernel32.dll,
-  which hangs the bash shell with an endless succession of error boxes.
-  The only way I found to break out of this was to bring up the debugger,
-  close it, then type Ctrl+C at the hung bash shell.  The bash shell
-  appears to be fine at that point, but you can never close it (short of
-  killing it via the task manager).
-  Same thing if xcopy32 is used instead.
-  xcopy works OK directly from a bash shell.  The segfaults occur if it's
-  run via a makefile, or via a shell script.  Guessing a problem with I/O
-  redirection, since some other apps can't see keyboard input before the
-  hung stuff is killed.
-
-  Workaround:  xxcopy works fine <http://www.xxcopy.com/>; free for
-  personal use, but not for commercial use.  Rename it to xcopy.exe and
-  get it into your path before the native xcopy, or fiddle the XCOPY
-  defn in common.mk to use xxcopy instead of xcopy.
