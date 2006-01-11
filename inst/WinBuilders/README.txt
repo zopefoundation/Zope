@@ -31,19 +31,33 @@ or later should be fine.  Inno 5.x versions do *not* work (it appears the
 Inno "custom dialog" mechanism has changed in an incompatible way)
 
 'svn switch' to, or check out, the Zope tag for which an installer is to be
-built.  You want a native Windows checkout here, so that the text files have
-Windows-appropriate line ends.
+built.
 
-Within a Zope checkout, parent directory of this package is inst.  Make a
-"tmp" directory, inst/tmp.  Place the necessary pre-requisites in the tmp
-directory.  At the time of this writing, this includes:
+Within a Zope checkout, the parent directory of this package is inst.  Make
+a "tmp" directory, inst/tmp.  Place the necessary pre-requisites in the tmp
+directory.  At the time of this writing, these are:
 
   - Python-2.4.2.tgz
-  - pywin32-205.win32-py2.3.exe (extracts binaries and sources)
-  - Zope.tgz
+  - pywin32-205.win32-py2.4.exe
+  - Zope-2.9.0.tgz
 
 As time marches on, these version numbers will obviously change.  See/edit
 mk/python.mk and mk/zope.mk for the exact versions required.
+
+You also need to install the same Windows Python that Zope will repackage.
+There doesn't appear to be a sane way to extract binaries (.exe, .pyd,
+.dll, .lib) from an .msi installer, and building Python from source is a long
+& messy process on Windows.  So python.mk just copies them from an installed
+Python instead.  Cautions:
+
+- If you didn't accept the Python's installer's default directory, or if
+  you did but it's on a different drive, you'll need to change
+  WIN_PYINSTALLEDDIR in python.mk.
+
+- The main Python DLL must live in WIN_PYINSTALLEDDIR too.  Depending on
+  how you installed Python, that may be sitting in some Windows system
+  directory instead; if so, make a copy in the root of your Python
+  installation.
 
 
 Building
