@@ -7,10 +7,23 @@ works" on Win98SE (see bottom of file for discussion).
 Setup Environment
 ------------------
 
+Install Python 2.4.2 (or whatever is most current) by running its native
+Windows installer from python.org.
+
+    Note:  Python 2.4 switched from using a Wise installer to using a
+    Microsoft .msi installer, and the latter is harder to work with.  The
+    buildout used to extract Python source and binaries (.exe, .pyd, .dll)
+    from the Wise installer (which could be treated much like a zip file).
+    Now the Python installer isn't used at all.  Instead, the Python
+    source is taken from the Python tarball release, and the binaries are
+    copied from your installed Python.
+
 Install Cygwin from cygwin.org (the default installation should give
 you everything you need).
 
-Install Microsoft Visual C++ 6.0 (or MSVC 7 once we get to Python 2.4)
+Install Microsoft Visual C++ 7.1 (aka Visual Studio .NET 2003).  This is
+needed to compile Zope's Python C extensions compatible with Python 2.4
+(and 2.5, when that's released).
 
 Install InnoSetup 4.2 from www.jrsofware.org (into its default location).
 Versions earlier than 4.0.11 are known to not work; any 4.2.x release
@@ -25,8 +38,7 @@ Within a Zope checkout, parent directory of this package is inst.  Make a
 "tmp" directory, inst/tmp.  Place the necessary pre-requisites in the tmp
 directory.  At the time of this writing, this includes:
 
-  - Python-2.3.5.tgz
-  - Python-2.3.5.exe (used for binary modules)
+  - Python-2.4.2.tgz
   - pywin32-205.win32-py2.3.exe (extracts binaries and sources)
   - Zope.tgz
 
