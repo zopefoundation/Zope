@@ -8,9 +8,13 @@ AppUpdatesURL=http://www.zope.org
 DefaultDirName={pf}\Zope-<<VERSION>>
 DefaultGroupName=Zope <<VERSION>>
 OutputBaseFilename=Zope-<<VERSION>>-win32
+SolidCompression=yes
 WizardImageFile=<<MAKEFILEDIR>>\etc\zlogo_left.bmp
 WizardSmallImageFile=<<MAKEFILEDIR>>\etc\zlogo_top.bmp
-SolidCompression=yes
+; Starting w/ Inno 4.1.3, Inno decided to stretch the .bmp files in various
+; ways.  Hard to know why, but it looks terrible on my vanilla boxes.
+; Luckily, 4.1.3 also added WizardImageStretch to turn that off.
+WizardImageStretch=no
 
 SourceDir=.
 OutputDir=.
@@ -69,7 +73,7 @@ var
   PasswordChars		  : array of char;
 
   DataDirValues: array of String;
-  
+
   Password	  : string;
   DataDir		  :  String;
 
@@ -87,7 +91,7 @@ begin
   { set up data dir data structures }
   SetArrayLength(DataDirValues, 1);
   DataDir := '';
-  
+
   Result := True;
 end;
 
@@ -106,9 +110,9 @@ begin
 	if DataDirValues[0] <> '' then DataDirValues[0]:= '';
 
 	{ Ask for a dir until the user has approved one or clicked Back or Cancel }
-	
+
   Next:= InputDir(False, DataDirValues[0], DataDir);
-	
+
   if Next and FileOrDirExists(DataDir) then DirOk := False;
 
 	while Next and not DirOk do begin
@@ -133,7 +137,7 @@ begin
   ScriptDlgPageSetSubCaption1('Specify administrator password');
 	ScriptDlgPageSetSubCaption2('The login name for your Zope administrator account is "admin". When you first connect to the Zope management interface, you will need to login using the "admin" username and the password you specify below.');
 	Next := InputQueryArrayEx(PasswordPrompts, PasswordChars, PasswordValues);
-	
+
 	while Next and (PasswordValues[0] = '') do begin
 	  MsgBox('You must enter an administrator password', mbError, MB_OK)
 		Next := InputQueryArrayEx(PasswordPrompts, PasswordChars, PasswordValues);
@@ -172,7 +176,7 @@ begin
   if ( (not BackClicked and (CurPage = wpSelectTasks)) or (BackClicked and (CurPage = wpReady))  )
         and DoInstanceHome() then begin
     if not BackClicked then CurSubPage:=0 else CurSubPage:=1;
-     
+
     ScriptDlgPageOpen();
     ScriptDlgPageSetCaption('Instance Setup');
 
