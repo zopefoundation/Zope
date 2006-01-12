@@ -31,13 +31,13 @@ Name: service; Description: "Run your Zope instance as a Windows service (start 
 Source: "<<MAKEFILEDIR>>\etc\README.html"; DestDir: "{app}"; Flags: ignoreversion
 Source:"bin\*.*"; DestDir: "{app}\bin"; Flags: ignoreversion recursesubdirs
 Source:"doc\*.*"; DestDir: "{app}\doc"; Flags: ignoreversion recursesubdirs
-Source:"import\*.*"; DestDir: "{app}\import"; Flags: ignoreversion recursesubdirs
 Source:"lib\*.*"; DestDir: "{app}\lib"; Flags: ignoreversion recursesubdirs
 Source:"skel\*.*"; DestDir: "{app}\skel"; Flags: ignoreversion recursesubdirs
+Source:"zopeskel\*.*"; DestDir: "{app}\zopeskel"; Flags: ignoreversion recursesubdirs
 ; these are required to be put into the bin directory for proper function of NT services
 Source:"bin\Lib\site-packages\win32\PythonService.exe"; DestDir: "{app}\bin"; Flags: ignoreversion
-Source:"bin\Lib\site-packages\pywin32_system32\PyWinTypes23.dll"; DestDir: "{app}\bin"; Flags: ignoreversion
-Source:"bin\Lib\site-packages\pywin32_system32\PythonCOM23.dll"; DestDir: "{app}\bin"; Flags: ignoreversion
+Source:"bin\Lib\site-packages\pywin32_system32\PyWinTypes24.dll"; DestDir: "{app}\bin"; Flags: ignoreversion
+Source:"bin\Lib\site-packages\pywin32_system32\PythonCOM24.dll"; DestDir: "{app}\bin"; Flags: ignoreversion
 ; This is a helper module for manging registry entries at uninstall time
 Source: "<<MAKEFILEDIR>>\bin\fixreg.py"; DestDir: "{app}\bin"; Flags: ignoreversion
 

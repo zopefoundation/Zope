@@ -112,8 +112,7 @@ $(BUILD_DIR)/bin/python.exe:
 	$(XCOPY) "$(WIN_PYINSTALLEDDIR)\$(PYMAJORMINOR).dll" \
 						"$(WIN_BUILD_DIR)\bin"
 	$(XCOPY) "$(WIN_MAKEFILEDIR)\bin\msvcr71.dll" "$(WIN_BUILD_DIR)\bin"
-	$(XCOPY) "$(WIN_PYINSTALLEDDIR)\libs\$(PYMAJORMINOR).lib" \
-						"$(WIN_BUILD_DIR)\bin\libs"
+	$(XCOPY) "$(WIN_PYINSTALLEDDIR)\libs" "$(WIN_BUILD_DIR)\bin\libs"
 	$(XCOPY) "$(WIN_PYINSTALLEDDIR)\DLLs\*.pyd" \
 						"$(WIN_BUILD_DIR)\bin\DLLs"
 

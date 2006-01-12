@@ -6,8 +6,8 @@ ZOPE_REQUIRED_FILES=tmp/$(ZOPEDIRNAME).tgz
 REQUIRED_FILES=$(PYTHON_REQUIRED_FILES)\
                $(ZOPE_REQUIRED_FILES)
 
-MAKEZOPE="$(MAKEFILEDIR)/bin/makezope.bat" "$(WIN_BUILD_DIR)"
 # run the Zope tests
+# XXX This is out of date and can't work.
 test_zope:
 	$(CD) "$(BASE_DIR)/src/Zope"
 	"$(PYPCBUILDDIR)/python.exe" utilities/testrunner.py -a
@@ -16,15 +16,15 @@ test_zope:
 clean_zope:
 	$(RMRF) src/$(ZOPEDIRNAME)
 
-install_zope: src/$(ZOPEDIRNAME)/inst/configure.py \
-	$(BUILD_DIR)/lib/python/version.txt \
+install_zope: src/$(ZOPEDIRNAME)/install.py \
 	install_python \
+	$(BUILD_DIR)/lib/python/Zope2/version.txt \
 	$(BUILD_DIR)/Zope-$(ZOPEVERSION)-win32.exe
 
 ESCAPED=$(shell sh $(MAKEFILEDIR)/bin/escape.sh '$(WIN_MAKEFILEDIR)')
 SEDSCRIPT="s@<<VERSION>>@$(ZOPEVERSION)@g;s@<<MAKEFILEDIR>>@$(ESCAPED)@g"
 
-$(BUILD_DIR)/Zope-$(ZOPEVERSION)-win32.exe: $(BUILD_DIR)/lib/python/version.txt
+$(BUILD_DIR)/Zope-$(ZOPEVERSION)-win32.exe: $(BUILD_DIR)/lib/python/Zope2/version.txt
 	$(SED) $(SEDSCRIPT) < "$(MAKEFILEDIR)/etc/zope.iss.in" | unix2dos > "$(BUILD_DIR)/zope.iss"
 
 	# Remove CVS directories and compiled Python files from the build tree.
@@ -44,19 +44,31 @@ $(BUILD_DIR)/Zope-$(ZOPEVERSION)-win32.exe: $(BUILD_DIR)/lib/python/version.txt
 	# Build the Inno installer.
 	$(CD) "$(BUILD_DIR)";"$(ISS_COMPILER)" /cc "$(WIN_BUILD_DIR)\zope.iss"
 
-$(BUILD_DIR)/lib/python/Zope2/Startup/run.py:
-	$(CD) "$(BUILD_DIR)"; \
-	bin/python.exe \
-            "$(WIN_SRC_DIR)\$(ZOPEDIRNAME)\inst\configure.py" \
-            --prefix="$(WIN_BUILD_DIR)" --no-compile
-	$(MAKEZOPE)
-	$(TOUCH) "$(BUILD_DIR)/lib/python/Zope2/Startup/run.py"
+# This builds Zope, then installs it into the build directory, then
+# creates lib/python/Zope2/version.txt in the build directory.
+#
+# Yuck:  for whatever reason, distutils refuses to allow an absolute
+# path for the --home option, so this hardcodes "build" as the name of
+# the build directory, and assumes "build" is a sibling of SRC_DIR.
+#
+# Yuck:  the --no-compile option here has no effect:  the install step
+# creates oodles of unwanted .pyc files.  They're removed by the
+# $(BUILD_DIR)/Zope-$(ZOPEVERSION)-win32.exe target, though, before
+# building the installer.
+#
+# Yuck:  no matter what I pass to --install-headers, it throws away the
+# last path component.  We actually want to copy the Zope/ZODB headers
+# into bin/Include.  The "nonsense" at the end gets throws away, and that
+# smells like a bug.  When it gets fixed, I suppose this will copy the
+# headers to bin/Include/nonsense/.
+$(BUILD_DIR)/lib/python/Zope2/version.txt: $(BUILD_DIR)/bin/python.exe
+	cd "$(SRC_DIR)/$(ZOPEDIRNAME)" && \
+		"$<" install.py install --no-compile --home=../../build \
+			--install-headers=../../build/bin/Include/nonsense
+	@echo Zope $(ZOPEVERSION) > $@
+	$(TOUCH) $@
 
-$(BUILD_DIR)/lib/python/version.txt: $(BUILD_DIR)/lib/python/Zope2/Startup/run.py
-	@echo Zope $(ZOPEVERSION) > "$(BUILD_DIR)/lib/python/version.txt"
-	$(TOUCH) "$(BUILD_DIR)/lib/python/version.txt"
-
-src/$(ZOPEDIRNAME)/inst/configure.py:
+# This merely unpacks the Zope tarball.
+src/$(ZOPEDIRNAME)/install.py:
 	$(MKDIR) "$(SRC_DIR)"
-	$(CD) "$(SRC_DIR)" && $(TAR) xvzf ../tmp/$(ZOPEDIRNAME).tgz \
-           && $(TOUCH) $(ZOPEDIRNAME)/inst/configure.py
+	$(CD) "$(SRC_DIR)" && $(TAR) xvzf ../tmp/$(ZOPEDIRNAME).tgz

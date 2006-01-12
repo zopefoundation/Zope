@@ -17,7 +17,17 @@ RM=rm -f
 RMRF=rm -rf
 CD=cd
 
-XCOPY=xcopy /i /s /e /y
+# xcopy args:
+# /i = if dest doesn't exist and source has more than one file, assume
+#      dest shoud be a directory
+# /y = don't prompt about overwriting dest if it exists -- just do it
+# /s = recurse, copying non-empty subdirectories too
+# CAUTION:  don't use /e unless you have to!  /e copies empty subdirectories
+# too, but has another truly bizarre behavior:  if you use xcopy to copy
+# a single file, and use /e, it creates empty subdirectories in the target's
+# directory with the same names as the subdirectories in the source's
+# directory.  This is worse than useless.
+XCOPY=xcopy /i /s /y
 
 CPR=cp -r
 CP=cp
