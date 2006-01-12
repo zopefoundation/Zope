@@ -393,7 +393,7 @@ class zope_ftp_channel(ftp_channel):
     def rnfr_completion(self,response):
         status=response.getStatus()
         if status==200:
-            self.respond ('250 RNTO command successful.')
+            self.respond ('350 RNFR command successful.')
         else:
             self.respond ('550 %s: no such file or directory.' % self.fromfile)
 

@@ -22,6 +22,15 @@ Zope Changes
 
    - Collector #1233: port ZOPE_CONFIG patch from Zope 2.7 to Zope 2.8
 
+
+  after Zope 2.8.5 
+
+    Bugs Fixed
+
+      - Collector #1999: fixed broken FTP rename functionality
+        (RNFR now returns 350 as status code instead 250)
+
+
   Zope 2.8.5 (2005/12/19)
 
     Bugs Fixed
