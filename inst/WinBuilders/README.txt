@@ -110,20 +110,43 @@ now required, or the files you've downloaded are not in 'tmp'.
 Testing Zope
 ------------
 
-The test suite can be run from inst\build\:
+XXX This doesn't work right starting with Zope 2.9:  it's clumsier than it
+XXX should be, and the functional tests don't even try to run (just the
+XXX unit tests).
+XXX Someone who understands how Zope3 testing from a zpkgtools-tarball build
+XXX was made to work again may be able to help here.
+
+The test suite can be run from inst\build\, after building the installer.
 
 - Open a native (not Cygwin) DOS box.  We want to test with the Python the
-  Zope installer includes.
-- cd to inst\build
-- Copy log.ini from the root of the Zope checkout.  This isn't necessary for
-  the tests to pass, but if you don't do it a great many spurious log
-  messages will be displayed on the console, some of which "look like"
-  errors (some of the tests deliberately provoke errors).
-- Enter
+  Zope installer includes, in an all-native environment, to match what
+  the installer-installed code will do as closely as possible.
 
-      bin\python bin\test.py -v --all
+- cd inst\build
+
+- Copy log.ini from the root of the Zope _checkout_ -- it's not included
+  in the tarball::
+
+      copy ..\..\log.ini .
+
+  Copying log.ini isn't necessary for the tests to pass, but if you don't
+  do it a great many spurious log messages will be displayed on the
+  console, some of which "look like" errors (some of the tests deliberately
+  provoke errors).
+
+- Copy test.py from the unpacked tarball::
+
+      copy ..\src\$(ZOPE_VERSION)\test.py .
+
+- Enter::
+
+      bin\python test.py -vv -m "!^zope[.]app[.]" --all
 
   or whatever variation you like best.  All tests should pass.
+
+  Note that zope.app tests should be excluded because not all of them _can_
+  pass (this isn't "a Windows thing", it's a temporary all-platform wart
+  due to missing bits from Zope3).
 
 Also run the Windows installer, and play with the Zope it installs.
 
