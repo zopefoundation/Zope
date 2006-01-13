@@ -45,28 +45,31 @@ def startup():
     # Import products
     OFS.Application.import_products()
 
+    configuration = getConfiguration()
+
     # Open the database
+    dbtab = configuration.dbtab
     try:
         # Try to use custom storage
         try:
-            m=imp.find_module('custom_zodb',[getConfiguration().testinghome])
+            m=imp.find_module('custom_zodb',[configuration.testinghome])
         except:
-            m=imp.find_module('custom_zodb',[getConfiguration().instancehome])
+            m=imp.find_module('custom_zodb',[configuration.instancehome])
     except:
         # if there is no custom_zodb, use the config file specified databases
-        configuration = getConfiguration()
-        DB = configuration.dbtab.getDatabase('/', is_root=1)
-        Globals.BobobaseName = DB.getName()
+        DB = dbtab.getDatabase('/', is_root=1)
     else:
         m=imp.load_module('Zope2.custom_zodb', m[0], m[1], m[2])
+        sys.modules['Zope2.custom_zodb']=m
+
         if hasattr(m,'DB'):
             DB=m.DB
+            dbtab.databases.update(getattr(DB, 'databases', {}))
+            DB.databases = dbtab.databases
         else:
-            storage = m.Storage
-            DB = ZODB.DB(storage)
+            DB = ZODB.DB(m.Storage, databases=dbtab.databases)
 
-        Globals.BobobaseName = DB.getName()
-        sys.modules['Zope2.custom_zodb']=m
+    Globals.BobobaseName = DB.getName()
 
     if DB.getActivityMonitor() is None:
         from ZODB.ActivityMonitor import ActivityMonitor
