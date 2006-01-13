@@ -65,7 +65,7 @@ $(BUILD_DIR)/lib/python/Zope2/version.txt: $(BUILD_DIR)/bin/python.exe
 	cd "$(SRC_DIR)/$(ZOPEDIRNAME)" && \
 		"$<" install.py install --no-compile --home=../../build \
 			--install-headers=../../build/bin/Include/nonsense
-	@echo Zope $(ZOPEVERSION) > $@
+	echo Zope $(ZOPEVERSION) > $@
 	$(TOUCH) $@
 
 # This merely unpacks the Zope tarball.
