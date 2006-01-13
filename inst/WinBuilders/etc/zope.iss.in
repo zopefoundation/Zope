@@ -69,157 +69,175 @@ Root: HKLM; Subkey: "Software\Zope Corporation\Zope\<<VERSION>>"; Flags: uninsde
 
 [Code]
 var
-  PasswordPrompts, PasswordValues : array of String;
-  PasswordChars		  : array of char;
+    PasswordPrompts, PasswordValues: array of String;
+    PasswordChars: array of char;
+    Password: string;
 
-  DataDirValues: array of String;
-
-  Password	  : string;
-  DataDir		  :  String;
+    DataDirValues: array of String;
+    DataDir:  String;
 
 function InitializeSetup(): Boolean;
 begin
-  { set up password data structures }
-  SetArrayLength(PasswordPrompts, 1);
-  PasswordPrompts[0] := 'Password:';
-  SetArrayLength(PasswordValues, 1);
-  PasswordValues[0] := '';
-  SetArrayLength(PasswordChars, 1);
-  PasswordChars[0] := '*';
-  Password := '';
+    { set up password data structures }
+    SetArrayLength(PasswordPrompts, 2);
+    PasswordPrompts[0] := 'Password:';
+    PasswordPrompts[1] := 'Confirm password:';
+    SetArrayLength(PasswordValues, 2);
+    PasswordValues[0] := '';
+    PasswordValues[1] := '';
+    SetArrayLength(PasswordChars, 2);
+    PasswordChars[0] := '*';
+    PasswordChars[1] := '*';
+    Password := '';
 
-  { set up data dir data structures }
-  SetArrayLength(DataDirValues, 1);
-  DataDir := '';
+    { set up data dir data structures }
+    SetArrayLength(DataDirValues, 1);
+    DataDir := '';
 
-  Result := True;
+    Result := True;
 end;
 
 function CollectInstanceDir(): Boolean;
 
 var
-  Next: Boolean;
-  DirOk: Boolean;
+    Next: Boolean;
+    DirOk: Boolean;
 
 begin
-  DirOk := True;
-  ScriptDlgPageSetSubCaption1('Select where Zope instance files should be installed');
-	ScriptDlgPageSetSubCaption2('Select the folder to which you would like Setup to install Zope "instance" files, then click Next.');
+    DirOk := True;
+    ScriptDlgPageSetSubCaption1('Select where Zope instance files should be installed');
+    ScriptDlgPageSetSubCaption2('Select the folder to which you would like Setup to install Zope "instance" files, then click Next.');
 
- 	if DataDir = '' then DataDir:= 'C:\Zope-Instance';
-	if DataDirValues[0] <> '' then DataDirValues[0]:= '';
+    if DataDir = '' then DataDir := 'C:\Zope-Instance';
+    if DataDirValues[0] <> '' then DataDirValues[0] := '';
 
 	{ Ask for a dir until the user has approved one or clicked Back or Cancel }
 
-  Next:= InputDir(False, DataDirValues[0], DataDir);
+    Next:= InputDir(False, DataDirValues[0], DataDir);
 
-  if Next and FileOrDirExists(DataDir) then DirOk := False;
+    if Next and FileOrDirExists(DataDir) then DirOk := False;
 
-	while Next and not DirOk do begin
-	  if DataDir = '' then begin
-	    DirOk := False;
-      MsgBox(SetupMessage(msgInvalidPath), mbError, MB_OK);
+    while Next and not DirOk do begin
+        if DataDir = '' then begin
+            DirOk := False;
+            MsgBox(SetupMessage(msgInvalidPath), mbError, MB_OK);
+        end;
+        if FileOrDirExists(DataDir) then begin
+            DirOk := MsgBox('Directory Exists' #13#13 'The directory ' +
+                DataDir + ' already exists.  Would you like to create ' +
+                'instance files in that directory anyway?',
+                mbConfirmation, MB_YESNO) = idYes;
+        end;
+        if not DirOk then Next := InputDir(False, DataDirValues[0], DataDir);
     end;
-  	if FileOrDirExists(DataDir) then begin
-	      DirOk := MsgBox('Directory Exists' #13#13 'The directory ' + DataDir + ' already exists.  Would you like to create instance files in that directory anyway?', mbConfirmation, MB_YESNO) = idYes;
-	  end;
-	  if not DirOk then Next := InputDir(False, DataDirValues[0], DataDir);
-  end;
 
-	Result:=Next;
-
+	Result := Next;
 end;
 
 function CollectPassword(): Boolean;
 var
-  Next: Boolean;
+    Next: Boolean;
+    gotPassword: Boolean;
 begin
-  ScriptDlgPageSetSubCaption1('Specify administrator password');
-	ScriptDlgPageSetSubCaption2('The login name for your Zope administrator account is "admin". When you first connect to the Zope management interface, you will need to login using the "admin" username and the password you specify below.');
-	Next := InputQueryArrayEx(PasswordPrompts, PasswordChars, PasswordValues);
+    ScriptDlgPageSetSubCaption1('Specify administrator password');
+	ScriptDlgPageSetSubCaption2('The login name for your Zope administrator ' +
+	    'account is "admin". When you first connect to the Zope management ' +
+	    'interface, you will need to login using the "admin" username and ' +
+	    'the password you specify below.');
 
-	while Next and (PasswordValues[0] = '') do begin
-	  MsgBox('You must enter an administrator password', mbError, MB_OK)
-		Next := InputQueryArrayEx(PasswordPrompts, PasswordChars, PasswordValues);
-	end;
-	Password := PasswordValues[0];
-  Result:=Next;
+    gotPassword := False;
+    repeat
+        Next := InputQueryArrayEx(PasswordPrompts, PasswordChars, PasswordValues);
+        if Next then begin
+            if PasswordValues[0] = '' then
+                MsgBox('You must enter an administrator password', mbError, MB_OK)
+            else if PasswordValues[0] <> PasswordValues[1] then
+                MsgBox('Please try again -- the passwords don''t match',
+                       mbError, MB_OK)
+            else begin
+                gotPassword := True;
+                Password := PasswordValues[0]
+            end
+        end;
+    until gotPassword or not Next;
+
+    Result := Next;
 end;
 
-function DoInstanceHome():Boolean;
+function DoInstanceHome(): Boolean;
 var
-   S : String;
+    S : String;
 begin
-   S := WizardSelectedComponents(False);
-   Result := Pos('instance', S) <> 0;
+    S := WizardSelectedComponents(False);
+    Result := Pos('instance', S) <> 0;
 end;
 
 function DoService(): Boolean;
 var
-  S : String;
+    S : String;
 begin
-  S := WizardSelectedTasks(False);
-  Result := Pos('service', S) <> 0;
+    S := WizardSelectedTasks(False);
+    Result := Pos('service', S) <> 0;
 end;
 
 function DontDoService(): Boolean;
 begin
-  Result := not DoService();
+    Result := not DoService();
 end;
 
 function ScriptDlgPages(CurPage: Integer; BackClicked: Boolean): Boolean;
 var
-   Next	      : Boolean;
-   CurSubPage : Integer;
+    Next	      : Boolean;
+    CurSubPage : Integer;
 begin
-  Next:=True;
-  if ( (not BackClicked and (CurPage = wpSelectTasks)) or (BackClicked and (CurPage = wpReady))  )
+    Next:=True;
+    if ( (not BackClicked and (CurPage = wpSelectTasks)) or (BackClicked and (CurPage = wpReady))  )
         and DoInstanceHome() then begin
-    if not BackClicked then CurSubPage:=0 else CurSubPage:=1;
+        if not BackClicked then CurSubPage:=0 else CurSubPage:=1;
 
-    ScriptDlgPageOpen();
-    ScriptDlgPageSetCaption('Instance Setup');
+        ScriptDlgPageOpen();
+        ScriptDlgPageSetCaption('Instance Setup');
 
-    while (CurSubPage >=0) and (CurSubPage <=1) and not Terminated do begin
-      case CurSubPage of
-	      0:  Next:=CollectInstanceDir();
-	      1:  Next:=CollectPassword();
-	    end;
-	    if Next then CurSubPage := CurSubPage +1 else CurSubPage := CurSubPage -1;
-	  end;
+        while (CurSubPage >=0) and (CurSubPage <=1) and not Terminated do begin
+            case CurSubPage of
+                0: Next := CollectInstanceDir();
+                1: Next := CollectPassword();
+            end;
+	        if Next then CurSubPage := CurSubPage +1 else CurSubPage := CurSubPage -1;
+        end;
 
-    if not BackClicked then
-      Result := Next
-    else
-      Result := not Next;
-    ScriptDlgPageClose(not Result);
+        if not BackClicked then
+            Result := Next
+        else
+            Result := not Next;
+        ScriptDlgPageClose(not Result);
+    end;
 
-  end;
-  Result:=Next;
+    Result := Next;
 end;
 
 function NextButtonClick(CurPage: Integer): Boolean;
 begin
-  Result := ScriptDlgPages(CurPage, False);
+    Result := ScriptDlgPages(CurPage, False);
 end;
 
 function BackButtonClick(CurPage: Integer): Boolean;
 begin
-  Result := ScriptDlgPages(CurPage, True);
+    Result := ScriptDlgPages(CurPage, True);
 end;
 
 function GetPassword(Default: String): String;
 begin
-  Result := Password;
+    Result := Password;
 end;
 
 function GetDataDir(Default	:  String):String;
 begin
-   Result := DataDir;
+    Result := DataDir;
 end; { GetInstanceDir }
 
 function IsAdministrator(): Boolean;
 begin
-   Result := IsAdminLoggedOn();
+    Result := IsAdminLoggedOn();
 end;
 
