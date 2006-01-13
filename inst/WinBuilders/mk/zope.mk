@@ -58,7 +58,7 @@ $(BUILD_DIR)/Zope-$(ZOPEVERSION)-win32.exe: $(BUILD_DIR)/lib/python/Zope2/versio
 #
 # Yuck:  no matter what I pass to --install-headers, it throws away the
 # last path component.  We actually want to copy the Zope/ZODB headers
-# into bin/Include.  The "nonsense" at the end gets throws away, and that
+# into bin/Include.  The "nonsense" at the end gets thrown away, and that
 # smells like a bug.  When it gets fixed, I suppose this will copy the
 # headers to bin/Include/nonsense/.
 $(BUILD_DIR)/lib/python/Zope2/version.txt: $(BUILD_DIR)/bin/python.exe
