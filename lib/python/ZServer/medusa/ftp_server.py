@@ -706,12 +706,12 @@ class ftp_server (asyncore.dispatcher):
         self.port = port
         self.authorizer = authorizer
 
-        if hostname is None:
-            self.hostname = socket.gethostname()
-        else:
-            self.hostname = hostname
-            
-            # statistics
+        try:
+            self.hostname = socket.gethostbyaddr(ip)[0]
+        except socket.error:
+            self.hostname = ip
+
+        # statistics
         self.total_sessions = counter()
         self.closed_sessions = counter()
         self.total_files_out = counter()
