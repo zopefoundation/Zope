@@ -6,13 +6,6 @@ ZOPE_REQUIRED_FILES=tmp/$(ZOPEDIRNAME).tgz
 REQUIRED_FILES=$(PYTHON_REQUIRED_FILES)\
                $(ZOPE_REQUIRED_FILES)
 
-# run the Zope tests
-# XXX This is out of date and can't work.
-test_zope:
-	$(CD) "$(BASE_DIR)/src/Zope"
-	"$(PYPCBUILDDIR)/python.exe" utilities/testrunner.py -a
-	$(CD) "$(BASE_DIR)"
-
 clean_zope:
 	$(RMRF) src/$(ZOPEDIRNAME)
 
