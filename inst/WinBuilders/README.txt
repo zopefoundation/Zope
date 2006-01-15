@@ -24,10 +24,9 @@ Install Microsoft Visual C++ 7.1 (aka Visual Studio .NET 2003).  This is
 needed to compile Zope's Python C extensions compatible with Python 2.4
 (and 2.5, when that's released).
 
-Install InnoSetup 4.2 from www.jrsofware.org (into its default location).
-Versions earlier than 4.0.11 are known to not work; any 4.2.x release
-or later should be fine.  Inno 5.x versions do *not* work (it appears the
-Inno "custom dialog" mechanism has changed in an incompatible way)
+Install InnoSetup 5.1.5 (or later) from www.jrsoftware.org, into its
+default location.  Inno 4.x (or earlier) cannot work:  Inno 5 introduced a
+vastly simpler way to create the custom dialog pages we want.
 
 'svn switch' to, or check out, the Zope tag for which an installer is to be
 built.
