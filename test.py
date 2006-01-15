@@ -14,7 +14,7 @@
 #
 ##############################################################################
 """
-test.py [-abcCdDfgGhLmprtTuv] [modfilter [testfilter]]
+test.py [-abcCdDfgGhLmpqrtTuv] [modfilter [testfilter]]
 
 Find and run tests written using the unittest module.
 
@@ -145,10 +145,11 @@ named .testinfo, it will not be searched for tests.  Really.)
     KCacheGrind sources to create data suitable for analysis by KCacheGrind.
 
 -v
+-q
     Verbose output.  With one -v, unittest prints a dot (".") for each
     test run.  With -vv, unittest prints the name of each test (for
-    some definition of "name" ...).  With no -v, unittest is silent
-    until the end of the run, except when errors occur.
+    some definition of "name" ...).  With no -v (or with -q), unittest is
+    silent until the end of the run, except when errors occur.
 
 -u
 -m
@@ -801,7 +802,7 @@ def process_args(argv=None):
     no_warnings = False
 
     try:
-        opts, args = getopt.getopt(argv[1:], "a:bcC:dDfg:G:hLmprtTuv",
+        opts, args = getopt.getopt(argv[1:], "a:bcC:dDfg:G:hLmpqrtTuv",
                                    ["all", "help", "libdir=", "times=",
                                     "keepbytecode", "nowarnings", "dir=",
                                     "config-file=", "import-testing",
@@ -870,6 +871,8 @@ def process_args(argv=None):
             GUI = 1
         elif k == "-v":
             VERBOSE += 1
+        elif k == "-q":
+            VERBOSE = 0
         elif k == "--times":
             try:
                 timetests = int(v)
