@@ -18,7 +18,7 @@ import os
 import time
 
 from App.config import getConfiguration
-from OFS.content_types import guess_content_type
+from zope.app.content_types import guess_content_type
 from Globals import package_home
 from Common import rfc1123_date
 from DateTime import DateTime

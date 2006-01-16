@@ -17,7 +17,7 @@ $Id$
 import History
 from Globals import HTML, DTMLFile, MessageDialog
 from SimpleItem import Item_w__name__, pretty_tb
-from OFS.content_types import guess_content_type
+from zope.app.content_types import guess_content_type
 from PropertyManager import PropertyManager
 from AccessControl.Role import RoleManager
 from webdav.common import rfc1123_date

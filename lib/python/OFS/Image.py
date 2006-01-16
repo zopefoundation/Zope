@@ -15,7 +15,7 @@
 $Id$
 """
 import Globals, struct
-from OFS.content_types import guess_content_type
+from zope.app.content_types import guess_content_type
 from Globals import DTMLFile
 from PropertyManager import PropertyManager
 from AccessControl.Role import RoleManager

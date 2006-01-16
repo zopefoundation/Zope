@@ -32,6 +32,9 @@ Zope Changes
       - officially deprecated the zLOG module (to be removed in Zope 2.11).
         Use the logging module of Python instead.
 
+      - Replaced used of deprecated 'OFS.content_types' module with cognates
+        from 'zope.app.content_types'.
+
   Zope 2.9.0 (2006/01/09)
 
     Bugs fixed

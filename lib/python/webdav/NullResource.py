@@ -17,7 +17,7 @@ $Id$
 
 import sys
 
-import Acquisition, OFS.content_types
+import Acquisition
 import Globals
 import OFS.SimpleItem
 from AccessControl import getSecurityManager
@@ -25,6 +25,7 @@ from Globals import Persistent, DTMLFile
 from OFS.CopySupport import CopyError
 from zExceptions import MethodNotAllowed
 from zExceptions import Unauthorized, NotFound, Forbidden, BadRequest
+from zope.app.content_types import guess_content_type
 
 import davcmds
 from common import aq_base, tokenFinder, IfParser
@@ -141,7 +142,7 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
 
         typ=REQUEST.get_header('content-type', None)
         if typ is None:
-            typ, enc=OFS.content_types.guess_content_type(name, body)
+            typ, enc = guess_content_type(name, body)
 
         factory = getattr(parent, 'PUT_factory', self._default_PUT_factory )
         ob = factory(name, typ, body)
@@ -407,7 +408,7 @@ class LockNullResource(NullResource, OFS.SimpleItem.Item_w__name__):
         body = REQUEST.get('BODY', '')
         typ = REQUEST.get_header('content-type', None)
         if typ is None:
-            typ, enc = OFS.content_types.guess_content_type(name, body)
+            typ, enc = guess_content_type(name, body)
 
         factory = getattr(parent, 'PUT_factory', self._default_PUT_factory)
         ob = (factory(name, typ, body) or
