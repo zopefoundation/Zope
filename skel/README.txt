@@ -5,5 +5,6 @@ server.  It contains the following directories:
   etc/         Configuration files
   Extensions/  Python sources for External Methods
   log/         Log files
-  Products/    Installed products specific to the instance
+  lib/python/  Installed Python packages specific to the instance
+  Products/    Installed Zope Products specific to the instance
   var/         Run-time data files, including the object database
