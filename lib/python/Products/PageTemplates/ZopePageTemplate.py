@@ -90,7 +90,7 @@ def guess_type(filename, text):
 
 
 _default_content_fn = os.path.join(package_home(globals()), 'pt', 'default.html')
-
+  
 
 class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
                        Traversable, PropertyManager):
@@ -124,9 +124,10 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
     security.declareObjectProtected(view)
     security.declareProtected(view, '__call__')
 
-    def __init__(self, id, text=None, content_type=None, encoding='utf-8'):
+    def __init__(self, id, text=None, content_type=None, encoding='utf-8', strict=False):
         self.id = id
-        self.expand = 0
+        self.expand = 0                                                               
+        self.strict = strict
         self.ZBindings_edit(self._default_bindings)
         self.pt_edit(text, content_type, encoding)
 
@@ -134,7 +135,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
     def pt_edit(self, text, content_type, encoding='utf-8'):
 
         text = text.strip()
-        if not isinstance(text, unicode):
+        if self.strict and not isinstance(text, unicode):
             text = unicode(text, encoding)
 
         self.ZCacheable_invalidate()
@@ -162,7 +163,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
 
     security.declareProtected(change_page_templates, 'pt_setTitle')
     def pt_setTitle(self, title, encoding='utf-8'):
-        if not isinstance(title, unicode):
+        if self.strict and not isinstance(title, unicode):
             title = unicode(title, encoding)
         self._setPropValue('title', title)
 
@@ -368,6 +369,13 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
     def wl_isLocked(self):
         return 0
 
+    security.declareProtected(view, 'strictUnicode')
+    def strictUnicode(self):
+        """ Return True if the ZPT enforces the use of unicode,
+            False otherwise.
+        """
+        return self.strict
+
 
     def manage_convertUnicode(self, preferred_encodings=preferred_encodings, RESPONSE=None):
         """ convert non-unicode templates to unicode """
@@ -430,7 +438,7 @@ ZopePageTemplate.manage = ZopePageTemplate.pt_editForm
 
 manage_addPageTemplateForm= FSZPT('manage_addPageTemplateForm', os.path.join(package_home(globals()), 'pt', 'ptAdd.pt'))
 
-def manage_addPageTemplate(self, id, title='', text=None, encoding='utf-8', submit=None, REQUEST=None, RESPONSE=None):
+def manage_addPageTemplate(self, id, title='', text='', encoding='utf-8', submit=None, REQUEST=None, RESPONSE=None):
     "Add a Page Template with optional file content."
 
     filename = ''
