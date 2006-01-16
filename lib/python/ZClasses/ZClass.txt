@@ -16,6 +16,8 @@ To do anything, we need a working Zope object space:
     >>> from OFS.Application import Application
     >>> app = Application()
     >>> conn.root()['Application'] = app
+    >>> from OFS.Folder import manage_addFolder
+    >>> manage_addFolder(app, 'temp_folder')
     >>> from OFS.Application import initialize
     >>> initialize(app)
     >>> app.manage_addFolder('sandbox')
