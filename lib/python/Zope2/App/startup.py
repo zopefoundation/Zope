@@ -61,12 +61,15 @@ def startup():
         m=imp.load_module('Zope2.custom_zodb', m[0], m[1], m[2])
         sys.modules['Zope2.custom_zodb']=m
 
+        # Get the database and join it to the dbtab multidatabase
+        # FIXME: this uses internal datastructures of dbtab
+        databases = getattr(dbtab, 'databases', {})
         if hasattr(m,'DB'):
             DB=m.DB
-            dbtab.databases.update(getattr(DB, 'databases', {}))
-            DB.databases = dbtab.databases
+            databases.update(getattr(DB, 'databases', {}))
+            DB.databases = databases
         else:
-            DB = ZODB.DB(m.Storage, databases=dbtab.databases)
+            DB = ZODB.DB(m.Storage, databases=databases)
 
     Globals.BobobaseName = DB.getName()
 
