@@ -64,11 +64,11 @@ $(BUILD_DIR)/lib/python/Zope2/version.txt: $(BUILD_DIR)/bin/python.exe
 	echo Zope $(ZOPEVERSION) > $@
 	$(TOUCH) $@
 
-../tmp/$(ZOPEDIRNAME).tgz:
-	$(CURL) -o ../tmp/$(ZOPEDIRNAME).tgz http://www.zope.org/Products/Zope/$(ZOPEVERSION)/$(ZOPEDIRNAME).tgz
-	$(TOUCH) ../tmp/$(ZOPEDIRNAME).tgz
+tmp/$(ZOPEDIRNAME).tgz:
+	$(CURL) -o tmp/$(ZOPEDIRNAME).tgz http://www.zope.org/Products/Zope/$(ZOPEVERSION)/$(ZOPEDIRNAME).tgz
+	$(TOUCH) tmp/$(ZOPEDIRNAME).tgz
 
 # This merely unpacks the Zope tarball.
-src/$(ZOPEDIRNAME)/install.py: ../tmp/$(ZOPEDIRNAME).tgz
+src/$(ZOPEDIRNAME)/install.py: tmp/$(ZOPEDIRNAME).tgz
 	$(MKDIR) "$(SRC_DIR)"
 	$(CD) "$(SRC_DIR)" && $(TAR) xvzf ../tmp/$(ZOPEDIRNAME).tgz
