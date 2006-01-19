@@ -38,7 +38,7 @@ $(BUILD_DIR)/Zope-$(ZOPEVERSION)-win32.exe: $(BUILD_DIR)/lib/python/Zope2/versio
 	find $(BUILD_DIR) -name "*.zcml" | xargs unix2dos
 
 	# Build the Inno installer.
-	$(CD) "$(BUILD_DIR)";"$(ISS_COMPILER)" /cc "$(WIN_BUILD_DIR)\zope.iss"
+	$(CD) "$(BUILD_DIR)";"$(ISS_COMPILER)" "$(WIN_BUILD_DIR)\zope.iss"
 
 # This builds Zope, then installs it into the build directory, then
 # creates lib/python/Zope2/version.txt in the build directory.

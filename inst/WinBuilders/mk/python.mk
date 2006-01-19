@@ -66,6 +66,18 @@ clean_python:
 clean_libs:
 	$(RMRF) $(W32EXTRACTDIR)
 
+# Fetch dependencies
+tmp:
+	$(MKDIR) tmp
+	
+tmp/$(W32ALLDIRNAME).exe: tmp
+	$(CURL) -o tmp/$(W32ALLDIRNAME).exe http://easynews.dl.sourceforge.net/sourceforge/pywin32/$(W32ALLDIRNAME).exe
+	$(TOUCH) tmp/$(W32ALLDIRNAME).exe
+
+tmp/$(PYDIRNAME).tgz: tmp
+	$(CURL) -o tmp/$(PYDIRNAME).tgz http://python.org/ftp/python/$(PYVERSION)/$(PYDIRNAME).tgz
+	$(TOUCH) tmp/$(PYDIRNAME).tgz
+
 $(ARB_PYSRCDIR): tmp/$(PYDIRNAME).tgz
 	$(MKDIR) "$(SRC_DIR)"
 	$(CD) "$(SRC_DIR)" && $(TAR) xvzf ../tmp/$(PYDIRNAME).tgz
