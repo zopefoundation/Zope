@@ -22,7 +22,7 @@ Zope Changes
 
    - Collector #1233: port ZOPE_CONFIG patch from Zope 2.7 to Zope 2.8
 
-  after 2.9.0 
+  after 2.9.0
 
     Bugs fixed
 
@@ -34,6 +34,9 @@ Zope Changes
 
       - Replaced used of deprecated 'OFS.content_types' module with cognates
         from 'zope.app.content_types'.
+
+      - Collector #2002: fixed broken 'ls -R' functionality (didn't
+        recurse properly subclasses of OFS.Folder)
 
   Zope 2.9.0 (2006/01/09)
 
