@@ -197,6 +197,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #2002: fixed broken 'ls -R' functionality (didn't
+        recurse properly subclasses of OFS.Folder)
+
       - Collector #1992: unified the visible hostnames of the FTP and
         HTTP servers
 
@@ -207,7 +210,6 @@ Zope Changes
         the XML preamble is adjusted to the real encoding of the content
         as specified through the 'charset' within the content-type
         property.
-
 
       - Collector #1939: When running as a service, Zope could
         potentially collect too much log output filling the NT Event
