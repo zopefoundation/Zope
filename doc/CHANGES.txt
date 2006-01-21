@@ -22,11 +22,6 @@ Zope Changes
 
    - Collector #1233: port ZOPE_CONFIG patch from Zope 2.7 to Zope 2.8
 
-  after Zope 2.9.0
-
-      - Collector #2002: fixed broken 'ls -R' functionality (didn't
-        recurse properly subclasses of OFS.Folder)
-
   Zope 2.9.0 (2006/01/09)
 
     Bugs fixed
