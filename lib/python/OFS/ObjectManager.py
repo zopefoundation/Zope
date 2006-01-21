@@ -524,7 +524,7 @@ class ObjectManager(
             obj_ids.sort()
             for id in obj_ids:
                 o=self._getOb(id)
-                if hasattr(o, 'isPrincipiaFolderish') and \
+                if hasattr(aq_base(o), 'isPrincipiaFolderish') and \
                    o.isPrincipiaFolderish:
                     r.append(o)
         return r
@@ -641,7 +641,7 @@ class ObjectManager(
                 break
             ob=ob.aq_parent
 
-        files=self.objectItems()
+        files = list(self.objectItems())
 
         # recursive ride through all subfolders (ls -R) (ajung)
 
@@ -649,14 +649,9 @@ class ObjectManager(
 
             all_files = copy.copy(files)
             for f in files:
-                if f[1].meta_type == "Folder":
+                if hasattr(aq_base(f[1]), 'isPrincipiaFolderish') and f[1].isPrincipiaFolderish:
                     all_files.extend(findChildren(f[1]))
-                else:
-                    all_files.append(f)
-
             files = all_files
-
-        files = list(files)
 
         # Perform globbing on list of files (ajung)
 
@@ -735,12 +730,12 @@ def findChildren(obj,dirname=''):
     find all children of an object (ajung)
     """
 
-    lst =[]
-    for name,child in obj.objectItems():
-        if child.meta_type=="Folder":
-            lst.extend(findChildren(child,dirname+ obj.id + '/'))
+    lst = []
+    for name, child in obj.objectItems():
+        if hasattr(aq_base(child), 'isPrincipiaFolderish') and child.isPrincipiaFolderish:
+            lst.extend(findChildren(child, dirname + obj.id + '/'))
         else:
-            lst.append( (dirname + obj.id + "/" + name,child) )
+            lst.append((dirname + obj.id + "/" + name, child))
 
     return lst
 
