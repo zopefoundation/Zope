@@ -21,6 +21,10 @@ $Id: test.py 33303 2005-07-13 22:28:33Z jim $
 
 import os.path, sys
 
+# Remove this directory from path:
+here = os.path.abspath(os.path.dirname(sys.argv[0]))
+sys.path[:] = [p for p in sys.path if os.path.abspath(p) != here]
+
 shome = os.environ.get('SOFTWARE_HOME')
 zhome = os.environ.get('ZOPE_HOME')
 ihome = os.environ.get('INSTANCE_HOME')
