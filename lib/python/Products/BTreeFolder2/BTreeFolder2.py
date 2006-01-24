@@ -341,21 +341,22 @@ class BTreeFolder2Base (Persistent):
         # Returns a list of subobject ids of the current object.
         # If 'spec' is specified, returns objects whose meta_type
         # matches 'spec'.
-        if spec is not None:
-            if isinstance(spec, StringType):
-                spec = [spec]
-            mti = self._mt_index
-            set = None
-            for meta_type in spec:
-                ids = mti.get(meta_type, None)
-                if ids is not None:
-                    set = union(set, ids)
-            if set is None:
-                return ()
-            else:
-                return set.keys()
+
+        mti = self._mt_index
+        if spec is None:
+            spec = mti.keys() #all meta types
+
+        if isinstance(spec, StringType):
+            spec = [spec]
+        set = None
+        for meta_type in spec:
+            ids = mti.get(meta_type, None)
+            if ids is not None:
+                set = union(set, ids)
+        if set is None:
+            return ()
         else:
-            return self._tree.keys()
+            return set.keys()
 
 
     security.declareProtected(access_contents_information,
