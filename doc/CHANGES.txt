@@ -197,6 +197,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #2013: improved XHTML conformance of error messages,
+        some of which did not close '<p>' tags.
+
       - Collector #2002: fixed broken 'ls -R' functionality (didn't
         recurse properly subclasses of OFS.Folder)
 
