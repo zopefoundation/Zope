@@ -652,7 +652,7 @@ class HTTPResponse(BaseResponse):
         raise NotFound, self._error_html(
             "Debugging Notice",
             "Zope has encountered a problem publishing your object.<p>"
-            "\n%s" % entry)
+            "\n%s</p>" % entry)
 
     def badRequestError(self,name):
         self.setStatus(400)
@@ -666,7 +666,7 @@ class HTTPResponse(BaseResponse):
             "The parameter, <em>%s</em>, " % name +
             "was omitted from the request.<p>" +
             "Make sure to specify all required parameters, " +
-            "and try the request again."
+            "and try the request again.</p>"
             )
 
     def _unauthorized(self):
@@ -679,9 +679,9 @@ class HTTPResponse(BaseResponse):
         m = "<strong>You are not authorized to access this resource.</strong>"
         if self.debug_mode:
             if self._auth:
-                m = m + '<p>\nUsername and password are not correct.'
+                m = m + '<p>\nUsername and password are not correct.</p>'
             else:
-                m = m + '<p>\nNo Authorization header found.'
+                m = m + '<p>\nNo Authorization header found.</p>'
         raise Unauthorized, m
 
     def exception(self, fatal=0, info=None,
@@ -771,7 +771,7 @@ class HTTPResponse(BaseResponse):
         if fatal and t is SystemExit and v.code == 0:
             body = self.setBody(
                 (str(t),
-                 'Zope has exited normally.<p>' + self._traceback(t, v, tb)),
+                 'Zope has exited normally.<p>' + self._traceback(t, v, tb) + '</p>'),
                 is_error=1)
         else:
             try:
@@ -782,7 +782,8 @@ class HTTPResponse(BaseResponse):
                 body = self.setBody(
                     (str(t),
                      'Sorry, a site error occurred.<p>'
-                     + self._traceback(t, v, tb)),
+                     + self._traceback(t, v, tb)
+                     + '</p>'),
                     is_error=1)
             elif self.isHTML(b):
                 # error is an HTML document, not just a snippet of html
