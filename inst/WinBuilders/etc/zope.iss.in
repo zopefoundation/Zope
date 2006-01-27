@@ -8,9 +8,13 @@ AppUpdatesURL=http://www.zope.org
 DefaultDirName={pf}\Zope-<<VERSION>>
 DefaultGroupName=Zope <<VERSION>>
 OutputBaseFilename=Zope-<<VERSION>>-win32
+SolidCompression=yes
 WizardImageFile=<<MAKEFILEDIR>>\etc\zlogo_left.bmp
 WizardSmallImageFile=<<MAKEFILEDIR>>\etc\zlogo_top.bmp
-SolidCompression=yes
+; Starting w/ Inno 4.1.3, Inno decided to stretch the .bmp files in various
+; ways.  Hard to know why, but it looks terrible on my vanilla boxes.
+; Luckily, 4.1.3 also added WizardImageStretch to turn that off.
+WizardImageStretch=no
 
 SourceDir=.
 OutputDir=.
@@ -27,13 +31,13 @@ Name: service; Description: "Run your Zope instance as a Windows service (start 
 Source: "<<MAKEFILEDIR>>\etc\README.html"; DestDir: "{app}"; Flags: ignoreversion
 Source:"bin\*.*"; DestDir: "{app}\bin"; Flags: ignoreversion recursesubdirs
 Source:"doc\*.*"; DestDir: "{app}\doc"; Flags: ignoreversion recursesubdirs
-Source:"import\*.*"; DestDir: "{app}\import"; Flags: ignoreversion recursesubdirs
 Source:"lib\*.*"; DestDir: "{app}\lib"; Flags: ignoreversion recursesubdirs
 Source:"skel\*.*"; DestDir: "{app}\skel"; Flags: ignoreversion recursesubdirs
+Source:"zopeskel\*.*"; DestDir: "{app}\zopeskel"; Flags: ignoreversion recursesubdirs
 ; these are required to be put into the bin directory for proper function of NT services
 Source:"bin\Lib\site-packages\win32\PythonService.exe"; DestDir: "{app}\bin"; Flags: ignoreversion
-Source:"bin\Lib\site-packages\pywin32_system32\PyWinTypes23.dll"; DestDir: "{app}\bin"; Flags: ignoreversion
-Source:"bin\Lib\site-packages\pywin32_system32\PythonCOM23.dll"; DestDir: "{app}\bin"; Flags: ignoreversion
+Source:"bin\Lib\site-packages\pywin32_system32\PyWinTypes24.dll"; DestDir: "{app}\bin"; Flags: ignoreversion
+Source:"bin\Lib\site-packages\pywin32_system32\PythonCOM24.dll"; DestDir: "{app}\bin"; Flags: ignoreversion
 ; This is a helper module for manging registry entries at uninstall time
 Source: "<<MAKEFILEDIR>>\bin\fixreg.py"; DestDir: "{app}\bin"; Flags: ignoreversion
 
@@ -65,157 +69,129 @@ Root: HKLM; Subkey: "Software\Zope Corporation\Zope\<<VERSION>>"; Flags: uninsde
 
 [Code]
 var
-  PasswordPrompts, PasswordValues : array of String;
-  PasswordChars		  : array of char;
+    { custom dialog pages }
 
-  DataDirValues: array of String;
-  
-  Password	  : string;
-  DataDir		  :  String;
+    { for selecting an instance home directory }
+    InstanceDirPage: TInputDirWizardPage;
 
-function InitializeSetup(): Boolean;
+    { for specifying the password for the "admin" account }
+    AdminPwdPage: TInputQueryWizardPage;
+
+procedure InitializeWizard;
 begin
-  { set up password data structures }
-  SetArrayLength(PasswordPrompts, 1);
-  PasswordPrompts[0] := 'Password:';
-  SetArrayLength(PasswordValues, 1);
-  PasswordValues[0] := '';
-  SetArrayLength(PasswordChars, 1);
-  PasswordChars[0] := '*';
-  Password := '';
+    { The instance directory page follows the standard "select additional
+      tasks" page. }
+    InstanceDirPage := CreateInputDirPage(wpSelectTasks,
+        'Instance Setup',
+        'Select where Zope instance files should be installed',
+        'Select the folder to which you would like Setup to install ' +
+            'Zope "instance" files, then click Next.',
+        False,
+        '');
+    InstanceDirPage.Add('');
 
-  { set up data dir data structures }
-  SetArrayLength(DataDirValues, 1);
-  DataDir := '';
-  
-  Result := True;
+    { The admin password page follows our instance directory page. }
+    AdminPwdPage := CreateInputQueryPage(InstanceDirPage.ID,
+        'Instance Setup',
+        'Specify administrator password',
+        'The login name for your Zope administrator ' +
+            'account is "admin". When you first connect to the Zope ' +
+            'management interface, you will need to login using the ' +
+            '"admin" username and the password you specify below.');
+    AdminPwdPage.Add('Password:', True);
+    AdminPwdPage.Add('Confirm password:', True);
+
+    { Set default values; use settings from last time when possible. }
+    InstanceDirPage.Values[0] := GetPreviousData('InstanceDir',
+                                                 'C:\Zope-Instance');
+    AdminPwdPage.Values[0] := '';
+    AdminPwdPage.Values[1] := '';
 end;
 
-function CollectInstanceDir(): Boolean;
-
-var
-  Next: Boolean;
-  DirOk: Boolean;
-
+procedure RegisterPreviousData(PreviousDataKey: Integer);
 begin
-  DirOk := True;
-  ScriptDlgPageSetSubCaption1('Select where Zope instance files should be installed');
-	ScriptDlgPageSetSubCaption2('Select the folder to which you would like Setup to install Zope "instance" files, then click Next.');
-
- 	if DataDir = '' then DataDir:= 'C:\Zope-Instance';
-	if DataDirValues[0] <> '' then DataDirValues[0]:= '';
-
-	{ Ask for a dir until the user has approved one or clicked Back or Cancel }
-	
-  Next:= InputDir(False, DataDirValues[0], DataDir);
-	
-  if Next and FileOrDirExists(DataDir) then DirOk := False;
-
-	while Next and not DirOk do begin
-	  if DataDir = '' then begin
-	    DirOk := False;
-      MsgBox(SetupMessage(msgInvalidPath), mbError, MB_OK);
-    end;
-  	if FileOrDirExists(DataDir) then begin
-	      DirOk := MsgBox('Directory Exists' #13#13 'The directory ' + DataDir + ' already exists.  Would you like to create instance files in that directory anyway?', mbConfirmation, MB_YESNO) = idYes;
-	  end;
-	  if not DirOk then Next := InputDir(False, DataDirValues[0], DataDir);
-  end;
-
-	Result:=Next;
-
+    { Store settings so we can restore them next time. }
+    { Note that we deliberately don't store the admin password across
+      runs!  We want that to vanish when the installer finishes. }
+    SetPreviousData(PreviousDataKey, 'InstanceDir', InstanceDirPage.Values[0]);
 end;
 
-function CollectPassword(): Boolean;
+function DoInstanceHome(): Boolean;
 var
-  Next: Boolean;
+    S: String;
 begin
-  ScriptDlgPageSetSubCaption1('Specify administrator password');
-	ScriptDlgPageSetSubCaption2('The login name for your Zope administrator account is "admin". When you first connect to the Zope management interface, you will need to login using the "admin" username and the password you specify below.');
-	Next := InputQueryArrayEx(PasswordPrompts, PasswordChars, PasswordValues);
-	
-	while Next and (PasswordValues[0] = '') do begin
-	  MsgBox('You must enter an administrator password', mbError, MB_OK)
-		Next := InputQueryArrayEx(PasswordPrompts, PasswordChars, PasswordValues);
-	end;
-	Password := PasswordValues[0];
-  Result:=Next;
+    S := WizardSelectedComponents(False);
+    Result := Pos('instance', S) <> 0;
 end;
 
-function DoInstanceHome():Boolean;
-var
-   S : String;
+function ShouldSkipPage(PageID: Integer): Boolean;
 begin
-   S := WizardSelectedComponents(False);
-   Result := Pos('instance', S) <> 0;
+    { Skip pages that shouldn't be shown. }
+    if (PageID = InstanceDirPage.ID) or (PageID = AdminPwdPage.ID) then
+        Result := not DoInstanceHome()
+    else
+        Result := False;
+end;
+
+function NextButtonClick(CurPageID: Integer): Boolean;
+var
+    temp: String;
+begin
+    { Validate pages before allowing the user to proceed. }
+    Result := True;  // innocent until proven guilty
+
+    if CurPageID = InstanceDirPage.ID then begin
+        temp := InstanceDirPage.Values[0];
+        if temp = '' then begin
+            Result := False;
+            MsgBox(SetupMessage(msgInvalidPath), mbError, MB_OK);
+        end
+        else if FileOrDirExists(temp) then begin
+            Result := MsgBox('Directory Exists' #13#13 'The directory ' +
+                temp + ' already exists.  Would you like to create ' +
+                'instance files in that directory anyway?',
+                mbConfirmation, MB_YESNO) = idYes;
+        end
+    end
+    else if CurPageID = AdminPwdPage.ID then begin
+        temp := AdminPwdPage.Values[0];
+        if temp = '' then begin
+            Result := False;
+            MsgBox('You must enter an administrator password',
+                   mbError, MB_OK);
+        end
+        else if temp <> AdminPwdPage.Values[1] then begin
+            Result := False;
+            MsgBox('Please try again -- the passwords don''t match',
+                   mbError, MB_OK)
+        end
+    end
 end;
 
 function DoService(): Boolean;
 var
-  S : String;
+    S: String;
 begin
-  S := WizardSelectedTasks(False);
-  Result := Pos('service', S) <> 0;
+    S := WizardSelectedTasks(False);
+    Result := Pos('service', S) <> 0;
 end;
 
 function DontDoService(): Boolean;
 begin
-  Result := not DoService();
-end;
-
-function ScriptDlgPages(CurPage: Integer; BackClicked: Boolean): Boolean;
-var
-   Next	      : Boolean;
-   CurSubPage : Integer;
-begin
-  Next:=True;
-  if ( (not BackClicked and (CurPage = wpSelectTasks)) or (BackClicked and (CurPage = wpReady))  )
-        and DoInstanceHome() then begin
-    if not BackClicked then CurSubPage:=0 else CurSubPage:=1;
-     
-    ScriptDlgPageOpen();
-    ScriptDlgPageSetCaption('Instance Setup');
-
-    while (CurSubPage >=0) and (CurSubPage <=1) and not Terminated do begin
-      case CurSubPage of
-	      0:  Next:=CollectInstanceDir();
-	      1:  Next:=CollectPassword();
-	    end;
-	    if Next then CurSubPage := CurSubPage +1 else CurSubPage := CurSubPage -1;
-	  end;
-
-    if not BackClicked then
-      Result := Next
-    else
-      Result := not Next;
-    ScriptDlgPageClose(not Result);
-
-  end;
-  Result:=Next;
-end;
-
-function NextButtonClick(CurPage: Integer): Boolean;
-begin
-  Result := ScriptDlgPages(CurPage, False);
-end;
-
-function BackButtonClick(CurPage: Integer): Boolean;
-begin
-  Result := ScriptDlgPages(CurPage, True);
+    Result := not DoService();
 end;
 
 function GetPassword(Default: String): String;
 begin
-  Result := Password;
+    Result := AdminPwdPage.Values[0];
 end;
 
-function GetDataDir(Default	:  String):String;
+function GetDataDir(Default: String):String;
 begin
-   Result := DataDir;
-end; { GetInstanceDir }
+    Result := InstanceDirPage.Values[0];
+end;
 
 function IsAdministrator(): Boolean;
 begin
-   Result := IsAdminLoggedOn();
+    Result := IsAdminLoggedOn();
 end;
-
