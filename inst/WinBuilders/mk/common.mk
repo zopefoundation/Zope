@@ -41,7 +41,7 @@ CURL=curl -N
 CSCRIPT=cscript
 ECHO=echo
 ISS_DIR=$(CYGROOT)/Progra~1/Inno Setup 5
-ISS_COMPILER=$(ISS_DIR)/Compil32.exe /cc
+ISS_COMPILER=$(ISS_DIR)/Compil32.exe
 # We need a version that understands cygwin paths, so /bin/
 UNZIP=/bin/unzip
 
