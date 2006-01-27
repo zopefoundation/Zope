@@ -26,6 +26,9 @@ Zope Changes
 
     Bugs fixed
 
+      - Collector #2013: improved XHTML conformance of error messages,
+        some of which did not close '<p>' tags.
+
       - Collector #1999: fixed broken FTP rename functionality
         (RNFR now returns 350 as status code instead 250)
 
