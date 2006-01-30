@@ -11,14 +11,14 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Yet another trace log analysis tool
+"""Yet another lag analysis tool
+
+
 
 $Id$
 """
 
 import datetime, optparse, sys
-
-
 
 class Request:
 
@@ -52,6 +52,60 @@ class Request:
     def total_seconds(self):
         return (self.end - self.start).seconds
 
+class Times:
+
+    tid = 1l
+
+    def __init__(self):
+        self.times = []
+        self.hangs = 0
+        Times.tid += 1
+        self.tid = Times.tid # generate a unique id
+
+    def finished(self, request):
+        self.times.append(request.app_seconds)
+
+    def hung(self):
+        self.hangs += 1
+
+    def impact(self):
+        times = self.times
+        if not times:
+            self.median = self.mean = self.impact = 0
+            return 0
+        self.times.sort()
+        n = len(times) 
+        if n % 2:
+            m = times[(n+1)/2-1]
+        else:
+            m = .5 * (times[n/2]+times[n/2-1])
+        self.median = m
+        self.mean = sum(times)/n
+        self.impact = self.mean * (n+self.hangs)
+        return self.impact
+
+    def __str__(self):
+        times = self.times
+        if not times:
+            return "              0                             %5d" % (
+                self.hangs)
+            
+        n = len(times)
+        m = self.median
+        return "%9.1f %5d %6.0f %6.2f %6.2f %6.0f %5d" % (
+            self.impact, n, times[0], m, self.mean, times[-1], self.hangs)
+
+    def html(self):
+        times = self.times
+        if not times:
+            print td('', 0, '', '', '', '', self.hangs)
+        else:
+            n = len(times)
+            m = self.median
+            impact = '<a name="u%s">%s' % (self.tid, self.impact)
+            print td(impact, n, times[0], m, self.mean, times[-1],
+                     self.hangs)
+
 def parsedt(s):
     date, time = s.split('T')
     return datetime.datetime(*(
@@ -69,15 +123,33 @@ def main(args=None):
         restarts = find_restarts(options.event_log)
     else:
         restarts = []
-        
+
     restarts.append(datetime.datetime.utcnow()+datetime.timedelta(1000))
 
+    if options.html:
+        print_app_requests = print_app_requests_html
+        output_minute = output_minute_html
+        output_stats = output_stats_html
+        minutes_header = minutes_header_html
+        minutes_footer = minutes_footer_html
+        print '<html title="trace log statistics"><body>'
+    else:
+        print_app_requests = print_app_requests_text
+        output_minute = output_minute_text
+        output_stats = output_stats_text
+        minutes_header = minutes_header_text
+        minutes_footer = minutes_footer_text
+        
+        
+    urls = {}
     [file] = args
     lmin = ldt = None
     requests = {}
     input = apps = output = n = 0
     spr = spa = 0.0
     restart = restarts.pop(0)
+    minutes_header()
+    remove_prefix = options.remove_prefix
     for record in open(file):
         record = record.split()
         typ, rid, dt = record[:3]
@@ -89,7 +161,9 @@ def main(args=None):
             print_app_requests(requests, ldt,
                                options.old_requests,
                                options.app_requests,
+                               urls,
                                "\nLeft over:")
+            record_hung(urls, requests)
             requests = {}
             input = apps = output = n = 0
             spr = spa = 0.0
@@ -98,18 +172,12 @@ def main(args=None):
         
         if min != lmin:
             if lmin is not None:
-                
-                print lmin.replace('T', ' '), "%4d I=%3d A=%3d O=%3d " % (
-                    len(requests), input, apps, output),
-                if n:
-                    print "N=%4d %10.2f %10.2f" % (n, spr/n, spa/n)
-                else:
-                    print
-
+                output_minute(lmin, requests, input, apps, output, n, spr, spa)
                 if apps > options.apps:
                     print_app_requests(requests, dt,
                                        options.old_requests,
                                        options.app_requests,
+                                       urls,
                                        )
             lmin = min
             spr = 0.0
@@ -117,8 +185,23 @@ def main(args=None):
             n = 0
             
         if typ == 'B':
+            if rid in requests:
+                request = requests[rid]
+                if request.state == 'output':
+                    output -= 1
+                elif request.state == 'app':
+                    apps -= 1
+                else:
+                    input -= 1
+            
             input += 1
-            requests[rid] = Request(dt, *record[3:5])
+            request = Request(dt, *record[3:5])
+            if remove_prefix and request.url.startswith(remove_prefix):
+                request.url = request.url[len(remove_prefix):]
+            requests[rid] = request
+            times = urls.get(request.url)
+            if times is None:
+                times = urls[request.url] = Times()
         elif typ == 'I':
             if rid in requests:
                 input -= 1
@@ -137,13 +220,99 @@ def main(args=None):
                 spr += request.total_seconds
                 spa += request.app_seconds
                 n += 1
+                times = urls[request.url]
+                times.finished(request)
         else:
             print 'WTF', record
 
     print_app_requests(requests, dt,
                        options.old_requests,
                        options.app_requests,
+                       urls,
                        "Left over:")
+
+    minutes_footer()
+
+    output_stats(urls)
+
+    if options.html:
+        print '</body></html>'
+
+def output_stats_text(urls):
+    print
+    print 'URL statistics:'
+    print "   Impact count    min median   mean    max hangs"
+    print "========= ===== ====== ====== ====== ====== ====="
+    urls = [(times.impact(), url, times)
+            for (url, times) in urls.iteritems()
+            ]
+    urls.sort()
+    urls.reverse()
+    for (_, url, times) in urls:
+        if times.impact > 0 or times.hangs:
+            print times, url
+
+def output_stats_html(urls):
+    print
+    print 'URL statistics:'
+    print '<table border="1">'
+    print '<tr><th>Impact</th><th>count</th><th>min</th>'
+    print     '<th>median</th><th>mean</th><th>max</th><th>hangs</th></tr>'
+    urls = [(times.impact(), url, times)
+            for (url, times) in urls.iteritems()
+            ]
+    urls.sort()
+    urls.reverse()
+    for (_, url, times) in urls:
+        if times.impact > 0 or times.hangs:
+            print '<tr>'
+            times.html()
+            print td(url)
+            print '</tr>'
+    print '</table>'
+
+def minutes_header_text():
+    print
+    print "          minute   req input   app output"
+    print "================ ===== ===== ===== ======"
+
+def minutes_footer_text():
+    print
+
+def minutes_header_html():
+    print '<table border="2">'
+    print "<tr>"
+    print '<th>Minute</th>'
+    print '<th>Requests</th>'
+    print '<th>Resquests inputing</th>'
+    print '<th>Resquests executing or waiting</th>'
+    print '<th>Resquests outputing</th>'
+    print '<th>Resquests completed</th>'
+    print '<th>Mean Seconds Per Request Total</th>'
+    print '<th>Mean Seconds Per Request in App</th>'
+    print "</tr>"
+
+def minutes_footer_html():
+    print '</table>'
+
+def output_minute_text(lmin, requests, input, apps, output, n, spr, spa):
+    print lmin.replace('T', ' '), "%5d I=%3d A=%3d O=%5d " % (
+        len(requests), input, apps, output),
+    if n:
+        print "N=%4d %10.2f %10.2f" % (n, spr/n, spa/n)
+    else:
+        print
+
+def td(*values):
+    return ''.join([("<td>%s</td>" % s) for s in values])
+
+def output_minute_html(lmin, requests, input, apps, output, n, spr, spa):
+    print '<tr>'
+    apps = '<font size="+2"><strong>%s</strong></font>' % apps
+    print td(lmin.replace('T', ' '), len(requests), input, apps, output)
+    if n:
+        print td(n, "%10.2f" % (spr/n), "%10.2f" % (spa/n))
+    print '</tr>'
 
 def find_restarts(event_log):
     result = []
@@ -152,12 +321,25 @@ def find_restarts(event_log):
             result.append(parsedt(l.split()[0]))
     return result
 
-def print_app_requests(requests, dt, min_seconds, max_requests, label=''):
+def record_hung(urls, requests):
+    for request in requests.itervalues():
+        times = urls.get(request.url)
+        if times is None:
+            times = urls[request.url] = Times()
+        times.hung()
+
+def print_app_requests_text(requests, dt, min_seconds, max_requests, urls,
+                       label=''):
     requests = [
         ((dt-request.input_time).seconds, request)
         for request in requests.values()
         if request.state == 'app'
     ]
+
+    urls = {}
+    for s, request in requests:
+        urls[request.url] = urls.get(request.url, 0) + 1
+    
     requests.sort()
     requests.reverse()
     for s, request in requests[:max_requests]:
@@ -166,7 +348,51 @@ def print_app_requests(requests, dt, min_seconds, max_requests, label=''):
         if label:
             print label
             label = ''
-        print s, request.url
+        url = request.url
+        repeat = urls[url]
+        if repeat > 1:
+            print s, "R=%d" % repeat, url
+        else:
+            print s, url
+
+def print_app_requests_html(requests, dt, min_seconds, max_requests, allurls,
+                            label=''):
+    requests = [
+        ((dt-request.input_time).seconds, request)
+        for request in requests.values()
+        if request.state == 'app'
+    ]
+
+    urls = {}
+    for s, request in requests:
+        urls[request.url] = urls.get(request.url, 0) + 1
+    
+    requests.sort()
+    requests.reverse()
+    printed = False
+    for s, request in requests[:max_requests]:
+        if s < min_seconds:
+            continue
+        if label:
+            print label
+            label = ''
+        if not printed:
+            minutes_footer_html()
+            print '<table border="1">'
+            print '<tr><th>age</th><th>R</th><th>url</th></tr>'
+            printed = True
+        url = request.url
+        repeat = urls[url]
+        print '<tr>'
+        if repeat <= 1:
+            repeat = ''
+        url = '<a href="#u%s">%s</a>' % (allurls[url].tid, url)
+        print td(s, repeat, url)
+        print '</tr>'
+
+    if printed:
+        print '</table>'
+        minutes_header_html()
 
 parser = optparse.OptionParser("""
 Usage: %prog [options] trace_log_file
@@ -215,6 +441,15 @@ parser.add_option("--event-log", "-e", dest='event_log',
                   help="""
 The name of an event log that goes with the trace log.  This is used
 to determine when the server is restarted, so that the running trace data structures can be reinitialized.
+""")
+parser.add_option("--html", dest='html', action='store_true',
+                  help="""
+The name of an event log that goes with the trace log.  This is used
+to determine when the server is restarted, so that the running trace data structures can be reinitialized.
+""")
+parser.add_option("--remove-prefix", dest='remove_prefix',
+                  help="""
+A prefex to be removed from URLS.
 """)
                   
 
