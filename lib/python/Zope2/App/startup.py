@@ -280,9 +280,10 @@ class TransactionsManager:
             except AttributeError:
                 # Most likely some product forgot to call __of__()
                 # on the user object.
-                LOG('AccessControl', WARNING,
-                    'A user object of type %s has no aq_parent.'
-                    % str(type(auth_user)))
+                ac_logger.warning(
+                    'A user object of type %s has no aq_parent.',
+                    type(auth_user)
+                    )
                 auth_path = request_get('AUTHENTICATION_PATH')
             else:
                 auth_path = '/'.join(auth_folder.getPhysicalPath()[1:-1])
