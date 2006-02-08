@@ -853,7 +853,7 @@ def install_product(app, product_dir, product_name, meta_types,
                     list(Folder.Folder.__ac_permissions__)+new_permissions)
 
             if not doInstall():
-                transaction().abort()
+                transaction.abort()
             else:
                 transaction.get().note('Installed product '+product_name)
                 transaction.commit()
