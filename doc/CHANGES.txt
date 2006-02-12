@@ -197,7 +197,7 @@ Zope Changes
 
     Bugs Fixed
 
-      - zope.app.introspector was included with the source archive
+      - zope.app.introspector was not included with the source archive
 
       - Collector #2013: improved XHTML conformance of error messages,
         some of which did not close '<p>' tags.
