@@ -574,7 +574,8 @@ itypes = {}
 for name in ('NoneType', 'IntType', 'LongType', 'FloatType', 'StringType',
              'BufferType', 'TupleType', 'ListType', 'DictType', 'XRangeType',
              'SliceType', 'EllipsisType', 'UnicodeType', 'CodeType',
-             'TracebackType', 'FrameType', 'DictProxyType'):
+             'TracebackType', 'FrameType', 'DictProxyType', 'BooleanType',
+             'ComplexType'):
     if hasattr(types, name):
         itypes[getattr(types, name)] = 0
 
