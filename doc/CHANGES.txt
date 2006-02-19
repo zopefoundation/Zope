@@ -18,6 +18,10 @@ Zope Changes
 
     Bugs fixed
 
+      - Collector #2019: removed validateValue() from cAccessControl (already
+        removed in former Zope versions from the AccessControl Python
+        implementation)
+
       - Collector #1991: ZPublisher did not deal properly with a trailing
         %20 in the URL
 
