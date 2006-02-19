@@ -18,6 +18,9 @@ Zope Changes
 
     Bugs fixed
 
+      - Collector #1991: ZPublisher did not deal properly with a trailing
+        %20 in the URL
+
       - Collector #1989:  'test.py' now copyied to $ZOPE_HOME/bin
         during installation, which re-enables tests run from the instance
         home.
