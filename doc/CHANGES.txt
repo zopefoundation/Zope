@@ -197,6 +197,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #1991: ZPublisher did not deal properly with a trailing
+        %20 in the URL
+
       - zope.app.introspector was not included with the source archive
 
       - Collector #2013: improved XHTML conformance of error messages,

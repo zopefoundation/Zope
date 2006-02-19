@@ -266,6 +266,65 @@ def testPublisher():
     """
     pass
 
+class ObjectNotFound:
+    """Mock object for traversing to.
+    """
+
+    def __call__(self):
+        tracer.append('ObjectNotFound')
+        return 'ObjectNotFound'
+
+
+class PathRequest(Request):
+    def __init__(self, path):
+        self.PATH_INFO = path
+        Request.__init__(self)
+
+    def get(self, a, b=''):
+        if a == 'PATH_INFO':
+            return self.PATH_INFO
+        else:
+            return ''
+
+    def traverse(self, path, validated_hook):
+        if path == self.PATH_INFO:
+            return Object()
+        else:
+            return ObjectNotFound()
+
+def testPublishPath():
+    """
+    Tests to ensure that publish passes paths through to the request without
+    stripping spaces (as this can lead to google indexing pages with a trailing
+    space when someone has a typo in an href to you're site). Zope bug #1991.
+
+    >>> from ZPublisher.Publish import publish
+
+    Without the trailing space, should work normally
+
+    >>> tracer.reset()
+    >>> request = PathRequest('/foo')
+    >>> response = publish(request, module_name, after_list)
+    >>> tracer.showTracedPath()
+    begin
+    __call__
+    commit
+
+    Now with a trailing space, should also work normally, but in zope 2.9.0
+    and earlier publish did a strip() on the path so instead of __call__ you
+    an ObjectNotFound in the trace.
+
+    >>> tracer.reset()
+    >>> request = PathRequest('/foo ')
+    >>> response = publish(request, module_name, after_list)
+    >>> tracer.showTracedPath()
+    begin
+    __call__
+    commit
+
+    """
+    pass
+
 
 from zope.testing import doctest
 
