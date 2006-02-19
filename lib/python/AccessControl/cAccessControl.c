@@ -365,8 +365,6 @@ static PyObject *permissionName(PyObject *name);
 
 static PyObject *SecurityManager_validate(SecurityManager *self, 
                                           PyObject *args);
-static PyObject *SecurityManager_validateValue(SecurityManager *self,
-                                               PyObject *args);
 static PyObject *SecurityManager_DTMLValidate(SecurityManager *self,
                                               PyObject *args);
 static PyObject *SecurityManager_checkPermission(SecurityManager *self, 
@@ -467,11 +465,6 @@ static PyMethodDef SecurityManager_methods[] = {
 	},
 	{"DTMLValidate",
 		(PyCFunction)SecurityManager_DTMLValidate,
-		METH_VARARGS,
-		""
-	},
-	{"validateValue",
-		(PyCFunction)SecurityManager_validateValue,
 		METH_VARARGS,
 		""
 	},
@@ -1323,23 +1316,6 @@ SecurityManager_validate(SecurityManager *self, PyObject *args)
                          accessed, container, name, value, self->context);
   return callfunction6(self->validate, 
                        accessed, container, name, value, self->context, roles);
-}
-
-static PyObject *
-SecurityManager_validateValue(SecurityManager *self, PyObject *args)
-{
-  PyObject *value=Py_None, *roles=NULL;
-  
-  if (unpacktuple2(args, "validateValue", 1, &value, &roles) < 0) return NULL;
-          
-  CHECK_SECURITY_MANAGER_STATE(self, NULL);
-  GET_SECURITY_MANAGER_VALIDATE(self, NULL);
-  
-  if (roles==NULL) 
-    return callfunction5(self->validate, 
-                         Py_None, Py_None, Py_None, value, self->context);
-  return callfunction6(self->validate, 
-                       Py_None, Py_None, Py_None, value, self->context, roles);
 }
 
 static PyObject *
