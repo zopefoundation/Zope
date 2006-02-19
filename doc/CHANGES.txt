@@ -27,6 +27,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - ZPublisher.BaseRequest: The publisher would happily publish attributes
+        of type 'bool' and 'complex'.
+
       - Collector #1991: ZPublisher did not deal properly with a trailing
         %20 in the URL
 

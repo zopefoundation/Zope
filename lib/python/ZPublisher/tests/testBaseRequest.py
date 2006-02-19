@@ -16,6 +16,22 @@ class DummyObjectBasic(Implicit):
         """Attribute with docstring."""
         return 'view content'
 
+    def noview(self):
+        # Attribute without docstring.
+        return 'unpublishable'
+
+
+class DummyObjectWithoutDocstring(Implicit):
+    ""
+
+    def view(self):
+        """Attribute with docstring."""
+        return 'view content'
+
+    def noview(self):
+        # Attribute without docstring.
+        return 'unpublishable'
+
 
 class DummyObjectWithDefault(DummyObjectBasic):
     """Dummy class with docstring."""
@@ -68,6 +84,7 @@ class DummyObjectWithBDBBT(DummyObjectWithBD):
             return getattr(self, name)
         raise AttributeError, name
 
+
 class TestBaseRequest(TestCase):
 
     def setUp(self):
@@ -80,6 +97,11 @@ class TestBaseRequest(TestCase):
         self.f1._setObject('objWithBD', DummyObjectWithBD() )
         self.f1._setObject('objWithBBT', DummyObjectWithBBT() )
         self.f1._setObject('objWithBDBBT', DummyObjectWithBDBBT() )
+        self.f1._setObject('objWithoutDocstring', DummyObjectWithoutDocstring() )
+        self.f1.simpleString = 'foo'
+        self.f1.simpleList = []
+        self.f1.simpleBoolean = True
+        self.f1.simpleComplex = complex(1)
 
     def makeBaseRequest(self):
         response = HTTPResponse()
@@ -182,6 +204,40 @@ class TestBaseRequest(TestCase):
         r.traverse('/')
         self.assertEqual(r.URL, '/index_html')
         self.assertEqual(r.response.base, '')
+
+    def test_traverse_attribute_with_docstring(self):
+        r = self.makeBaseRequest()
+        r.traverse('folder/objBasic/view')
+        self.assertEqual(r.URL, '/folder/objBasic/view')
+        self.assertEqual(r.response.base, '')
+
+    def test_traverse_attribute_without_docstring(self):
+        from ZPublisher import NotFound
+        r = self.makeBaseRequest()
+        self.assertRaises(NotFound, r.traverse, 'folder/objBasic/noview')
+
+    def test_traverse_class_without_docstring(self):
+        from ZPublisher import NotFound
+        r = self.makeBaseRequest()
+        self.assertRaises(NotFound, r.traverse, 'folder/objWithoutDocstring')
+
+    def test_traverse_attribute_of_class_without_docstring(self):
+        from ZPublisher import NotFound
+        r = self.makeBaseRequest()
+        self.assertRaises(NotFound, r.traverse, 'folder/objWithoutDocstring/view')
+
+    def test_traverse_attribute_and_class_without_docstring(self):
+        from ZPublisher import NotFound
+        r = self.makeBaseRequest()
+        self.assertRaises(NotFound, r.traverse, 'folder/objWithoutDocstring/noview')
+
+    def test_traverse_simple_type(self):
+        from ZPublisher import NotFound
+        r = self.makeBaseRequest()
+        self.assertRaises(NotFound, r.traverse, 'folder/simpleString')
+        self.assertRaises(NotFound, r.traverse, 'folder/simpleList')
+        self.assertRaises(NotFound, r.traverse, 'folder/simpleBoolean')
+        self.assertRaises(NotFound, r.traverse, 'folder/simpleComplex')
 
 
 def test_suite():
