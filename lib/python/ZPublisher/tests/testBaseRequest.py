@@ -102,6 +102,8 @@ class TestBaseRequest(TestCase):
         self.f1.simpleList = []
         self.f1.simpleBoolean = True
         self.f1.simpleComplex = complex(1)
+        self.f1.simpleSet = set([])
+        self.f1.simpleFrozenSet = frozenset([])
 
     def makeBaseRequest(self):
         response = HTTPResponse()
@@ -238,6 +240,12 @@ class TestBaseRequest(TestCase):
         self.assertRaises(NotFound, r.traverse, 'folder/simpleList')
         self.assertRaises(NotFound, r.traverse, 'folder/simpleBoolean')
         self.assertRaises(NotFound, r.traverse, 'folder/simpleComplex')
+
+    def test_traverse_set_type(self):
+        from ZPublisher import NotFound
+        r = self.makeBaseRequest()
+        self.assertRaises(NotFound, r.traverse, 'folder/simpleSet')
+        self.assertRaises(NotFound, r.traverse, 'folder/simpleFrozenSet')
 
 
 def test_suite():

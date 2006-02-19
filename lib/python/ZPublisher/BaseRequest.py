@@ -579,6 +579,10 @@ for name in ('NoneType', 'IntType', 'LongType', 'FloatType', 'StringType',
     if hasattr(types, name):
         itypes[getattr(types, name)] = 0
 
+# Python 2.4 no longer maintains the types module.
+itypes[set] = 0
+itypes[frozenset] = 0
+
 def typeCheck(obj, deny=itypes):
     # Return true if its ok to publish the type, false otherwise.
     return deny.get(type(obj), 1)
