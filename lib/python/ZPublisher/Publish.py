@@ -93,8 +93,9 @@ def publish(request, module_name, after_list, debug=0,
         if bobo_before is not None:
             bobo_before()
 
-        # Get a nice clean path list:
-        path=request_get('PATH_INFO').strip()
+        # Get the path list.
+        # According to RFC1738 a trailing space in the path is valid.
+        path=request_get('PATH_INFO')
 
         request['PARENTS']=parents=[object]
 
