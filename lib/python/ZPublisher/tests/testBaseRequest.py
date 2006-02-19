@@ -239,6 +239,17 @@ class TestBaseRequest(TestCase):
         self.assertRaises(NotFound, r.traverse, 'folder/simpleBoolean')
         self.assertRaises(NotFound, r.traverse, 'folder/simpleComplex')
 
+    import sys
+    if sys.version_info >= (2, 4):
+
+        def test_traverse_set_type(self):
+            from ZPublisher import NotFound
+            self.f1.simpleSet = set([])
+            self.f1.simpleFrozenSet = frozenset([])
+            r = self.makeBaseRequest()
+            self.assertRaises(NotFound, r.traverse, 'folder/simpleSet')
+            self.assertRaises(NotFound, r.traverse, 'folder/simpleFrozenSet')
+
 
 def test_suite():
     return TestSuite( ( makeSuite(TestBaseRequest), ) )

@@ -566,6 +566,7 @@ def old_validation(groups, request, auth,
 # Zope 3 by then :)
 
 import types
+import sys
 
 itypes = {}
 for name in ('NoneType', 'IntType', 'LongType', 'FloatType', 'StringType',
@@ -575,6 +576,11 @@ for name in ('NoneType', 'IntType', 'LongType', 'FloatType', 'StringType',
              'ComplexType'):
     if hasattr(types, name):
         itypes[getattr(types, name)] = 0
+
+# Python 2.4 no longer maintains the types module.
+if sys.version_info >= (2, 4):
+    itypes[set] = 0
+    itypes[frozenset] = 0
 
 def typeCheck(obj, deny=itypes):
     # Return true if its ok to publish the type, false otherwise.
