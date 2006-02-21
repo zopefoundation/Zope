@@ -46,7 +46,7 @@ class SimpleTrailblazer:
     def __init__(self, base):
         self.base = base
 
-    def _construct(self, context, id, final):
+    def _construct(self, context, id):
         """Creates and returns the named folder."""
         dispatcher = guarded_getattr(context, 'manage_addProduct')['OFSP']
         factory = guarded_getattr(dispatcher, 'manage_addFolder')

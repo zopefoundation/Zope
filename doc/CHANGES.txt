@@ -27,6 +27,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #1819: fixed signature of
+        MountedObject.SimpleTrailblazer._construct(
+
       - ZPublisher.BaseRequest: The publisher would happily publish attributes
         of type 'bool' and 'complex', as well as Python 2.4's 'set' and
         'frozenset'.
