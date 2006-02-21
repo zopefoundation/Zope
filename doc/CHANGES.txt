@@ -18,6 +18,9 @@ Zope Changes
 
     Bugs fixed
 
+      - Collector #1819: fixed signature of
+        MountedObject.SimpleTrailblazer._construct()
+
       - Collector #2019: removed validateValue() from cAccessControl (already
         removed in former Zope versions from the AccessControl Python
         implementation)
