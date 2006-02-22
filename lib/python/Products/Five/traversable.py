@@ -33,8 +33,6 @@ from AccessControl import getSecurityManager
 from Acquisition import aq_base
 from Products.Five.security import newInteraction
 
-from webdav.NullResource import NullResource
-
 _marker = object
 
 class FakeRequest(dict):
@@ -97,27 +95,14 @@ class Traversable:
         # potential WebDAV issues, in particular we should not perform
         # acquisition for webdav requests, and should return a NullResource
         # when appropriate.
-        method = REQUEST.get('REQUEST_METHOD', 'GET').upper()
-        if (len(REQUEST.get('TraversalRequestNameStack', ())) == 0 and
-            not (method in ('GET', 'HEAD', 'POST') and not
-                 isinstance(REQUEST.RESPONSE, xmlrpc.Response))):
-            if getattr(aq_base(self), name, None) is not None:
-                return getattr(self, name)
-            else:
-                # XXX: This may be unnecessary as Zope itself doesn't do it,
-                # but it shouldn't be harmful
-                if (method in ('PUT', 'MKCOL') and not
-                    isinstance(RESPONSE, xmlrpc.Response)):
-                    return NullResource(self, name, REQUEST).__of__(self)
-        else:
-            try:
-                return getattr(self, name)
-            except AttributeError:
-                pass
-            try:
-                return self[name]
-            except (AttributeError, KeyError):
-                pass
+        try:
+            return getattr(self, name)
+        except AttributeError:
+            pass
+        try:
+            return self[name]
+        except (AttributeError, KeyError):
+            pass
         raise AttributeError, name
 
     __bobo_traverse__.__five_method__ = True
