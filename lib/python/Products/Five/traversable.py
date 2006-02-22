@@ -16,6 +16,7 @@
 $Id: traversable.py 19283 2005-10-31 17:43:51Z philikon $
 """
 from zExceptions import NotFound
+from ZPublisher import xmlrpc
 
 from zope.component import getMultiAdapter, ComponentLookupError
 from zope.interface import implements, Interface
@@ -29,7 +30,10 @@ from zope.app.publication.browser import setDefaultSkin
 from zope.app.interface import queryType
 
 from AccessControl import getSecurityManager
+from Acquisition import aq_base
 from Products.Five.security import newInteraction
+
+from webdav.NullResource import NullResource
 
 _marker = object
 
@@ -56,7 +60,7 @@ class Traversable:
         Just raise a AttributeError to indicate traversal has failed
         and let Zope do it's job.
         """
-        raise AttributeError, name
+        raise NotImplementedError
     __fallback_traverse__.__five_method__ = True
 
     def __bobo_traverse__(self, REQUEST, name):
@@ -86,14 +90,36 @@ class Traversable:
                 AttributeError, KeyError, NotFound):
             pass
         try:
-            return getattr(self, name)
-        except AttributeError:
+            return self.__fallback_traverse__(REQUEST, name)
+        except NotImplementedError:
             pass
-        try:
-            return self[name]
-        except (AttributeError, KeyError):
-            pass
-        return self.__fallback_traverse__(REQUEST, name)
+        # This should at least make a half hearted attempt to care for
+        # potential WebDAV issues, in particular we should not perform
+        # acquisition for webdav requests, and should return a NullResource
+        # when appropriate.
+        method = REQUEST.get('REQUEST_METHOD', 'GET').upper()
+        if (len(REQUEST.get('TraversalRequestNameStack', ())) == 0 and
+            not (method in ('GET', 'HEAD', 'POST') and not
+                 isinstance(REQUEST.RESPONSE, xmlrpc.Response))):
+            if getattr(aq_base(self), name, None) is not None:
+                return getattr(self, name)
+            else:
+                # XXX: This may be unnecessary as Zope itself doesn't do it,
+                # but it shouldn't be harmful
+                if (method in ('PUT', 'MKCOL') and not
+                    isinstance(RESPONSE, xmlrpc.Response)):
+                    return NullResource(self, name, REQUEST).__of__(self)
+        else:
+            try:
+                return getattr(self, name)
+            except AttributeError:
+                pass
+            try:
+                return self[name]
+            except (AttributeError, KeyError):
+                pass
+        raise AttributeError, name
+
     __bobo_traverse__.__five_method__ = True
 
 
@@ -112,3 +138,5 @@ class FiveTraversable(DefaultTraversable):
             return getMultiAdapter((context, REQUEST), Interface, name)
         except ComponentLookupError:
             pass
+        
+        

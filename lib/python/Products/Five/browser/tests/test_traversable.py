@@ -64,6 +64,9 @@ def test_traversable():
       ... <five:traversable
       ...     class="Products.Five.browser.tests.test_traversable.SimpleClass"
       ...     />
+      ... <five:traversable
+      ...     class="Products.Five.tests.testing.FiveTraversableFolder"
+      ...     />
       ... 
       ... <browser:page
       ...     for="Products.Five.tests.testing.fancycontent.IFancyContent"
@@ -98,6 +101,63 @@ def test_traversable():
       HTTP/1.1 200 OK
       ...
       Fancy, fancy
+
+    Without five traversable, if there had been an attrubute something-else,
+    the __bobo_traverse__ method would have still been used instead of the
+    atribute, let's make sure we preserve that behavior.
+
+      >>> self.folder.fancy.an_attribute = 'This is an attribute'
+      >>> print http(r'''
+      ... GET /test_folder_1_/fancy/an_attribute HTTP/1.1
+      ... ''')
+      HTTP/1.1 200 OK
+      ...
+      an_attribute
+
+    If we use WebDAV to get an object no acquisition should be performed,
+    otherwise content creation will break:
+ 
+      >>> from Products.Five.tests.testing import manage_addFiveTraversableFolder
+      >>> manage_addFiveTraversableFolder(self.folder, 'traversable_folder', 'Traversable')
+
+    Let's verify that we can get our object properties via WebDAV:
+      >>> print http(r'''
+      ... PROPFIND /test_folder_1_/fancy HTTP/1.1
+      ... Content-Type: text/xml; charset="utf-8"
+      ... Depth: 0
+      ...
+      ... <?xml version="1.0" encoding="utf-8"?>
+      ...   <DAV:propfind xmlns:DAV="DAV:"
+      ...      xmlns:zope="http://www.zope.org/propsets/default">
+      ...      <DAV:prop><zope:title/></DAV:prop>
+      ...   </DAV:propfind>
+      ... ''')
+      HTTP/1.1 200 OK
+      ...
+      PROPFIND
+
+    And that a normal http request will acquire the object:
+      >>> print http(r'''
+      ... GET /test_folder_1_/traversable_folder/fancy HTTP/1.1
+      ... ''')
+      HTTP/1.1 200 OK
+      ...
+      <FancyContent at >
+
+    But that a WebDAV request will not:
+      >>> print http(r'''
+      ... PROPFIND /test_folder_1_/traversable_folder/fancy HTTP/1.1
+      ... Content-Type: text/xml; charset="utf-8"
+      ... Depth: 0
+      ...
+      ... <?xml version="1.0" encoding="utf-8"?>
+      ...   <DAV:propfind xmlns:DAV="DAV:"
+      ...      xmlns:zope="http://www.zope.org/propsets/default">
+      ...      <DAV:prop><zope:title/></DAV:prop>
+      ...   </DAV:propfind>
+      ... ''')
+      HTTP/1.1 404 Not Found
+      ...
 
 
     Clean up:
