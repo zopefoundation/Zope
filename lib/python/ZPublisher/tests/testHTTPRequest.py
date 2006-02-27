@@ -14,11 +14,11 @@ class RecordTests( unittest.TestCase ):
 
 
 class ProcessInputsTests(unittest.TestCase):
-    def _getHTTPRequest(self, env):
+    def _getHTTPRequest(self, env, stdin=None):
         from ZPublisher.HTTPRequest import HTTPRequest
-        return HTTPRequest(None, env, None)
+        return HTTPRequest(stdin, env, None)
 
-    def _processInputs(self, inputs):
+    def _processInputs(self, inputs, extraenv=None, stdin=None):
         # Have the inputs processed, and return a HTTPRequest object holding the
         # result.
         # inputs is expected to be a list of (key, value) tuples, no CGI
@@ -32,7 +32,9 @@ class ProcessInputsTests(unittest.TestCase):
 
         env = {'SERVER_NAME': 'testingharnas', 'SERVER_PORT': '80'}
         env['QUERY_STRING'] = query_string
-        req = self._getHTTPRequest(env)
+        if extraenv is not None:
+            env.update(extraenv)
+        req = self._getHTTPRequest(env, stdin)
         req.processInputs()
         self._noFormValuesInOther(req)
         return req
@@ -153,6 +155,15 @@ class ProcessInputsTests(unittest.TestCase):
 
         self._noTaintedValues(req)
         self._onlyTaintedformHoldsTaintedStrings(req)
+
+    def testPUTShortcut(self):
+        # PUT requests are not fed through cgi.FieldStorage because
+        # their bodies are never (in practice, anyway) MIME-encoded, and
+        # we don't want FieldStorage to create a separate tempfile copy for
+        # large uploads.
+        stdin = []
+        req = self._processInputs((), {'REQUEST_METHOD':'PUT'}, stdin)
+        self.assert_(req._file is stdin)
 
     def testUnicodeConversions(self):
         inputs = (('ustring:ustring:utf8', 'test\xc2\xae'),
