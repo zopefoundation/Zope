@@ -10,41 +10,56 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-"""Zope Page Template module
 
-Zope object encapsulating a Page Template.
-"""
+""" Zope Page Template module (wrapper for the Zope 3 ZPT implementation) """
 
 __version__='$Revision: 1.48 $'[11:-2]
 
-import os, AccessControl, Acquisition, sys, types
-from types import StringType
-from Globals import DTMLFile, ImageFile, MessageDialog, package_home
+import re
+import os
+import Acquisition 
+from Globals import ImageFile, package_home, InitializeClass
 from OFS.SimpleItem import SimpleItem
+from OFS.content_types import guess_content_type
 from DateTime.DateTime import DateTime
-from Shared.DC.Scripts.Script import Script, BindingsUI
+from Shared.DC.Scripts.Script import Script 
 from Shared.DC.Scripts.Signature import FuncCode
-from AccessControl import getSecurityManager
-try:
-    from AccessControl import Unauthorized
-except ImportError:
-    Unauthorized = "Unauthorized"
+
 from OFS.History import Historical, html_diff
 from OFS.Cache import Cacheable
 from OFS.Traversable import Traversable
 from OFS.PropertyManager import PropertyManager
-from PageTemplate import PageTemplate
-from Expressions import SecureModuleImporter
-from PageTemplateFile import PageTemplateFile
+
+from AccessControl import getSecurityManager, safe_builtins, ClassSecurityInfo
+from AccessControl.Permissions import view, ftp_access, change_page_templates, view_management_screens
 
 from webdav.Lockable import ResourceLockedError
 from webdav.WriteLockInterface import WriteLockInterface
+from zope.pagetemplate.pagetemplate import PageTemplate 
+from zope.pagetemplate.pagetemplatefile import sniff_type
+
+# regular expression to extract the encoding from the XML preamble
+encoding_reg= re.compile('<\?xml.*?encoding="(.*?)".*?\?>', re.M)
+
+preferred_encodings = ['utf-8', 'iso-8859-15']
+if os.environ.has_key('ZPT_PREFERRED_ENCODING'):
+    preferred_encodings.insert(0, os.environ['ZPT_PREFERRED_ENCODING'])
+
+class SecureModuleImporter:
+    __allow_access_to_unprotected_subobjects__ = 1
+    def __getitem__(self, module):
+        mod = safe_builtins['__import__'](module)
+        path = module.split('.')
+        for name in path[1:]:
+            mod = getattr(mod, name)
+        return mod
+
 
 class Src(Acquisition.Explicit):
-    " "
+    """ I am scary code """
 
-    PUT = document_src = Acquisition.Acquired
     index_html = None
+    PUT = document_src = Acquisition.Acquired
 
     def __before_publishing_traverse__(self, ob, request):
         if getattr(request, '_hacked_path', 0):
@@ -55,9 +70,31 @@ class Src(Acquisition.Explicit):
         return self.document_src(REQUEST)
 
 
+def sniffEncoding(text, default_encoding='utf-8'):
+    """ try to determine the encoding from html or xml """
+
+    if text.startswith('<?xml'):
+        mo = encoding_reg.search(text)
+        if mo:
+            return mo.group(1)
+    return default_encoding
+
+
+def guess_type(filename, text):
+
+    content_type, dummy = guess_content_type(filename, text)
+    if content_type in ('text/html', 'text/xml'):
+        return content_type
+
+    return sniff_type(text) or 'text/html'
+
+
+_default_content_fn = os.path.join(package_home(globals()), 'pt', 'default.html')
+  
+
 class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
                        Traversable, PropertyManager):
-    "Zope wrapper for Page Template using TAL, TALES, and METAL"
+    """ Z2 wrapper class for Zope 3 page templates """
 
     __implements__ = (WriteLockInterface,)
 
@@ -67,8 +104,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
     func_code = FuncCode((), 0)
 
     _default_bindings = {'name_subpath': 'traverse_subpath'}
-    _default_content_fn = os.path.join(package_home(globals()),
-                                       'www', 'default.html')
+    _default_content_fn = os.path.join(package_home(globals()), 'www', 'default.html')
 
     manage_options = (
         {'label':'Edit', 'action':'pt_editForm',
@@ -79,52 +115,44 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         + SimpleItem.manage_options \
         + Cacheable.manage_options
 
-    _properties=({'id':'title', 'type': 'string', 'mode': 'wd'},
+
+    _properties=({'id':'title', 'type': 'ustring', 'mode': 'w'},
                  {'id':'content_type', 'type':'string', 'mode': 'w'},
                  {'id':'expand', 'type':'boolean', 'mode': 'w'},
                  )
 
-    def __init__(self, id, text=None, content_type=None):
-        self.id = str(id)
+    security = ClassSecurityInfo()
+    security.declareObjectProtected(view)
+    security.declareProtected(view, '__call__')
+
+    def __init__(self, id, text=None, content_type=None, encoding='utf-8', strict=False):
+        self.id = id
+        self.expand = 0                                                               
+        self.strict = strict
         self.ZBindings_edit(self._default_bindings)
-        if text is None:
-            text = open(self._default_content_fn).read()
-        self.pt_edit(text, content_type)
+        self.pt_edit(text, content_type, encoding)
 
-    def _setPropValue(self, id, value):
-        PropertyManager._setPropValue(self, id, value)
+    security.declareProtected(change_page_templates, 'pt_edit')
+    def pt_edit(self, text, content_type, encoding='utf-8'):
+
+        text = text.strip()
+        if self.strict and not isinstance(text, unicode):
+            text = unicode(text, encoding)
+
         self.ZCacheable_invalidate()
+        PageTemplate.pt_edit(self, text, content_type)
 
-    security = AccessControl.ClassSecurityInfo()
-
-    security.declareObjectProtected('View')
-    security.declareProtected('View', '__call__')
-
-    security.declareProtected('View management screens',
-      'pt_editForm', 'manage_main', 'read',
-      'ZScriptHTML_tryForm', 'PrincipiaSearchSource',
-      'document_src', 'source_dot_xml')
-
-    security.declareProtected('FTP access',
-      'manage_FTPstat','manage_FTPget','manage_FTPlist')
-
-    pt_editForm = PageTemplateFile('www/ptEdit', globals(),
-                                   __name__='pt_editForm')
-    pt_editForm._owner = None
-    manage = manage_main = pt_editForm
-
-    source_dot_xml = Src()
-
-    security.declareProtected('Change Page Templates',
-      'pt_editAction', 'pt_setTitle', 'pt_edit',
-      'pt_upload', 'pt_changePrefs')
-    def pt_editAction(self, REQUEST, title, text, content_type, expand):
+    security.declareProtected(change_page_templates, 'pt_editAction')
+    def pt_editAction(self, REQUEST, title, text, content_type, encoding, expand):
         """Change the title and document."""
+
         if self.wl_isLocked():
-            raise ResourceLockedError, "File is locked via WebDAV"
-        self.expand=expand
-        self.pt_setTitle(title)
-        self.pt_edit(text, content_type)
+            raise ResourceLockedError("File is locked via WebDAV")
+
+        self.expand = expand
+        self.pt_setTitle(title, encoding)
+
+        self.pt_edit(text, content_type, encoding)
         REQUEST.set('text', self.read()) # May not equal 'text'!
         REQUEST.set('title', self.title)
         message = "Saved changes."
@@ -133,36 +161,45 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
                        % '<br>'.join(self._v_warnings))
         return self.pt_editForm(manage_tabs_message=message)
 
-    def pt_setTitle(self, title):
-        charset = getattr(self, 'management_page_charset', None)
-        if type(title) == types.StringType and charset:
-            try:
-                title.decode('us-ascii')
-                title = str(title)
-            except UnicodeError:
-                title = unicode(title, charset)
-        elif type(title) != types.UnicodeType:
-            title = str(title)
+
+    security.declareProtected(change_page_templates, 'pt_setTitle')
+    def pt_setTitle(self, title, encoding='utf-8'):
+        if self.strict and not isinstance(title, unicode):
+            title = unicode(title, encoding)
         self._setPropValue('title', title)
 
-    def pt_upload(self, REQUEST, file='', charset=None):
+
+    def _setPropValue(self, id, value):
+        """ set a property and invalidate the cache """
+        PropertyManager._setPropValue(self, id, value)
+        self.ZCacheable_invalidate()
+
+
+    security.declareProtected(change_page_templates, 'pt_upload')
+    def pt_upload(self, REQUEST, file='', encoding='utf-8'):
         """Replace the document with the text in file."""
+
         if self.wl_isLocked():
-            raise ResourceLockedError, "File is locked via WebDAV"
+            raise ResourceLockedError("File is locked via WebDAV")
 
-        if type(file) is not StringType:
-            if not file: raise ValueError, 'File not specified'
-            file = file.read()
-        if charset:
-            try:
-                unicode(file, 'us-ascii')
-                file = str(file)
-            except UnicodeDecodeError:
-                file = unicode(file, charset)
-        self.write(file)
-        message = 'Saved changes.'
-        return self.pt_editForm(manage_tabs_message=message)
+        if isinstance(file, str):
+            filename = None
+            text = file
+        else:
+            if not file: 
+                raise ValueError('File not specified')
+            filename = file.filename
+            text = file.read()
 
+        content_type = guess_type(filename, text)   
+        if not content_type in ('text/html', 'text/xml'):
+            raise ValueError('Unsupported mimetype: %s' % content_type)
+
+        encoding = sniffEncoding(text, encoding)
+        self.pt_edit(text, content_type, encoding)
+        return self.pt_editForm(manage_tabs_message='Saved changes')
+
+    security.declareProtected(change_page_templates, 'pt_changePrefs')
     def pt_changePrefs(self, REQUEST, height=None, width=None,
                        dtpref_cols="100%", dtpref_rows="20"):
         """Change editing preferences."""
@@ -183,20 +220,20 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         setCookie("dtpref_rows", rows, path='/', expires=e)
         setCookie("dtpref_cols", cols, path='/', expires=e)
         REQUEST.other.update({"dtpref_cols":cols, "dtpref_rows":rows})
-        return self.manage_main()
+        return self.pt_editForm()
 
     def ZScriptHTML_tryParams(self):
         """Parameters to test the script with."""
         return []
 
-    def manage_historyCompare(self, rev1, rev2, REQUEST,
-                              historyComparisonResults=''):
-        return ZopePageTemplate.inheritedAttribute(
-            'manage_historyCompare')(
-            self, rev1, rev2, REQUEST,
-            historyComparisonResults=html_diff(rev1._text, rev2._text) )
+#    def manage_historyCompare(self, rev1, rev2, REQUEST,
+#                              historyComparisonResults=''):
+#        return ZopePageTemplate.inheritedAttribute(
+#            'manage_historyCompare')(
+#            self, rev1, rev2, REQUEST,
+#            historyComparisonResults=html_diff(rev1._text, rev2._text) )
 
-    def pt_getContext(self):
+    def pt_getContext(self, *args, **kw):
         root = self.getPhysicalRoot()
         context = self._getContext()
         c = {'template': self,
@@ -207,13 +244,12 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
              'options': {},
              'root': root,
              'request': getattr(root, 'REQUEST', None),
-             'modules': SecureModuleImporter,
+             'modules': SecureModuleImporter(),
              }
         return c
 
-    def write(self, text):
-        self.ZCacheable_invalidate()
-        ZopePageTemplate.inheritedAttribute('write')(self, text)
+    security.declareProtected(view_management_screens, 'read',
+      'ZScriptHTML_tryForm')
 
     def _exec(self, bound_names, args, kw):
         """Call a Page Template"""
@@ -228,7 +264,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         except AttributeError:
             pass
 
-        security=getSecurityManager()
+        security = getSecurityManager()
         bound_names['user'] = security.getUser()
 
         # Retrieve the value from the cache.
@@ -244,8 +280,13 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
 
         # Execute the template in a new security context.
         security.addContext(self)
+
         try:
-            result = self.pt_render(extra_context=bound_names)
+            # XXX: check the parameters for pt_render()! (aj)
+            result = self.pt_render(self.pt_getContext())
+        
+
+#            result = self.pt_render(extra_context=bound_names)
             if keyset is not None:
                 # Store the result in the cache.
                 self.ZCacheable_set(result, keywords=keyset)
@@ -253,37 +294,50 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         finally:
             security.removeContext(self)
 
-    security.declareProtected('Change Page Templates',
-      'PUT', 'manage_FTPput', 'write',
+    security.declareProtected(change_page_templates,
       'manage_historyCopy',
       'manage_beforeHistoryCopy', 'manage_afterHistoryCopy')
 
+    security.declareProtected(change_page_templates, 'PUT')
     def PUT(self, REQUEST, RESPONSE):
         """ Handle HTTP PUT requests """
         self.dav__init(REQUEST, RESPONSE)
         self.dav__simpleifhandler(REQUEST, RESPONSE, refresh=1)
-        self.write(REQUEST.get('BODY', ''))
+        ## XXX:this should be unicode or we must pass an encoding
+        self.pt_edit(REQUEST.get('BODY', ''))
         RESPONSE.setStatus(204)
         return RESPONSE
 
+    security.declareProtected(change_page_templates, 'manage_FTPput')
     manage_FTPput = PUT
 
+    security.declareProtected(ftp_access, 'manage_FTPstat','manage_FTPlist')
+
+    security.declareProtected(ftp_access, 'manage_FTPget')
     def manage_FTPget(self):
         "Get source for FTP download"
         self.REQUEST.RESPONSE.setHeader('Content-Type', self.content_type)
         return self.read()
 
+    security.declareProtected(view_management_screens, 'html')
+    def html(self):
+        return self.content_type == 'text/html'
+        
+    security.declareProtected(view_management_screens, 'get_size')
     def get_size(self):
         return len(self.read())
+
+    security.declareProtected(view_management_screens, 'getSize')
     getSize = get_size
 
+    security.declareProtected(view_management_screens, 'PrincipiaSearchSource')
     def PrincipiaSearchSource(self):
         "Support for searching - the document's contents are searched."
         return self.read()
 
+    security.declareProtected(view_management_screens, 'document_src')
     def document_src(self, REQUEST=None, RESPONSE=None):
         """Return expanded document source."""
-
         if RESPONSE is not None:
             RESPONSE.setHeader('Content-Type', 'text/plain')
         if REQUEST is not None and REQUEST.get('raw'):
@@ -302,10 +356,8 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
                               'title': 'This template has an error'},)
         return icons
 
-    def __setstate__(self, state):
-        # This is here for backward compatibility. :-(
-        ZopePageTemplate.inheritedAttribute('__setstate__')(self, state)
 
+    security.declareProtected(view, 'pt_source_file')
     def pt_source_file(self):
         """Returns a file name to be compiled into the TAL code."""
         try:
@@ -315,53 +367,126 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
             # acquisition context, so we don't know where it is. :-(
             return None
 
+    def wl_isLocked(self):
+        return 0
+
+    security.declareProtected(view, 'strictUnicode')
+    def strictUnicode(self):
+        """ Return True if the ZPT enforces the use of unicode,
+            False otherwise.
+        """
+        return self.strict
+
+
+    def manage_convertUnicode(self, preferred_encodings=preferred_encodings, RESPONSE=None):
+        """ convert non-unicode templates to unicode """
+
+        if not isinstance(self._text, unicode):
+
+            for encoding in preferred_encodings:
+                try:
+                    self._text = unicode(self._text, encoding)
+                    if RESPONSE:
+                        return RESPONSE.redirect(self.absolute_url() + '/pt_editForm?manage_tabs_message=ZPT+successfully+converted')
+                    else:
+                        return
+                except UnicodeDecodeError:
+                    pass
+
+            raise RuntimeError('Pagetemplate could not be converted to unicode')
+
+        else:
+            if RESPONSE:
+                return RESPONSE.redirect(self.absolute_url() + '/pt_editForm?manage_tabs_message=ZPT+already+converted')
+            else:
+                return
+
+
+    security.declareProtected(view_management_screens, 'getSource')
+    getSource = Src()
+    source_dot_xml = Src()
+
+InitializeClass(ZopePageTemplate)
+
+
 setattr(ZopePageTemplate, 'source.xml',  ZopePageTemplate.source_dot_xml)
 setattr(ZopePageTemplate, 'source.html', ZopePageTemplate.source_dot_xml)
 
-# Product registration and Add support
-manage_addPageTemplateForm = PageTemplateFile(
-    'www/ptAdd', globals(), __name__='manage_addPageTemplateForm')
 
-from urllib import quote
+def _newZPT(id, filename):
+    """ factory to generate ZPT instances from the file-system
+        based templates (basically for internal purposes)
+    """
+    zpt = ZopePageTemplate(id, open(filename).read(), 'text/html')
+    zpt.__name__= id
+    return zpt
 
-def manage_addPageTemplate(self, id, title=None, text=None,
-                           REQUEST=None, submit=None):
+class FSZPT(ZopePageTemplate):
+    """ factory to generate ZPT instances from the file-system
+        based templates (basically for internal purposes)
+    """
+
+    def __init__(self, id, filename):
+        ZopePageTemplate.__init__(self, id, open(filename).read(), 'text/html')
+        self.__name__= id
+
+InitializeClass(FSZPT)
+
+
+ZopePageTemplate.pt_editForm = FSZPT('pt_editForm', os.path.join(package_home(globals()),'pt', 'ptEdit.pt'))
+# this is scary, do we need this?
+ZopePageTemplate.manage = ZopePageTemplate.pt_editForm
+
+manage_addPageTemplateForm= FSZPT('manage_addPageTemplateForm', os.path.join(package_home(globals()), 'pt', 'ptAdd.pt'))
+
+def manage_addPageTemplate(self, id, title='', text='', encoding='utf-8', submit=None, REQUEST=None, RESPONSE=None):
     "Add a Page Template with optional file content."
 
-    id = str(id)
-    if REQUEST is None:
-        self._setObject(id, ZopePageTemplate(id, text))
-        ob = getattr(self, id)
-        if title:
-            ob.pt_setTitle(title)
-        return ob
-    else:
-        file = REQUEST.form.get('file')
+    filename = ''
+    content_type = 'text/html'
+
+    if REQUEST and REQUEST.has_key('file'):
+        file = REQUEST['file']
+        filename = file.filename
+        text = file.read()
         headers = getattr(file, 'headers', None)
-        if headers is None or not file.filename:
-            zpt = ZopePageTemplate(id, text) # collector 596
+        if headers and headers.has_key('content_type'):
+            content_type = headers['content_type']
         else:
-            zpt = ZopePageTemplate(id, file, headers.get('content_type'))
+            content_type = guess_type(filename, text) 
+        encoding = sniffEncoding(text, encoding)
 
-        self._setObject(id, zpt)
+    else:
+        if hasattr(text, 'read'):
+            filename = getattr(text, 'filename', '')
+            headers = getattr(text, 'headers', None)
+            text = text.read()
+            if headers and headers.has_key('content_type'):
+                content_type = headers['content_type']
+            else:
+                content_type = guess_type(filename, text) 
+        encoding = sniffEncoding(text, encoding)
 
-        # collector 596
-        if title:
-            ob = getattr(self, id)
-            ob.pt_setTitle(title)
+    if not text:
+        text = open(_default_content_fn).read()
+        encoding = 'utf-8'
+        content_type = 'text/html'
 
-        try:
-            u = self.DestinationURL()
-        except AttributeError:
-            u = REQUEST['URL1']
+    zpt = ZopePageTemplate(id, text, content_type, encoding)
+    zpt.pt_setTitle(title, encoding)
+    self._setObject(id, zpt)
+    zpt = getattr(self, id)
 
+    if RESPONSE:    
         if submit == " Add and Edit ":
-            u = "%s/%s" % (u, quote(id))
-        REQUEST.RESPONSE.redirect(u+'/manage_main')
-    return ''
+            RESPONSE.redirect(zpt.absolute_url() + '/pt_editForm')
+        else:
+            RESPONSE.redirect(self.absolute_url() + '/manage_main')
+    else:        
+        return zpt
 
 from Products.PageTemplates import misc_
-misc_['exclamation.gif'] = ImageFile('www/exclamation.gif', globals())
+misc_['exclamation.gif'] = ImageFile('pt/exclamation.gif', globals())
 
 def initialize(context):
     context.registerClass(
@@ -369,7 +494,7 @@ def initialize(context):
         permission='Add Page Templates',
         constructors=(manage_addPageTemplateForm,
                       manage_addPageTemplate),
-        icon='www/zpt.gif',
+        icon='pt/zpt.gif',
         )
     context.registerHelp()
     context.registerHelpTitle('Zope Help')
