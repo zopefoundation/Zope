@@ -375,15 +375,6 @@ class HTTPRequest(BaseRequest):
         environ=self.environ
         method=environ.get('REQUEST_METHOD','GET')
 
-        if method == 'PUT':
-            # we don't need to do any real input processing if we are handling
-            # a PUT request because in practice, the body is never
-            # mime-encoded.  This is an optimization especially because
-            # FieldStorage creates an additional tempfile if we allow it to
-            # parse the body, and PUT uploads can tend to be large.
-            self._file = self.stdin
-            return
-
         if method != 'GET': fp=self.stdin
         else:               fp=None
 

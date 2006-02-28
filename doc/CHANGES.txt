@@ -26,10 +26,6 @@ Zope Changes
 
     Restructuring
 
-      - REQUEST.processInputs now shortcuts the creation of a cgi.FieldStorage
-        object if the request is a PUT request.  This is an optimization
-        for large uploads.
-
       - deprecated the zLOG module. Use Pythons 'logging' module instead.
 
       - replaced all zLOG occurences (expect the zLOG module itself) with 
