@@ -133,6 +133,12 @@ class Traversable:
         If true, then all of the objects along the path are validated with
         the security machinery. Usually invoked using restrictedTraverse().
         """
+
+        if not isinstance(path, str):
+            path = [x for x in path if x]
+
+        print 'r',self.absolute_url(1), path
+
         if not path:
             return self
 
@@ -173,7 +179,7 @@ class Traversable:
                 name = path_pop()
                 __traceback_info__ = path, name
 
-                if name.startswith('_'):
+                if name[0] == '_':
                     # Never allowed in a URL.
                     raise NotFound, name
 
@@ -238,7 +244,7 @@ class Traversable:
 
     security.declarePublic('restrictedTraverse')
     def restrictedTraverse(self, path, default=_marker):
-        # Trusted code traversal code, always enforces security
+        # Trusted code traversal code, always enforces securitys
         return self.unrestrictedTraverse(path, default, restricted=1)
 
 InitializeClass(Traversable)
