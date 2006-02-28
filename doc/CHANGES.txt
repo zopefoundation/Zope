@@ -14,6 +14,12 @@ Zope Changes
      to the rules for such a type laid out in the Python docs:
      http://docs.python.org/api/supporting-cycle-detection.html
 
+  After Zope 2.9.1
+
+    Bugs fixed
+
+      - Missing import of NotFound in webdav.Resource.
+
   Zope 2.9.1  (2006/02/25)
 
     Bugs fixed

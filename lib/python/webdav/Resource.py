@@ -24,7 +24,7 @@ import Globals
 from AccessControl import getSecurityManager
 from Acquisition import aq_base
 from zExceptions import BadRequest, MethodNotAllowed
-from zExceptions import Unauthorized, Forbidden
+from zExceptions import Unauthorized, Forbidden, NotFound
 from zope.interface import implements
 from ZPublisher.HTTPRangeSupport import HTTPRangeInterface
 
