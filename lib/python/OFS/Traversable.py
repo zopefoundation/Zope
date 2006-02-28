@@ -134,11 +134,6 @@ class Traversable:
         the security machinery. Usually invoked using restrictedTraverse().
         """
 
-        if not isinstance(path, str):
-            path = [x for x in path if x]
-
-        print 'r',self.absolute_url(1), path
-
         if not path:
             return self
 
