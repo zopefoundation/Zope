@@ -22,8 +22,13 @@ Zope Changes
 
    - Collector #1233: port ZOPE_CONFIG patch from Zope 2.7 to Zope 2.8
 
+  After Zope 2.8.6
 
-  after Zope 2.8.6 (2006/02/25)
+    Bugs fixed
+
+      - Missing import of NotFound in webdav.Resource.
+
+  Zope 2.8.6 (2006/02/25)
 
     Bugs Fixed
 

@@ -26,7 +26,7 @@ from Acquisition import aq_base
 from AccessControl import getSecurityManager
 from ZPublisher.HTTPRangeSupport import HTTPRangeInterface
 from zExceptions import Unauthorized, Forbidden
-from zExceptions import BadRequest, MethodNotAllowed 
+from zExceptions import BadRequest, MethodNotAllowed, NotFound
 
 from WriteLockInterface import WriteLockInterface
 import Lockable
