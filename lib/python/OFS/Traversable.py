@@ -173,7 +173,7 @@ class Traversable:
                 name = path_pop()
                 __traceback_info__ = path, name
 
-                if name[0] == '_':
+                if name.startswith('_'):
                     # Never allowed in a URL.
                     raise NotFound, name
 
