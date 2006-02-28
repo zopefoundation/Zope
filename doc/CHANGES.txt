@@ -197,6 +197,8 @@ Zope Changes
 
     Bugs Fixed
 
+      - Missing import of NotFound in webdav.Resource
+
       - Collector #1819: fixed method signature of
         MountedObject.SimpleTrailblazer._construct()
 
