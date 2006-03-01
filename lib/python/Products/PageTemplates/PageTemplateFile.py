@@ -32,74 +32,10 @@ from OFS.SimpleItem import Item_w__name__
 from Shared.DC.Scripts.Signature import FuncCode
 
 
-from zope.tales.tales import ExpressionEngine
-from zope.tales.expressions import PathExpr, StringExpr, NotExpr, DeferExpr, SubPathExpr
-from zope.tales.tales import _valid_name, _parse_expr, NAME_RE, Undefined 
-from zope.tales.expressions import SimpleModuleImporter
-from zope.tales.pythonexpr import PythonExpr
-
-from zope.tales.expressions import PathExpr
-
-_marker = object()
-
-def extendedSimpleTraverse(object, path_items, econtext):
-    """Traverses a sequence of names, first trying attributes then items.
-    """
-
-    for name in path_items:
-        next = getattr(object, name, _marker)
-        if next is not _marker:
-            object = next
-        elif hasattr(object, '__getitem__'):
-            try:
-                object = object[name]
-            except:
-                # FIX bare try..except
-                object = object.restrictedTraverse(name)
-        else:
-            # Allow AttributeError to propagate
-            object = getattr(object, name)
-    return object
-
-
-
-class MyPathExpr(PathExpr):
-
-    def __init__(self, name, expr, engine, traverser=extendedSimpleTraverse):
-        self._s = expr
-        self._name = name
-        paths = expr.split('|')
-        self._subexprs = []
-        add = self._subexprs.append
-        for i in range(len(paths)):
-            path = paths[i].lstrip()
-            if _parse_expr(path):
-                # This part is the start of another expression type,
-                # so glue it back together and compile it.
-                add(engine.compile('|'.join(paths[i:]).lstrip()))
-                break
-            add(SubPathExpr(path, traverser, engine)._eval)
-
-
-
-def Engine():
-    e = ExpressionEngine()
-    reg = e.registerType
-    for pt in MyPathExpr._default_type_names:
-        reg(pt, MyPathExpr)
-    reg('string', StringExpr)
-    reg('python', PythonExpr)
-    reg('not', NotExpr)
-    reg('defer', DeferExpr)
-    e.registerBaseName('modules', SimpleModuleImporter())
-    return e
-
-Engine = Engine()
-
-
-
 class PageTemplateFile(SimpleItem, Script, PT, Traversable):
-
+    """ A Zope 2-aware wrapper class around the Zope 3 ZPT
+        PageTemplateFile implementation.
+    """
 
     func_defaults = None
     func_code = FuncCode((), 0)
@@ -224,9 +160,6 @@ class PageTemplateFile(SimpleItem, Script, PT, Traversable):
         filesystem, it is owned by no one managed by Zope.
         """
         return None
-
-    def pt_getEngine(self):
-        return Engine
 
     def __getstate__(self):
         from ZODB.POSException import StorageError
