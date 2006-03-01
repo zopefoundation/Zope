@@ -15,6 +15,7 @@ import os
 
 from Globals import package_home, InitializeClass
 from App.config import getConfiguration
+from Acquisition import aq_parent, aq_inner
 from ZopePageTemplate import ZopePageTemplate
 from zope.app.content_types import guess_content_type
 import AccessControl
