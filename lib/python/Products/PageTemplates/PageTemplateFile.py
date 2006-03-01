@@ -32,6 +32,8 @@ from Shared.DC.Scripts.Script import Script
 from OFS.SimpleItem import Item_w__name__
 from Shared.DC.Scripts.Signature import FuncCode
 
+from Engine import Engine
+
 
 class PageTemplateFile(SimpleItem, Script, PT, Traversable):
     """ A Zope 2-aware wrapper class around the Zope 3 ZPT
@@ -85,6 +87,9 @@ class PageTemplateFile(SimpleItem, Script, PT, Traversable):
         from ZopePageTemplate import guess_type
         self.pt_edit( content, guess_type(filename, content))
 
+
+    def pt_getEngine(self):
+        return Engine
 
     def pt_getContext(self):
         root = self.getPhysicalRoot()

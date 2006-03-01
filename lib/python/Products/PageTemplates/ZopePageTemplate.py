@@ -38,6 +38,8 @@ from webdav.WriteLockInterface import WriteLockInterface
 from zope.pagetemplate.pagetemplate import PageTemplate 
 from zope.pagetemplate.pagetemplatefile import sniff_type
 
+from Engine import Engine
+
 # regular expression to extract the encoding from the XML preamble
 encoding_reg= re.compile('<\?xml.*?encoding="(.*?)".*?\?>', re.M)
 
@@ -173,6 +175,10 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         """ set a property and invalidate the cache """
         PropertyManager._setPropValue(self, id, value)
         self.ZCacheable_invalidate()
+
+
+    def pt_getEngine(self):
+        return Engine
 
 
     security.declareProtected(change_page_templates, 'pt_upload')
