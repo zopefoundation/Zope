@@ -1,12 +1,16 @@
 
 # Common Engine for Zope3-ZPT-in-Zope-2
 
+from GlobalTranslationService import getGlobalTranslationService
 
 from zope.tales.tales import ExpressionEngine
 from zope.tales.expressions import PathExpr, StringExpr, NotExpr, DeferExpr, SubPathExpr
 from zope.tales.expressions import SimpleModuleImporter, _marker
 from zope.tales.pythonexpr import PythonExpr
-from zope.tales.tales import _valid_name, _parse_expr, NAME_RE, Undefined 
+from zope.tales.tales import _valid_name, _parse_expr, NAME_RE, Undefined, Context 
+from zope.i18n import translate
+
+GTS = getGlobalTranslationService()
 
 
 def BoboTraverseAwareSimpleTraverse(object, path_items, econtext):
@@ -51,21 +55,24 @@ class PathExpr(PathExpr):
                 break
             add(SubPathExpr(path, traverser, engine)._eval)
 
-
-from zope.tales.tales import Context
-
-
-from zope.i18n import translate
-
 class Context(Context):
 
 
     def translate(self, msgid, domain=None, mapping=None, default=None):
-        # fix that
-        return msgid
-#        return translate(msgid, domain, mapping,
-#                         context=context, default=default)
+#        import pdb
+#        pdb.set_trace()
+        return GTS.translate(msgid, domain, mapping,
+                         context=self.contexts['context'], default=default)
 
+    def translate(self, domain, msgid, mapping=None,
+                  context=None, target_language=None, default=None):
+        if context is None:
+            context = self.contexts.get('here')
+        return getGlobalTranslationService().translate(
+            domain, msgid, mapping=mapping,
+            context=context,
+            default=default,
+            target_language=target_language)
 
 
 class ExpressionEngine(ExpressionEngine):
