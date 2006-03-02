@@ -38,6 +38,8 @@ from webdav.WriteLockInterface import WriteLockInterface
 from zope.pagetemplate.pagetemplate import PageTemplate 
 from zope.pagetemplate.pagetemplatefile import sniff_type
 
+from Products.PageTemplates.Expressions import getEngine
+
 # regular expression to extract the encoding from the XML preamble
 encoding_reg= re.compile('<\?xml.*?encoding="(.*?)".*?\?>', re.M)
 
@@ -131,6 +133,9 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         self.strict = strict
         self.ZBindings_edit(self._default_bindings)
         self.pt_edit(text, content_type, encoding)
+
+    def pt_getEngine(self):
+        return getEngine()
 
     security.declareProtected(change_page_templates, 'pt_edit')
     def pt_edit(self, text, content_type, encoding='utf-8'):
