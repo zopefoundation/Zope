@@ -146,6 +146,8 @@ class Cacheable:
         '''
         return self.__enabled and self.ZCacheable_getCache()
 
+    security.declareProtected(ViewManagementScreensPermission,
+                              'ZCacheable_isAMethod')
     def ZCacheable_isAMethod(self):
         '''
         Returns 1 when this object is a ZClass method.
@@ -274,6 +276,8 @@ class Cacheable:
         '''Returns the id of the current ZCacheManager.'''
         return self.__manager_id
 
+    security.declareProtected(ViewManagementScreensPermission,
+                              'ZCacheable_getManagerURL')
     def ZCacheable_getManagerURL(self):
         '''Returns the URL of the current ZCacheManager.'''
         manager = self.ZCacheable_getManager()
