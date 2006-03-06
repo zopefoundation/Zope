@@ -1333,7 +1333,7 @@ class HTTPRequest(BaseRequest):
             if auth[:6].lower() == 'basic ':
                 if base64 is None: import base64
                 [name,password] = \
-                    base64.decodestring(auth.split()[-1]).split(':')
+                    base64.decodestring(auth.split()[-1]).split(':', 1)
                 return name, password
 
     def taintWrapper(self, enabled=TAINTING_ENABLED):

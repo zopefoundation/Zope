@@ -1,6 +1,71 @@
 import unittest
 from urllib import quote_plus
 
+class AuthCredentialsTestsa( unittest.TestCase ):
+
+    def _getTargetClass(self):
+        from ZPublisher.HTTPRequest import HTTPRequest
+        return HTTPRequest
+
+    def _makeOne(self, stdin=None, environ=None, response=None, clean=1):
+
+        if stdin is None:
+            from StringIO import StringIO
+            stdin = StringIO()
+
+        if environ is None:
+            environ = {}
+
+        if 'SERVER_NAME' not in environ:
+            environ['SERVER_NAME'] = 'http://localhost'
+
+        if 'SERVER_PORT' not in environ:
+            environ['SERVER_PORT'] = '8080'
+
+        if response is None:
+            class _FauxResponse(object):
+                _auth = None
+
+            response = _FauxResponse()
+
+        return self._getTargetClass()(stdin, environ, response, clean)
+
+    def test__authUserPW_simple( self ):
+
+        import base64
+
+        user_id = 'user'
+        password = 'password'
+        encoded = base64.encodestring( '%s:%s' % ( user_id, password ) )
+        auth_header = 'basic %s' % encoded
+
+        environ = { 'HTTP_AUTHORIZATION': auth_header }
+        request = self._makeOne( environ=environ )
+
+        user_id_x, password_x = request._authUserPW()
+
+        self.assertEqual( user_id_x, user_id )
+        self.assertEqual( password_x, password )
+
+    def test__authUserPW_with_embedded_colon( self ):
+
+        # http://www.zope.org/Collectors/Zope/2039
+
+        import base64
+
+        user_id = 'user'
+        password = 'embedded:colon'
+        encoded = base64.encodestring( '%s:%s' % ( user_id, password ) )
+        auth_header = 'basic %s' % encoded
+
+        environ = { 'HTTP_AUTHORIZATION': auth_header }
+        request = self._makeOne( environ=environ )
+
+        user_id_x, password_x = request._authUserPW()
+
+        self.assertEqual( user_id_x, user_id )
+        self.assertEqual( password_x, password )
+
 class RecordTests( unittest.TestCase ):
 
     def test_repr( self ):
@@ -638,6 +703,7 @@ class RequestTests( unittest.TestCase ):
 
 def test_suite():
     suite = unittest.TestSuite()
+    suite.addTest(unittest.makeSuite(AuthCredentialsTestsa, 'test'))
     suite.addTest(unittest.makeSuite(RecordTests, 'test'))
     suite.addTest(unittest.makeSuite(ProcessInputsTests, 'test'))
     suite.addTest(unittest.makeSuite(RequestTests, 'test'))
