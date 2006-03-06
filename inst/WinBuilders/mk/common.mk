@@ -37,7 +37,6 @@ TAR=tar
 SED=sed
 TOUCH=touch
 NMAKE=nmake
-CURL=curl -N
 CSCRIPT=cscript
 ECHO=echo
 ISS_DIR=$(CYGROOT)/Progra~1/Inno Setup 5

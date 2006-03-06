@@ -65,7 +65,6 @@ $(BUILD_DIR)/lib/python/Zope2/version.txt: $(BUILD_DIR)/bin/python.exe
 	$(TOUCH) $@
 
 tmp/$(ZOPEDIRNAME).tgz:
-	$(CURL) -o tmp/$(ZOPEDIRNAME).tgz http://www.zope.org/Products/Zope/$(ZOPEVERSION)/$(ZOPEDIRNAME).tgz
 	$(TOUCH) tmp/$(ZOPEDIRNAME).tgz
 
 # This merely unpacks the Zope tarball.

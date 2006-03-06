@@ -16,7 +16,7 @@
 PYVERSION_MAJOR := 2
 PYVERSION_MINOR := 4
 PYVERSION_PATCH := 2
-W32ALLVERSION := 205
+W32ALLVERSION := 207
 
 PYVERSION := $(PYVERSION_MAJOR).$(PYVERSION_MINOR).$(PYVERSION_PATCH)
 
@@ -69,14 +69,6 @@ clean_libs:
 # Fetch dependencies
 tmp:
 	$(MKDIR) tmp
-	
-tmp/$(W32ALLDIRNAME).exe: tmp
-	$(CURL) -o tmp/$(W32ALLDIRNAME).exe http://easynews.dl.sourceforge.net/sourceforge/pywin32/$(W32ALLDIRNAME).exe
-	$(TOUCH) tmp/$(W32ALLDIRNAME).exe
-
-tmp/$(PYDIRNAME).tgz: tmp
-	$(CURL) -o tmp/$(PYDIRNAME).tgz http://python.org/ftp/python/$(PYVERSION)/$(PYDIRNAME).tgz
-	$(TOUCH) tmp/$(PYDIRNAME).tgz
 
 $(ARB_PYSRCDIR): tmp/$(PYDIRNAME).tgz
 	$(MKDIR) "$(SRC_DIR)"

@@ -36,8 +36,8 @@ a "tmp" directory, inst/tmp.  Place the necessary pre-requisites in the tmp
 directory.  At the time of this writing, these are:
 
   - Python-2.4.2.tgz
-  - pywin32-205.win32-py2.4.exe
-  - Zope-2.9.0.tgz
+  - pywin32-207.win32-py2.4.exe
+  - Zope-2.9.1.tgz
 
 As time marches on, these version numbers will obviously change.  See/edit
 mk/python.mk and mk/zope.mk for the exact versions required.
@@ -57,6 +57,14 @@ Python instead.  Cautions:
   directory instead; if so, make a copy in the root of your Python
   installation.
 
+  Places you may want to hunt for python24.dll:
+
+  C:\Program Files
+  C:\Windows\System32
+
+  Place you most likely want to copy it to:
+
+  C:\Python24
 
 Building
 --------
