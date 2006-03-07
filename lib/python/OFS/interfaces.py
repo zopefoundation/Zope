@@ -28,6 +28,7 @@ from webdav.interfaces import IDAVCollection
 from webdav.interfaces import IDAVResource
 
 from zope.app.traversing.interfaces import IContainmentRoot
+from zope.app.component.interfaces import IPossibleSite
 
 class IOrderedContainer(Interface):
 
@@ -476,13 +477,12 @@ class ICopyContainer(Interface):
 #      not synced with ZopeBook API Reference;
 #      based on OFS.ObjectManager.ObjectManager
 class IObjectManager(IZopeObject, ICopyContainer, INavigation, IManageable,
-                     IAcquirer, IPersistent, IDAVCollection, ITraversable):
-
+                     IAcquirer, IPersistent, IDAVCollection, ITraversable,
+                     IPossibleSite):
     """Generic object manager
 
     This interface provides core behavior for collections of heterogeneous
-    objects.
-    """
+    objects."""
 
     meta_types = Tuple(
         title=u"Meta types",
