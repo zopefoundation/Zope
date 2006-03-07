@@ -1,12 +1,12 @@
 # The Python and pywin32 versions.  For Python, both the source tarball
-# and the Windows installer must be in tmp/.  For pywin32 (previously known 
+# and the Windows installer must be in tmp/.  For pywin32 (previously known
 # as win32all), the Windows installer must be in tmp/.  Nothing beyond those
 # is required to build Python, and you don't even need a compiler.
 PYVERSION_MAJOR=2
 PYVERSION_MINOR=3
 PYVERSION_PATCH=5
 PYVERSION=$(PYVERSION_MAJOR).$(PYVERSION_MINOR).$(PYVERSION_PATCH)
-W32ALLVERSION=205
+W32ALLVERSION=207
 
 # CAUTION:  Extracting files from Wise installers doesn't really do what
 # you expect.  While a Wise installer is a zip file, the zip file
