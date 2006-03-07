@@ -10,6 +10,10 @@ DefaultGroupName=ZEO <<VERSION>>
 OutputBaseFilename=ZEO-<<VERSION>>-win32
 WizardImageFile=<<MAKEFILEDIR>>\etc\zlogo_left.bmp
 WizardSmallImageFile=<<MAKEFILEDIR>>\etc\zlogo_top.bmp
+; Starting w/ Inno 4.1.3, Inno decided to stretch the .bmp files in various
+; ways.  Hard to know why, but it looks terrible on my pretty vanilla box.
+; Luckily, 4.1.3 also added WizardImageStretch to turn that off.
+WizardImageStretch=no
 
 SourceDir=.
 OutputDir=.
