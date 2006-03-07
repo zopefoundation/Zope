@@ -94,6 +94,8 @@ class Cacheable:
           'ZCacheable_getManagerId',
           'ZCacheable_getManagerIds',
           'ZCacheable_configHTML',
+          'ZCacheable_isAMethod',
+          'ZCacheable_getManagerURL',
           )),
         (ChangeCacheSettingsPermission,
          ('ZCacheable_setManagerId',
