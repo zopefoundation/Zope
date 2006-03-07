@@ -23,6 +23,8 @@ Zope Changes
 
       - Missing import of NotFound in webdav.Resource.
 
+      - OFS.Image: 'Image.update_data' did not refresh the Etag.
+
   Zope 2.8.6 (2006/02/25)
 
     Bugs Fixed

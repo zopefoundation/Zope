@@ -781,6 +781,7 @@ class Image(File):
 
         self.ZCacheable_invalidate()
         self.ZCacheable_set(None)
+        self.http__refreshEtag()
 
     def __str__(self):
         return self.tag()
