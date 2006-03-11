@@ -142,7 +142,7 @@ class PageTemplateFile(Item_w__name__, Script, PageTemplate, Traversable):
         if t != "text/xml":
             # For HTML, we really want the file read in text mode:
             f.close()
-            f = open(self.filename)
+            f = open(self.filename, 'U')
             text = ''
         text += f.read()
         f.close()
