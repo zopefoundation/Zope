@@ -28,6 +28,11 @@ Zope Changes
 
       - OFS.Image: 'Image.update_data' did not refresh the Etag.
 
+      - Collector #940: PageTemplateFile: Open files with universal
+        line-endings support to avoid line-endings problems within python
+        expressions.
+        
+
   Zope 2.8.6 (2006/02/25)
 
     Bugs Fixed
