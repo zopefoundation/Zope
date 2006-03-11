@@ -3,6 +3,10 @@
 import os, os.path
 import tempfile
 import unittest
+import Zope2
+import transaction
+
+from Testing.makerequest import makerequest
 
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 
@@ -144,10 +148,49 @@ class TypeSniffingTestCase(unittest.TestCase):
                     desired_path, pt_path,
                     )
                 )
+        
  
+class LineEndingsTestCase(unittest.TestCase):
+
+    TEMPFILENAME = tempfile.mktemp(".zpt")
+    TAL = ('''<html tal:replace="python: ' '.join(('foo',''',
+           '''                                    'bar',''',
+           '''                                    'spam',''',
+           '''                                    'eggs'))"></html>''')
+    OUTPUT = 'foo bar spam eggs\n'
+    
+    def setUp(self):
+        transaction.begin()
+        self.root = makerequest(Zope2.app())
+
+    def tearDown(self):
+        if os.path.exists(self.TEMPFILENAME):
+            os.unlink(self.TEMPFILENAME)
+        transaction.abort()
+        self.root._p_jar.close()
+
+    def runPTWithLineEndings(self, lineendings='\n'):
+        text = lineendings.join(self.TAL)
+        f = open(self.TEMPFILENAME, "wb")
+        f.write(text)
+        f.close()
+        pt = PageTemplateFile(self.TEMPFILENAME).__of__(self.root)
+        return pt()
+
+    def test_unix(self):
+        self.assertEqual(self.runPTWithLineEndings(), self.OUTPUT)
+
+    def test_dos(self):
+        self.assertEqual(self.runPTWithLineEndings('\r\n'), self.OUTPUT)
+
+    def test_mac(self):
+        self.assertEqual(self.runPTWithLineEndings('\r'), self.OUTPUT)
 
 def test_suite():
-    return unittest.makeSuite(TypeSniffingTestCase)
+    return unittest.TestSuite((
+        unittest.makeSuite(TypeSniffingTestCase),
+        unittest.makeSuite(LineEndingsTestCase),
+    ))
 
 if __name__ == "__main__":
     unittest.main(defaultTest="test_suite")
