@@ -1,8 +1,24 @@
+# -*- coding: iso-8859-15 -*-
+
 """ Unit tests for ZReST objects
 
 $Id$
 """
 import unittest
+
+txt = """Hello World
+============
+
+text text
+
+Von Vögeln und Öfen
+===================
+
+- some
+- more
+- text
+
+"""
 
 class TestZReST(unittest.TestCase):
 
@@ -28,6 +44,25 @@ class TestZReST(unittest.TestCase):
         resty.formatted = 'IGNORE ME'
 
         self.failIf('IGNORE ME' in resty.index_html())
+
+    def testConversion(self):
+        resty = self._makeOne()
+        resty.source = txt
+        resty.input_encoding = 'iso-8859-15'
+        resty.output_encoding = 'iso-8859-15'
+        resty.render()
+        html = resty.index_html()
+
+        s = '<h1><a name="hello-world">Hello World</a></h1>'
+        self.assertEqual(s in html, True)
+
+        s = '<h1><a name="von-v-geln-und-fen">Von Vögeln und Öfen</a></h1>'
+        self.assertEqual(s in html, True)
+
+        # ZReST should render a complete HTML document
+        self.assertEqual('<html' in html, True)
+        self.assertEqual('<body>' in html, True)
+
 
 def test_suite():
     suite = unittest.TestSuite()
