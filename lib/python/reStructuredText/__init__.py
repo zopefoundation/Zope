@@ -58,7 +58,7 @@ class Warnings:
 def render(src,
            writer='html4css1',
            report_level=1,
-           stylesheet='default.css',
+           stylesheet=None,
            input_encoding=default_input_encoding,
            output_encoding=default_output_encoding,
            language_code=default_language_code,
@@ -71,6 +71,7 @@ def render(src,
     settings['input_encoding'] = input_encoding
     settings['output_encoding'] = output_encoding
     settings['stylesheet'] = stylesheet
+    settings['stylesheet_path'] = None
     settings['file_insertion_enabled'] = 0
     if language_code:
         settings['language_code'] = language_code
@@ -93,7 +94,7 @@ def render(src,
 def HTML(src,
          writer='html4css1',
          report_level=1,
-         stylesheet='default.css',
+         stylesheet=None,
          input_encoding=default_input_encoding,
          output_encoding=default_output_encoding,
          language_code=default_language_code,
