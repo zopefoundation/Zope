@@ -26,7 +26,7 @@ modulesecurity.declareProtected('View management screens',
     'manage_addZReSTForm')
 manage_addZReSTForm = DTMLFile('dtml/manage_addZReSTForm', globals())
 
-modulesecurity.declareProtected('Add Z Roundups', 'manage_addZReST')
+modulesecurity.declareProtected('Add RestructuredText Document', 'manage_addZReST')
 def manage_addZReST(self, id, file='', REQUEST=None):
     """Add a ZReST product """
     # validate the instance_home
