@@ -57,12 +57,14 @@ class TestReST(unittest.TestCase):
             html = HTML(txt, input_encoding=encoding, 
                              output_encoding=encoding, 
                              initial_header_level=level)
-            self.assertEqual('<h%d><a name="hello-world">Hello World</a></h%d>'\
-                              % (level+1, level+1) in html,
-                             True)
-            self.assertEqual('<h%d><a name="von-v-geln-und-fen">Von Vögeln und Öfen</a></h%d>'\
-                              % (level+1, level+1) in html,
-                             True)
+
+            expected = '<h%d><a id="hello-world" name="hello-world">Hello World</a></h%d>' %\
+                        (level+1, level+1) 
+            self.assertEqual(expected in html, True)
+
+            expected = '<h%d><a id="von-v-geln-und-fen" name="von-v-geln-und-fen">Von Vögeln und Öfen</a></h%d>' %\
+                        (level+1, level+1) 
+            self.assertEqual(expected in html, True)
         
 
 def test_suite():
