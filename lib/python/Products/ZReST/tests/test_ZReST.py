@@ -53,10 +53,10 @@ class TestZReST(unittest.TestCase):
         resty.render()
         html = resty.index_html()
 
-        s = '<h1><a name="hello-world">Hello World</a></h1>'
+        s = '<h1><a id="hello-world" name="hello-world">Hello World</a></h1>'
         self.assertEqual(s in html, True)
 
-        s = '<h1><a name="von-v-geln-und-fen">Von Vögeln und Öfen</a></h1>'
+        s = '<h1><a id="von-v-geln-und-fen" name="von-v-geln-und-fen">Von Vögeln und Öfen</a></h1>'
         self.assertEqual(s in html, True)
 
         # ZReST should render a complete HTML document
