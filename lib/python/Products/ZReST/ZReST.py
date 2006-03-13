@@ -56,7 +56,7 @@ class ZReST(Item, PropertyManager, Historical, Implicit, Persistent):
                  input_encoding=None):
         self.id = id
         self.title = id
-        self.stylesheet = 'default.css'
+        self.stylesheet = ''
         self.report_level = '2'
         self.source = ''
 
@@ -201,6 +201,7 @@ class ZReST(Item, PropertyManager, Historical, Implicit, Persistent):
                 'output_encoding': self.output_encoding,
                 'initial_header_level' : 1,
                 'stylesheet' : self.stylesheet,
+                'stylesheet_path' : None,
                 'pub.settings.warning_stream' :  Warnings(),
                 'file_insertion_enabled' : 0,
                 }
