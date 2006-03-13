@@ -70,7 +70,7 @@ class ZReST(Item, PropertyManager, Historical, Implicit, Persistent):
     # define the properties that define this object
     _properties = (
         {'id':'stylesheet', 'type': 'string', 'mode': 'w',
-            'default': 'default.css'},
+            'default': ''},
         {'id':'report_level', 'type': 'string', 'mode': 'w', 'default': '2'},
         {'id':'input_encoding', 'type': 'string', 'mode': 'w', 'default': 'iso-8859-15'},
         {'id':'output_encoding', 'type': 'string', 'mode': 'w', 'default': 'iso-8859-15'},
