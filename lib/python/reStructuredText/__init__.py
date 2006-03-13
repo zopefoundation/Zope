@@ -152,6 +152,9 @@ def HTML(src,
 
     warnings = ''.join(warning_stream.messages)
 
-    return output.encode(output_encoding)
+    if output_encoding != 'unicode':
+        return output.encode(output_encoding)
+    else:
+        return output
 
 __all__ = ("HTML", 'render')
