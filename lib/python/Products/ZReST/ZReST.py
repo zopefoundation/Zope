@@ -7,19 +7,22 @@ This Product stores two texts - a "source" text in ReStructureText format,
 and a HTML "formatted" version of that text.
 
 '''
-import docutils.core, docutils.io
 
-from Globals import InitializeClass, DTMLFile
+import sys
+import docutils.core, docutils.io
+from docutils.writers.html4css1 import HTMLTranslator, Writer
+
+from Acquisition import Implicit
+from Persistence import Persistent
 from OFS.SimpleItem import Item
 from OFS.PropertyManager import PropertyManager
 from OFS.History import Historical, html_diff
-from Acquisition import Implicit
-from Persistence import Persistent
+from Globals import InitializeClass, DTMLFile
 from AccessControl import ClassSecurityInfo
 from AccessControl import ModuleSecurityInfo
 from DateTime.DateTime import DateTime
 from App.config import getConfiguration 
-import sys
+
 modulesecurity = ModuleSecurityInfo()
 
 modulesecurity.declareProtected('View management screens',
@@ -190,55 +193,23 @@ class ZReST(Item, PropertyManager, Historical, Implicit, Persistent):
         ''' Render the source to HTML
         '''
         if self._v_formatted is None:
-            # format with strings
-            pub = docutils.core.Publisher()
-            pub.set_reader('standalone', None, 'restructuredtext')
-            pub.set_writer('html')
 
-            # go with the defaults
-            pub.get_settings()
+            settings = {
+                'halt_level': 6,
+                'report_level' : self.report_level,
+                'input_encoding': self.input_encoding,
+                'output_encoding': self.output_encoding,
+                'initial_header_level' : 1,
+                'stylesheet' : self.stylesheet,
+                'pub.settings.warning_stream' :  Warnings(),
+                'file_insertion_enabled' : 0,
+                }
 
-            # this is needed, but doesn't seem to do anything
-            pub.settings._destination = ''
-
-            # use the stylesheet chosen by the user
-            pub.settings.stylesheet = self.stylesheet
-
-            # set the reporting level to something sane
-            pub.settings.report_level = int(self.report_level)
-
-            # disallow use of the .. include directive for security reasons
-            pub.settings.file_insertion_enabled = 0
-
-            # don't break if we get errors
-            pub.settings.halt_level = 6
-
-            # remember warnings
-            pub.settings.warning_stream = Warnings()
-
-            pub.source = docutils.io.StringInput(
-                source=self.source, encoding=self.input_encoding)
-
-            # output - not that it's needed
-            pub.settings.output_encoding = self.output_encoding
-            pub.destination = docutils.io.StringOutput(
-                encoding=self.output_encoding)
-
-            # parse!
-            document = pub.reader.read(pub.source, pub.parser, pub.settings)
-
-            # transform
-            pub.apply_transforms(document)
-
-            self._v_warnings = ''.join(pub.settings.warning_stream.messages)
-
-            if document.children:
-                item = document.children[0]
-                if item.tagname == 'title':
-                    self.title = item.children[0].astext()
-
-            # do the format
-            self._v_formatted = pub.writer.write(document, pub.destination)
+            self._v_formatted = docutils.core.publish_string(
+                                        self.source,
+                                        writer=Writer(),
+                                        settings_overrides=settings,
+                                )
 
         return self._v_formatted
 
