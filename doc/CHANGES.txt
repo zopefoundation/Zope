@@ -52,6 +52,17 @@ Zope Changes
 
     Features added
 
+      - Updated to Docutils 0.4.0 
+
+      - reStructuredText: The default value for the 'stylesheet'
+        property has been changed from 'default.css' to None because
+        there is no 'default.css' file by default. 
+
+      - ZReST: rewritten render() method to integrate it smoothly
+        with Docutils 0.4.0. The default value for the 'stylesheet'
+        property has been changed from 'default.css' to None because
+        there is no 'default.css' file by default. 
+
       - Added a "clock server" servertype which allows users to
         configure methods that should be called periodically as if
         they were being called by a remote user agent on one of Zope's
