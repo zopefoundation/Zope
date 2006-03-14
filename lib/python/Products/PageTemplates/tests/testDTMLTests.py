@@ -135,9 +135,49 @@ class DTMLTests(unittest.TestCase):
         expect = util.read_output('DTML3.html')
         util.check_xml(expect, o)
 
+    def check_on_error_in_slot_filler(self):
+        # The `here` isn't defined, so the macro definition is
+        # expected to catch the error that gets raised.
+        text = '''\
+            <div metal:define-macro="foo">
+               <div tal:on-error="string:eek">
+                  <div metal:define-slot="slot" />
+                  cool
+               </div>
+            </div>
+
+            <div metal:use-macro="template/macros/foo">
+               <div metal:fill-slot="slot">
+                  <p tal:content="here/xxx" />
+               </div>
+            </div>
+            '''
+        self.t.write(text)
+        aa = util.argv(('one', 'two', 'three', 'four', 'five'))
+        self.t.__of__(aa)()
+
+    def check_on_error_in_slot_default(self):
+        # The `here` isn't defined, so the macro definition is
+        # expected to catch the error that gets raised.
+        text = '''\
+            <div metal:define-macro="foo">
+               <div tal:on-error="string:eek">
+                  <div metal:define-slot="slot">
+                    <div tal:content="here/xxx" />
+                  </div>
+               </div>
+            </div>
+
+            <div metal:use-macro="template/macros/foo">
+            </div>
+            '''
+        self.t.write(text)
+        aa = util.argv(('one', 'two', 'three', 'four', 'five'))
+        self.t.__of__(aa)()
+
+
 def test_suite():
     return unittest.makeSuite(DTMLTests, 'check')
 
 if __name__=='__main__':
     main()
-
