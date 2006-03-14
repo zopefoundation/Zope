@@ -110,12 +110,12 @@ def getObject(module, name, reload=0,
         return old[name]
 
     base, ext = os.path.splitext(module)
-    if ext in ('py', 'pyp', 'pyc'):
+    if ext in ('py', 'pyc'):
         # XXX should never happen; splitext() keeps '.' with the extension
         p = base
     else:
         p = module
-    p=getPath('Extensions', p, suffixes=('','py','pyp','pyc'))
+    p=getPath('Extensions', p, suffixes=('','py','pyc'))
     if p is None:
         raise NotFound, (
             "The specified module, <em>%s</em>, couldn't be found." % module)
@@ -128,16 +128,6 @@ def getObject(module, name, reload=0,
         binmod=imp.load_compiled('Extension', p, file)
         file.close()
         m=binmod.__dict__
-
-    elif ext=='.pyp':
-        import rotor
-        prod_id=module.split('.', 1)[0]
-        data=zlib.decompress(
-            rotor.newrotor(prod_id +' shshsh').decrypt(open(p,'rb').read())
-            )
-        execsrc=compile(data, module, 'exec')
-        m={}
-        exec execsrc in m
 
     else:
         try: execsrc=open(p)
