@@ -82,9 +82,6 @@ def checkValidId(self, id, allow_dup=0):
         'The id "%s" is invalid because it begins with "aq_".' % id)
     if id.endswith('__'): raise BadRequest, (
         'The id "%s" is invalid because it ends with two underscores.' % id)
-    if id[0] == '@':
-        raise BadRequest('The id "%s" is invalid because it begins with '
-                         '"@".' % id)
     if not allow_dup:
         obj = getattr(self, id, None)
         if obj is not None:

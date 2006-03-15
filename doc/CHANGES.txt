@@ -18,9 +18,6 @@ Zope Changes
 
     Bugs fixed
 
-      - OFS ObjectManager: Fixed 'checkValidId'.
-        Names starting with '@' are reserved for views and not allowed in IDs.
-
       - Missing import of NotFound in webdav.Resource.
 
   Zope 2.9.1  (2006/02/25)
