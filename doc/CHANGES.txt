@@ -30,7 +30,9 @@ Zope Changes
 
       - removed ZopeTutorial (Elvis is now really dead)
 
-      - ZClasses are deprecated and should no longer be used.
+      - ZClasses are deprecated and should no longer be used. In addition
+        any code related to the ZClasses (re)distribution mechanism is
+        removed.
 
       - ZGadyFlyDA/Gadfly is deprecated
 

@@ -94,7 +94,6 @@ class Product(Folder, PermissionManager):
     icon='p_/Product_icon'
     version=''
     configurable_objects_=()
-    redistributable=0
     import_error_=None
     _isBeingUsedAsAMethod_=1
 
@@ -136,15 +135,8 @@ class Product(Folder, PermissionManager):
 
     manage_options=(
         (Folder.manage_options[0],) +
-        tuple(Folder.manage_options[2:]) +
-        (
-        {'label':'Distribution', 'action':'manage_distributionView',
-         'help':('OFSP','Product_Distribution.stx')},
+        tuple(Folder.manage_options[2:]) 
         )
-        )
-
-    manage_distributionView=Globals.DTMLFile(
-        'dtml/distributionView',globals())
 
     _properties=Folder._properties+(
         {'id':'version', 'type': 'string'},
@@ -186,98 +178,6 @@ class Product(Folder, PermissionManager):
         "Return the URL for the destination for factory output"
         return self.REQUEST['BASE4']
 
-    def manage_distribute(self, version, RESPONSE, configurable_objects=[],
-                          redistributable=0):
-        "Set the product up to create a distribution and give a link"
-        if self.__dict__.has_key('manage_options'):
-            raise TypeError, 'This product is <b>not</b> redistributable.'
-        self.version=version=version.strip()
-        self.configurable_objects_=configurable_objects
-        self.redistributable=redistributable
-        RESPONSE.redirect('Distributions/%s-%s.tar.gz' %
-                          (quote(self.id), quote(version)))
-
-    def _distribution(self):
-        # Return a distribution
-        if self.__dict__.has_key('manage_options'):
-            raise TypeError, 'This product is <b>not</b> redistributable.'
-
-        id=self.id
-
-        import rotor
-        import tar
-        rot=rotor.newrotor(id+' shshsh')
-        ar=tar.tgzarchive("%s-%s" % (id, self.version))
-        prefix="Products/%s/" % self.id
-
-        # __init__.py
-        ar.add(prefix+"__init__.py",
-               '''"Product %s"
-               ''' % id
-               )
-
-        # Extensions
-        pp=id+'.'
-        lpp=len(pp)
-        ed=os.path.join(getConfiguration().instancehome,'Extensions')
-        if os.path.exists(ed):
-            for name in os.listdir(ed):
-                suffix=''
-                if name[:lpp]==pp:
-                    path=os.path.join(ed, name)
-                    try:
-                        f=open(path)
-                        data=f.read()
-                        f.close()
-                        if name[-3:]=='.py':
-                            data=rot.encrypt(zlib.compress(data))
-                            suffix='p'
-                    except: data=None
-                    if data:
-                        ar.add("%sExtensions/%s%s" %
-                               (prefix,name[lpp:],suffix),
-                               data)
-
-        # version.txt
-        ar.add(prefix+'version.txt', self.version)
-
-        # product.dat
-        f=CompressedOutputFile(rot)
-        if self.redistributable:
-            # Since it's redistributable, make all objects configurable.
-            objectList = self._objects
-        else:
-            objectList = tuple(filter(
-                lambda o, obs=self.configurable_objects_:
-                o['id'] in obs,
-                self._objects))
-        meta={
-            '_objects': objectList,
-            'redistributable': self.redistributable,
-            }
-        f.write(cPickle.dumps(meta,1))
-
-        self._p_jar.exportFile(self._p_oid, f)
-        ar.add(prefix+'product.dat', f.getdata())
-
-        ar.finish()
-        return str(ar)
-
-    class Distributions(Acquisition.Explicit):
-        "Product Distributions"
-
-        def __bobo_traverse__(self, REQUEST, name):
-            if name[-7:] != '.tar.gz':
-                raise ValueError, 'Invalid Name: %s' % escape(name)
-            l=name.find('-')
-            id, version = name[:l], name[l+1:-7]
-            product=self.aq_parent
-            if product.id==id and product.version==version:
-                return Distribution(product)
-
-            raise ValueError, 'Invalid version or product id: %s' % escape(name)
-
-    Distributions=Distributions()
 
     manage_traceback=Globals.DTMLFile('dtml/traceback',globals())
     manage_readme=Globals.DTMLFile('dtml/readme',globals())
@@ -485,17 +385,6 @@ class CompressedInputFile:
         self._b=self._b[l:]
         return r
 
-class Distribution:
-    "A distribution builder"
-
-    def __init__(self, product):
-        self._product=product
-
-    def index_html(self, RESPONSE):
-        "Return distribution data"
-        r=self._product._distribution()
-        RESPONSE['content-type']='application/x-gzip'
-        return r
 
 def initializeProduct(productp, name, home, app):
     # Initialize a levered product
@@ -527,7 +416,6 @@ def initializeProduct(productp, name, home, app):
                     return old
     except: pass
 
-    disable_distribution = 1
     try:
         f=CompressedInputFile(open(home+'/product.dat','rb'), name+' shshsh')
     except:
@@ -536,8 +424,6 @@ def initializeProduct(productp, name, home, app):
     else:
         meta=cPickle.Unpickler(f).load()
         product=app._p_jar.importFile(f)
-        if meta.get('redistributable', 0):
-            disable_distribution = 0
         product._objects=meta['_objects']
 
     if old is not None:
@@ -552,11 +438,6 @@ def initializeProduct(productp, name, home, app):
     product.icon='p_/InstalledProduct_icon'
     product.version=fver
     product.home=home
-    if disable_distribution:
-        product.manage_options=(Folder.manage_options[0],) + \
-                                tuple(Folder.manage_options[2:])
-        product._distribution=None
-        product.manage_distribution=None
     product.thisIsAnInstalledProduct=1
 
     if ie:
