@@ -6,21 +6,13 @@ Zope Changes
 
   To-do
 
-   - Reenable C permission roles by implementing recent Python
-     changes in C, brining the Python and C implementations back in
-     sync.  See lib/python/AccessControl/PermissionRole.py.
-
    - Add cyclic-garbage collection support to C extension classes,
      especially to acquisition wrappers.
 
-   - Reenable C Zope security policy by implementing recent Python
-     changes in C, bringing the Python and C implementations back in
-     sync.  See lib/python/AccessControl/ZopeSecurityPolicy.py.
-
-   - Change acquisition wrappers to implement the descr get slot
-     directly, thus speeding the use of the slot.
-
-   - Collector #1233: port ZOPE_CONFIG patch from Zope 2.7 to Zope 2.8
+     N.B:  ExtensionClassType already declares that it supports GC
+     (via the Py_TPFLAGS_HAVE_GC flag), but does not appear to conform
+     to the rules for such a type laid out in the Python docs:
+     http://docs.python.org/api/supporting-cycle-detection.html
 
   Trunk only (unreleased)
 
