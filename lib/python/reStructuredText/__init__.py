@@ -21,9 +21,9 @@ except ImportError:
     raise ImportError, 'Please install docutils 0.3.3+ from http://docutils.sourceforge.net/#download.'
 
 version = docutils.__version__.split('.')
-if version < ['0', '3', '3']:
+if version <= ['0', '4', '0']:
     raise ImportError, """Old version of docutils found:
-Got: %(version)s, required: 0.3.3+
+Got: %(version)s, required: 0.4.0+
 Please remove docutils from %(path)s and replace it with a new version. You
 can download docutils at http://docutils.sourceforge.net/#download.
 """ % {'version' : docutils.__version__, 'path' : docutils.__path__[0] }
