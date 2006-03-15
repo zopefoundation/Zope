@@ -378,7 +378,6 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         self.assertRaises(BadRequest, om._setObject, '111', si)
         self.assertRaises(BadRequest, om._setObject, 'REQUEST', si)
         self.assertRaises(BadRequest, om._setObject, '/', si)
-        self.assertRaises(BadRequest, om._setObject, '@@view', si)
 
     def test_list_imports(self):
         om = self._makeOne()
@@ -389,7 +388,6 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         for filename in om.list_imports():
             self.failUnless(filename.endswith('.zexp') or
                             filename.endswith('.xml'))
-
 
 def test_suite():
     suite = unittest.TestSuite()
