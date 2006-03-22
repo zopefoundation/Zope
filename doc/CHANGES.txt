@@ -18,9 +18,6 @@ Zope Changes
 
     Bugs fixed
 
-      - Collector #2052: PerisistentMapping was inappropriately saving
-        volatile attributes.
-
       - Collector #2039: 'ZPublisher.HTTPRequest.HTTPRequest._authUserPW'
         choked on passwords which contained colons.
 
