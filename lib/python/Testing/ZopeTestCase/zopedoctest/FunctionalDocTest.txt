@@ -124,6 +124,7 @@ Test Unauthorized
   ... """, handle_errors=True)
   HTTP/1.1 401 Unauthorized
   ...
+  Www-Authenticate: basic realm=...
 
 Test Basic Authentication
 
