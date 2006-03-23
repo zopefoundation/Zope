@@ -116,26 +116,28 @@ class TestPythonScript(ZopeTestCase.ZopeTestCase):
 
     def testCannotAccessWithoutAccessPermissionSecurityManager(self):
         # manage_main should be protected
-        self.assertRaises(Unauthorized, getSecurityManager().validateValue, self.ps.manage_main)
+        self.assertRaises(Unauthorized, getSecurityManager().validate,
+                          self.ps, self.ps, 'manage_main', self.ps.manage_main)
 
     def testCanAccessWithAccessPermissionSecurityManager(self):
         # manage_main should be accessible if we have the necessary permissions
         self.setPermissions(access_permissions)
         try:
-            getSecurityManager().validateValue(self.ps.manage_main)
+            getSecurityManager().validate(self.ps, self.ps, 'manage_main', self.ps.manage_main)
         except Unauthorized:
             self.fail('Access to manage_main was denied')
 
     def testCannotAccessIfAnonymousSecurityManager(self):
         # manage_main should be protected from Anonymous
         self.logout()
-        self.assertRaises(Unauthorized, getSecurityManager().validateValue, self.ps.manage_main)
+        self.assertRaises(Unauthorized, getSecurityManager().validate,
+                          self.ps, self.ps, 'manage_main', self.ps.manage_main)
 
     def testCanAccessIfManagerSecurityManager(self):
         # manage_main should be accessible to Manager
         self.setRoles(['Manager'])
         try:
-            getSecurityManager().validateValue(self.ps.manage_main)
+            getSecurityManager().validate(self.ps, self.ps, 'manage_main', self.ps.manage_main)
         except Unauthorized:
             self.fail('Access to manage_main was denied to Manager')
 
