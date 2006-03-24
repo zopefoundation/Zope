@@ -33,7 +33,7 @@ feedback about the license to zope-license@zope.org.
 Installing Zope
 ---------------
 
-Follow the instructions in ``doc/INSTALL.txt`` to install Zope.
+Follow the instructions in ``Zope/doc/INSTALL.txt`` to install Zope.
 
 Reporting bugs
 --------------
