@@ -193,7 +193,7 @@ class VirtualHostMonster(Persistent, Item, Implicit):
                     request['VIRTUAL_URL'] = '/'.join(vup)
 
                     # new ACTUAL_URL
-                    add = request['ACTUAL_URL'].endswith('/') and '/' or ''
+                    add = (path and request['ACTUAL_URL'].endswith('/')) and '/' or ''
                     request['ACTUAL_URL'] = request['VIRTUAL_URL']+add
 
                 return
