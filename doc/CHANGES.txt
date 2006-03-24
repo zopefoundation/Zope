@@ -18,6 +18,8 @@ Zope Changes
 
     Bugs fixed
 
+      - Collector #2037: fixed broken ACTUAL_URL for '/'
+
       - Collector #2039: 'ZPublisher.HTTPRequest.HTTPRequest._authUserPW'
         choked on passwords which contained colons.
 

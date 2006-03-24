@@ -57,6 +57,17 @@ class VHMRegressions(unittest.TestCase):
         m = self.app.folder.doc.getPhysicalPath
         self.assertEqual(m(), ('', 'folder', 'doc'))
 
+    def test_actual_url(self):
+        self.app.folder.manage_addDTMLMethod('index_html', '')
+        ob = self.traverse('/VirtualHostBase/http/www.mysite.com:80/folder/VirtualHostRoot/doc/')
+        self.assertEqual(self.app.REQUEST['ACTUAL_URL'], 'http://www.mysite.com/doc/')
+        ob = self.traverse('/VirtualHostBase/http/www.mysite.com:80/folder/VirtualHostRoot/doc')
+        self.assertEqual(self.app.REQUEST['ACTUAL_URL'], 'http://www.mysite.com/doc')
+        ob = self.traverse('/VirtualHostBase/http/www.mysite.com:80/folder/VirtualHostRoot/')
+        self.assertEqual(self.app.REQUEST['ACTUAL_URL'], 'http://www.mysite.com/')
+        ob = self.traverse('/VirtualHostBase/http/www.mysite.com:80/folder/VirtualHostRoot')
+        self.assertEqual(self.app.REQUEST['ACTUAL_URL'], 'http://www.mysite.com/') 
+
 def gen_cases():
     for vbase, ubase in (
         ('', 'http://foo'),
