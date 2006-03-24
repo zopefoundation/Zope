@@ -202,6 +202,8 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #2037: fixed broken ACTUAL_URL for '/'
+
       - Missing import of NotFound in webdav.Resource
 
       - Collector #1819: fixed method signature of
