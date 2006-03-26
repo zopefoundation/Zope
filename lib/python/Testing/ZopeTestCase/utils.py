@@ -173,5 +173,7 @@ __all__ = [
     'startZServer',
     'importObjectFromFile',
     'appcall',
+    'makerequest',
+    'makelist',
 ]
 
