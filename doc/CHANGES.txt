@@ -202,8 +202,8 @@ Zope Changes
 
     Bugs Fixed
 
-      - Applied patch by Yoshinori Okuji to fix some XML export/import
-        problems
+      - Collector #2051: Applied patch by Yoshinori Okuji to fix some
+        XML export/import problems, including tests for that feature.
 
       - Collector #2037: fixed broken ACTUAL_URL for '/'
 

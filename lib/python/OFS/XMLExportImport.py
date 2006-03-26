@@ -98,7 +98,7 @@ def save_record(parser, tag, data):
 def importXML(jar, file, clue=''):
     import xml.parsers.expat
     if type(file) is str:
-        file=open(file)
+        file=open(file, 'rb')
     outfile=TemporaryFile()
     data=file.read()
     F=ppml.xmlPickler()
