@@ -40,6 +40,11 @@ DocBookChapterWithFigures = docbook.DocBookChapterWithFigures()
 DocBookArticle = docbook.DocBookArticle()
 
 def HTML(src, level=1):
+    import warnings
+    warnings.warn(
+        'The StructuredText package is deprecated and will be removed '
+        'in Zope 2.12. Use zope.structuredtext instead.',
+        DeprecationWarning, stacklevel=2)
     if isinstance(src, basestring):
         return ClassicHTML(src, level)
     return HTMLNG(src, level)
