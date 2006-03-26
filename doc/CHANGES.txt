@@ -18,8 +18,8 @@ Zope Changes
 
     Bugs fixed
 
-      - Applied patch by Yoshinori Okuji to fix some XML export/import
-        problems
+      - Collector #2051: Applied patch by Yoshinori Okuji to fix some
+        XML export/import problems, and added tests for that feature.
 
       - Missing import of NotFound in webdav.Resource.
 
