@@ -202,6 +202,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Applied patch by Yoshinori Okuji to fix some XML export/import
+        problems
+
       - Collector #2037: fixed broken ACTUAL_URL for '/'
 
       - Missing import of NotFound in webdav.Resource
