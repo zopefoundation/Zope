@@ -414,14 +414,14 @@ class ToXMLUnpickler(Unpickler):
     def load_binput(self):
         i = mloads('i' + self.read(1) + '\000\000\000')
         last = self.stack[-1]
-        if getattr(last, 'id', last) is not last:
+        if getattr(last, 'id', last) is last:
             last.id = self.idprefix + `i`
     dispatch[BINPUT] = load_binput
 
     def load_long_binput(self):
         i = mloads('i' + self.read(4))
         last = self.stack[-1]
-        if getattr(last, 'id', last) is not last:
+        if getattr(last, 'id', last) is last:
             last.id = self.idprefix + `i`
     dispatch[LONG_BINPUT] = load_long_binput
 
@@ -643,10 +643,10 @@ class xmlPickler(NoBlanks, xyap):
         'pickle': lambda self, tag, attrs: [tag, attrs],
         }
     end_handlers={
-        'pickle': lambda self, tag, data: data[2]+'.',
+        'pickle': lambda self, tag, data: str(data[2])+'.',
         'none': lambda self, tag, data: 'N',
         'int': save_int,
-        'long': lambda self, tag, data: 'L'+data[2]+'L\012',
+        'long': lambda self, tag, data: 'L'+str(data[2])+'L\012',
         'float': save_float,
         'string': save_string,
         'reference': save_reference,
