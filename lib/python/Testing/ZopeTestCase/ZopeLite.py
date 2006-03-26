@@ -61,6 +61,9 @@ def _configure_logging():
     import logging
     root = logging.getLogger()
     if not root.handlers:
+        class NullHandler(logging.Handler):
+            def emit(self, record): pass
+        root.addHandler(NullHandler())
         logging.basicConfig()
 
 def _configure_debug_mode():

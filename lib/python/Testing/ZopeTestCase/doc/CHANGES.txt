@@ -5,7 +5,7 @@ Unreleased
   than GET or HEAD while omitting the stdin argument.
 - installProduct() now becomes a noop if ZopeTestCase did not apply its
   patches.
-- Made the functional doctests set the cookie related headers.
+- Made functional doctests set cookie related headers.
 - Made functional doctests set the Www-Authenticate header.
 - Made sure logging is configured. Read $INSTANCE_HOME/log.ini if it exists.
 
