@@ -25,6 +25,9 @@ Zope Changes
 
       - Collector #2037: fixed broken ACTUAL_URL for '/'
 
+      - Put the default skin interface on the request once it is
+        created, both in ZPublisher and ZopeTestCase.
+
   Zope 2.9.1  (2006/02/25)
 
     Bugs fixed

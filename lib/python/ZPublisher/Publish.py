@@ -21,6 +21,7 @@ from Request import Request
 from maybe_lock import allocate_lock
 from mapply import mapply
 from zExceptions import Redirect
+from zope.app.publication.browser import setDefaultSkin
 
 class Retry(Exception):
     """Raise this to retry a request
@@ -184,6 +185,11 @@ def publish_module_standard(module_name,
 
             if request is None:
                 request=Request(stdin, environ, response)
+
+            # make sure that the request we hand over has the
+            # default layer/skin set on it; subsequent code that
+            # wants to look up views will likely depend on it
+            setDefaultSkin(request)
 
             response = publish(request, module_name, after_list, debug=debug)
         except SystemExit, v:
