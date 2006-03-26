@@ -138,6 +138,12 @@ def makerequest(app, stdout=sys.stdout):
     request = Request(sys.stdin, environ, response)
     request._steps = ['noobject'] # Fake a published object
     request['ACTUAL_URL'] = request.get('URL') # Zope 2.7.4
+
+    # set Zope3-style default skin so that the request is usable for
+    # Zope3-style view look-ups
+    from zope.app.publication.browser import setDefaultSkin
+    setDefaultSkin(request)
+
     return app.__of__(RequestContainer(REQUEST=request))
 
 
