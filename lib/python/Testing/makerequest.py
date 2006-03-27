@@ -36,4 +36,10 @@ def makerequest(app, stdout=stdout):
     environ['SERVER_PORT']='80'
     environ['REQUEST_METHOD'] = 'GET'
     req = HTTPRequest(stdin, environ, resp)
+
+    # set Zope3-style default skin so that the request is usable for
+    # Zope3-style view look-ups
+    from zope.app.publication.browser import setDefaultSkin
+    setDefaultSkin(req)
+
     return app.__of__(RequestContainer(REQUEST = req))
