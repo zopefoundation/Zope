@@ -51,6 +51,7 @@ from zopedoctest import FunctionalDocFileSuite
 
 import zopedoctest as doctest
 import transaction
+import placeless
 
 Zope = Zope2
 
