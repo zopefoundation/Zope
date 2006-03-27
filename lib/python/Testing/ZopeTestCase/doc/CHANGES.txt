@@ -1,4 +1,4 @@
-Unreleased
+Zope 2.10 edition
 - transaction.commit(1) is deprecated in favor of transaction.savepoint().
 - Don't break if Python distros ship without profile support (Debian, Ubuntu).
 - Functional.publish() would hang if it got a request_method argument other
@@ -8,6 +8,8 @@ Unreleased
 - Made functional doctests set cookie related headers.
 - Made functional doctests set the Www-Authenticate header.
 - Made sure logging is configured. Read $INSTANCE_HOME/log.ini if it exists.
+- Made base.TestCase a new-style class.
+- Added placeless.py for Z3-style setup. Thanks to Whit Morriss.
 
 0.9.8 (Zope 2.8 edition)
 - Renamed 'doctest' package to 'zopedoctest' because of name-shadowing

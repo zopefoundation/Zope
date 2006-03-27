@@ -40,7 +40,7 @@ def close(app):
 
 
 
-class TestCase(profiler.Profiled, unittest.TestCase):
+class TestCase(profiler.Profiled, unittest.TestCase, object):
     '''Base test case for Zope testing
     '''
 
