@@ -171,11 +171,13 @@ class ObjectManager(
 
     _components = None
 
+    security.declarePublic('getSiteManager')
     def getSiteManager(self):
         if self._components is None:
             raise ComponentLookupError('No component registry defined.')
         return self._components
 
+    security.declareProtected('Manage Site', 'setSiteManager')
     def setSiteManager(self, components):
         self._components = components
 
