@@ -481,11 +481,10 @@ class ZCatalog(Folder, Persistent, Implicit):
             name = (name,)
 
         paths = self._catalog.uids.keys()
-        num_paths = len(paths)   # inefficient        
 
         i = 0
         if pghandler:
-            pghandler.init('reindexing %s' % name, num_paths)
+            pghandler.init('reindexing %s' % name, len(paths))
 
         for p in paths:
             i+=1
