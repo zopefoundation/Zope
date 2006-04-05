@@ -14,6 +14,14 @@ Zope Changes
      to the rules for such a type laid out in the Python docs:
      http://docs.python.org/api/supporting-cycle-detection.html
 
+  Zope 2.9.3 (UNRELEASED)
+
+   Bugs fixed
+
+      - Collector #2057: Allow Testing.makerequest to work with
+        any acquisition-supporting root object, not just Zope2.app.
+        Formerly, if you did that, getPhysicalPath() was broken.
+
   Zope 2.9.2 (2006/03/27)
 
     Bugs fixed

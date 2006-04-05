@@ -19,27 +19,50 @@ Usage:
     import makerequest
     app = makerequest.makerequest(Zope2.app())
 
+You can optionally pass stdout to be used by the response,
+and an environ mapping to be used in the request.
+Defaults are sys.stdout and os.environ.
+
+If you don't want to start a zope app in your test, you can wrap other
+objects, but they must support acquisition and you should only wrap
+your root object.
+
+
 $Id$
 
 """
 
 import os
-from os import environ
 from sys import stdin, stdout
 from ZPublisher.HTTPRequest import HTTPRequest
 from ZPublisher.HTTPResponse import HTTPResponse
 from ZPublisher.BaseRequest import RequestContainer
 
-def makerequest(app, stdout=stdout):
+def makerequest(app, stdout=stdout, environ=None):
     resp = HTTPResponse(stdout=stdout)
-    environ['SERVER_NAME']='foo'
-    environ['SERVER_PORT']='80'
-    environ['REQUEST_METHOD'] = 'GET'
+    if environ is None:
+        environ = os.environ
+    environ.setdefault('SERVER_NAME', 'foo')
+    environ.setdefault('SERVER_PORT', '80')
+    environ.setdefault('REQUEST_METHOD',  'GET')
     req = HTTPRequest(stdin, environ, resp)
-
+    req._steps = ['noobject']  # Fake a published object.
+    req['ACTUAL_URL'] = req.get('URL') # Zope 2.7.4
+    
     # set Zope3-style default skin so that the request is usable for
-    # Zope3-style view look-ups
+    # Zope3-style view look-ups.
     from zope.app.publication.browser import setDefaultSkin
     setDefaultSkin(req)
 
-    return app.__of__(RequestContainer(REQUEST = req))
+    requestcontainer = RequestContainer(REQUEST = req)
+    # Workaround for collector 2057: ensure that we don't break
+    # getPhysicalPath if app has that method.
+    # We could instead fix Traversable.getPhysicalPath() to check for
+    # existence of p.getPhysicalPath before calling it; but it's such
+    # a commonly called method that I don't want to impact performance
+    # for something that AFAICT only affects makerequest() in
+    # practice.
+    if getattr(app, 'getPhysicalPath', None) is not None:
+        requestcontainer.getPhysicalPath = lambda: ()
+
+    return app.__of__(requestcontainer)
