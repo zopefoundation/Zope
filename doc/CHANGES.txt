@@ -46,6 +46,9 @@ Zope Changes
 
     Features added
 
+      - Testing.makerequest: Added an 'environ' argument so
+        clients can use mappings other than os.environ.
+
       - Updated to Docutils 0.4.0 
 
       - reStructuredText: The default value for the 'stylesheet'
@@ -201,6 +204,10 @@ Zope Changes
         from the Zope 3 source tree (to get rid of redundant packages)
 
     Bugs Fixed
+
+      - Collector #2057: Allow Testing.makerequest to work with
+	any acquisition-supporting root object, not just Zope2.app.
+        Formerly, if you did that, getPhysicalPath() was broken.
 
       - Collector #2051: Applied patch by Yoshinori Okuji to fix some
         XML export/import problems, including tests for that feature.
