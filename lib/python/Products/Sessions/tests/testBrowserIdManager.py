@@ -27,7 +27,6 @@ from ZPublisher.HTTPRequest import HTTPRequest
 from ZPublisher.HTTPResponse import HTTPResponse
 from ZPublisher.BeforeTraverse import queryBeforeTraverse
 from sys import stdin
-from os import environ
 from OFS.Application import Application
 
 class TestBrowserIdManager(TestCase):
@@ -38,6 +37,7 @@ class TestBrowserIdManager(TestCase):
         self.app._setObject('browser_id_manager', mgr)
         self.m = self.app.browser_id_manager
         resp = HTTPResponse()
+        environ = {}
         environ['SERVER_NAME']='fred'
         environ['SERVER_PORT']='80'
         self.req = HTTPRequest(stdin, environ, resp)
@@ -238,6 +238,7 @@ class TestBrowserIdManager(TestCase):
         bid = '43295340A0bpcu4nkCI'
         name = '_ZopeId'
         resp = HTTPResponse()
+        environ = {}
         environ['SERVER_NAME']='fred'
         environ['SERVER_PORT']='80'
         self.req = HTTPRequest(stdin, environ, resp)
