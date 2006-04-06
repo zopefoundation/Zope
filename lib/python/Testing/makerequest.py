@@ -38,13 +38,12 @@ from ZPublisher.HTTPRequest import HTTPRequest
 from ZPublisher.HTTPResponse import HTTPResponse
 from ZPublisher.BaseRequest import RequestContainer
 
-def makerequest(app, stdout=stdout, environ=None):
+def makerequest(app, stdout=stdout):
     resp = HTTPResponse(stdout=stdout)
-    if environ is None:
-        environ = os.environ
-    environ.setdefault('SERVER_NAME', 'foo')
-    environ.setdefault('SERVER_PORT', '80')
-    environ.setdefault('REQUEST_METHOD',  'GET')
+    environ = os.environ
+    environ['SERVER_NAME'] = 'foo'
+    environ['SERVER_PORT'] = '80'
+    environ['REQUEST_METHOD'] =  'GET'
     req = HTTPRequest(stdin, environ, resp)
     req._steps = ['noobject']  # Fake a published object.
     req['ACTUAL_URL'] = req.get('URL') # Zope 2.7.4

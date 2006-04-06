@@ -127,13 +127,25 @@ def startZServer(number_of_threads=1, log=None):
 
 def makerequest(app, stdout=sys.stdout):
     '''Wraps the app into a fresh REQUEST.'''
-    from Testing.makerequest import makerequest as _makerequest
+    from ZPublisher.BaseRequest import RequestContainer
+    from ZPublisher.Request import Request
+    from ZPublisher.Response import Response
+    response = Response(stdout=stdout)
     environ = {}
     environ['SERVER_NAME'] = _Z2HOST or 'nohost'
     environ['SERVER_PORT'] = '%d' % (_Z2PORT or 80)
     environ['REQUEST_METHOD'] = 'GET'
-    app = _makerequest(app, stdout=stdout, environ=environ)
-    return app
+    request = Request(sys.stdin, environ, response)
+    request._steps = ['noobject'] # Fake a published object
+    request['ACTUAL_URL'] = request.get('URL') # Zope 2.7.4
+
+    # set Zope3-style default skin so that the request is usable for
+    # Zope3-style view look-ups
+    from zope.app.publication.browser import setDefaultSkin
+    setDefaultSkin(request)
+
+    return app.__of__(RequestContainer(REQUEST=request))
+
 
 def appcall(function, *args, **kw):
     '''Calls a function passing 'app' as first argument.'''

@@ -50,11 +50,6 @@ class MakerequestTests(unittest.TestCase):
         self.failUnless(written.startswith('Status: 200 OK\n'))
         self.failUnless(written.endswith('\naaa'))
 
-    def test_environ(self):
-        # You can pass an environ argument to use in the request.
-        environ = {'foofoo': 'barbar'}
-        item = makerequest(SimpleItem(), environ=environ)
-        self.assertEqual(item.REQUEST.environ['foofoo'], 'barbar')
 
 def test_suite():
     suite = unittest.TestSuite()
