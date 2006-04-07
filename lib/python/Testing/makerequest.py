@@ -19,12 +19,15 @@ Usage:
     import makerequest
     app = makerequest.makerequest(Zope2.app())
 
-You can optionally pass stdout to be used by the response,
-and an environ mapping to be used in the request.
-Defaults are sys.stdout and os.environ.
+You can optionally pass stdout to be used by the response;
+default is sys.stdout.
+
+You can optionally pass an environ mapping to be used in the request.
+Default is a fresh dictionary. Passing os.environ is not recommended;
+tests should not pollute the real os.environ.
 
 If you don't want to start a zope app in your test, you can wrap other
-objects, but they must support acquisition and you should only wrap
+objects, but it must support acquisition and you should only wrap
 your root object.
 
 
@@ -38,10 +41,8 @@ from ZPublisher.HTTPRequest import HTTPRequest
 from ZPublisher.HTTPResponse import HTTPResponse
 from ZPublisher.BaseRequest import RequestContainer
 
-def makerequest(app, stdout=stdout, environ=None):
+def makerequest(app, stdout=stdout, environ={}):
     resp = HTTPResponse(stdout=stdout)
-    if environ is None:
-        environ = os.environ
     environ.setdefault('SERVER_NAME', 'foo')
     environ.setdefault('SERVER_PORT', '80')
     environ.setdefault('REQUEST_METHOD',  'GET')
