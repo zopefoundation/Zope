@@ -132,8 +132,8 @@ def makerequest(app, stdout=sys.stdout):
     environ['SERVER_NAME'] = _Z2HOST or 'nohost'
     environ['SERVER_PORT'] = '%d' % (_Z2PORT or 80)
     environ['REQUEST_METHOD'] = 'GET'
-    app = _makerequest(app, stdout=stdout, environ=environ)
-    return app
+    return _makerequest(app, stdout=stdout, environ=environ)
+
 
 def appcall(function, *args, **kw):
     '''Calls a function passing 'app' as first argument.'''
