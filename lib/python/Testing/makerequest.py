@@ -14,23 +14,6 @@
 Facilitates unit tests which requires an acquirable REQUEST from
 ZODB objects
 
-Usage:
-
-    import makerequest
-    app = makerequest.makerequest(Zope2.app())
-
-You can optionally pass stdout to be used by the response;
-default is sys.stdout.
-
-You can optionally pass an environ mapping to be used in the request.
-Default is a fresh dictionary. Passing os.environ is not recommended;
-tests should not pollute the real os.environ.
-
-If you don't want to start a zope app in your test, you can wrap other
-objects, but it must support acquisition and you should only wrap
-your root object.
-
-
 $Id$
 
 """
@@ -41,7 +24,34 @@ from ZPublisher.HTTPRequest import HTTPRequest
 from ZPublisher.HTTPResponse import HTTPResponse
 from ZPublisher.BaseRequest import RequestContainer
 
-def makerequest(app, stdout=stdout, environ={}):
+def makerequest(app, stdout=stdout, environ=None):
+    """
+    Adds an HTTPRequest at app.REQUEST, and returns
+    app.__of__(app.REQUEST). Useful for tests that need to acquire
+    REQUEST.
+    
+    Usage:
+      import makerequest
+      app = makerequest.makerequest(app)
+
+    You should only wrap the object used as 'root' in your tests.
+    
+    app is commonly a Zope2.app(), but that's not strictly necessary
+    and frequently may be overkill; you can wrap other objects as long
+    as they support acquisition and provide enough of the features of
+    Zope2.app for your tests to run.  For example, if you want to call
+    getPhysicalPath() on child objects, app must provide a
+    non-recursive implementation of getPhysicalPath().
+
+    *stdout* is an optional file-like object and is used by
+    REQUEST.RESPONSE. The default is sys.stdout.
+
+    *environ* is an optional mapping to be used in the request.
+    Default is a fresh dictionary. Passing os.environ is not
+    recommended; tests should not pollute the real os.environ.
+    """
+    if environ is None:
+        environ = {}
     resp = HTTPResponse(stdout=stdout)
     environ.setdefault('SERVER_NAME', 'foo')
     environ.setdefault('SERVER_PORT', '80')
@@ -56,14 +66,4 @@ def makerequest(app, stdout=stdout, environ={}):
     setDefaultSkin(req)
 
     requestcontainer = RequestContainer(REQUEST = req)
-    # Workaround for collector 2057: ensure that we don't break
-    # getPhysicalPath if app has that method.
-    # We could instead fix Traversable.getPhysicalPath() to check for
-    # existence of p.getPhysicalPath before calling it; but it's such
-    # a commonly called method that I don't want to impact performance
-    # for something that AFAICT only affects makerequest() in
-    # practice.
-    if getattr(app, 'getPhysicalPath', None) is not None:
-        requestcontainer.getPhysicalPath = lambda: ()
-
     return app.__of__(requestcontainer)

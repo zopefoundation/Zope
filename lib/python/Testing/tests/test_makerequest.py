@@ -33,9 +33,13 @@ class MakerequestTests(unittest.TestCase):
         self.failUnless(hasattr(item, 'REQUEST'))
     
     def test_dont_break_getPhysicalPath(self):
-        # see http://www.zope.org/Collectors/Zope/2057
-        item = SimpleItem()
-        self.assertEqual(item.getPhysicalPath(), ('',))
+        # see http://www.zope.org/Collectors/Zope/2057.  If you want
+        # to call getPhysicalPath() on the wrapped object, be sure
+        # that it provides a non-recursive getPhysicalPath().
+        class FakeRoot(SimpleItem):
+            def getPhysicalPath(self):
+                return ('foo',)
+        item = FakeRoot()
         self.assertEqual(item.getPhysicalPath(),
                          makerequest(item).getPhysicalPath())
 
