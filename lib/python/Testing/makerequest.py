@@ -20,8 +20,7 @@ Usage:
     app = makerequest.makerequest(Zope2.app())
 
 You can optionally pass stdout to be used by the response,
-and an environ mapping to be used in the request.
-Defaults are sys.stdout and os.environ.
+default is sys.stdout.
 
 If you don't want to start a zope app in your test, you can wrap other
 objects, but they must support acquisition and you should only wrap
@@ -54,14 +53,4 @@ def makerequest(app, stdout=stdout):
     setDefaultSkin(req)
 
     requestcontainer = RequestContainer(REQUEST = req)
-    # Workaround for collector 2057: ensure that we don't break
-    # getPhysicalPath if app has that method.
-    # We could instead fix Traversable.getPhysicalPath() to check for
-    # existence of p.getPhysicalPath before calling it; but it's such
-    # a commonly called method that I don't want to impact performance
-    # for something that AFAICT only affects makerequest() in
-    # practice.
-    if getattr(app, 'getPhysicalPath', None) is not None:
-        requestcontainer.getPhysicalPath = lambda: ()
-
     return app.__of__(requestcontainer)

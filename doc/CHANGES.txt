@@ -18,9 +18,6 @@ Zope Changes
 
    Bugs fixed
 
-      - Collector #2057: Allow Testing.makerequest to work with
-        any acquisition-supporting root object, not just Zope2.app.
-        Formerly, if you did that, getPhysicalPath() was broken.
 
   Zope 2.9.2 (2006/03/27)
 
