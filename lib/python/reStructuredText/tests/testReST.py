@@ -65,7 +65,22 @@ class TestReST(unittest.TestCase):
             expected = '<h%d><a id="von-v-geln-und-fen" name="von-v-geln-und-fen">Von Vögeln und Öfen</a></h%d>' %\
                         (level+1, level+1) 
             self.assertEqual(expected in html, True)
-        
+
+    def testWithSingleSubtitle(self):
+        input = '''
+title
+-----
+subtitle
+++++++++
+text
+'''
+        expected='''<h3 class="title">title</h3>
+<h4 class="subtitle">subtitle</h4>
+<p>text</p>
+'''
+        output = HTML(input)
+        self.assertEquals(output, expected) 
+
 
 def test_suite():
     from unittest import TestSuite, makeSuite
