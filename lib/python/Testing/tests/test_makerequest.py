@@ -32,13 +32,6 @@ class MakerequestTests(unittest.TestCase):
         item = makerequest(item)
         self.failUnless(hasattr(item, 'REQUEST'))
     
-    def test_dont_break_getPhysicalPath(self):
-        # see http://www.zope.org/Collectors/Zope/2057
-        item = SimpleItem()
-        self.assertEqual(item.getPhysicalPath(), ('',))
-        self.assertEqual(item.getPhysicalPath(),
-                         makerequest(item).getPhysicalPath())
-
     def test_stdout(self):
         # You can pass a stdout arg and it's used by the response.
         import cStringIO
