@@ -273,6 +273,9 @@ Zope Changes
         __dav_collection__ with a false value was overridden by
         isAnObjectManager.
 
+      - added missing Zope 3 imports: zope.app.intid, zope.app.keyreference, 
+        zope.app.session, zope.contentprovider, zope.viewlet
+
     Other
 
       - AccessControl.User: Use a better __repr__.
