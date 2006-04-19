@@ -18,7 +18,7 @@ $Id$
 """
 
 from zope.interface import implements
-from zope.app.event.objectevent import ObjectEvent
+from zope.component.interfaces import ObjectEvent
 import OFS.interfaces
 
 

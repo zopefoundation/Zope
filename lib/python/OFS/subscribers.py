@@ -29,8 +29,8 @@ import OFS.interfaces
 
 from zope.interface import implements
 from zope.component import adapts
+from zope.location.interfaces import ISublocations
 from zope.app.container.contained import dispatchToSublocations
-from zope.app.location.interfaces import ISublocations
 
 
 deprecatedManageAddDeleteClasses = []

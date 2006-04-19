@@ -37,7 +37,7 @@ from zExceptions import Unauthorized, BadRequest
 from ZODB.POSException import ConflictError
 from zope.interface import implements
 from zope.event import notify
-from zope.app.event.objectevent import ObjectCopiedEvent
+from zope.lifecycleevent import ObjectCopiedEvent
 from zope.app.container.contained import ObjectMovedEvent
 from zope.app.container.contained import notifyContainerModified
 from OFS.event import ObjectWillBeMovedEvent

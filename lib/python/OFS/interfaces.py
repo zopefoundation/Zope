@@ -27,7 +27,7 @@ from persistent.interfaces import IPersistent
 from webdav.interfaces import IDAVCollection
 from webdav.interfaces import IDAVResource
 
-from zope.app.traversing.interfaces import IContainmentRoot
+from zope.traversing.interfaces import IContainmentRoot
 from zope.app.component.interfaces import IPossibleSite
 
 class IOrderedContainer(Interface):
@@ -903,7 +903,7 @@ class IApplication(IFolder, IContainmentRoot):
 ##################################################
 # Event interfaces
 
-from zope.app.event.interfaces import IObjectEvent
+from zope.component.interfaces import IObjectEvent
 
 class IObjectWillBeMovedEvent(IObjectEvent):
     """An object will be moved."""
