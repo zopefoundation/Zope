@@ -20,7 +20,7 @@ import os
 import Acquisition 
 from Globals import ImageFile, package_home, InitializeClass
 from OFS.SimpleItem import SimpleItem
-from zope.app.contenttypes import guess_content_type
+from zope.contenttype import guess_content_type
 from DateTime.DateTime import DateTime
 from Shared.DC.Scripts.Script import Script 
 from Shared.DC.Scripts.Signature import FuncCode
