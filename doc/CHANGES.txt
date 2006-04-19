@@ -17,6 +17,9 @@ Zope Changes
   Zope 2.9.3 (UNRELEASED)
 
    Bugs fixed
+      
+      - Added missing Zope 3 packages: zope.app.intid, zope.app.keyreference, 
+        zope.app.session, zope.contentprovider, zope.viewlet  
 
 
   Zope 2.9.2 (2006/03/27)
