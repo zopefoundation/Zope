@@ -58,6 +58,44 @@ class ZPTRegressions(unittest.TestCase):
         pt = self.app.pt1
         self.assertEqual(pt.document_src(), self.text)
 
+class ZPTMacros(unittest.TestCase):
+    def setUp(self):
+        transaction.begin()
+        self.app = makerequest(Zope2.app())
+        f = self.app.manage_addProduct['PageTemplates'].manage_addPageTemplate
+        self._addPT = f
+        self.title = 'title of page template'
+        self.text = """
+<metal:block use-macro="template/macros/themacro">
+  <p metal:fill-slot="theslot">
+    This is in the slot
+  </p>
+</metal:block>
+<tal:block condition="default">
+<div metal:define-macro="themacro">
+  <h1>This is the header</h1>
+  <p metal:define-slot="theslot">
+    This will be replaced
+  </p>
+</div>
+</tal:block>
+"""
+        self.result = """
+<div>
+  <h1>This is the header</h1>
+  <p>
+    This is in the slot
+  </p>
+</div>
+
+"""       
+
+    def testMacroExpansion(self):
+        request = self.app.REQUEST        
+        self._addPT('pt1', text=self.text, REQUEST=request)
+        pt = self.app.pt1
+        self.assertEqual(pt(), self.result)
+
         
 class DummyFileUpload:
 
@@ -71,7 +109,9 @@ class DummyFileUpload:
 
        
 def test_suite():
-    return unittest.makeSuite(ZPTRegressions)
+    suite = unittest.makeSuite(ZPTRegressions)
+    suite.addTests(unittest.makeSuite(ZPTMacros))
+    return suite
 
 if __name__ == '__main__':
     unittest.main(defaultTest='test_suite')
