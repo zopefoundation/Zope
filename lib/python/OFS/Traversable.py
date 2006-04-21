@@ -196,8 +196,20 @@ class Traversable:
                         else:
                             # Can't determine container
                             container = _none
-                        if not securityManager.validate(
-                            obj, container, name, next):
+                        try:
+                            validated = securityManager.validate(
+                                                   obj, container, name, next)
+                        except Unauthorized:
+                            # If next is a simple unwrapped property, it's
+                            # parentage is indeterminate, but it may have been
+                            # acquired safely.  In this case validate will
+                            # raise an error, and we can explicitly check that
+                            # our value was acquired safely.
+                            validated = 0
+                            if container is _none and \
+                                   guarded_getattr(obj, name, marker) is next:
+                                validated = 1
+                        if not validated:
                             raise Unauthorized, name
                 else:
                     if restricted:

@@ -17,6 +17,9 @@ Zope Changes
   After Zope 2.8.6
 
     Bugs fixed
+      
+      - Collector #2072: Applied patch to fix problem with overly restrictive
+        __bobo_traverse__ security and tests.
 
       - Applied patch by Yoshinori Okuji to fix some XML export/import
         problems
