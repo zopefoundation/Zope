@@ -134,6 +134,14 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         self.ZBindings_edit(self._default_bindings)
         self.pt_edit(text, content_type, encoding)
 
+    def pt_render(self, namespace, source=False, sourceAnnotations=False,
+                  showtal=False):
+        if namespace is None:
+            namespace = self.pt_getContext()
+        return super(ZopePageTemplate, self).pt_render(namespace, source, sourceAnnotations,
+                  showtal)
+
+
     def pt_getEngine(self):
         return getEngine()
 

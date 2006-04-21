@@ -94,6 +94,12 @@ class ZPTMacros(unittest.TestCase):
         pt = self.app.pt1
         self.assertEqual(pt(), self.result)
 
+    def testPtErrors(self):
+        request = self.app.REQUEST        
+        self._addPT('pt1', text=self.text, REQUEST=request)
+        pt = self.app.pt1
+        pt.pt_render(None, source=1)
+        self.assertEqual(pt.pt_errors(None), None)
         
 class DummyFileUpload:
 
