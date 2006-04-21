@@ -259,6 +259,9 @@ class Context:
             context=context,
             default=default,
             target_language=target_language)
+    
+    def getValue(self, name, default=None):
+        return self.vars.get(name, default)
 
 class TALESTracebackSupplement:
     """Implementation of ITracebackSupplement"""

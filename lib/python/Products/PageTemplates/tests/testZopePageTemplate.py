@@ -71,7 +71,7 @@ class ZPTMacros(unittest.TestCase):
     This is in the slot
   </p>
 </metal:block>
-<tal:block condition="default">
+<tal:block condition="nothing">
 <div metal:define-macro="themacro">
   <h1>This is the header</h1>
   <p metal:define-slot="theslot">
@@ -80,14 +80,12 @@ class ZPTMacros(unittest.TestCase):
 </div>
 </tal:block>
 """
-        self.result = """
-<div>
+        self.result = """<div>
   <h1>This is the header</h1>
   <p>
     This is in the slot
   </p>
 </div>
-
 """       
 
     def testMacroExpansion(self):
