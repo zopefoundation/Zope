@@ -22,6 +22,7 @@ import cStringIO
 import transaction
 import ZODB, Acquisition, transaction
 from AccessControl import SecurityManager, Unauthorized
+from AccessControl.Permissions import access_contents_information
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
 from Acquisition import aq_base
@@ -100,6 +101,16 @@ class BoboTraversable(SimpleItem):
         pass
 
     bb_status = 'screechy'
+
+
+class BoboTraversableWithAcquisition(SimpleItem):
+    """
+       A BoboTraversable class which may use acquisition to find objects.
+       This is similar to how the __bobo_traverse__ added by Five behaves).
+    """
+
+    def __bobo_traverse__(self, request, name):
+        return Acquisition.aq_get(self, name)
 
 
 def makeConnection():
@@ -234,6 +245,58 @@ class TestTraverse( unittest.TestCase ):
         bb = BoboTraversable()
         self.failUnless(
             bb.restrictedTraverse('manufactured') is 42)
+
+    def testBoboTraverseToAcquiredObject(self):
+        # Verify it's possible to use a __bobo_traverse__ which retrieves
+        # objects by acquisition
+        noSecurityManager()
+        SecurityManager.setSecurityPolicy( self.oldPolicy )
+        bb = BoboTraversableWithAcquisition()
+        bb = bb.__of__(self.root)
+        self.assertEqual(
+            bb.restrictedTraverse('folder1'), bb.folder1)
+        self.assertEqual(
+            Acquisition.aq_inner(bb.restrictedTraverse('folder1')),
+            self.root.folder1)
+
+    def testBoboTraverseToAcquiredProtectedObject(self):
+        # Verify it's possible to use a __bobo_traverse__ which retrieves
+        # objects by acquisition
+        noSecurityManager()
+        SecurityManager.setSecurityPolicy( self.oldPolicy )
+        folder = self.root.folder1
+        # restrict the ability to access the retrieved object itself
+        folder.manage_permission(access_contents_information, [], 0)
+        bb = BoboTraversableWithAcquisition()
+        bb = bb.__of__(self.root)
+        self.failUnlessRaises(Unauthorized,
+                              self.root.folder1.restrictedTraverse, 'folder1')
+
+    def testBoboTraverseToAcquiredAttribute(self):
+        # Verify it's possible to use __bobo_traverse__ to an acquired
+        # attribute
+        noSecurityManager()
+        SecurityManager.setSecurityPolicy( self.oldPolicy )
+        folder = self.root.folder1
+        folder.stuff = 'stuff here'
+        bb = BoboTraversableWithAcquisition()
+        bb = bb.__of__(folder)
+        self.assertEqual(
+            bb.restrictedTraverse('stuff'), 'stuff here')
+
+    def testBoboTraverseToAcquiredProtectedAttribute(self):
+        # Verify that using __bobo_traverse__ to get an acquired but
+        # protected attribute results in Unauthorized
+        noSecurityManager()
+        SecurityManager.setSecurityPolicy( self.oldPolicy )
+        folder = self.root.folder1
+        # We protect the the attribute by restricting access to the parent
+        folder.manage_permission(access_contents_information, [], 0)
+        folder.stuff = 'stuff here'
+        bb = BoboTraversableWithAcquisition()
+        bb = bb.__of__(folder)
+        self.failUnlessRaises(Unauthorized,
+                              self.root.folder1.restrictedTraverse, 'stuff')
 
     def testAcquiredAttributeDenial(self):
         # Verify that restrictedTraverse raises the right kind of exception

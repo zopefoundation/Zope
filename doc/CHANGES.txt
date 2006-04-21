@@ -17,6 +17,9 @@ Zope Changes
   Zope 2.9.3 (UNRELEASED)
 
    Bugs fixed
+
+      - Collector #2072: Applied patch to fix problem with overly restrictive
+        __bobo_traverse__ security and tests.
       
       - Added missing Zope 3 packages: zope.app.intid, zope.app.keyreference, 
         zope.app.session, zope.contentprovider, zope.viewlet  
