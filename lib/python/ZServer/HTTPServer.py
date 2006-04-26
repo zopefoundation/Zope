@@ -43,6 +43,7 @@ from cStringIO import StringIO
 
 from PubCore import handle
 from HTTPResponse import make_response
+from HTTPResponse import ChannelPipe, is_proxying_match, proxying_connection_re
 from ZPublisher.HTTPRequest import HTTPRequest
 from App.config import getConfiguration
 
@@ -261,9 +262,7 @@ class zhttp_handler:
             s=0
         DebugLogger.log('I', id(request), s)
 
-        #import pdb;pdb.set_trace()
         env=self.get_environment(request)
-        from HTTPResponse import ChannelPipe, is_proxying_match, proxying_connection_re
         env['wsgi.output'] = ChannelPipe(request)
         version = request.version
         if version=='1.0' and is_proxying_match(request.request):
@@ -276,14 +275,9 @@ class zhttp_handler:
             connection_re = CONNECTION
         
         env['http_connection'] = get_header(connection_re,
-                                                           request.header).lower()
+                                            request.header).lower()
         env['server_version']=request.channel.server.SERVER_IDENT
     
-        
-        #zresponse=make_response(request,env)
-        #if self._force_connection_close:
-            #zresponse._http_connection = 'close'
-        #zrequest=HTTPRequest(sin, env, zresponse)
         request.channel.current_request=None
         request.channel.queue.append((self.module_name, env, None))
         request.channel.work()

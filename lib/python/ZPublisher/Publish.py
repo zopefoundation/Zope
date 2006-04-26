@@ -21,6 +21,8 @@ from Request import Request
 from maybe_lock import allocate_lock
 from mapply import mapply
 from zExceptions import Redirect
+from ZServer.HTTPResponse import ZServerHTTPResponse
+from cStringIO import StringIO
 
 class Retry(Exception):
     """Raise this to retry a request
@@ -172,28 +174,21 @@ from HTTPRequest import HTTPRequest
 from ZServer.HTTPResponse import make_response
 
 class WSGIPublisherApplication(object):
-    """A WSGI application implementation for the zope publisher
+    """A WSGI application implementation for the zope2 publisher
 
     Instances of this class can be used as a WSGI application object.
-
-    The class relies on a properly initialized request factory.
     """
     #implements(interfaces.IWSGIApplication)
-    def __init__(self, response):
-        self.response = response
 
     def __call__(self, environ, start_response):
         """See zope.app.wsgi.interfaces.IWSGIApplication"""
-        from ZServer.HTTPResponse import ZServerHTTPResponse, is_proxying_match, proxying_connection_re
-        from ZServer.medusa import http_server
-        from cStringIO import StringIO
         
         response = ZServerHTTPResponse(stdout=environ['wsgi.output'], stderr=StringIO())
         response._http_version = environ['SERVER_PROTOCOL'].split('/')[1]
         response._http_connection = environ['CONNECTION_TYPE']
         response._server_version = environ['SERVER_SOFTWARE']
 
-        request = HTTPRequest(environ['wsgi.input'], environ, response)
+        request = Request(environ['wsgi.input'], environ, response)
 
         # Let's support post-mortem debugging
         handle_errors = environ.get('wsgi.handleErrors', True)
@@ -231,10 +226,9 @@ def fakeWrite(body):
 def publish_module_standard(module_name,
                    stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr,
                    environ=os.environ, debug=0, request=None, response=None):
-    # The WSGI way!
 
+    # The WSGI way!
     def wsgi_start_response(status,response_headers,exc_info=None):
-        # I don't understand what to do here. Start writing? At what?
         return fakeWrite
 
     must_die=0
@@ -244,7 +238,9 @@ def publish_module_standard(module_name,
         env = environ.copy()
     else:
         env = request
-        
+    
+    if not env.has_key('CONNECTION_TYPE'):
+        print env
     env['wsgi.input']        = sys.stdin
     env['wsgi.errors']       = sys.stderr
     env['wsgi.version']      = (1,0)
@@ -255,79 +251,13 @@ def publish_module_standard(module_name,
     if not env.has_key('wsgi.output'):
         env['wsgi.output'] = stdout
 
-    application = WSGIPublisherApplication(None)
+    application = WSGIPublisherApplication()
     body = application(env, wsgi_start_response)
     env['wsgi.output'].write(body[0])
     env['wsgi.output'].close()
         
     # The module defined a post-access function, call it
     if after_list[0] is not None: after_list[0]()
-
-    if must_die:
-        # Try to turn exception value into an exit code.
-        try:
-            if hasattr(must_die[1], 'code'):
-                code = must_die[1].code
-            else: code = int(must_die[1])
-        except:
-            code = must_die[1] and 1 or 0
-        if hasattr(request.response, '_requestShutdown'):
-            request.response._requestShutdown(code)
-
-        try: raise must_die[0], must_die[1], must_die[2]
-        finally: must_die=None
-
-    return status
-
-
-
-def publish_module_standard_old(module_name,
-                   stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr,
-                   environ=os.environ, debug=0, request=None, response=None):
-    must_die=0
-    status=200
-    after_list=[None]
-    try:
-        try:
-            if response is None:
-                response=Response(stdout=stdout, stderr=stderr)
-            else:
-                stdout=response.stdout
-
-            if request is None:
-                request=Request(stdin, environ, response)
-
-            # make sure that the request we hand over has the
-            # default layer/skin set on it; subsequent code that
-            # wants to look up views will likely depend on it
-            setDefaultSkin(request)
-
-            response = publish(request, module_name, after_list, debug=debug)
-        except SystemExit, v:
-            must_die=sys.exc_info()
-            request.response.exception(must_die)
-        except ImportError, v:
-            if isinstance(v, tuple) and len(v)==3: must_die=v
-            elif hasattr(sys, 'exc_info'): must_die=sys.exc_info()
-            else: must_die = SystemExit, v, sys.exc_info()[2]
-            request.response.exception(1, v)
-        except:
-            request.response.exception()
-            status=response.getStatus()
-
-        if response:
-            outputBody=getattr(response, 'outputBody', None)
-            if outputBody is not None:
-                outputBody()
-            else:
-                response=str(response)
-                if response: stdout.write(response)
-
-        # The module defined a post-access function, call it
-        if after_list[0] is not None: after_list[0]()
-
-    finally:
-        if request is not None: request.close()
 
     if must_die:
         # Try to turn exception value into an exit code.
