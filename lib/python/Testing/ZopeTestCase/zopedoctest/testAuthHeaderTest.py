@@ -12,7 +12,7 @@
 ##############################################################################
 """Test for auth_header
 
-$Id: testAuthHeaderTest.py,v 1.2 2005/03/26 18:07:08 shh42 Exp $
+$Id$
 """
 
 import os, sys

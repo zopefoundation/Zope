@@ -261,13 +261,31 @@ class zhttp_handler:
             s=0
         DebugLogger.log('I', id(request), s)
 
+        #import pdb;pdb.set_trace()
         env=self.get_environment(request)
-        zresponse=make_response(request,env)
-        if self._force_connection_close:
-            zresponse._http_connection = 'close'
-        zrequest=HTTPRequest(sin, env, zresponse)
+        from HTTPResponse import ChannelPipe, is_proxying_match, proxying_connection_re
+        env['wsgi.output'] = ChannelPipe(request)
+        version = request.version
+        if version=='1.0' and is_proxying_match(request.request):
+            # a request that was made as if this zope was an http 1.0 proxy.
+            # that means we have to use some slightly different http
+            # headers to manage persistent connections.
+            connection_re = proxying_connection_re
+        else:
+            # a normal http request
+            connection_re = CONNECTION
+        
+        env['http_connection'] = get_header(connection_re,
+                                                           request.header).lower()
+        env['server_version']=request.channel.server.SERVER_IDENT
+    
+        
+        #zresponse=make_response(request,env)
+        #if self._force_connection_close:
+            #zresponse._http_connection = 'close'
+        #zrequest=HTTPRequest(sin, env, zresponse)
         request.channel.current_request=None
-        request.channel.queue.append((self.module_name, zrequest, zresponse))
+        request.channel.queue.append((self.module_name, env, None))
         request.channel.work()
 
     def status(self):

@@ -194,7 +194,7 @@ class ZServerHTTPResponse(HTTPResponse):
 
     _retried_response = None
 
-    def _finish(self):
+    def _finish(self, close_output=1):
         if self._retried_response:
             try:
                 self._retried_response._finish()
@@ -209,7 +209,8 @@ class ZServerHTTPResponse(HTTPResponse):
             self._tempfile=None
 
         stdout.finish(self)
-        stdout.close()
+        if close_output:
+            stdout.close()
 
         self.stdout=None # need to break cycle?
         self._request=None
@@ -318,7 +319,6 @@ proxying_connection_re = re.compile ('Proxy-Connection: (.*)', re.IGNORECASE)
 def make_response(request, headers):
     "Simple http response factory"
     # should this be integrated into the HTTPResponse constructor?
-
     response=ZServerHTTPResponse(stdout=ChannelPipe(request), stderr=StringIO())
     response._http_version=request.version
     if request.version=='1.0' and is_proxying_match(request.request):

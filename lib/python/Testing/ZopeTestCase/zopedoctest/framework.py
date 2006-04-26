@@ -43,7 +43,7 @@ The following code should be at the top of every test module:
   if __name__ == '__main__':
       framework()
 
-$Id:$
+$Id$
 """
 
 __version__ = '0.2.4'

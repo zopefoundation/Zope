@@ -13,7 +13,7 @@
 """Parts of ZServer support are in this module so they can
 be imported more selectively.
 
-$Id: threadutils.py,v 1.6 2004/08/19 15:31:26 shh42 Exp $
+$Id$
 """
 
 from threading import Thread

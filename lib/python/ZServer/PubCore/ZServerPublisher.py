@@ -22,5 +22,5 @@ class ZServerPublisher:
                     request=request,
                     response=response)
             finally:
-                response._finish()
+                #response._finish()
                 request=response=None

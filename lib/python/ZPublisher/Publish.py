@@ -21,7 +21,6 @@ from Request import Request
 from maybe_lock import allocate_lock
 from mapply import mapply
 from zExceptions import Redirect
-from zope.app.publication.browser import setDefaultSkin
 
 class Retry(Exception):
     """Raise this to retry a request
@@ -57,7 +56,7 @@ def set_default_debug_mode(debug_mode):
 
 def set_default_authentication_realm(realm):
     global _default_realm
-    _default_realm = realm
+    _default_realm = realm        
 
 def publish(request, module_name, after_list, debug=0,
             # Optimize:
@@ -169,8 +168,120 @@ def publish(request, module_name, after_list, debug=0,
                 transactions_manager.abort()
             raise
 
+from HTTPRequest import HTTPRequest
+from ZServer.HTTPResponse import make_response
+
+class WSGIPublisherApplication(object):
+    """A WSGI application implementation for the zope publisher
+
+    Instances of this class can be used as a WSGI application object.
+
+    The class relies on a properly initialized request factory.
+    """
+    #implements(interfaces.IWSGIApplication)
+    def __init__(self, response):
+        self.response = response
+
+    def __call__(self, environ, start_response):
+        """See zope.app.wsgi.interfaces.IWSGIApplication"""
+        from ZServer.HTTPResponse import ZServerHTTPResponse, is_proxying_match, proxying_connection_re
+        from ZServer.medusa import http_server
+        from cStringIO import StringIO
+        
+        response = ZServerHTTPResponse(stdout=environ['wsgi.output'], stderr=StringIO())
+        response._http_version = environ['SERVER_PROTOCOL'].split('/')[1]
+        response._http_connection = environ['CONNECTION_TYPE']
+        response._server_version = environ['SERVER_SOFTWARE']
+
+        request = HTTPRequest(environ['wsgi.input'], environ, response)
+
+        # Let's support post-mortem debugging
+        handle_errors = environ.get('wsgi.handleErrors', True)
+        
+        try:
+            response = publish(request, 'Zope2', after_list=[None], 
+                               debug=handle_errors)
+        except SystemExit, v:
+            must_die=sys.exc_info()
+            request.response.exception(must_die)
+        except ImportError, v:
+            if isinstance(v, tuple) and len(v)==3: must_die=v
+            elif hasattr(sys, 'exc_info'): must_die=sys.exc_info()
+            else: must_die = SystemExit, v, sys.exc_info()[2]
+            request.response.exception(1, v)
+        except:
+            request.response.exception()
+            status=response.getStatus()
+
+        if response:
+            # Start the WSGI server response
+            start_response(response.getHeader('status'), 
+                           response.headers.items())
+            result=str(response)
+        # Return the result body iterable.
+        request.close()
+        #response._finish(0)
+        return (result,)
+    
+
+def fakeWrite(body):
+    raise NotImplementedError(
+        "Zope 2's HTTP Server does not support the WSGI write() function.")
 
 def publish_module_standard(module_name,
+                   stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr,
+                   environ=os.environ, debug=0, request=None, response=None):
+    # The WSGI way!
+
+    def wsgi_start_response(status,response_headers,exc_info=None):
+        # I don't understand what to do here. Start writing? At what?
+        return fakeWrite
+
+    must_die=0
+    status=200
+    after_list=[None]
+    if request is None:
+        env = environ.copy()
+    else:
+        env = request
+        
+    env['wsgi.input']        = sys.stdin
+    env['wsgi.errors']       = sys.stderr
+    env['wsgi.version']      = (1,0)
+    env['wsgi.multithread']  = True
+    env['wsgi.multiprocess'] = True
+    env['wsgi.run_once']     = True
+    env['wsgi.url_scheme']   = env['SERVER_PROTOCOL'].split('/')[0]
+    if not env.has_key('wsgi.output'):
+        env['wsgi.output'] = stdout
+
+    application = WSGIPublisherApplication(None)
+    body = application(env, wsgi_start_response)
+    env['wsgi.output'].write(body[0])
+    env['wsgi.output'].close()
+        
+    # The module defined a post-access function, call it
+    if after_list[0] is not None: after_list[0]()
+
+    if must_die:
+        # Try to turn exception value into an exit code.
+        try:
+            if hasattr(must_die[1], 'code'):
+                code = must_die[1].code
+            else: code = int(must_die[1])
+        except:
+            code = must_die[1] and 1 or 0
+        if hasattr(request.response, '_requestShutdown'):
+            request.response._requestShutdown(code)
+
+        try: raise must_die[0], must_die[1], must_die[2]
+        finally: must_die=None
+
+    return status
+
+
+
+def publish_module_standard_old(module_name,
                    stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr,
                    environ=os.environ, debug=0, request=None, response=None):
     must_die=0
