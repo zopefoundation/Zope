@@ -18,6 +18,9 @@ Zope Changes
 
     Restructuring
 
+      - ZCatalog: removed manage_deleteIndex(), manage_delColumns()
+        which were deprecated since Zope 2.4
+
       - deprecated the zLOG module. Use Pythons 'logging' module instead.
 
       - replaced all zLOG occurences (expect the zLOG module itself) with 

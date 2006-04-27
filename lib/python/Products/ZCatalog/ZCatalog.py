@@ -372,25 +372,6 @@ class ZCatalog(Folder, Persistent, Implicit):
                 '/manage_catalogSchema?manage_tabs_message=Column%20Added')
 
 
-    security.declareProtected(manage_zcatalog_entries, 'manage_delColumns')
-    def manage_delColumns(self, names, REQUEST=None, RESPONSE=None, URL1=None):
-        """ Deprecated method. Use manage_delColumn instead. """
-        # log a deprecation warning
-        import warnings
-        warnings.warn(
-            "The manage_delColumns method of ZCatalog is deprecated"
-            "since Zope 2.4.2.\n"
-            "This method is only kept for backwards compatibility "
-            "for a while\n"
-            "and will go away in a future release.\n"
-            "\n"
-            "Please use instead the manage_delColumn method.\n"
-            ,DeprecationWarning)
-
-        self.manage_delColumn(names, REQUEST=REQUEST, RESPONSE=RESPONSE,
-                              URL1=URL1)
-
-
     security.declareProtected(manage_zcatalog_entries, 'manage_delColumn')
     def manage_delColumn(self, names, REQUEST=None, RESPONSE=None, URL1=None):
         """ delete a column or some columns """
@@ -416,26 +397,6 @@ class ZCatalog(Folder, Persistent, Implicit):
             RESPONSE.redirect(
                 URL1 +
                 '/manage_catalogIndexes?manage_tabs_message=Index%20Added')
-
-
-    security.declareProtected(manage_zcatalog_entries, 'manage_deleteIndex')
-    def manage_deleteIndex(self, ids=None, REQUEST=None, RESPONSE=None,
-        URL1=None):
-        """ Deprecated method. Use manage_delIndex instead. """
-        # log a deprecation warning
-        import warnings
-        warnings.warn(
-            "The manage_deleteIndex method of ZCatalog is deprecated"
-            "since Zope 2.4.2.\n"
-            "This method is only kept for backwards compatibility for a "
-            "while\n"
-            "and will go away in a future release.\n"
-            "\n"
-            "Please use instead the manage_delIndex method.\n"
-            ,DeprecationWarning)
-
-        self.manage_delIndex(ids=ids, REQUEST=REQUEST, RESPONSE=RESPONSE,
-                             URL1=URL1)
 
 
     security.declareProtected(manage_zcatalog_entries, 'manage_delIndex')
