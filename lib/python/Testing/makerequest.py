@@ -62,7 +62,7 @@ def makerequest(app, stdout=stdout, environ=None):
     
     # set Zope3-style default skin so that the request is usable for
     # Zope3-style view look-ups.
-    from zope.app.publication.browser import setDefaultSkin
+    from zope.publisher.browser import setDefaultSkin
     setDefaultSkin(req)
 
     requestcontainer = RequestContainer(REQUEST = req)
