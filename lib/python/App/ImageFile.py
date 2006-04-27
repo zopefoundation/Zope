@@ -26,7 +26,7 @@ from Globals import package_home
 from Common import rfc1123_date
 from DateTime import DateTime
 
-from zope.app.contenttypes import guess_content_type
+from zope.contenttype import guess_content_type
 
 class ImageFile(Acquisition.Explicit):
     """Image objects stored in external files."""

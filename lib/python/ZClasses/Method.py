@@ -25,7 +25,7 @@ from zExceptions import BadRequest
 
 import marshal
 from cgi import escape
-from zope.app.contenttypes import guess_content_type
+from zope.contenttype import guess_content_type
 
 _marker=[]
 class ZClassMethodsSheet(

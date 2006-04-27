@@ -14,11 +14,10 @@
 
 $Id$
 """
-
 import warnings
 warnings.warn('Using OFS.content_types is deprecated (will be removed in Zope '
-              '2.11). Instead use zope.app.contenttypes.', 
+              '2.11). Instead use zope.contenttype.', 
               DeprecationWarning,
               stacklevel=2) 
 
-from zope.app.contenttypes import text_type, guess_content_type, add_files
+from zope.contenttype import text_type, guess_content_type, add_files
