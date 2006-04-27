@@ -25,6 +25,8 @@ from TaintedString import TaintedString
 from maybe_lock import allocate_lock
 xmlrpc=None # Placeholder for module that we'll import if we have to.
 
+from zope.publisher.base import DebugFlags
+
 # This may get overwritten during configuration
 default_encoding = 'iso-8859-15'
 
@@ -256,7 +258,8 @@ class HTTPRequest(BaseRequest):
         have_env=environ.has_key
         get_env=environ.get
         self.response=response
-        other=self.other={'RESPONSE': response}
+        other=self.other={'RESPONSE': response,
+                          'debug': DebugFlags()}
         self.form={}
         self.taintedform={}
         self.steps=[]
