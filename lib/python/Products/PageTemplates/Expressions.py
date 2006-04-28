@@ -299,8 +299,6 @@ def restrictedTraverse(object, path, securityManager,
 
         t=get(object, '__bobo_traverse__', N)
         if name and name[:1] in '@+':
-            import pdb
-            pdb.set_trace()
             # Process URI segment parameters.
             ns, nm = nsParse(name)
             if ns:
