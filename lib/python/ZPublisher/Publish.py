@@ -73,7 +73,6 @@ def publish(request, module_name, after_list, debug=0,
 
     parents=None
     response=None
-
     try:
         request.processInputs()
 
@@ -185,7 +184,7 @@ class WSGIPublisherApplication(object):
         
         response = ZServerHTTPResponse(stdout=environ['wsgi.output'], stderr=StringIO())
         response._http_version = environ['SERVER_PROTOCOL'].split('/')[1]
-        response._http_connection = environ['CONNECTION_TYPE']
+        response._http_connection = environ.get('CONNECTION_TYPE', 'close')
         response._server_version = environ['SERVER_SOFTWARE']
 
         request = Request(environ['wsgi.input'], environ, response)
@@ -215,7 +214,7 @@ class WSGIPublisherApplication(object):
             result=str(response)
         # Return the result body iterable.
         request.close()
-        #response._finish(0)
+        response._finish(0)
         return (result,)
     
 
@@ -238,10 +237,6 @@ def publish_module_standard(module_name,
         env = environ.copy()
     else:
         env = request
-    
-    if not env.has_key('CONNECTION_TYPE'):
-        print env
-    env['wsgi.input']        = sys.stdin
     env['wsgi.errors']       = sys.stderr
     env['wsgi.version']      = (1,0)
     env['wsgi.multithread']  = True
@@ -250,12 +245,14 @@ def publish_module_standard(module_name,
     env['wsgi.url_scheme']   = env['SERVER_PROTOCOL'].split('/')[0]
     if not env.has_key('wsgi.output'):
         env['wsgi.output'] = stdout
+    if not env.has_key('wsgi.input'):
+        env['wsgi.input']        = stdin
 
     application = WSGIPublisherApplication()
     body = application(env, wsgi_start_response)
-    env['wsgi.output'].write(body[0])
+    for b in body:
+        env['wsgi.output'].write(b)
     env['wsgi.output'].close()
-        
     # The module defined a post-access function, call it
     if after_list[0] is not None: after_list[0]()
 

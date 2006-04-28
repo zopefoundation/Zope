@@ -264,6 +264,7 @@ class zhttp_handler:
 
         env=self.get_environment(request)
         env['wsgi.output'] = ChannelPipe(request)
+        env['wsgi.input'] = sin
         version = request.version
         if version=='1.0' and is_proxying_match(request.request):
             # a request that was made as if this zope was an http 1.0 proxy.
