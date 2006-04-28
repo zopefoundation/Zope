@@ -49,6 +49,17 @@ Zope Changes
 
     Features added
 
+      - The traversal has been refactored to take heed of Zope3s 
+        IPublishTraverse adapter interfaces. The ZCML directives 
+        five:traversable and five:defaultViewable are therefore no
+        longer needed, as everything now is five:traversable and
+        five:defaultViewable. 
+
+        There was a bug in earlier versions of Five that allowed you 
+        to do custom publishing traversal with ITraversable adapters.
+        This bug has been corrected. Anybody using ITraversable 
+        adapters need to convert them to IPublishTraversal adapters.
+
       - Testing.makerequest: Added an 'environ' argument so
         clients can use mappings other than os.environ.
 

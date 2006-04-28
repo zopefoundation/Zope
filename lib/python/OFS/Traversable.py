@@ -25,9 +25,14 @@ from AccessControl.ZopeGuards import guarded_getattr
 from Acquisition import Acquired, aq_inner, aq_parent, aq_base
 from zExceptions import NotFound
 from ZODB.POSException import ConflictError
-from zope.interface import implements
+from zope.interface import implements, Interface
 
 from interfaces import ITraversable
+from zope.app.traversing.interfaces import ITraversable as IZope3Traversable
+from zope.component import queryMultiAdapter
+from zope.app.traversing.interfaces import TraversalError
+from zope.app.traversing.namespace import nsParse
+from zope.app.traversing.namespace import namespaceLookup
 
 _marker = object()
 
@@ -59,6 +64,7 @@ class Traversable:
             return self.virtual_url_path()
 
         spp = self.getPhysicalPath()
+            
         try:
             toUrl = self.REQUEST.physicalPathToURL
         except AttributeError:
@@ -133,7 +139,6 @@ class Traversable:
         If true, then all of the objects along the path are validated with
         the security machinery. Usually invoked using restrictedTraverse().
         """
-
         if not path:
             return self
 
@@ -188,7 +193,19 @@ class Traversable:
                         continue
 
                 bobo_traverse = _getattr(obj, '__bobo_traverse__', _none)
-                if bobo_traverse is not _none:
+                if name and name[:1] in '@+':
+                    # Process URI segment parameters.
+                    ns, nm = nsParse(name)
+                    if ns:
+                        try:
+                            next = namespaceLookup(ns, nm, obj, 
+                                                   self.REQUEST).__of__(obj)
+                            if restricted and not securityManager.validate(
+                                obj, obj, name, next):
+                                raise Unauthorized, name
+                        except TraversalError:
+                            raise AttributeError(name)
+                elif bobo_traverse is not _none:
                     next = bobo_traverse(REQUEST, name)
                     if restricted:
                         if aq_base(next) is not next:
@@ -228,11 +245,20 @@ class Traversable:
                         next = _getattr(obj, name, marker)
                     if next is marker:
                         try:
-                            next=obj[name]
-                        except AttributeError:
-                            # Raise NotFound for easier debugging
-                            # instead of AttributeError: __getitem__
-                            raise NotFound, name
+                            try:
+                                next=obj[name]
+                            except AttributeError:
+                                # Raise NotFound for easier debugging
+                                # instead of AttributeError: __getitem__
+                                raise NotFound, name
+                        except (NotFound, KeyError): 
+                            # Try to look for a view
+                            next = queryMultiAdapter((obj, self.REQUEST), 
+                                                     Interface, name)
+                            if next is None:
+                                # Didn't find one, reraise the error:
+                                raise
+                            next = next.__of__(obj)
                         if restricted and not securityManager.validate(
                             obj, obj, _none, next):
                             raise Unauthorized, name
