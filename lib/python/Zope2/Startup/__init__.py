@@ -117,7 +117,7 @@ class ZopeStarter:
             config = getConfiguration()
             if config.twisted_servers:
                 if not _use_twisted:
-                    raise ValueError, "You do not have twisted installed."
+                    raise ImportError("You do not have twisted installed.")
                 twisted.internet.reactor.run()
             else:
                 import ZServer

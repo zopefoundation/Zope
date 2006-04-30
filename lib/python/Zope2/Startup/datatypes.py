@@ -345,4 +345,5 @@ try:
         pass
 except ImportError:
     class TwistedServerFactory:
-        pass
+        def __init__(self, section):
+            raise ImportError("You do not have twisted installed.")
