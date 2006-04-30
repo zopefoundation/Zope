@@ -20,11 +20,10 @@ import sys
 import socket
 from re import compile
 from socket import gethostbyaddr
+import twisted.internet.reactor
 
 import ZConfig
-
 from ZConfig.components.logger import loghandler
-
 
 logger = logging.getLogger("Zope")
 started = False
@@ -96,7 +95,10 @@ class ZopeStarter:
         self.makePidFile()
         self.setupInterpreter()
         self.startZope()
-        self.registerSignals()
+        from App.config import getConfiguration
+        config = getConfiguration()
+        if not config.twisted_servers:
+            self.registerSignals()
         # emit a "ready" message in order to prevent the kinds of emails
         # to the Zope maillist in which people claim that Zope has "frozen"
         # after it has emitted ZServer messages.
@@ -106,10 +108,15 @@ class ZopeStarter:
     def run(self):
         # the mainloop.
         try:
-            import ZServer
-            import Lifetime
-            Lifetime.loop()
-            sys.exit(ZServer.exit_code)
+            from App.config import getConfiguration
+            config = getConfiguration()
+            if config.twisted_servers:
+                twisted.internet.reactor.run()
+            else:
+                import ZServer
+                import Lifetime
+                Lifetime.loop()
+                sys.exit(ZServer.exit_code)
         finally:
             self.shutdown()
 
