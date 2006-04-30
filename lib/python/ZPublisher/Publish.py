@@ -122,7 +122,6 @@ def publish(request, module_name, after_list, debug=0,
 
         return response
     except:
-
         # DM: provide nicer error message for FTP
         sm = None
         if response is not None:

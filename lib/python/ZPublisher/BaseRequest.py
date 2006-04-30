@@ -16,10 +16,22 @@ $Id$
 """
 from urllib import quote
 import xmlrpc
-from zExceptions import Forbidden
+from zExceptions import Forbidden, Unauthorized, NotFound
 
+from zope.interface import implements, providedBy, Interface
+from zope.component import queryMultiAdapter
+from zope.component import getSiteManager
+from zope.component.interfaces import ComponentLookupError
 from zope.event import notify
 from zope.app.publication.interfaces import EndRequestEvent
+from zope.app.publisher.browser import queryDefaultViewName
+from zope.publisher.interfaces import IPublishTraverse
+from zope.component.interfaces import IDefaultViewName
+from zope.publisher.interfaces.browser import IBrowserPublisher
+from zope.publisher.interfaces.browser import IBrowserRequest
+from zope.app.traversing.interfaces import TraversalError
+from zope.app.traversing.namespace import nsParse
+from zope.app.traversing.namespace import namespaceLookup
 
 UNSPECIFIED_ROLES=''
 
@@ -45,6 +57,86 @@ except ImportError:
     def getRoles(container, name, value, default):
         return getattr(value, '__roles__', default)
 
+class DefaultPublishTraverse(object):
+
+    implements(IBrowserPublisher)
+    
+    def __init__(self, context, request):
+        self.context = context
+        self.request = request
+        
+    def publishTraverse(self, request, name):
+        object = self.context
+        URL=request['URL']
+
+        if name[:1]=='_':
+            raise Forbidden("Object name begins with an underscore at: %s" % URL)
+
+        try:
+            if hasattr(object,'__bobo_traverse__'):
+                subobject=object.__bobo_traverse__(request, name)
+                if type(subobject) is type(()) and len(subobject) > 1:
+                    # Add additional parents into the path
+                    # XXX This needs handling. Check the publish refactor branch...
+                    parents[-1:] = list(subobject[:-1])
+                    object, subobject = subobject[-2:]
+            else:
+                try:
+                    subobject=getattr(object, name)
+                except AttributeError:
+                    subobject=object[name]
+             
+        except (AttributeError, KeyError, NotFound):
+            # Find a view even if it doesn't start with @@, but only
+            # If nothing else could be found
+            subobject = queryMultiAdapter((object, request), Interface, name)
+            if subobject is not None:
+                # OFS.Application.__bobo_traverse__ calls
+                # REQUEST.RESPONSE.notFoundError which sets the HTTP
+                # status code to 404
+                request.RESPONSE.setStatus(200)
+                # We don't need to do the docstring security check
+                # for views, so lets skip it and return the object here.
+                return subobject.__of__(object) 
+            raise
+
+        # Ensure that the object has a docstring, or that the parent
+        # object has a pseudo-docstring for the object. Objects that
+        # have an empty or missing docstring are not published.
+        doc = getattr(subobject, '__doc__', None)
+        if doc is None:
+            doc = getattr(object, '%s__doc__' % name, None)
+        if not doc:
+            raise Forbidden(
+                "The object at %s has an empty or missing " \
+                "docstring. Objects must have a docstring to be " \
+                "published." % URL
+                )
+
+        # Hack for security: in Python 2.2.2, most built-in types
+        # gained docstrings that they didn't have before. That caused
+        # certain mutable types (dicts, lists) to become publishable
+        # when they shouldn't be. The following check makes sure that
+        # the right thing happens in both 2.2.2+ and earlier versions.
+
+        if not typeCheck(subobject):
+            raise Forbidden(
+                "The object at %s is not publishable." % URL
+                )
+
+        return subobject
+    
+    def browserDefault(self, request):
+        if hasattr(self.context, '__browser_default__'):
+            return self.context.__browser_default__(request)
+        # Zope 3.2 still uses IDefaultView name when it
+        # registeres default views, even though it's
+        # deprecated. So we handle that here:
+        default_name = queryDefaultViewName(self.context, request)
+        if default_name is not None:
+            return self.context, (default_name,)
+        return self.context, ()
+        
 
 _marker=[]
 class BaseRequest:
@@ -184,6 +276,35 @@ class BaseRequest:
     __repr__=__str__
 
 
+    def traverseName(self, ob, name):
+        if name and name[:1] in '@+':
+            # Process URI segment parameters.
+            ns, nm = nsParse(name)
+            if ns:
+                try:
+                    ob2 = namespaceLookup(ns, nm, ob, self)
+                except TraversalError:
+                    raise KeyError(ob, name)
+
+                return ob2.__of__(ob)
+
+        if name == '.':
+            return ob
+
+        if IPublishTraverse.providedBy(ob):
+            ob2 = ob.publishTraverse(self, name)
+        else:
+            adapter = queryMultiAdapter((ob, self), IPublishTraverse)
+            if adapter is None:
+                ## Zope2 doesn't set up its own adapters in a lot of cases
+                ## so we will just use a default adapter.
+                adapter = DefaultPublishTraverse(ob, self)
+
+            ob2 = adapter.publishTraverse(self, name)
+
+        return ob2
+
+
     def traverse(self, path, response=None, validated_hook=None):
         """Traverse the object space
 
@@ -193,7 +314,6 @@ class BaseRequest:
         request=self
         request_get=request.get
         if response is None: response=self.response
-        debug_mode=response.debug_mode
 
         # remember path for later use
         browser_path = path
@@ -235,14 +355,14 @@ class BaseRequest:
         object=parents[-1]
         del parents[:]
 
-        roles = getRoles(None, None, object, UNSPECIFIED_ROLES)
+        self.roles = getRoles(None, None, object, UNSPECIFIED_ROLES)
 
         # if the top object has a __bobo_traverse__ method, then use it
         # to possibly traverse to an alternate top-level object.
         if hasattr(object,'__bobo_traverse__'):
             try:
                 object=object.__bobo_traverse__(request)
-                roles = getRoles(None, None, object, UNSPECIFIED_ROLES)
+                self.roles = getRoles(None, None, object, UNSPECIFIED_ROLES)
             except: pass
 
         if not path and not method:
@@ -277,125 +397,101 @@ class BaseRequest:
                 path = request.path = request['TraversalRequestNameStack']
                 # Check for method:
                 if path:
-                    entry_name = path.pop()
-                elif hasattr(object, '__browser_default__'):
-                    # If we have reached the end of the path. We look to see
-                    # if the object implements __browser_default__. If so, we
-                    # call it to let the object tell us how to publish it
-                    # __browser_default__ returns the object to be published
-                    # (usually self) and a sequence of names to traverse to
-                    # find the method to be published. (Casey)
-                    request._hacked_path=1
-                    object, default_path = object.__browser_default__(request)
-                    if len(default_path) > 1:
-                        path = list(default_path)
-                        method = path.pop()
-                        request['TraversalRequestNameStack'] = path
-                        continue
-                    else:
-                        entry_name = default_path[0]
-                elif (method and hasattr(object,method)
-                      and entry_name != method
-                      and getattr(object, method) is not None):
-                    request._hacked_path=1
-                    entry_name = method
-                    method = 'index_html'
+                    entry_name = path.pop() 
                 else:
-                    if (hasattr(object, '__call__')):
-                        roles = getRoles(object, '__call__', object.__call__,
-                                         roles)
-                    if request._hacked_path:
-                        i=URL.rfind('/')
-                        if i > 0: response.setBase(URL[:i])
-                    break
+                    # If we have reached the end of the path, we look to see
+                    # if we can find IBrowserPublisher.browserDefault. If so,
+                    # we call it to let the object tell us how to publish it
+                    # BrowserDefault returns the object to be published
+                    # (usually self) and a sequence of names to traverse to
+                    # find the method to be published.
+                    if (IBrowserPublisher.providedBy(object) or 
+                        IDefaultViewName.providedBy(object)):
+                        adapter = object
+                    else:
+                        adapter = queryMultiAdapter((object, self), 
+                                                    IBrowserPublisher)
+                        if adapter is None:
+                            # Zope2 doesn't set up its own adapters in a lot
+                            # of cases so we will just use a default adapter.
+                            adapter = DefaultPublishTraverse(object, self)
+                    
+                    newobject, default_path = adapter.browserDefault(self)
+                    if default_path or newobject is not object:
+                        object = newobject
+                        request._hacked_path=1
+                        if len(default_path) > 1:
+                            path = list(default_path)
+                            method = path.pop()
+                            request['TraversalRequestNameStack'] = path
+                            continue
+                        else:
+                            entry_name = default_path[0]
+                    elif (method and hasattr(object,method)
+                          and entry_name != method
+                          and getattr(object, method) is not None):
+                        request._hacked_path=1
+                        entry_name = method
+                        method = 'index_html'
+                    else:
+                        if hasattr(object, '__call__'):
+                            self.roles = getRoles(object, '__call__', object.__call__,
+                                                  self.roles)
+                        if request._hacked_path:
+                            i=URL.rfind('/')
+                            if i > 0: response.setBase(URL[:i])
+                        break
                 step = quote(entry_name)
                 _steps.append(step)
                 request['URL'] = URL = '%s/%s' % (request['URL'], step)
-                got = 0
-                if entry_name[:1]=='_':
-                    if debug_mode:
+                
+                try:
+                    subobject = self.traverseName(object, entry_name)
+                    if (hasattr(object,'__bobo_traverse__') or 
+                        hasattr(object, entry_name)):
+                        check_name = entry_name
+                    else:
+                        check_name = None
+                    
+                    self.roles = getRoles(
+                        object, check_name, subobject,
+                        self.roles)
+                    object = subobject
+                except (KeyError, AttributeError):
+                    if response.debug_mode:
                         return response.debugError(
-                          "Object name begins with an underscore at: %s" % URL)
-                    else: return response.forbiddenError(entry_name)
+                            "Cannot locate object at: %s" % URL)
+                    else:
+                        return response.notFoundError(URL)
+                except Forbidden, e:
+                    if self.response.debug_mode:
+                        return response.debugError(e.args)
+                    else: 
+                        return response.forbiddenError(entry_name)
+                    
 
-                if hasattr(object,'__bobo_traverse__'):
-                    try:
-                        subobject=object.__bobo_traverse__(request,entry_name)
-                        if type(subobject) is type(()) and len(subobject) > 1:
-                            # Add additional parents into the path
-                            parents[-1:] = list(subobject[:-1])
-                            object, subobject = subobject[-2:]
-                    except (AttributeError, KeyError):
-                        if debug_mode:
-                            return response.debugError(
-                                "Cannot locate object at: %s" % URL)
-                        else:
-                            return response.notFoundError(URL)
-                else:
-                    try:
-                        # Note - no_acquire_flag is necessary to support
-                        # things like DAV.  We have to make sure
-                        # that the target object is not acquired
-                        # if the request_method is other than GET
-                        # or POST. Otherwise, you could never use
-                        # PUT to add a new object named 'test' if
-                        # an object 'test' existed above it in the
-                        # heirarchy -- you'd always get the
-                        # existing object :(
-
-                        if (no_acquire_flag and len(path) == 0 and
-                            hasattr(object, 'aq_base')):
-                            if hasattr(object.aq_base, entry_name):
-                                subobject=getattr(object, entry_name)
-                            else: raise AttributeError, entry_name
-                        else: subobject=getattr(object, entry_name)
-                    except AttributeError:
-                        got=1
-                        try: subobject=object[entry_name]
-                        except (KeyError, IndexError,
-                                TypeError, AttributeError):
-                            if debug_mode:
-                                return response.debugError(
-                                    "Cannot locate object at: %s" % URL)
-                            else:
-                                return response.notFoundError(URL)
-
-                # Ensure that the object has a docstring, or that the parent
-                # object has a pseudo-docstring for the object. Objects that
-                # have an empty or missing docstring are not published.
-                doc = getattr(subobject, '__doc__', None)
-                if doc is None:
-                    doc = getattr(object, '%s__doc__' % entry_name, None)
-                if not doc:
-                    return response.debugError(
-                        "The object at %s has an empty or missing " \
-                        "docstring. Objects must have a docstring to be " \
-                        "published." % URL
-                        )
-
-                # Hack for security: in Python 2.2.2, most built-in types
-                # gained docstrings that they didn't have before. That caused
-                # certain mutable types (dicts, lists) to become publishable
-                # when they shouldn't be. The following check makes sure that
-                # the right thing happens in both 2.2.2+ and earlier versions.
-
-                if not typeCheck(subobject):
-                    return response.debugError(
-                        "The object at %s is not publishable." % URL
-                        )
-
-                roles = getRoles(
-                    object, (not got) and entry_name or None, subobject,
-                    roles)
-
-                # Promote subobject to object
-                object=subobject
                 parents.append(object)
 
                 steps.append(entry_name)
         finally:
             parents.reverse()
- 
+        
+        # Note - no_acquire_flag is necessary to support
+        # things like DAV.  We have to make sure
+        # that the target object is not acquired
+        # if the request_method is other than GET
+        # or POST. Otherwise, you could never use
+        # PUT to add a new object named 'test' if
+        # an object 'test' existed above it in the
+        # heirarchy -- you'd always get the
+        # existing object :(
+        if (no_acquire_flag and
+            hasattr(parents[1], 'aq_base') and 
+            not hasattr(parents[1],'__bobo_traverse__')):
+            if not (hasattr(parents[1].aq_base, entry_name) or
+                    parents[1].aq_base.has_key(entry_name)):
+                raise AttributeError, entry_name
+            
         # After traversal post traversal hooks aren't available anymore
         del self._post_traverse
 
@@ -427,25 +523,25 @@ class BaseRequest:
 
                 auth=request._auth
 
-                if v is old_validation and roles is UNSPECIFIED_ROLES:
+                if v is old_validation and self.roles is UNSPECIFIED_ROLES:
                     # No roles, so if we have a named group, get roles from
                     # group keys
-                    if hasattr(groups,'keys'): roles=groups.keys()
+                    if hasattr(groups,'keys'): self.roles=groups.keys()
                     else:
                         try: groups=groups()
                         except: pass
-                        try: roles=groups.keys()
+                        try: self.roles=groups.keys()
                         except: pass
 
                     if groups is None:
                         # Public group, hack structures to get it to validate
-                        roles=None
+                        self.roles=None
                         auth=''
 
                 if v is old_validation:
-                    user=old_validation(groups, request, auth, roles)
-                elif roles is UNSPECIFIED_ROLES: user=v(request, auth)
-                else: user=v(request, auth, roles)
+                    user=old_validation(groups, request, auth, self.roles)
+                elif self.roles is UNSPECIFIED_ROLES: user=v(request, auth)
+                else: user=v(request, auth, self.roles)
 
                 while user is None and i < last_parent_index:
                     parent=parents[i]
@@ -456,11 +552,11 @@ class BaseRequest:
                     if hasattr(groups,'validate'): v=groups.validate
                     else: v=old_validation
                     if v is old_validation:
-                        user=old_validation(groups, request, auth, roles)
-                    elif roles is UNSPECIFIED_ROLES: user=v(request, auth)
-                    else: user=v(request, auth, roles)
+                        user=old_validation(groups, request, auth, self.roles)
+                    elif self.roles is UNSPECIFIED_ROLES: user=v(request, auth)
+                    else: user=v(request, auth, self.roles)
 
-            if user is None and roles != UNSPECIFIED_ROLES:
+            if user is None and self.roles != UNSPECIFIED_ROLES:
                 response.unauthorized()
 
         if user is not None:

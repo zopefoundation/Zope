@@ -14,13 +14,24 @@
 class ZServerPublisher:
     def __init__(self, accept):
         from ZPublisher import publish_module
+        from ZPublisher.WSGIPublisher import publish_module as publish_wsgi
         while 1:
-            try:
-                name, request, response=accept()
-                publish_module(
-                    name,
-                    request=request,
-                    response=response)
-            finally:
-                response._finish()
-                request=response=None
+            name, a, b=accept()
+            if name == "Zope2":
+                try:
+                    publish_module(
+                        name,
+                        request=a,
+                        response=b)
+                finally:
+                    b._finish()
+                    a=b=None
+
+            elif name == "Zope2WSGI":
+                try:
+                    res = publish_wsgi(a, b)
+                    for r in res:
+                        a['wsgi.output'].write(r)
+                finally:
+                    a['wsgi.output']._close = 1
+                    a['wsgi.output'].close()

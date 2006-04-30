@@ -248,12 +248,28 @@ class NotExpr:
     def __repr__(self):
         return 'not:%s' % `self._s`
 
+from zope.interface import Interface, implements
+from zope.component import queryMultiAdapter
+from zope.app.traversing.namespace import nsParse
+from zope.app.traversing.namespace import namespaceLookup
+from zope.app.traversing.interfaces import TraversalError
+from zope.publisher.interfaces.browser import IBrowserRequest
+from zope.app.publication.browser import setDefaultSkin
+
+class FakeRequest(dict):
+    implements(IBrowserRequest)
+
+    def getURL(self):
+        return "http://codespeak.net/z3/five"
+
 def restrictedTraverse(object, path, securityManager,
                        get=getattr, has=hasattr, N=None, M=[],
                        TupleType=type(()) ):
 
-    REQUEST = {'path': path}
+    REQUEST = FakeRequest()
+    REQUEST['path'] = path
     REQUEST['TraversalRequestNameStack'] = path = path[:] # Copy!
+    setDefaultSkin(REQUEST)
     path.reverse()
     validate = securityManager.validate
     __traceback_info__ = REQUEST
@@ -282,7 +298,18 @@ def restrictedTraverse(object, path, securityManager,
                 continue
 
         t=get(object, '__bobo_traverse__', N)
-        if t is not N:
+        if name and name[:1] in '@+':
+            # Process URI segment parameters.
+            ns, nm = nsParse(name)
+            if ns:
+                try:
+                    o = namespaceLookup(ns, nm, object, 
+                                           REQUEST).__of__(object)
+                    if not validate(object, object, name, o):
+                        raise Unauthorized, name
+                except TraversalError:
+                    raise AttributeError(name)
+        elif t is not N:
             o=t(REQUEST, name)
 
             container = None
@@ -305,7 +332,16 @@ def restrictedTraverse(object, path, securityManager,
                     # XXX maybe in Python 2.2 we can just check whether
                     # the object has the attribute "__getitem__"
                     # instead of blindly catching exceptions.
-                    o = object[name]
+                    try:
+                        o = object[name]
+                    except (AttributeError, KeyError):
+                        # Try to look for a view
+                        o = queryMultiAdapter((object, REQUEST), 
+                                                 Interface, name)
+                        if o is None:
+                            # Didn't find one, reraise the error:
+                            raise
+                        o = o.__of__(object)
                 except AttributeError, exc:
                     if str(exc).find('__getitem__') >= 0:
                         # The object does not support the item interface.
