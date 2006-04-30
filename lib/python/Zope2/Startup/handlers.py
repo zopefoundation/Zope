@@ -5,10 +5,29 @@ import logging
 from re import compile
 from socket import gethostbyaddr
 
-import twisted.internet
-from twisted.application.service import MultiService
-import zope.app.appsetup.interfaces
-import zope.app.twisted.main
+try:
+    import twisted.internet
+    from twisted.application.service import MultiService
+    import zope.app.appsetup.interfaces
+    import zope.app.twisted.main
+
+    import twisted.web2.wsgi
+    import twisted.web2.server
+    import twisted.web2.log
+    
+    try:
+        from twisted.web2.http import HTTPFactory
+    except ImportError:
+        from twisted.web2.channel.http import HTTPFactory
+    
+    from zope.component import provideUtility
+    from zope.app.twisted.server import ServerType, SSLServerType
+    from zope.app.twisted.interfaces import IServerType
+    from ZPublisher.WSGIPublisher import publish_module
+    
+    _use_twisted = True
+except ImportError:
+    _use_twisted = False
 
 # top-level key handlers
 
@@ -242,29 +261,15 @@ def _name2Ips(host, isIp_=compile(r'(\d+\.){3}').match):
     if isIp_(host): return [host]
     return gethostbyaddr(host)[2]
 
-# XXX Need to find a better place for this.
 
-import twisted.web2.wsgi
-import twisted.web2.server
-import twisted.web2.log
-
-try:
-    from twisted.web2.http import HTTPFactory
-except ImportError:
-    from twisted.web2.channel.http import HTTPFactory
-
-from zope.component import provideUtility
-from zope.app.twisted.server import ServerType, SSLServerType
-from zope.app.twisted.interfaces import IServerType
-from ZPublisher.WSGIPublisher import publish_module
+# Twisted support:
 
 def createHTTPFactory(ignored):
-    resource = twisted.web2.wsgi.WSGIResource(
-        publish_module)
+    resource = twisted.web2.wsgi.WSGIResource(publish_module)
     resource = twisted.web2.log.LogWrapperResource(resource)
 
     return HTTPFactory(twisted.web2.server.Site(resource))
 
-http = ServerType(createHTTPFactory, 8080)
-
-provideUtility(http, IServerType, 'Zope2-HTTP')
+if _use_twisted:
+    http = ServerType(createHTTPFactory, 8080)
+    provideUtility(http, IServerType, 'Zope2-HTTP')
