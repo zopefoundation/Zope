@@ -20,7 +20,12 @@ import sys
 import socket
 from re import compile
 from socket import gethostbyaddr
-import twisted.internet.reactor
+try:
+    import twisted.internet.reactor
+    _use_twisted = True
+except ImportError:
+    _use_twisted = True
+    
 
 import ZConfig
 from ZConfig.components.logger import loghandler
@@ -111,6 +116,8 @@ class ZopeStarter:
             from App.config import getConfiguration
             config = getConfiguration()
             if config.twisted_servers:
+                if not _use_twisted:
+                    raise ValueError, "You do not have twisted installed."
                 twisted.internet.reactor.run()
             else:
                 import ZServer

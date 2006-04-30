@@ -11,7 +11,7 @@
   <import package="tempstorage"/>
   <import package="Zope2.Startup" file="warnfilter.xml"/>
 
-  <sectiontype name="server" datatype="zope.app.twisted.server.ServerFactory">
+  <sectiontype name="server" datatype="Zope2.Startup.datatypes.TwistedServerFactory">
     <key name="type" required="yes" />
     <key name="address" datatype="inet-address" />
     <key name="backlog" datatype="integer" default="50" />
