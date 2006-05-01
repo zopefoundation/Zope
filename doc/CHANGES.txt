@@ -18,6 +18,9 @@ Zope Changes
 
    Bugs fixed
 
+      - Collector #2061: Fix problems where windows line endings are passed
+        to restricted code compilers.
+
       - Collector #2072: Applied patch to fix problem with overly restrictive
         __bobo_traverse__ security and tests.
       
