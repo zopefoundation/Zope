@@ -18,7 +18,6 @@ $Id$
 """
 
 import warnings
-import sys
 from logging import getLogger
 
 from Acquisition import aq_base
@@ -153,7 +152,7 @@ def callManageBeforeDelete(ob, item, container):
     except ConflictError:
         raise
     except:
-        LOG.error('_delObject() threw', exc_info=sys.exc_info())
+        LOG.error('_delObject() threw', exc_info=True)
         # In debug mode when non-Manager, let exceptions propagate.
         if getConfiguration().debug_mode:
             if not getSecurityManager().getUser().has_role('Manager'):
