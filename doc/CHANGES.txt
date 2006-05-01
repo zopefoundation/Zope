@@ -219,6 +219,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #2061: Fix problems where windows line endings are passed
+        to restricted code compilers.
+
       - Collector #2051: Applied patch by Yoshinori Okuji to fix some
         XML export/import problems, including tests for that feature.
 
