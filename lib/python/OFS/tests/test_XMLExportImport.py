@@ -11,6 +11,7 @@
 #
 ##############################################################################
 import unittest
+import os
 import tempfile
 import transaction
 from StringIO import StringIO
@@ -68,16 +69,20 @@ class XMLExportImportTests(unittest.TestCase):
         transaction.savepoint(optimistic=True) # need an OID!
         oid = dm._p_oid
 
-        ostream = tempfile.NamedTemporaryFile(suffix='.xml')
+        handle, path = tempfile.mkstemp(suffix='.xml')
         try:
+            ostream = os.fdopen(handle,'wb')
             data = exportXML(connection, oid, ostream)
-            ostream.flush()
-            newobj = importXML(connection, ostream.name)
-        finally:
             ostream.close()
+            newobj = importXML(connection, path)
+            self.failUnless(isinstance(newobj, DTMLMethod))
+            self.assertEqual(newobj.read(), dm.read())
+        finally:
+            # if this operaiton fails with a 'Permission Denied' error,
+            # then comment it out as it's probably masking a failure in
+            # the block above.
+            os.remove(path)
 
-        self.failUnless(isinstance(newobj, DTMLMethod))
-        self.assertEqual(newobj.read(), dm.read())
 
     def test_OFS_ObjectManager__importObjectFromFile_xml(self):
         from OFS.DTMLMethod import DTMLMethod
@@ -95,13 +100,17 @@ class XMLExportImportTests(unittest.TestCase):
         oid = dm._p_oid
         sub = app._getOb('sub')
 
-        ostream = tempfile.NamedTemporaryFile(suffix='.xml')
+        handle, path = tempfile.mkstemp(suffix='.xml')
         try:
+            ostream = os.fdopen(handle,'wb')
             data = exportXML(connection, oid, ostream)
-            ostream.flush()
-            sub._importObjectFromFile(ostream.name, 0, 0)
-        finally:
             ostream.close()
+            sub._importObjectFromFile(path, 0, 0)
+        finally:
+            # if this operaiton fails with a 'Permission Denied' error,
+            # then comment it out as it's probably masking a failure in
+            # the block above.
+            os.remove(path)
 
 def test_suite():
     return unittest.TestSuite((
