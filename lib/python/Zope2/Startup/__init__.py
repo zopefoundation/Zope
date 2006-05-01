@@ -116,9 +116,13 @@ class ZopeStarter:
             from App.config import getConfiguration
             config = getConfiguration()
             import ZServer
+            if config.twisted_servers and config.servers:
+                raise ZConfig.ConfigurationError(
+                    "You can't run both ZServer servers and twisted servers.")
             if config.twisted_servers:
                 if not _use_twisted:
-                    raise ImportError("You do not have twisted installed.")
+                    raise ZConfig.ConfigurationError(
+                        "You do not have twisted installed.")
                 twisted.internet.reactor.run()
                 # Storing the exit code in the ZServer even for twisted, 
                 # but hey, it works...
