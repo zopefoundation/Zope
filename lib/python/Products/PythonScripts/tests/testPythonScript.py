@@ -223,7 +223,8 @@ class TestPythonScriptErrors(PythonScriptTestBase):
 
     def testBadImports(self):
         self.assertPSRaises(ImportError, body="from string import *")
-        self.assertPSRaises(ImportError, body="import mmap")
+        self.assertPSRaises(ImportError, body="from datetime import datetime")
+        #self.assertPSRaises(ImportError, body="import mmap")
 
     def testAttributeAssignment(self):
         # It's illegal to assign to attributes of anything that

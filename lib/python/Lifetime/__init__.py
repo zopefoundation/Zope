@@ -31,6 +31,11 @@ def shutdown(exit_code,fast = 0):
         import ZServer
         ZServer.exit_code = exit_code
         _shutdown_phase = 1
+        try:
+            from twisted.internet import reactor
+            reactor.callLater(0.1, reactor.stop)
+        except ImportError:
+            pass
     if fast:
         # Someone wants us to shutdown fast. This is hooked into SIGTERM - so
         # possibly the system is going down and we can expect a SIGKILL within

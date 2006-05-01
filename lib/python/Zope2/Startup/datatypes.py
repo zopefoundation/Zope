@@ -339,3 +339,11 @@ def zopeClassFactory(jar, module, name,
 # Zope class factory."  This no longer works with the implementation of
 # mounted databases, so we just use the zopeClassFactory as the default
 
+try:
+    from zope.app.twisted.server import ServerFactory
+    class TwistedServerFactory(ServerFactory):
+        pass
+except ImportError:
+    class TwistedServerFactory:
+        def __init__(self, section):
+            raise ImportError("You do not have twisted installed.")

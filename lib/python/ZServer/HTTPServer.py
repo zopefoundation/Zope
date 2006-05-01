@@ -279,6 +279,48 @@ class zhttp_handler:
             </ul>""" %(self.module_name, self.hits)
             )
 
+from HTTPResponse import ChannelPipe
+
+class zwsgi_handler(zhttp_handler):
+    
+    def continue_request(self, sin, request):
+        "continue handling request now that we have the stdin"
+
+        s=get_header(CONTENT_LENGTH, request.header)
+        if s:
+            s=int(s)
+        else:
+            s=0
+        DebugLogger.log('I', id(request), s)
+
+        env=self.get_environment(request)
+        version = request.version
+        if version=='1.0' and is_proxying_match(request.request):
+            # a request that was made as if this zope was an http 1.0 proxy.
+            # that means we have to use some slightly different http
+            # headers to manage persistent connections.
+            connection_re = proxying_connection_re
+        else:
+            # a normal http request
+            connection_re = CONNECTION
+        
+        env['http_connection'] = get_header(connection_re,
+                                            request.header).lower()
+        env['server_version']=request.channel.server.SERVER_IDENT
+
+        env['wsgi.output'] = ChannelPipe(request)
+        env['wsgi.input'] = sin
+        env['wsgi.errors']       = sys.stderr
+        env['wsgi.version']      = (1,0)
+        env['wsgi.multithread']  = True
+        env['wsgi.multiprocess'] = True
+        env['wsgi.run_once']     = True
+        env['wsgi.url_scheme']   = env['SERVER_PROTOCOL'].split('/')[0]
+
+        request.channel.current_request=None
+        request.channel.queue.append(('Zope2WSGI', env, 
+                                      env['wsgi.output'].start_response))
+        request.channel.work()
 
 
 class zhttp_channel(http_channel):

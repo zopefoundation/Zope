@@ -48,6 +48,27 @@ Zope Changes
       - Using FastCGI is offically deprecated.
 
     Features added
+    
+      - Experimental WSGI and Twisted support for http.
+        Zope now has a WSGI interface for integration with other
+        web-servers than ZServer. Most notably Twisted is supported.
+        The WSGI application is ZPublisher.WSGIPublisher.publish_module
+        
+        You can make ZServer use the twisted interface with the 
+        "use-wsgi on" keyword in the http-server section in zope.conf.
+        
+        You can run Twisted by installing Twisted (2.1 recommended) and
+        replacing the http-server section with a server section in 
+        zope.conf. It is not possible to run a Twisted server together with
+        a ZServer at the same time.
+        
+          <server>
+            address 8080
+            type Zope2-HTTP
+          </server>
+        
+        WSGI: http://www.python.org/dev/peps/pep-0333/
+        Twisted: http://twistedmatrix.com/
 
       - The traversal has been refactored to take heed of Zope3s 
         IPublishTraverse adapter interfaces. The ZCML directives 

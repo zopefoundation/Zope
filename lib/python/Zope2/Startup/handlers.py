@@ -1,7 +1,33 @@
 import os
 import sys
+import time
+import logging
 from re import compile
 from socket import gethostbyaddr
+
+try:
+    import twisted.internet
+    from twisted.application.service import MultiService
+    import zope.app.appsetup.interfaces
+    import zope.app.twisted.main
+
+    import twisted.web2.wsgi
+    import twisted.web2.server
+    import twisted.web2.log
+    
+    try:
+        from twisted.web2.http import HTTPFactory
+    except ImportError:
+        from twisted.web2.channel.http import HTTPFactory
+    
+    from zope.component import provideUtility
+    from zope.app.twisted.server import ServerType, SSLServerType
+    from zope.app.twisted.interfaces import IServerType
+    from ZPublisher.WSGIPublisher import publish_module
+    
+    _use_twisted = True
+except ImportError:
+    _use_twisted = False
 
 # top-level key handlers
 
@@ -133,7 +159,7 @@ def catalog_getObject_raises(value):
         "'catalog-getObject-raises' option will be removed in Zope 2.10:\n",
         DeprecationWarning)
 
-        from Products.ZCatalog import CatalogBrains 
+        from Products.ZCatalog import CatalogBrains
         CatalogBrains.GETOBJECT_RAISES = bool(value)
 
     return value
@@ -143,7 +169,8 @@ def catalog_getObject_raises(value):
 def root_handler(config):
     """ Mutate the configuration with defaults and perform
     fixups of values that require knowledge about configuration
-    values outside of their context. """
+    values outside of their context.
+    """
 
     # Set environment variables
     for k,v in config.environment.items():
@@ -165,7 +192,7 @@ def root_handler(config):
     instanceprod = os.path.join(config.instancehome, 'Products')
     if instanceprod not in config.products:
         config.products.append(instanceprod)
-    
+
     import Products
     L = []
     for d in config.products + Products.__path__:
@@ -189,6 +216,23 @@ def root_handler(config):
                         "Zope2",
                         config.cgi_environment,
                         config.port_base)
+
+    if not config.twisted_servers:
+        config.twisted_servers = []
+    else:
+        # Set number of threads (reuse zserver_threads variable)
+        twisted.internet.reactor.suggestThreadPoolSize(config.zserver_threads)
+
+        # Create a root service
+        rootService = MultiService()
+
+        for server in config.twisted_servers:
+            service = server.create(None)
+            service.setServiceParent(rootService)
+
+        rootService.startService()
+        twisted.internet.reactor.addSystemEventTrigger(
+            'before', 'shutdown', rootService.stopService)
 
     # set up trusted proxies
     if config.trusted_proxies:
@@ -217,3 +261,15 @@ def _name2Ips(host, isIp_=compile(r'(\d+\.){3}').match):
     if isIp_(host): return [host]
     return gethostbyaddr(host)[2]
 
+
+# Twisted support:
+
+def createHTTPFactory(ignored):
+    resource = twisted.web2.wsgi.WSGIResource(publish_module)
+    resource = twisted.web2.log.LogWrapperResource(resource)
+
+    return HTTPFactory(twisted.web2.server.Site(resource))
+
+if _use_twisted:
+    http = ServerType(createHTTPFactory, 8080)
+    provideUtility(http, IServerType, 'Zope2-HTTP')

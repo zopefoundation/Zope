@@ -19,6 +19,7 @@
          receive WebDAV source responses to GET requests.
        </description>
      </key>
+     <key name="use-wsgi" datatype="boolean" default="off" />
   </sectiontype>
 
   <sectiontype name="webdav-source-server"
@@ -26,6 +27,7 @@
                implements="ZServer.server">
      <key name="address" datatype="inet-binding-address"/>
      <key name="force-connection-close" datatype="boolean" default="off"/>
+     <key name="use-wsgi" datatype="boolean" default="off" />
   </sectiontype>
 
   <sectiontype name="persistent-cgi"

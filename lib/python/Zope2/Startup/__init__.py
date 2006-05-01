@@ -20,11 +20,15 @@ import sys
 import socket
 from re import compile
 from socket import gethostbyaddr
+try:
+    import twisted.internet.reactor
+    _use_twisted = True
+except ImportError:
+    _use_twisted = True
+    
 
 import ZConfig
-
 from ZConfig.components.logger import loghandler
-
 
 logger = logging.getLogger("Zope")
 started = False
@@ -96,7 +100,10 @@ class ZopeStarter:
         self.makePidFile()
         self.setupInterpreter()
         self.startZope()
-        self.registerSignals()
+        from App.config import getConfiguration
+        config = getConfiguration()
+        if not config.twisted_servers:
+            self.registerSignals()
         # emit a "ready" message in order to prevent the kinds of emails
         # to the Zope maillist in which people claim that Zope has "frozen"
         # after it has emitted ZServer messages.
@@ -106,10 +113,24 @@ class ZopeStarter:
     def run(self):
         # the mainloop.
         try:
+            from App.config import getConfiguration
+            config = getConfiguration()
             import ZServer
-            import Lifetime
-            Lifetime.loop()
-            sys.exit(ZServer.exit_code)
+            if config.twisted_servers and config.servers:
+                raise ZConfig.ConfigurationError(
+                    "You can't run both ZServer servers and twisted servers.")
+            if config.twisted_servers:
+                if not _use_twisted:
+                    raise ZConfig.ConfigurationError(
+                        "You do not have twisted installed.")
+                twisted.internet.reactor.run()
+                # Storing the exit code in the ZServer even for twisted, 
+                # but hey, it works...
+                sys.exit(ZServer.exit_code)
+            else:
+                import Lifetime
+                Lifetime.loop()
+                sys.exit(ZServer.exit_code)
         finally:
             self.shutdown()
 

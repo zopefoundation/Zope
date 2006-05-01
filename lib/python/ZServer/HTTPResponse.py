@@ -311,6 +311,16 @@ class ChannelPipe:
             self._close=1
         self._request.reply_code=response.status
 
+    def start_response(self, status, headers, exc_info=None):
+        # Used for WSGI
+        self._request.reply_code = int(status.split(' ')[0])
+        status = 'HTTP/%s %s\r\n' % (self._request.version, status)
+        self.write(status)
+        headers = '\r\n'.join([': '.join(x) for x in headers])
+        self.write(headers)
+        self.write('\r\n\r\n')
+        return self.write
+        
 
 is_proxying_match = re.compile(r'[^ ]* [^ \\]*:').match
 proxying_connection_re = re.compile ('Proxy-Connection: (.*)', re.IGNORECASE)

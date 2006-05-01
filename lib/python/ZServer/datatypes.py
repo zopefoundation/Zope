@@ -71,6 +71,7 @@ class HTTPServerFactory(ServerFactory):
         # webdav-source-server sections won't have webdav_source_clients:
         webdav_clients = getattr(section, "webdav_source_clients", None)
         self.webdav_source_clients = webdav_clients
+        self.use_wsgi = section.use_wsgi
 
     def create(self):
         from ZServer.AccessLogger import access_logger
@@ -86,7 +87,10 @@ class HTTPServerFactory(ServerFactory):
 
     def createHandler(self):
         from ZServer import HTTPServer
-        return HTTPServer.zhttp_handler(self.module, '', self.cgienv)
+        if self.use_wsgi:
+            return HTTPServer.zwsgi_handler(self.module, '', self.cgienv)
+        else:
+            return HTTPServer.zhttp_handler(self.module, '', self.cgienv)
 
 
 class WebDAVSourceServerFactory(HTTPServerFactory):

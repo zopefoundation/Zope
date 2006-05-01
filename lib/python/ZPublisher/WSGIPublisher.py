@@ -12,17 +12,108 @@
 ##############################################################################
 __doc__="""Python Object Publisher -- Publish Python objects on web servers
 
-$Id$"""
+$Id: Publish.py 67721 2006-04-28 14:57:35Z regebro $"""
 
-import sys, os
+import sys, os, re, time
 import transaction
 from Response import Response
 from Request import Request
 from maybe_lock import allocate_lock
 from mapply import mapply
 from zExceptions import Redirect
-from zope.app.publication.browser import setDefaultSkin
+from cStringIO import StringIO
+from ZServer.medusa.http_date import build_http_date
 
+class WSGIResponse(Response):
+    """A response object for WSGI
+
+    This Response object knows nothing about ZServer, but tries to be
+    compatible with the ZServerHTTPResponse. 
+    
+    Most significantly, streaming is not (yet) supported."""
+
+    _streaming = 0
+    
+    def __str__(self,
+                html_search=re.compile('<html>',re.I).search,
+                ):
+        if self._wrote:
+            if self._chunking:
+                return '0\r\n\r\n'
+            else:
+                return ''
+
+        headers=self.headers
+        body=self.body
+
+        # set 204 (no content) status if 200 and response is empty
+        # and not streaming
+        if not headers.has_key('content-type') and \
+                not headers.has_key('content-length') and \
+                not self._streaming and \
+                self.status == 200:
+            self.setStatus('nocontent')
+
+        # add content length if not streaming
+        if not headers.has_key('content-length') and \
+                not self._streaming:
+            self.setHeader('content-length',len(body))
+
+
+        content_length= headers.get('content-length', None)
+        if content_length>0 :
+            self.setHeader('content-length', content_length)
+
+        headersl=[]
+        append=headersl.append
+
+        status=headers.get('status', '200 OK')
+
+        # status header must come first.
+        append("HTTP/%s %s" % (self._http_version or '1.0' , status))
+        if headers.has_key('status'):
+            del headers['status']
+
+        # add zserver headers
+        append('Server: %s' % self._server_version)
+        append('Date: %s' % build_http_date(time.time()))
+
+        if self._http_version=='1.0':
+            if self._http_connection=='keep-alive' and \
+                    self.headers.has_key('content-length'):
+                self.setHeader('Connection','Keep-Alive')
+            else:
+                self.setHeader('Connection','close')
+
+        # Close the connection if we have been asked to.
+        # Use chunking if streaming output.
+        if self._http_version=='1.1':
+            if self._http_connection=='close':
+                self.setHeader('Connection','close')
+            elif not self.headers.has_key('content-length'):
+                if self.http_chunk and self._streaming:
+                    self.setHeader('Transfer-Encoding','chunked')
+                    self._chunking=1
+                else:
+                    self.setHeader('Connection','close')
+
+        for key, val in headers.items():
+            if key.lower()==key:
+                # only change non-literal header names
+                key="%s%s" % (key[:1].upper(), key[1:])
+                start=0
+                l=key.find('-',start)
+                while l >= start:
+                    key="%s-%s%s" % (key[:l],key[l+1:l+2].upper(),key[l+2:])
+                    start=l+1
+                    l=key.find('-',start)
+            append("%s: %s" % (key, val))
+        if self.cookies:
+            headersl=headersl+self._cookie_list()
+        headersl[len(headersl):]=[self.accumulated_headers, body]
+        return "\r\n".join(headersl)
+
+    
 class Retry(Exception):
     """Raise this to retry a request
     """
@@ -57,7 +148,7 @@ def set_default_debug_mode(debug_mode):
 
 def set_default_authentication_realm(realm):
     global _default_realm
-    _default_realm = realm
+    _default_realm = realm        
 
 def publish(request, module_name, after_list, debug=0,
             # Optimize:
@@ -72,7 +163,6 @@ def publish(request, module_name, after_list, debug=0,
 
     parents=None
     response=None
-
     try:
         request.processInputs()
 
@@ -122,6 +212,7 @@ def publish(request, module_name, after_list, debug=0,
 
         return response
     except:
+
         # DM: provide nicer error message for FTP
         sm = None
         if response is not None:
@@ -168,55 +259,59 @@ def publish(request, module_name, after_list, debug=0,
                 transactions_manager.abort()
             raise
 
+def publish_module_standard(environ, start_response):
 
-def publish_module_standard(module_name,
-                   stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr,
-                   environ=os.environ, debug=0, request=None, response=None):
     must_die=0
     status=200
     after_list=[None]
+    stdout = StringIO()
+    stderr = StringIO()
+    response = WSGIResponse(stdout=stdout, stderr=stderr)
+    response._http_version = environ['SERVER_PROTOCOL'].split('/')[1]
+    response._http_connection = environ.get('CONNECTION_TYPE', 'close')
+    response._server_version = environ['SERVER_SOFTWARE']
+
+    request = Request(environ['wsgi.input'], environ, response)
+
+    # Let's support post-mortem debugging
+    handle_errors = environ.get('wsgi.handleErrors', True)
+    
     try:
-        try:
-            if response is None:
-                response=Response(stdout=stdout, stderr=stderr)
-            else:
-                stdout=response.stdout
+        response = publish(request, 'Zope2', after_list=[None], 
+                           debug=handle_errors)
+    except SystemExit, v:
+        must_die=sys.exc_info()
+        request.response.exception(must_die)
+    except ImportError, v:
+        if isinstance(v, tuple) and len(v)==3: must_die=v
+        elif hasattr(sys, 'exc_info'): must_die=sys.exc_info()
+        else: must_die = SystemExit, v, sys.exc_info()[2]
+        request.response.exception(1, v)
+    except:
+        request.response.exception()
+        status=response.getStatus()
 
-            if request is None:
-                request=Request(stdin, environ, response)
+    if response:
+        # Start the WSGI server response
+        status = response.getHeader('status')
+        # ZServerHTTPResponse calculates all headers and things when you
+        # call it's __str__, so we need to get it, and then munge out
+        # the headers from it. It's a bit backwards, and we might optimize
+        # this by not using ZServerHTTPResponse at all, and making the 
+        # HTTPResponses more WSGI friendly. But this works.
+        result = str(response)
+        headers, body = result.split('\r\n\r\n',1)
+        headers = [tuple(n.split(': ',1)) for n in headers.split('\r\n')[1:]]
+        start_response(status, headers)
+        # If somebody used response.write, that data will be in the
+        # stdout StringIO, so we put that before the body.
+        # XXX This still needs verification that it really works.
+        result=(stdout.getvalue(), body)
+    request.close()
+    stdout.close()
 
-            # make sure that the request we hand over has the
-            # default layer/skin set on it; subsequent code that
-            # wants to look up views will likely depend on it
-            setDefaultSkin(request)
-
-            response = publish(request, module_name, after_list, debug=debug)
-        except SystemExit, v:
-            must_die=sys.exc_info()
-            request.response.exception(must_die)
-        except ImportError, v:
-            if isinstance(v, tuple) and len(v)==3: must_die=v
-            elif hasattr(sys, 'exc_info'): must_die=sys.exc_info()
-            else: must_die = SystemExit, v, sys.exc_info()[2]
-            request.response.exception(1, v)
-        except:
-            request.response.exception()
-            status=response.getStatus()
-
-        if response:
-            outputBody=getattr(response, 'outputBody', None)
-            if outputBody is not None:
-                outputBody()
-            else:
-                response=str(response)
-                if response: stdout.write(response)
-
-        # The module defined a post-access function, call it
-        if after_list[0] is not None: after_list[0]()
-
-    finally:
-        if request is not None: request.close()
-
+    if after_list[0] is not None: after_list[0]()
+    
     if must_die:
         # Try to turn exception value into an exit code.
         try:
@@ -230,8 +325,9 @@ def publish_module_standard(module_name,
 
         try: raise must_die[0], must_die[1], must_die[2]
         finally: must_die=None
-
-    return status
+        
+    # Return the result body iterable.
+    return result
 
 
 _l=allocate_lock()
@@ -328,18 +424,13 @@ def install_profiling(filename):
     global _pfile
     _pfile = filename
     
-def pm(module_name, stdin, stdout, stderr,
-       environ, debug, request, response):
+def pm(environ, start_response):
     try:
-        r=_pfunc(module_name, stdin=stdin, stdout=stdout,
-                 stderr=stderr, environ=environ, debug=debug,
-                 request=request, response=response)
+        r=_pfunc(environ, start_response)
     except: r=None
     sys._pr_=r
 
-def publish_module_profiled(module_name, stdin=sys.stdin, stdout=sys.stdout,
-                            stderr=sys.stderr, environ=os.environ, debug=0,
-                            request=None, response=None):
+def publish_module_profiled(environ, start_response):
     import profile, pstats
     global _pstat
     _plock.acquire()
@@ -348,12 +439,9 @@ def publish_module_profiled(module_name, stdin=sys.stdin, stdout=sys.stdout,
             path_info=request.get('PATH_INFO')
         else: path_info=environ.get('PATH_INFO')
         if path_info[-14:]=='manage_profile':
-            return _pfunc(module_name, stdin=stdin, stdout=stdout,
-                          stderr=stderr, environ=environ, debug=debug,
-                          request=request, response=response)
+            return _pfunc(environ, start_response)
         pobj=profile.Profile()
-        pobj.runcall(pm, module_name, stdin, stdout, stderr,
-                     environ, debug, request, response)
+        pobj.runcall(pm, menviron, start_response)
         result=sys._pr_
         pobj.create_stats()
         if _pstat is None:
@@ -380,14 +468,10 @@ def publish_module_profiled(module_name, stdin=sys.stdin, stdout=sys.stdout,
         raise error[0], error[1], error[2]
     return result
 
-def publish_module(module_name,
-                   stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr,
-                   environ=os.environ, debug=0, request=None, response=None):
+def publish_module(environ, start_response):
     """ publish a Python module, with or without profiling enabled """
     if _pfile: # profiling is enabled
-        return publish_module_profiled(module_name, stdin, stdout, stderr,
-                                       environ, debug, request, response)
+        return publish_module_profiled(environ, start_response)
     else:
-        return publish_module_standard(module_name, stdin, stdout, stderr,
-                                       environ, debug, request, response)
+        return publish_module_standard(environ, start_response)
 
