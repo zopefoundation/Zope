@@ -170,7 +170,14 @@ class TestProductInit( unittest.TestCase ):
         f.write('Syntax Error!')
         f.close()
         self.configure(cfg)
-        self.assertRaises(SyntaxError, self.import_bad_product)
+        try:
+            from logging import getLogger
+            logger = getLogger('Zope')
+            logger.disabled = 1
+            self.assertRaises(SyntaxError, self.import_bad_product)
+        finally:
+            logger.disabled = 0
+            
 
     def import_bad_product(self):
         from OFS.Application import import_product
