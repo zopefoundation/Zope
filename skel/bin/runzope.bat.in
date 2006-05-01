@@ -1,6 +1,6 @@
-@set PYTHON=<<PYTHON>>
 @set ZOPE_HOME=<<ZOPE_HOME>>
 @set INSTANCE_HOME=<<INSTANCE_HOME>>
+@set PYTHON=%ZOPE_HOME%\bin\python.exe
 @set SOFTWARE_HOME=%ZOPE_HOME%\lib\python
 @set CONFIG_FILE=%INSTANCE_HOME%\etc\zope.conf
 @set PYTHONPATH=%SOFTWARE_HOME%
