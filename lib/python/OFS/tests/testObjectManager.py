@@ -7,6 +7,7 @@ from AccessControl.User import User # before SpecialUsers
 from AccessControl.SpecialUsers import emergency_user, nobody, system
 from Acquisition import Implicit
 from App.config import getConfiguration
+from logging import getLogger
 from OFS.ObjectManager import ObjectManager
 from OFS.SimpleItem import SimpleItem
 from zope.app.testing.placelesssetup import PlacelessSetup
@@ -14,6 +15,7 @@ import Products.Five
 from Products.Five import zcml
 from Products.Five.eventconfigure import setDeprecatedManageAddDelete
 
+logger = getLogger('OFS.subscribers')            
 
 class FauxRoot( Implicit ):
 
@@ -284,7 +286,11 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         om = self._makeOne()
         ob = ItemForDeletion(fail_on_delete=True)
         om._setObject(ob.getId(), ob)
-        om._delObject(ob.getId())
+        try:
+            logger.disabled = 1
+            om._delObject(ob.getId())
+        finally:
+            logger.disabled = 0
 
     def test_delObject_exception(self):
         # Test exception behavior in manage_beforeDelete
@@ -293,8 +299,12 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         om = self._makeOne()
         ob = ItemForDeletion(fail_on_delete=True)
         om._setObject(ob.getId(), ob)
-        om._delObject(ob.getId())
-
+        try:
+            logger.disabled = 1
+            om._delObject(ob.getId())
+        finally:
+            logger.disabled = 0
+        
     def test_delObject_exception_debug_manager(self):
         # Test exception behavior in manage_beforeDelete in debug mode
         # Manager user
@@ -303,7 +313,11 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         om = self._makeOne()
         ob = ItemForDeletion(fail_on_delete=True)
         om._setObject(ob.getId(), ob)
-        om._delObject(ob.getId())
+        try:
+            logger.disabled = 1
+            om._delObject(ob.getId())
+        finally:
+            logger.disabled = 0
 
     def test_delObject_exception_debug(self):
         # Test exception behavior in manage_beforeDelete in debug mode
@@ -313,7 +327,11 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         om = self._makeOne()
         ob = ItemForDeletion(fail_on_delete=True)
         om._setObject(ob.getId(), ob)
-        self.assertRaises(DeleteFailed, om._delObject, ob.getId())
+        try:
+            logger.disabled = 1
+            self.assertRaises(DeleteFailed, om._delObject, ob.getId())
+        finally:
+            logger.disabled = 0
 
     def test_delObject_exception_debug_deep(self):
         # Test exception behavior in manage_beforeDelete in debug mode
@@ -325,7 +343,11 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         ob = ItemForDeletion(fail_on_delete=True)
         om1._setObject('om2', om2, set_owner=False)
         om2._setObject(ob.getId(), ob)
-        self.assertRaises(DeleteFailed, om1._delObject, 'om2')
+        try:
+            logger.disabled = 1
+            self.assertRaises(DeleteFailed, om1._delObject, 'om2')
+        finally:
+            logger.disabled = 0
 
     def test_hasObject(self):
         om = self._makeOne()

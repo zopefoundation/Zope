@@ -14,6 +14,8 @@
 
 import os, sys, unittest, tempfile, cStringIO
 
+from logging import getLogger
+
 import ZODB
 from OFS.Application import Application, AppInitializer, get_products
 import Zope2.Startup
@@ -121,7 +123,12 @@ class TestInitialization( unittest.TestCase ):
 
         i = self.getOne()
         self.configure(bad_cfg)
-        status = i.install_tempfolder_and_sdc()
+        try:
+            logger = getLogger('Zope.ZODBMountPoint')
+            logger.disabled = 1
+            status = i.install_tempfolder_and_sdc()
+        finally:
+            logger.disabled = 0
         self.failIf(status)
 
     def test_install_tempfolder_and_sdc_unlimited_sessions(self):
