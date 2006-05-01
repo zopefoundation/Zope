@@ -33,5 +33,6 @@ class ZServerPublisher:
                     for r in res:
                         a['wsgi.output'].write(r)
                 finally:
+                    # TODO: Support keeping connections open.
                     a['wsgi.output']._close = 1
                     a['wsgi.output'].close()

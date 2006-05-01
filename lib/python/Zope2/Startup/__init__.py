@@ -115,12 +115,15 @@ class ZopeStarter:
         try:
             from App.config import getConfiguration
             config = getConfiguration()
+            import ZServer
             if config.twisted_servers:
                 if not _use_twisted:
                     raise ImportError("You do not have twisted installed.")
                 twisted.internet.reactor.run()
+                # Storing the exit code in the ZServer even for twisted, 
+                # but hey, it works...
+                sys.exit(ZServer.exit_code)
             else:
-                import ZServer
                 import Lifetime
                 Lifetime.loop()
                 sys.exit(ZServer.exit_code)

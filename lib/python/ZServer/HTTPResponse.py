@@ -313,6 +313,7 @@ class ChannelPipe:
 
     def start_response(self, status, headers, exc_info=None):
         # Used for WSGI
+        self._request.reply_code = int(status.split(' ')[0])
         status = 'HTTP/%s %s\r\n' % (self._request.version, status)
         self.write(status)
         headers = '\r\n'.join([': '.join(x) for x in headers])
