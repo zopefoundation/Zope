@@ -240,6 +240,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #2062: Fix manage_historyCopy, which was broken, and write
+        tests for it.
+
       - Collector #2061: Fix problems where windows line endings are passed
         to restricted code compilers.
 

@@ -143,15 +143,12 @@ class Historical(ExtensionClass.Base):
         if serial != self._p_serial:
             self.manage_beforeHistoryCopy()
             state=self._p_jar.oldstate(self, serial)
-            # Scrub the object before restoring the old state
             base = aq_base(self)
-            base._p_changed=0
-            base._p_deactivate()
-            base.__setstate__(state)
-            base._p_changed=1
-
+            base._p_activate()       # make sure we're not a ghost 
+            base.__setstate__(state) # change the state
+            base._p_changed = True   # marke object as dirty 
             self.manage_afterHistoryCopy()
-
+            
         if RESPONSE is not None and URL1 is not None:
             RESPONSE.redirect(URL1+'/manage_workspace')
 
@@ -194,7 +191,6 @@ class Historical(ExtensionClass.Base):
         return self.manage_historyCompare(rev1, rev2, REQUEST)
 
 InitializeClass(Historical)
-
 
 def dump(tag, x, lo, hi, r):
     r1=[]
