@@ -404,8 +404,7 @@ class BaseRequest:
                     # BrowserDefault returns the object to be published
                     # (usually self) and a sequence of names to traverse to
                     # find the method to be published.
-                    if (IBrowserPublisher.providedBy(object) or 
-                        IDefaultViewName.providedBy(object)):
+                    if IBrowserPublisher.providedBy(object):
                         adapter = object
                     else:
                         adapter = queryMultiAdapter((object, self), 
