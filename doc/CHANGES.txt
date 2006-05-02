@@ -240,6 +240,8 @@ Zope Changes
         from the Zope 3 source tree (to get rid of redundant packages)
 
     Bugs Fixed
+      - When you add roles in manage_access, roles are now stripped of
+        any leading or trailing spaces.
 
       - Collector #2062: Fix manage_historyCopy, which was broken, and write
         tests for it.
