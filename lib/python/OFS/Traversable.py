@@ -25,20 +25,17 @@ from AccessControl.ZopeGuards import guarded_getattr
 from Acquisition import Acquired, aq_inner, aq_parent, aq_base
 from zExceptions import NotFound
 from ZODB.POSException import ConflictError
-from zope.interface import implements, Interface
+from OFS.interfaces import ITraversable
 
-from interfaces import ITraversable
-from zope.app.traversing.interfaces import ITraversable as IZope3Traversable
+from zope.interface import implements, Interface
 from zope.component import queryMultiAdapter
-from zope.app.traversing.interfaces import TraversalError
-from zope.app.traversing.namespace import nsParse
-from zope.app.traversing.namespace import namespaceLookup
+from zope.traversing.interfaces import TraversalError
+from zope.traversing.namespace import nsParse, namespaceLookup
 
 _marker = object()
 
 
 class Traversable:
-
     implements(ITraversable)
 
     security = ClassSecurityInfo()

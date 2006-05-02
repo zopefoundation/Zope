@@ -250,11 +250,10 @@ class NotExpr:
 
 from zope.interface import Interface, implements
 from zope.component import queryMultiAdapter
-from zope.app.traversing.namespace import nsParse
-from zope.app.traversing.namespace import namespaceLookup
-from zope.app.traversing.interfaces import TraversalError
+from zope.traversing.interfaces import TraversalError
+from zope.traversing.namespace import nsParse, namespaceLookup
 from zope.publisher.interfaces.browser import IBrowserRequest
-from zope.app.publication.browser import setDefaultSkin
+from zope.publisher.browser import setDefaultSkin
 
 class FakeRequest(dict):
     implements(IBrowserRequest)

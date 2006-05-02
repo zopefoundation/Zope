@@ -29,9 +29,8 @@ from zope.publisher.interfaces import IPublishTraverse
 from zope.component.interfaces import IDefaultViewName
 from zope.publisher.interfaces.browser import IBrowserPublisher
 from zope.publisher.interfaces.browser import IBrowserRequest
-from zope.app.traversing.interfaces import TraversalError
-from zope.app.traversing.namespace import nsParse
-from zope.app.traversing.namespace import namespaceLookup
+from zope.traversing.interfaces import TraversalError
+from zope.traversing.namespace import nsParse, namespaceLookup
 
 UNSPECIFIED_ROLES=''
 
