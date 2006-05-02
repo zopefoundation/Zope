@@ -13,11 +13,35 @@
 
 
 # Implement the manage_addProduct method of object managers
+import types
 import Acquisition, sys, Products
 from Globals import InitializeClass
 from AccessControl import ClassSecurityInfo
 from AccessControl.PermissionMapping import aqwrap
 from AccessControl.Owned import UnownableOwner
+import Zope2
+
+def _product_packages():
+    """Returns all product packages including the regularly defined
+    zope2 packages and those without the Products namespace package.
+    """
+    
+    old_product_packages = {}
+    for x in dir(Products):
+        m = getattr(Products, x)
+        if isinstance(m, types.ModuleType):
+            old_product_packages[x] = m
+    
+    packages = {}
+    products = Zope2.app().Control_Panel.Products
+    for product_id in products.objectIds():
+        product = products[product_id]
+        if hasattr(product, 'package_name'):
+            packages[product_id] = __import__(product.package_name)
+        elif old_product_packages.has_key(product_id):
+            packages[product_id] = old_product_packages[product_id]
+    
+    return packages
 
 class ProductDispatcher(Acquisition.Implicit):
     " "
@@ -32,7 +56,7 @@ class ProductDispatcher(Acquisition.Implicit):
 
         # Try to get a custom dispatcher from a Python product
         dispatcher_class=getattr(
-            getattr(Products, name, None),
+            _product_packages().get(name, None),
             '__FactoryDispatcher__',
             FactoryDispatcher)
 
