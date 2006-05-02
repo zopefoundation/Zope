@@ -46,6 +46,7 @@ from zExceptions import BadRequest
 
 from ZODB.POSException import ConflictError
 from zope.interface import implements
+from zope.component.interfaces import ComponentLookupError
 
 import CopySupport
 from interfaces import IObjectManager
@@ -165,6 +166,21 @@ class ObjectManager(
     isAnObjectManager=1
 
     isPrincipiaFolderish=1
+
+    # IPossibleSite API
+
+    _components = None
+
+    security.declarePublic('getSiteManager')
+    def getSiteManager(self):
+        if self._components is None:
+            raise ComponentLookupError('No component registry defined.')
+        return self._components
+
+    security.declareProtected('Manage Site', 'setSiteManager')
+    def setSiteManager(self, components):
+        self._components = components
+
 
     def __class_init__(self):
         try:    mt=list(self.meta_types)

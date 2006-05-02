@@ -202,7 +202,7 @@ def root_handler(config):
 
     # Augment the set of MIME types:
     if config.mime_types:
-        from zope.app.contenttypes import add_files
+        from zope.contenttype import add_files
         add_files(config.mime_types)
 
     # if no servers are defined, create default http server and ftp server

@@ -701,6 +701,45 @@ class RequestTests( unittest.TestCase ):
         f.seek(0)
         self.assertEqual(f.xreadlines(),f)
 
+    def testDebug(self):
+        TEST_ENVIRON = {
+            'REQUEST_METHOD': 'GET',
+            'SERVER_NAME': 'localhost',
+            'SERVER_PORT': '80',
+            }
+        from StringIO import StringIO
+        from ZPublisher.HTTPRequest import HTTPRequest
+        s = StringIO('')
+
+        # accessing request.debug from non-Zope3 code will raise an
+        # AttributeError
+        env = TEST_ENVIRON.copy()
+        request = HTTPRequest(s, env, None)
+        request.processInputs()
+        self.assertRaises(AttributeError, getattr, request, 'debug')
+
+        # or it will actually yield a 'debug' form variable if it
+        # exists
+        env = TEST_ENVIRON.copy()
+        env['QUERY_STRING'] = 'debug=1'
+        request = HTTPRequest(s, env, None)
+        request.processInputs()
+        self.assertEqual(request.debug, '1')
+
+        # if we access request.debug from a Zope 3 package, however,
+        # we will see the DebugFlags instance
+        def getDebug(request):
+            return request.debug
+        # make a forged copy of getDebug that looks as if its module
+        # was a Zope 3 package
+        z3globals = globals().copy()
+        z3globals['__name__'] = 'zope.apackage'
+        import new
+        getDebugFromZope3 = new.function(getDebug.func_code, z3globals)
+        from zope.publisher.base import DebugFlags
+        self.assertEqual(getDebug(request), '1')
+        self.assert_(isinstance(getDebugFromZope3(request), DebugFlags))
+
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(AuthCredentialsTestsa, 'test'))

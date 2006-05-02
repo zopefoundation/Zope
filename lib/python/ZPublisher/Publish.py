@@ -21,7 +21,7 @@ from Request import Request
 from maybe_lock import allocate_lock
 from mapply import mapply
 from zExceptions import Redirect
-from zope.app.publication.browser import setDefaultSkin
+from zope.publisher.browser import setDefaultSkin
 
 class Retry(Exception):
     """Raise this to retry a request

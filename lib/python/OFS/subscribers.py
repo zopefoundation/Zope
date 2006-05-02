@@ -20,17 +20,17 @@ $Id$
 import warnings
 from logging import getLogger
 
+import OFS.interfaces
 from Acquisition import aq_base
 from App.config import getConfiguration
 from AccessControl import getSecurityManager
 from ZODB.POSException import ConflictError
-import OFS.interfaces
 
-from zope.interface import implements
-from zope.component import adapts
+import zope.component
+import zope.interface
+import zope.location.interfaces
 from zope.app.container.contained import dispatchToSublocations
-from zope.app.location.interfaces import ISublocations
-
+from zope.app.container.interfaces import IObjectMovedEvent
 
 deprecatedManageAddDeleteClasses = []
 
@@ -78,8 +78,8 @@ def maybeWarnDeprecated(ob, method_name):
 class ObjectManagerSublocations(object):
     """Get the sublocations for an ObjectManager.
     """
-    adapts(OFS.interfaces.IObjectManager)
-    implements(ISublocations)
+    zope.component.adapts(OFS.interfaces.IObjectManager)
+    zope.interface.implements(zope.location.interfaces.ISublocations)
 
     def __init__(self, container):
         self.container = container
@@ -98,6 +98,8 @@ class ObjectManagerSublocations(object):
 # could have a simple subscriber for IObjectManager that directly calls
 # dispatchToSublocations.
 
+@zope.component.adapter(OFS.interfaces.IItem,
+                        OFS.interfaces.IObjectWillBeMovedEvent)
 def dispatchObjectWillBeMovedEvent(ob, event):
     """Multi-subscriber for IItem + IObjectWillBeMovedEvent.
     """
@@ -107,6 +109,7 @@ def dispatchObjectWillBeMovedEvent(ob, event):
     # Next, do the manage_beforeDelete dance
     callManageBeforeDelete(ob, event.object, event.oldParent)
 
+@zope.component.adapter(OFS.interfaces.IItem, IObjectMovedEvent)
 def dispatchObjectMovedEvent(ob, event):
     """Multi-subscriber for IItem + IObjectMovedEvent.
     """
@@ -116,6 +119,8 @@ def dispatchObjectMovedEvent(ob, event):
     if OFS.interfaces.IObjectManager.providedBy(ob):
         dispatchToSublocations(ob, event)
 
+@zope.component.adapter(OFS.interfaces.IItem,
+                        OFS.interfaces.IObjectClonedEvent)
 def dispatchObjectClonedEvent(ob, event):
     """Multi-subscriber for IItem + IObjectClonedEvent.
     """

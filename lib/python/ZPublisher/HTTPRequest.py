@@ -13,7 +13,7 @@
 
 __version__='$Revision: 1.96 $'[11:-2]
 
-import re, sys, os, time, random, codecs
+import re, sys, os, time, random, codecs, inspect
 from types import StringType, UnicodeType
 from BaseRequest import BaseRequest
 from HTTPResponse import HTTPResponse
@@ -24,6 +24,8 @@ from Converters import get_converter
 from TaintedString import TaintedString
 from maybe_lock import allocate_lock
 xmlrpc=None # Placeholder for module that we'll import if we have to.
+
+from zope.publisher.base import DebugFlags
 
 # This may get overwritten during configuration
 default_encoding = 'iso-8859-15'
@@ -262,6 +264,7 @@ class HTTPRequest(BaseRequest):
         self.steps=[]
         self._steps=[]
         self._lazies={}
+        self._debug = DebugFlags()
 
 
         if environ.has_key('REMOTE_ADDR'):
@@ -1213,7 +1216,18 @@ class HTTPRequest(BaseRequest):
             raise KeyError, key
         return v
 
+    # Using the getattr protocol to retrieve form values and similar
+    # is discouraged and is likely to be deprecated in the future.
+    # request.get(key) or request[key] should be used instead
     def __getattr__(self, key, default=_marker, returnTaints=0):
+        # ugly hack to make request.debug work for Zope 3 code (the
+        # ZPT engine, to be exact) while retaining request.debug
+        # functionality for all other code
+        if key == 'debug':
+            lastframe = inspect.currentframe().f_back
+            if lastframe.f_globals['__name__'].startswith('zope.'):
+                return self._debug
+        
         v = self.get(key, default, returnTaints=returnTaints)
         if v is _marker:
             raise AttributeError, key
