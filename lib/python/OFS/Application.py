@@ -891,6 +891,11 @@ def install_standards(app):
                 continue
             app.manage_addProduct['PageTemplates'].manage_addPageTemplate(
                 id=fn, title='', text=open(ob.filename))
+        elif ext in ('.ico', '.gif', '.png'):
+            if hasattr(app, fn):
+                continue
+            app.manage_addProduct['OFSP'].manage_addImage(
+                id=fn, title='', file=open(os.path.join(std_dir, fn)))
         else:
             continue
         wrote = 1
