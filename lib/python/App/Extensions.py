@@ -78,6 +78,7 @@ def getPath(prefix, name, checkProduct=1, suffixes=('',)):
     if d: raise ValueError, (
         'The file name, %s, should be a simple file name' % name)
 
+    result = None
     if checkProduct:
         l = name.find('.')
         if l > 0:
@@ -85,14 +86,38 @@ def getPath(prefix, name, checkProduct=1, suffixes=('',)):
             n = name[l + 1:]
             for product_dir in Products.__path__:
                 r = _getPath(product_dir, os.path.join(p, prefix), n, suffixes)
-                if r is not None: return r
+                if r is not None: result = r
 
-    import App.config
-    cfg = App.config.getConfiguration()
-    sw=os.path.dirname(os.path.dirname(cfg.softwarehome))
-    for home in (cfg.instancehome, sw):
-        r=_getPath(home, prefix, name, suffixes)
-        if r is not None: return r
+    if result is None:
+        import App.config
+        cfg = App.config.getConfiguration()
+        sw=os.path.dirname(os.path.dirname(cfg.softwarehome))
+        for home in (cfg.instancehome, sw):
+            r=_getPath(home, prefix, name, suffixes)
+            if r is not None: result = r
+
+    if result is None:
+        try:
+            l = name.find('.')
+            if l > 0:
+                realName = name[l + 1:]
+                toplevel = name[:l]
+                
+                m = __import__(toplevel)
+        
+                d = os.path.join(m.__path__[0], prefix, realName)
+                
+                for s in suffixes:
+                    if s: s="%s.%s" % (d, s)
+                    else: s=d
+                    if os.path.exists(s): 
+                        result = s
+                        break
+        except:
+            pass
+        
+
+    return result
 
 def getObject(module, name, reload=0,
               # The use of a mutable default is intentional here,
