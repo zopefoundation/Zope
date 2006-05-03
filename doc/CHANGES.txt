@@ -48,6 +48,9 @@ Zope Changes
       - Using FastCGI is offically deprecated.
 
     Features added
+
+      - Included Zope 3.3 and corresponding Five 1.5 release.
+
       - There is now a default favicon.ico.
     
       - Experimental WSGI and Twisted support for http.
