@@ -33,13 +33,18 @@ def _product_packages():
             old_product_packages[x] = m
     
     packages = {}
-    products = Zope2.app().Control_Panel.Products
-    for product_id in products.objectIds():
-        product = products[product_id]
-        if hasattr(product, 'package_name'):
-            packages[product_id] = __import__(product.package_name)
-        elif old_product_packages.has_key(product_id):
-            packages[product_id] = old_product_packages[product_id]
+    app = Zope2.app()
+    try:
+        products = app.Control_Panel.Products
+        
+        for product_id in products.objectIds():
+            product = products[product_id]
+            if hasattr(product, 'package_name'):
+                packages[product_id] = __import__(product.package_name)
+            elif old_product_packages.has_key(product_id):
+                packages[product_id] = old_product_packages[product_id]
+    finally:
+        app._p_jar.close()
     
     return packages
 
