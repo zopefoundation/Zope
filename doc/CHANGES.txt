@@ -18,6 +18,9 @@ Zope Changes
 
    Bugs fixed
 
+      - Collector #1447: When editing content on a virtual-hosted zope,
+        AcceleratedHTTPCacheManager now purges the correct URL.
+
       - Collector #2062: Fix manage_historyCopy, which was broken, and write
         tests for it.
 
