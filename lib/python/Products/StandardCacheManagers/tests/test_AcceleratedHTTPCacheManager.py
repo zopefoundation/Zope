@@ -15,87 +15,139 @@
 
 $Id$
 """
+
 import unittest
-import threading
-import time
-from SimpleHTTPServer import SimpleHTTPRequestHandler
-from BaseHTTPServer import HTTPServer
-
-class PurgingHTTPRequestHandler(SimpleHTTPRequestHandler):
-
-    protocol_version = 'HTTP/1.0'
-
-    def do_PURGE(self):
-
-        """Serve a PURGE request."""
-        self.server.test_case.purged_host = self.headers.get('Host','xxx')
-        self.server.test_case.purged_path = self.path
-        self.send_response(200)
-        self.end_headers()
-
-    def log_request(self, code='ignored', size='ignored'):
-        pass
+from Products.StandardCacheManagers.AcceleratedHTTPCacheManager \
+     import AcceleratedHTTPCache, AcceleratedHTTPCacheManager
 
 
 class DummyObject:
 
-    _PATH = '/path/to/object'
+    def __init__(self, path='/path/to/object', urlpath=None):
+        self.path = path
+        if urlpath is None:
+            self.urlpath = path
+        else:
+            self.urlpath = urlpath
 
     def getPhysicalPath(self):
-        return tuple(self._PATH.split('/'))
+        return tuple(self.path.split('/'))
+
+    def absolute_url_path(self):
+        return self.urlpath
+
+class MockResponse:
+    status = '200'
+    reason = "who knows, I'm just a mock"
+
+def MockConnectionClassFactory():
+    # Returns both a class that mocks an HTTPConnection,
+    # and a reference to a data structure where it logs requests.
+    request_log = []
+
+    class MockConnection:
+        # Minimal replacement for httplib.HTTPConnection.
+        def __init__(self, host):
+            self.host = host
+            self.request_log = request_log
+
+        def request(self, method, path):
+            self.request_log.append({'method':method,
+                                     'host':self.host,
+                                     'path':path,})
+        def getresponse(self):
+            return MockResponse()
+
+    return MockConnection, request_log
+
 
 class AcceleratedHTTPCacheTests(unittest.TestCase):
 
-    _SERVER_PORT = 1888
-    thread = purged_host = purged_path = None
-
-    def tearDown(self):
-        if self.thread:
-            self.httpd.server_close()
-            self.thread.join(2)
-
     def _getTargetClass(self):
-
-        from Products.StandardCacheManagers.AcceleratedHTTPCacheManager \
-            import AcceleratedHTTPCache
-
         return AcceleratedHTTPCache
 
     def _makeOne(self, *args, **kw):
-
         return self._getTargetClass()(*args, **kw)
 
-    def _handleServerRequest(self):
-
-        server_address = ('', self._SERVER_PORT)
-
-        self.httpd = HTTPServer(server_address, PurgingHTTPRequestHandler)
-        self.httpd.test_case = self
-
-        sa = self.httpd.socket.getsockname()
-        self.thread = threading.Thread(target=self.httpd.handle_request)
-        self.thread.setDaemon(True)
-        self.thread.start()
-        time.sleep(0.2) # Allow time for server startup
-
     def test_PURGE_passes_Host_header(self):
-
-        _TO_NOTIFY = 'localhost:%d' % self._SERVER_PORT
-
+        _TO_NOTIFY = 'localhost:1888'
         cache = self._makeOne()
         cache.notify_urls = ['http://%s' % _TO_NOTIFY]
-        object = DummyObject()
+        cache.connection_factory, requests = MockConnectionClassFactory()
+        dummy = DummyObject()
+        cache.ZCache_invalidate(dummy)
+        self.assertEqual(len(requests), 1)
+        result = requests[-1]
+        self.assertEqual(result['method'], 'PURGE')
+        self.assertEqual(result['host'], _TO_NOTIFY)
+        self.assertEqual(result['path'], dummy.path)
 
-        # Run the HTTP server for this test.
-        self._handleServerRequest()
+    def test_multiple_notify(self):
+        cache = self._makeOne()
+        cache.notify_urls = ['http://foo', 'bar', 'http://baz/bat']
+        cache.connection_factory, requests = MockConnectionClassFactory()
+        cache.ZCache_invalidate(DummyObject())
+        self.assertEqual(len(requests), 3)
+        self.assertEqual(requests[0]['host'], 'foo')
+        self.assertEqual(requests[1]['host'], 'bar')
+        self.assertEqual(requests[2]['host'], 'baz')
+        cache.ZCache_invalidate(DummyObject())
+        self.assertEqual(len(requests), 6)
 
-        cache.ZCache_invalidate(object)
+    def test_vhost_purging_1447(self):
+        # Test for http://www.zope.org/Collectors/Zope/1447
+        cache = self._makeOne()
+        cache.notify_urls = ['http://foo.com']
+        cache.connection_factory, requests = MockConnectionClassFactory()
+        dummy = DummyObject(urlpath='/published/elsewhere')
+        cache.ZCache_invalidate(dummy)
+        # That should fire off two invalidations,
+        # one for the physical path and one for the abs. url path.
+        self.assertEqual(len(requests), 2)
+        self.assertEqual(requests[0]['path'], dummy.absolute_url_path())
+        self.assertEqual(requests[1]['path'], dummy.path)
 
-        self.assertEqual(self.purged_host, _TO_NOTIFY)
-        self.assertEqual(self.purged_path, DummyObject._PATH)
+
+class CacheManagerTests(unittest.TestCase):
+
+    def _getTargetClass(self):
+        return AcceleratedHTTPCacheManager
+
+    def _makeOne(self, *args, **kw):
+        return self._getTargetClass()(*args, **kw)
+
+    def _makeContext(self):
+        from OFS.Folder import Folder
+        root = Folder()
+        root.getPhysicalPath = lambda: ('', 'some_path',)
+        cm_id = 'http_cache'
+        manager = self._makeOne(cm_id)
+        root._setObject(cm_id, manager)
+        manager = root[cm_id]
+        return root, manager
+
+    def test_add(self):
+        # ensure __init__ doesn't raise errors.
+        root, cachemanager = self._makeContext()
+
+    def test_ZCacheManager_getCache(self):
+        root, cachemanager = self._makeContext()
+        cache = cachemanager.ZCacheManager_getCache()
+        self.assert_(isinstance(cache, AcceleratedHTTPCache))
+
+    def test_getSettings(self):
+        root, cachemanager = self._makeContext()
+        settings = cachemanager.getSettings()
+        self.assert_('anonymous_only' in settings.keys())
+        self.assert_('interval' in settings.keys())
+        self.assert_('notify_urls' in settings.keys())
+
 
 def test_suite():
-    return unittest.makeSuite(AcceleratedHTTPCacheTests)
+    suite = unittest.TestSuite()
+    suite.addTest(unittest.makeSuite(AcceleratedHTTPCacheTests))
+    suite.addTest(unittest.makeSuite(CacheManagerTests))
+    return suite
 
 if __name__ == '__main__':
     unittest.main(defaultTest='test_suite')
