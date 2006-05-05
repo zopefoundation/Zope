@@ -20,6 +20,8 @@ $Id$
 
 from OFS.Cache import Cache, CacheManager
 from OFS.SimpleItem import SimpleItem
+import logging
+import socket
 import time
 from Globals import InitializeClass
 from Globals import DTMLFile
@@ -31,10 +33,15 @@ from urllib import quote
 from App.Common import rfc1123_date
 
 
+logger = logging.getLogger('Zope.AcceleratedHTTPCacheManager')
+
 class AcceleratedHTTPCache (Cache):
     # Note the need to take thread safety into account.
     # Also note that objects of this class are not persistent,
     # nor do they use acquisition.
+
+    connection_factory = httplib.HTTPConnection
+
     def __init__(self):
         self.hit_counts = {}
 
@@ -44,14 +51,30 @@ class AcceleratedHTTPCache (Cache):
         self.__dict__.update(kw)
 
     def ZCache_invalidate(self, ob):
-        # Note that this only works for default views of objects.
+        # Note that this only works for default views of objects at
+        # their canonical path. If an object is viewed and cached at
+        # any other path via acquisition or virtual hosting, that
+        # cache entry cannot be purged because there is an infinite
+        # number of such possible paths, and Squid does not support
+        # any kind of fuzzy purging; we have to specify exactly the
+        # URL to purge.  So we try to purge the known paths most
+        # likely to turn up in practice: the physical path and the
+        # current absolute_url_path.  Any of those can be
+        # wrong in some circumstances, but it may be the best we can
+        # do :-(
+        # It would be nice if Squid's purge feature was better
+        # documented.  (pot! kettle! black!)
+
         phys_path = ob.getPhysicalPath()
         if self.hit_counts.has_key(phys_path):
             del self.hit_counts[phys_path]
-        ob_path = quote('/'.join(phys_path))
+        purge_paths = (ob.absolute_url_path(), quote('/'.join(phys_path)))
+        # Don't purge the same path twice.
+        if purge_paths[0] == purge_paths[1]:
+            purge_paths  = purge_paths[:1]
         results = []
         for url in self.notify_urls:
-            if not url:
+            if not url.strip():
                 continue
             # Send the PURGE request to each HTTP accelerator.
             if url[:7].lower() == 'http://':
@@ -60,23 +83,37 @@ class AcceleratedHTTPCache (Cache):
                 u = 'http://' + url
             (scheme, host, path, params, query, fragment
              ) = urlparse.urlparse(u)
-            if path[-1:] == '/':
-                p = path[:-1] + ob_path
-            else:
-                p = path + ob_path
-            h = httplib.HTTPConnection(host)
-            h.request('PURGE', p)
-            r = h.getresponse()
-            results.append('%s %s' % (r.status, r.reason))
+            if path.lower().startswith('/http://'):
+                    path = path.lstrip('/')
+            for ob_path in purge_paths:
+                p = path.rstrip('/') + ob_path
+                h = self.connection_factory(host)
+                logger.debug('PURGING host %s, path %s' % (host, p))
+                # An exception on one purge should not prevent the others.
+                try:
+                    h.request('PURGE', p)
+                    # This better not hang. I wish httplib gave us
+                    # control of timeouts.
+                except socket.gaierror:
+                    msg = 'socket.gaierror: maybe the server ' + \
+                          'at %s is down, or the cache manager ' + \
+                          'is misconfigured?'
+                    logger.error(msg % url)
+                    continue
+                r = h.getresponse()
+                status = '%s %s' % (r.status, r.reason)
+                results.append(status)
+                logger.debug('purge response: %s' % status)
         return 'Server response(s): ' + ';'.join(results)
 
     def ZCache_get(self, ob, view_name, keywords, mtime_func, default):
         return default
 
     def ZCache_set(self, ob, data, view_name, keywords, mtime_func):
-        # Note the blatant ignorance of view_name, keywords, and
-        # mtime_func.  Standard HTTP accelerators are not able to make
-        # use of this data.
+        # Note the blatant ignorance of view_name and keywords.
+        # Standard HTTP accelerators are not able to make use of this
+        # data.  mtime_func is also ignored because using "now" for
+        # Last-Modified is as good as using any time in the past.
         REQUEST = ob.REQUEST
         RESPONSE = REQUEST.RESPONSE
         anon = 1
@@ -148,7 +185,7 @@ class AcceleratedHTTPCacheManager (CacheManager, SimpleItem):
     security.declareProtected(view_management_screens, 'getSettings')
     def getSettings(self):
         ' '
-        return self._settings.copy()  # Don't let DTML modify it.
+        return self._settings.copy()  # Don't let UI modify it.
 
     security.declareProtected(view_management_screens, 'manage_main')
     manage_main = DTMLFile('dtml/propsAccel', globals())
