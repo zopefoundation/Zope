@@ -17,7 +17,10 @@ Zope Changes
   After Zope 2.8.6
 
     Bugs fixed
-      
+
+      - Collector #1447: When editing content on a virtual-hosted zope,
+        AcceleratedHTTPCacheManager now purges the correct URL.
+
       - Collector #2072: Applied patch to fix problem with overly restrictive
         __bobo_traverse__ security and tests.
 
