@@ -284,10 +284,10 @@ def minutes_header_html():
     print "<tr>"
     print '<th>Minute</th>'
     print '<th>Requests</th>'
-    print '<th>Resquests inputing</th>'
-    print '<th>Resquests executing or waiting</th>'
-    print '<th>Resquests outputing</th>'
-    print '<th>Resquests completed</th>'
+    print '<th>Requests inputing</th>'
+    print '<th>Requests executing or waiting</th>'
+    print '<th>Requests outputing</th>'
+    print '<th>Requests completed</th>'
     print '<th>Mean Seconds Per Request Total</th>'
     print '<th>Mean Seconds Per Request in App</th>'
     print "</tr>"
@@ -444,8 +444,7 @@ to determine when the server is restarted, so that the running trace data struct
 """)
 parser.add_option("--html", dest='html', action='store_true',
                   help="""
-The name of an event log that goes with the trace log.  This is used
-to determine when the server is restarted, so that the running trace data structures can be reinitialized.
+Generate HTML output.
 """)
 parser.add_option("--remove-prefix", dest='remove_prefix',
                   help="""
