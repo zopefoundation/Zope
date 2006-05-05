@@ -243,6 +243,10 @@ Zope Changes
         from the Zope 3 source tree (to get rid of redundant packages)
 
     Bugs Fixed
+
+      - Collector #1447: When editing content on a virtual-hosted zope,
+        AcceleratedHTTPCacheManager now purges the correct URL.
+
       - When you add roles in manage_access, roles are now stripped of
         any leading or trailing spaces.
 
