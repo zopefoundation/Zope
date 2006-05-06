@@ -10,34 +10,35 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-"""Filesystem Page Template module
 
-Zope object encapsulating a Page Template from the filesystem.
-"""
+import os
 
-__version__ = '$Revision: 1.30 $'[11:-2]
-
-import os, AccessControl
-from logging import getLogger
-from Globals import package_home, DevelopmentMode
-from Shared.DC.Scripts.Script import Script
-from Shared.DC.Scripts.Signature import FuncCode
-from AccessControl import getSecurityManager
-from OFS.Traversable import Traversable
-from PageTemplate import PageTemplate
-from Expressions import SecureModuleImporter
-from ComputedAttribute import ComputedAttribute
-from Acquisition import aq_parent, aq_inner
+from Globals import package_home, InitializeClass
 from App.config import getConfiguration
+from Acquisition import aq_parent, aq_inner
+from ZopePageTemplate import ZopePageTemplate
+from zope.app.content_types import guess_content_type
+import AccessControl
+
+from ComputedAttribute import ComputedAttribute
+from OFS.SimpleItem import SimpleItem
+from Expressions import SecureModuleImporter
+from OFS.Traversable import Traversable
+from zope.pagetemplate.pagetemplatefile import PageTemplateFile as PTF
+from zope.pagetemplate.pagetemplate import PageTemplate as PT
+
+from Shared.DC.Scripts.Script import Script
+
 from OFS.SimpleItem import Item_w__name__
+from Shared.DC.Scripts.Signature import FuncCode
+
+from Engine import Engine
 
 
-LOG = getLogger('PageTemplateFile')
-
-class PageTemplateFile(Item_w__name__, Script, PageTemplate, Traversable):
-    "Zope wrapper for filesystem Page Template using TAL, TALES, and METAL"
-
-    meta_type = 'Page Template (File)'
+class PageTemplateFile(SimpleItem, Script, PT, Traversable):
+    """ A Zope 2-aware wrapper class around the Zope 3 ZPT
+        PageTemplateFile implementation.
+    """
 
     func_defaults = None
     func_code = FuncCode((), 0)
@@ -53,32 +54,47 @@ class PageTemplateFile(Item_w__name__, Script, PageTemplate, Traversable):
     security.declareProtected('View management screens',
       'read', 'document_src')
 
-    def __init__(self, filename, _prefix=None, **kw):
-        self.ZBindings_edit(self._default_bindings)
-        if _prefix is None:
-            _prefix = getConfiguration().softwarehome
-        elif not isinstance(_prefix, str):
-            _prefix = package_home(_prefix)
-        name = kw.get('__name__')
-        basepath, ext = os.path.splitext(filename)
-        if name:
-            self._need__name__ = 0
-            self.__name__ = name
-        else:
-            self.__name__ = os.path.basename(basepath)
-        if not ext:
-            # XXX This is pretty bogus, but can't be removed since
-            # it's been released this way.
-            filename = filename + '.zpt'
-        self.filename = os.path.join(_prefix, filename)
+    _default_bindings = {'name_subpath': 'traverse_subpath'}
 
-    def getId(self):
-        """return the ID of this object"""
-        return self.__name__
-    
+
+    def __init__(self, filename, _prefix=None, **kw):
+
+        name = None
+        if kw.has_key('__name__'):
+            name = kw['__name__']
+            del kw['__name__'] 
+
+        basepath, ext = os.path.splitext(filename)
+
+        if name:
+            self.id = self.__name__ = name
+        else:
+            self.id = self.__name__ = os.path.basename(basepath)
+
+        if _prefix:
+            if isinstance(_prefix, str):
+                filename = os.path.join(_prefix, filename)
+            else:
+                filename = os.path.join(package_home(_prefix), filename)
+
+        if not ext:
+            filename = filename + '.zpt'
+
+        self.filename = filename
+
+        content = open(filename).read()
+
+        from ZopePageTemplate import guess_type
+        self.pt_edit( content, guess_type(filename, content))
+
+
+    def pt_getEngine(self):
+        return Engine
+
     def pt_getContext(self):
         root = self.getPhysicalRoot()
         context = self._getContext()
+        from DateTime.DateTime import DateTime
         c = {'template': self,
              'here': context,
              'context': context,
@@ -86,6 +102,7 @@ class PageTemplateFile(Item_w__name__, Script, PageTemplate, Traversable):
              'nothing': None,
              'options': {},
              'root': root,
+             'DateTime' : DateTime,
              'request': getattr(root, 'REQUEST', None),
              'modules': SecureModuleImporter,
              }
@@ -106,11 +123,14 @@ class PageTemplateFile(Item_w__name__, Script, PageTemplate, Traversable):
             pass
 
         # Execute the template in a new security context.
-        security = getSecurityManager()
+        security = AccessControl.getSecurityManager()
         bound_names['user'] = security.getUser()
         security.addContext(self)
+
         try:
-            return self.pt_render(extra_context=bound_names)
+            context = self.pt_getContext()
+            context.update(bound_names)
+            return self.pt_render(context)
         finally:
             security.removeContext(self)
 
@@ -187,20 +207,4 @@ class PageTemplateFile(Item_w__name__, Script, PageTemplate, Traversable):
         raise StorageError, ("Instance of AntiPersistent class %s "
                              "cannot be stored." % self.__class__.__name__)
 
-
-XML_PREFIXES = [
-    "<?xml",                      # ascii, utf-8
-    "\xef\xbb\xbf<?xml",          # utf-8 w/ byte order mark
-    "\0<\0?\0x\0m\0l",            # utf-16 big endian
-    "<\0?\0x\0m\0l\0",            # utf-16 little endian
-    "\xfe\xff\0<\0?\0x\0m\0l",    # utf-16 big endian w/ byte order mark
-    "\xff\xfe<\0?\0x\0m\0l\0",    # utf-16 little endian w/ byte order mark
-    ]
-
-XML_PREFIX_MAX_LENGTH = max(map(len, XML_PREFIXES))
-
-def sniff_type(text):
-    for prefix in XML_PREFIXES:
-        if text.startswith(prefix):
-            return "text/xml"
-    return None
+InitializeClass(PageTemplateFile)
