@@ -70,8 +70,6 @@ class Context(Context):
 
 
     def translate(self, msgid, domain=None, mapping=None, default=None):
-#        import pdb
-#        pdb.set_trace()
         return GTS.translate(msgid, domain, mapping,
                          context=self.contexts['context'], default=default)
 
