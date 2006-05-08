@@ -12,30 +12,27 @@
 ##############################################################################
 
 import os
+from logging import getLogger
 
-from Globals import package_home, InitializeClass
+import AccessControl
+from Globals import package_home, InitializeClass, DevelopmentMode
 from App.config import getConfiguration
 from Acquisition import aq_parent, aq_inner
-from ZopePageTemplate import ZopePageTemplate
-from zope.app.content_types import guess_content_type
-import AccessControl
-
 from ComputedAttribute import ComputedAttribute
 from OFS.SimpleItem import SimpleItem
-from Expressions import SecureModuleImporter
 from OFS.Traversable import Traversable
-from zope.pagetemplate.pagetemplatefile import PageTemplateFile as PTF
-from zope.pagetemplate.pagetemplate import PageTemplate as PT
-
 from Shared.DC.Scripts.Script import Script
-
-from OFS.SimpleItem import Item_w__name__
 from Shared.DC.Scripts.Signature import FuncCode
+from Products.PageTemplates.Engine import Engine
+from Products.PageTemplates.Expressions import SecureModuleImporter
+from Products.PageTemplates.ZopePageTemplate import guess_type
 
-from Engine import Engine
+from zope.contenttype import guess_content_type
+from zope.pagetemplate.pagetemplate import PageTemplate
 
+LOG = getLogger('PageTemplateFile')
 
-class PageTemplateFile(SimpleItem, Script, PT, Traversable):
+class PageTemplateFile(SimpleItem, Script, PageTemplate, Traversable):
     """ A Zope 2-aware wrapper class around the Zope 3 ZPT
         PageTemplateFile implementation.
     """
@@ -56,9 +53,7 @@ class PageTemplateFile(SimpleItem, Script, PT, Traversable):
 
     _default_bindings = {'name_subpath': 'traverse_subpath'}
 
-
     def __init__(self, filename, _prefix=None, **kw):
-
         name = None
         if kw.has_key('__name__'):
             name = kw['__name__']
@@ -83,8 +78,6 @@ class PageTemplateFile(SimpleItem, Script, PT, Traversable):
         self.filename = filename
 
         content = open(filename).read()
-
-        from ZopePageTemplate import guess_type
         self.pt_edit( content, guess_type(filename, content))
 
 
