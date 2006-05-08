@@ -208,3 +208,20 @@ class PageTemplateFile(SimpleItem, Script, PT, Traversable):
                              "cannot be stored." % self.__class__.__name__)
 
 InitializeClass(PageTemplateFile)
+
+XML_PREFIXES = [
+    "<?xml",                      # ascii, utf-8
+    "\xef\xbb\xbf<?xml",          # utf-8 w/ byte order mark
+    "\0<\0?\0x\0m\0l",            # utf-16 big endian
+    "<\0?\0x\0m\0l\0",            # utf-16 little endian
+    "\xfe\xff\0<\0?\0x\0m\0l",    # utf-16 big endian w/ byte order mark
+    "\xff\xfe<\0?\0x\0m\0l\0",    # utf-16 little endian w/ byte order mark
+    ]
+
+XML_PREFIX_MAX_LENGTH = max(map(len, XML_PREFIXES))
+
+def sniff_type(text):
+    for prefix in XML_PREFIXES:
+        if text.startswith(prefix):
+            return "text/xml"
+    return None
