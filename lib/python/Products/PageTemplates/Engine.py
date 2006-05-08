@@ -11,18 +11,17 @@
 #
 ##############################################################################
 
-
-from GlobalTranslationService import getGlobalTranslationService
-
 from zope.tales.tales import ExpressionEngine
-from zope.tales.expressions import PathExpr, StringExpr, NotExpr, DeferExpr, SubPathExpr
-from zope.tales.expressions import SimpleModuleImporter, _marker
+from zope.tales.expressions import PathExpr, StringExpr, NotExpr
+from zope.tales.expressions import DeferExpr, SubPathExpr
+from zope.tales.expressions import SimpleModuleImporter
 from zope.tales.pythonexpr import PythonExpr
 from zope.tales.tales import _valid_name, _parse_expr, NAME_RE, Undefined, Context 
 from zope.i18n import translate
 
-GTS = getGlobalTranslationService()
+from Products.PageTemplates.GlobalTranslationService import getGlobalTranslationService
 
+_marker = object()
 
 def BoboTraverseAwareSimpleTraverse(object, path_items, econtext):
     """ a slightly modified version of zope.tales.expressions.simpleTraverse()
@@ -68,10 +67,10 @@ class PathExpr(PathExpr):
 
 class Context(Context):
 
-
     def translate(self, msgid, domain=None, mapping=None, default=None):
-        return GTS.translate(msgid, domain, mapping,
-                         context=self.contexts['context'], default=default)
+        return getGlobalTranslationService().translate(
+            msgid, domain, mapping,
+            context=self.contexts['context'], default=default)
 
     def translate(self, domain, msgid, mapping=None,
                   context=None, target_language=None, default=None):
@@ -108,4 +107,3 @@ def Engine():
     return e
 
 Engine = Engine()
-
