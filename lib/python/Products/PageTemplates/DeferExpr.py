@@ -45,38 +45,11 @@ Example
         <div tal:condition"python: not (foo or bar)">...</div>
     </div>
 """
-
-_marker = object()
-
-# defer expression
-
-class DeferWrapper:
-    """Wrapper for defer: expression
-    """
-    def __init__(self, expr, econtext):
-        self._expr = expr
-        self._econtext = econtext
-
-    def __str__(self):
-        return str(self())
-
-    def __call__(self):
-        return self._expr(self._econtext)
-
-class DeferExpr:
-    """defer: expression handler for deferred evaluation of the context
-    """
-    def __init__(self, name, expr, compiler):
-        self._s = expr = expr.lstrip()
-        self._c = compiler.compile(expr)
-
-    def __call__(self, econtext):
-        return DeferWrapper(self._c, econtext)
-
-    def __repr__(self):
-        return 'defer:%s' % `self._s`
+from zope.tales.expressions import DeferWrapper, DeferExpr
 
 # lazy expression
+
+_marker = object()
 
 class LazyWrapper(DeferWrapper):
     """Wrapper for lazy: expression
@@ -99,4 +72,3 @@ class LazyExpr(DeferExpr):
 
     def __repr__(self):
         return 'lazy:%s' % `self._s`
-

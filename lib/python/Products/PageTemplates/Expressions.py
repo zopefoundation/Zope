@@ -10,36 +10,37 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-
 """Page Template Expression Engine
 
 Page Template-specific implementation of TALES, with handlers
 for Python expressions, string literals, and paths.
+
+$Id$
 """
-
-__version__='$Revision: 1.45 $'[11:-2]
-
 import re, sys
-from TALES import Engine
-from TALES import CompilerError
-from TALES import _valid_name
-from TALES import NAME_RE
-from TALES import Undefined
-from TALES import Default
-from TALES import _parse_expr
+from TALES import Engine, CompilerError, NAME_RE, Undefined, Default
+from TALES import _parse_expr, _valid_name
 from Acquisition import aq_base, aq_inner, aq_parent
-from DeferExpr import LazyWrapper
-from DeferExpr import LazyExpr
-from DeferExpr import DeferWrapper
-from DeferExpr import DeferExpr
+from DeferExpr import LazyWrapper, LazyExpr
+from zope.tales.expressions import DeferWrapper, DeferExpr, StringExpr, NotExpr
+
+# BBB 2005/05/01 -- remove after 12 months
+import zope.deferredimport
+zope.deferredimport.deprecatedFrom(
+    "Use the Zope 3 ZPT engine instead of the Zope 2 one.  Expression "
+    "types can be imported from zope.tales.expressions.  This reference "
+    "will be gone in Zope 2.12.",
+    "zope.tales.expressions",
+    "StringExpr", "NotExpr"
+    )
 
 _engine = None
 def getEngine():
     global _engine
     if _engine is None:
-        from PathIterator import Iterator
-        _engine = Engine(Iterator)
-        installHandlers(_engine)
+       from PathIterator import Iterator
+       _engine = Engine(Iterator)
+       installHandlers(_engine)
     return _engine
 
 def installHandlers(engine):
@@ -189,64 +190,6 @@ class PathExpr:
 
     def __repr__(self):
         return '%s:%s' % (self._name, `self._s`)
-
-
-_interp = re.compile(r'\$(%(n)s)|\${(%(n)s(?:/[^}]*)*)}' % {'n': NAME_RE})
-
-class StringExpr:
-    def __init__(self, name, expr, engine):
-        self._s = expr
-        if '%' in expr:
-            expr = expr.replace('%', '%%')
-        self._vars = vars = []
-        if '$' in expr:
-            parts = []
-            for exp in expr.split('$$'):
-                if parts: parts.append('$')
-                m = _interp.search(exp)
-                while m is not None:
-                    parts.append(exp[:m.start()])
-                    parts.append('%s')
-                    vars.append(PathExpr('path', m.group(1) or m.group(2),
-                                         engine))
-                    exp = exp[m.end():]
-                    m = _interp.search(exp)
-                if '$' in exp:
-                    raise CompilerError, (
-                        '$ must be doubled or followed by a simple path')
-                parts.append(exp)
-            expr = ''.join(parts)
-        self._expr = expr
-
-    def __call__(self, econtext):
-        vvals = []
-        for var in self._vars:
-            v = var(econtext)
-            # I hope this isn't in use anymore.
-            ## if isinstance(v, Exception):
-            ##     raise v
-            vvals.append(v)
-        return self._expr % tuple(vvals)
-
-    def __str__(self):
-        return 'string expression %s' % `self._s`
-
-    def __repr__(self):
-        return 'string:%s' % `self._s`
-
-class NotExpr:
-    def __init__(self, name, expr, compiler):
-        self._s = expr = expr.lstrip()
-        self._c = compiler.compile(expr)
-
-    def __call__(self, econtext):
-        # We use the (not x) and 1 or 0 formulation to avoid changing
-        # the representation of the result in Python 2.3, where the
-        # result of "not" becomes an instance of bool.
-        return (not econtext.evaluateBoolean(self._c)) and 1 or 0
-
-    def __repr__(self):
-        return 'not:%s' % `self._s`
 
 from zope.interface import Interface, implements
 from zope.component import queryMultiAdapter
