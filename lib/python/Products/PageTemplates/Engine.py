@@ -67,15 +67,10 @@ class PathExpr(PathExpr):
 
 class Context(Context):
 
-    def translate(self, msgid, domain=None, mapping=None, default=None):
-        return getGlobalTranslationService().translate(
-            msgid, domain, mapping,
-            context=self.contexts['context'], default=default)
-
-    def translate(self, domain, msgid, mapping=None,
+    def translate(self, msgid, domain, mapping=None,
                   context=None, target_language=None, default=None):
         if context is None:
-            context = self.contexts.get('here')
+            context = self.contexts.get('context')
         return getGlobalTranslationService().translate(
             domain, msgid, mapping=mapping,
             context=context,
