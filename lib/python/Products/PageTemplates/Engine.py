@@ -18,52 +18,49 @@ from zope.tales.expressions import SimpleModuleImporter
 from zope.tales.pythonexpr import PythonExpr
 from zope.tales.tales import _valid_name, _parse_expr, NAME_RE, Undefined, Context 
 from zope.i18n import translate
+from zope.traversing.adapters import traversePathElement
 
+from zExceptions import NotFound
+from OFS.interfaces import ITraversable
 from Products.PageTemplates.GlobalTranslationService import getGlobalTranslationService
 
 _marker = object()
 
-def BoboTraverseAwareSimpleTraverse(object, path_items, econtext):
+def boboTraverseAwareSimpleTraverse(object, path_items, econtext):
     """ a slightly modified version of zope.tales.expressions.simpleTraverse()
         that interacts correctly with objects implementing bobo_traverse().
     """
+    request = getattr(econtext, 'request', None)
+    path_items = list(path_items)
+    path_items.reverse()
 
-    for name in path_items:
-        next = getattr(object, name, _marker)
-        if next is not _marker:
-            object = next
-        else:
+    while path_items:
+        name = path_items.pop()
+        if ITraversable.providedBy(object):
             try:
                 object = object.restrictedTraverse(name)
-            except (KeyError, AttributeError):
-                try:
-                    object = object[name]
-                except:
-                    object = getattr(object, name)
-
+            except NotFound, e:
+                # OFS.Traversable.restrictedTraverse spits out
+                # NotFound (the Zope 2 version) which Zope 3's ZPT
+                # implementation obviously doesn't know as an
+                # exception indicating failed traversal.  Perhaps Zope
+                # 2's NotFound should be made to extend LookupError at
+                # some point (or it should just be replaced with Zope
+                # 3's version).  For the time being, however, we
+                # simply converting NotFounds into LookupErrors:
+                raise LookupError(*e.args)
+        else:
+            object = traversePathElement(object, name, path_items,
+                                         request=request)
     return object
 
 
-class PathExpr(PathExpr):
-    """We need to subclass PathExpr at this point since there is no other
-       away to pass our own traverser because we do not instantiate 
-       PathExpr on our own...this sucks!
-    """
+class ZopePathExpr(PathExpr):
+    """Zope2-aware path expression implementation"""
 
-    def __init__(self, name, expr, engine, traverser=BoboTraverseAwareSimpleTraverse):
-        self._s = expr
-        self._name = name
-        paths = expr.split('|')
-        self._subexprs = []
-        add = self._subexprs.append
-        for i in range(len(paths)):
-            path = paths[i].lstrip()
-            if _parse_expr(path):
-                # This part is the start of another expression type,
-                # so glue it back together and compile it.
-                add(engine.compile('|'.join(paths[i:]).lstrip()))
-                break
-            add(SubPathExpr(path, traverser, engine)._eval)
+    def __init__(self, name, expr, engine):
+        super(ZopePathExpr, self).__init__(name, expr, engine,
+                                           boboTraverseAwareSimpleTraverse)
 
 class Context(Context):
 
@@ -91,13 +88,12 @@ class ExpressionEngine(ExpressionEngine):
 
 def Engine():
     e = ExpressionEngine()
-    reg = e.registerType
-    for pt in PathExpr._default_type_names:
-        reg(pt, PathExpr)
-    reg('string', StringExpr)
-    reg('python', PythonExpr)
-    reg('not', NotExpr)
-    reg('defer', DeferExpr)
+    for pt in ZopePathExpr._default_type_names:
+        e.registerType(pt, ZopePathExpr)
+    e.registerType('string', StringExpr)
+    e.registerType('python', PythonExpr)
+    e.registerType('not', NotExpr)
+    e.registerType('defer', DeferExpr)
     e.registerBaseName('modules', SimpleModuleImporter())
     return e
 
