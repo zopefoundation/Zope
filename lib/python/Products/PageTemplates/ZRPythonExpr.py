@@ -10,14 +10,12 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-
 """Zope-specific Python Expression Handler
 
 Handler for Python expressions that uses the RestrictedPython package.
+
+$Id$
 """
-
-__version__='$Revision: 1.11 $'[11:-2]
-
 from AccessControl import safe_builtins
 from AccessControl.ZopeGuards import guarded_getattr, get_safe_globals
 from RestrictedPython import compile_restricted_eval

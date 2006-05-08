@@ -10,15 +10,13 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-
 """Old Zope-specific Python Expression Handler
 
 Handler for Python expressions, using the pre-Python 2.1 restriction
 machinery from PythonScripts.
+
+$Id$
 """
-
-__version__='$Revision: 1.8 $'[11:-2]
-
 from AccessControl import getSecurityManager
 from Products.PythonScripts.Guarded import _marker, \
      GuardedBlock, theGuard, safebin, WriteGuard, ReadGuard, UntupleFunction

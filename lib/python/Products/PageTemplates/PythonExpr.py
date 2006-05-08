@@ -10,15 +10,13 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-
 """Generic Python Expression Handler
+
+$Id$
 """
-
-__version__='$Revision: 1.13 $'[11:-2]
-
 from TALES import CompilerError
 from sys import exc_info
-from DeferExpr import DeferWrapper
+from zope.tales.expressions import DeferWrapper
 
 class getSecurityManager:
     '''Null security manager'''
