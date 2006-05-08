@@ -10,35 +10,35 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
+"""Zope Page Template module (wrapper for the Zope 3 ZPT implementation)
 
-""" Zope Page Template module (wrapper for the Zope 3 ZPT implementation) """
-
-__version__='$Revision: 1.48 $'[11:-2]
-
+$Id$
+"""
 import re
 import os
 import Acquisition 
 from Globals import ImageFile, package_home, InitializeClass
-from OFS.SimpleItem import SimpleItem
-from zope.contenttype import guess_content_type
 from DateTime.DateTime import DateTime
 from Shared.DC.Scripts.Script import Script 
 from Shared.DC.Scripts.Signature import FuncCode
 
+from OFS.SimpleItem import SimpleItem
 from OFS.History import Historical, html_diff
 from OFS.Cache import Cacheable
 from OFS.Traversable import Traversable
 from OFS.PropertyManager import PropertyManager
 
 from AccessControl import getSecurityManager, safe_builtins, ClassSecurityInfo
-from AccessControl.Permissions import view, ftp_access, change_page_templates, view_management_screens
+from AccessControl.Permissions import view, ftp_access, change_page_templates
+from AccessControl.Permissions import view_management_screens
 
 from webdav.Lockable import ResourceLockedError
 from webdav.WriteLockInterface import WriteLockInterface
+from zope.contenttype import guess_content_type
 from zope.pagetemplate.pagetemplate import PageTemplate 
 from zope.pagetemplate.pagetemplatefile import sniff_type
 
-from Engine import Engine
+from Products.PageTemplates.Engine import Engine
 
 
 # regular expression to extract the encoding from the XML preamble
@@ -75,7 +75,6 @@ class Src(Acquisition.Explicit):
 
 def sniffEncoding(text, default_encoding='utf-8'):
     """ try to determine the encoding from html or xml """
-
     if text.startswith('<?xml'):
         mo = encoding_reg.search(text)
         if mo:
@@ -84,13 +83,11 @@ def sniffEncoding(text, default_encoding='utf-8'):
 
 
 def guess_type(filename, text):
-
     content_type, dummy = guess_content_type(filename, text)
     if content_type in ('text/html', 'text/xml'):
         return content_type
 
     return sniff_type(text) or 'text/html'
-
 
 _default_content_fn = os.path.join(package_home(globals()), 'pt', 'default.html')
   
