@@ -35,6 +35,8 @@ Zope Changes
 
       - Updated Five to bugfix release 1.3.5.
 
+      - OFS.PropertyManager: Provided missing security declarations.
+
   Zope 2.9.2 (2006/03/27)
 
     Bugs fixed

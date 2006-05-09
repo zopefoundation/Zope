@@ -121,7 +121,8 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
                                )),
         ('Access contents information',
          ('hasProperty', 'propertyIds', 'propertyValues','propertyItems',
-          'getProperty', 'getPropertyType', 'propertyMap', ''),
+          'getProperty', 'getPropertyType', 'propertyMap', 'propertyLabel',
+          'propdict', 'valid_property_id', ''),
          ('Anonymous', 'Manager'),
          ),
         )
