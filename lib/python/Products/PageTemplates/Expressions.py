@@ -21,25 +21,21 @@ from zope.tales.tales import ExpressionEngine, Context
 from zope.tales.expressions import PathExpr, StringExpr, NotExpr
 from zope.tales.expressions import DeferExpr, SubPathExpr
 from zope.tales.expressions import SimpleModuleImporter
-from zope.tales.pythonexpr import PythonExpr
-from zope.i18n import translate
 from zope.traversing.adapters import traversePathElement
 
 from zExceptions import NotFound, Unauthorized
 from OFS.interfaces import ITraversable
 from Products.PageTemplates.DeferExpr import LazyExpr
 from Products.PageTemplates.GlobalTranslationService import getGlobalTranslationService
-from Products.PageTemplates.ZRPythonExpr import _SecureModuleImporter
+from Products.PageTemplates.ZRPythonExpr import PythonExpr, _SecureModuleImporter
 SecureModuleImporter = _SecureModuleImporter()
 
 # BBB 2005/05/01 -- remove after 12 months
-import zope.deferredimport
-zope.deferredimport.deprecatedFrom(
-    "Use the Zope 3 ZPT engine instead of the Zope 2 one.  Expression "
-    "types can be imported from zope.tales.expressions.  This reference "
-    "will be gone in Zope 2.12.",
-    "zope.tales.expressions",
-    "StringExpr", "NotExpr"
+import zope.deprecation
+zope.deprecation.deprecated(
+    ("StringExpr", "NotExpr", "PathExpr", "SubPathExpr"),
+    "Zope 2 uses the Zope 3 ZPT engine now.  Expression types can be "
+    "imported from zope.tales.expressions."
     )
 
 def boboTraverseAwareSimpleTraverse(object, path_items, econtext):

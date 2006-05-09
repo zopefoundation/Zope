@@ -19,9 +19,8 @@ $Id$
 from AccessControl import safe_builtins
 from AccessControl.ZopeGuards import guarded_getattr, get_safe_globals
 from RestrictedPython import compile_restricted_eval
-from TALES import CompilerError
-
-from PythonExpr import PythonExpr
+from zope.tales.tales import CompilerError
+from zope.tales.pythonexpr import PythonExpr
 
 class PythonExpr(PythonExpr):
     _globals = get_safe_globals()
@@ -29,20 +28,19 @@ class PythonExpr(PythonExpr):
     _globals['__debug__' ] = __debug__
 
     def __init__(self, name, expr, engine):
-        self.expr = expr = expr.strip().replace('\n', ' ')
-        code, err, warn, use = compile_restricted_eval(expr, str(self))
+        self.text = text = expr.strip().replace('\n', ' ')
+        code, err, warn, use = compile_restricted_eval(text, str(self))
         if err:
-            raise CompilerError, ('Python expression error:\n%s' %
-                                  '\n'.join(err) )
-        self._f_varnames = use.keys()
+            raise engine.getCompilerError()('Python expression error:\n%s' %
+                                            '\n'.join(err))            
+        self._varnames = use.keys()
         self._code = code
 
     def __call__(self, econtext):
-        __traceback_info__ = self.expr
-        code = self._code
-        g = self._bind_used_names(econtext)
-        g.update(self._globals)
-        return eval(code, g, {})
+        __traceback_info__ = self.text
+        vars = self._bind_used_names(econtext, {})
+        vars.update(self._globals)
+        return eval(self._code, vars, {})
 
 class _SecureModuleImporter:
     __allow_access_to_unprotected_subobjects__ = 1
