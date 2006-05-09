@@ -37,6 +37,9 @@ Zope Changes
 
       - OFS.PropertyManager: Provided missing security declarations.
 
+      - Products.SiteErrorLog: SiteErrorLog only copied the unformatted
+        traceback to the event.log, missing out on __traceback_supplement__.
+
   Zope 2.9.2 (2006/03/27)
 
     Bugs fixed
