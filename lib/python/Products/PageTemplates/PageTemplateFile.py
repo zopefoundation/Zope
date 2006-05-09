@@ -33,9 +33,9 @@ from zope.pagetemplate.pagetemplate import PageTemplate
 LOG = getLogger('PageTemplateFile')
 
 class PageTemplateFile(SimpleItem, Script, PageTemplate, Traversable):
-    """ A Zope 2-aware wrapper class around the Zope 3 ZPT
-        PageTemplateFile implementation.
-    """
+    """Zope 2 implementation of a PageTemplate loaded from a file."""
+
+    meta_type = 'Page Template (File)'
 
     func_defaults = None
     func_code = FuncCode((), 0)
