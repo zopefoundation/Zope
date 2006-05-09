@@ -23,7 +23,7 @@ from OFS.SimpleItem import SimpleItem
 from OFS.Traversable import Traversable
 from Shared.DC.Scripts.Script import Script
 from Shared.DC.Scripts.Signature import FuncCode
-from Products.PageTemplates.Engine import Engine
+from Products.PageTemplates.Expressions import getEngine
 from Products.PageTemplates.Expressions import SecureModuleImporter
 from Products.PageTemplates.ZopePageTemplate import guess_type
 
@@ -82,7 +82,7 @@ class PageTemplateFile(SimpleItem, Script, PageTemplate, Traversable):
 
 
     def pt_getEngine(self):
-        return Engine
+        return getEngine()
 
     def pt_getContext(self):
         root = self.getPhysicalRoot()

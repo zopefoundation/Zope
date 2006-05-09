@@ -38,7 +38,7 @@ from zope.contenttype import guess_content_type
 from zope.pagetemplate.pagetemplate import PageTemplate 
 from zope.pagetemplate.pagetemplatefile import sniff_type
 
-from Products.PageTemplates.Engine import Engine
+from Products.PageTemplates.Expressions import getEngine
 
 
 # regular expression to extract the encoding from the XML preamble
@@ -187,7 +187,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
 
 
     def pt_getEngine(self):
-        return Engine
+        return getEngine()
 
 
     security.declareProtected(change_page_templates, 'pt_upload')
