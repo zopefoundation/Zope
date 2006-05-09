@@ -124,6 +124,7 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
     __propsets__=()
     propertysheets=vps(DefaultPropertySheets)
 
+    security.declareProtected(access_contents_information, 'valid_property_id')
     def valid_property_id(self, id):
         if not id or id[:1]=='_' or (id[:3]=='aq_') \
            or (' ' in id) or hasattr(aq_base(self), id) or escape(id) != id:
@@ -248,6 +249,7 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
         """
         return tuple(map(lambda dict: dict.copy(), self._propertyMap()))
 
+    security.declareProtected(access_contents_information, 'propertyLabel')
     def propertyLabel(self, id):
         """Return a label for the given property id
         """
@@ -256,6 +258,7 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
                 return p.get('label', id)
         return id
 
+    security.declareProtected(access_contents_information, 'propdict')
     def propdict(self):
         dict={}
         for p in self._properties:
