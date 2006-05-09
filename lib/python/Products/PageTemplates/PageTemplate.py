@@ -19,5 +19,5 @@ $Id$
 import zope.deprecation
 zope.deprecation.moved("zope.pagetemplate.pagetemplate", "2.12")
 
-from zope.tales.expressions import SimpleModuleImporter
-ModuleImporter = SimpleModuleImporter()
+from zope.tales.expressions import SimpleModuleImporter as _ModuleImporter
+ModuleImporter = _ModuleImporter()
