@@ -98,6 +98,8 @@ class ZopeEngine(ExpressionEngine):
 
 def Engine():
     e = ZopeEngine()
+    #TODO wire in PathIterator.Iterator after fixing it
+    # e.iteratorFactory = Iterator
     for pt in ZopePathExpr._default_type_names:
         e.registerType(pt, ZopePathExpr)
     e.registerType('string', StringExpr)
