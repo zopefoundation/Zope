@@ -22,6 +22,7 @@ from zope.tales.expressions import PathExpr, StringExpr, NotExpr
 from zope.tales.expressions import DeferExpr, SubPathExpr
 from zope.tales.expressions import SimpleModuleImporter
 from zope.traversing.adapters import traversePathElement
+from zope.contentprovider.tales import TALESProviderExpression
 
 from zExceptions import NotFound, Unauthorized
 from OFS.interfaces import ITraversable
@@ -107,6 +108,7 @@ def Engine():
     e.registerType('not', NotExpr)
     e.registerType('defer', DeferExpr)
     e.registerType('lazy', LazyExpr)
+    e.registerType('provider', TALESProviderExpression)
     e.registerBaseName('modules', SecureModuleImporter)
     return e
 
