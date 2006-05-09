@@ -15,10 +15,5 @@
 $Id$
 """
 # BBB 2005/05/01 -- remove after 12 months
-import zope.deferredimport
-zope.deferredimport.deprecatedFrom(
-    "Zope 2 uses the Zope 3 ZPT engine now.  The PythonExpr type can be "
-    "imported from zope.tales.pythonexpr.",
-    "zope.tales.pythonexpr",
-    "PythonExpr", "ExprTypeProxy"
-    )
+import zope.deprecation
+zope.deprecation.moved("zope.tales.pythonexpr", "2.12")
