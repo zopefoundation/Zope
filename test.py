@@ -99,4 +99,14 @@ testrunner.setup.add_option(
 Initialize Zope with the given configuration file.
 """)
 
+def filter_warnings(option, opt, *ignored):
+    import warnings
+    warnings.simplefilter('ignore', Warning, append=True)
+
+testrunner.other.add_option(
+    '--nowarnings', action="callback", callback=filter_warnings,
+    help="""\
+Install a filter to suppress warnings emitted by code.
+""")
+
 sys.exit(testrunner.run(defaults))
