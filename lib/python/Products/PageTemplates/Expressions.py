@@ -294,7 +294,19 @@ def restrictedTraverse(object, path, securityManager,
                 container = o.im_self
             elif (has(aq_base(object), name) and get(object, name) == o):
                 container = object
-            if not validate(object, container, name, o):
+            try:
+                validated = validate(object, container, name, o)
+            except Unauthorized:
+                # If next is a simple unwrapped property, it's
+                # parentage is indeterminate, but it may have been
+                # acquired safely.  In this case validate will
+                # raise an error, and we can explicitly check that
+                # our value was acquired safely.
+                validated = 0
+                if container is None and \
+                                        guarded_getattr(object, name, M) is o:
+                    validated = 1
+            if not validated:
                 raise Unauthorized, name
         else:
             # Try an attribute.
