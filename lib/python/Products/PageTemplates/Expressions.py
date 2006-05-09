@@ -21,15 +21,17 @@ from zope.tales.tales import ExpressionEngine, Context
 from zope.tales.expressions import PathExpr, StringExpr, NotExpr
 from zope.tales.expressions import DeferExpr, SubPathExpr
 from zope.tales.expressions import SimpleModuleImporter
+from zope.tales.pythonexpr import PythonExpr
 from zope.traversing.adapters import traversePathElement
 from zope.contentprovider.tales import TALESProviderExpression
 
 from zExceptions import NotFound, Unauthorized
 from OFS.interfaces import ITraversable
+from Products.PageTemplates import ZRPythonExpr
 from Products.PageTemplates.DeferExpr import LazyExpr
 from Products.PageTemplates.GlobalTranslationService import getGlobalTranslationService
-from Products.PageTemplates.ZRPythonExpr import PythonExpr, _SecureModuleImporter
-SecureModuleImporter = _SecureModuleImporter()
+
+SecureModuleImporter = ZRPythonExpr._SecureModuleImporter()
 
 # BBB 2005/05/01 -- remove after 12 months
 import zope.deprecation
@@ -97,14 +99,14 @@ class ZopeEngine(ExpressionEngine):
                 kwcontexts = contexts
         return ZopeContext(self, kwcontexts)
 
-def Engine():
+def createZopeEngine():
     e = ZopeEngine()
     #TODO wire in PathIterator.Iterator after fixing it
     # e.iteratorFactory = Iterator
     for pt in ZopePathExpr._default_type_names:
         e.registerType(pt, ZopePathExpr)
     e.registerType('string', StringExpr)
-    e.registerType('python', PythonExpr)
+    e.registerType('python', ZRPythonExpr.PythonExpr)
     e.registerType('not', NotExpr)
     e.registerType('defer', DeferExpr)
     e.registerType('lazy', LazyExpr)
@@ -112,7 +114,13 @@ def Engine():
     e.registerBaseName('modules', SecureModuleImporter)
     return e
 
-Engine = Engine()
+def createTrustedZopeEngine():
+    # same as createZopeEngine, but use non-restricted Python
+    # expression evaluator
+    e = createZopeEngine()
+    e.types['python'] = PythonExpr
+    return e
 
+_engine = createZopeEngine()
 def getEngine():
-    return Engine
+    return _engine
