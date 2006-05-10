@@ -57,13 +57,22 @@ install:
 # inplace:     Do an in-place build
 inplace: build
 
+# test:        Do an inplace build and run the Zope test suite.
+test: inplace
+	${PYTHON} "${BASE_DIR}/test.py" ${TESTOPTS}
+
 # instance:    Do an inplace build and create an instance home in the resulting
 #              software home.
 instance: build
-	${PYTHON} "${BASE_DIR}/utilities/mkzopeinstance.py" ${MKZ_FLAGS} \
-           --dir="${BASE_DIR}" 
+	${PYTHON} "${BASE_DIR}/utilities/mkzopeinstance.py" ${MKZ_FLAGS}
 
-# uninstance:  Remove the instance files made by make instance (w/ prejudice)
+# testinst:    Perform an inplace build and create an instance home in the
+#              resulting software home without asking questions.  Useful when
+#              performing automated testing.
+testinst: MKZ_FLAGS=--user=admin:admin --dir="${BASE_DIR}"
+testinst: instance
+
+# uninstance:  Remove the instance files made by testinstance (w/ prejudice)
 uninstance:
 	${RMRF} "${BASE_DIR}/bin"
 	${RMRF} "${BASE_DIR}/etc"
@@ -71,16 +80,6 @@ uninstance:
 	${RMRF} "${BASE_DIR}/log"
 	${RMRF} "${BASE_DIR}/var"
 	${RMRF} "${BASE_DIR}/Products"
-
-# testinst:    Perform an inplace build and create an instance home in the
-#              resulting software home without asking questions.  Useful when
-#              performing automated testing.
-testinst: MKZ_FLAGS=--user=admin:admin
-testinst: instance
-
-# test:        Do an inplace build and run the Zope test suite.
-test: inplace
-	${PYTHON} "${BASE_DIR}/test.py" ${TESTOPTS}
 
 # clean:       Delete the build files and any binaries/bytecode files in
 #              the source directory for good measure.

@@ -18,6 +18,8 @@ Zope Changes
 
    Bugs fixed
 
+      - Collector #2082: 'make install' broken.
+
       - Collector #2081: 'make instance' forced inappropriate dir, credentials.
 
       - Collector #1447: When editing content on a virtual-hosted zope,
