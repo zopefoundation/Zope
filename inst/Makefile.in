@@ -86,6 +86,7 @@ uninstance:
 clean:
 	${FIND} "${BASE_DIR}" \
          -name '*.py[co]' -o -name '*.so' -o -name '*.o' | ${XARGS} ${RM}
+	${RMRF} build
 
 # version_txt: create a version file in lib/python/version.txt
 version_txt:
