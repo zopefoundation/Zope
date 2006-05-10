@@ -101,6 +101,8 @@ class ZopeEngine(ExpressionEngine):
 
 class ZopeIterator(Iterator):
 
+    __allow_access_to_unprotected_subobjects__ = True
+
     # these used to be properties in ZTUtils.Iterator.Iterator
 
     @property
@@ -121,6 +123,10 @@ class ZopeIterator(Iterator):
 
     # these aren't in zope.tales.tales.Iterator, but were in
     # ZTUtils.Iterator.Iterator
+
+    @property
+    def nextIndex(self):
+        return self.index + 1
 
     def first(self, name=None):
         if self.start:
