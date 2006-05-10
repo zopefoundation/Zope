@@ -48,7 +48,7 @@ build:
 install:
 	${PYTHON} "${BASE_DIR}/setup.py" ${DISTUTILS_OPTS} \
 	   build_ext ${BUILD_FLAGS} \
-	   install --skip-build --home="${PREFIX}" ${INSTALL_FLAGS}
+	   install --home="${PREFIX}" ${INSTALL_FLAGS}
 	[ -f ${PREFIX}/bin/python ] || ${LN} ${PYTHON} ${PREFIX}/bin/python
 	@echo
 	@echo Zope binaries installed successfully.
