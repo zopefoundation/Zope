@@ -39,7 +39,9 @@ Zope Changes
       - Collector #940: PageTemplateFile: Open files with universal
         line-endings support to avoid line-endings problems within python
         expressions.
-        
+
+      - OFS.PropertyManager: Provided missing security declarations.
+
 
   Zope 2.8.6 (2006/02/25)
 
