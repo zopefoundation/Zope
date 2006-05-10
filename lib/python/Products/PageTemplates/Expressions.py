@@ -17,7 +17,7 @@ for Python expressions, string literals, and paths.
 
 $Id$
 """
-from zope.tales.tales import ExpressionEngine, Context 
+from zope.tales.tales import ExpressionEngine, Context, Iterator
 from zope.tales.expressions import PathExpr, StringExpr, NotExpr
 from zope.tales.expressions import DeferExpr, SubPathExpr
 from zope.tales.expressions import SimpleModuleImporter
@@ -99,10 +99,48 @@ class ZopeEngine(ExpressionEngine):
                 kwcontexts = contexts
         return ZopeContext(self, kwcontexts)
 
+class ZopeIterator(Iterator):
+
+    # these used to be properties in ZTUtils.Iterator.Iterator
+
+    @property
+    def index(self):
+        return super(ZopeIterator, self).index()
+
+    @property
+    def start(self):
+        return super(ZopeIterator, self).start()
+
+    @property
+    def end(self):
+        return super(ZopeIterator, self).end()
+
+    @property
+    def item(self):
+        return super(ZopeIterator, self).item()
+
+    # these aren't in zope.tales.tales.Iterator, but were in
+    # ZTUtils.Iterator.Iterator
+
+    def first(self, name=None):
+        if self.start:
+            return True
+        return not self.same_part(name, self._last, self.item)
+
+    def last(self, name=None):
+        if self.end:
+            return True
+        return not self.same_part(name, self.item, self._next)
+
+    def same_part(self, name, ob1, ob2):
+        if name is None:
+            return ob1 == ob2
+        no = object()
+        return getattr(ob1, name, no) == getattr(ob2, name, no) is not no
+
 def createZopeEngine():
     e = ZopeEngine()
-    #TODO wire in PathIterator.Iterator after fixing it
-    # e.iteratorFactory = Iterator
+    e.iteratorFactory = ZopeIterator
     for pt in ZopePathExpr._default_type_names:
         e.registerType(pt, ZopePathExpr)
     e.registerType('string', StringExpr)

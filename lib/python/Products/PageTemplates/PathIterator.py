@@ -12,33 +12,14 @@
 ##############################################################################
 """Path Iterator
 
-A TALES Iterator with the ability to use first() and last() on
-subpaths of elements.
+BBB 2005/05/01 -- to be removed after 12 months
 
 $Id$
 """
-import TALES
-from Expressions import restrictedTraverse, Undefs, getSecurityManager
-
-class Iterator(TALES.Iterator):
-    def __bobo_traverse__(self, REQUEST, name):
-        if name in ('first', 'last'):
-            path = REQUEST['TraversalRequestNameStack']
-            names = list(path)
-            names.reverse()
-            path[:] = [tuple(names)]
-        return getattr(self, name)
-
-    def same_part(self, name, ob1, ob2):
-        if name is None:
-            return ob1 == ob2
-        if isinstance(name, type('')):
-            name = name.split('/')
-        name = filter(None, name)
-        securityManager = getSecurityManager()
-        try:
-            ob1 = restrictedTraverse(ob1, name, securityManager)
-            ob2 = restrictedTraverse(ob2, name, securityManager)
-        except Undefs:
-            return 0
-        return ob1 == ob2
+import zope.deferredimport
+zope.deferredimport.deprecated(
+    "It has been renamed to ZopeIterator and moved to the "
+    "Products.PageTemplates.Expressions module.  This reference will be "
+    "gone in Zope 2.12.",
+    PathIterator = "Products.PageTemplates.Expressions:ZopeIterator"
+    )
