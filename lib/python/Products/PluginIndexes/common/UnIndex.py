@@ -301,7 +301,7 @@ class UnIndex(SimpleItem):
         except ConflictError:
             raise
         except:
-            LOG.error('Attempt to unindex nonexistent document'
+            LOG.debug('Attempt to unindex nonexistent document'
                       ' with id %s' % documentId)
 
     def _apply_index(self, request, cid='', type=type):
