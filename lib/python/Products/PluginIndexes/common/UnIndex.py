@@ -302,7 +302,7 @@ class UnIndex(SimpleItem):
             raise
         except:
             LOG.debug('Attempt to unindex nonexistent document'
-                      ' with id %s' % documentId)
+                      ' with id %s' % documentId,exc_info=True)
 
     def _apply_index(self, request, cid='', type=type):
         """Apply the index to query parameters given in the request arg.
