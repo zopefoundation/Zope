@@ -17,6 +17,7 @@ import getopt
 import os
 import sys
 import versions
+import tempfile
 
 QUIET=0
 
@@ -34,6 +35,7 @@ def main():
     global PREFIX
     BASE_DIR=os.path.abspath(os.path.dirname(os.path.dirname(sys.argv[0])))
     PYTHON=sys.executable
+    TMP_DIR = tempfile.gettempdir()
     MAKEFILE=open(os.path.join(BASE_DIR, 'inst', IN_MAKEFILE)).read()
     REQUIRE_LF_ENABLED = 1
     REQUIRE_ZLIB = 1
@@ -82,6 +84,7 @@ def main():
         '<<PYTHON>>':PYTHON,
         '<<PREFIX>>':PREFIX,
         '<<BASE_DIR>>':BASE_DIR,
+        '<<TMP_DIR>>':TMP_DIR,
         '<<INSTALL_FLAGS>>':INSTALL_FLAGS,
         '<<ZOPE_MAJOR_VERSION>>':versions.ZOPE_MAJOR_VERSION,
         '<<ZOPE_MINOR_VERSION>>':versions.ZOPE_MINOR_VERSION,
