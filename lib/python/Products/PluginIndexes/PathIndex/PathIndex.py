@@ -132,7 +132,7 @@ class PathIndex(Persistent, SimpleItem):
         """ hook for (Z)Catalog """
 
         if not self._unindex.has_key(docid):
-            LOG.error('Attempt to unindex nonexistent document with id %s'
+            LOG.debug('Attempt to unindex nonexistent document with id %s'
                       % docid)
             return
 
@@ -150,7 +150,7 @@ class PathIndex(Persistent, SimpleItem):
                 if not self._index[comp]:
                     del self._index[comp]
             except KeyError:
-                LOG.error('Attempt to unindex document with id %s failed'
+                LOG.debug('Attempt to unindex document with id %s failed'
                           % docid)
 
         self._length.change(-1)

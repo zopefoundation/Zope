@@ -80,7 +80,7 @@ class TopicIndex(Persistent, SimpleItem):
             try:
                 fs.unindex_object(docid)
             except KeyError:
-                LOG.error('Attempt to unindex document'
+                LOG.debug('Attempt to unindex document'
                           ' with id %s failed' % docid)
         return 1
 
