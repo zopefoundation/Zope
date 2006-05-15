@@ -336,10 +336,12 @@ class DateTimeTests(unittest.TestCase):
                     try: d_us = DateTime("%d/%d/%d" % (year,month,day))
                     except: continue
 
-                    d_int = DateTime("%d.%d.%d" % (day,month,year), datefmt="international")
+                    d_int = DateTime("%d.%d.%d" % (day,month,year),
+                                     datefmt="international")
                     self.assertEqual(d_us, d_int)
 
-                    d_int = DateTime("%d/%d/%d" % (day,month,year), datefmt="international")
+                    d_int = DateTime("%d/%d/%d" % (day,month,year),
+                                     datefmt="international")
                     self.assertEqual(d_us, d_int)
 
     def test_calcTimezoneName(self):
@@ -371,7 +373,8 @@ class DateTimeTests(unittest.TestCase):
         '''Checks time zone in dates <= 1900 or >= 2038'''
         dt1 = DateTime('2040/01/30 14:33 GMT+1')
         dt2 = DateTime('2040/01/30 11:33 GMT-2')
-        self.assertEqual(dt1.strftime('%d/%m/%Y %H:%M'), dt2.strftime('%d/%m/%Y %H:%M'))
+        self.assertEqual(dt1.strftime('%d/%m/%Y %H:%M'),
+                         dt2.strftime('%d/%m/%Y %H:%M'))
 
     def testStrftimeUnicode(self):
         dt = DateTime('2002-05-02T08:00:00+00:00')
