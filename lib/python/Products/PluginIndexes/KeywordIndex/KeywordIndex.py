@@ -127,7 +127,7 @@ class KeywordIndex(UnIndex):
         try:
             del self._unindex[documentId]
         except KeyError:
-            LOG.error('Attempt to unindex nonexistent'
+            LOG.debug('Attempt to unindex nonexistent'
                       ' document id %s' % documentId)
 
     manage = manage_main = DTMLFile('dtml/manageKeywordIndex', globals())
