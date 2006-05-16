@@ -39,7 +39,7 @@ from ZPublisher.BaseRequest import RequestContainer
 
 def makerequest(app, stdout=stdout):
     resp = HTTPResponse(stdout=stdout)
-    environ = os.environ
+    environ = os.environ.copy()
     environ['SERVER_NAME'] = 'foo'
     environ['SERVER_PORT'] = '80'
     environ['REQUEST_METHOD'] =  'GET'
