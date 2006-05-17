@@ -18,6 +18,9 @@ Zope Changes
 
     Bugs fixed
 
+      - Collector #1429: Fix name/value traversal of ZSQL methods (backport
+        from 2.9).
+
       - Collector #1447: When editing content on a virtual-hosted zope,
         AcceleratedHTTPCacheManager now purges the correct URL.
 
