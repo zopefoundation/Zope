@@ -527,10 +527,10 @@ ListType=type([])
 class Traverse(ExtensionClass.Base):
     """Helper class for 'traversing' searches during URL traversal
     """
-    _r=None
     _da=None
 
     def __init__(self, da, args, name=None):
+        self._r=None
         self._da=da
         self._args=args
         self._name=name
