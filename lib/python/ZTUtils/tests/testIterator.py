@@ -1,7 +1,10 @@
 from __future__ import generators
 import os, sys, unittest
 
+import zope.deprecation
+zope.deprecation.__show__.off()
 from ZTUtils import Iterator
+zope.deprecation.__show__.on()
 
 try:
     iter
