@@ -25,11 +25,17 @@ from Shared.DC.Scripts.Script import Script
 from Shared.DC.Scripts.Signature import FuncCode
 from Products.PageTemplates.Expressions import SecureModuleImporter
 from Products.PageTemplates.PageTemplate import PageTemplate
-from Products.PageTemplates.ZopePageTemplate import guess_type
 
 from zope.contenttype import guess_content_type
+from zope.pagetemplate.pagetemplatefile import sniff_type
 
 LOG = getLogger('PageTemplateFile')
+
+def guess_type(filename, text):
+    content_type, dummy = guess_content_type(filename, text)
+    if content_type in ('text/html', 'text/xml'):
+        return content_type
+    return sniff_type(text) or 'text/html'
 
 class PageTemplateFile(SimpleItem, Script, PageTemplate, Traversable):
     """Zope 2 implementation of a PageTemplate loaded from a file."""

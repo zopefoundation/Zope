@@ -12,7 +12,6 @@ import Zope2
 import transaction
 
 from Testing.makerequest import makerequest
-from Products.PageTemplates.ZopePageTemplate import _default_content_fn
 
 class ZPTRegressions(unittest.TestCase):
 
@@ -35,7 +34,7 @@ class ZPTRegressions(unittest.TestCase):
 
     def testAddWithoutParams(self):
         pt = self._addPT('pt1')
-        default_text = open(_default_content_fn).read()
+        default_text = open(pt._default_content_fn).read()
         self.assertEqual(pt.title, '')
         self.assertEqual(pt.document_src().strip(), default_text.strip())
 
