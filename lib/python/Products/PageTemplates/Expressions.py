@@ -42,9 +42,8 @@ zope.deprecation.deprecated(
     )
 
 def boboTraverseAwareSimpleTraverse(object, path_items, econtext):
-    """ a slightly modified version of zope.tales.expressions.simpleTraverse()
-        that interacts correctly with objects implementing bobo_traverse().
-    """
+    """A slightly modified version of zope.tales.expressions.simpleTraverse
+    that interacts correctly with objects requiring."""
     request = getattr(econtext, 'request', None)
     path_items = list(path_items)
     path_items.reverse()
@@ -56,13 +55,12 @@ def boboTraverseAwareSimpleTraverse(object, path_items, econtext):
                 object = object.restrictedTraverse(name)
             except (NotFound, Unauthorized), e:
                 # OFS.Traversable.restrictedTraverse spits out
-                # NotFound or Unauthorized (the Zope 2 version) which
+                # NotFound or Unauthorized (the Zope 2 versions) which
                 # Zope 3's ZPT implementation obviously doesn't know
-                # as an exception indicating failed traversal.
-                # Perhaps Zope 2's NotFound should be made to extend
-                # LookupError at some point (or it should just be
-                # replaced with Zope 3's version).  For the time
-                # being, however, we simply converting NotFounds into
+                # as exceptions indicating failed traversal.  Perhaps
+                # the Zope 2's versions should be replaced with their
+                # Zope 3 equivalent at some point.  For the time
+                # being, however, we simply convert them into
                 # LookupErrors:
                 raise LookupError(*e.args)
         else:
@@ -71,7 +69,6 @@ def boboTraverseAwareSimpleTraverse(object, path_items, econtext):
     return object
 
 class ZopePathExpr(PathExpr):
-    """Zope2-aware path expression implementation"""
 
     def __init__(self, name, expr, engine):
         super(ZopePathExpr, self).__init__(name, expr, engine,
@@ -79,15 +76,12 @@ class ZopePathExpr(PathExpr):
 
 class ZopeContext(Context):
 
-    def translate(self, msgid, domain, mapping=None,
-                  context=None, target_language=None, default=None):
-        if context is None:
-            context = self.contexts.get('context')
+    def translate(self, msgid, domain=None, mapping=None, default=None):
+        context = self.contexts.get('context')
         return getGlobalTranslationService().translate(
             domain, msgid, mapping=mapping,
             context=context,
-            default=default,
-            target_language=target_language)
+            default=default)
 
 class ZopeEngine(ExpressionEngine):
     
