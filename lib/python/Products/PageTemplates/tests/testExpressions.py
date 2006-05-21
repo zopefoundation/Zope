@@ -51,14 +51,15 @@ class ExpressionTests(unittest.TestCase):
         ec = self.ec
         assert ec.evaluate('x | nothing') is None
 
-        # XXX this fails because Zope 3 doesn't allow empty path
-        # elements. My idea is to deprecate blank path elements and
-        # allow them for the time of the deprecation period. We do
-        # that by implementing our own SubPathExpr that just looks for
-        # empty path elements and replaces them with a call to a
-        # TALESNamespace adapter that explicitly does the empty
-        # element lookup.  Then we hand off to the standard Zope 3
-        # SubPathExpr implementation.  Something along these lines:
+        # XXX The following test fails because Zope 3 doesn't allow
+        # empty path elements.  My idea is to eventually disallow
+        # blank path elements, but to allow them for a limited
+        # deprecation period.  We do that by implementing our own
+        # SubPathExpr that just looks for empty path elements and
+        # replaces them with a call to a TALESNamespace adapter that
+        # explicitly does the empty element lookup.  Then we hand off
+        # to the standard Zope 3 SubPathExpr implementation.
+        # Something along these lines (pseudo-ish code!):
         #
         # class Zope2SubPathExpr(SubPathExpr):
         #     def __init__(self, text, ...):
