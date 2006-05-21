@@ -43,7 +43,8 @@ zope.deprecation.deprecated(
 
 def boboTraverseAwareSimpleTraverse(object, path_items, econtext):
     """A slightly modified version of zope.tales.expressions.simpleTraverse
-    that interacts correctly with objects requiring."""
+    that interacts correctly with objects providing OFS.interfaces.ITraversable.
+    """
     request = getattr(econtext, 'request', None)
     path_items = list(path_items)
     path_items.reverse()
