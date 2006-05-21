@@ -102,3 +102,12 @@ class PageTemplate(ExtensionClass.Base,
         if not kwargs.has_key('args'):
             kwargs['args'] = args
         return self.pt_render(extra_context={'options': kwargs})
+
+    # convenience method for the ZMI which allows to explicitly
+    # specify the HTMLness of a template.  The old Zope 2
+    # implementation had this as well, but arguably on the wrong class
+    # (this should be a ZopePageTemplate thing if at all)
+    def html(self):
+        if not hasattr(getattr(self, 'aq_base', self), 'is_html'):
+            return self.content_type == 'text/html'
+        return self.is_html
