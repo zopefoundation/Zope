@@ -433,7 +433,7 @@ def manage_addPageTemplate(self, id, title='', text='', encoding='utf-8',
         return zpt
 
 from Products.PageTemplates import misc_
-misc_['exclamation.gif'] = ImageFile('pt/exclamation.gif', globals())
+misc_['exclamation.gif'] = ImageFile('www/exclamation.gif', globals())
 
 def initialize(context):
     context.registerClass(
@@ -441,7 +441,7 @@ def initialize(context):
         permission='Add Page Templates',
         constructors=(manage_addPageTemplateForm,
                       manage_addPageTemplate),
-        icon='pt/zpt.gif',
+        icon='www/zpt.gif',
         )
     context.registerHelp()
     context.registerHelpTitle('Zope Help')
