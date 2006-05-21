@@ -87,7 +87,6 @@ class PageTemplateFile(SimpleItem, Script, PageTemplate, Traversable):
     def pt_getContext(self):
         root = self.getPhysicalRoot()
         context = self._getContext()
-        from DateTime.DateTime import DateTime
         c = {'template': self,
              'here': context,
              'context': context,
@@ -95,7 +94,6 @@ class PageTemplateFile(SimpleItem, Script, PageTemplate, Traversable):
              'nothing': None,
              'options': {},
              'root': root,
-             'DateTime' : DateTime,
              'request': getattr(root, 'REQUEST', None),
              'modules': SecureModuleImporter,
              }
