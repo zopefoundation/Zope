@@ -17,6 +17,8 @@ $Id$
 import sys
 import ExtensionClass
 import zope.pagetemplate.pagetemplate
+from zope.pagetemplate.pagetemplate import PTRuntimeError
+from zope.pagetemplate.pagetemplate import PageTemplateTracebackSupplement
 from zope.tales.expressions import SimpleModuleImporter
 from Products.PageTemplates.Expressions import getEngine
 
@@ -31,13 +33,11 @@ zope.deprecation.deprecated(
     "to zope.pagetemplate.pagetemplate.SimpleModuleImporter (this is a "
     "class, not an instance)."
     )
-
-import zope.deferredimport
-zope.deferredimport.deprecatedFrom(
-    "It has moved to zope.pagetemplate.pagetemplate.  This reference will "
+zope.deprecation.deprecated(
+    ('PTRuntimeError', 'PageTemplateTracebackSupplement'),
+    "Zope 2 uses the Zope 3 ZPT engine now.  The object you're importing "
+    "has moved to zope.pagetemplate.pagetemplate.  This reference will "
     "be gone in Zope 2.12.",
-    'zope.pagetemplate.pagetemplate',
-    'PTRuntimeError', 'PageTemplateTracebackSupplement'
     )
 ##############################################################################
 
@@ -64,6 +64,21 @@ class PageTemplate(ExtensionClass.Base,
                 parent = getattr(self, 'aq_parent', None)
             c['root'] = self
         return c
+
+    @property
+    def macros(self):
+        return self.pt_macros()
+
+    # sub classes may override this to do additional stuff for macro access
+    def pt_macros(self):
+        self._cook_check()
+        if self._v_errors:
+            __traceback_supplement__ = (PageTemplateTracebackSupplement, self, {})
+            raise PTRuntimeError, (
+                'Page Template %s has errors: %s' % (
+                self.id, self._v_errors
+                ))
+        return self._v_macros
 
     # these methods are reimplemented or duplicated here because of
     # different call signatures in the Zope 2 world
