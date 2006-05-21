@@ -87,7 +87,11 @@ class ZPTMacros(unittest.TestCase):
     This is in the slot
   </p>
 </div>
-"""       
+"""
+
+    def tearDown(self):
+        transaction.abort()
+        self.app._p_jar.close()
 
     def testMacroExpansion(self):
         request = self.app.REQUEST        
