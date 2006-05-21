@@ -39,6 +39,7 @@ from zope.pagetemplate.pagetemplate import PageTemplate
 from zope.pagetemplate.pagetemplatefile import sniff_type
 
 from Products.PageTemplates.Expressions import getEngine
+from Products.PageTemplates.Expressions import SecureModuleImporter
 
 
 # regular expression to extract the encoding from the XML preamble
@@ -47,16 +48,6 @@ encoding_reg= re.compile('<\?xml.*?encoding="(.*?)".*?\?>', re.M)
 preferred_encodings = ['utf-8', 'iso-8859-15']
 if os.environ.has_key('ZPT_PREFERRED_ENCODING'):
     preferred_encodings.insert(0, os.environ['ZPT_PREFERRED_ENCODING'])
-
-class SecureModuleImporter:
-    __allow_access_to_unprotected_subobjects__ = 1
-    def __getitem__(self, module):
-        mod = safe_builtins['__import__'](module)
-        path = module.split('.')
-        for name in path[1:]:
-            mod = getattr(mod, name)
-        return mod
-
 
 class Src(Acquisition.Explicit):
     """ I am scary code """
@@ -259,7 +250,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
              'options': {},
              'root': root,
              'request': getattr(root, 'REQUEST', None),
-             'modules': SecureModuleImporter(),
+             'modules': SecureModuleImporter,
              }
         return c
 
