@@ -35,9 +35,9 @@ from AccessControl.Permissions import view_management_screens
 from webdav.Lockable import ResourceLockedError
 from webdav.WriteLockInterface import WriteLockInterface
 from zope.contenttype import guess_content_type
-from zope.pagetemplate.pagetemplate import PageTemplate 
 from zope.pagetemplate.pagetemplatefile import sniff_type
 
+from Products.PageTemplates.PageTemplate import PageTemplate
 from Products.PageTemplates.Expressions import getEngine
 from Products.PageTemplates.Expressions import SecureModuleImporter
 
@@ -122,14 +122,6 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         self.strict = strict
         self.ZBindings_edit(self._default_bindings)
         self.pt_edit(text, content_type, encoding)
-
-    def pt_render(self, namespace, source=False, sourceAnnotations=False,
-                  showtal=False):
-        if namespace is None:
-            namespace = self.pt_getContext()
-        return super(ZopePageTemplate, self).pt_render(namespace, source, sourceAnnotations,
-                  showtal)
-
 
     def pt_getEngine(self):
         return getEngine()
@@ -288,11 +280,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         security.addContext(self)
 
         try:
-            # XXX: check the parameters for pt_render()! (aj)
-            result = self.pt_render(self.pt_getContext())
-        
-
-#            result = self.pt_render(extra_context=bound_names)
+            result = self.pt_render(extra_context=bound_names)
             if keyset is not None:
                 # Store the result in the cache.
                 self.ZCacheable_set(result, keywords=keyset)

@@ -14,11 +14,11 @@
 
 $Id$
 """
+import sys
 import ExtensionClass
 import zope.pagetemplate.pagetemplate
 from zope.tales.expressions import SimpleModuleImporter
 from Products.PageTemplates.Expressions import getEngine
-from Products.PageTemplates.Expressions import SecureModuleImporter
 
 ##############################################################################
 # BBB 2005/05/01 -- to be removed after 12 months
@@ -47,12 +47,13 @@ class PageTemplate(ExtensionClass.Base,
     def pt_getEngine(self):
         return getEngine()
 
-    def pt_getContext(self, args=(), options={}):
-        c = super(PageTemplate, self).pt_getContext(args, options)
-        c.update({
-            'request': None,
-            'modules': SimpleModuleImporter(),
-            })
+    def pt_getContext(self):
+        c = {'template': self,
+             'options': {},
+             'nothing': None,
+             'request': None,
+             'modules': SimpleModuleImporter(),
+             }
         parent = getattr(self, 'aq_parent', None)
         if parent is not None:
             c['here'] = parent
@@ -63,3 +64,26 @@ class PageTemplate(ExtensionClass.Base,
                 parent = getattr(self, 'aq_parent', None)
             c['root'] = self
         return c
+
+    # these methods are reimplemented or duplicated here because of
+    # different call signatures in the Zope 2 world
+
+    def pt_render(self, source=False, extra_context={}):
+        c = self.pt_getContext()
+        c.update(extra_context)
+        return super(PageTemplate, self).pt_render(c, source=source)
+
+    def pt_errors(self, namespace={}):
+        self._cook_check()
+        err = self._v_errors
+        if err:
+            return err
+        try:
+            self.pt_render(source=True, extra_context=namespace)
+        except:
+            return ('Macro expansion failed', '%s: %s' % sys.exc_info()[:2])
+
+    def __call__(self, *args, **kwargs):
+        if not kwargs.has_key('args'):
+            kwargs['args'] = args
+        return self.pt_render(extra_context={'options': kwargs})

@@ -59,6 +59,7 @@ class ZPTRegressions(unittest.TestCase):
         self.assertEqual(pt.document_src(), self.text)
 
 class ZPTMacros(unittest.TestCase):
+
     def setUp(self):
         transaction.begin()
         self.app = makerequest(Zope2.app())
@@ -98,9 +99,9 @@ class ZPTMacros(unittest.TestCase):
         request = self.app.REQUEST        
         self._addPT('pt1', text=self.text, REQUEST=request)
         pt = self.app.pt1
-        pt.pt_render(None, source=1)
-        self.assertEqual(pt.pt_errors(None), None)
-        
+        pt.pt_render(source=True)
+        self.assertEqual(pt.pt_errors(), None)
+
 class DummyFileUpload:
 
     def __init__(self, data='', filename='', content_type=''):

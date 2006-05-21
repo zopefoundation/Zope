@@ -25,10 +25,10 @@ from Shared.DC.Scripts.Script import Script
 from Shared.DC.Scripts.Signature import FuncCode
 from Products.PageTemplates.Expressions import getEngine
 from Products.PageTemplates.Expressions import SecureModuleImporter
+from Products.PageTemplates.PageTemplate import PageTemplate
 from Products.PageTemplates.ZopePageTemplate import guess_type
 
 from zope.contenttype import guess_content_type
-from zope.pagetemplate.pagetemplate import PageTemplate
 
 LOG = getLogger('PageTemplateFile')
 
@@ -121,7 +121,7 @@ class PageTemplateFile(SimpleItem, Script, PageTemplate, Traversable):
         try:
             context = self.pt_getContext()
             context.update(bound_names)
-            return self.pt_render(context)
+            return self.pt_render(extra_context=bound_names)
         finally:
             security.removeContext(self)
 
