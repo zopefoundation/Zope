@@ -104,23 +104,25 @@ class TALESTests(unittest.TestCase):
     def testVariables(self):
         '''Test variables'''
         ctxt = self.getContext()
-        c = ctxt.vars
         ctxt.beginScope()
         ctxt.setLocal('v1', 1)
         ctxt.setLocal('v2', 2)
 
+        c = ctxt.vars
         assert c['v1'] == 1, 'Variable "v1"'
 
         ctxt.beginScope()
         ctxt.setLocal('v1', 3)
         ctxt.setGlobal('g', 1)
 
+        c = ctxt.vars
         assert c['v1'] == 3, 'Inner scope'
         assert c['v2'] == 2, 'Outer scope'
         assert c['g'] == 1, 'Global'
 
         ctxt.endScope()
 
+        c = ctxt.vars
         assert c['v1'] == 1, "Uncovered local"
         assert c['g'] == 1, "Global from inner scope"
 
