@@ -17,7 +17,7 @@ $Id$
 import sys
 import ExtensionClass
 import zope.pagetemplate.pagetemplate
-from zope.pagetemplate.pagetemplate import PTRuntimeError
+from zope.pagetemplate.pagetemplate import _error_start, PTRuntimeError
 from zope.pagetemplate.pagetemplate import PageTemplateTracebackSupplement
 from zope.tales.expressions import SimpleModuleImporter
 from Products.PageTemplates.Expressions import getEngine
@@ -102,6 +102,22 @@ class PageTemplate(ExtensionClass.Base,
         if not kwargs.has_key('args'):
             kwargs['args'] = args
         return self.pt_render(extra_context={'options': kwargs})
+
+    def read(self):
+        self._cook_check()
+        if not self._v_errors:
+            if not self.expand:
+                return self._text
+            try:
+                return self.pt_render(source=True)
+            except:
+                return ('%s\n Macro expansion failed\n %s\n-->\n%s' %
+                        (_error_start, "%s: %s" % sys.exc_info()[:2],
+                         self._text) )
+
+        return ('%s\n %s\n-->\n%s' % (_error_start,
+                                      '\n '.join(self._v_errors),
+                                      self._text))
 
     # convenience method for the ZMI which allows to explicitly
     # specify the HTMLness of a template.  The old Zope 2
