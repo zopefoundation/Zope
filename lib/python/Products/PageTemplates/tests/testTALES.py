@@ -1,7 +1,7 @@
 import os, sys, unittest
 
 from Products.PageTemplates import TALES
-from Products.PageTemplates.tests import harness1
+from zope.tales.tests.test_tales import Harness
 import string
 
 class DummyUnicodeExpr:
@@ -18,14 +18,14 @@ class TALESTests(unittest.TestCase):
 
     def testIterator0(self):
         '''Test sample Iterator class'''
-        context = harness1()
+        context = Harness(self)
         it = TALES.Iterator('name', (), context)
         assert not it.next(), "Empty iterator"
         context._complete_()
 
     def testIterator1(self):
         '''Test sample Iterator class'''
-        context = harness1()
+        context = Harness(self)
         it = TALES.Iterator('name', (1,), context)
         context._assert_('setLocal', 'name', 1)
         assert it.next() and not it.next(), "Single-element iterator"
@@ -33,7 +33,7 @@ class TALESTests(unittest.TestCase):
 
     def testIterator2(self):
         '''Test sample Iterator class'''
-        context = harness1()
+        context = Harness(self)
         it = TALES.Iterator('text', 'text', context)
         for c in 'text':
             context._assert_('setLocal', 'text', c)
