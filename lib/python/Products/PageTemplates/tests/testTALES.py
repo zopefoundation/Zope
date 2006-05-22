@@ -1,8 +1,7 @@
-import os, sys, unittest
+import unittest
 
 from Products.PageTemplates import TALES
 from zope.tales.tests.test_tales import Harness
-import string
 
 class DummyUnicodeExpr:
     '''Dummy expression type handler returning unicode'''

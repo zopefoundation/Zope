@@ -1,4 +1,4 @@
-import os, sys, unittest
+import unittest
 
 from Products.PageTemplates import Expressions
 from Products.PageTemplates.DeferExpr import LazyWrapper
