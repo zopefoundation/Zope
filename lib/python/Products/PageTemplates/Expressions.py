@@ -35,6 +35,7 @@ SecureModuleImporter = ZRPythonExpr._SecureModuleImporter()
 
 # BBB 2005/05/01 -- remove after 12 months
 import zope.deprecation
+from zope.deprecation import deprecate
 zope.deprecation.deprecated(
     ("StringExpr", "NotExpr", "PathExpr", "SubPathExpr"),
     "Zope 2 uses the Zope 3 ZPT engine now.  Expression types can be "
@@ -98,7 +99,12 @@ class ZopeIterator(Iterator):
 
     __allow_access_to_unprotected_subobjects__ = True
 
-    # these used to be properties in ZTUtils.Iterator.Iterator
+    # The things below used to be attributes in
+    # ZTUtils.Iterator.Iterator, however in zope.tales.tales.Iterator
+    # they're methods.  We need BBB on the Python level so we redefine
+    # them as properties here.  Eventually, we would like to get rid
+    # of them, though, so that we won't have to maintain yet another
+    # iterator class somewhere.
 
     @property
     def index(self):
@@ -116,18 +122,27 @@ class ZopeIterator(Iterator):
     def item(self):
         return super(ZopeIterator, self).item()
 
-    # these aren't in zope.tales.tales.Iterator, but were in
-    # ZTUtils.Iterator.Iterator
+    # The following things were in ZTUtils.Iterator.Iterator but
+    # aren't anymore in zope.tales.tales.Iterator.  For a good reason.
+    # They're just insane.
+
+    # BBB 2005/05/01 -- to be removed after 12 months
 
     @property
+    @deprecate("The 'nextIndex' method has been deprecated and will disappear "
+               "in Zope 2.12.  Use 'iterator.index+1' instead.")
     def nextIndex(self):
         return self.index + 1
 
+    @deprecate("The 'first' method has been deprecated and will disappear "
+               "in Zope 2.12.  Use the 'start' property instead.")
     def first(self, name=None):
         if self.start:
             return True
         return not self.same_part(name, self._last, self.item)
 
+    @deprecate("The 'last' method has been deprecated and will disappear "
+               "in Zope 2.12.  Use the 'end' property instead.")
     def last(self, name=None):
         if self.end:
             return True
