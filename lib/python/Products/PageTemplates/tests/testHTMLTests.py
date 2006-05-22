@@ -125,6 +125,11 @@ class HTMLTests(zope.component.testing.PlacelessSetup, unittest.TestCase):
         self.assert_expected(self.folder.t, 'Loop1.html')
 
     def checkFancyLoop(self):
+        # XXX iterator/first/bla is supposed to work for some reason,
+        # even though iterator.first is a method that needs to be
+        # called (and that won't happen when it appears inside a path
+        # expr).  I wonder how this worked in Zope 2.9.  Need to
+        # investigate.
         self.assert_expected(self.folder.t, 'Loop2.html')
 
     def checkGlobalsShadowLocals(self):
