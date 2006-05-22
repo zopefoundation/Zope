@@ -76,36 +76,7 @@ class ExpressionTests(unittest.TestCase):
         '''Test hybrid path expressions'''
         ec = self.ec
         assert ec.evaluate('x | python:1+1') == 2
-
-        # XXX The following test fails because int here is called
-        # which yields 0, not the int type. Why is it called? Because
-        # PathExpr calls everything that's not on the trees by the
-        # time it has counted to three.
-        assert ec.evaluate('x | python:int') == int
-
-        # The whole expression is a PathExpr with two subexpressions:
-        # a SubPathExpr and a PythonExpr.  The first fails as
-        # intended, so the second is evaluated.  The result is called.
-        # The old PathExpr didn't do that.  Specifically, it wouldn't
-        # call builtin types (str, unicode, dict, list, tuple, bool).
-        # There are two things we can do about this now:
-
-        # a) Nothing. Accept the incompatibility from Zope 2.9 to
-        #    2.10.  Of course, this might break existing code, but
-        #    there are ways to make code compatible with 2.9 and 2.10:
-        #    Add a nocall: before the python: expression (if that's
-        #    possible?!?).  You just have to know about these things
-        #    beforehand.
-        
-        # b) Provide our own PathExpr implementation that does not
-        #    blindly call primitive types.  We would have to keep this
-        #    code in Zope 2 forever which means there'd be an
-        #    incompatibility between Zope 2 and Zope 3 ZPTs forever.
-
-        # I'm leaning towards option a). Given that this only turns
-        # out to be a problem with builtin types, the breakage is
-        # quite limited.
-
+        assert ec.evaluate('x | python:int') == 0
         assert ec.evaluate('x | string:x') == 'x'
         assert ec.evaluate('x | string:$one') == '1'
         assert ec.evaluate('x | not:exists:x')
