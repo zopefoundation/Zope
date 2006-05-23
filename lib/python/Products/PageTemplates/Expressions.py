@@ -25,8 +25,10 @@ from zope.tales.pythonexpr import PythonExpr
 from zope.traversing.interfaces import ITraversable
 from zope.traversing.adapters import traversePathElement
 from zope.contentprovider.tales import TALESProviderExpression
+from zope.proxy import removeAllProxies
 
 import OFS.interfaces
+from Acquisition import aq_base
 from zExceptions import NotFound, Unauthorized
 from Products.PageTemplates import ZRPythonExpr
 from Products.PageTemplates.DeferExpr import LazyExpr
@@ -72,11 +74,54 @@ def boboTraverseAwareSimpleTraverse(object, path_items, econtext):
                                          request=request)
     return object
 
+def render(ob, ns):
+    """Calls the object, possibly a document template, or just returns
+    it if not callable.  (From DT_Util.py)
+    """
+    if hasattr(ob, '__render_with_namespace__'):
+        ob = ZRPythonExpr.call_with_ns(ob.__render_with_namespace__, ns)
+    else:
+        # items might be acquisition wrapped
+        base = aq_base(ob)
+        # item might be proxied (e.g. modules might have a deprecation
+        # proxy)
+        base = removeAllProxies(base)
+        if callable(base):
+            try:
+                if getattr(base, 'isDocTemp', 0):
+                    ob = call_with_ns(ob, ns, 2)
+                else:
+                    ob = ob()
+            except AttributeError, n:
+                if str(n) != '__call__':
+                    raise
+    return ob
+
 class ZopePathExpr(PathExpr):
 
     def __init__(self, name, expr, engine):
         super(ZopePathExpr, self).__init__(name, expr, engine,
                                            boboTraverseAwareSimpleTraverse)
+
+    # override this to support different call metrics (see bottom of method)
+    def _eval(self, econtext):
+        for expr in self._subexprs[:-1]:
+            # Try all but the last subexpression, skipping undefined ones.
+            try:
+                ob = expr(econtext)
+            except Undefs:
+                pass
+            else:
+                break
+        else:
+            # On the last subexpression allow exceptions through.
+            ob = self._subexprs[-1](econtext)
+
+        if self._name == 'nocall':
+            return ob
+
+        # this is where we are different from our super class:
+        return render(ob, econtext.vars)
 
 class ZopeContext(Context):
 
