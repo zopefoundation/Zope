@@ -125,15 +125,6 @@ class HTMLTests(zope.component.testing.PlacelessSetup, unittest.TestCase):
         self.assert_expected(self.folder.t, 'Loop1.html')
 
     def checkFancyLoop(self):
-        # XXX This checks among others for a feature of the
-        # PathIterator which lets you do something like this in a path
-        # expr: iterator/last/bla.  This would check whether the
-        # current item in the iteration was the last one with a
-        # particular 'bla' attribute value.  I wonder whether anyone
-        # actually needs this? I vote for ripping it out.  We can
-        # provide BBB for a certain deprecation period by enabling a
-        # specialized ITraversable adapter for ZopeIterator that works
-        # similar to the old PathIterator.
         self.assert_expected(self.folder.t, 'Loop2.html')
 
     def checkGlobalsShadowLocals(self):

@@ -18,8 +18,8 @@ $Id$
 """
 import zope.deferredimport
 zope.deferredimport.deprecated(
-    "It has been renamed to ZopeIterator and moved to the "
+    "It has been renamed to PathIterator and moved to the "
     "Products.PageTemplates.Expressions module.  This reference will be "
     "gone in Zope 2.12.",
-    PathIterator = "Products.PageTemplates.Expressions:ZopeIterator"
+    PathIterator = "Products.PageTemplates.Expressions:PathIterator"
     )

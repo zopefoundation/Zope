@@ -17,16 +17,18 @@ for Python expressions, string literals, and paths.
 
 $Id$
 """
+from zope.interface import implements
 from zope.tales.tales import ExpressionEngine, Context, Iterator
 from zope.tales.expressions import PathExpr, StringExpr, NotExpr
 from zope.tales.expressions import DeferExpr, SubPathExpr
 from zope.tales.expressions import SimpleModuleImporter
 from zope.tales.pythonexpr import PythonExpr
+from zope.traversing.interfaces import ITraversable
 from zope.traversing.adapters import traversePathElement
 from zope.contentprovider.tales import TALESProviderExpression
 
+import OFS.interfaces
 from zExceptions import NotFound, Unauthorized
-from OFS.interfaces import ITraversable
 from Products.PageTemplates import ZRPythonExpr
 from Products.PageTemplates.DeferExpr import LazyExpr
 from Products.PageTemplates.GlobalTranslationService import getGlobalTranslationService
@@ -52,7 +54,7 @@ def boboTraverseAwareSimpleTraverse(object, path_items, econtext):
 
     while path_items:
         name = path_items.pop()
-        if ITraversable.providedBy(object):
+        if OFS.interfaces.ITraversable.providedBy(object):
             try:
                 object = object.restrictedTraverse(name)
             except (NotFound, Unauthorized), e:
@@ -82,8 +84,7 @@ class ZopeContext(Context):
         context = self.contexts.get('context')
         return getGlobalTranslationService().translate(
             domain, msgid, mapping=mapping,
-            context=context,
-            default=default)
+            context=context, default=default)
 
 class ZopeEngine(ExpressionEngine):
     
@@ -96,8 +97,6 @@ class ZopeEngine(ExpressionEngine):
         return ZopeContext(self, kwcontexts)
 
 class ZopeIterator(Iterator):
-
-    __allow_access_to_unprotected_subobjects__ = True
 
     # The things below used to be attributes in
     # ZTUtils.Iterator.Iterator, however in zope.tales.tales.Iterator
@@ -122,27 +121,23 @@ class ZopeIterator(Iterator):
     def item(self):
         return super(ZopeIterator, self).item()
 
-    # The following things were in ZTUtils.Iterator.Iterator but
-    # aren't anymore in zope.tales.tales.Iterator.  For a good reason.
-    # They're just insane.
-
+    # This method was on the old ZTUtils.Iterator.Iterator class but
+    # isn't part of the spec.  We'll support it for a short
+    # deprecation period.
     # BBB 2005/05/01 -- to be removed after 12 months
-
     @property
     @deprecate("The 'nextIndex' method has been deprecated and will disappear "
                "in Zope 2.12.  Use 'iterator.index+1' instead.")
     def nextIndex(self):
         return self.index + 1
 
-    @deprecate("The 'first' method has been deprecated and will disappear "
-               "in Zope 2.12.  Use the 'start' property instead.")
+    # 'first' and 'last' are Zope 2 enhancements to the TALES iterator
+    # spec.  See help/tal-repeat.stx for more info
     def first(self, name=None):
         if self.start:
             return True
-        return not self.same_part(name, self._last, self.item)
+        return not self.same_part(name, self._last_item, self.item)
 
-    @deprecate("The 'last' method has been deprecated and will disappear "
-               "in Zope 2.12.  Use the 'end' property instead.")
     def last(self, name=None):
         if self.end:
             return True
@@ -154,9 +149,47 @@ class ZopeIterator(Iterator):
         no = object()
         return getattr(ob1, name, no) == getattr(ob2, name, no) is not no
 
+    # 'first' needs to have access to the last item in the loop
+    def next(self):
+        if self._nextIndex > 0:
+            self._last_item = self.item
+        return super(ZopeIterator, self).next()
+
+class PathIterator(ZopeIterator):
+    """A TALES Iterator with the ability to use first() and last() on
+    subpaths of elements."""
+    # we want to control our own traversal so that we can deal with
+    # 'first' and 'last' when they appear in path expressions
+    implements(ITraversable)
+
+    def traverse(self, name, furtherPath):
+        if name in ('first', 'last'):
+            method = getattr(self, name)
+            # it's important that 'name' becomes a copy because we'll
+            # clear out 'furtherPath'
+            name = furtherPath[:]
+            if not name:
+                name = None
+            # make sure that traversal ends here with us
+            furtherPath[:] = []
+            return method(name)
+        return getattr(self, name)
+
+    def same_part(self, name, ob1, ob2):
+        if name is None:
+            return ob1 == ob2
+        if isinstance(name, basestring):
+            name = name.split('/')
+        try:
+            ob1 = boboTraverseAwareSimpleTraverse(ob1, name, None)
+            ob2 = boboTraverseAwareSimpleTraverse(ob2, name, None)
+        except LookupError:
+            return False
+        return ob1 == ob2
+
 def createZopeEngine():
     e = ZopeEngine()
-    e.iteratorFactory = ZopeIterator
+    e.iteratorFactory = PathIterator
     for pt in ZopePathExpr._default_type_names:
         e.registerType(pt, ZopePathExpr)
     e.registerType('string', StringExpr)
