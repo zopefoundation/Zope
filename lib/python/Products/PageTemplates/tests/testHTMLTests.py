@@ -162,6 +162,9 @@ class HTMLTests(zope.component.testing.PlacelessSetup, unittest.TestCase):
         self.assert_expected(self.folder.t, 'CheckI18nTranslateHooked.html')
         setGlobalTranslationService(old_ts)
 
+    def checkImportOldStyleClass(self):
+        self.assert_expected(self.folder.t, 'CheckImportOldStyleClass.html')
+
 def test_suite():
     return unittest.makeSuite(HTMLTests, 'check')
 
