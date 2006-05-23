@@ -21,7 +21,6 @@ from zope.interface import implements
 from zope.tales.tales import ExpressionEngine, Context, Iterator
 from zope.tales.expressions import PathExpr, StringExpr, NotExpr
 from zope.tales.expressions import DeferExpr, SubPathExpr
-from zope.tales.expressions import SimpleModuleImporter
 from zope.tales.pythonexpr import PythonExpr
 from zope.traversing.interfaces import ITraversable
 from zope.traversing.adapters import traversePathElement
@@ -38,8 +37,9 @@ SecureModuleImporter = ZRPythonExpr._SecureModuleImporter()
 # BBB 2005/05/01 -- remove after 12 months
 import zope.deprecation
 from zope.deprecation import deprecate
+from zope.tales.expressions import Undefs
 zope.deprecation.deprecated(
-    ("StringExpr", "NotExpr", "PathExpr", "SubPathExpr"),
+    ("StringExpr", "NotExpr", "PathExpr", "SubPathExpr", "Undefs"),
     "Zope 2 uses the Zope 3 ZPT engine now.  Expression types can be "
     "imported from zope.tales.expressions."
     )
