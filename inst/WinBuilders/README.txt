@@ -6,7 +6,7 @@ The buildout has been tested under Windows 2K and XP Pro SP2.
 Setup Environment
 ------------------
 
-Install Python 2.4.2 (or whatever is most current) by running its native
+Install Python 2.4.3 (or whatever is most current) by running its native
 Windows installer from python.org.
 
     Note:  Python 2.4 switched from using a Wise installer to using a
@@ -35,9 +35,9 @@ Within a Zope checkout, the parent directory of this package is inst.  Make
 a "tmp" directory, inst/tmp.  Place the necessary pre-requisites in the tmp
 directory.  At the time of this writing, these are:
 
-  - Python-2.4.2.tgz
-  - pywin32-207.win32-py2.4.exe
-  - Zope-2.9.1.tgz
+  - Python-2.4.3.tgz
+  - pywin32-208.win32-py2.4.exe
+  - Zope-2.9.3.tgz
 
 As time marches on, these version numbers will obviously change.  See/edit
 mk/python.mk and mk/zope.mk for the exact versions required.
