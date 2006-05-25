@@ -116,6 +116,8 @@ class ZopePathExpr(PathExpr):
         else:
             # On the last subexpression allow exceptions through.
             ob = self._subexprs[-1](econtext)
+            if self._hybrid:
+                return ob
 
         if self._name == 'nocall':
             return ob

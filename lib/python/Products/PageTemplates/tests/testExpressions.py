@@ -76,7 +76,7 @@ class ExpressionTests(unittest.TestCase):
         '''Test hybrid path expressions'''
         ec = self.ec
         assert ec.evaluate('x | python:1+1') == 2
-        assert ec.evaluate('x | python:int') == 0
+        assert ec.evaluate('x | python:int') == int
         assert ec.evaluate('x | string:x') == 'x'
         assert ec.evaluate('x | string:$one') == '1'
         assert ec.evaluate('x | not:exists:x')
