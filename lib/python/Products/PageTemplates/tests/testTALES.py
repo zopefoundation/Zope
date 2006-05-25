@@ -1,6 +1,17 @@
 import unittest
 
+# BBB 2005/05/01 -- to be changed after 12 months
+# ignore deprecation warnings on import for now
+import warnings
+showwarning = warnings.showwarning
+warnings.showwarning = lambda *a, **k: None
+# this old import should remain here until the TALES.py module is
+# completely removed, so that API backward compatibility is properly
+# tested
 from Products.PageTemplates import TALES
+# restore warning machinery
+warnings.showwarning = showwarning
+
 from zope.tales.tests.test_tales import Harness
 
 class DummyUnicodeExpr:
