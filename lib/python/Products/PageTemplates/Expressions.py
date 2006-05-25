@@ -18,7 +18,7 @@ for Python expressions, string literals, and paths.
 $Id$
 """
 from zope.interface import implements
-from zope.tales.tales import ExpressionEngine, Context, Iterator
+from zope.tales.tales import Context, Iterator
 from zope.tales.expressions import PathExpr, StringExpr, NotExpr
 from zope.tales.expressions import DeferExpr, SubPathExpr
 from zope.tales.pythonexpr import PythonExpr
@@ -26,6 +26,7 @@ from zope.traversing.interfaces import ITraversable
 from zope.traversing.adapters import traversePathElement
 from zope.contentprovider.tales import TALESProviderExpression
 from zope.proxy import removeAllProxies
+import zope.app.pagetemplate.engine
 
 import OFS.interfaces
 from Acquisition import aq_base
@@ -133,15 +134,9 @@ class ZopeContext(Context):
             domain, msgid, mapping=mapping,
             context=context, default=default)
 
-class ZopeEngine(ExpressionEngine):
-    
-    def getContext(self, contexts=None, **kwcontexts):
-        if contexts is not None:
-            if kwcontexts:
-                kwcontexts.update(contexts)
-            else:
-                kwcontexts = contexts
-        return ZopeContext(self, kwcontexts)
+class ZopeEngine(zope.app.pagetemplate.engine.ZopeEngine):
+
+    _create_context = ZopeContext
 
 class ZopeIterator(Iterator):
 
