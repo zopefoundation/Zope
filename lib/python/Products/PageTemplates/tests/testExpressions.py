@@ -1,5 +1,8 @@
 import unittest
 
+import zope.component.testing
+from zope.traversing.adapters import DefaultTraversable
+
 from Products.PageTemplates import Expressions
 from Products.PageTemplates.DeferExpr import LazyWrapper
 from Products.PageTemplates.DeferExpr import DeferWrapper
@@ -9,9 +12,12 @@ class Dummy:
     def __call__(self):
         return 'dummy'
 
-class ExpressionTests(unittest.TestCase):
+class ExpressionTests(zope.component.testing.PlacelessSetup, unittest.TestCase):
 
     def setUp(self):
+        super(ExpressionTests, self).setUp()
+        zope.component.provideAdapter(DefaultTraversable, (None,))
+
         self.e = e = Expressions.getEngine()
         self.ec = e.getContext(
             one = 1,
@@ -19,9 +25,6 @@ class ExpressionTests(unittest.TestCase):
             blank = '',
             dummy = Dummy()
             )
-
-    def tearDown(self):
-        del self.e, self.ec
 
     def testCompile(self):
         '''Test expression compilation'''
