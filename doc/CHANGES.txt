@@ -14,7 +14,11 @@ Zope Changes
      to the rules for such a type laid out in the Python docs:
      http://docs.python.org/api/supporting-cycle-detection.html
 
-  After Zope 2.8.6
+  Zope 2.8.7 (unreleased)
+
+    Features added:
+        
+      - ZODB 3.4.3
 
     Bugs fixed
 
