@@ -53,9 +53,12 @@ zope.deprecation.deprecated(
 # Path Expression uses them
 ZopeUndefs = Undefs + (NotFound, Unauthorized)
 
-def boboTraverseAwareSimpleTraverse(object, path_items, econtext):
-    """A slightly modified version of zope.tales.expressions.simpleTraverse
-    that interacts correctly with objects providing OFS.interfaces.ITraversable.
+def boboAwareZopeTraverse(object, path_items, econtext):
+    """Traverses a sequence of names, first trying attributes then items.
+
+    This uses Zope 3 path traversal where possible and interacts
+    correctly with objects providing OFS.interface.ITraversable when
+    necessary (bobo-awareness).
     """
     request = getattr(econtext, 'request', None)
     path_items = list(path_items)
@@ -97,7 +100,7 @@ class ZopePathExpr(PathExpr):
 
     def __init__(self, name, expr, engine):
         super(ZopePathExpr, self).__init__(name, expr, engine,
-                                           boboTraverseAwareSimpleTraverse)
+                                           boboAwareZopeTraverse)
 
     # override this to support different call metrics (see bottom of
     # method) and Zope 2's traversal exceptions (ZopeUndefs instead of
@@ -232,8 +235,8 @@ class PathIterator(ZopeIterator):
         if isinstance(name, basestring):
             name = name.split('/')
         try:
-            ob1 = boboTraverseAwareSimpleTraverse(ob1, name, None)
-            ob2 = boboTraverseAwareSimpleTraverse(ob2, name, None)
+            ob1 = boboAwareZopeTraverse(ob1, name, None)
+            ob2 = boboAwareZopeTraverse(ob2, name, None)
         except LookupError:
             return False
         return ob1 == ob2
