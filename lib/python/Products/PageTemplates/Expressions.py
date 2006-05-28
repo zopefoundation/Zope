@@ -237,7 +237,7 @@ class PathIterator(ZopeIterator):
         try:
             ob1 = boboAwareZopeTraverse(ob1, name, None)
             ob2 = boboAwareZopeTraverse(ob2, name, None)
-        except LookupError:
+        except ZopeUndefs:
             return False
         return ob1 == ob2
 
