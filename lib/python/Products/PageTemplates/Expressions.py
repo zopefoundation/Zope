@@ -20,7 +20,7 @@ $Id$
 from zope.interface import implements
 from zope.tales.tales import Context, Iterator
 from zope.tales.expressions import PathExpr, StringExpr, NotExpr
-from zope.tales.expressions import DeferExpr, SubPathExpr
+from zope.tales.expressions import DeferExpr, SubPathExpr, Undefs
 from zope.tales.pythonexpr import PythonExpr
 from zope.traversing.interfaces import ITraversable
 from zope.traversing.adapters import traversePathElement
@@ -40,12 +40,18 @@ SecureModuleImporter = ZRPythonExpr._SecureModuleImporter()
 # BBB 2005/05/01 -- remove after 12 months
 import zope.deprecation
 from zope.deprecation import deprecate
-from zope.tales.expressions import Undefs
 zope.deprecation.deprecated(
     ("StringExpr", "NotExpr", "PathExpr", "SubPathExpr", "Undefs"),
     "Zope 2 uses the Zope 3 ZPT engine now.  Expression types can be "
     "imported from zope.tales.expressions."
     )
+
+# In Zope 2 traversal semantics, NotFound or Unauthorized (the Zope 2
+# versions) indicate that traversal has failed.  By default, Zope 3's
+# TALES engine doesn't recognize them as such which is why we extend
+# Zope 3's list here and make sure our implementation of the TALES
+# Path Expression uses them
+ZopeUndefs = Undefs + (NotFound, Unauthorized)
 
 def boboTraverseAwareSimpleTraverse(object, path_items, econtext):
     """A slightly modified version of zope.tales.expressions.simpleTraverse
@@ -58,18 +64,7 @@ def boboTraverseAwareSimpleTraverse(object, path_items, econtext):
     while path_items:
         name = path_items.pop()
         if OFS.interfaces.ITraversable.providedBy(object):
-            try:
-                object = object.restrictedTraverse(name)
-            except (NotFound, Unauthorized), e:
-                # OFS.Traversable.restrictedTraverse spits out
-                # NotFound or Unauthorized (the Zope 2 versions) which
-                # Zope 3's ZPT implementation obviously doesn't know
-                # as exceptions indicating failed traversal.  Perhaps
-                # the Zope 2's versions should be replaced with their
-                # Zope 3 equivalent at some point.  For the time
-                # being, however, we simply convert them into
-                # LookupErrors:
-                raise LookupError(*e.args)
+            object = object.restrictedTraverse(name)
         else:
             object = traversePathElement(object, name, path_items,
                                          request=request)
@@ -104,13 +99,15 @@ class ZopePathExpr(PathExpr):
         super(ZopePathExpr, self).__init__(name, expr, engine,
                                            boboTraverseAwareSimpleTraverse)
 
-    # override this to support different call metrics (see bottom of method)
+    # override this to support different call metrics (see bottom of
+    # method) and Zope 2's traversal exceptions (ZopeUndefs instead of
+    # Undefs)
     def _eval(self, econtext):
         for expr in self._subexprs[:-1]:
             # Try all but the last subexpression, skipping undefined ones.
             try:
                 ob = expr(econtext)
-            except Undefs:
+            except ZopeUndefs: # use Zope 2 expression types
                 pass
             else:
                 break
@@ -125,6 +122,18 @@ class ZopePathExpr(PathExpr):
 
         # this is where we are different from our super class:
         return render(ob, econtext.vars)
+
+    # override this to support Zope 2's traversal exceptions
+    # (ZopeUndefs instead of Undefs)
+    def _exists(self, econtext):
+        for expr in self._subexprs:
+            try:
+                expr(econtext)
+            except ZopeUndefs: # use Zope 2 expression types
+                pass
+            else:
+                return 1
+        return 0
 
 class ZopeContext(Context):
 
