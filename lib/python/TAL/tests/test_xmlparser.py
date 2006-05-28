@@ -7,7 +7,17 @@ import sys
 from TAL.tests import utils
 import unittest
 
+# BBB 2005/05/01 -- to be changed after 12 months
+# ignore deprecation warnings on import for now
+import warnings
+showwarning = warnings.showwarning
+warnings.showwarning = lambda *a, **k: None
+# this old import should remain here until the TAL package is
+# completely removed, so that API backward compatibility is properly
+# tested
 from TAL import XMLParser
+# restore warning machinery
+warnings.showwarning = showwarning
 
 
 class EventCollector(XMLParser.XMLParser):
