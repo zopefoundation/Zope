@@ -22,7 +22,7 @@
 
 <span metal:use-macro="OUTER2">
   AAA
-  <xxx metal:fill-slot="OUTERSLOT">
+  <xxx>
   <span>INNER</span>
   </xxx>
   BBB
@@ -48,7 +48,7 @@
 
 <span metal:use-macro="OUTER3">
   AAA
-  <xxx metal:fill-slot="OUTERSLOT">
+  <xxx>
   <span>INNER
     <xxx>INNERSLOT</xxx>
   </span>
@@ -63,7 +63,7 @@
 </span>
 
 <span metal:use-macro="INNER3">INNER
-    <xxx metal:fill-slot="INNERSLOT">INNERSLOT</xxx>
+    <xxx>INNERSLOT</xxx>
   </span>
 
 <span metal:use-macro="INNER3">INNER
