@@ -1,8 +1,18 @@
-import os, sys, unittest
+import unittest
 
+# BBB 2005/05/01 -- to be changed after 12 months
+# ignore deprecation warnings on import for now
+import warnings
+showwarning = warnings.showwarning
+warnings.showwarning = lambda *a, **k: None
+# this old import should remain here until the TALES.py module is
+# completely removed, so that API backward compatibility is properly
+# tested
 from Products.PageTemplates import TALES
-from Products.PageTemplates.tests import harness1
-import string
+# restore warning machinery
+warnings.showwarning = showwarning
+
+from zope.tales.tests.test_tales import Harness
 
 class DummyUnicodeExpr:
     '''Dummy expression type handler returning unicode'''
@@ -18,14 +28,14 @@ class TALESTests(unittest.TestCase):
 
     def testIterator0(self):
         '''Test sample Iterator class'''
-        context = harness1()
+        context = Harness(self)
         it = TALES.Iterator('name', (), context)
         assert not it.next(), "Empty iterator"
         context._complete_()
 
     def testIterator1(self):
         '''Test sample Iterator class'''
-        context = harness1()
+        context = Harness(self)
         it = TALES.Iterator('name', (1,), context)
         context._assert_('setLocal', 'name', 1)
         assert it.next() and not it.next(), "Single-element iterator"
@@ -33,7 +43,7 @@ class TALESTests(unittest.TestCase):
 
     def testIterator2(self):
         '''Test sample Iterator class'''
-        context = harness1()
+        context = Harness(self)
         it = TALES.Iterator('text', 'text', context)
         for c in 'text':
             context._assert_('setLocal', 'text', c)
@@ -104,23 +114,25 @@ class TALESTests(unittest.TestCase):
     def testVariables(self):
         '''Test variables'''
         ctxt = self.getContext()
-        c = ctxt.vars
         ctxt.beginScope()
         ctxt.setLocal('v1', 1)
         ctxt.setLocal('v2', 2)
 
+        c = ctxt.vars
         assert c['v1'] == 1, 'Variable "v1"'
 
         ctxt.beginScope()
         ctxt.setLocal('v1', 3)
         ctxt.setGlobal('g', 1)
 
+        c = ctxt.vars
         assert c['v1'] == 3, 'Inner scope'
         assert c['v2'] == 2, 'Outer scope'
         assert c['g'] == 1, 'Global'
 
         ctxt.endScope()
 
+        c = ctxt.vars
         assert c['v1'] == 1, "Uncovered local"
         assert c['g'] == 1, "Global from inner scope"
 

@@ -10,73 +10,81 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-
 """Page Template Expression Engine
 
 Page Template-specific implementation of TALES, with handlers
 for Python expressions, string literals, and paths.
+
+$Id$
 """
+from zope.interface import implements
+from zope.tales.tales import Context, Iterator
+from zope.tales.expressions import PathExpr, StringExpr, NotExpr
+from zope.tales.expressions import DeferExpr, SubPathExpr, Undefs
+from zope.tales.pythonexpr import PythonExpr
+from zope.traversing.interfaces import ITraversable
+from zope.traversing.adapters import traversePathElement
+from zope.contentprovider.tales import TALESProviderExpression
+from zope.proxy import removeAllProxies
+import zope.app.pagetemplate.engine
 
-__version__='$Revision: 1.45 $'[11:-2]
+import OFS.interfaces
+from Acquisition import aq_base
+from zExceptions import NotFound, Unauthorized
+from Products.PageTemplates import ZRPythonExpr
+from Products.PageTemplates.DeferExpr import LazyExpr
+from Products.PageTemplates.GlobalTranslationService import getGlobalTranslationService
 
-import re, sys
-from TALES import Engine
-from TALES import CompilerError
-from TALES import _valid_name
-from TALES import NAME_RE
-from TALES import Undefined
-from TALES import Default
-from TALES import _parse_expr
-from Acquisition import aq_base, aq_inner, aq_parent
-from DeferExpr import LazyWrapper
-from DeferExpr import LazyExpr
-from DeferExpr import DeferWrapper
-from DeferExpr import DeferExpr
+SecureModuleImporter = ZRPythonExpr._SecureModuleImporter()
 
-_engine = None
-def getEngine():
-    global _engine
-    if _engine is None:
-        from PathIterator import Iterator
-        _engine = Engine(Iterator)
-        installHandlers(_engine)
-    return _engine
+# BBB 2005/05/01 -- remove after 12 months
+import zope.deprecation
+from zope.deprecation import deprecate
+zope.deprecation.deprecated(
+    ("StringExpr", "NotExpr", "PathExpr", "SubPathExpr", "Undefs"),
+    "Zope 2 uses the Zope 3 ZPT engine now.  Expression types can be "
+    "imported from zope.tales.expressions."
+    )
 
-def installHandlers(engine):
-    reg = engine.registerType
-    pe = PathExpr
-    for pt in ('standard', 'path', 'exists', 'nocall'):
-        reg(pt, pe)
-    reg('string', StringExpr)
-    reg('python', PythonExpr)
-    reg('not', NotExpr)
-    reg('defer', DeferExpr)
-    reg('lazy', LazyExpr)
+# In Zope 2 traversal semantics, NotFound or Unauthorized (the Zope 2
+# versions) indicate that traversal has failed.  By default, Zope 3's
+# TALES engine doesn't recognize them as such which is why we extend
+# Zope 3's list here and make sure our implementation of the TALES
+# Path Expression uses them
+ZopeUndefs = Undefs + (NotFound, Unauthorized)
 
-import AccessControl
-import AccessControl.cAccessControl
-acquisition_security_filter = AccessControl.cAccessControl.aq_validate
-from AccessControl import getSecurityManager
-from AccessControl.ZopeGuards import guarded_getattr
-from AccessControl import Unauthorized
-from ZRPythonExpr import PythonExpr
-from ZRPythonExpr import _SecureModuleImporter
-from ZRPythonExpr import call_with_ns
+def boboAwareZopeTraverse(object, path_items, econtext):
+    """Traverses a sequence of names, first trying attributes then items.
 
-SecureModuleImporter = _SecureModuleImporter()
+    This uses Zope 3 path traversal where possible and interacts
+    correctly with objects providing OFS.interface.ITraversable when
+    necessary (bobo-awareness).
+    """
+    request = getattr(econtext, 'request', None)
+    path_items = list(path_items)
+    path_items.reverse()
 
-Undefs = (Undefined, AttributeError, KeyError,
-          TypeError, IndexError, Unauthorized)
+    while path_items:
+        name = path_items.pop()
+        if OFS.interfaces.ITraversable.providedBy(object):
+            object = object.restrictedTraverse(name)
+        else:
+            object = traversePathElement(object, name, path_items,
+                                         request=request)
+    return object
 
 def render(ob, ns):
-    """
-    Calls the object, possibly a document template, or just returns it if
-    not callable.  (From DT_Util.py)
+    """Calls the object, possibly a document template, or just returns
+    it if not callable.  (From DT_Util.py)
     """
     if hasattr(ob, '__render_with_namespace__'):
-        ob = call_with_ns(ob.__render_with_namespace__, ns)
+        ob = ZRPythonExpr.call_with_ns(ob.__render_with_namespace__, ns)
     else:
+        # items might be acquisition wrapped
         base = aq_base(ob)
+        # item might be proxied (e.g. modules might have a deprecation
+        # proxy)
+        base = removeAllProxies(base)
         if callable(base):
             try:
                 if getattr(base, 'isDocTemp', 0):
@@ -88,278 +96,172 @@ def render(ob, ns):
                     raise
     return ob
 
-class SubPathExpr:
-    def __init__(self, path):
-        self._path = path = path.strip().split('/')
-        self._base = base = path.pop(0)
-        if base and not _valid_name(base):
-            raise CompilerError, 'Invalid variable name "%s"' % base
-        # Parse path
-        self._dp = dp = []
-        for i in range(len(path)):
-            e = path[i]
-            if e[:1] == '?' and _valid_name(e[1:]):
-                dp.append((i, e[1:]))
-        dp.reverse()
+class ZopePathExpr(PathExpr):
 
-    def _eval(self, econtext,
-              list=list, isinstance=isinstance, StringType=type('')):
-        vars = econtext.vars
-        path = self._path
-        if self._dp:
-            path = list(path) # Copy!
-            for i, varname in self._dp:
-                val = vars[varname]
-                if isinstance(val, StringType):
-                    path[i] = val
-                else:
-                    # If the value isn't a string, assume it's a sequence
-                    # of path names.
-                    path[i:i+1] = list(val)
-        __traceback_info__ = base = self._base
-        if base == 'CONTEXTS' or not base:
-            ob = econtext.contexts
-        else:
-            ob = vars[base]
-        if isinstance(ob, DeferWrapper):
-            ob = ob()
-        if path:
-            ob = restrictedTraverse(ob, path, getSecurityManager())
-        return ob
-
-class PathExpr:
     def __init__(self, name, expr, engine):
-        self._s = expr
-        self._name = name
-        self._hybrid = 0
-        paths = expr.split('|')
-        self._subexprs = []
-        add = self._subexprs.append
-        for i in range(len(paths)):
-            path = paths[i].lstrip()
-            if _parse_expr(path):
-                # This part is the start of another expression type,
-                # so glue it back together and compile it.
-                add(engine.compile(('|'.join(paths[i:]).lstrip())))
-                self._hybrid = 1
-                break
-            add(SubPathExpr(path)._eval)
+        super(ZopePathExpr, self).__init__(name, expr, engine,
+                                           boboAwareZopeTraverse)
 
+    # override this to support different call metrics (see bottom of
+    # method) and Zope 2's traversal exceptions (ZopeUndefs instead of
+    # Undefs)
+    def _eval(self, econtext):
+        for expr in self._subexprs[:-1]:
+            # Try all but the last subexpression, skipping undefined ones.
+            try:
+                ob = expr(econtext)
+            except ZopeUndefs: # use Zope 2 expression types
+                pass
+            else:
+                break
+        else:
+            # On the last subexpression allow exceptions through.
+            ob = self._subexprs[-1](econtext)
+            if self._hybrid:
+                return ob
+
+        if self._name == 'nocall':
+            return ob
+
+        # this is where we are different from our super class:
+        return render(ob, econtext.vars)
+
+    # override this to support Zope 2's traversal exceptions
+    # (ZopeUndefs instead of Undefs)
     def _exists(self, econtext):
         for expr in self._subexprs:
             try:
                 expr(econtext)
-            except Undefs:
+            except ZopeUndefs: # use Zope 2 expression types
                 pass
             else:
                 return 1
         return 0
 
-    def _eval(self, econtext,
-              isinstance=isinstance,
-              BasicTypes=(str, unicode, dict, list, tuple, bool),
-              render=render):
-        for expr in self._subexprs[:-1]:
-            # Try all but the last subexpression, skipping undefined ones.
-            try:
-                ob = expr(econtext)
-            except Undefs:
-                pass
-            else:
-                break
-        else:
-            # On the last subexpression allow exceptions through, and
-            # don't autocall if the expression was not a subpath.
-            ob = self._subexprs[-1](econtext)
-            if self._hybrid:
-                return ob
+class ZopeContext(Context):
 
-        if self._name == 'nocall' or isinstance(ob, BasicTypes):
-            return ob
-        # Return the rendered object
-        return render(ob, econtext.vars)
+    def translate(self, msgid, domain=None, mapping=None, default=None):
+        context = self.contexts.get('context')
+        return getGlobalTranslationService().translate(
+            domain, msgid, mapping=mapping,
+            context=context, default=default)
 
-    def __call__(self, econtext):
-        if self._name == 'exists':
-            return self._exists(econtext)
-        return self._eval(econtext)
+class ZopeEngine(zope.app.pagetemplate.engine.ZopeEngine):
 
-    def __str__(self):
-        return '%s expression %s' % (self._name, `self._s`)
+    _create_context = ZopeContext
 
-    def __repr__(self):
-        return '%s:%s' % (self._name, `self._s`)
+class ZopeIterator(Iterator):
 
+    # The things below used to be attributes in
+    # ZTUtils.Iterator.Iterator, however in zope.tales.tales.Iterator
+    # they're methods.  We need BBB on the Python level so we redefine
+    # them as properties here.  Eventually, we would like to get rid
+    # of them, though, so that we won't have to maintain yet another
+    # iterator class somewhere.
 
-_interp = re.compile(r'\$(%(n)s)|\${(%(n)s(?:/[^}]*)*)}' % {'n': NAME_RE})
+    @property
+    def index(self):
+        return super(ZopeIterator, self).index()
 
-class StringExpr:
-    def __init__(self, name, expr, engine):
-        self._s = expr
-        if '%' in expr:
-            expr = expr.replace('%', '%%')
-        self._vars = vars = []
-        if '$' in expr:
-            parts = []
-            for exp in expr.split('$$'):
-                if parts: parts.append('$')
-                m = _interp.search(exp)
-                while m is not None:
-                    parts.append(exp[:m.start()])
-                    parts.append('%s')
-                    vars.append(PathExpr('path', m.group(1) or m.group(2),
-                                         engine))
-                    exp = exp[m.end():]
-                    m = _interp.search(exp)
-                if '$' in exp:
-                    raise CompilerError, (
-                        '$ must be doubled or followed by a simple path')
-                parts.append(exp)
-            expr = ''.join(parts)
-        self._expr = expr
+    @property
+    def start(self):
+        return super(ZopeIterator, self).start()
 
-    def __call__(self, econtext):
-        vvals = []
-        for var in self._vars:
-            v = var(econtext)
-            # I hope this isn't in use anymore.
-            ## if isinstance(v, Exception):
-            ##     raise v
-            vvals.append(v)
-        return self._expr % tuple(vvals)
+    @property
+    def end(self):
+        return super(ZopeIterator, self).end()
 
-    def __str__(self):
-        return 'string expression %s' % `self._s`
+    @property
+    def item(self):
+        return super(ZopeIterator, self).item()
 
-    def __repr__(self):
-        return 'string:%s' % `self._s`
+    # This method was on the old ZTUtils.Iterator.Iterator class but
+    # isn't part of the spec.  We'll support it for a short
+    # deprecation period.
+    # BBB 2005/05/01 -- to be removed after 12 months
+    @property
+    @deprecate("The 'nextIndex' method has been deprecated and will disappear "
+               "in Zope 2.12.  Use 'iterator.index+1' instead.")
+    def nextIndex(self):
+        return self.index + 1
 
-class NotExpr:
-    def __init__(self, name, expr, compiler):
-        self._s = expr = expr.lstrip()
-        self._c = compiler.compile(expr)
+    # 'first' and 'last' are Zope 2 enhancements to the TALES iterator
+    # spec.  See help/tal-repeat.stx for more info
+    def first(self, name=None):
+        if self.start:
+            return True
+        return not self.same_part(name, self._last_item, self.item)
 
-    def __call__(self, econtext):
-        # We use the (not x) and 1 or 0 formulation to avoid changing
-        # the representation of the result in Python 2.3, where the
-        # result of "not" becomes an instance of bool.
-        return (not econtext.evaluateBoolean(self._c)) and 1 or 0
+    def last(self, name=None):
+        if self.end:
+            return True
+        return not self.same_part(name, self.item, self._next)
 
-    def __repr__(self):
-        return 'not:%s' % `self._s`
+    def same_part(self, name, ob1, ob2):
+        if name is None:
+            return ob1 == ob2
+        no = object()
+        return getattr(ob1, name, no) == getattr(ob2, name, no) is not no
 
-from zope.interface import Interface, implements
-from zope.component import queryMultiAdapter
-from zope.traversing.interfaces import TraversalError
-from zope.traversing.namespace import nsParse, namespaceLookup
-from zope.publisher.interfaces.browser import IBrowserRequest
-from zope.publisher.browser import setDefaultSkin
+    # 'first' needs to have access to the last item in the loop
+    def next(self):
+        if self._nextIndex > 0:
+            self._last_item = self.item
+        return super(ZopeIterator, self).next()
 
-class FakeRequest(dict):
-    implements(IBrowserRequest)
+class PathIterator(ZopeIterator):
+    """A TALES Iterator with the ability to use first() and last() on
+    subpaths of elements."""
+    # we want to control our own traversal so that we can deal with
+    # 'first' and 'last' when they appear in path expressions
+    implements(ITraversable)
 
-    def getURL(self):
-        return "http://codespeak.net/z3/five"
+    def traverse(self, name, furtherPath):
+        if name in ('first', 'last'):
+            method = getattr(self, name)
+            # it's important that 'name' becomes a copy because we'll
+            # clear out 'furtherPath'
+            name = furtherPath[:]
+            if not name:
+                name = None
+            # make sure that traversal ends here with us
+            furtherPath[:] = []
+            return method(name)
+        return getattr(self, name)
 
-def restrictedTraverse(object, path, securityManager,
-                       get=getattr, has=hasattr, N=None, M=[],
-                       TupleType=type(()) ):
+    def same_part(self, name, ob1, ob2):
+        if name is None:
+            return ob1 == ob2
+        if isinstance(name, basestring):
+            name = name.split('/')
+        try:
+            ob1 = boboAwareZopeTraverse(ob1, name, None)
+            ob2 = boboAwareZopeTraverse(ob2, name, None)
+        except ZopeUndefs:
+            return False
+        return ob1 == ob2
 
-    REQUEST = FakeRequest()
-    REQUEST['path'] = path
-    REQUEST['TraversalRequestNameStack'] = path = path[:] # Copy!
-    setDefaultSkin(REQUEST)
-    path.reverse()
-    validate = securityManager.validate
-    __traceback_info__ = REQUEST
-    while path:
-        name = path.pop()
+def createZopeEngine():
+    e = ZopeEngine()
+    e.iteratorFactory = PathIterator
+    for pt in ZopePathExpr._default_type_names:
+        e.registerType(pt, ZopePathExpr)
+    e.registerType('string', StringExpr)
+    e.registerType('python', ZRPythonExpr.PythonExpr)
+    e.registerType('not', NotExpr)
+    e.registerType('defer', DeferExpr)
+    e.registerType('lazy', LazyExpr)
+    e.registerType('provider', TALESProviderExpression)
+    e.registerBaseName('modules', SecureModuleImporter)
+    return e
 
-        if isinstance(name, TupleType):
-            object = object(*name)
-            continue
+def createTrustedZopeEngine():
+    # same as createZopeEngine, but use non-restricted Python
+    # expression evaluator
+    e = createZopeEngine()
+    e.types['python'] = PythonExpr
+    return e
 
-        if not name or name[0] == '_':
-            # Skip directly to item access
-            o = object[name]
-            # Check access to the item.
-            if not validate(object, object, None, o):
-                raise Unauthorized, name
-            object = o
-            continue
-
-        if name=='..':
-            o = get(object, 'aq_parent', M)
-            if o is not M:
-                if not validate(object, object, name, o):
-                    raise Unauthorized, name
-                object=o
-                continue
-
-        t=get(object, '__bobo_traverse__', N)
-        if name and name[:1] in '@+':
-            # Process URI segment parameters.
-            ns, nm = nsParse(name)
-            if ns:
-                try:
-                    o = namespaceLookup(ns, nm, object, 
-                                           REQUEST).__of__(object)
-                    if not validate(object, object, name, o):
-                        raise Unauthorized, name
-                except TraversalError:
-                    raise AttributeError(name)
-        elif t is not N:
-            o=t(REQUEST, name)
-
-            container = None
-            if aq_base(o) is not o:
-                # The object is wrapped, so the acquisition
-                # context determines the container.
-                container = aq_parent(aq_inner(o))
-            elif has(o, 'im_self'):
-                container = o.im_self
-            elif (has(aq_base(object), name) and get(object, name) == o):
-                container = object
-            if not validate(object, container, name, o):
-                raise Unauthorized, name
-        else:
-            # Try an attribute.
-            o = guarded_getattr(object, str(name), M) # failed on u'aq_parent'
-            if o is M:
-                # Try an item.
-                try:
-                    # XXX maybe in Python 2.2 we can just check whether
-                    # the object has the attribute "__getitem__"
-                    # instead of blindly catching exceptions.
-                    try:
-                        o = object[name]
-                    except (AttributeError, KeyError):
-                        # Try to look for a view
-                        o = queryMultiAdapter((object, REQUEST), 
-                                                 Interface, name)
-                        if o is None:
-                            # Didn't find one, reraise the error:
-                            raise
-                        o = o.__of__(object)
-                except AttributeError, exc:
-                    if str(exc).find('__getitem__') >= 0:
-                        # The object does not support the item interface.
-                        # Try to re-raise the original attribute error.
-                        # XXX I think this only happens with
-                        # ExtensionClass instances.
-                        guarded_getattr(object, name)
-                    raise
-                except TypeError, exc:
-                    if str(exc).find('unsubscriptable') >= 0:
-                        # The object does not support the item interface.
-                        # Try to re-raise the original attribute error.
-                        # XXX This is sooooo ugly.
-                        guarded_getattr(object, name)
-                    raise
-                else:
-                    # Check access to the item.
-                    if not validate(object, object, None, o):
-                        raise Unauthorized, name
-        object = o
-
-    return object
+_engine = createZopeEngine()
+def getEngine():
+    return _engine

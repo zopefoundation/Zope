@@ -15,12 +15,11 @@
 
 $Id$
 """
-
 import re
 import Products.Five.i18n
 
 from DocumentTemplate.DT_Util import ustr
-from TAL.TALDefs import NAME_RE
+from zope.tal.taldefs import NAME_RE
 
 class DummyTranslationService:
     """Translation service that doesn't know anything about translation."""
@@ -30,12 +29,14 @@ class DummyTranslationService:
             return ustr(mapping[m.group(m.lastindex)])
         cre = re.compile(r'\$(?:(%s)|\{(%s)\})' % (NAME_RE, NAME_RE))
         return cre.sub(repl, default or msgid)
-    # XXX Not all of Zope2.I18n.ITranslationService is implemented.
 
 #
 # As of Five 1.1, we're by default using Zope 3 Message Catalogs for
 # translation, but we allow fallback translation services such as PTS
 # and Localizer
+#
+# TODO We should really deprecate Zope2-style translation service and
+# only support Zope3-style i18n in the future.
 #
 
 Products.Five.i18n._fallback_translation_service = DummyTranslationService()

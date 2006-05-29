@@ -18,6 +18,18 @@ Zope Changes
 
     Restructuring
 
+      - Products.PageTemplates now uses the Zope 3 ZPT implementation
+        in zope.pagetemplate.
+
+      - The TAL package has been deprecated in favour of the TAL
+        engine from zope.tal.
+
+      - Products.PageTemplates.TALES has been deprecated in favour of
+        the TALES engine from zope.tales.
+
+      - ZTUtils.Iterator has been deprecated in favour of the TALES
+        iterator implementation in zope.tales.tales.
+
       - ZCatalog: removed manage_deleteIndex(), manage_delColumns()
         which were deprecated since Zope 2.4
 

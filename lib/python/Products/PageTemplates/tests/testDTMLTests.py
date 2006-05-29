@@ -11,8 +11,10 @@
 #
 ##############################################################################
 
-import os, sys, unittest
+import unittest
 
+import zope.component.testing
+from zope.traversing.adapters import DefaultTraversable
 from Products.PageTemplates.tests import util
 from Products.PageTemplates.PageTemplate import PageTemplate
 from Acquisition import Implicit
@@ -43,16 +45,20 @@ class UnitTestSecurityPolicy:
     def checkPermission( self, permission, object, context) :
         return 1
 
-class DTMLTests(unittest.TestCase):
+class DTMLTests(zope.component.testing.PlacelessSetup, unittest.TestCase):
 
     def setUp(self):
-        self.t=(AqPageTemplate())
+        super(DTMLTests, self).setUp()
+        zope.component.provideAdapter(DefaultTraversable, (None,))
+
+        self.t = AqPageTemplate()
         self.policy = UnitTestSecurityPolicy()
-        self.oldPolicy = SecurityManager.setSecurityPolicy( self.policy )
+        self.oldPolicy = SecurityManager.setSecurityPolicy(self.policy)
         noSecurityManager()  # Use the new policy.
 
     def tearDown(self):
-        SecurityManager.setSecurityPolicy( self.oldPolicy )
+        super(DTMLTests, self).tearDown()
+        SecurityManager.setSecurityPolicy(self.oldPolicy)
         noSecurityManager()  # Reset to old policy.
 
     def check1(self):

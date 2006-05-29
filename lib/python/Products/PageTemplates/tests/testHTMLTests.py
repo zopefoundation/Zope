@@ -11,8 +11,10 @@
 #
 ##############################################################################
 
-import os, sys, unittest
+import unittest
 
+import zope.component.testing
+from zope.traversing.adapters import DefaultTraversable
 from Products.PageTemplates.tests import util
 from Products.PageTemplates.PageTemplate import PageTemplate
 from Products.PageTemplates.GlobalTranslationService import \
@@ -59,9 +61,12 @@ class UnitTestSecurityPolicy:
     def checkPermission( self, permission, object, context) :
         return 1
 
-class HTMLTests(unittest.TestCase):
+class HTMLTests(zope.component.testing.PlacelessSetup, unittest.TestCase):
 
     def setUp(self):
+        super(HTMLTests, self).setUp()
+        zope.component.provideAdapter(DefaultTraversable, (None,))
+
         self.folder = f = Folder()
         f.laf = AqPageTemplate()
         f.t = AqPageTemplate()
@@ -70,6 +75,7 @@ class HTMLTests(unittest.TestCase):
         noSecurityManager()  # Use the new policy.
 
     def tearDown(self):
+        super(HTMLTests, self).tearDown()
         SecurityManager.setSecurityPolicy( self.oldPolicy )
         noSecurityManager()  # Reset to old policy.
 
@@ -155,6 +161,9 @@ class HTMLTests(unittest.TestCase):
         old_ts = setGlobalTranslationService(TestTranslationService())
         self.assert_expected(self.folder.t, 'CheckI18nTranslateHooked.html')
         setGlobalTranslationService(old_ts)
+
+    def checkImportOldStyleClass(self):
+        self.assert_expected(self.folder.t, 'CheckImportOldStyleClass.html')
 
 def test_suite():
     return unittest.makeSuite(HTMLTests, 'check')

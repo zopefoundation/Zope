@@ -8,7 +8,7 @@ import glob
 from TAL.tests import utils
 import unittest
 
-from TAL import runtest
+from zope.tal import runtest
 
 class FileTestCase(unittest.TestCase):
 

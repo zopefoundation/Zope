@@ -21,12 +21,24 @@ import unittest
 
 from StringIO import StringIO
 
+# BBB 2005/05/01 -- to be changed after 12 months
+# ignore deprecation warnings on import for now
+import warnings
+showwarning = warnings.showwarning
+warnings.showwarning = lambda *a, **k: None
+# this old import should remain here until the TAL package is
+# completely removed, so that API backward compatibility is properly
+# tested
 from TAL.TALDefs import METALError, I18NError
 from TAL.HTMLTALParser import HTMLTALParser
 from TAL.TALParser import TALParser
 from TAL.TALInterpreter import TALInterpreter
 from TAL.DummyEngine import DummyEngine, DummyTranslationService
 from TAL.TALInterpreter import interpolate
+# restore warning machinery
+warnings.showwarning = showwarning
+
+
 from TAL.tests import utils
 from zope.i18nmessageid import Message
 
@@ -105,14 +117,15 @@ class I18NCornerTestCase(TestCaseBase):
     def test_structure_replace_with_messageid_and_i18nname(self):
         program, macros = self._compile(
             '<div i18n:translate="" >'
-            '<span tal:replace="structure foo" i18n:name="foo_name"/>'
+            '<span tal:replace="structure foo" i18n:name="foo_name"'
+            '      i18n:translate=""/>'
             '</div>')
         self._check(program, '<div>FOOVALUE</div>\n')
 
     def test_complex_replace_with_messageid_and_i18nname(self):
         program, macros = self._compile(
             '<div i18n:translate="" >'
-            '<em i18n:name="foo_name">'
+            '<em i18n:name="foo_name" tal:omit-tag="">'
             '<span tal:replace="foo"/>'
             '</em>'
             '</div>')
@@ -146,7 +159,7 @@ class I18NCornerTestCase(TestCaseBase):
                     '<div>THIS IS TEXT FOR <span>BARVALUE</span>.</div>\n')
 
     def test_translate_static_text_as_dynamic_from_bytecode(self):
-        program =  [('version', '1.5'),
+        program =  [('version', '1.6'),
  ('mode', 'html'),
 ('setPosition', (1, 0)),
 ('beginScope', {'i18n:translate': ''}),
@@ -178,23 +191,8 @@ class I18NCornerTestCase(TestCaseBase):
         self._check(program,
                     '<div>THIS IS TEXT FOR <span>BARVALUE</span>.</div>\n')
 
-    def _getCollectingTranslationDomain(self):
-        class CollectingTranslationService(DummyTranslationService):
-            data = []
-
-            def translate(self, domain, msgid, mapping=None,
-                          context=None, target_language=None, default=None):
-                self.data.append((msgid, mapping))
-                return DummyTranslationService.translate(
-                    self,
-                    domain, msgid, mapping, context, target_language, default)
-
-        xlatsvc = CollectingTranslationService()
-        self.engine.translationService = xlatsvc
-        return xlatsvc
-
     def test_for_correct_msgids(self):
-        xlatdmn = self._getCollectingTranslationDomain()
+        self.engine.translationDomain.clearMsgids()
         result = StringIO()
         program, macros = self._compile(
             '<div i18n:translate="">This is text for '
@@ -203,7 +201,7 @@ class I18NCornerTestCase(TestCaseBase):
         self.interpreter = TALInterpreter(program, {}, self.engine,
                                           stream=result)
         self.interpreter()
-        msgids = list(xlatdmn.data)
+        msgids = self.engine.translationDomain.getMsgids('default')
         msgids.sort()
         self.assertEqual(2, len(msgids))
         self.assertEqual('BaRvAlUe', msgids[0][0])
@@ -217,7 +215,7 @@ class I18NCornerTestCase(TestCaseBase):
         # Test for Issue 314: i18n:translate removes line breaks from
         # <pre>...</pre> contents
         # HTML mode
-        xlatdmn = self._getCollectingTranslationDomain()
+        self.engine.translationDomain.clearMsgids()
         result = StringIO()
         program, macros = self._compile(
             '<div i18n:translate=""> This is text\n'
@@ -227,7 +225,7 @@ class I18NCornerTestCase(TestCaseBase):
         self.interpreter = TALInterpreter(program, {}, self.engine,
                                           stream=result)
         self.interpreter()
-        msgids = list(xlatdmn.data)
+        msgids = self.engine.translationDomain.getMsgids('default')
         msgids.sort()
         self.assertEqual(2, len(msgids))
         self.assertEqual(' This is text\n <b>\tfor</b>\n pre. ', msgids[0][0])
@@ -238,7 +236,7 @@ class I18NCornerTestCase(TestCaseBase):
             result.getvalue())
 
         # XML mode
-        xlatdmn = self._getCollectingTranslationDomain()
+        self.engine.translationDomain.clearMsgids()
         result = StringIO()
         parser = TALParser()
         parser.parseString(
@@ -250,7 +248,7 @@ class I18NCornerTestCase(TestCaseBase):
         self.interpreter = TALInterpreter(program, {}, self.engine,
                                           stream=result)
         self.interpreter()
-        msgids = list(xlatdmn.data)
+        msgids = self.engine.translationDomain.getMsgids('default')
         msgids.sort()
         self.assertEqual(1, len(msgids))
         self.assertEqual('This is text <b> for</b> barvalue.', msgids[0][0])
@@ -260,7 +258,7 @@ class I18NCornerTestCase(TestCaseBase):
             result.getvalue())
 
     def test_raw_msgids_and_i18ntranslate_i18nname(self):
-        xlatdmn = self._getCollectingTranslationDomain()
+        self.engine.translationDomain.clearMsgids()
         result = StringIO()
         program, macros = self._compile(
             '<div i18n:translate=""> This is text\n \tfor\n'
@@ -269,7 +267,7 @@ class I18NCornerTestCase(TestCaseBase):
         self.interpreter = TALInterpreter(program, {}, self.engine,
                                           stream=result)
         self.interpreter()
-        msgids = list(xlatdmn.data)
+        msgids = self.engine.translationDomain.getMsgids('default')
         msgids.sort()
         self.assertEqual(2, len(msgids))
         self.assertEqual(' \tRaW\n ', msgids[0][0])
@@ -416,12 +414,13 @@ class InterpolateTestCase(TestCaseBase):
         expected = u"foo baz"
         self.assertEqual(interpolate(text, mapping), expected)
 
-    def test_unicode_mixed_unknown_encoding(self):
-        # This test assumes that sys.getdefaultencoding is ascii...
-        text = u"foo ${bar}"
-        mapping = {u'bar': 'd\xe9j\xe0'}
-        expected = u"foo d\\xe9j\\xe0"
-        self.assertEqual(interpolate(text, mapping), expected)
+    # this test just tests sick behaviour, we'll disable it
+    #def test_unicode_mixed_unknown_encoding(self):
+    #    # This test assumes that sys.getdefaultencoding is ascii...
+    #    text = u"foo ${bar}"
+    #    mapping = {u'bar': 'd\xe9j\xe0'}
+    #    expected = u"foo d\\xe9j\\xe0"
+    #    self.assertEqual(interpolate(text, mapping), expected)
 
 def test_suite():
     suite = unittest.makeSuite(I18NErrorsTestCase)

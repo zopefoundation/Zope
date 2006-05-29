@@ -12,14 +12,17 @@
 ##############################################################################
 """Iterator class
 
-Unlike the builtin iterators of Python 2.2+, these classes are
-designed to maintain information about the state of an iteration.
-The Iterator() function accepts either a sequence or a Python
-iterator.  The next() method fetches the next item, and returns
-true if it succeeds.
+BBB 2005/05/01 -- to be removed after 12 months
 
 $Id$
 """
+import zope.deprecation
+zope.deprecation.deprecated(
+    'Iterator',
+    'Iterator has been deprecated and will be removed in Zope 2.12.  '
+    'PageTemplates now use the Zope 3 implementation.  Use ZopeIterator '
+    'from Products.PageTemplates.Expressions instead.'
+    )
 
 class Iterator:
     '''Simple Iterator class'''

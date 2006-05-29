@@ -1,4 +1,7 @@
-import os, sys, unittest
+import unittest
+
+import zope.component.testing
+from zope.traversing.adapters import DefaultTraversable
 
 from Products.PageTemplates import Expressions
 from Products.PageTemplates.DeferExpr import LazyWrapper
@@ -9,9 +12,12 @@ class Dummy:
     def __call__(self):
         return 'dummy'
 
-class ExpressionTests(unittest.TestCase):
+class ExpressionTests(zope.component.testing.PlacelessSetup, unittest.TestCase):
 
     def setUp(self):
+        super(ExpressionTests, self).setUp()
+        zope.component.provideAdapter(DefaultTraversable, (None,))
+
         self.e = e = Expressions.getEngine()
         self.ec = e.getContext(
             one = 1,
@@ -19,9 +25,6 @@ class ExpressionTests(unittest.TestCase):
             blank = '',
             dummy = Dummy()
             )
-
-    def tearDown(self):
-        del self.e, self.ec
 
     def testCompile(self):
         '''Test expression compilation'''
@@ -50,9 +53,11 @@ class ExpressionTests(unittest.TestCase):
         '''Test advanced expression evaluation 1'''
         ec = self.ec
         assert ec.evaluate('x | nothing') is None
-        assert ec.evaluate('d/') == 'blank'
+        # empty path elements aren't supported anymore, for the lack
+        # of a use case
+        #assert ec.evaluate('d/') == 'blank'
         assert ec.evaluate('d/_') == 'under'
-        assert ec.evaluate('d/ | nothing') == 'blank'
+        #assert ec.evaluate('d/ | nothing') == 'blank'
         assert ec.evaluate('d/?blank') == 'blank'
 
     def testHybrid(self):
@@ -63,7 +68,7 @@ class ExpressionTests(unittest.TestCase):
         assert ec.evaluate('x | string:x') == 'x'
         assert ec.evaluate('x | string:$one') == '1'
         assert ec.evaluate('x | not:exists:x')
-        
+
     def testWrappers(self):
         """Test if defer and lazy are returning their wrappers
         """
