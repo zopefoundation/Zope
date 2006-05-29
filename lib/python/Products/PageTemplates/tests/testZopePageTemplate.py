@@ -10,7 +10,8 @@ Note: Tests require Zope >= 2.7
 import unittest
 import Zope2
 import transaction
-
+import zope.component.testing
+from zope.traversing.adapters import DefaultTraversable
 from Testing.makerequest import makerequest
 
 class ZPTRegressions(unittest.TestCase):
@@ -57,9 +58,12 @@ class ZPTRegressions(unittest.TestCase):
         pt = self.app.pt1
         self.assertEqual(pt.document_src(), self.text)
 
-class ZPTMacros(unittest.TestCase):
+class ZPTMacros(zope.component.testing.PlacelessSetup, unittest.TestCase):
 
     def setUp(self):
+        super(ZPTMacros, self).setUp()
+        zope.component.provideAdapter(DefaultTraversable, (None,))
+
         transaction.begin()
         self.app = makerequest(Zope2.app())
         f = self.app.manage_addProduct['PageTemplates'].manage_addPageTemplate
@@ -89,6 +93,8 @@ class ZPTMacros(unittest.TestCase):
 """
 
     def tearDown(self):
+        super(ZPTMacros, self).tearDown()
+
         transaction.abort()
         self.app._p_jar.close()
 
