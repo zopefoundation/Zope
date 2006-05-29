@@ -98,12 +98,16 @@ def getPath(prefix, name, checkProduct=1, suffixes=('',)):
 
     if result is None:
         try:
-            l = name.find('.')
+            l = name.rfind('.')
             if l > 0:
                 realName = name[l + 1:]
                 toplevel = name[:l]
                 
-                m = __import__(toplevel)
+                pos = toplevel.rfind('.')
+                if pos > -1:
+                    m = __import__(toplevel, globals(), {}, toplevel[pos+1:])
+                else:
+                    m = __import__(toplevel)
         
                 d = os.path.join(m.__path__[0], prefix, realName)
                 

@@ -40,7 +40,13 @@ def _product_packages():
         for product_id in products.objectIds():
             product = products[product_id]
             if hasattr(product, 'package_name'):
-                packages[product_id] = __import__(product.package_name)
+                pos = product.package_name.rfind('.')
+                if pos > -1:
+                    packages[product_id] = __import__(product.package_name, 
+                                                      globals(), {}, 
+                                                      product.package_name[pos+1:])
+                else:
+                    packages[product_id] = __import__(product.package_name)
             elif old_product_packages.has_key(product_id):
                 packages[product_id] = old_product_packages[product_id]
     finally:
