@@ -18,6 +18,20 @@ Zope Changes
 
     Restructuring
 
+      - Zope 2.10+ now includes site.zcml as part of its instance 
+        creation skel directory.  As a consequence Five now requires 
+        this file to exist in every instance.  If upgrading a site 
+        from Zope 2.9 to 2.10, you will need to copy site.zcml and 
+        package-includes/ from your installed Zope installation 
+        location (skel/etc/) into the etc/ directory of your upgraded 
+        instance.
+  
+        The rationale for requiring this new file is to bring Zope 2 
+        instances closer in consistency to Zope 3 instances.  It also 
+        eases use of Zope 3 coding techniques in Zope 2 and removes 
+        some confusion when trying to run pure Zope 3 applications on 
+        Zope 2.
+
       - Products.PageTemplates now uses the Zope 3 ZPT implementation
         in zope.pagetemplate.
 
