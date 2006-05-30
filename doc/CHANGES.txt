@@ -14,12 +14,12 @@ Zope Changes
      to the rules for such a type laid out in the Python docs:
      http://docs.python.org/api/supporting-cycle-detection.html
 
-  Zope 2.10 beta 2 (unreleased)
+  Zope 2.10.0 beta 2 (unreleased)
 
     Bugs fixed 
 
 
-  Zope 2.10 beta 1 (2006/05/30)
+  Zope 2.10.0 beta 1 (2006/05/30)
 
     Restructuring
 
