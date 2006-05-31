@@ -59,15 +59,13 @@ class PageTemplateFile(SimpleItem, Script, PageTemplate, Traversable):
     _default_bindings = {'name_subpath': 'traverse_subpath'}
 
     def __init__(self, filename, _prefix=None, **kw):
-        name = None
-        if kw.has_key('__name__'):
-            name = kw['__name__']
-            del kw['__name__'] 
+        name = kw.pop('__name__', None)
 
         basepath, ext = os.path.splitext(filename)
 
         if name:
             self.id = self.__name__ = name
+            self._need__name__ = 0
         else:
             self.id = self.__name__ = os.path.basename(basepath)
 
