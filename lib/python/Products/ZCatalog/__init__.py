@@ -23,7 +23,10 @@ try:
     from ZClasses import createZClassForBase
 finally:
     del warnings.filters[-1]
-    del __warningregistry__
+    try:
+        del __warningregistry__
+    except NameError:
+        pass
 
 createZClassForBase( ZCatalog.ZCatalog , globals()
                    , 'ZCatalogBase', 'ZCatalog' )
