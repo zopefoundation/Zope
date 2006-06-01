@@ -42,7 +42,7 @@ import transaction
 
 import Globals, OFS.Folder, OFS.SimpleItem,  Acquisition, Products
 from Globals import InitializeClass
-import ZClasses, AccessControl.Owned
+import AccessControl.Owned
 from OFS.Folder import Folder
 from HelpSys.HelpSys import ProductHelp
 from AccessControl import Unauthorized
@@ -53,6 +53,17 @@ from Permission import PermissionManager
 import RefreshFuncs
 from App.config import getConfiguration
 
+# BBB: ZClasses are deprecated but we don't want the warning to appear here
+import warnings
+warnings.filterwarnings('ignore', message='^ZClasses', append=1)
+try:
+    import ZClasses
+finally:
+    del warnings.filters[-1]
+    try:
+        del __warningregistry__
+    except NameError:
+        pass
 
 class ProductFolder(Folder):
     "Manage a collection of Products"
