@@ -15,11 +15,14 @@
 $Id$
 """
 
-import warnings
-warnings.warn('Using Gadfly and ZGadflyDA is deprecated. The module will be '
-              'removed in Zope 2.11)', 
-              DeprecationWarning,
-              stacklevel=2) 
+# Don't warn when the product is imported by the startup code
+import sys
+if sys._getframe(1).f_code.co_name != 'import_product': # OFS.Application
+    import warnings
+    warnings.warn('Using Gadfly and ZGadflyDA is deprecated. '
+                  'The module will be removed in Zope 2.11)',
+                  DeprecationWarning,
+                  stacklevel=2)
 
 import Globals, os
 
