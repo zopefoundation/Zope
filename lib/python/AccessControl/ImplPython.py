@@ -317,9 +317,8 @@ class ZopeSecurityPolicy:
                             None)
 
             if p is not None:
-                tp = p.__class__
-                if tp is not int and tp is not bool:
-                    if tp is dict:
+                if not isinstance(p, int): # catches bool too
+                    if isinstance(p, dict):
                         if isinstance(name, basestring):
                             p = p.get(name)
                         else:
