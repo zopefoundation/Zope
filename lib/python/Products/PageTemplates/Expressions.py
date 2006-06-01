@@ -152,6 +152,10 @@ class ZopeEngine(zope.app.pagetemplate.engine.ZopeEngine):
 
 class ZopeIterator(Iterator):
 
+    # allow iterator API to be accessed from (restricted) Python TALES
+    # expressions
+    __allow_access_to_unprotected_subobjects__ = True
+
     # The things below used to be attributes in
     # ZTUtils.Iterator.Iterator, however in zope.tales.tales.Iterator
     # they're methods.  We need BBB on the Python level so we redefine

@@ -69,6 +69,14 @@ class ExpressionTests(zope.component.testing.PlacelessSetup, unittest.TestCase):
         assert ec.evaluate('x | string:$one') == '1'
         assert ec.evaluate('x | not:exists:x')
 
+    def testIteratorZRPythonExpr(self):
+        '''Test access to iterator functions from Python expressions'''
+        ec = self.ec
+        ec.beginScope()
+        ec.setRepeat('loop', "python:[1,2,3]")
+        assert ec.evaluate("python:repeat['loop'].even()")
+        ec.endScope()
+
     def testWrappers(self):
         """Test if defer and lazy are returning their wrappers
         """
