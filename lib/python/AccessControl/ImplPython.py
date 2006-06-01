@@ -317,7 +317,7 @@ class ZopeSecurityPolicy:
 
             if p is not None:
                 tp = p.__class__
-                if tp is not int:
+                if tp is not int and tp is not bool:
                     if tp is dict:
                         if isinstance(name, basestring):
                             p = p.get(name)

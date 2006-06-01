@@ -113,6 +113,11 @@ class UnprotectedSimpleItem (SimpleItemish):
     __allow_access_to_unprotected_subobjects__ = 1
 
 
+class UnprotectedSimpleItemBool (SimpleItemish):
+
+    __allow_access_to_unprotected_subobjects__ = True
+
+
 class OwnedSimpleItem(UnprotectedSimpleItem):
     def getOwner(self, info=0):
         if info:
@@ -159,6 +164,7 @@ class ZopeSecurityPolicyTestBase(unittest.TestCase):
         a = App()
         self.a = a
         a.item = UnprotectedSimpleItem()
+        a.itemb = UnprotectedSimpleItemBool()
         self.item = a.item
         a.r_item = RestrictedSimpleItem()
         a.item1 = PartlyProtectedSimpleItem1()
@@ -237,11 +243,13 @@ class ZopeSecurityPolicyTestBase(unittest.TestCase):
 
     def testAccessToUnprotectedSubobjects(self):
         item = self.item
+        itemb = self.a.itemb
         r_item = self.a.r_item
         item1 = self.a.item1
         item2 = self.a.item2
         item3 = self.a.item3
         self.assertPolicyAllows(item,  'public_prop')
+        self.assertPolicyAllows(itemb, 'public_prop')
         self.assertPolicyDenies(r_item,'public_prop')
         self.assertPolicyAllows(item1, 'public_prop')
         self.assertPolicyAllows(item2, 'public_prop')
