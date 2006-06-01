@@ -16,12 +16,20 @@ import common.ResultList     as ResultList
 import common.UnIndex        as UnIndex
 
 import PathIndex.PathIndex
-import TextIndex.TextIndex
 import FieldIndex.FieldIndex
 import KeywordIndex.KeywordIndex
 import TopicIndex.TopicIndex
 import DateIndex.DateIndex
 import DateRangeIndex.DateRangeIndex
+
+# BBB: TextIndex is deprecated but we don't want the warning to appear here
+import warnings
+warnings.filterwarnings('ignore', message='^Using TextIndex', append=1)
+try:
+    import TextIndex.TextIndex
+finally:
+    del warnings.filters[-1]
+    del __warningregistry__
 
 _indexes =  ('TextIndex',
              'KeywordIndex',
