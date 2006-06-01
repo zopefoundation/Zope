@@ -37,7 +37,6 @@ import transaction
 from Products.PluginIndexes.common.PluggableIndex \
      import PluggableIndexInterface
 from Products.PluginIndexes.interfaces import IPluggableIndex
-from Products.PluginIndexes.TextIndex import Splitter
 from zope.interface import implements
 
 from Catalog import Catalog, CatalogError
@@ -508,9 +507,12 @@ class ZCatalog(Folder, Persistent, Implicit):
                 '?manage_tabs_message=Reindexing%20Performed')
 
 
+    # BBB: will be removed in Zope 2.12 (like TextIndex itself)
     security.declareProtected(manage_zcatalog_entries, 'availableSplitters')
     def availableSplitters(self):
         """ splitter we can add """
+        # This import will trigger a deprecation warning about TextIndex
+        from Products.PluginIndexes.TextIndex import Splitter
         return Splitter.availableSplitters
 
 
