@@ -15,7 +15,15 @@
 
 import ZCatalog, CatalogAwareness, CatalogPathAwareness
 from Products.PluginIndexes.TextIndex import Vocabulary
-from ZClasses import createZClassForBase
+
+# BBB: ZClasses are deprecated but we don't want the warning to appear here
+import warnings
+warnings.filterwarnings('ignore', message='^ZClasses', append=1)
+try:
+    from ZClasses import createZClassForBase
+finally:
+    del warnings.filters[-1]
+    del __warningregistry__
 
 createZClassForBase( ZCatalog.ZCatalog , globals()
                    , 'ZCatalogBase', 'ZCatalog' )
