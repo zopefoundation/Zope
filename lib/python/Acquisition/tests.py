@@ -1620,7 +1620,49 @@ def test_Wrapper_gc():
 """
 
 
-    
+def test_proxying():
+    """Make sure that recent python slots are proxied.
+
+    >>> import Acquisition
+    >>> class Impl(Acquisition.Implicit):
+    ...     pass
+
+    >>> class C(Acquisition.Implicit):
+    ...     def __getitem__(self, key):
+    ...         print 'getitem', key
+    ...         if key == 4:
+    ...             raise IndexError
+    ...         return key
+    ...     def __contains__(self, key):
+    ...         print 'contains', repr(key)
+    ...         return key == 5
+
+    The naked class behaves like this:
+
+    >>> c = C()
+    >>> 3 in c
+    contains 3
+    False
+    >>> 5 in c
+    contains 5
+    True
+
+    Let's put c in the context of i:
+
+    >>> i = Impl()
+    >>> i.c = c
+
+    Now check that __contains__ is properly used:
+
+    >>> 3 in i.c # c.__of__(i)
+    contains 3
+    False
+    >>> 5 in i.c
+    contains 5
+    True
+
+    """
+
 
 import unittest
 from zope.testing.doctest import DocTestSuite
