@@ -16,8 +16,9 @@ Zope Changes
 
   Zope 2.10.0 beta 2 (unreleased)
 
-    Bugs fixed 
+    Bugs Fixed
 
+      - Acquisition wrappers now correctly proxy __contains__.
 
   Zope 2.10.0 beta 1 (2006/05/30)
 

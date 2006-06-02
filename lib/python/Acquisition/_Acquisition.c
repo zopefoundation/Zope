@@ -37,7 +37,7 @@ static PyObject *py__add__, *py__sub__, *py__mul__, *py__div__,
   *py__pos__, *py__abs__, *py__nonzero__, *py__invert__, *py__int__,
   *py__long__, *py__float__, *py__oct__, *py__hex__,
   *py__getitem__, *py__setitem__, *py__delitem__,
-  *py__getslice__, *py__setslice__, *py__delslice__,
+  *py__getslice__, *py__setslice__, *py__delslice__,  *py__contains__,
   *py__len__, *py__of__, *py__call__, *py__repr__, *py__str__, *py__cmp__;
 
 static PyObject *Acquired=0;
@@ -75,6 +75,7 @@ init_py_names(void)
   INIT_PY_NAME(__getslice__);
   INIT_PY_NAME(__setslice__);
   INIT_PY_NAME(__delslice__);
+  INIT_PY_NAME(__contains__);
   INIT_PY_NAME(__len__);
   INIT_PY_NAME(__of__);
   INIT_PY_NAME(__call__);
@@ -804,6 +805,18 @@ Wrapper_ass_slice(Wrapper *self, int  ilow, int  ihigh, PyObject *v)
   return 0;
 }
 
+static int
+Wrapper_contains(Wrapper *self, PyObject *v)
+{
+  long c;
+
+  UNLESS(v=CallMethodO(OBJECT(self),py__contains__,Build("(O)", v) ,NULL))
+    return -1;
+  c = PyInt_AsLong(v);
+  Py_DECREF(v);
+  return c;
+}
+
 static PySequenceMethods Wrapper_as_sequence = {
 	(inquiry)Wrapper_length,		/*sq_length*/
 	(binaryfunc)Wrapper_add,		/*sq_concat*/
@@ -812,6 +825,7 @@ static PySequenceMethods Wrapper_as_sequence = {
 	(intintargfunc)Wrapper_slice,		/*sq_slice*/
 	(intobjargproc)Wrapper_ass_item,	/*sq_ass_item*/
 	(intintobjargproc)Wrapper_ass_slice,	/*sq_ass_slice*/
+	(objobjproc)Wrapper_contains,		/*sq_contains*/
 };
 
 /* -------------------------------------------------------------- */
