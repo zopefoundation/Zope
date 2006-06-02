@@ -99,6 +99,8 @@ def render(ob, ns):
 class ZopePathExpr(PathExpr):
 
     def __init__(self, name, expr, engine):
+        if not expr.strip():
+            expr = 'nothing'
         super(ZopePathExpr, self).__init__(name, expr, engine,
                                            boboAwareZopeTraverse)
 
