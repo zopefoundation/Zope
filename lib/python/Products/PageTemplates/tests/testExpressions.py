@@ -86,6 +86,15 @@ class ExpressionTests(zope.component.testing.PlacelessSetup, unittest.TestCase):
         self.failUnless(isinstance(defer, DeferWrapper))
         self.failUnless(isinstance(lazy, LazyWrapper))
 
+    def test_empty_ZopePathExpr(self):
+        """Test empty path expressions.
+        """
+        ec = self.ec
+        self.assertEquals(ec.evaluate('path:'), None)
+        self.assertEquals(ec.evaluate('path:  '), None)
+        self.assertEquals(ec.evaluate(''), None)
+        self.assertEquals(ec.evaluate('  \n'), None)
+
 def test_suite():
     return unittest.makeSuite(ExpressionTests)
 
