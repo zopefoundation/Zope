@@ -18,6 +18,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #2118: Empty TALES path expressions are allowed
+        in Zope 2.
+
       - Acquisition wrappers now correctly proxy __contains__.
 
   Zope 2.10.0 beta 1 (2006/05/30)
