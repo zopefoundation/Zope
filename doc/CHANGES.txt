@@ -20,6 +20,9 @@ Zope Changes
 
       - Updated Five to bugfix release 1.3.6.
 
+      - Collector #2116: sequence.sort() did not work properly
+        locale related comparison methods
+
   Zope 2.9.3 (2006/05/13)
 
    Bugs fixed
