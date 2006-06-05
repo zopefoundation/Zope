@@ -17,7 +17,8 @@ eg Sort(sequence, (("akey", "nocase"), ("anotherkey", "cmp", "desc")))
 $Id$
 """
 
-from types import TupleType
+from App.config import getConfiguration
+
 
 def sort(sequence, sort=(), _=None, mapping=0):
     """
@@ -82,7 +83,7 @@ def sort(sequence, sort=(), _=None, mapping=0):
     s=[]
     for client in sequence:
         k = None
-        if type(client)==TupleType and len(client)==2:
+        if isinstance(client, tuple) and len(client)==2:
             if isort: k=client[0]
             v=client[1]
         else:
@@ -133,12 +134,32 @@ basic_type={type(''): 1, type(0): 1, type(0.0): 1, type(()): 1, type([]): 1,
 def nocase(str1, str2):
     return cmp(str1.lower(), str2.lower())
 
-import sys
-if sys.modules.has_key("locale"): # only if locale is already imported
-    from locale import strcoll
 
-    def strcoll_nocase(str1, str2):
-        return strcoll(str1.lower(), str2.lower())
+def getStrcoll():
+    """ check the Zope configuration for the 'locale' configuration
+        and return a suitable implementation.
+    """
+
+    if getConfiguration().locale:
+        from locale import strcoll
+        return strcoll
+    else:
+        raise RuntimeError("strcoll() is only available for a proper 'locale' configuration in zope.conf")
+
+def getStrcoll_nocase():
+    """ check the Zope configuration for the 'locale' configuration
+        and return a suitable implementation.
+    """
+
+    if getConfiguration().locale:
+        from locale import strcoll
+    
+        def strcoll_nocase(str1, str2):
+            return strcoll(str1.lower(), str2.lower())
+        return strcoll_nocase
+
+    else:
+        raise RuntimeError("strcoll_nocase() is only available for a proper 'locale' configuration in zope.conf")
 
 
 def make_sortfunctions(sortfields, _):
@@ -168,9 +189,9 @@ def make_sortfunctions(sortfields, _):
         elif f_name == "nocase":
             func = nocase
         elif f_name in ("locale", "strcoll"):
-            func = strcoll
+            func = getStrcoll()
         elif f_name in ("locale_nocase", "strcoll_nocase"):
-            func = strcoll_nocase
+            func = getStrcoll_nocase()
         else: # no - look it up in the namespace
             func = _.getitem(f_name, 0)
 
