@@ -23,6 +23,10 @@ Zope Changes
 
       - Acquisition wrappers now correctly proxy __contains__.
 
+      - Collector #2116: sequence.sort() did not work properly
+        locale related comparison methods
+
+
   Zope 2.10.0 beta 1 (2006/05/30)
 
     Restructuring
