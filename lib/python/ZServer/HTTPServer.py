@@ -63,6 +63,9 @@ CONTENT_LENGTH  = re.compile('Content-Length: ([0-9]+)',re.I)
 CONNECTION      = re.compile('Connection: (.*)', re.I)
 USER_AGENT      = re.compile('User-Agent: (.*)', re.I)
 
+is_proxying_match = re.compile(r'[^ ]* [^ \\]*:').match
+
+
 # maps request some headers to environment variables.
 # (those that don't start with 'HTTP_')
 header2env={'content-length'    : 'CONTENT_LENGTH',
