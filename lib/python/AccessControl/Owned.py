@@ -153,8 +153,9 @@ class Owned(ExtensionClass.Base):
         new=ownerInfo(user)
         if new is None: return # Special user!
         old = self.getOwnerTuple()
-        if old==new: return
-        if old is UnownableOwner: return
+        if not recursive:
+            if old==new: return
+            if old is UnownableOwner: return
 
         for child in self.objectValues():
             if recursive:
