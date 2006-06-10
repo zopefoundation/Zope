@@ -29,6 +29,8 @@ Zope Changes
       - Collector #2122: fixed missing is_proxying_match definition
         in ZServer/HTTPServer
 
+      - Collector 2077: fixed problem with ACTUAL_URL and SiteRoot
+
 
   Zope 2.10.0 beta 1 (2006/05/30)
 
