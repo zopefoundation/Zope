@@ -25,6 +25,7 @@ Zope Changes
 
       - Collector 2077: fixed problem with ACTUAL_URL and SiteRoot
 
+      - Collector #2073: fixed misbehaviour of OFS.Owned.changeOwnership
 
   Zope 2.9.3 (2006/05/13)
 
