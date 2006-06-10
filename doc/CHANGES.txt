@@ -24,3 +24,5 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #2122: fixed missing is_proxying_match definition
+        in ZServer/HTTPServer
