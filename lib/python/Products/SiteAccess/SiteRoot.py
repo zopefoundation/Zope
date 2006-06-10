@@ -117,10 +117,13 @@ class SiteRoot(Traverser, Implicit):
                 if srd[i] is None:
                     srd[i] = request.environ.get(srp, None)
         if srd[0] is not None:
+            request['ACTUAL_URL'] = request['ACTUAL_URL'].replace(request['SERVER_URL'], srd[0])
             request['SERVER_URL'] = srd[0]
             request._resetURLS()
         if srd[1] is not None:
+            old = request['URL']
             request.setVirtualRoot(srd[1])
+            request['ACTUAL_URL'] = request['ACTUAL_URL'].replace(old, request['URL'])
 
     def get_size(self):
         '''Make FTP happy'''

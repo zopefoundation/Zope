@@ -23,6 +23,9 @@ Zope Changes
       - Collector #2116: sequence.sort() did not work properly
         locale related comparison methods
 
+      - Collector 2077: fixed problem with ACTUAL_URL and SiteRoot
+
+
   Zope 2.9.3 (2006/05/13)
 
    Bugs fixed
