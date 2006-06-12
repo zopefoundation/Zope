@@ -700,6 +700,19 @@ class RequestTests( unittest.TestCase ):
         self.assertEqual(f.next(),'test\n')
         f.seek(0)
         self.assertEqual(f.xreadlines(),f)
+	
+    def testResolveUrl(self):
+        # Check that ResolveUrl really raises the same error 
+	# it received from ZPublisher.BaseRequest.traverse
+	# collector entry 1944
+        from ZPublisher.HTTPRequest import HTTPRequest
+	from zExceptions import NotFound
+	env = TEST_ENVIRON.copy()
+	req = HTTPRequest(None, env, None)
+	req['PARENTS'] = ['Nobody', 'cares', 'here'] 
+	testmethod = req.resolve_url
+	self.assertRaises(NotFound, testmethod, 'http://localhost/does_not_exist')
+
 
 def test_suite():
     suite = unittest.TestSuite()
