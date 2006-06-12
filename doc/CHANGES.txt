@@ -31,4 +31,4 @@ Zope Changes
 
       - Collector #2073: fixed misbehaviour of OFS.Owned.changeOwnership
 
-      - Collector #1944: HTTPRequest.resolve_url has error in raising errors
+
