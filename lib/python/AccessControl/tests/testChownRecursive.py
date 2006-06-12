@@ -17,12 +17,9 @@ $Id: testSkeleton.py 30245 2005-05-05 09:50:09Z shh $
 """
 
 import os, sys
-if __name__ == '__main__':
-    execfile(os.path.join(sys.path[0], 'framework.py'))
 
 from Testing import ZopeTestCase
 
-#ZopeTestCase.installProduct('SomeProduct')
 
 
 class TestRecursiveChangeOwnership(ZopeTestCase.ZopeTestCase):
