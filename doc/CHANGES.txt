@@ -30,3 +30,5 @@ Zope Changes
       - Collector #2077: fixed problem with ACTUAL_URL and SiteRoot
 
       - Collector #2073: fixed misbehaviour of OFS.Owned.changeOwnership
+
+      - Collector #1944: HTTPRequest.resolve_url has error in raising errors
