@@ -649,6 +649,18 @@ class ProcessInputsTests(unittest.TestCase):
         self.assertEquals(req.cookies['hmm'], '')
         self.assertEquals(req.cookies['baz'], 'gee')
 
+    def testResolveUrl(self):
+        # Check that ResolveUrl really raises the same error 
+        # it received from ZPublisher.BaseRequest.traverse
+        # collector entry 1944
+        from ZPublisher.HTTPRequest import HTTPRequest
+        from zExceptions import NotFound
+        env = TEST_ENVIRON.copy()
+        req = HTTPRequest(None, env, None)
+        req['PARENTS'] = ['Nobody', 'cares', 'here'] 
+        testmethod = req.resolve_url
+        self.assertRaises(NotFound, testmethod, 'http://localhost/does_not_exist')
+
 TEST_ENVIRON = {
     'CONTENT_TYPE': 'multipart/form-data; boundary=12345',
     'REQUEST_METHOD': 'POST',
