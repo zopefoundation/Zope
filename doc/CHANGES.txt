@@ -25,7 +25,9 @@ Zope Changes
 
       - Collector #2073: fixed misbehaviour of OFS.Owned.changeOwnership
 
-      - Collector #1944: HTTPRequest.resolve_url has error in raising errors
+      - Collector #1944: HTTPRequest.resolve_url has error in raising error
+
+      - Collector #2063: cleaned up some mess in MailHost.sendTemplate()
 
   Zope 2.8.7 (2007/05/29)
 

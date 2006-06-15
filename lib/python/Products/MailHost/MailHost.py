@@ -125,7 +125,7 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
         messageText = mtemplate(self, trueself.REQUEST)
         messageText, mto, mfrom = _mungeHeaders( messageText, mto, mfrom)
         messageText=_encode(messageText, encode)
-        self._send(mfrom, mto, messageText)
+        trueself._send(mfrom, mto, messageText)
 
         if not statusTemplate: return "SEND OK"
 
