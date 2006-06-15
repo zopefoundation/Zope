@@ -33,6 +33,8 @@ Zope Changes
 
       - Collector #2073: fixed misbehaviour of OFS.Owned.changeOwnership
 
+      - Collector #2063: cleaned up some mess in MailHost.sendTemplate()
+
   Zope 2.10.0 beta 1 (2006/05/30)
 
     Restructuring
