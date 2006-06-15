@@ -611,18 +611,9 @@ class HTTPResponse(BaseResponse):
     def _error_html(self,title,body):
         # XXX could this try to use standard_error_message somehow?
         return ("""\
-<table border="0" width="100%">
-<tr valign="top">
-
-<td width="10%" align="center">
-&nbsp;
-</td>
-
-<td width="90%">
   <h2>Site Error</h2>
   <p>An error was encountered while publishing this resource.
-  </p>""" + \
-  """
+  </p>
   <p><strong>%s</strong></p>
 
   %s""" %(title,body) + \
@@ -639,14 +630,12 @@ class HTTPResponse(BaseResponse):
   </ul>
 
   <p>For more detailed information about the error, please
-  refer to error log.
+  refer to the error log.
   </p>
 
   <p>If the error persists please contact the site maintainer.
   Thank you for your patience.
-  </p>
-</td></tr>
-</table>""")
+  </p>""")
 
 
     def notFoundError(self,entry='Unknown'):

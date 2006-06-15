@@ -18,6 +18,8 @@ Zope Changes
 
    Bugs fixed
 
+      - Collector #2133: standard_error_messages are out of sync.
+
       - Updated Five to bugfix release 1.3.6.
 
       - Collector #2116: sequence.sort() did not work properly
