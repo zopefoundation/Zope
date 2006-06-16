@@ -1797,6 +1797,14 @@ class DateTime:
         d1 = (( d4 - L) % 365) + L
         return d1/7 + 1
 
+    def encode(self, out):
+        """
+        Encode value for XML-RPC
+        """
+        out.write('<value><dateTime.iso8601>')
+        out.write(self.ISO8601())
+        out.write('</dateTime.iso8601></value>\n')
+
 
 class strftimeFormatter:
 
