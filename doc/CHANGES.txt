@@ -18,6 +18,9 @@ Zope Changes
 
     Bugs fixed
 
+      - Collector #2016: DemoStorage couldn't wrap base storages without
+                         an '_oid' attribute.
+
       - Collector #2116: sequence.sort() did not work properly
         locale related comparison methods
 
