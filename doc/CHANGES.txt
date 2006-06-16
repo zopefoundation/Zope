@@ -18,6 +18,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #2016: DemoStorage couldn't wrap base storages without
+                         an '_oid' attribute.
+
       - Collector #2118: Empty TALES path expressions are allowed
         in Zope 2.
 
