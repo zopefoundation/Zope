@@ -25,6 +25,28 @@ from HTTPResponse import HTTPResponse
 import xmlrpclib
 
 from zExceptions import Unauthorized
+from ZODB.POSException import ConflictError
+
+# Make DateTime.DateTime marshallable via XML-RPC
+# http://www.zope.org/Collectors/Zope/2109
+from DateTime import DateTime
+WRAPPERS = xmlrpclib.WRAPPERS + (DateTime,)
+
+def dump_instance(self, value, write):
+    # Check for special wrappers
+    if value.__class__ in WRAPPERS:
+        self.write = write
+        value.encode(self)
+        del self.write
+    else:
+        # Store instance attributes as a struct (really?).
+        # We want to avoid disclosing private attributes.
+        # Private attributes are by convention named with
+        # a leading underscore character.
+        value = dict([(k, v) for (k, v) in value.__dict__.items() if k[0] != '_'])
+        self.dump_struct(value, write)
+
+xmlrpclib.Marshaller.dispatch[types.InstanceType] = dump_instance
 
 def parse_input(data):
     """Parse input data and return a method path and argument tuple
@@ -100,16 +122,6 @@ class Response:
             # Convert Fault object to XML-RPC response.
             body=xmlrpclib.dumps(body, methodresponse=1, allow_none=True)
         else:
-            if type(body) == types.InstanceType:
-                # Avoid disclosing private members. Private members are
-                # by convention named with a leading underscore char.
-                orig = body.__dict__
-                dict = {}
-                for key in orig.keys():
-                    if key[:1] != '_':
-                        dict[key] = orig[key]
-                body = dict
-
             # Marshall our body as an XML-RPC response. Strings will be sent
             # strings, integers as integers, etc. We do *not* convert
             # everything to a string first.
@@ -119,6 +131,8 @@ class Response:
             try:
                 body = xmlrpclib.dumps(
                     (body,), methodresponse=1, allow_none=True)
+            except ConflictError:
+                raise
             except:
                 self.exception()
                 return
@@ -165,6 +179,8 @@ class Response:
                 f=Fault(-1, 'Unexpected Zope exception: %s' % value)
             else:
                 f=Fault(-2, 'Unexpected Zope error value: %s' % value)
+        except ConflictError:
+            raise
         except:
             f=Fault(-3, "Unknown Zope fault type")
 
