@@ -43,7 +43,8 @@ def dump_instance(self, value, write):
         # We want to avoid disclosing private attributes.
         # Private attributes are by convention named with
         # a leading underscore character.
-        value = dict([(k, v) for (k, v) in value.__dict__.items() if k[0] != '_'])
+        value = dict([(k, v) for (k, v) in value.__dict__.items()
+                      if k[:1] != '_'])
         self.dump_struct(value, write)
 
 xmlrpclib.Marshaller.dispatch[types.InstanceType] = dump_instance

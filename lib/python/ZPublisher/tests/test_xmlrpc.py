@@ -191,6 +191,19 @@ class XMLRPCResponseTests(unittest.TestCase):
         response.setBody(body)
         self.assertRaises(xmlrpclib.Fault, xmlrpclib.loads, faux._body)
 
+    def test_emptystringattribute(self):
+        # Test an edge case: attribute name '' is possible,
+        # at least in theory.
+        import xmlrpclib
+        body = FauxInstance(_secret='abc')
+        setattr(body, '', True)
+        faux = FauxResponse()
+        response = self._makeOne(faux)
+        response.setBody(body)
+        data, method = xmlrpclib.loads(faux._body)
+        data = data[0]
+        self.assertEqual(data, {'': True})
+
 
 def test_suite():
     return unittest.TestSuite((unittest.makeSuite(XMLRPCResponseTests),))
