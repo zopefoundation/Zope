@@ -17,6 +17,7 @@ $Id$
 from urllib import quote
 import xmlrpc
 from zExceptions import Forbidden, Unauthorized, NotFound
+from Acquisition import aq_base
 
 from zope.interface import implements, providedBy, Interface
 from zope.component import queryMultiAdapter
@@ -80,24 +81,37 @@ class DefaultPublishTraverse(object):
                     parents[-1:] = list(subobject[:-1])
                     object, subobject = subobject[-2:]
             else:
-                try:
-                    subobject=getattr(object, name)
-                except AttributeError:
-                    subobject=object[name]
+                # Try getting unacquired attributes:
+                if hasattr(aq_base(object), name):
+                    subobject = getattr(object, name)
+                else:
+                    subobject=object[name]                    
              
-        except (AttributeError, KeyError, NotFound):
-            # Find a view even if it doesn't start with @@, but only
-            # If nothing else could be found
-            subobject = queryMultiAdapter((object, request), Interface, name)
+        except (AttributeError, KeyError, NotFound), e:
+            # Nothing was found with __bobo_traverse__ or directly on
+            # the object. We try to fall back to a view:
+            subobject = queryMultiAdapter((object, request), Interface, name)                
             if subobject is not None:
                 # OFS.Application.__bobo_traverse__ calls
                 # REQUEST.RESPONSE.notFoundError which sets the HTTP
                 # status code to 404
-                request.RESPONSE.setStatus(200)
+                request.response.setStatus(200)
                 # We don't need to do the docstring security check
                 # for views, so lets skip it and return the object here.
-                return subobject.__of__(object) 
-            raise
+                return subobject.__of__(object)
+            
+            # And lastly, of there is no view, try acquired attributes, but
+            # only if there is no __bobo_traverse__:
+            if not hasattr(object,'__bobo_traverse__'):
+                try:
+                    subobject=getattr(object, name)
+                    # Again, clear any error status created by __bobo_traverse__
+                    # because we actually found something:
+                    request.response.setStatus(200)
+                    return subobject
+                except AttributeError:
+                    pass
+            raise e
 
         # Ensure that the object has a docstring, or that the parent
         # object has a pseudo-docstring for the object. Objects that
@@ -133,7 +147,9 @@ class DefaultPublishTraverse(object):
         # deprecated. So we handle that here:
         default_name = queryDefaultViewName(self.context, request)
         if default_name is not None:
-            return self.context, (default_name,)
+            # Adding '@@' here forces this to be a view.
+            # A neater solution might be desireable.
+            return self.context, ('@@' + default_name,)
         return self.context, ()
         
 
