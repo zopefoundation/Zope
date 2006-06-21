@@ -270,7 +270,7 @@ class TestTraverse( unittest.TestCase ):
         bb = BoboTraversableWithAcquisition()
         bb = bb.__of__(self.root)
         self.failUnlessRaises(Unauthorized,
-                              self.root.folder1.restrictedTraverse, 'folder1')
+                              bb.restrictedTraverse, 'folder1')
 
     def testBoboTraverseToAcquiredAttribute(self):
         # Verify it's possible to use __bobo_traverse__ to an acquired
@@ -308,7 +308,7 @@ class TestTraverse( unittest.TestCase ):
         newSecurityManager( None, UnitTestUser().__of__( self.root ) )
         self.root.stuff = 'stuff here'
         self.failUnlessRaises(Unauthorized,
-                              self.root.folder1.restrictedTraverse, 'stuff')
+                              self.app.folder1.restrictedTraverse, 'stuff')
 
     def testDefaultValueWhenUnathorized(self):
         # Test that traversing to an unauthorized object returns
@@ -335,9 +335,234 @@ class TestTraverse( unittest.TestCase ):
             aq_base(self.root))
 
 
+import os, sys
+if __name__ == '__main__':
+    execfile(os.path.join(sys.path[0], 'framework.py'))
+
+
+class SimpleClass(object):
+    """Class with no __bobo_traverse__."""
+
+
+def test_traversable():
+    """
+    Test the behaviour of unrestrictedTraverse and views. The tests are copies
+    from Five.browser.tests.test_traversable, but instead of publishing they
+    do unrestrictedTraverse.
+
+      >>> import Products.Five
+      >>> from Products.Five import zcml
+      >>> zcml.load_config("configure.zcml", Products.Five)
+      >>> from Testing.makerequest import makerequest
+      >>> self.app = makerequest(self.app)
+      
+    ``SimpleContent`` is a traversable class by default.  Its fallback
+    traverser should raise NotFound when traversal fails.  (Note: If
+    we return None in __fallback_traverse__, this test passes but for
+    the wrong reason: None doesn't have a docstring so BaseRequest
+    raises NotFoundError.)
+
+      >>> from Products.Five.tests.testing.simplecontent import manage_addSimpleContent
+      >>> manage_addSimpleContent(self.folder, 'testoid', 'Testoid')
+      >>> from zExceptions import NotFound
+      >>> try:
+      ...    self.folder.testoid.unrestrictedTraverse('doesntexist')
+      ... except NotFound:
+      ...    pass
+      
+    Now let's take class which already has a __bobo_traverse__ method.
+    Five should correctly use that as a fallback.
+
+      >>> configure_zcml = '''
+      ... <configure xmlns="http://namespaces.zope.org/zope"
+      ...            xmlns:meta="http://namespaces.zope.org/meta"
+      ...            xmlns:browser="http://namespaces.zope.org/browser"
+      ...            xmlns:five="http://namespaces.zope.org/five">
+      ... 
+      ... <!-- make the zope2.Public permission work -->
+      ... <meta:redefinePermission from="zope2.Public" to="zope.Public" />
+      ...
+      ... <!-- this view will never be found -->
+      ... <browser:page
+      ...     for="Products.Five.tests.testing.fancycontent.IFancyContent"
+      ...     class="Products.Five.browser.tests.pages.FancyView"
+      ...     attribute="view"
+      ...     name="fancyview"
+      ...     permission="zope2.Public"
+      ...     />
+      ... <!-- these two will -->
+      ... <browser:page
+      ...     for="Products.Five.tests.testing.fancycontent.IFancyContent"
+      ...     class="Products.Five.browser.tests.pages.FancyView"
+      ...     attribute="view"
+      ...     name="raise-attributeerror"
+      ...     permission="zope2.Public"
+      ...     />
+      ... <browser:page
+      ...     for="Products.Five.tests.testing.fancycontent.IFancyContent"
+      ...     class="Products.Five.browser.tests.pages.FancyView"
+      ...     attribute="view"
+      ...     name="raise-keyerror"
+      ...     permission="zope2.Public"
+      ...     />
+      ... </configure>'''
+      >>> zcml.load_string(configure_zcml)
+
+      >>> from Products.Five.tests.testing.fancycontent import manage_addFancyContent
+      >>> info = manage_addFancyContent(self.folder, 'fancy', '')
+
+    In the following test we let the original __bobo_traverse__ method
+    kick in:
+
+      >>> self.folder.fancy.unrestrictedTraverse('something-else').index_html({})
+      'something-else'
+
+    Once we have a custom __bobo_traverse__ method, though, it always
+    takes over.  Therefore, unless it raises AttributeError or
+    KeyError, it will be the only way traversal is done.
+
+      >>> self.folder.fancy.unrestrictedTraverse('fancyview').index_html({})
+      'fancyview'
+      
+
+    Note that during publishing, if the original __bobo_traverse__ method
+    *does* raise AttributeError or KeyError, we can get normal view look-up.
+    In unrestrictedTraverse, we don't. Maybe we should? Needs discussing.
+
+      >>> self.folder.fancy.unrestrictedTraverse('raise-attributeerror')()
+      u'Fancy, fancy'
+
+      >>> self.folder.fancy.unrestrictedTraverse('raise-keyerror')()
+      u'Fancy, fancy'
+
+      >>> try:
+      ...     self.folder.fancy.unrestrictedTraverse('raise-valueerror')
+      ... except ValueError:
+      ...     pass
+
+    In the Zope 2 ZPublisher, an object with a __bobo_traverse__ will not do
+    attribute lookup unless the __bobo_traverse__ method itself does it (i.e.
+    the __bobo_traverse__ is the only element used for traversal lookup).
+    Let's demonstrate:
+
+      >>> from Products.Five.tests.testing.fancycontent import manage_addNonTraversableFancyContent
+      >>> info = manage_addNonTraversableFancyContent(self.folder, 'fancy_zope2', '')
+      >>> self.folder.fancy_zope2.an_attribute = 'This is an attribute'
+      >>> self.folder.fancy_zope2.unrestrictedTraverse('an_attribute').index_html({})
+      'an_attribute'
+
+    Without a __bobo_traverse__ method this would have returned the attribute
+    value 'This is an attribute'.  Let's make sure the same thing happens for
+    an object that has been marked traversable by Five:
+
+      >>> self.folder.fancy.an_attribute = 'This is an attribute'
+      >>> self.folder.fancy.unrestrictedTraverse('an_attribute').index_html({})
+      'an_attribute'
+
+
+    Clean up:
+
+      >>> from zope.app.testing.placelesssetup import tearDown
+      >>> tearDown()
+
+    Verify that after cleanup, there's no cruft left from five:traversable::
+
+      >>> from Products.Five.browser.tests.test_traversable import SimpleClass
+      >>> hasattr(SimpleClass, '__bobo_traverse__')
+      False
+      >>> hasattr(SimpleClass, '__fallback_traverse__')
+      False
+
+      >>> from Products.Five.tests.testing.fancycontent import FancyContent
+      >>> hasattr(FancyContent, '__bobo_traverse__')
+      True
+      >>> hasattr(FancyContent.__bobo_traverse__, '__five_method__')
+      False
+      >>> hasattr(FancyContent, '__fallback_traverse__')
+      False
+    """
+
+def test_view_doesnt_shadow_attribute():
+    """
+    Test that views don't shadow attributes, e.g. items in a folder.
+
+    Let's first define a browser page for object managers called
+    ``eagle``:
+
+      >>> configure_zcml = '''
+      ... <configure xmlns="http://namespaces.zope.org/zope"
+      ...            xmlns:meta="http://namespaces.zope.org/meta"
+      ...            xmlns:browser="http://namespaces.zope.org/browser"
+      ...            xmlns:five="http://namespaces.zope.org/five">
+      ...   <!-- make the zope2.Public permission work -->
+      ...   <meta:redefinePermission from="zope2.Public" to="zope.Public" />
+      ...   <browser:page
+      ...       name="eagle"
+      ...       for="OFS.interfaces.IObjectManager"
+      ...       class="Products.Five.browser.tests.pages.SimpleView"
+      ...       attribute="eagle"
+      ...       permission="zope2.Public"
+      ...       />
+      ...   <browser:page
+      ...       name="mouse"
+      ...       for="OFS.interfaces.IObjectManager"
+      ...       class="Products.Five.browser.tests.pages.SimpleView"
+      ...       attribute="mouse"
+      ...       permission="zope2.Public"
+      ...       />
+      ... </configure>'''
+      >>> import Products.Five
+      >>> from Products.Five import zcml
+      >>> zcml.load_config("configure.zcml", Products.Five)
+      >>> zcml.load_string(configure_zcml)
+
+    Then we create a traversable folder...
+
+      >>> from Products.Five.tests.testing.folder import manage_addFiveTraversableFolder
+      >>> manage_addFiveTraversableFolder(self.folder, 'ftf')
+
+    and add an object called ``eagle`` to it:
+
+      >>> from Products.Five.tests.testing.simplecontent import manage_addIndexSimpleContent
+      >>> manage_addIndexSimpleContent(self.folder.ftf, 'eagle', 'Eagle')
+
+    When we publish the ``ftf/eagle`` now, we expect the attribute to
+    take precedence over the view during traversal:
+
+      >>> self.folder.ftf.unrestrictedTraverse('eagle').index_html({})
+      'Default index_html called'
+
+    Of course, unless we explicitly want to lookup the view using @@:
+
+      >>> self.folder.ftf.unrestrictedTraverse('@@eagle')()
+      u'The eagle has landed'
+
+
+    Some weird implementations of __bobo_traverse__, like the one
+    found in OFS.Application, raise NotFound.  Five still knows how to
+    deal with this, hence views work there too:
+
+      >>> self.app.unrestrictedTraverse('@@eagle')()
+      u'The eagle has landed'
+
+    However, acquired attributes *should* be shadowed. See discussion on
+    http://codespeak.net/pipermail/z3-five/2006q2/001474.html
+    
+      >>> manage_addIndexSimpleContent(self.folder, 'mouse', 'Mouse')
+      >>> self.folder.ftf.unrestrictedTraverse('mouse')()
+      u'The mouse has been eaten by the eagle'
+      
+    Clean up:
+
+      >>> from zope.app.testing.placelesssetup import tearDown
+      >>> tearDown()
+    """
+
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest( unittest.makeSuite( TestTraverse ) )
+    from Testing.ZopeTestCase import FunctionalDocTestSuite
+    suite.addTest( FunctionalDocTestSuite() )
     return suite
 
 if __name__ == '__main__':

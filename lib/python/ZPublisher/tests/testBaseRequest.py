@@ -247,9 +247,149 @@ class TestBaseRequest(TestCase):
         self.assertRaises(NotFound, r.traverse, 'folder/simpleSet')
         self.assertRaises(NotFound, r.traverse, 'folder/simpleFrozenSet')
 
+from ZPublisher import NotFound
+
+import zope.interface
+import zope.component
+import zope.testing.cleanup
+import zope.traversing.namespace
+from zope.publisher.browser import IBrowserRequest
+from zope.publisher.browser import IDefaultBrowserLayer
+from zope.traversing.interfaces import ITraversable
+
+
+class IDummy(zope.interface.Interface):
+    """IDummy"""
+
+class DummyObjectZ3(DummyObjectBasic):
+    zope.interface.implements(IDummy)
+    def __init__(self, name):
+        self.name = name
+
+class DummyObjectZ3WithAttr(DummyObjectZ3):
+    def meth(self):
+        """doc"""
+        return 'meth on %s' % self.name
+    def methonly(self):
+        """doc"""
+        return 'methonly on %s' % self.name
+
+class DummyView(Implicit):
+    def __init__(self, content, request):
+        self.content = content
+        self.request = request
+    def __call__(self):
+        return 'view on %s' % (self.content.name)
+
+class TestBaseRequestZope3Views(TestCase):
+
+    def setUp(self):
+        zope.testing.cleanup.cleanUp()
+        self.root = DummyObjectBasic()
+        folder = self.root._setObject('folder', DummyObjectZ3('folder'))
+        folder._setObject('obj', DummyObjectZ3('obj'))
+        folder._setObject('withattr', DummyObjectZ3WithAttr('withattr'))
+        folder2 = self.root._setObject('folder2',
+                                       DummyObjectZ3WithAttr('folder2'))
+        folder2._setObject('obj2', DummyObjectZ3('obj2'))
+        folder2._setObject('withattr2', DummyObjectZ3WithAttr('withattr2'))
+        gsm = zope.component.getGlobalSiteManager()
+
+        # The request needs to implement the proper interface
+        zope.interface.classImplements(BaseRequest, IDefaultBrowserLayer)
+
+        # Define our 'meth' view
+        gsm.registerAdapter(DummyView, (IDummy, IDefaultBrowserLayer), None,
+                            'meth')
+
+        # Bind the 'view' namespace (for @@ traversal)
+        gsm.registerAdapter(zope.traversing.namespace.view,
+                            (IDummy, IDefaultBrowserLayer), ITraversable,
+                            'view')
+
+    def tearDown(self):
+        zope.testing.cleanup.cleanUp()
+
+    def makeBaseRequest(self):
+        response = HTTPResponse()
+        environment = {
+            'URL': '',
+            'PARENTS': [self.root],
+            'steps': [],
+            '_hacked_path': 0,
+            '_test_counter': 0,
+            'response': response,
+            }
+        return BaseRequest(environment)
+
+    def setDefaultViewName(self, name):
+        from zope.component.interfaces import IDefaultViewName
+        gsm = zope.component.getGlobalSiteManager()
+        gsm.registerAdapter(name, (IDummy, IBrowserRequest), IDefaultViewName,
+                            '')
+
+    def test_traverse_view(self):
+        """simple view"""
+        r = self.makeBaseRequest()
+        ob = r.traverse('folder/obj/meth')
+        self.assertEqual(ob(), 'view on obj')
+        ob = r.traverse('folder/obj/@@meth')
+        self.assertEqual(ob(), 'view on obj')
+        # using default view
+        self.setDefaultViewName('meth')
+        ob = r.traverse('folder/obj')
+        self.assertEqual(ob(), 'view on obj')
+
+    def test_traverse_view_attr_local(self):
+        """method on object used first"""
+        r = self.makeBaseRequest()
+        ob = r.traverse('folder/withattr/meth')
+        self.assertEqual(ob(), 'meth on withattr')
+        ob = r.traverse('folder/withattr/@@meth')
+        self.assertEqual(ob(), 'view on withattr')
+        # using default view
+        self.setDefaultViewName('meth')
+        ob = r.traverse('folder/withattr')
+        self.assertEqual(ob(), 'view on withattr')
+
+    def test_traverse_view_attr_above(self):
+        """view takes precedence over acquired attribute"""
+        r = self.makeBaseRequest()
+        ob = r.traverse('folder2/obj2/meth')
+        self.assertEqual(ob(), 'view on obj2') # used to be buggy (acquired)
+        ob = r.traverse('folder2/obj2/@@meth')
+        self.assertEqual(ob(), 'view on obj2')
+        # using default view
+        self.setDefaultViewName('meth')
+        ob = r.traverse('folder2/obj2')
+        self.assertEqual(ob(), 'view on obj2')
+
+    def test_traverse_view_attr_local2(self):
+        """method with other method above"""
+        r = self.makeBaseRequest()
+        ob = r.traverse('folder2/withattr2/meth')
+        self.assertEqual(ob(), 'meth on withattr2')
+        ob = r.traverse('folder2/withattr2/@@meth')
+        self.assertEqual(ob(), 'view on withattr2')
+        # using default view
+        self.setDefaultViewName('meth')
+        ob = r.traverse('folder2/withattr2')
+        self.assertEqual(ob(), 'view on withattr2')
+
+    def test_traverse_view_attr_acquired(self):
+        """normal acquired attribute without view"""
+        r = self.makeBaseRequest()
+        ob = r.traverse('folder2/obj2/methonly')
+        self.assertEqual(ob(), 'methonly on folder2')
+        self.assertRaises(NotFound, r.traverse, 'folder2/obj2/@@methonly')
+        # using default view
+        self.setDefaultViewName('methonly')
+        self.assertRaises(NotFound, r.traverse, 'folder2/obj2')
 
 def test_suite():
-    return TestSuite( ( makeSuite(TestBaseRequest), ) )
+    return TestSuite( ( makeSuite(TestBaseRequest),
+                        makeSuite(TestBaseRequestZope3Views),
+                    ) )
 
 if __name__ == '__main__':
     main(defaultTest='test_suite')

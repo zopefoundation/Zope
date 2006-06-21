@@ -1498,11 +1498,11 @@ def parse_cookie(text,
 
             else:
                 # Broken Cookie without = nor value.
- 		broken_p = paramlessre.match(text)
- 		if broken_p:
- 		    l = len(broken_p.group(1))
- 		    name = broken_p.group(2)
- 		    value = ''
+                broken_p = paramlessre.match(text)
+                if broken_p:
+                    l = len(broken_p.group(1))
+                    name = broken_p.group(2)
+                    value = ''
 
                 else:
                     return result
