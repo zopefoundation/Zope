@@ -97,6 +97,7 @@ for name in en:
 status_codes['nameerror'] = 503
 status_codes['keyerror'] = 503
 status_codes['redirect'] = 300
+status_codes['resourcelockederror'] = 423
 
 
 start_of_header_search = re.compile('(<head[^>]*>)', re.IGNORECASE).search
