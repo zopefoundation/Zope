@@ -74,6 +74,12 @@ class HTTPResponseTests(unittest.TestCase):
         response.appendHeader('XXX', 'foo')
         self.assertEqual(response.headers.get('xxx'), 'bar,\n\tfoo')
 
+    def test_setStatus_ResourceLockedError(self):
+        response = self._makeOne()
+        from webdav.Lockable import ResourceLockedError
+        response.setStatus(ResourceLockedError)
+        self.assertEqual(response.status, 423)
+
 
 def test_suite():
     suite = unittest.TestSuite()

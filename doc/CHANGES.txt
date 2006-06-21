@@ -18,6 +18,8 @@ Zope Changes
 
     Bugs fixed
 
+      - Collector #2136: Map ResourceLockedError to the correct response code.
+
       - Collector #2016: DemoStorage couldn't wrap base storages without
                          an '_oid' attribute.
 
