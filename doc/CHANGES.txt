@@ -18,6 +18,9 @@ Zope Changes
 
     Bugs fixed
 
+      - OFS Application: Removed deprecation warnings added in Zope 2.8.5.
+        The warning period starts in Zope 2.9.0.
+
       - Collector #2136: Map ResourceLockedError to the correct response code.
 
       - Collector #2016: DemoStorage couldn't wrap base storages without
