@@ -798,7 +798,7 @@ def install_product(app, product_dir, product_name, meta_types,
                 warn('__init__.py of %s has a long deprecated '
                      '\'__ac_permissions__\' attribute. '
                      '\'__ac_permissions__\' will be ignored by '
-                     'install_product in Zope 2.10. Please use registerClass '
+                     'install_product in Zope 2.11. Please use registerClass '
                      'instead.' % product.__name__,
                      DeprecationWarning)
             for p in pgetattr(product, '__ac_permissions__', ()):
@@ -813,7 +813,7 @@ def install_product(app, product_dir, product_name, meta_types,
             if pgetattr(product, 'meta_types', None) is not None:
                 warn('__init__.py of %s has a long deprecated \'meta_types\' '
                      'attribute. \'meta_types\' will be ignored by '
-                     'install_product in Zope 2.10. Please use registerClass '
+                     'install_product in Zope 2.11. Please use registerClass '
                      'instead.' % product.__name__,
                      DeprecationWarning)
             for meta_type in pgetattr(product, 'meta_types', ()):
@@ -828,10 +828,12 @@ def install_product(app, product_dir, product_name, meta_types,
                 meta_types.append(meta_type)
 
             if pgetattr(product, 'methods', None) is not None:
-                warn('__init__.py of %s has a long deprecated \'methods\' '
-                     'attribute. \'methods\' will be ignored by '
-                     'install_product in Zope 2.10. Please use registerClass '
-                     'instead.' % product.__name__,
+                warn("__init__.py of %s has a long deprecated 'methods' "
+                     "attribute. 'methods' support might be removed in Zope "
+                     "2.11 or a later feature release. Please use the "
+                     "'legacy' argument of registerClass instead if the "
+                     "methods are constructors. Or refactor the product "
+                     "using adapters." % product.__name__,
                      DeprecationWarning)
             for name,method in pgetattr(
                 product, 'methods', {}).items():

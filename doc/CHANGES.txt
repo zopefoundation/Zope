@@ -18,6 +18,10 @@ Zope Changes
 
    Bugs fixed
 
+      - OFS Application: Updated deprecation warnings.
+        Support for '__ac_permissions__' and 'meta_types' will be removed in
+        Zope 2.11, 'methods' support might remain longer.
+
       - Collector #2136: Map ResourceLockedError to the correct response code.
 
       - Collector #2109: XML-RPC did not handle DateTime.DateTime objects.
