@@ -18,6 +18,9 @@ Zope Changes
 
     Restructuring
 
+      - Removed deprecated support for product initialization based on
+        '__ac_permissions__' and 'meta_types' attributes.
+
       - removed zLOG module which was deprecated since Zope 2.9
 
     Features added
