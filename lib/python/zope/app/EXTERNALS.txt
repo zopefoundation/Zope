@@ -51,6 +51,7 @@ renderer svn://svn.zope.org/repos/main/Zope3/branches/3.2-zope.app.externals/src
 rotterdam svn://svn.zope.org/repos/main/Zope3/branches/3.2-zope.app.externals/src/zope/app/rotterdam
 schema svn://svn.zope.org/repos/main/Zope3/branches/3.2-zope.app.externals/src/zope/app/schema
 security svn://svn.zope.org/repos/main/Zope3/branches/3.2-zope.app.externals/src/zope/app/security
+servicenames svn://svn.zope.org/repos/main/Zope3/branches/3.2-zope.app.externals/src/zope/app/servicenames
 session svn://svn.zope.org/repos/main/Zope3/branches/3.2-zope.app.externals/src/zope/app/session
 site svn://svn.zope.org/repos/main/Zope3/branches/3.2-zope.app.externals/src/zope/app/site
 size svn://svn.zope.org/repos/main/Zope3/branches/3.2-zope.app.externals/src/zope/app/size
