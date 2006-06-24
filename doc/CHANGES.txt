@@ -18,9 +18,6 @@ Zope Changes
 
    Bugs fixed
 
-      - Returned to the "classic" './configure && make && make install'
-        recipe, dropping the use of 'zpkg' for building Zope2 releases.
-
       - OFS Application: Updated deprecation warnings.
         Support for '__ac_permissions__' and 'meta_types' will be removed in
         Zope 2.11, 'methods' support might remain longer.
@@ -44,6 +41,11 @@ Zope Changes
       - Collector #2073: fixed misbehaviour of OFS.Owned.changeOwnership
 
       - Collector #2063: cleaned up some mess in MailHost.sendTemplate()
+
+   Other Changes
+
+      - Returned to the "classic" './configure && make && make install'
+        recipe, dropping the use of 'zpkg' for building Zope2 releases.
 
   Zope 2.9.3 (2006/05/13)
 
