@@ -15,7 +15,7 @@ $Id$
 """
 
 import time, sys
-from zLOG import LOG, INFO
+import logging
 
 from DateTime.DateTime import DateTime
 
@@ -92,7 +92,8 @@ class ZLogHandler(StdoutHandler):
     __implements__ = IProgressHandler
 
     def output(self, text):
-        LOG(self._ident, INFO, text)
+        logger = logging.getLogger(self._ident)
+        logger.info(text)
 
 
 class FilelogHandler(StdoutHandler):

@@ -13,9 +13,9 @@
 __version__='$Revision: 1.12 $'[11:-2]
 
 """BeforeTraverse interface and helper classes"""
+import logging
 
 from Acquisition import aq_base
-from zLOG import LOG, ERROR
 import sys
 
 # Interface
@@ -86,6 +86,7 @@ class MultiHook:
     MultiHook calls the named hook from the class of the container, then
     the prior hook, then all the hooks in its list.
     """
+    logger = logging.getLogger('MultiHook')
     def __init__(self, hookname, prior, defined_in_class):
         self._hookname = hookname
         self._prior = prior
@@ -103,7 +104,7 @@ class MultiHook:
             try:
                 cob(container, request)
             except TypeError:
-                LOG('MultiHook', ERROR, '%s call %s failed.' % (
+                self.logger.error('%s call %s failed.' % (
                     `self._hookname`, `cob`), error=sys.exc_info())
 
     def add(self, cob):
@@ -120,6 +121,7 @@ class NameCaller:
 
     >>> registerBeforeTraverse(folder, NameCaller('preop'), 'XApp')
     """
+    logger = logging.getLogger('BeforeTraverse')
 
     def __init__(self, name):
         self.name = name
@@ -149,8 +151,6 @@ class NameCaller:
             # Only catch exceptions that are likely to be logic errors.
             # We shouldn't catch Redirects, Unauthorizeds, etc. since
             # the programmer may want to raise them deliberately.
-            from zLOG import LOG, ERROR
             import sys
-            LOG('BeforeTraverse', ERROR,
-                'Error while invoking hook: "%s"' % self.name, error=
-                sys.exc_info())
+            self.logger.error('Error while invoking hook: "%s"'
+                                % self.name, error=sys.exc_info())

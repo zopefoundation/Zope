@@ -13,11 +13,13 @@
 """
 Objects for packages that have been uninstalled.
 """
-import  SimpleItem, Globals, Acquisition
+from thread import allocate_lock
+import logging
+logger = logging.getLogger('ZODB') # ???
+
+import SimpleItem, Globals, Acquisition
 from Acquisition import Acquired
 import Persistence
-from thread import allocate_lock
-from zLOG import LOG, WARNING
 from cgi import escape
 
 broken_klasses={}
@@ -71,8 +73,9 @@ def Broken(self, oid, pair):
             klass.info=(
                 'This object\'s class was %s in module %s.' %
                 (klass.__name__, klass.__module__))
-            LOG('ZODB', WARNING, 'Could not import class %s '
-                'from module %s' % (`klass.__name__`, `klass.__module__`))
+            logger.warn('Could not import class %s '
+                        'from module %s'
+                        % (`klass.__name__`, `klass.__module__`))
     finally:
         broken_klasses_lock.release()
     if oid is None: return klass

@@ -37,7 +37,6 @@ from Products.PluginIndexes.common.PluggableIndex \
      import PluggableIndexInterface
 from Products.PluginIndexes.interfaces import IPluggableIndex
 from Products.PluginIndexes.TextIndex import Splitter
-from zLOG import LOG
 from zope.interface import implements
 
 from Catalog import Catalog, CatalogError
@@ -47,7 +46,7 @@ from ProgressHandler import ZLogHandler
 from ZCatalogIndexes import ZCatalogIndexes
 
 
-LOG = logging.getLogger('Zope.ZCatalog')
+logger = logging.getLogger('Zope.ZCatalog')
 
 manage_addZCatalogForm=DTMLFile('dtml/addZCatalog',globals())
 
@@ -304,8 +303,8 @@ class ZCatalog(Folder, Persistent, Implicit):
                 except ConflictError:
                     raise
                 except:
-                    LOG.error('Recataloging object at %s failed' % p,
-                              exc_info=sys.exc_info())
+                    logger.error('Recataloging object at %s failed' % p,
+                                 exc_info=sys.exc_info())
 
         if pghandler: pghandler.finish()
 
@@ -494,8 +493,8 @@ class ZCatalog(Folder, Persistent, Implicit):
             if obj is None:
                 obj = self.resolve_url(p, REQUEST)
             if obj is None:
-                LOG.error('reindexIndex could not resolve '
-                          'an object from the uid %r.' % p)
+                logger.error('reindexIndex could not resolve '
+                             'an object from the uid %r.' % p)
             else:
                 # don't update metadata when only reindexing a single
                 # index via the UI
@@ -924,7 +923,7 @@ class ZCatalog(Folder, Persistent, Implicit):
            classes. 
         """
 
-        LOG.info('Start migration of indexes for %s' % self.absolute_url(1))
+        logger.info('Start migration of indexes for %s' % self.absolute_url(1))
 
         for idx in self.Indexes.objectValues():
             bases = [str(name) for name in idx.__class__.__bases__]
@@ -941,7 +940,7 @@ class ZCatalog(Folder, Persistent, Implicit):
             if found:
                 idx_type = idx.meta_type
                 idx_id = idx.getId()
-                LOG.info('processing index %s' % idx_id)
+                logger.info('processing index %s' % idx_id)
 
                 indexed_attrs = getattr(idx, 'indexed_attrs', None)
 
@@ -963,7 +962,8 @@ class ZCatalog(Folder, Persistent, Implicit):
                 self.manage_reindexIndex(idx_id, REQUEST)
 
         self._migrated_280 = True
-        LOG.info('Finished migration of indexes for %s' % self.absolute_url(1))
+        logger.info('Finished migration of indexes for %s'
+                    % self.absolute_url(1))
 
         if RESPONSE:
             RESPONSE.redirect( URL1 +

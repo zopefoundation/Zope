@@ -41,7 +41,7 @@ from OFS.Application import Application
 from OFS.Folder import Folder
 import sys
 import traceback
-from zLOG import log_time
+from zLOG.EventLogger import log_time
 sys.setcheckinterval(200)
 
 from Products.Transience.tests import fauxtime

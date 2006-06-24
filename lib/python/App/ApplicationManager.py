@@ -15,6 +15,9 @@ __doc__="""System management components"""
 __version__='$Revision: 1.94 $'[11:-2]
 
 import sys,os,time,Globals, Acquisition, os, Undo
+import logging
+logger = logging.getLogger('ApplicationManager')
+
 from Globals import DTMLFile
 from OFS.ObjectManager import ObjectManager
 from OFS.Folder import Folder
@@ -31,7 +34,6 @@ from AccessControl import getSecurityManager
 from zExceptions import Redirect
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from cgi import escape
-import zLOG
 import Lifetime
 
 try: import thread
@@ -391,8 +393,7 @@ class ApplicationManager(Folder,CacheManager):
                 user = '"%s"' % getSecurityManager().getUser().getUserName()
             except:
                 user = 'unknown user'
-            zLOG.LOG("ApplicationManager", zLOG.INFO,
-                     "Restart requested by %s" % user)
+            logger.info("Restart requested by %s" % user)
             #for db in Globals.opened: db.close()
             Lifetime.shutdown(1)
             return """<html>
@@ -407,8 +408,7 @@ class ApplicationManager(Folder,CacheManager):
             user = '"%s"' % getSecurityManager().getUser().getUserName()
         except:
             user = 'unknown user'
-        zLOG.LOG("ApplicationManager", zLOG.INFO,
-                 "Shutdown requested by %s" % user)
+        logger.info("Shutdown requested by %s" % user)
         #for db in Globals.opened: db.close()
         Lifetime.shutdown(0)
         return """<html>

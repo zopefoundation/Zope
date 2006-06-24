@@ -18,6 +18,8 @@ $Id$
 import time
 from datetime import date, datetime
 from datetime import tzinfo, timedelta
+import logging
+logger = logging.getLogger('UnIndex')
 from types import StringType, FloatType, IntType
 
 import BTrees.Length
@@ -28,7 +30,6 @@ from DateTime.DateTime import DateTime
 from Globals import DTMLFile
 from OFS.PropertyManager import PropertyManager
 from ZODB.POSException import ConflictError
-from zLOG import LOG, ERROR
 from zope.interface import implements
 
 from Products.PluginIndexes.common import safe_callable
@@ -144,7 +145,7 @@ class DateIndex(UnIndex, PropertyManager):
                     except ConflictError:
                         raise
                     except:
-                        LOG('UnIndex', ERROR,
+                        logger.error(
                             ("Should not happen: ConvertedDate was there,"
                              " now it's not, for document with id %s" %
                              documentId))
