@@ -18,6 +18,9 @@ Zope Changes
 
    Bugs fixed
 
+      - Returned to the "classic" './configure && make && make install'
+        recipe, dropping the use of 'zpkg' for building Zope2 releases.
+
       - OFS Application: Updated deprecation warnings.
         Support for '__ac_permissions__' and 'meta_types' will be removed in
         Zope 2.11, 'methods' support might remain longer.

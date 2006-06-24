@@ -34,6 +34,7 @@ Distutils setup for Zope
         --install-platlib=/usr/local/lib/zope \
         --install-purelib=/usr/local/lib/zope
 """
+ZOPE_VERSION = '2.9.4-alpha'
 
 import glob
 import os
@@ -447,7 +448,7 @@ doclines = __doc__.split("\n")
 
 setup(name='Zope',
       author=AUTHOR,
-      version="2.8",
+      version=ZOPE_VERSION,
       maintainer="Zope Corporation",
       maintainer_email="zope-dev@zope.org",
       url = "http://www.zope.org/",
