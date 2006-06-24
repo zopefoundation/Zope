@@ -20,6 +20,7 @@ Python code.
 __version__='$Revision: 1.56 $'[11:-2]
 
 import sys, os, traceback, re, marshal, new
+import logging
 from Globals import DTMLFile, MessageDialog, package_home
 import AccessControl, OFS, RestrictedPython
 from Acquisition import aq_parent
@@ -33,9 +34,10 @@ from AccessControl import getSecurityManager
 from OFS.History import Historical, html_diff
 from OFS.Cache import Cacheable
 from AccessControl.ZopeGuards import get_safe_globals, guarded_getattr
-from zLOG import LOG, ERROR, INFO, PROBLEM
 from zExceptions import Forbidden
 import Globals
+
+LOG = logging.getLogger('Script (Python)')
 
 # Track the Python bytecode version
 import imp
@@ -209,7 +211,7 @@ class PythonScript(Script, Historical, Cacheable):
             getattr(self, 'Script_magic', None) != Script_magic):
             global _log_complaint
             if _log_complaint:
-                LOG(self.meta_type, INFO, _log_complaint)
+                LOG.info(_log_complaint)
                 _log_complaint = 0
             # Changes here won't get saved, unless this Script is edited.
             body = self._body.rstrip()
@@ -438,7 +440,7 @@ class PythonScript(Script, Historical, Cacheable):
             else:
                 self._makeFunction()
         except:
-            LOG(self.meta_type, ERROR, 'write failed', error=sys.exc_info())
+            LOG.error('write failed', error=sys.exc_info())
             raise
 
     def manage_FTPget(self):
