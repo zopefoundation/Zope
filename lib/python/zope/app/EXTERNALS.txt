@@ -14,6 +14,7 @@ content_types svn://svn.zope.org/repos/main/Zope3/branches/3.2-zope.app.external
 copypastemove svn://svn.zope.org/repos/main/Zope3/branches/3.2-zope.app.externals/src/zope/app/copypastemove
 datetimeutils svn://svn.zope.org/repos/main/Zope3/branches/3.2-zope.app.externals/src/zope/app/datetimeutils
 debug svn://svn.zope.org/repos/main/Zope3/branches/3.2-zope.app.externals/src/zope/app/debug
+decorator svn://svn.zope.org/repos/main/Zope3/branches/3.2-zope.app.externals/src/zope/app/decorator
 dependable svn://svn.zope.org/repos/main/Zope3/branches/3.2-zope.app.externals/src/zope/app/dependable
 dtmlpage svn://svn.zope.org/repos/main/Zope3/branches/3.2-zope.app.externals/src/zope/app/dtmlpage
 dublincore svn://svn.zope.org/repos/main/Zope3/branches/3.2-zope.app.externals/src/zope/app/dublincore
