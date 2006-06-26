@@ -48,6 +48,9 @@ from ZCatalogIndexes import ZCatalogIndexes
 
 logger = logging.getLogger('Zope.ZCatalog')
 
+# BBB:  some products apparently import 'LOG' from here!  Gone in 2.10.
+from zLOG import LOG
+
 manage_addZCatalogForm=DTMLFile('dtml/addZCatalog',globals())
 
 def manage_addZCatalog(self, id, title,
