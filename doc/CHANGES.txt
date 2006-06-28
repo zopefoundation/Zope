@@ -18,6 +18,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - OFS Image: Image and File now both support simple unicode objects
+        for data (they function the same as strings for data).
+
       - OFS Application: Updated deprecation warnings.
         Support for '__ac_permissions__' and 'meta_types' will be removed in
         Zope 2.11, 'methods' support might remain longer.
