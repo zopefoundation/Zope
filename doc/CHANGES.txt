@@ -18,8 +18,8 @@ Zope Changes
 
     Bugs Fixed
 
-      - OFS Image: Image and File now both support simple unicode objects
-        for data (they function the same as strings for data).
+      - OFS Image: Image and File updated to use isinstance(data, str)
+        and raises TypeError upon encountering unicode objects.
 
       - OFS Application: Updated deprecation warnings.
         Support for '__ac_permissions__' and 'meta_types' will be removed in

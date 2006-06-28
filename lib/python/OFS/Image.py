@@ -230,7 +230,7 @@ class File(Persistent, Implicit, PropertyManager,
                     RESPONSE.setStatus(206) # Partial content
 
                     data = self.data
-                    if isinstance(data, basestring):
+                    if isinstance(data, str):
                         RESPONSE.write(data[start:end])
                         return True
 
@@ -301,7 +301,7 @@ class File(Persistent, Implicit, PropertyManager,
                             'Content-Range: bytes %d-%d/%d\r\n\r\n' % (
                                 start, end - 1, self.size))
 
-                        if isinstance(data, basestring):
+                        if isinstance(data, str):
                             RESPONSE.write(data[start:end])
 
                         else:
@@ -400,7 +400,7 @@ class File(Persistent, Implicit, PropertyManager,
         self.ZCacheable_set(None)
 
         data=self.data
-        if isinstance(data, basestring):
+        if isinstance(data, str):
             RESPONSE.setBase(None)
             return data
 
@@ -427,6 +427,10 @@ class File(Persistent, Implicit, PropertyManager,
 
     security.declarePrivate('update_data')
     def update_data(self, data, content_type=None, size=None):
+        if isinstance(data, unicode):
+            raise TypeError('Data can only be str or file-like.  '
+                            'Unicode objects are expressly forbidden.')
+
         if content_type is not None: self.content_type=content_type
         if size is None: size=len(data)
         self.size=size
@@ -480,7 +484,7 @@ class File(Persistent, Implicit, PropertyManager,
         if headers and headers.has_key('content-type'):
             content_type=headers['content-type']
         else:
-            if not isinstance(body, basestring): body=body.data
+            if not isinstance(body, str): body=body.data
             content_type, enc=guess_content_type(
                 getattr(file, 'filename',id), body, content_type)
         return content_type
@@ -489,7 +493,7 @@ class File(Persistent, Implicit, PropertyManager,
 
         n=1 << 16
 
-        if isinstance(file, basestring):
+        if isinstance(file, str):
             size=len(file)
             if size < n: return file, size
             # Big string: cut it into smaller chunks
@@ -616,7 +620,7 @@ class File(Persistent, Implicit, PropertyManager,
                 return result
 
         data = self.data
-        if isinstance(data, basestring):
+        if isinstance(data, str):
             RESPONSE.setBase(None)
             return data
 
@@ -776,6 +780,10 @@ class Image(File):
 
     security.declarePrivate('update_data')
     def update_data(self, data, content_type=None, size=None):
+        if isinstance(data, unicode):
+            raise TypeError('Data can only be str or file-like.  '
+                            'Unicode objects are expressly forbidden.')
+        
         if size is None: size=len(data)
 
         self.size=size

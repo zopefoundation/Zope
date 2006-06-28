@@ -252,14 +252,11 @@ class FileTests(unittest.TestCase):
         verifyClass(HTTPRangeInterface, File)
         verifyClass(WriteLockInterface, File)
 
-    def testUnicodeWithIndexHtml(self):
-        # Introduced to help test the fact that Image.py has been
-        # changed to be lenient towards any basestring type, not just str
-        
+    def testUnicode(self):
         val = u'some unicode string here'
-        self.file.manage_edit('foobar', 'text/plain', filedata=val)
-        s = self.file.index_html(self.app.REQUEST, self.app.REQUEST.RESPONSE)
-        self.assertEquals(s, val)
+        
+        self.assertRaises(TypeError, self.file.manage_edit,
+                          'foobar', 'text/plain', filedata=val)
         
 class ImageTests(FileTests):
     data = open(filedata, 'rb').read()
