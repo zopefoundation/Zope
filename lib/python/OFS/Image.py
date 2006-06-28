@@ -43,7 +43,6 @@ from zExceptions import Redirect
 from cgi import escape
 import transaction
 
-StringType=type('')
 manage_addFileForm=DTMLFile('dtml/imageAdd', globals(),Kind='File',kind='file')
 def manage_addFile(self,id,file='',title='',precondition='', content_type='',
                    REQUEST=None):
@@ -231,7 +230,7 @@ class File(Persistent, Implicit, PropertyManager,
                     RESPONSE.setStatus(206) # Partial content
 
                     data = self.data
-                    if type(data) is StringType:
+                    if isinstance(data, basestring):
                         RESPONSE.write(data[start:end])
                         return True
 
@@ -302,7 +301,7 @@ class File(Persistent, Implicit, PropertyManager,
                             'Content-Range: bytes %d-%d/%d\r\n\r\n' % (
                                 start, end - 1, self.size))
 
-                        if type(data) is StringType:
+                        if isinstance(data, basestring):
                             RESPONSE.write(data[start:end])
 
                         else:
@@ -401,7 +400,7 @@ class File(Persistent, Implicit, PropertyManager,
         self.ZCacheable_set(None)
 
         data=self.data
-        if type(data) is type(''):
+        if isinstance(data, basestring):
             RESPONSE.setBase(None)
             return data
 
@@ -481,7 +480,7 @@ class File(Persistent, Implicit, PropertyManager,
         if headers and headers.has_key('content-type'):
             content_type=headers['content-type']
         else:
-            if type(body) is not type(''): body=body.data
+            if not isinstance(body, basestring): body=body.data
             content_type, enc=guess_content_type(
                 getattr(file, 'filename',id), body, content_type)
         return content_type
@@ -490,7 +489,7 @@ class File(Persistent, Implicit, PropertyManager,
 
         n=1 << 16
 
-        if type(file) is StringType:
+        if isinstance(file, basestring):
             size=len(file)
             if size < n: return file, size
             # Big string: cut it into smaller chunks
@@ -617,7 +616,7 @@ class File(Persistent, Implicit, PropertyManager,
                 return result
 
         data = self.data
-        if type(data) is type(''):
+        if isinstance(data, basestring):
             RESPONSE.setBase(None)
             return data
 
