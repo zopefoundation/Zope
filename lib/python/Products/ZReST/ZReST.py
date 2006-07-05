@@ -203,6 +203,7 @@ class ZReST(Item, PropertyManager, Historical, Implicit, Persistent):
                 'stylesheet' : self.stylesheet,
                 'stylesheet_path' : None,
                 'pub.settings.warning_stream' :  Warnings(),
+                'raw_enabled' : 0,
                 'file_insertion_enabled' : 0,
                 }
 
