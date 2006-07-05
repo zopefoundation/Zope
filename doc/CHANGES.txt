@@ -18,6 +18,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - reStructuredText/ZReST: setting raw_enabled to 0 for security
+        reasons
+
       - Collector #2113:  'zopectl test' masked Ctrl-C.
 
       - OFS Image: Image and File updated to use isinstance(data, str)
