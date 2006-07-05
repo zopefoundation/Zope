@@ -72,6 +72,7 @@ def render(src,
     settings['output_encoding'] = output_encoding
     settings['stylesheet'] = stylesheet
     settings['file_insertion_enabled'] = 0
+    settings['raw_enabled'] = 0
     if language_code:
         settings['language_code'] = language_code
     settings['language_code'] = language_code

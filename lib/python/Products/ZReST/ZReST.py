@@ -210,6 +210,9 @@ class ZReST(Item, PropertyManager, Historical, Implicit, Persistent):
             # disallow use of the .. include directive for security reasons
             pub.settings.file_insertion_enabled = 0
 
+            # disallow insertion of raw data through for security reasons
+            pub.settings.raw_enabled = 0
+
             # don't break if we get errors
             pub.settings.halt_level = 6
 
