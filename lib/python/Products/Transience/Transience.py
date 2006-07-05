@@ -22,6 +22,7 @@ import random
 import sys
 import os
 import thread
+import logging
 from cgi import escape
 
 import Globals
@@ -40,7 +41,7 @@ from AccessControl import ClassSecurityInfo, getSecurityManager
 from AccessControl.SecurityManagement import newSecurityManager, \
      setSecurityManager
 from AccessControl.User import nobody
-from zLOG import LOG, WARNING, INFO
+
 
 from TransientObject import TransientObject
 from Fake import FakeIOBTree
@@ -60,6 +61,8 @@ DEBUG = int(os.environ.get('Z_TOC_DEBUG', 0))
 
 _marker = []
 
+LOG = logging.getLogger('Transience')
+
 def setStrict(on=''):
     """ Turn on assertions (which may cause conflicts) """
     global STRICT
@@ -72,7 +75,7 @@ def TLOG(*args):
     for arg in args:
         sargs.append(str(arg))
     msg = ' '.join(sargs)
-    LOG('Transience', INFO, msg)
+    LOG.info(msg)
 
 constructTransientObjectContainerForm = HTMLFile(
     'dtml/addTransientObjectContainer', globals())
@@ -434,7 +437,7 @@ class TransientObjectContainer(SimpleItem):
             length = self._length() # XXX ReadConflictError hotspot
 
             if self._limit and length >= self._limit:
-                LOG('Transience', WARNING,
+                LOG.warning(
                     ('Transient object container %s max subobjects '
                      'reached' % self.getId())
                     )
@@ -796,8 +799,7 @@ class TransientObjectContainer(SimpleItem):
             except (KeyError, AttributeError):
                 path = self.getPhysicalPath()
                 err = 'No such onAdd/onDelete method %s referenced via %s'
-                LOG('Transience',
-                    WARNING,
+                LOG.warning(
                     err % (callback, '/'.join(path)),
                     error=sys.exc_info()
                     )
@@ -817,8 +819,7 @@ class TransientObjectContainer(SimpleItem):
                 except:
                     # dont raise, just log
                     path = self.getPhysicalPath()
-                    LOG('Transience',
-                        WARNING,
+                    LOG.warning(
                         '%s failed when calling %s in %s' % (name,callback,
                                                         '/'.join(path)),
                         error=sys.exc_info()
@@ -828,8 +829,7 @@ class TransientObjectContainer(SimpleItem):
         else:
             err = '%s in %s attempted to call non-callable %s'
             path = self.getPhysicalPath()
-            LOG('Transience',
-                WARNING,
+            LOG.warning(
                 err % (name, '/'.join(path), callback),
                 error=sys.exc_info()
                 )

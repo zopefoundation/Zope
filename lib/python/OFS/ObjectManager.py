@@ -20,6 +20,8 @@ import marshal
 import sys, fnmatch, copy, os, re
 from cgi import escape
 from cStringIO import StringIO
+import logging
+logger = logging.getLogger('FTP')
 from types import StringType, UnicodeType
 
 import App.Common
@@ -36,7 +38,6 @@ from webdav.Collection import Collection
 from webdav.Lockable import ResourceLockedError
 from webdav.NullResource import NullResource
 from zExceptions import BadRequest
-from zLOG import LOG, ERROR
 from ZODB.POSException import ConflictError
 from zope.interface import implements
 
@@ -673,8 +674,8 @@ class ObjectManager(
             try:
                 stat=marshal.loads(v.manage_FTPstat(REQUEST))
             except:
-                LOG("FTP", ERROR, "Failed to stat file '%s'" % k,
-                    error=sys.exc_info())
+                logger.error("Failed to stat file '%s'" % k,
+                             error=sys.exc_info())
                 stat=None
             if stat is not None:
                 out=out+((k,stat),)

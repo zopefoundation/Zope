@@ -20,7 +20,6 @@ __version__='$Revision: 1.48 $'[11:-2]
 import os, AccessControl, Acquisition, sys, types
 from types import StringType
 from Globals import DTMLFile, ImageFile, MessageDialog, package_home
-from zLOG import LOG, ERROR, INFO
 from OFS.SimpleItem import SimpleItem
 from DateTime.DateTime import DateTime
 from Shared.DC.Scripts.Script import Script, BindingsUI

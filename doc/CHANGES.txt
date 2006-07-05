@@ -18,6 +18,8 @@ Zope Changes
 
    Bugs fixed
 
+      - Collector #2113:  'zopectl test' often masked Ctrl-C.
+
       - OFS Application: Updated deprecation warnings.
         Support for '__ac_permissions__' and 'meta_types' will be removed in
         Zope 2.11, 'methods' support might remain longer.

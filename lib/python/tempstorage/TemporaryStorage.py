@@ -21,8 +21,10 @@ $Id$
 """
 
 __version__ ='$Revision: 1.1.2.2 $'[11:-2]
+import logging
+logger = logging.getLogger('TemporaryStorage')
 
-from zLOG import LOG, BLATHER
+from zLOG.EventLogger import CUSTOM_BLATHER
 from ZODB.serialize import referencesf
 from ZODB import POSException
 from ZODB.BaseStorage import BaseStorage
@@ -182,7 +184,7 @@ class TemporaryStorage(BaseStorage, ConflictResolvingStorage):
         if version:
             # we allow a version to be in use although we don't
             # support versions in the storage.
-            LOG('TemporaryStorage', BLATHER,
+            logging.log(CUSTOM_BLATHER,
                 ('versions in use with TemporaryStorage although Temporary'
                  'Storage doesnt support versions'),
                 )

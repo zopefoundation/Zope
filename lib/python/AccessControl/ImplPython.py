@@ -15,13 +15,15 @@
 
 import os
 import string
+import logging
+logger = logging.getLogger('Zope Security Policy')
 
 from Acquisition import aq_base
 from Acquisition import aq_parent
 from Acquisition import aq_inner
 from Acquisition import aq_acquire
 from ExtensionClass import Base
-from zLOG import LOG, BLATHER, PROBLEM
+from zLOG.EventLogger import CUSTOM_BLATHER
 from zope.interface import implements
 
 # This is used when a permission maps explicitly to no permission.  We
@@ -346,8 +348,8 @@ class ZopeSecurityPolicy:
                 return 1
         except TypeError:
             # 'roles' isn't a sequence
-            LOG('Zope Security Policy', PROBLEM, "'%s' passed as roles"
-                " during validation of '%s' is not a sequence." % (
+            logger.warn("'%s' passed as roles"
+                        " during validation of '%s' is not a sequence." % (
                 `roles`, name))
             raise
 
@@ -804,7 +806,7 @@ def raiseVerbose(msg, accessed, container, name, value, context,
         info.append(s + '.')
 
     text = ' '.join(info)
-    LOG('Zope Security Policy', BLATHER, 'Unauthorized: %s' % text)
+    logger.log(CUSTOM_BLATHER, 'Unauthorized: %s' % text)
     raise Unauthorized(text)
 
 def getUserRolesInContext(user, context):

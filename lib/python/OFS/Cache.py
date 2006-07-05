@@ -15,10 +15,12 @@
 $Id$
 """
 import time, sys
+import logging
+logger = logging.getLogger('Cache')
+
 import Globals
 from Globals import DTMLFile
 from Acquisition import aq_get, aq_acquire, aq_inner, aq_parent, aq_base
-from zLOG import LOG, WARNING
 from AccessControl import getSecurityManager
 from AccessControl.Role import _isBeingUsedAsAMethod
 from AccessControl import Unauthorized
@@ -195,8 +197,7 @@ class Cacheable:
                                    mtime_func, default)
                 return val
             except:
-                LOG('Cache', WARNING, 'ZCache_get() exception',
-                    error=sys.exc_info())
+                logger.warn('ZCache_get() exception', error=sys.exc_info())
                 return default
         return default
 
@@ -213,8 +214,7 @@ class Cacheable:
                 c.ZCache_set(ob, data, view_name, keywords,
                              mtime_func)
             except:
-                LOG('Cache', WARNING, 'ZCache_set() exception',
-                    error=sys.exc_info())
+                logger.warn('ZCache_set() exception', error=sys.exc_info())
 
     def ZCacheable_invalidate(self, view_name='', REQUEST=None):
         '''Called after a cacheable object is edited. Causes all
@@ -231,8 +231,7 @@ class Cacheable:
             except:
                 exc = sys.exc_info()
                 try:
-                    LOG('Cache', WARNING, 'ZCache_invalidate() exception',
-                        error=exc)
+                    logger.warn('ZCache_invalidate() exception', error=exc)
                     message = 'An exception occurred: %s: %s' % exc[:2]
                 finally:
                     exc = None

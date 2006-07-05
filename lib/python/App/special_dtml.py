@@ -10,10 +10,11 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
+from types import InstanceType
+import logging
+logger = logging.getLogger('ZPublisher')
 
 import DocumentTemplate, Common, Persistence, MethodObject, Globals, os, sys
-from types import InstanceType
-from zLOG import LOG,WARNING
 from App.config import getConfiguration
 
 class HTML(DocumentTemplate.HTML,Persistence.Persistent,):
@@ -175,8 +176,10 @@ class DTMLFile(Bindings, Explicit, ClassicHTMLFile):
                 try: result = render_blocks(self._v_blocks, ns)
                 except DTReturn, v: result = v.v
                 except AttributeError:
-                    if type(sys.exc_value)==InstanceType and sys.exc_value.args[0]=="_v_blocks":
-                        LOG("ZPublisher",WARNING,"DTML file '%s' could not be read" % self.raw)
+                    if (type(sys.exc_value) == InstanceType
+                            and sys.exc_value.args[0]=="_v_blocks"):
+                        logger.warn("DTML file '%s' could not be read"
+                                      % self.raw)
                         raise ValueError, ("DTML file error: "
                                            "Check logfile for details")
                     else:

@@ -18,8 +18,9 @@ Zope object encapsulating a Page Template from the filesystem.
 __version__ = '$Revision: 1.30 $'[11:-2]
 
 import os, AccessControl
+import logging
+
 from Globals import package_home, DevelopmentMode
-from zLOG import LOG, ERROR
 from Shared.DC.Scripts.Script import Script
 from Shared.DC.Scripts.Signature import FuncCode
 from AccessControl import getSecurityManager
@@ -30,6 +31,8 @@ from ComputedAttribute import ComputedAttribute
 from Acquisition import aq_parent, aq_inner
 from App.config import getConfiguration
 from OFS.SimpleItem import Item_w__name__
+
+LOG = logging.getLogger('PageTemplateFile')
 
 class PageTemplateFile(Item_w__name__, Script, PageTemplate, Traversable):
     "Zope wrapper for filesystem Page Template using TAL, TALES, and METAL"
@@ -146,8 +149,7 @@ class PageTemplateFile(Item_w__name__, Script, PageTemplate, Traversable):
         self.pt_edit(text, t)
         self._cook()
         if self._v_errors:
-            LOG('PageTemplateFile', ERROR, 'Error in template',
-                '\n'.join(self._v_errors))
+            LOG.error('Error in template', '\n'.join(self._v_errors))
             return
         self._v_last_read = mtime
 
