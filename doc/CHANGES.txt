@@ -18,6 +18,9 @@ Zope Changes
 
     Bugs fixed
 
+      - reStructuredText/ZReST: setting raw_enabled to 0 for security
+        reasons
+
       - OFS Application: Removed deprecation warnings added in Zope 2.8.5.
         The warning period starts in Zope 2.9.0.
 
