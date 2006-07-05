@@ -47,6 +47,11 @@ Zope Changes
 
       - Collector #2063: cleaned up some mess in MailHost.sendTemplate()
 
+   Other Changes
+
+      - Returned to the "classic" './configure && make && make install'
+        recipe, dropping the use of 'zpkg' for building Zope2 releases.
+
   Zope 2.9.3 (2006/05/13)
 
    Bugs fixed
