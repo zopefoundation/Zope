@@ -237,11 +237,11 @@ class Traversable:
                             if not validated:
                                 raise Unauthorized, name
                     else:
-                        if hasattr(aq_base(obj), name):
+                        if getattr(aq_base(obj), name, marker) is not marker:
                             if restricted:
-                                next = guarded_getattr(obj, name, marker)
+                                next = guarded_getattr(obj, name)
                             else:
-                                next = _getattr(obj, name, marker)
+                                next = _getattr(obj, name)
                         else:
                             try:
                                 next=obj[name]
@@ -249,6 +249,9 @@ class Traversable:
                                 # Raise NotFound for easier debugging
                                 # instead of AttributeError: __getitem__
                                 raise NotFound, name
+                            if restricted and not securityManager.validate(
+                                obj, obj, _none, next):
+                                raise Unauthorized, name
 
                 except (AttributeError, NotFound, KeyError), e: 
                     # Try to look for a view
@@ -270,13 +273,10 @@ class Traversable:
                                 next = _getattr(obj, name, marker)
                         except AttributeError:
                             raise e
-                    if next is marker:
-                        # Nothing found re-raise error
-                        raise e
-                
-                if restricted and not securityManager.validate(
-                    obj, obj, _none, next):
-                    raise Unauthorized, name
+                        if next is marker:
+                            # Nothing found re-raise error
+                            raise e
+
                 obj = next
 
             return obj
