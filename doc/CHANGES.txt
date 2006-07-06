@@ -18,6 +18,14 @@ Zope Changes
 
     Bugs Fixed
 
+      - reStructuredText/ZReST: setting raw_enabled to 0 for security
+        reasons
+
+      - Collector #2113:  'zopectl test' masked Ctrl-C.
+
+      - OFS Image: Image and File updated to use isinstance(data, str)
+        and raises TypeError upon encountering unicode objects.
+
       - OFS Application: Updated deprecation warnings.
         Support for '__ac_permissions__' and 'meta_types' will be removed in
         Zope 2.11, 'methods' support might remain longer.

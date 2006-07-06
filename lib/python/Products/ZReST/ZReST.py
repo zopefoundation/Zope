@@ -204,6 +204,7 @@ class ZReST(Item, PropertyManager, Historical, Implicit, Persistent):
                 'stylesheet_path' : None,
                 'pub.settings.warning_stream' :  Warnings(),
                 'file_insertion_enabled' : 0,
+                'raw_enabled' : 0,
                 }
 
             self._v_formatted = docutils.core.publish_string(

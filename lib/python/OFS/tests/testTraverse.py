@@ -68,6 +68,24 @@ class CruelSecurityPolicy:
         return 0
 
 
+class ProtectedMethodSecurityPolicy:
+    """Check security strictly on bound methods.
+    """
+    def validate(self, accessed, container, name, value, *args):
+        if getattr(aq_base(value), 'im_self', None) is None:
+            return 1
+
+        # Bound method
+        if name is None:
+            raise Unauthorized
+        klass = value.im_self.__class__
+        roles = getattr(klass, name+'__roles__', object())
+        if roles is None: # ACCESS_PUBLIC
+            return 1
+
+        raise Unauthorized(name)
+
+
 class UnitTestUser( Acquisition.Implicit ):
     """
         Stubbed out manager for unit testing purposes.
@@ -101,6 +119,22 @@ class BoboTraversable(SimpleItem):
         pass
 
     bb_status = 'screechy'
+
+
+class Restricted(SimpleItem):
+    """Instance we'll check with ProtectedMethodSecurityPolicy
+    """
+    getId__roles__ = None # ACCESS_PUBLIC
+    def getId(self):
+        return self.id
+
+    private__roles__ = () # ACCESS_PRIVATE
+    def private(self):
+        return 'private!'
+
+    # not protected
+    def ohno(self):
+        return 'ohno!'
 
 
 class BoboTraversableWithAcquisition(SimpleItem):
@@ -209,6 +243,17 @@ class TestTraverse( unittest.TestCase ):
             KeyError, self.folder1.unrestrictedTraverse,  '/folder1/file2' )
         self.failUnlessRaises(
             KeyError, self.folder1.unrestrictedTraverse,  '/folder1/file2/' )
+
+    def testTraverseMethodRestricted(self):
+        self.root.my = Restricted('my')
+        my = self.root.my
+        my.id = 'my'
+        noSecurityManager()
+        SecurityManager.setSecurityPolicy(ProtectedMethodSecurityPolicy())
+        r = my.restrictedTraverse('getId')
+        self.assertEquals(r(), 'my')
+        self.assertRaises(Unauthorized, my.restrictedTraverse, 'private')
+        self.assertRaises(Unauthorized, my.restrictedTraverse, 'ohno')
 
     def testBoboTraverseToWrappedSubObj(self):
         # Verify it's possible to use __bobo_traverse__ with the

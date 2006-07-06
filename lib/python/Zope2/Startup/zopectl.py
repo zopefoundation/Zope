@@ -258,13 +258,19 @@ class ZopeCmd(ZDCmd):
         pid = os.fork()
         if pid == 0:  # child
             os.execv(self.options.python, args)
-        else:
-            os.waitpid(pid, 0)
+        
+        # Parent process running (execv replaces process in child
+        while True:
+            try:
+                os.waitpid(pid, 0)
+            except (OSError, KeyboardInterrupt):
+                continue
+            else:
+                break
 
     def help_test(self):
         print "test [args]+ -- run unit / functional tests."
         print "                See $ZOPE_HOME/bin/test.py --help for syntax."
-
 
 def main(args=None):
     # This is exactly like zdctl.main(), but uses ZopeCtlOptions and

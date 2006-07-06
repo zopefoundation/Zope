@@ -252,7 +252,12 @@ class FileTests(unittest.TestCase):
         verifyClass(HTTPRangeInterface, File)
         verifyClass(WriteLockInterface, File)
 
-
+    def testUnicode(self):
+        val = u'some unicode string here'
+        
+        self.assertRaises(TypeError, self.file.manage_edit,
+                          'foobar', 'text/plain', filedata=val)
+        
 class ImageTests(FileTests):
     data = open(filedata, 'rb').read()
     content_type = 'image/gif'
@@ -284,7 +289,6 @@ class ImageTests(FileTests):
         from webdav.WriteLockInterface import WriteLockInterface
 
         verifyClass(WriteLockInterface, Image)
-
 
 def test_suite():
     return unittest.TestSuite((
