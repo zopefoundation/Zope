@@ -118,7 +118,7 @@ class Traversable:
         return path
 
     security.declarePrivate('unrestrictedTraverse')
-    def unrestrictedTraverse(self, path, default=_marker, restricted=0):
+    def unrestrictedTraverse(self, path, default=_marker, restricted=False):
         """Lookup an object by path.
 
         path -- The path to the object. May be a sequence of strings or a slash
@@ -139,10 +139,6 @@ class Traversable:
         if not path:
             return self
 
-        _getattr = getattr
-        _none = None
-        marker = _marker
-
         if isinstance(path, str):
             # Unicode paths are not allowed
             path = path.split('/')
@@ -151,27 +147,25 @@ class Traversable:
 
         REQUEST = {'TraversalRequestNameStack': path}
         path.reverse()
-        path_pop=path.pop
+        path_pop = path.pop
 
         if len(path) > 1 and not path[0]:
             # Remove trailing slash
-            path.pop(0)
+            path_pop(0)
 
         if restricted:
-            securityManager = getSecurityManager()
-        else:
-            securityManager = _none
+            validate = getSecurityManager().validate
 
         if not path[-1]:
             # If the path starts with an empty string, go to the root first.
             path_pop()
-            self = self.getPhysicalRoot()
-            if (restricted
-                and not securityManager.validate(None, None, None, self)):
-                raise Unauthorized, name
+            obj = self.getPhysicalRoot()
+            if restricted and not validate(None, None, None, obj):
+                raise Unauthorized(name)
+        else:
+            obj = self
 
         try:
-            obj = self
             while path:
                 name = path_pop()
                 __traceback_info__ = path, name
@@ -182,102 +176,98 @@ class Traversable:
 
                 if name == '..':
                     next = aq_parent(obj)
-                    if next is not _none:
-                        if restricted and not securityManager.validate(
-                            obj, obj,name, next):
-                            raise Unauthorized, name
+                    if next is not None:
+                        if restricted and not validate(obj, obj, name, next):
+                            raise Unauthorized(name)
                         obj = next
                         continue
 
-                bobo_traverse = _getattr(obj, '__bobo_traverse__', _none)
+                bobo_traverse = getattr(obj, '__bobo_traverse__', None)
                 try:
                     if name and name[:1] in '@+':
                         # Process URI segment parameters.
                         ns, nm = nsParse(name)
                         if ns:
                             try:
-                                next = namespaceLookup(ns, nm, obj, 
-                                                       self.REQUEST).__of__(obj)
-                                if restricted and not securityManager.validate(
+                                next = namespaceLookup(
+                                    ns, nm, obj, self.REQUEST).__of__(obj)
+                                if restricted and not validate(
                                     obj, obj, name, next):
-                                    raise Unauthorized, name
+                                    raise Unauthorized(name)
                             except TraversalError:
                                 raise AttributeError(name)
-                    elif bobo_traverse is not _none:
+                    elif bobo_traverse is not None:
                         next = bobo_traverse(REQUEST, name)
                         if restricted:
                             if aq_base(next) is not next:
                                 # The object is wrapped, so the acquisition
                                 # context is the container.
                                 container = aq_parent(aq_inner(next))
-                            elif _getattr(next, 'im_self', _none) is not _none:
+                            elif getattr(next, 'im_self', None) is not None:
                                 # Bound method, the bound instance
                                 # is the container
                                 container = next.im_self
-                            elif _getattr(aq_base(obj), name, marker) == next:
+                            elif getattr(aq_base(obj), name, _marker) is next:
                                 # Unwrapped direct attribute of the object so
                                 # object is the container
                                 container = obj
                             else:
                                 # Can't determine container
-                                container = _none
+                                container = None
+                            # If next is a simple unwrapped property, its
+                            # parentage is indeterminate, but it may have
+                            # been acquired safely. In this case validate
+                            # will raise an error, and we can explicitly
+                            # check that our value was acquired safely.
                             try:
-                                validated = securityManager.validate(
-                                                       obj, container, name, next)
+                                ok = validate(obj, container, name, next)
                             except Unauthorized:
-                                # If next is a simple unwrapped property, it's
-                                # parentage is indeterminate, but it may have been
-                                # acquired safely.  In this case validate will
-                                # raise an error, and we can explicitly check that
-                                # our value was acquired safely.
-                                validated = 0
-                                if container is _none and \
-                                       guarded_getattr(obj, name, marker) is next:
-                                    validated = 1
-                            if not validated:
-                                raise Unauthorized, name
+                                ok = False
+                            if not ok:
+                                if (container is not None or
+                                    guarded_getattr(obj, name, _marker)
+                                        is not next):
+                                    raise Unauthorized(name)
                     else:
-                        if getattr(aq_base(obj), name, marker) is not marker:
+                        if getattr(aq_base(obj), name, _marker) is not _marker:
                             if restricted:
                                 next = guarded_getattr(obj, name)
                             else:
-                                next = _getattr(obj, name)
+                                next = getattr(obj, name)
                         else:
                             try:
-                                next=obj[name]
+                                next = obj[name]
                             except AttributeError:
                                 # Raise NotFound for easier debugging
                                 # instead of AttributeError: __getitem__
-                                raise NotFound, name
-                            if restricted and not securityManager.validate(
-                                obj, obj, _none, next):
-                                raise Unauthorized, name
+                                raise NotFound(name)
+                            if restricted and not validate(
+                                obj, obj, None, next):
+                                raise Unauthorized(name)
 
-                except (AttributeError, NotFound, KeyError), e: 
+                except (AttributeError, NotFound, KeyError), e:
                     # Try to look for a view
-                    next = queryMultiAdapter((obj, self.REQUEST), 
+                    next = queryMultiAdapter((obj, self.REQUEST),
                                              Interface, name)
 
                     if next is not None:
                         next = next.__of__(obj)
-                        if restricted:
-                            if not securityManager.validate(
-                                obj, obj, name, next):
-                                raise Unauthorized, name
+                        if restricted and not validate(obj, obj, name, next):
+                            raise Unauthorized(name)
                     elif bobo_traverse is not None:
-                        # Attribute lookup should not be done after 
+                        # Attribute lookup should not be done after
                         # __bobo_traverse__:
                         raise e
                     else:
                         # No view, try acquired attributes
                         try:
                             if restricted:
-                                next = guarded_getattr(obj, name, marker)
+                                next = guarded_getattr(obj, name, _marker)
                             else:
-                                next = _getattr(obj, name, marker)
+                                next = getattr(obj, name, _marker)
                         except AttributeError:
                             raise e
-                        if next is marker:
+                        if next is _marker:
                             # Nothing found re-raise error
                             raise e
 
@@ -288,7 +278,7 @@ class Traversable:
         except ConflictError:
             raise
         except:
-            if default is not marker:
+            if default is not _marker:
                 return default
             else:
                 raise
@@ -296,7 +286,7 @@ class Traversable:
     security.declarePublic('restrictedTraverse')
     def restrictedTraverse(self, path, default=_marker):
         # Trusted code traversal code, always enforces securitys
-        return self.unrestrictedTraverse(path, default, restricted=1)
+        return self.unrestrictedTraverse(path, default, restricted=True)
 
 InitializeClass(Traversable)
 
