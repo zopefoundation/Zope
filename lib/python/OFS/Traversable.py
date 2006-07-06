@@ -260,6 +260,10 @@ class Traversable:
 
                     if next is not None:
                         next = next.__of__(obj)
+                        if restricted:
+                            if not securityManager.validate(
+                                obj, obj, name, next):
+                                raise Unauthorized, name
                     elif bobo_traverse is not None:
                         # Attribute lookup should not be done after 
                         # __bobo_traverse__:
