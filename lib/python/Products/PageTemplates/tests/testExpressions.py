@@ -74,7 +74,7 @@ class ExpressionTests(zope.component.testing.PlacelessSetup, unittest.TestCase):
         ec = self.ec
         ec.beginScope()
         ec.setRepeat('loop', "python:[1,2,3]")
-        assert ec.evaluate("python:repeat['loop'].even()")
+        assert ec.evaluate("python:repeat['loop'].odd()")
         ec.endScope()
 
     def testWrappers(self):

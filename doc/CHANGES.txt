@@ -18,6 +18,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Fix #2141: TALES doesn't traverse correctly over 'repeat'
+        variable
+
       - reStructuredText/ZReST: setting raw_enabled to 0 for security
         reasons
 

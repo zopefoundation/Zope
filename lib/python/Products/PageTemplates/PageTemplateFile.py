@@ -56,8 +56,6 @@ class PageTemplateFile(SimpleItem, Script, PageTemplate, Traversable):
     security.declareProtected('View management screens',
       'read', 'document_src')
 
-    _default_bindings = {'name_subpath': 'traverse_subpath'}
-
     def __init__(self, filename, _prefix=None, **kw):
         name = kw.pop('__name__', None)
 
