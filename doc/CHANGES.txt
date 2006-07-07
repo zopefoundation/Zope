@@ -67,6 +67,9 @@ Zope Changes
 
     Other Changes
 
+      - Disabled docutils file inclusion completely, rather than trying
+        to jigger it via configuration settings.
+
       - Returned to the "classic" './configure && make && make install'
         recipe, dropping the use of 'zpkg' for building Zope2 releases.
 
