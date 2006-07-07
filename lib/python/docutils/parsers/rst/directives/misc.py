@@ -24,48 +24,7 @@ except ImportError:
 def include(name, arguments, options, content, lineno,
             content_offset, block_text, state, state_machine):
     """Include a reST file as part of the content of this reST file."""
-    if not state.document.settings.file_insertion_enabled:
-        warning = state_machine.reporter.warning(
-              '"%s" directive disabled.' % name,
-              nodes.literal_block(block_text, block_text), line=lineno)
-        return [warning]
-    source = state_machine.input_lines.source(
-        lineno - state_machine.input_offset - 1)
-    source_dir = os.path.dirname(os.path.abspath(source))
-    path = directives.path(arguments[0])
-    path = os.path.normpath(os.path.join(source_dir, path))
-    path = utils.relative_path(None, path)
-    encoding = options.get('encoding', state.document.settings.input_encoding)
-    try:
-        state.document.settings.record_dependencies.add(path)
-        include_file = io.FileInput(
-            source_path=path, encoding=encoding,
-            error_handler=state.document.settings.input_encoding_error_handler,
-            handle_io_errors=None)
-    except IOError, error:
-        severe = state_machine.reporter.severe(
-              'Problems with "%s" directive path:\n%s: %s.'
-              % (name, error.__class__.__name__, error),
-              nodes.literal_block(block_text, block_text), line=lineno)
-        return [severe]
-    try:
-        include_text = include_file.read()
-    except UnicodeError, error:
-        severe = state_machine.reporter.severe(
-              'Problem with "%s" directive:\n%s: %s'
-              % (name, error.__class__.__name__, error),
-              nodes.literal_block(block_text, block_text), line=lineno)
-        return [severe]
-    if options.has_key('literal'):
-        literal_block = nodes.literal_block(include_text, include_text,
-                                            source=path)
-        literal_block.line = 1
-        return literal_block
-    else:
-        include_lines = statemachine.string2lines(include_text,
-                                                  convert_whitespace=1)
-        state_machine.insert_input(include_lines, path)
-        return []
+    raise NotImplementedError, 'File inclusion not allowed!'
 
 include.arguments = (1, 0, 1)
 include.options = {'literal': directives.flag,
@@ -81,6 +40,8 @@ def raw(name, arguments, options, content, lineno,
     Content may be included inline (content section of directive) or
     imported from a file or url.
     """
+    if options.has_key('file') or options.has_key('url'):
+        raise NotImplementedError, 'File inclusion not allowed!'
     print 2
     if ( not state.document.settings.raw_enabled
          or (not state.document.settings.file_insertion_enabled

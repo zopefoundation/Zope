@@ -40,6 +40,11 @@ Zope Changes
 
       - Collector #2063: cleaned up some mess in MailHost.sendTemplate()
 
+    Other Changes
+
+      - Disabled docutils file inclusion completely, rather than trying
+        to jigger it via configuration settings.
+
   Zope 2.8.7 (2007/05/29)
 
     Features added:
