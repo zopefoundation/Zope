@@ -165,6 +165,9 @@ class HTMLTests(zope.component.testing.PlacelessSetup, unittest.TestCase):
     def checkImportOldStyleClass(self):
         self.assert_expected(self.folder.t, 'CheckImportOldStyleClass.html')
 
+    def checkRepeatVariable(self):
+        self.assert_expected(self.folder.t, 'RepeatVariable.html')
+
 def test_suite():
     return unittest.makeSuite(HTMLTests, 'check')
 

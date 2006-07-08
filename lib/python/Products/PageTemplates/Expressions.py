@@ -28,6 +28,7 @@ from zope.proxy import removeAllProxies
 import zope.app.pagetemplate.engine
 
 import OFS.interfaces
+from MultiMapping import MultiMapping
 from Acquisition import aq_base
 from zExceptions import NotFound, Unauthorized
 from Products.Five.browser.providerexpression import Z2ProviderExpression
@@ -140,7 +141,31 @@ class ZopePathExpr(PathExpr):
                 return 1
         return 0
 
+class SafeMapping(MultiMapping):
+    """Mapping with security declarations and limited method exposure.
+
+    Since it subclasses MultiMapping, this class can be used to wrap
+    one or more mapping objects.  Restricted Python code will not be
+    able to mutate the SafeMapping or the wrapped mappings, but will be
+    able to read any value.
+    """
+    __allow_access_to_unprotected_subobjects__ = True
+    push = pop = None
+
+    _push = MultiMapping.push
+    _pop = MultiMapping.pop
+
 class ZopeContext(Context):
+
+    def __init__(self, engine, contexts):
+        super(ZopeContext, self).__init__(engine, contexts)
+        # wrap the top-level 'repeat' variable, as it is visible to
+        # restricted code
+        self.setContext('repeat', SafeMapping(self.repeat_vars))
+        # regenerate the first scope and the scope stack after messing
+        # with the global context
+        self.vars = vars = contexts.copy()
+        self._vars_stack = [vars]
 
     def translate(self, msgid, domain=None, mapping=None, default=None):
         context = self.contexts.get('context')
