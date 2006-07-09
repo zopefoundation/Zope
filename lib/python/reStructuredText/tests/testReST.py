@@ -86,12 +86,17 @@ text
         source = 'hello world\n .. include:: /etc/passwd'
         self.assertRaises(NotImplementedError, HTML, source)
 
-# disabled test so far until we have a consensus how to deal with 'raw'
-#    def testRawPassthrough(self):
-#
-#        source = '.. raw:: html\n\n  <h1>HELLO WORLD</h1>'
-#        self.assertRaises(NotImplementedError, HTML, source)
 
+    def testRawPassthrough(self):
+
+        source = '.. raw:: html\n  <h1>HELLO WORLD</h1>'
+        result = HTML(source)       # don't raise
+
+        source = '.. raw:: html\n  :file: inclusion.txt'
+        self.assertRaises(NotImplementedError, HTML, source)
+
+        source = '.. raw:: html\n  :url: http://www.zope.org'
+        self.assertRaises(NotImplementedError, HTML, source)
 
 def test_suite():
     from unittest import TestSuite, makeSuite
