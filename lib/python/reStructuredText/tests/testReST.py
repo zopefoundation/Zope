@@ -82,6 +82,17 @@ text
         self.assertEquals(output, expected) 
 
 
+    def testFileInclusion(self):
+        source = 'hello world\n .. include:: /etc/passwd'
+        self.assertRaises(NotImplementedError, HTML, source)
+
+# disabled test so far until we have a consensus how to deal with 'raw'
+#    def testRawPassthrough(self):
+#
+#        source = '.. raw:: html\n\n  <h1>HELLO WORLD</h1>'
+#        self.assertRaises(NotImplementedError, HTML, source)
+
+
 def test_suite():
     from unittest import TestSuite, makeSuite
     return TestSuite((makeSuite(TestReST),))
