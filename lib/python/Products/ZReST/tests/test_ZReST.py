@@ -69,11 +69,20 @@ class TestZReST(unittest.TestCase):
         resty.source = 'hello world\n .. include:: /etc/passwd'
         self.assertRaises(NotImplementedError, resty.render)
 
-# disabled test so far until we have a consensus how to deal with 'raw'
-#    def testRawPassthrough(self):
-#        resty = self._makeOne()
-#        resty.source = '.. raw:: html\n\n  <h1>HELLO WORLD</h1>'
-#        self.assertRaises(NotImplementedError, resty.render)
+
+    def testRawPassthrough(self):
+
+        resty = self._makeOne()
+        resty.source = '.. raw:: html\n  <h1>HELLO WORLD</h1>'
+        result = resty.render() # should not fail
+
+        resty = self._makeOne()
+        resty.source = '.. raw:: html\n  :file: inclusion.txt'
+        self.assertRaises(NotImplementedError, resty.render)
+
+        resty = self._makeOne()
+        resty.source = '.. raw:: html\n  :url: http://www.zope.org/'
+        self.assertRaises(NotImplementedError, resty.render)
 
 
 def test_suite():
