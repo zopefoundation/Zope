@@ -56,12 +56,24 @@ class TestZReST(unittest.TestCase):
         s = '<h1><a id="hello-world" name="hello-world">Hello World</a></h1>'
         self.assertEqual(s in html, True)
 
-        s = '<h1><a id="von-v-geln-und-fen" name="von-v-geln-und-fen">Von Vögeln und Öfen</a></h1>'
+        s = '<h1><a id="von-v-geln-und-fen" name="von-v-geln-und-fen">'\
+            'Von Vögeln und Öfen</a></h1>'
         self.assertEqual(s in html, True)
 
         # ZReST should render a complete HTML document
         self.assertEqual('<html' in html, True)
         self.assertEqual('<body>' in html, True)
+
+    def testFileInclusion(self):
+        resty = self._makeOne()
+        resty.source = 'hello world\n .. include:: /etc/passwd'
+        self.assertRaises(NotImplementedError, resty.render)
+
+# disabled test so far until we have a consensus how to deal with 'raw'
+#    def testRawPassthrough(self):
+#        resty = self._makeOne()
+#        resty.source = '.. raw:: html\n\n  <h1>HELLO WORLD</h1>'
+#        self.assertRaises(NotImplementedError, resty.render)
 
 
 def test_suite():
