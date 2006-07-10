@@ -78,10 +78,6 @@ class TestZReST(unittest.TestCase):
         result = resty.render() # don't raise, but don't work either
         self.failIf(EXPECTED in result)
 
-        self.failUnless("&quot;raw&quot; directive disabled" in result)
-        from cgi import escape
-        self.failUnless(escape(EXPECTED) in result)
-
     def test_raw_directive_file_directive_raises(self):
 
         resty = self._makeOne()
