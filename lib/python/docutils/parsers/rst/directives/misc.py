@@ -42,7 +42,6 @@ def raw(name, arguments, options, content, lineno,
     """
     if options.has_key('file') or options.has_key('url'):
         raise NotImplementedError, 'File inclusion not allowed!'
-    print 2
     if ( not state.document.settings.raw_enabled
          or (not state.document.settings.file_insertion_enabled
              and (options.has_key('file') or options.has_key('url'))) ):
