@@ -336,6 +336,43 @@ foo bar
             spam='<a href="spam">\nfoo bar')
         self.assertEqual(res,expected)
 
+    def test_fmt_reST_include_directive_raises(self):
+        source = '.. include:: /etc/passwd'
+        html = self.doc_class('<dtml-var name="foo" fmt="restructured-text">')
+        html._vars['foo'] = source
+        self.assertRaises(NotImplementedError, html)
+
+    def test_fmt_reST_raw_directive_disabled(self):
+
+        EXPECTED = '<h1>HELLO WORLD</h1>'
+
+        source = '.. raw:: html\n\n  %s\n' % EXPECTED
+        html = self.doc_class('<dtml-var name="foo" fmt="restructured-text">')
+        html._vars['foo'] = source
+
+        result = html()       # don't raise, but don't work either
+        self.failIf(EXPECTED in result)
+
+        self.failUnless("&quot;raw&quot; directive disabled" in result)
+        from cgi import escape
+        self.failUnless(escape(EXPECTED) in result)
+
+    def test_fmt_reST_raw_directive_file_option_raises(self):
+
+        source = '.. raw:: html\n  :file: inclusion.txt'
+        html = self.doc_class('<dtml-var name="foo" fmt="restructured-text">')
+        html._vars['foo'] = source
+
+        self.assertRaises(NotImplementedError, html, source)
+
+    def test_fmt_reST_raw_directive_url_option_raises(self):
+
+        source = '.. raw:: html\n  :url: http://www.zope.org'
+        html = self.doc_class('<dtml-var name="foo" fmt="restructured-text">')
+        html._vars['foo'] = source
+
+        self.assertRaises(NotImplementedError, html, source)
+
     def testPropogatedError(self):
 
         class foo:
