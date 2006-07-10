@@ -29,6 +29,36 @@ class TestZReST(unittest.TestCase):
 
         self.failIf('IGNORE ME' in resty.index_html())
 
+    def test_include_directive_raises(self):
+        resty = self._makeOne()
+        resty.source = 'hello world\n .. include:: /etc/passwd'
+        self.assertRaises(NotImplementedError, resty.render)
+
+    def test_raw_directive_disabled(self):
+
+        EXPECTED = '<h1>HELLO WORLD</h1>'
+
+        resty = self._makeOne()
+        resty.source = '.. raw:: html\n\n  %s\n' % EXPECTED
+        result = resty.render() # don't raise, but don't work either
+        self.failIf(EXPECTED in result)
+
+        self.failUnless("&quot;raw&quot; directive disabled" in result)
+        from cgi import escape
+        self.failUnless(escape(EXPECTED) in result)
+
+    def test_raw_directive_file_directive_raises(self):
+
+        resty = self._makeOne()
+        resty.source = '.. raw:: html\n  :file: inclusion.txt'
+        self.assertRaises(NotImplementedError, resty.render)
+
+    def test_raw_directive_url_directive_raises(self):
+
+        resty = self._makeOne()
+        resty.source = '.. raw:: html\n  :url: http://www.zope.org/'
+        self.assertRaises(NotImplementedError, resty.render)
+
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TestZReST))
