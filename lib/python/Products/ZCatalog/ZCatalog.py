@@ -911,7 +911,7 @@ class ZCatalog(Folder, Persistent, Implicit):
         self.pgthreshold = pgthreshold
         if RESPONSE:
             RESPONSE.redirect(
-                URL1 + '/manage_main?manage_tabs_message=Catalog%20Changed')
+                URL1 + '/manage_catalogAdvanced?manage_tabs_message=Catalog%20Changed')
 
     def _getProgressThreshold(self):
         if not hasattr(self, 'pgthreshold'):
