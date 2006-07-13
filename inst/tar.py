@@ -19,7 +19,9 @@ from distutils import filelist
 
 INCLUDES = tuple('.*'.split())
 EXCLUDES = tuple(r""".*.svn\\ .*CVS\\ .*.tgz
-                     .*makefile .*Makefile inst\\tmp\\.* .*build-base\\
+                     .*makefile$ .*Makefile$
+                     .*inst\\tmp\\.* .*inst\\src\\.*
+                     .*build-base\\ .*build\\
                      .*~ .*.#.*""".split())
 
 def collect(top_dir, includes=INCLUDES, excludes=EXCLUDES):
@@ -41,8 +43,9 @@ def collect(top_dir, includes=INCLUDES, excludes=EXCLUDES):
 
 def tar_it_up(dest, files):
     tar = tarfile.open(dest, mode='w:gz')
+    basename = os.path.splitext(os.path.basename(dest))[0]
     for fname in files:
-        tar.add(fname, recursive=False)
+        tar.add(fname, os.path.join(basename, fname), recursive=False)
     tar.close()
 
 def main(options, args):
