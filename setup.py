@@ -34,11 +34,11 @@ Distutils setup for Zope
         --install-platlib=/usr/local/lib/zope \
         --install-purelib=/usr/local/lib/zope
 """
-ZOPE_VERSION = '2.9.4-alpha'
 
 import glob
 import os
 import sys
+import shutil
 
 import distutils.core
 
@@ -48,6 +48,12 @@ import distutils.core
 from distutils.command.install import install
 from distutils.command.install_data import install_data
 from distutils.util import convert_path
+
+sys.path.insert(0, 'inst')
+import versions
+del sys.path[0]
+
+ZOPE_VERSION = '%s%s-%s' % (versions.ZOPE_MAJOR_VERSION,  versions.ZOPE_MINOR_VERSION, versions.VERSION_RELEASE_TAG)
 
 class ZopeInstallData(install_data):
     def finalize_options(self):
@@ -233,7 +239,7 @@ HEADER_PATH_ALIASES = {'zope.proxy': 'zope/proxy'}
 
 # Create the finder instance, which will be used in lots of places.  `finder'
 # is the global we're most interested in.
-IGNORE_EXTS = ('.pyc', '.pyo', '.c', '.h', '.so', '.cfg')
+IGNORE_EXTS = ('.pyc', '.pyo', '.c', '.h', '.so', '.o', '.dll', '.lib', '.obj', '.cfg')
 finder = Finder(IGNORE_EXTS, PACKAGES_ROOT)
 
 for dirpath, dirnames, filenames in os.walk(PACKAGES_ROOT):
@@ -254,13 +260,20 @@ class MyExtBuilder(build_ext):
     # building extensions, but Zope's the build_ext -i variant
     # is used to build Zope in place.
     #
-    # Note that we also create symlinks for the oddball include
+    # Note that we also create make a copy for the oddball include
     # directories used by some Zope3 extensions.
     def run(self):
         os.path.walk(os.curdir, remove_stale_bytecode, None)
         for k, v in HEADER_PATH_ALIASES.items():
-            if not os.path.exists(k):
-                os.symlink(v, k)
+            if os.path.exists(k):
+                shutil.rmtree(k)
+            ignore = list(IGNORE_EXTS)
+            ignore.remove('.h')
+            f = Finder(tuple(ignore), v)
+            for dirpath, dirnames, filenames in os.walk(v):
+                if not '.svn' in dirpath:
+                    f.visit(dirpath, filenames)
+            f.copy_files(self, k)
         build_ext.run(self)
 
 class MyLibInstaller(installcmd):
@@ -280,7 +293,7 @@ class MyDistribution(Distribution):
         self.cmdclass['install_lib'] = MyLibInstaller
 
 
-EXTENSIONCLASS_INCLUDEDIRS = ['ExtensionClass', '.'] 
+EXTENSIONCLASS_INCLUDEDIRS = ['ExtensionClass', '.']
 
 # All extension modules must be listed here.
 ext_modules = [
