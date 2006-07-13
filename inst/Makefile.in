@@ -104,6 +104,7 @@ uninstance:
 clean: unbuild
 	${FIND} "${BASE_DIR}" \
          -name '*.py[co]' -o -name '*.so' -o -name '*.o' | ${XARGS} ${RM}
+	${RM} "$(BASE_DIR)/lib/python/version.txt"
 	${RMRF} build
 
 # version_txt: create a version file in lib/python/version.txt
