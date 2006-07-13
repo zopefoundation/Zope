@@ -7,7 +7,8 @@ NAME=Zope
 MAJOR_VERSION=<<ZOPE_MAJOR_VERSION>>
 MINOR_VERSION=<<ZOPE_MINOR_VERSION>>
 RELEASE_TAG=<<VERSION_RELEASE_TAG>>
-PACKAGE_NAME=$(NAME)-$(MAJOR_VERSION).$(MINOR_VERSION)-$(RELEASE_TAG)
+ZOPEVERSION=$(MAJOR_VERSION).$(MINOR_VERSION)-$(RELEASE_TAG)
+PACKAGE_NAME=$(NAME)-$(ZOPEVERSION)
 
 PYTHON="<<PYTHON>>"
 TMPDIR="<<TMP_DIR>>"
@@ -31,7 +32,9 @@ RMRF=deltree /y
 CD=cd
 XCOPY=xcopy /i /s /e /y
 COPY=copy
+MOVE=move
 EXISTS=IF EXIST
+NOT_EXISTS=IF NOT EXIST
 
 default: build
 # default:     The default step (invoked when make is called without a target)
@@ -58,6 +61,16 @@ install: build version_txt
 	@ echo.
 	@ echo Zope binaries installed successfully.
 	@ echo Now run '$(PYTHON) $(PREFIX)\bin\mkzopeinstance.py'
+
+
+$(BASE_DIR)/inst/tmp/$(PACKAGE_NAME).tgz:
+	$(MAKE) sdist
+	$(NOT_EXISTS) inst\tmp $(MKDIR) inst\tmp
+	$(MOVE) $(PACKAGE_NAME).tgz inst\tmp
+
+# installer:     Create the Zope Installer.
+installer: $(BASE_DIR)/inst/tmp/$(PACKAGE_NAME).tgz
+	$(CD) inst && sh Winbuilders/buildout zope ZOPEVERSION=$(ZOPEVERSION)
 
 # inplace:     Do an in-place build
 inplace:

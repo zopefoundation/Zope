@@ -1,15 +1,15 @@
-ZOPEVERSION := 2.9.3
+ZOPEVERSION = 2.9.3
 ZOPEDIRNAME := Zope-$(ZOPEVERSION)
 
 ZOPE_REQUIRED_FILES=tmp/$(ZOPEDIRNAME).tgz
 
-REQUIRED_FILES=$(PYTHON_REQUIRED_FILES)\
+REQUIRED_FILES=$(PYTHON_REQUIRED_FILES) \
                $(ZOPE_REQUIRED_FILES)
 
 clean_zope:
 	$(RMRF) src/$(ZOPEDIRNAME)
 
-install_zope: src/$(ZOPEDIRNAME)/install.py \
+install_zope: src/$(ZOPEDIRNAME)/inst/configure.py \
 	install_python \
 	$(BUILD_DIR)/lib/python/Zope2/version.txt \
 	$(BUILD_DIR)/Zope-$(ZOPEVERSION)-win32.exe
@@ -40,27 +40,16 @@ $(BUILD_DIR)/Zope-$(ZOPEVERSION)-win32.exe: $(BUILD_DIR)/lib/python/Zope2/versio
 	# Build the Inno installer.
 	$(CD) "$(BUILD_DIR)";"$(ISS_COMPILER)" /cc "$(WIN_BUILD_DIR)\zope.iss"
 
+MAKEZOPE="$(MAKEFILEDIR)/bin/makezope.bat" "$(WIN_SRC_DIR)\\$(ZOPEDIRNAME)"
+
 # This builds Zope, then installs it into the build directory, then
 # creates lib/python/Zope2/version.txt in the build directory.
-#
-# Yuck:  for whatever reason, distutils refuses to allow an absolute
-# path for the --home option, so this hardcodes "build" as the name of
-# the build directory, and assumes "build" is a sibling of SRC_DIR.
-#
-# Yuck:  the --no-compile option here has no effect:  the install step
-# creates oodles of unwanted .pyc files.  They're removed by the
-# $(BUILD_DIR)/Zope-$(ZOPEVERSION)-win32.exe target, though, before
-# building the installer.
-#
-# Yuck:  no matter what I pass to --install-headers, it throws away the
-# last path component.  We actually want to copy the Zope/ZODB headers
-# into bin/Include.  The "nonsense" at the end gets thrown away, and that
-# smells like a bug.  When it gets fixed, I suppose this will copy the
-# headers to bin/Include/nonsense/.
 $(BUILD_DIR)/lib/python/Zope2/version.txt: $(BUILD_DIR)/bin/python.exe
 	cd "$(SRC_DIR)/$(ZOPEDIRNAME)" && \
-		"$<" install.py install --no-compile --home=../../build \
-			--install-headers=../../build/bin/Include/nonsense
+		"$<" inst/configure.py  \
+                        --prefix="$(WIN_BUILD_DIR)" \
+                        --no-compile
+	$(MAKEZOPE)
 	echo Zope $(ZOPEVERSION) > $@
 	$(TOUCH) $@
 
@@ -68,6 +57,7 @@ tmp/$(ZOPEDIRNAME).tgz:
 	$(TOUCH) tmp/$(ZOPEDIRNAME).tgz
 
 # This merely unpacks the Zope tarball.
-src/$(ZOPEDIRNAME)/install.py: tmp/$(ZOPEDIRNAME).tgz
+src/$(ZOPEDIRNAME)/inst/configure.py: tmp/$(ZOPEDIRNAME).tgz
 	$(MKDIR) "$(SRC_DIR)"
-	$(CD) "$(SRC_DIR)" && $(TAR) xvzf ../tmp/$(ZOPEDIRNAME).tgz
+	$(CD) "$(SRC_DIR)" && $(TAR) xzf ../tmp/$(ZOPEDIRNAME).tgz
+	$(TOUCH) $@

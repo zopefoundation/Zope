@@ -33,7 +33,7 @@ Source:"bin\*.*"; DestDir: "{app}\bin"; Flags: ignoreversion recursesubdirs
 Source:"doc\*.*"; DestDir: "{app}\doc"; Flags: ignoreversion recursesubdirs
 Source:"lib\*.*"; DestDir: "{app}\lib"; Flags: ignoreversion recursesubdirs
 Source:"skel\*.*"; DestDir: "{app}\skel"; Flags: ignoreversion recursesubdirs
-Source:"zopeskel\*.*"; DestDir: "{app}\zopeskel"; Flags: ignoreversion recursesubdirs
+
 ; these are required to be put into the bin directory for proper function of NT services
 Source:"bin\Lib\site-packages\win32\PythonService.exe"; DestDir: "{app}\bin"; Flags: ignoreversion
 Source:"bin\Lib\site-packages\pywin32_system32\PyWinTypes24.dll"; DestDir: "{app}\bin"; Flags: ignoreversion

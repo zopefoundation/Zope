@@ -72,7 +72,7 @@ tmp:
 
 $(ARB_PYSRCDIR): tmp/$(PYDIRNAME).tgz
 	$(MKDIR) "$(SRC_DIR)"
-	$(CD) "$(SRC_DIR)" && $(TAR) xvzf ../tmp/$(PYDIRNAME).tgz
+	$(CD) "$(SRC_DIR)" && $(TAR) xzf ../tmp/$(PYDIRNAME).tgz
 	$(TOUCH) "$(ARB_PYSRCDIR)"
 
 # unzip warns about .exe not being exactly a .zip, then succeeds in
