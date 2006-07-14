@@ -4,22 +4,9 @@ Zope Changes
   Change information for previous versions of Zope can be found in the
   file HISTORY.txt.
 
-  To-do
-
-   - Add cyclic-garbage collection support to C extension classes,
-     especially to acquisition wrappers.
-
-     N.B:  ExtensionClassType already declares that it supports GC
-     (via the Py_TPFLAGS_HAVE_GC flag), but does not appear to conform
-     to the rules for such a type laid out in the Python docs:
-     http://docs.python.org/api/supporting-cycle-detection.html
-
-  after Zope 2.8.7 (unreleased)
+  Zope 2.8.8 (2006/07/14)
 
     Bugs fixed
-
-      - reStructuredText/ZReST: setting raw_enabled to 0 for security
-        reasons
 
       - OFS Application: Removed deprecation warnings added in Zope 2.8.5.
         The warning period starts in Zope 2.9.0.
@@ -27,9 +14,9 @@ Zope Changes
       - Collector #2136: Map ResourceLockedError to the correct response code.
 
       - Collector #2016: DemoStorage couldn't wrap base storages without
-                         an '_oid' attribute.
+        an '_oid' attribute (fixed in ZODB 3.4.4).
 
-      - Collector #2116: sequence.sort() did not work properly
+      - Collector #2116: sequence.sort() did not work properly for
         locale related comparison methods
 
       - Collector 2077: fixed problem with ACTUAL_URL and SiteRoot
@@ -42,14 +29,14 @@ Zope Changes
 
     Other Changes
 
-      - Disabled docutils file inclusion completely, rather than trying
-        to jigger it via configuration settings.
+      - Updated to ZopeX3 3.0.2.
 
-  Zope 2.8.7 (2007/05/29)
+      - Updated to ZODB 3.4.4.
 
-    Features added:
-        
-      - ZODB 3.4.3
+      - Disabled docutils / ReST file inclusion completely, rather than
+        trying to jigger it via configuration settings.
+
+  Zope 2.8.7 (2006/05/29)
 
     Bugs fixed
 
@@ -80,6 +67,9 @@ Zope Changes
 
       - OFS.PropertyManager: Provided missing security declarations.
 
+    Other Changes
+
+      - Updated to ZODB 3.4.3.
 
   Zope 2.8.6 (2006/02/25)
 
