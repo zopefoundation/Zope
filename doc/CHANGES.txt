@@ -39,6 +39,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Usage of 'urljoin' in 'webdav.davcmds' could lead to wrongly
+        constructed urls.
+
       - reStructuredText/ZReST: setting raw_enabled to 0 for security
         reasons
 
