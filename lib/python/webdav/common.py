@@ -42,6 +42,11 @@ def absattr(attr):
         return attr()
     return attr
 
+def urljoin(url, s):
+    url = url.rstrip('/')
+    s = s.lstrip('/')
+    return '/'.join((url, s))
+
 def urlfix(url, s):
     n=len(s)
     if url[-n:]==s: url=url[:-n]
