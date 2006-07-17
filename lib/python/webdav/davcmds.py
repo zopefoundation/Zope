@@ -17,7 +17,7 @@ $Id$
 """
 
 import sys
-from common import absattr, aq_base, urlfix, urlbase
+from common import absattr, aq_base, urlfix, urlbase, urljoin
 from OFS.PropertySheets import DAVProperties
 from LockItem import LockItem
 from WriteLockInterface import WriteLockInterface
@@ -29,7 +29,6 @@ from AccessControl import getSecurityManager
 from zExceptions import BadRequest, Forbidden
 from common import isDavCollection
 from common import PreconditionFailed
-from ZConfig.url import urljoin
 import transaction
 
 def safe_quote(url, mark=r'%'):
@@ -163,8 +162,8 @@ class PropFind:
                     if dflag:
                         ob._p_deactivate()
                 elif hasattr(ob, '__dav_resource__'):
-                    uri=urljoin(url, absattr(ob.id))
-                    depth=depth=='infinity' and depth or 0
+                    uri = urljoin(url, absattr(ob.getId()))
+                    depth = depth=='infinity' and depth or 0
                     self.apply(ob, uri, depth, result, top=0)
                     if dflag:
                         ob._p_deactivate()
@@ -403,7 +402,7 @@ class Lock:
         if depth == 'infinity' and iscol:
             for ob in obj.objectValues():
                 if hasattr(obj, '__dav_resource__'):
-                    uri = urljoin(url, absattr(ob.id))
+                    uri = urljoin(url, absattr(ob.getId()))
                     self.apply(ob, creator, depth, token, result,
                                uri, top=0)
         if not top:
@@ -466,7 +465,7 @@ class Unlock:
             for ob in obj.objectValues():
                 if hasattr(ob, '__dav_resource__') and \
                    WriteLockInterface.isImplementedBy(ob):
-                    uri = urljoin(url, absattr(ob.id))
+                    uri = urljoin(url, absattr(ob.getId()))
                     self.apply(ob, token, uri, result, top=0)
         if not top:
             return result
@@ -520,7 +519,7 @@ class DeleteCollection:
             for ob in obj.objectValues():
                 dflag = hasattr(ob,'_p_changed') and (ob._p_changed == None)
                 if hasattr(ob, '__dav_resource__'):
-                    uri = urljoin(url, absattr(ob.id))
+                    uri = urljoin(url, absattr(ob.getId()))
                     self.apply(ob, token, user, uri, result, top=0)
                     if dflag:
                         ob._p_deactivate()
