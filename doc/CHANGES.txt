@@ -14,7 +14,7 @@ Zope Changes
      to the rules for such a type laid out in the Python docs:
      http://docs.python.org/api/supporting-cycle-detection.html
 
-  Zope 2.9.4 (unreleased)
+  Zope 2.9.4 (2006/07/21)
 
    Bugs fixed
 
