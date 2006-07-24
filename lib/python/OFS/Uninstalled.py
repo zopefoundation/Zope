@@ -40,7 +40,7 @@ class BrokenClass(Acquisition.Explicit, SimpleItem.Item,
         raise SystemError, (
             """This object was originally created by a product that
             is no longer installed.  It cannot be updated.
-            """)
+            (%s)""" % repr(self))
 
     def __getattr__(self, name):
         if name[:3]=='_p_':
