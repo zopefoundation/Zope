@@ -18,6 +18,9 @@ Zope Changes
 
    Bugs fixed
 
+      - Collector #2157: Expose name of broken class in SystemError raised
+        from '__getstate__' of a broken instance.
+
       - Usage of 'urljoin' in 'webdav.davcmds' could lead to wrongly
         constructed urls.
 
