@@ -415,6 +415,9 @@ Zope Changes
       - Made WebDAV server distinguishable from the default HTTP
         server both in the ZMI and in event.log.
 
+      - Made Acquisition and derived classes play inside Python's acyclic
+        garbage collection framework.
+
       - Included BTreeFolder2
 
     Bugs fixed
