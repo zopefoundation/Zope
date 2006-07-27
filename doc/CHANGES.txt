@@ -4,16 +4,6 @@ Zope Changes
   Change information for previous versions of Zope can be found in the
   file HISTORY.txt.
 
-  To-do
-
-   - Add cyclic-garbage collection support to C extension classes,
-     especially to acquisition wrappers.
-
-     N.B:  ExtensionClassType already declares that it supports GC
-     (via the Py_TPFLAGS_HAVE_GC flag), but does not appear to conform
-     to the rules for such a type laid out in the Python docs:
-     http://docs.python.org/api/supporting-cycle-detection.html
-
   Trunk  (unreleased)
 
     Restructuring
