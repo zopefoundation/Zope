@@ -52,6 +52,18 @@ text
         source = '.. raw:: html\n  :url: http://www.zope.org'
         self.assertRaises(NotImplementedError, HTML, source)
 
+    def test_csv_table_file_option_raise(self):
+
+        source = '.. csv-table:: \n  :file: inclusion.txt'
+        result = HTML(source)
+        self.failUnless('directive disabled' in result)
+
+    def test_csv_table_url_option_raise(self):
+
+        source = '.. csv-table:: \n  :url: http://www.evil.org'
+        result = HTML(source)
+        self.failUnless('directive disabled' in result)
+
 def test_suite():
     from unittest import TestSuite, makeSuite
     return TestSuite((makeSuite(TestReST),))

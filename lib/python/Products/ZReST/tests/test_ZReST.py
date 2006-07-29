@@ -3,6 +3,12 @@
 $Id$
 """
 import unittest
+import tempfile
+
+
+csv_text = """bin:x:1:1:bin:/bin:/bin/bash
+daemon:x:2:2:Daemon:/sbin:/bin/bash
+"""
 
 class TestZReST(unittest.TestCase):
 
@@ -12,6 +18,11 @@ class TestZReST(unittest.TestCase):
 
     def _makeOne(self, id='test', *args, **kw):
         return self._getTargetClass()(id=id, *args, **kw)
+
+    def _csvfile(self):
+        fn = tempfile.mktemp()
+        open(fn, 'w').write(csv_text)
+        return fn
 
     def test_empty(self):
         empty = self._makeOne()
@@ -58,6 +69,24 @@ class TestZReST(unittest.TestCase):
         resty = self._makeOne()
         resty.source = '.. raw:: html\n  :url: http://www.zope.org/'
         self.assertRaises(NotImplementedError, resty.render)
+
+    def test_csv_table_file_option_raise(self):
+
+        resty = self._makeOne()
+        csv_file = self._csvfile()
+        resty.source = '.. csv-table:: \n  :file: %s' % csv_file
+        result = resty.render()
+        self.failUnless('daemon' not in result, 
+                        'csv-table/file directive is not disabled!')
+
+    def test_csv_table_url_option_raise(self):
+        resty = self._makeOne()
+        csv_file = self._csvfile()
+        resty.source = '.. csv-table:: \n  :url: file://%s' % csv_file
+        result = resty.render()
+        self.failUnless('daemon' not in result, 
+                        'csv-table/url directive is not disabled!')
+
 
 def test_suite():
     suite = unittest.TestSuite()
