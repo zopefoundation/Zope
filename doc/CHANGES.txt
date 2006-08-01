@@ -8,6 +8,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Traversal order changes were causing WebDAV requests which used
+        acquisition to fail.
+
       - Collector #2157: Expose name of broken class in SystemError raised
         from '__getstate__' of a broken instance.
 

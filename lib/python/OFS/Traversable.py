@@ -26,6 +26,7 @@ from Acquisition import Acquired, aq_inner, aq_parent, aq_base
 from zExceptions import NotFound
 from ZODB.POSException import ConflictError
 from OFS.interfaces import ITraversable
+import webdav
 
 from zope.interface import implements, Interface
 from zope.component import queryMultiAdapter
@@ -165,6 +166,7 @@ class Traversable:
         else:
             obj = self
 
+        resource = _marker
         try:
             while path:
                 name = path_pop()
@@ -237,6 +239,13 @@ class Traversable:
                         else:
                             try:
                                 next = obj[name]
+                                # The item lookup may return a NullResource,
+                                # if this is the case we save it and return it
+                                # if all other lookups fail.
+                                if isinstance(next,
+                                              webdav.NullResource.NullResource):
+                                    resource = next
+                                    raise KeyError(name)
                             except AttributeError:
                                 # Raise NotFound for easier debugging
                                 # instead of AttributeError: __getitem__
@@ -268,8 +277,11 @@ class Traversable:
                         except AttributeError:
                             raise e
                         if next is _marker:
-                            # Nothing found re-raise error
-                            raise e
+                            # If we have a NullResource from earlier use it.
+                            next = resource
+                            if next is _marker:
+                                # Nothing found re-raise error
+                                raise e
 
                 obj = next
 
