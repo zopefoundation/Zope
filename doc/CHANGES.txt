@@ -8,6 +8,9 @@ Zope Changes
 
     Bugs fixed
 
+      - Fix yet another resTructuredText glitch, and add tests (test
+        backported from 2.9, which was not in fact vulnerable).
+
       - Collector #2157: Expose name of broken class in SystemError raised
         from '__getstate__' of a broken instance.
 
