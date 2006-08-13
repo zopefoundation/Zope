@@ -8,6 +8,8 @@ Zope Changes
 
     Bugs Fixed
 
+      - Updated Five to stable 1.5 release.
+
       - Traversal order changes were causing WebDAV requests which used
         acquisition to fail.
 
