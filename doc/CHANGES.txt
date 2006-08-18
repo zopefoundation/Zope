@@ -16,6 +16,9 @@ Zope Changes
       - Usage of 'urljoin' in 'webdav.davcmds' could lead to wrongly
         constructed urls.
 
+      - Collector #2155: Fix wrong parameter being passed to
+        logger's error() method, with tests.
+
   Zope 2.9.4 (2006/07/21)
 
    Bugs fixed

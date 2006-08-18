@@ -13,10 +13,9 @@
 __version__='$Revision: 1.12 $'[11:-2]
 
 """BeforeTraverse interface and helper classes"""
-import logging
 
+import logging
 from Acquisition import aq_base
-import sys
 
 # Interface
 
@@ -105,7 +104,7 @@ class MultiHook:
                 cob(container, request)
             except TypeError:
                 self.logger.error('%s call %s failed.' % (
-                    `self._hookname`, `cob`), error=sys.exc_info())
+                    `self._hookname`, `cob`), exc_info=True)
 
     def add(self, cob):
         self._list.append(cob)
@@ -151,6 +150,5 @@ class NameCaller:
             # Only catch exceptions that are likely to be logic errors.
             # We shouldn't catch Redirects, Unauthorizeds, etc. since
             # the programmer may want to raise them deliberately.
-            import sys
             self.logger.error('Error while invoking hook: "%s"'
-                                % self.name, error=sys.exc_info())
+                                % self.name, exc_info=True)
