@@ -8,6 +8,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #2155: Fix wrong parameter being passed to
+        logger's error() method, with tests.
+
       - Updated Five to stable 1.5 release.
 
       - Traversal order changes were causing WebDAV requests which used
