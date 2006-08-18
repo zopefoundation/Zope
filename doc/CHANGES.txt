@@ -29,6 +29,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #2155: Fix wrong parameter being passed to
+        logger's error() method, with tests.
+
       - Collector #2157: Expose name of broken class in SystemError raised
         from '__getstate__' of a broken instance.
 
