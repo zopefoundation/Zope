@@ -642,6 +642,13 @@ class _AbstractFormParser:
                 d["__label"] = self._current_label
 
     def handle_data(self, data):
+        # according to http://www.w3.org/TR/html4/appendix/notes.html#h-B.3.1
+        # line break immediately after start tags or immediately before end
+        # tags must be ignored, but real browsers only ignore a line break
+        # after a start tag, so we'll do that.
+        if data[0:1] == '\n':
+            data = data[1:]
+
         debug("%s", data)
         if self._option is not None:
             # self._option is a dictionary of the OPTION element's HTML
