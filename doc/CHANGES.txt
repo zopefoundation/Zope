@@ -8,6 +8,8 @@ Zope Changes
 
    Bugs fixed
 
+      - Collector #2169: webdav.Resource.COPY did not send ObjectClonedEvent.
+
       - Updated Five to bugfix release 1.3.7.
 
       - Collector #2157: Expose name of broken class in SystemError raised
