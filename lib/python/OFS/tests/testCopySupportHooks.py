@@ -159,6 +159,15 @@ class TestCopySupport(HookTest):
         self.assertEqual(old.order(), (0, 0, 1))                    # del
         self.assertEqual(self.subfolder.mydoc.order(), (1, 0, 0))   # add
 
+    def test_7_DELETE(self):
+        # Test webdav DELETE
+        req = self.app.REQUEST
+        req['URL'] = '%s/mydoc' % self.folder.absolute_url()
+        old = self.folder.mydoc
+        self.folder.mydoc.DELETE(req, req.RESPONSE)
+        self.assertEqual(req.RESPONSE.getStatus(), 204)
+        self.assertEqual(old.order(), (0, 0, 1))                    # del
+
 
 class TestCopySupportSublocation(HookTest):
     '''Tests the order in which the add/clone/del hooks are called'''
@@ -210,6 +219,9 @@ class TestCopySupportSublocation(HookTest):
 
     def test_5_COPY(self):
         # Test webdav COPY
+        #
+        # See http://www.zope.org/Collectors/Zope/2169
+        #
         req = self.app.REQUEST
         req.environ['HTTP_DEPTH'] = 'infinity'
         req.environ['HTTP_DESTINATION'] = '%s/subfolder/yourfolder' % self.folder.absolute_url()
@@ -231,6 +243,17 @@ class TestCopySupportSublocation(HookTest):
         self.assertEqual(self.subfolder.yourfolder.order(), (1, 0, 0))          # add
         self.assertEqual(olddoc.order(), (0, 0, 1))                             # del
         self.assertEqual(self.subfolder.yourfolder.mydoc.order(), (1, 0, 0))    # add
+
+    def test_7_DELETE(self):
+        # Test webdav DELETE
+        req = self.app.REQUEST
+        req['URL'] = '%s/myfolder' % self.folder.absolute_url()
+        oldfolder = self.folder.myfolder
+        olddoc = self.folder.myfolder.mydoc
+        self.folder.myfolder.DELETE(req, req.RESPONSE)
+        self.assertEqual(req.RESPONSE.getStatus(), 204)
+        self.assertEqual(oldfolder.order(), (0, 0, 1))                          # del
+        self.assertEqual(olddoc.order(), (0, 0, 1))                             # del
 
 
 def test_suite():
