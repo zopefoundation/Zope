@@ -8,6 +8,8 @@ Zope Changes
 
     Bugs fixed
 
+      - Collector #2169: webdav.Resource.COPY did not send ObjectClonedEvent.
+
   Zope 2.10.0 beta 2 (2006/08/20)
 
     Bugs Fixed

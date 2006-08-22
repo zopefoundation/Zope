@@ -45,6 +45,10 @@ from interfaces import IDAVResource
 from interfaces import IWriteLock
 from WriteLockInterface import WriteLockInterface
 
+from zope.event import notify
+from OFS.event import ObjectClonedEvent
+import OFS.subscribers
+
 
 class Resource(ExtensionClass.Base, Lockable.LockableItem):
 
@@ -399,7 +403,11 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
         parent._setObject(name, ob)
         ob = parent._getOb(name)
         ob._postCopy(parent, op=0)
-        ob.manage_afterClone(ob)
+
+        OFS.subscribers.compatibilityCall('manage_afterClone', ob, ob)
+
+        notify(ObjectClonedEvent(ob))
+
         # We remove any locks from the copied object because webdav clients
         # don't track the lock status and the lock token for copied resources
         ob.wl_clearLocks()
