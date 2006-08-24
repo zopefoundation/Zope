@@ -85,7 +85,6 @@ class File(Persistent, Implicit, PropertyManager,
 
     precondition=''
     size=None
-    alt=''
 
     manage_editForm  =DTMLFile('dtml/fileEdit',globals(),
                                Kind='File',kind='file')
@@ -110,7 +109,6 @@ class File(Persistent, Implicit, PropertyManager,
         )
 
     _properties=({'id':'title', 'type': 'string'},
-                 {'id':'alt', 'type':'string'},
                  {'id':'content_type', 'type':'string'},
                  )
 
@@ -734,6 +732,7 @@ class Image(File):
     security = ClassSecurityInfo()
     security.declareObjectProtected(View)
 
+    alt=''
     height=''
     width=''
 
@@ -750,6 +749,7 @@ class Image(File):
     security.declareProtected(delete_objects, 'DELETE')
 
     _properties=({'id':'title', 'type': 'string'},
+                 {'id':'alt', 'type':'string'},
                  {'id':'content_type', 'type':'string','mode':'w'},
                  {'id':'height', 'type':'string'},
                  {'id':'width', 'type':'string'},
