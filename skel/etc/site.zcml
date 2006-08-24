@@ -21,6 +21,7 @@
 
   <!-- Load the configuration overrides-->
 
+  <includeOverrides files="package-includes/*-overrides.zcml" />
   <five:loadProductsOverrides />
 
 </configure>
