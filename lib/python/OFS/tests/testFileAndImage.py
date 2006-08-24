@@ -277,8 +277,12 @@ class ImageTests(FileTests):
           ('<img src="http://foo/file" alt="" title="" height="16" width="16" />'))
 
     def testTag(self):
-        self.assertEqual(self.file.tag(),
-          ('<img src="http://foo/file" alt="" title="" height="16" width="16" />'))
+        tag_fmt = '<img src="http://foo/file" alt="%s" title="%s" height="16" width="16" />'
+        self.assertEqual(self.file.tag(), (tag_fmt % ('','')))
+        self.file.manage_changeProperties(title='foo')
+        self.assertEqual(self.file.tag(), (tag_fmt % ('','foo')))
+        self.file.manage_changeProperties(alt='bar')
+        self.assertEqual(self.file.tag(), (tag_fmt % ('bar','foo')))
 
     def testViewImageOrFile(self):
         pass # dtml method,screw it
