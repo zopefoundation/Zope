@@ -426,14 +426,7 @@ class AppInitializer:
                          'session-delete-notify-script-path' % delnotify)
                 delnotify=None
 
-            toc = TransientObjectContainer(
-                'session_data', 'Session Data Container',
-                addNotification = addnotify,
-                delNotification = delnotify,
-                limit=limit,
-                period_secs=period_spec)
-
-            if timeout_spec is not None:
+            if 1:  # Preserve indentation for diff
                 toc = TransientObjectContainer('session_data',
                                                'Session Data Container',
                                                timeout_mins = timeout_spec,
