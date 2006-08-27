@@ -5,6 +5,7 @@ from unittest import TestCase, makeSuite, main
 import string
 import urllib
 from ZTUtils.Zope import make_query, complex_marshal
+from ZTUtils.Zope import make_hidden_input
 from DateTime import DateTime
 
 class QueryTests(TestCase):
@@ -50,6 +51,18 @@ class QueryTests(TestCase):
                            record=record, string=str_)
         assert query == 'date:date=%s&integer:int=1&listing:int:list=1&listing:date:list=%s&listing:list=str&string=str&record.arg1:int:list:record=1&record.arg1:date:list:record=%s&record.arg1:list:record=str&record.arg2:int:record=1'%(quote_date,quote_date,quote_date)
 
+    def testMakeHiddenInput(self):
+        tag = make_hidden_input(foo='bar')
+        self.assertEqual(tag, '<input type="hidden" name="foo" value="bar">')
+        tag = make_hidden_input(foo=1)
+        self.assertEqual(tag, '<input type="hidden" name="foo:int" value="1">')
+        # Escaping
+        tag = make_hidden_input(foo='bar & baz')
+        self.assertEqual(tag, '<input type="hidden" name="foo" value="bar &amp; baz">')
+        tag = make_hidden_input(foo='<bar>')
+        self.assertEqual(tag, '<input type="hidden" name="foo" value="&lt;bar&gt;">')
+        tag = make_hidden_input(foo='"bar"')
+        self.assertEqual(tag, '<input type="hidden" name="foo" value="&quot;bar&quot;">')
 
 def test_suite():
     return makeSuite(QueryTests)
