@@ -8,9 +8,12 @@ Zope Changes
 
     Bugs fixed
 
-      - Collector #2176: Fixed bad logging call.
+      - Collector #2152: Fixed MailHost documentation; simple_send does not
+        process or validate its arguments in any way.
 
       - Collector #2175: ZTUtils.make_hidden_input did not escape double-quotes.
+
+      - Collector #2176: Fixed bad logging call.
 
       - Collector #1907: Moved 'alt' property from File to Image.
 
