@@ -17,15 +17,26 @@ $Id$
 
 import unittest
 
+from Products.MailHost.MailHost import MailHost
 from Products.MailHost.MailHost import MailHostError, _mungeHeaders
+
+
+class DummyMailHost(MailHost):
+    meta_type = 'Dummy Mail Host'
+    def __init__(self, id):
+        self.id = id
+        self.sent = ''
+    def _send(self, mfrom, mto, messageText):
+        self.sent = messageText
 
 
 class TestMailHost(unittest.TestCase):
 
     def _getTargetClass(self):
-        from Products.MailHost.MailHost import MailHost
+        return DummyMailHost
 
-        return MailHost
+    def _makeOne(self, *args, **kw):
+        return self._getTargetClass()(*args, **kw)
 
     def test_z3interfaces(self):
         from Products.MailHost.interfaces import IMailHost
@@ -112,6 +123,73 @@ This is the message body."""
         self.failUnless(resto == ['"Public, Joe" <pjoe@domain.com>',
                                   '"Foo Bar" <foo@domain.com>'])
         self.failUnless(resfrom == 'sender@domain.com' )
+
+    def testSendMessageOnly(self):
+        msg = """\
+To: "Name, Nick" <recipient@domain.com>, "Foo Bar" <foo@domain.com>
+From: sender@domain.com
+Subject: This is the subject
+Date: Sun, 27 Aug 2006 17:00:00 +0200
+
+This is the message body."""
+
+        mailhost = self._makeOne('MailHost')
+        mailhost.send(msg)
+        self.assertEqual(mailhost.sent, msg)
+
+    def testSendWithArguments(self):
+        inmsg = """\
+Date: Sun, 27 Aug 2006 17:00:00 +0200
+
+This is the message body."""
+
+        outmsg = """\
+Date: Sun, 27 Aug 2006 17:00:00 +0200
+Subject: This is the subject
+To: "Name, Nick" <recipient@domain.com>,"Foo Bar" <foo@domain.com>
+From: sender@domain.com
+
+This is the message body."""
+
+        mailhost = self._makeOne('MailHost')
+        mailhost.send(messageText=inmsg,
+                      mto='"Name, Nick" <recipient@domain.com>, "Foo Bar" <foo@domain.com>',
+                      mfrom='sender@domain.com', subject='This is the subject')
+        self.assertEqual(mailhost.sent, outmsg)
+
+    def testSendWithMtoList(self):
+        inmsg = """\
+Date: Sun, 27 Aug 2006 17:00:00 +0200
+
+This is the message body."""
+
+        outmsg = """\
+Date: Sun, 27 Aug 2006 17:00:00 +0200
+Subject: This is the subject
+To: "Name, Nick" <recipient@domain.com>,"Foo Bar" <foo@domain.com>
+From: sender@domain.com
+
+This is the message body."""
+
+        mailhost = self._makeOne('MailHost')
+        mailhost.send(messageText=inmsg,
+                      mto=['"Name, Nick" <recipient@domain.com>', '"Foo Bar" <foo@domain.com>'],
+                      mfrom='sender@domain.com', subject='This is the subject')
+        self.assertEqual(mailhost.sent, outmsg)
+
+    def testSimpleSend(self):
+        outmsg = """\
+From: sender@domain.com
+To: "Name, Nick" <recipient@domain.com>, "Foo Bar" <foo@domain.com>
+Subject: This is the subject
+
+This is the message body."""
+
+        mailhost = self._makeOne('MailHost')
+        mailhost.simple_send(mto='"Name, Nick" <recipient@domain.com>, "Foo Bar" <foo@domain.com>',
+                             mfrom='sender@domain.com', subject='This is the subject',
+                             body='This is the message body.')
+        self.assertEqual(mailhost.sent, outmsg)
 
 
 def test_suite():
