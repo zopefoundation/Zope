@@ -671,9 +671,9 @@ def import_products():
 
     for priority, product_name, index, product_dir in products:
         if done.has_key(product_name):
-            LOG.warn('Duplicate Product name',
-                     'After loading Product %s from %s,\n'
-                     'I skipped the one in %s.\n' % (
+            LOG.warn('Duplicate Product name: '
+                     'After loading Product %s from %s, '
+                     'I skipped the one in %s.' % (
                     `product_name`, `done[product_name]`, `product_dir`) )
             continue
         done[product_name]=product_dir
