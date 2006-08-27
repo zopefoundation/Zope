@@ -200,7 +200,7 @@ def make_hidden_input(*args, **kwargs):
         d.update(arg)
     d.update(kwargs)
 
-    hq = cgi.escape
+    hq = lambda x:cgi.escape(x, quote=True)
     qlist = complex_marshal(d.items())
     for i in range(len(qlist)):
         k, m, v = qlist[i]

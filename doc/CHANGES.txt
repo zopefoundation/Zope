@@ -10,6 +10,8 @@ Zope Changes
 
       - Collector #2176: Fixed bad logging call.
 
+      - Collector #2175: ZTUtils.make_hidden_input did not escape double-quotes.
+
       - Collector #1907: Moved 'alt' property from File to Image.
 
       - Collector #1983: Specifying session-resolution-seconds >= 1200 caused
