@@ -37,7 +37,7 @@ class MailHost:
         """
         Sends an email message where the messageText is an rfc822 formatted
         message. This allows you complete control over the message headers,
-        including setting any extra headers such as Cc: and Bcc:.
+        including setting any extra headers such as Cc: and Reply-To:.
         The arguments are:
 
             messageText -- The mail message. It can either be a rfc822
@@ -60,9 +60,11 @@ class MailHost:
     def simple_send(self, mto, mfrom, subject, body):
         """
         Sends a message. Only To:, From: and Subject: headers can be set.
+        Note that simple_send does not process or validate its arguments
+        in any way.
         The arguments are:
 
-            mto -- A commaseparated string or list of recipient(s) of the message.
+            mto -- A commaseparated string of recipient(s) of the message.
 
             mfrom -- The address of the message sender.
 
