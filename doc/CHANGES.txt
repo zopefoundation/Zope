@@ -8,6 +8,8 @@ Zope Changes
 
     Bugs fixed
 
+      - Collector #2176: Fixed bad logging call.
+
       - Collector #1907: Moved 'alt' property from File to Image.
 
       - Collector #1983: Specifying session-resolution-seconds >= 1200 caused
