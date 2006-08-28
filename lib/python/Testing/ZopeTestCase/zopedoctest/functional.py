@@ -299,22 +299,36 @@ class FunctionalSuiteFactory(ZopeSuiteFactory):
                                        | doctest.NORMALIZE_WHITESPACE)
 
 
+def extractLayer(func):
+    def wrap(*args, **kw):
+        suite = func(*args, **kw)
+        tc = kw.get('test_class', None)
+        if tc and hasattr(tc, 'layer'):
+            suite.layer = tc.layer
+        return suite
+    return wrap
+
+
+@extractLayer
 def ZopeDocTestSuite(module=None, **kw):
     module = doctest._normalize_module(module)
     return ZopeSuiteFactory(module, **kw).doctestsuite()
 
 
+@extractLayer
 def ZopeDocFileSuite(*paths, **kw):
     if kw.get('module_relative', True):
         kw['package'] = doctest._normalize_module(kw.get('package'))
     return ZopeSuiteFactory(*paths, **kw).docfilesuite()
 
 
+@extractLayer
 def FunctionalDocTestSuite(module=None, **kw):
     module = doctest._normalize_module(module)
     return FunctionalSuiteFactory(module, **kw).doctestsuite()
 
 
+@extractLayer
 def FunctionalDocFileSuite(*paths, **kw):
     if kw.get('module_relative', True):
         kw['package'] = doctest._normalize_module(kw.get('package'))
