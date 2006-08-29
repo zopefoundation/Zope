@@ -100,6 +100,7 @@ class ZopeStarter:
         self.makePidFile()
         self.setupInterpreter()
         self.startZope()
+        self.serverListen()
         from App.config import getConfiguration
         config = getConfiguration()
         if not config.twisted_servers:
@@ -210,6 +211,18 @@ class ZopeStarter:
         import ZServer
         ZServer.setNumberOfThreads(self.cfg.zserver_threads)
         ZServer.CONNECTION_LIMIT = self.cfg.max_listen_sockets
+
+
+    def serverListen(self):
+
+    	for server in self.cfg.servers:
+
+            if hasattr(server, 'fast_listen'):
+                # This one has the delayed listening feature
+                if not server.fast_listen:
+                    server.fast_listen = True
+                    server.listen(1024) # same value as defined in medusa.http_server.py  
+
 
     def setupServers(self):
         socket_err = (

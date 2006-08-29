@@ -903,9 +903,16 @@ instancehome $INSTANCE
 <http-server>
   # valid keys are "address" and "force-connection-close"
   address 8080
+
   # force-connection-close on
+  #
   # You can also use the WSGI interface between ZServer and ZPublisher:
   # use-wsgi on
+  #
+  # To defer the opening of the HTTP socket until the end of the 
+  # startup phase: 
+  # fast_listen false
+  #
 </http-server>
 
 # Examples:

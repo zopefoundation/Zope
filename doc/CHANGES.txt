@@ -27,6 +27,11 @@ Zope Changes
 
     Features added
 
+      - added 'fast_listen' directive to http-server and webdav-source-server
+        sections in etc/zope.conf in order to defer the opening of the sockets
+        until the late startup phase. This in in particular useful when running
+        Zope behind a loadbalancer (patch by Patrick Gerken).
+
     Bugs Fixed
 
       - Collector #2155: Fix wrong parameter being passed to

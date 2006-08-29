@@ -428,8 +428,10 @@ class zhttp_server(http_server):
     channel_class = zhttp_channel
     shutup=0
 
-    def __init__ (self, ip, port, resolver=None, logger_object=None):
+    def __init__ (self, ip, port, resolver=None, logger_object=None,
+                  fast_listen=True):
         self.shutup=1
+        self.fast_listen = fast_listen
         http_server.__init__(self, ip, port, resolver, logger_object)
         self.shutup=0
         self.log_info('%s server started at %s\n'
@@ -460,8 +462,13 @@ class zhttp_server(http_server):
 
     def listen(self, num):
         # override asyncore limits for nt's listen queue size
-        self.accepting = 1
-        return self.socket.listen (num)
+
+        if self.fast_listen:
+            self.accepting = 1
+            return self.socket.listen (num)
+        else:
+            return 0
+
 
 class zwebdav_server(zhttp_server):
     server_protocol = 'WebDAV'
