@@ -21,7 +21,7 @@
      </key>
      <key name="fast_listen" datatype="boolean" default="on">
        <description>
-         Defines wether the http server should listen to requests immediatelly
+         Defines wether the http server should listen to requests immediately
          or only after zope is ready to run
        </description>
      </key>
