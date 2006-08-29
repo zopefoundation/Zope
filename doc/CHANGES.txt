@@ -22,6 +22,8 @@ Zope Changes
 
       - Collector #2169: webdav.Resource.COPY did not send ObjectClonedEvent.
 
+      - Collector #2178: Fix ZopeTestCase doctest support for layers
+
   Zope 2.10.0 beta 2 (2006/08/20)
 
     Bugs Fixed
@@ -85,6 +87,8 @@ Zope Changes
         http://codespeak.net/pipermail/z3-five/2006q2/001474.html
         
       - The defaultView directive now only looks up views, not attributes.
+
+      - Collector #2178: Fix ZopeTestCase doctest support for layers
 
     Other Changes
 
