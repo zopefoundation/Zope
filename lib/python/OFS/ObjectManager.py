@@ -155,6 +155,8 @@ class ObjectManager(
 
     isPrincipiaFolderish=1
 
+    has_order_support = 0 # See OrderSupport.py
+
     def __class_init__(self):
         try:    mt=list(self.meta_types)
         except: mt=[]
