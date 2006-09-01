@@ -167,6 +167,8 @@ class ObjectManager(
 
     isPrincipiaFolderish=1
 
+    has_order_support = 0 # See OrderSupport.py
+
     # IPossibleSite API
 
     _components = None
