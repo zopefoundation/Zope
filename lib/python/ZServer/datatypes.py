@@ -70,7 +70,7 @@ class HTTPServerFactory(ServerFactory):
         self.force_connection_close = section.force_connection_close
         # webdav-source-server sections won't have webdav_source_clients:
         webdav_clients = getattr(section, "webdav_source_clients", None)
-        self.fast_listen = getattr(section, 'fast_listen')
+        self.fast_listen = getattr(section, 'fast_listen', True)
         self.webdav_source_clients = webdav_clients
         self.use_wsgi = section.use_wsgi
 
