@@ -1,19 +1,18 @@
-"""test runner that works with zope.testing.testrunner"""
-import unittest
-import os, sys
+"""Test runner that works with zope.testing.testrunner"""
 
-import os, sys
+import unittest
+import os
+import Testing.ZopeTestCase.zopedoctest
 
 suite = unittest.TestSuite()
 
 names = os.listdir(os.path.dirname(__file__))
-tests = [x[:-3] for x in names \
-         if x.startswith('test') and x.endswith('.py') \
-         and not x == 'tests.py']
+tests = [x[:-3] for x in names
+         if x.startswith('test') and x.endswith('.py')
+         and x != 'tests.py']
 
-import Testing.ZopeTestCase.zopedoctest
 for test in tests:
-    m = __import__("Testing.ZopeTestCase.zopedoctest.%s" %test)
+    m = __import__('Testing.ZopeTestCase.zopedoctest.%s' % test)
     m = getattr(Testing.ZopeTestCase.zopedoctest, test)
     if hasattr(m, 'test_suite'):
         suite.addTest(m.test_suite())
