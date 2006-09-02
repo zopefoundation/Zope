@@ -311,27 +311,27 @@ def extractLayer(func):
 
 @extractLayer
 def ZopeDocTestSuite(module=None, **kw):
-    module = doctest._normalize_module(module)
+    module = doctest._normalize_module(module, depth=3)
     return ZopeSuiteFactory(module, **kw).doctestsuite()
 
 
 @extractLayer
 def ZopeDocFileSuite(*paths, **kw):
     if kw.get('module_relative', True):
-        kw['package'] = doctest._normalize_module(kw.get('package'))
+        kw['package'] = doctest._normalize_module(kw.get('package'), depth=3)
     return ZopeSuiteFactory(*paths, **kw).docfilesuite()
 
 
 @extractLayer
 def FunctionalDocTestSuite(module=None, **kw):
-    module = doctest._normalize_module(module)
+    module = doctest._normalize_module(module, depth=3)
     return FunctionalSuiteFactory(module, **kw).doctestsuite()
 
 
 @extractLayer
 def FunctionalDocFileSuite(*paths, **kw):
     if kw.get('module_relative', True):
-        kw['package'] = doctest._normalize_module(kw.get('package'))
+        kw['package'] = doctest._normalize_module(kw.get('package'), depth=3)
     return FunctionalSuiteFactory(*paths, **kw).docfilesuite()
 
 
