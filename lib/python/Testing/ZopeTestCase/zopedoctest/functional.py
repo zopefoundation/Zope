@@ -132,7 +132,7 @@ def http(request_string, handle_errors=True):
     # Discard leading white space to make call layout simpler
     request_string = request_string.lstrip()
 
-    # split off and parse the command line
+    # Split off and parse the command line
     l = request_string.find('\n')
     command_line = request_string[:l].rstrip()
     request_string = request_string[l+1:]
@@ -162,6 +162,10 @@ def http(request_string, handle_errors=True):
 
     headers = [split_header(header)
                for header in rfc822.Message(instream).headers]
+
+    # Store request body without headers
+    instream = StringIO(instream.read())
+
     for name, value in headers:
         name = ('_'.join(name.upper().split('-')))
         if name not in ('CONTENT_TYPE', 'CONTENT_LENGTH'):
