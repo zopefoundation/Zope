@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.3
+#!/usr/bin/env python2.4
 
 ##############################################################################
 #
@@ -49,7 +49,8 @@ from distutils.command.install import install
 from distutils.command.install_data import install_data
 from distutils.util import convert_path
 
-sys.path.insert(0, 'inst')
+where = os.path.split(__file__)[0]
+sys.path.insert(0, os.path.join(where, 'inst'))
 import versions
 del sys.path[0]
 
