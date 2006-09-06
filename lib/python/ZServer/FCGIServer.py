@@ -47,6 +47,7 @@ from tempfile import TemporaryFile
 import socket, string, os, sys, time
 import thread
 from types import StringTypes
+import base64
 
 tz_for_log = compute_timezone_for_log()
 
@@ -455,11 +456,24 @@ class FCGIChannel(asynchat.async_chat):
             method=self.env['REQUEST_METHOD']
         else:
             method="GET"
+        if self.env.has_key('HTTP_AUTHORIZATION'):
+            http_authorization=self.env['HTTP_AUTHORIZATION']
+            if string.lower(http_authorization[:6]) == 'basic ':
+                try: decoded=base64.decodestring(http_authorization[6:])
+                except base64.binascii.Error: decoded=''
+                t = string.split(decoded, ':', 1)
+                if len(t) < 2:
+                    user_name = '-'
+                else:
+                    user_name = t[0]
+        else:
+            user_name='-'
         if self.addr:
             self.server.logger.log (
                 self.addr[0],
-                '%s - - [%s] "%s %s" %d %d "%s" "%s"' % (
+                '%s - %s [%s] "%s %s" %d %d "%s" "%s"' % (
                     self.addr[1],
+                    user_name,
                     time.strftime (
                     '%d/%b/%Y:%H:%M:%S ',
                     time.localtime(time.time())
@@ -471,7 +485,8 @@ class FCGIChannel(asynchat.async_chat):
         else:
             self.server.logger.log (
                 '127.0.0.1 ',
-                '- - [%s] "%s %s" %d %d "%s" "%s"' % (
+                '- %s [%s] "%s %s" %d %d "%s" "%s"' % (
+                    user_name,
                     time.strftime (
                     '%d/%b/%Y:%H:%M:%S ',
                     time.localtime(time.time())
