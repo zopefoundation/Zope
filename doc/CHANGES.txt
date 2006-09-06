@@ -8,6 +8,8 @@ Zope Changes
 
    Bugs fixed
 
+      - Collector #2185: Log username for FCGI requests.
+
       - Collector #2152: Fixed MailHost documentation; simple_send does not
         process or validate its arguments in any way.
 
