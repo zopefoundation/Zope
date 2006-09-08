@@ -204,15 +204,22 @@ class ZopeSuiteFactory:
     def __init__(self, *args, **kw):
         self._args = args
         self._kw = kw
+        self._layer = None
         self.setup_globs()
         self.setup_test_class()
         self.setup_optionflags()
 
     def doctestsuite(self):
-        return doctest.DocTestSuite(*self._args, **self._kw)
+        suite = doctest.DocTestSuite(*self._args, **self._kw)
+        if self._layer is not None:
+            suite.layer = self._layer
+        return suite
 
     def docfilesuite(self):
-        return doctest.DocFileSuite(*self._args, **self._kw)
+        suite = doctest.DocFileSuite(*self._args, **self._kw)
+        if self._layer is not None:
+            suite.layer = self._layer
+        return suite
 
     def setup_globs(self):
         globs = self._kw.setdefault('globs', {})
@@ -227,6 +234,10 @@ class ZopeSuiteFactory:
 
         if 'test_class' in self._kw:
             del self._kw['test_class']
+
+        # Fix for http://zope.org/Collectors/Zope/2178
+        if hasattr(test_class, 'layer'):
+            self._layer = test_class.layer
 
         # If the test_class does not have a runTest method, we add
         # a dummy attribute so that TestCase construction works.
@@ -307,17 +318,14 @@ def ZopeDocTestSuite(module=None, **kw):
     module = doctest._normalize_module(module)
     return ZopeSuiteFactory(module, **kw).doctestsuite()
 
-
 def ZopeDocFileSuite(*paths, **kw):
     if kw.get('module_relative', True):
         kw['package'] = doctest._normalize_module(kw.get('package'))
     return ZopeSuiteFactory(*paths, **kw).docfilesuite()
 
-
 def FunctionalDocTestSuite(module=None, **kw):
     module = doctest._normalize_module(module)
     return FunctionalSuiteFactory(module, **kw).doctestsuite()
-
 
 def FunctionalDocFileSuite(*paths, **kw):
     if kw.get('module_relative', True):

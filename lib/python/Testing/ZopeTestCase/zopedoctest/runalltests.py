@@ -27,12 +27,16 @@ if __name__ == '__main__':
 import unittest
 TestRunner = unittest.TextTestRunner
 suite = unittest.TestSuite()
+cwd = os.getcwd()
 
 def test_finder(recurse, dir, names):
     if dir == os.curdir or '__init__.py' in names:
         parts = [x for x in dir[len(os.curdir):].split(os.sep) if x]
         tests = [x for x in names if x.startswith('test') and x.endswith('.py')]
         for test in tests:
+            if test == 'tests.py' and 'ZopeTestCase' in cwd:
+                # Skip tests.py when running ZTC tests
+                continue
             modpath = parts + [test[:-3]]
             m = __import__('.'.join(modpath))
             for part in modpath[1:]:
