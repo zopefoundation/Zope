@@ -12,6 +12,8 @@
 - Added placeless.py for Z3-style setup. Thanks to Whit Morriss.
 - Fixed functional.http() to only pass the request body (no headers) to
   publish_module(). Thanks to Andreas Zeidler.
+- Fixed doctestsuite factory to copy layers from test_class to the suite.
+  Thanks to Whit Morris.
 
 0.9.8 (Zope 2.8 edition)
 - Renamed 'doctest' package to 'zopedoctest' because of name-shadowing
