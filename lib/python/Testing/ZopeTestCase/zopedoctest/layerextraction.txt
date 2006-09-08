@@ -3,3 +3,4 @@ variable
 
  >>> getattr(self.app, 'LAYER_EXTRACTED', False)
  True
+
