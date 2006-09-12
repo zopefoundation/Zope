@@ -140,7 +140,7 @@ def logBadRefresh(productid):
     exc = sys.exc_info()
     try:
         logger.error('Exception while refreshing %s'
-                      % productid, error=exc)
+                      % productid, exc_info=exc)
         if hasattr(exc[0], '__name__'):
             error_type = exc[0].__name__
         else:
