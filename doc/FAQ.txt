@@ -249,9 +249,8 @@ Zope Installation Frequently Asked Questions
 
     4. Plone doesn't work!
 
-        As of the release of Zope 2.8.0, Plone does not support
-        Zope 2.8 yet.  Check http://www.plone.org for updates.
-
+        All Plone versions require a certain Zope version.
+        Check the Plone release informations on http://www.plone.org
 
   General
 
