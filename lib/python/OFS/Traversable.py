@@ -186,7 +186,7 @@ class Traversable:
 
                 bobo_traverse = getattr(obj, '__bobo_traverse__', None)
                 try:
-                    if name and name[:1] in '@+':
+                    if name and name[:1] in '@+' and name != '+':
                         # Process URI segment parameters.
                         ns, nm = nsParse(name)
                         if ns:
