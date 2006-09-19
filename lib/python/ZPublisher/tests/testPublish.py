@@ -1,3 +1,5 @@
+from zope.app.publication.browser import setDefaultSkin
+from zope.publisher.interfaces.browser import IDefaultBrowserLayer
 from ZPublisher import Retry
 from ZODB.POSException import ConflictError
 
@@ -117,6 +119,14 @@ class Request:
         r = self.__class__()
         r.retry_count = self.retry_count
         return r
+
+class RequestWithSkinCheck(Request):
+    def traverse(self, path, validated_hook):
+        if IDefaultBrowserLayer.providedBy(self):
+            return Object()
+        else:
+            tracer.exceptions['__call__'] = [ValueError]
+            return Object()
 
 module_name = __name__
 after_list = [None]
@@ -261,6 +271,56 @@ def testPublisher():
     raising ValueError from __call__
     zpublisher_exception_hook
     raising ConflictError from zpublisher_exception_hook
+    abort
+
+    The request generator applies the default skin layer to the request.
+    We have a specially crafted request that tests this.  If the
+    request does not have the required interface it raises an
+    ValueError.  Let's see that this works as expected
+
+    >>> tracer.reset()
+    >>> request = RequestWithSkinCheck()
+    >>> setDefaultSkin(request)
+    >>> response = publish(request, module_name, after_list)
+    >>> tracer.showTracedPath()
+    begin
+    __call__
+    commit
+
+    Retries generate new request objects, the publisher needs to
+    ensure that the skin layer is applied to those as well. If the
+    skin layer is not applied to subsequent requests, an ValueError
+    would be raised here.
+
+    >>> tracer.reset()
+    >>> tracer.exceptions['commit'] = [ConflictError, ConflictError,
+    ...                                  ConflictError, ConflictError]
+    >>> request = RequestWithSkinCheck()
+    >>> setDefaultSkin(request)
+    >>> response = publish(request, module_name, after_list)
+    Traceback (most recent call last):
+    ...
+    ConflictError: database conflict error
+    >>> tracer.showTracedPath()
+    begin
+    __call__
+    commit
+    raising ConflictError from commit
+    abort
+    begin
+    __call__
+    commit
+    raising ConflictError from commit
+    abort
+    begin
+    __call__
+    commit
+    raising ConflictError from commit
+    abort
+    begin
+    __call__
+    commit
+    raising ConflictError from commit
     abort
 
     """

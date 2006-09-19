@@ -8,6 +8,9 @@ Zope Changes
 
    Bugs fixed
 
+      - Call setDefaultSkin on new requests created as the result of
+        ConflictError retries.
+      
       - Collector #2189: Fix logging of errors during product refresh.
 
       - Collector #2185: Log username for FCGI requests.
