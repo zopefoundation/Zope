@@ -34,6 +34,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Call setDefaultSkin on new requests created as the result of
+        ConflictError retries.
+
       - Collector #2155: Fix wrong parameter being passed to
         logger's error() method, with tests.
 

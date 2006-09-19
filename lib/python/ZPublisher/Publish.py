@@ -158,6 +158,8 @@ def publish(request, module_name, after_list, debug=0,
             # Only reachable if Retry is raised and request supports retry.
             newrequest=request.retry()
             request.close()  # Free resources held by the request.
+            # Set the default layer/skin on the newly generated request
+            setDefaultSkin(newrequest)
             try:
                 return publish(newrequest, module_name, after_list, debug)
             finally:
