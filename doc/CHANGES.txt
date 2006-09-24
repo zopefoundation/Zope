@@ -10,6 +10,8 @@ Zope Changes
 
       - Call setDefaultSkin on new requests created as the result of
         ConflictError retries.
+
+      - Collector #2187: PUT_factory broken
       
   Zope 2.10.0 beta 2 (2006/09/17)
 
