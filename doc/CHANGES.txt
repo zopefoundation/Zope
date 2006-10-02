@@ -4,7 +4,7 @@ Zope Changes
   Change information for previous versions of Zope can be found in the
   file HISTORY.txt.
 
-  Zope 2.9.5 (2006/10/01)
+  Zope 2.9.5 (2006/10/03)
 
    Bugs fixed
 
@@ -39,6 +39,8 @@ Zope Changes
         logger's error() method, with tests.
 
       - Collector #2178: Fix ZopeTestCase doctest support for layers
+
+      - included Zope 3.2.2
 
   Zope 2.9.4 (2006/07/21)
 
