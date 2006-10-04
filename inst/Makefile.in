@@ -117,6 +117,8 @@ sdist: clobber sdist_tgz
 # sdist_tgz:   Create a tgz archive file as a source distribution.
 #
 sdist_tgz: version_txt
+	${FIND} . -type f -exec chmod a+r {} \; 
+	${FIND} . -type d -exec chmod a+rx {} \; 
 	${MKDIR} ${TMPDIR}
 	${CD} ${TMPDIR} && ${LN} ${BASE_DIR} ${PACKAGE_NAME} && \
           ${TAR} czfh ${BASE_DIR}/${PACKAGE_NAME}.tgz \
