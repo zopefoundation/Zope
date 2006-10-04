@@ -71,7 +71,7 @@ class Connection(
             try: self.connect(self.connection_string)
             except:
                 logger.error('Error connecting to relational database.',
-                             error=exc_info())
+                             exc_info=exc_info())
 
     def title_and_id(self):
         s=Connection.inheritedAttribute('title_and_id')(self)
