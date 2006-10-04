@@ -12,6 +12,7 @@ System requirements when building from source
    * bash or another Bourne shell variant
 
    * Python 2.4.2 or later installed somewhere in the system PATH
+     (Python 2.5 is not supported)
 
    * GNU make
 
