@@ -94,11 +94,17 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(response.headers.get('content-type'),
                          'text/plain; charset=iso-8859-15')
 
-    def test_charset_application_header(self):
+    def test_charset_application_header_no_header(self):
         response = self._makeOne(body='foo',
                     headers={'content-type': 'application/foo'})
         self.assertEqual(response.headers.get('content-type'),
-                         'application/foo; charset=iso-8859-15')
+                         'application/foo')
+
+    def test_charset_application_header_with_header(self):
+        response = self._makeOne(body='foo',
+                    headers={'content-type': 'application/foo; charset: something'})
+        self.assertEqual(response.headers.get('content-type'),
+                         'application/foo; charset: something')
     
     def test_charset_application_header_unicode(self):
         response = self._makeOne(body=unicode('ärger', 'iso-8859-15'),
@@ -117,9 +123,9 @@ class HTTPResponseTests(unittest.TestCase):
 
     def test_XMLEncodingRecoding(self):
         xml = u'<?xml version="1.0" encoding="iso-8859-15" ?>\n<foo><bar/></foo>'
-        response = self._makeOne(body=xml, headers={'content-type': 'application/foo; charset=utf-8'})
+        response = self._makeOne(body=xml, headers={'content-type': 'text/xml; charset=utf-8'})
         self.assertEqual(xml.replace('iso-8859-15', 'utf-8')==response.body, True)
-        response = self._makeOne(body=xml, headers={'content-type': 'application/foo; charset=iso-8859-15'})
+        response = self._makeOne(body=xml, headers={'content-type': 'text/xml; charset=iso-8859-15'})
         self.assertEqual(xml==response.body, True)
 
 
