@@ -34,6 +34,8 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #2209: ZTUtils module could not be used inside ZPT
+
       - Collector #2208: rewriting/setting the 'charset' part of the content-type
         HTTP header will be done only for 'text/*'
 
