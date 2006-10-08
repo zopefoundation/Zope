@@ -21,6 +21,11 @@ $Id$
 # Placeholder for Zope Product data
 misc_ = {}
 
+# import ZTUtils in order to make i importable through
+# ZopeGuards.load_module() where an importable modules must be
+# available in sys.modules
+import ZTUtils
+
 def initialize(context):
     # Import lazily, and defer initialization to the module
     import ZopePageTemplate
