@@ -343,7 +343,7 @@ class HTTPResponse(BaseResponse):
             self.setHeader('content-type', c)
         else:
             c = self.headers['content-type']
-            if not 'charset=' in  c:
+            if c.startswith('text/') and not 'charset=' in  c:
                 c = '%s; charset=%s' % (c, default_encoding)                
                 self.setHeader('content-type', c)
 
