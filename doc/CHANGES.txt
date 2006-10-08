@@ -11,6 +11,9 @@ Zope Changes
     
       - Collector #2205: fixed wrong logger argument in ZRDB/Connection.py
 
+      - Collector #2208: rewriting/setting the 'charset' part of the content-type
+        HTTP header will be done only for 'text/*'
+
 
   Zope 2.9.5 (2006/10/03)
 

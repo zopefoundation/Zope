@@ -94,11 +94,17 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(response.headers.get('content-type'),
                          'text/plain; charset=iso-8859-15')
 
-    def test_charset_application_header(self):
+    def test_charset_application_header_no_header(self):
         response = self._makeOne(body='foo',
                     headers={'content-type': 'application/foo'})
         self.assertEqual(response.headers.get('content-type'),
-                         'application/foo; charset=iso-8859-15')
+                         'application/foo')
+
+    def test_charset_application_header_with_header(self):
+        response = self._makeOne(body='foo',
+                    headers={'content-type': 'application/foo; charset: something'})
+        self.assertEqual(response.headers.get('content-type'),
+                         'application/foo; charset: something')
     
     def test_charset_application_header_unicode(self):
         response = self._makeOne(body=unicode('ärger', 'iso-8859-15'),
@@ -114,6 +120,7 @@ class HTTPResponseTests(unittest.TestCase):
                          'application/foo; charset=utf-8')
         self.assertEqual(response.body, unicode('ärger',
                          'iso-8859-15').encode('utf-8'))
+
 
 def test_suite():
     suite = unittest.TestSuite()
