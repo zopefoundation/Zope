@@ -197,7 +197,7 @@ class Cacheable:
                                    mtime_func, default)
                 return val
             except:
-                logger.warn('ZCache_get() exception', exc_info=sys.exc_info())
+                logger.warn('ZCache_get() exception', exc_info=True)
                 return default
         return default
 
@@ -214,7 +214,7 @@ class Cacheable:
                 c.ZCache_set(ob, data, view_name, keywords,
                              mtime_func)
             except:
-                logger.warn('ZCache_set() exception', exc_info=sys.exc_info())
+                logger.warn('ZCache_set() exception', exc_info=True)
 
     def ZCacheable_invalidate(self, view_name='', REQUEST=None):
         '''Called after a cacheable object is edited. Causes all
@@ -231,7 +231,7 @@ class Cacheable:
             except:
                 exc = sys.exc_info()
                 try:
-                    logger.warn('ZCache_invalidate() exception', exc_info=exc)
+                    logger.warn('ZCache_invalidate() exception', exc_info=True)
                     message = 'An exception occurred: %s: %s' % exc[:2]
                 finally:
                     exc = None
