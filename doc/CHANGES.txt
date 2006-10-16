@@ -16,6 +16,9 @@ Zope Changes
       - Collector #2208: rewriting/setting the 'charset' part of the
         content-type HTTP header will be done only for 'text/*'
 
+      - Collector #2206: Set PYTHONPATH to include existing PYTHONPATH
+        in skel/bin/zopectl.in and skel/bin/runzope.in
+
   Zope 2.9.5 (2006/10/03)
 
    Bugs fixed
