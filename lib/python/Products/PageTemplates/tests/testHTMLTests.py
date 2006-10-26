@@ -156,6 +156,9 @@ class HTMLTests(unittest.TestCase):
         self.assert_expected(self.folder.t, 'CheckI18nTranslateHooked.html')
         setGlobalTranslationService(old_ts)
 
+    def checkAttributes(self):
+        self.assert_expected(self.folder.t, 'Attributes.html')
+
 def test_suite():
     return unittest.makeSuite(HTMLTests, 'check')
 
