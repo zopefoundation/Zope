@@ -34,6 +34,8 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #2198: Zope 3.3 fix breaks Five 1.5 test_getNextUtility
+
       - Collector #2206: Set PYTHONPATH to include existing PYTHONPATH
         in skel/bin/zopectl.in and skel/bin/runzope.in
 
