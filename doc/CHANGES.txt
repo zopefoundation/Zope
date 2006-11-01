@@ -8,8 +8,10 @@ Zope Changes
 
     Bugs fixed
 
-      - Collector #2208: rewriting/setting the 'charset' part of the content-type
-        HTTP header will be done only for 'text/*'
+      - Collector #2213: Can't edit "old" ZopePageTemplate instances.
+
+      - Collector #2208: rewriting/setting the 'charset' part of the
+        content-type HTTP header will be done only for 'text/*'
 
       - Collector #2209: ZTUtils module could not be used inside ZPT
 
@@ -43,7 +45,8 @@ Zope Changes
       - Collector #2152: Fixed MailHost documentation; simple_send does not
         process or validate its arguments in any way.
 
-      - Collector #2175: ZTUtils.make_hidden_input did not escape double-quotes.
+      - Collector #2175: ZTUtils.make_hidden_input did not escape
+        double-quotes.
 
       - Collector #2176: Fixed bad logging call.
 
