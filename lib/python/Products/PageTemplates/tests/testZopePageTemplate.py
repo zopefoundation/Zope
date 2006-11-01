@@ -40,7 +40,7 @@ class ZPTRegressions(unittest.TestCase):
         self.assertEqual(pt.document_src().strip(), default_text.strip())
 
     def testAddWithRequest(self):
-        """Test manage_add with file"""
+        # Test manage_add with file
         request = self.app.REQUEST
         request.form['file'] = DummyFileUpload(filename='some file',
                                                data=self.text,
@@ -51,12 +51,20 @@ class ZPTRegressions(unittest.TestCase):
         self.assertEqual(pt.document_src(), self.text)
 
     def testAddWithRequestButNoFile(self):
-        """Collector #596: manage_add with text but no file"""
+        # Collector #596: manage_add with text but no file
         request = self.app.REQUEST
         self._addPT('pt1', text=self.text, REQUEST=request)
         # no object is returned when REQUEST is passed.
         pt = self.app.pt1
         self.assertEqual(pt.document_src(), self.text)
+
+    def test_BBB_for_strict_attribute(self):
+        # Collector 2213:  old templates don't have 'strict' attribute.
+        from Products.PageTemplates.ZopePageTemplate import ZopePageTemplate
+        zpt = ZopePageTemplate('issue_2213')
+        del zpt.strict  # simulate old templates
+        self.assertEqual(zpt.strict, False)
+
 
 class ZPTMacros(zope.component.testing.PlacelessSetup, unittest.TestCase):
 

@@ -11,6 +11,8 @@ Zope Changes
       - Removed deprecated support for product initialization based on
         '__ac_permissions__' and 'meta_types' attributes.
 
+      - Collector #2213: Can't edit "old" ZopePageTemplate instances.
+
       - reStructuredText/ZReST: setting raw_enabled to 0 for security
         reasons
 
@@ -41,8 +43,8 @@ Zope Changes
 
       - Collector #2209: ZTUtils module could not be used inside ZPT
 
-      - Collector #2208: rewriting/setting the 'charset' part of the content-type
-        HTTP header will be done only for 'text/*'
+      - Collector #2208: rewriting/setting the 'charset' part of the
+        content-type HTTP header will be done only for 'text/*'
 
       - Call setDefaultSkin on new requests created as the result of
         ConflictError retries.

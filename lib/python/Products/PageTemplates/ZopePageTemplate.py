@@ -79,6 +79,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
 
     func_defaults = None
     func_code = FuncCode((), 0)
+    strict = False
 
     _default_bindings = {'name_subpath': 'traverse_subpath'}
     _default_content_fn = os.path.join(package_home(globals()),
