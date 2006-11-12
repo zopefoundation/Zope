@@ -12,6 +12,12 @@ class Dummy:
     def __call__(self):
         return 'dummy'
 
+class DummyDocumentTemplate:
+    __allow_access_to_unprotected_subobjects__ = 1
+    isDocTemp = True
+    def __call__(self, client=None, REQUEST={}, RESPONSE=None, **kw):
+        return 'dummy'
+
 class ExpressionTests(zope.component.testing.PlacelessSetup, unittest.TestCase):
 
     def setUp(self):
@@ -23,7 +29,8 @@ class ExpressionTests(zope.component.testing.PlacelessSetup, unittest.TestCase):
             one = 1,
             d = {'one': 1, 'b': 'b', '': 'blank', '_': 'under'},
             blank = '',
-            dummy = Dummy()
+            dummy = Dummy(),
+            dummy2 = DummyDocumentTemplate()
             )
 
     def testCompile(self):
@@ -47,7 +54,12 @@ class ExpressionTests(zope.component.testing.PlacelessSetup, unittest.TestCase):
 
     def testRenderedEval(self):
         ec = self.ec
-        assert ec.evaluate('dummy') == 'dummy'
+        self.assertEquals(ec.evaluate('dummy'), 'dummy')
+
+        # http://www.zope.org/Collectors/Zope/2232
+        # DTML templates could not be called from a Page Template
+        # due to an ImportError
+        self.assertEquals(ec.evaluate('dummy2'), 'dummy')
 
     def testEval1(self):
         '''Test advanced expression evaluation 1'''

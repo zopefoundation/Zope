@@ -8,6 +8,8 @@ Zope Changes
 
     Bugs fixed
 
+      - Collector #2232: Can't call DTML templates from Page Templates
+
       - Collector #2213: Can't edit "old" ZopePageTemplate instances.
 
       - Collector #2208: rewriting/setting the 'charset' part of the
