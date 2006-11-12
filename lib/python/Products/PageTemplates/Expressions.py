@@ -89,7 +89,7 @@ def render(ob, ns):
         if callable(base):
             try:
                 if getattr(base, 'isDocTemp', 0):
-                    ob = call_with_ns(ob, ns, 2)
+                    ob = ZRPythonExpr.call_with_ns(ob, ns, 2)
                 else:
                     ob = ob()
             except AttributeError, n:
