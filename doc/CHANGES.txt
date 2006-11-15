@@ -41,6 +41,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #2237: 'make' doesn't tell you to run 'make inplace'
+        before running 'make instance'.
+
       - Collector #2232: Can't call DTML templates from Page Templates
 
       - Collector #2198: Zope 3.3 fix breaks Five 1.5 test_getNextUtility
