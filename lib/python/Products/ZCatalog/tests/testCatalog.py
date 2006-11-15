@@ -246,6 +246,27 @@ class TestZCatalog(unittest.TestCase):
         result = self._catalog(title='9999')
         self.assertEquals(1, len(result))
 
+    def test_manage_catalogObject_does_not_trigger_boolean_eval(self):
+        # make objects with __len__ and __nonzero__
+        class mydummy1:
+            def __init__(self, fail):
+                self.fail = fail
+            def __len__(self):
+                self.fail("__len__() was called")
+        class mydummy2:
+            def __init__(self, fail):
+                self.fail = fail
+            def __nonzero__(self):
+                self.fail("__nonzero__() was called")
+        # store them to be found by the catalog
+        self.d['0'] = mydummy1(self.fail)
+        self.d['1'] = mydummy2(self.fail)
+        # create a fake response that doesn't bomb on manage_catalogObject()
+        class myresponse:
+            def redirect(self, url):
+                pass
+        # this next call should not fail
+        self._catalog.manage_catalogObject(None, myresponse(), 'URL1', urls=('0', '1'))
 
 class dummy(ExtensionClass.Base):
     att1 = 'att1'

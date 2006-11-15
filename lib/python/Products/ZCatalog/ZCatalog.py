@@ -232,7 +232,7 @@ class ZCatalog(Folder, Persistent, Implicit):
 
             for url in urls:
                 obj = self.resolve_path(url)
-                if not obj:
+                if obj is not None:
                     obj = self.resolve_url(url, REQUEST)
                 if obj is not None:
                     self.catalog_object(obj, url)
