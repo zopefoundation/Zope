@@ -12,6 +12,11 @@ Zope Changes
 
       - Collector #2213: Can't edit "old" ZopePageTemplate instances.
 
+      - Collector #2235: A number of ZCatalog methods were doing boolean
+        evaluation of objects that implemented __len__ instead of checking
+        them against None. Replaced a number of "if not obj" with
+        "if obj is None".
+
       - Collector #2208: rewriting/setting the 'charset' part of the
         content-type HTTP header will be done only for 'text/*'
 
