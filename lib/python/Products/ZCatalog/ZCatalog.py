@@ -234,7 +234,7 @@ class ZCatalog(Folder, Persistent, Implicit):
 
             for url in urls:
                 obj = self.resolve_path(url)
-                if not obj and hasattr(self, 'REQUEST'):
+                if obj is None and hasattr(self, 'REQUEST'):
                     obj = self.resolve_url(url, REQUEST)
                 if obj is not None:
                     self.catalog_object(obj, url)
@@ -298,7 +298,7 @@ class ZCatalog(Folder, Persistent, Implicit):
 
             p = paths[i]
             obj = self.resolve_path(p)
-            if not obj:
+            if obj is None:
                 obj = self.resolve_url(p, self.REQUEST)
             if obj is not None:
                 try:
@@ -615,8 +615,8 @@ class ZCatalog(Folder, Persistent, Implicit):
     def getobject(self, rid, REQUEST=None):
         """Return a cataloged object given a 'data_record_id_'
         """
-        obj = self.aq_parent.unrestrictedTraverse(self.getpath(rid))
-        if not obj:
+        obj = self.aq_parent.unrestrictedTraverse(self.getpath(rid), None)
+        if obj is None:
             if REQUEST is None:
                 REQUEST=self.REQUEST
             obj = self.resolve_url(self.getpath(rid), REQUEST)

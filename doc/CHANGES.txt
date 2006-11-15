@@ -9,6 +9,11 @@ Zope Changes
 
    Bugs fixed
 
+      - Collector #2235: A number of ZCatalog methods were doing boolean
+        evaluation of objects that implemented __len__ instead of checking
+        them against None. Replaced a number of "if not obj" with
+        "if obj is not None".
+
       - Collector #2218: fixed wrong logger argument in OFS/Cache.py
 
       - Collector #2205: fixed wrong logger argument in ZRDB/Connection.py
