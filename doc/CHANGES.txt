@@ -8,8 +8,10 @@ Zope Changes
 
     Bugs fixed
 
-      - Collector #2235: ZCatalog.manage_catalogObject was triggering __len__
-        of objects that implement it, like containers.
+      - Collector #2235: A number of ZCatalog methods were doing boolean
+        evaluation of objects that implemented __len__ instead of checking
+        them against None. Replace a number of "if not obj" with
+        "if obj is not None".
 
       - Fix yet another resTructuredText glitch, and add tests (test
         backported from 2.9, which was not in fact vulnerable).
