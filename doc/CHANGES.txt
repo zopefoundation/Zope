@@ -12,6 +12,9 @@ Zope Changes
 
       - Collector #2213: Can't edit "old" ZopePageTemplate instances.
 
+      - Collector #2237: 'make' doesn't tell you to run 'make inplace'
+        before running 'make instance'.
+
       - Collector #2235: A number of ZCatalog methods were doing boolean
         evaluation of objects that implemented __len__ instead of checking
         them against None. Replaced a number of "if not obj" with
