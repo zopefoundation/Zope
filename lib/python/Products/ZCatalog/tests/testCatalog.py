@@ -272,7 +272,7 @@ class TestZCatalog(unittest.TestCase):
         result = self._catalog(title='9999')
         self.assertEquals(1, len(result))
 
-    def testBooleanEvalOn_manage_catalogObject_(self):
+    def testBooleanEvalOn_manage_catalogObject(self):
         self.d['11'] = dummyLenFail(11, self.fail)
         self.d['12'] = dummyNonzeroFail(12, self.fail)
         # create a fake response that doesn't bomb on manage_catalogObject()
