@@ -38,9 +38,9 @@ MKDIR=mkdir -p
 # default:     The default step (invoked when make is called without a target)
 default: build
 	@echo
-	@echo Zope built.  Next, do \'make install\' \(or \'make instance\'
-	@echo to run a Zope instance directly from the build directory\).
-	@echo
+	@echo Zope built.  Next, do \'make install\' \(or \'make inplace\',
+	@echo followed by \'make instance\' to run a Zope instance directly
+	@echo from the build directory\).
 
 # build:       Do whatever 'setup.py build' implies
 build:
