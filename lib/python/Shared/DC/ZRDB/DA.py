@@ -361,20 +361,25 @@ class DA(
         max_cache=self.max_cache_
         now=time()
         t=now-self.cache_time_
-        if len(cache) > max_cache / 2:
+        if len(cache) >= max_cache:
             keys=tcache.keys()
             keys.reverse()
-            while keys and (len(keys) > max_cache or keys[-1] < t):
+            while keys and (len(keys) >= max_cache or keys[-1] < t):
                 key=keys[-1]
                 q=tcache[key]
                 del tcache[key]
-                if cache[q][0] == key:
-                    del cache[q]
+                del cache[q]
                 del keys[-1]
 
         if cache.has_key(cache_key):
             k, r = cache[cache_key]
-            if k > t: return r
+            if k > t:
+                # yay! a cached result returned!
+                return r
+            else:
+                # delete stale cache entries
+                del cache[cache_key]
+                del tcache[k]
 
         # call the pure query
         result=DB__.query(query,max_rows)
