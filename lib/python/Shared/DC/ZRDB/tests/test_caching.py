@@ -290,6 +290,28 @@ class TestCaching(TestCase):
             {44: ('query3',1,'conn_id')}
             )
         
+    def test_cachefull_but_not_old(self):
+        # get some old entries for one query in
+        # (the time are carefully picked to give out-of-order dict keys)
+        self._do_query('query1',5)
+        self._do_query('query1',15)
+        self._do_query('query1',43)
+        self._check_cache(
+            {('query1',1,'conn_id'): (43,'result for query1')},
+            {5: ('query1',1,'conn_id'),
+             15: ('query1',1,'conn_id'),
+             43: ('query1',1,'conn_id'),}
+            )
+        # now do another query
+        self._do_query('query2',41.1)
+        # XXX whoops, because {5:True,15:True,43:True}.keys()==[43,5,15]
+        # the cache/tcache clearing code makes a mistake:
+        # - the first time round the while loop, we remove 43 from the cache
+        #   and tcache 'cos it matches the time in the cache
+        # - the 2nd time round, 5 is "too old", so we attempt to check
+        #   if it matches the query in the cache, which blows up :-)
+        self.assertRaises(KeyError,self._do_query,'query3',41.2)
+        
 class DummyDA:
 
     def __call__(self):
