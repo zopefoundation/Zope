@@ -352,11 +352,8 @@ class DA(
 
     def _searchable_result_columns(self): return self._col
 
-    def _cached_result(self, DB__, query):
-        pure_query = query
-        # we need to munge the incoming query key in the cache
-        # so that the same request to a different db is returned
-        query = query + ('\nDBConnId: %s' % self.connection_hook, )
+    def _cached_result(self, DB__, query, max_rows, conn_id):
+        cache_key = query,max_rows,conn_id
         
         # Try to fetch from cache
         if hasattr(self,'_v_cache'): cache=self._v_cache
@@ -376,15 +373,15 @@ class DA(
                     del cache[q]
                 del keys[-1]
 
-        if cache.has_key(query):
-            k, r = cache[query]
+        if cache.has_key(cache_key):
+            k, r = cache[cache_key]
             if k > t: return r
 
         # call the pure query
-        result=apply(DB__.query, pure_query)
+        result=DB__.query(query,max_rows)
         if self.cache_time_ > 0:
-            tcache[int(now)]=query
-            cache[query]= now, result
+            tcache[int(now)]=cache_key
+            cache[cache_key]= now, result
 
         return result
 
@@ -450,8 +447,9 @@ class DA(
         if src__: return query
 
         if self.cache_time_ > 0 and self.max_cache_ > 0:
-            result=self._cached_result(DB__, (query, self.max_rows_))
-        else: result=DB__.query(query, self.max_rows_)
+            result=self._cached_result(DB__, query, self.max_rows_, c)
+        else:
+            result=DB__.query(query, self.max_rows_)
 
         if hasattr(self, '_v_brain'): brain=self._v_brain
         else:
