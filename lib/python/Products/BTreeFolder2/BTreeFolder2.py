@@ -193,7 +193,7 @@ class BTreeFolder2Base (Persistent):
             return 1
         except AssertionError:
             LOG.warn( 'Detected damage to %s. Fixing now.' % path,
-                error=sys.exc_info())
+                exc_info=True)
             try:
                 self._tree = OOBTree(self._tree)
                 mt_index = OOBTree()
@@ -202,7 +202,7 @@ class BTreeFolder2Base (Persistent):
                 self._mt_index = mt_index
             except:
                 LOG.error('Failed to fix %s.' % path,
-                    error=sys.exc_info())
+                    exc_info=True)
                 raise
             else:
                 LOG.info('Fixed %s.' % path)

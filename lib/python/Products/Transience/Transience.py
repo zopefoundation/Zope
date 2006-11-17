@@ -801,7 +801,7 @@ class TransientObjectContainer(SimpleItem):
                 err = 'No such onAdd/onDelete method %s referenced via %s'
                 LOG.warning(
                     err % (callback, '/'.join(path)),
-                    error=sys.exc_info()
+                    exc_info=True()
                     )
                 return
         else:
@@ -822,7 +822,7 @@ class TransientObjectContainer(SimpleItem):
                     LOG.warning(
                         '%s failed when calling %s in %s' % (name,callback,
                                                         '/'.join(path)),
-                        error=sys.exc_info()
+                        exc_info=True()
                         )
             finally:
                 setSecurityManager(sm)
@@ -831,7 +831,7 @@ class TransientObjectContainer(SimpleItem):
             path = self.getPhysicalPath()
             LOG.warning(
                 err % (name, '/'.join(path), callback),
-                error=sys.exc_info()
+                exc_info=True()
                 )
 
     def getId(self):

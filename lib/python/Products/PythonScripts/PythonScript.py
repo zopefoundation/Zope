@@ -440,7 +440,7 @@ class PythonScript(Script, Historical, Cacheable):
             else:
                 self._makeFunction()
         except:
-            LOG.error('write failed', error=sys.exc_info())
+            LOG.error('write failed', exc_info=True)
             raise
 
     def manage_FTPget(self):

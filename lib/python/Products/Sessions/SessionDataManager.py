@@ -284,7 +284,7 @@ class SessionDataManagerTraverser(Persistent):
             getSessionData = sdm.getSessionData
         except:
             msg = 'Session automatic traversal failed to get session data'
-            logger.warn(msg, error=sys.exc_info())
+            logger.warn(msg, exc_info=True)
             return
 
         # set the getSessionData method in the "lazy" namespace
