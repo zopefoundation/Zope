@@ -71,7 +71,7 @@ class Connection(
             try: self.connect(self.connection_string)
             except:
                 logger.error('Error connecting to relational database.',
-                             exc_info=exc_info())
+                             exc_info=True)
 
     def title_and_id(self):
         s=Connection.inheritedAttribute('title_and_id')(self)
@@ -151,7 +151,7 @@ class Connection(
                 self._v_database_connection.close()
         except:
             logger.error('Error closing relational database connection.',
-                         error=exc_info())
+                         exc_info=True)
         self._v_connected=''
         if REQUEST is not None:
             return self.manage_main(self, REQUEST)
