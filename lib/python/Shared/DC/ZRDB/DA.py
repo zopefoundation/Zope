@@ -39,8 +39,7 @@ from AccessControl.DTML import RestrictedDTML
 from webdav.Resource import Resource
 from webdav.Lockable import ResourceLockedError
 from zExceptions import BadRequest
-try: from IOBTree import Bucket
-except: Bucket=lambda:{}
+Bucket=lambda:{}
 
 
 class DatabaseError(BadRequest):
@@ -369,7 +368,7 @@ class DA(
                 key=keys[-1]
                 q=tcache[key]
                 del tcache[key]
-                if int(cache[q][0]) == key:
+                if cache[q][0] == key:
                     del cache[q]
                 del keys[-1]
 
@@ -380,7 +379,20 @@ class DA(
         # call the pure query
         result=DB__.query(query,max_rows)
         if self.cache_time_ > 0:
-            tcache[int(now)]=cache_key
+            # When a ZSQL method is handled by one ZPublisher thread twice in
+            # less time than it takes for time.time() to return a different
+            # value, the SQL generated is different, then this code will leak
+            # an entry in 'cache' for each time the ZSQL method generates
+            # different SQL until time.time() returns a different value.
+            #
+            # On Linux, you would need an extremely fast machine under extremely
+            # high load, making this extremely unlikely. On Windows, this is a
+            # little more likely, but still unlikely to be a problem.
+            #
+            # If it does become a problem, the values of the tcache mapping
+            # need to be turned into sets of cache keys rather than a single
+            # cache key.
+            tcache[now]=cache_key
             cache[cache_key]= now, result
 
         return result
