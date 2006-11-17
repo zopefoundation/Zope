@@ -44,8 +44,7 @@ from AccessControl.DTML import RestrictedDTML
 from webdav.Resource import Resource
 from webdav.Lockable import ResourceLockedError
 from zExceptions import BadRequest
-try: from IOBTree import Bucket
-except: Bucket=lambda:{}
+from BTrees.OOBTree import OOBucket as Bucket
 
 
 class DatabaseError(BadRequest):
@@ -357,39 +356,79 @@ class DA(
 
     def _searchable_result_columns(self): return self._col
 
-    def _cached_result(self, DB__, query):
-        pure_query = query
-        # we need to munge the incoming query key in the cache
-        # so that the same request to a different db is returned
-        query = query + ('\nDBConnId: %s' % self.connection_hook, )
-        
-        # Try to fetch from cache
-        if hasattr(self,'_v_cache'): cache=self._v_cache
-        else: cache=self._v_cache={}, Bucket()
-        cache, tcache = cache
+    def _cached_result(self, DB__, query, max_rows, conn_id):
+        # Try to fetch a result from the cache.
+        # Compute and cache the result otherwise.
+        # Also maintains the cache and ensures stale entries
+        # are never returned and that the cache never gets too large.
+
+        # NB: Correct cache behavior is predicated on Bucket.keys()
+        #     returning a sequence ordered from smalled number
+        #     (ie: the oldest cache entry) to largest number
+        #     (ie: the newest cache entry). Please be careful if you
+        #     change the class instantied below!
+
+        # get hold of a cache
+        caches = getattr(self,'_v_cache',None)
+        if caches is None:
+            caches = self._v_cache = {}, Bucket()
+        cache, tcache = caches
+
+        # the key for caching
+        cache_key = query,max_rows,conn_id
+        # the maximum number of result sets to cache
         max_cache=self.max_cache_
+        # the current time
         now=time()
+        # the oldest time which is not stale
         t=now-self.cache_time_
-        if len(cache) > max_cache / 2:
+        
+        # if the cache is too big, we purge entries from it
+        if len(cache) >= max_cache:
             keys=tcache.keys()
-            keys.reverse()
-            while keys and (len(keys) > max_cache or keys[-1] < t):
-                key=keys[-1]
+            # We also hoover out any stale entries, as we're
+            # already doing cache minimisation.
+            # 'keys' is ordered, so we purge the oldest results
+            # until the cache is small enough and there are no
+            # stale entries in it
+            while keys and (len(keys) >= max_cache or keys[0] < t):
+                key=keys[0]
                 q=tcache[key]
                 del tcache[key]
-                if int(cache[q][0]) == key:
-                    del cache[q]
-                del keys[-1]
+                del cache[q]
+                del keys[0]
 
-        if cache.has_key(query):
-            k, r = cache[query]
-            if k > t: return r
+        # okay, now see if we have a cached result
+        if cache.has_key(cache_key):
+            k, r = cache[cache_key]
+            # the result may still be stale, as we only hoover out
+            # stale results above if the cache gets too large.
+            if k > t:
+                # yay! a cached result returned!
+                return r
+            else:
+                # delete stale cache entries
+                del cache[cache_key]
+                del tcache[k]
 
         # call the pure query
-        result=apply(DB__.query, pure_query)
-        if self.cache_time_ > 0:
-            tcache[int(now)]=query
-            cache[query]= now, result
+        result=DB__.query(query,max_rows)
+
+        # When a ZSQL method is handled by one ZPublisher thread twice in
+        # less time than it takes for time.time() to return a different
+        # value, the SQL generated is different, then this code will leak
+        # an entry in 'cache' for each time the ZSQL method generates
+        # different SQL until time.time() returns a different value.
+        #
+        # On Linux, you would need an extremely fast machine under extremely
+        # high load, making this extremely unlikely. On Windows, this is a
+        # little more likely, but still unlikely to be a problem.
+        #
+        # If it does become a problem, the values of the tcache mapping
+        # need to be turned into sets of cache keys rather than a single
+        # cache key.
+        tcache[now]=cache_key
+        cache[cache_key]= now, result
 
         return result
 
@@ -456,8 +495,9 @@ class DA(
         if src__: return query
 
         if self.cache_time_ > 0 and self.max_cache_ > 0:
-            result=self._cached_result(DB__, (query, self.max_rows_))
-        else: result=DB__.query(query, self.max_rows_)
+            result=self._cached_result(DB__, query, self.max_rows_, c)
+        else:
+            result=DB__.query(query, self.max_rows_)
 
         if hasattr(self, '_v_brain'): brain=self._v_brain
         else:
