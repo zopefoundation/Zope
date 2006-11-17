@@ -799,10 +799,7 @@ class TransientObjectContainer(SimpleItem):
             except (KeyError, AttributeError):
                 path = self.getPhysicalPath()
                 err = 'No such onAdd/onDelete method %s referenced via %s'
-                LOG.warning(
-                    err % (callback, '/'.join(path)),
-                    exc_info=True()
-                    )
+                LOG.warning( err % (callback, '/'.join(path)), exc_info=True)
                 return
         else:
             method = callback
