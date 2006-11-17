@@ -41,6 +41,18 @@ Zope Changes
 
     Bugs Fixed
 
+      - Reworking of _cached_result in Shared.DC.ZRDB.DA.DA:
+
+        - fixed KeyError reported in Collector #2212
+
+        - fixed two memory leaks that occurred under high load
+
+        - fixed broken cache keys for people using the obscure 
+          Shared.DC.ZRDB.DA.DA.connection_hook
+
+        - fixed incorrect cache ordering resulting in newer results
+          being dumped when the cache became too large.
+
       - Collector #2237: 'make' doesn't tell you to run 'make inplace'
         before running 'make instance'.
 
