@@ -615,12 +615,7 @@ class ZCatalog(Folder, Persistent, Implicit):
     def getobject(self, rid, REQUEST=None):
         """Return a cataloged object given a 'data_record_id_'
         """
-        obj = self.aq_parent.unrestrictedTraverse(self.getpath(rid), None)
-        if obj is None:
-            if REQUEST is None:
-                REQUEST=self.REQUEST
-            obj = self.resolve_url(self.getpath(rid), REQUEST)
-        return obj
+        return self.aq_parent.unrestrictedTraverse(self.getpath(rid))
 
     def getMetadataForUID(self, uid):
         """return the correct metadata given the uid, usually the path"""
