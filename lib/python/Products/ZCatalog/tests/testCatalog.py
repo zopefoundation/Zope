@@ -177,14 +177,22 @@ class dummyNonzeroFail(zdummy):
     def __nonzero__(self):
         self.fail("__nonzero__() was called")
 
+class FakeTraversalError(KeyError):
+    """fake traversal exception for testing"""
+
 class fakeparent(Implicit):
     # fake parent mapping unrestrictedTraverse to
     # catalog.resolve_path as simulated by TestZCatalog
     def __init__(self, d):
         self.d = d
 
-    def unrestrictedTraverse(self, path, default=None):
-        return self.d.get(path, default)
+    marker = object()
+
+    def unrestrictedTraverse(self, path, default=marker):
+        result = self.d.get(path, default)
+        if result is self.marker:
+            raise FakeTraversalError(path)
+        return result
 
 class TestZCatalog(unittest.TestCase):
 
@@ -283,7 +291,7 @@ class TestZCatalog(unittest.TestCase):
         self._catalog.manage_catalogObject(None, myresponse(), 'URL1', urls=('11', '12'))
 
     def testBooleanEvalOn_refreshCatalog_getobject(self):
-        # wrap catalog under the fake parent
+        # wrap catalog under the fake parent providing unrestrictedTraverse()
         catalog = self._catalog.__of__(fakeparent(self.d))
         # replace entries to test refreshCatalog
         self.d['0'] = dummyLenFail(0, self.fail)
@@ -292,9 +300,26 @@ class TestZCatalog(unittest.TestCase):
         catalog.refreshCatalog()
 
         for uid in ('0', '1'):
-            rid = self._catalog.getrid(uid)
+            rid = catalog.getrid(uid)
             # neither should these
             catalog.getobject(rid)
+
+    def test_getobject_doesntMaskTraversalErrorsAndDoesntDelegateTo_resolve_url(self):
+        # wrap catalog under the fake parent providing unrestrictedTraverse()
+        catalog = self._catalog.__of__(fakeparent(self.d))
+        # make resolve_url fail if ZCatalog falls back on it
+        def resolve_url(path, REQUEST):
+            self.fail(".resolve_url() should not be called by .getobject()")
+        catalog.resolve_url = resolve_url
+
+        # traversal should work at first
+        rid0 = catalog.getrid('0')
+        # lets set it up so the traversal fails
+        del self.d['0']
+        self.assertRaises(FakeTraversalError, catalog.getobject, rid0, REQUEST=object())
+        # and if there is a None at the traversal point, that's where it should return
+        self.d['0'] = None
+        self.assertEquals(catalog.getobject(rid0), None)
 
 class dummy(ExtensionClass.Base):
     att1 = 'att1'
