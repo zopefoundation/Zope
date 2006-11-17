@@ -100,8 +100,18 @@ class TestCaching(TestCase):
         if result:
             self.fail('\n\n'+'\n'.join(result))
         
+    def test_bad_aquisition(self):
+        # checks that something called _v_cache isn't acquired from anywhere
+        from ExtensionClass import Base
+        class Dummy(Base):
+            _v_cache = 'muhahaha'
+        obj = Dummy()
+        self.da = self.da.__of__(obj)
+        del self.da._v_cache
+        self._do_query('query',1)
+        
     def test_same_query_different_seconds(self):
-        # this tests a sequence set of requests for the same
+        # this tests a sequence of requests for the same
         # query, but where the item returned is always in the cache
         self._check_cache({},{})
         for t in range(1,6):
@@ -114,8 +124,7 @@ class TestCaching(TestCase):
     def test_same_query_same_second(self):
         # this tests a sequence set of requests for the same
         # query, but where the item returned is always in the cache
-        # and where the queries all occur in the same second, so
-        # tickling the potential cache time rounding problem
+        # and where the queries all occur in the same second
         self._check_cache({},{})
         for t in range(11,16,1):
             t = float(t)/10
@@ -128,8 +137,6 @@ class TestCaching(TestCase):
     def test_different_queries_different_second(self):
         # This tests different queries being fired into the cache
         # in sufficient volume to excercise the purging code
-        # XXX this demonstrates newer cached material being incorrectly
-        #     dumped due to the replacement of Bucket with dict
         self._check_cache({},{})
         # one
         self._do_query('query1',1.1)
@@ -147,28 +154,25 @@ class TestCaching(TestCase):
             )
         # three - now we drop our first cache entry
         self._do_query('query3',4.3)
-        # XXX oops - because dicts have an arbitary ordering, we dumped the wrong key!
         self._check_cache(
-            {('query1',1,'conn_id'): (1.1,'result for query1'),
+            {('query2',1,'conn_id'): (3.2,'result for query2'),
              ('query3',1,'conn_id'): (4.3,'result for query3'),},
-            {1.1: ('query1',1,'conn_id'),
+            {3.2: ('query2',1,'conn_id'),
              4.3: ('query3',1,'conn_id'),}
             )
         # four - now we drop our second cache entry
         self._do_query('query4',8.4)
-        # XXX oops - because dicts have an arbitary ordering, we dumped the wrong key!
         self._check_cache(
-            {('query1',1,'conn_id'): (1.1,'result for query1'),
+            {('query3',1,'conn_id'): (4.3,'result for query3'),
              ('query4',1,'conn_id'): (8.4,'result for query4'),},
-            {1.1: ('query1',1,'conn_id'),
+            {4.3: ('query3',1,'conn_id'),
              8.4: ('query4',1,'conn_id'),}
             )
         
     def test_different_queries_same_second(self):
         # This tests different queries being fired into the cache
-        # in the same second.
-        # XXX this demonstrates newer cached material being incorrectly
-        #     dumped due to the replacement of Bucket with dict
+        # in the same second in sufficient quantities to exercise
+        # the purging code
         self._check_cache({},{})
         # one
         self._do_query('query1',1.0)
@@ -194,15 +198,17 @@ class TestCaching(TestCase):
             )
         # four - now we drop another cache entry
         self._do_query('query4',1.3)
-        # XXX oops - because dicts have an arbitary ordering, we dumped the wrong key!
         self._check_cache(
-            {('query2',1,'conn_id'): (1.1,'result for query2'),
+            {('query3',1,'conn_id'): (1.2,'result for query3'),
              ('query4',1,'conn_id'): (1.3,'result for query4'),},
-            {1.1: ('query2',1,'conn_id'),
+            {1.2: ('query3',1,'conn_id'),
              1.3: ('query4',1,'conn_id'),}
             )
 
     def test_time_tcache_expires(self):
+        # This tests that once the cache purging code is triggered,
+        # it will actively hoover out all expired cache entries
+        
         # the first query gets cached
         self._do_query('query1',1)
         self._check_cache(
@@ -218,7 +224,7 @@ class TestCaching(TestCase):
              2:('query2',1,'conn_id')}
             )
         # the 3rd trips the max_cache trigger, so both our old queries get
-        # dumped
+        # dumped because they are past their expiration time
         self._do_query('query',23)
         self._check_cache(
             {('query',1,'conn_id'): (23,'result for query')},
@@ -226,6 +232,10 @@ class TestCaching(TestCase):
             )
     
     def test_time_refreshed_cache(self):
+        # This tests that when a cached query is expired when it comes
+        # to check for a cached entry for that query, the stale entry is
+        # removed and replaced with a fresh entry.
+        
         # the first query gets cached
         self._do_query('query1',1)
         self._check_cache(
@@ -258,6 +268,8 @@ class Hook:
         return conn_to_use
 
 class TestCacheKeys(TestCase):
+    # These tests check that the keys used for caching are unique
+    # in the right ways.
 
     def _cached_result(self,DB__,query,row_count,conn_id):
         self.cache_key = query,row_count,conn_id
@@ -291,20 +303,36 @@ class TestCacheKeys(TestCase):
         self.da.conn2 = DummyDA()
         self.da()
         self.assertEqual(self.cache_key,('some sql',1000,'conn2'))
-        
-class TestFullChain(TestCase):
 
-    def test_full_chain(self):
+class TestFullChain(TestCase):
+    # This exercises both DA.__call__ and DA._cached_result.
+
+    def setUp(self):
         from Shared.DC.ZRDB.DA import DA
         self.da = DA('da','title','conn_id','arg1 arg2','some sql')        
         self.da.conn_id = DummyDA()
+        
+    def test_args_match(self):
+        # This checks is that DA._cached_result's call signature
+        # matches that expected by DA.__call__
+
         # These need to be set so DA.__call__ tries for a cached result
         self.da.cache_time_ = 1
         self.da.max_cache_ = 1
-        # run the method, exercising both DA.__call__ and DA._cached_result
-        # currently all this checks is that DA._cached_result's call signature
-        # matches that expected by DA.__call__
+        # the actual test, will throw exceptions if things aren't right
         self.da()
+
+    def test_cached_result_not_called_for_no_caching(self):
+        # blow up the _cached_result method on our
+        # test instance
+        self.da._cached_result = None
+        # check we never get there with the default "no cachine"
+        self.da()
+        # turn caching on
+        self.da.cache_time_ = 1
+        self.da.max_cache_ = 1
+        # check that we get an exception
+        self.assertRaises(TypeError,self.da)
         
 def test_suite():
     suite = TestSuite()
