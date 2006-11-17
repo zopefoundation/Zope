@@ -180,7 +180,7 @@ class TestCaching(TestCase):
     def test_different_queries_same_second(self):
         # This tests different queries being fired into the cache
         # in the same second.
-        # XXX The demonstrates a memory leak in the cache code
+        # XXX The demonstrates 2 memory leaks in the cache code
         self._check_cache({},{})
         # one
         self._do_query('query1',1.0)
@@ -191,6 +191,7 @@ class TestCaching(TestCase):
         # two
         self._do_query( 'query2',1.1)
         self._check_cache(
+            # XXX oops, query1 is in the cache but it'll never be purged.
             {('query1',1,'conn_id'): (1.0,'result for query1'),
              ('query2',1,'conn_id'): (1.1,'result for query2'),},
             {1.0: ('query2',1,'conn_id'),}
@@ -198,6 +199,7 @@ class TestCaching(TestCase):
         # three
         self._do_query('query3',1.2)
         self._check_cache(
+            # XXX oops, query1 and query2 are in the cache but will never be purged
             {('query1',1,'conn_id'): (1,'result for query1'),
              ('query2',1,'conn_id'): (1.1,'result for query2'),
              ('query3',1,'conn_id'): (1.2,'result for query3'),},
@@ -206,7 +208,7 @@ class TestCaching(TestCase):
         # four - now we drop our first cache entry, this is an off-by-one error
         self._do_query('query4',1.3)
         self._check_cache(
-            # XXX - oops, why is query1 here still?
+            # XXX - oops, why is query1 here still? see above ;-)
             {('query1',1,'conn_id'): (1,'result for query1'),
              ('query2',1,'conn_id'): (1.1,'result for query2'),
              ('query3',1,'conn_id'): (1.2,'result for query3'),
@@ -216,7 +218,7 @@ class TestCaching(TestCase):
         # five - now we drop another cache entry
         self._do_query('query5',1.4)
         self._check_cache(
-            # XXX - oops, why are query1 and query2 here still?
+            # XXX - oops, why are query1 and query2 here still? see above ;-)
             {('query1',1,'conn_id'): (1,'result for query1'),
              ('query2',1,'conn_id'): (1.1,'result for query2'),
              ('query3',1,'conn_id'): (1.2,'result for query3'),
@@ -225,6 +227,69 @@ class TestCaching(TestCase):
             {1: ('query5',1,'conn_id'),}
             )
 
+    def test_time_tcache_expires(self):
+        # the first query gets cached
+        self._do_query('query1',1)
+        self._check_cache(
+            {('query1',1,'conn_id'): (1,'result for query1')},
+            {1: ('query1',1,'conn_id')}
+            )
+        # the 2nd gets cached, the cache is still smaller than max_cache / 2
+        self._do_query('query2',12)
+        self._check_cache(
+            {('query1',1,'conn_id'): (1,'result for query1'),
+             ('query2',1,'conn_id'): (12,'result for query2')},
+            {1: ('query1',1,'conn_id'),
+             12:('query2',1,'conn_id')}
+            )
+        # the 2rd trips the max_cache/2 trigger, so both our old queries get
+        # dumped
+        self._do_query('query',23)
+        self._check_cache(
+            {('query',1,'conn_id'): (23,'result for query')},
+            {23:('query',1,'conn_id')}
+            )
+    
+    def test_time_refreshed_cache(self):
+        # the first query gets cached
+        self._do_query('query1',1)
+        self._check_cache(
+            {('query1',1,'conn_id'): (1,'result for query1')},
+            {1: ('query1',1,'conn_id')}
+            )
+        # do the same query much later, so new one gets cached
+        # XXX memory leak as old tcache entry is left lying around
+        self._do_query('query1',12)
+        self._check_cache(
+            {('query1',1,'conn_id'): (12,'result for query1')},
+            {1: ('query1',1,'conn_id'), # XXX why is 1 still here?
+             12: ('query1',1,'conn_id')}
+            )
+    def test_cachetime_doesnt_match_tcache_time(self):
+        # get some old entries for one query in
+        # (the time are carefully picked to give out-of-order dict keys)
+        self._do_query('query1',4)
+        self._do_query('query1',19)
+        self._do_query('query1',44)
+        self._check_cache(
+            {('query1',1,'conn_id'): (44,'result for query1')},
+            {4: ('query1',1,'conn_id'),
+             19: ('query1',1,'conn_id'),
+             44: ('query1',1,'conn_id')}
+            )
+        # now do another query
+        self._do_query('query2',44.1)
+        # XXX whoops, because {4:True,19:True,44:True}.keys()==[44,19,4]
+        # the cache/tcache clearing code deletes the cache entry and
+        # then tries to do it again later with an older tcache entry.
+        # brian's patch in Dec 2000 works around this.
+        self._do_query('query3',44.2)
+        self._check_cache(
+            {('query1',1,'conn_id'): (44,'result for query1'),
+             ('query3',1,'conn_id'): (44.2,'result for query3')},
+            {44: ('query3',1,'conn_id')}
+            )
+        
 class DummyDA:
 
     def __call__(self):
