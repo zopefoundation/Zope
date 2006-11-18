@@ -570,7 +570,7 @@ class AppInitializer:
         except:
             bad_things=1
             LOG.error('The attempt to rebuild the registry failed.',
-                error=sys.exc_info())
+                       exc_info=True)
             transaction.abort()
 
         # Now we need to see if any (disk-based) products were installed
