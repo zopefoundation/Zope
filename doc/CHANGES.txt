@@ -41,13 +41,16 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #2191: extended DateTime parser for better support
+        to the ISO8601 specification.
+
       - Reworking of _cached_result in Shared.DC.ZRDB.DA.DA:
 
         - fixed KeyError reported in Collector #2212
 
         - fixed two memory leaks that occurred under high load
 
-        - fixed broken cache keys for people using the obscure 
+        - fixed broken cache keys for people using the obscure
           Shared.DC.ZRDB.DA.DA.connection_hook
 
         - fixed incorrect cache ordering resulting in newer results
@@ -103,7 +106,7 @@ Zope Changes
            3. Acquired attributes
         According to consensus in z3-five mailing list:
         http://codespeak.net/pipermail/z3-five/2006q2/001474.html
-        
+
       - The defaultView directive now only looks up views, not attributes.
 
     Other Changes
@@ -118,18 +121,18 @@ Zope Changes
 
     Restructuring
 
-      - Zope 2.10+ now includes site.zcml as part of its instance 
-        creation skel directory.  As a consequence Five now requires 
-        this file to exist in every instance.  If upgrading a site 
-        from Zope 2.9 to 2.10, you will need to copy site.zcml and 
-        package-includes/ from your installed Zope installation 
-        location (skel/etc/) into the etc/ directory of your upgraded 
+      - Zope 2.10+ now includes site.zcml as part of its instance
+        creation skel directory.  As a consequence Five now requires
+        this file to exist in every instance.  If upgrading a site
+        from Zope 2.9 to 2.10, you will need to copy site.zcml and
+        package-includes/ from your installed Zope installation
+        location (skel/etc/) into the etc/ directory of your upgraded
         instance.
-  
-        The rationale for requiring this new file is to bring Zope 2 
-        instances closer in consistency to Zope 3 instances.  It also 
-        eases use of Zope 3 coding techniques in Zope 2 and removes 
-        some confusion when trying to run pure Zope 3 applications on 
+
+        The rationale for requiring this new file is to bring Zope 2
+        instances closer in consistency to Zope 3 instances.  It also
+        eases use of Zope 3 coding techniques in Zope 2 and removes
+        some confusion when trying to run pure Zope 3 applications on
         Zope 2.
 
       - Products.PageTemplates now uses the Zope 3 ZPT implementation
@@ -149,7 +152,7 @@ Zope Changes
 
       - deprecated the zLOG module. Use Pythons 'logging' module instead.
 
-      - replaced all zLOG occurences (expect the zLOG module itself) with 
+      - replaced all zLOG occurences (expect the zLOG module itself) with
         the 'logging' module
 
       - PluginIndexes/TextIndex is deprecated. Use ZCTextIndex instead
@@ -166,7 +169,7 @@ Zope Changes
       - ZGadyFlyDA/Gadfly is deprecated
 
       - deprecated OFS.content_types (to be removed in Zope 2.11) and
-        replaced all occurences with zope.app.content_types 
+        replaced all occurences with zope.app.content_types
 
       - OFS.content_types: moved code to zope.app.content_types and added
         method aliases
@@ -178,52 +181,52 @@ Zope Changes
       - Included Zope 3.3 and corresponding Five 1.5 release.
 
       - There is now a default favicon.ico.
-    
+
       - Experimental WSGI and Twisted support for http.
         Zope now has a WSGI interface for integration with other
         web-servers than ZServer. Most notably Twisted is supported.
         The WSGI application is ZPublisher.WSGIPublisher.publish_module
-        
-        You can make ZServer use the twisted interface with the 
+
+        You can make ZServer use the twisted interface with the
         "use-wsgi on" keyword in the http-server section in zope.conf.
-        
+
         You can run Twisted by installing Twisted (2.1 recommended) and
-        replacing the http-server section with a server section in 
+        replacing the http-server section with a server section in
         zope.conf. It is not possible to run a Twisted server together with
         a ZServer at the same time.
-        
+
           <server>
             address 8080
             type Zope2-HTTP
           </server>
-        
+
         WSGI: http://www.python.org/dev/peps/pep-0333/
         Twisted: http://twistedmatrix.com/
 
-      - The traversal has been refactored to take heed of Zope3s 
-        IPublishTraverse adapter interfaces. The ZCML directives 
+      - The traversal has been refactored to take heed of Zope3s
+        IPublishTraverse adapter interfaces. The ZCML directives
         five:traversable and five:defaultViewable are therefore no
         longer needed, as everything now is five:traversable and
-        five:defaultViewable. 
+        five:defaultViewable.
 
-        There was a bug in earlier versions of Five that allowed you 
+        There was a bug in earlier versions of Five that allowed you
         to do custom publishing traversal with ITraversable adapters.
-        This bug has been corrected. Anybody using ITraversable 
+        This bug has been corrected. Anybody using ITraversable
         adapters need to convert them to IPublishTraversal adapters.
 
       - Testing.makerequest: Added an 'environ' argument so
         clients can use mappings other than os.environ.
 
-      - Updated to Docutils 0.4.0 
+      - Updated to Docutils 0.4.0
 
       - reStructuredText: The default value for the 'stylesheet'
         property has been changed from 'default.css' to None because
-        there is no 'default.css' file by default. 
+        there is no 'default.css' file by default.
 
       - ZReST: rewritten render() method to integrate it smoothly
         with Docutils 0.4.0. The default value for the 'stylesheet'
         property has been changed from 'default.css' to None because
-        there is no 'default.css' file by default. 
+        there is no 'default.css' file by default.
 
       - Added a "clock server" servertype which allows users to
         configure methods that should be called periodically as if
@@ -450,7 +453,7 @@ Zope Changes
         __dav_collection__ with a false value was overridden by
         isAnObjectManager.
 
-      - added missing Zope 3 imports: zope.app.intid, zope.app.keyreference, 
+      - added missing Zope 3 imports: zope.app.intid, zope.app.keyreference,
         zope.app.session, zope.contentprovider, zope.viewlet
 
     Other
@@ -470,7 +473,7 @@ Zope Changes
 
     Bugs Fixed
 
-      - If a content object implemented any in-place numeric operators, 
+      - If a content object implemented any in-place numeric operators,
         untrusted code could call them, thus modifying the content.
 
       - If Python 2.4 is used, despite the fact that Python 2.4 is
@@ -492,7 +495,7 @@ Zope Changes
         supporting 'debug' argument passed to
         'ZPublisher.Test.publish_module'.
 
-      - Collector #1879: applied patch by Dieter Maurer to fix a bug in 
+      - Collector #1879: applied patch by Dieter Maurer to fix a bug in
         ac_aquire() ignoring the default argument
 
       - Collector #1864, #1906: fixed header normalization in appendHeader()
@@ -516,11 +519,11 @@ Zope Changes
       - DateIndex now properly removes documents from both indexes if
         the value is None
 
-      - Collector #1888: Some parts of the TALInterpreter would not pass a 
-        default when  translating, yet expect a string back. This would cause 
-        an error (usually "NoneType has no attribute 'replace'") in the case 
+      - Collector #1888: Some parts of the TALInterpreter would not pass a
+        default when  translating, yet expect a string back. This would cause
+        an error (usually "NoneType has no attribute 'replace'") in the case
         the message was not translated.
-        
+
   Zope 2.8.1 (2005/08/11)
 
     Features added
