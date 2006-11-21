@@ -18,6 +18,8 @@ $Id$
 import os, sys
 import interfaces
 
+from zope.interface import implements
+
 # Some distros ship without profile
 try:
     from profile import Profile
@@ -69,7 +71,7 @@ class Profiled:
        Profiler statistics will be printed after the test results.
     '''
 
-    __implements__ = (interfaces.IProfiled,)
+    implements(interfaces.IProfiled)
 
     def runcall(self, *args, **kw):
         return apply(runcall, args, kw)

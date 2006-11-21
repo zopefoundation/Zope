@@ -30,6 +30,7 @@ import interfaces
 import utils
 import connections
 
+from zope.interface import implements
 from AccessControl import getSecurityManager
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
@@ -46,8 +47,7 @@ standard_permissions = [access_contents_information, view]
 class ZopeTestCase(base.TestCase):
     '''Base test case for Zope testing'''
 
-    __implements__ = (interfaces.IZopeSecurity,
-                      base.TestCase.__implements__)
+    implements(interfaces.IZopeSecurity)
 
     _setup_fixture = 1
 
@@ -119,9 +119,6 @@ class FunctionalTestCase(functional.Functional, ZopeTestCase):
        You can mix-in Functional with every xTestCase
        to turn it into a functional test case.
     '''
-
-    __implements__ = (functional.Functional.__implements__,
-                      ZopeTestCase.__implements__)
 
 
 from base import app

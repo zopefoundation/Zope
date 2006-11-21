@@ -23,6 +23,7 @@ import utils
 import interfaces
 import connections
 
+from zope.interface import implements
 from AccessControl.SecurityManagement import noSecurityManager
 
 
@@ -44,8 +45,7 @@ class TestCase(profiler.Profiled, unittest.TestCase, object):
     '''Base test case for Zope testing
     '''
 
-    __implements__ = (interfaces.IZopeTestCase,
-                      profiler.Profiled.__implements__)
+    implements(interfaces.IZopeTestCase)
 
     def afterSetUp(self):
         '''Called after setUp() has completed. This is

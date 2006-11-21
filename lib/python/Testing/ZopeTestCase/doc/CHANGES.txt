@@ -1,3 +1,6 @@
+0.9.10 (Zope 2.11 edition)
+- Switched to Zope3 interfaces.
+
 0.9.9 (Zope 2.11 edition)
 - transaction.commit(1) is deprecated in favor of transaction.savepoint(1).
 - Don't break if Python distros ship without profile support (Debian, Ubuntu).

@@ -122,8 +122,9 @@ Class TestCase
     Base test case for Zope testing
     (derived from unittest.TestCase)
 
-    __implements__ = (IZopeTestCase,
-                      Profiled.__implements__)
+    Interfaces
+
+        implements(IZopeTestCase)
 
     Methods
 
@@ -168,8 +169,9 @@ Class ZopeTestCase
     Base test case for Zope testing
     (derived from base.TestCase)
 
-    __implements__ = (IZopeSecurity,
-                      TestCase.__implements__)
+    Interfaces
+
+        implements(IZopeSecurity)
 
     Methods
 
@@ -188,8 +190,9 @@ Class FunctionalTestCase
     Convenience class for functional unit testing
     (derived from Functional and ZopeTestCase)
 
-    __implements__ = (Functional.__implements__,
-                      ZopeTestCase.__implements__)
+    Interfaces
+
+        *See base classes*
 
     Methods
 
@@ -220,9 +223,9 @@ Class PortalTestCase
     Base test case for CMF testing
     (derived from base.TestCase)
 
-    __implements__ = (IPortalTestCase,
-                      IPortalSecurity,
-                      TestCase.__implements__)
+    Interfaces
+
+        implements(IPortalTestCase, IPortalSecurity)
 
     Methods
 
@@ -262,7 +265,9 @@ Class Profiled
 
     Profiling support mix-in for xTestCases
 
-    __implements__ = (IProfiled,)
+    Interfaces
+
+        implements(IProfiled)
 
     Methods
 
@@ -284,6 +289,10 @@ Class Sandboxed
 
     Sandbox support mix-in for xTestCases
 
+    Interfaces
+
+        *No interfaces*
+
     Methods
 
         *No public methods*
@@ -304,7 +313,9 @@ Class Functional
 
     Functional testing mix-in for xTestCases
 
-    __implements__ = (IFunctional,)
+    Interfaces
+
+        implements(IFunctional)
 
     Methods
 

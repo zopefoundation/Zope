@@ -22,8 +22,8 @@ if __name__ == '__main__':
 from Testing.ZopeTestCase import *
 from Testing.ZopeTestCase.interfaces import *
 
-from Interface.Verify import verifyClass
-from Interface.Verify import verifyObject
+from zope.interface.verify import verifyClass
+from zope.interface.verify import verifyObject
 
 
 class TestAbstractClasses(TestCase):

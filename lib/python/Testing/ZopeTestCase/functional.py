@@ -22,6 +22,8 @@ import transaction
 import sandbox
 import interfaces
 
+from zope.interface import implements
+
 
 class Functional(sandbox.Sandboxed):
     '''Derive from this class and an xTestCase to get functional
@@ -31,7 +33,7 @@ class Functional(sandbox.Sandboxed):
                ...
     '''
 
-    __implements__ = (interfaces.IFunctional,)
+    implements(interfaces.IFunctional)
 
     def publish(self, path, basic=None, env=None, extra=None,
                 request_method='GET', stdin=None, handle_errors=True):
