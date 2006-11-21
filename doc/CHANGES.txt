@@ -5,7 +5,7 @@ Zope Changes
   file HISTORY.txt.
 
 
-  Zope 2.9.6 (unreleased)
+  Zope 2.9.6 (2006-11-22)
 
    Bugs fixed
 
