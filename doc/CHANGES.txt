@@ -9,13 +9,16 @@ Zope Changes
 
    Bugs fixed
 
+      - Collector #2191: extended DateTime parser for better support
+        to the ISO8601 specification.
+
       - Reworking of _cached_result in Shared.DC.ZRDB.DA.DA:
 
         - fixed KeyError reported in Collector #2212
 
         - fixed two memory leaks that occurred under high load
 
-        - fixed broken cache keys for people using the obscure 
+        - fixed broken cache keys for people using the obscure
           Shared.DC.ZRDB.DA.DA.connection_hook
 
         - fixed incorrect cache ordering resulting in newer results
@@ -45,7 +48,7 @@ Zope Changes
 
       - Call setDefaultSkin on new requests created as the result of
         ConflictError retries.
-      
+
       - Collector #2189: Fix logging of errors during product refresh.
 
       - Collector #2185: Log username for FCGI requests.
@@ -141,9 +144,9 @@ Zope Changes
 
       - Collector #2072: Applied patch to fix problem with overly restrictive
         __bobo_traverse__ security and tests.
-      
-      - Added missing Zope 3 packages: zope.app.intid, zope.app.keyreference, 
-        zope.app.session, zope.contentprovider, zope.viewlet  
+
+      - Added missing Zope 3 packages: zope.app.intid, zope.app.keyreference,
+        zope.app.session, zope.contentprovider, zope.viewlet
 
       - Updated Five to bugfix release 1.3.5.
 
