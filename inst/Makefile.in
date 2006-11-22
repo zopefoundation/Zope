@@ -81,7 +81,7 @@ test: inplace
 
 # instance:    Do an inplace build and create an instance home in the resulting
 #              software home.
-instance: build
+instance: build version_txt
 	${PYTHON} "${BASE_DIR}/utilities/mkzopeinstance.py" ${MKZ_FLAGS}
 
 # testinst:    Perform an inplace build and create an instance home in the
