@@ -82,7 +82,7 @@ test: inplace
 
 # instance:    Do an inplace build and create an instance home in the resulting
 #              software home.
-instance: build
+instance: build version_txt
 	$(PYTHON) "$(BASE_DIR)\utilities\mkzopeinstance.py" $(MKZ_FLAGS)
 
 # testinst:    Perform an inplace build and create an instance home in the
@@ -108,10 +108,10 @@ clean:
 	-$(EXISTS) "$(BASE_DIR)\lib\python\version.txt" $(RM) "$(BASE_DIR)\lib\python\version.txt"
 	-$(EXISTS) build $(RMRF) build
 
-# version_txt: create a version file in lib/python/version.txt
+# version_txt: create a version file in lib/python/Zope2/version.txt
 version_txt:
 	echo Zope $(MAJOR_VERSION).$(MINOR_VERSION)-$(RELEASE_TAG) > \
-          "$(BASE_DIR)/lib/python/version.txt"
+          "$(BASE_DIR)/lib/python/Zope2/version.txt"
 
 # sdist:       Create a source distribution file (implies clobber).
 #
