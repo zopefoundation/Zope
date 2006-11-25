@@ -21,22 +21,22 @@ $Id: test.py 33303 2005-07-13 22:28:33Z jim $
 
 import os.path, sys
 
-# Remove this directory from path:
-here = os.path.abspath(os.path.dirname(sys.argv[0]))
-sys.path[:] = [p for p in sys.path if os.path.abspath(p) != here]
+# Remove script directory from path:
+scriptdir = os.path.realpath(os.path.dirname(sys.argv[0]))
+sys.path[:] = [p for p in sys.path if os.path.realpath(p) != scriptdir]
 
 shome = os.environ.get('SOFTWARE_HOME')
 zhome = os.environ.get('ZOPE_HOME')
 ihome = os.environ.get('INSTANCE_HOME')
 
 if zhome:
-    zhome = os.path.abspath(zhome)
+    zhome = os.path.realpath(zhome)
     if shome:
-        shome = os.path.abspath(shome)
+        shome = os.path.realpath(shome)
     else:
         shome = os.path.join(zhome, 'lib', 'python')
 elif shome:
-    shome = os.path.abspath(shome)
+    shome = os.path.realpath(shome)
     zhome = os.path.dirname(os.path.dirname(shome))
 elif ihome:
     print >> sys.stderr, '''
@@ -44,8 +44,13 @@ elif ihome:
     must be set
     '''
 else:
-    # No zope home, assume that it is the script directory
-    zhome = os.path.abspath(os.path.dirname(sys.argv[0]))
+    # No zope home, derive it from script directory:
+    # (test.py lives in either ZOPE_HOME or ZOPE_HOME/bin)
+    parentdir, lastpart = os.path.split(scriptdir)
+    if lastpart == 'bin':
+        zhome = parentdir
+    else:
+        zhome = scriptdir
     shome = os.path.join(zhome, 'lib', 'python')
 
 sys.path.insert(0, shome)
