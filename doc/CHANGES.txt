@@ -10,6 +10,7 @@ Zope Changes
 
       -  fixed the creation of lib/python/Zope2/version.txt
 
+      - added Python 2.4.4 as optimal Python version to 'configure'
 
   Zope 2.10.1 (2006-11-22)
 
