@@ -4,6 +4,12 @@ Zope Changes
   Change information for previous versions of Zope can be found in the
   file HISTORY.txt.
 
+  Zope 2.9.7 (unreleased)
+
+   Bugs fixed
+
+      - added Python 2.4.4 as optimal Python version to 'configure'
+
 
   Zope 2.9.6 (2006-11-22)
 
