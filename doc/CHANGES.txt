@@ -15,9 +15,6 @@ Zope Changes
 
    Bugs fixed
 
-      - Collector #2191: extended DateTime parser for better support
-        to the ISO8601 specification.
-
       - Reworking of _cached_result in Shared.DC.ZRDB.DA.DA:
 
         - fixed KeyError reported in Collector #2212

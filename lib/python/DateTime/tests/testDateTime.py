@@ -1,16 +1,6 @@
-##############################################################################
-#
-# Copyright (c) 2003 Zope Corporation and Contributors.
-# All Rights Reserved.
-#
-# This software is subject to the provisions of the Zope Public License,
-# Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
-# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
-# WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-# WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE.
-#
-##############################################################################
+
+# To run these tests, use:
+#   python unittest.py DateTime.tests.suite
 
 import math
 import os
@@ -48,30 +38,30 @@ class DateTimeTests(unittest.TestCase):
                          math.floor(dt2.time * 86400000.0))
 
     def testBug1203(self):
-        # 01:59:60 occurred in old DateTime
+        '''01:59:60 occurred in old DateTime'''
         dt = DateTime(7200, 'GMT')
         self.assert_(str(dt).find('60') < 0, dt)
 
     def testDSTInEffect(self):
-        # Checks GMT offset for a DST date in the US/Eastern time zone
+        '''Checks GMT offset for a DST date in the US/Eastern time zone'''
         dt = DateTime(2000, 5, 9, 15, 0, 0, 'US/Eastern')
         self.assertEqual(dt.toZone('GMT').hour(), 19,
                          (dt, dt.toZone('GMT')))
 
     def testDSTNotInEffect(self):
-        # Checks GMT offset for a non-DST date in the US/Eastern time zone
+        '''Checks GMT offset for a non-DST date in the US/Eastern time zone'''
         dt = DateTime(2000, 11, 9, 15, 0, 0, 'US/Eastern')
         self.assertEqual(dt.toZone('GMT').hour(), 20,
                          (dt, dt.toZone('GMT')))
 
     def testAddPrecision(self):
-        # Precision of serial additions
+        '''Precision of serial additions'''
         dt = DateTime()
         self.assertEqual(str(dt + 0.10 + 3.14 + 6.76 - 10), str(dt),
                          dt)
 
     def testConstructor3(self):
-        # Constructor from date/time string
+        '''Constructor from date/time string'''
         dt = DateTime()
         dt1s = '%d/%d/%d %d:%d:%f %s' % (
             dt.year(),
@@ -87,19 +77,19 @@ class DateTimeTests(unittest.TestCase):
         self.assertEqual(repr(dt),repr(dt1))
 
     def testConstructor4(self):
-        # Constructor from time float
+        '''Constructor from time float'''
         dt = DateTime()
         dt1 = DateTime(float(dt))
         self._compare(dt,dt1)
 
     def testConstructor5(self):
-        # Constructor from time float and timezone
+        '''Constructor from time float and timezone'''
         dt = DateTime()
         dt1 = DateTime(float(dt), dt.timezone())
         self.assertEqual(str(dt), str(dt1), (dt, dt1))
 
     def testConstructor6(self):
-        # Constructor from year and julian date
+        '''Constructor from year and julian date'''
         # This test must normalize the time zone, or it *will* break when
         # DST changes!
         dt1 = DateTime(2000, 5.500000578705)
@@ -107,7 +97,7 @@ class DateTimeTests(unittest.TestCase):
         self._compare(dt, dt1)
 
     def testConstructor7(self):
-        # Constructor from parts
+        '''Constructor from parts'''
         dt = DateTime()
         dt1 = DateTime(
             dt.year(),
@@ -122,19 +112,19 @@ class DateTimeTests(unittest.TestCase):
         self.assertEqual(repr(dt), repr(dt1))
 
     def testDayOfWeek(self):
-        # strftime() used to always be passed a day of week of 0
+        '''strftime() used to always be passed a day of week of 0.'''
         dt = DateTime('2000/6/16')
         s = dt.strftime('%A')
         self.assertEqual(s, 'Friday', (dt, s))
 
     def testOldDate(self):
-        # Fails when an 1800 date is displayed with negative signs
+        '''Fails when an 1800 date is displayed with negative signs'''
         dt = DateTime('1830/5/6 12:31:46.213 pm')
         dt1 = dt.toZone('GMT+6')
         self.assert_(str(dt1).find('-') < 0, (dt, dt1))
 
     def testSubtraction(self):
-        # Reconstruction of a DateTime from its parts, with subtraction
+        '''Reconstruction of a DateTime from its parts, with subtraction'''
         dt = DateTime()
         dt1 = dt - 3.141592653
         dt2 = DateTime(
@@ -148,25 +138,25 @@ class DateTimeTests(unittest.TestCase):
         self.assertEqual(dt1, dt3, (dt, dt1, dt2, dt3))
 
     def testTZ1add(self):
-        # Time zone manipulation: add to a date
+        '''Time zone manipulation: add to a date'''
         dt = DateTime('1997/3/8 1:45am GMT-4')
         dt1 = DateTime('1997/3/9 1:45pm GMT+8')
         self.assertEqual(dt + 1.0, dt1, (dt, dt1))
 
     def testTZ1sub(self):
-        # Time zone manipulation: subtract from a date
+        '''Time zone manipulation: subtract from a date'''
         dt = DateTime('1997/3/8 1:45am GMT-4')
         dt1 = DateTime('1997/3/9 1:45pm GMT+8')
         self.assertEqual(dt1 - 1.0, dt, (dt, dt1))
 
     def testTZ1diff(self):
-        # Time zone manipulation: diff two dates
+        '''Time zone manipulation: diff two dates'''
         dt = DateTime('1997/3/8 1:45am GMT-4')
         dt1 = DateTime('1997/3/9 1:45pm GMT+8')
         self.assertEqual(dt1 - dt, 1.0, (dt, dt1))
 
     def testCompareMethods(self):
-        # Compare two dates using several methods
+        '''Compare two dates using several methods'''
         dt = DateTime('1997/1/1')
         dt1 = DateTime('1997/2/2')
         self.failUnless(dt1.greaterThan(dt))
@@ -177,7 +167,7 @@ class DateTimeTests(unittest.TestCase):
         self.failUnless(not dt.equalTo(dt1))
 
     def testCompareOperations(self, dt=None, dt1=None):
-        # Compare two dates using several operations
+        """Compare two dates using several operations"""
         if dt is None:
             dt = DateTime('1997/1/1')
         if dt1 is None:
@@ -190,7 +180,7 @@ class DateTimeTests(unittest.TestCase):
         self.failUnless(not (dt == dt1))
 
     def testUpgradeOldInstances(self):
-        # Compare dates that don't have the _millis attribute yet
+        """Compare dates that don't have the _millis attribute yet."""
         dt = DateTime('1997/1/1')
         dt1 = DateTime('1997/2/2')
         del dt._millis
@@ -198,7 +188,7 @@ class DateTimeTests(unittest.TestCase):
         self.testCompareOperations(dt, dt1)
 
     def testTZ2(self):
-        # Time zone manipulation test 2
+        '''Time zone manipulation test 2'''
         dt = DateTime()
         dt1 = dt.toZone('GMT')
         s = dt.second()
@@ -206,13 +196,13 @@ class DateTimeTests(unittest.TestCase):
         self.assertEqual(s, s1, (dt, dt1, s, s1))
 
     def testTZDiffDaylight(self):
-        # Diff dates across daylight savings dates
+        '''Diff dates across daylight savings dates'''
         dt = DateTime('2000/6/8 1:45am US/Eastern')
         dt1 = DateTime('2000/12/8 12:45am US/Eastern')
         self.assertEqual(dt1 - dt, 183, (dt, dt1, dt1 - dt))
 
     def testY10KDate(self):
-        # Comparison of a Y10K date and a Y2K date
+        '''Comparison of a Y10K date and a Y2K date'''
         dt = DateTime('10213/09/21')
         dt1 = DateTime(2000, 1, 1)
 
@@ -222,7 +212,7 @@ class DateTimeTests(unittest.TestCase):
         self.assertEqual(ddays, 3000000L, ddays)
 
     def test_tzoffset(self):
-        # Test time-zone given as an offset
+        '''Test time-zone given as an offset'''
 
         # GMT
         dt = DateTime('Tue, 10 Sep 2001 09:41:03 GMT')
@@ -257,106 +247,38 @@ class DateTimeTests(unittest.TestCase):
         self.assertEqual(dt.tzoffset(), 15900)
 
     def testISO8601(self):
-        # ISO8601 reference dates
+        ''' iso 8601 dates '''
+
         ref0 = DateTime('2002/5/2 8:00am GMT')
         ref1 = DateTime('2002/5/2 8:00am US/Eastern')
-        ref2 = DateTime('2006/11/6 10:30 UTC')
-        ref3 = DateTime('2004/06/14 14:30:15 GMT-3')
-        ref4 = DateTime('2006/01/01 UTC')
 
-        # Basic tests
         isoDt = DateTime('2002-05-02T08:00:00')
-        self.assertEqual(ref0, isoDt)
+        self.assertEqual( ref0, isoDt)
         isoDt = DateTime('2002-05-02T08:00:00Z')
-        self.assertEqual(ref0, isoDt)
+        self.assertEqual( ref0, isoDt)
+
         isoDt = DateTime('2002-05-02T08:00:00-04:00')
-        self.assertEqual(ref1, isoDt)
-        isoDt = DateTime('2002-05-02 08:00:00-04:00')
-        self.assertEqual(ref1, isoDt)
+        self.assertEqual( ref1, isoDt)
 
         # Bug 1386: the colon in the timezone offset is optional
         isoDt = DateTime('2002-05-02T08:00:00-0400')
-        self.assertEqual(ref1, isoDt)
+        self.assertEqual( ref1, isoDt)
+        
+        dgood = '2002-05-02'
+        tgood = 'T08:00:00-04:00'
+        for dbad in '2002-5-2', '2002-10-2', '2002-2-10', '02-2-10':
+            self.assertRaises(DateTime.SyntaxError, DateTime, dbad)
+            self.assertRaises(DateTime.SyntaxError, DateTime, dbad + tgood)
+        for tbad in '08:00', 'T8:00': #, 'T08:00Z-04:00':
+            self.assertRaises(DateTime.SyntaxError, DateTime, dgood + tbad)
 
-        # Bug 2191: date reduced formats
-        isoDt = DateTime('2006-01-01')
-        self.assertEqual(ref4, isoDt)
-        isoDt = DateTime('200601-01')
-        self.assertEqual(ref4, isoDt)
-        isoDt = DateTime('20060101')
-        self.assertEqual(ref4, isoDt)
-        isoDt = DateTime('2006-01')
-        self.assertEqual(ref4, isoDt)
-        isoDt = DateTime('200601')
-        self.assertEqual(ref4, isoDt)
-        isoDt = DateTime('2006')
-        self.assertEqual(ref4, isoDt)
-
-        # Bug 2191: date/time separators are also optional
-        isoDt = DateTime('20020502T08:00:00')
-        self.assertEqual(ref0, isoDt)
-        isoDt = DateTime('2002-05-02T080000')
-        self.assertEqual(ref0, isoDt)
-        isoDt = DateTime('20020502T080000')
-        self.assertEqual(ref0, isoDt)
-
-        # Bug 2191: timezones with only one digit for hour
-        isoDt = DateTime('20020502T080000+0')
-        self.assertEqual(ref0, isoDt)
-        isoDt = DateTime('20020502 080000-4')
-        self.assertEqual(ref1, isoDt)
-        isoDt = DateTime('20020502T080000-400')
-        self.assertEqual(ref1, isoDt)
-        isoDt = DateTime('20020502T080000-4:00')
-        self.assertEqual(ref1, isoDt)
-
-        # Bug 2191: optional seconds/minutes
-        isoDt = DateTime('2002-05-02T0800')
-        self.assertEqual(ref0, isoDt)
-        isoDt = DateTime('2002-05-02T08')
-        self.assertEqual(ref0, isoDt)
-
-        # Bug 2191: week format
-        isoDt = DateTime('2002-W18-4T0800')
-        self.assertEqual(ref0, isoDt)
-        isoDt = DateTime('2002-W184T0800')
-        self.assertEqual(ref0, isoDt)
-        isoDt = DateTime('2002W18-4T0800')
-        self.assertEqual(ref0, isoDt)
-        isoDt = DateTime('2002W184T08')
-        self.assertEqual(ref0, isoDt)
-        isoDt = DateTime('2004-W25-1T14:30:15-03:00')
-        self.assertEqual(ref3, isoDt)
-        isoDt = DateTime('2004-W25T14:30:15-03:00')
-        self.assertEqual(ref3, isoDt)
-
-        # Bug 2191: day of year format
-        isoDt = DateTime('2002-122T0800')
-        self.assertEqual(ref0, isoDt)
-        isoDt = DateTime('2002122T0800')
-        self.assertEqual(ref0, isoDt)
-
-        # Bug 2191: hours/minutes fractions
-        isoDt = DateTime('2006-11-06T10.5')
-        self.assertEqual(ref2, isoDt)
-        isoDt = DateTime('2006-11-06T10,5')
-        self.assertEqual(ref2, isoDt)
-        isoDt = DateTime('20040614T1430.25-3')
-        self.assertEqual(ref3, isoDt)
-        isoDt = DateTime('2004-06-14T1430,25-3')
-        self.assertEqual(ref3, isoDt)
-        isoDt = DateTime('2004-06-14T14:30.25-3')
-        self.assertEqual(ref3, isoDt)
-        isoDt = DateTime('20040614T14:30,25-3')
-        self.assertEqual(ref3, isoDt)
-
-        # ISO8601 standard format
         iso8601_string = '2002-05-02T08:00:00-04:00'
         iso8601DT = DateTime(iso8601_string)
         self.assertEqual(iso8601_string, iso8601DT.ISO8601())
 
     def testJulianWeek(self):
-        # Check JulianDayWeek function
+        """ check JulianDayWeek function """
+
         try:
             import gzip
         except ImportError:
@@ -378,7 +300,7 @@ class DateTimeTests(unittest.TestCase):
         self.assertEqual(DateTime(d), d)
 
     def testRFC822(self):
-        # rfc822 conversion
+        '''rfc822 conversion'''
         dt = DateTime('2002-05-02T08:00:00+00:00')
         self.assertEqual(dt.rfc822(), 'Thu, 02 May 2002 08:00:00 +0000')
 
@@ -393,10 +315,9 @@ class DateTimeTests(unittest.TestCase):
         dts = dt.rfc822().split(' ')
         times = dts[4].split(':')
         _isDST = time.localtime(time.time())[8]
-        if _isDST:
-            offset = time.altzone
-        else:
-            offset = time.timezone
+        if _isDST: offset = time.altzone
+        else:      offset = time.timezone
+
         self.assertEqual(dts[0], dt.aDay() + ',')
         self.assertEqual(int(dts[1]), dt.day())
         self.assertEqual(dts[2], dt.aMonth())
@@ -406,14 +327,14 @@ class DateTimeTests(unittest.TestCase):
         self.assertEqual(int(times[2]), int(dt.second()))
         self.assertEqual(dts[5], "%+03d%02d" % divmod( (-offset/60), 60) )
 
+
     def testInternationalDateformat(self):
+
         for year in range(1990, 2020):
-            for month in range (1, 13):
-                for day in range(1, 32):
-                    try:
-                        d_us = DateTime("%d/%d/%d" % (year,month,day))
-                    except:
-                        continue
+            for month in range (1,13):
+                for day in range(1,32):
+                    try: d_us = DateTime("%d/%d/%d" % (year,month,day))
+                    except: continue
 
                     d_int = DateTime("%d.%d.%d" % (day,month,year),
                                      datefmt="international")
@@ -430,9 +351,9 @@ class DateTimeTests(unittest.TestCase):
         except DateTime.TimeError:
             self.fail('Zope Collector issue #484 (negative time bug): '
                       'TimeError raised')
-
+    
     def testStrftimeTZhandling(self):
-        # strftime timezone testing
+        '''strftime timezone testing'''
         # This is a test for collector issue #1127
         format = '%Y-%m-%d %H:%M %Z'
         dt = DateTime('Wed, 19 Nov 2003 18:32:07 -0215')
@@ -442,14 +363,14 @@ class DateTimeTests(unittest.TestCase):
         self.assertEqual(dt_string, dt_localstring)
 
     def testStrftimeFarDates(self):
-        # Checks strftime in dates <= 1900 or >= 2038
+        '''Checks strftime in dates <= 1900 or >= 2038'''
         dt = DateTime('1900/01/30')
         self.assertEqual(dt.strftime('%d/%m/%Y'), '30/01/1900')
         dt = DateTime('2040/01/30')
         self.assertEqual(dt.strftime('%d/%m/%Y'), '30/01/2040')
 
     def testZoneInFarDates(self):
-        # Checks time zone in dates <= 1900 or >= 2038
+        '''Checks time zone in dates <= 1900 or >= 2038'''
         dt1 = DateTime('2040/01/30 14:33 GMT+1')
         dt2 = DateTime('2040/01/30 11:33 GMT-2')
         self.assertEqual(dt1.strftime('%d/%m/%Y %H:%M'),
@@ -459,7 +380,6 @@ class DateTimeTests(unittest.TestCase):
         dt = DateTime('2002-05-02T08:00:00+00:00')
         ok = dt.strftime('Le %d/%m/%Y a %Hh%M').replace('a', u'\xe0')
         self.assertEqual(dt.strftime(u'Le %d/%m/%Y \xe0 %Hh%M'), ok)
-
 
 def test_suite():
     return unittest.makeSuite(DateTimeTests)
