@@ -8,12 +8,17 @@ Zope Changes
 
    Bugs fixed
 
+      - Reverted backward-incompatible fix for Collector #2191.
+
       - added Python 2.4.4 as optimal Python version to 'configure'
 
 
   Zope 2.9.6 (2006-11-22)
 
    Bugs fixed
+
+      - Collector #2191: extended DateTime parser for better support
+        to the ISO8601 specification.
 
       - Reworking of _cached_result in Shared.DC.ZRDB.DA.DA:
 
