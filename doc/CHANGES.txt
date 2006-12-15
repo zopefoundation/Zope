@@ -109,6 +109,8 @@ Zope Changes
 
       - The defaultView directive now only looks up views, not attributes.
 
+      - Collector #2187: PUT_factory broken (fwd port from 2.10 branch).
+
     Other Changes
 
       - Disabled docutils file inclusion completely, rather than trying
