@@ -123,15 +123,30 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         self.expand = 0                                                               
         self.ZBindings_edit(self._default_bindings)
         self.output_encoding = encoding
+
+        # default content
         if not text:
             text = open(self._default_content_fn).read()
             encoding = 'utf-8'
             content_type = 'text/html'
-        self.pt_edit(text, content_type, encoding)
+        self.pt_edit(text, content_type)
 
     security.declareProtected(change_page_templates, 'pt_edit')
-    def pt_edit(self, text, content_type, encoding='utf-8'):
+    def pt_edit(self, text, content_type):
+
         text = text.strip()
+        
+        guessed_content_type = guess_type('', text)
+        if guessed_content_type != content_type:
+            raise ValueError('Guessed content-type != passed content-type (%s vs. %s)' % 
+                             (guessed_content_type, content_type))
+
+        encoding = sniffEncoding(text)
+        if content_type == 'text/xml':
+            self.output_encoding = 'utf-8'
+        else:   
+            self.output_encoding = encoding
+
         if not isinstance(text, unicode):
             text = unicode(text, encoding)
 
@@ -195,8 +210,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         if not content_type in ('text/html', 'text/xml'):
             raise ValueError('Unsupported mimetype: %s' % content_type)
 
-        encoding = sniffEncoding(text)
-        self.pt_edit(text, content_type, encoding)
+        self.pt_edit(text, content_type)
         return self.pt_editForm(manage_tabs_message='Saved changes')
 
     security.declareProtected(change_page_templates, 'pt_changePrefs')
@@ -302,12 +316,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         self.dav__simpleifhandler(REQUEST, RESPONSE, refresh=1)
         text = REQUEST.get('BODY', '')
         content_type = guess_type('', text) 
-        encoding = sniffEncoding(text)
-        if content_type == 'text/xml':
-            self.output_encoding = 'utf-8'
-        else:   
-            self.output_encoding = encoding
-        self.pt_edit(text, content_type, encoding)
+        self.pt_edit(text, content_type)
         RESPONSE.setStatus(204)
         return RESPONSE
 
