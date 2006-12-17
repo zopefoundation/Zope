@@ -1,3 +1,5 @@
+# -*- encoding: utf-8 -*.*
+
 """ZopePageTemplate regression tests.
 
 Ensures that adding a page template works correctly.
@@ -6,13 +8,46 @@ Note: Tests require Zope >= 2.7
 
 """
 
-
 import unittest
 import Zope2
 import transaction
 import zope.component.testing
 from zope.traversing.adapters import DefaultTraversable
 from Testing.makerequest import makerequest
+from Testing.ZopeTestCase import ZopeTestCase, installProduct
+from Products.PageTemplates.ZopePageTemplate import ZopePageTemplate, manage_addPageTemplate
+
+
+ascii_str = '<html><body>hello world</body></html>'
+utf8_str = '<html><body>ÃŒÃ¶Ã€</body></html>'
+iso885915_str = unicode(utf8_str, 'utf8').encode('iso-8859-15')
+
+installProduct('PageTemplates')
+
+
+class ZopePageTemplateFileTests(ZopeTestCase):
+
+    def testPT_RenderWithAscii(self):
+        manage_addPageTemplate(self.app, 'test', text=ascii_str, encoding='ascii')
+        zpt = self.app['test']
+        result = zpt.pt_render()
+        # use startswith() because the renderer appends a trailing \n
+        self.assertEqual(result.startswith(ascii_str), True)
+
+    def testPT_RenderWithISO885915(self):
+        manage_addPageTemplate(self.app, 'test', text=iso885915_str, encoding='iso-8859-15')
+        zpt = self.app['test']
+        result = zpt.pt_render()
+        # use startswith() because the renderer appends a trailing \n
+        self.assertEqual(result.startswith(iso885915_str), True)
+
+    def testPT_RenderWithUTF8(self):
+        manage_addPageTemplate(self.app, 'test', text=utf8_str, encoding='utf8')
+        zpt = self.app['test']
+        result = zpt.pt_render()
+        # use startswith() because the renderer appends a trailing \n
+        self.assertEqual(result.startswith(utf8_str), True)
+
 
 class ZPTRegressions(unittest.TestCase):
 
@@ -133,6 +168,7 @@ class DummyFileUpload:
 def test_suite():
     suite = unittest.makeSuite(ZPTRegressions)
     suite.addTests(unittest.makeSuite(ZPTMacros))
+    suite.addTests(unittest.makeSuite(ZopePageTemplateFileTests))
     return suite
 
 if __name__ == '__main__':
