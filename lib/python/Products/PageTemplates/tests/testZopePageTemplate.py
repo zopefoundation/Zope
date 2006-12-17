@@ -47,17 +47,14 @@ html_utf8_w_header = unicode(html_template_w_header, 'iso-8859-15').encode('utf-
 
 html_template_wo_header = '''
 <html>
-    <head>
-        <META http-equiv="content-type" content="text/html; charset=%s">
-    </hed>
     <body>
     test üöäÜÖÄß
     </body>
 </html>
 '''
 
-html_iso_8859_15_wo_header = html_template_wo_header % 'iso-8859-15'
-html_utf8_wo_header = unicode(html_template_wo_header, 'iso-8859-15').encode('utf-8') % 'utf-8'
+html_iso_8859_15_wo_header = html_template_wo_header 
+html_utf8_wo_header = unicode(html_template_wo_header, 'iso-8859-15').encode('utf-8') 
 
 
 installProduct('PageTemplates')
@@ -106,6 +103,13 @@ class ZopePageTemplateFileTests(ZopeTestCase):
 
     def testPutHTMLUTF8_WithCharsetInfo(self):
         self.assertEqual(self._put(html_utf8_w_header), 'utf-8')
+
+    def testPutHTMLIso8859_15WithoutCharsetInfo(self):
+        self.assertEqual(self._put(html_iso_8859_15_wo_header), 'iso-8859-15')
+
+    def testPutHTMLUTF8_WithoutCharsetInfo(self):
+        import pdb; pdb.set_trace() 
+        self.assertEqual(self._put(html_utf8_wo_header), 'iso-8859-15')
 
     def testPutXMLIso8859_15(self):
         """ XML: use always UTF-8 als output encoding """
