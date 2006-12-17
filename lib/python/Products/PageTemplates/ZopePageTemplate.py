@@ -122,17 +122,16 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         self.id = id
         self.expand = 0                                                               
         self.ZBindings_edit(self._default_bindings)
-        self.output_encoding = encoding
+        self.output_encoding = 'utf-8'
 
         # default content
         if not text:
             text = open(self._default_content_fn).read()
-            encoding = 'utf-8'
             content_type = 'text/html'
-        self.pt_edit(text, content_type)
+        self.pt_edit(text, content_type, True)
 
     security.declareProtected(change_page_templates, 'pt_edit')
-    def pt_edit(self, text, content_type):
+    def pt_edit(self, text, content_type, keep_output_encoding=False):
 
         text = text.strip()
         
@@ -142,10 +141,13 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
                              (guessed_content_type, content_type))
 
         encoding = sniffEncoding(text)
-        if content_type == 'text/xml':
-            self.output_encoding = 'utf-8'
-        else:   
-            self.output_encoding = encoding
+        if not keep_output_encoding:
+            if content_type == 'text/xml':
+                self.output_encoding = 'utf-8'
+            else:   
+                self.output_encoding = encoding
+
+        encoding = self.output_encoding
 
         if not isinstance(text, unicode):
             text = unicode(text, encoding)
@@ -161,16 +163,16 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
     source_dot_xml = Src()
 
     security.declareProtected(change_page_templates, 'pt_editAction')
-    def pt_editAction(self, REQUEST, title, text, content_type, encoding, expand):
+    def pt_editAction(self, REQUEST, title, text, content_type, expand):
         """Change the title and document."""
 
         if self.wl_isLocked():
             raise ResourceLockedError("File is locked via WebDAV")
 
         self.expand = expand
-        self.pt_setTitle(title, encoding)
+        self.pt_setTitle(title, self.output_encoding)
 
-        self.pt_edit(text, content_type, encoding)
+        self.pt_edit(text, content_type, True)
         REQUEST.set('text', self.read()) # May not equal 'text'!
         REQUEST.set('title', self.title)
         message = "Saved changes."
