@@ -35,6 +35,7 @@ def guess_type(filename, text):
 
     # check for XML ourself since guess_content_type can't
     # detect text/xml  if 'filename' won't end with .xml
+    # XXX: fix this in zope.contenttype
 
     if text.startswith('<?xml'):
         return 'text/xml'
