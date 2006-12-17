@@ -141,12 +141,15 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
                              (guessed_content_type, content_type))
 
         encoding = sniffEncoding(text)
+
+        # for WebDAV, FTP 
         if not keep_output_encoding:
             if content_type == 'text/xml':
                 self.output_encoding = 'utf-8'
             else:   
                 self.output_encoding = encoding
         else:
+            # ZMI - no changes allowed
             encoding = self.output_encoding
 
         if not isinstance(text, unicode):
