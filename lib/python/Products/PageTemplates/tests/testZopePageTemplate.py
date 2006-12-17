@@ -174,13 +174,6 @@ class ZPTRegressions(unittest.TestCase):
         pt = self.app.pt1
         self.assertEqual(pt.document_src(), self.text)
 
-    def test_BBB_for_strict_attribute(self):
-        # Collector 2213:  old templates don't have 'strict' attribute.
-        from Products.PageTemplates.ZopePageTemplate import ZopePageTemplate
-        zpt = ZopePageTemplate('issue_2213')
-        del zpt.strict  # simulate old templates
-        self.assertEqual(zpt.strict, True)
-
 
 class ZPTMacros(zope.component.testing.PlacelessSetup, unittest.TestCase):
 

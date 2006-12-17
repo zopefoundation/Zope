@@ -90,7 +90,6 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
 
     func_defaults = None
     func_code = FuncCode((), 0)
-    strict = True
 
     _default_bindings = {'name_subpath': 'traverse_subpath'}
     _default_content_fn = os.path.join(package_home(globals()),
@@ -119,11 +118,9 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
     security.declareProtected(view_management_screens,
                               'read', 'ZScriptHTML_tryForm')
 
-    def __init__(self, id, text=None, content_type=None, encoding='utf-8',
-                 strict=True):
+    def __init__(self, id, text=None, content_type=None, encoding='utf-8', strict=True):
         self.id = id
         self.expand = 0                                                               
-        self.strict = strict
         self.ZBindings_edit(self._default_bindings)
         self.output_encoding = encoding
         if not text:
@@ -135,7 +132,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
     security.declareProtected(change_page_templates, 'pt_edit')
     def pt_edit(self, text, content_type, encoding='utf-8'):
         text = text.strip()
-        if self.strict and not isinstance(text, unicode):
+        if not isinstance(text, unicode):
             text = unicode(text, encoding)
 
         self.ZCacheable_invalidate()
@@ -169,7 +166,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
 
     security.declareProtected(change_page_templates, 'pt_setTitle')
     def pt_setTitle(self, title, encoding='utf-8'):
-        if self.strict and not isinstance(title, unicode):
+        if not isinstance(title, unicode):
             title = unicode(title, encoding)
         self._setPropValue('title', title)
 
