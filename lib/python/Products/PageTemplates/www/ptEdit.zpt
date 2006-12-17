@@ -33,7 +33,7 @@
        tal:content="python:context.bobobase_modification_time().strftime('%Y-%m-%d %I:%M %p')">1/1/2000
       </div>
     </td>
-    <td align="left" valign="top" colspan="2">
+    <td align="left" valign="top" colspan="2" rowspan="2">
       <a href="source.html" tal:condition="context/html">Browse HTML source</a>
       <a href="source.xml" tal:condition="not:context/html">Browse XML source</a>
       <br />
@@ -41,6 +41,17 @@
       <input type="checkbox" value="1" name="expand:int"
              tal:attributes="checked request/expand | context/expand" />
       Expand macros when editing
+    </td>
+  </tr>
+
+  <tr>
+    <td align="left" valign="middle">
+      <div class="form-label">Output encoding</div>
+    </td>
+    <td align="left" valign="middle">
+      <div class="form-text" 
+           tal:content="context/output_encoding"
+      />
     </td>
   </tr>
 
