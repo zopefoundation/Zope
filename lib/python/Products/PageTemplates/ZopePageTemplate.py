@@ -114,6 +114,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         self.expand = 0                                                               
         self.strict = strict
         self.ZBindings_edit(self._default_bindings)
+        self.output_encoding = encoding
         if not text:
             text = open(self._default_content_fn).read()
             encoding = 'utf-8'
@@ -252,7 +253,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         try:
             response = self.REQUEST.RESPONSE
             if not response.headers.has_key('content-type'):
-                response.setHeader('content-type', self.content_type)
+                response.setHeader('content-type', '%s; charset=%s' % (self.content_type, self.output_encoding))
         except AttributeError:
             pass
 
@@ -353,6 +354,12 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
             # acquisition context, so we don't know where it is. :-(
             return None
 
+    def pt_render(self, source=False, extra_context={}):
+        result = PageTemplate.pt_render(self, source, extra_context)
+        assert isinstance(result, unicode)
+        return result.encode(self.output_encoding)
+
+
     def wl_isLocked(self):
         return 0
 
@@ -420,7 +427,7 @@ def manage_addPageTemplate(self, id, title='', text='', encoding='utf-8',
                 content_type = guess_type(filename, text) 
         encoding = sniffEncoding(text, encoding)
 
-    zpt = ZopePageTemplate(id, text, content_type, encoding)
+    zpt = ZopePageTemplate(id, text, content_type, encoding, True)
     zpt.pt_setTitle(title, encoding)
     self._setObject(id, zpt)
     zpt = getattr(self, id)
