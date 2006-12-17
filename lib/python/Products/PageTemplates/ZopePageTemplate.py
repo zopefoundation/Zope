@@ -122,7 +122,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         self.id = id
         self.expand = 0                                                               
         self.ZBindings_edit(self._default_bindings)
-        self.output_encoding = 'utf-8'
+        self.output_encoding = encoding
 
         # default content
         if not text:
@@ -146,8 +146,8 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
                 self.output_encoding = 'utf-8'
             else:   
                 self.output_encoding = encoding
-
-        encoding = self.output_encoding
+        else:
+            encoding = self.output_encoding
 
         if not isinstance(text, unicode):
             text = unicode(text, encoding)
