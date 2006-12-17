@@ -68,6 +68,7 @@ class ZopePageTemplateFileTests(ZopeTestCase):
         result = zpt.pt_render()
         # use startswith() because the renderer appends a trailing \n
         self.assertEqual(result.startswith(ascii_str), True)
+        self.assertEqual(zpt.output_encoding, 'iso-8859-15')
 
     def testPT_RenderWithISO885915(self):
         manage_addPageTemplate(self.app, 'test', text=iso885915_str, encoding='iso-8859-15')
@@ -75,6 +76,7 @@ class ZopePageTemplateFileTests(ZopeTestCase):
         result = zpt.pt_render()
         # use startswith() because the renderer appends a trailing \n
         self.assertEqual(result.startswith(iso885915_str), True)
+        self.assertEqual(zpt.output_encoding, 'iso-8859-15')
 
     def testPT_RenderWithUTF8(self):
         manage_addPageTemplate(self.app, 'test', text=utf8_str, encoding='utf-8')
@@ -82,6 +84,7 @@ class ZopePageTemplateFileTests(ZopeTestCase):
         result = zpt.pt_render()
         # use startswith() because the renderer appends a trailing \n
         self.assertEqual(result.startswith(utf8_str), True)
+        self.assertEqual(zpt.output_encoding, 'iso-8859-15')
 
     def _createZPT(self):
         manage_addPageTemplate(self.app, 'test', text=utf8_str, encoding='utf-8')
