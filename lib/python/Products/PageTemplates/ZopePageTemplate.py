@@ -305,7 +305,10 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         text = REQUEST.get('BODY', '')
         content_type = guess_type('', text) 
         encoding = sniffEncoding(text, self.output_encoding)
-        self.output_encoding = encoding
+        if content_type == 'text/xml':
+            self.output_encoding = 'utf-8'
+        else:   
+            self.output_encoding = encoding
         self.pt_edit(text, content_type, encoding)
         RESPONSE.setStatus(204)
         return RESPONSE
