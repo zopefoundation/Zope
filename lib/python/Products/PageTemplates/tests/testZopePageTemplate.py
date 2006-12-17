@@ -22,8 +22,7 @@ ascii_str = '<html><body>hello world</body></html>'
 iso885915_str = '<html><body>üöäÜÖÄß</body></html>'
 utf8_str = unicode(iso885915_str, 'iso-8859-15').encode('utf-8')
 
-xml_template = '''
-<?xml vesion="1.0" encoding="%s"?>
+xml_template = '''<?xml vesion="1.0" encoding="%s"?>
 <foo>
 üöäÜÖÄß
 </foo>
@@ -81,12 +80,40 @@ class ZopePageTemplateFileTests(ZopeTestCase):
         self.assertEqual(result.startswith(iso885915_str), True)
 
     def testPT_RenderWithUTF8(self):
-        manage_addPageTemplate(self.app, 'test', text=utf8_str, encoding='utf8')
+        manage_addPageTemplate(self.app, 'test', text=utf8_str, encoding='utf-8')
         zpt = self.app['test']
         result = zpt.pt_render()
         # use startswith() because the renderer appends a trailing \n
         self.assertEqual(result.startswith(utf8_str), True)
 
+    def _createZPT(self):
+        manage_addPageTemplate(self.app, 'test', text=utf8_str, encoding='utf-8')
+        zpt = self.app['test']
+        return zpt
+
+    def _makePUTRequest(self, body):
+        return {'BODY' : body}
+
+    def _put(self, text):
+        zpt = self._createZPT()
+        REQUEST = self.app.REQUEST
+        REQUEST.set('BODY', text)
+        zpt.PUT(REQUEST, REQUEST.RESPONSE)
+        return zpt.output_encoding
+
+    def testPutHTMLIso8859_15WithCharsetInfo(self):
+        self.assertEqual(self._put(html_iso_8859_15_w_header), 'iso-8859-15')
+
+    def testPutHTMLUTF8_WithCharsetInfo(self):
+        self.assertEqual(self._put(html_utf8_w_header), 'utf-8')
+
+    def testPutXMLIso8859_15(self):
+        """ XML: use always UTF-8 als output encoding """
+        self.assertEqual(self._put(xml_iso_8859_15), 'utf-8')
+
+    def testPutXMLUTF8(self):
+        """ XML: use always UTF-8 als output encoding """
+        self.assertEqual(self._put(xml_utf8), 'utf-8')
 
 class ZPTRegressions(unittest.TestCase):
 
