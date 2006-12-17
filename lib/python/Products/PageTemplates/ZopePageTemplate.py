@@ -41,7 +41,8 @@ from Products.PageTemplates.PageTemplateFile import guess_type
 from Products.PageTemplates.Expressions import SecureModuleImporter
 
 # regular expression to extract the encoding from the XML preamble
-encoding_reg = re.compile('<\?xml.*?encoding="(.*?)".*?\?>', re.M)
+encoding_reg = re.compile(r'<\?xml.*?encoding="(.*?)".*?\?>', re.M)
+charset_reg = re.compile(r'<meta.*?charset=(?P<charset>[\w\-]*).*?>', (re.I|re.M|re.S))
 
 preferred_encodings = ['utf-8', 'iso-8859-15']
 if os.environ.has_key('ZPT_PREFERRED_ENCODING'):
@@ -49,10 +50,19 @@ if os.environ.has_key('ZPT_PREFERRED_ENCODING'):
 
 def sniffEncoding(text, default_encoding='utf-8'):
     """Try to determine the encoding from html or xml"""
+
+    # sniff into the XML preamble
     if text.startswith('<?xml'):
         mo = encoding_reg.search(text)
         if mo:
             return mo.group(1)
+   
+    # sniff for <meta http-equiv="content-type" ...> header
+    else:
+        mo = charset_reg.search(text)
+        if mo:
+            return mo.groupdict()['charset']
+
     return default_encoding
 
 class Src(Acquisition.Explicit):
@@ -79,7 +89,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
 
     func_defaults = None
     func_code = FuncCode((), 0)
-    strict = False
+    strict = True
 
     _default_bindings = {'name_subpath': 'traverse_subpath'}
     _default_content_fn = os.path.join(package_home(globals()),
@@ -109,7 +119,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
                               'read', 'ZScriptHTML_tryForm')
 
     def __init__(self, id, text=None, content_type=None, encoding='utf-8',
-                 strict=False):
+                 strict=True):
         self.id = id
         self.expand = 0                                                               
         self.strict = strict
@@ -294,7 +304,9 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         self.dav__simpleifhandler(REQUEST, RESPONSE, refresh=1)
         text = REQUEST.get('BODY', '')
         content_type = guess_type('', text) 
-        self.pt_edit(text, content_type, self.output_encoding)
+        encoding = sniffEncoding(text, self.output_encoding)
+        self.output_encoding = encoding
+        self.pt_edit(text, content_type, encoding)
         RESPONSE.setStatus(204)
         return RESPONSE
 
