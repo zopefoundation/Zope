@@ -1,4 +1,4 @@
-# -*- encoding: utf-8 -*.*
+# -*- encoding: iso-8859-15 -*-
 
 """ZopePageTemplate regression tests.
 
@@ -19,8 +19,47 @@ from Products.PageTemplates.ZopePageTemplate import ZopePageTemplate, manage_add
 
 
 ascii_str = '<html><body>hello world</body></html>'
-utf8_str = '<html><body>ÃƒÅ’ÃƒÂ¶Ãƒâ‚¬</body></html>'
-iso885915_str = unicode(utf8_str, 'utf8').encode('iso-8859-15')
+iso885915_str = '<html><body>üöäÜÖÄß</body></html>'
+utf8_str = unicode(iso885915_str, 'iso-8859-15').encode('utf-8')
+
+xml_template = '''
+<?xml vesion="1.0" encoding="%s"?>
+<foo>
+üöäÜÖÄß
+</foo>
+'''
+
+xml_iso_8859_15 = xml_template % 'iso-8859-15'
+xml_utf8 = unicode(xml_template, 'iso-8859-15').encode('utf-8') % 'utf-8'
+
+html_template_w_header = '''
+<html>
+    <head>
+        <META http-equiv="content-type" content="text/html; charset=%s">
+    </hed>
+    <body>
+    test üöäÜÖÄß
+    </body>
+</html>
+'''
+
+html_iso_8859_15_w_header = html_template_w_header % 'iso-8859-15'
+html_utf8_w_header = unicode(html_template_w_header, 'iso-8859-15').encode('utf-8') % 'utf-8'
+
+html_template_wo_header = '''
+<html>
+    <head>
+        <META http-equiv="content-type" content="text/html; charset=%s">
+    </hed>
+    <body>
+    test üöäÜÖÄß
+    </body>
+</html>
+'''
+
+html_iso_8859_15_wo_header = html_template_wo_header % 'iso-8859-15'
+html_utf8_wo_header = unicode(html_template_wo_header, 'iso-8859-15').encode('utf-8') % 'utf-8'
+
 
 installProduct('PageTemplates')
 
