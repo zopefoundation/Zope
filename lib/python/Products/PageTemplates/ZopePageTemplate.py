@@ -48,7 +48,7 @@ preferred_encodings = ['utf-8', 'iso-8859-15']
 if os.environ.has_key('ZPT_PREFERRED_ENCODING'):
     preferred_encodings.insert(0, os.environ['ZPT_PREFERRED_ENCODING'])
 
-def sniffEncoding(text, default_encoding='utf-8'):
+def sniffEncoding(text):
     """Try to determine the encoding from html or xml"""
 
     # sniff into the XML preamble
@@ -56,14 +56,15 @@ def sniffEncoding(text, default_encoding='utf-8'):
         mo = encoding_reg.search(text)
         if mo:
             return mo.group(1)
+        return 'utf-8'
    
     # sniff for <meta http-equiv="content-type" ...> header
     else:
         mo = charset_reg.search(text)
         if mo:
             return mo.groupdict()['charset']
+        return 'iso-8859-15'
 
-    return default_encoding
 
 class Src(Acquisition.Explicit):
     """ I am scary code """
@@ -197,7 +198,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         if not content_type in ('text/html', 'text/xml'):
             raise ValueError('Unsupported mimetype: %s' % content_type)
 
-        encoding = sniffEncoding(text, encoding)
+        encoding = sniffEncoding(text)
         self.pt_edit(text, content_type, encoding)
         return self.pt_editForm(manage_tabs_message='Saved changes')
 
@@ -304,7 +305,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         self.dav__simpleifhandler(REQUEST, RESPONSE, refresh=1)
         text = REQUEST.get('BODY', '')
         content_type = guess_type('', text) 
-        encoding = sniffEncoding(text, self.output_encoding)
+        encoding = sniffEncoding(text)
         if content_type == 'text/xml':
             self.output_encoding = 'utf-8'
         else:   
@@ -429,7 +430,7 @@ def manage_addPageTemplate(self, id, title='', text='', encoding='utf-8',
             content_type = headers['content_type']
         else:
             content_type = guess_type(filename, text) 
-        encoding = sniffEncoding(text, encoding)
+        encoding = sniffEncoding(text)
 
     else:
         if hasattr(text, 'read'):
@@ -440,7 +441,7 @@ def manage_addPageTemplate(self, id, title='', text='', encoding='utf-8',
                 content_type = headers['content_type']
             else:
                 content_type = guess_type(filename, text) 
-        encoding = sniffEncoding(text, encoding)
+        encoding = sniffEncoding(text)
 
     zpt = ZopePageTemplate(id, text, content_type, encoding, True)
     zpt.pt_setTitle(title, encoding)
