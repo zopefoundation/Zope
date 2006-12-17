@@ -32,6 +32,13 @@ from zope.pagetemplate.pagetemplatefile import sniff_type
 LOG = getLogger('PageTemplateFile')
 
 def guess_type(filename, text):
+
+    # check for XML ourself since guess_content_type can't
+    # detect text/xml  if 'filename' won't end with .xml
+
+    if text.startswith('<?xml'):
+        return 'text/xml'
+
     content_type, dummy = guess_content_type(filename, text)
     if content_type in ('text/html', 'text/xml'):
         return content_type
