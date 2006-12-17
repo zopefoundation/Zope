@@ -292,8 +292,9 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         """ Handle HTTP PUT requests """
         self.dav__init(REQUEST, RESPONSE)
         self.dav__simpleifhandler(REQUEST, RESPONSE, refresh=1)
-        ## XXX this should be unicode or we must pass an encoding
-        self.pt_edit(REQUEST.get('BODY', ''))
+        text = REQUEST.get('BODY', '')
+        content_type = guess_type('', text) 
+        self.pt_edit(text, content_type, self.output_encoding)
         RESPONSE.setStatus(204)
         return RESPONSE
 
@@ -304,8 +305,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
     security.declareProtected(ftp_access, 'manage_FTPget')
     def manage_FTPget(self):
         "Get source for FTP download"
-        self.REQUEST.RESPONSE.setHeader('Content-Type', self.content_type)
-        return self.read()
+        return self.pt_render()
 
     security.declareProtected(view_management_screens, 'html')
     def html(self):
