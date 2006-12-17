@@ -96,28 +96,39 @@ class ZopePageTemplateFileTests(ZopeTestCase):
         REQUEST = self.app.REQUEST
         REQUEST.set('BODY', text)
         zpt.PUT(REQUEST, REQUEST.RESPONSE)
-        return zpt.output_encoding
+        return zpt
 
     def testPutHTMLIso8859_15WithCharsetInfo(self):
-        self.assertEqual(self._put(html_iso_8859_15_w_header), 'iso-8859-15')
+        zpt = self._put(html_iso_8859_15_w_header)
+        self.assertEqual(zpt.output_encoding, 'iso-8859-15')
+        self.assertEqual(zpt.content_type, 'text/html')
 
     def testPutHTMLUTF8_WithCharsetInfo(self):
-        self.assertEqual(self._put(html_utf8_w_header), 'utf-8')
+        zpt = self._put(html_utf8_w_header)
+        self.assertEqual(zpt.output_encoding, 'utf-8')
+        self.assertEqual(zpt.content_type, 'text/html')
 
     def testPutHTMLIso8859_15WithoutCharsetInfo(self):
-        self.assertEqual(self._put(html_iso_8859_15_wo_header), 'iso-8859-15')
+        zpt = self._put(html_iso_8859_15_wo_header)
+        self.assertEqual(zpt.output_encoding, 'iso-8859-15')
+        self.assertEqual(zpt.content_type, 'text/html')
 
     def testPutHTMLUTF8_WithoutCharsetInfo(self):
-        import pdb; pdb.set_trace() 
-        self.assertEqual(self._put(html_utf8_wo_header), 'iso-8859-15')
+        zpt = self._put(html_utf8_wo_header)
+        self.assertEqual(zpt.output_encoding, 'iso-8859-15')
+        self.assertEqual(zpt.content_type, 'text/html')
 
     def testPutXMLIso8859_15(self):
         """ XML: use always UTF-8 als output encoding """
-        self.assertEqual(self._put(xml_iso_8859_15), 'utf-8')
+        zpt = self._put(xml_iso_8859_15)
+        self.assertEqual(zpt.output_encoding, 'utf-8')
+        self.assertEqual(zpt.content_type, 'text/xml')
 
     def testPutXMLUTF8(self):
         """ XML: use always UTF-8 als output encoding """
-        self.assertEqual(self._put(xml_utf8), 'utf-8')
+        zpt = self._put(xml_utf8)
+        self.assertEqual(zpt.output_encoding, 'utf-8')
+        self.assertEqual(zpt.content_type, 'text/xml')
 
 class ZPTRegressions(unittest.TestCase):
 
