@@ -107,7 +107,10 @@ class ZopePageTemplateFileTests(ZopeTestCase):
     def testWriteAcceptsUnicode(self):
         manage_addPageTemplate(self.app, 'test', '', encoding='utf-8')
         zpt = self.app['test']
-        zpt.write(u'this is unicode')
+        s = u'this is unicode'
+        zpt.write(s)
+        self.assertEqual(zpt.read(), s)
+        self.assertEqual(isinstance(zpt.read(), unicode), True)
 
     def testWriteWontAcceptsNonUnicode(self):
         manage_addPageTemplate(self.app, 'test', '', encoding='utf-8')
