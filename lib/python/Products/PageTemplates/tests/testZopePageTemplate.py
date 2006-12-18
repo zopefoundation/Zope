@@ -16,6 +16,7 @@ from zope.traversing.adapters import DefaultTraversable
 from Testing.makerequest import makerequest
 from Testing.ZopeTestCase import ZopeTestCase, installProduct
 from Products.PageTemplates.ZopePageTemplate import ZopePageTemplate, manage_addPageTemplate
+from Products.PageTemplates.utils import encodingFromXMLPreamble, charsetFromMetaEquiv
 
 
 ascii_str = '<html><body>hello world</body></html>'
@@ -59,6 +60,23 @@ html_utf8_wo_header = unicode(html_template_wo_header, 'iso-8859-15').encode('ut
 
 installProduct('PageTemplates')
 
+class ZPTUtilsTests(unittest.TestCase):
+
+    def testExtractEncodingFromXMLPreamble(self):
+        extract = encodingFromXMLPreamble
+        self.assertEqual(extract('<?xml version="1.0" ?>'), 'utf-8')
+        self.assertEqual(extract('<?xml encoding="utf-8" version="1.0" ?>'), 'utf-8')
+        self.assertEqual(extract('<?xml encoding="UTF-8" version="1.0" ?>'), 'utf-8')
+        self.assertEqual(extract('<?xml encoding="ISO-8859-15" version="1.0" ?>'), 'iso-8859-15')
+        self.assertEqual(extract('<?xml encoding="iso-8859-15" version="1.0" ?>'), 'iso-8859-15')
+
+    def testExtractCharsetFromMetaHTTPEquivTag(self):
+        extract = charsetFromMetaEquiv
+        self.assertEqual(extract('<html><META http-equiv="content-type" content="text/html; charset=UTF-8"></html>'), 'utf-8')
+        self.assertEqual(extract('<html><META http-equiv="content-type" content="text/html; charset=iso-8859-15"></html>'), 'iso-8859-15')
+        self.assertEqual(extract('<html><META http-equiv="content-type" content="text/html"></html>'), None)
+        self.assertEqual(extract('<html>...<html>'), None)
+        
 
 class ZopePageTemplateFileTests(ZopeTestCase):
 
@@ -67,7 +85,7 @@ class ZopePageTemplateFileTests(ZopeTestCase):
         zpt = self.app['test']
         result = zpt.pt_render()
         # use startswith() because the renderer appends a trailing \n
-        self.assertEqual(result.startswith(ascii_str), True)
+        self.assertEqual(result.encode('ascii').startswith(ascii_str), True)
         self.assertEqual(zpt.output_encoding, 'iso-8859-15')
 
     def testPT_RenderWithISO885915(self):
@@ -75,15 +93,16 @@ class ZopePageTemplateFileTests(ZopeTestCase):
         zpt = self.app['test']
         result = zpt.pt_render()
         # use startswith() because the renderer appends a trailing \n
-        self.assertEqual(result.startswith(iso885915_str), True)
+        self.assertEqual(result.encode('iso-8859-15').startswith(iso885915_str), True)
         self.assertEqual(zpt.output_encoding, 'iso-8859-15')
 
     def testPT_RenderWithUTF8(self):
+        import pdb; pdb.set_trace() 
         manage_addPageTemplate(self.app, 'test', text=utf8_str, encoding='utf-8')
         zpt = self.app['test']
         result = zpt.pt_render()
         # use startswith() because the renderer appends a trailing \n
-        self.assertEqual(result.startswith(utf8_str), True)
+        self.assertEqual(result.encode('utf-8').startswith(utf8_str), True)
         self.assertEqual(zpt.output_encoding, 'iso-8859-15')
 
     def _createZPT(self):
@@ -243,9 +262,11 @@ class DummyFileUpload:
 
        
 def test_suite():
-    suite = unittest.makeSuite(ZPTRegressions)
-    suite.addTests(unittest.makeSuite(ZPTMacros))
-    suite.addTests(unittest.makeSuite(ZopePageTemplateFileTests))
+#    suite = unittest.makeSuite(ZPTRegressions)
+    suite = unittest.makeSuite(ZPTUtilsTests)
+#    suite.addTests(unittest.makeSuite(ZPTUtilsTests))
+#    suite.addTests(unittest.makeSuite(ZPTMacros))
+#    suite.addTests(unittest.makeSuite(ZopePageTemplateFileTests))
     return suite
 
 if __name__ == '__main__':
