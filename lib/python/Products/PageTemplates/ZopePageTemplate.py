@@ -290,7 +290,6 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         try:
             response = self.REQUEST.RESPONSE
             if not response.headers.has_key('content-type'):
-#                response.setHeader('content-type', '%s; charset=%s' % (self.content_type, self.output_encoding))
                 response.setHeader('content-type', self.content_type)
         except AttributeError:
             pass
