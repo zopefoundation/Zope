@@ -278,6 +278,8 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         return c
 
     def write(self, text):
+        if not isinstance(text, unicode):
+            raise TypeError("'text' parameter must be unicode")
         self.ZCacheable_invalidate()
         ZopePageTemplate.inheritedAttribute('write')(self, text)
 
