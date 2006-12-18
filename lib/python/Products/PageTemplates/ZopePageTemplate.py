@@ -40,6 +40,8 @@ from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from Products.PageTemplates.PageTemplateFile import guess_type
 from Products.PageTemplates.Expressions import SecureModuleImporter
 
+from Products.PageTemplates.utils import encodingFromXMLPreamble, charsetFromMetaEquiv
+            
 # regular expression to extract the encoding from the XML preamble
 encoding_reg = re.compile(r'<\?xml.*?encoding="(.*?)".*?\?>', re.M)
 charset_reg = re.compile(r'<meta.*?charset=(?P<charset>[\w\-]*).*?>', (re.I|re.M|re.S))
@@ -118,11 +120,11 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
     security.declareProtected(view_management_screens,
                               'read', 'ZScriptHTML_tryForm')
 
-    def __init__(self, id, text=None, content_type=None, encoding='utf-8', strict=True):
+    def __init__(self, id, text=None, content_type=None, encoding='utf-8', strict=True, output_encoding='utf-8'):
         self.id = id
         self.expand = 0                                                               
         self.ZBindings_edit(self._default_bindings)
-        self.output_encoding = encoding
+        self.output_encoding = output_encoding
 
         # default content
         if not text:
@@ -140,19 +142,53 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
             raise ValueError('Guessed content-type != passed content-type (%s vs. %s)' % 
                              (guessed_content_type, content_type))
 
-        encoding = sniffEncoding(text)
 
-        # for WebDAV, FTP 
-        if not keep_output_encoding:
-            if content_type == 'text/xml':
-                self.output_encoding = 'utf-8'
-            else:   
-                self.output_encoding = encoding
+        is_unicode = isinstance(text, unicode)
+        encoding = None
+        output_encoding = None
+
+        if content_type == 'text/xml':
+
+            if is_unicode:
+                encoding = None
+                output_encoding = 'utf-8'
+            else:
+                encoding = encodingFromXMLPreamble(text)
+                output_encoding = 'utf-8'
+            
+
+        elif content_type == 'text/html':
+
+            charset = charsetFromMetaEquiv(text)
+            print charset
+
+            if is_unicode:
+
+                if charset:
+                    encoding = None
+                    output_encoding = charset
+                else:
+                    encoding = None
+                    output_encoding = 'iso-8859-15'
+
+            else:
+
+                if charset:
+                    encoding = charset
+                    output_encoding = charset
+                else:
+                    encoding = 'iso-8859-15'
+                    output_encoding = 'iso-8859-15'
+            
+
         else:
-            # ZMI - no changes allowed
-            encoding = self.output_encoding
+            raise ValueError('Unsupported content_type %s' % content_type)
 
-        if not isinstance(text, unicode):
+        # for content updated through WebDAV, FTP 
+        if not keep_output_encoding:
+            self.output_encoding = output_encoding
+
+        if not is_unicode:
             text = unicode(text, encoding)
 
         self.ZCacheable_invalidate()
@@ -332,7 +368,8 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
     security.declareProtected(ftp_access, 'manage_FTPget')
     def manage_FTPget(self):
         "Get source for FTP download"
-        return self.pt_render()
+        result = self.pt_render()
+        return result.encode(self.output_encoding)
 
     security.declareProtected(view_management_screens, 'html')
     def html(self):
@@ -384,7 +421,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
     def pt_render(self, source=False, extra_context={}):
         result = PageTemplate.pt_render(self, source, extra_context)
         assert isinstance(result, unicode)
-        return result.encode(self.output_encoding)
+        return result
 
 
     def wl_isLocked(self):
