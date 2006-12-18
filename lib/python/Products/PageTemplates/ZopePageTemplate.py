@@ -42,30 +42,11 @@ from Products.PageTemplates.Expressions import SecureModuleImporter
 
 from Products.PageTemplates.utils import encodingFromXMLPreamble, charsetFromMetaEquiv
             
-# regular expression to extract the encoding from the XML preamble
-encoding_reg = re.compile(r'<\?xml.*?encoding="(.*?)".*?\?>', re.M)
-charset_reg = re.compile(r'<meta.*?charset=(?P<charset>[\w\-]*).*?>', (re.I|re.M|re.S))
 
 preferred_encodings = ['utf-8', 'iso-8859-15']
 if os.environ.has_key('ZPT_PREFERRED_ENCODING'):
     preferred_encodings.insert(0, os.environ['ZPT_PREFERRED_ENCODING'])
-
-def sniffEncoding(text):
-    """Try to determine the encoding from html or xml"""
-
-    # sniff into the XML preamble
-    if text.startswith('<?xml'):
-        mo = encoding_reg.search(text)
-        if mo:
-            return mo.group(1)
-        return 'utf-8'
-   
-    # sniff for <meta http-equiv="content-type" ...> header
-    else:
-        mo = charset_reg.search(text)
-        if mo:
-            return mo.groupdict()['charset']
-        return 'iso-8859-15'
+  
 
 
 class Src(Acquisition.Explicit):
@@ -120,7 +101,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
     security.declareProtected(view_management_screens,
                               'read', 'ZScriptHTML_tryForm')
 
-    def __init__(self, id, text=None, content_type=None, encoding='utf-8', strict=True, output_encoding='utf-8'):
+    def __init__(self, id, text=None, content_type=None, strict=True, output_encoding='utf-8'):
         self.id = id
         self.expand = 0                                                               
         self.ZBindings_edit(self._default_bindings)
@@ -130,19 +111,14 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         if not text:
             text = open(self._default_content_fn).read()
             content_type = 'text/html'
-        self.pt_edit(text, content_type, True)
+        self.pt_edit(text, content_type)
+
 
     security.declareProtected(change_page_templates, 'pt_edit')
     def pt_edit(self, text, content_type, keep_output_encoding=False):
 
         text = text.strip()
         
-        guessed_content_type = guess_type('', text)
-        if guessed_content_type != content_type:
-            raise ValueError('Guessed content-type != passed content-type (%s vs. %s)' % 
-                             (guessed_content_type, content_type))
-
-
         is_unicode = isinstance(text, unicode)
         encoding = None
         output_encoding = None
@@ -160,7 +136,6 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         elif content_type == 'text/html':
 
             charset = charsetFromMetaEquiv(text)
-            print charset
 
             if is_unicode:
 
@@ -179,10 +154,9 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
                 else:
                     encoding = 'iso-8859-15'
                     output_encoding = 'iso-8859-15'
-            
 
         else:
-            raise ValueError('Unsupported content_type %s' % content_type)
+            raise ValueError('Unsupported content-type %s' % content_type)
 
         # for content updated through WebDAV, FTP 
         if not keep_output_encoding:
@@ -316,7 +290,8 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         try:
             response = self.REQUEST.RESPONSE
             if not response.headers.has_key('content-type'):
-                response.setHeader('content-type', '%s; charset=%s' % (self.content_type, self.output_encoding))
+#                response.setHeader('content-type', '%s; charset=%s' % (self.content_type, self.output_encoding))
+                response.setHeader('content-type', self.content_type)
         except AttributeError:
             pass
 
@@ -463,6 +438,7 @@ manage_addPageTemplateForm = PageTemplateFile(
     'www/ptAdd', globals(), __name__='manage_addPageTemplateForm')
 
 def manage_addPageTemplate(self, id, title='', text='', encoding='utf-8',
+                           output_encoding='utf-8',
                            submit=None, REQUEST=None, RESPONSE=None):
     "Add a Page Template with optional file content."
 
@@ -478,7 +454,7 @@ def manage_addPageTemplate(self, id, title='', text='', encoding='utf-8',
             content_type = headers['content_type']
         else:
             content_type = guess_type(filename, text) 
-        encoding = sniffEncoding(text)
+
 
     else:
         if hasattr(text, 'read'):
@@ -489,9 +465,14 @@ def manage_addPageTemplate(self, id, title='', text='', encoding='utf-8',
                 content_type = headers['content_type']
             else:
                 content_type = guess_type(filename, text) 
-        encoding = sniffEncoding(text)
 
-    zpt = ZopePageTemplate(id, text, content_type, encoding, True)
+    # ensure that we pass unicode to the constructor to
+    # avoid further hassles with pt_edit()
+
+    if not isinstance(text, unicode):
+        text = unicode(text, encoding)
+
+    zpt = ZopePageTemplate(id, text, content_type, output_encoding=encoding)
     zpt.pt_setTitle(title, encoding)
     self._setObject(id, zpt)
     zpt = getattr(self, id)
