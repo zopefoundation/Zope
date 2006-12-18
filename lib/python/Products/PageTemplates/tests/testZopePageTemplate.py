@@ -97,7 +97,6 @@ class ZopePageTemplateFileTests(ZopeTestCase):
         self.assertEqual(zpt.output_encoding, 'iso-8859-15')
 
     def testPT_RenderWithUTF8(self):
-        import pdb; pdb.set_trace() 
         manage_addPageTemplate(self.app, 'test', text=utf8_str, encoding='utf-8')
         zpt = self.app['test']
         result = zpt.pt_render()
@@ -262,11 +261,10 @@ class DummyFileUpload:
 
        
 def test_suite():
-#    suite = unittest.makeSuite(ZPTRegressions)
-    suite = unittest.makeSuite(ZPTUtilsTests)
-#    suite.addTests(unittest.makeSuite(ZPTUtilsTests))
-#    suite.addTests(unittest.makeSuite(ZPTMacros))
-#    suite.addTests(unittest.makeSuite(ZopePageTemplateFileTests))
+    suite = unittest.makeSuite(ZPTRegressions)
+    suite.addTests(unittest.makeSuite(ZPTUtilsTests))
+    suite.addTests(unittest.makeSuite(ZPTMacros))
+    suite.addTests(unittest.makeSuite(ZopePageTemplateFileTests))
     return suite
 
 if __name__ == '__main__':
