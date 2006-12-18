@@ -438,7 +438,6 @@ manage_addPageTemplateForm = PageTemplateFile(
     'www/ptAdd', globals(), __name__='manage_addPageTemplateForm')
 
 def manage_addPageTemplate(self, id, title='', text='', encoding='utf-8',
-                           output_encoding='utf-8',
                            submit=None, REQUEST=None, RESPONSE=None):
     "Add a Page Template with optional file content."
 
