@@ -40,20 +40,14 @@ from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from Products.PageTemplates.PageTemplateFile import guess_type
 from Products.PageTemplates.Expressions import SecureModuleImporter
 
-# regular expression to extract the encoding from the XML preamble
-encoding_reg = re.compile('<\?xml.*?encoding="(.*?)".*?\?>', re.M)
+from Products.PageTemplates.utils import encodingFromXMLPreamble, charsetFromMetaEquiv
+            
 
 preferred_encodings = ['utf-8', 'iso-8859-15']
 if os.environ.has_key('ZPT_PREFERRED_ENCODING'):
     preferred_encodings.insert(0, os.environ['ZPT_PREFERRED_ENCODING'])
+  
 
-def sniffEncoding(text, default_encoding='utf-8'):
-    """Try to determine the encoding from html or xml"""
-    if text.startswith('<?xml'):
-        mo = encoding_reg.search(text)
-        if mo:
-            return mo.group(1)
-    return default_encoding
 
 class Src(Acquisition.Explicit):
     """ I am scary code """
@@ -79,7 +73,6 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
 
     func_defaults = None
     func_code = FuncCode((), 0)
-    strict = False
 
     _default_bindings = {'name_subpath': 'traverse_subpath'}
     _default_content_fn = os.path.join(package_home(globals()),
@@ -108,22 +101,68 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
     security.declareProtected(view_management_screens,
                               'read', 'ZScriptHTML_tryForm')
 
-    def __init__(self, id, text=None, content_type=None, encoding='utf-8',
-                 strict=False):
+    def __init__(self, id, text=None, content_type=None, strict=True, output_encoding='utf-8'):
         self.id = id
         self.expand = 0                                                               
-        self.strict = strict
         self.ZBindings_edit(self._default_bindings)
+        self.output_encoding = output_encoding
+
+        # default content
         if not text:
             text = open(self._default_content_fn).read()
-            encoding = 'utf-8'
             content_type = 'text/html'
-        self.pt_edit(text, content_type, encoding)
+        self.pt_edit(text, content_type)
+
 
     security.declareProtected(change_page_templates, 'pt_edit')
-    def pt_edit(self, text, content_type, encoding='utf-8'):
+    def pt_edit(self, text, content_type, keep_output_encoding=False):
+
         text = text.strip()
-        if self.strict and not isinstance(text, unicode):
+        
+        is_unicode = isinstance(text, unicode)
+        encoding = None
+        output_encoding = None
+
+        if content_type == 'text/xml':
+
+            if is_unicode:
+                encoding = None
+                output_encoding = 'utf-8'
+            else:
+                encoding = encodingFromXMLPreamble(text)
+                output_encoding = 'utf-8'
+            
+
+        elif content_type == 'text/html':
+
+            charset = charsetFromMetaEquiv(text)
+
+            if is_unicode:
+
+                if charset:
+                    encoding = None
+                    output_encoding = charset
+                else:
+                    encoding = None
+                    output_encoding = 'iso-8859-15'
+
+            else:
+
+                if charset:
+                    encoding = charset
+                    output_encoding = charset
+                else:
+                    encoding = 'iso-8859-15'
+                    output_encoding = 'iso-8859-15'
+
+        else:
+            raise ValueError('Unsupported content-type %s' % content_type)
+
+        # for content updated through WebDAV, FTP 
+        if not keep_output_encoding:
+            self.output_encoding = output_encoding
+
+        if not is_unicode:
             text = unicode(text, encoding)
 
         self.ZCacheable_invalidate()
@@ -137,16 +176,16 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
     source_dot_xml = Src()
 
     security.declareProtected(change_page_templates, 'pt_editAction')
-    def pt_editAction(self, REQUEST, title, text, content_type, encoding, expand):
+    def pt_editAction(self, REQUEST, title, text, content_type, expand):
         """Change the title and document."""
 
         if self.wl_isLocked():
             raise ResourceLockedError("File is locked via WebDAV")
 
         self.expand = expand
-        self.pt_setTitle(title, encoding)
+        self.pt_setTitle(title, self.output_encoding)
 
-        self.pt_edit(text, content_type, encoding)
+        self.pt_edit(text, content_type, True)
         REQUEST.set('text', self.read()) # May not equal 'text'!
         REQUEST.set('title', self.title)
         message = "Saved changes."
@@ -157,7 +196,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
 
     security.declareProtected(change_page_templates, 'pt_setTitle')
     def pt_setTitle(self, title, encoding='utf-8'):
-        if self.strict and not isinstance(title, unicode):
+        if not isinstance(title, unicode):
             title = unicode(title, encoding)
         self._setPropValue('title', title)
 
@@ -186,8 +225,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         if not content_type in ('text/html', 'text/xml'):
             raise ValueError('Unsupported mimetype: %s' % content_type)
 
-        encoding = sniffEncoding(text, encoding)
-        self.pt_edit(text, content_type, encoding)
+        self.pt_edit(text, content_type)
         return self.pt_editForm(manage_tabs_message='Saved changes')
 
     security.declareProtected(change_page_templates, 'pt_changePrefs')
@@ -240,6 +278,8 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         return c
 
     def write(self, text):
+        if not isinstance(text, unicode):
+            raise TypeError("'text' parameter must be unicode")
         self.ZCacheable_invalidate()
         ZopePageTemplate.inheritedAttribute('write')(self, text)
 
@@ -291,8 +331,9 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         """ Handle HTTP PUT requests """
         self.dav__init(REQUEST, RESPONSE)
         self.dav__simpleifhandler(REQUEST, RESPONSE, refresh=1)
-        ## XXX this should be unicode or we must pass an encoding
-        self.pt_edit(REQUEST.get('BODY', ''))
+        text = REQUEST.get('BODY', '')
+        content_type = guess_type('', text) 
+        self.pt_edit(text, content_type)
         RESPONSE.setStatus(204)
         return RESPONSE
 
@@ -303,8 +344,8 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
     security.declareProtected(ftp_access, 'manage_FTPget')
     def manage_FTPget(self):
         "Get source for FTP download"
-        self.REQUEST.RESPONSE.setHeader('Content-Type', self.content_type)
-        return self.read()
+        result = self.pt_render()
+        return result.encode(self.output_encoding)
 
     security.declareProtected(view_management_screens, 'html')
     def html(self):
@@ -352,6 +393,12 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
             # This page template is being compiled without an
             # acquisition context, so we don't know where it is. :-(
             return None
+
+    def pt_render(self, source=False, extra_context={}):
+        result = PageTemplate.pt_render(self, source, extra_context)
+        assert isinstance(result, unicode)
+        return result
+
 
     def wl_isLocked(self):
         return 0
@@ -407,7 +454,7 @@ def manage_addPageTemplate(self, id, title='', text='', encoding='utf-8',
             content_type = headers['content_type']
         else:
             content_type = guess_type(filename, text) 
-        encoding = sniffEncoding(text, encoding)
+
 
     else:
         if hasattr(text, 'read'):
@@ -418,9 +465,14 @@ def manage_addPageTemplate(self, id, title='', text='', encoding='utf-8',
                 content_type = headers['content_type']
             else:
                 content_type = guess_type(filename, text) 
-        encoding = sniffEncoding(text, encoding)
 
-    zpt = ZopePageTemplate(id, text, content_type, encoding)
+    # ensure that we pass unicode to the constructor to
+    # avoid further hassles with pt_edit()
+
+    if not isinstance(text, unicode):
+        text = unicode(text, encoding)
+
+    zpt = ZopePageTemplate(id, text, content_type, output_encoding=encoding)
     zpt.pt_setTitle(title, encoding)
     self._setObject(id, zpt)
     zpt = getattr(self, id)

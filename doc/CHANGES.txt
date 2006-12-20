@@ -39,6 +39,8 @@ Zope Changes
         until the late startup phase. This in in particular useful when running
         Zope behind a loadbalancer (patch by Patrick Gerken).
 
+      - the ZopePageTemplate implementation now uses unicode internally.        
+
     Bugs Fixed
 
       - Collector #2191: extended DateTime parser for better support
