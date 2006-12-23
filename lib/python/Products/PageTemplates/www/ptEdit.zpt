@@ -1,4 +1,4 @@
-<h1 tal:replace="structure python:context.manage_page_header(management_page_charset=context.output_encoding)">Header</h1>
+<h1 tal:replace="structure python:context.manage_page_header(management_page_charset='utf-8')">Header</h1>
 <h2 tal:define="manage_tabs_message options/manage_tabs_message | nothing"
     tal:replace="structure context/manage_tabs">Tabs</h2>
 
@@ -44,19 +44,7 @@
     </td>
   </tr>
 
-  <tr>
-    <td align="left" valign="middle">
-      <div class="form-label">Output encoding</div>
-    </td>
-    <td align="left" valign="middle">
-      <div class="form-text" 
-           tal:content="context/output_encoding"
-      />
-    </td>
-  </tr>
-
   <tr tal:define="errors context/pt_errors" tal:condition="errors">
-    <tal:block define="global body python:context.document_src({'raw':1})" />
     <td align="left" valign="middle" class="form-label">Errors</td>
     <td align="left" valign="middle" style="background-color: #FFDDDD"
         colspan="3">

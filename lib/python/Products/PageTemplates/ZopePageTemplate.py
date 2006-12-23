@@ -40,7 +40,7 @@ from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from Products.PageTemplates.PageTemplateFile import guess_type
 from Products.PageTemplates.Expressions import SecureModuleImporter
 
-from Products.PageTemplates.utils import encodingFromXMLPreamble, charsetFromMetaEquiv
+from Products.PageTemplates.utils import encodingFromXMLPreamble, charsetFromMetaEquiv, convertToUnicode
             
 
 preferred_encodings = ['utf-8', 'iso-8859-15']
@@ -70,6 +70,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
     __implements__ = (WriteLockInterface,)
 
     meta_type = 'Page Template'
+    output_encoding = 'iso-8859-15'  # provide default for old instances
 
     func_defaults = None
     func_code = FuncCode((), 0)
@@ -90,6 +91,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
 
     _properties=({'id':'title', 'type': 'ustring', 'mode': 'w'},
                  {'id':'content_type', 'type':'string', 'mode': 'w'},
+                 {'id':'output_encoding', 'type':'string', 'mode': 'w'},
                  {'id':'expand', 'type':'boolean', 'mode': 'w'},
                  )
 
@@ -183,7 +185,12 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
             raise ResourceLockedError("File is locked via WebDAV")
 
         self.expand = expand
-        self.pt_setTitle(title, self.output_encoding)
+
+        # The ZMI edit view uses utf-8! So we can safely assume
+        # that 'title' and 'text' are utf-8 encoded strings - hopefully
+
+        self.pt_setTitle(title, 'utf-8') 
+        text = unicode(text, 'utf-8')
 
         self.pt_edit(text, content_type, True)
         REQUEST.set('text', self.read()) # May not equal 'text'!
@@ -193,6 +200,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
             message = ("<strong>Warning:</strong> <i>%s</i>"
                        % '<br>'.join(self._v_warnings))
         return self.pt_editForm(manage_tabs_message=message)
+
 
     security.declareProtected(change_page_templates, 'pt_setTitle')
     def pt_setTitle(self, title, encoding='utf-8'):
@@ -393,6 +401,17 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
             # This page template is being compiled without an
             # acquisition context, so we don't know where it is. :-(
             return None
+
+
+    def __setstate__(self, state):
+        # Perform on-the-fly migration to unicode.
+        # Perhaps it might be work with the 'generation' module here?
+        if not isinstance(state['_text'], unicode):
+            text, encoding = convertToUnicode(state['_text'], state['content_type'])
+            state['_text'] = text
+            state['output_encoding'] = encoding
+        self.__dict__.update(state) 
+
 
     def pt_render(self, source=False, extra_context={}):
         result = PageTemplate.pt_render(self, source, extra_context)

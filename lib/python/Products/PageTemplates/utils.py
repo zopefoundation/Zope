@@ -56,4 +56,34 @@ def charsetFromMetaEquiv(html):
 
     return None
 
+                                                                          
 
+def convertToUnicode(source, content_type):
+    """ Convert 'source' to unicode.
+        Returns (unicode_str, source_encoding).
+    """
+
+    if content_type.startswith('text/xml'):
+        encoding = encodingFromXMLPreamble(source)
+        return unicode(source, encoding), encoding  
+
+    elif content_type.startswith('text/html'):
+
+        encoding = charsetFromMetaEquiv(source)
+
+        # Try to detect the encoding by converting it unicode without raising
+        # exceptions. There are some smarter Python-based sniffer methods
+        # available however we have to check their licenses first before
+        # including them into the Zope 2 core
+
+        if not encoding:
+            for enc in ('utf-8', 'iso-8859-15'):
+                try:
+                    return unicode(source, enc), enc
+                except UnicodeDecodeError:
+                    continue
+
+        raise TypeError('Could not auto-detect encoding')
+
+    else:
+        raise ValueError('Unsupported content-type: %s' % content_type) 
