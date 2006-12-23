@@ -337,6 +337,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
     security.declareProtected(change_page_templates, 'PUT')
     def PUT(self, REQUEST, RESPONSE):
         """ Handle HTTP PUT requests """
+
         self.dav__init(REQUEST, RESPONSE)
         self.dav__simpleifhandler(REQUEST, RESPONSE, refresh=1)
         text = REQUEST.get('BODY', '')
@@ -407,7 +408,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         # Perform on-the-fly migration to unicode.
         # Perhaps it might be work with the 'generation' module here?
         if not isinstance(state['_text'], unicode):
-            text, encoding = convertToUnicode(state['_text'], state['content_type'])
+            text, encoding = convertToUnicode(state['_text'], state.get('content_type', 'text/html'))
             state['_text'] = text
             state['output_encoding'] = encoding
         self.__dict__.update(state) 
