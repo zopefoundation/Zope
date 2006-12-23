@@ -39,7 +39,13 @@ Zope Changes
         until the late startup phase. This in in particular useful when running
         Zope behind a loadbalancer (patch by Patrick Gerken).
 
-      - the ZopePageTemplate implementation now uses unicode internally.        
+      - the ZopePageTemplate implementation now uses unicode internally.
+        Non-unicode instances are migrated on-the-fly to unicode. However this
+        will work only properly for ZPT instances formerly encoded as utf-8 or
+        ISO-8859-15. For other encodings you might set the environment variable
+        ZPT_REFERRED_ENCODING to insert your preferred encoding in front of utf-8 and
+        ISO-8859-15 within the encoding sniffer code.
+
 
     Bugs Fixed
 

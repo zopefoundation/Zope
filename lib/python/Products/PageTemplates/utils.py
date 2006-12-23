@@ -58,7 +58,7 @@ def charsetFromMetaEquiv(html):
 
                                                                           
 
-def convertToUnicode(source, content_type):
+def convertToUnicode(source, content_type, preferred_encodings):
     """ Convert 'source' to unicode.
         Returns (unicode_str, source_encoding).
     """
@@ -77,7 +77,7 @@ def convertToUnicode(source, content_type):
         # including them into the Zope 2 core
 
         if not encoding:
-            for enc in ('utf-8', 'iso-8859-15'):
+            for enc in preferred_encodings:
                 try:
                     return unicode(source, enc), enc
                 except UnicodeDecodeError:

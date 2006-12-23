@@ -408,7 +408,9 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         # Perform on-the-fly migration to unicode.
         # Perhaps it might be work with the 'generation' module here?
         if not isinstance(state['_text'], unicode):
-            text, encoding = convertToUnicode(state['_text'], state.get('content_type', 'text/html'))
+            text, encoding = convertToUnicode(state['_text'], 
+                                    state.get('content_type', 'text/html'), 
+                                    preferred_encodings)
             state['_text'] = text
             state['output_encoding'] = encoding
         self.__dict__.update(state) 
@@ -423,31 +425,6 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
     def wl_isLocked(self):
         return 0
 
-    def manage_convertUnicode(self, preferred_encodings=preferred_encodings,
-                              RESPONSE=None):
-        """Convert non-unicode templates to unicode"""
-        if not isinstance(self._text, unicode):
-            for encoding in preferred_encodings:
-                try:
-                    self._text = unicode(self._text, encoding)
-                    if RESPONSE:
-                        return RESPONSE.redirect(self.absolute_url() +
-                                                 '/pt_editForm?manage_tabs_message='
-                                                 'ZPT+successfully+converted')
-                    else:
-                        return
-                except UnicodeDecodeError:
-                    pass
-
-            raise RuntimeError('Pagetemplate could not be converted to unicode')
-
-        else:
-            if RESPONSE:
-                return RESPONSE.redirect(self.absolute_url() +
-                                         '/pt_editForm?manage_tabs_message='
-                                         'ZPT+already+converted')
-            else:
-                return
 
 InitializeClass(ZopePageTemplate)
 
