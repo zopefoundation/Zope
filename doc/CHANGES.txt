@@ -44,7 +44,9 @@ Zope Changes
         will work only properly for ZPT instances formerly encoded as utf-8 or
         ISO-8859-15. For other encodings you might set the environment variable
         ZPT_REFERRED_ENCODING to insert your preferred encoding in front of utf-8 and
-        ISO-8859-15 within the encoding sniffer code.
+        ISO-8859-15 within the encoding sniffer code. In addition there is a new
+        'output_encodings' property that controls the conversion from/to unicode
+        for WebDAV/FTP operations.
 
 
     Bugs Fixed
