@@ -40,7 +40,8 @@ from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from Products.PageTemplates.PageTemplateFile import guess_type
 from Products.PageTemplates.Expressions import SecureModuleImporter
 
-from Products.PageTemplates.utils import encodingFromXMLPreamble, charsetFromMetaEquiv, convertToUnicode
+from Products.PageTemplates.utils import encodingFromXMLPreamble, \
+         charsetFromMetaEquiv, convertToUnicode
             
 
 preferred_encodings = ['utf-8', 'iso-8859-15']
@@ -103,7 +104,8 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
     security.declareProtected(view_management_screens,
                               'read', 'ZScriptHTML_tryForm')
 
-    def __init__(self, id, text=None, content_type='text/html', strict=True, output_encoding='utf-8'):
+    def __init__(self, id, text=None, content_type='text/html', strict=True, 
+                 output_encoding='utf-8'):
         self.id = id
         self.expand = 0                                                               
         self.ZBindings_edit(self._default_bindings)
@@ -284,7 +286,9 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
     def write(self, text):
 
         if not isinstance(text, unicode):
-            text, encoding = convertToUnicode(text, self.content_type, preferred_encodings)
+            text, encoding = convertToUnicode(text, 
+                                              self.content_type,
+                                              preferred_encodings)
             self.output_encoding = encoding
 
         self.ZCacheable_invalidate()
