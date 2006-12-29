@@ -108,7 +108,6 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         self.expand = 0                                                               
         self.ZBindings_edit(self._default_bindings)
         self.output_encoding = output_encoding
-
         # default content
         if not text:
             text = open(self._default_content_fn).read()
@@ -286,8 +285,11 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         return c
 
     def write(self, text):
+
         if not isinstance(text, unicode):
-            raise TypeError("'text' parameter must be unicode")
+            text, encoding = convertToUnicode(text, self.content_type, preferred_encodings)
+            self.output_encoding = encoding
+
         self.ZCacheable_invalidate()
         ZopePageTemplate.inheritedAttribute('write')(self, text)
 
