@@ -103,12 +103,11 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
     security.declareProtected(view_management_screens,
                               'read', 'ZScriptHTML_tryForm')
 
-    def __init__(self, id, text=None, content_type=None, strict=True, output_encoding='utf-8'):
+    def __init__(self, id, text=None, content_type='text/html', strict=True, output_encoding='utf-8'):
         self.id = id
         self.expand = 0                                                               
         self.ZBindings_edit(self._default_bindings)
         self.output_encoding = output_encoding
-
         # default content
         if not text:
             text = open(self._default_content_fn).read()
