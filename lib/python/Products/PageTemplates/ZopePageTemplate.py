@@ -139,16 +139,13 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
             charset = charsetFromMetaEquiv(text)
 
             if is_unicode:
-
                 if charset:
                     encoding = None
                     output_encoding = charset
                 else:
                     encoding = None
                     output_encoding = 'iso-8859-15'
-
             else:
-
                 if charset:
                     encoding = charset
                     output_encoding = charset
