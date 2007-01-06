@@ -17,6 +17,9 @@ for Python expressions, string literals, and paths.
 
 $Id$
 """
+
+import sys
+
 from zope.interface import implements
 from zope.tales.tales import Context, Iterator
 from zope.tales.expressions import PathExpr, StringExpr, NotExpr
@@ -172,6 +175,50 @@ class ZopeContext(Context):
         return getGlobalTranslationService().translate(
             domain, msgid, mapping=mapping,
             context=context, default=default)
+
+
+    def evaluateText(self, expr):
+        """ customized version in order to get rid of unicode
+            errors for all and ever
+        """
+
+        text = self.evaluate(expr)
+#        print expr, repr(text), text.__class__
+
+        if text is self.getDefault() or text is None:
+            return text
+
+        if isinstance(text, unicode):
+            # we love unicode, nothing to do
+            return text
+
+        elif isinstance(text, str):
+            # waahhh...a standard string
+            # trying to be somewhat smart...this must be
+            # replaced with some kind of configurable
+            # UnicodeEncodingConflictResolver (what a name)
+
+            try:
+                return unicode(text)
+
+            except UnicodeDecodeError:
+                # check for management_page_charset property, default to Python's
+                # default encoding
+
+                encoding = getattr(self.contexts['context'], 'management_page_charset', sys.getdefaultencoding())
+
+                try:
+                    return unicode(text, encoding)
+                except UnicodeDecodeError:
+                    # errors='replace' sucks...it's fine for now
+                    return unicode(text, encoding, 'replace')
+
+        else:
+
+            # This is a weird culprit ...calling unicode() on non-string
+            # objects
+            return unicode(text)
+
 
 class ZopeEngine(zope.app.pagetemplate.engine.ZopeEngine):
 
