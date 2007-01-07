@@ -15,6 +15,12 @@ class TypeSniffingTestCase(unittest.TestCase):
 
     TEMPFILENAME = tempfile.mktemp(".zpt")
 
+    def setUp(self):
+        from zope.component import provideUtility
+        from Products.PageTemplates.interfaces import IUnicodeEncodingConflictResolver
+        from Products.PageTemplates.unicodeconflictresolver import DefaultUnicodeEncodingConflictResolver
+        provideUtility(DefaultUnicodeEncodingConflictResolver, IUnicodeEncodingConflictResolver)
+
     def tearDown(self):
         if os.path.exists(self.TEMPFILENAME):
             os.unlink(self.TEMPFILENAME)
