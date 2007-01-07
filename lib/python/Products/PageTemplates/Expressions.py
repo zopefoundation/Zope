@@ -21,6 +21,7 @@ $Id$
 import logging
 
 from zope.component import getUtility
+from zope.component.interfaces import ComponentLookupError
 from zope.interface import implements
 from zope.tales.tales import Context, Iterator
 from zope.tales.expressions import PathExpr, StringExpr, NotExpr
@@ -199,7 +200,15 @@ class ZopeContext(Context):
 
         elif isinstance(text, str):
             # bahh...non-unicode string..we need to convert it to unicode
-            resolver = getUtility(IUnicodeEncodingConflictResolver)
+
+            # catch ComponentLookupError in order to make tests shut-up.
+            # This should not be a problem since it won't change the old
+            # default behavior
+
+            try:
+                resolver = getUtility(IUnicodeEncodingConflictResolver)
+            except ComponentLookupError:    
+                return unicode(text)
 
             try:
                 return resolver.resolve(self.contexts['context'], text, expr)
