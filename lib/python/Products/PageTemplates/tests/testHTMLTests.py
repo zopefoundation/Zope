@@ -14,11 +14,14 @@
 import unittest
 
 import zope.component.testing
+from zope.component import provideUtility
 from zope.traversing.adapters import DefaultTraversable
 from Products.PageTemplates.tests import util
 from Products.PageTemplates.PageTemplate import PageTemplate
 from Products.PageTemplates.GlobalTranslationService import \
      setGlobalTranslationService
+from Products.PageTemplates.interfaces import IUnicodeEncodingConflictResolver
+from Products.PageTemplates.unicodeconflictresolver import DefaultUnicodeEncodingConflictResolver
 from AccessControl import SecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
 
@@ -66,6 +69,8 @@ class HTMLTests(zope.component.testing.PlacelessSetup, unittest.TestCase):
     def setUp(self):
         super(HTMLTests, self).setUp()
         zope.component.provideAdapter(DefaultTraversable, (None,))
+
+        provideUtility(DefaultUnicodeEncodingConflictResolver, IUnicodeEncodingConflictResolver)
 
         self.folder = f = Folder()
         f.laf = AqPageTemplate()

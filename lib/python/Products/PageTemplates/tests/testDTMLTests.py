@@ -14,9 +14,12 @@
 import unittest
 
 import zope.component.testing
+from zope.component import provideUtility
 from zope.traversing.adapters import DefaultTraversable
 from Products.PageTemplates.tests import util
 from Products.PageTemplates.PageTemplate import PageTemplate
+from Products.PageTemplates.interfaces import IUnicodeEncodingConflictResolver
+from Products.PageTemplates.unicodeconflictresolver import DefaultUnicodeEncodingConflictResolver
 from Acquisition import Implicit
 from AccessControl import SecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
@@ -50,6 +53,7 @@ class DTMLTests(zope.component.testing.PlacelessSetup, unittest.TestCase):
     def setUp(self):
         super(DTMLTests, self).setUp()
         zope.component.provideAdapter(DefaultTraversable, (None,))
+        provideUtility(DefaultUnicodeEncodingConflictResolver, IUnicodeEncodingConflictResolver)
 
         self.t = AqPageTemplate()
         self.policy = UnitTestSecurityPolicy()
