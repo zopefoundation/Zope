@@ -18,8 +18,9 @@ for Python expressions, string literals, and paths.
 $Id$
 """
 
-import sys
+import logging
 
+from zope.component import getUtility
 from zope.interface import implements
 from zope.tales.tales import Context, Iterator
 from zope.tales.expressions import PathExpr, StringExpr, NotExpr
@@ -34,12 +35,16 @@ import OFS.interfaces
 from MultiMapping import MultiMapping
 from Acquisition import aq_base
 from zExceptions import NotFound, Unauthorized
+
 from Products.Five.browser.providerexpression import Z2ProviderExpression
 from Products.PageTemplates import ZRPythonExpr
 from Products.PageTemplates.DeferExpr import LazyExpr
 from Products.PageTemplates.GlobalTranslationService import getGlobalTranslationService
+from Products.PageTemplates.interfaces import IUnicodeEncodingConflictResolver
 
 SecureModuleImporter = ZRPythonExpr._SecureModuleImporter()
+
+LOG = logging.getLogger('Expressions')
 
 # BBB 2005/05/01 -- remove after 12 months
 import zope.deprecation
@@ -183,9 +188,9 @@ class ZopeContext(Context):
         """
 
         text = self.evaluate(expr)
-#        print expr, repr(text), text.__class__
 
         if text is self.getDefault() or text is None:
+            # XXX: should be unicode???
             return text
 
         if isinstance(text, unicode):
@@ -193,26 +198,20 @@ class ZopeContext(Context):
             return text
 
         elif isinstance(text, str):
-            # waahhh...a standard string
-            # trying to be somewhat smart...this must be
-            # replaced with some kind of configurable
-            # UnicodeEncodingConflictResolver (what a name)
+            # bahh...non-unicode string..we need to convert it to unicode
+            resolver = getUtility(IUnicodeEncodingConflictResolver)
 
             try:
-                return unicode(text)
-
-            except UnicodeDecodeError:
-                # check for management_page_charset property, default to Python's
-                # default encoding
-
-                encoding = getattr(self.contexts['context'], 'management_page_charset', sys.getdefaultencoding())
-
-                try:
-                    return unicode(text, encoding)
-                except UnicodeDecodeError:
-                    # errors='replace' sucks...it's fine for now
-                    return unicode(text, encoding, 'replace')
-
+                return resolver.resolve(self.contexts['context'], text, expr)
+            except UnicodeDecodeError,e:
+                LOG.error("""UnicodeDecodeError detected for expression "%s"\n"""
+                          """Resolver class: %s\n"""
+                          """Exception text: %s\n"""
+                          """Template: %s\n"""
+                          """Rendered text: %r"""  % \
+                          (expr, resolver.__class__, e, 
+                            self.contexts['template'].absolute_url(1), text))
+                raise 
         else:
 
             # This is a weird culprit ...calling unicode() on non-string

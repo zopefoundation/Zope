@@ -1,37 +1,56 @@
-###########################################################################
-# TextIndexNG V 3                
-# The next generation TextIndex for Zope
+##############################################################################
 #
-# This software is governed by a license. See
-# LICENSE.txt for the terms of this license.
-###########################################################################
+# Copyright (c) 2002 Zope Corporation and Contributors. All Rights Reserved.
+#
+# This software is subject to the provisions of the Zope Public License,
+# Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
+# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
+# WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
+# FOR A PARTICULAR PURPOSE
+#
+##############################################################################
 
-
-
-from zope.component.interfaces import IFactory
-from zope.interface import implements, implementedBy
-
+import sys
+from zope.interface import implements
 from Products.PageTemplates.interfaces import IUnicodeEncodingConflictResolver
 
-class UnicodeEncodingResolver:
+default_encoding = sys.getdefaultencoding()
+
+class DefaultUnicodeEncodingConflictResolver:
+    """ This resolver implements the old-style behavior and will 
+        raise an exception in case of the string 'text' can't be converted
+        propertly to unicode.
+    """
 
     implements(IUnicodeEncodingConflictResolver)
 
-    def __init__(self, context, text):
-        self.context = context
-        self.text = text
+    def resolve(self, context, text, expression):
+        return unicode(text)
 
-    def resolve(self, context, text):
-        return unicode(self.text, errors='replace')
+DefaultUnicodeEncodingConflictResolver = DefaultUnicodeEncodingConflictResolver()
 
-class UnicodeEncodingResolverFactory:
-    
-    implements(IFactory)
 
-    def __call__(self, context, text):
-        return UnicodeEncodingResolver(context, text)
+class Z2UnicodeEncodingConflictResolver:
+    """ This resolver tries to lookup the encoding from the 
+        'management_page_charset' property and defaults to 
+        sys.getdefaultencoding().
+    """
 
-    def getInterfaces(self):
-        return implementedBy(UnicodeEncodingResolverFactory)
+    implements(IUnicodeEncodingConflictResolver)
 
-UnicodeEncodingResolverFactory = UnicodeEncodingResolverFactory() 
+    def __init__(self, mode='strict'):
+        self.mode = mode
+
+    def resolve(self, context, text, expression):
+
+        try:
+            return unicode(text)
+        except UnicodeDecodeError:
+            encoding = getattr(context, 'managment_page_charset', default_encoding)
+            return unicode(text, encoding, self.mode)
+
+
+StrictUnicodeEncodingConflictResolver = Z2UnicodeEncodingConflictResolver('strict')
+ReplacingUnicodeEncodingConflictResolver = Z2UnicodeEncodingConflictResolver('replace')
+IgnoringUnicodeEncodingConflictResolver = Z2UnicodeEncodingConflictResolver('ignore')
