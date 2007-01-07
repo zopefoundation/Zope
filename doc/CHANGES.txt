@@ -23,6 +23,15 @@ Zope Changes
         'output_encodings' property that controls the conversion from/to unicode
         for WebDAV/FTP operations.
 
+      - the ZPT implementation has now a configurable option in order how to deal 
+        with UnicodeDecodeErrors. A custom UnicodeEncodingConflictResolver can
+        be configured through ZCML (see Products/PageTemplates/(configure.zcml,
+        unicodeconflictresolver.py, interfaces.py)
+
+      - the ZPT implementation has now a configurable option in order how to deal 
+        with UnicodeDecodeErrors. A custom UnicodeEncodingConflictResolver can
+        be configured through ZCML (see Products/PageTemplates/(configure.zcml,
+        unicodeconflictresolver.py, interfaces.py)
 
   Zope 2.10.1 (2006-11-22)
 
