@@ -173,6 +173,12 @@ class HTMLTests(zope.component.testing.PlacelessSetup, unittest.TestCase):
     def checkRepeatVariable(self):
         self.assert_expected(self.folder.t, 'RepeatVariable.html')
 
+    def checkBooleanAttributesAndDefault(self):
+        # Zope 2.9 and below support the semantics that an HTML
+        # "boolean" attribute (e.g. 'selected', 'disabled', etc.) can
+        # be used together with 'default'.
+        self.assert_expected(self.folder.t, 'BooleanAttributesAndDefault.html')
+
 def test_suite():
     return unittest.makeSuite(HTMLTests, 'check')
 

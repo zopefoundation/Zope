@@ -8,6 +8,9 @@ Zope Changes
 
     Bugs fixed
 
+      - Fixed Collector #2223: Evaluation of booleans in TALES and the
+        'default' variable.
+
       - Reverted backward-incompatible fix for Collector #2191.
 
       - Fixed the creation of lib/python/Zope2/version.txt
