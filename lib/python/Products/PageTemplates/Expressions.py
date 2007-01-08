@@ -182,12 +182,20 @@ class ZopeContext(Context):
             domain, msgid, mapping=mapping,
             context=context, default=default)
 
+    def evaluateBoolean(self, expr):
+        value = self.evaluate(expr)
+        # here we override the normal Zope 3 behaviour.  Zope 3
+        # doesn't care about the default in a boolean expression,
+        # while we do (Zope 2 legacy, see the
+        # BooleanAttributesAndDefault.html test case)
+        if value is self.getDefault():
+            return value
+        return bool(value)
 
     def evaluateText(self, expr):
         """ customized version in order to get rid of unicode
             errors for all and ever
         """
-
         text = self.evaluate(expr)
 
         if text is self.getDefault() or text is None:

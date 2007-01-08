@@ -8,6 +8,9 @@ Zope Changes
 
     Restructuring
 
+      - Fixed Collector #2223: Evaluation of booleans in TALES and the
+        'default' variable.
+
       - Removed deprecated support for product initialization based on
         '__ac_permissions__' and 'meta_types' attributes.
 
