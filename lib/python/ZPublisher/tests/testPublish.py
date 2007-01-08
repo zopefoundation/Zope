@@ -1,4 +1,4 @@
-from zope.app.publication.browser import setDefaultSkin
+from zope.publisher.browser import setDefaultSkin
 from zope.publisher.interfaces.browser import IDefaultBrowserLayer
 from ZPublisher import Retry
 from ZODB.POSException import ConflictError
