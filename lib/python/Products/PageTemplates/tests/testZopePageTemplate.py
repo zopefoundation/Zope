@@ -91,6 +91,11 @@ class ZPTUnicodeEncodingConflictResolution(ZopeTestCase):
         zope.component.provideAdapter(DefaultTraversable, (None,))
         zope.component.provideAdapter(HTTPCharsets, (None,))
         provideUtility(PreferredCharsetResolver, IUnicodeEncodingConflictResolver)
+        transaction.begin()
+
+    def tearDown(self):
+        transaction.abort()
+        self.app._p_jar.close()
 
     def testISO_8859_15(self):
         manage_addPageTemplate(self.app, 'test', 
@@ -107,10 +112,20 @@ class ZPTUnicodeEncodingConflictResolution(ZopeTestCase):
                                text='<div tal:content="python: request.get(\'data\')" />', 
                                encoding='ascii')
         zpt = self.app['test']
-        self.app.REQUEST.set('HTTP_ACCEPT_CHARSET', 'ISO-8859-15,utf-8')
+        self.app.REQUEST.set('HTTP_ACCEPT_CHARSET', 'utf-8,ISO-8859-15')
         self.app.REQUEST.set('data', unicode('üצה', 'iso-8859-15').encode('utf-8'))
         result = zpt.pt_render()
         self.assertEqual(result.startswith(unicode('<div>üצה</div>', 'iso-8859-15')), True)
+
+    def testUTF8WrongPreferredCharset(self):
+        manage_addPageTemplate(self.app, 'test', 
+                               text='<div tal:content="python: request.get(\'data\')" />', 
+                               encoding='ascii')
+        zpt = self.app['test']
+        self.app.REQUEST.set('HTTP_ACCEPT_CHARSET', 'iso-8859-15')
+        self.app.REQUEST.set('data', unicode('üצה', 'iso-8859-15').encode('utf-8'))
+        result = zpt.pt_render()
+        self.assertEqual(result.startswith(unicode('<div>üצה</div>', 'iso-8859-15')), False)
 
 
 class ZopePageTemplateFileTests(ZopeTestCase):
