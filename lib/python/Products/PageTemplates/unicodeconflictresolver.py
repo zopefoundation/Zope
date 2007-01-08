@@ -54,8 +54,8 @@ class Z2UnicodeEncodingConflictResolver:
             return unicode(text, encoding, self.mode)
 
 class PreferredCharsetResolver:
-    """ A resolver that tries uses the HTTP_ACCEPT_CHARSET
-        header.
+    """ A resolver that tries use the encoding information
+        from the HTTP_ACCEPT_CHARSET header.
     """
 
     implements(IUnicodeEncodingConflictResolver)
@@ -64,7 +64,8 @@ class PreferredCharsetResolver:
 
         request = context.REQUEST
 
-        if not hasattr(request, '__zpt_available_charsets'):
+        charsets = getattr(request, '__zpt_available_charsets', None)
+        if charsets is None:
             charsets = IUserPreferredCharsets(request).getPreferredCharsets()
 
             # add management_page_charset as one fallback
@@ -77,9 +78,6 @@ class PreferredCharsetResolver:
 
             # cache list of charsets
             request.__zpt_available_charsets = charsets
-
-        else:
-            charsets = request.__zpt_available_charsets
 
         for enc in charsets:
             try:
