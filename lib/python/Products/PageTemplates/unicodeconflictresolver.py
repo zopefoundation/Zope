@@ -47,7 +47,7 @@ class Z2UnicodeEncodingConflictResolver:
         try:
             return unicode(text)
         except UnicodeDecodeError:
-            encoding = getattr(context, 'managment_page_charset', default_encoding)
+            encoding = getattr(context, 'management_page_charset', default_encoding)
             return unicode(text, encoding, self.mode)
 
 
