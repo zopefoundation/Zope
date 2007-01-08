@@ -22,6 +22,7 @@ from maybe_lock import allocate_lock
 from mapply import mapply
 from zExceptions import Redirect
 from zope.publisher.browser import setDefaultSkin
+from zope.security.management import newInteraction, endInteraction
 
 class Retry(Exception):
     """Raise this to retry a request
@@ -74,6 +75,9 @@ def publish(request, module_name, after_list, debug=0,
     response=None
 
     try:
+        # TODO pass request here once BaseRequest implements IParticipation
+        newInteraction()
+
         request.processInputs()
 
         request_get=request.get
@@ -119,6 +123,7 @@ def publish(request, module_name, after_list, debug=0,
 
         if transactions_manager:
             transactions_manager.commit()
+        endInteraction()
 
         return response
     except:
@@ -154,6 +159,7 @@ def publish(request, module_name, after_list, debug=0,
             finally:
                 if transactions_manager:
                     transactions_manager.abort()
+                endInteraction()
 
             # Only reachable if Retry is raised and request supports retry.
             newrequest=request.retry()
@@ -168,6 +174,7 @@ def publish(request, module_name, after_list, debug=0,
         else:
             if transactions_manager:
                 transactions_manager.abort()
+            endInteraction()
             raise
 
 

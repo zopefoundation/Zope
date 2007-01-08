@@ -8,6 +8,17 @@ Zope Changes
 
     Restructuring
 
+      - Fixed Collector #2190: Calls to
+        zope.security.management.checkPermission aren't rerouted to
+        Zope 2's security policy.
+
+        NOTE: If you already have a Zope 2.10 instance running, you
+        will either have to recreate it or add the following lines to
+        the end of the etc/site.zcml file::
+
+          <securityPolicy
+                component="Products.Five.security.FiveSecurityPolicy" />
+
       - Fixed Collector #2223: Evaluation of booleans in TALES and the
         'default' variable.
 
