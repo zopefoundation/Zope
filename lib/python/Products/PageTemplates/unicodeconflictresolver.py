@@ -80,6 +80,8 @@ class PreferredCharsetResolver:
             request.__zpt_available_charsets = charsets
 
         for enc in charsets:
+            if enc == '*': continue
+
             try:
                 return unicode(text, enc)
             except UnicodeDecodeError:
