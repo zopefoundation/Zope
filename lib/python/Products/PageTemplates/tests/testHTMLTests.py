@@ -156,8 +156,11 @@ class HTMLTests(unittest.TestCase):
         self.assert_expected(self.folder.t, 'CheckI18nTranslateHooked.html')
         setGlobalTranslationService(old_ts)
 
-    def checkAttributes(self):
-        self.assert_expected(self.folder.t, 'Attributes.html')
+    def checkBooleanAttributesAndDefault(self):
+        # Zope 2.9 and below support the semantics that an HTML
+        # "boolean" attribute (e.g. 'selected', 'disabled', etc.) can
+        # be used together with 'default'.
+        self.assert_expected(self.folder.t, 'BooleanAttributesAndDefault.html')
 
 def test_suite():
     return unittest.makeSuite(HTMLTests, 'check')
