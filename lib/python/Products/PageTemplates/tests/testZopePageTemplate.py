@@ -23,7 +23,7 @@ ascii_str = '<html><body>hello world</body></html>'
 iso885915_str = '<html><body>üצהÜײִß</body></html>'
 utf8_str = unicode(iso885915_str, 'iso-8859-15').encode('utf-8')
 
-xml_template = '''<?xml vesion="1.0" encoding="%s"?>
+xml_template = '''<?xml version="1.0" encoding="%s"?>
 <foo>
 üצהÜײִß
 </foo>
