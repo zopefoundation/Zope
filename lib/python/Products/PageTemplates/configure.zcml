@@ -2,7 +2,7 @@
 
   <utility
       provides="Products.PageTemplates.interfaces.IUnicodeEncodingConflictResolver"
-      component="Products.PageTemplates.unicodeconflictresolver.DefaultUnicodeEncodingConflictResolver"
+      component="Products.PageTemplates.unicodeconflictresolver.PreferredCharsetResolver"
       />
 
 </configure>

@@ -11,19 +11,25 @@ Note: Tests require Zope >= 2.7
 import unittest
 import Zope2
 import transaction
+
 import zope.component.testing
-from zope.traversing.adapters import DefaultTraversable
+from zope.traversing.adapters import DefaultTraversable, Traverser
+from zope.publisher.http import HTTPCharsets 
+
 from Testing.makerequest import makerequest
 from Testing.ZopeTestCase import ZopeTestCase, installProduct
 from Products.PageTemplates.ZopePageTemplate import ZopePageTemplate, manage_addPageTemplate
 from Products.PageTemplates.utils import encodingFromXMLPreamble, charsetFromMetaEquiv
+from zope.component import provideUtility
+from Products.PageTemplates.interfaces import IUnicodeEncodingConflictResolver
+from Products.PageTemplates.unicodeconflictresolver import PreferredCharsetResolver
 
 
 ascii_str = '<html><body>hello world</body></html>'
 iso885915_str = '<html><body>üצהÜײִß</body></html>'
 utf8_str = unicode(iso885915_str, 'iso-8859-15').encode('utf-8')
 
-xml_template = '''<?xml vesion="1.0" encoding="%s"?>
+xml_template = '''<?xml version="1.0" encoding="%s"?>
 <foo>
 üצהÜײִß
 </foo>
@@ -76,7 +82,51 @@ class ZPTUtilsTests(unittest.TestCase):
         self.assertEqual(extract('<html><META http-equiv="content-type" content="text/html; charset=iso-8859-15"></html>'), 'iso-8859-15')
         self.assertEqual(extract('<html><META http-equiv="content-type" content="text/html"></html>'), None)
         self.assertEqual(extract('<html>...<html>'), None)
-        
+
+
+class ZPTUnicodeEncodingConflictResolution(ZopeTestCase):
+
+    def setUp(self):
+        super(ZPTUnicodeEncodingConflictResolution, self).setUp()
+        zope.component.provideAdapter(DefaultTraversable, (None,))
+        zope.component.provideAdapter(HTTPCharsets, (None,))
+        provideUtility(PreferredCharsetResolver, IUnicodeEncodingConflictResolver)
+        transaction.begin()
+
+    def tearDown(self):
+        transaction.abort()
+        self.app._p_jar.close()
+
+    def testISO_8859_15(self):
+        manage_addPageTemplate(self.app, 'test', 
+                               text='<div tal:content="python: request.get(\'data\')" />', 
+                               encoding='ascii')
+        zpt = self.app['test']
+        self.app.REQUEST.set('HTTP_ACCEPT_CHARSET', 'ISO-8859-15,utf-8')
+        self.app.REQUEST.set('data', 'üצה')
+        result = zpt.pt_render()
+        self.assertEqual(result.startswith(unicode('<div>üצה</div>', 'iso-8859-15')), True)
+
+    def testUTF8(self):
+        manage_addPageTemplate(self.app, 'test', 
+                               text='<div tal:content="python: request.get(\'data\')" />', 
+                               encoding='ascii')
+        zpt = self.app['test']
+        self.app.REQUEST.set('HTTP_ACCEPT_CHARSET', 'utf-8,ISO-8859-15')
+        self.app.REQUEST.set('data', unicode('üצה', 'iso-8859-15').encode('utf-8'))
+        result = zpt.pt_render()
+        self.assertEqual(result.startswith(unicode('<div>üצה</div>', 'iso-8859-15')), True)
+
+    def testUTF8WrongPreferredCharset(self):
+        manage_addPageTemplate(self.app, 'test', 
+                               text='<div tal:content="python: request.get(\'data\')" />', 
+                               encoding='ascii')
+        zpt = self.app['test']
+        self.app.REQUEST.set('HTTP_ACCEPT_CHARSET', 'iso-8859-15')
+        self.app.REQUEST.set('data', unicode('üצה', 'iso-8859-15').encode('utf-8'))
+        result = zpt.pt_render()
+        self.assertEqual(result.startswith(unicode('<div>üצה</div>', 'iso-8859-15')), False)
+
 
 class ZopePageTemplateFileTests(ZopeTestCase):
 
@@ -273,6 +323,7 @@ def test_suite():
     suite.addTests(unittest.makeSuite(ZPTUtilsTests))
     suite.addTests(unittest.makeSuite(ZPTMacros))
     suite.addTests(unittest.makeSuite(ZopePageTemplateFileTests))
+    suite.addTests(unittest.makeSuite(ZPTUnicodeEncodingConflictResolution))
     return suite
 
 if __name__ == '__main__':
