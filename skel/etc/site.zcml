@@ -2,8 +2,6 @@
 	       xmlns:meta="http://namespaces.zope.org/meta"
            xmlns:five="http://namespaces.zope.org/five">
 
-  <meta:provides feature="devmode" />
-
   <include package="Products.Five" />
   <meta:redefinePermission from="zope2.Public" to="zope.Public" />
 
@@ -17,6 +15,7 @@
   <five:loadProducts />
 
   <!-- Load the configuration overrides-->
+  <includeOverrides files="package-includes/*-overrides.zcml" />
   <five:loadProductsOverrides />
 
 
