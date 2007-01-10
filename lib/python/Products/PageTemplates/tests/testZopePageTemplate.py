@@ -86,16 +86,10 @@ class ZPTUtilsTests(unittest.TestCase):
 
 class ZPTUnicodeEncodingConflictResolution(ZopeTestCase):
 
-    def setUp(self):
-        super(ZPTUnicodeEncodingConflictResolution, self).setUp()
+    def afterSetUp(self):
         zope.component.provideAdapter(DefaultTraversable, (None,))
         zope.component.provideAdapter(HTTPCharsets, (None,))
         provideUtility(PreferredCharsetResolver, IUnicodeEncodingConflictResolver)
-        transaction.begin()
-
-    def tearDown(self):
-        transaction.abort()
-        self.app._p_jar.close()
 
     def testISO_8859_15(self):
         manage_addPageTemplate(self.app, 'test', 
