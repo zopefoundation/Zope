@@ -1,0 +1,267 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%deffont "standard" xfont "helvetica-medium-r"
+%deffont "thick" xfont "helvetica-bold-r"
+%deffont "typewriter" xfont "courier-medium-r"
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%% Default settings per each line numbers.
+%%
+%default 1 area 90 90, leftfill, size 2, fore "gray20", back "white", font "standard", hgap 0
+%default 2 size 7, vgap 10, prefix " ", ccolor "blue"
+%default 3 size 2, bar "gray70", vgap 10
+%default 4 size 5, fore "gray20", vgap 30, prefix " ", font "standard"
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%% Default settings that are applied to TAB-indented lines.
+%%
+%tab 1 size 5, vgap 40, prefix "  ", icon box "red" 50
+%tab 2 size 4, vgap 40, prefix "      ", icon arc "yellow" 50
+%tab 3 size 3, vgap 40, prefix "            ", icon delta3 "white" 40
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%page
+
+Five - Zope 3 in Zope 2
+
+
+
+
+%center
+Martijn Faassen, Infrae
+faassen@infrae.com
+Five developer
+
+%page
+
+Interfaces, adapters
+
+
+	What are interfaces?
+
+	What are adapters?
+
+	Why?
+
+	A very quick introduction
+
+%page
+
+Actually
+
+
+	This tutorial applies to Zope 3 as much as to Five
+
+	Indication Five reached its goal in this area
+
+%page
+
+Interface example
+
+
+%size 4, fore "blue"
+from zope.interface import Interface
+
+class IElephant(Interface):
+    """An elephant is a big grey animal.
+    """
+    def getAngerLevel():
+        "Return anger level on scale 0 (placid) to 10 (raging)"
+
+    def trample(target):
+        "Trample the target."
+
+    def trumpet():
+        "Make loud noise with trunk."
+
+%page
+
+Interface example, continued
+
+
+%size 4, fore "blue"
+from zope.interface import implements
+
+class AfricanElephant:
+    implements(IElephant)
+
+    def getAngerLevel(self):
+        return 5 # always pretty stroppy
+
+    def trample(self, target):
+        target.flatten()
+
+    def trumpet(self):
+        return "A terrible racket"
+
+%page
+
+Interfaces
+
+
+	Interfaces are about the what, not the how 
+
+	Interfaces don't do anything, they just describe
+
+	Code can state what interfaces objects provide
+
+	Code can introspect whether objects provide interfaces
+
+%page
+
+Why interfaces?
+        
+
+	They are documentation
+
+	Make multiple implementations of same interface easier
+
+	Allows you to program against published APIs
+
+	Allow glueing by interface
+
+%page
+
+Component architecture
+
+
+	zope.component part of Zope 3
+
+	allows glueing together of components in various ways
+
+	a component is an object which provides an interface
+
+	a Zope 2 object with a Zope 3 interface is a component
+
+%page
+
+Adapters, example
+
+
+%size 4, fore "blue"
+class INoiseMaker(Interface):
+    """Something that makes noise.
+    """
+    def makeNoise():
+         "Returns the noise that's made."
+
+%page
+
+Adapters, example continued
+
+
+%size 4, fore "blue"
+class ElephantNoiseMaker:
+     """Adapts elephant to noise maker.
+     """
+     implements(INoiseMaker)
+
+     def __init__(self, context):
+         self.context = context
+
+     def makeNoise(self):
+         return self.context.trumpet()
+
+%page
+
+Adapters, example continued 2
+
+
+%size 4, fore "blue"
+>>> elephant = AfricanElephant()
+>>> noise_maker = ElephantNoiseMaker(elephant)
+>>> print noise_maker.makeNoise()
+'A terrible racket'
+
+%page
+
+Adapters
+
+
+	Add behavior to object without changing its class
+
+	More manageable than mixins
+
+	Define new behavior in terms of other behavior
+
+%page
+
+Adapters, continued
+
+
+	Less framework burden on adapted objects
+
+	They only need to be a component
+
+	Adapted doesn't know about the adapter
+
+	Adapter is a component itself
+
+%page
+
+Adapter lookup
+
+
+	We just manually glued the adapter to the adapted
+
+	What if we had INoiseMaker adapters for other objects?
+
+	We want a universal way to say: give me a INoiseMaker for this object
+
+	This allows use to write more generic code
+
+%page
+
+Adapter lookup, example
+
+
+%size 4, fore "blue"
+for animal in animal_farm:
+    noise_maker = INoiseMaker(animal)
+    print noise_maker.makeNoise()
+
+%page
+
+Adapter glueing
+
+
+	System need to be informed what can adapt what
+
+	Zope Configuration Markup Language (ZCML) is used for that
+
+%page
+
+ZCML example
+
+
+%size 4, fore "blue"
+<configure xmlns="http://namespaces.zope.org/zope">
+  <adapter
+      for=".module.IElephant"
+      provides=".module.INoiseMaker"
+      factory=".module.ElephantNoiseMaker" />
+  <adapter
+      for=".other.IChicken"
+      provides=".module.INoiseMaker"
+      factory=".other.ChickenNoiseMaker" />
+</configure>
+
+%page
+
+ZCML, what we just said
+
+
+	The adapter ElephantNoiseMaker adapts any object that provides IElephant to a INoiseMaker
+
+	The adapter ChickenNoiseMaker adapts any object that provides IChicken to a INoiseMaker
+
+%page
+
+This works in Zope 2 with Five
+
+
+	This works in Zope 2 with Five
+
+	Your objects just need to be components (provide Zope 3 interfaces)
+
+	Your ZCML goes into configure.zcml in your product
+
+	That's it

@@ -1,0 +1,14 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:five="http://namespaces.zope.org/five">
+
+  <!-- define default namespace adapters, etc. -->
+  <include package="zope.traversing" />
+
+  <!-- BBB 2006/05/01 - to be removed after 12 months -->
+  <adapter
+      for="*"
+      factory=".bbb.BrowserDefault"
+      provides=".bbb.IBrowserDefault"
+      />
+
+</configure>

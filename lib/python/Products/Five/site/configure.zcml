@@ -1,0 +1,18 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:browser="http://namespaces.zope.org/browser">
+
+  <adapter
+      for="zope.app.component.interfaces.ISite"
+      provides=".interfaces.IFiveUtilityRegistry"
+      factory=".utility.SimpleLocalUtilityRegistry"
+      />
+
+  <browser:page
+      for="zope.app.component.interfaces.IPossibleSite"
+      name="manage_site.html"
+      permission="five.ManageSite"
+      class=".browser.LocalSiteView"
+      template="managesite.pt"
+      />
+
+</configure>

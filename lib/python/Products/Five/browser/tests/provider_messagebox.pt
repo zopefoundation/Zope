@@ -1,0 +1,11 @@
+ <html>
+   <body>
+     <h1>My Web Page</h1>
+     <div class="left-column">
+       <tal:block replace="structure provider:mypage.MessageBox" />
+     </div>
+     <div class="main">
+       Content here
+     </div>
+   </body>
+ </html>

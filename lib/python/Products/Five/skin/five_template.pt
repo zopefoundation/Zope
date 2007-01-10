@@ -1,0 +1,10 @@
+<html metal:define-macro="page">
+<head>
+<metal:block define-slot="style_slot">
+</metal:block>
+</head>
+<body>
+<metal:block define-slot="body">
+</metal:block>
+</body>
+</html>

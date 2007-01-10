@@ -1,0 +1,25 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:browser="http://namespaces.zope.org/browser">
+
+  <adapter factory=".siteManagerAdapter" />
+
+  <subscriber
+      for="zope.app.component.interfaces.ISite
+           zope.app.publication.interfaces.IBeforeTraverseEvent"
+      handler="zope.app.component.site.threadSiteSubscriber"
+      />
+
+  <subscriber
+      for="zope.app.publication.interfaces.IEndRequestEvent"
+      handler="zope.app.component.site.clearThreadSiteSubscriber"
+      />
+
+  <browser:page
+      for="OFS.interfaces.IObjectManager"
+      name="components.html"
+      class=".browser.ObjectManagerSiteView"
+      template="components.pt"
+      permission="five.ManageSite"
+      />
+
+</configure>

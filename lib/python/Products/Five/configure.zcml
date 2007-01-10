@@ -1,0 +1,28 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:five="http://namespaces.zope.org/five">
+
+  <include file="meta.zcml" />
+  <include file="permissions.zcml" />
+  <include file="i18n.zcml" />
+  <include file="event.zcml"/>
+  <include file="deprecated.zcml"/>
+  <include file="traversing.zcml"/>
+  <include package=".component" />
+  <include package=".site" />
+  <include package=".browser" />
+  <include package=".form" />
+  <include package=".formlib" />
+  <include package=".skin" />
+  <include package=".utilities" />
+  <include package=".viewlet" />
+
+  <!-- this is really lying, but it's to please checkContainer -->
+  <five:implements class="OFS.ObjectManager.ObjectManager"
+                   interface="zope.app.container.interfaces.IContainer" />
+
+  <!-- make Zope 2's REQUEST implement the right thing -->
+  <five:implements class="ZPublisher.HTTPRequest.HTTPRequest"
+                   interface="zope.publisher.interfaces.browser.IBrowserRequest"
+                   />
+
+</configure>

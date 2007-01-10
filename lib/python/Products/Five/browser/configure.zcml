@@ -1,0 +1,84 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:browser="http://namespaces.zope.org/browser">
+
+  <!-- BBB 2006/05/01 - to be removed after 12 months -->
+  <browser:defaultView
+      for="Products.Five.bbb.IBrowserDefault" 
+      name="index.html"
+      />
+
+  <interface
+      interface="zope.publisher.interfaces.browser.IBrowserSkinType"
+      />
+
+  <interface
+      interface="zope.app.publisher.interfaces.browser.IMenuItemType"
+      />
+
+  <!-- BBB 2006/02/18, to be removed after 12 months -->
+  <browser:layer
+      name="default"
+      interface="zope.publisher.interfaces.browser.IDefaultBrowserLayer"
+      bbb_aware="true"
+      />
+
+  <browser:page
+      for="*"
+      name="absolute_url"
+      class=".absoluteurl.AbsoluteURL"
+      permission="zope.Public"
+      allowed_interface="zope.traversing.browser.interfaces.IAbsoluteURL"
+      />
+
+  <view
+      for="*"
+      factory=".absoluteurl.AbsoluteURL"
+      type="zope.publisher.interfaces.http.IHTTPRequest"
+      permission="zope.Public"
+      provides="zope.traversing.browser.interfaces.IAbsoluteURL"
+      />
+
+  <browser:page
+      for="zope.traversing.interfaces.IContainmentRoot"
+      name="absolute_url"
+      class=".absoluteurl.SiteAbsoluteURL"
+      permission="zope.Public"
+      allowed_interface="zope.traversing.browser.interfaces.IAbsoluteURL"
+      />
+
+  <view
+      for="zope.traversing.interfaces.IContainmentRoot"
+      factory=".absoluteurl.SiteAbsoluteURL"
+      type="zope.publisher.interfaces.http.IHTTPRequest"
+      permission="zope.Public"
+      provides="zope.traversing.browser.interfaces.IAbsoluteURL"
+      />
+
+  <browser:view
+      for="OFS.interfaces.IObjectManager"
+      name="+"
+      class=".adding.ContentAdding"
+      permission="zope2.ViewManagementScreens"
+      >
+
+    <browser:page name="index.html"  template="adding.pt" />
+    <browser:page name="action.html" attribute="action" />
+
+  </browser:view>
+
+  <adapter
+      for="OFS.interfaces.IObjectManager"
+      factory=".adding.ObjectManagerNameChooser"
+      provides="zope.app.container.interfaces.INameChooser"
+      />
+
+  <!-- Menu access -->
+  <browser:page
+      for="*"
+      name="view_get_menu"
+      permission="zope.Public"
+      class=".menu.MenuAccessView"
+      allowed_interface="zope.app.publisher.interfaces.browser.IMenuAccessView"
+      />
+
+</configure>

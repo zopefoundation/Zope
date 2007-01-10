@@ -1,0 +1,69 @@
+<tal:tag condition="view/update"/>
+<html metal:use-macro="context/@@standard_macros/view"
+    i18n:domain="zope">
+  <body>
+  <div metal:fill-slot="body">
+
+  <div metal:define-macro="body">
+
+    <form action="." tal:attributes="action request/URL" method="POST"
+          enctype="multipart/form-data">
+
+      <div metal:define-macro="formbody">
+
+        <h3 tal:condition="view/label"
+            tal:content="view/label"
+            metal:define-slot="heading"
+            >Edit something</h3>
+
+        <p tal:define="status view/update"
+           tal:condition="status"
+           tal:content="status" />
+
+        <p tal:condition="view/errors" i18n:translate="">
+          There are <strong tal:content="python:len(view.errors)"
+                            i18n:name="num_errors">6</strong> input errors.
+        </p>
+
+        <div metal:define-slot="extra_info" tal:replace="nothing">
+        </div>
+
+        <div class="row"
+             metal:define-slot="extra_top" tal:replace="nothing">
+          <div class="label">Extra top</div>
+          <div class="field"><input type="text" style="width:100%" /></div>
+        </div>
+        
+        <div metal:use-macro="context/@@form_macros/widget_rows" />
+        
+        <div class="separator"></div>
+        
+        <div class="row"
+             metal:define-slot="extra_bottom" tal:replace="nothing">
+          <div class="label">Extra bottom</div>
+          <div class="field"><input type="text" style="width:100%" /></div>
+        </div>
+        <div class="separator"></div>
+      </div>
+
+      <div class="row">
+        <div class="controls">
+          <input type="submit" value="Refresh" 
+              i18n:attributes="value refresh-button" />
+          <input type="submit" name="UPDATE_SUBMIT" value="Change" 
+              i18n:attributes="value submit-button"/>
+        </div>
+      </div>
+      <div class="row" metal:define-slot="extra_buttons" tal:replace="nothing">
+      </div>
+
+      <div class="separator"></div>
+
+    </form>
+
+  </div>
+
+  </div>
+  </body>
+
+</html>

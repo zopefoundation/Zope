@@ -1,0 +1,38 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:five="http://namespaces.zope.org/five">
+
+  <adapter
+      for=".adapters.IAdaptable"
+      provides=".adapters.IAdapted"
+      factory=".adapters.Adapter"
+      />
+
+  <!-- testing that products meta.zcml statements are picked up. -->
+
+  <include file="meta.zcml" />
+
+  <five:parrot
+      class=".metaconfigure.NorwegianBlue"
+      name="Polly"
+      />
+
+  <!-- stuff that we'll override in overrides.zcml -->
+
+  <adapter
+      for=".adapters.IOrigin"
+      provides=".adapters.IDestination"
+      factory=".adapters.OriginalAdapter"
+      />
+
+  <!-- this tests whether content / class can be declared on the same class
+       with two different interfaces. -->
+
+  <class class=".classes.One" >
+    <implements interface=".classes.IOne" />
+  </class>
+
+  <class class=".classes.One" >
+    <implements interface=".classes.ITwo" />
+  </class>
+
+</configure>
