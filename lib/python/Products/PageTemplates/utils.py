@@ -70,20 +70,19 @@ def convertToUnicode(source, content_type, preferred_encodings):
     elif content_type.startswith('text/html'):
 
         encoding = charsetFromMetaEquiv(source)
+        if encoding:
+            return unicode(source, encoding), encoding  
 
-        # Try to detect the encoding by converting it unicode without raising
-        # exceptions. There are some smarter Python-based sniffer methods
-        # available however we have to check their licenses first before
-        # including them into the Zope 2 core
+    # Try to detect the encoding by converting it unicode without raising
+    # exceptions. There are some smarter Python-based sniffer methods
+    # available however we have to check their licenses first before
+    # including them into the Zope 2 core
 
-        if not encoding:
-            for enc in preferred_encodings:
-                try:
-                    return unicode(source, enc), enc
-                except UnicodeDecodeError:
-                    continue
+    for enc in preferred_encodings:
+        try:
+            return unicode(source, enc), enc
+        except UnicodeDecodeError:
+                continue
 
-        raise TypeError('Could not auto-detect encoding')
+    return unicode(source), None
 
-    else:
-        raise ValueError('Unsupported content-type: %s' % content_type) 

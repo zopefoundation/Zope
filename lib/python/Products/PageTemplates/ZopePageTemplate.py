@@ -126,7 +126,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         encoding = None
         output_encoding = None
 
-        if content_type == 'text/xml':
+        if content_type in ('text/xml',):
 
             if is_unicode:
                 encoding = None
@@ -136,7 +136,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
                 output_encoding = 'utf-8'
             
 
-        elif content_type == 'text/html':
+        elif content_type in ('text/html',) :
 
             charset = charsetFromMetaEquiv(text)
 
@@ -156,7 +156,10 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
                     output_encoding = 'iso-8859-15'
 
         else:
-            raise ValueError('Unsupported content-type %s' % content_type)
+            utext, encoding = convertToUnicode(text, 
+                                               content_type, 
+                                               preferred_encodings)
+            output_encoding = encoding
 
         # for content updated through WebDAV, FTP 
         if not keep_output_encoding:
@@ -228,8 +231,8 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
             text = file.read()
 
         content_type = guess_type(filename, text)   
-        if not content_type in ('text/html', 'text/xml'):
-            raise ValueError('Unsupported mimetype: %s' % content_type)
+#        if not content_type in ('text/html', 'text/xml'):
+#            raise ValueError('Unsupported mimetype: %s' % content_type)
 
         self.pt_edit(text, content_type)
         return self.pt_editForm(manage_tabs_message='Saved changes')
@@ -409,7 +412,8 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
 
     def __setstate__(self, state):
         # Perform on-the-fly migration to unicode.
-        # Perhaps it might be work with the 'generation' module here?
+        # Perhaps it might be better to work with the 'generation' module 
+        # here?
         if not isinstance(state['_text'], unicode):
             text, encoding = convertToUnicode(state['_text'], 
                                     state.get('content_type', 'text/html'), 
