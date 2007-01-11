@@ -8,6 +8,9 @@ Zope Changes
 
     Bugs fixed
 
+      - Collector #2263: 'field2ulines' did not convert empty string
+        correctly.
+
       - Collector #2237: 'make' doesn't tell you to run 'make inplace'
         before running 'make instance'.
 

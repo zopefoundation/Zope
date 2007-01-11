@@ -154,9 +154,18 @@ class field2utext(_unicode_converter):
         return unicode(field2text(v.encode('utf8')),'utf8')
 field2utext = field2utext()
 
-class field2ulines(_unicode_converter):
-    def convert_unicode(self,v):
-        return field2utext.convert_unicode(v).split('\n')
+class field2ulines:
+    def __call__(self, v):
+        if hasattr(v,'read'):
+            v=v.read()
+        if isinstance(v, (ListType, TupleType)): 
+            return [field2ustring(x) for x in v]
+        v = unicode(v)
+        return self.convert_unicode(v)
+
+    def convert_unicode(self, v):
+        return field2utext.convert_unicode(v).splitlines()
+
 field2ulines = field2ulines()
 
 type_converters = {
