@@ -71,6 +71,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #2263: 'field2ulines' did not convert empty string
+        correctly.
+
       - Collector #2191: extended DateTime parser for better support
         to the ISO8601 specification.
 
