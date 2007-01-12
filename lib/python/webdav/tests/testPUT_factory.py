@@ -67,6 +67,23 @@ class TestPUTFactory(unittest.TestCase):
         put(request, request.RESPONSE)
         self.failUnless('doc' in self.folder.objectIds())
 
+    def testCollector2261(self):
+        from OFS.Folder import manage_addFolder
+        from OFS.DTMLMethod import addDTMLMethod
+
+        manage_addFolder(self.app, 'A')
+        addDTMLMethod(self.app, 'a', file='I am file a')
+        manage_addFolder(self.app.A, 'B')
+        request = self.app.REQUEST
+        # this should create 'a' within /A/B containing 'bar'
+        put = request.traverse('/A/B/a')
+        put(request, request.RESPONSE)
+        # PUT should no acquire A.a
+        self.assertEqual(str(self.app.A.a), 'I am file a', 'PUT factory should acquire content')
+        # check for the newly created file
+        self.assertEqual(str(self.app.A.B.a), 'bar')
+
+
 
 def test_suite():
     return unittest.TestSuite((
