@@ -76,7 +76,6 @@ class TestPUTFactory(unittest.TestCase):
         addDTMLMethod(self.app, 'a', file='I am file a')
         manage_addFolder(self.app.A, 'B')
         request = self.app.REQUEST
-        import pdb; pdb.set_trace() 
         # this should create 'a' within /A/B containing 'bar'
         put = request.traverse('/A/B/a')
         put(request, request.RESPONSE)
