@@ -27,6 +27,7 @@ class TestPUTFactory(unittest.TestCase):
             request['BODY'] = 'bar'
             request.environ['CONTENT_TYPE'] = 'text/plain'
             request.environ['REQUEST_METHOD'] = 'PUT'
+            request.environ['WEBDAV_SOURCE_PORT'] = 1
             request._auth = auth_info
         except:
             self.tearDown()
@@ -75,6 +76,7 @@ class TestPUTFactory(unittest.TestCase):
         addDTMLMethod(self.app, 'a', file='I am file a')
         manage_addFolder(self.app.A, 'B')
         request = self.app.REQUEST
+        import pdb; pdb.set_trace() 
         # this should create 'a' within /A/B containing 'bar'
         put = request.traverse('/A/B/a')
         put(request, request.RESPONSE)
