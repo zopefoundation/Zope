@@ -295,6 +295,7 @@ class GuardedListType:
             return list.sorted(iterable, cmp=None, key=None, reverse=False)
 safe_builtins['list'] = GuardedListType()
 
+            
 class GuardedDictType:
     def __call__(self, *args, **kwargs):
         return dict(*args, **kwargs)
@@ -302,6 +303,7 @@ class GuardedDictType:
     def fromkeys(self, S, v=None):
         return dict.fromkeys(S,v)
 safe_builtins['dict'] = GuardedDictType()
+
 
 def guarded_enumerate(seq):
     return NullIter(enumerate(guarded_iter(seq)))

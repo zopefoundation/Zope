@@ -206,7 +206,7 @@ class TestPythonScriptNoAq(PythonScriptTestBase):
         self.assertEqual(f.get_size(), len(f.read()))
 
     def testSet(self):
-        res = self._newPS('return len(Set([1,2,3]))')()
+        res = self._newPS('from sets import Set; return len(Set([1,2,3]))')()
         self.assertEqual(res, 3)
 
     def testDateTime(self):
