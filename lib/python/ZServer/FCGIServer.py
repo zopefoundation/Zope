@@ -46,7 +46,6 @@ from cStringIO import StringIO
 from tempfile import TemporaryFile
 import socket, string, os, sys, time
 import thread
-from types import StringTypes
 import base64
 
 tz_for_log = compute_timezone_for_log()
@@ -573,7 +572,7 @@ class FCGIChannel(asynchat.async_chat):
         self.closed=1
         while self.producer_fifo:
             p=self.producer_fifo.first()
-            if p is not None and not isinstance(p, StringTypes):
+            if p is not None and not isinstance(p, basestring):
                 p.more() # free up resources held by producer
             self.producer_fifo.pop()
         asyncore.dispatcher.close(self)

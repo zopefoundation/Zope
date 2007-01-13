@@ -47,7 +47,6 @@ import DebugLogger
 from cStringIO import StringIO
 from tempfile import TemporaryFile
 import socket, string, os, sys, time
-from types import TupleType, StringTypes
 
 tz_for_log=compute_timezone_for_log()
 
@@ -163,7 +162,7 @@ class PCGIChannel(asynchat.async_chat):
         else:
             method="GET"
         addr=self.addr
-        if addr and type(addr) is TupleType:
+        if addr and isinstance(addr, tuple):
             self.server.logger.log (
                 addr[0],
                 '%d - - [%s] "%s %s" %d %d "%s" "%s"' % (
@@ -203,7 +202,7 @@ class PCGIChannel(asynchat.async_chat):
         self.closed=1
         while self.producer_fifo:
             p=self.producer_fifo.first()
-            if p is not None and not isinstance(p, StringTypes):
+            if p is not None and not isinstance(p, basestring):
                 p.more() # free up resources held by producer
             self.producer_fifo.pop()
         asyncore.dispatcher.close(self)

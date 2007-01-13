@@ -29,7 +29,6 @@ from medusa import http_server
 import asyncore
 from Producers import ShutdownProducer, LoggingProducer, CallbackProducer, \
     file_part_producer, file_close_producer, iterator_producer
-from types import LongType
 import DebugLogger
 
 
