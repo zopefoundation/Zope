@@ -205,6 +205,14 @@ class TestPythonScriptNoAq(PythonScriptTestBase):
         f = self._filePS('complex_print')
         self.assertEqual(f.get_size(), len(f.read()))
 
+    def testSet(self):
+        res = self._newPS('return len(Set([1,2,3]))')()
+        self.assertEqual(res, 3)
+
+    def testDateTime(self):
+        res = self._newPS("return DateTime('2007/12/10').strftime('%d.%m.%Y')")()
+        self.assertEqual(res, '10.12.2007')
+
 
 class TestPythonScriptErrors(PythonScriptTestBase):
     
