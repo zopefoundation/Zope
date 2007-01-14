@@ -196,12 +196,14 @@ class ZopePageTemplateFileTests(ZopeTestCase):
         zpt = self._put(xml_iso_8859_15)
         self.assertEqual(zpt.output_encoding, 'utf-8')
         self.assertEqual(zpt.content_type, 'text/xml')
+        result = zpt.pt_render() # should not raise an exception
 
     def testPutXMLUTF8(self):
         """ XML: use always UTF-8 als output encoding """
         zpt = self._put(xml_utf8)
         self.assertEqual(zpt.output_encoding, 'utf-8')
         self.assertEqual(zpt.content_type, 'text/xml')
+        result = zpt.pt_render() # should not raise an exception
 
 class ZPTRegressions(unittest.TestCase):
 
