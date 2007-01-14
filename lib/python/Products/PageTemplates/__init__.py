@@ -31,25 +31,3 @@ def initialize(context):
     # Import lazily, and defer initialization to the module
     import ZopePageTemplate
     ZopePageTemplate.initialize(context)
-
-
-# HACK!!!
-# We need to monkeypatch the parseString method of the Zope 3 
-# XMLParser since the internal ZPT representation uses unicode
-# however the XMLParser (using Expat) can only deal with standard
-# Python strings. However we won't and can't convert directly
-# to UTF-8 within the ZPT wrapper code. 
-# Unicode support for (this issue) should be directly added
-# to zope.tal.xmlparser however this requires a new Zope 3.3.X
-# release. For now we fix it here.
-
-from zope.tal.xmlparser import XMLParser
-import logging
-
-def parseString(self, s):
-    if isinstance(s, unicode):
-        s = s.encode('utf-8')
-    self.parser.Parse(s, 1)
-
-XMLParser.parseString = parseString
-logging.info('Monkeypatching zope.tal.xmlparser.XMLParser.parseString()')
