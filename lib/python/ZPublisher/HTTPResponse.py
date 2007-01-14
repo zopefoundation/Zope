@@ -249,6 +249,7 @@ class HTTPResponse(BaseResponse):
         literal flag is true, the case of the header name is preserved,
         otherwise word-capitalization will be performed on the header
         name on output.'''
+
         name = str(name)
         value = str(value)
         key = name.lower()
@@ -458,21 +459,20 @@ class HTTPResponse(BaseResponse):
 
         # Encode the Unicode data as requested
 
-        if self.headers.has_key('content-type'):
-            match = charset_re.match(self.headers['content-type'])
+        ct = self.headers.get('content-type')
+        if ct:
+            match = charset_re.match(ct)
             if match:
                 encoding = match.group(1)
                 body = body.encode(encoding)
                 body = fix_xml_preamble(body, encoding)
                 return body
             else:
-
-                ct = self.headers['content-type']
                 if ct.startswith('text/') or ct.startswith('application/'):
                     self.headers['content-type'] = '%s; charset=%s' % (ct, default_encoding)
 
         # Use the default character encoding
-        body = body.encode(default_encoding,'replace')
+        body = body.encode(default_encoding, 'replace')
         body = fix_xml_preamble(body, default_encoding)
         return body
 
