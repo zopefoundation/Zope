@@ -80,7 +80,7 @@ class TestPUTFactory(unittest.TestCase):
         put = request.traverse('/A/B/a')
         put(request, request.RESPONSE)
         # PUT should no acquire A.a
-        self.assertEqual(str(self.app.A.a), 'I am file a', 'PUT factory not should acquire content')
+        self.assertEqual(str(self.app.A.a), 'I am file a', 'PUT factory should not acquire content')
         # check for the newly created file
         self.assertEqual(str(self.app.A.B.a), 'bar')
 
