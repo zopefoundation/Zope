@@ -427,6 +427,17 @@ class BaseRequest:
                     # BrowserDefault returns the object to be published
                     # (usually self) and a sequence of names to traverse to
                     # find the method to be published.
+                    
+                    # This is webdav support. The last object in the path
+                    # should not be acquired. Instead, a NullResource should
+                    # be given if it doesn't exist:
+                    if (no_acquire_flag and
+                        hasattr(object, 'aq_base') and 
+                        not hasattr(object,'__bobo_traverse__')):
+                        if object.aq_parent is not object.aq_inner.aq_parent:
+                            from webdav.NullResource import NullResource
+                            object = NullResource(parents[-2], object.getId(), self).__of__(parents[-2])
+                    
                     if IBrowserPublisher.providedBy(object):
                         adapter = object
                     else:

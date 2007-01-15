@@ -10,6 +10,8 @@ Zope Changes
 
       - Updated Zope 3 to bugfix release 3.3.1.
 
+      - Collector #2261: Acquisition when creating objects via Webdav.
+
   Zope 2.10.2 beta 1 (2007/01/14)
 
     Bugs fixed

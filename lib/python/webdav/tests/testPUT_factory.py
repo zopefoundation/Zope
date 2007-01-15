@@ -27,6 +27,7 @@ class TestPUTFactory(unittest.TestCase):
             request['BODY'] = 'bar'
             request.environ['CONTENT_TYPE'] = 'text/plain'
             request.environ['REQUEST_METHOD'] = 'PUT'
+            request.environ['WEBDAV_SOURCE_PORT'] = 1
             request._auth = auth_info
         except:
             self.tearDown()
@@ -66,6 +67,23 @@ class TestPUTFactory(unittest.TestCase):
         put = request.traverse('/VirtualHostBase/http/foo.com:80/folder/VirtualHostRoot/_vh_foo/doc')
         put(request, request.RESPONSE)
         self.failUnless('doc' in self.folder.objectIds())
+
+    def testCollector2261(self):
+        from OFS.Folder import manage_addFolder
+        from OFS.DTMLMethod import addDTMLMethod
+
+        self.app.manage_addFolder('A', '')
+        addDTMLMethod(self.app, 'a', file='I am file a')
+        self.app.A.manage_addFolder('B', '')
+        request = self.app.REQUEST
+        # this should create 'a' within /A/B containing 'bar'
+        put = request.traverse('/A/B/a')
+        put(request, request.RESPONSE)
+        # PUT should no acquire A.a
+        self.assertEqual(str(self.app.A.a), 'I am file a', 'PUT factory not should acquire content')
+        # check for the newly created file
+        self.assertEqual(str(self.app.A.B.a), 'bar')
+
 
 
 def test_suite():
