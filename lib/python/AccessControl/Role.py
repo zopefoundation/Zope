@@ -160,6 +160,59 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
 
         if REQUEST is not None: return self.manage_access(REQUEST)
 
+    def manage_getUserRolesAndPermissions(self, user):
+        """ collect user related security settings """
+
+        from AccessControl.SecurityManagement import newSecurityManager
+        
+        d = {}
+
+        current = self
+        while 1:
+            try:
+                uf = current.acl_users
+            except AttributeError:
+                raise ValueError('User %s could not be found' % user)
+
+            userObj = uf.getUser(user)
+            if userObj:
+                break
+            else:
+                current = current.aq_parent
+
+
+        userObj = userObj.__of__(uf)
+
+        d = {'user_defined_in' : '/' + uf.absolute_url(1)}
+
+        # roles
+        roles = list(userObj.getRoles())
+        roles.sort()
+        d['roles'] = roles
+
+
+        # roles in context
+        roles = list(userObj.getRolesInContext(self))
+        roles.sort()
+        d['roles_in_context'] = roles
+
+        # permissions
+        allowed = []
+        disallowed = []
+        permMap = self.manage_getPermissionMapping()
+        for item in permMap:
+            p = item['permission_name']
+            if userObj.has_permission(p, self):
+                allowed.append(p)
+            else:
+                disallowed.append(p)
+
+        d['allowed_permissions'] = allowed
+        d['disallowed_permissions'] = disallowed
+
+        return d
+
+
     security.declareProtected(change_permissions, 'manage_permissionForm')
     manage_permissionForm=DTMLFile('dtml/permissionEdit', globals(),
                                    management_view='Security',
@@ -193,6 +246,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
     _normal_manage_access=DTMLFile('dtml/access', globals())
 
     _method_manage_access=DTMLFile('dtml/methodAccess', globals())
+    manage_reportUserPermissions=DTMLFile('dtml/reportUserPermissions', globals())
 
     security.declareProtected(change_permissions, 'manage_access')
     def manage_access(self, REQUEST, **kw):

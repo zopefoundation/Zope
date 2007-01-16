@@ -20,6 +20,15 @@ acquired permission settings may be augmented by selecting Roles for
 a permission in addition to selecting to acquire permissions.
 </p>
 
+
+<div>
+    <form action="manage_reportUserPermissions" method="GET">
+        Username:
+        <input type="text" name="user" size="20" />
+        <input type="submit" value="Show me the user permissions and roles in the context of the current object" />
+    </form>
+</div>
+
 <dtml-with expr="_.namespace(valid_roles=valid_roles())">
 <form action="manage_changePermissions" method="post">
 

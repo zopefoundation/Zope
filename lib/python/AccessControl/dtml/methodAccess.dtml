@@ -22,6 +22,9 @@ an object should be disabled. The listing below shows the current permission
 mappings for this item.
 </p>
 
+
+xx
+
 <dtml-with "_(valid=permissionMappingPossibleValues())">
 <form action="manage_setPermissionMapping" method="post">
 
