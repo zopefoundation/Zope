@@ -20,6 +20,7 @@ from Globals import DTMLFile, MessageDialog, Dictionary
 from Acquisition import Implicit, Acquired, aq_get
 from Globals import InitializeClass
 from AccessControl import ClassSecurityInfo
+from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.Permissions import change_permissions
 import ExtensionClass, PermissionMapping, Products
 from App.Common import aq_base
@@ -160,10 +161,16 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
 
         if REQUEST is not None: return self.manage_access(REQUEST)
 
-    def manage_getUserRolesAndPermissions(self, user):
-        """ collect user related security settings """
+    def manage_getUserRolesAndPermissions(self, user_id):
+        """ Used for permission/role reporting for a given user_id.
+            Returns a dict mapping
 
-        from AccessControl.SecurityManagement import newSecurityManager
+            'user_defined_in' -> path where the user account is defined
+            'roles' -> global roles,
+            'roles_in_context' -> roles in context of the current object,
+            'allowed_permissions' -> permissions allowed for the user,
+            'disallowed_permissions' -> all other permissions 
+        """
         
         d = {}
 
@@ -172,15 +179,16 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
             try:
                 uf = current.acl_users
             except AttributeError:
-                raise ValueError('User %s could not be found' % user)
+                raise ValueError('User %s could not be found' % user_id)
 
-            userObj = uf.getUser(user)
+            userObj = uf.getUser(user_id)
             if userObj:
                 break
             else:
                 current = current.aq_parent
 
 
+        newSecurityManager(None, userObj) # necessary?
         userObj = userObj.__of__(uf)
 
         d = {'user_defined_in' : '/' + uf.absolute_url(1)}

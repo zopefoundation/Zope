@@ -265,6 +265,16 @@ class IRoleManager(IPermissionMappingSupport):
         """
         """
 
+    def manage_getUserRolesAndPermissions(user_id):
+        """ Used for permission/role reporting for a given user_id.
+            Returns a dict mapping
+
+            'user_defined_in' -> path where the user account is defined
+            'roles' -> global roles,
+            'roles_in_context' -> roles in context of the current object,
+            'allowed_permissions' -> permissions allowed for the user,
+            'disallowed_permissions' -> all other permissions 
+        """
 
 class IStandardUserFolder(Interface):
 

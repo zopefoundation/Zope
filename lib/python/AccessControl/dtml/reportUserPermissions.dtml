@@ -3,9 +3,9 @@
 <dtml-if  manage_tabs><dtml-var manage_tabs></dtml-if>
 </dtml-with>
 
-<h1>Permissions and roles for user &dtml-user;</h1>
+<h1>Permissions and roles for user &dtml-user_id;</h1>
 
-<dtml-let result="manage_getUserRolesAndPermissions(user)">
+<dtml-let result="manage_getUserRolesAndPermissions(user_id)">
 
 <div>
     <b>Roles</b>: <dtml-var "', '.join(result['roles'])"> 
