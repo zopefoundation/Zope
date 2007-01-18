@@ -3,19 +3,49 @@
 <dtml-if  manage_tabs><dtml-var manage_tabs></dtml-if>
 </dtml-with>
 
-<h1>Permissions and roles for user &dtml-user_id;</h1>
+<p class="form-help">
+This listing shows the permissions and roles for particular user
+in the context of the current object.
+</p>
 
-<dtml-let result="manage_getUserRolesAndPermissions(user_id)">
+<dtml-let result="manage_getUserRolesAndPermissions(user)">
 
-<div>
-    <b>Roles</b>: <dtml-var "', '.join(result['roles'])"> 
-    <br/>
-    <b>Roles in Context</b>: <dtml-var "', ' .join(result['roles_in_context'])"> 
-    <br/>
-    <b>User account defined in</b>: <dtml-var "result['user_defined_in']">
-</div>
+<b>User account </b>: &dtml-user;
+<br/>
+<b>User account defined in</b>: <dtml-var "result['user_defined_in']">
+<br/>
+<br/>
 
-<table> 
+<table width="50%" cellspacing="0" cellpadding="4" border="1" nowrap>
+    <thead>
+        <tr>
+            <th>Roles</th>
+            <th>Roles in context</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td valign="top">
+                <ul>
+                    <dtml-in "result['roles']">
+                        <li>&dtml-sequence-item;
+                    </dtml-in>
+                </ul>
+            </td>
+            <td valign="top">
+                <ul>
+                    <dtml-in "result['roles_in_context']">
+                        <li>&dtml-sequence-item;
+                    </dtml-in>
+                </ul>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<br/>
+
+<table width="50%" cellspacing="0" cellpadding="4" border="1" nowrap>
     <thead>
         <tr>
             <th>Allowed permissions</th>
