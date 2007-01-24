@@ -77,6 +77,9 @@ Zope Changes
         for user-related reporting of permissions and roles 
 
     Bugs Fixed
+
+      - Collector #2269: fixed broken ZPT FTP support
+
       - Collector #2261: Acquisition when creating objects via Webdav.
 
       - Collector #2263: 'field2ulines' did not convert empty string
