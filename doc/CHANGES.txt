@@ -12,6 +12,8 @@ Zope Changes
 
       - Collector #2261: Acquisition when creating objects via Webdav.
 
+      - Collector #2269: fixed broken FTP support for ZPT
+
   Zope 2.10.2 beta 1 (2007/01/14)
 
     Bugs fixed

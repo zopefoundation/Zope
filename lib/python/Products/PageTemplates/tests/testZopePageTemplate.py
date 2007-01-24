@@ -249,6 +249,14 @@ class ZPTRegressions(unittest.TestCase):
         pt = self.app.pt1
         self.assertEqual(pt.document_src(), self.text)
 
+    def testFTPGet(self):
+        # check for bug #2269
+        request = self.app.REQUEST
+        text = '<span tal:content="string:foobar"></span>'
+        self._addPT('pt1', text=text, REQUEST=request)
+        result = self.app.pt1.manage_FTPget()
+        self.assertEqual(result, text)
+
 
 class ZPTMacros(zope.component.testing.PlacelessSetup, unittest.TestCase):
 

@@ -359,7 +359,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
     security.declareProtected(ftp_access, 'manage_FTPget')
     def manage_FTPget(self):
         "Get source for FTP download"
-        result = self.pt_render()
+        result = self.read()
         return result.encode(self.output_encoding)
 
     security.declareProtected(view_management_screens, 'html')
