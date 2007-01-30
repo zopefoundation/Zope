@@ -63,14 +63,13 @@ class DateRangeIndex(UnIndex):
     security = ClassSecurityInfo()
 
     meta_type = "DateRangeIndex"
+    query_options = ('query',)
 
     manage_options= ( { 'label'     : 'Properties'
                       , 'action'    : 'manage_indexProperties'
                       }
                     ,
                     )
-
-    query_options = ['query']
 
     since_field = until_field = None
 
@@ -213,7 +212,6 @@ class DateRangeIndex(UnIndex):
             t2 = self._until_only
 
         result = []
-        IntType = type( 0 )
 
         if not withLengths:
 
@@ -224,7 +222,7 @@ class DateRangeIndex(UnIndex):
 
             for key in t1.keys():
                 set = t1[ key ]
-                if type( set ) is IntType:
+                if isinstance(set, int):
                     length = 1
                 else:
                     length = len( set )
@@ -232,7 +230,7 @@ class DateRangeIndex(UnIndex):
 
             for key in t2.keys():
                 set = t2[ key ]
-                if type( set ) is IntType:
+                if isinstance(set, int):
                     length = 1
                 else:
                     length = len( set )
@@ -240,12 +238,12 @@ class DateRangeIndex(UnIndex):
 
         return tuple( result )
 
-    def _apply_index( self, request, cid='' ):
+    def _apply_index(self, request):
         """
             Apply the index to query parameters given in 'request', which
             should be a mapping object.
 
-            If the request does not contain the needed parametrs, then
+            If the request does not contain the needed parameters, then
             return None.
 
             If the request contains a parameter with the name of the
@@ -257,7 +255,7 @@ class DateRangeIndex(UnIndex):
             second object is a tuple containing the names of all data fields
             used.
         """
-        record = parseIndexRequest( request, self.getId() )
+        record = parseIndexRequest(request, self.id, self.query_options)
         if record.keys is None:
             return None
 
@@ -396,10 +394,10 @@ class DateRangeIndex(UnIndex):
     def _convertDateTime( self, value ):
         if value is None:
             return value
-        if type( value ) == type( '' ):
+        if isinstance(value, str):
             dt_obj = DateTime( value )
             value = dt_obj.millis() / 1000 / 60 # flatten to minutes
-        if isinstance( value, DateTime ):
+        if isinstance(value, DateTime):
             value = value.millis() / 1000 / 60 # flatten to minutes
         result = int( value )
         if isinstance(result, long): # this won't work (Python 2.3)

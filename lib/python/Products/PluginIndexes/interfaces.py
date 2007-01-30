@@ -43,12 +43,12 @@ class IPluggableIndex(Interface):
     def unindex_object(documentId):
         """Remove the documentId from the index."""
 
-    def _apply_index(request, cid=''):
+    def _apply_index(request):
         """Apply the index to query parameters given in 'request'.
 
         The argument should be a mapping object.
 
-        If the request does not contain the needed parametrs, then
+        If the request does not contain the needed parameters, then
         None is returned.
 
         If the request contains a parameter with the name of the column

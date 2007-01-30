@@ -8,6 +8,8 @@ Zope Changes
 
     Restructuring
 
+      - Indexes: Removed unused parameters from '_apply_index' methods.
+
       - Fixed Collector #2190: Calls to
         zope.security.management.checkPermission aren't rerouted to
         Zope 2's security policy.
@@ -77,6 +79,8 @@ Zope Changes
         for user-related reporting of permissions and roles 
 
     Bugs Fixed
+
+      - PluginIndexes: Fixed 'parseIndexRequest' for false values. 
 
       - Collector #2269: fixed broken ZPT FTP support
 

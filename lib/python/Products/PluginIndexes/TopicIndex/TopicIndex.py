@@ -46,7 +46,7 @@ class TopicIndex(Persistent, SimpleItem):
     implements(ITopicIndex, IPluggableIndex)
 
     meta_type="TopicIndex"
-    query_options = ('query','operator')
+    query_options = ('query', 'operator')
 
     manage_options= (
         {'label': 'FilteredSets',
@@ -91,14 +91,13 @@ class TopicIndex(Persistent, SimpleItem):
         if self.filteredSets.has_key(filter_id):
             return self.filteredSets[filter_id].getIds()
 
-    def _apply_index(self, request, cid=''):
+    def _apply_index(self, request):
         """ hook for (Z)Catalog
             'request' --  mapping type (usually {"topic": "..." }
-            'cid' -- ???
         """
-
-        record = parseIndexRequest(request,self.id,self.query_options)
-        if record.keys is None: return None
+        record = parseIndexRequest(request, self.id, self.query_options)
+        if record.keys is None:
+            return None
 
         operator = record.get('operator', self.defaultOperator).lower()
         if operator == 'or':  set_func = union

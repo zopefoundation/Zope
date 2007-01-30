@@ -61,12 +61,11 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
     ## Magic class attributes ##
 
     meta_type = 'ZCTextIndex'
+    query_options = ('query',)
 
     manage_options = (
         {'label': 'Overview', 'action': 'manage_main'},
     )
-
-    query_options = ['query']
 
     security = ClassSecurityInfo()
     security.declareObjectProtected(manage_zcatalog_indexes)
@@ -204,7 +203,7 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
         if self.index.has_doc(docid):
             self.index.unindex_doc(docid)
 
-    def _apply_index(self, request, cid=''):
+    def _apply_index(self, request):
         """Apply query specified by request, a mapping containing the query.
 
         Returns two object on success, the resultSet containing the
@@ -216,6 +215,7 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
         record = parseIndexRequest(request, self.id, self.query_options)
         if record.keys is None:
             return None
+
         query_str = ' '.join(record.keys)
         if not query_str:
             return None

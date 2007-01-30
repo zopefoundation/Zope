@@ -19,7 +19,6 @@ import time
 from logging import getLogger
 from datetime import date, datetime
 from datetime import tzinfo, timedelta
-from types import StringType, FloatType, IntType
 
 import BTrees.Length
 from BTrees.IIBTree import IISet, union, intersection, multiunion
@@ -90,7 +89,7 @@ class DateIndex(UnIndex, PropertyManager):
     implements(IDateIndex)
 
     meta_type = 'DateIndex'
-    query_options = ['query', 'range']
+    query_options = ('query', 'range')
 
     index_naive_time_as_local = True # False means index as UTC
     _properties=({'id':'index_naive_time_as_local',
@@ -157,14 +156,14 @@ class DateIndex(UnIndex, PropertyManager):
 
         return returnStatus
 
-    def _apply_index( self, request, cid='', type=type ):
+    def _apply_index(self, request):
         """Apply the index to query parameters given in the argument
 
         Normalize the 'query' arguments into integer values at minute
         precision before querying.
         """
-        record = parseIndexRequest( request, self.id, self.query_options )
-        if record.keys == None:
+        record = parseIndexRequest(request, self.id, self.query_options)
+        if record.keys is None:
             return None
 
         keys = map( self._convert, record.keys )
@@ -215,22 +214,17 @@ class DateIndex(UnIndex, PropertyManager):
             else:
                 setlist = index.values(lo)
 
-            #for k, set in setlist:
-                #if type(set) is IntType:
-                    #set = IISet((set,))
-                #r = set_func(r, set)
-            # XXX: Use multiunion!
             r = multiunion(setlist)
 
         else: # not a range search
             for key in keys:
                 set = index.get(key, None)
                 if set is not None:
-                    if type(set) is IntType:
+                    if isinstance(set, int):
                         set = IISet((set,))
                     r = set_func(r, set)
 
-        if type(r) is IntType:
+        if isinstance(r, int):
             r = IISet((r,))
 
         if r is None:
@@ -242,20 +236,20 @@ class DateIndex(UnIndex, PropertyManager):
         """Convert Date/Time value to our internal representation"""
         # XXX: Code patched 20/May/2003 by Kiran Jonnalagadda to
         # convert dates to UTC first.
-        if isinstance( value, DateTime ):
+        if isinstance(value, DateTime):
             t_tup = value.toZone('UTC').parts()
-        elif type( value ) in (FloatType, IntType):
+        elif isinstance(value, (float, int)):
             t_tup = time.gmtime( value )
-        elif type( value ) is StringType and value:
+        elif isinstance(value, str) and value:
             t_obj = DateTime( value ).toZone('UTC')
             t_tup = t_obj.parts()
-        elif type( value ) is date:
-            t_tup = value.timetuple()
-        elif type( value ) is datetime:
+        elif isinstance(value, datetime):
             if self.index_naive_time_as_local and value.tzinfo is None:
                 value = value.replace(tzinfo=Local)
             # else if tzinfo is None, naive time interpreted as UTC
             t_tup = value.utctimetuple()
+        elif isinstance(value, date):
+            t_tup = value.timetuple()
         else:
             return default
 

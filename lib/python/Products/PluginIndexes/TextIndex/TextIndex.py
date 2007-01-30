@@ -82,14 +82,13 @@ class TextIndex(Persistent, Implicit, SimpleItem):
     implements(ITextIndex, IPluggableIndex)
 
     meta_type='TextIndex'
+    query_options = ('query', 'operator')
 
     manage_options= (
         {'label': 'Settings',
          'action': 'manage_main',
          'help': ('TextIndex','TextIndex_Settings.stx')},
     )
-
-    query_options = ["query","operator"]
 
     def __init__(self, id, ignore_ex=None, call_methods=None, lexicon=None,
                  caller=None, extra=None):
@@ -440,7 +439,7 @@ class TextIndex(Persistent, Implicit, SimpleItem):
 
             return r
 
-    def _apply_index(self, request, cid=''):
+    def _apply_index(self, request):
         """ Apply the index to query parameters given in the argument,
         request
 
@@ -454,9 +453,9 @@ class TextIndex(Persistent, Implicit, SimpleItem):
         records.  The second object is a tuple containing the names of
         all data fields used.
         """
-
-        record = parseIndexRequest(request,self.id,self.query_options)
-        if record.keys==None: return None
+        record = parseIndexRequest(request, self.id, self.query_options)
+        if record.keys is None:
+            return None
 
         # Changed for 2.4
         # We use the default operator that can me managed via the ZMI

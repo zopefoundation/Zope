@@ -15,7 +15,6 @@
 $Id$
 """
 
-from types import StringType, ListType, TupleType
 from logging import getLogger
 
 from Globals import Persistent, DTMLFile
@@ -56,14 +55,13 @@ class PathIndex(Persistent, SimpleItem):
     implements(IPathIndex, IUniqueValueIndex)
 
     meta_type="PathIndex"
+    query_options = ('query', 'level', 'operator')
 
     manage_options= (
         {'label': 'Settings',
          'action': 'manage_main',
          'help': ('PathIndex','PathIndex_Settings.stx')},
     )
-
-    query_options = ("query", "level", "operator")
 
     def __init__(self,id,caller=None):
         self.id = id
@@ -108,7 +106,7 @@ class PathIndex(Persistent, SimpleItem):
             else:
                 path = f
 
-            if not isinstance(path, (StringType, TupleType)):
+            if not isinstance(path, (str, tuple)):
                 raise TypeError('path value must be string or tuple of strings')
         else:
             try:
@@ -116,7 +114,7 @@ class PathIndex(Persistent, SimpleItem):
             except AttributeError:
                 return 0
 
-        if isinstance(path, (ListType, TupleType)):
+        if isinstance(path, (list, tuple)):
             path = '/'+ '/'.join(path[1:])
         comps = filter(None, path.split('/'))
 
@@ -165,8 +163,7 @@ class PathIndex(Persistent, SimpleItem):
         level >= 0  starts searching at the given level
         level <  0  not implemented yet
         """
-
-        if isinstance(path, StringType):
+        if isinstance(path, str):
             level = default_level
         else:
             level = int(path[1])
@@ -207,17 +204,15 @@ class PathIndex(Persistent, SimpleItem):
     def __len__(self):
         return self._length()
 
-    def _apply_index(self, request, cid=''):
+    def _apply_index(self, request):
         """ hook for (Z)Catalog
             'request' --  mapping type (usually {"path": "..." }
              additionaly a parameter "path_level" might be passed
              to specify the level (see search())
-
-            'cid' -- ???
         """
-
-        record = parseIndexRequest(request,self.id,self.query_options)
-        if record.keys==None: return None
+        record = parseIndexRequest(request, self.id, self.query_options)
+        if record.keys is None:
+            return None
 
         level    = record.get("level",0)
         operator = record.get('operator',self.useOperator).lower()

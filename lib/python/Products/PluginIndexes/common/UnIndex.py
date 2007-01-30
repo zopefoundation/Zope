@@ -304,7 +304,7 @@ class UnIndex(SimpleItem):
             LOG.debug('Attempt to unindex nonexistent document'
                       ' with id %s' % documentId,exc_info=True)
 
-    def _apply_index(self, request, cid='', type=type):
+    def _apply_index(self, request):
         """Apply the index to query parameters given in the request arg.
 
         The request argument should be a mapping object.
@@ -344,7 +344,8 @@ class UnIndex(SimpleItem):
         up in a tuple ala: request = {'id':('',)}
         """
         record = parseIndexRequest(request, self.id, self.query_options)
-        if record.keys==None: return None
+        if record.keys is None:
+            return None
 
         index = self._index
         r     = None
