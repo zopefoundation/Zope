@@ -8,6 +8,9 @@ Zope Changes
 
    Bugs fixed
 
+      - Undeprectated 'zLOG' package, which is going to remain a
+        backward-compatibility shim for the Python logger.
+
       - Collector #2263: 'field2ulines' did not convert empty string
         correctly.
 
