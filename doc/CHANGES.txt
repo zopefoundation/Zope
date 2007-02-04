@@ -8,6 +8,8 @@ Zope Changes
 
     Bugs fixed
 
+      - Undeprecated 'zLOG', which will remain a backward-compatibility
+        shim for the Python logging module.
 
   Zope 2.10.2 (2007/01/26)
 
