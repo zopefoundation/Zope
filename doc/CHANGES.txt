@@ -8,6 +8,9 @@ Zope Changes
 
     Restructuring
 
+      - Undeprecated 'zLOG', which will remain a backward-compatibility
+        shim for the Python logging module.
+
       - Indexes: Removed unused parameters from '_apply_index' methods.
 
       - Fixed Collector #2190: Calls to
