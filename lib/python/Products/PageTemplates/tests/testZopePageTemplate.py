@@ -132,6 +132,15 @@ class ZopePageTemplateFileTests(ZopeTestCase):
         self.assertEqual(result.encode('ascii').startswith(ascii_str), True)
         self.assertEqual(zpt.output_encoding, 'iso-8859-15')
 
+    def testPT_RenderUnicodeExpr(self):
+        # Check workaround for unicode incompatibility of ZRPythonExpr.
+        # See http://mail.zope.org/pipermail/zope/2007-February/170537.html
+        manage_addPageTemplate(self.app, 'test', 
+                               text='<span tal:content="python: unicode(\'\xfe\', \'iso-8859-15\')" />',
+                               encoding='iso-8859-15')
+        zpt = self.app['test']
+        result = zpt.pt_render() # should not raise a UnicodeDecodeError
+
     def testPT_RenderWithISO885915(self):
         manage_addPageTemplate(self.app, 'test', text=iso885915_str, encoding='iso-8859-15')
         zpt = self.app['test']
