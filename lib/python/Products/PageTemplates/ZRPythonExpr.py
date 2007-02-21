@@ -29,7 +29,13 @@ class PythonExpr(PythonExpr):
 
     def __init__(self, name, expr, engine):
         self.text = text = expr.strip().replace('\n', ' ')
-        code, err, warn, use = compile_restricted_eval(text, str(self))
+
+        # Unicode expression are not handled properly by RestrictedPython
+        # We convert the expression to UTF-8 (ajung)
+        if isinstance(text, unicode):
+            text = text.encode('utf-8')
+        code, err, warn, use = compile_restricted_eval(text, 
+                                                       self.__class__.__name__)
         if err:
             raise engine.getCompilerError()('Python expression error:\n%s' %
                                             '\n'.join(err))            

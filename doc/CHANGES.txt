@@ -76,12 +76,16 @@ Zope Changes
         Products/PageTemplates/(configure.zcml, unicodeconflictresolver.py,
         interfaces.py)
 
-      - AccessControl.Role: added new method manage_getUserRolesAndPermissions().
+      - AccessControl.Role: added new method 
+        manage_getUserRolesAndPermissions().
  
       - AccessControl: the form behind the "Security" tab has a new form 
         for user-related reporting of permissions and roles 
 
     Bugs Fixed
+
+      - PageTemplate/ZRPythonExpr.py: expressions represented as unicode string
+        caused UnicodeDecodeErrors. 
 
       - PluginIndexes: Fixed 'parseIndexRequest' for false values. 
 
