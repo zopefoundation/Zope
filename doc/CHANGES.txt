@@ -11,6 +11,9 @@ Zope Changes
       - Undeprecated 'zLOG', which will remain a backward-compatibility
         shim for the Python logging module.
 
+      - PageTemplate/ZRPythonExpr.py: expressions represented as unicode string
+        caused UnicodeDecodeErrors. 
+
   Zope 2.10.2 (2007/01/26)
 
     Bugs fixed
