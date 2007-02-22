@@ -197,6 +197,9 @@ class TestPythonScriptNoAq(PythonScriptTestBase):
         bound = f.__render_with_namespace__({'yes': 1, 'no': self.fail})
         self.assertEqual(bound, 1)
 
+    def testNSBindInvalidHeader(self):
+        self.assertRaises(SyntaxError, self._filePS, 'ns_bind_invalid')
+
     def testBooleanMap(self):
         res = self._filePS('boolean_map')()
         self.failUnless(res)

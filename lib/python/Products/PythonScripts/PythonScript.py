@@ -416,7 +416,7 @@ class PythonScript(Script, Historical, Cacheable):
                 k = k.strip().lower()
                 v = v.strip()
                 if not mdata.has_key(k):
-                    SyntaxError, 'Unrecognized header line "%s"' % line
+                    raise SyntaxError, 'Unrecognized header line "%s"' % line
                 if v == mdata[k]:
                     # Unchanged value
                     continue
