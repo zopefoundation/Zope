@@ -14,7 +14,7 @@
 
 $Id$
 """
-from urllib import quote
+from urllib import quote as urllib_quote
 import xmlrpc
 from zExceptions import Forbidden
 
@@ -22,6 +22,10 @@ from zope.event import notify
 from zope.app.publication.interfaces import EndRequestEvent
 
 UNSPECIFIED_ROLES=''
+
+def quote(text):
+    # quote url path segments, but leave + and @ intact
+    return urllib_quote(text, '/+@')
 
 try:
     from ExtensionClass import Base

@@ -248,6 +248,76 @@ class TestBaseRequest(TestCase):
         self.assertRaises(NotFound, r.traverse, 'folder/simpleFrozenSet')
 
 
+import zope.interface
+import zope.component
+import zope.testing.cleanup
+import zope.app.traversing.namespace
+from zope.publisher.browser import IBrowserRequest
+from zope.publisher.browser import IDefaultBrowserLayer
+from zope.app.traversing.interfaces import ITraversable
+
+
+class IDummy(zope.interface.Interface):
+    """IDummy"""
+
+class DummyObjectZ3(DummyObjectBasic):
+    zope.interface.implements(IDummy)
+    def __init__(self, name):
+        self.name = name
+
+class DummyView(Implicit):
+    def __init__(self, content, request):
+        self.content = content
+        self.request = request
+    def __call__(self):
+        return 'view on %s' % (self.content.name)
+
+class TestBaseRequestZope3Views(TestCase):
+
+    def setUp(self):
+        zope.testing.cleanup.cleanUp()
+        self.root = DummyObjectBasic()
+        folder = self.root._setObject('folder', DummyObjectZ3('folder'))
+        folder._setObject('obj', DummyObjectZ3('obj'))
+        gsm = zope.component.getGlobalSiteManager()
+
+        # The request needs to implement the proper interface
+        zope.interface.classImplements(BaseRequest, IDefaultBrowserLayer)
+
+        # Define our 'meth' view
+        gsm.registerAdapter(DummyView, (IDummy, IDefaultBrowserLayer), None,
+                            'meth')
+
+        # Bind the 'view' namespace (for @@ traversal)
+        gsm.registerAdapter(zope.traversing.namespace.view,
+                            (IDummy, IDefaultBrowserLayer), ITraversable,
+                            'view')
+
+    def tearDown(self):
+        zope.testing.cleanup.cleanUp()
+
+    def makeBaseRequest(self):
+        response = HTTPResponse()
+        environment = {
+            'URL': '',
+            'PARENTS': [self.root],
+            'steps': [],
+            '_hacked_path': 0,
+            '_test_counter': 0,
+            'response': response,
+            }
+        return BaseRequest(environment)
+
+    def test_quoting(self):
+        """View markers should not be quoted"""
+        r = self.makeBaseRequest()
+        r.traverse('folder/obj/@@meth')
+        self.assertEqual(r['URL'], '/folder/obj/@@meth')
+
+        r = self.makeBaseRequest()
+        r.traverse('folder/obj/++view++meth')
+        self.assertEqual(r['URL'], '/folder/obj/++view++meth')
+
 def test_suite():
     return TestSuite( ( makeSuite(TestBaseRequest), ) )
 
