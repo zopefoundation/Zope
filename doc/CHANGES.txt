@@ -49,8 +49,6 @@ Zope Changes
         Support for '__ac_permissions__' and 'meta_types' will be removed in
         Zope 2.11, 'methods' support might remain longer.
 
-      - removed zLOG module which was deprecated since Zope 2.9
-
     Features added
 
       - PythonScripts: allow usage of Python's 'sets' module
