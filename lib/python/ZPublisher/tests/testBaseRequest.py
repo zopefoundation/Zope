@@ -385,6 +385,16 @@ class TestBaseRequestZope3Views(TestCase):
         # using default view
         self.setDefaultViewName('methonly')
         self.assertRaises(NotFound, r.traverse, 'folder2/obj2')
+        
+    def test_quoting(self):
+        """View markers should not be quoted"""
+        r = self.makeBaseRequest()
+        r.traverse('folder/obj/@@meth')
+        self.assertEqual(r['URL'], '/folder/obj/@@meth')
+
+        r = self.makeBaseRequest()
+        r.traverse('folder/obj/++view++meth')
+        self.assertEqual(r['URL'], '/folder/obj/++view++meth')
 
 def test_suite():
     return TestSuite( ( makeSuite(TestBaseRequest),

@@ -15,10 +15,10 @@ __version__='$Revision: 1.96 $'[11:-2]
 
 import re, sys, os, time, random, codecs, inspect
 from types import StringType, UnicodeType
-from BaseRequest import BaseRequest
+from BaseRequest import BaseRequest, quote
 from HTTPResponse import HTTPResponse
 from cgi import FieldStorage, escape
-from urllib import quote, unquote, splittype, splitport
+from urllib import unquote, splittype, splitport
 from copy import deepcopy
 from Converters import get_converter
 from TaintedString import TaintedString
