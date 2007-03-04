@@ -14,7 +14,7 @@
 
 $Id$
 """
-from urllib import quote
+from urllib import quote as urllib_quote
 import xmlrpc
 from zExceptions import Forbidden, Unauthorized, NotFound
 from Acquisition import aq_base
@@ -34,6 +34,10 @@ from zope.traversing.interfaces import TraversalError
 from zope.traversing.namespace import nsParse, namespaceLookup
 
 UNSPECIFIED_ROLES=''
+
+def quote(text):
+    # quote url path segments, but leave + and @ intact
+    return urllib_quote(text, '/+@')
 
 try:
     from ExtensionClass import Base
