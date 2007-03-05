@@ -218,6 +218,11 @@ def _registerPackage(module_, init_func=None):
         if init_func is not None:
             newContext = ProductContext(product, app, module_)
             init_func(newContext)
+
+        registered_packages = getattr(Products, '_registered_packages', None)
+        if registered_packages is None:
+            registered_packages = Products._registered_packages = []
+        registered_packages.append(module_)
     finally:
         try:
             import transaction

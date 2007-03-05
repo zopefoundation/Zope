@@ -82,6 +82,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - No longer opens a zodb connection every time a ProductDispatcher
+        is looked up.
+
       - PageTemplate/ZRPythonExpr.py: expressions represented as unicode string
         caused UnicodeDecodeErrors. 
 

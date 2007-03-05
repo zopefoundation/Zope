@@ -65,6 +65,10 @@ def test_registerPackage():
       >>> 'pythonproduct2' in product_listing
       True
 
+    Make sure it also shows up in ``Products._registered_packages``.
+
+      >>> [x.__name__ for x in getattr(Products, '_registered_packages', [])]
+      ['pythonproduct2']
 
     Clean up:
 
