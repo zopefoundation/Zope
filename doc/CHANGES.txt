@@ -8,6 +8,9 @@ Zope Changes
 
     Bugs fixed
 
+      - No longer opens a zodb connection every time a ProductDispatcher
+        is looked up.
+
       - Collector #2288: @ and + should not be quoted when forming
         request URLs in BaseRequest and HTTPRequest
 
