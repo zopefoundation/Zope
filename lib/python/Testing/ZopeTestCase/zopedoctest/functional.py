@@ -117,6 +117,7 @@ def http(request_string, handle_errors=True):
     """
     import urllib
     import rfc822
+    from zope.app.component.hooks import setSite, getSite
     from cStringIO import StringIO
     from ZPublisher.Response import Response
     from ZPublisher.Test import publish_module
@@ -125,6 +126,10 @@ def http(request_string, handle_errors=True):
 
     # Save current Security Manager
     old_sm = getSecurityManager()
+
+    # And we need to store the old site
+    old_site = getSite()
+    setSite(None)
 
     # Commit work done by previous python code.
     transaction.commit()
@@ -193,7 +198,10 @@ def http(request_string, handle_errors=True):
     # by calling the publish method above
     setSecurityManager(old_sm)
 
+    # And we need to restore the site again
+    setSite(old_site)
     # Sync connection
+
     sync()
 
     return DocResponseWrapper(response, outstream, path, header_output)

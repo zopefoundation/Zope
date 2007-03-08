@@ -39,6 +39,7 @@ class Functional(sandbox.Sandboxed):
                 request_method='GET', stdin=None, handle_errors=True):
         '''Publishes the object at 'path' returning a response object.'''
 
+        from zope.app.component.hooks import setSite, getSite
         from StringIO import StringIO
         from ZPublisher.Response import Response
         from ZPublisher.Test import publish_module
@@ -48,6 +49,10 @@ class Functional(sandbox.Sandboxed):
 
         # Save current security manager
         sm = getSecurityManager()
+
+        # And we need to store the old site
+        old_site = getSite()
+        setSite(None)
 
         # Commit the sandbox for good measure
         transaction.commit()
@@ -90,6 +95,9 @@ class Functional(sandbox.Sandboxed):
 
         # Restore security manager
         setSecurityManager(sm)
+
+        # And we need to restore the site again
+        setSite(old_site)
 
         return ResponseWrapper(response, outstream, path)
 
