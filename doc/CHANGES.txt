@@ -8,6 +8,8 @@ Zope Changes
 
     Bugs fixed
 
+      - Collector #2289: restored compatibility with PTProfiler
+    
       - No longer opens a zodb connection every time a ProductDispatcher
         is looked up.
 

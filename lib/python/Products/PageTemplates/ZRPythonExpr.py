@@ -28,7 +28,7 @@ class PythonExpr(PythonExpr):
     _globals['__debug__' ] = __debug__
 
     def __init__(self, name, expr, engine):
-        self.text = text = expr.strip().replace('\n', ' ')
+        self.text = self.expr = text = expr.strip().replace('\n', ' ')
 
         # Unicode expression are not handled properly by RestrictedPython
         # We convert the expression to UTF-8 (ajung)
