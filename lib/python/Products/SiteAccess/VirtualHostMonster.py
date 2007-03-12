@@ -7,8 +7,8 @@ from Globals import DTMLFile, MessageDialog, Persistent
 from OFS.SimpleItem import Item
 from Acquisition import Implicit, aq_inner, aq_parent
 from ZPublisher import BeforeTraverse
+from ZPublisher.BaseRequest import quote
 from zExceptions import BadRequest
-from urllib import quote
 import os
 
 from AccessRule import _swallow
