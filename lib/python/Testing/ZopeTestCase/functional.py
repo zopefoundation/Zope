@@ -25,6 +25,25 @@ import interfaces
 from zope.interface import implements
 
 
+def savestate(func):
+    '''Decorator saving thread local state before executing func
+       and restoring it afterwards.
+    '''
+    from AccessControl.SecurityManagement import getSecurityManager
+    from AccessControl.SecurityManagement import setSecurityManager
+    from zope.app.component.hooks import getSite
+    from zope.app.component.hooks import setSite
+
+    def wrapped_func(*args, **kw):
+        sm, site = getSecurityManager(), getSite()
+        try:
+            return func(*args, **kw)
+        finally:
+            setSecurityManager(sm)
+            setSite(site)
+    return wrapped_func
+
+
 class Functional(sandbox.Sandboxed):
     '''Derive from this class and an xTestCase to get functional
        testing support::
@@ -35,24 +54,14 @@ class Functional(sandbox.Sandboxed):
 
     implements(interfaces.IFunctional)
 
+    @savestate
     def publish(self, path, basic=None, env=None, extra=None,
                 request_method='GET', stdin=None, handle_errors=True):
         '''Publishes the object at 'path' returning a response object.'''
 
-        from zope.app.component.hooks import setSite, getSite
         from StringIO import StringIO
         from ZPublisher.Response import Response
         from ZPublisher.Test import publish_module
-
-        from AccessControl.SecurityManagement import getSecurityManager
-        from AccessControl.SecurityManagement import setSecurityManager
-
-        # Save current security manager
-        sm = getSecurityManager()
-
-        # And we need to store the old site
-        old_site = getSite()
-        setSite(None)
 
         # Commit the sandbox for good measure
         transaction.commit()
@@ -92,12 +101,6 @@ class Functional(sandbox.Sandboxed):
                        extra=extra,
                        debug=not handle_errors,
                       )
-
-        # Restore security manager
-        setSecurityManager(sm)
-
-        # And we need to restore the site again
-        setSite(old_site)
 
         return ResponseWrapper(response, outstream, path)
 

@@ -31,6 +31,7 @@ from Testing.ZopeTestCase import user_role
 from Testing.ZopeTestCase import standard_permissions
 from Testing.ZopeTestCase.sandbox import AppZapper
 from Testing.ZopeTestCase.functional import ResponseWrapper
+from Testing.ZopeTestCase.functional import savestate
 
 
 class HTTPHeaderOutput:
@@ -110,6 +111,7 @@ def sync():
     getRootFolder()._p_jar.sync()
 
 
+@savestate
 def http(request_string, handle_errors=True):
     """Execute an HTTP request string via the publisher
 
@@ -117,19 +119,9 @@ def http(request_string, handle_errors=True):
     """
     import urllib
     import rfc822
-    from zope.app.component.hooks import setSite, getSite
     from cStringIO import StringIO
     from ZPublisher.Response import Response
     from ZPublisher.Test import publish_module
-    from AccessControl.SecurityManagement import getSecurityManager
-    from AccessControl.SecurityManagement import setSecurityManager
-
-    # Save current Security Manager
-    old_sm = getSecurityManager()
-
-    # And we need to store the old site
-    old_site = getSite()
-    setSite(None)
 
     # Commit work done by previous python code.
     transaction.commit()
@@ -193,14 +185,6 @@ def http(request_string, handle_errors=True):
     header_output.setResponseHeaders(response.headers)
     header_output.appendResponseHeaders(response._cookie_list())
     header_output.appendResponseHeaders(response.accumulated_headers.splitlines())
-
-    # Restore previous security manager, which may have been changed
-    # by calling the publish method above
-    setSecurityManager(old_sm)
-
-    # And we need to restore the site again
-    setSite(old_site)
-    # Sync connection
 
     sync()
 
