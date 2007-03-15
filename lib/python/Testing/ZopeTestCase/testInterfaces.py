@@ -28,18 +28,11 @@ from zope.interface.verify import verifyObject
 
 class TestAbstractClasses(TestCase):
 
-    def testIProfiled(self):
-        self.failUnless(verifyClass(IProfiled, Profiled))
-
     def testIFunctional(self):
         self.failUnless(verifyClass(IFunctional, Functional))
 
 
 class TestBaseTestCase(TestCase):
-
-    def testIProfiled(self):
-        self.failUnless(verifyClass(IProfiled, TestCase))
-        self.failUnless(verifyObject(IProfiled, self))
 
     def testIZopeTestCase(self):
         self.failUnless(verifyClass(IZopeTestCase, TestCase))
@@ -49,10 +42,6 @@ class TestBaseTestCase(TestCase):
 class TestZopeTestCase(ZopeTestCase):
 
     _setup_fixture = 0
-
-    def testIProfiled(self):
-        self.failUnless(verifyClass(IProfiled, ZopeTestCase))
-        self.failUnless(verifyObject(IProfiled, self))
 
     def testIZopeTestCase(self):
         self.failUnless(verifyClass(IZopeTestCase, ZopeTestCase))
@@ -71,10 +60,6 @@ class TestFunctionalTestCase(FunctionalTestCase):
         self.failUnless(verifyClass(IFunctional, FunctionalTestCase))
         self.failUnless(verifyObject(IFunctional, self))
 
-    def testIProfiled(self):
-        self.failUnless(verifyClass(IProfiled, FunctionalTestCase))
-        self.failUnless(verifyObject(IProfiled, self))
-
     def testIZopeTestCase(self):
         self.failUnless(verifyClass(IZopeTestCase, FunctionalTestCase))
         self.failUnless(verifyObject(IZopeTestCase, self))
@@ -90,10 +75,6 @@ class TestPortalTestCase(PortalTestCase):
 
     def _portal(self):
         return None
-
-    def testIProfiled(self):
-        self.failUnless(verifyClass(IProfiled, PortalTestCase))
-        self.failUnless(verifyObject(IProfiled, self))
 
     def testIZopeTestCase(self):
         self.failUnless(verifyClass(IZopeTestCase, PortalTestCase))

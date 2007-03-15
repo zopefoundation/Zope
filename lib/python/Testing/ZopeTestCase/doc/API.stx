@@ -57,8 +57,6 @@ Module Testing.ZopeTestCase
 
         PortalTestCase
 
-        Profiled
-
         Sandboxed
 
         Functional
@@ -240,38 +238,6 @@ Class PortalTestCase
         login(name=user_name)
 
         logout()
-
-
-
-Module profiler
-
-    Profiling support
-
-    Functions
-
-        runcall(func, *args, **kw)
-
-        print_stats()
-
-        dump_stats(filename)
-
-    Classes
-
-        Profiled
-
-
-
-Class Profiled
-
-    Profiling support mix-in for xTestCases
-
-    Interfaces
-
-        implements(IProfiled)
-
-    Methods
-
-        runcall(func, *args, **kw)
 
 
 

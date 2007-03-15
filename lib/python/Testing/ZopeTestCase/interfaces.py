@@ -95,14 +95,6 @@ class IPortalSecurity(IZopeSecurity):
     '''This is currently the same as IZopeSecurity'''
 
 
-class IProfiled(Interface):
-
-    def runcall(func, *args, **kw):
-        '''Allows to run a function under profiler control
-           adding to the accumulated profiler statistics.
-        '''
-
-
 class IFunctional(Interface):
 
     def publish(path, basic=None, env=None, extra=None, request_method='GET', stdin=None):

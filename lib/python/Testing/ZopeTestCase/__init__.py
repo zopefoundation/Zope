@@ -33,7 +33,6 @@ from ZopeTestCase import FunctionalTestCase
 from PortalTestCase import portal_name
 from PortalTestCase import PortalTestCase
 
-from profiler import Profiled
 from sandbox import Sandboxed
 from functional import Functional
 

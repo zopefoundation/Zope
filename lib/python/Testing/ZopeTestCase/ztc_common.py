@@ -21,7 +21,7 @@ $Id$
 """
 
 # Overwrites the default framework() method to expose the
-# TestRunner parameters and add profiler support.
+# TestRunner parameters
 #
 def framework(stream=sys.stderr, descriptions=1, verbosity=1):
     if __name__ != '__main__':
@@ -29,17 +29,9 @@ def framework(stream=sys.stderr, descriptions=1, verbosity=1):
 
     if len(sys.argv) > 1:
         arg = sys.argv[1]
-        if arg in ('profile', 'profile-tests'):
-            os.environ['PROFILE_TESTS'] = '1'
-        elif arg == 'profile-setup':
-            os.environ['PROFILE_SETUP'] = '1'
-        elif arg == 'profile-teardown':
-            os.environ['PROFILE_TEARDOWN'] = '1'
-        else:
-            sys.exit(globals()[arg]() and 1 or 0)
+        sys.exit(globals()[arg]() and 1 or 0)
 
     result = TestRunner(stream, descriptions, verbosity).run(test_suite())
-    from Testing.ZopeTestCase import profiler; profiler.print_stats()
     sys.exit(len(result.errors) + len(result.failures))
 
 

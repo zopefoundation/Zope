@@ -18,7 +18,6 @@ $Id$
 import ZopeLite as Zope2
 import unittest
 import transaction
-import profiler
 import utils
 import interfaces
 import connections
@@ -41,7 +40,7 @@ def close(app):
 
 
 
-class TestCase(profiler.Profiled, unittest.TestCase, object):
+class TestCase(unittest.TestCase, object):
     '''Base test case for Zope testing
     '''
 
