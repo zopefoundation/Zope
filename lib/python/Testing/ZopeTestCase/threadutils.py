@@ -13,13 +13,22 @@
 """Parts of ZServer support are in this module so they can
 be imported more selectively.
 
-$Id: threadutils.py,v 1.6 2004/08/19 15:31:26 shh42 Exp $
+$Id$
 """
 
 from threading import Thread
 from StringIO import StringIO
 
 dummyLOG = StringIO()
+
+
+def setNumberOfThreads(number_of_threads):
+    '''Sets number of ZServer threads.'''
+    try:
+        from ZServer.PubCore import setNumberOfThreads
+        setNumberOfThreads(number_of_threads)
+    except ImportError:
+        pass
 
 
 def zserverRunner(host, port, log=None):
