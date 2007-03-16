@@ -331,6 +331,7 @@ class HTTPRequest(BaseRequest):
         if script: script="%s/%s" % (server_url,script)
         else:      script=server_url
         other['URL']=self.script=script
+        other['method'] = environ.get('REQUEST_METHOD', 'GET').upper()
 
         ################################################################
         # Cookie values should *not* be appended to existing form

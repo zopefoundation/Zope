@@ -739,6 +739,25 @@ class RequestTests( unittest.TestCase ):
         from zope.publisher.base import DebugFlags
         self.assertEqual(getDebug(request), '1')
         self.assert_(isinstance(getDebugFromZope3(request), DebugFlags))
+        
+    def testMethod(self):
+        TEST_ENVIRON = {
+            'REQUEST_METHOD': 'GET',
+            'SERVER_NAME': 'localhost',
+            'SERVER_PORT': '80',
+            }
+        from StringIO import StringIO
+        from ZPublisher.HTTPRequest import HTTPRequest
+        s = StringIO('')
+
+        env = TEST_ENVIRON.copy()
+        request = HTTPRequest(s, env, None)
+        self.assertEqual(request.method, 'GET')
+        
+        env = TEST_ENVIRON.copy()
+        env['REQUEST_METHOD'] = 'post'
+        request = HTTPRequest(s, env, None)
+        self.assertEqual(request.method, 'POST')
 
 def test_suite():
     suite = unittest.TestSuite()
