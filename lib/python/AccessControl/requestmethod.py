@@ -72,6 +72,7 @@ def requestmethod(method):
     
     return _methodtest
 
+# For Zope versions 2.8 - 2.10
 postonly = requestmethod('POST')
 
 __all__ = ('requestmethod', 'postonly')
