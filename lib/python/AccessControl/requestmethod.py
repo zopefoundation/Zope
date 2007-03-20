@@ -72,4 +72,6 @@ def requestmethod(method):
     
     return _methodtest
 
-__all__ = ('requestmethod',)
+postonly = requestmethod('POST')
+
+__all__ = ('requestmethod', 'postonly')
