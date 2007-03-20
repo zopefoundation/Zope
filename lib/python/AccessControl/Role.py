@@ -22,6 +22,7 @@ import Globals, ExtensionClass, PermissionMapping, Products
 from App.Common import aq_base
 
 from Permission import Permission
+from requestmethod import postonly
 
 
 DEFAULTMAXLISTUSERS=250
@@ -131,6 +132,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
                              help_topic='Security_Manage-Role.stx',
                              help_product='OFSP')
 
+    @postonly
     def manage_role(self, role_to_manage, permissions=[], REQUEST=None):
         """Change the permissions given to the given role.
         """
@@ -147,6 +149,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
                                  help_topic='Security_Manage-Acquisition.stx',
                                  help_product='OFSP')
 
+    @postonly
     def manage_acquiredPermissions(self, permissions=[], REQUEST=None):
         """Change the permissions that acquire.
         """
@@ -166,6 +169,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
                                    help_topic='Security_Manage-Permission.stx',
                                    help_product='OFSP')
 
+    @postonly
     def manage_permission(self, permission_to_manage,
                           roles=[], acquire=0, REQUEST=None):
         """Change the settings for the given permission.
@@ -202,6 +206,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
         else:
             return apply(self._normal_manage_access,(), kw)
 
+    @postonly
     def manage_changePermissions(self, REQUEST):
         """Change all permissions settings, called by management screen.
         """
@@ -349,6 +354,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
         dict=self.__ac_local_roles__ or {}
         return tuple(dict.get(userid, []))
 
+    @postonly
     def manage_addLocalRoles(self, userid, roles, REQUEST=None):
         """Set local roles for a user."""
         if not roles:
@@ -366,6 +372,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
             stat='Your changes have been saved.'
             return self.manage_listLocalRoles(self, REQUEST, stat=stat)
 
+    @postonly
     def manage_setLocalRoles(self, userid, roles, REQUEST=None):
         """Set local roles for a user."""
         if not roles:
@@ -379,6 +386,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
             stat='Your changes have been saved.'
             return self.manage_listLocalRoles(self, REQUEST, stat=stat)
 
+    @postonly
     def manage_delLocalRoles(self, userids, REQUEST=None):
         """Remove all local roles for a user."""
         dict=self.__ac_local_roles__
@@ -469,6 +477,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
 
         return self.manage_access(REQUEST)
 
+    @postonly
     def _addRole(self, role, REQUEST=None):
         if not role:
             return MessageDialog(
@@ -486,6 +495,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
         if REQUEST is not None:
             return self.manage_access(REQUEST)
 
+    @postonly
     def _delRoles(self, roles, REQUEST=None):
         if not roles:
             return MessageDialog(

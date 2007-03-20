@@ -23,6 +23,7 @@ from Acquisition import Implicit
 from OFS.SimpleItem import Item
 from base64 import decodestring
 from App.ImageFile import ImageFile
+from requestmethod import postonly
 from Role import RoleManager, DEFAULTMAXLISTUSERS
 from PermissionRole import _what_not_even_god_should_do, rolesForPermissionOn
 import AuthEncoding
@@ -527,7 +528,9 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
     # Authors of custom user folders don't need to do anything special to
     # support these - they will just call the appropriate '_' methods that
     # user folder subclasses already implement.
-    def userFolderAddUser(self, name, password, roles, domains, **kw):
+    @postonly
+    def userFolderAddUser(self, name, password, roles, domains,
+                          REQUEST=None, **kw):
         """API method for creating a new user object. Note that not all
            user folder implementations support dynamic creation of user
            objects."""
@@ -535,7 +538,9 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
             return self._doAddUser(name, password, roles, domains, **kw)
         raise NotImplementedError
 
-    def userFolderEditUser(self, name, password, roles, domains, **kw):
+    @postonly
+    def userFolderEditUser(self, name, password, roles, domains,
+                           REQUEST=None, **kw):
         """API method for changing user object attributes. Note that not
            all user folder implementations support changing of user object
            attributes."""
@@ -543,7 +548,8 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
             return self._doChangeUser(name, password, roles, domains, **kw)
         raise NotImplementedError
 
-    def userFolderDelUsers(self, names):
+    @postonly
+    def userFolderDelUsers(self, names, REQUEST=None):
         """API method for deleting one or more user objects. Note that not
            all user folder implementations support deletion of user objects."""
         if hasattr(self, '_doDelUsers'):
@@ -785,6 +791,7 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
             self, REQUEST, manage_tabs_message=manage_tabs_message,
             management_view='Properties')
 
+    @postonly
     def manage_setUserFolderProperties(self, encrypt_passwords=0,
                                        update_passwords=0,
                                        maxlistusers=DEFAULTMAXLISTUSERS,
@@ -839,7 +846,7 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
 
         return 1
 
-
+    @postonly
     def _addUser(self,name,password,confirm,roles,domains,REQUEST=None):
         if not name:
             return MessageDialog(
@@ -875,7 +882,7 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
         self._doAddUser(name, password, roles, domains)
         if REQUEST: return self._mainUser(self, REQUEST)
 
-
+    @postonly
     def _changeUser(self,name,password,confirm,roles,domains,REQUEST=None):
         if password == 'password' and confirm == 'pconfirm':
             # Protocol for editUser.dtml to indicate unchanged password
@@ -913,6 +920,7 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
         self._doChangeUser(name, password, roles, domains)
         if REQUEST: return self._mainUser(self, REQUEST)
 
+    @postonly
     def _delUsers(self,names,REQUEST=None):
         if not names:
             return MessageDialog(

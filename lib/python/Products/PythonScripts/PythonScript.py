@@ -33,6 +33,7 @@ from AccessControl import getSecurityManager
 from OFS.History import Historical, html_diff
 from OFS.Cache import Cacheable
 from AccessControl.ZopeGuards import get_safe_globals, guarded_getattr
+from AccessControl.requestmethod import postonly
 from zLOG import LOG, ERROR, INFO, PROBLEM
 from zExceptions import Forbidden
 import Globals
@@ -349,6 +350,7 @@ class PythonScript(Script, Historical, Cacheable):
       'manage_proxyForm', 'manage_proxy')
 
     manage_proxyForm = DTMLFile('www/pyScriptProxy', globals())
+    @postonly
     def manage_proxy(self, roles=(), REQUEST=None):
         "Change Proxy Roles"
         self._validateProxy(roles)
