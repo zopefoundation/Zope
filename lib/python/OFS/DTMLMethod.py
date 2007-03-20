@@ -29,6 +29,7 @@ from urllib import quote
 import  Globals, sys, Acquisition
 from AccessControl import getSecurityManager
 from AccessControl.DTML import RestrictedDTML
+from AccessControl.requestmethod import postonly
 from Cache import Cacheable
 from zExceptions import Forbidden
 from zExceptions.TracebackSupplement import PathTracebackSupplement
@@ -315,6 +316,7 @@ class DTMLMethod(RestrictedDTML, HTML, Acquisition.Implicit, RoleManager,
             'do not have proxy roles.\n<!--%s, %s-->' % (self.__name__, u, roles))
 
 
+    @postonly
     def manage_proxy(self, roles=(), REQUEST=None):
         "Change Proxy Roles"
         self._validateProxy(REQUEST, roles)

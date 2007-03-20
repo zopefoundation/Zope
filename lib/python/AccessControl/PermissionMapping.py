@@ -28,11 +28,14 @@ from zope.interface import implements
 from interfaces import IPermissionMappingSupport
 from Owned import UnownableOwner
 from Permission import pname
+from requestmethod import postonly
 
 
 class RoleManager:
 
     implements(IPermissionMappingSupport)
+    
+    # XXX: No security declarations?
 
     def manage_getPermissionMapping(self):
         """Return the permission mapping for the object
@@ -58,6 +61,7 @@ class RoleManager:
             a({'permission_name': ac_perms[0], 'class_permission': p})
         return r
 
+    @postonly
     def manage_setPermissionMapping(self,
                                     permission_names=[],
                                     class_permissions=[], REQUEST=None):
