@@ -33,6 +33,7 @@ from zope.interface import implements
 import AuthEncoding
 import SpecialUsers
 from interfaces import IStandardUserFolder
+from requestmethod import requestmethod
 from PermissionRole import _what_not_even_god_should_do, rolesForPermissionOn
 from Role import RoleManager, DEFAULTMAXLISTUSERS
 from SecurityManagement import getSecurityManager
@@ -534,7 +535,9 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
     # user folder subclasses already implement.
 
     security.declareProtected(ManageUsers, 'userFolderAddUser')
-    def userFolderAddUser(self, name, password, roles, domains, **kw):
+    @requestmethod('POST')
+    def userFolderAddUser(self, name, password, roles, domains,
+                          REQUEST=None, **kw):
         """API method for creating a new user object. Note that not all
            user folder implementations support dynamic creation of user
            objects."""
@@ -543,7 +546,9 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
         raise NotImplementedError
 
     security.declareProtected(ManageUsers, 'userFolderEditUser')
-    def userFolderEditUser(self, name, password, roles, domains, **kw):
+    @requestmethod('POST')
+    def userFolderEditUser(self, name, password, roles, domains,
+                           REQUEST=None, **kw):
         """API method for changing user object attributes. Note that not
            all user folder implementations support changing of user object
            attributes."""
@@ -552,7 +557,8 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
         raise NotImplementedError
 
     security.declareProtected(ManageUsers, 'userFolderDelUsers')
-    def userFolderDelUsers(self, names):
+    @requestmethod('POST')
+    def userFolderDelUsers(self, names, REQUEST=None):
         """API method for deleting one or more user objects. Note that not
            all user folder implementations support deletion of user objects."""
         if hasattr(self, '_doDelUsers'):
@@ -794,6 +800,7 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
             self, REQUEST, manage_tabs_message=manage_tabs_message,
             management_view='Properties')
 
+    @requestmethod('POST')
     def manage_setUserFolderProperties(self, encrypt_passwords=0,
                                        update_passwords=0,
                                        maxlistusers=DEFAULTMAXLISTUSERS,
@@ -848,7 +855,7 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
 
         return 1
 
-
+    @requestmethod('POST')
     def _addUser(self,name,password,confirm,roles,domains,REQUEST=None):
         if not name:
             return MessageDialog(
@@ -884,7 +891,7 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
         self._doAddUser(name, password, roles, domains)
         if REQUEST: return self._mainUser(self, REQUEST)
 
-
+    @requestmethod('POST')
     def _changeUser(self,name,password,confirm,roles,domains,REQUEST=None):
         if password == 'password' and confirm == 'pconfirm':
             # Protocol for editUser.dtml to indicate unchanged password
@@ -922,6 +929,7 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
         self._doChangeUser(name, password, roles, domains)
         if REQUEST: return self._mainUser(self, REQUEST)
 
+    @requestmethod('POST')
     def _delUsers(self,names,REQUEST=None):
         if not names:
             return MessageDialog(

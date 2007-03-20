@@ -51,6 +51,12 @@ Zope Changes
 
     Features added
 
+      - A new module, AccessControl.requestmethod, provides a decorator
+        factory that limits decorated methods to one request method only.
+        For example, marking a method with @requestmethod('POST') limits
+        that method to POST requests only when published. Several
+        security-related methods have been limited to POST only.
+
       - PythonScripts: allow usage of Python's 'sets' module
 
       - added 'fast_listen' directive to http-server and webdav-source-server
