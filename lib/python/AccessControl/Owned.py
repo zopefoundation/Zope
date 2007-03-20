@@ -22,6 +22,7 @@ from AccessControl import getSecurityManager, Unauthorized
 from AccessControl.Permissions import view_management_screens
 from AccessControl.Permissions import take_ownership
 from Acquisition import aq_get, aq_parent, aq_base
+from requestmethod import postonly
 from zope.interface import implements
 
 from interfaces import IOwned
@@ -177,6 +178,7 @@ class Owned(ExtensionClass.Base):
         return security.checkPermission('Take ownership', self)
 
     security.declareProtected(take_ownership, 'manage_takeOwnership')
+    @postonly
     def manage_takeOwnership(self, REQUEST, RESPONSE, recursive=0):
         """Take ownership (responsibility) for an object.
 
@@ -197,6 +199,7 @@ class Owned(ExtensionClass.Base):
         RESPONSE.redirect(REQUEST['HTTP_REFERER'])
 
     security.declareProtected(take_ownership, 'manage_changeOwnershipType')
+    @postonly
     def manage_changeOwnershipType(self, explicit=1,
                                    RESPONSE=None, REQUEST=None):
         """Change the type (implicit or explicit) of ownership.

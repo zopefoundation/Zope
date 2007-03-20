@@ -36,6 +36,7 @@ from AccessControl.Permissions import change_proxy_roles
 from AccessControl.Permissions import view as View
 from AccessControl.Permissions import ftp_access
 from AccessControl.DTML import RestrictedDTML
+from AccessControl.requestmethod import postonly
 from Cache import Cacheable
 from zExceptions import Forbidden
 from zExceptions.TracebackSupplement import PathTracebackSupplement
@@ -327,6 +328,7 @@ class DTMLMethod(RestrictedDTML, HTML, Acquisition.Implicit, RoleManager,
 
 
     security.declareProtected(change_proxy_roles, 'manage_proxy')
+    @postonly
     def manage_proxy(self, roles=(), REQUEST=None):
         "Change Proxy Roles"
         self._validateProxy(REQUEST, roles)
