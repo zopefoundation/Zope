@@ -8,9 +8,13 @@ Zope Changes
 
     Bugs fixed
 
-      - Protected various security mutators with a new postonly decorator.
-        The decorator limits method publishing to POST requests only, and
-        is a backport from Zope 2.11's requestmethod decorator factory.
+      - Collector #2294: Protected DOS-able ControlPanel methods with the
+        same 'requestmethod' wrapper.
+
+      - Collector #2294: Protected various security mutators with a new
+        postonly decorator.  The decorator limits method publishing to
+        POST requests only, and is a backport from Zope 2.11's requestmethod
+        decorator factory.
 
       - Collector #2263: 'field2ulines' did not convert empty string
         correctly.
