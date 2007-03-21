@@ -350,7 +350,6 @@ class PythonScript(Script, Historical, Cacheable):
       'manage_proxyForm', 'manage_proxy')
 
     manage_proxyForm = DTMLFile('www/pyScriptProxy', globals())
-    @postonly
     def manage_proxy(self, roles=(), REQUEST=None):
         "Change Proxy Roles"
         self._validateProxy(roles)
@@ -361,6 +360,7 @@ class PythonScript(Script, Historical, Cacheable):
                     title  ='Success!',
                     message='Your changes have been saved',
                     action ='manage_main')
+    manage_proxy = postonly(manage_proxy)
 
     security.declareProtected('Change Python Scripts',
       'PUT', 'manage_FTPput', 'write',

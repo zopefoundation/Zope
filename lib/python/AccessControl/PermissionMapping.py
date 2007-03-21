@@ -57,7 +57,6 @@ class RoleManager:
             a({'permission_name': ac_perms[0], 'class_permission': p})
         return r
 
-    @postonly
     def manage_setPermissionMapping(self,
                                     permission_names=[],
                                     class_permissions=[], REQUEST=None):
@@ -86,6 +85,7 @@ class RoleManager:
             return self.manage_access(
                 REQUEST,
                 manage_tabs_message='The permission mapping has been updated')
+    manage_setPermissionMapping = postonly(manage_setPermissionMapping)
 
     def _isBeingUsedAsAMethod(self, REQUEST =None, wannaBe=0):
         try:

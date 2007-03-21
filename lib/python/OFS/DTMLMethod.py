@@ -316,7 +316,6 @@ class DTMLMethod(RestrictedDTML, HTML, Acquisition.Implicit, RoleManager,
             'do not have proxy roles.\n<!--%s, %s-->' % (self.__name__, u, roles))
 
 
-    @postonly
     def manage_proxy(self, roles=(), REQUEST=None):
         "Change Proxy Roles"
         self._validateProxy(REQUEST, roles)
@@ -326,6 +325,7 @@ class DTMLMethod(RestrictedDTML, HTML, Acquisition.Implicit, RoleManager,
         if REQUEST:
             message="Saved changes."
             return self.manage_proxyForm(self,REQUEST,manage_tabs_message=message)
+    manage_proxy = postonly(manage_proxy)
 
     def PrincipiaSearchSource(self):
         "Support for searching - the document's contents are searched."

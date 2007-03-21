@@ -189,6 +189,7 @@ class Owned(ExtensionClass.Base):
         self.changeOwnership(security.getUser(), recursive)
 
         RESPONSE.redirect(REQUEST['HTTP_REFERER'])
+    manage_takeOwnership = postonly(manage_takeOwnership)
 
     def manage_changeOwnershipType(self, explicit=1,
                                    RESPONSE=None, REQUEST=None):
@@ -209,6 +210,7 @@ class Owned(ExtensionClass.Base):
                 del self._owner
 
         if RESPONSE is not None: RESPONSE.redirect(REQUEST['HTTP_REFERER'])
+    manage_changeOwnershipType = postonly(manage_changeOwnershipType)
 
     def _deleteOwnershipAfterAdd(self):
 

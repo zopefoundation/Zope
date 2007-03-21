@@ -12,9 +12,9 @@ To limit access to a function or method to POST requests, use the postonly
 decorator::
 
   >>> from AccessControl.requestmethod import *
-  >>> @postonly
-  ... def foo(bar, REQUEST):
+  >>> def foo(bar, REQUEST):
   ...     return bar
+  >>> foo = postonly(foo)
   
 When this method is accessed through a request that does not use POST, the
 Forbidden exception will be raised::
@@ -31,9 +31,9 @@ Only when the request was made using POST, will the call succeed::
 
 It doesn't matter if REQUEST is a positional or a keyword parameter::
 
-  >>> @postonly
-  ... def foo(bar, REQUEST=None):
+  >>> def foo(bar, REQUEST=None):
   ...     return bar
+  >>> foo = postonly(foo)
   >>> foo('spam', REQUEST=GET)
   Traceback (most recent call last):
   ...
@@ -47,9 +47,9 @@ It doesn't matter if REQUEST is a positional or a keyword parameter::
 Note that the REQUEST parameter is a requirement for the decorator to operate,
 not including it in the callable signature results in an error::
 
-  >>> @postonly
-  ... def foo(bar):
+  >>> def foo(bar):
   ...     return bar
+  >>> foo = postonly(foo)
   Traceback (most recent call last):
   ...
   ValueError: No REQUEST parameter in callable signature
@@ -60,9 +60,9 @@ original closely, and keyword parameter defaults must be preserved::
 
   >>> import inspect
   >>> mutabledefault = dict()
-  >>> @postonly
-  ... def foo(bar, baz=mutabledefault, REQUEST=None, **kw):
+  >>> def foo(bar, baz=mutabledefault, REQUEST=None, **kw):
   ...     return bar, baz is mutabledefault, REQUEST
+  >>> foo = postonly(foo)
   >>> inspect.getargspec(foo)[:3]
   (['bar', 'baz', 'REQUEST'], None, 'kw')
   >>> foo('spam')
