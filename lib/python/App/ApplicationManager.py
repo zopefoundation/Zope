@@ -33,6 +33,7 @@ from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from cgi import escape
 import zLOG
 import Lifetime
+from AccessControl.requestmethod import postonly
 
 try: import thread
 except: get_ident=lambda: 0
@@ -400,8 +401,9 @@ class ApplicationManager(Folder,CacheManager):
             </head>
             <body>Zope is restarting</body></html>
             """ % escape(URL1, 1)
+        manage_restart = postonly(manage_restart)
 
-    def manage_shutdown(self):
+    def manage_shutdown(self, REQUEST=None):
         """Shut down the application"""
         try:
             user = '"%s"' % getSecurityManager().getUser().getUserName()
@@ -416,6 +418,7 @@ class ApplicationManager(Folder,CacheManager):
         </head>
         <body>Zope is shutting down</body></html>
         """
+    manage_shutdown = postonly(manage_shutdown)
 
     def manage_pack(self, days=0, REQUEST=None):
         """Pack the database"""
@@ -428,6 +431,7 @@ class ApplicationManager(Folder,CacheManager):
             REQUEST['RESPONSE'].redirect(
                 REQUEST['URL1']+'/manage_workspace')
         return t
+    manage_pack = postonly(manage_pack)
 
     def revert_points(self): return ()
 
@@ -478,6 +482,7 @@ class ApplicationManager(Folder,CacheManager):
             db.commitVersion(v)
         if REQUEST is not None:
             REQUEST['RESPONSE'].redirect(REQUEST['URL1']+'/manage_main')
+    manage_saveVersions = postonly(manage_saveVersions)
 
     def manage_discardVersions(self, versions, REQUEST=None):
         "Discard some versions"
@@ -486,6 +491,7 @@ class ApplicationManager(Folder,CacheManager):
             db.abortVersion(v)
         if REQUEST is not None:
             REQUEST['RESPONSE'].redirect(REQUEST['URL1']+'/manage_main')
+    manage_discardVersions = postonly(manage_discardVersions)
 
     def getSOFTWARE_HOME(self):
         return getConfiguration().softwarehome
