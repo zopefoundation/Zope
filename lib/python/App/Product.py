@@ -47,6 +47,7 @@ from OFS.Folder import Folder
 from HelpSys.HelpSys import ProductHelp
 from AccessControl import Unauthorized
 from AccessControl import ClassSecurityInfo
+from AccessControl.Permissions import manage_zclasses
 
 from Factory import Factory
 from Permission import PermissionManager
@@ -73,7 +74,8 @@ class ProductFolder(Folder):
     meta_type ='Product Management'
     icon='p_/ProductFolder_icon'
 
-    all_meta_types={'name': 'Product', 'action': 'manage_addProductForm'},
+    all_meta_types={'name': 'Product', 'action': 'manage_addProductForm',
+                    'permission': manage_zclasses},
     meta_types=all_meta_types
 
     # This prevents subobjects from being owned!
