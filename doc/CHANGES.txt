@@ -8,6 +8,9 @@ Zope Changes
 
     Bugs fixed
 
+      - Collector #2298: webdav.Resource.COPY and webdav.Resource.MOVE did
+        not send the expected copy/move events.
+
       - Collector #2296: Fixed import of ZClass products, broken by removal
         of BBB support for pasting objects whose meta_type info was
         permission-free.

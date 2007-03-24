@@ -3,6 +3,7 @@ import Testing
 import Zope2
 Zope2.startup()
 
+import os
 import transaction
 
 from Testing.makerequest import makerequest
@@ -12,6 +13,16 @@ from AccessControl.SecurityManagement import noSecurityManager
 
 from OFS.SimpleItem import SimpleItem
 from OFS.Folder import Folder
+
+from zope import interface
+from zope.app.container.interfaces import IObjectAddedEvent
+from zope.app.container.interfaces import IObjectRemovedEvent
+from OFS.interfaces import IObjectWillBeAddedEvent
+from OFS.interfaces import IObjectWillBeRemovedEvent
+
+from zope.testing import cleanup
+from Products.Five import zcml
+from Globals import package_home
 
 
 class EventLogger(object):
@@ -27,39 +38,84 @@ class EventLogger(object):
 eventlog = EventLogger()
 
 
+class ITestItem(interface.Interface):
+    pass
+
 class TestItem(SimpleItem):
+    interface.implements(ITestItem)
     def __init__(self, id):
         self.id = id
-    def manage_afterAdd(self, item, container):
-        eventlog.trace(self, 'manage_afterAdd')
-    def manage_afterClone(self, item):
-        eventlog.trace(self, 'manage_afterClone')
-    def manage_beforeDelete(self, item, container):
-        eventlog.trace(self, 'manage_beforeDelete')
 
+
+class ITestFolder(interface.Interface):
+    pass
 
 class TestFolder(Folder):
+    interface.implements(ITestFolder)
     def __init__(self, id):
         self.id = id
     def _verifyObjectPaste(self, object, validate_src=1):
         pass # Always allow
-    def manage_afterAdd(self, item, container):
-        eventlog.trace(self, 'manage_afterAdd')
-        Folder.manage_afterAdd(self, item, container)
-    def manage_afterClone(self, item):
-        eventlog.trace(self, 'manage_afterClone')
-        Folder.manage_afterClone(self, item)
-    def manage_beforeDelete(self, item, container):
-        eventlog.trace(self, 'manage_beforeDelete')
-        Folder.manage_beforeDelete(self, item, container)
 
 
-from Products.Five.eventconfigure import setDeprecatedManageAddDelete
-setDeprecatedManageAddDelete(TestItem)
-setDeprecatedManageAddDelete(TestFolder)
+# See events.zcml
+
+def objectAddedEvent(ob, event):
+    eventlog.trace(ob, 'ObjectAddedEvent')
+
+def objectCopiedEvent(ob, event):
+    eventlog.trace(ob, 'ObjectCopiedEvent')
+
+def objectMovedEvent(ob, event):
+    if IObjectAddedEvent.providedBy(event):
+        return
+    if IObjectRemovedEvent.providedBy(event):
+        return
+    eventlog.trace(ob, 'ObjectMovedEvent')
+
+def objectRemovedEvent(ob, event):
+    eventlog.trace(ob, 'ObjectRemovedEvent')
+
+def containerModifiedEvent(ob, event):
+    eventlog.trace(ob, 'ContainerModifiedEvent')
+
+def objectWillBeAddedEvent(ob, event):
+    eventlog.trace(ob, 'ObjectWillBeAddedEvent')
+
+def objectWillBeMovedEvent(ob, event):
+    if IObjectWillBeAddedEvent.providedBy(event):
+        return
+    if IObjectWillBeRemovedEvent.providedBy(event):
+        return
+    eventlog.trace(ob, 'ObjectWillBeMovedEvent')
+
+def objectWillBeRemovedEvent(ob, event):
+    eventlog.trace(ob, 'ObjectWillBeRemovedEvent')
+
+def objectClonedEvent(ob, event):
+    eventlog.trace(ob, 'ObjectClonedEvent')
 
 
-class HookTest(unittest.TestCase):
+class EventLayer:
+
+    @classmethod
+    def setUp(cls):
+        cleanup.cleanUp()
+        zcml._initialized = 0
+        zcml.load_site()
+        import OFS.tests
+        file = os.path.join(package_home(globals()), 'events.zcml')
+        zcml.load_config(file, package=OFS.tests)
+
+    @classmethod
+    def tearDown(cls):
+        cleanup.cleanUp()
+        zcml._initialized = 0
+
+
+class EventTest(unittest.TestCase):
+
+    layer = EventLayer
 
     def setUp(self):
         self.app = makerequest(Zope2.app())
@@ -78,11 +134,11 @@ class HookTest(unittest.TestCase):
         self.app._p_jar.close()
 
 
-class TestCopySupport(HookTest):
-    '''Tests the order in which add/clone/del hooks are called'''
+class TestCopySupport(EventTest):
+    '''Tests the order in which events are fired'''
 
     def setUp(self):
-        HookTest.setUp(self)
+        EventTest.setUp(self)
         # A folder that does not verify pastes
         self.app._setObject('folder', TestFolder('folder'))
         self.folder = getattr(self.app, 'folder')
@@ -100,8 +156,11 @@ class TestCopySupport(HookTest):
         # Test clone
         self.subfolder.manage_clone(self.folder.mydoc, 'mydoc')
         self.assertEqual(eventlog.called(),
-            [('mydoc', 'manage_afterAdd'),
-             ('mydoc', 'manage_afterClone')]
+            [('mydoc', 'ObjectCopiedEvent'),
+             ('mydoc', 'ObjectWillBeAddedEvent'),
+             ('mydoc', 'ObjectAddedEvent'),
+             ('subfolder', 'ContainerModifiedEvent'),
+             ('mydoc', 'ObjectClonedEvent')]
         )
 
     def test_2_CopyPaste(self):
@@ -109,8 +168,11 @@ class TestCopySupport(HookTest):
         cb = self.folder.manage_copyObjects(['mydoc'])
         self.subfolder.manage_pasteObjects(cb)
         self.assertEqual(eventlog.called(),
-            [('mydoc', 'manage_afterAdd'),
-             ('mydoc', 'manage_afterClone')]
+            [('mydoc', 'ObjectCopiedEvent'),
+             ('mydoc', 'ObjectWillBeAddedEvent'),
+             ('mydoc', 'ObjectAddedEvent'),
+             ('subfolder', 'ContainerModifiedEvent'),
+             ('mydoc', 'ObjectClonedEvent')]
         )
 
     def test_3_CutPaste(self):
@@ -118,16 +180,19 @@ class TestCopySupport(HookTest):
         cb = self.folder.manage_cutObjects(['mydoc'])
         self.subfolder.manage_pasteObjects(cb)
         self.assertEqual(eventlog.called(),
-            [('mydoc', 'manage_beforeDelete'),
-             ('mydoc', 'manage_afterAdd')]
+            [('mydoc', 'ObjectWillBeMovedEvent'),
+             ('mydoc', 'ObjectMovedEvent'),
+             ('folder', 'ContainerModifiedEvent'),
+             ('subfolder', 'ContainerModifiedEvent')]
         )
 
     def test_4_Rename(self):
         # Test rename
         self.folder.manage_renameObject('mydoc', 'yourdoc')
         self.assertEqual(eventlog.called(),
-            [('mydoc', 'manage_beforeDelete'),
-             ('yourdoc', 'manage_afterAdd')]
+            [('mydoc', 'ObjectWillBeMovedEvent'),
+             ('yourdoc', 'ObjectMovedEvent'),
+             ('folder', 'ContainerModifiedEvent')]
         )
 
     def test_5_COPY(self):
@@ -137,8 +202,11 @@ class TestCopySupport(HookTest):
         req.environ['HTTP_DESTINATION'] = '%s/subfolder/mydoc' % self.folder.absolute_url()
         self.folder.mydoc.COPY(req, req.RESPONSE)
         self.assertEqual(eventlog.called(),
-            [('mydoc', 'manage_afterAdd'),
-             ('mydoc', 'manage_afterClone')]
+            [('mydoc', 'ObjectCopiedEvent'),
+             ('mydoc', 'ObjectWillBeAddedEvent'),
+             ('mydoc', 'ObjectAddedEvent'),
+             ('subfolder', 'ContainerModifiedEvent'),
+             ('mydoc', 'ObjectClonedEvent')]
         )
 
     def test_6_MOVE(self):
@@ -148,8 +216,10 @@ class TestCopySupport(HookTest):
         req.environ['HTTP_DESTINATION'] = '%s/subfolder/mydoc' % self.folder.absolute_url()
         self.folder.mydoc.MOVE(req, req.RESPONSE)
         self.assertEqual(eventlog.called(),
-            [('mydoc', 'manage_beforeDelete'),
-             ('mydoc', 'manage_afterAdd')]
+            [('mydoc', 'ObjectWillBeMovedEvent'),
+             ('mydoc', 'ObjectMovedEvent'),
+             ('folder', 'ContainerModifiedEvent'),
+             ('subfolder', 'ContainerModifiedEvent')]
         )
 
     def test_7_DELETE(self):
@@ -158,15 +228,17 @@ class TestCopySupport(HookTest):
         req['URL'] = '%s/mydoc' % self.folder.absolute_url()
         self.folder.mydoc.DELETE(req, req.RESPONSE)
         self.assertEqual(eventlog.called(),
-            [('mydoc', 'manage_beforeDelete')]
+            [('mydoc', 'ObjectWillBeRemovedEvent'),
+             ('mydoc', 'ObjectRemovedEvent'),
+             ('folder', 'ContainerModifiedEvent')]
         )
 
 
-class TestCopySupportSublocation(HookTest):
-    '''Tests the order in which add/clone/del hooks are called'''
+class TestCopySupportSublocation(EventTest):
+    '''Tests the order in which events are fired'''
 
     def setUp(self):
-        HookTest.setUp(self)
+        EventTest.setUp(self)
         # A folder that does not verify pastes
         self.app._setObject('folder', TestFolder('folder'))
         self.folder = getattr(self.app, 'folder')
@@ -187,10 +259,15 @@ class TestCopySupportSublocation(HookTest):
         # Test clone
         self.subfolder.manage_clone(self.folder.myfolder, 'myfolder')
         self.assertEqual(eventlog.called(),
-            [('myfolder', 'manage_afterAdd'),
-             ('mydoc', 'manage_afterAdd'),
-             ('myfolder', 'manage_afterClone'),
-             ('mydoc', 'manage_afterClone')]
+            [#('mydoc', 'ObjectCopiedEvent'),
+             ('myfolder', 'ObjectCopiedEvent'),
+             ('mydoc', 'ObjectWillBeAddedEvent'),
+             ('myfolder', 'ObjectWillBeAddedEvent'),
+             ('mydoc', 'ObjectAddedEvent'),
+             ('myfolder', 'ObjectAddedEvent'),
+             ('subfolder', 'ContainerModifiedEvent'),
+             ('mydoc', 'ObjectClonedEvent'),
+             ('myfolder', 'ObjectClonedEvent')]
         )
 
     def test_2_CopyPaste(self):
@@ -198,10 +275,15 @@ class TestCopySupportSublocation(HookTest):
         cb = self.folder.manage_copyObjects(['myfolder'])
         self.subfolder.manage_pasteObjects(cb)
         self.assertEqual(eventlog.called(),
-            [('myfolder', 'manage_afterAdd'),
-             ('mydoc', 'manage_afterAdd'),
-             ('myfolder', 'manage_afterClone'),
-             ('mydoc', 'manage_afterClone')]
+            [#('mydoc', 'ObjectCopiedEvent'),
+             ('myfolder', 'ObjectCopiedEvent'),
+             ('mydoc', 'ObjectWillBeAddedEvent'),
+             ('myfolder', 'ObjectWillBeAddedEvent'),
+             ('mydoc', 'ObjectAddedEvent'),
+             ('myfolder', 'ObjectAddedEvent'),
+             ('subfolder', 'ContainerModifiedEvent'),
+             ('mydoc', 'ObjectClonedEvent'),
+             ('myfolder', 'ObjectClonedEvent')]
         )
 
     def test_3_CutPaste(self):
@@ -209,20 +291,23 @@ class TestCopySupportSublocation(HookTest):
         cb = self.folder.manage_cutObjects(['myfolder'])
         self.subfolder.manage_pasteObjects(cb)
         self.assertEqual(eventlog.called(),
-            [('mydoc', 'manage_beforeDelete'),
-             ('myfolder', 'manage_beforeDelete'),
-             ('myfolder', 'manage_afterAdd'),
-             ('mydoc', 'manage_afterAdd')]
+            [('mydoc', 'ObjectWillBeMovedEvent'),
+             ('myfolder', 'ObjectWillBeMovedEvent'),
+             ('mydoc', 'ObjectMovedEvent'),
+             ('myfolder', 'ObjectMovedEvent'),
+             ('folder', 'ContainerModifiedEvent'),
+             ('subfolder', 'ContainerModifiedEvent')]
         )
 
     def test_4_Rename(self):
         # Test rename
         self.folder.manage_renameObject('myfolder', 'yourfolder')
         self.assertEqual(eventlog.called(),
-            [('mydoc', 'manage_beforeDelete'),
-             ('myfolder', 'manage_beforeDelete'),
-             ('yourfolder', 'manage_afterAdd'),
-             ('mydoc', 'manage_afterAdd')]
+            [('mydoc', 'ObjectWillBeMovedEvent'),
+             ('myfolder', 'ObjectWillBeMovedEvent'),
+             ('mydoc', 'ObjectMovedEvent'),
+             ('yourfolder', 'ObjectMovedEvent'),
+             ('folder', 'ContainerModifiedEvent')]
         )
 
     def test_5_COPY(self):
@@ -232,10 +317,15 @@ class TestCopySupportSublocation(HookTest):
         req.environ['HTTP_DESTINATION'] = '%s/subfolder/myfolder' % self.folder.absolute_url()
         self.folder.myfolder.COPY(req, req.RESPONSE)
         self.assertEqual(eventlog.called(),
-            [('myfolder', 'manage_afterAdd'),
-             ('mydoc', 'manage_afterAdd'),
-             ('myfolder', 'manage_afterClone'),
-             ('mydoc', 'manage_afterClone')]
+            [#('mydoc', 'ObjectCopiedEvent'),
+             ('myfolder', 'ObjectCopiedEvent'),
+             ('mydoc', 'ObjectWillBeAddedEvent'),
+             ('myfolder', 'ObjectWillBeAddedEvent'),
+             ('mydoc', 'ObjectAddedEvent'),
+             ('myfolder', 'ObjectAddedEvent'),
+             ('subfolder', 'ContainerModifiedEvent'),
+             ('mydoc', 'ObjectClonedEvent'),
+             ('myfolder', 'ObjectClonedEvent')]
         )
 
     def test_6_MOVE(self):
@@ -245,10 +335,12 @@ class TestCopySupportSublocation(HookTest):
         req.environ['HTTP_DESTINATION'] = '%s/subfolder/myfolder' % self.folder.absolute_url()
         self.folder.myfolder.MOVE(req, req.RESPONSE)
         self.assertEqual(eventlog.called(),
-            [('mydoc', 'manage_beforeDelete'),
-             ('myfolder', 'manage_beforeDelete'),
-             ('myfolder', 'manage_afterAdd'),
-             ('mydoc', 'manage_afterAdd')]
+            [('mydoc', 'ObjectWillBeMovedEvent'),
+             ('myfolder', 'ObjectWillBeMovedEvent'),
+             ('mydoc', 'ObjectMovedEvent'),
+             ('myfolder', 'ObjectMovedEvent'),
+             ('folder', 'ContainerModifiedEvent'),
+             ('subfolder', 'ContainerModifiedEvent')]
         )
 
     def test_7_DELETE(self):
@@ -257,8 +349,11 @@ class TestCopySupportSublocation(HookTest):
         req['URL'] = '%s/myfolder' % self.folder.absolute_url()
         self.folder.myfolder.DELETE(req, req.RESPONSE)
         self.assertEqual(eventlog.called(),
-            [('mydoc', 'manage_beforeDelete'),
-             ('myfolder', 'manage_beforeDelete')]
+            [('mydoc', 'ObjectWillBeRemovedEvent'),
+             ('myfolder', 'ObjectWillBeRemovedEvent'),
+             ('mydoc', 'ObjectRemovedEvent'),
+             ('myfolder', 'ObjectRemovedEvent'),
+             ('folder', 'ContainerModifiedEvent')]
         )
 
 
