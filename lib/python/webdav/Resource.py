@@ -17,12 +17,13 @@ $Id$
 
 import mimetypes
 import sys
+import warnings
 from urllib import unquote
 
 import ExtensionClass
 import Globals
 from AccessControl import getSecurityManager
-from Acquisition import aq_base
+from Acquisition import aq_base, aq_inner, aq_parent
 from zExceptions import BadRequest, MethodNotAllowed
 from zExceptions import Unauthorized, Forbidden, NotFound
 from zope.interface import implements
@@ -39,7 +40,11 @@ from interfaces import IWriteLock
 from WriteLockInterface import WriteLockInterface
 
 from zope.event import notify
+from zope.app.event.objectevent import ObjectCopiedEvent
+from zope.app.container.contained import ObjectMovedEvent
+from zope.app.container.contained import notifyContainerModified
 from OFS.event import ObjectClonedEvent
+from OFS.event import ObjectWillBeMovedEvent
 import OFS.subscribers
 
 
@@ -229,7 +234,7 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
         ifhdr = REQUEST.get_header('If', '')
         url = urlfix(REQUEST['URL'], 'DELETE')
         name = unquote(filter(None, url.split( '/')[-1]))
-        parent = self.aq_parent
+        parent = aq_parent(aq_inner(self))
         # Lock checking
         if Lockable.wl_isLocked(self):
             if ifhdr:
@@ -393,10 +398,14 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
         if depth=='0' and isDavCollection(ob):
             for id in ob.objectIds():
                 ob._delObject(id)
+
+        notify(ObjectCopiedEvent(ob, self))
+
         if existing:
             object=getattr(parent, name)
             self.dav__validate(object, 'DELETE', REQUEST)
             parent._delObject(name)
+
         parent._setObject(name, ob)
         ob = parent._getOb(name)
         ob._postCopy(parent, op=0)
@@ -502,20 +511,52 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
                 raise PreconditionFailed, 'Source is locked and no '\
                       'condition was passed in.'
 
+        orig_container = aq_parent(aq_inner(self))
+        orig_id = self.getId()
+
+        self._notifyOfCopyTo(parent, op=1)
+
+        notify(ObjectWillBeMovedEvent(self, orig_container, orig_id,
+                                      parent, name))
+
         # try to make ownership explicit so that it gets carried
         # along to the new location if needed.
         self.manage_changeOwnershipType(explicit=1)
 
-        self._notifyOfCopyTo(parent, op=1)
-        ob = aq_base(self._getCopy(parent))
-        self.aq_parent._delObject(absattr(self.id))
+        ob = self._getCopy(parent)
         ob._setId(name)
+
+        try:
+            orig_container._delObject(orig_id, suppress_events=True)
+        except TypeError:
+            # BBB: removed in Zope 2.11
+            orig_container._delObject(orig_id)
+            warnings.warn(
+                "%s._delObject without suppress_events is deprecated "
+                "and will be removed in Zope 2.11." %
+                orig_container.__class__.__name__, DeprecationWarning)
+
         if existing:
             object=getattr(parent, name)
             self.dav__validate(object, 'DELETE', REQUEST)
             parent._delObject(name)
-        parent._setObject(name, ob)
+
+        try:
+            parent._setObject(name, ob, set_owner=0, suppress_events=True)
+        except TypeError:
+            # BBB: removed in Zope 2.11
+            parent._setObject(name, ob, set_owner=0)
+            warnings.warn(
+                "%s._setObject without suppress_events is deprecated "
+                "and will be removed in Zope 2.11." %
+                parent.__class__.__name__, DeprecationWarning)
         ob = parent._getOb(name)
+
+        notify(ObjectMovedEvent(ob, orig_container, orig_id, parent, name))
+        notifyContainerModified(orig_container)
+        if aq_base(orig_container) is not aq_base(parent):
+            notifyContainerModified(parent)
+
         ob._postCopy(parent, op=1)
 
         # try to make ownership implicit if possible
