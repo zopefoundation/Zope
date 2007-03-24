@@ -1,0 +1,112 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    i18n_domain="extfile">
+
+  <!-- Item -->
+
+  <subscriber
+    handler=".testCopySupportEvents.objectAddedEvent"
+    for=".testCopySupportEvents.ITestItem
+         zope.app.container.interfaces.IObjectAddedEvent"
+    />
+
+  <subscriber
+    handler=".testCopySupportEvents.objectCopiedEvent"
+    for=".testCopySupportEvents.ITestItem
+         zope.lifecycleevent.interfaces.IObjectCopiedEvent"
+    />
+
+  <subscriber
+    handler=".testCopySupportEvents.objectMovedEvent"
+    for=".testCopySupportEvents.ITestItem
+         zope.app.container.interfaces.IObjectMovedEvent"
+    />
+
+  <subscriber
+    handler=".testCopySupportEvents.objectRemovedEvent"
+    for=".testCopySupportEvents.ITestItem
+         zope.app.container.interfaces.IObjectRemovedEvent"
+    />
+
+  <subscriber
+    handler=".testCopySupportEvents.objectWillBeAddedEvent"
+    for=".testCopySupportEvents.ITestItem
+         OFS.interfaces.IObjectWillBeAddedEvent"
+    />
+
+  <subscriber
+    handler=".testCopySupportEvents.objectWillBeMovedEvent"
+    for=".testCopySupportEvents.ITestItem
+         OFS.interfaces.IObjectWillBeMovedEvent"
+    />
+
+  <subscriber
+    handler=".testCopySupportEvents.objectWillBeRemovedEvent"
+    for=".testCopySupportEvents.ITestItem
+         OFS.interfaces.IObjectWillBeRemovedEvent"
+    />
+
+  <subscriber
+    handler=".testCopySupportEvents.objectClonedEvent"
+    for=".testCopySupportEvents.ITestItem
+         OFS.interfaces.IObjectClonedEvent"
+    />
+
+  <!-- Folder -->
+
+  <subscriber
+    handler=".testCopySupportEvents.objectAddedEvent"
+    for=".testCopySupportEvents.ITestFolder
+         zope.app.container.interfaces.IObjectAddedEvent"
+    />
+
+  <subscriber
+    handler=".testCopySupportEvents.objectCopiedEvent"
+    for=".testCopySupportEvents.ITestFolder
+         zope.lifecycleevent.interfaces.IObjectCopiedEvent"
+    />
+
+  <subscriber
+    handler=".testCopySupportEvents.objectMovedEvent"
+    for=".testCopySupportEvents.ITestFolder
+         zope.app.container.interfaces.IObjectMovedEvent"
+    />
+
+  <subscriber
+    handler=".testCopySupportEvents.objectRemovedEvent"
+    for=".testCopySupportEvents.ITestFolder
+         zope.app.container.interfaces.IObjectRemovedEvent"
+    />
+
+  <subscriber
+    handler=".testCopySupportEvents.containerModifiedEvent"
+    for=".testCopySupportEvents.ITestFolder
+         zope.app.container.interfaces.IContainerModifiedEvent"
+    />
+
+  <subscriber
+    handler=".testCopySupportEvents.objectWillBeAddedEvent"
+    for=".testCopySupportEvents.ITestFolder
+         OFS.interfaces.IObjectWillBeAddedEvent"
+    />
+
+  <subscriber
+    handler=".testCopySupportEvents.objectWillBeMovedEvent"
+    for=".testCopySupportEvents.ITestFolder
+         OFS.interfaces.IObjectWillBeMovedEvent"
+    />
+
+  <subscriber
+    handler=".testCopySupportEvents.objectWillBeRemovedEvent"
+    for=".testCopySupportEvents.ITestFolder
+         OFS.interfaces.IObjectWillBeRemovedEvent"
+    />
+
+  <subscriber
+    handler=".testCopySupportEvents.objectClonedEvent"
+    for=".testCopySupportEvents.ITestFolder
+         OFS.interfaces.IObjectClonedEvent"
+    />
+
+</configure>
+
