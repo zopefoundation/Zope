@@ -61,6 +61,9 @@ class PageTemplateResource(BrowserView, Resource):
 
     def render(self):
         """Rendered content"""
+        # ZPublisher might have called setBody with an incorrect URL
+        # we definitely don't want that if we are plain html
+        self.request.RESPONSE.setBase(None)
         pt = self.context
         return pt(self.request)
 

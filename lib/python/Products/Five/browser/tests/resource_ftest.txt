@@ -78,6 +78,33 @@ We also can traverse into sub-directories:
   <BLANKLINE>
 
 
+We also can traverse into sub-directories:
+
+  >>> print http(r'''
+  ... GET /test_folder_1_/testoid/++resource++fivetest_resources/resource_subdir/resource.txt HTTP/1.1
+  ... Authorization: Basic manager:r00t
+  ... ''')
+  HTTP/1.1 200 OK
+  ...
+  This is a resource in a subdirectory of a normal resource to test traversal.
+  <BLANKLINE>
+
+  >>> print http(r'''
+  ... GET /test_folder_1_/testoid/++resource++fivetest_resources/resource_subdir/resource.html HTTP/1.1
+  ... Authorization: Basic manager:r00t
+  ... ''')
+  HTTP/1.1 200 OK
+  ...
+  <html>
+      <head>
+      </head>
+      <body>
+          This .html should not have a base tag automatically
+          added to the header.
+      </body>
+  </html>
+  <BLANKLINE>
+
 Clean up
 --------
 

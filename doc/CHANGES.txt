@@ -70,7 +70,7 @@ Zope Changes
         ISO-8859-15. For other encodings you might set the environment variable
         ZPT_REFERRED_ENCODING to insert your preferred encoding in front of
         utf-8 and ISO-8859-15 within the encoding sniffer code.
-        
+
         In addition there is a new 'output_encodings' property that controls
         the conversion from/to unicode for WebDAV/FTP operations.
 
@@ -80,11 +80,11 @@ Zope Changes
         Products/PageTemplates/(configure.zcml, unicodeconflictresolver.py,
         interfaces.py)
 
-      - AccessControl.Role: added new method 
+      - AccessControl.Role: added new method
         manage_getUserRolesAndPermissions().
- 
-      - AccessControl: the form behind the "Security" tab has a new form 
-        for user-related reporting of permissions and roles 
+
+      - AccessControl: the form behind the "Security" tab has a new form
+        for user-related reporting of permissions and roles
 
     Bugs Fixed
 
@@ -97,7 +97,7 @@ Zope Changes
 
       - Collector #2294: Protected DOS-able ControlPanel methods with the
         same 'requestmethod' wrapper.
-  
+
       - Collector #2294: Protected various security mutators with a new
         'postonly' decorator.  The decorator limits method publishing to
         POST requests only, and is a backport from Zope 2.11's requestmethod
@@ -109,9 +109,9 @@ Zope Changes
         is looked up.
 
       - PageTemplate/ZRPythonExpr.py: expressions represented as unicode string
-        caused UnicodeDecodeErrors. 
+        caused UnicodeDecodeErrors.
 
-      - PluginIndexes: Fixed 'parseIndexRequest' for false values. 
+      - PluginIndexes: Fixed 'parseIndexRequest' for false values.
 
       - Collector #2269: fixed broken ZPT FTP support
 
@@ -189,6 +189,9 @@ Zope Changes
       - The defaultView directive now only looks up views, not attributes.
 
       - Collector #2187: PUT_factory broken (fwd port from 2.10 branch).
+
+      - Prevent ZPublisher from insering incorrect <base/> tags into the
+        headers of plain html files served from Zope3 resource directories.
 
     Other Changes
 
