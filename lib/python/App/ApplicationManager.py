@@ -386,7 +386,7 @@ class ApplicationManager(Folder,CacheManager):
 
     if os.environ.has_key('ZMANAGED'):
         manage_restartable=1
-        def manage_restart(self, URL1):
+        def manage_restart(self, URL1, REQUEST=None):
             """Shut down the application"""
             try:
                 user = '"%s"' % getSecurityManager().getUser().getUserName()
