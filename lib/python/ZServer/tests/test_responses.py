@@ -56,7 +56,7 @@ class ZServerResponseTestCase(unittest.TestCase):
         one = ZServerHTTPResponse(stdout=DummyChannel())
         self.assertRaises(AssertionError,
                           one.setBody, test_streamiterator())
-
+        
 class DummyChannel:
     def __init__(self):
         self.out = StringIO()
@@ -92,8 +92,46 @@ class test_streamiterator:
             return self.data
         raise StopIteration
 
+class ZServerHTTPResponseTestCase(unittest.TestCase):
+    """Test ZServer HTTPResponse object"""
+    
+    def _makeOne(self):
+        return ZServerHTTPResponse()
+    
+    def testToString(self):
+        response = self._makeOne()
+        response.headers = {
+            'content-type': 'text/plain',
+            'all-lower-case': 'foo',
+            'Title-Cased': 'bar',
+            'mixed-CasED': 'spam',
+            'multilined': 'eggs\n\tham'}
+        response.accumulated_headers = 'foo-bar: bar\n\tbaz\nFoo-bar: monty\n'
+        response.cookies = dict(foo=dict(value='bar'))
+        response.body = 'A body\nwith multiple lines\n'
+        
+        result = str(response)
+        headers, body = result.rsplit('\r\n\r\n')
+        
+        self.assertEqual(body, response.body)
+        
+        self.assertTrue(headers.startswith('HTTP/1.0 200 OK\r\n'))
+        
+        # 15 header lines all delimited by \r\n
+        self.assertEqual(
+            ['\n' in line for line in headers.split('\r\n')],
+            15 * [False])
+
+        self.assertTrue('Multilined: eggs\r\n\tham\r\n' in headers)
+        self.assertTrue('Foo-Bar: bar\r\n\tbaz\r\n' in headers)
+    
 def test_suite():
-    return unittest.makeSuite(ZServerResponseTestCase)
+    suite = unittest.TestSuite()
+    suite.addTests((
+        unittest.makeSuite(ZServerResponseTestCase),
+        unittest.makeSuite(ZServerHTTPResponseTestCase)
+    ))
+    return suite
 
 if __name__ == "__main__":
     unittest.main(defaultTest="test_suite")
