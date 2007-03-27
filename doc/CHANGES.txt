@@ -7,6 +7,8 @@ Zope Changes
   Zope 2.9.8 (unreleased)
 
    Bugs fixed
+
+      - Collector #1866: a 304 HTTP status should not have a content length.
   
       - Collector #2300: delimit *all* HTTP Response headers with CRLF.
 
