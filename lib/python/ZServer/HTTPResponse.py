@@ -72,15 +72,16 @@ class ZServerHTTPResponse(HTTPResponse):
                 self.status == 200:
             self.setStatus('nocontent')
 
-        # add content length if not streaming
-        if not headers.has_key('content-length') and \
-                not self._streaming:
-            self.setHeader('content-length',len(body))
-
-
-        content_length= headers.get('content-length', None)
-        if content_length>0 :
-            self.setHeader('content-length', content_length)
+        if self.status in (100, 101, 102, 204, 304):
+            # These responses should not have any body or Content-Length.
+            # See RFC 2616 4.4 "Message Length".
+            body = ''
+            if 'content-length' in headers:
+                del headers['content-length']
+            if 'content-type' in headers:
+                del headers['content-type']
+        elif not headers.has_key('content-length') and not self._streaming:
+            self.setHeader('content-length', len(body))
 
         headersl=[]
         append=headersl.append
@@ -97,8 +98,7 @@ class ZServerHTTPResponse(HTTPResponse):
         append('Date: %s' % build_http_date(time.time()))
 
         if self._http_version=='1.0':
-            if self._http_connection=='keep-alive' and \
-                    self.headers.has_key('content-length'):
+            if self._http_connection=='keep-alive':
                 self.setHeader('Connection','Keep-Alive')
             else:
                 self.setHeader('Connection','close')
@@ -108,12 +108,10 @@ class ZServerHTTPResponse(HTTPResponse):
         if self._http_version=='1.1':
             if self._http_connection=='close':
                 self.setHeader('Connection','close')
-            elif not self.headers.has_key('content-length'):
-                if self.http_chunk and self._streaming:
-                    self.setHeader('Transfer-Encoding','chunked')
-                    self._chunking=1
-                else:
-                    self.setHeader('Connection','close')
+            elif (not self.headers.has_key('content-length') and 
+                  self.http_chunk and self._streaming):
+                self.setHeader('Transfer-Encoding','chunked')
+                self._chunking=1
                     
         headers = headers.items()
         for line in self.accumulated_headers.splitlines():
