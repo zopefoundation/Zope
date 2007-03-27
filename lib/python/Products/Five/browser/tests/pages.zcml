@@ -218,6 +218,14 @@
       permission="zope2.Public"
       />
 
+  <!-- A named view -->
+  <browser:view
+      name="named_view"
+      for="Products.Five.tests.testing.simplecontent.ISimpleContent"
+      class=".pages.SimpleView"
+      permission="zope2.Public"
+      />
+      
   <!-- XXX this should really be in Five.form.tests -->
 
   <!-- protected edit form for permission check -->

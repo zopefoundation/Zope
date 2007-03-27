@@ -85,7 +85,17 @@ sure it is now:
 
   >>> self.folder.unrestrictedTraverse('testoid/@@new_style_class2')
   <Products.Five.metaclass.NewStyleClass ...>
+  
+Both browser:view and browser:page are ILocation providers, so make sure they
+have a __name__ attribute:
 
+  >>> page = self.folder.unrestrictedTraverse('testoid/eagle.txt')
+  >>> page.__name__
+  u'eagle.txt'
+
+  >>> view = self.folder.unrestrictedTraverse('testoid/named_view')
+  >>> view.__name__
+  u'named_view'
 
 ZPT-based browser pages
 -----------------------

@@ -251,6 +251,7 @@ class view(zope_app_view):
         except:
             cname = "GeneratedClass"
             
+        cdict['__name__'] = name
         newclass = makeClass(cname, bases, cdict)
         
         _handle_for(_context, for_)
