@@ -113,8 +113,15 @@ class ZServerHTTPResponse(HTTPResponse):
                     self._chunking=1
                 else:
                     self.setHeader('Connection','close')
+                    
+        headers = headers.items()
+        for line in self.accumulated_headers.splitlines():
+            if line[0] == '\t':
+                headers[-1][1] += '\n' + line
+                continue
+            headers.append(line.split(': ', 1))
 
-        for key, val in headers.items():
+        for key, val in headers:
             if key.lower()==key:
                 # only change non-literal header names
                 key="%s%s" % (key[:1].upper(), key[1:])
@@ -124,10 +131,13 @@ class ZServerHTTPResponse(HTTPResponse):
                     key="%s-%s%s" % (key[:l],key[l+1:l+2].upper(),key[l+2:])
                     start=l+1
                     l=key.find('-',start)
+                val = val.replace('\n\t', '\r\n\t')
             append("%s: %s" % (key, val))
         if self.cookies:
-            headersl=headersl+self._cookie_list()
-        headersl[len(headersl):]=[self.accumulated_headers, body]
+            headersl.extend(self._cookie_list())
+            
+        append('')
+        append(body)
         return "\r\n".join(headersl)
 
     _tempfile=None
@@ -149,6 +159,7 @@ class ZServerHTTPResponse(HTTPResponse):
         after beginning stream-oriented output.
 
         """
+
 
         if type(data) != type(''):
             raise TypeError('Value must be a string')
