@@ -51,6 +51,9 @@ Zope Changes
 
     Features added
 
+      - ZCatalog result objects (catalog brains) now have an interface,
+        ZCatalog.interfaces.ICatalogBrain.
+
       - A new module, AccessControl.requestmethod, provides a decorator
         factory that limits decorated methods to one request method only.
         For example, marking a method with @requestmethod('POST') limits

@@ -246,3 +246,37 @@ class IZCatalog(Interface):
         pghandler -- optional Progresshandler as defined in ProgressHandler.py
         (see also README.txt)
         """
+        
+# XXX This should inherit from an IRecord interface, if there ever is one.
+class ICatalogBrain(Interface):
+    """Catalog brain that handles looking up attributes as
+    required, and provides just enough smarts to let us get the URL, path,
+    and cataloged object without having to ask the catalog directly.
+    """
+    def has_key(key):
+        """Record has this field"""
+
+    def getPath():
+        """Get the physical path for this record"""
+        
+    def getURL(relative=0):
+        """Generate a URL for this record"""
+
+    def _unrestrictedGetObject():
+        """Return the object for this record
+
+        Same as getObject, but does not do security checks.
+        """
+
+    def getObject():
+        """Return the object for this record
+
+        Will return None if the object cannot be found via its cataloged path
+        (i.e., it was deleted or moved without recataloging), or if the user is
+        not authorized to access the object.
+
+        """
+
+    def getRID():
+        """Return the record ID for this object."""
+

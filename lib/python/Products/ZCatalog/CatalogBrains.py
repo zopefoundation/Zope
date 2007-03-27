@@ -13,8 +13,12 @@
 
 __version__ = "$Revision$"[11:-2]
 
+from zope.interface import implements
+
 import Acquisition, Record
 from ZODB.POSException import ConflictError
+
+from interfaces import ICatalogBrain
 
 # Switch for new behavior, raise exception instead of returning None.
 # Use 'catalog-getObject-raises off' in zope.conf to restore old behavior.
@@ -25,6 +29,8 @@ class AbstractCatalogBrain(Record.Record, Acquisition.Implicit):
     required, and provides just enough smarts to let us get the URL, path,
     and cataloged object without having to ask the catalog directly.
     """
+    implements(ICatalogBrain)
+    
     def has_key(self, key):
         return self.__record_schema__.has_key(key)
 
