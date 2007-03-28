@@ -397,7 +397,6 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
         self._notifyOfCopyTo(parent, op=0)
         ob = self._getCopy(parent)
         ob._setId(name)
-        #notify(ObjectCopiedEvent(ob, self))
 
         if depth=='0' and isDavCollection(ob):
             for id in ob.objectIds():
