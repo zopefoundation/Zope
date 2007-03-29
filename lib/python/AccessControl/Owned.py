@@ -176,6 +176,7 @@ class Owned(ExtensionClass.Base):
         if owner == info: return 0
         return security.checkPermission('Take ownership', self)
 
+    @postonly
     def manage_takeOwnership(self, REQUEST, RESPONSE, recursive=0):
         """Take ownership (responsibility) for an object.
 
@@ -195,6 +196,7 @@ class Owned(ExtensionClass.Base):
 
         RESPONSE.redirect(REQUEST['HTTP_REFERER'])
 
+    @postonly
     def manage_changeOwnershipType(self, explicit=1,
                                    RESPONSE=None, REQUEST=None):
         """Change the type (implicit or explicit) of ownership.
