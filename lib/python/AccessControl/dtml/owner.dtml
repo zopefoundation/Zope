@@ -25,7 +25,7 @@ of an object. Usually when taking ownership you should also take
 ownership of sub-objects as well.
 </p>
 
-<form action="manage_takeOwnership">
+<form action="manage_takeOwnership" method="POST">
 <p>
 <div class="form-element">
 <input class="form-element" name="submit" type="submit" 
