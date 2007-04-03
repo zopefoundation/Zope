@@ -74,3 +74,15 @@ pass in the desired request method::
   Traceback (most recent call last):
   ...
   Forbidden: Request must be PUT
+
+You can pass in multiple request methods allow access by any of them::
+
+  >>> @requestmethod('GET', 'HEAD', 'PROPFIND')
+  ... def foo(bar, REQUEST=None):
+  ...     return bar
+  >>> foo('spam', GET)
+  'spam'
+  >>> foo('spam', POST)
+  Traceback (most recent call last):
+  ...
+  Forbidden: Request must be GET, HEAD or PROPFIND

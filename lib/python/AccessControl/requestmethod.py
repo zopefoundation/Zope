@@ -27,12 +27,17 @@ def _buildFacade(spec, docstring):
     return 'def _facade%s:\n    """%s"""\n    return _curried%s' % (
         args, docstring, callargs)
 
-def requestmethod(method):
+def requestmethod(*methods):
     """Create a request method specific decorator"""
-    method = method.upper()
+    methods = map(lambda m: m.upper(), methods)
+    if len(methods) > 1:
+        methodsstr = ', '.join(methods[:-1])
+        methodsstr += ' or ' + methods[-1]
+    else:
+        methodsstr = methods[0]
 
     def _methodtest(callable):
-        """Only allow callable when request method is %s.""" % method
+        """Only allow callable when request method is %s.""" % methodsstr
         spec = inspect.getargspec(callable)
         args, defaults = spec[0], spec[3]
         try:
@@ -51,8 +56,8 @@ def requestmethod(method):
                 request = args[r_index]
                 
             if IBrowserRequest.providedBy(request):
-                if request.method != method:
-                    raise Forbidden('Request must be %s' % method)
+                if request.method not in methods:
+                    raise Forbidden('Request must be %s' % methodsstr)
     
             # Reconstruct keyword arguments
             if defaults is not None:
