@@ -30,7 +30,7 @@ from Product import ProductFolder
 from version_txt import version_txt
 from cStringIO import StringIO
 from AccessControl import getSecurityManager
-from AccessControl.requestmethod import postonly
+from AccessControl.requestmethod import requestmethod
 from zExceptions import Redirect
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from cgi import escape
@@ -389,7 +389,7 @@ class ApplicationManager(Folder,CacheManager):
 
     if os.environ.has_key('ZMANAGED'):
         manage_restartable=1
-        @postonly
+        @requestmethod('POST')
         def manage_restart(self, URL1, REQUEST=None):
             """Shut down the application"""
             try:
@@ -405,7 +405,7 @@ class ApplicationManager(Folder,CacheManager):
             <body>Zope is restarting</body></html>
             """ % escape(URL1, 1)
 
-    @postonly
+    @requestmethod('POST')
     def manage_shutdown(self, REQUEST=None):
         """Shut down the application"""
         try:
@@ -421,7 +421,7 @@ class ApplicationManager(Folder,CacheManager):
         <body>Zope is shutting down</body></html>
         """
 
-    @postonly
+    @requestmethod('POST')
     def manage_pack(self, days=0, REQUEST=None):
         """Pack the database"""
 
@@ -476,7 +476,7 @@ class ApplicationManager(Folder,CacheManager):
             r.append({'id': v})
         return r
 
-    @postonly
+    @requestmethod('POST')
     def manage_saveVersions(self, versions, REQUEST=None):
         "Commit some versions"
         db=self._p_jar.db()
@@ -485,7 +485,7 @@ class ApplicationManager(Folder,CacheManager):
         if REQUEST is not None:
             REQUEST['RESPONSE'].redirect(REQUEST['URL1']+'/manage_main')
 
-    @postonly
+    @requestmethod('POST')
     def manage_discardVersions(self, versions, REQUEST=None):
         "Discard some versions"
         db=self._p_jar.db()
