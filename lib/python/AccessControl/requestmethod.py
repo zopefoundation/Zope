@@ -51,10 +51,7 @@ def requestmethod(*methods):
             arglen -= len(defaults)
             
         def _curried(*args, **kw):
-            request = None
-            if len(args) > r_index:
-                request = args[r_index]
-                
+            request = args[r_index]
             if IBrowserRequest.providedBy(request):
                 if request.method not in methods:
                     raise Forbidden('Request must be %s' % methodsstr)
