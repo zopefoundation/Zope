@@ -287,7 +287,7 @@ class FunctionalSuiteFactory(ZopeSuiteFactory):
             name = test_class.__name__
             warnings.warn(("The test_class you are using doesn't "
                            "subclass from ZopeTestCase.Functional. "
-                           "Please fix that."), UserWarning, 2)
+                           "Please fix that."), UserWarning, 4)
             if not 'Functional' in name:
                 name = 'Functional%s' % name
             test_class = type(name, (Functional, test_class), {})
