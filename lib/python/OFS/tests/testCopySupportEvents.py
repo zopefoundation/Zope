@@ -19,7 +19,7 @@ from zope.app.container.interfaces import IObjectAddedEvent
 from zope.app.container.interfaces import IObjectMovedEvent
 from zope.app.container.interfaces import IObjectRemovedEvent
 from zope.app.container.interfaces import IContainerModifiedEvent
-from zope.lifecycleevent.interfaces import IObjectCopiedEvent
+from zope.app.event.interfaces import IObjectCopiedEvent
 from OFS.interfaces import IObjectWillBeAddedEvent
 from OFS.interfaces import IObjectWillBeMovedEvent
 from OFS.interfaces import IObjectWillBeRemovedEvent
