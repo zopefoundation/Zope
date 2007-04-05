@@ -3,7 +3,6 @@ import Testing
 import Zope2
 Zope2.startup()
 
-import os
 import transaction
 
 from Testing.makerequest import makerequest
@@ -15,14 +14,19 @@ from OFS.SimpleItem import SimpleItem
 from OFS.Folder import Folder
 
 from zope import interface
+from zope import component
 from zope.app.container.interfaces import IObjectAddedEvent
+from zope.app.container.interfaces import IObjectMovedEvent
 from zope.app.container.interfaces import IObjectRemovedEvent
+from zope.app.container.interfaces import IContainerModifiedEvent
+from zope.lifecycleevent.interfaces import IObjectCopiedEvent
 from OFS.interfaces import IObjectWillBeAddedEvent
+from OFS.interfaces import IObjectWillBeMovedEvent
 from OFS.interfaces import IObjectWillBeRemovedEvent
+from OFS.interfaces import IObjectClonedEvent
 
 from zope.testing import cleanup
 from Products.Five import zcml
-from Globals import package_home
 
 
 class EventLogger(object):
@@ -57,8 +61,6 @@ class TestFolder(Folder):
     def _verifyObjectPaste(self, object, validate_src=1):
         pass # Always allow
 
-
-# See events.zcml
 
 def objectAddedEvent(ob, event):
     eventlog.trace(ob, 'ObjectAddedEvent')
@@ -96,6 +98,21 @@ def objectClonedEvent(ob, event):
     eventlog.trace(ob, 'ObjectClonedEvent')
 
 
+def setUpItemSubscribers(interface):
+    component.provideHandler(objectAddedEvent, (interface, IObjectAddedEvent))
+    component.provideHandler(objectCopiedEvent, (interface, IObjectCopiedEvent))
+    component.provideHandler(objectMovedEvent, (interface, IObjectMovedEvent))
+    component.provideHandler(objectRemovedEvent, (interface, IObjectRemovedEvent))
+    component.provideHandler(objectWillBeAddedEvent, (interface, IObjectWillBeAddedEvent))
+    component.provideHandler(objectWillBeMovedEvent, (interface, IObjectWillBeMovedEvent))
+    component.provideHandler(objectWillBeRemovedEvent, (interface, IObjectWillBeRemovedEvent))
+    component.provideHandler(objectClonedEvent, (interface, IObjectClonedEvent))
+
+def setUpFolderSubscribers(interface):
+    setUpItemSubscribers(interface)
+    component.provideHandler(containerModifiedEvent, (interface, IContainerModifiedEvent))
+
+
 class EventLayer:
 
     @classmethod
@@ -103,9 +120,8 @@ class EventLayer:
         cleanup.cleanUp()
         zcml._initialized = 0
         zcml.load_site()
-        import OFS.tests
-        file = os.path.join(package_home(globals()), 'events.zcml')
-        zcml.load_config(file, package=OFS.tests)
+        setUpItemSubscribers(ITestItem)
+        setUpFolderSubscribers(ITestFolder)
 
     @classmethod
     def tearDown(cls):
