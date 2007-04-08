@@ -22,10 +22,10 @@ if __name__ == '__main__':
 def test_suite():
     import unittest
     from Testing.ZopeTestCase import FunctionalDocFileSuite
-    return unittest.TestSuite(
+    return unittest.TestSuite((
         FunctionalDocFileSuite(
-            'formlib.txt', package='Products.Five.formlib.tests')
-        )
+            'formlib.txt', package='Products.Five.formlib.tests'),
+        ))
 
 if __name__ == '__main__':
     framework()

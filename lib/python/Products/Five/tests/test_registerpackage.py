@@ -77,10 +77,9 @@ def test_registerPackage():
 
 
 def test_suite():
-    from zope.testing.doctest import DocTestSuite
-    return DocTestSuite()
-    #from Testing.ZopeTestCase import ZopeDocTestSuite
-    #return ZopeDocTestSuite()
+    # Must use functional because registerPackage commits
+    from Testing.ZopeTestCase import FunctionalDocTestSuite
+    return FunctionalDocTestSuite()
 
 if __name__ == '__main__':
     framework()
