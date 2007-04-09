@@ -22,6 +22,15 @@ from StringIO import StringIO
 dummyLOG = StringIO()
 
 
+def setNumberOfThreads(number_of_threads):
+    '''Sets number of ZServer threads.'''
+    try:
+        from ZServer.PubCore import setNumberOfThreads
+        setNumberOfThreads(number_of_threads)
+    except ImportError:
+        pass
+
+
 def zserverRunner(host, port, log=None):
     '''Runs an HTTP ZServer on host:port.'''
     from ZServer import logger, asyncore
