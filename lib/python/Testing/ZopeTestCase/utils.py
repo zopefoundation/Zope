@@ -115,7 +115,7 @@ def startZServer(number_of_threads=1, log=None):
     if _Z2HOST is None:
         _Z2HOST = '127.0.0.1'
         _Z2PORT = random.choice(range(55000, 55500))
-        from ZServer import setNumberOfThreads
+        from threadutils import setNumberOfThreads
         setNumberOfThreads(number_of_threads)
         from threadutils import QuietThread, zserverRunner
         t = QuietThread(target=zserverRunner, args=(_Z2HOST, _Z2PORT, log))
