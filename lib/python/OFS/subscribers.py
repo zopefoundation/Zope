@@ -31,6 +31,7 @@ import zope.interface
 import zope.location.interfaces
 from zope.app.container.contained import dispatchToSublocations
 from zope.app.container.interfaces import IObjectMovedEvent
+from zope.lifecycleevent.interfaces import IObjectCopiedEvent
 
 deprecatedManageAddDeleteClasses = []
 
@@ -127,6 +128,14 @@ def dispatchObjectClonedEvent(ob, event):
     # First, do the manage_afterClone dance
     callManageAfterClone(ob, event.object)
     # Next, dispatch to sublocations
+    if OFS.interfaces.IObjectManager.providedBy(ob):
+        dispatchToSublocations(ob, event)
+
+@zope.component.adapter(OFS.interfaces.IItem, IObjectCopiedEvent)
+def dispatchObjectCopiedEvent(ob, event):
+    """Multi-subscriber for IItem + IObjectCopiedEvent.
+    """
+    # Dispatch to sublocations
     if OFS.interfaces.IObjectManager.providedBy(ob):
         dispatchToSublocations(ob, event)
 

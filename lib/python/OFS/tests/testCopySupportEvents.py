@@ -275,7 +275,7 @@ class TestCopySupportSublocation(EventTest):
         # Test clone
         self.subfolder.manage_clone(self.folder.myfolder, 'myfolder')
         self.assertEqual(eventlog.called(),
-            [#('mydoc', 'ObjectCopiedEvent'),
+            [('mydoc', 'ObjectCopiedEvent'),
              ('myfolder', 'ObjectCopiedEvent'),
              ('mydoc', 'ObjectWillBeAddedEvent'),
              ('myfolder', 'ObjectWillBeAddedEvent'),
@@ -291,7 +291,7 @@ class TestCopySupportSublocation(EventTest):
         cb = self.folder.manage_copyObjects(['myfolder'])
         self.subfolder.manage_pasteObjects(cb)
         self.assertEqual(eventlog.called(),
-            [#('mydoc', 'ObjectCopiedEvent'),
+            [('mydoc', 'ObjectCopiedEvent'),
              ('myfolder', 'ObjectCopiedEvent'),
              ('mydoc', 'ObjectWillBeAddedEvent'),
              ('myfolder', 'ObjectWillBeAddedEvent'),
@@ -333,7 +333,7 @@ class TestCopySupportSublocation(EventTest):
         req.environ['HTTP_DESTINATION'] = '%s/subfolder/myfolder' % self.folder.absolute_url()
         self.folder.myfolder.COPY(req, req.RESPONSE)
         self.assertEqual(eventlog.called(),
-            [#('mydoc', 'ObjectCopiedEvent'),
+            [('mydoc', 'ObjectCopiedEvent'),
              ('myfolder', 'ObjectCopiedEvent'),
              ('mydoc', 'ObjectWillBeAddedEvent'),
              ('myfolder', 'ObjectWillBeAddedEvent'),

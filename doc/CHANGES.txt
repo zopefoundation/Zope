@@ -91,6 +91,8 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #2307: ObjectCopiedEvent not dispatched to sublocations.
+
       - Collector #2298: webdav.Resource.COPY and webdav.Resource.MOVE did
         not send the expected copy/move events.
 
