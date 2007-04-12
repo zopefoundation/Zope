@@ -15,15 +15,7 @@ from OFS.Folder import Folder
 
 from zope import interface
 from zope import component
-from zope.app.container.interfaces import IObjectAddedEvent
-from zope.app.container.interfaces import IObjectMovedEvent
-from zope.app.container.interfaces import IObjectRemovedEvent
-from zope.app.container.interfaces import IContainerModifiedEvent
-from zope.app.event.interfaces import IObjectCopiedEvent
-from OFS.interfaces import IObjectWillBeAddedEvent
-from OFS.interfaces import IObjectWillBeMovedEvent
-from OFS.interfaces import IObjectWillBeRemovedEvent
-from OFS.interfaces import IObjectClonedEvent
+from zope.app.event.interfaces import IObjectEvent
 
 from zope.testing import cleanup
 from Products.Five import zcml
@@ -35,7 +27,7 @@ class EventLogger(object):
     def reset(self):
         self._called = []
     def trace(self, ob, event):
-        self._called.append((ob.getId(), event))
+        self._called.append((ob.getId(), event.__class__.__name__))
     def called(self):
         return self._called
 
@@ -62,57 +54,6 @@ class TestFolder(Folder):
         pass # Always allow
 
 
-def objectAddedEvent(ob, event):
-    eventlog.trace(ob, 'ObjectAddedEvent')
-
-def objectCopiedEvent(ob, event):
-    eventlog.trace(ob, 'ObjectCopiedEvent')
-
-def objectMovedEvent(ob, event):
-    if IObjectAddedEvent.providedBy(event):
-        return
-    if IObjectRemovedEvent.providedBy(event):
-        return
-    eventlog.trace(ob, 'ObjectMovedEvent')
-
-def objectRemovedEvent(ob, event):
-    eventlog.trace(ob, 'ObjectRemovedEvent')
-
-def containerModifiedEvent(ob, event):
-    eventlog.trace(ob, 'ContainerModifiedEvent')
-
-def objectWillBeAddedEvent(ob, event):
-    eventlog.trace(ob, 'ObjectWillBeAddedEvent')
-
-def objectWillBeMovedEvent(ob, event):
-    if IObjectWillBeAddedEvent.providedBy(event):
-        return
-    if IObjectWillBeRemovedEvent.providedBy(event):
-        return
-    eventlog.trace(ob, 'ObjectWillBeMovedEvent')
-
-def objectWillBeRemovedEvent(ob, event):
-    eventlog.trace(ob, 'ObjectWillBeRemovedEvent')
-
-def objectClonedEvent(ob, event):
-    eventlog.trace(ob, 'ObjectClonedEvent')
-
-
-def setUpItemSubscribers(interface):
-    component.provideHandler(objectAddedEvent, (interface, IObjectAddedEvent))
-    component.provideHandler(objectCopiedEvent, (interface, IObjectCopiedEvent))
-    component.provideHandler(objectMovedEvent, (interface, IObjectMovedEvent))
-    component.provideHandler(objectRemovedEvent, (interface, IObjectRemovedEvent))
-    component.provideHandler(objectWillBeAddedEvent, (interface, IObjectWillBeAddedEvent))
-    component.provideHandler(objectWillBeMovedEvent, (interface, IObjectWillBeMovedEvent))
-    component.provideHandler(objectWillBeRemovedEvent, (interface, IObjectWillBeRemovedEvent))
-    component.provideHandler(objectClonedEvent, (interface, IObjectClonedEvent))
-
-def setUpFolderSubscribers(interface):
-    setUpItemSubscribers(interface)
-    component.provideHandler(containerModifiedEvent, (interface, IContainerModifiedEvent))
-
-
 class EventLayer:
 
     @classmethod
@@ -120,8 +61,8 @@ class EventLayer:
         cleanup.cleanUp()
         zcml._initialized = 0
         zcml.load_site()
-        setUpItemSubscribers(ITestItem)
-        setUpFolderSubscribers(ITestFolder)
+        component.provideHandler(eventlog.trace, (ITestItem, IObjectEvent))
+        component.provideHandler(eventlog.trace, (ITestFolder, IObjectEvent))
 
     @classmethod
     def tearDown(cls):
@@ -271,35 +212,42 @@ class TestCopySupportSublocation(EventTest):
         # Reset event log
         eventlog.reset()
 
-    def DISABLED_test_1_Clone(self):
+    def assertEqual(self, first, second, msg=None):
+        # XXX: Compare sets as the order of event handlers cannot be
+        #      relied on between objects.
+        if not set(first) == set(second):
+            raise self.failureException, \
+                (msg or '%r != %r' % (first, second))
+
+    def test_1_Clone(self):
         # Test clone
         self.subfolder.manage_clone(self.folder.myfolder, 'myfolder')
         self.assertEqual(eventlog.called(),
-            [#('mydoc', 'ObjectCopiedEvent'),
-             ('myfolder', 'ObjectCopiedEvent'),
-             ('mydoc', 'ObjectWillBeAddedEvent'),
+            [('myfolder', 'ObjectCopiedEvent'),
+             #('mydoc', 'ObjectCopiedEvent'),
              ('myfolder', 'ObjectWillBeAddedEvent'),
-             ('mydoc', 'ObjectAddedEvent'),
+             ('mydoc', 'ObjectWillBeAddedEvent'),
              ('myfolder', 'ObjectAddedEvent'),
+             ('mydoc', 'ObjectAddedEvent'),
              ('subfolder', 'ContainerModifiedEvent'),
-             ('mydoc', 'ObjectClonedEvent'),
-             ('myfolder', 'ObjectClonedEvent')]
+             ('myfolder', 'ObjectClonedEvent'),
+             ('mydoc', 'ObjectClonedEvent')]
         )
 
-    def DISABLED_test_2_CopyPaste(self):
+    def test_2_CopyPaste(self):
         # Test copy/paste
         cb = self.folder.manage_copyObjects(['myfolder'])
         self.subfolder.manage_pasteObjects(cb)
         self.assertEqual(eventlog.called(),
-            [#('mydoc', 'ObjectCopiedEvent'),
-             ('myfolder', 'ObjectCopiedEvent'),
-             ('mydoc', 'ObjectWillBeAddedEvent'),
+            [('myfolder', 'ObjectCopiedEvent'),
+             #('mydoc', 'ObjectCopiedEvent'),
              ('myfolder', 'ObjectWillBeAddedEvent'),
-             ('mydoc', 'ObjectAddedEvent'),
+             ('mydoc', 'ObjectWillBeAddedEvent'),
              ('myfolder', 'ObjectAddedEvent'),
+             ('mydoc', 'ObjectAddedEvent'),
              ('subfolder', 'ContainerModifiedEvent'),
-             ('mydoc', 'ObjectClonedEvent'),
-             ('myfolder', 'ObjectClonedEvent')]
+             ('myfolder', 'ObjectClonedEvent'),
+             ('mydoc', 'ObjectClonedEvent')]
         )
 
     def test_3_CutPaste(self):
@@ -307,10 +255,10 @@ class TestCopySupportSublocation(EventTest):
         cb = self.folder.manage_cutObjects(['myfolder'])
         self.subfolder.manage_pasteObjects(cb)
         self.assertEqual(eventlog.called(),
-            [('mydoc', 'ObjectWillBeMovedEvent'),
-             ('myfolder', 'ObjectWillBeMovedEvent'),
-             ('mydoc', 'ObjectMovedEvent'),
+            [('myfolder', 'ObjectWillBeMovedEvent'),
+             ('mydoc', 'ObjectWillBeMovedEvent'),
              ('myfolder', 'ObjectMovedEvent'),
+             ('mydoc', 'ObjectMovedEvent'),
              ('folder', 'ContainerModifiedEvent'),
              ('subfolder', 'ContainerModifiedEvent')]
         )
@@ -319,29 +267,29 @@ class TestCopySupportSublocation(EventTest):
         # Test rename
         self.folder.manage_renameObject('myfolder', 'yourfolder')
         self.assertEqual(eventlog.called(),
-            [('mydoc', 'ObjectWillBeMovedEvent'),
-             ('myfolder', 'ObjectWillBeMovedEvent'),
-             ('mydoc', 'ObjectMovedEvent'),
+            [('myfolder', 'ObjectWillBeMovedEvent'),
+             ('mydoc', 'ObjectWillBeMovedEvent'),
              ('yourfolder', 'ObjectMovedEvent'),
+             ('mydoc', 'ObjectMovedEvent'),
              ('folder', 'ContainerModifiedEvent')]
         )
 
-    def DISABLED_test_5_COPY(self):
+    def test_5_COPY(self):
         # Test webdav COPY
         req = self.app.REQUEST
         req.environ['HTTP_DEPTH'] = 'infinity'
         req.environ['HTTP_DESTINATION'] = '%s/subfolder/myfolder' % self.folder.absolute_url()
         self.folder.myfolder.COPY(req, req.RESPONSE)
         self.assertEqual(eventlog.called(),
-            [#('mydoc', 'ObjectCopiedEvent'),
-             ('myfolder', 'ObjectCopiedEvent'),
-             ('mydoc', 'ObjectWillBeAddedEvent'),
+            [('myfolder', 'ObjectCopiedEvent'),
+             #('mydoc', 'ObjectCopiedEvent'),
              ('myfolder', 'ObjectWillBeAddedEvent'),
-             ('mydoc', 'ObjectAddedEvent'),
+             ('mydoc', 'ObjectWillBeAddedEvent'),
              ('myfolder', 'ObjectAddedEvent'),
+             ('mydoc', 'ObjectAddedEvent'),
              ('subfolder', 'ContainerModifiedEvent'),
-             ('mydoc', 'ObjectClonedEvent'),
-             ('myfolder', 'ObjectClonedEvent')]
+             ('myfolder', 'ObjectClonedEvent'),
+             ('mydoc', 'ObjectClonedEvent')]
         )
 
     def test_6_MOVE(self):
@@ -351,24 +299,24 @@ class TestCopySupportSublocation(EventTest):
         req.environ['HTTP_DESTINATION'] = '%s/subfolder/myfolder' % self.folder.absolute_url()
         self.folder.myfolder.MOVE(req, req.RESPONSE)
         self.assertEqual(eventlog.called(),
-            [('mydoc', 'ObjectWillBeMovedEvent'),
-             ('myfolder', 'ObjectWillBeMovedEvent'),
-             ('mydoc', 'ObjectMovedEvent'),
+            [('myfolder', 'ObjectWillBeMovedEvent'),
+             ('mydoc', 'ObjectWillBeMovedEvent'),
              ('myfolder', 'ObjectMovedEvent'),
+             ('mydoc', 'ObjectMovedEvent'),
              ('folder', 'ContainerModifiedEvent'),
              ('subfolder', 'ContainerModifiedEvent')]
         )
 
-    def DISABLED_test_7_DELETE(self):
+    def test_7_DELETE(self):
         # Test webdav DELETE
         req = self.app.REQUEST
         req['URL'] = '%s/myfolder' % self.folder.absolute_url()
         self.folder.myfolder.DELETE(req, req.RESPONSE)
         self.assertEqual(eventlog.called(),
-            [('mydoc', 'ObjectWillBeRemovedEvent'),
-             ('myfolder', 'ObjectWillBeRemovedEvent'),
-             ('mydoc', 'ObjectRemovedEvent'),
+            [('myfolder', 'ObjectWillBeRemovedEvent'),
+             ('mydoc', 'ObjectWillBeRemovedEvent'),
              ('myfolder', 'ObjectRemovedEvent'),
+             ('mydoc', 'ObjectRemovedEvent'),
              ('folder', 'ContainerModifiedEvent')]
         )
 
