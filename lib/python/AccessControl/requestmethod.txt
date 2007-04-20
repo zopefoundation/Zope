@@ -61,9 +61,9 @@ original closely, and keyword parameter defaults must be preserved::
   >>> import inspect
   >>> mutabledefault = dict()
   >>> @postonly
-  ... def foo(bar, baz=mutabledefault, REQUEST=None, **kw):
-  ...     return bar, baz is mutabledefault, REQUEST
+  ... def foo(bar, baz=mutabledefault, egg=mutabledefault, REQUEST=None, **kw):
+  ...     return bar, baz is mutabledefault, egg is None, REQUEST
   >>> inspect.getargspec(foo)[:3]
-  (['bar', 'baz', 'REQUEST'], None, 'kw')
-  >>> foo('spam')
-  ('spam', True, None)
+  (['bar', 'baz', 'egg', 'REQUEST'], None, 'kw')
+  >>> foo('spam', egg=None)
+  ('spam', True, True, None)

@@ -15,14 +15,16 @@ import inspect
 from zExceptions import Forbidden
 from ZPublisher.HTTPRequest import HTTPRequest
 
+_default = []
+
 def _buildFacade(spec, docstring):
     """Build a facade function, matching the decorated method in signature.
     
-    Note that defaults are replaced by None, and _curried will reconstruct
+    Note that defaults are replaced by _default, and _curried will reconstruct
     these to preserve mutable defaults.
     
     """
-    args = inspect.formatargspec(formatvalue=lambda v: '=None', *spec)
+    args = inspect.formatargspec(formatvalue=lambda v: '=_default', *spec)
     callargs = inspect.formatargspec(formatvalue=lambda v: '', *spec)
     return 'def _facade%s:\n    """%s"""\n    return _curried%s' % (
         args, docstring, callargs)
@@ -46,7 +48,6 @@ def postonly(callable):
         
         if len(args) > r_index:
             request = args[r_index]
-        
         if isinstance(request, HTTPRequest):
             if request.get('REQUEST_METHOD', 'GET').upper() != 'POST':
                 raise Forbidden('Request must be POST')
@@ -55,7 +56,7 @@ def postonly(callable):
         if defaults is not None:
             args, kwparams = args[:arglen], args[arglen:]
             for positional, (key, default) in zip(kwparams, defaults):
-                if positional is None:
+                if positional is _default:
                     kw[key] = default
                 else:
                     kw[key] = positional
@@ -63,7 +64,7 @@ def postonly(callable):
         return callable(*args, **kw)
     
     # Build a facade, with a reference to our locally-scoped _curried
-    facade_globs = dict(_curried=_curried)
+    facade_globs = dict(_curried=_curried, _default=_default)
     exec _buildFacade(spec, callable.__doc__) in facade_globs
     return facade_globs['_facade']
 
