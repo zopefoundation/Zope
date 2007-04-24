@@ -17,7 +17,7 @@ from zope.publisher.interfaces.browser import IBrowserRequest
 
 _default = []
 
-def _buildFacade(spec, docstring):
+def _buildFacade(name, spec, docstring):
     """Build a facade function, matching the decorated method in signature.
     
     Note that defaults are replaced by _default, and _curried will reconstruct
@@ -26,8 +26,8 @@ def _buildFacade(spec, docstring):
     """
     args = inspect.formatargspec(formatvalue=lambda v: '=_default', *spec)
     callargs = inspect.formatargspec(formatvalue=lambda v: '', *spec)
-    return 'def _facade%s:\n    """%s"""\n    return _curried%s' % (
-        args, docstring, callargs)
+    return 'def %s%s:\n    """%s"""\n    return _curried%s' % (
+        name, args, docstring, callargs)
 
 def requestmethod(*methods):
     """Create a request method specific decorator"""
@@ -70,9 +70,10 @@ def requestmethod(*methods):
             return callable(*args, **kw)
         
         # Build a facade, with a reference to our locally-scoped _curried
+        name = callable.__name__
         facade_globs = dict(_curried=_curried, _default=_default)
-        exec _buildFacade(spec, callable.__doc__) in facade_globs
-        return facade_globs['_facade']
+        exec _buildFacade(name, spec, callable.__doc__) in facade_globs
+        return facade_globs[name]
     
     return _methodtest
 

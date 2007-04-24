@@ -57,12 +57,16 @@ original closely, and keyword parameter defaults must be preserved::
   >>> import inspect
   >>> mutabledefault = dict()
   >>> @requestmethod('POST')
-  ... def foo(bar, baz=mutabledefault, egg=mutabledefault, REQUEST=None, **kw):
+  ... def foo(bar, baz=mutabledefault, egg=mutabledefault, REQUEST=None, *args):
   ...     return bar, baz is mutabledefault, egg is None, REQUEST
   >>> inspect.getargspec(foo)[:3]
-  (['bar', 'baz', 'egg', 'REQUEST'], None, 'kw')
+  (['bar', 'baz', 'egg', 'REQUEST'], 'args', None)
   >>> foo('spam', egg=None)
   ('spam', True, True, None)
+  >>> foo(monty='python')
+  Traceback (most recent call last):
+  ...
+  TypeError: foo() got an unexpected keyword argument 'monty'
   
 The requestmethod decorator factory can be used for any request method, simply
 pass in the desired request method::
