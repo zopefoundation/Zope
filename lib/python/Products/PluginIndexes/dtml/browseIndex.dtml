@@ -27,7 +27,16 @@ The index "&dtml-getId;" contains <dtml-var items fmt=collection-length thousand
       <tr>
         <td>
           <dtml-if "meta_type in ('DateIndex',)">
-            <dtml-var "DateTime(_['sequence-key'])">
+            <dtml-comment><!--
+              DateIndexes store dates packed into an integer, unpack
+              into year, month, day, hour and minute, no seconds and UTC.
+            --></dtml-comment>
+            <dtml-var "DateTime((_['sequence-key'] / 535680),
+                                (_['sequence-key'] / 44640 ) % 12,
+                                (_['sequence-key'] / 1440  ) % 31,
+                                (_['sequence-key'] / 60    ) % 24,
+                                (_['sequence-key']         ) % 60,
+                                0, 'UTC')">
           <dtml-else>
             &dtml-sequence-key; 
           </dtml-if>
