@@ -8,6 +8,9 @@ Zope Changes
 
    Bugs fixed
 
+      - Collector #2316: correctly unpack DateTimeIndex dates when browsing the
+        index.
+
       - Collector #1866: a 304 HTTP status should not have a content length.
   
       - Collector #2300: delimit *all* HTTP Response headers with CRLF.
