@@ -8,6 +8,9 @@ Zope Changes
 
    Bugs fixed
 
+      - Collector #2318: Allow override of zopectl's control socket in
+        zope.conf
+
       - Collector #2316: correctly unpack DateTimeIndex dates when browsing the
         index.
 

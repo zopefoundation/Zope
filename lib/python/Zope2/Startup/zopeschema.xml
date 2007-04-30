@@ -187,6 +187,17 @@
        </description>
     </key>
 
+    <key name="socket-name" datatype="existing-dirpath" required="no">
+      <description>
+        Command-line option: -s or --socket-name.
+
+        The pathname of the Unix domain socket used for communication
+        between zopectl.py and zdrun.py.  The default is relative to the
+        current directory in which zdctl.py and zdrun.py are started.
+        You want to specify an absolute pathname here.
+      </description>
+    </key>
+
   </sectiontype>
 
   <sectiontype name="zodb_db" datatype=".ZopeDatabase"
