@@ -26,6 +26,7 @@ Options:
 -l/--logfile -- log file to be read by logtail command
 -u/--user -- run the daemon manager program as this user (or numeric id)
 -m/--umask -- provide octal umask for files created by the managed process
+-s/--socket-name -- socket between zopectl and zdrun
 action [arguments] -- see below
 
 Actions are commands like "start", "stop" and "status".  If -i is
@@ -45,6 +46,7 @@ import Zope2.Startup
 from zdaemon.zdctl import ZDCmd
 from zdaemon.zdoptions import ZDOptions
 from ZConfig.components.logger.handlers import FileHandlerFactory
+from ZConfig.datatypes import existing_dirpath
 
 
 def string_list(arg):
@@ -86,6 +88,8 @@ class ZopeCtlOptions(ZDOptions):
         self.add("user", "runner.user", "u:", "user=")
         self.add("prompt", "runner.prompt", default="zopectl>")
         self.add("umask", "runner.umask", "m:", "umask=")
+        self.add("sockname", "runner.socket_name", "s:", "socket-name=",
+                 existing_dirpath, default=None)
 
     def realize(self, *args, **kw):
         ZDOptions.realize(self, *args, **kw)
@@ -116,7 +120,10 @@ class ZopeCtlOptions(ZDOptions):
             self.program = config.runner.program
         else:
             self.program = [os.path.join(self.directory, "bin", "runzope")]
-        self.sockname = os.path.join(self.clienthome, "zopectlsock")
+        if config.runner and config.runner.socket_name:
+            self.sockname = config.runner.socket_name
+        else:
+            self.sockname = os.path.join(self.clienthome, "zopectlsock")
         self.python = sys.executable
         self.zdrun = os.path.join(os.path.dirname(zdaemon.__file__),
                                   "zdrun.py")

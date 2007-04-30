@@ -7,6 +7,9 @@ Zope Changes
   Zope 2.10.4 (unreleased)
 
     Bugs fixed
+
+      - Collector #2318: Allow override of zopectl's control socket in
+        zope.conf
     
   Zope 2.10.3 (2007/03/25)
 
