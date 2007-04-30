@@ -1,4 +1,5 @@
 import os
+import site
 import sys
 import time
 import logging
@@ -178,6 +179,7 @@ def root_handler(config):
 
     # Add directories to the pythonpath; always insert instancehome/lib/python
     instancelib = os.path.join(config.instancehome, 'lib', 'python')
+    site.addsitedir(instancelib)
     if instancelib not in config.path:
         config.path.append(instancelib)
     path = config.path[:]
