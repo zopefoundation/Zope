@@ -48,6 +48,9 @@ from zdaemon.zdoptions import ZDOptions
 from ZConfig.components.logger.handlers import FileHandlerFactory
 from ZConfig.datatypes import existing_dirpath
 
+WIN = False
+if sys.platform[:3].lower() == "win":
+    WIN = True
 
 def string_list(arg):
     return arg.split()
@@ -127,6 +130,12 @@ class ZopeCtlOptions(ZDOptions):
         self.python = sys.executable
         self.zdrun = os.path.join(os.path.dirname(zdaemon.__file__),
                                   "zdrun.py")
+        if WIN:
+            # Add the path to the zopeservice.py script, which is needed for
+            # some of the Windows specific commands
+            servicescript = os.path.join(self.directory, 'bin', 'zopeservice.py')
+            self.servicescript = '"%s" %s' % (self.python, servicescript)
+
         self.exitcodes = [0, 2]
         if self.logfile is None and config.eventlog is not None:
             for handler in config.eventlog.handler_factories:
@@ -158,11 +167,59 @@ class ZopeCmd(ZDCmd):
             args = [opt, svalue]
         return args
 
+    if WIN:
+        def get_status(self):
+            # get_status from zdaemon relies on *nix specific socket handling.
+            # We just don't support getting the status and sending actions to
+            # the control server on Windows. This could be extended to ask for
+            # the status of the Windows service though
+            self.zd_up = 0
+            self.zd_pid = 0
+            self.zd_status = None
+            return
+
+        def do_stop(self, arg):
+            # Stop the Windows service
+            program = "%s stop" % self.options.servicescript
+            print program
+            os.system(program)
+
+        def do_restart(self, arg):
+            # Restart the Windows service
+            program = "%s restart" % self.options.servicescript
+            print program
+            os.system(program)
+
+        # Add extra commands to install and remove the Windows service
+
+        def do_install(self, arg):
+            program = "%s install" % self.options.servicescript
+            print program
+            os.system(program)
+
+        def help_install(self):
+            print "install -- Installs Zope as a Windows service."
+
+        def do_remove(self, arg):
+            program = "%s remove" % self.options.servicescript
+            print program
+            os.system(program)
+
+        def help_remove(self):
+            print "remove -- Removes the Zope Windows service."
+
     def do_start(self, arg):
         # signal to Zope that it is being managed
-        #(to indicate it's web-restartable)
+        # (to indicate it's web-restartable)
         os.putenv('ZMANAGED', '1')
-        ZDCmd.do_start(self, arg)
+        if WIN:
+            # On Windows start the service, this fails with a reasonable
+            # error message as long as the service is not installed
+            program = "%s start" % self.options.servicescript
+            print program
+            os.system(program)
+        else:
+            ZDCmd.do_start(self, arg)
 
     def get_startup_cmd(self, python, more):
         cmdline = ( '%s -c "from Zope2 import configure;'
@@ -179,12 +236,17 @@ class ZopeCmd(ZDCmd):
         os.system(cmdline)
 
     def do_foreground(self, arg):
-        self.options.program[1:1] = ["-X", "debug-mode=on"]
-        try:
+        if WIN:
+            # Adding arguments to the program is not supported on Windows
+            # and the runzope script doesn't put you in debug-mode either
             ZDCmd.do_foreground(self, arg)
-        finally:
-            self.options.program.remove("-X")
-            self.options.program.remove("debug-mode=on")
+        else:
+            self.options.program[1:1] = ["-X", "debug-mode=on"]
+            try:
+                ZDCmd.do_foreground(self, arg)
+            finally:
+                self.options.program.remove("-X")
+                self.options.program.remove("debug-mode=on")
 
     def help_debug(self):
         print "debug -- run the Zope debugger to inspect your database"
@@ -262,18 +324,22 @@ class ZopeCmd(ZDCmd):
         args.insert(0, self.options.python)
 
         print 'Running tests via: %s' % ' '.join(args)
-        pid = os.fork()
-        if pid == 0:  # child
-            os.execv(self.options.python, args)
-        
-        # Parent process running (execv replaces process in child
-        while True:
-            try:
-                os.waitpid(pid, 0)
-            except (OSError, KeyboardInterrupt):
-                continue
-            else:
-                break
+        if WIN:
+            # Windows process handling is quite different
+            os.system(' '.join(args))
+        else:
+            pid = os.fork()
+            if pid == 0:  # child
+                os.execv(self.options.python, args)
+
+            # Parent process running (execv replaces process in child
+            while True:
+                try:
+                    os.waitpid(pid, 0)
+                except (OSError, KeyboardInterrupt):
+                    continue
+                else:
+                    break
 
     def help_test(self):
         print "test [args]+ -- run unit / functional tests."
@@ -317,7 +383,8 @@ if __name__ == "__main__":
     #   If it is not reset, 'os.wait[pid]' can non-deterministically fail.
     #   Thus, use a way such that "SIGCHLD" is definitely reset in children.
     #signal.signal(signal.SIGCHLD, signal.SIG_IGN)
-    if os.uname()[0] != 'Darwin':
+    if not WIN and os.uname()[0] != 'Darwin':
+        # On Windows the os.uname method does not exist.
         # On Mac OS X, setting up a signal handler causes waitpid to
         # raise EINTR, which is not preventable via the Python signal
         # handler API and can't be dealt with properly as we can't pass

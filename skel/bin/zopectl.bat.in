@@ -1,0 +1,8 @@
+@set ZOPE_HOME=<<ZOPE_HOME>>
+@set INSTANCE_HOME=<<INSTANCE_HOME>>
+@set PYTHON=%ZOPE_HOME%\bin\python.exe
+@set SOFTWARE_HOME=%ZOPE_HOME%\lib\python
+@set CONFIG_FILE=%INSTANCE_HOME%\etc\zope.conf
+@set PYTHONPATH=%SOFTWARE_HOME%
+@set ZDCTL=%SOFTWARE_HOME%\Zope2\Startup\zopectl.py
+"%PYTHON%" "%ZDCTL%" -C "%CONFIG_FILE%" %1 %2 %3 %4 %5 %6 %7

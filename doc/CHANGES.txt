@@ -51,6 +51,12 @@ Zope Changes
 
     Features added
 
+      - Support for using zopectl on Windows has been added. All commands are
+        supported and there are two Windows specific ones: install and remove,
+        which install or remove the Windows service. The start, stop and
+        restart commands handle the Windows service. In order to use them, you
+        need to call 'bin\zopectl install' once.
+
       - ZCatalog result objects (catalog brains) now have an interface,
         ZCatalog.interfaces.ICatalogBrain.
 
