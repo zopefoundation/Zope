@@ -759,6 +759,38 @@ class RequestTests( unittest.TestCase ):
         request = HTTPRequest(s, env, None)
         self.assertEqual(request.method, 'POST')
 
+    def testTrustedProxies(self):
+        TEST_ENVIRON = {
+            'REQUEST_METHOD': 'GET',
+            'SERVER_NAME': 'localhost',
+            'SERVER_PORT': '80',
+            'REMOTE_ADDR': '127.0.0.1',
+            'HTTP_X_FORWARDED_FOR': '10.1.20.30, 192.168.1.100',
+            }
+        from StringIO import StringIO
+        from ZPublisher.HTTPRequest import HTTPRequest, trusted_proxies
+        s = StringIO('')
+
+        env = TEST_ENVIRON.copy()
+        request = HTTPRequest(s, env, None)
+        self.assertEqual(request.getClientAddr(), '127.0.0.1')
+
+        trusted_proxies.append('127.0.0.1')
+        request = HTTPRequest(s, env, None)
+        self.assertEqual(request.getClientAddr(), '192.168.1.100')
+
+        trusted_proxies[0] = '192.168.1.100' 
+        env = TEST_ENVIRON.copy()
+        env['REMOTE_ADDR'] = '192.168.1.100'
+        request = HTTPRequest(s, env, None)
+        self.assertEqual(request.getClientAddr(), '10.1.20.30')
+
+        env = TEST_ENVIRON.copy()
+        del env['REMOTE_ADDR']
+        request = HTTPRequest(s, env, None)
+        self.assertEqual(request.getClientAddr(), '')
+
+
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(AuthCredentialsTests, 'test'))
