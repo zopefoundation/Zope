@@ -272,7 +272,15 @@ class HTTPRequest(BaseRequest):
             if environ.has_key('HTTP_X_FORWARDED_FOR') and self._client_addr in trusted_proxies:
                 # REMOTE_ADDR is one of our trusted local proxies. Not really very remote at all.
                 # The proxy can tell us the IP of the real remote client in the forwarded-for header
-                self._client_addr = environ['HTTP_X_FORWARDED_FOR'].split(',')[-1].strip()
+                # Skip the proxy-address itself though
+                forwarded_for = [
+                    e.strip()
+                    for e in environ['HTTP_X_FORWARDED_FOR'].split(',')]
+                forwarded_for.reverse()
+                for entry in forwarded_for:
+                    if entry not in trusted_proxies:
+                        self._client_addr = entry
+                        break
         else:
             self._client_addr = ''
 

@@ -8,6 +8,9 @@ Zope Changes
 
     Bugs fixed
 
+      - Collector #2321: Skip trusted proxies when extracting the client IP
+        address from the request.
+
       - Collector #2318: Allow override of zopectl's control socket in
         zope.conf
 
