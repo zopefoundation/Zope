@@ -1,7 +1,7 @@
 import unittest
 from urllib import quote_plus
 
-class AuthCredentialsTestsa( unittest.TestCase ):
+class AuthCredentialsTests( unittest.TestCase ):
 
     def _getTargetClass(self):
         from ZPublisher.HTTPRequest import HTTPRequest
@@ -761,7 +761,7 @@ class RequestTests( unittest.TestCase ):
 
 def test_suite():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(AuthCredentialsTestsa, 'test'))
+    suite.addTest(unittest.makeSuite(AuthCredentialsTests, 'test'))
     suite.addTest(unittest.makeSuite(RecordTests, 'test'))
     suite.addTest(unittest.makeSuite(ProcessInputsTests, 'test'))
     suite.addTest(unittest.makeSuite(RequestTests, 'test'))
