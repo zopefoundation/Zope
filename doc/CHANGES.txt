@@ -10,6 +10,13 @@ Zope Changes
 
       - Collector #2318: Allow override of zopectl's control socket in
         zope.conf
+
+      - Collector #2316: correctly unpack DateTimeIndex dates when browsing the
+        index.
+
+      - Collector #1866: a 304 HTTP status should not have a content length.
+  
+      - Collector #2300: delimit *all* HTTP Response headers with CRLF.
     
   Zope 2.10.3 (2007/03/25)
 
