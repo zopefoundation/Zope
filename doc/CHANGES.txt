@@ -97,6 +97,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #2320: HTTPResponse setHeader lowercased keys but getHeader
+        did not, causing lookups of 'Content-Type' to fail
+
       - Collector #2307: ObjectCopiedEvent not dispatched to sublocations.
 
       - Collector #2298: webdav.Resource.COPY and webdav.Resource.MOVE did

@@ -247,8 +247,7 @@ class HTTPResponse(BaseResponse):
         Sets an HTTP return header "name" with value "value", clearing
         the previous value set for the header, if one exists. If the
         literal flag is true, the case of the header name is preserved,
-        otherwise word-capitalization will be performed on the header
-        name on output.'''
+        otherwise the header name will be lowercased.'''
 
         name = str(name)
         value = str(value)
@@ -259,6 +258,18 @@ class HTTPResponse(BaseResponse):
             return
         name = literal and name or key
         self.headers[name] = value
+
+    def getHeader(self, name, literal=0):
+        '''\
+        Get a header value
+
+        Returns the value associated with a HTTP return header, or
+        "None" if no such header has been set in the response
+        yet. If the literal flag is true, the case of the header name is
+        preserved, otherwise the header name will be lowercased.'''
+        key = name.lower()
+        name = literal and name or key
+        return self.headers.get(name, None)
 
     def addHeader(self, name, value):
         '''\
