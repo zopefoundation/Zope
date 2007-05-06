@@ -77,6 +77,23 @@ class HTTPResponseTests(unittest.TestCase):
         response.appendHeader('XXX', 'foo')
         self.assertEqual(response.headers.get('xxx'), 'bar,\n\tfoo')
 
+    def test_setHeader(self):
+        response = self._makeOne()
+        response.setHeader('foo', 'bar')
+        self.assertEqual(response.getHeader('foo'), 'bar')
+        self.assertEqual(response.headers.get('foo'), 'bar')
+        response.setHeader('SPAM', 'eggs')
+        self.assertEqual(response.getHeader('spam'), 'eggs')
+        self.assertEqual(response.getHeader('SPAM'), 'eggs')
+
+    def test_setHeader_literal(self):
+        response = self._makeOne()
+        response.setHeader('foo', 'bar', literal=True)
+        self.assertEqual(response.getHeader('foo'), 'bar')
+        response.setHeader('SPAM', 'eggs', literal=True)
+        self.assertEqual(response.getHeader('SPAM', literal=True), 'eggs')
+        self.assertEqual(response.getHeader('spam'), None)
+
     def test_setStatus_ResourceLockedError(self):
         response = self._makeOne()
         from webdav.Lockable import ResourceLockedError
