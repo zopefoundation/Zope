@@ -230,6 +230,27 @@ class ZopeCmd(ZDCmd):
     def help_adduser(self):
         print "adduser <name> <password> -- add a Zope management user"
 
+    def do_whisk(self, arg):
+        from setuptools.command.easy_install import main
+        import site
+        args = filter(None, arg.split(' '))
+        instance_home = os.getenv('INSTANCE_HOME')
+        software_home = os.getenv('SOFTWARE_HOME')
+        instance_lib = os.path.join(instance_home, 'lib', 'python')
+        args = ['--multi-version', '--install-dir', instance_lib] + args
+        sys.path.insert(0, software_home)
+        sys.path.insert(0, instance_lib)
+        site.addsitedir(instance_lib)
+        try:
+            main(args)
+        except:
+            import traceback
+            traceback.print_exc()
+
+    def help_whisk(self):
+        print ("whisk <packagename> -- add an egg, and its dependencies, "
+                                     " to $INSTANCE_HOME/lib/python")
+
     def do_test(self, arg):
         args = filter(None, arg.split(' '))
 
