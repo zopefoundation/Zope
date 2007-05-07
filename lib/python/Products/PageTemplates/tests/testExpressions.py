@@ -2,50 +2,51 @@
 
 import unittest
 
-import zope.component
-import zope.component.testing
-from zope.traversing.adapters import DefaultTraversable
+from zope.component.testing import PlacelessSetup
 
-from Products.PageTemplates import Expressions
-from Products.PageTemplates.DeferExpr import LazyWrapper
-from Products.PageTemplates.DeferExpr import DeferWrapper
-from Products.PageTemplates.unicodeconflictresolver import \
-     DefaultUnicodeEncodingConflictResolver, \
-     StrictUnicodeEncodingConflictResolver, \
-     ReplacingUnicodeEncodingConflictResolver, \
-     IgnoringUnicodeEncodingConflictResolver
-from Products.PageTemplates.interfaces import IUnicodeEncodingConflictResolver
-
-
-class Dummy:
-    __allow_access_to_unprotected_subobjects__ = 1
-    def __call__(self):
-        return 'dummy'
-
-class DummyDocumentTemplate:
-    __allow_access_to_unprotected_subobjects__ = 1
-    isDocTemp = True
-    def __call__(self, client=None, REQUEST={}, RESPONSE=None, **kw):
-        return 'dummy'
-
-class ExpressionTests(zope.component.testing.PlacelessSetup, unittest.TestCase):
+class EngineTestsBase(PlacelessSetup):
 
     def setUp(self):
-        super(ExpressionTests, self).setUp()
-        zope.component.provideAdapter(DefaultTraversable, (None,))
+        from zope.component import provideAdapter
+        from zope.traversing.adapters import DefaultTraversable
+        PlacelessSetup.setUp(self)
+        provideAdapter(DefaultTraversable, (None,))
 
-        self.e = e = Expressions.getEngine()
-        self.ec = e.getContext(
+    def tearDown(self):
+        PlacelessSetup.tearDown(self)
+
+    def _makeEngine(self):
+        # subclasses must override
+        raise NotImplementedError
+
+    def _makeContext(self, bindings=None):
+
+        class Dummy:
+            __allow_access_to_unprotected_subobjects__ = 1
+            def __call__(self):
+                return 'dummy'
+
+        class DummyDocumentTemplate:
+            __allow_access_to_unprotected_subobjects__ = 1
+            isDocTemp = True
+            def __call__(self, client=None, REQUEST={}, RESPONSE=None, **kw):
+                return 'dummy'
+
+        _DEFAULT_BINDINGS = dict(
             one = 1,
             d = {'one': 1, 'b': 'b', '': 'blank', '_': 'under'},
             blank = '',
             dummy = Dummy(),
-            dummy2 = DummyDocumentTemplate()
+            dummy2 = DummyDocumentTemplate(),
             )
 
-    def testCompile(self):
-        '''Test expression compilation'''
-        e = self.e
+        if bindings is None:
+            bindings = _DEFAULT_BINDINGS
+        return self._makeEngine().getContext(bindings)
+
+    def test_compile(self):
+        #Test expression compilation
+        e = self._makeEngine()
         for p in ('x', 'x/y', 'x/y/z'):
             e.compile(p)
         e.compile('path:a|b|c/d/e')
@@ -55,98 +56,181 @@ class ExpressionTests(zope.component.testing.PlacelessSetup, unittest.TestCase):
         e.compile('python: 2 + 2')
         e.compile('python: 2 \n+\n 2\n')
 
-    def testSimpleEval(self):
-        '''Test simple expression evaluation'''
-        ec = self.ec
-        assert ec.evaluate('one') == 1
-        assert ec.evaluate('d/one') == 1
-        assert ec.evaluate('d/b') == 'b'
+    def test_evaluate_simple_path_binding(self):
+        ec = self._makeContext()
+        self.assertEqual(ec.evaluate('one'), 1)
 
-    def testRenderedEval(self):
-        ec = self.ec
+    def test_evaluate_simple_path_dict_key_int_value(self):
+        ec = self._makeContext()
+        self.assertEqual(ec.evaluate('d/one'), 1)
+
+    def test_evaluate_simple_path_dict_key_string_value(self):
+        ec = self._makeContext()
+        self.assertEqual(ec.evaluate('d/b'), 'b')
+
+    def test_evaluate_with_render_simple_callable(self):
+        ec = self._makeContext()
         self.assertEquals(ec.evaluate('dummy'), 'dummy')
 
+    def test_evaluate_with_render_DTML_template(self):
         # http://www.zope.org/Collectors/Zope/2232
         # DTML templates could not be called from a Page Template
         # due to an ImportError
+        ec = self._makeContext()
         self.assertEquals(ec.evaluate('dummy2'), 'dummy')
 
-    def testEval1(self):
-        '''Test advanced expression evaluation 1'''
-        ec = self.ec
-        assert ec.evaluate('x | nothing') is None
+    def test_evaluate_alternative_first_missing(self):
+        ec = self._makeContext()
+        self.failUnless(ec.evaluate('x | nothing') is None)
+
+    def DONT_test_evaluate_with_empty_element(self):
         # empty path elements aren't supported anymore, for the lack
         # of a use case
-        #assert ec.evaluate('d/') == 'blank'
-        assert ec.evaluate('d/_') == 'under'
-        #assert ec.evaluate('d/ | nothing') == 'blank'
-        assert ec.evaluate('d/?blank') == 'blank'
+        ec = self._makeContext()
+        self.assertEqual(ec.evaluate('d/'), 'blank')
 
-    def testHybrid(self):
-        '''Test hybrid path expressions'''
-        ec = self.ec
-        assert ec.evaluate('x | python:1+1') == 2
-        assert ec.evaluate('x | python:int') == int
-        assert ec.evaluate('x | string:x') == 'x'
-        assert ec.evaluate('x | string:$one') == '1'
-        assert ec.evaluate('x | not:exists:x')
+    def DONT_test_evaluate_with_empty_element_and_alternative(self):
+        # empty path elements aren't supported anymore, for the lack
+        # of a use case
+        ec = self._makeContext()
+        self.assertEqual(ec.evaluate('d/ | nothing'), 'blank')
 
-    def testIteratorZRPythonExpr(self):
-        '''Test access to iterator functions from Python expressions'''
-        ec = self.ec
+    def test_evaluate_dict_key_as_underscore(self):
+        ec = self._makeContext()
+        self.assertEqual(ec.evaluate('d/_'), 'under')
+
+    def test_evaluate_dict_with_key_from_expansion(self):
+        ec = self._makeContext()
+        self.assertEqual(ec.evaluate('d/?blank'), 'blank')
+
+    def test_hybrid_with_python_expression_int_value(self):
+        ec = self._makeContext()
+        self.assertEqual(ec.evaluate('x | python:1+1'), 2)
+
+    def test_hybrid_with_python_expression_type_value_not_called(self):
+        ec = self._makeContext()
+        self.assertEqual(ec.evaluate('x | python:int'), int)
+
+    def test_hybrid_with_string_expression(self):
+        ec = self._makeContext()
+        self.assertEqual(ec.evaluate('x | string:x'), 'x')
+
+    def test_hybrid_with_string_expression_and_expansion(self):
+        ec = self._makeContext()
+        self.assertEqual(ec.evaluate('x | string:$one'), '1')
+
+    def test_hybrid_with_compound_expression_int_value(self):
+        ec = self._makeContext()
+        self.failUnless(ec.evaluate('x | not:exists:x'))
+
+    def test_access_iterator_from_python_expression(self):
+        ec = self._makeContext()
         ec.beginScope()
         ec.setRepeat('loop', "python:[1,2,3]")
-        assert ec.evaluate("python:repeat['loop'].odd()")
+        self.failUnless(ec.evaluate("python:repeat['loop'].odd()"))
         ec.endScope()
 
-    def testWrappers(self):
-        """Test if defer and lazy are returning their wrappers
-        """
-        ec = self.ec
+    def test_defer_expression_returns_wrapper(self):
+        from Products.PageTemplates.DeferExpr import DeferWrapper
+        ec = self._makeContext()
         defer = ec.evaluate('defer: b')
-        lazy = ec.evaluate('lazy: b')
         self.failUnless(isinstance(defer, DeferWrapper))
+
+    def test_lazy_expression_returns_wrapper(self):
+        from Products.PageTemplates.DeferExpr import LazyWrapper
+        ec = self._makeContext()
+        lazy = ec.evaluate('lazy: b')
         self.failUnless(isinstance(lazy, LazyWrapper))
 
-    def test_empty_ZopePathExpr(self):
-        """Test empty path expressions.
-        """
-        ec = self.ec
+    def test_empty_path_expression_explicit(self):
+        ec = self._makeContext()
         self.assertEquals(ec.evaluate('path:'), None)
+
+    def test_empty_path_expression_explicit_with_trailing_whitespace(self):
+        ec = self._makeContext()
         self.assertEquals(ec.evaluate('path:  '), None)
+
+    def test_empty_path_expression_implicit(self):
+        ec = self._makeContext()
         self.assertEquals(ec.evaluate(''), None)
+
+    def test_empty_path_expression_implicit_with_trailing_whitespace(self):
+        ec = self._makeContext()
         self.assertEquals(ec.evaluate('  \n'), None)
 
+class UntrustedEngineTests(EngineTestsBase, unittest.TestCase):
 
-class UnicodeEncodingConflictResolverTests(zope.component.testing.PlacelessSetup, unittest.TestCase):
+    def _makeEngine(self):
+        from Products.PageTemplates.Expressions import createZopeEngine
+        return createZopeEngine()
+
+    # XXX:  add tests that show security checks being enforced
+
+class TrustedEngineTests(EngineTestsBase, unittest.TestCase):
+
+    def _makeEngine(self):
+        from Products.PageTemplates.Expressions import createTrustedZopeEngine
+        return createTrustedZopeEngine()
+
+    # XXX:  add tests that show security checks *not* being enforced
+
+class UnicodeEncodingConflictResolverTests(PlacelessSetup, unittest.TestCase):
 
     def testDefaultResolver(self):
-        zope.component.provideUtility(DefaultUnicodeEncodingConflictResolver, 
-                                      IUnicodeEncodingConflictResolver)
-        resolver = zope.component.getUtility(IUnicodeEncodingConflictResolver)
-        self.assertRaises(UnicodeDecodeError, resolver.resolve, None, 'äüö', None)
-        
+        from zope.component import getUtility
+        from zope.component import provideUtility
+        from Products.PageTemplates.interfaces \
+            import IUnicodeEncodingConflictResolver
+        from Products.PageTemplates.unicodeconflictresolver \
+            import DefaultUnicodeEncodingConflictResolver
+        provideUtility(DefaultUnicodeEncodingConflictResolver, 
+                       IUnicodeEncodingConflictResolver)
+        resolver = getUtility(IUnicodeEncodingConflictResolver)
+        self.assertRaises(UnicodeDecodeError,
+                          resolver.resolve, None, 'äüö', None)
+
     def testStrictResolver(self):
-        zope.component.provideUtility(StrictUnicodeEncodingConflictResolver, 
+        from zope.component import getUtility
+        from zope.component import provideUtility
+        from Products.PageTemplates.interfaces \
+            import IUnicodeEncodingConflictResolver
+        from Products.PageTemplates.unicodeconflictresolver \
+            import StrictUnicodeEncodingConflictResolver
+        provideUtility(StrictUnicodeEncodingConflictResolver, 
                                       IUnicodeEncodingConflictResolver)
-        resolver = zope.component.getUtility(IUnicodeEncodingConflictResolver)
-        self.assertRaises(UnicodeDecodeError, resolver.resolve, None, 'äüö', None)
-        
+        resolver = getUtility(IUnicodeEncodingConflictResolver)
+        self.assertRaises(UnicodeDecodeError,
+                          resolver.resolve, None, 'äüö', None)
+
     def testIgnoringResolver(self):
-        zope.component.provideUtility(IgnoringUnicodeEncodingConflictResolver, 
+        from zope.component import getUtility
+        from zope.component import provideUtility
+        from Products.PageTemplates.interfaces \
+            import IUnicodeEncodingConflictResolver
+        from Products.PageTemplates.unicodeconflictresolver \
+            import IgnoringUnicodeEncodingConflictResolver
+        provideUtility(IgnoringUnicodeEncodingConflictResolver, 
                                       IUnicodeEncodingConflictResolver)
-        resolver = zope.component.getUtility(IUnicodeEncodingConflictResolver)
+        resolver = getUtility(IUnicodeEncodingConflictResolver)
         self.assertEqual(resolver.resolve(None, 'äüö', None), '')
 
     def testReplacingResolver(self):
-        zope.component.provideUtility(ReplacingUnicodeEncodingConflictResolver, 
+        from zope.component import getUtility
+        from zope.component import provideUtility
+        from Products.PageTemplates.interfaces \
+            import IUnicodeEncodingConflictResolver
+        from Products.PageTemplates.unicodeconflictresolver \
+            import  ReplacingUnicodeEncodingConflictResolver
+        provideUtility(ReplacingUnicodeEncodingConflictResolver, 
                                       IUnicodeEncodingConflictResolver)
-        resolver = zope.component.getUtility(IUnicodeEncodingConflictResolver)
-        self.assertEqual(resolver.resolve(None, 'äüö', None), u'\ufffd\ufffd\ufffd')
+        resolver = getUtility(IUnicodeEncodingConflictResolver)
+        self.assertEqual(resolver.resolve(None, 'äüö', None),
+                         u'\ufffd\ufffd\ufffd')
 
 def test_suite():
     return unittest.TestSuite((
-         unittest.makeSuite(ExpressionTests),
+         unittest.makeSuite(UntrustedEngineTests),
+         unittest.makeSuite(TrustedEngineTests),
          unittest.makeSuite(UnicodeEncodingConflictResolverTests)
     ))
 
