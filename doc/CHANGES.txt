@@ -8,6 +8,8 @@ Zope Changes
 
     Bugs fixed
 
+      - Collector #2260: fixed Examples.zexp
+
       - Collector #2320: HTTPResponse setHeader lowercased keys but getHeader
         did not, causing lookups of 'Content-Type' to fail
 
