@@ -8,6 +8,8 @@ Zope Changes
 
    Bugs fixed
 
+      - Collector #2260: fixed a bug in Examples.zexp
+
       - Collector #2321: Skip trusted proxies when extracting the client IP
         address from the request.
 
