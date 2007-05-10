@@ -97,6 +97,8 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #2260: fixed bug in Examples package
+
       - Collector #2320: HTTPResponse setHeader lowercased keys but getHeader
         did not, causing lookups of 'Content-Type' to fail
 
