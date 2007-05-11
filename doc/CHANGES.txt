@@ -97,6 +97,8 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #2304: fixed markup issue in ptEdit.zpt
+
       - Collector #2260: fixed bug in Examples package
 
       - Collector #2320: HTTPResponse setHeader lowercased keys but getHeader
