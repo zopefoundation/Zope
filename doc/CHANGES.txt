@@ -97,6 +97,11 @@ Zope Changes
 
     Bugs Fixed
 
+      - Relaxed requirements for context of
+        Products.Five.browser.pagetemplatefile.ZopeTwoPageTemplateFile,
+        to reduce barriers for testing renderability of views which use them.
+        (http://www.zope.org/Collectors/Zope/2327)
+
       - Collector #2304: fixed markup issue in ptEdit.zpt
 
       - Collector #2260: fixed bug in Examples package
