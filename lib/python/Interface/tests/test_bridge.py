@@ -14,14 +14,13 @@
 
 $Id$
 """
-
-import os, sys
-if __name__ == '__main__':
-    execfile(os.path.join(sys.path[0], 'framework.py'))
+import unittest
+from zope.testing.doctest import DocFileSuite
 
 def test_suite():
-    from Testing.ZopeTestCase import ZopeDocFileSuite
-    return ZopeDocFileSuite('bridge.txt', package="Interface.tests")
+    return unittest.TestSuite([
+        DocFileSuite('bridge.txt', package='Interface.tests'),
+        ])
 
 if __name__ == '__main__':
-    framework()
+    unittest.main(defaultTest='test_suite')
