@@ -12,13 +12,13 @@
 ##############################################################################
 """Wrapper to integrate reStructuredText into Zope
 
-This implementation requires docutils 0.3.4+ from http://docutils.sf.net/
+This implementation requires docutils 0.4.0+ from http://docutils.sf.net/
 """
 
 try:
     import docutils
 except ImportError:
-    raise ImportError, 'Please install docutils 0.3.3+ from http://docutils.sourceforge.net/#download.'
+    raise ImportError, 'Please install docutils 0.4.0+ from http://docutils.sourceforge.net/#download.'
 
 version = docutils.__version__.split('.')
 if not (version >= ['0', '4', '0'] or  version >= ['0', '4']):
