@@ -8,6 +8,13 @@ Zope Changes
 
    Bugs fixed
 
+      - Fixed ZClass test breakage due to non-pickleability of
+        'zope.interface.Implements' 
+        
+        N.B.: updated 'zope.interface' package to Zope 3.2 branch;
+              should be pinned to a tag or a release before releasing
+              2.9.8).
+
       - Collector #2260: fixed a bug in Examples.zexp
 
       - Collector #2321: Skip trusted proxies when extracting the client IP
