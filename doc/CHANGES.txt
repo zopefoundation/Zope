@@ -8,6 +8,8 @@ Zope Changes
 
     Bugs fixed
 
+      - Collector #2307: ObjectCopiedEvent not dispatched to sublocations.
+
       - Collector #2304: fixed markup issue in ptEdit.zpt
 
       - Collector #2260: fixed Examples.zexp
