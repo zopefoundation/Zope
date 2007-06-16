@@ -97,6 +97,11 @@ Zope Changes
 
     Bugs Fixed
 
+      - When Zope properties were set via DAV in the "null" namespace
+        (xmlns="") a subsequent PROPFIND for the property would cause the 
+        XML representation for that property to show a namespace of 
+        xmlns="None".  Fixed within OFS.PropertySheets.dav__propstat.
+
       - Relaxed requirements for context of
         Products.Five.browser.pagetemplatefile.ZopeTwoPageTemplateFile,
         to reduce barriers for testing renderability of views which use them.

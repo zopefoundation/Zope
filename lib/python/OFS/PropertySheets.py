@@ -363,7 +363,10 @@ class PropertySheet(Traversable, Persistent, Implicit):
         xml_id=self.xml_namespace()
         propdict=self._propdict()
         if not propdict.has_key(name):
-            prop='<n:%s xmlns:n="%s"/>\n' % (name, xml_id)
+            if xml_id:
+                prop='<n:%s xmlns:n="%s"/>\n' % (name, xml_id)
+            else:
+                prop='<%s xmlns=""/>\n' % name
             code='404 Not Found'
             if not result.has_key(code):
                 result[code]=[prop]
@@ -388,8 +391,12 @@ class PropertySheet(Traversable, Persistent, Implicit):
                 attrs=''
                 if not hasattr(self, 'dav__%s' % name):
                     value = xml_escape(value)
-            prop='<n:%s%s xmlns:n="%s">%s</n:%s>\n' % (
-                name, attrs, xml_id, value, name)
+            if xml_id:
+                prop='<n:%s%s xmlns:n="%s">%s</n:%s>\n' % (
+                    name, attrs, xml_id, value, name)
+            else:
+                prop ='<%s%s xmlns="">%s</%s>\n' % (
+                    name, attrs, value, name)
             code='200 OK'
             if not result.has_key(code):
                 result[code]=[prop]
