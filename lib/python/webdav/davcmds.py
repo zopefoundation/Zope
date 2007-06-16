@@ -437,14 +437,18 @@ class Unlock:
         islockable = IWriteLock.providedBy(obj) or \
                      WriteLockInterface.isImplementedBy(obj)
 
-        if islockable and obj.wl_hasLock(token):
-            method = getattr(obj, 'wl_delLock')
-            vld = getSecurityManager().validate(None,obj,'wl_delLock',method)
-            if vld:
-                obj.wl_delLock(token)
+        if islockable:
+            if obj.wl_hasLock(token):
+                method = getattr(obj, 'wl_delLock')
+                vld = getSecurityManager().validate(None,obj,
+                                                    'wl_delLock',method)
+                if vld:
+                    obj.wl_delLock(token)
+                else:
+                    errmsg = "403 Forbidden"
             else:
-                errmsg = "403 Forbidden"
-        elif not islockable:
+                errmsg = '400 Bad Request'
+        else:
             # Only set an error message if the command is being applied
             # to a top level object.  Otherwise, we're descending a tree
             # which may contain many objects that don't implement locking,
@@ -476,7 +480,7 @@ class Unlock:
                     uri = urljoin(url, absattr(ob.getId()))
                     self.apply(ob, token, uri, result, top=0)
         if not top:
-            return result
+            return result.getvalue()
         if result.getvalue():
             # One or more subitems probably failed, so close the multistatus
             # element and clear out all succesful unlocks
