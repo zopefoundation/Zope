@@ -110,7 +110,7 @@ Command line used: litmus -k http://localhost:8080/ admin admin
       29. notowner_lock......... SKIPPED
       30. unlock................ SKIPPED
 
-  34. notowner_modify....... WARNING: DELETE failed with 404 not 423
+  34. notowner_modify....... WARNING: DELETE failed with 412 not 423
                              FAIL (MOVE of locked resource should fail)
 
       Unknown reasons (not yet investigated).
