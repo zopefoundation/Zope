@@ -17,7 +17,6 @@ class TestLockItem(unittest.TestCase):
 
         verifyClass(ILockItem, LockItem)
 
-
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(TestLockItem),

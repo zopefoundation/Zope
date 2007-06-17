@@ -152,5 +152,9 @@ InitializeClass(LockableItem)
 def wl_isLocked(ob):
     """ Returns true if the object is locked, returns 0 if the object
     is not locked or does not implement the WriteLockInterface """
+    return wl_isLockable(ob) and ob.wl_isLocked()
+
+def wl_isLockable(ob):
     return (IWriteLock.providedBy(ob) or
-            WriteLockInterface.isImplementedBy(ob)) and ob.wl_isLocked()
+            WriteLockInterface.isImplementedBy(ob))
+    

@@ -56,6 +56,26 @@ class TestResource(unittest.TestCase):
         from webdav.common import Locked
         self.assertRaises(Locked, inst.MOVE, request, response)
 
+    def test_dav__simpleifhandler_fail_cond_put_unlocked(self):
+        """
+        DAV: litmus' cond_put_unlocked test (#22) exposed a bug in
+        webdav.Resource.dav__simpleifhandler.  If the resource is not
+        locked, and a DAV request contains an If header, no token can
+        possibly match and we must return a 412 Precondition Failed
+        instead of 204 No Content.
+        """
+        ifhdr = 'If: (<locktoken:foo>)'
+        request = DummyRequest({'URL':'http://example.com/foo/PUT'},
+                               {'If':ifhdr})
+        response = DummyResponse()
+        inst = self._makeOne()
+        from zope.interface import directlyProvides
+        from webdav.interfaces import IWriteLock
+        directlyProvides(inst, IWriteLock)
+        from webdav.common import PreconditionFailed
+        self.assertRaises(PreconditionFailed, inst.dav__simpleifhandler,
+                          request, response)
+
     def test_dav__simpleifhandler_cond_put_corrupt_token(self):
         """
         DAV: litmus' cond_put_corrupt_token test (#18) exposed a bug

@@ -113,11 +113,26 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
     def dav__simpleifhandler(self, request, response, method='PUT',
                              col=0, url=None, refresh=0):
         ifhdr = request.get_header('If', None)
-        if Lockable.wl_isLocked(self) and (not ifhdr):
-            raise Locked, "Resource is locked."
 
-        if not ifhdr: return None
-        if not Lockable.wl_isLocked(self): return None
+        lockable = Lockable.wl_isLockable(self)
+        if not lockable:
+            # degenerate case, we shouldnt have even called this method.
+            return None
+
+        locked = self.wl_isLocked()
+
+        if locked and (not ifhdr):
+            raise Locked('Resource is locked.')
+
+        if not ifhdr:
+            return None
+
+        if (not locked):
+            # we have an if header but the resource isn't locked, we
+            # can shortcut checking the tags in the if header; no token
+            # can possibly match
+            raise PreconditionFailed(
+                'Resource not locked but If header specified')
 
         # Since we're a simple if handler, and since some clients don't
         # pass in the port information in the resource part of an If

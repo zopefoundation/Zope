@@ -97,6 +97,12 @@ Zope Changes
 
     Bugs Fixed
 
+      - DAV: litmus' cond_put_unlocked test (#22) exposed a bug in
+        webdav.Resource.dav__simpleifhandler.  If the resource is not
+        locked, and a DAV request contains an If header, no token can
+        possibly match and we must return a 412 Precondition Failed
+        instead of 204 No Content.
+
       - DAV: litmus' cond_put_corrupt_token test (#18) exposed a bug
         in webdav.Resource.dav__simpleifhandler.  If the resource is
         locked at all, and a DAV request contains an If header, and
