@@ -107,6 +107,19 @@ class Node:
     def attrs(self):
         return [Node(n) for n in self.node.attributes.values()]
 
+    def remove_namespace_attrs(self):
+        # remove all attributes which start with "xmlns:" or
+        # are equal to "xmlns"
+        if self.node.hasAttributes():
+            toremove = []
+            for name, value in self.node.attributes.items():
+                if name.startswith('xmlns:'):
+                    toremove.append(name)
+                if name == 'xmlns':
+                    toremove.append(name)
+            for name in toremove:
+                self.node.removeAttribute(name)
+
     def del_attr(self, name):
         # NOTE: zope calls this after remapping to remove namespace
         #       zope passes attributes like xmlns:n

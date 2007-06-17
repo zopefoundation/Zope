@@ -219,8 +219,7 @@ class PropPatch:
                     else:
                         # xml property
                         attrs={}
-                        prop.remap({ns:'n'})
-                        prop.del_attr('xmlns:n')
+                        prop.remove_namespace_attrs()
                         for attr in prop.attrs():
                             attrs[attr.qname()]=attr.value()
                         md={'__xml_attrs__':attrs}
