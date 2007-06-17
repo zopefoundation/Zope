@@ -127,13 +127,6 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
         if not ifhdr:
             return None
 
-        if (not locked):
-            # we have an if header but the resource isn't locked, we
-            # can shortcut checking the tags in the if header; no token
-            # can possibly match
-            raise PreconditionFailed(
-                'Resource not locked but If header specified')
-
         # Since we're a simple if handler, and since some clients don't
         # pass in the port information in the resource part of an If
         # header, we're only going to worry about if the paths compare
@@ -172,12 +165,12 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
                     for token in wehave: self.wl_getLock(token).refresh()
                 found = 1; break
 
-        if resourcetagged and found:
+        if resourcetagged and (not found):
+            raise PreconditionFailed, 'Condition failed.'
+        elif resourcetagged and found:
             return 1
-        if (not resourcetagged) and (not found):
-            raise Locked('Resource locked and no recognized lock tokens in '
-                         'If header')
-        raise PreconditionFailed('Condition failed')
+        else:
+            return 0
 
     # WebDAV class 1 support
     security.declareProtected(View, 'HEAD')
