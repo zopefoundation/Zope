@@ -35,6 +35,13 @@ class TestResource(unittest.TestCase):
         verifyClass(IWriteLock, Resource)
 
     def test_MOVE_self_locked(self):
+        """
+        DAV: litmus"notowner_modify" tests warn during a MOVE request
+        because we returned "412 Precondition Failed" instead of "423
+        Locked" when the resource attempting to be moved was itself
+        locked.  Fixed by changing Resource.Resource.MOVE to raise the
+        correct error.
+        """
         app = self.app
         request = DummyRequest({}, {})
         response = DummyResponse()
@@ -48,6 +55,27 @@ class TestResource(unittest.TestCase):
         directlyProvides(inst, IWriteLock)
         from webdav.common import Locked
         self.assertRaises(Locked, inst.MOVE, request, response)
+
+    def test_dav__simpleifhandler_cond_put_corrupt_token(self):
+        """
+        DAV: litmus' cond_put_corrupt_token test (#18) exposed a bug
+        in webdav.Resource.dav__simpleifhandler.  If the resource is
+        locked at all, and a DAV request contains an If header, and
+        none of the lock tokens present in the header match a lock on
+        the resource, we need to return a 423 Locked instead of 204 No
+        Content.
+        """
+        ifhdr = 'If: (<locktoken:foo>) (Not <DAV:no-lock>)'
+        request = DummyRequest({'URL':'http://example.com/foo/PUT'},
+                               {'If':ifhdr})
+        response = DummyResponse()
+        inst = self._makeOne()
+        inst._dav_writelocks = {'a':DummyLock()}
+        from zope.interface import directlyProvides
+        from webdav.interfaces import IWriteLock
+        directlyProvides(inst, IWriteLock)
+        from webdav.common import Locked
+        self.assertRaises(Locked, inst.dav__simpleifhandler, request, response)
 
 class DummyLock:
     def isValid(self):
@@ -76,6 +104,9 @@ class DummyRequest:
 
     def get(self, name, default):
         return self.form.get(name, default)
+
+    def __getitem__(self, name):
+        return self.form[name]
 
     def physicalPathFromURL(self, *arg):
         return ['']

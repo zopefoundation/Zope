@@ -97,6 +97,13 @@ Zope Changes
 
     Bugs Fixed
 
+      - DAV: litmus' cond_put_corrupt_token test (#18) exposed a bug
+        in webdav.Resource.dav__simpleifhandler.  If the resource is
+        locked at all, and a DAV request contains an If header, and
+        none of the lock tokens present in the header match a lock on
+        the resource, we need to return a 423 Locked instead of 204 No
+        Content.
+
       - DAV: litmus "notowner_modify" tests warn during a MOVE request
         because we returned "412 Precondition Failed" instead of "423
         Locked" when the resource attempting to be moved was itself

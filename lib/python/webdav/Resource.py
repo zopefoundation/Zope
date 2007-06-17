@@ -157,13 +157,12 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
                     for token in wehave: self.wl_getLock(token).refresh()
                 found = 1; break
 
-        if resourcetagged and (not found):
-            raise PreconditionFailed, 'Condition failed.'
-        elif resourcetagged and found:
+        if resourcetagged and found:
             return 1
-        else:
-            return 0
-
+        if (not resourcetagged) and (not found):
+            raise Locked('Resource locked and no recognized lock tokens in '
+                         'If header')
+        raise PreconditionFailed('Condition failed')
 
     # WebDAV class 1 support
     security.declareProtected(View, 'HEAD')
