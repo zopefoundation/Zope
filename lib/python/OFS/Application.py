@@ -633,6 +633,23 @@ def install_products(app):
         install_product(app, product_dir, product_name, meta_types,
                         folder_permissions, raise_exc=debug_mode)
 
+    # Delayed install of products-as-packages
+    for module_, init_func in getattr(Products, '_packages_to_initialize', []):
+        try:
+            product = App.Product.initializeProduct(module_, 
+                                                    module_.__name__, 
+                                                    module_.__path__[0],
+                                                    app)
+
+            product.package_name = module_.__name__
+
+            if init_func is not None:
+                newContext = ProductContext(product, app, module_)
+                init_func(newContext)
+        finally:
+            transaction.commit()
+    Products._packages_to_initialize = []
+
     Products.meta_types=Products.meta_types+tuple(meta_types)
     InitializeClass(Folder.Folder)
 
