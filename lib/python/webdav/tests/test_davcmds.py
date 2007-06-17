@@ -21,19 +21,6 @@ class TestUnlock(unittest.TestCase):
                 return self.token == token
         return Lockable(locktoken)
 
-    def test_apply_nontop_resource_returns_string(self):
-        """ When top=0 in unlock constructor, prior to Zope 2.11, the
-        unlock.apply method would return a StringIO.  This was bogus
-        because a StringIO cannot be used as a response body via the
-        standard RESPONSE.setBody() command.  Only strings or objects
-        with an asHTML method may be passed into setBody()."""
-
-        inst = self._makeOne()
-        lockable = self._makeLockable(None)
-        result = inst.apply(lockable, 'bogus',
-                            url='http://example.com/foo/UNLOCK', top=0)
-        self.failUnless(isinstance(result, str))
-
     def test_apply_bogus_lock(self):
         """
         When attempting to unlock a resource with a token that the
@@ -52,6 +39,7 @@ class TestUnlock(unittest.TestCase):
         lockable = self._makeLockable(None)
         result = inst.apply(lockable, 'bogus',
                             url='http://example.com/foo/UNLOCK', top=0)
+        result = result.getvalue()
         self.assertNotEqual(
             result.find('<d:status>HTTP/1.1 400 Bad Request</d:status>'),
             -1)

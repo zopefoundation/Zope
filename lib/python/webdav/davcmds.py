@@ -479,7 +479,7 @@ class Unlock:
                     uri = urljoin(url, absattr(ob.getId()))
                     self.apply(ob, token, uri, result, top=0)
         if not top:
-            return result.getvalue()
+            return result
         if result.getvalue():
             # One or more subitems probably failed, so close the multistatus
             # element and clear out all succesful unlocks
