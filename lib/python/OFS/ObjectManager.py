@@ -705,6 +705,7 @@ class ObjectManager(
                 out=out+((k,stat),)
         return marshal.dumps(out)
 
+    security.declareProtected(access_contents_information, 'manage_hasId')
     def manage_hasId(self, REQUEST):
         """ check if the folder has an object with REQUEST['id'] """
 

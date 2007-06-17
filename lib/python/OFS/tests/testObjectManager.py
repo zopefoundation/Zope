@@ -411,6 +411,16 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
             self.failUnless(filename.endswith('.zexp') or
                             filename.endswith('.xml'))
 
+    def test_hasId(self):
+        om = self._makeOne()
+        request={'id' : 'test'}
+        self.assertRaises(KeyError, om.manage_hasId, request)
+
+        si = SimpleItem('test')
+        om._setObject('test', si)
+        om.manage_hasId(request)
+
+
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest( unittest.makeSuite( ObjectManagerTests ) )

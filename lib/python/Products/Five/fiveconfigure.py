@@ -201,34 +201,24 @@ def registerClass(_context, class_, meta_type, permission, addview=None,
 def _registerPackage(module_, init_func=None):
     """Registers the given python package as a Zope 2 style product
     """
-
+    
     if not hasattr(module_, '__path__'):
         raise ValueError("Must be a package and the " \
                          "package must be filesystem based")
     
-    app = Zope2.app()
-    try:
-        product = initializeProduct(module_, 
-                                    module_.__name__, 
-                                    module_.__path__[0],
-                                    app)
-
-        product.package_name = module_.__name__
-
-        if init_func is not None:
-            newContext = ProductContext(product, app, module_)
-            init_func(newContext)
-
-        registered_packages = getattr(Products, '_registered_packages', None)
-        if registered_packages is None:
-            registered_packages = Products._registered_packages = []
-        registered_packages.append(module_)
-    finally:
-        try:
-            import transaction
-            transaction.commit()
-        finally:
-            app._p_jar.close()
+    registered_packages = getattr(Products, '_registered_packages', None)
+    if registered_packages is None:
+        registered_packages = Products._registered_packages = []
+    registered_packages.append(module_)
+    
+    # Delay the actual setup until the usual product loading time in
+    # OFS.Application. Otherwise, we may get database write errors in
+    # ZEO, when there's no connection with which to write an entry to
+    # Control_Panel. We would also get multiple calls to initialize().
+    to_initialize = getattr(Products, '_packages_to_initialize', None)
+    if to_initialize is None:
+        to_initialize = Products._packages_to_initialize = []
+    to_initialize.append((module_, init_func,))
 
 def registerPackage(_context, package, initialize=None):
     """ZCML directive function for registering a python package product
