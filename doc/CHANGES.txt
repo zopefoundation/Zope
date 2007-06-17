@@ -97,6 +97,12 @@ Zope Changes
 
     Bugs Fixed
 
+      - DAV: litmus "notowner_modify" tests warn during a MOVE request
+        because we returned "412 Precondition Failed" instead of "423
+        Locked" when the resource attempting to be moved was itself
+        locked.  Fixed by changing Resource.Resource.MOVE to raise the
+        correct error.
+
       - DAV: litmus props tests 19: propvalnspace and 20:
         propwformed were failing because Zope did not strip off the
         xmlns: attribute attached to XML property values.  We now strip

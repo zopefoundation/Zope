@@ -456,8 +456,7 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
         except 'Not Found':
             raise Conflict, 'The resource %s must exist.' % parent_path
         except:
-            t, v, tb=sys.exc_info()
-            raise t, v
+            raise
         if hasattr(parent, '__null_resource__'):
             raise Conflict, 'The resource %s must exist.' % parent_path
         existing=hasattr(aq_base(parent), name)
@@ -511,8 +510,7 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
                 if not itrue:
                     raise PreconditionFailed, 'Condition failed.'
             else:
-                raise PreconditionFailed, 'Source is locked and no '\
-                      'condition was passed in.'
+                raise Locked('Source is locked and no condition was passed in')
 
         orig_container = aq_parent(aq_inner(self))
         orig_id = self.getId()
