@@ -414,7 +414,7 @@ class BaseRequest:
         entry_name = ''
         try:
             # We build parents in the wrong order, so we
-            # need to make sure we reverse it when we're doe.
+            # need to make sure we reverse it when we're done.
             while 1:
                 bpth = getattr(object, '__before_publishing_traverse__', None)
                 if bpth is not None:
