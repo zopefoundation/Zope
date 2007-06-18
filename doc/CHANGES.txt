@@ -97,6 +97,13 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #1441: WebDAV compatibility with Windows Web Folders
+        restored by adding a configuration variable that controls the
+        sending of the non-standard MS-Author-Via and Public
+        headers. Thanks for PatrickD for the the hard work coming up
+        with an initial patch.  
+        (http://zope.org/Collectors/Zope/1441)
+
       - DAV: litmus "notowner_modify" tests warn during a MOVE request
         because we returned "412 Precondition Failed" instead of "423
         Locked" when the resource attempting to be moved was itself
@@ -118,13 +125,14 @@ Zope Changes
         for further rationale.
 
       - When Zope properties were set via DAV in the "null" namespace
-        (xmlns="") a subsequent PROPFIND for the property would cause the 
-        XML representation for that property to show a namespace of 
+        (xmlns="") a subsequent PROPFIND for the property would cause the
+        XML representation for that property to show a namespace of
         xmlns="None".  Fixed within OFS.PropertySheets.dav__propstat.
 
       - Relaxed requirements for context of
         Products.Five.browser.pagetemplatefile.ZopeTwoPageTemplateFile,
-        to reduce barriers for testing renderability of views which use them.
+        to reduce barriers for testing renderability of views which
+        use them.
         (http://www.zope.org/Collectors/Zope/2327)
 
       - Collector #2304: fixed markup issue in ptEdit.zpt
@@ -1296,7 +1304,8 @@ Zope Changes
        x86_64 systems
 
      - ZReST: the charset used in the rendered HTML was not set to the
-       corresponding output_encoding property of the ZReST instance. In addition
+       corresponding output_encoding property of the ZReST instance. In
+addition
        changing the encodings through the Properties tab did not re-render
        the HTML.
 

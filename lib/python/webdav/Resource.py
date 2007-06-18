@@ -18,8 +18,10 @@ $Id$
 import mimetypes
 import sys
 import warnings
+import re
 from urllib import unquote
 
+import webdav
 import ExtensionClass
 from Globals import InitializeClass
 from AccessControl import getSecurityManager
@@ -54,6 +56,7 @@ from OFS.event import ObjectClonedEvent
 from OFS.event import ObjectWillBeMovedEvent
 import OFS.subscribers
 
+ms_dav_agent = re.compile("Microsoft.*Internet Publishing.*")
 
 class Resource(ExtensionClass.Base, Lockable.LockableItem):
 
@@ -220,6 +223,15 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
         RESPONSE.setHeader('Allow', ', '.join(self.__http_methods__))
         RESPONSE.setHeader('Content-Length', 0)
         RESPONSE.setHeader('DAV', '1,2', 1)
+
+        # Microsoft Web Folders compatibility, only enabled if
+        # User-Agent matches.
+        if ms_dav_agent.match(REQUEST.get_header('User-Agent', '')):
+            if webdav.enable_ms_public_header:
+                RESPONSE.setHeader('Public', ', '.join(self.__http_methods__))
+            if webdav.enable_ms_author_via:
+                RESPONSE.setHeader('MS-Author-Via', 'DAV')
+
         RESPONSE.setStatus(200)
         return RESPONSE
 
