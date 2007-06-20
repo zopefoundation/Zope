@@ -224,7 +224,7 @@ class TestCopySupportSublocation(EventTest):
         self.subfolder.manage_clone(self.folder.myfolder, 'myfolder')
         self.assertEqual(eventlog.called(),
             [('myfolder', 'ObjectCopiedEvent'),
-             #('mydoc', 'ObjectCopiedEvent'),
+             ('mydoc', 'ObjectCopiedEvent'),
              ('myfolder', 'ObjectWillBeAddedEvent'),
              ('mydoc', 'ObjectWillBeAddedEvent'),
              ('myfolder', 'ObjectAddedEvent'),
@@ -240,7 +240,7 @@ class TestCopySupportSublocation(EventTest):
         self.subfolder.manage_pasteObjects(cb)
         self.assertEqual(eventlog.called(),
             [('myfolder', 'ObjectCopiedEvent'),
-             #('mydoc', 'ObjectCopiedEvent'),
+             ('mydoc', 'ObjectCopiedEvent'),
              ('myfolder', 'ObjectWillBeAddedEvent'),
              ('mydoc', 'ObjectWillBeAddedEvent'),
              ('myfolder', 'ObjectAddedEvent'),
@@ -282,7 +282,7 @@ class TestCopySupportSublocation(EventTest):
         self.folder.myfolder.COPY(req, req.RESPONSE)
         self.assertEqual(eventlog.called(),
             [('myfolder', 'ObjectCopiedEvent'),
-             #('mydoc', 'ObjectCopiedEvent'),
+             ('mydoc', 'ObjectCopiedEvent'),
              ('myfolder', 'ObjectWillBeAddedEvent'),
              ('mydoc', 'ObjectWillBeAddedEvent'),
              ('myfolder', 'ObjectAddedEvent'),

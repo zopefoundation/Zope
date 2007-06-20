@@ -8,6 +8,8 @@ Zope Changes
 
    Bugs fixed
 
+      - Collector #2307: ObjectCopiedEvent not dispatched to sublocations.
+
       - Fixed ZClass test breakage due to non-pickleability of
         'zope.interface.Implements' 
         

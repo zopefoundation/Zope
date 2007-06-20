@@ -125,6 +125,13 @@ def dispatchObjectClonedEvent(ob, event):
     if OFS.interfaces.IObjectManager.providedBy(ob):
         dispatchToSublocations(ob, event)
 
+def dispatchObjectCopiedEvent(ob, event):
+    """Multi-subscriber for IItem + IObjectCopiedEvent.
+    """
+    # Dispatch to sublocations
+    if OFS.interfaces.IObjectManager.providedBy(ob):
+        dispatchToSublocations(ob, event)
+
 
 def callManageAfterAdd(ob, item, container):
     """Compatibility subscriber for manage_afterAdd.
