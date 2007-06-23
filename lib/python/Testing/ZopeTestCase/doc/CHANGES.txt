@@ -16,6 +16,7 @@
   Thanks to Whit Morris.
 - Added hasPackage and installPackage functions for dealing with "products"
   registered via five:registerPackage.
+- Provide access to test globs in doctest setUp and tearDown.
 
 0.9.8 (Zope 2.8 edition)
 - Renamed 'doctest' package to 'zopedoctest' because of name-shadowing
