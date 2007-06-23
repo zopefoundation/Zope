@@ -1,6 +1,9 @@
 0.9.10 (Zope 2.11 edition)
 - Switched to Zope3 interfaces.
 - Removed broken profiler support.
+- Added hasPackage and installPackage functions for dealing with "products"
+  registered via five:registerPackage.
+- Provide access to test globs in doctest setUp and tearDown.
 
 0.9.9 (Zope 2.11 edition)
 - transaction.commit(1) is deprecated in favor of transaction.savepoint(1).
@@ -18,8 +21,6 @@
   publish_module(). Thanks to Andreas Zeidler.
 - Fixed doctestsuite factory to copy layers from test_class to the suite.
   Thanks to Whit Morris.
-- Added hasPackage and installPackage functions for dealing with "products"
-  registered via five:registerPackage.
 
 0.9.8 (Zope 2.8 edition)
 - Renamed 'doctest' package to 'zopedoctest' because of name-shadowing
