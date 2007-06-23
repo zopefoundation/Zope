@@ -128,6 +128,9 @@ class TestPythonScriptNoAq(PythonScriptTestBase):
         res = self._newPS('return 1 * 5 + 4 / 2 - 6')()
         self.assertEqual(res, 1)
 
+    def testCollector2295(self):
+        res = self._newPS('if False:\n  pass\n#hi')
+
     def testReduce(self):
         res = self._newPS('return reduce(lambda x, y: x + y, [1,3,5,7])')()
         self.assertEqual(res, 16)
