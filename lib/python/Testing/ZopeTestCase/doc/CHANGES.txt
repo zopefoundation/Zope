@@ -14,6 +14,7 @@
   publish_module(). Thanks to Andreas Zeidler.
 - Fixed doctestsuite factory to copy layers from test_class to the suite.
   Thanks to Whit Morris.
+- Provide access to test globs in doctest setUp and tearDown.
 
 0.9.8 (Zope 2.8 edition)
 - Renamed 'doctest' package to 'zopedoctest' because of name-shadowing

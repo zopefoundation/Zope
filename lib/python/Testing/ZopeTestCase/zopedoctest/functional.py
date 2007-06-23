@@ -261,6 +261,7 @@ class ZopeSuiteFactory:
             if hasattr(test_instance, 'portal'):
                 test.globs['portal'] = test_instance.portal
                 test.globs['portal_name'] = test_instance.portal.getId()
+            test_instance.globs = test.globs
             if kwsetUp is not None:
                 kwsetUp(test_instance)
 

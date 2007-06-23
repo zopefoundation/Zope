@@ -29,8 +29,12 @@ def setUp(self):
 
     >>> 'object' in folder.objectIds()
     True
+
+    >>> foo
+    1
     '''
     self.folder.manage_addFolder('object', '')
+    self.globs['foo'] = 1
 
 
 def test_suite():
