@@ -74,6 +74,11 @@ def testInstallPackage():
       True
       >>> ZopeTestCase.close(app)
 
+    hasPackage still returns True
+
+      >>> ZopeTestCase.hasPackage('testpackage')
+      True
+
     Clean up
 
       >>> import testpackage

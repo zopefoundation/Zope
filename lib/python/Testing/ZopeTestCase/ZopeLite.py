@@ -168,7 +168,7 @@ def installProduct(name, quiet=0):
 
 def hasPackage(name):
     '''Checks if a package has been registered with five:registerPackage.'''
-    return name in [m.__name__ for m, f in Products._packages_to_initialize]
+    return name in [m.__name__ for m in getattr(Products, '_registered_packages', [])]
 
 def installPackage(name, quiet=0):
     '''Installs a registered Python package like a Zope product.'''
