@@ -38,6 +38,9 @@ def setUp(self):
     Content-Type: text/plain
     <BLANKLINE>
     index
+
+    >>> foo
+    1
     '''
     self.folder.addDTMLDocument('index_html', file='index')
 
@@ -54,6 +57,8 @@ def setUp(self):
 <dtml-var sequence-item>: <dtml-var "REQUEST.cookies[_['sequence-item']]">
 </dtml-in>'''
     self.folder.addDTMLMethod('show_cookies', file=show_cookies)
+
+    self.globs['foo'] = 1
 
 
 def test_suite():

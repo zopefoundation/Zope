@@ -11,6 +11,7 @@
 - Added placeless.py for Z3-style setup. Thanks to Whit Morriss.
 - Fixed functional.http() to only pass the request body (no headers) to
   publish_module(). Thanks to Andreas Zeidler.
+- Provide access to test globs in doctest setUp and tearDown.
 
 0.9.8 (Zope 2.8 edition)
 - Renamed 'doctest' package to 'zopedoctest' because of name-shadowing
