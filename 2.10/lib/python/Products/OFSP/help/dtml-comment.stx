@@ -1,0 +1,37 @@
+comment: Comments DTML
+
+  The comment tag lets you document your DTML with comments. You can
+  also use it to temporarily disable DTML tags by commenting them out.
+
+  Syntax
+
+    'comment' tag syntax::
+
+      <dtml-comment>
+      </dtml-comment>
+
+    The 'comment' tag is a block tag. The contents of the block are
+    not executed, nor are they inserted into the DTML output.
+
+  Examples
+
+    Documenting DTML::
+
+      <dtml-comment>
+        This content is not executed and does not appear in the
+        output.
+      </dtml-comment>
+
+    Commenting out DTML::
+
+      <dtml-comment>
+        This DTML is disabled and will not be executed.
+        <dtml-call someMethod>
+      </dtml-comment>
+
+
+
+
+
+
+

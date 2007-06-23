@@ -1,0 +1,10 @@
+Zope Factory: Product creation facility.
+
+  Description
+  
+    Zope Factories insert objects into the product add list.
+
+    Typically Factories are used to place ZClasses in the product add
+    list. 
+        
+

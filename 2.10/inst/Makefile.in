@@ -1,0 +1,139 @@
+# Zope2 build and install Makefile.
+
+# We do as much as possible in Python in order to avoid needing to
+# learn autoconf or some other awful thing. ;-)
+
+NAME=Zope
+MAJOR_VERSION=<<ZOPE_MAJOR_VERSION>>
+MINOR_VERSION=<<ZOPE_MINOR_VERSION>>
+RELEASE_TAG=<<VERSION_RELEASE_TAG>>
+PACKAGE_NAME=${NAME}-${MAJOR_VERSION}.${MINOR_VERSION}-${RELEASE_TAG}
+
+PYTHON="<<PYTHON>>"
+TMPDIR=/tmp
+PREFIX=<<PREFIX>>
+BASE_DIR=<<BASE_DIR>>
+BUILD_BASE=<<BUILD_BASE>>
+DISTUTILS_OPTS=<<DISTUTILS_OPTS>>
+INSTALL_FLAGS=<<INSTALL_FLAGS>>
+TESTOPTS=-v
+BUILD_FLAGS=--build-base="${BUILD_BASE}" \
+            --build-lib="${BUILD_BASE}/build-lib" \
+            --build-scripts="${BUILD_BASE}/build-scripts"\
+            --build-temp="${BUILD_BASE}/build-temp"
+
+RM=rm -f
+RMRF=rm -rf
+FIND=find
+XARGS=xargs
+CD=cd
+LN=ln -sfn
+CP=cp
+TAR=tar
+MKDIR=mkdir -p
+
+.PHONY : clean install instance untestinst testinst build unbuild
+.PHONY : default
+
+# default:     The default step (invoked when make is called without a target)
+default: build
+	@echo
+	@echo Zope built.  Next, do \'make install\' \(or \'make inplace\',
+	@echo followed by \'make instance\' to run a Zope instance directly
+	@echo from the build directory\).
+
+# build:       Do whatever 'setup.py build' implies
+build:
+	${PYTHON} "${BASE_DIR}/setup.py" \
+           ${DISTUTILS_OPTS} build ${BUILD_FLAGS}
+
+# unbuild:     Remove the build directory (undo the make build step)
+unbuild:
+	${RMRF} ${BUILD_BASE}
+
+# install:     Install a software home.
+install: build version_txt
+	${PYTHON} "${BASE_DIR}/setup.py" ${DISTUTILS_OPTS} install \
+	   --home="${PREFIX}" ${BUILD_FLAGS} ${INSTALL_FLAGS}
+	[ -f ${PREFIX}/bin/python ] || ${LN} ${PYTHON} ${PREFIX}/bin/python
+	@echo
+	@echo Zope binaries installed successfully.
+	@echo Now run \'${PREFIX}/bin/mkzopeinstance.py\'
+
+# inplace:     Install a software home into to the source directory.
+#
+# Note: We used to run 'build_ext -i' for 'inplace', but that was
+# suboptimal because it had a tendency to try to rebuild all of the
+# (possibly  already-built) extensions that might be built during a
+# previous 'make' step.  built_ext doesn't understand '--build-base'
+# and friends so we can't stop it from doing this easily.  So instead,
+# we rely on the stock install step and name the prefix as the current
+# directory.  This is a little less efficient than just building the
+# extensions because it also compiles bytecode, but it's more intuitive and
+# less expensive in the common case than letting distutils
+# potentially rebuild the binaries when we've done that already.
+inplace: PREFIX=${BASE_DIR}
+inplace: install
+
+# test:        Do an inplace build and run the Zope test suite.
+test: inplace
+	${PYTHON} "${BASE_DIR}/test.py" ${TESTOPTS}
+
+# instance:    Do an inplace build and create an instance home in the resulting
+#              software home.
+instance: build version_txt
+	${PYTHON} "${BASE_DIR}/utilities/mkzopeinstance.py" ${MKZ_FLAGS}
+
+# testinst:    Perform an inplace build and create an instance home in the
+#              resulting software home without asking questions.  Useful when
+#              performing automated testing.
+testinst: MKZ_FLAGS=--user=admin:admin --dir="${BASE_DIR}"
+testinst: instance
+
+# uninstance:  Remove the instance files made by testinstance (w/ prejudice)
+uninstance:
+	${RMRF} "${BASE_DIR}/bin"
+	${RMRF} "${BASE_DIR}/etc"
+	${RMRF} "${BASE_DIR}/import"
+	${RMRF} "${BASE_DIR}/log"
+	${RMRF} "${BASE_DIR}/var"
+	${RMRF} "${BASE_DIR}/Products"
+
+# clean:       Delete the build files and any binaries/bytecode files in
+#              the source directory for good measure.
+clean: unbuild
+	${FIND} "${BASE_DIR}" \
+         -name '*.py[co]' -o -name '*.so' -o -name '*.o' | ${XARGS} ${RM}
+	${RM} "$(BASE_DIR)/lib/python/version.txt"
+	${RMRF} build
+
+# version_txt: create a version file in lib/python/version.txt
+version_txt:
+	printf "Zope ${MAJOR_VERSION}.${MINOR_VERSION}-${RELEASE_TAG}" >\
+          "${BASE_DIR}/lib/python/Zope2/version.txt"
+
+sdist: clobber sdist_tgz
+
+# sdist_tgz:   Create a tgz archive file as a source distribution.
+#
+sdist_tgz: version_txt
+	${FIND} . -type f -exec chmod a+r {} \; 
+	${FIND} . -type d -exec chmod a+rx {} \; 
+	${MKDIR} ${TMPDIR}
+	${CD} ${TMPDIR} && ${LN} ${BASE_DIR} ${PACKAGE_NAME} && \
+          ${TAR} czfh ${BASE_DIR}/${PACKAGE_NAME}.tgz \
+           --exclude=${PACKAGE_NAME}.tgz\
+           --exclude=.svn\
+           --exclude=makefile \
+           --exclude=build-base \
+           --exclude=*~ \
+           --exclude=.#* ${PACKAGE_NAME} 
+	${RMRF} ${TMPDIR}/${PACKAGE_NAME}
+
+# clobber:     Make the source tree 'pristine' again.
+clobber: clean uninstance
+
+# distclean:     Make the source tree *really* 'pristine' again.
+distclean: clobber
+	${RM} makefile Makefile
+	${RMRF} build-base

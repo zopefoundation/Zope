@@ -1,0 +1,51 @@
+<dtml-var manage_page_header>
+<dtml-var manage_tabs>
+
+<dtml-if nonempty>
+<p class="form-help">
+To save work done in version 
+&dtml-id;<dtml-if Zope-Version><dtml-if "_vars['Zope-Version'] != cookie">
+ <strong>to version 
+<em>&dtml-Zope-Version;</em></strong></dtml-if></dtml-if>,
+click on the &quot;Save&quot; button. To discard work done in
+version &dtml-id;, click on the &quot;Discard&quot; button.
+In either case, enter a comment to document the reason for 
+saving or discarding the version.
+</p>
+
+<form action="&dtml-URL1;" method="post">
+<textarea name=remark rows=10 cols=50></textarea>
+<br />
+<table border="0">
+<tr>
+  <td align="left">
+    <input class="form-element" type="submit" name="save:method" 
+           value="Save" />
+  </td>
+  <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+  <td align="right">
+    <input class="form-element" type="submit" name="discard:method" 
+           value="Discard" />
+  </td>
+</tr>
+</table>
+</form>
+<dtml-else>
+<p class="form-help">
+No unsaved work has been done in this version.
+</p>
+</dtml-if>
+
+<dtml-var manage_page_footer>
+
+
+
+
+
+
+
+
+
+
+
+

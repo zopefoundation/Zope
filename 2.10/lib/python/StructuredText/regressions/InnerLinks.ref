@@ -1,0 +1,11 @@
+<html>
+<head>
+<title>This is the InnerLinkTest</title>
+</head>
+<body>
+<h1>This is the InnerLinkTest</h1>
+<p>  see also <a href="#ref1">[1]</a> and <a href="#ref2">[2]</a></p>
+<p>  <a name="ref1">[1]</a> "Zope Book" by Amos Lattmeier and Michel Pelletier</p>
+<p>  <a name="ref2">[2]</a> "Python Book" by Guido van Rossum</p>
+</body>
+</html>

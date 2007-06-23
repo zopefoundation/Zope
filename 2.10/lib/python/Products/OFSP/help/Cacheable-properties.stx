@@ -1,0 +1,21 @@
+Cacheable objects
+
+  For background information, see the
+  <a href="Caching.stx">description of cache management</a>.
+
+  The 'Cache' tab allows you to associate a cacheable object with a
+  cache manager.  It is only available when at least one cache manager
+  exists somewhere in the current context.
+
+  Use the drop-down box to select which cache manager should be
+  associated with the object.  Some types of objects provide
+  additional caching options.
+
+  DTML methods can be cached according to the DTML namespace.  The entry
+  box on the 'Cache' tab allows you to enter the names
+  (one per line) that Zope should look up in the namespace to create the
+  cache key.  Note, however, that the namespace lookup operation can be
+  expensive, so use this feature with care.  Also note that it is not
+  possible for accelerated HTTP cache managers to make use of this feature.
+
+  (TODO) Python scripts and SQL methods may also provide further options.

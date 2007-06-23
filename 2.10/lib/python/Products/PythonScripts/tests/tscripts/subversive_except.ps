@@ -1,0 +1,7 @@
+# -*- python -*-
+# An attempt to bind an illegal name in an except clause
+try:
+    1/0
+except ZeroDivisionError, __getattr__:
+    pass
+

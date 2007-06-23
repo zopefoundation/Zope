@@ -1,0 +1,18 @@
+Version - Join/Leave: Start/Stop working in a Version.
+  
+  Description
+
+    This view allows you to start and stop working in a private
+    Version.
+
+    When you are working in a version all changes you make will be
+    hidden from other users. You may join and leave a Version as many
+    times as necessary until you are ready to commit the Version or
+    discard it.
+
+  Controls
+
+    'Start Working in' -- Join the Version.
+
+    'Quit Working in' -- Leave the Version.
+    

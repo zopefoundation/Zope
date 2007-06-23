@@ -1,0 +1,118 @@
+<biztalk_1 xmlns="urn:schemas-biztalk-org:biztalk:biztalk_1">
+
+<foo:header xmlns:foo="whomping-willow" plain="guido" quote="&quot;" apostrophe="'" both="&quot;'" lt="&lt;" gt="&gt;" amp="&amp;" foo="">
+	<manifest>
+		<document>
+			<name>sample1</name>
+			<description>a simple invoice</description>
+		</document>
+	</manifest>
+</foo:header>
+
+<body>
+
+<!-- sample1.xml is an example of a simple invoice for a small restaurant supplies order -->
+
+<invoice xmlns="urn:http://schemas.biztalk.org/united_rest_com/yw7sg15x.xml">
+	<header>
+		<invoicenumber>01786</invoicenumber>
+		<invoicedate>2000-03-17</invoicedate>	<!-- March 17th, 2000 -->
+		<orderno>55377</orderno>
+		<orderdate>2000-03-15</orderdate>	<!-- March 15th, 2000 -->
+		<customerpo>GJ03405</customerpo>
+		<shipmethod>DAVE 1</shipmethod>
+		<shipdate>2000-03-17</shipdate>	<!-- March 17th, 2000 -->
+		<customerid>K5211(34)</customerid>
+		<salespersoncode>23</salespersoncode>
+		<taxid>23</taxid>
+	</header>
+	<invoiceto>
+		<name>SHIPWRIGHT RESTAURANTS LIMITED</name>
+		<addressline>125 NORTH SERVICE ROAD W</addressline>
+		<addressline>WESTLAKE ACCESS</addressline>
+		<city>NORTH BAY</city>
+		<postcode>L8B1O5</postcode>
+		<state>ONTARIO</state>
+		<country>CANADA</country>
+	</invoiceto>
+	<shipto>
+		<name />
+		<addressline>ATTN: PAULINE DEGRASSI</addressline>		
+		<city />
+		<postcode />
+		<state />
+		<country />
+	</shipto>
+	<detaillines>
+		<detailline>
+			<quantityshipped>1</quantityshipped>
+			<unitofmeasure>CS</unitofmeasure>
+			<partnumber>DM 5309</partnumber>
+			<partdescription>#1013 12 OZ.MUNICH STEIN</partdescription>
+			<unitprice>37.72</unitprice>
+			<linetotal>37.72</linetotal>
+		</detailline>
+		<detailline>
+			<quantityshipped>6</quantityshipped>
+			<unitofmeasure>DZ</unitofmeasure>
+			<partnumber>ON 6420</partnumber>
+			<partdescription>PROVINCIAL DINNER FORK</partdescription>
+			<unitprice>17.98</unitprice>
+			<linetotal>107.88</linetotal>
+		</detailline>
+		<detailline>
+			<quantityshipped>72</quantityshipped>
+			<unitofmeasure>EA</unitofmeasure>
+			<partnumber>JR20643</partnumber>
+			<partdescription>PLASTIC HANDLED STEAK KNIFE</partdescription>
+			<unitprice>.81</unitprice>
+			<linetotal>58.32</linetotal>
+		</detailline>
+		<detailline>
+			<quantityshipped>6</quantityshipped>
+			<unitofmeasure>DZ</unitofmeasure>
+			<partnumber>ON 6410</partnumber>
+			<partdescription>PROVINCIAL TEASPOONS</partdescription>
+			<unitprice>12.16</unitprice>
+			<linetotal>72.96</linetotal>
+		</detailline>
+		<detailline>
+			<quantityshipped>0</quantityshipped>
+			<unitofmeasure>DZ</unitofmeasure>
+			<partnumber>ON 6411</partnumber>
+			<partdescription>PROVINCIAL RD BOWL SPOON</partdescription>
+			<quantitybackordered>6</quantitybackordered>
+			<unitprice>17.98</unitprice>
+			<linetotal>0.00</linetotal>
+		</detailline>
+		<detailline>
+			<quantityshipped>1</quantityshipped>
+			<unitofmeasure>EA</unitofmeasure>
+			<partnumber>DO 3218</partnumber>
+			<partdescription>34 OZ DUAL DIAL SCALE AM3218</partdescription>
+			<unitprice>70.00</unitprice>
+			<discountpercentage>5.0</discountpercentage>
+			<linetotal>66.50</linetotal>
+		</detailline>
+		<detailline>
+			<quantityshipped>1</quantityshipped>
+			<unitofmeasure>CS</unitofmeasure>
+			<partnumber>DM 195</partnumber>
+			<partdescription>20 OZ.BEER PUB GLASS</partdescription>
+			<unitprice>55.90</unitprice>
+			<linetotal>55.90</linetotal>
+		</detailline>
+	</detaillines>
+	<totals>
+		<subtotal>399.28</subtotal>
+		<discounttotal>3.50</discounttotal>
+		<freighttotal>23.75</freighttotal>
+		<gsttotal>29.61</gsttotal>
+		<provtaxtotal>33.84</provtaxtotal>
+		<othertotal>33.84</othertotal>
+		<invoicetotal>486.48</invoicetotal>
+	</totals>
+</invoice>
+
+</body>
+</biztalk_1>

@@ -1,0 +1,43 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html lang="en">
+  <head><title>&dtml-title_or_id; tables</title></head>
+  <body bgcolor="#FFFFFF" link="#000099" vlink="#555555" alink="#77003B">
+    <dtml-var manage_tabs>
+    
+    <h2>&dtml-title_or_id; tables</h2>
+    
+    <form action="manage_wizard" method="POST">
+      <table cellspacing="2">
+
+        <tr>
+	  <th align="LEFT" valign="TOP">Available tables</th>
+	  <td align="LEFT" valign="TOP">
+             <select name="tables:list" size=9 multiple>
+               <dtml-in table_info>
+                 <option value="&dtml-sequence-key;">
+                   &dtml-sequence-key; &dtml-sequence-item;
+                 </option>
+               </dtml-in>
+             </select>
+          </td>
+	</tr>
+        <tr>
+	  <th align="LEFT" valign="TOP">Statement type</th>
+	  <td align="LEFT" valign="TOP">
+             <select name="statement">
+               <option>SELECT</option>
+               <option>INSERT</option>
+               <option>UPDATE</option>
+             </select>
+          </td>
+	</tr>
+        <tr>
+	  <td></td>
+	  <td><br><input type="SUBMIT" value="Generate SQL"></td>
+	</tr>
+
+      </table>
+    </form>
+
+  </body>
+</html>

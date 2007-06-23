@@ -1,0 +1,34 @@
+ObjectManager - Find: Search Zope.
+
+  Description
+  
+    This view allows you to search for Zope objects.
+
+    To find objects you specify search criteria in the top frame and
+    then click the 'Find' button. The find results will appear in the
+    button frame. For more search criteria click the 'Advanced...'
+    link.
+
+  Controls
+
+    'Find objects of type' -- The types of objects to find.
+
+    'with ids' -- The ids of objects to find. You may specify one or
+    more ids separated by spaces.
+
+    'containing' -- The text that must be contained in the *body* of
+    found items. Text in the title or other attribute fields will not
+    be searched.
+
+    'modified' -- Allows you to restrict your search to a specific
+    time period. You can choose whether objects 'before' or 'after' a
+    specified date/time.
+      
+      **Note: The date should be a DateTime string such as 'YYYY/MM/DD
+      hh:mm:ss', 'YYYY-MM-DD', or 'hh:mm'.**
+
+    'Search only in this folder' -- Find objects in this folder.
+
+    'Search all subfolders' -- Find objects in all subfolders.
+
+    'Find' -- Find objects matching the find criteria.

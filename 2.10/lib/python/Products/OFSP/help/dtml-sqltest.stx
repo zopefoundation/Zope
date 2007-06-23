@@ -1,0 +1,82 @@
+sqltest: Formats SQL condition tests
+
+  The 'sqltest' tag inserts a condition test into SQL code. It tests a
+  column against a variable. This tag is used in SQL Methods.
+
+  Syntax
+
+    'sqltest' tag syntax::
+
+      <dtml-sqltest Variable|expr="VariableExpression">
+
+    The 'sqltest' tag is a singleton. It inserts a SQL condition test
+    statement. It is used to build SQL queries. The 'sqltest' tag
+    correctly escapes the inserted variable. The named variable or
+    variable expression is tested against a SQL column using the
+    specified comparison operation.
+
+  Attributes
+
+    type=string -- The type of the variable. Valid types include:
+    'string', 'int', 'float' and 'nb'. 'nb' means non-blank string,
+    and should be used instead of 'string' unless you want to test for
+    blank values. The type attribute is required and is used to
+    properly escape inserted variable.
+
+    column=string -- The name of the SQL column to test against. This
+    attribute defaults to the variable name.
+
+    multiple=boolean -- If true, then the variable may be a sequence
+    of values to test the column against.
+
+    optional=boolean -- If true, then the test is optional and will
+    not be rendered if the variable is empty or non-existent.
+
+    op=string -- The comparison operation. Valid comparisons include: 
+
+      eq -- equal to
+      
+      gt -- greater than
+
+      lt -- less than
+
+      ne -- not equal to
+
+      ge -- greater than or equal to
+
+      le -- less than or equal to
+
+      The comparison defaults to equal to. If the comparison is not
+      recognized it is used anyway. Thus you can use comparisons such
+      as 'like'.
+
+  Examples
+
+    Basic usage::
+
+      select * from employees
+        where <dtml-sqltest name type="nb">
+
+    If the 'name' variable is 'Bob' then this renders::
+
+      select * from employees
+        where name = 'Bob'
+     
+    Multiple values::
+
+      select * from employees
+        where <dtml-sqltest empid type=int multiple>
+    
+    If the 'empid' variable is '(12,14,17)' then this renders::
+
+      select * from employees
+        where empid in (12, 14, 17)
+ 
+  See Also
+
+    "sqlgroup tag":dtml-sqlgroup.stx
+
+    "sqlvar tag":dtml-sqlvar.stx
+
+
+

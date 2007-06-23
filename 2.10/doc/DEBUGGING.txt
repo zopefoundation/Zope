@@ -1,0 +1,77 @@
+
+Running Zope in Debug Mode
+
+  If you wish to run Zope in debug mode, set the 'debug-mode'
+  configuration file parameter to 'on' (this is the default).  This
+  will have the following effects::
+
+   o On UNIX, Zope will not detach from the controlling terminal.
+
+   o The Z_DEBUG_MODE environment variable gets set, which causes
+     behavioral changes to Zope appropriate for software development.
+     See the configuration file description of 'debug-mode' for more
+     information.
+
+Using 'zopectl debug'
+
+  In Zopes 2.7 and better, a utility known as 'zopectl' is installed
+  into generated instance homes.  You can use it to inspect a Zope
+  instance's running state via an interactive Python interpreter by
+  passing zopectl the 'debug' parameter on the command line.  The
+  'top-level' Zope object (the root folder) will be bound to the name
+  'app' within the interpreter.  You can then use normal Python method
+  calls against app and use the Python interpreter normally to inspect
+  results::
+
+    [chrism@james Trunk]$ bin/zopectl debug
+    Starting debugger (the name "app" is bound to the top-level Zope object)
+    >>> app.objectIds()
+    ['acl_users', 'Control_Panel', 'temp_folder', 'browser_id_manager', 'session    _data_manager', 'error_log', 'index_html', 'standard_error_message', 'standa    rd_html_footer', 'standard_html_header', 'standard_template.pt']
+    >>> 
+
+Using the Medusa Monitor
+
+  NOTE: as of Zope 2.7, the Medusa monitor client is known to have
+  operational problems due to lack of maintenance.  It may work, it
+  may not.  If it doesn't work as advertised, please try 'zopectl
+  debug' instead.
+
+  If you're running Zope with a medusa monitor port, you can connect
+  and interact via a python prompt with a running Zope session, while
+  others interact with it over the web.
+
+  Some constraints:
+
+   o You must connect to a server running on the local host.
+
+   o You must authenticate as superuser.
+
+   o At the time of writing the superuser password (in the access
+     file) must be plain text, not encrypted.
+
+  To use the monitor, start it from the shell prompt like so (as if
+  from the Zope root):
+
+  python lib/python/ZServer/medusa/monitor_client.py localhost 8099
+
+  You'll get back a python prompt.  To connect with the running Zope
+  session:
+
+  >>> import Zope
+  >>> app = Zope.app()
+  >>> dir(app.Control_Panel.Products)
+  ['ExternalMethod', 'MIMETools', 'MailHost', 'OFSP', 'ZCatalog',
+  'ZGadflyDA', 'ZSQLMethods', '_objects']
+  >>> 
+
+  To see ODB changes caused by access concurrent with your debug
+  session (eg, those web connections that can still be happening, or
+  other debug sessions!), you may have to do a bit of magic:
+
+  >>> app._p_jar.sync()
+
+  To commit changes you make, before exiting, you may have to do
+  another bit of magic:
+
+  >>> import transaction
+  >>> transaction.commit()

@@ -1,0 +1,43 @@
+omit-tag: Remove an element, leaving its contents
+
+  Syntax
+
+    'tal:omit-tag' syntax::
+  
+      argument ::= [ expression ]
+
+  Description
+
+    The 'tal:omit-tag' statement leaves the contents of a tag in place
+    while omitting the surrounding start and end tag.
+
+    If its expression evaluates to a *false* value, then normal
+    processing of the element continues and the tag is not omitted.
+    If the expression evaluates to a *true* value, or there is no
+    expression, the statement tag is replaced with its contents. 
+
+    Zope treats empty strings, empty sequences, zero, None, *nothing*,
+    and *default* at false. All other values are considered true.
+
+  Examples
+
+    Unconditionally omitting a tag::
+
+      <div tal:omit-tag="" comment="This tag will be removed">
+        <i>...but this text will remain.</i>
+      </div>
+
+    Conditionally omitting a tag::
+
+      <b tal:omit-tag="not:bold">I may be bold.</b>
+  
+    The above example will omit the 'b' tag if the variable 'bold' is
+    false.
+
+    Creating ten paragraph tags, with no enclosing tag::
+
+      <span tal:repeat="n python:range(10)"
+            tal:omit-tag="">
+        <p tal:content="n">1</p>
+      </span>
+    

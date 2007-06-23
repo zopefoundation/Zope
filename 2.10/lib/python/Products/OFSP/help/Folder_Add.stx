@@ -1,0 +1,19 @@
+Folder - Add: Add a Folder.
+
+  Description
+
+    This view allows you to create a new Folder.
+
+  Controls
+
+    'Id' -- The id of the Folder.
+
+    'Title' -- The optional title of the Folder.
+
+    'Create public interface' -- Creates an 'index_html' Page Template
+    inside the new Folder.
+
+    'Create user folder' -- Creates a User Folder inside the new
+    Folder to hold authorization information for the Folder.
+  
+    'Add' -- Creates a new Folder.

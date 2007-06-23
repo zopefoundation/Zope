@@ -1,0 +1,42 @@
+<dtml-var manage_page_header>
+<dtml-var manage_tabs>
+
+<dtml-if historyComparisonResults>
+<table>
+<tr>
+  <td align="left" valign="top">
+  <div class="form-label">
+Changes to &dtml-id; as of
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <div class="form-text">
+<dtml-var dt1 fmt="%Y-%m-%d %H:%M">
+  </div>
+  </td>
+</tr>
+<tr>
+  <td align="left" valign="top">
+  <div class="form-label">
+  to get to &dtml-id; as of
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <div class="form-text">
+<dtml-var dt2 fmt="%Y-%m-%d %H:%M">
+  </div>
+  </td>
+</tr>
+</table>
+
+<br />
+
+<dtml-var historyComparisonResults>
+
+<dtml-else>
+<p class="form-text">
+This object does not provide comparison support.
+</p>
+</dtml-if>
+
+<dtml-var manage_page_footer>

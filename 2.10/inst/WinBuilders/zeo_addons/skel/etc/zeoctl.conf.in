@@ -1,0 +1,28 @@
+# zeoctl configuration file
+
+%define INSTANCE_HOME <<INSTANCE_HOME>>
+%define SOFTWARE_HOME <<SOFTWARE_HOME>>
+
+<runner>
+  program $INSTANCE_HOME/bin/runzeo
+  socket-name $INSTANCE_HOME/etc/zeo.zdsock
+  daemon true
+  forever false
+  backoff-limit 10
+  exit-codes 0, 2
+  directory $INSTANCE_HOME
+  default-to-interactive true
+  # user zope
+  python <<PYTHON>>
+  zdrun $SOFTWARE_HOME\ZEO\runzeo.py
+  # This logfile should match the one in the zeo.conf file.
+  # It is used by zdctl's logtail command, zdrun/zdctl doesn't write it.
+  logfile $INSTANCE_HOME\log\zeo.log
+</runner>
+
+<eventlog>
+  level info
+  <logfile>
+    path $INSTANCE_HOME\log\zeoctl.log
+  </logfile>
+</eventlog>

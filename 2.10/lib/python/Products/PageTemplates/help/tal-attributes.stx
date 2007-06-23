@@ -1,0 +1,49 @@
+attributes: Replace element attributes
+  
+  Syntax
+
+    'tal:attributes' syntax::
+
+      argument             ::= attribute_statement [';' attribute_statement]*
+      attribute_statement  ::= attribute_name expression
+      attribute_name       ::= [namespace ':'] Name
+      namespace            ::= Name
+
+    *Note: If you want to include a semi-colon (;) in an 'expression',
+    it must be escaped by doubling it (;;).*
+
+  Description
+
+    The 'tal:attributes' statement replaces the value of an attribute
+    (or creates an attribute) with a dynamic value.  You can qualify an
+    attribute name with a namespace prefix, for example 'html:table', if
+    you are generating an XML document with multiple namespaces.  The
+    value of each expression is converted to a string, if necessary.
+
+    If the expression associated with an attribute assignment evaluates
+    to *nothing*, then that attribute is deleted from the statement
+    element.  If the expression evaluates to *default*, then that
+    attribute is left unchanged.  Each attribute assignment is
+    independent, so attributes may be assigned in the same statement in
+    which some attributes are deleted and others are left alone.
+
+    If you use 'tal:attributes' on an element with an active
+    'tal:replace' command, the 'tal:attributes' statement is ignored.
+
+    If you use 'tal:attributes' on an element with a 'tal:repeat'
+    statement, the replacement is made on each repetition of the
+    element, and the replacement expression is evaluated fresh for each
+    repetition.
+
+  Examples
+
+    Replacing a link::
+
+      <a href="/sample/link.html"
+	 tal:attributes="href here/sub/absolute_url">
+
+    Replacing two attributes::
+
+      <textarea rows="80" cols="20"
+	 tal:attributes="rows request/rows;cols request/cols">
+

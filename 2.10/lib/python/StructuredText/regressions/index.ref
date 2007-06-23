@@ -1,0 +1,48 @@
+<html>
+<head>
+<title>Extension Class</title>
+</head>
+<body>
+<h1>Extension Class</h1>
+<p>    <a href="COPYRIGHT.html">Copyright (C) 1996-1998, Digital Creations</a>.</p>
+<p>    A lightweight mechanism has been developed for making Python
+    extension types more class-like.  Classes can be developed in an
+    extension language, such as C or C++, and these classes can be
+    treated like other python classes:</p>
+
+<ul>
+<li>They can be sub-classed in python,</li>
+<li>They provide access to method documentation strings, and</li>
+<li>They can be used to directly create new instances.</li>
+
+</ul>
+<p>    Extension classes provide additional extensions to class and
+    instance semantics, including:</p>
+
+<ul>
+<li>A protocol for accessing subobjects "in the context of" their
+      containers.  This is used to implement custom method types
+      and <a href="Acquisition.html">environmental acquisition</a>.</li>
+<li>A protocol for overriding method call semantics.  This is used
+      to implement "synchonized" classes and could be used to
+      implement argument type checking.</li>
+<li>A protocol for class initialization that supports execution of a
+      special <code>__class_init__</code> method after a class has been
+      initialized. </li>
+
+</ul>
+<p>    Extension classes illustrate how the Python class mechanism can be
+    extended and may provide a basis for improved or specialized class
+    models. </p>
+<h2>  Releases</h2>
+<p>    The current release is <a href="ExtensionClass-1.2.tar.gz">1.2</a>,
+    To find out what's changed in this release,
+    see the <a href="release.html">release notes</a>.</p>
+<p>    Documentation is available <a href="ExtensionClass.html">on-line</a>.</p>
+<h3>  Windows Binaries</h3>
+<p>    A win32 binary release, <a href="ec12.zip">ec12.zip</a>, is available.  This
+    release includes all of the ExtensionClass modules built as 
+    Windows extension modules (.pyd) files.  These were built for
+    Python 1.5.1 using Microsoft Visual C++ 5.0 in "Release" mode.</p>
+</body>
+</html>

@@ -1,0 +1,69 @@
+Properties - Define properties.
+  
+  Description
+
+    This view allows you to edit and define properties on the current
+    object.
+
+    Property types
+
+      'boolean' -- 1 or 0. 
+
+      'date' -- A 'DateTime' value, for example '12/31/1999 15:42:52 PST'.
+      
+      'float' -- A decimal number, for example '12.4'. 
+
+      'int' -- An integer number, for example, '12'. 
+
+      'lines', 'ulines' -- A list of strings, one per line. 
+
+      'long' -- A long integer, for example '12232322322323232323423'. 
+
+      'string', 'ustring' -- A string of characters, for example 'This is a string'. 
+
+      'text', 'utext' -- A multi-line string, for example a paragraph. 
+
+      'tokens', 'utokens' -- A list of strings separated by white space, for example
+      'one two three'. 
+
+      'selection' -- A string selected by a pop-up menu. 
+
+      'multiple selection' -- A list of strings selected by a selection list.
+
+      Some of these textual properties come in two forms. The 'u'-prefixed
+      form stores Unicode text. The form without the prefix stores a python
+      plain string object, which is commonly assumed to contain latin-1
+      text.
+
+  Controls
+
+     Editing Properties
+
+      Existing properties can be edited by selecting them.
+
+      '[Checkbox]' -- Select the properties to change.
+      
+      'Property' -- The value of the property. 
+
+      'Save Changes' -- Changes the value of the selected properties.
+
+      'Delete' -- Deletes the selected properties.
+
+    Creating new properties
+
+      'Id' -- The id of the property.
+
+      'Type' -- The type of the property.
+
+      'Value' -- The value of the property.
+
+         **Note: When creating 'selection' and 'multiple selection'
+         properties, specify the name of another property (or method)
+         as the 'Value'. This property (or method) should return a
+         list of strings will be used to provide choices for the
+         selection.** 
+
+      'Add' -- Creates a new property.
+
+
+ 

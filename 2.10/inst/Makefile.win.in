@@ -1,0 +1,133 @@
+# Zope2 build and install Makefile for win32 (nmake-style).
+
+# We do as much as possible in Python in order to avoid needing to
+# learn autoconf or some other awful thing. ;-)
+
+NAME=Zope
+MAJOR_VERSION=<<ZOPE_MAJOR_VERSION>>
+MINOR_VERSION=<<ZOPE_MINOR_VERSION>>
+RELEASE_TAG=<<VERSION_RELEASE_TAG>>
+ZOPEVERSION=$(MAJOR_VERSION).$(MINOR_VERSION)-$(RELEASE_TAG)
+PACKAGE_NAME=$(NAME)-$(ZOPEVERSION)
+
+PYTHON="<<PYTHON>>"
+TMPDIR="<<TMP_DIR>>"
+PREFIX="<<PREFIX>>"
+BASE_DIR=<<BASE_DIR>>
+BUILD_BASE=<<BUILD_BASE>>
+DISTUTILS_OPTS=<<DISTUTILS_OPTS>>
+INSTALL_FLAGS=<<INSTALL_FLAGS>>
+TESTOPTS=-v
+BUILD_FLAGS=--build-base="$(BUILD_BASE)" \
+            --build-lib="$(BUILD_BASE)\build-lib" \
+            --build-scripts="$(BUILD_BASE)\build-scripts" \
+            --build-temp="$(BUILD_BASE)\build-temp"
+
+RM=del /f /q
+!IF ("$(OS)" == "Windows_NT")
+RMRF=rmdir /s /q
+!ELSE
+RMRF=deltree /y
+!ENDIF
+CD=cd
+XCOPY=xcopy /i /s /e /y
+COPY=copy
+MOVE=move
+EXISTS=IF EXIST
+NOT_EXISTS=IF NOT EXIST
+
+default: build
+# default:     The default step (invoked when make is called without a target)
+	@ echo.
+	@ echo Zope built.  Next, do 'nmake install'.
+	@ echo.
+
+.PHONY : clean install instance untestinst testinst build unbuild
+.PHONY : default
+
+# build:       Do whatever 'setup.py build' implies
+build:
+	$(PYTHON) "$(BASE_DIR)\setup.py" \
+            $(DISTUTILS_OPTS) build $(BUILD_FLAGS)
+
+# unbuild:     Remove the build directory (undo the make build step)
+unbuild:
+	-$(EXISTS) $(BUILD_BASE) $(RMRF) $(BUILD_BASE)
+
+# install:     Install a software home.
+install: build version_txt
+	$(PYTHON) "$(BASE_DIR)\setup.py" $(DISTUTILS_OPTS) install \
+	    --prefix="$(PREFIX)" $(BUILD_FLAGS) $(INSTALL_FLAGS)
+	@ echo.
+	@ echo Zope binaries installed successfully.
+	@ echo Now run '$(PYTHON) $(PREFIX)\bin\mkzopeinstance.py'
+
+
+$(BASE_DIR)/inst/tmp/$(PACKAGE_NAME).tgz:
+	$(MAKE) sdist
+	$(NOT_EXISTS) inst\tmp $(MKDIR) inst\tmp
+	$(MOVE) $(PACKAGE_NAME).tgz inst\tmp
+
+# installer:     Create the Zope Installer.
+installer: $(BASE_DIR)/inst/tmp/$(PACKAGE_NAME).tgz
+	$(CD) inst && sh Winbuilders/buildout zope ZOPEVERSION=$(ZOPEVERSION)
+
+# inplace:     Do an in-place build
+inplace:
+	$(MAKE) install PREFIX="$(BASE_DIR)"
+
+# test:        Do an inplace build and run the Zope test suite.
+test: inplace
+	$(PYTHON) "$(BASE_DIR)\test.py" $(TESTOPTS)
+
+# instance:    Do an inplace build and create an instance home in the resulting
+#              software home.
+instance: build version_txt
+	$(PYTHON) "$(BASE_DIR)\utilities\mkzopeinstance.py" $(MKZ_FLAGS)
+
+# testinst:    Perform an inplace build and create an instance home in the
+#              resulting software home without asking questions.  Useful when
+#              performing automated testing.
+testinst:
+	$(MAKE) instance MKZ_FLAGS=--user=admin:admin --dir="$(BASE_DIR)"
+
+# uninstance:  Remove the instance files made by testinstance (w/ prejudice)
+uninstance:
+	$(EXISTS) "$(BASE_DIR)/bin" $(RMRF) "$(BASE_DIR)/bin"
+	$(EXISTS) "$(BASE_DIR)/etc" $(RMRF) "$(BASE_DIR)/etc"
+	$(EXISTS) "$(BASE_DIR)/import" $(RMRF) "$(BASE_DIR)/import"
+	$(EXISTS) "$(BASE_DIR)/log" $(RMRF) "$(BASE_DIR)/log"
+	$(EXISTS) "$(BASE_DIR)/var" $(RMRF) "$(BASE_DIR)/var"
+	$(EXISTS) "$(BASE_DIR)/Products" $(RMRF) "$(BASE_DIR)/Products"
+
+# clean:       Delete the build files and any binaries/bytecode files in
+#              the source directory for good measure.
+clean:
+	$(CD) "$(BASE_DIR)"
+	-$(RM) /s *.pyc *.pyo *.dll *.o *.obj *.pyd
+	-$(EXISTS) "$(BASE_DIR)\lib\python\version.txt" $(RM) "$(BASE_DIR)\lib\python\version.txt"
+	-$(EXISTS) build $(RMRF) build
+
+# version_txt: create a version file in lib/python/Zope2/version.txt
+version_txt:
+	echo Zope $(MAJOR_VERSION).$(MINOR_VERSION)-$(RELEASE_TAG) > \
+          "$(BASE_DIR)/lib/python/Zope2/version.txt"
+
+# sdist:       Create a source distribution file (implies clobber).
+#
+sdist: clobber sdist_tgz
+
+# sdist_tgz:   Create a tgz archive file as a source distribution.
+#
+sdist_tgz: version_txt
+	$(PYTHON) $(BASE_DIR)\inst\tar.py $(BASE_DIR)\$(PACKAGE_NAME).tgz $(BASE_DIR)
+
+# clobber:     Make the source tree 'pristine' again.
+clobber: clean uninstance
+
+# distclean:     Make the source tree *really* 'pristine' again.
+distclean: clobber
+	$(EXISTS) makefile $(RM) makefile
+	$(EXISTS) Makefile $(RM) Makefile
+	$(EXISTS) build-base $(RMRF) build-base
+

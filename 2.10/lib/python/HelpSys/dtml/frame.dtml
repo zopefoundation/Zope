@@ -1,0 +1,19 @@
+<HTML>
+<HEAD>
+<TITLE>Zope Help System</TITLE>
+</HEAD>
+<FRAMESET COLS="200,*">
+<FRAME SRC="menu" NAME="help_menu"
+MARGINWIDTH="2" MARGINHEIGHT="2" SCROLLING="auto">
+<FRAME
+<dtml-if "_.has_key('help_url')">
+SRC="&dtml.url_quote-help_url;"
+<dtml-else>
+SRC="main"
+</dtml-if>
+NAME="help_main" MARGINWIDTH="2" MARGINHEIGHT="0" SCROLLING="auto">
+</FRAMESET>
+<NOFRAMES>
+Management interfaces require the use of a <B>frames-capable</B> web browser.
+</NOFRAMES>
+</HTML>

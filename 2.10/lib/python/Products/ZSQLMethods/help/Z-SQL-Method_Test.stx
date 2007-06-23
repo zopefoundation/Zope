@@ -1,0 +1,23 @@
+Z SQL Method - Test: Test the validity of your SQL statement
+  
+    Description
+
+        Test a SQL method.
+  
+    Controls
+
+        '*[arument names]*' -- There will be one text field for each
+        argument specified for the SQL method. The text field will
+        contain the default value.  **Important:** You must enter a
+        value matching the specified argument type, otherwise a "Type
+        Error" is returned.
+        
+        'Submit Query' -- Causes the query to be executed and the
+        results are returned as an HTML table. If the query was had a
+        syntax error or the accessed table did not exist, a
+        database-specific error message is returned in form of an
+        exception.
+        
+        If you have a SQL statement that does not return any data,
+        Zope will tell you that this SQL statement was not a
+        query and will not display any results.

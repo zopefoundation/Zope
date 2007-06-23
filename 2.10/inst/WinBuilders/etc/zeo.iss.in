@@ -1,0 +1,181 @@
+[Setup]
+AppName=ZEO <<VERSION>>
+AppVerName=ZEO <<VERSION>>
+AppPublisher=Zope Corporation
+AppPublisherURL=http://www.zope.org
+AppSupportURL=http://www.zope.org
+AppUpdatesURL=http://www.zope.org
+DefaultDirName={pf}\ZEO-<<VERSION>>
+DefaultGroupName=ZEO <<VERSION>>
+OutputBaseFilename=ZEO-<<VERSION>>-win32
+WizardImageFile=<<MAKEFILEDIR>>\etc\zlogo_left.bmp
+WizardSmallImageFile=<<MAKEFILEDIR>>\etc\zlogo_top.bmp
+
+SourceDir=.
+OutputDir=.
+
+[Components]
+Name: main; Description: "Main ZEO files"; Types: full compact custom; Flags: fixed
+Name: instance; Description: "ZEO 'instance home' files (required to run ZEO immediately)"; Types: full compact custom; ExtraDiskSpaceRequired: 1453056
+
+[Tasks]
+Name: service; Description: "Run your ZEO instance as a Windows service (start ZEO automatically at system startup)"; MinVersion: 4.0,4.0; Components: instance; Check: IsAdministrator
+
+[Files]
+; Main ZEO files
+Source:"bin\*.*"; DestDir: "{app}\bin"; Flags: ignoreversion recursesubdirs
+Source:"doc\*.*"; DestDir: "{app}\doc"; Flags: ignoreversion recursesubdirs
+Source:"lib\*.*"; DestDir: "{app}\lib"; Flags: ignoreversion recursesubdirs
+Source:"skel\*.*"; DestDir: "{app}\skel"; Flags: ignoreversion recursesubdirs
+; these are required to be put into the bin directory for proper function of NT services
+Source:"bin\Lib\site-packages\PythonService.exe"; DestDir: "{app}\bin"; Flags: ignoreversion
+Source:"bin\Lib\site-packages\PyWinTypes23.dll"; DestDir: "{app}\bin"; Flags: ignoreversion
+
+[Icons]
+Name: "{group}\Run ZEO In Console"; Filename: "{code:GetDataDir}\bin\runzeo.bat"; Check: DoInstanceHome
+Name: "{group}\Uninstall ZEO"; Filename: "{uninstallexe}";
+Name: "{group}\Make ZEO Instance"; Filename: "{app}\bin\python.exe"; Parameters: """{app}\bin\mkzeoinstance.py"""
+
+[Run]
+Filename: "{app}\bin\pythonw.exe"; Parameters: """{app}\bin\compilezpy.py"" ""{app}"" "; Description: "Byte-compiling Python files"; StatusMsg: "Byte-compiling Python files..."
+Filename:"{app}\bin\pythonw.exe"; Parameters: """{app}\bin\mkzeoinstance.py"" ""--dir={code:GetDataDir}"" "; Description: "Creating default instance"; StatusMsg: "Creating default instance..."; Check: DoInstanceHome
+Filename: "{app}\bin\pythonw.exe"; Parameters: """{code:GetDataDir}\bin\zeoservice.py"" --startup auto install"; Check: DoService
+Filename: "{app}\bin\pythonw.exe"; Parameters: """{code:GetDataDir}\bin\zeoservice.py"" start"; Description: "Launch ZEO"; Flags: nowait postinstall skipifsilent; Check: DoService
+Filename: "{code:GetDataDir}\bin\runzeo.bat"; Description: "Launch ZEO"; Flags: nowait postinstall skipifsilent; Check: DontDoService
+
+[UninstallRun]
+Filename: "{app}\bin\pythonw.exe"; Parameters: """{code:GetDataDir}\bin\zeoservice.py"" stop"; Check: DoService
+Filename: "{app}\bin\pythonw.exe"; Parameters: """{code:GetDataDir}\bin\zeoservice.py"" remove"; Check: DoService
+Filename: "{app}\bin\pythonw.exe"; Parameters: """{app}\bin\decompilezpy.py"" ""{app}"""
+
+[Code]
+var
+  PasswordPrompts, PasswordValues : array of String;
+  PasswordChars		  : array of char;
+
+  DataDirValues: array of String;
+  
+  Password	  : string;
+  DataDir		  :  String;
+
+function InitializeSetup(): Boolean;
+begin
+  { set up password data structures }
+  SetArrayLength(PasswordPrompts, 1);
+  PasswordPrompts[0] := 'Password:';
+  SetArrayLength(PasswordValues, 1);
+  PasswordValues[0] := '';
+  SetArrayLength(PasswordChars, 1);
+  PasswordChars[0] := '*';
+  Password := '';
+
+  { set up data dir data structures }
+  SetArrayLength(DataDirValues, 1);
+  DataDir := '';
+  
+  Result := True;
+end;
+
+function CollectInstanceDir(): Boolean;
+
+var
+  Next: Boolean;
+  DirOk: Boolean;
+
+begin
+  DirOk := True;
+  ScriptDlgPageSetSubCaption1('Select where ZEO instance files should be installed');
+	ScriptDlgPageSetSubCaption2('Select the folder to which you would like Setup to install ZEO "instance" files, then click Next.');
+
+ 	if DataDir = '' then DataDir:= 'C:\ZEO-Instance';
+	if DataDirValues[0] <> '' then DataDirValues[0]:= '';
+
+	{ Ask for a dir until the user has approved one or clicked Back or Cancel }
+	
+  Next:= InputDir(DataDirValues[0], DataDir);
+	
+  if Next and FileOrDirExists(DataDir) then DirOk := False;
+
+	while Next and not DirOk do begin
+	  if DataDir = '' then begin
+	    DirOk := False;
+      MsgBox(SetupMessage(msgInvalidPath), mbError, MB_OK);
+    end;
+  	if FileOrDirExists(DataDir) then begin
+	      DirOk := MsgBox('Directory Exists' #13#13 'The directory ' + DataDir + ' already exists.  Would you like to create instance files in that directory anyway?', mbConfirmation, MB_YESNO) = idYes;
+	  end;
+	  if not DirOk then Next := InputDir(DataDirValues[0], DataDir);
+  end;
+
+	Result:=Next;
+
+end;
+
+function DoInstanceHome():Boolean;
+var
+   S : String;
+begin
+   S := WizardSelectedComponents(False);
+   Result := Pos('instance', S) <> 0;
+end;
+
+function DoService(): Boolean;
+var
+  S : String;
+begin
+  S := WizardSelectedTasks(False);
+  Result := Pos('service', S) <> 0;
+end;
+
+function DontDoService(): Boolean;
+begin
+  Result := not DoService();
+end;
+
+function ScriptDlgPages(CurPage: Integer; BackClicked: Boolean): Boolean;
+var
+   Next	      : Boolean;
+   CurSubPage : Integer;
+begin
+  Next:=True;
+  if ( (not BackClicked and (CurPage = wpSelectTasks)) or (BackClicked and (CurPage = wpReady))  )
+        and DoInstanceHome() then begin
+    ScriptDlgPageOpen();
+    ScriptDlgPageSetCaption('Instance Setup');
+    Next:=CollectInstanceDir();
+
+    if not BackClicked then
+      Result := Next
+    else
+      Result := not Next;
+    ScriptDlgPageClose(not Result);
+
+  end;
+  Result:=Next;
+end;
+
+function NextButtonClick(CurPage: Integer): Boolean;
+begin
+  Result := ScriptDlgPages(CurPage, False);
+end;
+
+function BackButtonClick(CurPage: Integer): Boolean;
+begin
+  Result := ScriptDlgPages(CurPage, True);
+end;
+
+function GetPassword(Default: String): String;
+begin
+  Result := Password;
+end;
+
+function GetDataDir(Default	:  String):String;
+begin
+   Result := DataDir;
+end; { GetInstanceDir }
+
+function IsAdministrator(): Boolean;
+begin
+   Result := IsAdminLoggedOn();
+end;
+

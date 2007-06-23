@@ -1,0 +1,69 @@
+Request method decorators
+=========================
+
+.. Note::
+    This is a partial backport from Zope 2.11's new request method
+    decorators, condensed into a postonly decorator.
+
+Using request method decorators, you can limit functions or methods to only
+be callable when the HTTP request was made using a particular method. 
+
+To limit access to a function or method to POST requests, use the postonly
+decorator::
+
+  >>> from AccessControl.requestmethod import *
+  >>> @postonly
+  ... def foo(bar, REQUEST):
+  ...     return bar
+  
+When this method is accessed through a request that does not use POST, the
+Forbidden exception will be raised::
+
+  >>> foo('spam', GET)
+  Traceback (most recent call last):
+  ...
+  Forbidden: Request must be POST
+  
+Only when the request was made using POST, will the call succeed::
+
+  >>> foo('spam', POST)
+  'spam'
+
+It doesn't matter if REQUEST is a positional or a keyword parameter::
+
+  >>> @postonly
+  ... def foo(bar, REQUEST=None):
+  ...     return bar
+  >>> foo('spam', REQUEST=GET)
+  Traceback (most recent call last):
+  ...
+  Forbidden: Request must be POST
+  
+*Not* passing an optional REQUEST always succeeds::
+
+  >>> foo('spam')
+  'spam'
+  
+Note that the REQUEST parameter is a requirement for the decorator to operate,
+not including it in the callable signature results in an error::
+
+  >>> @postonly
+  ... def foo(bar):
+  ...     return bar
+  Traceback (most recent call last):
+  ...
+  ValueError: No REQUEST parameter in callable signature
+
+Because the Zope Publisher uses introspection to match REQUEST variables
+against callable signatures, the result of the decorator must match the
+original closely, and keyword parameter defaults must be preserved::
+
+  >>> import inspect
+  >>> mutabledefault = dict()
+  >>> @postonly
+  ... def foo(bar, baz=mutabledefault, egg=mutabledefault, REQUEST=None, **kw):
+  ...     return bar, baz is mutabledefault, egg is None, REQUEST
+  >>> inspect.getargspec(foo)[:3]
+  (['bar', 'baz', 'egg', 'REQUEST'], None, 'kw')
+  >>> foo('spam', egg=None)
+  ('spam', True, True, None)

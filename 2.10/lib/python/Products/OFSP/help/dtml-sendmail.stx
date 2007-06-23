@@ -1,0 +1,65 @@
+sendmail: Sends email with SMTP
+
+  The 'sendmail' tag sends an email message
+  using SMTP.
+
+  Syntax
+
+    'sendmail' tag syntax::
+
+      <dtml-sendmail>
+      </dtml-sendmail>
+
+    The 'sendmail' tag is a block tag. It either requires a 'mailhost'
+    or a 'smtphost' argument, but not both. The tag block is sent as
+    an email message. The beginning of the block describes the email
+    headers. The headers are separated from the body by a blank
+    line. Alternately the 'To', 'From' and 'Subject' headers can be
+    set with tag arguments.
+
+  Attributes
+
+    mailhost -- The name of a Zope MailHost object
+    to use to send email. You cannot specify both a mailhost and a smtphost.
+ 
+    smtphost -- The name of a SMTP server used to send email. You
+    cannot specify both a mailhost and a smtphost.
+
+    port -- If the smtphost attribute is used, then the port attribute
+    is used to specify a port number to connect to. If not specified,
+    then port 25 will be used.
+
+    mailto -- The recipient address or a list of recipient addresses
+    separated by commas. This can also be specified with the 'To' header.
+
+    mailfrom -- The sender address. This can also be specified with
+    the 'From' header.
+
+    subject -- The email subject. This can also be specified with the
+    'Subject' header.
+
+  Examples
+
+    Sending an email message using a Mail Host::
+
+      <dtml-sendmail mailhost="mailhost">
+      To: <dtml-var recipient>
+      From: <dtml-var sender>
+      Subject: <dtml-var subject>
+
+      Dear <dtml-var recipient>,
+
+      You order number <dtml-var order_number> is ready.
+      Please pick it up at your soonest convenience.
+      </dtml-sendmail>
+
+  See Also
+
+    "RFC 821 (SMTP Protocol)":http://www.ietf.org/rfc/rfc0821.txt
+
+    "mime tag":dtml-mime.stx
+
+
+
+
+

@@ -1,0 +1,34 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html lang="en">
+<head>
+<title>Z Object Publishing Environment Help</title>
+</head>
+<body bgcolor="#ffffff" link="#000099" vlink="#555555">
+<table cellspacing="0">
+<tr>
+  <td valign="top" nowrap>
+  <a href="hs_main" target="hs_cframe">
+  <img src="&dtml-BASEPATH1;/&dtml-hs_eicon;" border="0"
+   alt="Z Online Help"></a> 
+  <strong>
+  <a href="hs_main" target="hs_cframe">
+  Z Online Help
+  </a>
+  </strong>
+  </td>
+</tr>
+</table>
+<dtml-tree id=hs_id url=hs_url branches=hs_objectvalues nowrap=1>
+<a href="&dtml.-tree-item-url;/hs_main" target="hs_cframe">
+<dtml-if tree-item-expanded>
+<img src="&dtml-BASEPATH1;/&dtml-hs_eicon;" border="0" alt="click to view this item"></a> 
+<dtml-else>
+<img src="&dtml-BASEPATH1;/&dtml-hs_cicon;" border="0" alt="click to view this item"></a> 
+</dtml-if>
+<a href="&dtml.-tree-item-url;/hs_main" target="hs_cframe">
+&dtml-hs_title;
+</a>
+</dtml-tree>
+
+</body>
+</html>

@@ -1,0 +1,12 @@
+<dtml-var standard_html_header>
+<dtml-call "REQUEST.set('MANAGE_TABS_NO_BANNER',1)">
+<dtml-var manage_tabs>
+
+<p>
+<form action="results" method="GET">
+Search terms
+<input type="text" name="SearchableText" size="16">
+<input type="submit" value=" Search ">
+</form>
+</p>
+<dtml-var standard_html_footer>

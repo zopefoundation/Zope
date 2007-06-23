@@ -1,0 +1,5 @@
+. charset configuration, defaulting to 'latin-1'
+. add "level" and "header" args to render / as_html
+  - level indicates the header level to start at
+  - header boolean turns page header tags on/off
+

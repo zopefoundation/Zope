@@ -1,0 +1,36 @@
+TALES Nocall expressions
+
+  Syntax
+
+    Nocall expression syntax::
+
+      nocall_expression ::= 'nocall:' path_expression
+
+  Description
+
+    Nocall expressions avoid rendering the results of a path
+    expression.
+    
+    An ordinary path expression tries to render the object that it
+    fetches.  This means that if the object is a function, Script,
+    Method, or some other kind of executable thing, then expression
+    will evaluate to the result of calling the object.  This is
+    usually what you want, but not always.  For example, if you want
+    to put a DTML Document into a variable so that you can refer to
+    its properties, you can't use a normal path expression because it
+    will render the Document into a string.
+
+  Examples
+
+    Using nocall to get the properties of a document::
+
+      <span tal:define="doc nocall:here/aDoc"
+            tal:content="string:${doc/getId}: ${doc/title}">
+      Id: Title</span>
+
+    Using nocall expressions on a functions::
+
+      <p tal:define="join nocall:modules/string/join">
+
+    This example defines a variable 'join' which is bound to the
+    'string.join' function.

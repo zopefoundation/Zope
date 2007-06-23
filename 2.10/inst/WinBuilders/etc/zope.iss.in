@@ -1,0 +1,197 @@
+[Setup]
+AppName=Zope <<VERSION>>
+AppVerName=Zope <<VERSION>>
+AppPublisher=Zope Corporation
+AppPublisherURL=http://www.zope.org
+AppSupportURL=http://www.zope.org
+AppUpdatesURL=http://www.zope.org
+DefaultDirName={pf}\Zope-<<VERSION>>
+DefaultGroupName=Zope <<VERSION>>
+OutputBaseFilename=Zope-<<VERSION>>-win32
+SolidCompression=yes
+WizardImageFile=<<MAKEFILEDIR>>\etc\zlogo_left.bmp
+WizardSmallImageFile=<<MAKEFILEDIR>>\etc\zlogo_top.bmp
+; Starting w/ Inno 4.1.3, Inno decided to stretch the .bmp files in various
+; ways.  Hard to know why, but it looks terrible on my vanilla boxes.
+; Luckily, 4.1.3 also added WizardImageStretch to turn that off.
+WizardImageStretch=no
+
+SourceDir=.
+OutputDir=.
+
+[Components]
+Name: main; Description: "Main Zope files"; Types: full compact custom; Flags: fixed
+Name: instance; Description: "Zope 'instance home' files (required to run Zope immediately)"; Types: full compact custom; ExtraDiskSpaceRequired: 1453056
+
+[Tasks]
+Name: service; Description: "Run your Zope instance as a Windows service (start Zope automatically at system startup)"; MinVersion: 4.0,4.0; Components: instance; Check: IsAdministrator
+
+[Files]
+; Main Zope files
+Source: "<<MAKEFILEDIR>>\etc\README.html"; DestDir: "{app}"; Flags: ignoreversion
+Source:"bin\*.*"; DestDir: "{app}\bin"; Flags: ignoreversion recursesubdirs
+Source:"doc\*.*"; DestDir: "{app}\doc"; Flags: ignoreversion recursesubdirs
+Source:"lib\*.*"; DestDir: "{app}\lib"; Flags: ignoreversion recursesubdirs
+Source:"skel\*.*"; DestDir: "{app}\skel"; Flags: ignoreversion recursesubdirs
+
+; these are required to be put into the bin directory for proper function of NT services
+Source:"bin\Lib\site-packages\win32\PythonService.exe"; DestDir: "{app}\bin"; Flags: ignoreversion
+Source:"bin\Lib\site-packages\pywin32_system32\PyWinTypes24.dll"; DestDir: "{app}\bin"; Flags: ignoreversion
+Source:"bin\Lib\site-packages\pywin32_system32\PythonCOM24.dll"; DestDir: "{app}\bin"; Flags: ignoreversion
+; This is a helper module for manging registry entries at uninstall time
+Source: "<<MAKEFILEDIR>>\bin\fixreg.py"; DestDir: "{app}\bin"; Flags: ignoreversion
+
+[Icons]
+Name: "{group}\Run Zope In Console"; Filename: "{code:GetDataDir}\bin\runzope.bat"; Check: DoInstanceHome
+Name: "{group}\Uninstall Zope"; Filename: "{uninstallexe}";
+Name: "{group}\Make Zope Instance"; Filename: "{app}\bin\python.exe"; Parameters: """{app}\bin\mkzopeinstance.py"""
+
+[Run]
+Filename: "{app}\bin\pythonw.exe"; Parameters: """{app}\bin\compilezpy.py"" ""{app}"" "; Description: "Byte-compiling Python files"; StatusMsg: "Byte-compiling Python files..."
+Filename:"{app}\bin\pythonw.exe"; Parameters: """{app}\bin\mkzopeinstance.py"" --user=""admin:{code:GetPassword}"" --dir=""{code:GetDataDir}"" "; Description: "Creating default instance"; StatusMsg: "Creating default instance..."; Check: DoInstanceHome
+Filename: "{app}\bin\pythonw.exe"; Parameters: """{code:GetDataDir}\bin\zopeservice.py"" --startup auto install"; Check: DoService
+Filename: "{app}\README.html"; Flags: shellexec skipifdoesntexist postinstall skipifsilent; Description: "View 'QuickStart' document in a web browser"
+Filename: "{app}\bin\pythonw.exe"; Parameters: """{code:GetDataDir}\bin\zopeservice.py"" start"; Description: "Launch Zope"; Flags: nowait postinstall skipifsilent; Check: DoService
+Filename: "{code:GetDataDir}\bin\runzope.bat"; Description: "Launch Zope"; Flags: nowait postinstall skipifsilent; Check: DontDoService
+
+[UninstallRun]
+Filename: "{app}\bin\pythonw.exe"; Parameters: """{code:GetDataDir}\bin\zopeservice.py"" --wait=30 stop"; Check: DoService
+Filename: "{app}\bin\pythonw.exe"; Parameters: """{code:GetDataDir}\bin\zopeservice.py"" remove"; Check: DoService
+Filename: "{app}\bin\pythonw.exe"; Parameters: """{app}\bin\decompilezpy.py"" ""{app}"""
+Filename: "{app}\bin\pythonw.exe"; Parameters: """{app}\bin\fixreg.py"" ""<<VERSION>>"""
+
+[Registry]
+Root: HKLM; Subkey: "Software\Zope Corporation\Zope"; ValueType: string; ValueName: "PreviousVersion"; ValueData: "{reg:HKLM\Software\Zope Corporation\Zope,CurrentVersion|}"
+Root: HKLM; Subkey: "Software\Zope Corporation\Zope"; Flags: uninsdeletekeyifempty; ValueType: string; ValueName: "CurrentVersion"; ValueData: "<<VERSION>>"
+Root: HKLM; Subkey: "Software\Zope Corporation\Zope\<<VERSION>>"; Flags: uninsdeletekey; ValueType: string; ValueName: "Home"; ValueData: "{app}"
+Root: HKLM; Subkey: "Software\Zope Corporation\Zope\<<VERSION>>"; Flags: uninsdeletekey; ValueType: string; ValueName: "Python"; ValueData: "{app}\bin\python.exe"
+Root: HKLM; Subkey: "Software\Zope Corporation\Zope\<<VERSION>>"; Flags: uninsdeletekey; ValueType: string; ValueName: "Pythonw"; ValueData: "{app}\bin\pythonw.exe"
+
+[Code]
+var
+    { custom dialog pages }
+
+    { for selecting an instance home directory }
+    InstanceDirPage: TInputDirWizardPage;
+
+    { for specifying the password for the "admin" account }
+    AdminPwdPage: TInputQueryWizardPage;
+
+procedure InitializeWizard;
+begin
+    { The instance directory page follows the standard "select additional
+      tasks" page. }
+    InstanceDirPage := CreateInputDirPage(wpSelectTasks,
+        'Instance Setup',
+        'Select where Zope instance files should be installed',
+        'Select the folder to which you would like Setup to install ' +
+            'Zope "instance" files, then click Next.',
+        False,
+        '');
+    InstanceDirPage.Add('');
+
+    { The admin password page follows our instance directory page. }
+    AdminPwdPage := CreateInputQueryPage(InstanceDirPage.ID,
+        'Instance Setup',
+        'Specify administrator password',
+        'The login name for your Zope administrator ' +
+            'account is "admin". When you first connect to the Zope ' +
+            'management interface, you will need to login using the ' +
+            '"admin" username and the password you specify below.');
+    AdminPwdPage.Add('Password:', True);
+    AdminPwdPage.Add('Confirm password:', True);
+
+    { Set default values; use settings from last time when possible. }
+    InstanceDirPage.Values[0] := GetPreviousData('InstanceDir',
+                                                 'C:\Zope-Instance');
+    AdminPwdPage.Values[0] := '';
+    AdminPwdPage.Values[1] := '';
+end;
+
+procedure RegisterPreviousData(PreviousDataKey: Integer);
+begin
+    { Store settings so we can restore them next time. }
+    { Note that we deliberately don't store the admin password across
+      runs!  We want that to vanish when the installer finishes. }
+    SetPreviousData(PreviousDataKey, 'InstanceDir', InstanceDirPage.Values[0]);
+end;
+
+function DoInstanceHome(): Boolean;
+var
+    S: String;
+begin
+    S := WizardSelectedComponents(False);
+    Result := Pos('instance', S) <> 0;
+end;
+
+function ShouldSkipPage(PageID: Integer): Boolean;
+begin
+    { Skip pages that shouldn't be shown. }
+    if (PageID = InstanceDirPage.ID) or (PageID = AdminPwdPage.ID) then
+        Result := not DoInstanceHome()
+    else
+        Result := False;
+end;
+
+function NextButtonClick(CurPageID: Integer): Boolean;
+var
+    temp: String;
+begin
+    { Validate pages before allowing the user to proceed. }
+    Result := True;  // innocent until proven guilty
+
+    if CurPageID = InstanceDirPage.ID then begin
+        temp := InstanceDirPage.Values[0];
+        if temp = '' then begin
+            Result := False;
+            MsgBox(SetupMessage(msgInvalidPath), mbError, MB_OK);
+        end
+        else if FileOrDirExists(temp) then begin
+            Result := MsgBox('Directory Exists' #13#13 'The directory ' +
+                temp + ' already exists.  Would you like to create ' +
+                'instance files in that directory anyway?',
+                mbConfirmation, MB_YESNO) = idYes;
+        end
+    end
+    else if CurPageID = AdminPwdPage.ID then begin
+        temp := AdminPwdPage.Values[0];
+        if temp = '' then begin
+            Result := False;
+            MsgBox('You must enter an administrator password',
+                   mbError, MB_OK);
+        end
+        else if temp <> AdminPwdPage.Values[1] then begin
+            Result := False;
+            MsgBox('Please try again -- the passwords don''t match',
+                   mbError, MB_OK)
+        end
+    end
+end;
+
+function DoService(): Boolean;
+var
+    S: String;
+begin
+    S := WizardSelectedTasks(False);
+    Result := Pos('service', S) <> 0;
+end;
+
+function DontDoService(): Boolean;
+begin
+    Result := not DoService();
+end;
+
+function GetPassword(Default: String): String;
+begin
+    Result := AdminPwdPage.Values[0];
+end;
+
+function GetDataDir(Default: String):String;
+begin
+    Result := InstanceDirPage.Values[0];
+end;
+
+function IsAdministrator(): Boolean;
+begin
+    Result := IsAdminLoggedOn();
+end;

@@ -1,0 +1,14 @@
+ObjectManager - Rename: Change object ids.
+  
+  Description
+
+    This view allows you to change the id of one or more objects.
+
+  Controls
+
+    'to' -- The new id of each object. The
+    default value is the old id.
+
+    'OK' -- Changes the ids of the objects.
+
+    'Cancel' -- Cancels renaming operation.
