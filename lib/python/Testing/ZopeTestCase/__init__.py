@@ -20,6 +20,8 @@ import utils
 
 from ZopeLite import hasProduct
 from ZopeLite import installProduct
+from ZopeLite import hasPackage
+from ZopeLite import installPackage
 from ZopeLite import _print
 
 from ZopeTestCase import folder_name

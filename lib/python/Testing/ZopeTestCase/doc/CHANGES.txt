@@ -18,6 +18,8 @@
   publish_module(). Thanks to Andreas Zeidler.
 - Fixed doctestsuite factory to copy layers from test_class to the suite.
   Thanks to Whit Morris.
+- Added hasPackage and installPackage functions for dealing with "products"
+  registered via five:registerPackage.
 
 0.9.8 (Zope 2.8 edition)
 - Renamed 'doctest' package to 'zopedoctest' because of name-shadowing
