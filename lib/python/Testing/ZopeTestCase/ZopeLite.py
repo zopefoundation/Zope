@@ -26,7 +26,6 @@ $Id$
 """
 
 import os, sys, time
-import transaction
 
 # Allow code to tell it is run by the test framework
 os.environ['ZOPETESTCASE'] = '1'
@@ -133,62 +132,60 @@ if not Zope2._began_startup:
 
 # Allow test authors to install Zope products into the test environment. Note
 # that installProduct() must be called at module level -- never from tests.
-from OFS.Application import get_folder_permissions, get_products, install_product
+from OFS.Application import get_folder_permissions, get_products
+from OFS.Application import install_product, install_package
 from OFS.Folder import Folder
 import Products
 
 _theApp = Zope2.app()
 _installedProducts = {}
+_installedPackages = {}
 
 def hasProduct(name):
     '''Checks if a product can be found along Products.__path__'''
     return name in [n[1] for n in get_products()]
 
-def installProduct(name, quiet=0, package=False):
+def installProduct(name, quiet=0):
     '''Installs a Zope product.'''
     start = time.time()
     meta_types = []
     if _patched and not _installedProducts.has_key(name):
-        if package:
-            # Processing of products-as-packages can be simpler; also check
-            # whether this has been registered with <five:registerPackage />
-            # and has not been loaded.
-            for module_, init_func in getattr(Products, '_packages_to_initialize', []):
-                if module_.__name__ == name:
-                    if not quiet: _print('Installing %s ... ' % name)
-                    try:
-                        product = App.Product.initializeProduct(module_, 
-                                                                module_.__name__, 
-                                                                module_.__path__[0],
-                                                                _theApp)
-
-                        product.package_name = module_.__name__
-
-                        if init_func is not None:
-                            newContext = App.ProductContext.ProductContext(product, app, module_)
-                            init_func(newContext)
-                    finally:
-                        transaction.commit()
-                    
-                    Globals.InitializeClass(Folder)
-                    if not quiet: _print('done (%.3fs)\n' % (time.time() - start))
-                    break
+        for priority, product_name, index, product_dir in get_products():
+            if product_name == name:
+                if not quiet: _print('Installing %s ... ' % product_name)
+                # We want to fail immediately if a product throws an exception
+                # during install, so we set the raise_exc flag.
+                install_product(_theApp, product_dir, product_name, meta_types,
+                                get_folder_permissions(), raise_exc=1)
+                _installedProducts[product_name] = 1
+                Products.meta_types = Products.meta_types + tuple(meta_types)
+                Globals.InitializeClass(Folder)
+                if not quiet: _print('done (%.3fs)\n' % (time.time() - start))
+                break
         else:
-            for priority, product_name, index, product_dir in get_products():
-                if product_name == name:
-                    if not quiet: _print('Installing %s ... ' % product_name)
-                    # We want to fail immediately if a product throws an exception
-                    # during install, so we set the raise_exc flag.
-                    install_product(_theApp, product_dir, product_name, meta_types,
-                                    get_folder_permissions(), raise_exc=1)
-                    _installedProducts[product_name] = 1
-                    Products.meta_types = Products.meta_types + tuple(meta_types)
-                    Globals.InitializeClass(Folder)
-                    if not quiet: _print('done (%.3fs)\n' % (time.time() - start))
-                    break
-            else:
-                if name != 'SomeProduct':   # Ignore the skeleton tests :-P
-                    if not quiet: _print('Installing %s ... NOT FOUND\n' % name)
+            if name != 'SomeProduct':   # Ignore the skeleton tests :-P
+                if not quiet: _print('Installing %s ... NOT FOUND\n' % name)
+
+def hasPackage(name):
+    '''Checks if a package has been registered with five:registerPackage.'''
+    return name in [m.__name__ for m, f in Products._packages_to_initialize]
+
+def installPackage(name, quiet=0):
+    '''Installs a registered Python package like a Zope product.'''
+    start = time.time()
+    if _patched and not _installedPackages.has_key(name):
+        for module, init_func in Products._packages_to_initialize:
+            if module.__name__ == name:
+                if not quiet: _print('Installing %s ... ' % module.__name__)
+                # We want to fail immediately if a package throws an exception
+                # during install, so we set the raise_exc flag.
+                install_package(_theApp, module, init_func, raise_exc=1)
+                _installedPackages[module.__name__] = 1
+                Products._packages_to_initialize.remove((module, init_func))
+                if not quiet: _print('done (%.3fs)\n' % (time.time() - start))
+                break
+        else:
+            if not quiet: _print('Installing %s ... NOT FOUND\n' % name)
 
 def _load_control_panel():
     # Loading the Control_Panel of an existing ZODB may take
