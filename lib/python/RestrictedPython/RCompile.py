@@ -43,7 +43,7 @@ class RestrictedCompileMode(AbstractCompileMode):
 
     def __init__(self, source, filename):
         if source:
-            source = '\n'.join(source.splitlines())
+            source = '\n'.join(source.splitlines()) + '\n'
         self.rm = RestrictionMutator()
         AbstractCompileMode.__init__(self, source, filename)
 
@@ -209,7 +209,7 @@ class RFunction(RModule):
     def __init__(self, p, body, name, filename, globals):
         self.params = p
         if body:
-            body = '\n'.join(body.splitlines())
+            body = '\n'.join(body.splitlines()) + '\n' 
         self.body = body
         self.name = name
         self.globals = globals or []
