@@ -633,21 +633,9 @@ def install_products(app):
         install_product(app, product_dir, product_name, meta_types,
                         folder_permissions, raise_exc=debug_mode)
 
-    # Delayed install of products-as-packages
-    for module_, init_func in getattr(Products, '_packages_to_initialize', []):
-        try:
-            product = App.Product.initializeProduct(module_, 
-                                                    module_.__name__, 
-                                                    module_.__path__[0],
-                                                    app)
-
-            product.package_name = module_.__name__
-
-            if init_func is not None:
-                newContext = ProductContext(product, app, module_)
-                init_func(newContext)
-        finally:
-            transaction.commit()
+    # Delayed install of packages-as-products
+    for module, init_func in Products._packages_to_initialize:
+        install_package(app, module, init_func, raise_exc=debug_mode)
     Products._packages_to_initialize = []
 
     Products.meta_types=Products.meta_types+tuple(meta_types)
@@ -877,6 +865,34 @@ def install_product(app, product_dir, product_name, meta_types,
             transaction.abort()
             if raise_exc:
                 raise
+
+
+def install_package(app, module, init_func, raise_exc=False, log_exc=True):
+    """Installs a Python package like a product."""
+    try:
+        product = App.Product.initializeProduct(module,
+                                                module.__name__,
+                                                module.__path__[0],
+                                                app)
+        product.package_name = module.__name__
+        if init_func is not None:
+            newContext = ProductContext(product, app, module)
+            init_func(newContext)
+
+        if not doInstall():
+            transaction.abort()
+        else:
+            transaction.get().note('Installed package %s' % module.__name__)
+            transaction.commit()
+
+    except:
+        if log_exc:
+            LOG.error("Couldn't install %s" % module.__name__,
+                      exc_info=True)
+        transaction.abort()
+        if raise_exc:
+            raise
+
 
 def install_standards(app):
     # Check to see if we've already done this before
