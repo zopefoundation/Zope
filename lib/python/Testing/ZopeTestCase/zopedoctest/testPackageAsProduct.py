@@ -20,9 +20,12 @@ if __name__ == '__main__':
     execfile(os.path.join(sys.path[0], 'framework.py'))
 
 from unittest import TestSuite
-from Testing.ZopeTestCase import FunctionalDocTestSuite
+from Testing import ZopeTestCase
+from Testing.ZopeTestCase import ZopeLite
+from Testing.ZopeTestCase import ZopeDocTestSuite
 from Products.Five import zcml
 from zope.testing import cleanup
+import Products
 
 
 def testInstallPackage():
@@ -31,14 +34,11 @@ def testInstallPackage():
 
       >>> from Testing import ZopeTestCase
       >>> from Products.Five import zcml
-      >>> import sys, Products
-
-    Rig sys.path so testpackage can be imported
-
-      >>> saved = sys.path[:]
-      >>> sys.path.append(ZopeTestCase.__path__[0])
 
     Register testpackage
+
+      >>> ZopeTestCase.hasPackage('testpackage')
+      False
 
       >>> config = '''
       ... <configure
@@ -48,19 +48,18 @@ def testInstallPackage():
       ...     initialize="testpackage.initialize"
       ...     />
       ... </configure>'''
-
-      >>> ZopeTestCase.hasPackage('testpackage')
-      False
       >>> zcml.load_string(config)
+
+    The package is registered now
+
       >>> ZopeTestCase.hasPackage('testpackage')
       True
 
-    Not yet installed
+    But not yet installed
 
-      >>> app = ZopeTestCase.app()
+      >>> app = self._app()
       >>> 'testpackage' in app.Control_Panel.Products.objectIds()
       False
-      >>> ZopeTestCase.close(app)
 
     Install it
 
@@ -69,39 +68,54 @@ def testInstallPackage():
 
     Now it shows up in Control_Panel
 
-      >>> app = ZopeTestCase.app()
+      >>> app = self._app()
       >>> 'testpackage' in app.Control_Panel.Products.objectIds()
       True
-      >>> ZopeTestCase.close(app)
 
     hasPackage still returns True
 
       >>> ZopeTestCase.hasPackage('testpackage')
       True
 
-    Clean up
+    A package is only installed once, subsequent calls to installPackage
+    are ignored:
 
-      >>> import testpackage
-      >>> Products._registered_packages.remove(testpackage)
-      >>> sys.path[:] = saved
+      >>> ZopeTestCase.installPackage('testpackage', quiet=True)
     """
 
 
-def setUp(self):
-    cleanup.cleanUp()
-    zcml._initialized = False
-    zcml.load_site()
+class TestClass(ZopeTestCase.FunctionalTestCase):
 
-def tearDown(self):
-    cleanup.cleanUp()
-    zcml._initialized = False
+    def afterSetUp(self):
+        cleanup.cleanUp()
+        zcml._initialized = False
+        zcml.load_site()
+
+        self.saved = sys.path[:]
+        sys.path.append(ZopeTestCase.__path__[0])
+
+    def afterClear(self):
+        cleanup.cleanUp()
+        sys.path[:] = self.saved
+
+        registered = getattr(Products, '_registered_packages', None)
+        if registered is not None:
+            Products._registered_packages = [m for m in registered
+                                             if m.__name__ != 'testpackage']
+
+        to_initialize = getattr(Products, '_packages_to_initialize', None)
+        if to_initialize is not None:
+            Products._packages_to_initialize = [(m, f) for (m, f) in to_initialize
+                                                if m.__name__ != 'testpackage']
 
 
 def test_suite():
-    return TestSuite((
-        # Must use functional because installPackage commits
-        FunctionalDocTestSuite(setUp=setUp, tearDown=tearDown),
-    ))
+    if ZopeLite.active:
+        return TestSuite((
+            ZopeDocTestSuite(test_class=TestClass),
+        ))
+    else:
+        return TestSuite()
 
 if __name__ == '__main__':
     framework()

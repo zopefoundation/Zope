@@ -216,6 +216,7 @@ DB = Zope2.DB
 configure = Zope2.configure
 def startup(): pass
 Zope = Zope2
+active = _patched
 
 # ZODB sandbox factory
 from ZODB.DemoStorage import DemoStorage
