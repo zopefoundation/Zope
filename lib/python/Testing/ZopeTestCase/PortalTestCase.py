@@ -100,7 +100,10 @@ class PortalTestCase(base.TestCase):
             self.portal.clearCurrentSkin()
         else: # CMF 1.4
             self.portal._v_skindata = None
-        self.portal.setupCurrentSkin()
+        try:
+            self.portal.setupCurrentSkin(self.app.REQUEST)
+        except TypeError:
+            self.portal.setupCurrentSkin()
 
     # Portal interface
 
