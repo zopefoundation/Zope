@@ -8,6 +8,10 @@ Zope Changes
 
     Bugs fixed
 
+      - Fixed bug in ZPublisher.BaseRequest with persistent site managers. An
+        EndRequestEvent was thrown after the ZODB connection was already
+        closed and thus the site manager not being available anymore.
+
       - Collector #2295: Comments in PythonScripts could lead to syntax
         errors
 
