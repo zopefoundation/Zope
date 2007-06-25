@@ -60,7 +60,7 @@ def page(_context, name, permission, for_,
         allowed_attributes = []
     if allowed_interface is not None:
         for interface in allowed_interface:
-            allowed_attributes.extend(interface.names())
+            allowed_attributes.extend(interface.names(all=True))
 
     if attribute != '__call__':
         if template:

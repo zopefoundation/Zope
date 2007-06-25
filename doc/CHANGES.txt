@@ -97,6 +97,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Five.browser.metaconfigure.page didn't protect names from interface
+        superclasses (http://www.zope.org/Collectors/Zope/2333)
+
       - Fixed bug in ZPublisher.BaseRequest with persistent site managers.
         An EndRequestEvent was thrown after the ZODB connection was already
         closed and thus the site manager not being available anymore.
