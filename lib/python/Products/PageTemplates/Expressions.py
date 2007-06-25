@@ -83,6 +83,26 @@ def boboAwareZopeTraverse(object, path_items, econtext):
                                          request=request)
     return object
 
+def trustedBoboAwareZopeTraverse(object, path_items, econtext):
+    """Traverses a sequence of names, first trying attributes then items.
+
+    This uses Zope 3 path traversal where possible and interacts
+    correctly with objects providing OFS.interface.ITraversable when
+    necessary (bobo-awareness).
+    """
+    request = getattr(econtext, 'request', None)
+    path_items = list(path_items)
+    path_items.reverse()
+
+    while path_items:
+        name = path_items.pop()
+        if OFS.interfaces.ITraversable.providedBy(object):
+            object = object.unrestrictedTraverse(name)
+        else:
+            object = traversePathElement(object, name, path_items,
+                                         request=request)
+    return object
+
 def render(ob, ns):
     """Calls the object, possibly a document template, or just returns
     it if not callable.  (From DT_Util.py)
@@ -108,11 +128,13 @@ def render(ob, ns):
 
 class ZopePathExpr(PathExpr):
 
+    _TRAVERSER = staticmethod(boboAwareZopeTraverse)
+
     def __init__(self, name, expr, engine):
         if not expr.strip():
             expr = 'nothing'
         super(ZopePathExpr, self).__init__(name, expr, engine,
-                                           boboAwareZopeTraverse)
+                                           self._TRAVERSER)
 
     # override this to support different call metrics (see bottom of
     # method) and Zope 2's traversal exceptions (ZopeUndefs instead of
@@ -149,6 +171,9 @@ class ZopePathExpr(PathExpr):
             else:
                 return 1
         return 0
+
+class TrustedZopePathExpr(ZopePathExpr):
+    _TRAVERSER = staticmethod(trustedBoboAwareZopeTraverse)
 
 class SafeMapping(MultiMapping):
     """Mapping with security declarations and limited method exposure.
@@ -335,11 +360,11 @@ class PathIterator(ZopeIterator):
             return False
         return ob1 == ob2
 
-def createZopeEngine():
+def createZopeEngine(zpe=ZopePathExpr):
     e = ZopeEngine()
     e.iteratorFactory = PathIterator
-    for pt in ZopePathExpr._default_type_names:
-        e.registerType(pt, ZopePathExpr)
+    for pt in zpe._default_type_names:
+        e.registerType(pt, zpe)
     e.registerType('string', StringExpr)
     e.registerType('python', ZRPythonExpr.PythonExpr)
     e.registerType('not', NotExpr)
@@ -352,7 +377,7 @@ def createZopeEngine():
 def createTrustedZopeEngine():
     # same as createZopeEngine, but use non-restricted Python
     # expression evaluator
-    e = createZopeEngine()
+    e = createZopeEngine(TrustedZopePathExpr)
     e.types['python'] = PythonExpr
     return e
 
