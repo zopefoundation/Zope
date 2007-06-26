@@ -1,5 +1,14 @@
 import unittest
 from urllib import quote_plus
+ 
+TEST_LARGEFILE_DATA = '''
+--12345
+Content-Disposition: form-data; name="file"; filename="file"
+Content-Type: application/octet-stream
+
+test %s
+
+''' % ('test' * 1000)
 
 class AuthCredentialsTests( unittest.TestCase ):
 
@@ -683,6 +692,17 @@ class RequestTests( unittest.TestCase ):
         self.assertNotEqual(start_count, sys.getrefcount(s))  # Precondition
         req.close()
         self.assertEqual(start_count, sys.getrefcount(s))  # The test
+
+    def testFileName(self):
+        # checks fileupload object supports the filename
+        from StringIO import StringIO
+        s = StringIO(TEST_LARGEFILE_DATA)
+        env = TEST_ENVIRON.copy()
+        from ZPublisher.HTTPRequest import HTTPRequest
+        req = HTTPRequest(s, env, None)
+        req.processInputs()
+        f = req.form.get('file')
+        self.assert_(f.name)
 
     def testFileIterator(self):
         # checks fileupload object supports the iterator protocol

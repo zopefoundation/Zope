@@ -34,7 +34,7 @@ An unprotected form can be accessed with anonymously:
 
   >>> browser.open("http://localhost/test_folder_1_/ftf/+/addfieldcontent.html")
   >>> print browser.headers
-  Status: 200 OK
+  Status: 200 ...
   ...
 
 We don't have access, we will not be able to get to the protected add form:
@@ -49,7 +49,7 @@ For a protected one we need a manager account:
   >>> browser.addHeader('Authorization', 'Basic manager:r00t')
   >>> browser.open("http://localhost/test_folder_1_/ftf/+/protectedaddform.html")
   >>> print browser.headers
-  Status: 200 OK
+  Status: 200 ... 
   ...
 
 
@@ -66,7 +66,7 @@ Having added this piece of content, we can access it under its URL:
 
   >>> browser.open("http://localhost/test_folder_1_/ftf/edittest")
   >>> print browser.headers
-  Status: 200 OK
+  Status: 200 ... 
   ...
 
 We can also verify that the title was set correctly, and the not
@@ -104,7 +104,7 @@ Therefore, if we specify invalid data, our object won't change:
   >>> ctl.value = 'BarDescription'
   >>> browser.getControl(name="UPDATE_SUBMIT").click()
   >>> print browser.headers
-  Status: 200 OK
+  Status: 200 ... 
   ...
   >>> print browser.contents
   <html>
@@ -129,7 +129,7 @@ However, when we specify the correct fields:
   >>> ctl.value = 'FooDescription'
   >>> browser.getControl(name="UPDATE_SUBMIT").click()
   >>> print browser.headers
-  Status: 200 OK
+  Status: 200 ... 
   ...
 
 We will see that something has changed:

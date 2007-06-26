@@ -4,6 +4,10 @@ Zope Changes
   Change information for previous versions of Zope can be found in the
   file HISTORY.txt.
 
+  Todo
+
+     - Fix ZClasses (once again)
+
   Trunk  (unreleased)
 
     Restructuring
@@ -51,6 +55,10 @@ Zope Changes
 
     Features added
 
+      - integrated ZODB 3.8
+    
+      - integraed Zope 3.4
+
       - Support for using zopectl on Windows has been added. All commands are
         supported and there are two Windows specific ones: install and remove,
         which install or remove the Windows service. The start, stop and
@@ -97,6 +105,7 @@ Zope Changes
 
     Bugs Fixed
 
+<<<<<<< .working
       - Five.browser.metaconfigure.page didn't protect names from interface
         superclasses (http://www.zope.org/Collectors/Zope/2333)
 
@@ -138,6 +147,8 @@ Zope Changes
         (xmlns="") a subsequent PROPFIND for the property would cause the
         XML representation for that property to show a namespace of
         xmlns="None".  Fixed within OFS.PropertySheets.dav__propstat.
+
+      - integrated theuni's additional test from 2.11 (see r73132)
 
       - Relaxed requirements for context of
         Products.Five.browser.pagetemplatefile.ZopeTwoPageTemplateFile,

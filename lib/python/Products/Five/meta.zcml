@@ -75,20 +75,6 @@
 
     </meta:complexDirective>
 
-    <!-- BBB 2006/02/24, to be removed after 12 months -->
-    <meta:directive
-        name="vocabulary"
-        schema="zope.app.schema.metadirectives.IVocabularyDirective"
-        handler="zope.app.schema.metaconfigure.vocabulary"
-        />
-
-    <!-- BBB 2006/02/24, to be removed after 12 months -->
-    <meta:directive
-        name="defaultLayer"
-        schema="zope.app.component.metadirectives.IDefaultLayerDirective"
-        handler="zope.app.component.metaconfigure.defaultLayer"
-        />
-
     <meta:directive
         name="securityPolicy"
         schema="zope.security.zcml.ISecurityPolicyDirective"

@@ -20,8 +20,8 @@
       factory="zope.publisher.http.HTTPCharsets"
       />
 
-  <configure package="zope.app">
-    <i18n:registerTranslations directory="locales"/>
+  <configure package="zope.app.locales">
+    <i18n:registerTranslations directory="."/>
   </configure>
 
 </configure>

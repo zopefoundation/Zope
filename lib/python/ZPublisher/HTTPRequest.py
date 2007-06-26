@@ -13,7 +13,7 @@
 
 __version__='$Revision: 1.96 $'[11:-2]
 
-import re, sys, os, time, random, codecs, inspect
+import re, sys, os, time, random, codecs, inspect, tempfile
 from types import StringType, UnicodeType
 from BaseRequest import BaseRequest, quote
 from HTTPResponse import HTTPResponse
@@ -395,7 +395,7 @@ class HTTPRequest(BaseRequest):
         taintedform=self.taintedform
 
         meth=None
-        fs=FieldStorage(fp=fp,environ=environ,keep_blank_values=1)
+        fs=ZopeFieldStorage(fp=fp,environ=environ,keep_blank_values=1)
         if not hasattr(fs,'list') or fs.list is None:
             # Hm, maybe it's an XML-RPC
             if (fs.headers.has_key('content-type') and
@@ -1418,6 +1418,10 @@ def sane_environment(env):
         except: pass
     return dict
 
+class ZopeFieldStorage(FieldStorage):
+
+    def make_file(self, binary=None):
+        return tempfile.NamedTemporaryFile("w+b")
 
 class FileUpload:
     '''\
@@ -1443,7 +1447,7 @@ class FileUpload:
         else: methods= ['close', 'fileno', 'flush', 'isatty',
                         'read', 'readline', 'readlines', 'seek',
                         'tell', 'truncate', 'write', 'writelines',
-                        '__iter__','next'] # see Collector 1837
+                        '__iter__','next', 'name'] # see Collector 1837
 
         d=self.__dict__
         for m in methods:

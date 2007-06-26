@@ -56,7 +56,7 @@ class TemporaryStorageTests(
 
     def doreadconflict(self, db, mvcc):
         tm1 = transaction.TransactionManager()
-        conn = db.open(mvcc=mvcc, transaction_manager=tm1)
+        conn = db.open(transaction_manager=tm1)
         r1 = conn.root()
         obj = MinPO('root')
         r1["p"] = obj
@@ -66,7 +66,7 @@ class TemporaryStorageTests(
 
         # start a new transaction with a new connection
         tm2 = transaction.TransactionManager()
-        cn2 = db.open(mvcc=mvcc, transaction_manager=tm2)
+        cn2 = db.open(transaction_manager=tm2)
         r2 = cn2.root()
 
         self.assertEqual(r1._p_serial, r2._p_serial)
@@ -84,10 +84,6 @@ class TemporaryStorageTests(
 
         obj.child1 
         return obj
-
-    def checkWithoutMVCCRaisesReadConflict(self):
-        db = DB(self._storage)
-        self.assertRaises(ReadConflictError, self.doreadconflict, db, False)
 
     def checkWithMVCCDoesntRaiseReadConflict(self):
         db = DB(self._storage)

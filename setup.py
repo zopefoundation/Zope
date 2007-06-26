@@ -307,29 +307,6 @@ ext_modules = [
                        'ExtensionClass/pickle/pickle.c',
                        'Acquisition/Acquisition.h']),
 
-    # BTrees
-    Extension(name='BTrees._OOBTree',
-              include_dirs=EXTENSIONCLASS_INCLUDEDIRS+['persistent'],
-              sources=['BTrees/_OOBTree.c']),
-    Extension(name='BTrees._OIBTree',
-              include_dirs=EXTENSIONCLASS_INCLUDEDIRS+['persistent'],
-              sources=['BTrees/_OIBTree.c']),
-    Extension(name='BTrees._IIBTree',
-              include_dirs=EXTENSIONCLASS_INCLUDEDIRS+['persistent'],
-              define_macros=[('EXCLUDE_INTSET_SUPPORT', None)],
-              sources=['BTrees/_IIBTree.c']),
-    Extension(name='BTrees._IOBTree',
-              include_dirs=EXTENSIONCLASS_INCLUDEDIRS+['persistent'],
-              define_macros=[('EXCLUDE_INTSET_SUPPORT', None)],
-              sources=['BTrees/_IOBTree.c']),
-    Extension(name='BTrees._IFBTree',
-              include_dirs=EXTENSIONCLASS_INCLUDEDIRS+['persistent'],
-              define_macros=[('EXCLUDE_INTSET_SUPPORT', None)],
-              sources=['BTrees/_IFBTree.c']),
-    Extension(name='BTrees._fsBTree',
-              include_dirs=EXTENSIONCLASS_INCLUDEDIRS+['persistent'],
-              define_macros=[('EXCLUDE_INTSET_SUPPORT', None)],
-              sources=['BTrees/_fsBTree.c']),
 
     # DocumentTemplate
     Extension(name='DocumentTemplate.cDocumentTemplate',
@@ -413,9 +390,6 @@ ext_modules = [
     Extension(name = 'persistent.TimeStamp',
               sources= ['persistent/TimeStamp.c']
               ),
-    Extension(name = 'ZODB.winlock',
-              sources = ['ZODB/winlock.c']
-              ),
 
     #zope
     Extension("zope.proxy._zope_proxy_proxy",
@@ -456,6 +430,51 @@ ext_modules = [
                  ]),
 
     ]
+
+# BTree extension modules (code borrowed from ZODB/setup.py)
+
+# Include directories for C extensions
+include = ['.']
+
+# Set up dependencies for the BTrees package
+base_btrees_depends = [
+    "BTrees/BTreeItemsTemplate.c",
+    "BTrees/BTreeModuleTemplate.c",
+    "BTrees/BTreeTemplate.c",
+    "BTrees/BucketTemplate.c",
+    "BTrees/MergeTemplate.c",
+    "BTrees/SetOpTemplate.c",
+    "BTrees/SetTemplate.c",
+    "BTrees/TreeSetTemplate.c",
+    "BTrees/sorters.c",
+    "persistent/cPersistence.h",
+    ]
+
+_flavors = {"O": "object", "I": "int", "F": "float", 'L': 'int'}
+
+KEY_H = "BTrees/%skeymacros.h"
+VALUE_H = "BTrees/%svaluemacros.h"
+
+def BTreeExtension(flavor):
+    key = flavor[0]
+    value = flavor[1]
+    name = "BTrees._%sBTree" % flavor
+    sources = ["BTrees/_%sBTree.c" % flavor]
+    kwargs = {"include_dirs": include}
+    if flavor != "fs":
+        kwargs["depends"] = (base_btrees_depends + [KEY_H % _flavors[key],
+                                                    VALUE_H % _flavors[value]])
+    else:
+        kwargs["depends"] = base_btrees_depends
+    if key != "O":
+        kwargs["define_macros"] = [('EXCLUDE_INTSET_SUPPORT', None)]
+    return Extension(name, sources, **kwargs)
+
+ext_modules += [BTreeExtension(flavor)
+        for flavor in ("OO", "IO", "OI", "II", "IF",
+                       "fs", "LO", "OL", "LL", "LF",
+                       )]
+
 
 # We're using the module docstring as the distutils descriptions.
 doclines = __doc__.split("\n")
@@ -509,16 +528,12 @@ setup(
              "utilities/requestprofiler.py", "utilities/zpasswd.py",
              "utilities/copyzopeskel.py", "utilities/reindex_catalog.py",
              "utilities/compilezpy.py", "utilities/decompilezpy.py",
-             "utilities/ZODBTools/timeout.py", "utilities/ZODBTools/analyze.py",
+             "utilities/ZODBTools/analyze.py",
              "utilities/ZODBTools/checkbtrees.py", "utilities/ZODBTools/fsdump.py",
              "utilities/ZODBTools/fsrefs.py" , "utilities/ZODBTools/fstail.py",
              "utilities/ZODBTools/fstest.py", "utilities/ZODBTools/migrate.py",
-             "utilities/ZODBTools/netspace.py", "utilities/ZODBTools/parsezeolog.py",
+             "utilities/ZODBTools/netspace.py", "utilities/ZODBTools/zodbload.py",
              "utilities/ZODBTools/repozo.py", "utilities/ZODBTools/space.py",
-             "utilities/ZODBTools/timeout.py", "utilities/ZODBTools/zeopack.py",
-             "utilities/ZODBTools/zeoqueue.py", "utilities/ZODBTools/zeoreplay.py",
-             "utilities/ZODBTools/zeoserverlog.py", "utilities/ZODBTools/zeoup.py",
-             "utilities/ZODBTools/zodbload.py",
              "test.py"],
     distclass=ZopeDistribution,
     )
