@@ -9,11 +9,11 @@ from ZPublisher.HTTPResponse import HTTPResponse
 def makeBaseRequest(root):
     response = HTTPResponse()
     environment = { 'URL': '',
-		    'PARENTS': [root],
-		    'steps': [],
-		    '_hacked_path': 0,
-		    '_test_counter': 0,
-		    'response': response }
+                    'PARENTS': [root],
+                    'steps': [],
+                    '_hacked_path': 0,
+                    '_test_counter': 0,
+                    'response': response }
     return BaseRequest(environment)
 
 
@@ -26,8 +26,8 @@ class DummyObjectBasic(Implicit):
 class BrokenHook:
     
     def __call__(self, *args):
-	print self.__class__.__name__, 'called'
-	raise TypeError, self.__class__.__name__
+        print self.__class__.__name__, 'called'
+        raise TypeError, self.__class__.__name__
 
 def testBeforeTraverse(self):
     """ 
