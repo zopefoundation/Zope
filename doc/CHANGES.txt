@@ -8,6 +8,8 @@ Zope Changes
 
     Bugs fixed
 
+      - Collector #2153: Supporting unquoted cookies with spaces.
+
       - The REQUEST no longer accepts holds after it has been closed.
 
       - Collector #1441: WebDAV compatibility with Windows Web Folders
