@@ -658,6 +658,20 @@ class ProcessInputsTests(unittest.TestCase):
         self.assertEquals(req.cookies['hmm'], '')
         self.assertEquals(req.cookies['baz'], 'gee')
 
+	# Unquoted multi-space cookies
+        env['HTTP_COOKIE'] = 'single=cookie data; ' \
+	                     'quoted="cookie data with unquoted spaces"; ' \
+			     'multi=cookie data with unquoted spaces; ' \
+			     'multi2=cookie data with unquoted spaces'
+        req = self._getHTTPRequest(env)
+        self.assertEquals(req.cookies['single'], 'cookie data')
+        self.assertEquals(req.cookies['quoted'], 
+	                              'cookie data with unquoted spaces')
+        self.assertEquals(req.cookies['multi'], 
+	                              'cookie data with unquoted spaces')
+        self.assertEquals(req.cookies['multi2'], 
+	                              'cookie data with unquoted spaces')
+
 TEST_ENVIRON = {
     'CONTENT_TYPE': 'multipart/form-data; boundary=12345',
     'REQUEST_METHOD': 'POST',
