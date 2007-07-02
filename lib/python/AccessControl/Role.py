@@ -341,11 +341,12 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
                 if mlu < 0: raise OverflowError
                 un = getattr(aclu, 'user_names', _notfound)
                 if un is not _notfound:
+                    un = aclu.__of__(item).user_names # rewrap
                     unl = un()
                     # maxlistusers of 0 is list all
                     if len(unl) > mlu and mlu != 0:
                         raise OverflowError
-                    for name in un():
+                    for name in unl:
                         dict[name]=1
             item = getattr(item, 'aq_parent', _notfound)
             if item is _notfound:
