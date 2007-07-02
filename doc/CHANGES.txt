@@ -10,6 +10,8 @@ Zope Changes
 
       - Collector #1306: Missing acquisition context on local roles screen.
 
+      - The REQUEST no longer accepts holds after it has been closed.
+
       - Collector #2153: Supporting unquoted cookies with spaces.
 
       - Collector #2295: Comments in PythonScripts could lead to syntax

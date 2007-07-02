@@ -247,6 +247,17 @@ class TestBaseRequest(TestCase):
         self.assertRaises(NotFound, r.traverse, 'folder/simpleSet')
         self.assertRaises(NotFound, r.traverse, 'folder/simpleFrozenSet')
 
+    def test_hold_after_close(self):
+        # Request should no longer accept holds after it has been closed
+        r = self.makeBaseRequest()
+        r._hold(lambda x: None)
+        self.assertEqual(len(r._held), 1)
+        r.close()
+        # No more holding from now on
+        self.assertEqual(r._held, None)
+        r._hold(lambda x: None)
+        self.assertEqual(r._held, None)
+
 
 import zope.interface
 import zope.component
