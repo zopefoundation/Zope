@@ -10,7 +10,7 @@ Zope Changes
 
       - updated to ZODB 3.7.1
 
-      - updated to Zope 3.3.1
+      - updated to Zope 3.3.2
 
     Bugs fixed
 
