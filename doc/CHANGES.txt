@@ -6,6 +6,12 @@ Zope Changes
 
   Zope 2.10.4 (23.06.2007)
 
+    Other changes
+
+      - updated to ZODB 3.7.1
+
+      - updated to Zope 3.3.1
+
     Bugs fixed
 
       - Collector #1306: Missing acquisition context on local roles screen.
