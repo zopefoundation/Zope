@@ -8,6 +8,8 @@ Zope Changes
 
    Bugs fixed
 
+      - updated to ZODB 3.6.3
+
       - Collector #1306: Missing acquisition context on local roles screen.
 
       - The REQUEST no longer accepts holds after it has been closed.
