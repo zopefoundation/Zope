@@ -100,6 +100,27 @@ Zope Changes
       - AccessControl: the form behind the "Security" tab has a new form
         for user-related reporting of permissions and roles
 
+      - Zope 3-based exception views can now be registered in ZCML for
+        various exceptions that can be raised by Zope. Registering an
+        exception view can be done like this:
+
+          <browser:page
+            for="zope.publisher.interfaces.INotFound"
+            class=".view.SomeView"
+            name="index.html"
+            permission="zope.Public" />
+
+        Relevant exceptions that can have views are:
+
+        zope.interface.common.interfaces.IException
+        zope.publisher.interfaces.INotFound
+        zope.security.interfaces.IForbidden
+        zope.security.interfaces.IUnauthorized
+
+        Note that the name has to be 'index.html' for the exception
+        view to work. (patch by Sidnei da Silva from Enfold,
+        integration by Martijn Faassen (Startifact) for Infrae)
+
     Bugs Fixed
 
       - Collector #1306: Missing acquisition context on local roles screen.

@@ -20,17 +20,22 @@ $Id$
 
 from unauthorized import Unauthorized
 
+from zope.interface import implements
+from zope.interface.common.interfaces import IException
+from zope.publisher.interfaces import INotFound
+from zope.security.interfaces import IForbidden
+
 class BadRequest(Exception):
-    pass
+    implements(IException)
 
 class InternalError(Exception):
-    pass
+    implements(IException)
 
 class NotFound(Exception):
-    pass
+    implements(INotFound)
 
 class Forbidden(Exception):
-    pass
+    implements(IForbidden)
 
 class MethodNotAllowed(Exception):
     pass

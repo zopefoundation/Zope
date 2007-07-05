@@ -13,6 +13,7 @@
 """Initialize the Zope2 Package and provide a published module
 """
 
+from zope.component import queryMultiAdapter
 from AccessControl.SecurityManagement import getSecurityManager
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
@@ -20,7 +21,7 @@ from Acquisition import aq_acquire
 from App.config import getConfiguration
 from time import asctime
 from types import StringType, ListType
-from zExceptions import Unauthorized
+from zExceptions import Unauthorized, Redirect
 from ZODB.POSException import ConflictError
 import transaction
 import AccessControl.User
@@ -37,6 +38,8 @@ import App.ZApplication
 import Zope2
 import ZPublisher
 
+app = None
+startup_time = asctime()
 
 def startup():
     global app
@@ -132,100 +135,124 @@ def validated_hook(request, user):
                 )
             Zope2.DB.removeVersionPool(version)
             raise Unauthorized, "You don't have permission to enter versions."
-    
+
 
 
 class RequestContainer(ExtensionClass.Base):
     def __init__(self,r): self.REQUEST=r
 
-conflict_errors = 0
-unresolved_conflict_errors = 0
+class ZPublisherExceptionHook:
 
-conflict_logger = logging.getLogger('ZPublisher.Conflict')
+    def __init__(self):
+        self.conflict_errors = 0
+        self.unresolved_conflict_errors = 0
+        self.conflict_logger = logging.getLogger('ZPublisher.Conflict')
+        self.error_message = 'standard_error_message'
+        self.raise_error_message = 'raise_standardErrorMessage'
 
-def zpublisher_exception_hook(published, REQUEST, t, v, traceback):
-    global unresolved_conflict_errors
-    global conflict_errors
-    try:
-        if isinstance(t, StringType):
-            if t.lower() in ('unauthorized', 'redirect'):
-                raise
-        else:
-            if t is SystemExit:
-                raise
-            if issubclass(t, ConflictError):
-                conflict_errors += 1
-                level = getConfiguration().conflict_error_log_level
-                if level:
-                    conflict_logger.log(level,
-                        "%s at %s: %s (%d conflicts (%d unresolved) "
-                        "since startup at %s)",
-                        v.__class__.__name__,
-                        REQUEST.get('PATH_INFO', '<unknown>'),
-                        v,
-                        conflict_errors,
-                        unresolved_conflict_errors,
-                        startup_time)
-                raise ZPublisher.Retry(t, v, traceback)
-            if t is ZPublisher.Retry:
-                try:
-                    v.reraise()
-                except:
-                    # we catch the re-raised exception so that it gets
-                    # stored in the error log and gets rendered with
-                    # standard_error_message
-                    t, v, traceback = sys.exc_info()
-                if issubclass(t, ConflictError):
-                    # ouch, a user saw this conflict error :-(
-                    unresolved_conflict_errors += 1
+    def logConflicts(self, v, REQUEST):
+        self.conflict_errors += 1
+        level = getattr(getConfiguration(), 'conflict_error_log_level', 0)
+        if not self.conflict_logger.isEnabledFor(level):
+            return False
+        self.conflict_logger.log(
+            level,
+            "%s at %s: %s (%d conflicts (%d unresolved) "
+            "since startup at %s)",
+            v.__class__.__name__,
+            REQUEST.get('PATH_INFO', '<unknown>'),
+            v,
+            self.conflict_errors,
+            self.unresolved_conflict_errors,
+            startup_time)
+        return True
 
+    def __call__(self, published, REQUEST, t, v, traceback):
         try:
-            log = aq_acquire(published, '__error_log__', containment=1)
-        except AttributeError:
-            error_log_url = ''
-        else:
-            error_log_url = log.raising((t, v, traceback))
-
-        if (getattr(REQUEST.get('RESPONSE', None), '_error_format', '')
-            !='text/html'):
-            raise t, v, traceback
-
-        if (published is None or published is app or
-            type(published) is ListType):
-            # At least get the top-level object
-            published=app.__bobo_traverse__(REQUEST).__of__(
-                RequestContainer(REQUEST))
-
-        published=getattr(published, 'im_self', published)
-        while 1:
-            f=getattr(published, 'raise_standardErrorMessage', None)
-            if f is None:
-                published=getattr(published, 'aq_parent', None)
-                if published is None:
-                    raise t, v, traceback
+            if isinstance(t, StringType):
+                if t.lower() in ('unauthorized', 'redirect'):
+                    raise
             else:
-                break
+                if t is SystemExit or t is Redirect:
+                    raise
 
-        client=published
-        while 1:
-            if getattr(client, 'standard_error_message', None) is not None:
-                break
-            client=getattr(client, 'aq_parent', None)
-            if client is None:
+                if issubclass(t, ConflictError):
+                    self.logConflicts(v, REQUEST)
+                    raise ZPublisher.Retry(t, v, traceback)
+
+                if t is ZPublisher.Retry:
+                    try:
+                        v.reraise()
+                    except:
+                        # we catch the re-raised exception so that it gets
+                        # stored in the error log and gets rendered with
+                        # standard_error_message
+                        t, v, traceback = sys.exc_info()
+                    if issubclass(t, ConflictError):
+                        # ouch, a user saw this conflict error :-(
+                        self.unresolved_conflict_errors += 1
+
+            try:
+                log = aq_acquire(published, '__error_log__', containment=1)
+            except AttributeError:
+                error_log_url = ''
+            else:
+                error_log_url = log.raising((t, v, traceback))
+
+            if (getattr(REQUEST.get('RESPONSE', None), '_error_format', '')
+                !='text/html'):
                 raise t, v, traceback
 
-        if REQUEST.get('AUTHENTICATED_USER', None) is None:
-            REQUEST['AUTHENTICATED_USER']=AccessControl.User.nobody
+            # Lookup a view for the exception and render it, then
+            # raise the rendered value as the exception value
+            # (basically the same that 'raise_standardErrorMessage'
+            # does. The view is named 'index.html' because that's what
+            # Zope 3 uses as well.
+            view = queryMultiAdapter((v, REQUEST), name=u'index.html')
+            if view is not None:
+                v = view()
+                response = REQUEST.RESPONSE
+                response.setStatus(t)
+                response.setBody(v)
+                return response
 
-        try:
-            f(client, REQUEST, t, v, traceback, error_log_url=error_log_url)
-        except TypeError:
-            # Pre 2.6 call signature
-            f(client, REQUEST, t, v, traceback)
+            if (published is None or published is app or
+                type(published) is ListType):
+                # At least get the top-level object
+                published=app.__bobo_traverse__(REQUEST).__of__(
+                    RequestContainer(REQUEST))
 
-    finally:
-        traceback=None
+            published = getattr(published, 'im_self', published)
+            while 1:
+                f = getattr(published, self.raise_error_message, None)
+                if f is None:
+                    published = getattr(published, 'aq_parent', None)
+                    if published is None:
+                        raise t, v, traceback
+                else:
+                    break
 
+            client = published
+            while 1:
+                if getattr(client, self.error_message, None) is not None:
+                    break
+                client = getattr(client, 'aq_parent', None)
+                if client is None:
+                    raise t, v, traceback
+
+            if REQUEST.get('AUTHENTICATED_USER', None) is None:
+                REQUEST['AUTHENTICATED_USER'] = AccessControl.User.nobody
+
+            try:
+                f(client, REQUEST, t, v, traceback, error_log_url=error_log_url)
+            except TypeError:
+                # Pre 2.6 call signature
+                f(client, REQUEST, t, v, traceback)
+
+        finally:
+            traceback = None
+
+zpublisher_exception_hook = ZPublisherExceptionHook()
 ac_logger = logging.getLogger('event.AccessControl')
 
 class TransactionsManager:

@@ -15,9 +15,13 @@ $Id$
 """
 
 from types import StringType
+from zope.interface import implements
+from zope.security.interfaces import IUnauthorized
 
 class Unauthorized(Exception):
-    """Some user wasn't allowed to access a resource"""
+    """Some user wasn't allowed to access a resource
+    """
+    implements(IUnauthorized)
 
     def __init__(self, message=None, value=None, needed=None, name=None, **kw):
         """Possible signatures:
