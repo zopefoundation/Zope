@@ -357,6 +357,11 @@ def test_unwrapped():
     ...
     AttributeError: aq_parent
 
+    >>> c.__parent__
+    Traceback (most recent call last):
+    ...
+    AttributeError: __parent__
+
     >>> Acquisition.aq_acquire(c, 'id')
     'unwrapped'
     >>> Acquisition.aq_acquire(c, 'x')
@@ -533,6 +538,13 @@ def test_simple():
     >>> show(Acquisition.aq_self(a.b.c))
     c
 
+    A wrapper's __parent__ attribute (which is equivalent to its
+    aq_parent attribute) points to the Acquisition parent.
+
+    >>> a.b.c.__parent__ == a.b.c.aq_parent
+    True
+    >>> a.b.c.__parent__ == a.b
+    True
     """
 
 def test__of__exception():

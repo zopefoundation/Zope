@@ -419,18 +419,27 @@ Wrapper_findattr(Wrapper *self, PyObject *oname,
   char *name="";
 
   if (PyString_Check(oname)) name=PyString_AS_STRING(oname);
-  if (*name=='a' && name[1]=='q' && name[2]=='_')
-    if ((r=Wrapper_special(self, name+3, oname)))
-      {
-	if (filter)
-	  switch(apply_filter(filter,OBJECT(self),oname,r,extra,orig))
-	    {
-	    case -1: return NULL;
-	    case 1: return r;
-	    }
-	else return r;
-      }
-    else PyErr_Clear();
+  if ((*name=='a' && name[1]=='q' && name[2]=='_') ||
+      (strcmp(name, "__parent__")==0))
+    {
+      /* __parent__ is an alias to aq_parent */
+      if (strcmp(name, "__parent__")==0)
+        name = "parent";
+      else
+        name = name + 3;
+
+      if ((r=Wrapper_special(self, name, oname)))
+        {
+          if (filter)
+            switch(apply_filter(filter,OBJECT(self),oname,r,extra,orig))
+              {
+              case -1: return NULL;
+              case 1: return r;
+              }
+          else return r;
+        }
+      else PyErr_Clear();
+    }
   else if (*name=='_' && name[1]=='_' && 
            (strcmp(name+2,"reduce__")==0 ||
             strcmp(name+2,"reduce_ex__")==0 ||
