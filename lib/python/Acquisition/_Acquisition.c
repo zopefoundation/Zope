@@ -627,8 +627,8 @@ Wrapper_setattro(Wrapper *self, PyObject *oname, PyObject *v)
 
   /* Allow assignment to parent, to change context. */
   if (PyString_Check(oname)) name=PyString_AS_STRING(oname);
-  if (*name=='a' && name[1]=='q' && name[2]=='_' 
-      && strcmp(name+3,"parent")==0)
+  if ((*name=='a' && name[1]=='q' && name[2]=='_' 
+       && strcmp(name+3,"parent")==0) || (strcmp(name, "__parent__")==0))
     {
       Py_XINCREF(v);
       ASSIGN(self->container, v);

@@ -1401,13 +1401,27 @@ def test_creating_wrappers_directly():
     ...
     TypeError: __init__() takes exactly 2 arguments (1 given)
 
-    We can reassign aq_parent
+    We can reassign aq_parent / __parent__ on a wrapper:
 
     >>> x = B()
     >>> x.color = 'green'
     >>> w.aq_parent = x
     >>> w.color
     'green'
+
+    >>> y = B()
+    >>> y.color = 'blue'
+    >>> w.__parent__ = y
+    >>> w.color
+    'blue'
+
+    Note that messing with the wrapper won't in any way affect the
+    wrapped object:
+
+    >>> Acquisition.aq_base(w).__parent__
+    Traceback (most recent call last):
+    ...
+    AttributeError: __parent__
 
     >>> w = ImplicitAcquisitionWrapper()
     Traceback (most recent call last):
