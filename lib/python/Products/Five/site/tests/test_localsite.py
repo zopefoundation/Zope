@@ -116,36 +116,38 @@ class SiteManagerTest(PlacelessSetup, unittest.TestCase):
         setSite(self.f2)
         self.assertEqual(getSiteManager(None), self.sm2)
 
-    def test_queryNextSiteManager(self):
-        from zope.app.component import queryNextSiteManager
-        marker = object()
-        self.assert_(queryNextSiteManager(self.root, marker) is marker)
-        self.assert_(queryNextSiteManager(self.f1, marker) is getGlobalSiteManager())
-        self.assertEqual(queryNextSiteManager(self.f2, marker), self.sm1)
-        self.assertEqual(queryNextSiteManager(self.sm1), getGlobalSiteManager())
-        self.assertEqual(queryNextSiteManager(self.sm2), self.sm1)
-        self.assert_(queryNextSiteManager(self.p1, marker) is marker)
-        self.assert_(queryNextSiteManager(self.p2, marker) is marker)
+    # DEPRECATED in Zope 3.4
+    #def test_queryNextSiteManager(self):
+    #    from zope.app.component import queryNextSiteManager
+    #    marker = object()
+    #    self.assert_(queryNextSiteManager(self.root, marker) is marker)
+    #    self.assert_(queryNextSiteManager(self.f1, marker) is getGlobalSiteManager())
+    #    self.assertEqual(queryNextSiteManager(self.f2, marker), self.sm1)
+    #    self.assertEqual(queryNextSiteManager(self.sm1), getGlobalSiteManager())
+    #    self.assertEqual(queryNextSiteManager(self.sm2), self.sm1)
+    #    self.assert_(queryNextSiteManager(self.p1, marker) is marker)
+    #    self.assert_(queryNextSiteManager(self.p2, marker) is marker)
+    #
+    #    self.assert_(queryNextSiteManager(self.unparented_folder, marker)
+    #                 is marker)
+    #    self.assert_(queryNextSiteManager(self.unrooted_subfolder, marker)
+    #                 is marker)
 
-        self.assert_(queryNextSiteManager(self.unparented_folder, marker)
-                     is marker)
-        self.assert_(queryNextSiteManager(self.unrooted_subfolder, marker)
-                     is marker)
-
-    def test_getNextSiteManager(self):
-        from zope.app.component import getNextSiteManager
-        self.assertRaises(ComponentLookupError, getNextSiteManager, self.root)
-        self.assertEqual(getNextSiteManager(self.f1), getGlobalSiteManager())
-        self.assertEqual(getNextSiteManager(self.f2), self.sm1)
-        self.assertEqual(getNextSiteManager(self.sm1), getGlobalSiteManager())
-        self.assertEqual(getNextSiteManager(self.sm2), self.sm1)
-        self.assertRaises(ComponentLookupError, getNextSiteManager, self.p1)
-        self.assertRaises(ComponentLookupError, getNextSiteManager, self.p2)
-
-        self.assertRaises(ComponentLookupError,
-                          getNextSiteManager, self.unparented_folder)
-        self.assertRaises(ComponentLookupError,
-                          getNextSiteManager, self.unrooted_subfolder)
+    # DEPRECATED in Zope 3.4
+    #def test_getNextSiteManager(self):
+    #    from zope.app.component import getNextSiteManager
+    #    self.assertRaises(ComponentLookupError, getNextSiteManager, self.root)
+    #    self.assertEqual(getNextSiteManager(self.f1), getGlobalSiteManager())
+    #    self.assertEqual(getNextSiteManager(self.f2), self.sm1)
+    #    self.assertEqual(getNextSiteManager(self.sm1), getGlobalSiteManager())
+    #    self.assertEqual(getNextSiteManager(self.sm2), self.sm1)
+    #    self.assertRaises(ComponentLookupError, getNextSiteManager, self.p1)
+    #    self.assertRaises(ComponentLookupError, getNextSiteManager, self.p2)
+    #
+    #    self.assertRaises(ComponentLookupError,
+    #                      getNextSiteManager, self.unparented_folder)
+    #    self.assertRaises(ComponentLookupError,
+    #                      getNextSiteManager, self.unrooted_subfolder)
 
 # XXX Maybe we need to test this with RestrictedPython in the context
 # of Zope2? Maybe we just don't care.
