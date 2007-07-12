@@ -21,6 +21,7 @@ import unittest
 
 import ZConfig
 import Zope2.Startup
+import Products
 
 from Zope2.Startup import datatypes
 
@@ -42,6 +43,10 @@ class StartupTestCase(unittest.TestCase):
     def setUp(self):
         if self.schema is None:
             StartupTestCase.schema = getSchema()
+
+    def tearDown(self):
+        Products.__path__ = [d for d in Products.__path__
+                             if os.path.exists(d)]
 
     def load_config_text(self, text):
         # We have to create a directory of our own since the existence

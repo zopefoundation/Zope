@@ -26,6 +26,7 @@ from ZConfig.components.logger.tests import test_logger
 from ZConfig.components.logger.loghandler import NullHandler
 
 import Zope2.Startup
+import Products
 
 from App.config import getConfiguration, setConfiguration
 
@@ -63,6 +64,8 @@ class ZopeStarterTestCase(test_logger.LoggingTestBase):
             os.rmdir(TEMPNAME)
         except:
             pass
+        Products.__path__ = [d for d in Products.__path__
+                             if os.path.exists(d)]
         test_logger.LoggingTestBase.tearDown(self)
         # reset logger states
         for name in (None, 'access', 'trace'):

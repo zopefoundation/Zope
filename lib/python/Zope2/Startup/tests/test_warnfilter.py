@@ -23,6 +23,7 @@ import warnings
 
 import ZConfig
 import Zope2.Startup
+import Products
 
 from Zope2.Startup import datatypes
 
@@ -52,6 +53,8 @@ class TestWarnFilter(unittest.TestCase):
 
     def tearDown(self):
         warnings.filters[:] = self.original_warning_filters
+        Products.__path__ = [d for d in Products.__path__
+                             if os.path.exists(d)]
 
     def load_config_text(self, text):
         # We have to create a directory of our own since the existence
