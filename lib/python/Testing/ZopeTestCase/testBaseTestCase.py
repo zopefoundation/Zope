@@ -405,6 +405,7 @@ class TestRequestGarbage1(base.TestCase):
             _sentinel1.append('__del__')
 
     def afterSetUp(self):
+        _sentinel1[:] = []
         self.anApp = base.app()
         self.anApp.REQUEST._hold(self.Held())
 
@@ -422,6 +423,7 @@ class TestRequestGarbage2(base.TestCase):
             _sentinel2.append('__del__')
 
     def afterSetUp(self):
+        _sentinel2[:] = []
         self.app.REQUEST._hold(self.Held())
 
     def testClearClosesRequest(self):
@@ -438,6 +440,7 @@ class TestRequestGarbage3(sandbox.Sandboxed, base.TestCase):
             _sentinel3.append('__del__')
 
     def afterSetUp(self):
+        _sentinel3[:] = []
         self.app.REQUEST._hold(self.Held())
 
     def testClearClosesRequest(self):
