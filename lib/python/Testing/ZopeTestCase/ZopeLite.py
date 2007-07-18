@@ -132,12 +132,14 @@ if not Zope2._began_startup:
 
 # Allow test authors to install Zope products into the test environment. Note
 # that installProduct() must be called at module level -- never from tests.
-from OFS.Application import get_folder_permissions, get_products, install_product
+from OFS.Application import get_folder_permissions, get_products
+from OFS.Application import install_product, install_package
 from OFS.Folder import Folder
 import Products
 
 _theApp = Zope2.app()
 _installedProducts = {}
+_installedPackages = {}
 
 def hasProduct(name):
     '''Checks if a product can be found along Products.__path__'''
@@ -163,6 +165,27 @@ def installProduct(name, quiet=0):
         else:
             if name != 'SomeProduct':   # Ignore the skeleton tests :-P
                 if not quiet: _print('Installing %s ... NOT FOUND\n' % name)
+
+def hasPackage(name):
+    '''Checks if a package has been registered with five:registerPackage.'''
+    return name in [m.__name__ for m in getattr(Products, '_registered_packages', [])]
+
+def installPackage(name, quiet=0):
+    '''Installs a registered Python package like a Zope product.'''
+    start = time.time()
+    if _patched and not _installedPackages.has_key(name):
+        for module, init_func in Products._packages_to_initialize:
+            if module.__name__ == name:
+                if not quiet: _print('Installing %s ... ' % module.__name__)
+                # We want to fail immediately if a package throws an exception
+                # during install, so we set the raise_exc flag.
+                install_package(_theApp, module, init_func, raise_exc=1)
+                _installedPackages[module.__name__] = 1
+                Products._packages_to_initialize.remove((module, init_func))
+                if not quiet: _print('done (%.3fs)\n' % (time.time() - start))
+                break
+        else:
+            if not quiet: _print('Installing %s ... NOT FOUND\n' % name)
 
 def _load_control_panel():
     # Loading the Control_Panel of an existing ZODB may take
@@ -193,6 +216,7 @@ DB = Zope2.DB
 configure = Zope2.configure
 def startup(): pass
 Zope = Zope2
+active = _patched
 
 # ZODB sandbox factory
 from ZODB.DemoStorage import DemoStorage

@@ -202,8 +202,8 @@ class BaseRequest:
 
     def close(self):
         self.other.clear()
-        self._held=None
         notify(EndRequestEvent(None, self))
+        self._held=None
 
     def processInputs(self):
         """Do any input processing that could raise errors
@@ -634,7 +634,8 @@ class BaseRequest:
     def _hold(self, object):
         """Hold a reference to an object to delay it's destruction until mine
         """
-        self._held=self._held+(object,)
+        if self._held is not None:
+            self._held=self._held+(object,)
 
 def exec_callables(callables):
     result = None

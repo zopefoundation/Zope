@@ -11,3 +11,8 @@
 #
 ##############################################################################
 __ac_permissions__=()
+
+# This is used to keep track of packages which need to be initialized as
+# products. These will be processed during the usual product installation
+# in OFS.Application
+_packages_to_initialize = []

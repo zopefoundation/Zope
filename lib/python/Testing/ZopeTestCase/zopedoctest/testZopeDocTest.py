@@ -12,7 +12,7 @@
 ##############################################################################
 """Example Zope doctest
 
-$Id: testZopeDocTest.py,v 1.2 2005/03/26 18:07:08 shh42 Exp $
+$Id$
 """
 
 import os, sys
@@ -29,8 +29,12 @@ def setUp(self):
 
     >>> 'object' in folder.objectIds()
     True
+
+    >>> foo
+    1
     '''
     self.folder.manage_addFolder('object', '')
+    self.globs['foo'] = 1
 
 
 def test_suite():

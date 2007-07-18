@@ -8,9 +8,37 @@ Zope Changes
 
       - Backported feature from Zope 2.11 to support named temporary files.
 
-  Zope 2.10.4 (unreleased)
+  Zope 2.10.4 (23.06.2007)
+
+    Other changes
+
+      - updated to ZODB 3.7.1
+
+      - updated to Zope 3.3.2
 
     Bugs fixed
+
+      - Collector #1306: Missing acquisition context on local roles screen.
+
+      - Collector #2153: Supporting unquoted cookies with spaces.
+
+      - The REQUEST no longer accepts holds after it has been closed.
+
+      - Collector #1441: WebDAV compatibility with Windows Web Folders
+        restored by adding a configuration variable that controls the
+        sending of the non-standard MS-Author-Via and Public
+        headers. Thanks for PatrickD for the the hard work coming up
+        with an initial patch.  
+        (http://zope.org/Collectors/Zope/1441)
+
+      - Fixed bug in ZPublisher.BaseRequest with persistent site managers. An
+        EndRequestEvent was thrown after the ZODB connection was already
+        closed and thus the site manager not being available anymore.
+
+      - Collector #2295: Comments in PythonScripts could lead to syntax
+        errors
+
+      - Collector #2307: ObjectCopiedEvent not dispatched to sublocations.
 
       - Collector #2304: fixed markup issue in ptEdit.zpt
 
@@ -1314,9 +1342,9 @@ Zope Changes
        x86_64 systems
 
      - ZReST: the charset used in the rendered HTML was not set to the
-       corresponding output_encoding property of the ZReST instance. In addition
-       changing the encodings through the Properties tab did not re-render
-       the HTML.
+       corresponding output_encoding property of the ZReST
+       instance. In addition changing the encodings through the
+       Properties tab did not re-render the HTML.
 
      - Collector #1234: an exception triple passed to LOG() was not
        propagated properly to the logging module of Python
