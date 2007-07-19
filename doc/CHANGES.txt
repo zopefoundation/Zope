@@ -9,6 +9,9 @@ Zope Changes
 
     Restructuring
 
+      - Removed ZGadflyDA (was deprecated since Zope 2.9). The code is
+        still available from svn.zope.org/Products.ZGadflyDA.
+
       - Removed OFS.content_types (was deprecated since Zope 2.9)
 
       - Undeprecated 'zLOG', which will remain a backward-compatibility
