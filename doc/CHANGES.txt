@@ -9,6 +9,8 @@ Zope Changes
 
     Restructuring
 
+      - Removed OFS.content_types (was deprecated since Zope 2.9)
+
       - Undeprecated 'zLOG', which will remain a backward-compatibility
         shim for the Python logging module.
 
