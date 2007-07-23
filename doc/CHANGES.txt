@@ -128,6 +128,10 @@ Zope Changes
 
     Bugs Fixed
 
+      - "version.txt" file was being written to the wrong place by the
+        Makefile, causing Zope to report "unreleased version" even for
+        released versions.
+
       - Collector #1306: Missing acquisition context on local roles screen.
 
       - Collector #2153: Supporting unquoted cookies with spaces.
