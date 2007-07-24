@@ -1555,13 +1555,34 @@ module_aq_base(PyObject *ignored, PyObject *args)
 static PyObject *
 capi_aq_parent(PyObject *self)
 {
-  PyObject *result=Py_None;
+  PyObject *result, *v, *tb;
 
   if (isWrapper(self) && WRAPPER(self)->container)
-  	result=WRAPPER(self)->container;
+    {
+      result=WRAPPER(self)->container;
+      Py_INCREF(result);
+      return result;
+    }
+  else if ((result=PyObject_GetAttr(self, py__parent__)))
+    /* We already own the reference to result (PyObject_GetAttr gives
+       it to us), no need to INCREF here */
+    return result;
+  else
+    {
+      /* We need to clean up the AttributeError from the previous
+         getattr (because it has clearly failed) */
+      PyErr_Fetch(&result,&v,&tb);
+      if (result && (result != PyExc_AttributeError))
+        {
+          PyErr_Restore(result,v,tb);
+          return NULL;
+        }
+      Py_XDECREF(result); Py_XDECREF(v); Py_XDECREF(tb);
 
-  Py_INCREF(result);
-  return result;
+      result=Py_None;
+      Py_INCREF(result);
+      return result;
+    }
 }
 
 static PyObject *
