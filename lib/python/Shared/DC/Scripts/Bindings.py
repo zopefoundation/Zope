@@ -179,6 +179,13 @@ class UnauthorizedBinding:
         # Make *extra* sure that the wrapper isn't used to access
         # __call__, etc.
         if name.startswith('__'):
+            # Acquisition will nowadays try to do an getattr on all
+            # objects which aren't Acquisition wrappers, asking for a
+            # __parent__ pointer.  We don't want to raise Unauthorized
+            # in this case but simply an AttributeError.
+            if name in ('__parent__', '__name__'):
+                raise AttributeError(name)
+
             self.__you_lose()
 
         return guarded_getattr(self._wrapped, name, default)
