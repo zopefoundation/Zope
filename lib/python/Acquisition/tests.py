@@ -1690,6 +1690,326 @@ def test_proxying():
     """
 
 
+class Location(object):
+    __parent__ = None
+ 
+class ECLocation(ExtensionClass.Base):
+    __parent__ = None
+
+def test___parent__no_wrappers():
+    """
+    Acquisition also works with objects that aren't wrappers, as long
+    as they have __parent__ pointers.  Let's take a hierarchy like
+    z --isParent--> y --isParent--> x:
+
+      >>> x = Location()
+      >>> y = Location()
+      >>> z = Location()
+      >>> x.__parent__ = y
+      >>> y.__parent__ = z
+
+    and some attributes that we want to acquire:
+
+      >>> x.hello = 'world'
+      >>> y.foo = 42
+      >>> z.foo = 43  # this should not be found
+      >>> z.bar = 3.145
+
+    ``aq_acquire`` works we know it from implicit/acquisition wrappers:
+
+      >>> Acquisition.aq_acquire(x, 'hello')
+      'world'
+      >>> Acquisition.aq_acquire(x, 'foo')
+      42
+      >>> Acquisition.aq_acquire(x, 'bar')
+      3.145
+
+    TODO aq_parent, aq_chain
+    """
+
+def test_implicit_wrapper_as___parent__():
+    """
+    Let's do the same test again, only now not all objects are of the
+    same kind and link to each other via __parent__ pointers.  The
+    root is a stupid ExtensionClass object:
+
+      >>> class Root(ExtensionClass.Base):
+      ...     bar = 3.145
+      >>> z = Root()
+
+    The intermediate parent is an object that supports implicit
+    acquisition.  We bind it to the root via the __of__ protocol:
+
+      >>> class Impl(Acquisition.Implicit):
+      ...     foo = 42
+      >>> y = Impl().__of__(z)
+
+    The child object is again a simple object with a simple __parent__
+    pointer:
+
+      >>> x = Location()
+      >>> x.hello = 'world'
+      >>> x.__parent__ = y
+
+    ``aq_acquire`` works as expected from implicit/acquisition
+    wrappers:
+
+      >>> Acquisition.aq_acquire(x, 'hello')
+      'world'
+      >>> Acquisition.aq_acquire(x, 'foo')
+      42
+      >>> Acquisition.aq_acquire(x, 'bar')
+      3.145
+
+    Note that also the (implicit) acquisition wrapper has a __parent__
+    pointer, which is automatically computed from the acquisition
+    container (it's identical to aq_parent):
+
+      >>> y.__parent__ is z
+      True
+
+    Just as much as you can assign to aq_parent, you can also assign
+    to __parent__ to change the acquisition context of the wrapper:
+
+      >>> newroot = Root()
+      >>> y.__parent__ = newroot
+      >>> y.__parent__ is z
+      False
+      >>> y.__parent__ is newroot
+      True
+
+    Note that messing with the wrapper won't in any way affect the
+    wrapped object:
+
+      >>> Acquisition.aq_base(y).__parent__
+      Traceback (most recent call last):
+        ...
+      AttributeError: __parent__
+
+    TODO aq_parent, aq_chain
+    """
+
+def test_explicit_wrapper_as___parent__():
+    """
+    Let's do this test yet another time, with an explicit wrapper:
+
+      >>> class Root(ExtensionClass.Base):
+      ...     bar = 3.145
+      >>> z = Root()
+
+    The intermediate parent is an object that supports implicit
+    acquisition.  We bind it to the root via the __of__ protocol:
+
+      >>> class Expl(Acquisition.Explicit):
+      ...     foo = 42
+      >>> y = Expl().__of__(z)
+
+    The child object is again a simple object with a simple __parent__
+    pointer:
+
+      >>> x = Location()
+      >>> x.hello = 'world'
+      >>> x.__parent__ = y
+
+    ``aq_acquire`` works as expected from implicit/acquisition
+    wrappers:
+
+      >>> Acquisition.aq_acquire(x, 'hello')
+      'world'
+      >>> Acquisition.aq_acquire(x, 'foo')
+      42
+      >>> Acquisition.aq_acquire(x, 'bar')
+      3.145
+
+    Note that also the (explicit) acquisition wrapper has a __parent__
+    pointer, which is automatically computed from the acquisition
+    container (it's identical to aq_parent):
+
+      >>> y.__parent__ is z
+      True
+
+    Just as much as you can assign to aq_parent, you can also assign
+    to __parent__ to change the acquisition context of the wrapper:
+
+      >>> newroot = Root()
+      >>> y.__parent__ = newroot
+      >>> y.__parent__ is z
+      False
+      >>> y.__parent__ is newroot
+      True
+
+    Note that messing with the wrapper won't in any way affect the
+    wrapped object:
+
+      >>> Acquisition.aq_base(y).__parent__
+      Traceback (most recent call last):
+        ...
+      AttributeError: __parent__
+
+    TODO aq_parent, aq_chain
+    """
+
+def test_implicit_wrapper_has_nonwrapper_as_aq_parent():
+    """Let's do this the other way around: The root and the
+    intermediate parent is an object that doesn't support acquisition,
+
+      >>> y = ECLocation()
+      >>> z = Location()
+      >>> y.__parent__ = z
+      >>> y.foo = 42
+      >>> z.foo = 43  # this should not be found
+      >>> z.bar = 3.145
+
+    only the outmost object does:
+
+      >>> class Impl(Acquisition.Implicit):
+      ...     hello = 'world'
+      >>> x = Impl().__of__(y)
+
+    Again, acquiring objects work as usual:
+
+      >>> Acquisition.aq_acquire(x, 'hello')
+      'world'
+      >>> Acquisition.aq_acquire(x, 'foo')
+      42
+      >>> Acquisition.aq_acquire(x, 'bar')
+      3.145
+
+    Because the outmost object, ``x``, is wrapped in an implicit
+    acquisition wrapper, we can also use direct attribute access:
+
+      >>> x.hello
+      'world'
+      >>> x.foo
+      42
+      >>> x.bar
+      3.145
+
+    TODO aq_parent, aq_chain
+    """
+
+def test_explicit_wrapper_has_nonwrapper_as_aq_parent():
+    """Let's do this the other way around: The root and the
+    intermediate parent is an object that doesn't support acquisition,
+
+      >>> y = ECLocation()
+      >>> z = Location()
+      >>> y.__parent__ = z
+      >>> y.foo = 42
+      >>> z.foo = 43  # this should not be found
+      >>> z.bar = 3.145
+
+    only the outmost object does:
+
+      >>> class Expl(Acquisition.Explicit):
+      ...     hello = 'world'
+      >>> x = Expl().__of__(y)
+
+    Again, acquiring objects work as usual:
+
+      >>> Acquisition.aq_acquire(x, 'hello')
+      'world'
+      >>> Acquisition.aq_acquire(x, 'foo')
+      42
+      >>> Acquisition.aq_acquire(x, 'bar')
+      3.145
+
+    TODO aq_parent, aq_chain
+    """
+
+def test___parent__aq_parent_circles():
+    """
+    As a general safety belt, Acquisition won't follow a mixture of
+    circular __parent__ pointers and aq_parent wrappers.  These can
+    occurr when code that uses implicit acquisition wrappers meets
+    code that uses __parent__ pointers.
+
+      >>> class Impl(Acquisition.Implicit):
+      ...     hello = 'world'
+
+      >>> class Impl2(Acquisition.Implicit):
+      ...     hello = 'world2'
+      ...     only = 'here'
+
+      >>> x = Impl()
+      >>> y = Impl2().__of__(x)
+      >>> x.__parent__ = y
+
+      >>> x.__parent__.aq_base is y.aq_base
+      True
+
+      >>> x.__parent__.__parent__ is x
+      True
+
+      >>> x.hello
+      'world'
+      >>> Acquisition.aq_acquire(x, 'hello')
+      'world'
+
+      >>> x.only
+      Traceback (most recent call last):
+      ...
+      AttributeError: only
+      >>> Acquisition.aq_acquire(x, 'only')
+      'here'
+
+      >>> Acquisition.aq_acquire(x, 'non_existant_attr')
+      Traceback (most recent call last):
+      ...
+      AttributeError: non_existant_attr
+
+      >>> Acquisition.aq_acquire(y, 'non_existant_attr')
+      Traceback (most recent call last):
+      ...
+      AttributeError: non_existant_attr
+
+      >>> x.non_existant_attr
+      Traceback (most recent call last):
+      ...
+      AttributeError: non_existant_attr
+
+      >>> y.non_existant_attr
+      Traceback (most recent call last):
+      ...
+      AttributeError: non_existant_attr
+
+    """
+
+def test___parent__parent__circles():
+    """
+    Acquisition won't follow circular __parent__ references:
+
+      >>> class Impl(Acquisition.Implicit):
+      ...     hello = 'world'
+
+      >>> class Impl2(Acquisition.Implicit):
+      ...     hello = 'world2'
+      ...     only = 'here'
+
+      >>> x = Impl()
+      >>> y = Impl2()
+      >>> x.__parent__ = y
+      >>> y.__parent__ = x
+
+      >>> x.__parent__.__parent__ is x
+      True
+
+      >>> Acquisition.aq_acquire(x, 'hello')
+      'world'
+      >>> Acquisition.aq_acquire(x, 'only')
+      'here'
+
+      >>> Acquisition.aq_acquire(x, 'non_existant_attr')
+      Traceback (most recent call last):
+      ...
+      AttributeError: non_existant_attr
+
+      >>> Acquisition.aq_acquire(y, 'non_existant_attr')
+      Traceback (most recent call last):
+      ...
+      AttributeError: non_existant_attr
+    """
+
 import unittest
 from zope.testing.doctest import DocTestSuite
 

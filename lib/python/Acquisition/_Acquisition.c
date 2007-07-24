@@ -38,7 +38,8 @@ static PyObject *py__add__, *py__sub__, *py__mul__, *py__div__,
   *py__long__, *py__float__, *py__oct__, *py__hex__,
   *py__getitem__, *py__setitem__, *py__delitem__,
   *py__getslice__, *py__setslice__, *py__delslice__,  *py__contains__,
-  *py__len__, *py__of__, *py__call__, *py__repr__, *py__str__, *py__cmp__;
+  *py__len__, *py__of__, *py__call__, *py__repr__, *py__str__, *py__cmp__,
+  *py__parent__;
 
 static PyObject *Acquired=0;
 
@@ -82,7 +83,7 @@ init_py_names(void)
   INIT_PY_NAME(__repr__);
   INIT_PY_NAME(__str__);
   INIT_PY_NAME(__cmp__);
-  
+  INIT_PY_NAME(__parent__);
 #undef INIT_PY_NAME
 }
 
@@ -414,6 +415,23 @@ static PyObject *
 Wrapper_findattr(Wrapper *self, PyObject *oname,
 		PyObject *filter, PyObject *extra, PyObject *orig,
 		int sob, int sco, int explicit, int containment)
+/*
+  Parameters:
+
+  sob
+    Search self->obj for the 'oname' attribute
+
+  sco
+    Search self->container for the 'oname' attribute
+
+  explicit
+    Explicitly acquire 'oname' attribute from container (assumed with
+    implicit acquisition wrapper)
+
+  containment
+    Use the innermost wrapper ("aq_inner") for looking up the 'oname'
+    attribute.
+*/
 {
   PyObject *r, *v, *tb;
   char *name="";
@@ -486,6 +504,7 @@ Wrapper_findattr(Wrapper *self, PyObject *oname,
 	  Py_XDECREF(r); Py_XDECREF(v); Py_XDECREF(tb);
 	  r=NULL;
 	}
+	  /* normal attribute lookup */
       else if ((r=PyObject_GetAttr(self->obj,oname)))
 	{
 	  if (r==Acquired)
@@ -520,6 +539,7 @@ Wrapper_findattr(Wrapper *self, PyObject *oname,
       PyErr_Clear();
     }
 
+  /* Lookup has failed, acquire it from parent. */
   if (sco && (*name != '_' || explicit)) 
     return Wrapper_acquire(self, oname, filter, extra, orig, explicit, 
 			   containment);
@@ -533,23 +553,34 @@ Wrapper_acquire(Wrapper *self, PyObject *oname,
 		PyObject *filter, PyObject *extra, PyObject *orig,
 		int explicit, int containment)
 {
-  PyObject *r;
+  PyObject *r,  *v, *tb;
   int sob=1, sco=1;
 
   if (self->container)
     {
+      /* If the container has an acquisition wrapper itself, we'll use
+         Wrapper_findattr to progress further. */
       if (isWrapper(self->container))
 	{
 	  if (self->obj && isWrapper(self->obj))
 	    {
-	      /* Try to optimize search by recognizing repeated obs in path */
+	      /* Try to optimize search by recognizing repeated
+                 objects in path. */
 	      if (WRAPPER(self->obj)->container==
 		  WRAPPER(self->container)->container) 
 		sco=0;
 	      else if (WRAPPER(self->obj)->container==
 		      WRAPPER(self->container)->obj)  
 		sob=0;
-	   }
+	    }
+
+          /* Don't search the container when the container of the
+             container is the same object as 'self'. */
+          if (WRAPPER(self->container)->container == WRAPPER(self)->obj)
+            {
+              sco=0;
+              containment=1;
+            }
 
 	  r=Wrapper_findattr((Wrapper*)self->container,
 			     oname, filter, extra, orig, sob, sco, explicit, 
@@ -558,8 +589,46 @@ Wrapper_acquire(Wrapper *self, PyObject *oname,
 	  if (r && has__of__(r)) ASSIGN(r,__of__(r,OBJECT(self)));
 	  return r;
 	}
+      /* If the container has a __parent__ pointer, we create an
+	 acquisition wrapper for it accordingly.  Then we can proceed
+	 with Wrapper_findattr, just as if the container had an
+	 acquisition wrapper in the first place (see above). */
+      else if ((r = PyObject_GetAttr(self->container, py__parent__)))
+        {
+          ASSIGN(self->container, newWrapper(self->container, r,
+                                               (PyTypeObject*)&Wrappertype));
+
+          /* Don't search the container when the parent of the parent
+             is the same object as 'self' */
+          if (WRAPPER(r)->obj == WRAPPER(self)->obj)
+            sco=0;
+
+          Py_DECREF(r); /* don't need __parent__ anymore */
+
+          r=Wrapper_findattr((Wrapper*)self->container,
+                             oname, filter, extra, orig, sob, sco, explicit, 
+                             containment);
+          /* There's no need to DECREF the wrapper here because it's
+             not stored in self->container, thus 'self' owns its
+             reference now */
+        return r;
+        }
+      /* The container is the end of the acquisition chain; if we
+         can't look up the attribute here, we can't look it up at
+         all. */
       else
 	{
+          /* We need to clean up the AttributeError from the previous
+             getattr (because it has clearly failed). */
+          PyErr_Fetch(&r,&v,&tb);
+          if (r && (r != PyExc_AttributeError))
+            {
+              PyErr_Restore(r,v,tb);
+              return NULL;
+            }
+          Py_XDECREF(r); Py_XDECREF(v); Py_XDECREF(tb);
+          r=NULL;
+
 	  if ((r=PyObject_GetAttr(self->container,oname))) {
 	    if (r == Acquired) {
 	      Py_DECREF(r);
@@ -1341,8 +1410,7 @@ static PyObject *
 capi_aq_acquire(PyObject *self, PyObject *name, PyObject *filter,
 	PyObject *extra, int explicit, PyObject *defalt, int containment)
 {
-  
-  PyObject *result;
+  PyObject *result, *v, *tb;
 
   if (filter==Py_None) filter=0;
 
@@ -1352,22 +1420,47 @@ capi_aq_acquire(PyObject *self, PyObject *name, PyObject *filter,
 	      WRAPPER(self), name, filter, extra, OBJECT(self),1,
 	      explicit || 
 	      WRAPPER(self)->ob_type==(PyTypeObject*)&Wrappertype,
-	      explicit, containment);
+	      explicit, containment);  
+  /* Not wrapped; check if we have a __parent__ pointer.  If that's
+     the case, we create a wrapper and pretend it's business as
+     usual */
+  else if ((result = PyObject_GetAttr(self, py__parent__)))
+    {
+      self = newWrapper(self, result, (PyTypeObject*)&Wrappertype);
+      Py_DECREF(result); /* don't need __parent__ anymore */
+      result = Wrapper_findattr(WRAPPER(self), name, filter, extra,
+                                OBJECT(self), 1, 1, explicit, containment);
+      /* Get rid of temporary wrapper */
+      Py_DECREF(self);
+      return result;
+    }
+  /* No wrapper and no __parent__, so just getattr. */
+  else
+    {
+      /* We need to clean up the AttributeError from the previous
+         getattr (because it has clearly failed). */
+      PyErr_Fetch(&result,&v,&tb);
+      if (result && (result != PyExc_AttributeError))
+        {
+          PyErr_Restore(result,v,tb);
+          return NULL;
+        }
+      Py_XDECREF(result); Py_XDECREF(v); Py_XDECREF(tb);
+
+      if (! filter) return PyObject_GetAttr(self, name);
+
+      /* Crap, we've got to construct a wrapper so we can use
+         Wrapper_findattr */
+      UNLESS (self=newWrapper(self, Py_None, (PyTypeObject*)&Wrappertype)) 
+        return NULL;
   
-  /* Not wrapped and no filter, so just getattr */
-  if (! filter) return PyObject_GetAttr(self, name);
+      result=Wrapper_findattr(WRAPPER(self), name, filter, extra, OBJECT(self),
+                              1, 1, explicit, containment);
 
-  /* Crap, we've got to construct a wrapper so we can use Wrapper_findattr */
-  UNLESS (self=newWrapper(self, Py_None, (PyTypeObject*)&Wrappertype)) 
-    return NULL;
-  
-  result=Wrapper_findattr(WRAPPER(self), name, filter, extra, OBJECT(self),
-			   1, 1, explicit, containment);
-
-  /* get rid of temp wrapper */
-  Py_DECREF(self);
-
-  return result;
+      /* Get rid of temporary wrapper */
+      Py_DECREF(self);
+      return result;
+    }
 }
 
 static PyObject *
