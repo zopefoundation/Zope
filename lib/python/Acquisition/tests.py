@@ -1725,14 +1725,26 @@ def test___parent__no_wrappers():
       >>> Acquisition.aq_acquire(x, 'bar')
       3.145
 
-    as does ``aq_parent``:
+    as does ``aq_get``:
+
+      >>> Acquisition.aq_get(x, 'hello')
+      'world'
+      >>> Acquisition.aq_get(x, 'foo')
+      42
+      >>> Acquisition.aq_get(x, 'bar')
+      3.145
+
+    and ``aq_parent``:
 
       >>> Acquisition.aq_parent(x) is y
       True
       >>> Acquisition.aq_parent(y) is z
       True
 
-    TODO aq_chain
+    as well as ``aq_chain``:
+
+      >>> Acquisition.aq_chain(x) == [x, y, z]
+      True
     """
 
 def test_implicit_wrapper_as___parent__():
@@ -1769,11 +1781,25 @@ def test_implicit_wrapper_as___parent__():
       >>> Acquisition.aq_acquire(x, 'bar')
       3.145
 
-    as does ``aq_parent``:
+    as does ``aq_get``:
+
+      >>> Acquisition.aq_get(x, 'hello')
+      'world'
+      >>> Acquisition.aq_get(x, 'foo')
+      42
+      >>> Acquisition.aq_get(x, 'bar')
+      3.145
+
+    and ``aq_parent``:
 
       >>> Acquisition.aq_parent(x) is y
       True
       >>> Acquisition.aq_parent(y) is z
+      True
+
+    as well as ``aq_chain``:
+
+      >>> Acquisition.aq_chain(x) == [x, y, z]
       True
 
     Note that also the (implicit) acquisition wrapper has a __parent__
@@ -1800,8 +1826,6 @@ def test_implicit_wrapper_as___parent__():
       Traceback (most recent call last):
         ...
       AttributeError: __parent__
-
-    TODO aq_chain
     """
 
 def test_explicit_wrapper_as___parent__():
@@ -1836,11 +1860,25 @@ def test_explicit_wrapper_as___parent__():
       >>> Acquisition.aq_acquire(x, 'bar')
       3.145
 
-    as does ``aq_parent``:
+    as does ``aq_get``:
+
+      >>> Acquisition.aq_get(x, 'hello')
+      'world'
+      >>> Acquisition.aq_get(x, 'foo')
+      42
+      >>> Acquisition.aq_get(x, 'bar')
+      3.145
+
+    and ``aq_parent``:
 
       >>> Acquisition.aq_parent(x) is y
       True
       >>> Acquisition.aq_parent(y) is z
+      True
+
+    as well as ``aq_chain``:
+
+      >>> Acquisition.aq_chain(x) == [x, y, z]
       True
 
     Note that also the (explicit) acquisition wrapper has a __parent__
@@ -1867,8 +1905,6 @@ def test_explicit_wrapper_as___parent__():
       Traceback (most recent call last):
         ...
       AttributeError: __parent__
-
-    TODO aq_chain
     """
 
 def test_implicit_wrapper_has_nonwrapper_as_aq_parent():
@@ -1888,7 +1924,7 @@ def test_implicit_wrapper_has_nonwrapper_as_aq_parent():
       ...     hello = 'world'
       >>> x = Impl().__of__(y)
 
-    Again, acquiring objects work as usual:
+    Again, acquiring objects works as usual:
 
       >>> Acquisition.aq_acquire(x, 'hello')
       'world'
@@ -1897,11 +1933,31 @@ def test_implicit_wrapper_has_nonwrapper_as_aq_parent():
       >>> Acquisition.aq_acquire(x, 'bar')
       3.145
 
-    as does ``aq_parent``:
+    as does ``aq_get``:
+
+      >>> Acquisition.aq_get(x, 'hello')
+      'world'
+      >>> Acquisition.aq_get(x, 'foo')
+      42
+      >>> Acquisition.aq_get(x, 'bar')
+      3.145
+
+    and ``aq_parent``:
 
       >>> Acquisition.aq_parent(x) == y
       True
+      >>> x.aq_parent == y
+      True
+      >>> x.aq_parent.aq_parent == z
+      True
       >>> Acquisition.aq_parent(y) is z
+      True
+
+    as well as ``aq_chain``:
+
+      >>> Acquisition.aq_chain(x) == [x, y, z]
+      True
+      >>> x.aq_chain == [x, y, z]
       True
 
     Because the outmost object, ``x``, is wrapped in an implicit
@@ -1913,8 +1969,6 @@ def test_implicit_wrapper_has_nonwrapper_as_aq_parent():
       42
       >>> x.bar
       3.145
-
-    TODO aq_parent, aq_chain
     """
 
 def test_explicit_wrapper_has_nonwrapper_as_aq_parent():
@@ -1943,7 +1997,32 @@ def test_explicit_wrapper_has_nonwrapper_as_aq_parent():
       >>> Acquisition.aq_acquire(x, 'bar')
       3.145
 
-    TODO aq_chain
+    as does ``aq_get``:
+
+      >>> Acquisition.aq_get(x, 'hello')
+      'world'
+      >>> Acquisition.aq_get(x, 'foo')
+      42
+      >>> Acquisition.aq_get(x, 'bar')
+      3.145
+
+    and ``aq_parent``:
+
+      >>> Acquisition.aq_parent(x) == y
+      True
+      >>> x.aq_parent == y
+      True
+      >>> x.aq_parent.aq_parent == z
+      True
+      >>> Acquisition.aq_parent(y) is z
+      True
+
+    as well as ``aq_chain``:
+
+      >>> Acquisition.aq_chain(x) == [x, y, z]
+      True
+      >>> x.aq_chain == [x, y, z]
+      True
     """
 
 def test___parent__aq_parent_circles():

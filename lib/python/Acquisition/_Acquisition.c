@@ -1422,8 +1422,7 @@ capi_aq_acquire(PyObject *self, PyObject *name, PyObject *filter,
 	      WRAPPER(self)->ob_type==(PyTypeObject*)&Wrappertype,
 	      explicit, containment);  
   /* Not wrapped; check if we have a __parent__ pointer.  If that's
-     the case, we create a wrapper and pretend it's business as
-     usual */
+     the case, create a wrapper and pretend it's business as usual. */
   else if ((result = PyObject_GetAttr(self, py__parent__)))
     {
       self = newWrapper(self, result, (PyTypeObject*)&Wrappertype);
@@ -1437,8 +1436,8 @@ capi_aq_acquire(PyObject *self, PyObject *name, PyObject *filter,
   /* No wrapper and no __parent__, so just getattr. */
   else
     {
-      /* We need to clean up the AttributeError from the previous
-         getattr (because it has clearly failed). */
+      /* Clean up the AttributeError from the previous getattr
+         (because it has clearly failed). */
       PyErr_Fetch(&result,&v,&tb);
       if (result && (result != PyExc_AttributeError))
         {
@@ -1486,13 +1485,35 @@ module_aq_acquire(PyObject *ignored, PyObject *args, PyObject *kw)
 static PyObject *
 capi_aq_get(PyObject *self, PyObject *name, PyObject *defalt, int containment)
 {
-  PyObject *result = NULL;
+  PyObject *result = NULL, *v, *tb;
   /* We got a wrapped object, so business as usual */
   if (isWrapper(self)) 
     result=Wrapper_findattr(WRAPPER(self), name, 0, 0, OBJECT(self), 1, 1, 1, 
-		       containment);
+                            containment);
+  /* Not wrapped; check if we have a __parent__ pointer.  If that's
+     the case, create a wrapper and pretend it's business as usual. */
+  else if ((result = PyObject_GetAttr(self, py__parent__)))
+    {
+      self=newWrapper(self, result, (PyTypeObject*)&Wrappertype);
+      Py_DECREF(result); /* don't need __parent__ anymore */
+      result=Wrapper_findattr(WRAPPER(self), name, 0, 0, OBJECT(self),
+                              1, 1, 1, containment);
+      Py_DECREF(self); /* Get rid of temporary wrapper. */
+    }
   else
-    result=PyObject_GetAttr(self, name);
+    {
+      /* Clean up the AttributeError from the previous getattr
+         (because it has clearly failed). */
+      PyErr_Fetch(&result,&v,&tb);
+      if (result && (result != PyExc_AttributeError))
+        {
+          PyErr_Restore(result,v,tb);
+          return NULL;
+        }
+      Py_XDECREF(result); Py_XDECREF(v); Py_XDECREF(tb);
+ 
+      result=PyObject_GetAttr(self, name);
+    }
 
   if (! result && defalt)
     {
@@ -1658,7 +1679,7 @@ module_aq_inner(PyObject *ignored, PyObject *args)
 static PyObject *
 capi_aq_chain(PyObject *self, int containment)
 {
-  PyObject *result;
+  PyObject *result, *v, *tb;
 
   UNLESS (result=PyList_New(0)) return NULL;
 
@@ -1681,8 +1702,27 @@ capi_aq_chain(PyObject *self, int containment)
 	    }
 	}
       else
-	if (PyList_Append(result, self) < 0)
-	  goto err;
+        {
+          if (PyList_Append(result, self) < 0)
+            goto err;
+
+          if ((self=PyObject_GetAttr(self, py__parent__)))
+            {
+              Py_DECREF(self); /* We don't need our own reference. */
+              if (self!=Py_None)
+                continue;
+            }
+          else
+            {
+              PyErr_Fetch(&self,&v,&tb);
+              if (self && (self != PyExc_AttributeError))
+                {
+                  PyErr_Restore(self,v,tb);
+                  return NULL;
+                }
+              Py_XDECREF(self); Py_XDECREF(v); Py_XDECREF(tb);
+            }
+        }
 
       break;
     }
