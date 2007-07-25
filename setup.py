@@ -544,6 +544,13 @@ setup(
              "utilities/ZODBTools/zodbload.py",
              "utilities/ZODBTools/repozo.py",
              "utilities/ZODBTools/space.py",
+             "lib/python/ZEO/scripts/timeout.py",
+             "lib/python/ZEO/scripts/parsezeolog.py",
+             "lib/python/ZEO/scripts/zeopack.py",
+             "lib/python/ZEO/scripts/zeoqueue.py",
+             "lib/python/ZEO/scripts/zeoreplay.py",
+             "lib/python/ZEO/scripts/zeoserverlog.py",
+             "lib/python/ZEO/scripts/zeoup.py",
              "test.py"],
     distclass=ZopeDistribution,
     )
