@@ -193,16 +193,16 @@ class ZReST(Item, PropertyManager, Historical, Implicit, Persistent):
         ''' Render the source to HTML
         '''
         if self._v_formatted is None:
-
+            warnings = self._v_warnings = Warnings()
             settings = {
                 'halt_level': 6,
-                'report_level' : self.report_level,
+                'report_level' : int(self.report_level),
                 'input_encoding': self.input_encoding,
                 'output_encoding': self.output_encoding,
                 'initial_header_level' : 1,
                 'stylesheet' : self.stylesheet,
                 'stylesheet_path' : None,
-                'pub.settings.warning_stream' :  Warnings(),
+                'warning_stream' : warnings,
                 'raw_enabled' : 0,
                 'file_insertion_enabled' : 0,
                 }

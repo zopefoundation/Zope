@@ -28,6 +28,15 @@ Please remove docutils from %(path)s and replace it with a new version. You
 can download docutils at http://docutils.sourceforge.net/#download.
 """ % {'version' : docutils.__version__, 'path' : docutils.__path__[0] }
 
+# Disable inclusion of files for security reasons.  We do this by
+# changing the default value of the ``file_insertion_enabled``
+# parameter to False.
+import docutils.parsers.rst
+for title, options, conf in docutils.parsers.rst.Parser.settings_spec[2]:
+    if options == ['--file-insertion-enabled']:
+        conf['default'] = 0
+        break
+
 import sys, os, locale
 from App.config import getConfiguration
 from docutils.core import publish_parts

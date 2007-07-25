@@ -16,7 +16,7 @@
 __rcs_id__='$Id$'
 __version__='$Revision: 1.15 $'[11:-2]
 
-import sys, os
+import sys, os, cgi
 import unittest
 
 if __name__=='__main__':
@@ -42,6 +42,14 @@ class D:
     def __repr__(self): return "D(%s)" % `self.__dict__`
 
 def d(**kw): return kw
+
+docutils_include_warning = '''\
+<p class="system-message-title">System Message: WARNING/2 (<tt class="docutils">&lt;string&gt;</tt>, line 1)</p>
+<p>&quot;include&quot; directive disabled.</p>'''
+
+docutils_raw_warning = '''\
+<p class="system-message-title">System Message: WARNING/2 (<tt class="docutils">&lt;string&gt;</tt>, line 1)</p>
+<p>&quot;raw&quot; directive disabled.</p>'''
 
 class PukeError(Exception):
     """Exception raised in test code."""
@@ -340,38 +348,51 @@ foo bar
         source = '.. include:: /etc/passwd'
         html = self.doc_class('<dtml-var name="foo" fmt="restructured-text">')
         html._vars['foo'] = source
-        self.assertRaises(NotImplementedError, html)
+        result = html()
+
+        # The include: directive hasn't been rendered, it remains
+        # verbatimly in the rendered output.  Instead a warning
+        # message is presented:
+        self.assert_(source in result)
+        self.assert_(docutils_include_warning in result)
 
     def test_fmt_reST_raw_directive_disabled(self):
-
         EXPECTED = '<h1>HELLO WORLD</h1>'
-
         source = '.. raw:: html\n\n  %s\n' % EXPECTED
         html = self.doc_class('<dtml-var name="foo" fmt="restructured-text">')
         html._vars['foo'] = source
+        result = html()
 
-        result = html()       # don't raise, but don't work either
-        self.failIf(EXPECTED in result)
-
-        self.failUnless("&quot;raw&quot; directive disabled" in result)
-        from cgi import escape
-        self.failUnless(escape(EXPECTED) in result)
+        # The raw: directive hasn't been rendered, it remains
+        # verbatimly in the rendered output.  Instead a warning
+        # message is presented:
+        self.assert_(EXPECTED not in result)
+        self.assert_(cgi.escape(EXPECTED) in result)
+        self.assert_(docutils_raw_warning in result)
 
     def test_fmt_reST_raw_directive_file_option_raises(self):
-
         source = '.. raw:: html\n  :file: inclusion.txt'
         html = self.doc_class('<dtml-var name="foo" fmt="restructured-text">')
         html._vars['foo'] = source
+        result = html()
 
-        self.assertRaises(NotImplementedError, html, source)
+        # The raw: directive hasn't been rendered, it remains
+        # verbatimly in the rendered output.  Instead a warning
+        # message is presented:
+        self.assert_(source in result)
+        self.assert_(docutils_raw_warning in result)
 
     def test_fmt_reST_raw_directive_url_option_raises(self):
-
         source = '.. raw:: html\n  :url: http://www.zope.org'
         html = self.doc_class('<dtml-var name="foo" fmt="restructured-text">')
         html._vars['foo'] = source
+        result = html()
 
-        self.assertRaises(NotImplementedError, html, source)
+        # The raw: directive hasn't been rendered, it remains
+        # verbatimly in the rendered output.  Instead a warning
+        # message is presented:
+        self.assert_(source in result)
+        self.assert_(docutils_raw_warning in result)
 
     def testPropogatedError(self):
 

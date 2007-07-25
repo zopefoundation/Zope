@@ -9,6 +9,10 @@ Zope Changes
 
     Restructuring
 
+      - Ship Zope with a standard docutils 0.4 distribution, instead
+        of a patched one.  Both trusted and untrusted code are still
+        protected against unwanted file inclusion.
+
       - Removed ZGadflyDA (was deprecated since Zope 2.9). The code is
         still available from svn.zope.org/Products.ZGadflyDA.
 

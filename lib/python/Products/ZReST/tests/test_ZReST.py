@@ -5,6 +5,7 @@
 $Id$
 """
 import unittest
+import cgi
 import tempfile
 
 txt = """Hello World
@@ -25,6 +26,9 @@ Von Vögeln und Öfen
 csv_text = """bin:x:1:1:bin:/bin:/bin/bash
 daemon:x:2:2:Daemon:/sbin:/bin/bash
 """
+
+docutils_include_warning = '(WARNING/2) "include" directive disabled.'
+docutils_raw_warning = '(WARNING/2) "raw" directive disabled.'
 
 class TestZReST(unittest.TestCase):
 
@@ -78,32 +82,51 @@ class TestZReST(unittest.TestCase):
     def test_include_directive_raises(self):
         resty = self._makeOne()
         resty.source = 'hello world\n .. include:: /etc/passwd'
-        self.assertRaises(NotImplementedError, resty.render)
+        result = resty.render()
+        warnings = ''.join(resty._v_warnings.messages)
+
+        # The include: directive hasn't been rendered, it remains
+        # verbatimly in the rendered output.  Instead a warning
+        # message is presented:
+        self.assert_(docutils_include_warning in warnings)
 
     def test_raw_directive_disabled(self):
-
-        EXPECTED = '<h1>HELLO WORLD</h1>'
-
         resty = self._makeOne()
+        EXPECTED = '<h1>HELLO WORLD</h1>'
         resty.source = '.. raw:: html\n\n  %s\n' % EXPECTED
-        result = resty.render() # don't raise, but don't work either
-        self.failIf(EXPECTED in result)
+        result = resty.render()
+        warnings = ''.join(resty._v_warnings.messages)
+
+        # The raw: directive hasn't been rendered, it remains
+        # verbatimly in the rendered output.  Instead a warning
+        # message is presented:
+        self.assert_(EXPECTED not in result)
+        self.assert_(cgi.escape(EXPECTED) in result)
+        self.assert_(docutils_raw_warning in warnings)
 
     def test_raw_directive_file_directive_raises(self):
-
         resty = self._makeOne()
         resty.source = '.. raw:: html\n  :file: inclusion.txt'
-        self.assertRaises(NotImplementedError, resty.render)
+        result = resty.render()
+        warnings = ''.join(resty._v_warnings.messages)
+
+        # The raw: directive hasn't been rendered, it remains
+        # verbatimly in the rendered output.  Instead a warning
+        # message is presented:
+        self.assert_(docutils_raw_warning in warnings)
 
     def test_raw_directive_url_directive_raises(self):
-
         resty = self._makeOne()
         resty.source = '.. raw:: html\n  :url: http://www.zope.org/'
-        self.assertRaises(NotImplementedError, resty.render)
+        result = resty.render()
+        warnings = ''.join(resty._v_warnings.messages)
 
+        # The raw: directive hasn't been rendered, it remains
+        # verbatimly in the rendered output.  Instead a warning
+        # message is presented:
+        self.assert_(docutils_raw_warning in warnings)
 
     def test_csv_table_file_option_raise(self):
-
         resty = self._makeOne()
         csv_file = self._csvfile()
         resty.source = '.. csv-table:: \n  :file: %s' % csv_file
