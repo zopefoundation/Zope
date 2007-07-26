@@ -132,6 +132,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - ZopePageTemplate's pt_edit did not recognize content type arguments
+        which had a charset information included.
+
       - "version.txt" file was being written to the wrong place by the
         Makefile, causing Zope to report "unreleased version" even for
         released versions.
