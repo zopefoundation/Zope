@@ -165,6 +165,14 @@ class ZopePageTemplateFileTests(ZopeTestCase):
         self.assertEqual(zpt.read(), s)
         self.assertEqual(isinstance(zpt.read(), unicode), True)
 
+    def testEditWithContentTypeCharset(self):
+        manage_addPageTemplate(self.app, 'test', xml_utf8, encoding='utf-8')
+        zpt = self.app['test']
+        xml_unicode = unicode(xml_utf8, 'utf-8').strip()
+        zpt.pt_edit(xml_unicode, 'text/xml')
+        zpt.pt_edit(xml_unicode, 'text/xml; charset=utf-8')
+        self.assertEqual(zpt.read(), xml_unicode)
+
     def _createZPT(self):
         manage_addPageTemplate(self.app, 'test', text=utf8_str, encoding='utf-8')
         zpt = self.app['test']

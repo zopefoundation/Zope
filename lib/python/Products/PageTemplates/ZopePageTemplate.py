@@ -126,7 +126,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         encoding = None
         output_encoding = None
 
-        if content_type in ('text/xml',):
+        if content_type.startswith('text/xml'):
 
             if is_unicode:
                 encoding = None
@@ -134,9 +134,8 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
             else:
                 encoding = encodingFromXMLPreamble(text)
                 output_encoding = 'utf-8'
-            
 
-        elif content_type in ('text/html',) :
+        elif content_type.startswith('text/html'):
 
             charset = charsetFromMetaEquiv(text)
 
