@@ -42,7 +42,7 @@ class Z2ProviderExpression(StringExpr):
             raise cp_interfaces.ContentProviderLookupError(name)
 
         if getattr(provider, '__of__', None) is not None:
-            provider = provider.__of__(context)
+            provider = provider.__of__(view)
 
         # Insert the data gotten from the context
         addTALNamespaceData(provider, econtext)
