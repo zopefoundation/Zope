@@ -55,4 +55,4 @@ class ObjectWidgetClass(zope.app.form.browser.objectwidget.ObjectWidget):
                 val = self.context.schema[name].default
             self.getSubWidget(name).setRenderedValue(val)
 
-ObjectWidget = ObjectWidetClass
+ObjectWidget = ObjectWidgetClass
