@@ -18,7 +18,6 @@ $Id$
 import os
 import urllib
 
-import Acquisition
 from OFS.Traversable import Traversable as OFSTraversable
 from zope.app.publisher.browser.resources import empty
 from zope.app.publisher.fileresource import File, Image
@@ -28,12 +27,11 @@ from zope.component import getMultiAdapter
 from zope.component.interfaces import IResource
 from zope.datetime import time as timeFromDateTimeString
 from zope.traversing.browser.interfaces import IAbsoluteURL
-
 from Products.Five.browser import BrowserView
 
 _marker = []
 
-class Resource(Acquisition.Explicit):
+class Resource(object):
     """A publishable resource
     """
     implements(IResource)
@@ -63,7 +61,7 @@ class PageTemplateResource(BrowserView, Resource):
         """Rendered content"""
         # ZPublisher might have called setBody with an incorrect URL
         # we definitely don't want that if we are plain html
-        self.request.RESPONSE.setBase(None)
+        self.request.response.setBase(None)
         pt = self.context
         return pt(self.request)
 
@@ -229,11 +227,7 @@ class DirectoryResource(BrowserView, Resource, OFSTraversable):
         resource = factory(name, filename)(self.request)
         resource.__name__ = name
         resource.__parent__ = self
-        # XXX __of__ wrapping is usually done on traversal.
-        # However, we don't want to subclass Traversable (or do we?)
-        # The right thing should probably be a specific (and very simple)
-        # traverser that does __getitem__ and __of__.
-        return resource.__of__(self)
+        return resource
 
 class DirectoryResourceFactory(ResourceFactory):
 

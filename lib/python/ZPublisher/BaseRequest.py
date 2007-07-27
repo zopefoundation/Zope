@@ -95,7 +95,7 @@ class DefaultPublishTraverse(object):
                     request.response.setStatus(200)
                     # We don't need to do the docstring security check
                     # for views, so lets skip it and return the object here.
-                    return subobject.__of__(object)
+                    return subobject
                 # No view found. Reraise the error raised by __bobo_traverse__
                 raise e
         else:
@@ -105,9 +105,10 @@ class DefaultPublishTraverse(object):
                 subobject = getattr(object, name)
             else:
                 # We try to fall back to a view:
-                subobject = queryMultiAdapter((object, request), Interface, name)                
+                subobject = queryMultiAdapter((object, request), Interface,
+                                              name)
                 if subobject is not None:
-                    return subobject.__of__(object)
+                    return subobject
             
                 # And lastly, of there is no view, try acquired attributes, but
                 # only if there is no __bobo_traverse__:
@@ -311,8 +312,7 @@ class BaseRequest:
                     ob2 = namespaceLookup(ns, nm, ob, self)
                 except TraversalError:
                     raise KeyError(ob, name)
-
-                return ob2.__of__(ob)
+                return ob2
 
         if name == '.':
             return ob

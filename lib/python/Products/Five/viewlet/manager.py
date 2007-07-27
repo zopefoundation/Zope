@@ -41,9 +41,6 @@ class ViewletManagerBase(origManagerBase, Acquisition.Explicit):
             raise zope.component.interfaces.ComponentLookupError(
                 'No provider with name `%s` found.' %name)
 
-        # Wrap the viewlet for security lookups
-        viewlet = viewlet.__of__(viewlet.context)
-
         # If the viewlet cannot be accessed, then raise an
         # unauthorized error
         if not guarded_hasattr(viewlet, 'render'):
@@ -65,8 +62,6 @@ class ViewletManagerBase(origManagerBase, Acquisition.Explicit):
         # the object has a real context from which to determine owner
         # security.
         for name, viewlet in viewlets:
-            if getattr(viewlet, '__of__', None) is not None:
-                viewlet = viewlet.__of__(viewlet.__parent__)
             if guarded_hasattr(viewlet, 'render'):
                 results.append((name, viewlet))
         return results

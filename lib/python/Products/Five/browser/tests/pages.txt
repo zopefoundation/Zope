@@ -221,7 +221,6 @@ so we get ('',) instead of ('eagle',):
 Wrap into an acquisition so that imPermissionRole objects can be
 evaluated. __roles__ is a imPermissionRole object:
 
-  >>> view = view.__of__(self.folder.testoid)
   >>> view_roles = getattr(view, '__roles__', None)
   >>> view_roles
   ('Manager',)

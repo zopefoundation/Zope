@@ -209,9 +209,9 @@ class view(zope_app_view):
                 view = component.queryMultiAdapter((self, request), name=name,
                                                    default=None)
                 if view is not None:
-                    return view.__of__(self)
+                    return view
 
-                m = class_.publishTraverse.__get__(self).__of__(self)
+                m = class_.publishTraverse.__get__(self)
                 return m(request, name)
 
         else:
@@ -223,7 +223,7 @@ class view(zope_app_view):
                 view = component.queryMultiAdapter((self, request), name=name,
                                                    default=None)
                 if view is not None:
-                    return view.__of__(self)
+                    return view
 
                 raise NotFoundError(self, name, request)
 

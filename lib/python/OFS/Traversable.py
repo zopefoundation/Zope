@@ -192,7 +192,7 @@ class Traversable:
                         if ns:
                             try:
                                 next = namespaceLookup(
-                                    ns, nm, obj, self.REQUEST).__of__(obj)
+                                    ns, nm, obj, self.REQUEST)
                                 if restricted and not validate(
                                     obj, obj, name, next):
                                     raise Unauthorized(name)
@@ -260,7 +260,7 @@ class Traversable:
                                              Interface, name)
 
                     if next is not None:
-                        next = next.__of__(obj)
+                        next = next
                         if restricted and not validate(obj, obj, name, next):
                             raise Unauthorized(name)
                     elif bobo_traverse is not None:
