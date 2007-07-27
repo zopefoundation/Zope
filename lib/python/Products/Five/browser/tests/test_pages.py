@@ -19,47 +19,6 @@ import os, sys
 if __name__ == '__main__':
     execfile(os.path.join(sys.path[0], 'framework.py'))
 
-def test_ViewAcquisitionWrapping():
-    """
-      >>> import Products.Five.browser.tests
-      >>> from Products.Five import zcml
-      >>> zcml.load_config("configure.zcml", Products.Five)
-      >>> zcml.load_config('pages.zcml', package=Products.Five.browser.tests)
-
-      >>> from Products.Five.tests.testing import simplecontent as sc
-      >>> sc.manage_addSimpleContent(self.folder, 'testoid', 'Testoid')
-      >>> uf = self.folder.acl_users
-      >>> uf._doAddUser('manager', 'r00t', ['Manager'], [])
-      >>> self.login('manager')
-
-      >>> view = self.folder.unrestrictedTraverse('testoid/eagle.txt')
-      >>> view is not None
-      True
-      >>> from Products.Five.browser.tests.pages import SimpleView
-      >>> isinstance(view, SimpleView)
-      True
-      >>> view()
-      u'The eagle has landed'
-
-    This sucks, but we know it
-
-      >>> from Acquisition import aq_parent, aq_base
-      >>> aq_parent(view.context) is view
-      True
-
-    This is the right way to get the context parent
-
-      >>> view.context.aq_inner.aq_parent is not view
-      True
-      >>> view.context.aq_inner.aq_parent is self.folder
-      True
-
-    Clean up:
-
-      >>> from zope.app.testing.placelesssetup import tearDown
-      >>> tearDown()
-    """
-
 def test_view_with_unwrapped_context():
     """
     It may be desirable when writing tests for views themselves to
