@@ -21,7 +21,7 @@ from AccessControl import ClassSecurityInfo
 from AccessControl import getSecurityManager, Unauthorized
 from AccessControl.Permissions import view_management_screens
 from AccessControl.Permissions import take_ownership
-from Acquisition import aq_get, aq_parent, aq_base
+from Acquisition import aq_get, aq_parent, aq_base, aq_inner
 from requestmethod import requestmethod
 from zope.interface import implements
 
@@ -236,12 +236,12 @@ class Owned(ExtensionClass.Base):
     def manage_fixupOwnershipAfterAdd(self):
 
         # Sigh, get the parent's _owner
-        parent=getattr(self, 'aq_parent', None)
+        parent=getattr(self, '__parent__', None)
         if parent is not None: _owner=aq_get(parent, '_owner', None, 1)
         else: _owner=None
 
         if (_owner is None and
-            ((not hasattr(self, 'aq_parent')) or
+            ((not getattr(self, '__parent__', None) is None) or
              (not hasattr(self, 'getPhysicalRoot'))
              )
             ):
@@ -298,13 +298,13 @@ def ownerInfo(user, getattr=getattr):
         return None
     uid=user.getId()
     if uid is None: return uid
-    db=user.aq_inner.aq_parent
+    db=aq_parent(aq_inner(user))
     path=[absattr(db.id)]
     root=db.getPhysicalRoot()
     while 1:
         db=getattr(db,'aq_inner', None)
         if db is None: break
-        db=db.aq_parent
+        db=aq_parent(db)
         if db is root: break
         id=db.id
         if not isinstance(id, str):

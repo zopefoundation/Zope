@@ -101,7 +101,7 @@ def rolesForPermissionOn(perm, object, default=_default_roles, n=None):
         object = getattr(object, 'aq_inner', None)
         if object is None:
             break
-        object = object.aq_parent
+        object = object.__parent__
 
     if r is None:
         if _embed_permission_in_roles:
