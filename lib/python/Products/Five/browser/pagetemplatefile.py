@@ -17,7 +17,7 @@ $Id$
 """
 import os, sys
 
-from Acquisition import aq_inner
+from Acquisition import aq_inner, aq_acquire
 from Globals import package_home
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from Products.PageTemplates.Expressions import SecureModuleImporter
@@ -64,22 +64,16 @@ class ZopeTwoPageTemplateFile(PageTemplateFile):
 
     def pt_getContext(self):
         try:
-            root = self.getPhysicalRoot()
+            root = aq_acquire(self.context, 'getPhysicalRoot')()
         except AttributeError:
-            try:
-                root = self.context.getPhysicalRoot()
-            except AttributeError:
-                root = None
-
-        # Even if the context isn't a view (when would that be exaclty?),
-        # there shouldn't be any dange in applying a view, because it
-        # won't be used.  However assuming that a lack of getPhysicalRoot
-        # implies a missing view causes problems.
+            root = None
         view = self._getContext()
-
         here = aq_inner(self.context)
+        try:
+            request = aq_acquire(root, 'REQUEST')
+        except AttributeError:
+            request = None
 
-        request = getattr(root, 'REQUEST', None)
         c = {'template': self,
              'here': here,
              'context': here,
