@@ -15,11 +15,9 @@
 
 $Id$
 """
-import Acquisition
 import zope.publisher.browser
 
-class BrowserView(Acquisition.Explicit, zope.publisher.browser.BrowserView):
-    """Five browser view
+class BrowserView(zope.publisher.browser.BrowserView):
 
-    Mixes in explicit acquisition so that security can be acquired for
-    views"""
+    def __of__(self):
+        return self
