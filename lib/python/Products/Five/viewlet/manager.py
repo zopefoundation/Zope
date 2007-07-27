@@ -65,7 +65,8 @@ class ViewletManagerBase(origManagerBase, Acquisition.Explicit):
         # the object has a real context from which to determine owner
         # security.
         for name, viewlet in viewlets:
-            viewlet = viewlet.__of__(viewlet.context)
+            if getattr(viewlet, '__of__', None) is not None:
+                viewlet = viewlet.__of__(viewlet.__parent__)
             if guarded_hasattr(viewlet, 'render'):
                 results.append((name, viewlet))
         return results
