@@ -15,79 +15,25 @@
 
 $Id$
 """
-import os, sys
-
-from Acquisition import aq_inner, aq_acquire
-from Globals import package_home
-from Products.PageTemplates.PageTemplateFile import PageTemplateFile
+import zope.app.pagetemplate
 from Products.PageTemplates.Expressions import SecureModuleImporter
 from Products.PageTemplates.Expressions import createTrustedZopeEngine
-from zope.app.pagetemplate.viewpagetemplatefile import ViewMapper
 
 _engine = createTrustedZopeEngine()
 def getEngine():
     return _engine
 
-class ZopeTwoPageTemplateFile(PageTemplateFile):
-    """A strange hybrid between Zope 2 and Zope 3 page template.
-
-    Uses Zope 2's engine, but with security disabled and with some
-    initialization and API from Zope 3.
-    """
-
-    def __init__(self, filename, _prefix=None, content_type=None):
-        # XXX doesn't use content_type yet
-
-        self.ZBindings_edit(self._default_bindings)
-
-        path = self.get_path_from_prefix(_prefix)
-        self.filename = os.path.join(path, filename)
-        if not os.path.isfile(self.filename):
-            raise ValueError("No such file", self.filename)
-
-        basepath, ext = os.path.splitext(self.filename)
-        self.__name__ = os.path.basename(basepath)
-
-        super(PageTemplateFile, self).__init__(self.filename, _prefix)
-
-    def get_path_from_prefix(self, _prefix):
-        if isinstance(_prefix, str):
-            path = _prefix
-        else:
-            if _prefix is None:
-                _prefix = sys._getframe(2).f_globals
-            path = package_home(_prefix)
-        return path
+class ViewPageTemplateFile(zope.app.pagetemplate.ViewPageTemplateFile):
 
     def pt_getEngine(self):
         return getEngine()
 
-    def pt_getContext(self):
-        try:
-            root = aq_acquire(self.context, 'getPhysicalRoot')()
-        except AttributeError:
-            root = None
-        view = self._getContext()
-        here = aq_inner(self.context)
-        try:
-            request = aq_acquire(root, 'REQUEST')
-        except AttributeError:
-            request = None
+    def pt_getContext(self, instance, request, **kw):
+        context = super(ViewPageTemplateFile, self).pt_getContext(
+            instance, request, **kw)
+        context['modules'] = SecureModuleImporter
+        context['options'] = ''
+        return context
 
-        c = {'template': self,
-             'here': here,
-             'context': here,
-             'container': here,
-             'nothing': None,
-             'options': {},
-             'root': root,
-             'request': request,
-             'modules': SecureModuleImporter,
-             }
-        if view is not None:
-            c['view'] = view
-            c['views'] = ViewMapper(here, request)
-
-        return c
-
-ViewPageTemplateFile = ZopeTwoPageTemplateFile
+# BBB
+ZopeTwoPageTemplateFile = ViewPageTemplateFile
