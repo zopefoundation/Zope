@@ -41,10 +41,10 @@ class Z2ProviderExpression(StringExpr):
         if provider is None:
             raise cp_interfaces.ContentProviderLookupError(name)
 
-        # A content provider's context (__parent__) is the view, not
-        # the context object.
+        # Wrap the content provider's in its __parent__, whatever that
+        # may be (typically the view).
         if getattr(provider, '__of__', None) is not None:
-            provider = provider.__of__(view)
+            provider = provider.__of__(provider.__parent__)
 
         # Insert the data gotten from the context
         addTALNamespaceData(provider, econtext)
