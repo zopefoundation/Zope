@@ -1665,11 +1665,12 @@ def test_proxying():
 
 
 import unittest
-from zope.testing.doctest import DocTestSuite
+from zope.testing.doctest import DocTestSuite, DocFileSuite
 
 def test_suite():
     return unittest.TestSuite((
         DocTestSuite(),
+        DocFileSuite('README.txt', package='Acquisition'),
         ))
 
 if __name__ == '__main__':
