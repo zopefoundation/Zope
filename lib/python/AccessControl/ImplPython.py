@@ -20,6 +20,7 @@ from logging import getLogger
 from Acquisition import aq_base
 from Acquisition import aq_parent
 from Acquisition import aq_inner
+from Acquisition import aq_inContextOf
 from Acquisition import aq_acquire
 from ExtensionClass import Base
 from zope.interface import implements
@@ -840,17 +841,10 @@ def verifyAcquisitionContext(user, object, object_roles=None):
             # This is a strange rule, though
             # it doesn't cause any security holes. SDH
             return 1
-        if not hasattr(object, 'aq_inContextOf'):
-            if hasattr(object, 'im_self'):
-                # This is a method.  Grab its self.
-                object=object.im_self
-            if not hasattr(object, 'aq_inContextOf'):
-                # object is not wrapped, therefore we
-                # can't determine context.
-                # Fail the access attempt.  Otherwise
-                # this would be a security hole.
-                return None
-        if not object.aq_inContextOf(ucontext, 1):
+        if hasattr(object, 'im_self'):
+            # This is a method.  Grab its self.
+            object=object.im_self
+        if not aq_inContextOf(object, ucontext, 1):
             if 'Shared' in object_roles:
                 # Old role setting. Waaa
                 object_roles=user._shared_roles(object)

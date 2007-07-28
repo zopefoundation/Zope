@@ -20,6 +20,7 @@ import re
 import socket
 from base64 import decodestring
 
+from Acquisition import aq_inContextOf
 from Acquisition import Implicit
 from App.Management import Navigation, Tabs
 from Globals import DTMLFile, MessageDialog, Persistent, PersistentMapping
@@ -165,14 +166,10 @@ class BasicUser(Implicit):
         if context is not None:
             if object is None:
                 return 1
-            if not hasattr(object, 'aq_inContextOf'):
-                if hasattr(object, 'im_self'):
-                    # This is a method.  Grab its self.
-                    object=object.im_self
-                if not hasattr(object, 'aq_inContextOf'):
-                    # Object is not wrapped, so return false.
-                    return 0
-            return object.aq_inContextOf(context, 1)
+            if hasattr(object, 'im_self'):
+                # This is a method.  Grab its self.
+                object=object.im_self
+            return aq_inContextOf(object, context, 1)
 
         # This is lame, but required to keep existing behavior.
         return 1
