@@ -25,4 +25,18 @@ class BrowserView(zope.publisher.browser.BrowserView):
     def __of__(self, context):
         return self
 
-    # TODO we probably want to provide the aq_* properties as well
+    # We provide the aq_* properties here for BBB
+
+    @property
+    def aq_base(self):
+        return self
+
+    aq_self = aq_inner = aq_base
+
+    @property
+    def aq_parent(self):
+        return self.__parent__
+
+    @property
+    def aq_chain(self):
+        return [self]
