@@ -93,7 +93,6 @@ class FindSupport(ExtensionClass.Base):
                 md=td()
                 obj_expr=(Eval(obj_expr), md, md._push, md._pop)
 
-        base = obj
         base = aq_base(obj)
 
         if hasattr(base, 'objectItems'):
@@ -198,7 +197,6 @@ class FindSupport(ExtensionClass.Base):
                 md=td()
                 obj_expr=(Eval(obj_expr), md, md._push, md._pop)
 
-        base = obj
         base = aq_base(obj)
 
         if not hasattr(base, 'objectItems'):
