@@ -23,6 +23,7 @@ from zope.i18n.interfaces import IUserPreferredLanguages
 from zope.i18n.negotiator import normalize_lang
 from zope.component import queryUtility
 from zope.i18nmessageid import Message
+from zope.publisher.interfaces.browser import IBrowserRequest
 
 
 class FiveTranslationService:
@@ -60,8 +61,11 @@ class FiveTranslationService:
 
         # in Zope3, context is adapted to IUserPreferredLanguages,
         # which means context should be the request in this case.
+        # Do not attempt to acquire REQUEST from the context, when we already
+        # got a request as the context
         if context is not None:
-            context = aq_acquire(context, 'REQUEST', None)
+            if not IBrowserRequest.providedBy(context):
+                context = aq_acquire(context, 'REQUEST', None)
         return util.translate(msgid, mapping=mapping, context=context,
                               target_language=target_language, default=default)
 
