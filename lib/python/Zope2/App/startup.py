@@ -18,6 +18,8 @@ from AccessControl.SecurityManagement import getSecurityManager
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
 from Acquisition import aq_acquire
+from Acquisition import aq_inner
+from Acquisition import aq_parent
 from App.config import getConfiguration
 from time import asctime
 from types import StringType, ListType
@@ -125,7 +127,7 @@ def validated_hook(request, user):
     newSecurityManager(request, user)
     version = request.get(Globals.VersionNameName, '')
     if version:
-        object = user.aq_parent
+        object = aq_parent(user)
         if not getSecurityManager().checkPermission(
             'Join/leave Versions', object):
             request['RESPONSE'].setCookie(
@@ -226,7 +228,7 @@ class ZPublisherExceptionHook:
             while 1:
                 f = getattr(published, self.raise_error_message, None)
                 if f is None:
-                    published = getattr(published, 'aq_parent', None)
+                    published = aq_parent(published)
                     if published is None:
                         raise t, v, traceback
                 else:
@@ -236,7 +238,7 @@ class ZPublisherExceptionHook:
             while 1:
                 if getattr(client, self.error_message, None) is not None:
                     break
-                client = getattr(client, 'aq_parent', None)
+                client = aq_parent(client)
                 if client is None:
                     raise t, v, traceback
 
@@ -291,8 +293,7 @@ class TransactionsManager:
                     object = None
                     break
                 to_append = (object.__name__,) + to_append
-                object = getattr(object, 'aq_inner', object)
-                object = getattr(object, 'aq_parent', None)
+                object = aq_parent(aq_inner(object))
 
             if object is not None:
                 path = '/'.join(object.getPhysicalPath() + to_append)
@@ -307,11 +308,8 @@ class TransactionsManager:
         T.note(path)
         auth_user=request_get('AUTHENTICATED_USER',None)
         if auth_user is not None:
-            try:
-                auth_folder = auth_user.aq_parent
-            except AttributeError:
-                # Most likely some product forgot to call __of__()
-                # on the user object.
+            auth_folder = aq_parent(auth_user)
+            if auth_folder is None:
                 ac_logger.warning(
                     'A user object of type %s has no aq_parent.',
                     type(auth_user)
@@ -321,6 +319,3 @@ class TransactionsManager:
                 auth_path = '/'.join(auth_folder.getPhysicalPath()[1:-1])
 
             T.setUser(auth_user.getId(), auth_path)
-
-
-
