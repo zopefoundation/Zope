@@ -22,7 +22,7 @@ class BrowserView(zope.publisher.browser.BrowserView):
     # BBB for code that expects BrowserView to still inherit from
     # Acquisition.Explicit.
 
-    def __of__(self):
+    def __of__(self, context):
         return self
 
     # TODO we probably want to provide the aq_* properties as well
