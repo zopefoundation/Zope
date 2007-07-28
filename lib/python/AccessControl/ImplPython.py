@@ -293,7 +293,7 @@ class ZopeSecurityPolicy:
                         raise Unauthorized(name, value)
                 else:
                     # Try to acquire roles
-                    try: roles = container.aq_acquire('__roles__')
+                    try: roles = aq_acquire(container, '__roles__')
                     except AttributeError:
                         if containerbase is not accessedbase:
                             if self._verbose:
