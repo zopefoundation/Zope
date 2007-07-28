@@ -17,11 +17,8 @@ import os
 import string
 from logging import getLogger
 
-from Acquisition import aq_base
-from Acquisition import aq_parent
-from Acquisition import aq_inner
+from Acquisition import aq_base, aq_parent, aq_inner, aq_acquire
 from Acquisition import aq_inContextOf
-from Acquisition import aq_acquire
 from ExtensionClass import Base
 from zope.interface import implements
 
@@ -99,10 +96,10 @@ def rolesForPermissionOn(perm, object, default=_default_roles, n=None):
                 else:
                     r = r + list(roles)
 
-        object = getattr(object, 'aq_inner', None)
+        object = aq_inner(object)
         if object is None:
             break
-        object = object.__parent__
+        object = aq_parent(object)
 
     if r is None:
         if _embed_permission_in_roles:
