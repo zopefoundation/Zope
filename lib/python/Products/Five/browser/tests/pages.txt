@@ -157,7 +157,7 @@ Make sure that global template variables in ZPT pages are correct:
   >>> print view()
   View is a view: True
   Context is testoid: True
-  Contaxt.aq_parent is test_folder_1_: True
+  Context.aq_parent is test_folder_1_: True
   Container is context: True
   Here is context: True
   Nothing is None: True
