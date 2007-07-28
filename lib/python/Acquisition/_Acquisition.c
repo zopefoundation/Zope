@@ -1190,49 +1190,45 @@ Wrapper_acquire_method(Wrapper *self, PyObject *args, PyObject *kw)
 # endif
 }
 
-
 static PyObject *
-Wrapper_inContextOf(Wrapper *self, PyObject *args)
+capi_aq_inContextOf(PyObject *self, PyObject *o, int inner)
 {
-  PyObject *subob, *o, *c;
-  int inner=1;
-
-  UNLESS(PyArg_ParseTuple(args,"O|i",&o,&inner)) return NULL;
+  PyObject *next, *c;
 
   if (inner) {
-    /* subob = self */
-    subob = OBJECT(self);
-
-    /* o = aq_base(o) */
-    while (isWrapper(o) && WRAPPER(o)->obj) o=WRAPPER(o)->obj;
+    /* next = self
+       o = aq_base(o) */
+    next = self;
+    while (isWrapper(o) && WRAPPER(o)->obj)
+      o=WRAPPER(o)->obj;
 
     /* while 1: */
     while (1) {
 
-      /*   if aq_base(subob) is o: return 1 */
-      c = subob;
+      /*   if aq_base(next) is o: return 1 */
+      c = next;
       while (isWrapper(c) && WRAPPER(c)->obj) c = WRAPPER(c)->obj;
       if (c == o) return PyInt_FromLong(1);
 
-      /*   self = aq_inner(subob) */
+      /*   self = aq_inner(next) */
       /*   if self is None: break */
-      if (isWrapper(subob)) {
-        self = WRAPPER(subob);
-        while (self->obj && isWrapper(self->obj))
-          self = WRAPPER(self->obj);
+      if (isWrapper(next)) {
+        self = next;
+        while (WRAPPER(self)->obj && isWrapper(WRAPPER(self)->obj))
+          self = WRAPPER(self)->obj;
       }
       else break;
 
-      /*   subob = aq_parent(self) */
-      /*   if subob is None: break */
-      if (self->container)
-        subob = self->container;
+      /*   next = aq_parent(self) */
+      /*   if next is None: break */
+      if (WRAPPER(self)->container)
+        next = WRAPPER(self)->container;
       else break;
     }
   }
   else {
     /* Follow wrappers instead. */
-    c = OBJECT(self);
+    c = (PyObject*)self;
     while (1) {
       if (c==o) return PyInt_FromLong(1);
       if (c && isWrapper(c)) c=WRAPPER(c)->container;
@@ -1241,6 +1237,18 @@ Wrapper_inContextOf(Wrapper *self, PyObject *args)
   }
 
   return PyInt_FromLong(0);
+}
+
+
+static PyObject *
+Wrapper_inContextOf(Wrapper *self, PyObject *args)
+{
+  PyObject *o;
+
+  int inner=1;
+  UNLESS(PyArg_ParseTuple(args,"O|i",&o,&inner)) return NULL;
+
+  return capi_aq_inContextOf((PyObject*)self, o, inner);
 }
 
 PyObject *
