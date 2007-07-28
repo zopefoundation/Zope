@@ -17,6 +17,7 @@ $Id$
 """
 import zope.app.pagetemplate
 
+from Acquisition import aq_base
 from Acquisition import aq_parent
 from AccessControl import getSecurityManager
 from Products.PageTemplates.Expressions import SecureModuleImporter
@@ -38,7 +39,7 @@ class ViewPageTemplateFile(zope.app.pagetemplate.ViewPageTemplateFile):
         # get the root
         obj = context['context']
         root = None
-        while (getattr(obj, 'getPhysicalRoot', None) is None
+        while (getattr(aq_base(obj), 'getPhysicalRoot', None) is None
                and aq_parent(obj) is not None):
             obj = aq_parent(obj)
         if getattr(obj, 'getPhysicalRoot', None) is not None:
