@@ -15,7 +15,7 @@
 
 $Id$
 """
-from Acquisition import aq_acquire
+from Acquisition import aq_get
 from zope.interface import implements
 from zope.i18n.interfaces import IFallbackTranslationDomainFactory
 from zope.i18n.interfaces import ITranslationDomain
@@ -65,7 +65,7 @@ class FiveTranslationService:
         # got a request as the context
         if context is not None:
             if not IBrowserRequest.providedBy(context):
-                context = aq_acquire(context, 'REQUEST', None)
+                context = aq_get(context, 'REQUEST', None)
         return util.translate(msgid, mapping=mapping, context=context,
                               target_language=target_language, default=default)
 
