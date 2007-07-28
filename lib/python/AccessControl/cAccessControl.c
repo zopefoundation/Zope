@@ -1881,7 +1881,7 @@ c_rolesForPermissionOn(PyObject *perm, PyObject *object,
         object = aq_inner(object)
         if object is None:
             break
-        object = object.__parent__
+        object = aq_parent(object)
        */
       {
         PyObject *tobj = aq_inner(object);
