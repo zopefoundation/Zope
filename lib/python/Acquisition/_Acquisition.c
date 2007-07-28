@@ -1239,7 +1239,6 @@ capi_aq_inContextOf(PyObject *self, PyObject *o, int inner)
   return PyInt_FromLong(0);
 }
 
-
 static PyObject *
 Wrapper_inContextOf(Wrapper *self, PyObject *args)
 {
@@ -1753,6 +1752,18 @@ module_aq_chain(PyObject *ignored, PyObject *args)
   return capi_aq_chain(self, containment);
 }
 
+static PyObject *
+module_aq_inContextOf(PyObject *ignored, PyObject *args)
+{
+  PyObject *self, *o;
+  int inner=1;
+
+  UNLESS (PyArg_ParseTuple(args, "OO|i", &self, &o, &inner))
+    return NULL;
+
+  return capi_aq_inContextOf(self, o, inner);
+}
+
 static struct PyMethodDef methods[] = {
   {"aq_acquire", (PyCFunction)module_aq_acquire, METH_VARARGS|METH_KEYWORDS, 
    "aq_acquire(ob, name [, filter, extra, explicit]) -- "
@@ -1770,10 +1781,13 @@ static struct PyMethodDef methods[] = {
    "aq_self(ob) -- Get the object with the outermost wrapper removed"},
   {"aq_inner", (PyCFunction)module_aq_inner, METH_VARARGS, 
    "aq_inner(ob) -- "
-   "Get the object with alll but the innermost wrapper removed"},
+   "Get the object with all but the innermost wrapper removed"},
   {"aq_chain", (PyCFunction)module_aq_chain, METH_VARARGS, 
    "aq_chain(ob [, containment]) -- "
    "Get a list of objects in the acquisition environment"},
+  {"aq_inContextOf", (PyCFunction)module_aq_inContextOf, METH_VARARGS,
+   "aq_inContextOf(base, ob [, inner]) -- "
+   "Determine whether the object is in the acquisition context of base."},
   {NULL,	NULL}
 };
 

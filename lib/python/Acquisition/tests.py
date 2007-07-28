@@ -457,6 +457,13 @@ def test_simple():
     >>> a.b.c.aq_inContextOf(a.b.c)
     1
 
+    >>> Acquisition.aq_inContextOf(a.b.c, a)
+    1
+    >>> Acquisition.aq_inContextOf(a.b.c, a.b)
+    1
+    >>> Acquisition.aq_inContextOf(a.b.c, a.b.c)
+    1
+
 
     >>> a.b.c.aq_acquire('y')
     42
@@ -1274,6 +1281,13 @@ def old_tests():
     >>> checkContext(b.c, b)
     1
     >>> not checkContext(b.c, b.a)
+    1
+
+    Acquisition.aq_inContextOf works the same way:
+
+    >>> Acquisition.aq_inContextOf(b.c, b)
+    1
+    >>> not Acquisition.aq_inContextOf(b.c, b.a)
     1
     
     >>> b.a.aq_inContextOf(b)
