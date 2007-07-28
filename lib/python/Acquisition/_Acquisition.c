@@ -1190,54 +1190,8 @@ Wrapper_acquire_method(Wrapper *self, PyObject *args, PyObject *kw)
 # endif
 }
 
-static PyObject *
-capi_aq_inContextOf(PyObject *self, PyObject *o, int inner)
-{
-  PyObject *next, *c;
-
-  if (inner) {
-    /* next = self
-       o = aq_base(o) */
-    next = self;
-    while (isWrapper(o) && WRAPPER(o)->obj)
-      o=WRAPPER(o)->obj;
-
-    /* while 1: */
-    while (1) {
-
-      /*   if aq_base(next) is o: return 1 */
-      c = next;
-      while (isWrapper(c) && WRAPPER(c)->obj) c = WRAPPER(c)->obj;
-      if (c == o) return PyInt_FromLong(1);
-
-      /*   self = aq_inner(next) */
-      /*   if self is None: break */
-      if (isWrapper(next)) {
-        self = next;
-        while (WRAPPER(self)->obj && isWrapper(WRAPPER(self)->obj))
-          self = WRAPPER(self)->obj;
-      }
-      else break;
-
-      /*   next = aq_parent(self) */
-      /*   if next is None: break */
-      if (WRAPPER(self)->container)
-        next = WRAPPER(self)->container;
-      else break;
-    }
-  }
-  else {
-    /* Follow wrappers instead. */
-    c = (PyObject*)self;
-    while (1) {
-      if (c==o) return PyInt_FromLong(1);
-      if (c && isWrapper(c)) c=WRAPPER(c)->container;
-      else break;
-    }
-  }
-
-  return PyInt_FromLong(0);
-}
+/* forward declaration so that we can use it in Wrapper_inContextOf */
+static PyObject * capi_aq_inContextOf(PyObject *self, PyObject *o, int inner);
 
 static PyObject *
 Wrapper_inContextOf(Wrapper *self, PyObject *args)
@@ -1750,6 +1704,41 @@ module_aq_chain(PyObject *ignored, PyObject *args)
     return NULL;
 
   return capi_aq_chain(self, containment);
+}
+
+static PyObject *
+capi_aq_inContextOf(PyObject *self, PyObject *o, int inner)
+{
+  PyObject *next, *c;
+
+  /* next = self
+     o = aq_base(o) */
+  next = self;
+  while (isWrapper(o) && WRAPPER(o)->obj)
+    o=WRAPPER(o)->obj;
+
+  while (1) {
+
+    /*   if aq_base(next) is o: return 1 */
+    c = next;
+    while (isWrapper(c) && WRAPPER(c)->obj) c = WRAPPER(c)->obj;
+    if (c == o) return PyInt_FromLong(1);
+
+    if (inner)
+      {
+        self = capi_aq_inner(next);
+        Py_DECREF(self);  /* We're not holding on to the inner wrapper */
+        if (self == Py_None) break;
+      }
+    else
+      self = next;
+
+    next = capi_aq_parent(self);
+    Py_DECREF(next); /* We're not holding on to the parent */
+    if (next == Py_None) break;
+  }
+
+  return PyInt_FromLong(0);
 }
 
 static PyObject *

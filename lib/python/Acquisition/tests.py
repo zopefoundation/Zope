@@ -1232,6 +1232,9 @@ def test_aq_inContextOf():
     ...     def hi(self):
     ...         print "%s()" % self.__class__.__name__, self.color
 
+    >>> class Location(object):
+    ...     __parent__ = None
+
     >>> b=B()
     >>> b.a=A()
     >>> b.a.hi()
@@ -1261,6 +1264,8 @@ def test_aq_inContextOf():
     >>> b.c == c
     1
 
+    >>> l = Location()
+    >>> l.__parent__ = b.c
 
     >>> def checkContext(self, o):
     ...     # Python equivalent to aq_inContextOf
@@ -1276,6 +1281,7 @@ def test_aq_inContextOf():
     ...         next = aq_parent(self)
     ...         if next is None:
     ...             break
+    ...     return 0
 
 
     >>> checkContext(b.c, b)
@@ -1283,13 +1289,27 @@ def test_aq_inContextOf():
     >>> not checkContext(b.c, b.a)
     1
 
+    >>> checkContext(l, b)
+    1
+    >>> checkContext(l, b.c)
+    1
+    >>> not checkContext(l, b.a)
+    1
+
     Acquisition.aq_inContextOf works the same way:
 
     >>> Acquisition.aq_inContextOf(b.c, b)
     1
-    >>> not Acquisition.aq_inContextOf(b.c, b.a)
+    >>> Acquisition.aq_inContextOf(b.c, b.a)
+    0
+
+    >>> Acquisition.aq_inContextOf(l, b)
     1
-    
+    >>> Acquisition.aq_inContextOf(l, b.c)
+    1
+    >>> Acquisition.aq_inContextOf(l, b.a)
+    0
+
     >>> b.a.aq_inContextOf(b)
     1
     >>> b.c.aq_inContextOf(b)
@@ -1300,12 +1320,12 @@ def test_aq_inContextOf():
     1
     >>> b.c.d.aq_inContextOf(b.c)
     1
-    >>> not b.c.aq_inContextOf(foo)
-    1
-    >>> not b.c.aq_inContextOf(b.a)
-    1
-    >>> not b.a.aq_inContextOf('somestring')
-    1
+    >>> b.c.aq_inContextOf(foo)
+    0
+    >>> b.c.aq_inContextOf(b.a)
+    0
+    >>> b.a.aq_inContextOf('somestring')
+    0
     """
 
 def test_AqAlg():
