@@ -218,11 +218,9 @@ so we get ('',) instead of ('eagle',):
   >>> getattr(view, '__ac_permissions__')
   (('View management screens', ('',)),)
 
-Wrap into an acquisition so that imPermissionRole objects can be
-evaluated. __roles__ is a imPermissionRole object:
+The view's __roles__ attribute can be evaluated correctly:
 
-  >>> view_roles = getattr(view, '__roles__', None)
-  >>> view_roles
+  >>> view.__roles__
   ('Manager',)
 
 Check to see if view's context properly acquires its true
@@ -236,14 +234,15 @@ Check the wrapper type
   >>> from Acquisition import ImplicitAcquisitionWrapper
   >>> type(context) == ImplicitAcquisitionWrapper
   True
- 
-The acquired parent is the view. This isn't 
-usually what you want.
 
-  >>> aq_parent(context) == view
-  True 
+The parent of the view is the view's context:
 
-To get what you usually want, do this
+  >>> view.__parent__ == view.context
+  True
+  >>> aq_parent(view) == view.context
+  True
+
+The direct parent of the context is 
 
   >>> context.aq_inner.aq_parent
   <Folder at /test_folder_1_> 
