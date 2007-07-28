@@ -18,6 +18,7 @@ from AccessControl.SecurityManagement import getSecurityManager
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
 from Acquisition import aq_acquire
+from Acquisition import aq_base
 from Acquisition import aq_inner
 from Acquisition import aq_parent
 from App.config import getConfiguration
@@ -239,7 +240,9 @@ class ZPublisherExceptionHook:
                 if getattr(client, self.error_message, None) is not None:
                     break
                 client = aq_parent(client)
-                if client is None:
+                # If we are going in circles without getting the error_message
+                # just raise
+                if client is None or aq_base(client) is aq_base(published):
                     raise t, v, traceback
 
             if REQUEST.get('AUTHENTICATED_USER', None) is None:
