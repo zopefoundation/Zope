@@ -20,6 +20,8 @@ import re
 import socket
 from base64 import decodestring
 
+from Acquisition import aq_base
+from Acquisition import aq_parent
 from Acquisition import aq_inContextOf
 from Acquisition import Implicit
 from App.Management import Navigation, Tabs
@@ -152,7 +154,7 @@ class BasicUser(Implicit):
             if getattr(parent, '__parent__', None) is not None:
                 while hasattr(parent.aq_self,'aq_self'):
                     parent = parent.aq_self
-                parent = parent.__parent__
+                parent = aq_parent(parent)
             else: return r
 
     def _check_context(self, object):
@@ -772,7 +774,7 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
 
     def _isTop(self):
         try:
-            return self.__parent__.aq_base.isTopLevelPrincipiaApplicationObject
+            return aq_base(aq_parent(self)).isTopLevelPrincipiaApplicationObject
         except:
             return 0
 
@@ -987,8 +989,8 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
 
     def manage_afterAdd(self, item, container):
         if item is self:
-            if hasattr(self, 'aq_base'): self=self.aq_base
-            container.__allow_groups__=self
+            self = aq_base(self)
+            container.__allow_groups__ = self
 
     def __creatable_by_emergency_user__(self): return 1
 
