@@ -241,7 +241,7 @@ class Owned(ExtensionClass.Base):
         else: _owner=None
 
         if (_owner is None and
-            ((not getattr(self, '__parent__', None) is None) or
+            ((getattr(self, '__parent__', None) is None) or
              (not hasattr(self, 'getPhysicalRoot'))
              )
             ):
