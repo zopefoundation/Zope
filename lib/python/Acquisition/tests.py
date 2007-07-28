@@ -1220,7 +1220,7 @@ def test_mixed_explicit_and_explicit():
     """
 
 
-def old_tests():
+def test_aq_inContextOf():
     """    
     >>> from ExtensionClass import Base
     >>> import Acquisition
