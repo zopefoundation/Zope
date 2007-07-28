@@ -16,6 +16,9 @@
 $Id$
 """
 import zope.app.pagetemplate
+
+from Acquisition import aq_parent
+from AccessControl import getSecurityManager
 from Products.PageTemplates.Expressions import SecureModuleImporter
 from Products.PageTemplates.Expressions import createTrustedZopeEngine
 
@@ -31,7 +34,25 @@ class ViewPageTemplateFile(zope.app.pagetemplate.ViewPageTemplateFile):
     def pt_getContext(self, instance, request, **kw):
         context = super(ViewPageTemplateFile, self).pt_getContext(
             instance, request, **kw)
-        context['modules'] = SecureModuleImporter
+
+        # get the root
+        obj = context['context']
+        root = None
+        while (getattr(obj, 'getPhysicalRoot', None) is None
+               and aq_parent(obj) is not None):
+            obj = aq_parent(obj)
+        if getattr(obj, 'getPhysicalRoot', None) is not None:
+            root = obj.getPhysicalRoot()
+
+        context.update(here=context['context'],
+                       # philiKON thinks container should be the view,
+                       # but BBB is more important than aesthetics.
+                       container=context['context'],
+                       root=root,
+                       modules=SecureModuleImporter,
+                       traverse_subpath=[],  # BBB, never really worked
+                       user = getSecurityManager().getUser()
+                       )
         return context
 
 # BBB
