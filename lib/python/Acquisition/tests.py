@@ -1258,14 +1258,17 @@ def old_tests():
     >>> def checkContext(self, o):
     ...     # Python equivalent to aq_inContextOf
     ...     from Acquisition import aq_base, aq_parent, aq_inner
-    ...     subob = self
+    ...     next = self
     ...     o = aq_base(o)
     ...     while 1:
-    ...         if aq_base(subob) is o: return 1
-    ...         self = aq_inner(subob)
-    ...         if self is None: break
-    ...         subob = aq_parent(self)
-    ...         if subob is None: break
+    ...         if aq_base(next) is o:
+    ...             return 1
+    ...         self = aq_inner(next)
+    ...         if self is None:
+    ...             break
+    ...         next = aq_parent(self)
+    ...         if next is None:
+    ...             break
 
 
     >>> checkContext(b.c, b)
