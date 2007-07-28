@@ -32,7 +32,6 @@ class ViewPageTemplateFile(zope.app.pagetemplate.ViewPageTemplateFile):
         context = super(ViewPageTemplateFile, self).pt_getContext(
             instance, request, **kw)
         context['modules'] = SecureModuleImporter
-        context['options'] = ''
         return context
 
 # BBB
