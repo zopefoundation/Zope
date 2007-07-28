@@ -15,7 +15,9 @@
 
 $Id$
 """
+
 import zope.publisher.browser
+import Acquisition
 
 class BrowserView(zope.publisher.browser.BrowserView):
 
@@ -39,4 +41,4 @@ class BrowserView(zope.publisher.browser.BrowserView):
 
     @property
     def aq_chain(self):
-        return [self]
+        return Acquisition.aq_chain(self)
