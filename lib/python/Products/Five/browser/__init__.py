@@ -17,7 +17,9 @@ $Id$
 """
 
 import zope.publisher.browser
-import Acquisition
+
+from Acquisition import aq_chain
+from Acquisition import aq_inner
 
 class BrowserView(zope.publisher.browser.BrowserView):
 
@@ -26,6 +28,18 @@ class BrowserView(zope.publisher.browser.BrowserView):
 
     def __of__(self, context):
         return self
+
+    # XXX Classes which are still based on Acquisition and access
+    # self.context in a method need to call aq_inner on it, or get a funky
+    # aq_chain. We do this here for BBB friendly purposes.
+
+    def __getParent(self):
+        return getattr(self, '_parent', aq_inner(self.context))
+
+    def __setParent(self, parent):
+        self._parent = parent
+
+    __parent__ = property(__getParent, __setParent)
 
     # We provide the aq_* properties here for BBB
 
@@ -41,4 +55,4 @@ class BrowserView(zope.publisher.browser.BrowserView):
 
     @property
     def aq_chain(self):
-        return Acquisition.aq_chain(self)
+        return aq_chain(self)

@@ -35,7 +35,6 @@ from zope.app.container.interfaces import IContainerNamesContainer
 from zope.app.container.constraints import checkFactory, checkObject
 from zope.app.publisher.browser.menu import getMenu
 
-from Acquisition import aq_inner
 from zExceptions import BadRequest
 from OFS.SimpleItem import SimpleItem
 
@@ -205,16 +204,6 @@ class Adding(BasicAdding):
 class ContentAdding(Adding, SimpleItem):
 
     menu_id = "add_content"
-
-    def __getParent(self):
-        # This class is based on Acquisition and accesses self.context
-        # We need to call aq_inner on it, or we get a funky aq_chain
-        return getattr(self, '_parent', aq_inner(self.context))
-
-    def __setParent(self, parent):
-        self._parent = parent
-
-    __parent__ = property(__getParent, __setParent)
 
 class ObjectManagerNameChooser:
     """A name chooser for a Zope object manager.
