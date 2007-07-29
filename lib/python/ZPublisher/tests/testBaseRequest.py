@@ -441,19 +441,29 @@ class TestBaseRequestZope3Views(TestCase):
         self.assertEqual(r['URL'], '/folder/obj/++view++meth')
 
     def test_browserDefault(self):
-        # Test that browserDefault returning self, () works
+        # browserDefault can return self, () to indicate that the
+        # object itself wants to be published (using __call__):
         r = self.makeBaseRequest()
         ob = r.traverse('folder/obj/page')
         self.assertEqual(ob(), 'Test page')
 
+        # browserDefault can return another_object, () to indicate
+        # that that object should be published (using __call__):
         r = self.makeBaseRequest()
         ob = r.traverse('folder/obj/page2')
         self.assertEqual(ob(), 'Test page')
 
+        # browserDefault can also return self.some_method, () to
+        # indicate that that method should be called.
+        r = self.makeBaseRequest()
+        ob = r.traverse('folder/obj/page3')
+        self.assertEqual(ob(), 'Test page')
+
 def test_suite():
-    return TestSuite( ( makeSuite(TestBaseRequest),
-                        makeSuite(TestBaseRequestZope3Views),
-                    ) )
+    return TestSuite([
+        makeSuite(TestBaseRequest),
+        makeSuite(TestBaseRequestZope3Views),
+        ])
 
 if __name__ == '__main__':
     main(defaultTest='test_suite')
