@@ -35,15 +35,13 @@ from zope.app.container.interfaces import IContainerNamesContainer
 from zope.app.container.constraints import checkFactory, checkObject
 from zope.app.publisher.browser.menu import getMenu
 
-from Acquisition import Implicit
 from zExceptions import BadRequest
 from OFS.SimpleItem import SimpleItem
 
 from Products.Five import BrowserView
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
-from Products.Five.browser.pagetemplatefile import ZopeTwoPageTemplateFile
-
-class BasicAdding(Implicit, BrowserView):
+class BasicAdding(BrowserView):
     implements(IAdding, IPublishTraverse)
 
     def add(self, content):
@@ -164,7 +162,7 @@ class BasicAdding(Implicit, BrowserView):
 class Adding(BasicAdding):
 
     menu_id = None
-    index = ZopeTwoPageTemplateFile("adding.pt")
+    index = ViewPageTemplateFile("adding.pt")
 
     def addingInfo(self):
         """Return menu data.
