@@ -39,7 +39,7 @@ class BrowserView(zope.publisher.browser.BrowserView):
     def __setParent(self, parent):
         self._parent = parent
 
-    __parent__ = property(__getParent, __setParent)
+    aq_parent = __parent__ = property(__getParent, __setParent)
 
     # We provide the aq_* properties here for BBB
 
@@ -48,10 +48,6 @@ class BrowserView(zope.publisher.browser.BrowserView):
         return self
 
     aq_self = aq_inner = aq_base
-
-    @property
-    def aq_parent(self):
-        return self.__parent__
 
     @property
     def aq_chain(self):
