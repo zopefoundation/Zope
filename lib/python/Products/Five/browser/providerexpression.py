@@ -13,14 +13,10 @@
 ##############################################################################
 """Provider expression.
 
-$Id$
+This module solely exists for backwards-compatibility.  Please import
+TALESProviderExpression from zope.contentprovider.tales.
 """
-from zope.contentprovider import interfaces as cp_interfaces
-from zope.contentprovider.tales import TALESProviderExpression
-from zope.interface import implements
 
-class Z2ProviderExpression(TALESProviderExpression):
-    """This legacy provider was needed before to add acquisition wrappers to
-    the providers in order for security to work."""
-
-    implements(cp_interfaces.ITALESProviderExpression)
+# BBB
+from zope.contentprovider.tales import TALESProviderExpression \
+     as Z2ProviderExpression
