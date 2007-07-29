@@ -187,9 +187,6 @@ class DirectoryResource(BrowserView, Resource, OFSTraversable):
 
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
-        # OFSTraversable.absolute_url() assumes self.REQUEST being
-        # accessible:
-        self.REQUEST = request
 
     def getId(self):
         name = self.__name__
