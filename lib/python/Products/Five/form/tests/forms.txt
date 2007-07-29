@@ -24,7 +24,6 @@ Let's set up a testbrowser:
 
   >>> from Products.Five.testbrowser import Browser
   >>> browser = Browser()
-  >>> browser.handleErrors = False
   >>> browser.addHeader('Accept-Language', 'en-US')
 
 Add forms
