@@ -215,19 +215,27 @@ high-level security tests).  Let's manually look up a protected view:
 It's protecting the object with the permission, and not the attribute,
 so we get ('',) instead of ('eagle',):
 
-  >>> getattr(view, '__ac_permissions__')
+  >>> view.__ac_permissions__
   (('View management screens', ('',)),)
 
 The view's __roles__ attribute can be evaluated correctly:
 
-  >>> view.__roles__
+(We have to use aq_acquire here instead of a simple getattr. The
+reason is that __roles__ actually is an object that expects being
+called through the __of__ protocol upon which it renders the roles
+tuple. aq_acquire will trigger this for us.  This isn't a problem,
+really, because AccessControl ends up using aq_acquire anyway, so it
+Just Works.)
+
+  >>> from Acquisition import aq_acquire
+  >>> aq_acquire(view, '__roles__')
   ('Manager',)
 
 Check to see if view's context properly acquires its true
 parent
 
   >>> from Acquisition import aq_parent, aq_base, aq_inner
-  >>> context = getattr(view, 'context')
+  >>> context = view.context
 
 Check the wrapper type
 
