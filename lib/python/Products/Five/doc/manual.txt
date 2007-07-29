@@ -271,13 +271,6 @@ view class are:
 * They need to be initialized with the Zope 2 security system, as
   otherwise you cannot use the view.
 
-* This also means they need to be part of the Zope 2 acquisition
-  system, as this is a requirement for Zope 2 security to
-  function. The ``BrowserView`` base class, available from
-  ``Products.Five``, already inherits from ``Acquisition.Explicit`` to
-  make this be the case. Acquisition is explicit so no attributes can
-  be acquired by accident.
-
 An example of a simple view::
  
   from Products.Five import BrowserView

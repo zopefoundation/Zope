@@ -17,9 +17,7 @@ $Id$
 """
 import zope.app.pagetemplate
 
-from Acquisition import aq_base
 from Acquisition import aq_get
-from Acquisition import aq_parent
 from AccessControl import getSecurityManager
 from Products.PageTemplates.Expressions import SecureModuleImporter
 from Products.PageTemplates.Expressions import createTrustedZopeEngine

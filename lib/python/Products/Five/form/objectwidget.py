@@ -14,11 +14,9 @@
 """Five-compatible version of ObjectWidget
 
 This is needed because ObjectWidget uses ViewPageTemplateFile whose
-macro definition is unfortunately incompatible with
-ZopeTwoPageTemplateFile.  So this subclass uses
-ZopeTwoPageTemplateFile for the template that renders the widget's
-sub-editform.  Acquisition has to be mixed in to provide the
-ZopeTwoPageTemplateFile with the proper acquisition context.
+macro definition is unfortunately incompatible with ZopeTwoPageTemplateFile.
+So this subclass uses ZopeTwoPageTemplateFile for the template that renders
+the widget's sub-editform.
 
 $Id$
 """
