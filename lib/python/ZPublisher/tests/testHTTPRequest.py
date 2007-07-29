@@ -801,6 +801,30 @@ class RequestTests( unittest.TestCase ):
         request = HTTPRequest(s, env, None)
         self.assertEqual(request.getClientAddr(), '')
 
+    def testGetHeader(self):
+        s = StringIO('')
+        env = TEST_ENVIRON.copy()
+        request = HTTPRequest(s, env, None)
+
+        self.assertEqual(request.getHeader('Content-Type'),
+                         'multipart/form-data; boundary=12345')
+
+        # getHeader is agnostic of case
+        self.assertEqual(request.getHeader('content-type'),
+                         'multipart/form-data; boundary=12345')
+
+        # and of dashes vs. underscores
+        self.assertEqual(request.getHeader('content_type'),
+                         'multipart/form-data; boundary=12345')
+
+        # the 'literal' argument can turn this normalization off:
+        self.assertEqual(request.getHeader('Content-Type', literal=True), None)
+
+        # the 'default' argument can be used to get something other than
+        # None when the lookup fails:
+        self.assertEqual(request.getHeader('Not-existant', default='Whatever'),
+                         'Whatever')
+
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(AuthCredentialsTests, 'test'))
