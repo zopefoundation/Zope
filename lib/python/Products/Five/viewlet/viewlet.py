@@ -16,16 +16,14 @@
 $Id$
 """
 import os
-from Acquisition import Explicit
 from zope.viewlet import viewlet as orig_viewlet
 
 from Products.Five.browser.pagetemplatefile import ZopeTwoPageTemplateFile
 
-# We add Acquisition to all the base classes to enable security machinery
-class ViewletBase(orig_viewlet.ViewletBase, Explicit):
+class ViewletBase(orig_viewlet.ViewletBase):
     pass
 
-class SimpleAttributeViewlet(orig_viewlet.SimpleAttributeViewlet, Explicit):
+class SimpleAttributeViewlet(orig_viewlet.SimpleAttributeViewlet):
     pass
 
 class simple(orig_viewlet.simple):
@@ -52,7 +50,7 @@ def SimpleViewletClass(template, bases=(), attributes=None,
     return class_
 
 
-class ResourceViewletBase(orig_viewlet.ResourceViewletBase, Explicit):
+class ResourceViewletBase(orig_viewlet.ResourceViewletBase):
     pass
 
 def JavaScriptViewlet(path):

@@ -15,7 +15,7 @@
 
 $Id$
 """
-import Acquisition
+from Acquisition import aq_base
 from AccessControl.ZopeGuards import guarded_hasattr
 import zope.interface
 import zope.security
@@ -24,9 +24,7 @@ from zope.viewlet.manager import ViewletManagerBase as origManagerBase
 
 from Products.Five.browser.pagetemplatefile import ZopeTwoPageTemplateFile
 
-aq_base = Acquisition.aq_base
-
-class ViewletManagerBase(origManagerBase, Acquisition.Explicit):
+class ViewletManagerBase(origManagerBase):
     """A base class for Viewlet managers to work in Zope2"""
 
     def __getitem__(self, name):
