@@ -39,16 +39,32 @@
       />
 
   <browser:page
-      for="zope.traversing.interfaces.IContainmentRoot"
+      for="OFS.interfaces.ITraversable"
       name="absolute_url"
-      class=".absoluteurl.SiteAbsoluteURL"
+      class=".absoluteurl.OFSTraversableAbsoluteURL"
       permission="zope.Public"
       allowed_interface="zope.traversing.browser.interfaces.IAbsoluteURL"
       />
 
   <view
-      for="zope.traversing.interfaces.IContainmentRoot"
-      factory=".absoluteurl.SiteAbsoluteURL"
+      for="OFS.interfaces.ITraversable"
+      factory=".absoluteurl.OFSTraversableAbsoluteURL"
+      type="zope.publisher.interfaces.http.IHTTPRequest"
+      permission="zope.Public"
+      provides="zope.traversing.browser.interfaces.IAbsoluteURL"
+      />
+
+  <browser:page
+      for="OFS.interfaces.IApplication"
+      name="absolute_url"
+      class=".absoluteurl.RootAbsoluteURL"
+      permission="zope.Public"
+      allowed_interface="zope.traversing.browser.interfaces.IAbsoluteURL"
+      />
+
+  <view
+      for="OFS.interfaces.IApplication"
+      factory=".absoluteurl.RootAbsoluteURL"
       type="zope.publisher.interfaces.http.IHTTPRequest"
       permission="zope.Public"
       provides="zope.traversing.browser.interfaces.IAbsoluteURL"
