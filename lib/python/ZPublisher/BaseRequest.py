@@ -427,7 +427,7 @@ class BaseRequest:
                 else:
                     # If we have reached the end of the path, we look to see
                     # if we can find IBrowserPublisher.browserDefault. If so,
-                    # we call it to let the object tell us how to publish it
+                    # we call it to let the object tell us how to publish it.
                     # BrowserDefault returns the object to be published
                     # (usually self) and a sequence of names to traverse to
                     # find the method to be published.
@@ -440,7 +440,8 @@ class BaseRequest:
                         not hasattr(object,'__bobo_traverse__')):
                         if object.aq_parent is not object.aq_inner.aq_parent:
                             from webdav.NullResource import NullResource
-                            object = NullResource(parents[-2], object.getId(), self).__of__(parents[-2])
+                            object = NullResource(parents[-2], object.getId(),
+                                                  self).__of__(parents[-2])
                     
                     if IBrowserPublisher.providedBy(object):
                         adapter = object
@@ -451,10 +452,9 @@ class BaseRequest:
                             # Zope2 doesn't set up its own adapters in a lot
                             # of cases so we will just use a default adapter.
                             adapter = DefaultPublishTraverse(object, self)
-                    
-                    newobject, default_path = adapter.browserDefault(self)
-                    if default_path or newobject is not object:
-                        object = newobject
+
+                    object, default_path = adapter.browserDefault(self)
+                    if default_path:
                         request._hacked_path=1
                         if len(default_path) > 1:
                             path = list(default_path)

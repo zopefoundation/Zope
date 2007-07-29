@@ -264,10 +264,10 @@ import zope.interface
 import zope.component
 import zope.testing.cleanup
 import zope.traversing.namespace
+import zope.publisher.browser
 from zope.publisher.browser import IBrowserRequest
 from zope.publisher.browser import IDefaultBrowserLayer
 from zope.traversing.interfaces import ITraversable
-
 
 class IDummy(zope.interface.Interface):
     """IDummy"""
@@ -292,6 +292,33 @@ class DummyView(Implicit):
     def __call__(self):
         return 'view on %s' % (self.content.name)
 
+class DummyPage(zope.publisher.browser.BrowserPage):
+
+    # BrowserPage is an IBrowserPublisher with a browserDefault that
+    # returns self, () so that __call__ is invoked by the publisher.
+
+    def __call__(self):
+        return 'Test page'
+
+class DummyPage2(zope.publisher.browser.BrowserPage):
+
+    def browserDefault(self, request):
+        # intentionally return something that's not self
+        return DummyPage(self.context, request), ()
+
+    # __call__ remains unimplemented, baseclass raises NotImplementedError
+
+class DummyPage3(zope.publisher.browser.BrowserPage):
+
+    def browserDefault(self, request):
+        # intentionally return a method here
+        return self.foo, ()
+
+    def foo(self):
+        return 'Test page'
+
+    # __call__ remains unimplemented, baseclass raises NotImplementedError
+
 class TestBaseRequestZope3Views(TestCase):
 
     def setUp(self):
@@ -309,9 +336,15 @@ class TestBaseRequestZope3Views(TestCase):
         # The request needs to implement the proper interface
         zope.interface.classImplements(BaseRequest, IDefaultBrowserLayer)
 
-        # Define our 'meth' view
-        gsm.registerAdapter(DummyView, (IDummy, IDefaultBrowserLayer), None,
-                            'meth')
+        # Define the views
+        gsm.registerAdapter(DummyView, (IDummy, IDefaultBrowserLayer),
+                            zope.interface.Interface, 'meth')
+        gsm.registerAdapter(DummyPage, (IDummy, IDefaultBrowserLayer),
+                            zope.interface.Interface, 'page')
+        gsm.registerAdapter(DummyPage2, (IDummy, IDefaultBrowserLayer),
+                            zope.interface.Interface, 'page2')
+        gsm.registerAdapter(DummyPage3, (IDummy, IDefaultBrowserLayer),
+                            zope.interface.Interface, 'page3')
 
         # Bind the 'view' namespace (for @@ traversal)
         gsm.registerAdapter(zope.traversing.namespace.view,
@@ -406,6 +439,16 @@ class TestBaseRequestZope3Views(TestCase):
         r = self.makeBaseRequest()
         r.traverse('folder/obj/++view++meth')
         self.assertEqual(r['URL'], '/folder/obj/++view++meth')
+
+    def test_browserDefault(self):
+        # Test that browserDefault returning self, () works
+        r = self.makeBaseRequest()
+        ob = r.traverse('folder/obj/page')
+        self.assertEqual(ob(), 'Test page')
+
+        r = self.makeBaseRequest()
+        ob = r.traverse('folder/obj/page2')
+        self.assertEqual(ob(), 'Test page')
 
 def test_suite():
     return TestSuite( ( makeSuite(TestBaseRequest),
