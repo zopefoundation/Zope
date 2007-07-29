@@ -58,7 +58,7 @@ class NoDocstringView(BrowserView):
 
 class NewStyleClass(object):
     """
-    This is a testclass to verify that new style classes are ignored
+    This is a testclass to verify that new style classes work
     in browser:page
     """
 
