@@ -283,17 +283,17 @@ class LocalUtilityServiceTest(ZopeTestCase.ZopeTestCase):
         # let's see if we can acquire something all the way from the
         # root (Application) object; we need to be careful to choose
         # something that's only available from the root object
-        from Acquisition import aq_acquire
+        from Acquisition import aq_get
         dummy = zapi.getUtility(IDummyUtility)
-        acquired = aq_acquire(dummy, 'ZopeAttributionButton', None)
+        acquired = aq_get(dummy, 'ZopeAttributionButton', None)
         self.failUnless(acquired is not None)
 
         name, dummy = zapi.getUtilitiesFor(IDummyUtility).next()
-        acquired = aq_acquire(dummy, 'ZopeAttributionButton', None)
+        acquired = aq_get(dummy, 'ZopeAttributionButton', None)
         self.failUnless(acquired is not None)
 
         dummy = zapi.getAllUtilitiesRegisteredFor(IDummyUtility).next()
-        acquired = aq_acquire(dummy, 'ZopeAttributionButton', None)
+        acquired = aq_get(dummy, 'ZopeAttributionButton', None)
         self.failUnless(acquired is not None)        
 
     def test_getNextUtility(self):
