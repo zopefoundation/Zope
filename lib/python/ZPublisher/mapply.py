@@ -12,6 +12,7 @@
 ##############################################################################
 """Provide an apply-like facility that works with any mapping object
 """
+import zope.publisher.publish
 
 def default_call_object(object, args, context):
     result=object(*args) # Type s<cr> to step into published object.
@@ -39,27 +40,15 @@ def mapply(object, positional=(), keyword={},
     if hasattr(object,'__bases__'):
         f, names, defaults = handle_class(object, context)
     else:
-        f=object
-        im=0
-        if hasattr(f, 'im_func'):
-            im=1
-        elif not hasattr(f,'func_defaults'):
-            if hasattr(f, '__call__'):
-                f=f.__call__
-                if hasattr(f, 'im_func'):
-                    im=1
-                elif not hasattr(f,'func_defaults') and maybe: return object
-            elif maybe: return object
-
-        if im:
-            f=f.im_func
-            c=f.func_code
-            defaults=f.func_defaults
-            names=c.co_varnames[1:c.co_argcount]
-        else:
-            defaults=f.func_defaults
-            c=f.func_code
-            names=c.co_varnames[:c.co_argcount]
+        try:
+            f, count = zope.publisher.publish.unwrapMethod(object)
+        except TypeError:
+            if maybe:
+                return object
+            raise
+        code = f.func_code
+        defaults = f.func_defaults
+        names = code.co_varnames[count:code.co_argcount]
 
     nargs=len(names)
     if positional:
