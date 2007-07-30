@@ -1,0 +1,60 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:browser="http://namespaces.zope.org/browser">
+
+  <browser:page
+      for="*"
+      name="attributes"
+      class=".aqlegacy.LegacyAttributes"
+      permission="zope.Public"
+      />
+
+  <browser:page
+      for="*"
+      name="explicit"
+      class=".aqlegacy.Explicit"
+      attribute="render"
+      permission="zope.Public"
+      />
+
+  <browser:page
+      for="*"
+      name="explicit_zcmltemplate"
+      class=".aqlegacy.Explicit"
+      template="falcon.pt"
+      permission="zope.Public"
+      />
+
+  <browser:page
+      for="*"
+      name="explicit_template"
+      class=".aqlegacy.ExplicitWithTemplate"
+      attribute="template"
+      permission="zope.Public"
+      />
+
+  <browser:page
+      for="*"
+      name="implicit"
+      class=".aqlegacy.Implicit"
+      attribute="render"
+      permission="zope.Public"
+      />
+
+  <browser:page
+      for="*"
+      name="implicit_template"
+      class=".aqlegacy.ImplicitWithTemplate"
+      attribute="template"
+      permission="zope.Public"
+      />
+
+  <browser:page
+      for="*"
+      name="implicit_zcmltemplate"
+      class=".aqlegacy.Implicit"
+      template="falcon.pt"
+      permission="zope.Public"
+      />
+
+
+</configure>

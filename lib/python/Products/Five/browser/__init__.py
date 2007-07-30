@@ -15,11 +15,8 @@
 
 $Id$
 """
-
+import Acquisition
 import zope.publisher.browser
-
-from Acquisition import aq_chain
-from Acquisition import aq_inner
 
 class BrowserView(zope.publisher.browser.BrowserView):
 
@@ -27,6 +24,12 @@ class BrowserView(zope.publisher.browser.BrowserView):
     # Acquisition.Explicit.
 
     def __of__(self, context):
+        # Technically this isn't in line with the way Acquisition's
+        # __of__ works.  With Acquisition, you get a wrapper around
+        # the original object and only that wrapper's parent is the
+        # new context.  Here we change the original object.
+        #self.__parent__ = context  # ugh. segfault!
+
         return self
 
     # XXX Classes which are still based on Acquisition and access
@@ -34,7 +37,7 @@ class BrowserView(zope.publisher.browser.BrowserView):
     # aq_chain. We do this here for BBB friendly purposes.
 
     def __getParent(self):
-        return getattr(self, '_parent', aq_inner(self.context))
+        return getattr(self, '_parent', Acquisition.aq_inner(self.context))
 
     def __setParent(self, parent):
         self._parent = parent
@@ -43,12 +46,8 @@ class BrowserView(zope.publisher.browser.BrowserView):
 
     # We provide the aq_* properties here for BBB
 
-    @property
-    def aq_base(self):
-        return self
-
-    aq_self = aq_inner = aq_base
+    aq_self = aq_inner = aq_base = property(lambda self: self)
 
     @property
     def aq_chain(self):
-        return aq_chain(self)
+        return Acquisition.aq_chain(self)
