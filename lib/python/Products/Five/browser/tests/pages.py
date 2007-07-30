@@ -16,6 +16,7 @@
 $Id$
 """
 from Products.Five import BrowserView
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
 class SimpleView(BrowserView):
     """More docstring. Please Zope"""
@@ -38,6 +39,10 @@ class CallView(BrowserView):
 
     def __call__(self):
         return u"I was __call__()'ed"
+
+class CallTemplate(BrowserView):
+
+    __call__ = ViewPageTemplateFile('falcon.pt')
 
 class CallableNoDocstring:
 

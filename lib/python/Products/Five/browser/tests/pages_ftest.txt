@@ -144,6 +144,14 @@ class bearing only a __call__ method:
   ...
   I was __call__()'ed
 
+or a __call__ object that's callable, such as a ViewPageTemplateFile:
+
+  >>> print http(r'''
+  ... GET /test_folder_1_/testoid/calltemplate.html HTTP/1.1
+  ... ''')
+  HTTP/1.1 200 OK
+  ...
+  <p>The falcon has taken flight</p>
 
 Clean up
 --------
