@@ -32,9 +32,9 @@ class BrowserView(zope.publisher.browser.BrowserView):
 
         return self
 
-    # XXX Classes which are still based on Acquisition and access
-    # self.context in a method need to call aq_inner on it, or get a funky
-    # aq_chain. We do this here for BBB friendly purposes.
+    # Classes which are still based on Acquisition and access
+    # self.context in a method need to call aq_inner on it, or get a
+    # funky aq_chain. We do this here for BBB friendly purposes.
 
     def __getParent(self):
         return getattr(self, '_parent', Acquisition.aq_inner(self.context))
@@ -45,9 +45,11 @@ class BrowserView(zope.publisher.browser.BrowserView):
     aq_parent = __parent__ = property(__getParent, __setParent)
 
     # We provide the aq_* properties here for BBB
-
     aq_self = aq_inner = aq_base = property(lambda self: self)
+    aq_chain = property(Acquisition.aq_chain)
 
-    @property
-    def aq_chain(self):
-        return Acquisition.aq_chain(self)
+    def aq_acquire(self, *args, **kw):
+        return Acquisition.aq_acquire(self, *args, **kw)
+
+    def aq_inContextOf(self, *args, **kw):
+        return Acquisition.aq_inContextOf(self, *args, **kw)

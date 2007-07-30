@@ -23,13 +23,28 @@ views still works (the printed output is the aq_chain of the view):
   >>> print browser.contents
   [<Products.Five.metaclass.LegacyAttributes object at ...>, <Folder at /test_folder_1_>, <Application at >, <ZPublisher.BaseRequest.RequestContainer object at ...>]
 
-Let's also make sure that calling __of__ on a view has the desired
-effect.  First let's get a view:
+Let's do some more manual tests with the view object.  But first we
+must get it:
 
   >>> from zope.component import getMultiAdapter
   >>> from zope.publisher.browser import TestRequest
   >>> request = TestRequest()
   >>> view = getMultiAdapter((self.folder, request), name='attributes')
+
+Let's try to acquire something from the root folder:
+
+  >>> button = view.aq_acquire('ZopeAttributionButton')
+  >>> print button()
+  <a href="http://www.zope.org/Credits" target="_top"><img src="http://nohost/p_/ZopeButton" width="115" height="50" border="0" alt="Powered by Zope" /></a>
+
+Let's check that we're in the right context:
+
+  >>> view.aq_inContextOf(self.folder)
+  1
+  >>> view.aq_inContextOf(self.app)
+  1
+  >>> view.aq_inContextOf(object())
+  0
 
 Let's try the __of__ protocol:
 
