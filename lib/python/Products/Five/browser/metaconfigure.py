@@ -29,10 +29,10 @@ from zope.configuration.exceptions import ConfigurationError
 from zope.publisher.interfaces.browser import IBrowserRequest, \
      IDefaultBrowserLayer
 
-from zope.app.publisher.browser.viewmeta import pages as zope_app_pages
-from zope.app.publisher.browser.viewmeta import view as zope_app_view
-from zope.app.publisher.browser.viewmeta import providesCallable, \
-     _handle_menu, _handle_for
+import zope.app.publisher.browser.viewmeta
+import zope.app.pagetemplate.simpleviewclass
+from zope.app.publisher.browser.viewmeta import (providesCallable,
+                                                 _handle_menu, _handle_for)
 
 from Products.Five.browser import BrowserView
 from Products.Five.browser.resource import FileResourceFactory
@@ -159,7 +159,7 @@ def page(_context, name, permission, for_,
         args = (new_class,)
         )
 
-class pages(zope_app_pages):
+class pages(zope.app.publisher.browser.viewmeta.pages):
 
     def page(self, _context, name, attribute='__call__', template=None,
              menu=None, title=None):
@@ -172,7 +172,7 @@ class pages(zope_app_pages):
 
 # view (named view with pages)
 
-class view(zope_app_view):
+class view(zope.app.publisher.browser.viewmeta.view):
 
     def __call__(self):
         (_context, name, for_, permission, layer, class_,
@@ -389,32 +389,22 @@ def resourceDirectory(_context, name, directory, layer=IDefaultBrowserLayer,
             args = (new_class,)
             )
 
-#
-# mixin classes / class factories
-#
+class ViewMixinForAttributes(BrowserView,
+                             zope.app.publisher.browser.viewmeta.simple):
 
-class ViewMixinForAttributes(BrowserView):
+    # For some reason, the 'simple' baseclass doesn't implement this
+    # mandatory method (see https://bugs.launchpad.net/zope3/+bug/129296)
+    def browserDefault(self, request):
+        return getattr(self, self.__page_attribute__), ()
 
-    # we have an attribute that we can simply tell ZPublisher to go to
-    def __browser_default__(self, request):
-        return self, (self.__page_attribute__,)
+    # __call__ should have the same signature as the original method
+    @property
+    def __call__(self):
+        return getattr(self, self.__page_attribute__)
 
-    # this is technically not needed because ZPublisher finds our
-    # attribute through __browser_default__; but we also want to be
-    # able to call pages from python modules, PythonScripts or ZPT
-    __call__ = property(lambda self: getattr(self, self.__page_attribute__))
-
-class ViewMixinForTemplates(BrowserView):
-
-    # short cut to get to macros more easily
-    def __getitem__(self, name):
-        if name == 'macros':
-            return self.index.macros
-        return self.index.macros[name]
-
-    # make the template publishable
-    def __call__(self, *args, **kw):
-        return self.index(self, *args, **kw)
+class ViewMixinForTemplates(BrowserView,
+                            zope.app.pagetemplate.simpleviewclass.simple):
+    pass
 
 def makeClassForTemplate(filename, globals=None, used_for=None,
                          bases=(), cdict=None, name=u''):
