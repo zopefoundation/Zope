@@ -28,6 +28,9 @@ class BrowserView(zope.publisher.browser.BrowserView):
         # __of__ works.  With Acquisition, you get a wrapper around
         # the original object and only that wrapper's parent is the
         # new context.  Here we change the original object.
+        
+        # The first segfault happens in form.tests.forms.txt in the first line
+        # of the "Widget Overrides" chapter (line 154).
         #self.__parent__ = context  # ugh. segfault!
 
         return self
