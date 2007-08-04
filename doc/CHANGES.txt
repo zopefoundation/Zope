@@ -9,6 +9,9 @@ Zope Changes
 
     Restructuring
 
+      - ZPT: removed display of ZPT warnings since warnings were
+        removed from the zope.pagetemplate implementation     
+
       - Ship Zope with a standard docutils 0.4 distribution, instead
         of a patched one.  Both trusted and untrusted code are still
         protected against unwanted file inclusion.
