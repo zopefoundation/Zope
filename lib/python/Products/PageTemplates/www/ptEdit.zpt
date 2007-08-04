@@ -51,15 +51,6 @@
 <pre tal:content="python:'\n'.join(errors)">errors</pre>
     </td>
   </tr>
-<!--
-  <tr tal:define="warnings context/pt_warnings" tal:condition="warnings">
-    <td align="left" valign="middle" class="form-label">Warnings</td>
-    <td align="left" valign="middle" style="background-color: #FFEEDD"
-        colspan="3">
-<pre tal:content="python:'\n'.join(warnings)">errors</pre>
-    </td>
-  </tr>
--->
   <tr>
     <td align="left" valign="top" colspan="4"
         tal:define="width request/dtpref_cols | string:100%;
