@@ -23,29 +23,11 @@ class BrowserView(zope.publisher.browser.BrowserView):
     # BBB for code that expects BrowserView to still inherit from
     # Acquisition.Explicit.
 
-    # counter = 0
-
     def __of__(self, context):
         # Technically this isn't in line with the way Acquisition's
-        # __of__ works.  With Acquisition, you get a wrapper around
+        # __of__ works. With Acquisition, you get a wrapper around
         # the original object and only that wrapper's parent is the
-        # new context.  Here we change the original object.
-        
-        # XXX The first segfault happens in form.tests.forms.txt in the first
-        # line of the "Widget Overrides" chapter (line 154).
-
-        # What causes it is:
-        
-        # ../zope2/lib/python/Zope2/App/startup.py(199)__call__()
-        # -> log = aq_acquire(published, '__error_log__', containment=1)
-        
-        # Which causes an infinite loop :(
-        
-        # self.__parent__ = context  # ugh. segfault!
-        # self.counter = self.counter + 1
-        # if self.counter > 10:
-        #     import pdb; pdb.set_trace()
-
+        # new context.
         return self
 
     # Classes which are still based on Acquisition and access
