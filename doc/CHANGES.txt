@@ -135,6 +135,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #2338: ZPT: fixed unicode issue when using the 'structure'
+        directive
+
       - Collector #2332: SessionDataManger: don't swallow ConflictErrors
 
       - ZopePageTemplate's pt_edit did not recognize content type arguments
