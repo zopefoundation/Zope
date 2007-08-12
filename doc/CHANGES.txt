@@ -4,6 +4,13 @@ Zope Changes
   Change information for previous versions of Zope can be found in the
   file HISTORY.txt.
 
+  Zope 2.9.9 (unreleased)
+
+   Bugs fixed
+
+      - Collector #2332: SessionDataManger: don't swallow ConflictErrors
+
+
   Zope 2.9.8 (2007/07/05)
 
    Bugs fixed

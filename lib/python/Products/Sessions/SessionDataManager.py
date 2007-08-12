@@ -17,6 +17,7 @@ logger = logging.getLogger('Session Tracking')
 
 import Globals
 from OFS.SimpleItem import Item
+from ZODB.POSException import ConflictError
 from Acquisition import Implicit, Explicit, aq_base
 from Persistence import Persistent
 from AccessControl.Owned import Owned
@@ -222,6 +223,8 @@ class SessionDataManager(Item, Implicit, Persistent, RoleManager, Owned, Tabs):
                     'External data container at %s in use' % args)
                 self._v_wrote_dc_type = 1
             return self.unrestrictedTraverse(self.obpath)
+        except ConflictError:
+            raise
         except:
             raise SessionDataManagerErr, (
                 "External session data container '%s' not found." %
