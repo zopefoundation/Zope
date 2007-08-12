@@ -11,6 +11,8 @@ Zope Changes
       - ZopePageTemplate's pt_edit did not recognize content type arguments
         which had a charset information included.
 
+      - Collector #2332: SessionDataManger: don't swallow ConflictErrors
+
   Zope 2.10.4 (23.06.2007)
 
     Other changes
