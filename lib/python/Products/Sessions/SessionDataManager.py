@@ -15,7 +15,7 @@ import re, time, sys
 from logging import getLogger
 import Globals
 from OFS.SimpleItem import Item
-/bin/bash: line 1: /tmp/yy: No such file or directory
+from ZODB.POSException import ConflictError
 from Acquisition import Implicit, Explicit, aq_base
 from Persistence import Persistent
 from AccessControl.Owned import Owned
