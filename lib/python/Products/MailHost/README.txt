@@ -9,3 +9,5 @@ MailHost
 
   MailHost provides integration with the Zope transaction system
   and optional support for asynchronous mail delivery.
+
+  Supports TLS/SSL encryption (requires Python compiled with SSL support)
