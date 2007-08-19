@@ -58,7 +58,6 @@
     <input type="text" name="smtp_uid" size="15"
      value="&dtml-smtp_uid;"/>
     </td>
-<dtml-var "smtp_uid" >
     <td>
     <span class="form-help">(optional for SMTP AUTH)</span>
     </td>
