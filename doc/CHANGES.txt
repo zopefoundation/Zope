@@ -71,6 +71,7 @@ Zope Changes
         option will create a mail queue on the filesystem (under 
         'Queue directory') and start a queue thread that checks the queue every
         three seconds. This decouples the sending of mail from its delivery.
+        In addition MailHosts now supports encrypted connections through TLS/SSL.
 
       - integrated ZODB 3.8
     
