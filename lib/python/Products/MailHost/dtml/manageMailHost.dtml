@@ -58,6 +58,7 @@
     <input type="text" name="smtp_uid" size="15"
      value="&dtml-smtp_uid;"/>
     </td>
+<dtml-var "smtp_uid" >
     <td>
     <span class="form-help">(optional for SMTP AUTH)</span>
     </td>
@@ -112,6 +113,30 @@
     <input class="form-element" type="submit" name="submit" 
      value="Save Changes" /> 
     </div>
+    </td>
+  </tr>
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-label">
+    Mails in queue <br/> 
+    </div>
+    </td>
+    <td align="left" valign="top">
+        <span class="form-help"><dtml-var queueLength></span>
+    </td>
+  </tr>
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-label">
+    Queue processor thread alive?<br/> 
+    </div>
+    </td>
+    <td align="left" valign="top">
+        <div class="form-help">
+            <dtml-var queueThreadAlive>
+            <br/>
+            <a href="manage_restartQueueThread">Restart queue processor thread</a> (this may take some seconds)
+        </div>
     </td>
   </tr>
 </table>

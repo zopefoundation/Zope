@@ -24,7 +24,7 @@ from cStringIO import StringIO
 import Acquisition
 import OFS.SimpleItem
 from AccessControl import ClassSecurityInfo
-from AccessControl.Permissions import change_configuration
+from AccessControl.Permissions import change_configuration, view
 from AccessControl.Permissions import use_mailhost_services
 from AccessControl.Permissions import view_management_screens
 from AccessControl.Role import RoleManager
@@ -33,6 +33,7 @@ from DateTime import DateTime
 
 from zope.interface import implements
 from zope.sendmail.mailer import SMTPMailer
+from zope.sendmail.maildir import Maildir
 from zope.sendmail.delivery import DirectMailDelivery, QueuedMailDelivery, \
                             QueueProcessorThread
 
@@ -196,7 +197,8 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
             while thread.isAlive():
                 # wait until thread is really dead
                 time.sleep(0.1)
-
+            del queue_threads[path]
+            LOG.info('Thread for %s stopped' % path)
 
     def _startQueueProcessorThread(self):
         """ Start thread for processing the mail queue """
@@ -208,6 +210,36 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
             thread.setQueuePath(self.smtp_queue_directory)
             thread.start()
             queue_threads[path] = thread     
+            LOG.info('Thread for %s started' % path)
+
+     
+    security.declareProtected(view, 'queueLength')
+    def queueLength(self):
+        """ return length of mail queue """
+
+        maildir = Maildir(self.smtp_queue_directory)
+        return len([item for item in maildir])
+
+
+    security.declareProtected(view, 'queueThreadAlive')
+    def queueThreadAlive(self):
+        """ return True/False is queue thread is working """
+
+        th = queue_threads.get(self.absolute_url(1))
+        if th:
+            return th.isAlive()
+        return False
+
+    security.declareProtected(change_configuration, 'manage_restartQueueThread')
+    def manage_restartQueueThread(self, REQUEST=None):
+        """ Restart the queue processor thread """
+
+        self._stopQueueProcessorThread()
+        self._startQueueProcessorThread()
+
+        if REQUEST is not None:
+            msg = 'Queue processor thread restarted'
+            return self.manage_main(self, REQUEST, manage_tabs_message=msg)
 
 
     security.declarePrivate('_send')
