@@ -18,6 +18,7 @@ $Id$
 import mimetools
 import rfc822
 import time
+import logging
 from cStringIO import StringIO
 
 import Acquisition
@@ -37,7 +38,9 @@ from zope.sendmail.delivery import DirectMailDelivery, QueuedMailDelivery, \
 
 from interfaces import IMailHost
 
-queue_threads = {}
+queue_threads = {}  # maps MailHost path -> queue processor threada
+
+LOG = logging.getLogger('MailHost')
 
 class MailHostError(Exception):
     pass
@@ -199,9 +202,7 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
         """ Start thread for processing the mail queue """
         
         path = self.absolute_url(1)
-
         if not queue_threads.has_key(path):
-
             thread = QueueProcessorThread()
             thread.setMailer(self._makeMailer())
             thread.setQueuePath(self.smtp_queue_directory)
@@ -214,10 +215,8 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
         """ Send the message """
 
         if self.smtp_queue:
-            
             # Start queue processor thread, if necessary
             self._startQueueProcessorThread()
-
             delivery = QueuedMailDelivery(self.smtp_queue_directory)
         else:
             delivery = DirectMailDelivery(self._makeMailer())
