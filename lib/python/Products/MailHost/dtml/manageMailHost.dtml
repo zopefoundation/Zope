@@ -114,39 +114,46 @@
     </div>
     </td>
   </tr>
-  <tr>
-    <td align="left" valign="top">
-    <div class="form-label">
-    Mails in queue <br/> 
-    </div>
-    </td>
-    <td align="left" valign="top">
-        <span class="form-help"><dtml-var queueLength></span>
-    </td>
-  </tr>
-  <tr>
-    <td align="left" valign="top">
-    <div class="form-label">
-    Status of queue processor thread<br/> 
-    </div>
-    </td>
-    <td align="left" valign="top">
-        <div class="form-help">
-
-            <dtml-if "queueThreadAlive()">
-                Running
-                <br/>
-                <a href="manage_restartQueueThread?action=stop">Stop queue processor thread</a> (this may take some seconds)
-            </dtml-if>
-            <dtml-if "not queueThreadAlive()">
-                Stopped
-                <br/>
-                <a href="manage_restartQueueThread?action=start">Start queue processor thread</a> (this may take some seconds)
-            </dtml-if>
-        </div>
-    </td>
-  </tr>
 </table>
+
+<dtml-if smtp_queue>
+    <br />
+    <table cellspacing="0" cellpadding="2" border="0">
+      <tr>
+        <td align="left" valign="top">
+        <div class="form-label">
+        Mails in queue <br/> 
+        </div>
+        </td>
+        <td align="left" valign="top">
+            <span class="form-help"><dtml-var queueLength></span>
+        </td>
+      </tr>
+      <tr>
+        <td align="left" valign="top">
+        <div class="form-label">
+        Status of queue processor thread<br/> 
+        </div>
+        </td>
+        <td align="left" valign="top">
+            <div class="form-help">
+
+                <dtml-if "queueThreadAlive()">
+                    Running
+                    <br/>
+                    <a href="manage_restartQueueThread?action=stop">Stop queue processor thread</a> (this may take some seconds)
+                </dtml-if>
+                <dtml-if "not queueThreadAlive()">
+                    Stopped
+                    <br/>
+                    <a href="manage_restartQueueThread?action=start">Start queue processor thread</a> (this may take some seconds)
+                </dtml-if>
+            </div>
+        </td>
+      </tr>
+    </table>
+</dtml-if>
+
 </form>
 
 <dtml-var manage_page_footer>
