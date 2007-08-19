@@ -64,6 +64,10 @@ Zope Changes
 
     Features added
 
+      - MailHost: now uses zope.sendmail for delivering the mail providing
+        integration with the Zope transaction system (avoids sending dupe
+        emails in case of conflict errors)
+
       - integrated ZODB 3.8
     
       - integrated Zope 3.4

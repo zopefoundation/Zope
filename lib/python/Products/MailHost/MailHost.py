@@ -18,7 +18,6 @@ $Id$
 import mimetools
 import rfc822
 from cStringIO import StringIO
-from smtplib import SMTP
 
 import Acquisition
 import OFS.SimpleItem
@@ -29,15 +28,15 @@ from AccessControl.Permissions import view_management_screens
 from AccessControl.Role import RoleManager
 from Globals import Persistent, DTMLFile, InitializeClass
 from DateTime import DateTime
+
 from zope.interface import implements
+from zope.sendmail.mailer import SMTPMailer
+from zope.sendmail.delivery import DirectMailDelivery
 
 from interfaces import IMailHost
 
-
 class MailHostError(Exception):
-
     pass
-
 
 manage_addMailHostForm=DTMLFile('dtml/addMailHost_form', globals())
 def manage_addMailHost( self, id, title='', smtp_host='localhost'
@@ -54,8 +53,7 @@ add = manage_addMailHost
 
 
 class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
-
-    'a mailhost...?'
+    """a mailhost...?"""
 
     implements(IMailHost)
 
@@ -156,20 +154,22 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
         self._send( mfrom, mto, body )
 
     security.declarePrivate('_send')
-    def _send( self, mfrom, mto, messageText ):
+    def _send(self, mfrom, mto, messageText):
         """ Send the message """
-        smtpserver = SMTP(self.smtp_host, int(self.smtp_port) )
-        if self.smtp_uid:
-            smtpserver.login(self.smtp_uid, self.smtp_pwd)
-        smtpserver.sendmail( mfrom, mto, messageText )
-        smtpserver.quit()
+
+        mailer = SMTPMailer(self.smtp_host,
+                            int(self.smtp_port),
+                            self.smtp_uid or None,
+                            self.smtp_pwd or None
+                            )
+        delivery = DirectMailDelivery(mailer)
+        delivery.send(mfrom, mto, messageText)
 
 InitializeClass(MailBase)
 
 
 class MailHost(Persistent, MailBase):
-
-    "persistent version"
+    """persistent version"""
 
 
 def _encode(body, encode=None):
