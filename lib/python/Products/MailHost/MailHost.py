@@ -17,6 +17,7 @@ $Id$
 
 import mimetools
 import rfc822
+import time
 from cStringIO import StringIO
 
 import Acquisition
@@ -31,9 +32,12 @@ from DateTime import DateTime
 
 from zope.interface import implements
 from zope.sendmail.mailer import SMTPMailer
-from zope.sendmail.delivery import DirectMailDelivery
+from zope.sendmail.delivery import DirectMailDelivery, QueuedMailDelivery, \
+                            QueueProcessorThread
 
 from interfaces import IMailHost
+
+queue_threads = {}
 
 class MailHostError(Exception):
     pass
@@ -64,6 +68,8 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
     security = ClassSecurityInfo()
     smtp_uid='' # Class attributes for smooth upgrades
     smtp_pwd=''
+    smtp_queue = False
+    smtp_queue_directory = '/tmp'
 
     timeout=1.0
 
@@ -79,7 +85,7 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
 
 
     def __init__( self, id='', title='', smtp_host='localhost', smtp_port=25, 
-                  smtp_uid='', smtp_pwd=''):
+                  smtp_uid='', smtp_pwd='', smtp_queue=False, smtp_queue_directory='/tmp'):
         """Initialize a new MailHost instance """
         self.id = id
         self.title = title
@@ -87,6 +93,8 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
         self.smtp_port = int(smtp_port)
         self.smtp_uid = smtp_uid
         self.smtp_pwd = smtp_pwd
+        self.smtp_queue = smtp_queue
+        self.smtp_queue_directory = smtp_queue_directory
 
 
     # staying for now... (backwards compatibility)
@@ -95,7 +103,9 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
         self.smtp_port=smtp_port
 
     security.declareProtected(change_configuration, 'manage_makeChanges')
-    def manage_makeChanges(self,title,smtp_host,smtp_port,smtp_uid='',smtp_pwd='', REQUEST=None):
+    def manage_makeChanges(self,title,smtp_host,smtp_port,smtp_uid='',smtp_pwd='', 
+                           smtp_queue=False, smtp_queue_directory='/tmp',
+                           REQUEST=None):
         'make the changes'
 
         title=str(title)
@@ -107,6 +117,17 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
         self.smtp_port=smtp_port
         self.smtp_uid = smtp_uid
         self.smtp_pwd = smtp_pwd
+        self.smtp_queue = smtp_queue
+        self.smtp_queue_directory = smtp_queue_directory
+
+        # restart queue processor thread 
+        if self.smtp_queue:
+            self._stopQueueProcessorThread() 
+            self._startQueueProcessorThread() 
+        else:
+            self._stopQueueProcessorThread() 
+
+
         if REQUEST is not None:
             msg = 'MailHost %s updated' % self.id
             return self.manage_main( self
@@ -153,17 +174,55 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
 
         self._send( mfrom, mto, body )
 
+
+    def _makeMailer(self):
+        """ Create a SMTPMailer """
+        return SMTPMailer(self.smtp_host,
+                          int(self.smtp_port),
+                          self.smtp_uid or None,
+                          self.smtp_pwd or None
+                          )
+
+    def _stopQueueProcessorThread(self):
+        """ Stop thread for processing the mail queue """
+
+        path = self.absolute_url(1)
+        if queue_threads.has_key(path):
+            thread = queue_threads[path]
+            thread.stop()
+            while thread.isAlive():
+                # wait until thread is really dead
+                time.sleep(0.1)
+
+
+    def _startQueueProcessorThread(self):
+        """ Start thread for processing the mail queue """
+        
+        path = self.absolute_url(1)
+
+        if not queue_threads.has_key(path):
+
+            thread = QueueProcessorThread()
+            thread.setMailer(self._makeMailer())
+            thread.setQueuePath(self.smtp_queue_directory)
+            thread.start()
+            queue_threads[path] = thread     
+
+
     security.declarePrivate('_send')
     def _send(self, mfrom, mto, messageText):
         """ Send the message """
 
-        mailer = SMTPMailer(self.smtp_host,
-                            int(self.smtp_port),
-                            self.smtp_uid or None,
-                            self.smtp_pwd or None
-                            )
-        delivery = DirectMailDelivery(mailer)
-        delivery.send(mfrom, mto, messageText)
+        if self.smtp_queue:
+            
+            # Start queue processor thread, if necessary
+            self._startQueueProcessorThread()
+
+            delivery = QueuedMailDelivery(self.smtp_queue_directory)
+        else:
+            delivery = DirectMailDelivery(self._makeMailer())
+
+        delivery.send(mfrom, mto, messageText)                
 
 InitializeClass(MailBase)
 

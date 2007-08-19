@@ -51,7 +51,7 @@
   <tr>
     <td align="left" valign="top">
     <div class="form-label">
-    Authentication ID:
+    Username:
     </div>
     </td>
     <td align="left" valign="top">
@@ -68,6 +68,29 @@
     <td align="left" valign="top">
     <input type="password" name="smtp_pwd" size="15"
      value="&dtml-smtp_pwd;"/>
+    </td>
+  </tr>
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-label">
+    Use queue
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <input type="checkbox" name="smtp_queue:boolean" value="1"
+     <dtml-if "smtp_queue">checked</dtml-if>
+
+    </td>
+  </tr>
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-label">
+    Queue directory:
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <input type="text" name="smtp_queue_directory" size="30"
+     value="&dtml-smtp_queue_directory;"/>
     </td>
   </tr>
   <tr>

@@ -66,7 +66,11 @@ Zope Changes
 
       - MailHost: now uses zope.sendmail for delivering the mail providing
         integration with the Zope transaction system (avoids sending dupe
-        emails in case of conflict errors)
+        emails in case of conflict errors). In addition MailHost now provides 
+        support for asynchronous mail delivery. The 'Use queue' configuration 
+        option will create a mail queue on the filesystem (under 
+        'Queue directory') and start a queue thread that checks the queue every
+        three seconds. This decouples the sending of mail from its delivery.
 
       - integrated ZODB 3.8
     
