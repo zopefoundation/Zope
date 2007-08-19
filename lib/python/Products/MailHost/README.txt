@@ -6,3 +6,6 @@ MailHost
 
   Email can optionally be encoded using Base64, Quoted-Printable
   or UUEncode encoding.
+
+  MailHost provides integration with the Zope transaction system
+  and optional support for asynchronous mail delivery.
