@@ -51,12 +51,15 @@
   <tr>
     <td align="left" valign="top">
     <div class="form-label">
-    Username:
+    Username
     </div>
     </td>
     <td align="left" valign="top">
     <input type="text" name="smtp_uid" size="15"
      value="&dtml-smtp_uid;"/>
+    </td>
+    <td>
+    <span class="form-help">(optional for SMTP AUTH)</span>
     </td>
   </tr>
   <tr>
@@ -69,28 +72,36 @@
     <input type="password" name="smtp_pwd" size="15"
      value="&dtml-smtp_pwd;"/>
     </td>
+    <td>
+    <span class="form-help">(optional for SMTP AUTH)</span>
+    </td>
   </tr>
   <tr>
     <td align="left" valign="top">
     <div class="form-label">
-    Use queue
+    Use mail queue
     </div>
     </td>
     <td align="left" valign="top">
     <input type="checkbox" name="smtp_queue:boolean" value="1"
      <dtml-if "smtp_queue">checked</dtml-if>
-
+    </td>
+    <td>
+    <span class="form-help">(asynchronous mail delivery if checked)</span>
     </td>
   </tr>
   <tr>
     <td align="left" valign="top">
     <div class="form-label">
-    Queue directory:
+    Queue directory<br/> 
     </div>
     </td>
     <td align="left" valign="top">
     <input type="text" name="smtp_queue_directory" size="30"
      value="&dtml-smtp_queue_directory;"/>
+    </td>
+    <td>
+    <span class="form-help">(directory on the filesystem where the mails will be spooled. Only used if 'Use mail queue' is checked.)</span>
     </td>
   </tr>
   <tr>
