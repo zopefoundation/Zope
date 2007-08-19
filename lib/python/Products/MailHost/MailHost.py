@@ -33,13 +33,17 @@ from Globals import Persistent, DTMLFile, InitializeClass
 from DateTime import DateTime
 
 from zope.interface import implements
-from zope.sendmail.mailer import SMTPMailer
 from zope.sendmail.maildir import Maildir
 from zope.sendmail.delivery import DirectMailDelivery, QueuedMailDelivery, \
                             QueueProcessorThread
 
 from interfaces import IMailHost
 from decorator import synchronized
+
+# Use our own TLS/SSL-aware mailer since the zope.sendmail does
+# not support TLS/SSL in this version (should be replaced with
+# the next version)
+from mailer import SMTPMailer
 
 queue_threads = {}  # maps MailHost path -> queue processor threada
 
