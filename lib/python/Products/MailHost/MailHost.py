@@ -20,6 +20,7 @@ import rfc822
 import time
 import logging
 from cStringIO import StringIO
+from threading import Lock
 
 import Acquisition
 import OFS.SimpleItem
@@ -38,6 +39,7 @@ from zope.sendmail.delivery import DirectMailDelivery, QueuedMailDelivery, \
                             QueueProcessorThread
 
 from interfaces import IMailHost
+from decorator import synchronized
 
 queue_threads = {}  # maps MailHost path -> queue processor threada
 
@@ -74,8 +76,10 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
     smtp_pwd=''
     smtp_queue = False
     smtp_queue_directory = '/tmp'
+    lock = Lock()
 
-    timeout=1.0
+    # timeout=1.0 # unused?
+    
 
     manage_options=(
         (
@@ -187,6 +191,7 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
                           self.smtp_pwd or None
                           )
 
+    @synchronized(lock)
     def _stopQueueProcessorThread(self):
         """ Stop thread for processing the mail queue """
 
@@ -200,6 +205,7 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
             del queue_threads[path]
             LOG.info('Thread for %s stopped' % path)
 
+    @synchronized(lock)
     def _startQueueProcessorThread(self):
         """ Start thread for processing the mail queue """
         
