@@ -231,14 +231,18 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
         return False
 
     security.declareProtected(change_configuration, 'manage_restartQueueThread')
-    def manage_restartQueueThread(self, REQUEST=None):
+    def manage_restartQueueThread(self, action='start', REQUEST=None):
         """ Restart the queue processor thread """
 
-        self._stopQueueProcessorThread()
-        self._startQueueProcessorThread()
+        if action == 'stop':
+            self._stopQueueProcessorThread()
+        elif action == 'start':
+            self._startQueueProcessorThread()
+        else:
+            raise ValueError('Unsupported action %s' % action)
 
         if REQUEST is not None:
-            msg = 'Queue processor thread restarted'
+            msg = 'Queue processor thread %sed' % action
             return self.manage_main(self, REQUEST, manage_tabs_message=msg)
 
 

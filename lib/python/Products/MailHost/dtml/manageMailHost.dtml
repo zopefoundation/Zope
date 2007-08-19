@@ -128,14 +128,22 @@
   <tr>
     <td align="left" valign="top">
     <div class="form-label">
-    Queue processor thread alive?<br/> 
+    Status of queue processor thread<br/> 
     </div>
     </td>
     <td align="left" valign="top">
         <div class="form-help">
-            <dtml-var queueThreadAlive>
-            <br/>
-            <a href="manage_restartQueueThread">Restart queue processor thread</a> (this may take some seconds)
+
+            <dtml-if "queueThreadAlive()">
+                Running
+                <br/>
+                <a href="manage_restartQueueThread?action=stop">Stop queue processor thread</a> (this may take some seconds)
+            </dtml-if>
+            <dtml-if "not queueThreadAlive()">
+                Stopped
+                <br/>
+                <a href="manage_restartQueueThread?action=start">Start queue processor thread</a> (this may take some seconds)
+            </dtml-if>
         </div>
     </td>
   </tr>
