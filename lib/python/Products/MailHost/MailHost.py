@@ -242,7 +242,8 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
             raise ValueError('Unsupported action %s' % action)
 
         if REQUEST is not None:
-            msg = 'Queue processor thread %sed' % action
+            msg = 'Queue processor thread %s' % \
+                  (action == 'stop' and 'stopped' or 'started')
             return self.manage_main(self, REQUEST, manage_tabs_message=msg)
 
 
