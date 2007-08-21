@@ -144,7 +144,7 @@ Zope Changes
 
     Bugs Fixed
 
-      - Collector #2338: ZPT: fixed unicode issue when using the 'structure'
+      - Collector #2339: ZPT: fixed unicode issue when using the 'structure'
         directive
 
       - Collector #2332: SessionDataManger: don't swallow ConflictErrors
