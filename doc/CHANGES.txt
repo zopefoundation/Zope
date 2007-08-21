@@ -13,6 +13,9 @@ Zope Changes
 
       - Collector #2332: SessionDataManger: don't swallow ConflictErrors
 
+      - Collector #2339: ZPT: fixed unicode issue when using the 'structure'
+        directive
+
   Zope 2.10.4 (23.06.2007)
 
     Other changes
