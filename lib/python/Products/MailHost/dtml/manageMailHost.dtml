@@ -79,6 +79,23 @@
   <tr>
     <td align="left" valign="top">
     <div class="form-label">
+    Force TLS
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <input type="checkbox" name="force_tls:boolean" value="1"
+     <dtml-if "force_tls">checked</dtml-if>
+    </td>
+    <td>
+        <span class="form-help">(enforce the use of an encrypted connection 
+            to the SMTP server. Mail delivery fails if the SMTP server
+            does not support encryption)
+        </span>
+    </td>
+  </tr>
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-label">
     Use mail queue
     </div>
     </td>
