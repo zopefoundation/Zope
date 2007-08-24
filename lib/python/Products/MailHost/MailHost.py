@@ -96,8 +96,9 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
         )
 
 
-    def __init__( self, id='', title='', smtp_host='localhost', smtp_port=25, 
-                  smtp_uid='', smtp_pwd='', smtp_queue=False, smtp_queue_directory='/tmp'):
+    def __init__(self, id='', title='', smtp_host='localhost', smtp_port=25, 
+                 force_tls=False, no_tls=False,
+                 smtp_uid='', smtp_pwd='', smtp_queue=False, smtp_queue_directory='/tmp'):
         """Initialize a new MailHost instance """
         self.id = id
         self.title = title
@@ -105,6 +106,8 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
         self.smtp_port = int(smtp_port)
         self.smtp_uid = smtp_uid
         self.smtp_pwd = smtp_pwd
+        self.force_tls = force_tls
+        self.no_tls = no_tls
         self.smtp_queue = smtp_queue
         self.smtp_queue_directory = smtp_queue_directory
 
@@ -117,6 +120,7 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
     security.declareProtected(change_configuration, 'manage_makeChanges')
     def manage_makeChanges(self,title,smtp_host,smtp_port,smtp_uid='',smtp_pwd='', 
                            smtp_queue=False, smtp_queue_directory='/tmp',
+                           force_tls=False, no_tls=False,
                            REQUEST=None):
         'make the changes'
 
@@ -129,6 +133,8 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
         self.smtp_port=smtp_port
         self.smtp_uid = smtp_uid
         self.smtp_pwd = smtp_pwd
+        self.no_tls = no_tls
+        self.force_tls = force_tls
         self.smtp_queue = smtp_queue
         self.smtp_queue_directory = smtp_queue_directory
 
@@ -189,10 +195,12 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
 
     def _makeMailer(self):
         """ Create a SMTPMailer """
-        return SMTPMailer(self.smtp_host,
+        return SMTPMailer(hostname=self.smtp_host,
                           int(self.smtp_port),
-                          self.smtp_uid or None,
-                          self.smtp_pwd or None
+                          username=self.smtp_uid or None,
+                          password=self.smtp_pwd or None,
+                          no_tls=self.no_tls,
+                          force_tls=self.force_tls
                           )
 
     @synchronized(lock)
@@ -205,7 +213,7 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
             thread.stop()
             while thread.isAlive():
                 # wait until thread is really dead
-                time.sleep(0.1)
+                time.sleep(0.3)
             del queue_threads[path]
             LOG.info('Thread for %s stopped' % path)
 
