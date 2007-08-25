@@ -9,6 +9,11 @@ Zope Changes
 
     Restructuring
 
+      - All Products folders as well as the zope and zope.app folders are
+        declared as setuptools namespace packages now. See
+        http://peak.telecommunity.com/DevCenter/setuptools#namespace-packages
+        for more information about namespace packages.
+
       - ZPT: removed display of ZPT warnings since warnings were
         removed from the zope.pagetemplate implementation     
 
