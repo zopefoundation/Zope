@@ -46,13 +46,10 @@ Let's check that we're in the right context:
   >>> view.aq_inContextOf(object())
   0
 
-Let's try the __of__ protocol:
+Views also still support the __of__ protocol, at least pro forma:
 
-  #>>> view = view.__of__(self.app)
-  #>>> view.aq_parent == self.folder
-  #False
-  #>>> view.aq_parent == self.app
-  #True
+  >>> view == view.__of__(self.app)
+  True
 
 Mixing in Acquisition.{Ex|Im}plicit
 -----------------------------------
