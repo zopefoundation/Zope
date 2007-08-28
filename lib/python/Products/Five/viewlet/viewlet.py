@@ -17,12 +17,14 @@ $Id$
 """
 import os
 import zope.viewlet.viewlet
+from Products.Five.bbb import AquisitionBBB
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
-class ViewletBase(zope.viewlet.viewlet.ViewletBase):
+class ViewletBase(zope.viewlet.viewlet.ViewletBase, AquisitionBBB):
     pass
 
-class SimpleAttributeViewlet(zope.viewlet.viewlet.SimpleAttributeViewlet):
+class SimpleAttributeViewlet(zope.viewlet.viewlet.SimpleAttributeViewlet,
+                             AquisitionBBB):
     pass
 
 class simple(zope.viewlet.viewlet.simple):
