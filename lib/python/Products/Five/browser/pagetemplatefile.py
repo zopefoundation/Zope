@@ -15,6 +15,7 @@
 
 $Id$
 """
+from os.path import basename
 import zope.app.pagetemplate
 
 from Acquisition import aq_get
@@ -22,11 +23,21 @@ from AccessControl import getSecurityManager
 from Products.PageTemplates.Expressions import SecureModuleImporter
 from Products.PageTemplates.Expressions import createTrustedZopeEngine
 
+from Products.Five.bbb import AquisitionBBB
+
 _engine = createTrustedZopeEngine()
 def getEngine():
     return _engine
 
-class ViewPageTemplateFile(zope.app.pagetemplate.ViewPageTemplateFile):
+class ViewPageTemplateFile(zope.app.pagetemplate.ViewPageTemplateFile,
+                           AquisitionBBB):
+
+    def getId(self):
+        return basename(self.filename)
+
+    @property
+    def id(self):
+        return self.getId()
 
     def pt_getEngine(self):
         return getEngine()
