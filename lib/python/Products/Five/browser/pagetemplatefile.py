@@ -35,9 +35,7 @@ class ViewPageTemplateFile(zope.app.pagetemplate.ViewPageTemplateFile,
     def getId(self):
         return basename(self.filename)
 
-    @property
-    def id(self):
-        return self.getId()
+    property(getId)
 
     def pt_getEngine(self):
         return getEngine()
