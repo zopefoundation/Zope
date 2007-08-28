@@ -23,6 +23,11 @@ class BrowserView(zope.publisher.browser.BrowserView):
     # BBB for code that expects BrowserView to still inherit from
     # Acquisition.Explicit.
 
+    # Use an explicit __init__ to work around problems with magically inserted
+    # super classes when using BrowserView as a base for viewlets.
+    def __init__(self, context, request):
+        zope.publisher.browser.BrowserView.__init__(self, context, request)
+
     def __of__(self, context):
         # Technically this isn't in line with the way Acquisition's
         # __of__ works. With Acquisition, you get a wrapper around
