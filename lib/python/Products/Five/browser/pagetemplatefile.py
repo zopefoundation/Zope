@@ -16,7 +16,7 @@
 $Id$
 """
 from os.path import basename
-import zope.app.pagetemplate
+from zope.app.pagetemplate import viewpagetemplatefile
 
 from Acquisition import aq_get
 from AccessControl import getSecurityManager
@@ -29,8 +29,7 @@ _engine = createTrustedZopeEngine()
 def getEngine():
     return _engine
 
-class ViewPageTemplateFile(zope.app.pagetemplate.ViewPageTemplateFile,
-                           AquisitionBBB):
+class ViewPageTemplateFile(viewpagetemplatefile.ViewPageTemplateFile):
 
     def getId(self):
         return basename(self.filename)
@@ -61,6 +60,21 @@ class ViewPageTemplateFile(zope.app.pagetemplate.ViewPageTemplateFile,
                        user = getSecurityManager().getUser()
                        )
         return context
+
+    def __get__(self, instance, type):
+        return BoundPageTemplate(self, instance)
+
+
+# When a view's template is accessed e.g. as template.view, a
+# BoundPageTemplate object is retured.  For BBB reasons, it needs to
+# support the aq_* methods and attributes known from Acquisition.  For
+# that it also needs to be locatable thru __parent__.
+
+class BoundPageTemplate(viewpagetemplatefile.BoundPageTemplate,
+                        AquisitionBBB):
+
+    __parent__ = property(lambda self: self.im_self)
+
 
 # BBB
 ZopeTwoPageTemplateFile = ViewPageTemplateFile
