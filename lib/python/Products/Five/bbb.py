@@ -19,9 +19,31 @@ from zope.interface import Interface, implements
 from zope.component.interfaces import ComponentLookupError
 from zope.app.publisher.browser import getDefaultViewName
 
-import zExceptions
-import Products.Five.security
-from Products.Five import fivemethod
+import Acquisition
+
+
+class AquisitionBBB(object):
+    """Emulate a class implementing Acquisition.interfaces.IAcquirer and
+    IAcquisitionWrapper.
+    """
+
+    def __of__(self, context):
+        # Technically this isn't in line with the way Acquisition's
+        # __of__ works. With Acquisition, you get a wrapper around
+        # the original object and only that wrapper's parent is the
+        # new context.
+        return self
+
+    aq_self = aq_inner = aq_base = property(lambda self: self)
+    aq_chain = property(Acquisition.aq_chain)
+    aq_parent = property(Acquisition.aq_parent)
+
+    def aq_acquire(self, *args, **kw):
+        return Acquisition.aq_acquire(self, *args, **kw)
+
+    def aq_inContextOf(self, *args, **kw):
+        return Acquisition.aq_inContextOf(self, *args, **kw)
+
 
 class IBrowserDefault(Interface):
     """Provide a hook for deciding about the default view for an object"""
