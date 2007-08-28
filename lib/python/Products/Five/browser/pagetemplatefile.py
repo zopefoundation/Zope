@@ -23,7 +23,7 @@ from AccessControl import getSecurityManager
 from Products.PageTemplates.Expressions import SecureModuleImporter
 from Products.PageTemplates.Expressions import createTrustedZopeEngine
 
-from Products.Five.bbb import AquisitionBBB
+from Products.Five.bbb import AcquisitionBBB
 
 _engine = createTrustedZopeEngine()
 def getEngine():
@@ -71,7 +71,7 @@ class ViewPageTemplateFile(viewpagetemplatefile.ViewPageTemplateFile):
 # that it also needs to be locatable thru __parent__.
 
 class BoundPageTemplate(viewpagetemplatefile.BoundPageTemplate,
-                        AquisitionBBB):
+                        AcquisitionBBB):
 
     __parent__ = property(lambda self: self.im_self)
 

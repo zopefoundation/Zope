@@ -22,7 +22,7 @@ from zope.app.publisher.browser import getDefaultViewName
 import Acquisition
 
 
-class AquisitionBBB(object):
+class AcquisitionBBB(object):
     """Emulate a class implementing Acquisition.interfaces.IAcquirer and
     IAcquisitionWrapper.
     """

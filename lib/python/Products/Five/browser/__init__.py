@@ -18,10 +18,10 @@ $Id$
 import Acquisition
 import zope.publisher.browser
 
-from Products.Five.bbb import AquisitionBBB
+from Products.Five.bbb import AcquisitionBBB
 
 
-class BrowserView(zope.publisher.browser.BrowserView, AquisitionBBB):
+class BrowserView(zope.publisher.browser.BrowserView, AcquisitionBBB):
 
     # Use an explicit __init__ to work around problems with magically inserted
     # super classes when using BrowserView as a base for viewlets.
