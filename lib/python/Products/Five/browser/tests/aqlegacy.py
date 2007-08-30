@@ -22,17 +22,20 @@ from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
 class LegacyAttributes(BrowserView):
-    """Make sure that accessing those old aq_* attributes on Five
-    BrowserViews still works, even though BrowserView may not be an
-    Acquisition-decendant class anymore...
+    """Make sure that those old aq_* attributes on Five BrowserViews
+    still work, in particular aq_chain, even though BrowserView may
+    not be an Acquisition-decendant class anymore...
     """
 
     def __call__(self):
-        assert self.aq_parent == self.context
-        assert self.aq_inner == self
-        assert self.aq_base == self
-        assert self.aq_self == self
         return repr([obj for obj in self.aq_chain])
+
+class LegacyTemplate(BrowserView):
+
+    template = ViewPageTemplateFile('falcon.pt')
+
+    def __call__(self):
+        return self.template()
 
 class Explicit(Acquisition.Explicit):
 

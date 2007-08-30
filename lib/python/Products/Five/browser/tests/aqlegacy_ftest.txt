@@ -21,7 +21,10 @@ views still works (the printed output is the aq_chain of the view):
 
   >>> browser.open('http://localhost/test_folder_1_/attributes')
   >>> print browser.contents
-  [<Products.Five.metaclass.LegacyAttributes object at ...>, <Folder at /test_folder_1_>, <Application at >, <ZPublisher.BaseRequest.RequestContainer object at ...>]
+  [<Products.Five.metaclass.LegacyAttributes object at ...>,
+   <Folder at /test_folder_1_>,
+   <Application at >,
+   <ZPublisher.BaseRequest.RequestContainer object at ...>]
 
 Let's do some more manual tests with the view object.  But first we
 must get it:
@@ -30,6 +33,17 @@ must get it:
   >>> from zope.publisher.browser import TestRequest
   >>> request = TestRequest()
   >>> view = getMultiAdapter((self.folder, request), name='attributes')
+
+Let's check for the various aq_* attributes:
+
+  >>> view.aq_parent == self.folder
+  True
+  >>> view.aq_inner == view
+  True
+  >>> view.aq_base == view
+  True
+  >>> view.aq_self == view
+  True
 
 Let's try to acquire something from the root folder:
 
@@ -50,6 +64,28 @@ Views also still support the __of__ protocol, at least pro forma:
 
   >>> view == view.__of__(self.app)
   True
+
+Acquisition API legacy on a browser view's template
+---------------------------------------------------
+
+A view's template will also support the various aq_* attributes:
+
+  >>> view = getMultiAdapter((self.folder, request), name='template')
+  >>> template = view.template
+
+  >>> template.aq_parent == view
+  True
+  >>> template.aq_inner == template
+  True
+  >>> template.aq_base == template
+  True
+  >>> template.aq_self == template
+  True
+
+  >>> button = template.aq_acquire('ZopeAttributionButton')
+  >>> print button()
+  <a href="http://www.zope.org/Credits" target="_top"><img src="http://nohost/p_/ZopeButton" width="115" height="50" border="0" alt="Powered by Zope" /></a>
+
 
 Mixing in Acquisition.{Ex|Im}plicit
 -----------------------------------
