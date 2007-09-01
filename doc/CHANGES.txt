@@ -149,6 +149,8 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #2346: username logging in FCGI crashed the server
+
       - Collector #2339: ZPT: fixed unicode issue when using the 'structure'
         directive
 
