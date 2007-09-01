@@ -18,6 +18,8 @@ which mix-in one of the Acquisition base classes without knowing
 better) still work.
 """
 import Acquisition
+from zope.interface import implements
+from zope.contentprovider.interfaces import IContentProvider
 from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
@@ -54,3 +56,52 @@ class Implicit(Acquisition.Implicit):
 class ImplicitWithTemplate(Acquisition.Implicit):
 
     template = ViewPageTemplateFile('falcon.pt')
+
+
+class ExplicitContentProvider(Acquisition.Explicit):
+    implements(IContentProvider)
+
+    def __init__(self, context, request, view):
+        self.context = context
+        self.request = request
+        self.view = view
+        # Normally, a content provider should set __parent__ to view
+        # or context.  This one doesn't do this on purpose to ensure
+        # it works without.
+
+    def update(self):
+        # Make sure that the content provider is acquisition wrapped.
+        assert self.aq_parent == self.context
+        assert self.aq_base == self
+
+    def render(self):
+        return 'Content provider inheriting from Explicit'
+
+class ExplicitViewlet(Acquisition.Explicit):
+
+    def __init__(self, context, request, view, manager):
+        self.context = context
+        self.request = request
+
+    def update(self):
+        pass
+
+    def render(self):
+        return 'Viewlet inheriting from Explicit'
+
+class BrowserViewViewlet(BrowserView):
+
+    def __init__(self, context, request, view, manager):
+        # This is the tricky bit.  super(...).__init__ wouldn't
+        # necessarily have to resolve to BrowserView.__init__ because
+        # <browser:viewlet /> generates classes on the fly with a
+        # mix-in base class...
+        super(BrowserViewViewlet, self).__init__(context, request)
+        self.view = view
+        self.manager = manager
+
+    def update(self):
+        pass
+
+    def render(self):
+        return 'BrowserView viewlet'

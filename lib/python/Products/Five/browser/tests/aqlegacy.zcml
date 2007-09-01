@@ -63,5 +63,46 @@
       permission="zope.Public"
       />
 
+  <!-- Content providers and viewlets -->
+
+  <adapter
+      for="* * *"
+      provides="zope.contentprovider.interfaces.IContentProvider"
+      factory=".aqlegacy.ExplicitContentProvider"
+      name="aqlegacyprovider"
+      />
+
+  <browser:page
+      for="*"
+      name="aqlegacyprovider"
+      template="legacyprovider.pt"
+      permission="zope.Public"
+      />
+
+  <browser:viewletManager
+      name="aqlegacymanager"
+      permission="zope.Public"
+      />
+
+  <browser:viewlet
+      for="*"
+      class=".aqlegacy.ExplicitViewlet"
+      name="explicit"
+      permission="zope.Public"
+      />
+
+  <browser:viewlet
+      for="*"
+      class=".aqlegacy.BrowserViewViewlet"
+      name="browserview"
+      permission="zope.Public"
+      />
+
+  <browser:page
+      for="*"
+      name="aqlegacymanager"
+      template="legacymanager.pt"
+      permission="zope.Public"
+      />
 
 </configure>

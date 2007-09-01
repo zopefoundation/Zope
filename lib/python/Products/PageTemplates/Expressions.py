@@ -30,7 +30,6 @@ from zope.tales.pythonexpr import PythonExpr
 from zope.traversing.interfaces import ITraversable
 from zope.traversing.adapters import traversePathElement
 from zope.proxy import removeAllProxies
-from zope.contentprovider.tales import TALESProviderExpression
 import zope.app.pagetemplate.engine
 
 import OFS.interfaces
@@ -38,6 +37,7 @@ from MultiMapping import MultiMapping
 from Acquisition import aq_base
 from zExceptions import NotFound, Unauthorized
 
+from Products.Five.browser.providerexpression import Z2ProviderExpression
 from Products.PageTemplates import ZRPythonExpr
 from Products.PageTemplates.DeferExpr import LazyExpr
 from Products.PageTemplates.GlobalTranslationService import getGlobalTranslationService
@@ -345,7 +345,7 @@ def createZopeEngine():
     e.registerType('not', NotExpr)
     e.registerType('defer', DeferExpr)
     e.registerType('lazy', LazyExpr)
-    e.registerType('provider', TALESProviderExpression)
+    e.registerType('provider', Z2ProviderExpression)
     e.registerBaseName('modules', SecureModuleImporter)
     return e
 

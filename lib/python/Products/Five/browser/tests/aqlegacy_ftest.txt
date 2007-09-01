@@ -119,6 +119,19 @@ first place...):
   <p>The falcon has taken flight</p>
 
 
+Testing legacy content providers and viewlets
+=============================================
+
+  >>> browser.open('http://localhost/test_folder_1_/aqlegacyprovider')
+  >>> print browser.contents
+  <p>Content provider inheriting from Explicit</p>
+
+  >>> browser.open('http://localhost/test_folder_1_/aqlegacymanager')
+  >>> print browser.contents
+  <p>BrowserView viewlet
+  Viewlet inheriting from Explicit</p>
+
+
 Clean up
 --------
 
