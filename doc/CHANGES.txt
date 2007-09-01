@@ -8,6 +8,8 @@ Zope Changes
 
    Bugs fixed
 
+      - Collector #2346: username logging in FCGI crashed the server
+
       - Collector #2332: SessionDataManger: don't swallow ConflictErrors
 
 
