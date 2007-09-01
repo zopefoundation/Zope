@@ -84,7 +84,10 @@ class ExplicitViewlet(Acquisition.Explicit):
         self.request = request
 
     def update(self):
-        pass
+        # Make sure that the viewlet has the legacy attributes and
+        # they point to the right objects.
+        assert self.aq_parent == self.context
+        assert self.aq_base == self
 
     def render(self):
         return 'Viewlet inheriting from Explicit'
