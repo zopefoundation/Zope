@@ -32,6 +32,13 @@ class LegacyAttributes(BrowserView):
     def __call__(self):
         return repr([obj for obj in self.aq_chain])
 
+class ExplicitLegacyAttributes(Acquisition.Explicit):
+    """Make sure that those old aq_* attributes work on browser views
+    that only inherit from Explicit as well."""
+
+    def __call__(self):
+        return repr([obj for obj in self.aq_chain])
+
 class LegacyTemplate(BrowserView):
 
     template = ViewPageTemplateFile('falcon.pt')

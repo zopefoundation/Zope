@@ -10,6 +10,13 @@
 
   <browser:page
       for="*"
+      name="explicitattributes"
+      class=".aqlegacy.ExplicitLegacyAttributes"
+      permission="zope.Public"
+      />
+
+  <browser:page
+      for="*"
       name="template"
       class=".aqlegacy.LegacyTemplate"
       permission="zope.Public"
