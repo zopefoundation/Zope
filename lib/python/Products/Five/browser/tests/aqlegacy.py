@@ -18,7 +18,10 @@ which mix-in one of the Acquisition base classes without knowing
 better) still work.
 """
 import Acquisition
+import OFS.SimpleItem
+
 from zope.interface import implements
+from zope.traversing.interfaces import ITraversable
 from zope.contentprovider.interfaces import IContentProvider
 from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -115,3 +118,19 @@ class BrowserViewViewlet(BrowserView):
 
     def render(self):
         return 'BrowserView viewlet'
+
+
+class LegacyNamespace(object):
+    implements(ITraversable)
+
+    def __init__(self, context, request):
+        self.context = context
+        self.request = request
+
+    def traverse(self, name, ignored):
+        return LegacyNamespaceObject(name)
+
+class LegacyNamespaceObject(OFS.SimpleItem.SimpleItem):
+
+    def __init__(self, name):
+        self.id = name

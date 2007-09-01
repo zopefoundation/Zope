@@ -112,4 +112,24 @@
       permission="zope.Public"
       />
 
+  <!-- Namespace traversal -->
+
+  <adapter
+      for="*"
+      factory=".aqlegacy.LegacyNamespace"
+      name="aqlegacy"
+      />
+  <adapter
+      for="* *"
+      factory=".aqlegacy.LegacyNamespace"
+      name="aqlegacy"
+      />
+
+  <browser:page
+      for=".aqlegacy.LegacyNamespaceObject"
+      name="index.html"
+      template="falcon.pt"
+      permission="zope.Public"
+      />
+
 </configure>

@@ -23,6 +23,7 @@ from AccessControl import getSecurityManager
 from AccessControl import Unauthorized
 from AccessControl.ZopeGuards import guarded_getattr
 from Acquisition import Acquired, aq_inner, aq_parent, aq_acquire, aq_base
+from Acquisition.interfaces import IAcquirer
 from zExceptions import NotFound
 from ZODB.POSException import ConflictError
 from OFS.interfaces import ITraversable
@@ -193,6 +194,8 @@ class Traversable:
                             try:
                                 next = namespaceLookup(
                                     ns, nm, obj, aq_acquire(self, 'REQUEST'))
+                                if IAcquirer.providedBy(next):
+                                    next = next.__of__(obj)
                                 if restricted and not validate(
                                     obj, obj, name, next):
                                     raise Unauthorized(name)

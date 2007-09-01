@@ -141,6 +141,28 @@ Testing legacy content providers and viewlets
   Viewlet inheriting from Explicit</p>
 
 
+Testing namespace traversal
+===========================
+
+Namespace traversal can turn up objects during traversal without
+attribute access.  That means they might not be wrapped by default.
+Here we make sure that they are wrapped and that things like the
+request can be acquired.
+
+First let's try ``restrictedTraverse()``:
+
+  >>> foo = self.folder.restrictedTraverse('++aqlegacy++foo')
+  >>> import Acquisition
+  >>> Acquisition.aq_acquire(foo, 'REQUEST')
+  <HTTPRequest, URL=http://nohost>
+
+Now let's try URL traversal:
+
+  >>> browser.open('http://localhost/test_folder_1_/++aqlegacy++foo/index.html')
+  >>> print browser.contents
+  <p>The falcon has taken flight</p>
+
+
 Clean up
 --------
 

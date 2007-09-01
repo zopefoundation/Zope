@@ -18,6 +18,7 @@ from urllib import quote as urllib_quote
 import xmlrpc
 from zExceptions import Forbidden, Unauthorized, NotFound
 from Acquisition import aq_base
+from Acquisition.interfaces import IAcquirer
 
 from zope.interface import implements, providedBy, Interface
 from zope.component import queryMultiAdapter
@@ -312,6 +313,9 @@ class BaseRequest:
                     ob2 = namespaceLookup(ns, nm, ob, self)
                 except TraversalError:
                     raise KeyError(ob, name)
+
+                if IAcquirer.providedBy(ob2):
+                    ob2 = ob2.__of__(ob)
                 return ob2
 
         if name == '.':
