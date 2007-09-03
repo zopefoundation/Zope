@@ -18,13 +18,15 @@ Zope Changes
       - Collector #2339: ZPT: fixed unicode issue when using the 'structure'
         directive
 
-  Zope 2.10.4 (23.06.2007)
+  Zope 2.10.4 (2007/06/23)
 
     Other changes
 
       - updated to ZODB 3.7.1
 
       - updated to Zope 3.3.2
+
+      - updated to Five 1.5.5
 
     Bugs fixed
 
