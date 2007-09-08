@@ -84,7 +84,7 @@ InstanceDict_dealloc(InstanceDictobject *self)
   Py_XDECREF(self->namespace);
   Py_XDECREF(self->guarded_getattr);
   Py_DECREF(self->ob_type);
-  PyMem_DEL(self);
+  PyObject_DEL(self);
 }
 
 static PyObject *
@@ -438,7 +438,7 @@ MM_dealloc(MM *self)
   Py_XDECREF(self->data);
   Py_XDECREF(self->dict);
   Py_DECREF(self->ob_type);
-  PyMem_DEL(self);
+  PyObject_DEL(self);
 }
 
 static PyObject *
@@ -514,7 +514,7 @@ static void
 DictInstance_dealloc(DictInstance *self)
 {
   Py_DECREF(self->data);
-  PyMem_DEL(self);
+  PyObject_DEL(self);
 }
 
 static PyObject *

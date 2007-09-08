@@ -1278,7 +1278,7 @@ static PyObject *ZopeSecurityPolicy_validate(PyObject *self, PyObject *args) {
 static void ZopeSecurityPolicy_dealloc(ZopeSecurityPolicy *self) {
 
 	Py_DECREF(self->ob_type);	/* Extensionclass init incref'd */
-	PyMem_DEL(self);  
+	PyObject_DEL(self);  
 }
 
 
@@ -1362,7 +1362,7 @@ SecurityManager_dealloc(SecurityManager *self)
   Py_XDECREF(self->validate);
   Py_XDECREF(self->checkPermission);
   Py_DECREF(self->ob_type);	/* Extensionclass init incref'd */
-  PyMem_DEL(self);  
+  PyObject_DEL(self);  
 }
 
 static PyObject *
@@ -1559,7 +1559,7 @@ static void PermissionRole_dealloc(PermissionRole *self) {
 
 	Py_XDECREF(self->ob_type);	/* Extensionclass init incref'd */
 
-	PyMem_DEL(self);  
+	PyObject_DEL(self);  
 }
 
 
@@ -1705,7 +1705,7 @@ static void imPermissionRole_dealloc(imPermissionRole *self) {
 
 	Py_DECREF(self->ob_type);	/* Extensionclass init incref'd */
 
-	PyMem_DEL(self);  
+	PyObject_DEL(self);  
 }
 
 /*

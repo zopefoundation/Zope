@@ -32,7 +32,7 @@ static void
 Missing_dealloc(Missing *self)
 {
   Py_DECREF(self->ob_type);
-  PyMem_DEL(self);
+  PyObject_DEL(self);
 }
 
 static PyObject *

@@ -54,7 +54,7 @@ CA_dealloc(CA *self)
 {
   Py_DECREF(self->callable);
   Py_DECREF(self->ob_type);
-  PyMem_DEL(self);
+  PyObject_DEL(self);
 }
 
 static PyObject *

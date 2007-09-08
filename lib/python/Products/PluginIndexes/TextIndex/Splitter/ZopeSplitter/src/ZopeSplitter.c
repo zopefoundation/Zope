@@ -47,7 +47,7 @@ Splitter_dealloc(Splitter *self)
 {
     Py_XDECREF(self->text);
     Py_XDECREF(self->synstop);
-    PyMem_DEL(self);
+    PyObject_DEL(self);
 }
 
 static int

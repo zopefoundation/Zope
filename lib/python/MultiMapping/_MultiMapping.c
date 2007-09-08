@@ -130,7 +130,7 @@ MM_dealloc(MMobject *self)
 {
   Py_XDECREF(self->data);
   Py_DECREF(self->ob_type);
-  PyMem_DEL(self);
+  PyObject_DEL(self);
 }
 
 static PyObject *

@@ -156,7 +156,7 @@ Record_dealloc(Record *self)
 {
   Record_deal(self);
   Py_DECREF(self->ob_type);
-  PyMem_DEL(self);
+  PyObject_DEL(self);
 }
 
 static PyObject *
