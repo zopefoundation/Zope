@@ -95,9 +95,6 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
         +OFS.SimpleItem.Item.manage_options
         )
 
-    def __setstate__(self, state):
-        import pdb; pdb.set_trace() 
-
 
     def __init__(self, id='', title='', smtp_host='localhost', smtp_port=25, 
                  force_tls=False, 
