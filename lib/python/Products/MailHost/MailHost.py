@@ -95,6 +95,9 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
         +OFS.SimpleItem.Item.manage_options
         )
 
+    def __setstate__(self, state):
+        import pdb; pdb.set_trace() 
+
 
     def __init__(self, id='', title='', smtp_host='localhost', smtp_port=25, 
                  force_tls=False, 
@@ -232,8 +235,12 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
     def queueLength(self):
         """ return length of mail queue """
 
-        maildir = Maildir(self.smtp_queue_directory)
-        return len([item for item in maildir])
+        try:
+            maildir = Maildir(self.smtp_queue_directory)
+            return len([item for item in maildir])
+        except ValueError:
+            return 'n/a - %s is not a maildir - please verify your ' \
+                   'configuration' % self.smtp_queue_directory
 
 
     security.declareProtected(view, 'queueThreadAlive')
