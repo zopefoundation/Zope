@@ -268,9 +268,6 @@ view class are:
   attribute. Typically this comes from a base class, such as
   ``BrowserView``.
 
-* They need to be initialized with the Zope 2 security system, as
-  otherwise you cannot use the view.
-
 * This also means they need to be part of the Zope 2 acquisition
   system, as this is a requirement for Zope 2 security to
   function. The ``BrowserView`` base class, available from
@@ -283,22 +280,17 @@ An example of a simple view::
   from Products.Five import BrowserView
 
   class SimpleFolderView(BrowserView):
-      security = ClassSecurityInfo()
 
-      security.declarePublic('eagle')
       def eagle(self):
           """Test
           """
           return "The eagle has landed: %s" % self.context.objectIds()
 
-  InitializeClass(SimpleFolderView)
-
 Note that it is not a good idea to give a view class its own
 ``index_html``, as this confuses Five's view lookup machinery.
 
-As you can see, the class is initialized with the Zope 2 security
-system. This view uses methods in Python, but you can also use other
-Zope 2 mechanisms such as ``PageTemplateFile``.
+This view uses methods in Python, but you can also use other Zope 2 mechanisms
+such as ``PageTemplateFile``.
 
 Finally, we need to hook up the pages through ZCML::
 
