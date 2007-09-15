@@ -8,6 +8,8 @@ Zope Changes
 
     Bugs fixed
 
+      - Collector #2352: fix in OFS.Traversable
+
       - Collector #2346: username logging in FCGI crashed the server
 
       - ZopePageTemplate's pt_edit did not recognize content type arguments
