@@ -186,18 +186,18 @@ class Traversable:
 
                 bobo_traverse = getattr(obj, '__bobo_traverse__', None)
                 try:
-                    if name and name[:1] in '@+' and name != '+':
+                    if name and name[:1] in '@+' and name != '+' and nsParse(name)[1]:
                         # Process URI segment parameters.
                         ns, nm = nsParse(name)
-                        if ns:
-                            try:
-                                next = namespaceLookup(
-                                    ns, nm, obj, self.REQUEST).__of__(obj)
-                                if restricted and not validate(
-                                    obj, obj, name, next):
-                                    raise Unauthorized(name)
-                            except TraversalError:
-                                raise AttributeError(name)
+                        try:
+                            next = namespaceLookup(
+                                ns, nm, obj, self.REQUEST).__of__(obj)
+                            if restricted and not validate(
+                                obj, obj, name, next):
+                                raise Unauthorized(name)
+                        except TraversalError:
+                            raise AttributeError(name)
+
                     elif bobo_traverse is not None:
                         next = bobo_traverse(REQUEST, name)
                         if restricted:
