@@ -69,6 +69,15 @@ Zope Changes
 
     Features added
 
+      - The ZPublisher HTTP request has now both the debug and locale
+        attributes available, like its Zope 3 counterpart. The debug attribute
+        was so far limited to code from the zope.* namespace in order to make
+        the Zope 3 ZPT engine work. The locale attribute provides access to an
+        zope.i18n.interfaces.locales.ILocale object with access to locale
+        related information like date / time formatting or translated language
+        and country names. Form variables of both debug and locale will shadow
+        these two attributes and their use is therefor discouraged.
+
       - MailHost: now uses zope.sendmail for delivering the mail. With this change
         MailHost integrates with the Zope transaction system (avoids sending dupe
         emails in case of conflict errors). In addition MailHost now provides 

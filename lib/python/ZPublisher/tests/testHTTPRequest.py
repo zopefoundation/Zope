@@ -734,7 +734,7 @@ class RequestTests( unittest.TestCase ):
         self.assertEqual(f.next(),'test\n')
         f.seek(0)
         self.assertEqual(f.xreadlines(),f)
-	
+
     def testDebug(self):
         TEST_ENVIRON = {
             'REQUEST_METHOD': 'GET',
@@ -743,37 +743,116 @@ class RequestTests( unittest.TestCase ):
             }
         from StringIO import StringIO
         from ZPublisher.HTTPRequest import HTTPRequest
+        from zope.publisher.base import DebugFlags
         s = StringIO('')
 
-        # accessing request.debug from non-Zope3 code will raise an
-        # AttributeError
+        # when accessing request.debug we will see the DebugFlags instance
         env = TEST_ENVIRON.copy()
         request = HTTPRequest(s, env, None)
-        request.processInputs()
-        self.assertRaises(AttributeError, getattr, request, 'debug')
+        self.assert_(isinstance(request.debug, DebugFlags))
+        # It won't be available through dictonary lookup, though
+        self.assert_(request.get('debug') is None)
 
-        # or it will actually yield a 'debug' form variable if it
-        # exists
+        # request.debug will actually yield a 'debug' form variable
+        # if it exists
         env = TEST_ENVIRON.copy()
         env['QUERY_STRING'] = 'debug=1'
         request = HTTPRequest(s, env, None)
         request.processInputs()
         self.assertEqual(request.debug, '1')
+        self.assertEqual(request.get('debug'), '1')
+        self.assertEqual(request['debug'], '1')
 
-        # if we access request.debug from a Zope 3 package, however,
-        # we will see the DebugFlags instance
-        def getDebug(request):
-            return request.debug
-        # make a forged copy of getDebug that looks as if its module
-        # was a Zope 3 package
-        z3globals = globals().copy()
-        z3globals['__name__'] = 'zope.apackage'
-        import new
-        getDebugFromZope3 = new.function(getDebug.func_code, z3globals)
-        from zope.publisher.base import DebugFlags
-        self.assertEqual(getDebug(request), '1')
-        self.assert_(isinstance(getDebugFromZope3(request), DebugFlags))
-        
+        # we can still override request.debug with a form variable or directly
+        env = TEST_ENVIRON.copy()
+        request = HTTPRequest(s, env, None)
+        request.processInputs()
+        self.assert_(isinstance(request.debug, DebugFlags))
+        request.form['debug'] = '1'
+        self.assertEqual(request.debug, '1')
+        request['debug'] = '2'
+        self.assertEqual(request.debug, '2')
+
+    def testLocale(self):
+        TEST_ENVIRON = {
+            'HTTP_ACCEPT_LANGUAGE': 'en',
+            'REQUEST_METHOD': 'GET',
+            'SERVER_NAME': 'localhost',
+            'SERVER_PORT': '80',
+            }
+        from StringIO import StringIO
+        from ZPublisher.HTTPRequest import HTTPRequest
+        from zope.component import provideAdapter
+        from zope.publisher.browser import BrowserLanguages
+        from zope.publisher.interfaces.http import IHTTPRequest
+        from zope.i18n.interfaces import IUserPreferredLanguages
+        from zope.i18n.interfaces.locales import ILocale
+
+        provideAdapter(BrowserLanguages, [IHTTPRequest],
+                       IUserPreferredLanguages)
+        s = StringIO('')
+
+        # before accessing request.locale for the first time, request._locale
+        # is still a marker
+        from ZPublisher.HTTPRequest import _marker
+        env = TEST_ENVIRON.copy()
+        request = HTTPRequest(s, env, None)
+        self.assert_(request._locale is _marker)
+        # when accessing request.locale we will see an ILocale
+        self.assert_(ILocale.providedBy(request.locale))
+        # and request._locale has been set
+        self.assert_(request._locale is request.locale)
+        # It won't be available through dictonary lookup, though
+        self.assert_(request.get('locale') is None)
+
+        # request.locale will actually yield a 'locale' form variable
+        # if it exists
+        env = TEST_ENVIRON.copy()
+        env['QUERY_STRING'] = 'locale=1'
+        request = HTTPRequest(s, env, None)
+        request.processInputs()
+        self.assertEqual(request.locale, '1')
+        self.assertEqual(request.get('locale'), '1')
+        self.assertEqual(request['locale'], '1')
+
+        # we can still override request.locale with a form variable
+        env = TEST_ENVIRON.copy()
+        request = HTTPRequest(s, env, None)
+        request.processInputs()
+        self.assert_(ILocale.providedBy(request.locale))
+        request.form['locale'] = '1'
+        self.assertEqual(request.locale, '1')
+        request['locale'] = '2'
+        self.assertEqual(request.locale, '2')
+
+        # we should also test the correct semantics of the locale
+        for httplang in ('it', 'it-ch', 'it-CH', 'IT', 'IT-CH', 'IT-ch'):
+            env = TEST_ENVIRON.copy()
+            env['HTTP_ACCEPT_LANGUAGE'] = httplang
+            request = HTTPRequest(s, env, None)
+            locale = request.locale
+            self.assert_(ILocale.providedBy(locale))
+            parts = httplang.split('-')
+            lang = parts.pop(0).lower()
+            territory = variant = None
+            if parts:
+                territory = parts.pop(0).upper()
+            if parts:
+                variant = parts.pop(0).upper()
+            self.assertEqual(locale.id.language, lang)
+            self.assertEqual(locale.id.territory, territory)
+            self.assertEqual(locale.id.variant, variant)
+
+        # Now test for non-existant locale fallback
+        env = TEST_ENVIRON.copy()
+        env['HTTP_ACCEPT_LANGUAGE'] = 'xx'
+        request = HTTPRequest(s, env, None)
+        locale = request.locale
+        self.assert_(ILocale.providedBy(locale))
+        self.assert_(locale.id.language is None)
+        self.assert_(locale.id.territory is None)
+        self.assert_(locale.id.variant is None)
+
     def testMethod(self):
         TEST_ENVIRON = {
             'REQUEST_METHOD': 'GET',

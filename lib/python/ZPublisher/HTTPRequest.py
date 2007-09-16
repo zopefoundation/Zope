@@ -13,7 +13,7 @@
 
 __version__='$Revision: 1.96 $'[11:-2]
 
-import re, sys, os, time, random, codecs, inspect, tempfile
+import re, sys, os, time, random, codecs, tempfile
 from types import StringType, UnicodeType
 from BaseRequest import BaseRequest, quote
 from HTTPResponse import HTTPResponse
@@ -25,6 +25,8 @@ from TaintedString import TaintedString
 from maybe_lock import allocate_lock
 xmlrpc=None # Placeholder for module that we'll import if we have to.
 
+from zope.i18n.interfaces import IUserPreferredLanguages
+from zope.i18n.locales import locales, LoadLocaleError
 from zope.publisher.base import DebugFlags
 
 # This may get overwritten during configuration
@@ -240,6 +242,26 @@ class HTTPRequest(BaseRequest):
         """
         return self._client_addr
 
+    def setupLocale(self):
+        envadapter = IUserPreferredLanguages(self, None)
+        if envadapter is None:
+            self._locale = None
+            return
+
+        langs = envadapter.getPreferredLanguages()
+        for httplang in langs:
+            parts = (httplang.split('-') + [None, None])[:3]
+            try:
+                self._locale = locales.getLocale(*parts)
+                return
+            except LoadLocaleError:
+                # Just try the next combination
+                pass
+        else:
+            # No combination gave us an existing locale, so use the default,
+            # which is guaranteed to exist
+            self._locale = locales.getLocale(None, None, None)
+
     def __init__(self, stdin, environ, response, clean=0):
         self._orig_env=environ
         # Avoid the overhead of scrubbing the environment in the
@@ -265,7 +287,8 @@ class HTTPRequest(BaseRequest):
         self._steps=[]
         self._lazies={}
         self._debug = DebugFlags()
-
+        # We don't set up the locale initially but just on first access
+        self._locale = _marker
 
         if environ.has_key('REMOTE_ADDR'):
             self._client_addr = environ['REMOTE_ADDR']
@@ -1229,16 +1252,17 @@ class HTTPRequest(BaseRequest):
     # is discouraged and is likely to be deprecated in the future.
     # request.get(key) or request[key] should be used instead
     def __getattr__(self, key, default=_marker, returnTaints=0):
-        # ugly hack to make request.debug work for Zope 3 code (the
-        # ZPT engine, to be exact) while retaining request.debug
-        # functionality for all other code
-        if key == 'debug':
-            lastframe = inspect.currentframe().f_back
-            if lastframe.f_globals['__name__'].startswith('zope.'):
-                return self._debug
-        
         v = self.get(key, default, returnTaints=returnTaints)
         if v is _marker:
+            if key == 'locale':
+                # we only create the _locale on first access, as setting it
+                # up might be slow and we don't want to slow down every
+                # request
+                if self._locale is _marker:
+                    self.setupLocale()
+                return self._locale
+            if key == 'debug':
+                return self._debug
             raise AttributeError, key
         return v
 
