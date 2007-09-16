@@ -44,6 +44,10 @@ a.strong-link {
   color: #000099;
 }
 
+a img {
+  border: 0;
+}
+
 p {
   font-family: Verdana, Helvetica, sans-serif;
   font-size: 10pt;
