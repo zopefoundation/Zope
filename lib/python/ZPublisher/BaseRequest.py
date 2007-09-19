@@ -88,8 +88,8 @@ class BaseRequest:
 
     def close(self):
         self.other.clear()
-        self._held=None
         notify(EndRequestEvent(None, self))
+        self._held=None
 
     def processInputs(self):
         """Do any input processing that could raise errors
