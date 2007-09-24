@@ -8,6 +8,9 @@ Zope Changes
 
    Bugs fixed
 
+      - Collector #2287: form ':record' objects did not implement enough
+        of the mapping protocol.
+
       - Collector #2346: username logging in FCGI crashed the server
 
       - Collector #2332: SessionDataManger: don't swallow ConflictErrors

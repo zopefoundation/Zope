@@ -1515,7 +1515,7 @@ class record:
     _guarded_writes = 1
 
     def __getattr__(self, key, default=None):
-        if key in ('get', 'keys', 'items', 'values', 'copy', 'has_key'):
+        if key in ('get', 'keys', 'items', 'values', 'copy', 'has_key', '__contains__', '__iter__', '__len__'):
             return getattr(self.__dict__, key)
         raise AttributeError, key
 
