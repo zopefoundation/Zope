@@ -86,6 +86,28 @@ class RecordTests( unittest.TestCase ):
         d = eval( r )
         self.assertEqual( d, record.__dict__ )
 
+    def test_contains(self):
+        from ZPublisher.HTTPRequest import record
+        record = record()
+        record.a = 1
+        self.assertTrue('a' in record)
+
+    def test_iter(self):
+        from ZPublisher.HTTPRequest import record
+        record = record()
+        record.a = 1
+        record.b = 2
+        record.c = 3
+        for k in record:
+            self.assertTrue(k in ('a','b','c'))
+
+    def test_len(self):
+        from ZPublisher.HTTPRequest import record
+        record = record()
+        record.a = 1
+        record.b = 2
+        record.c = 3
+        self.assertEqual(len(record), 3)
 
 class ProcessInputsTests(unittest.TestCase):
     def _getHTTPRequest(self, env):

@@ -158,6 +158,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #2278: form ':record' objects did not implement enough
+        of the mapping protocol.
+
       - Collector #2352: fix in OFS.Traversable
 
       - Collector #2346: username logging in FCGI crashed the server
