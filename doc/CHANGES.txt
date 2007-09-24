@@ -8,6 +8,9 @@ Zope Changes
 
     Bugs fixed
 
+      - Collector #2287: form ':record' objects did not implement enough of
+        the mapping interface.
+
       - Collector #2352: fix in OFS.Traversable
 
       - Collector #2346: username logging in FCGI crashed the server
