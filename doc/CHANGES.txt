@@ -15,6 +15,7 @@ Zope Changes
 
       - Collector #2332: SessionDataManger: don't swallow ConflictErrors
 
+      - Collector #146408: fixed broken logger call in Transience.py
 
   Zope 2.9.8 (2007/07/05)
 
