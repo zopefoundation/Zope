@@ -819,7 +819,7 @@ class TransientObjectContainer(SimpleItem):
                     LOG.warning(
                         '%s failed when calling %s in %s' % (name,callback,
                                                         '/'.join(path)),
-                        exc_info=True()
+                        exc_info=True
                         )
             finally:
                 setSecurityManager(sm)
@@ -828,7 +828,7 @@ class TransientObjectContainer(SimpleItem):
             path = self.getPhysicalPath()
             LOG.warning(
                 err % (name, '/'.join(path), callback),
-                exc_info=True()
+                exc_info=True
                 )
 
     def getId(self):
