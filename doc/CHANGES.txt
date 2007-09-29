@@ -69,6 +69,14 @@ Zope Changes
 
     Features added
 
+      - Testing/custom_zodb.py: added support use a different storage other
+        than DemoStorage. A dedicated FileStorage can be mount by setting the
+        $TEST_FILESTORAGE environment variable to a custom Data.fs file.  A 
+        ZEO server can be configured using the $TEST_ZEO_HOST and 
+        $TEST_ZEO_PORT environment variables. This new functionality allows us
+        to use the standard Zope testrunner for writing and running tests
+        against existing Zope installations.
+
       - The ZPublisher HTTP request has now both the debug and locale
         attributes available, like its Zope 3 counterpart. The debug attribute
         was so far limited to code from the zope.* namespace in order to make
