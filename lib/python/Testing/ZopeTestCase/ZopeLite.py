@@ -174,7 +174,7 @@ def installPackage(name, quiet=0):
     '''Installs a registered Python package like a Zope product.'''
     start = time.time()
     if _patched and not _installedPackages.has_key(name):
-        for module, init_func in Products._packages_to_initialize:
+        for module, init_func in getattr(Products, '_packages_to_initialize', []):
             if module.__name__ == name:
                 if not quiet: _print('Installing %s ... ' % module.__name__)
                 # We want to fail immediately if a package throws an exception
