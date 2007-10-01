@@ -8,6 +8,9 @@ Zope Changes
 
     Bugs fixed
 
+      - Launchpad #147201: treat container-class in zope.conf as a string,
+        making it possible to use types from extra products directories.
+
       - Collector #2358: backported fix making 'Products' package a real
         "namespace package" from the trunk.
 
