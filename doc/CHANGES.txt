@@ -8,6 +8,9 @@ Zope Changes
 
    Bugs fixed
 
+      - Launchpad #147201: treat container-class in zope.conf as a string,
+        making it possible to use types from extra products directories.
+
       - Collector #2287: form ':record' objects did not implement enough
         of the mapping protocol.
 
