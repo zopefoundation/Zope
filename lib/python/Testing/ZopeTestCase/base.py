@@ -21,10 +21,10 @@ import transaction
 import utils
 import interfaces
 import connections
+import layer
 
 from zope.interface import implements
 from AccessControl.SecurityManagement import noSecurityManager
-
 
 
 def app():
@@ -34,10 +34,10 @@ def app():
     connections.register(app)
     return app
 
+
 def close(app):
     '''Closes the app's ZODB connection.'''
     connections.close(app)
-
 
 
 class TestCase(unittest.TestCase, object):
@@ -45,6 +45,8 @@ class TestCase(unittest.TestCase, object):
     '''
 
     implements(interfaces.IZopeTestCase)
+
+    layer = layer.ZopeLite
 
     def afterSetUp(self):
         '''Called after setUp() has completed. This is

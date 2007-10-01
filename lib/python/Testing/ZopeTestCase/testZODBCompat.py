@@ -25,7 +25,9 @@ if __name__ == '__main__':
 
 from Testing import ZopeTestCase
 
-import transaction
+from Testing.ZopeTestCase import layer
+from Testing.ZopeTestCase import utils
+from Testing.ZopeTestCase import transaction
 
 from AccessControl.Permissions import add_documents_images_and_files
 from AccessControl.Permissions import delete_objects
@@ -33,6 +35,35 @@ import tempfile
 
 folder_name = ZopeTestCase.folder_name
 cutpaste_permissions = [add_documents_images_and_files, delete_objects]
+
+# Dummy object
+from OFS.SimpleItem import SimpleItem
+
+class DummyObject(SimpleItem):
+    id = 'dummy'
+    foo = None
+    _v_foo = None
+    _p_foo = None
+
+
+
+class ZODBCompatLayer(layer.ZopeLite):
+
+    @classmethod
+    def setUp(cls):
+        def setup(app):
+            app._setObject('dummy1', DummyObject())
+            app._setObject('dummy2', DummyObject())
+            transaction.commit()
+        utils.appcall(setup)
+
+    @classmethod
+    def tearDown(cls):
+        def cleanup(app):
+            app._delObject('dummy1')
+            app._delObject('dummy2')
+            transaction.commit()
+        utils.appcall(cleanup)
 
 
 class TestCopyPaste(ZopeTestCase.ZopeTestCase):
@@ -159,22 +190,6 @@ class TestImportExport(ZopeTestCase.ZopeTestCase):
             App.config.setConfiguration(config)
 
 
-# Dummy object
-from OFS.SimpleItem import SimpleItem
-
-class DummyObject(SimpleItem):
-    id = 'dummy'
-    foo = None
-    _v_foo = None
-    _p_foo = None
-
-app = ZopeTestCase.app()
-app._setObject('dummy1', DummyObject())
-app._setObject('dummy2', DummyObject())
-transaction.commit()
-ZopeTestCase.close(app)
-
-
 class TestAttributesOfCleanObjects(ZopeTestCase.ZopeTestCase):
     '''This testcase shows that _v_ and _p_ attributes are NOT bothered
        by transaction boundaries, if the respective object is otherwise
@@ -194,7 +209,9 @@ class TestAttributesOfCleanObjects(ZopeTestCase.ZopeTestCase):
 
        This testcase exploits the fact that test methods are sorted by name.
     '''
-    
+
+    layer = ZODBCompatLayer
+
     def afterSetUp(self):
         self.dummy = self.app.dummy1 # See above
 
@@ -255,6 +272,8 @@ class TestAttributesOfDirtyObjects(ZopeTestCase.ZopeTestCase):
 
        This testcase exploits the fact that test methods are sorted by name.
     '''
+
+    layer = ZODBCompatLayer
 
     def afterSetUp(self):
         self.dummy = self.app.dummy2 # See above

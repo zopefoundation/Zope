@@ -23,15 +23,14 @@ import sys
 import time
 import random
 import transaction
+import layer
 
 
-def setupCoreSessions(app=None):
+@layer.appcall
+def setupCoreSessions(app):
     '''Sets up the session_data_manager e.a.'''
     from Acquisition import aq_base
     commit = 0
-
-    if app is None: 
-        return appcall(setupCoreSessions)
 
     if not hasattr(app, 'temp_folder'):
         from Products.TemporaryFolder.TemporaryFolder import MountedTemporaryFolder
@@ -68,11 +67,9 @@ def setupCoreSessions(app=None):
         transaction.commit()
 
 
-def setupZGlobals(app=None):
+@layer.appcall
+def setupZGlobals(app):
     '''Sets up the ZGlobals BTree required by ZClasses.'''
-    if app is None: 
-        return appcall(setupZGlobals)
-
     root = app._p_jar.root()
     if not root.has_key('ZGlobals'):
         from BTrees.OOBTree import OOBTree
@@ -80,11 +77,9 @@ def setupZGlobals(app=None):
         transaction.commit()
 
 
-def setupSiteErrorLog(app=None):
+@layer.appcall
+def setupSiteErrorLog(app):
     '''Sets up the error_log object required by ZPublisher.'''
-    if app is None: 
-        return appcall(setupSiteErrorLog)
-
     if not hasattr(app, 'error_log'):
         try:
             from Products.SiteErrorLog.SiteErrorLog import SiteErrorLog
@@ -135,13 +130,13 @@ def makerequest(app, stdout=sys.stdout):
     return _makerequest(app, stdout=stdout, environ=environ)
 
 
-def appcall(function, *args, **kw):
+def appcall(func, *args, **kw):
     '''Calls a function passing 'app' as first argument.'''
     from base import app, close
     app = app()
     args = (app,) + args
     try:
-        return function(*args, **kw)
+        return func(*args, **kw)
     finally:
         transaction.abort()
         close(app)

@@ -30,23 +30,31 @@ if __name__ == '__main__':
 
 from Testing import ZopeTestCase
 
+from Testing.ZopeTestCase import layer
+from Testing.ZopeTestCase import utils
+from Testing.ZopeTestCase import transaction
+
 from Globals import SOFTWARE_HOME
 examples_path = os.path.join(SOFTWARE_HOME, '..', '..', 'skel', 'import', 'Examples.zexp')
 examples_path = os.path.abspath(examples_path)
 
 
-# Open ZODB connection
-app = ZopeTestCase.app()
+class ShoppingCartLayer(layer.ZopeLite):
 
-# Set up sessioning objects
-ZopeTestCase.utils.setupCoreSessions(app)
+    @classmethod
+    def setUp(cls):
+        # Set up sessioning objects
+        utils.appcall(utils.setupCoreSessions)
 
-# Set up example applications
-if not hasattr(app, 'Examples'):
-    ZopeTestCase.utils.importObjectFromFile(app, examples_path)
+        # Set up example applications
+        utils.appcall(utils.importObjectFromFile, examples_path, quiet=1)
 
-# Close ZODB connection
-ZopeTestCase.close(app)
+    @classmethod
+    def tearDown(cls):
+        def cleanup(app):
+            app._delObject('Examples')
+            transaction.commit()
+        utils.appcall(cleanup)
 
 
 class DummyOrder:
@@ -62,6 +70,8 @@ class TestShoppingCart(ZopeTestCase.ZopeTestCase):
     '''Test the ShoppingCart example application'''
 
     _setup_fixture = 0  # No default fixture
+
+    layer = ShoppingCartLayer
 
     def afterSetUp(self):
         self.cart = self.app.Examples.ShoppingCart
