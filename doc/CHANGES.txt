@@ -9,6 +9,8 @@ Zope Changes
 
     Restructuring
 
+      - Document.sequence: replaced by zope.sequencesort
+
       - All Products folders as well as the zope and zope.app folders are
         declared as setuptools namespace packages now. See
         http://peak.telecommunity.com/DevCenter/setuptools#namespace-packages

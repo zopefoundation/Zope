@@ -13,7 +13,7 @@
 
 import os, sys, unittest
 
-from DocumentTemplate.sequence.SortEx import *
+from DocumentTemplate.sequence import *
 from DocumentTemplate.sequence.tests.ztestlib import *
 from DocumentTemplate.sequence.tests.results import *
 
