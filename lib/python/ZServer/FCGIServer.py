@@ -456,18 +456,15 @@ class FCGIChannel(asynchat.async_chat):
             method=self.env['REQUEST_METHOD']
         else:
             method="GET"
+        user_name = '-'
         if self.env.has_key('HTTP_AUTHORIZATION'):
             http_authorization=self.env['HTTP_AUTHORIZATION']
             if string.lower(http_authorization[:6]) == 'basic ':
                 try: decoded=base64.decodestring(http_authorization[6:])
                 except base64.binascii.Error: decoded=''
                 t = string.split(decoded, ':', 1)
-                if len(t) < 2:
-                    user_name = '-'
-                else:
+                if len(t) >= 2:
                     user_name = t[0]
-        else:
-            user_name='-'
         if self.addr:
             self.server.logger.log (
                 self.addr[0],

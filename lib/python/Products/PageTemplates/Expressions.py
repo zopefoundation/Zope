@@ -217,11 +217,19 @@ class ZopeContext(Context):
             return value
         return bool(value)
 
+    def evaluateStructure(self, expr):
+        text = super(ZopeContext, self).evaluateStructure(expr)
+        return self._handleText(text, expr)
+
     def evaluateText(self, expr):
         """ customized version in order to get rid of unicode
             errors for all and ever
         """
         text = self.evaluate(expr)
+        return self._handleText(text, expr)
+
+
+    def _handleText(self, text, expr):
 
         if text is self.getDefault() or text is None:
             # XXX: should be unicode???

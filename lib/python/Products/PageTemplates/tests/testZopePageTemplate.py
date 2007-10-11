@@ -121,6 +121,16 @@ class ZPTUnicodeEncodingConflictResolution(ZopeTestCase):
         result = zpt.pt_render()
         self.assertEqual(result.startswith(unicode('<div>üצה</div>', 'iso-8859-15')), False)
 
+    def testStructureWithAccentedChars(self):
+        manage_addPageTemplate(self.app, 'test', 
+                               text='<div tal:content="structure python: %s" />' % "'üצה'",
+                               encoding='iso-8859-15')
+        zpt = self.app['test']
+        self.app.REQUEST.set('HTTP_ACCEPT_CHARSET', 'iso-8859-15,utf-8')
+        self.app.REQUEST.set('data', unicode('üצה', 'iso-8859-15').encode('utf-8'))
+        result = zpt.pt_render()
+        self.assertEqual(result.startswith(unicode('<div>üצה</div>', 'iso-8859-15')), True)
+
 
 class ZopePageTemplateFileTests(ZopeTestCase):
 
@@ -164,6 +174,14 @@ class ZopePageTemplateFileTests(ZopeTestCase):
         zpt.write(s)
         self.assertEqual(zpt.read(), s)
         self.assertEqual(isinstance(zpt.read(), unicode), True)
+
+    def testEditWithContentTypeCharset(self):
+        manage_addPageTemplate(self.app, 'test', xml_utf8, encoding='utf-8')
+        zpt = self.app['test']
+        xml_unicode = unicode(xml_utf8, 'utf-8').strip()
+        zpt.pt_edit(xml_unicode, 'text/xml')
+        zpt.pt_edit(xml_unicode, 'text/xml; charset=utf-8')
+        self.assertEqual(zpt.read(), xml_unicode)
 
     def _createZPT(self):
         manage_addPageTemplate(self.app, 'test', text=utf8_str, encoding='utf-8')

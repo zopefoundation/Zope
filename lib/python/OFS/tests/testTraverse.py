@@ -169,6 +169,7 @@ class TestTraverse( unittest.TestCase ):
             self.app = makerequest( self.root, stdout=responseOut )
             manage_addFolder( self.app, 'folder1' )
             folder1 = getattr( self.app, 'folder1' )
+            setattr(folder1, '+something', 'plus')
 
             folder1.all_meta_types = \
                                     ( { 'name'        : 'File'
@@ -378,7 +379,11 @@ class TestTraverse( unittest.TestCase ):
         self.failUnless(
             aq_base(self.root.folder1.file.restrictedTraverse('../..')) is
             aq_base(self.root))
-
+    
+    def testTraverseToNameStartingWithPlus(self):
+        # Verify it's possible to traverse to a name such as +something
+        self.failUnless(
+            self.folder1.unrestrictedTraverse('+something') is 'plus')
 
 import os, sys
 if __name__ == '__main__':
