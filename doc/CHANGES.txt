@@ -71,6 +71,9 @@ Zope Changes
 
     Features added
 
+      - Testing.ZopeTestCase: Introduced a "ZopeLite" test layer, making it
+        possible to mix ZTC and non-ZTC tests much more freely.
+
       - Testing/custom_zodb.py: added support use a different storage other
         than DemoStorage. A dedicated FileStorage can be mount by setting the
         $TEST_FILESTORAGE environment variable to a custom Data.fs file.  A 

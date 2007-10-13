@@ -17,6 +17,7 @@ $Id$
 
 import ZopeLite as Zope2
 import utils
+import layer
 
 from ZopeLite import hasProduct
 from ZopeLite import installProduct

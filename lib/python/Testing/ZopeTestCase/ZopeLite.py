@@ -26,6 +26,7 @@ $Id$
 """
 
 import os, sys, time
+import layer
 
 # Allow code to tell it is run by the test framework
 os.environ['ZOPETESTCASE'] = '1'
@@ -105,7 +106,12 @@ _write('.')
 
 _patched = False
 
+@layer.onsetup
 def _apply_patches():
+    # Do not patch a running Zope
+    if Zope2._began_startup:
+        return
+
     # Avoid expensive product import
     def null_import_products(): pass
     OFS.Application.import_products = null_import_products
@@ -126,9 +132,17 @@ def _apply_patches():
     global _patched
     _patched = True
 
-# Do not patch a running Zope
-if not Zope2._began_startup:
-    _apply_patches()
+_apply_patches()
+
+_theApp = None
+
+@layer.onsetup
+def _startup():
+    global _theApp
+    _theApp = Zope2.app()
+
+# Start ZopeLite
+_startup()
 
 # Allow test authors to install Zope products into the test environment. Note
 # that installProduct() must be called at module level -- never from tests.
@@ -137,7 +151,6 @@ from OFS.Application import install_product, install_package
 from OFS.Folder import Folder
 import Products
 
-_theApp = Zope2.app()
 _installedProducts = {}
 _installedPackages = {}
 
@@ -145,7 +158,13 @@ def hasProduct(name):
     '''Checks if a product can be found along Products.__path__'''
     return name in [n[1] for n in get_products()]
 
+@layer.onsetup
 def installProduct(name, quiet=0):
+    '''Installs a Zope product at layer setup time.'''
+    quiet = 1 # Ignore argument
+    _installProduct(name, quiet)
+
+def _installProduct(name, quiet=0):
     '''Installs a Zope product.'''
     start = time.time()
     meta_types = []
@@ -170,8 +189,14 @@ def hasPackage(name):
     '''Checks if a package has been registered with five:registerPackage.'''
     return name in [m.__name__ for m in getattr(Products, '_registered_packages', [])]
 
+@layer.onsetup
 def installPackage(name, quiet=0):
-    '''Installs a registered Python package like a Zope product.'''
+    '''Installs a registered Python package at layer setup time.'''
+    quiet = 1 # Ignore argument
+    _installPackage(name, quiet)
+
+def _installPackage(name, quiet=0):
+    '''Installs a registered Python package.'''
     start = time.time()
     if _patched and not _installedPackages.has_key(name):
         for module, init_func in getattr(Products, '_packages_to_initialize', []):
@@ -187,27 +212,8 @@ def installPackage(name, quiet=0):
         else:
             if not quiet: _print('Installing %s ... NOT FOUND\n' % name)
 
-def _load_control_panel():
-    # Loading the Control_Panel of an existing ZODB may take
-    # a while; print another dot if it does.
-    start = time.time()
-    max = (start - _start) / 4
-    _exec('_theApp.Control_Panel')
-    _theApp.Control_Panel
-    if (time.time() - start) > max:
-        _write('.')
-
-def _install_products():
-    installProduct('PluginIndexes', 1)  # Must install first
-    installProduct('OFSP', 1)
-    #installProduct('ExternalMethod', 1)
-    #installProduct('ZSQLMethods', 1)
-    #installProduct('ZGadflyDA', 1)
-    #installProduct('MIMETools', 1)
-    #installProduct('MailHost', 1)
-
-_load_control_panel()
-_install_products()
+installProduct('PluginIndexes', 1)  # Must install first
+installProduct('OFSP', 1)
 
 # So people can use ZopeLite.app()
 app = Zope2.app

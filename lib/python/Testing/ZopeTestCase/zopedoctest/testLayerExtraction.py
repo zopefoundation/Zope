@@ -20,9 +20,10 @@ from Testing import ZopeTestCase
 from Testing.ZopeTestCase import ZopeDocFileSuite
 from Testing.ZopeTestCase import ZopeDocTestSuite
 from Testing.ZopeTestCase import transaction
+from Testing.ZopeTestCase import layer
 
 
-class TestLayer:
+class TestLayer(layer.ZopeLite):
     """
     If the layer is extracted properly, we should see the following
     variable

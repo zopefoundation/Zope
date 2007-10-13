@@ -46,14 +46,14 @@ import urllib
 ZopeTestCase.utils.setupSiteErrorLog()
 
 # Start the web server
-host, port = ZopeTestCase.utils.startZServer(4)
-folder_url = 'http://%s:%d/%s' %(host, port, ZopeTestCase.folder_name)
+ZopeTestCase.utils.startZServer()
 
 
 class ManagementOpener(urllib.FancyURLopener):
     '''Logs on as manager when prompted'''
     def prompt_user_passwd(self, host, realm):
         return ('manager', 'secret')
+
 
 class UnauthorizedOpener(urllib.FancyURLopener):
     '''Raises Unauthorized when prompted'''
@@ -66,6 +66,8 @@ class TestWebserver(ZopeTestCase.ZopeTestCase):
     def afterSetUp(self):
         uf = self.folder.acl_users
         uf.userFolderAddUser('manager', 'secret', ['Manager'], [])
+
+        self.folder_url = self.folder.absolute_url()
 
         # A simple document
         self.folder.addDTMLDocument('index_html', file='index_html called')
@@ -99,7 +101,7 @@ class TestWebserver(ZopeTestCase.ZopeTestCase):
     def testURLAccessPublicObject(self):
         # Test web access to a public resource
         urllib._urlopener = ManagementOpener()
-        page = urllib.urlopen(folder_url+'/index_html').read()
+        page = urllib.urlopen(self.folder_url+'/index_html').read()
         self.assertEqual(page, 'index_html called')
 
     def testAccessProtectedObject(self):
@@ -110,7 +112,7 @@ class TestWebserver(ZopeTestCase.ZopeTestCase):
     def testURLAccessProtectedObject(self):
         # Test web access to a protected resource
         urllib._urlopener = ManagementOpener()
-        page = urllib.urlopen(folder_url+'/secret_html').read()
+        page = urllib.urlopen(self.folder_url+'/secret_html').read()
         self.assertEqual(page, 'secret_html called')
 
     def testSecurityOfPublicObject(self):
@@ -125,7 +127,7 @@ class TestWebserver(ZopeTestCase.ZopeTestCase):
         # Test web security of a public resource
         urllib._urlopener = UnauthorizedOpener()
         try: 
-            urllib.urlopen(folder_url+'/index_html')
+            urllib.urlopen(self.folder_url+'/index_html')
         except Unauthorized:
             # Convert error to failure
             self.fail('Unauthorized')
@@ -143,7 +145,7 @@ class TestWebserver(ZopeTestCase.ZopeTestCase):
         # Test web security of a protected resource
         urllib._urlopener = UnauthorizedOpener()
         try: 
-            urllib.urlopen(folder_url+'/secret_html')
+            urllib.urlopen(self.folder_url+'/secret_html')
         except Unauthorized:
             pass    # Test passed
         else:
@@ -161,12 +163,8 @@ class TestWebserver(ZopeTestCase.ZopeTestCase):
     def testURLModifyObject(self):
         # Test a transaction that actually commits something
         urllib._urlopener = ManagementOpener()
-        page = urllib.urlopen(folder_url+'/index_html/change_title?title=Foo').read()
+        page = urllib.urlopen(self.folder_url+'/index_html/change_title?title=Foo').read()
         self.assertEqual(page, 'Foo')
-
-    def testAbsoluteURL(self):
-        # Test absolute_url
-        self.assertEqual(self.folder.absolute_url(), folder_url)
 
 
 class TestSandboxedWebserver(ZopeTestCase.Sandboxed, TestWebserver):
@@ -182,7 +180,7 @@ class TestSandboxedWebserver(ZopeTestCase.Sandboxed, TestWebserver):
         # same connection as the main thread, allowing us to
         # see changes made to 'index_html' right away.
         urllib._urlopener = ManagementOpener()
-        urllib.urlopen(folder_url+'/index_html/change_title?title=Foo')
+        urllib.urlopen(self.folder_url+'/index_html/change_title?title=Foo')
         self.assertEqual(self.folder.index_html.title, 'Foo')
 
     def testCanCommit(self):
