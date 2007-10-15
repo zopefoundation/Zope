@@ -59,26 +59,7 @@ class FormBase(FiveFormlibMixin, form.FormBase):
 
 
 class EditFormBase(FiveFormlibMixin, form.EditFormBase):
-
-    # Overrides formlib.form.EditFormBase.handle_edit_action, to remove
-    # dependecy on request.locale
-    
-    @form.action(_("Apply"), condition=form.haveInputWidgets)
-    def handle_edit_action(self, action, data):
-        if form.applyChanges(
-            self.context, self.form_fields, data, self.adapters):
-
-            zope.event.notify(
-                zope.lifecycleevent.ObjectModifiedEvent(self.context)
-                )
-            # TODO: Needs locale support. See also Five.form.EditView.
-            self.status = _(
-                "Updated on ${date_time}", 
-                mapping={'date_time': str(datetime.utcnow())}
-                )
-        else:
-            self.status = _('No changes')
-
+    pass
 
 class DisplayFormBase(FiveFormlibMixin, form.DisplayFormBase):
     pass

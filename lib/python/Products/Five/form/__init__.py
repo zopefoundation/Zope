@@ -120,14 +120,11 @@ class EditView(BrowserView):
                                  names=self.fieldNames)
                 if changed:
                     self.changed()
-                    # XXX: Needs locale support:
-                    #formatter = self.request.locale.dates.getFormatter(
-                    #    'dateTime', 'medium')
-                    #status = _("Updated on ${date_time}",
-                    #           mapping={'date_time':
-                    #                    formatter.format(datetime.utcnow())})
+                    formatter = self.request.locale.dates.getFormatter(
+                       'dateTime', 'medium')
                     status = _("Updated on ${date_time}",
-                               mapping={'date_time': str(datetime.utcnow())})
+                              mapping={'date_time':
+                                       formatter.format(datetime.utcnow())})
 
         self.update_status = status
         return status
