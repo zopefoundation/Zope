@@ -31,6 +31,8 @@ from zope.pagetemplate.pagetemplatefile import sniff_type
 
 LOG = getLogger('PageTemplateFile')
 
+LAZY_FILE_LOADING = False
+
 def guess_type(filename, text):
 
     # check for XML ourself since guess_content_type can't
@@ -86,8 +88,9 @@ class PageTemplateFile(SimpleItem, Script, PageTemplate, Traversable):
 
         self.filename = filename
 
-        content = open(filename).read()
-        self.pt_edit( content, guess_type(filename, content))
+        if not LAZY_FILE_LOADING:
+            content = open(filename).read()
+            self.pt_edit( content, guess_type(filename, content))
 
     def pt_getContext(self):
         root = self.getPhysicalRoot()

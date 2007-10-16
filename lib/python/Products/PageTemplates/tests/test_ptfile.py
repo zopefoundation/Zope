@@ -8,6 +8,7 @@ import transaction
 
 from Testing.makerequest import makerequest
 
+from Products.PageTemplates import PageTemplateFile as PTF
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 
 
@@ -192,10 +193,42 @@ class LineEndingsTestCase(unittest.TestCase):
     def test_mac(self):
         self.assertEqual(self.runPTWithLineEndings('\r'), self.OUTPUT)
 
+
+class LazyLoadingTestCase(unittest.TestCase):
+
+    TEMPFILENAME = tempfile.mktemp(".zpt")
+    OLD_LAZY = None
+
+    def setUp(self):
+        self.OLD_LAZY = PTF.LAZY_FILE_LOADING
+
+    def tearDown(self):
+        if os.path.exists(self.TEMPFILENAME):
+            os.unlink(self.TEMPFILENAME)
+        PTF.LAZY_FILE_LOADING = self.OLD_LAZY
+
+    def test_not_lazy(self):
+        f = open(self.TEMPFILENAME, 'w')
+        print >> f, 'Lazyness'
+        f.close()
+        pt = PageTemplateFile(self.TEMPFILENAME)
+        self.failUnless(pt._text.startswith('Lazyness'))
+        self.failUnless(pt._v_program)
+
+    def test_lazy(self):
+        f = open(self.TEMPFILENAME, 'w')
+        print >> f, 'Lazyness'
+        f.close()
+        PTF.LAZY_FILE_LOADING = True
+        pt = PageTemplateFile(self.TEMPFILENAME)
+        self.failUnless(not pt._text and not pt._v_program)
+
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(TypeSniffingTestCase),
         unittest.makeSuite(LineEndingsTestCase),
+        unittest.makeSuite(LazyLoadingTestCase),
     ))
 
 if __name__ == "__main__":
