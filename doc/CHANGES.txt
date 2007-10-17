@@ -173,6 +173,10 @@ Zope Changes
         view to work. (patch by Sidnei da Silva from Enfold,
         integration by Martijn Faassen (Startifact) for Infrae)
 
+      - DateTime now uses pytz for time zone data if available. This
+        means support for more time zones and up to date daylight
+        saving time information.
+
     Bugs Fixed
 
       - Launchpad #147201: treat container-class in zope.conf as a string,

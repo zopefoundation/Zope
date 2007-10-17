@@ -12,7 +12,7 @@ Returns the list of recognized timezone names:
 
   >>> from DateTime import Timezones
   >>> Timezones() # doctest: +ELLIPSIS
-  ['Brazil/Acre', 'Brazil/DeNoronha', ..., 'NZST', 'IDLE']
+  [...'Brazil/Acre', 'Brazil/DeNoronha', ..., 'NZST', 'IDLE']
 
 
 Class DateTime
@@ -229,7 +229,7 @@ Conversion and comparison methods
   object, represented in the indicated timezone:
 
     >>> dt.toZone('UTC')
-    DateTime('1997/03/09 18:45:00 Universal')
+    DateTime('1997/03/09 18:45:00 UTC')
 
     >>> dt.toZone('UTC') == dt
     True
