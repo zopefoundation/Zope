@@ -509,20 +509,12 @@ class DateTimeTests(unittest.TestCase):
 
 def test_suite():
     from zope.testing import doctest
-    try:
-        # if pytz is available include a test for it
-        import pytz
-        return unittest.TestSuite([
-            unittest.makeSuite(DateTimeTests),
-            doctest.DocFileSuite('DateTime.txt', package='DateTime'),
-            doctest.DocFileSuite('pytz.txt', package='DateTime'),
-            ])
+    return unittest.TestSuite([
+        unittest.makeSuite(DateTimeTests),
+        doctest.DocFileSuite('DateTime.txt', package='DateTime'),
+        doctest.DocFileSuite('pytz.txt', package='DateTime'),
+        ])
 
-    except ImportError:
-        return unittest.TestSuite([
-            unittest.makeSuite(DateTimeTests),
-            doctest.DocFileSuite('DateTime.txt', package='DateTime')
-            ])
 
 if __name__=="__main__":
     unittest.main(defaultTest='test_suite')

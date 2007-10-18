@@ -1,18 +1,13 @@
 Pytz Support
 ============
-If the pytz package is importable, it will be used for time zone
-information, otherwise, DateTime's own time zone database is used. The
+
+Allows the pytz package to be used for time zone information. The
 advantage of using pytz is that it has a more complete and up to date
 time zone and daylight savings time database.
 
-This test assumes that pytz is available.
-
-    >>> import pytz
-
 Usage
 -----
-If pytz is available, then DateTime will use it. You don't have to do
-anything special to make it work.
+You don't have to do anything special to make it work.
 
     >>> from DateTime import DateTime, Timezones
     >>> d = DateTime('March 11, 2007 US/Eastern')
@@ -53,9 +48,9 @@ Let's compare this to 2006.
     -18000
 
 Time Zones
-----------
-When pytz is available, DateTime can use its large database of time
-zones. Here are some examples:
+---------
+DateTime can use pytz's large database of time zones. Here are some
+examples:
 
     >>> d = DateTime('Pacific/Kwajalein')
     >>> d = DateTime('America/Shiprock')
@@ -75,13 +70,12 @@ the pytz database.
     >>> d = DateTime('iceland')
 
 These time zones use DateTimes database. So it's preferable to use the
-official time zone name when you have pytz installed.
+official time zone name.
 
 One trickiness is that DateTime supports some zone name
-abbreviations. Some of these map to pytz names, so when pytz is
-present these abbreviations will give you time zone date from
-pytz. Notable among abbreviations that work this way are 'est', 'cst',
-'mst', and 'pst'.
+abbreviations. Some of these map to pytz names, so these abbreviations
+will give you time zone date from pytz. Notable among abbreviations
+that work this way are 'est', 'cst', 'mst', and 'pst'.
 
 Let's verify that 'est' picks up the 2007 daylight savings time changes.
 
@@ -115,7 +109,7 @@ The following are tests of internal components.
 
 Cache
 ~~~~~
-When pytz is present, the DateTime class uses a different time zone cache.
+The DateTime class uses a new time zone cache.
 
     >>> DateTime._tzinfo #doctest: +ELLIPSIS
     <DateTime.pytz_support.PytzCache instance at ...>

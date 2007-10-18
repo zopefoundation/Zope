@@ -22,11 +22,7 @@ from datetime import datetime
 from interfaces import IDateTime
 from interfaces import DateTimeError, SyntaxError, DateError, TimeError
 from zope.interface import implements
-try:
-    from pytz_support import PytzCache    
-except ImportError:
-    # pytz not available, use legacy timezone support
-    PytzCache = None
+from pytz_support import PytzCache    
 
 default_datefmt = None
 
@@ -992,11 +988,7 @@ class DateTime:
     # For backward compatibility only:
     _isDST = localtime(time())[8]
     _localzone  = _isDST and _localzone1 or _localzone0
-
-    if PytzCache is not None:
-        _tzinfo = PytzCache(_cache())
-    else:
-        _tzinfo = _cache()
+    _tzinfo = PytzCache(_cache())
 
     def localZone(self, ltm=None):
         '''Returns the time zone on the given date.  The time zone
@@ -2049,6 +2041,5 @@ class strftimeFormatter:
 # Module methods
 def Timezones():
     """Return the list of recognized timezone names"""
-    if PytzCache is not None:
-        return list(PytzCache(_cache())._zlst)
-    return _cache._zlst
+    return list(PytzCache(_cache())._zlst)
+
