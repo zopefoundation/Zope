@@ -49,11 +49,11 @@ except:
     tzname=('UNKNOWN','UNKNOWN')
 
 # To control rounding errors, we round system time to the nearest
-# millisecond.  Then delicate calculations can rely on that the
+# microsecond.  Then delicate calculations can rely on that the
 # maximum precision that needs to be preserved is known.
 _system_time = time
 def time():
-    return round(_system_time(), 3)
+    return round(_system_time(), 6)
 
 # Determine machine epoch
 tm=((0, 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334),
@@ -97,7 +97,7 @@ iso8601Match = re.compile(r'''
     )?                              # after minute is optional
    )?                               # after hour is optional
    (?:                              # timezone:
-    Z                               #  one Z
+    (?P<Z>Z)                        #  one Z
    |                                # or:
     (?P<signal>[-+])                #  one plus or one minus as signal
     (?P<hour_off>\d                 #  one digit for hour offset...
@@ -373,10 +373,10 @@ def _calcIndependentSecondEtc(tz, x, ms):
     x_adjusted = x - fset + ms
     d = x_adjusted / 86400.0
     t = x_adjusted - long(EPOCH) + 86400L
-    millis = (x + 86400 - fset) * 1000 + \
-             long(round(ms * 1000.0)) - long(EPOCH * 1000.0)
+    micros = (x + 86400 - fset) * 1000000 + \
+             long(round(ms * 1000000.0)) - long(EPOCH * 1000000.0)
     s = d - math.floor(d)
-    return s,d,t,millis
+    return s,d,t,micros
 
 def _calcHMS(x, ms):
     # hours, minutes, seconds from integer and float.
@@ -527,7 +527,8 @@ class DateTime:
         local machine timezone). DateTime objects also provide access
         to their value in a float format usable with the python time
         module, provided that the value of the object falls in the
-        range of the epoch-based time module.
+        range of the epoch-based time module, and as a datetime.datetime
+        object.
 
         A DateTime object should be considered immutable; all conversion
         and numeric operations return a new DateTime object rather than
@@ -665,6 +666,13 @@ class DateTime:
           - If the DateTime function is invoked with a single argument
             that is a DateTime instane, a copy of the passed object will
             be created.
+            
+          - New in 2.11:
+            The DateTime function may now be invoked with a single argument
+            that is a datetime.datetime instance. Timezone naive DateTimes may
+            be converted back to timezone naive datetime.datetime objects with
+            asdatetime(). All DateTime instances may be converted to a timezone
+            naive datetime.datetime in UTC with utcdatetime().
 
           - If the function is invoked with two numeric arguments, then
             the first is taken to be an integer year and the second
@@ -738,14 +746,23 @@ class DateTime:
         datefmt = kw.get('datefmt', getDefaultDateFormat())
         d=t=s=None
         ac=len(args)
-        millisecs = None
+        microsecs = None
 
         if ac==10:
             # Internal format called only by DateTime
             yr,mo,dy,hr,mn,sc,tz,t,d,s=args
         elif ac == 11:
-            # Internal format that includes milliseconds.
+            # Internal format that includes milliseconds (from the epoch)
             yr,mo,dy,hr,mn,sc,tz,t,d,s,millisecs=args
+            microsecs = millisecs * 1000
+        
+        elif ac == 12:
+            # Internal format that includes microseconds (from the epoch) and a
+            # flag indicating whether this was constructed in a timezone naive
+            # manner
+            yr,mo,dy,hr,mn,sc,tz,t,d,s,microsecs,tznaive=args
+            if tznaive is not None: # preserve this information
+                self._timezone_naive = tznaive
 
         elif not args or (ac and args[0]==None):
             # Current time, to be displayed in local timezone
@@ -756,7 +773,8 @@ class DateTime:
             s,d = _calcSD(t)
             yr,mo,dy,hr,mn,sc=lt[:6]
             sc=sc+ms
-
+            self._timezone_naive = False
+        
         elif ac==1:
             arg=args[0]
 
@@ -774,6 +792,22 @@ class DateTime:
                 s,d = _calcSD(t)
                 yr,mo,dy,hr,mn,sc=lt[:6]
                 sc=sc+ms
+            
+            elif isinstance(arg, datetime):
+                yr,mo,dy,hr,mn,sc,tz,tznaive=self._parse_iso8601_preserving_tznaive(arg.isoformat())
+                self._timezone_naive = tznaive
+                ms = sc - math.floor(sc)
+                x = _calcDependentSecond2(yr,mo,dy,hr,mn,sc)
+
+                if tz:
+                    try: tz=self._tzinfo._zmap[tz.lower()]
+                    except KeyError:
+                        if numericTimeZoneMatch(tz) is None:
+                            raise DateTimeError, \
+                                  'Unknown time zone in date: %s' % arg
+                else:
+                    tz = self._calcTimezoneName(x, ms)
+                s,d,t,microsecs = _calcIndependentSecondEtc(tz, x, ms)
 
             elif isinstance(arg, (unicode, str)) and arg.lower() in self._tzinfo._zidx:
                 # Current time, to be displayed in specified timezone
@@ -783,6 +817,7 @@ class DateTime:
                 s,d = _calcSD(t)
                 x = _calcDependentSecond(tz, t)
                 yr,mo,dy,hr,mn,sc = _calcYMDHMS(x, ms)
+                
 
             elif isinstance(arg, (unicode, str)):
                 # Date/time string
@@ -790,7 +825,8 @@ class DateTime:
                 iso8601 = iso8601Match(arg.strip())
                 fields_iso8601 = iso8601 and iso8601.groupdict() or {}
                 if fields_iso8601 and not fields_iso8601.get('garbage'):
-                    yr,mo,dy,hr,mn,sc,tz=self._parse_iso8601(arg)
+                    yr,mo,dy,hr,mn,sc,tz,tznaive=self._parse_iso8601_preserving_tznaive(arg)
+                    self._timezone_naive = tznaive
                 else:
                     yr,mo,dy,hr,mn,sc,tz=self._parse(arg, datefmt)
 
@@ -809,7 +845,7 @@ class DateTime:
                                   'Unknown time zone in date: %s' % arg
                 else:
                     tz = self._calcTimezoneName(x, ms)
-                s,d,t,millisecs = _calcIndependentSecondEtc(tz, x, ms)
+                s,d,t,microsecs = _calcIndependentSecondEtc(tz, x, ms)
 
             else:
                 # Seconds from epoch, gmt
@@ -844,7 +880,7 @@ class DateTime:
                 ms = x_float - x_floor
                 x = long(x_floor)
                 yr,mo,dy,hr,mn,sc = _calcYMDHMS(x, ms)
-                s,d,t,millisecs = _calcIndependentSecondEtc(tz, x, ms)
+                s,d,t,microsecs = _calcIndependentSecondEtc(tz, x, ms)
         else:
             # Explicit format
             yr,mo,dy=args[:3]
@@ -878,7 +914,7 @@ class DateTime:
             else:
                 # Get local time zone name
                 tz = self._calcTimezoneName(x, ms)
-            s,d,t,millisecs = _calcIndependentSecondEtc(tz, x, ms)
+            s,d,t,microsecs = _calcIndependentSecondEtc(tz, x, ms)
 
         if hr>12:
             self._pmhour=hr-12
@@ -891,24 +927,25 @@ class DateTime:
             self._months[mo],self._months_a[mo],self._months_p[mo]
         self._fday,self._aday,self._pday= \
             self._days[dx],self._days_a[dx],self._days_p[dx]
-        # Round to nearest millisecond in platform-independent way.  You
+        # Round to nearest microsecond in platform-independent way.  You
         # cannot rely on C sprintf (Python '%') formatting to round
         # consistently; doing it ourselves ensures that all but truly
         # horrid C sprintf implementations will yield the same result
-        # x-platform, provided the format asks for exactly 3 digits after
+        # x-platform, provided the format asks for exactly 6 digits after
         # the decimal point.
-        sc = round(sc, 3)
-        if sc >= 60.0:  # can happen if, e.g., orig sc was 59.9999
-            sc = 59.999
+        sc = round(sc, 6)
+        if sc >= 60.0:  # can happen if, e.g., orig sc was 59.9999999
+            sc = 59.999999
         self._nearsec=math.floor(sc)
         self._year,self._month,self._day     =yr,mo,dy
         self._hour,self._minute,self._second =hr,mn,sc
         self.time,self._d,self._t,self._tz   =s,d,t,tz
-        if millisecs is None:
-            millisecs = long(math.floor(t * 1000.0))
-        self._millis = millisecs
-        # self._millis is the time since the epoch
-        # in long integer milliseconds.
+        if microsecs is None:
+            microsecs = long(math.floor(t * 1000000.0))
+        self._micros = microsecs
+        # self._micros is the time since the epoch
+        # in long integer microseconds.
+        
 
     int_pattern  =re.compile(r'([0-9]+)') #AJ
     flt_pattern  =re.compile(r':([0-9]+\.[0-9]+)') #AJ
@@ -1019,8 +1056,10 @@ class DateTime:
         sp=st.split()
         tz=sp[-1]
         if tz and (tz.lower() in ValidZones):
+            self._timezone_naive = False
             st=' '.join(sp[:-1])
         else:
+            self._timezone_naive = True
             tz = None  # Decide later, since the default time zone
         # could depend on the date.
 
@@ -1219,14 +1258,15 @@ class DateTime:
         object, represented in the indicated timezone.
         """
         t,tz=self._t,self._tzinfo._zmap[z.lower()]
-        millis = self.millis()
+        micros = self.micros()
+        tznaive = False # you're performing a timzone change, can't be naive
 
         try:
             # Try to use time module for speed.
             yr,mo,dy,hr,mn,sc=safegmtime(t+_tzoffset(tz, t))[:6]
             sc=self._second
             return self.__class__(yr,mo,dy,hr,mn,sc,tz,t,
-                                  self._d,self.time,millis)
+                                  self._d,self.time,micros,tznaive)
         except:  # gmtime can't perform the calculation in the given range.
             # Calculate the difference between the two time zones.
             tzdiff = _tzoffset(tz, t) - _tzoffset(self._tz, t)
@@ -1239,7 +1279,7 @@ class DateTime:
             x_new = x + tzdiff
             yr,mo,dy,hr,mn,sc = _calcYMDHMS(x_new, ms)
             return self.__class__(yr,mo,dy,hr,mn,sc,tz,t,
-                                  self._d,self.time,millis)
+                                  self._d,self.time,micros,tznaive)
 
     def isFuture(self):
         """Return true if this object represents a date/time
@@ -1324,13 +1364,13 @@ class DateTime:
         than the specified DateTime or time module style time.
 
         Revised to give more correct results through comparison of
-        long integer milliseconds.
+        long integer microseconds.
         """
         # Optimized for sorting speed
         try:
-            return (self._millis > t._millis)
+            return (self._micros > t._micros)
         except AttributeError:
-            try: self._millis
+            try: self._micros
             except AttributeError: self._upgrade_old()
         return (self._t > t)
 
@@ -1346,13 +1386,13 @@ class DateTime:
         time.
 
         Revised to give more correct results through comparison of
-        long integer milliseconds.
+        long integer microseconds.
         """
         # Optimized for sorting speed
         try:
-            return (self._millis >= t._millis)
+            return (self._micros >= t._micros)
         except AttributeError:
-            try: self._millis
+            try: self._micros
             except AttributeError: self._upgrade_old()
         return (self._t >= t)
 
@@ -1367,13 +1407,13 @@ class DateTime:
         the specified DateTime or time module style time.
 
         Revised to give more correct results through comparison of
-        long integer milliseconds.
+        long integer microseconds.
         """
         # Optimized for sorting speed
         try:
-            return (self._millis == t._millis)
+            return (self._micros == t._micros)
         except AttributeError:
-            try: self._millis
+            try: self._micros
             except AttributeError: self._upgrade_old()
         return (self._t == t)
 
@@ -1388,13 +1428,13 @@ class DateTime:
         to the specified DateTime or time module style time.
 
         Revised to give more correct results through comparison of
-        long integer milliseconds.
+        long integer microseconds.
         """
         # Optimized for sorting speed
         try:
-            return (self._millis != t._millis)
+            return (self._micros != t._micros)
         except AttributeError:
-            try: self._millis
+            try: self._micros
             except AttributeError: self._upgrade_old()
         return (self._t != t)
 
@@ -1409,13 +1449,13 @@ class DateTime:
         the specified DateTime or time module style time.
 
         Revised to give more correct results through comparison of
-        long integer milliseconds.
+        long integer microseconds.
         """
         # Optimized for sorting speed
         try:
-            return (self._millis < t._millis)
+            return (self._micros < t._micros)
         except AttributeError:
-            try: self._millis
+            try: self._micros
             except AttributeError: self._upgrade_old()
         return (self._t < t)
 
@@ -1430,13 +1470,13 @@ class DateTime:
         or equal to the specified DateTime or time module style time.
 
         Revised to give more correct results through comparison of
-        long integer milliseconds.
+        long integer microseconds.
         """
         # Optimized for sorting speed
         try:
-            return (self._millis <= t._millis)
+            return (self._micros <= t._micros)
         except AttributeError:
-            try: self._millis
+            try: self._micros
             except AttributeError: self._upgrade_old()
         return (self._t <= t)
 
@@ -1559,15 +1599,35 @@ class DateTime:
     def millis(self):
         """Return the millisecond since the epoch in GMT."""
         try:
-            return self._millis
+            micros = self._micros
+        except AttributeError:
+            micros = self._upgrade_old()
+        return micros / 1000
+    
+    def micros(self):
+        """Return the microsecond since the epoch in GMT."""
+        try:
+            return self._micros
         except AttributeError:
             return self._upgrade_old()
+    
+    def timezoneNaive(self):
+        """The python datetime module introduces the idea of distinguishing
+        between timezone aware and timezone naive datetime values. For lossless
+        conversion to and from datetime.datetime record if we record this
+        information using True / False. DateTime makes no distinction, when we
+        don't have any information we return None here.
+        """
+        try:
+            return self._timezone_naive
+        except AttributeError:
+            return None
 
     def _upgrade_old(self):
         """Upgrades a previously pickled DateTime object."""
-        millis = long(math.floor(self._t * 1000.0))
-        self._millis = millis
-        return millis
+        micros = long(math.floor(self._t * 1000000.0))
+        #self._micros = micros # don't upgrade instances in place
+        return micros
 
     def strftime(self, format):
         """Format the date/time using the *current timezone representation*."""
@@ -1712,10 +1772,17 @@ class DateTime:
         Dates are output as: YYYY-MM-DDTHH:MM:SSTZD
             T is a literal character.
             TZD is Time Zone Designator, format +HH:MM or -HH:MM
+        
+        If the instance is timezone naive (it was not specified with a timezone
+        when it was constructed) then the timezone is ommitted.
 
         The HTML4 method below offers the same formatting, but converts
         to UTC before returning the value and sets the TZD "Z".
         """
+        if self.timezoneNaive():
+            return "%0.4d-%0.2d-%0.2dT%0.2d:%0.2d:%0.2d" % (
+                self._year, self._month, self._day,
+                self._hour, self._minute, self._second)
         tzoffset = _tzoffset2iso8601zone(_tzoffset(self._tz, self._t))
         return "%0.4d-%0.2d-%0.2dT%0.2d:%0.2d:%0.2d%s" % (
             self._year, self._month, self._day,
@@ -1735,6 +1802,30 @@ class DateTime:
         return "%0.4d-%0.2d-%0.2dT%0.2d:%0.2d:%0.2dZ" % (
             newdate._year, newdate._month, newdate._day,
             newdate._hour, newdate._minute, newdate._second)
+    
+    def asdatetime(self):
+        """Return a standard libary datetime.datetime
+        """
+        tznaive = self.timezoneNaive()
+        if tznaive is True:
+            # we were either converted from an ISO8601 timezone naive string or
+            # a timezone naive datetime
+            second = int(self._second)
+            microsec = self.micros() % 1000000
+            dt = datetime(self._year, self._month, self._day, self._hour,
+                          self._minute, second, microsec)
+            return dt
+        else:
+            raise NotImplementedError('conversion of datetime aware DateTime to datetime unsupported')
+    
+    def utcdatetime(self):
+        """Convert the time to UTC then return a timezone naive datetime object"""
+        utc = self.toZone('UTC')
+        second = int(utc._second)
+        microsec = utc.micros() % 1000000
+        dt = datetime(utc._year, utc._month, utc._day, utc._hour,
+                      utc._minute, second, microsec)
+        return dt
 
     def __add__(self,other):
         """A DateTime may be added to a number and a number may be
@@ -1744,13 +1835,17 @@ class DateTime:
             raise DateTimeError,'Cannot add two DateTimes'
         o=float(other)
         tz = self._tz
-        t = (self._t + (o*86400.0))
-        d = (self._d + o)
+        #t = (self._t + (o*86400.0))
+        omicros = round(o*86400000000)
+        tmicros = self.micros() + omicros
+        #d = (self._d + o)
+        t = tmicros / 1000000.0
+        d = (tmicros + long(EPOCH*1000000)) / 86400000000.0
         s = d - math.floor(d)
         ms = t - math.floor(t)
         x = _calcDependentSecond(tz, t)
         yr,mo,dy,hr,mn,sc = _calcYMDHMS(x, ms)
-        return self.__class__(yr,mo,dy,hr,mn,sc,self._tz,t,d,s)
+        return self.__class__(yr,mo,dy,hr,mn,sc,self._tz,t,d,s, None, self.timezoneNaive())
 
     __radd__=__add__
 
@@ -1760,11 +1855,7 @@ class DateTime:
         a number.
         """
         if hasattr(other, '_d'):
-            if 0:  # This logic seems right but is incorrect.
-                my_t = self._t + _tzoffset(self._tz, self._t)
-                ob_t = other._t + _tzoffset(other._tz, other._t)
-                return (my_t - ob_t) / 86400.0
-            return self._d - other._d
+            return (self.micros() - other.micros()) / 86400000000.0
         else:
             return self.__add__(-(other))
 
@@ -1786,10 +1877,10 @@ class DateTime:
             return '%4.4d/%2.2d/%2.2d %2.2d:%2.2d:%2.2d %s' % (
                     y, m, d, h, mn, s, t)
         else:
-            # s is already rounded to the nearest millisecond, and
+            # s is already rounded to the nearest microsecond, and
             # it's not a whole number of seconds.  Be sure to print
             # 2 digits before the decimal point.
-            return '%4.4d/%2.2d/%2.2d %2.2d:%2.2d:%06.3f %s' % (
+            return '%4.4d/%2.2d/%2.2d %2.2d:%2.2d:%06.6f %s' % (
                     y, m, d, h, mn, s, t)
 
     def __cmp__(self,obj):
@@ -1806,9 +1897,9 @@ class DateTime:
         """
         # Optimized for sorting speed.
         try:
-            return cmp(self._millis, obj._millis)
+            return cmp(self._micros, obj._micros)
         except AttributeError:
-            try: self._millis
+            try: self._micros
             except AttributeError: self._upgrade_old()
         return cmp(self._t,obj)
 
@@ -1819,17 +1910,22 @@ class DateTime:
 
     def __int__(self):
         """Convert to an integer number of seconds since the epoch (gmt)."""
-        return int(self.millis() / 1000)
+        return int(self.micros() / 1000000)
 
     def __long__(self):
         """Convert to a long-int number of seconds since the epoch (gmt)."""
-        return long(self.millis() / 1000)
+        return long(self.micros() / 1000000)
 
     def __float__(self):
         """Convert to floating-point number of seconds since the epoch (gmt)."""
         return float(self._t)
 
     def _parse_iso8601(self,s):
+        # preserve the previously implied contract
+        # who know where this could be used...
+        return _parse_iso8601_preserving_tznaive(s)[:7]
+
+    def _parse_iso8601_preserving_tznaive(self,s):
         try:
             return self.__parse_iso8601(s)
         except IndexError:
@@ -1839,10 +1935,11 @@ class DateTime:
     def __parse_iso8601(self,s):
         """Parse an ISO 8601 compliant date.
 
-        See: http://www.omg.org/docs/ISO-stds/06-08-01.pdf
+        See: http://en.wikipedia.org/wiki/ISO_8601
         """
         month = day = week_day = 1
         year = hour = minute = seconds = hour_off = min_off = 0
+        tznaive = True
 
         iso8601 = iso8601Match(s.strip())
         fields = iso8601 and iso8601.groupdict() or {}
@@ -1898,9 +1995,18 @@ class DateTime:
         if fields['min_off']:
             min_off = int(fields['min_off'])
 
-        tz = 'GMT%+03d%02d' % (hour_off, min_off)
+        if fields['signal'] or fields['Z']:
+            tznaive = False
+            tz = 'GMT%+03d%02d' % (hour_off, min_off)
+        else:
+            tznaive = True
+            # Figure out what time zone it is in the local area
+            # on the given date.
+            ms = seconds - math.floor(seconds)
+            x = _calcDependentSecond2(year,month,day,hour,minute,seconds)
+            tz = self._calcTimezoneName(x, ms)
 
-        return year, month, day, hour, minute, seconds, tz
+        return year, month, day, hour, minute, seconds, tz, tznaive
 
     def JulianDay(self):
         """Return the Julian day.

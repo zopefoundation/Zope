@@ -19,6 +19,8 @@ import unittest
 
 from DateTime.DateTime import _findLocalTimeZoneName
 from DateTime import DateTime
+from datetime import datetime
+import pytz
 
 try:
     __file__
@@ -135,6 +137,7 @@ class DateTimeTests(unittest.TestCase):
 
     def testSubtraction(self):
         # Reconstruction of a DateTime from its parts, with subtraction
+        # this also tests the accuracy of addition and reconstruction
         dt = DateTime()
         dt1 = dt - 3.141592653
         dt2 = DateTime(
@@ -190,11 +193,11 @@ class DateTimeTests(unittest.TestCase):
         self.failUnless(not (dt == dt1))
 
     def testUpgradeOldInstances(self):
-        # Compare dates that don't have the _millis attribute yet
+        # Compare dates that don't have the _micros attribute yet
         dt = DateTime('1997/1/1')
         dt1 = DateTime('1997/2/2')
-        del dt._millis
-        del dt1._millis
+        del dt._micros
+        del dt1._micros
         self.testCompareOperations(dt, dt1)
 
     def testTZ2(self):
@@ -258,17 +261,21 @@ class DateTimeTests(unittest.TestCase):
 
     def testISO8601(self):
         # ISO8601 reference dates
-        ref0 = DateTime('2002/5/2 8:00am GMT')
+        ref0 = DateTime('2002/5/2 8:00am')
         ref1 = DateTime('2002/5/2 8:00am US/Eastern')
         ref2 = DateTime('2006/11/6 10:30 UTC')
         ref3 = DateTime('2004/06/14 14:30:15 GMT-3')
         ref4 = DateTime('2006/01/01 UTC')
+        ref5 = DateTime('2002/5/2 8:00am GMT')
 
         # Basic tests
+        # this is timezone naive and should be interpreted in the local timezone
         isoDt = DateTime('2002-05-02T08:00:00')
         self.assertEqual(ref0, isoDt)
         isoDt = DateTime('2002-05-02T08:00:00Z')
-        self.assertEqual(ref0, isoDt)
+        self.assertEqual(ref5, isoDt)
+        isoDt = DateTime('2002-05-02T08:00:00+00:00')
+        self.assertEqual(ref5, isoDt)
         isoDt = DateTime('2002-05-02T08:00:00-04:00')
         self.assertEqual(ref1, isoDt)
         isoDt = DateTime('2002-05-02 08:00:00-04:00')
@@ -302,7 +309,7 @@ class DateTimeTests(unittest.TestCase):
 
         # Bug 2191: timezones with only one digit for hour
         isoDt = DateTime('20020502T080000+0')
-        self.assertEqual(ref0, isoDt)
+        self.assertEqual(ref5, isoDt)
         isoDt = DateTime('20020502 080000-4')
         self.assertEqual(ref1, isoDt)
         isoDt = DateTime('20020502T080000-400')
@@ -459,6 +466,45 @@ class DateTimeTests(unittest.TestCase):
         dt = DateTime('2002-05-02T08:00:00+00:00')
         ok = dt.strftime('Le %d/%m/%Y a %Hh%M').replace('a', u'\xe0')
         self.assertEqual(dt.strftime(u'Le %d/%m/%Y \xe0 %Hh%M'), ok)
+    
+    def testTimezoneNaiveHandling(self):
+        # checks that we assign timezone naivity correctly
+        dt = DateTime('2007-10-04T08:00:00+00:00')
+        assert dt.timezoneNaive() is False, 'error with naivity handling in __parse_iso8601'
+        dt = DateTime('2007-10-04T08:00:00Z')
+        assert dt.timezoneNaive() is False, 'error with naivity handling in __parse_iso8601'
+        dt = DateTime('2007-10-04T08:00:00')
+        assert dt.timezoneNaive() is True, 'error with naivity handling in __parse_iso8601'
+        dt = DateTime('2007/10/04 15:12:33.487618 GMT+1')
+        assert dt.timezoneNaive() is False, 'error with naivity handling in _parse'
+        dt = DateTime('2007/10/04 15:12:33.487618')
+        assert dt.timezoneNaive() is True, 'error with naivity handling in _parse'
+        dt = DateTime()
+        assert dt.timezoneNaive() is False, 'error with naivity for current time'
+        s = '2007-10-04T08:00:00'
+        dt = DateTime(s)
+        self.assertEqual(s, dt.ISO8601())
+        s = '2007-10-04T08:00:00+00:00'
+        dt = DateTime(s)
+        self.assertEqual(s, dt.ISO8601())
+    
+    def testConversions(self):
+        sdt0 = datetime.now() # this is a timezone naive datetime
+        dt0 = DateTime(sdt0)
+        assert dt0.timezoneNaive() is True, (sdt0, dt0)
+        sdt1 = datetime(2007, 10, 4, 18, 14, 42, 580, pytz.utc)
+        dt1 = DateTime(sdt1)
+        assert dt1.timezoneNaive() is False, (sdt1, dt1)
+        
+        # convert back
+        sdt2 = dt0.asdatetime()
+        self.assertEqual(sdt0, sdt2)
+        sdt3 = dt1.utcdatetime() # this returns a timezone naive datetime
+        self.assertEqual(sdt1.hour, sdt3.hour)
+        
+        dt4 = DateTime('2007-10-04T10:00:00+05:00')
+        sdt4 = datetime(2007, 10, 4, 5, 0)
+        self.assertEqual(dt4.utcdatetime(), sdt4)
 
 
 def test_suite():
