@@ -84,7 +84,7 @@ class PreferredCharsetResolver:
 
             try:
                 return unicode(text, enc)
-            except UnicodeDecodeError:
+            except (LookupError, UnicodeDecodeError):
                 pass
 
         return text
