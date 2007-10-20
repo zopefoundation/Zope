@@ -55,6 +55,8 @@ from zope.event import notify
 from zope.app.container.contained import ObjectAddedEvent
 from zope.app.container.contained import ObjectRemovedEvent
 from zope.app.container.contained import notifyContainerModified
+from zope.app.container.interfaces import IContainer
+from zope.interface import implements
 from OFS.event import ObjectWillBeAddedEvent
 from OFS.event import ObjectWillBeRemovedEvent
 import OFS.subscribers
@@ -140,7 +142,7 @@ class ObjectManager(
     This class provides core behavior for collections of heterogeneous objects.
     """
 
-    implements(IObjectManager)
+    implements(IObjectManager, IContainer)
 
     security = ClassSecurityInfo()
     security.declareObjectProtected(access_contents_information)

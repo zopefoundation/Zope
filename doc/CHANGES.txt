@@ -9,6 +9,8 @@ Zope Changes
 
     Restructuring
 
+      - Moved two implements declarations from Five into the proper classes.
+
       - Document.sequence: replaced by zope.sequencesort
 
       - All Products folders as well as the zope and zope.app folders are

@@ -27,7 +27,9 @@ xmlrpc=None # Placeholder for module that we'll import if we have to.
 
 from zope.i18n.interfaces import IUserPreferredLanguages
 from zope.i18n.locales import locales, LoadLocaleError
+from zope.interface import implements
 from zope.publisher.base import DebugFlags
+from zope.publisher.interfaces.browser import IBrowserRequest
 
 # This may get overwritten during configuration
 default_encoding = 'iso-8859-15'
@@ -119,12 +121,15 @@ class HTTPRequest(BaseRequest):
     values will be looked up in the order: environment variables,
     other variables, form data, and then cookies.
     """
+    implements(IBrowserRequest)
+
     _hacked_path=None
     args=()
     _file=None
     _urls = ()
 
     retry_max_count=3
+
     def supports_retry(self):
         if self.retry_count < self.retry_max_count:
             time.sleep(random.uniform(0, 2**(self.retry_count)))
