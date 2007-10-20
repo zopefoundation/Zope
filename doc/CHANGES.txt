@@ -71,10 +71,6 @@ Zope Changes
 
     Features added
 
-      - Added LAZY_FILE_LOADING constant to PageTemplateFile. When set to True
-        Page Template files aren't lo aded and parsed on Zope startup anymore,
-        but on first access instead.
-
       - Testing.ZopeTestCase: Introduced a "ZopeLite" test layer, making it
         possible to mix ZTC and non-ZTC tests much more freely.
 
@@ -178,6 +174,10 @@ Zope Changes
         information.
 
     Bugs Fixed
+
+      - Changed PageTemplateFile not to load the file contents on Zope startup
+        anymore but on first access instead. This brings them inline with the
+        zope.pagetemplate version and speeds up Zope startup.
 
       - Launchpad #147201: treat container-class in zope.conf as a string,
         making it possible to use types from extra products directories.
