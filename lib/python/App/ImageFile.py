@@ -15,6 +15,7 @@
 __version__='$Revision: 1.20 $'[11:-2]
 
 import os
+import stat
 import time
 
 import Acquisition
@@ -27,6 +28,8 @@ from Common import rfc1123_date
 from DateTime import DateTime
 
 from zope.contenttype import guess_content_type
+
+from ZPublisher.Iterators import filestream_iterator
 
 class ImageFile(Acquisition.Explicit):
     """Image objects stored in external files."""
@@ -48,16 +51,28 @@ class ImageFile(Acquisition.Explicit):
             max_age = 3600 # One hour
         self.cch = 'public,max-age=%d' % max_age
 
-        data = open(path, 'rb').read()
-        content_type, enc=guess_content_type(path, data)
+        # First try to get the content_type by name
+        content_type, enc=guess_content_type(path, default='failed')
+
+        if content_type == 'failed':
+            # This failed, lets look into the file content
+            img = open(path, 'rb')
+            data = img.read(1024) # 1k should be enough
+            img.close()
+
+            content_type, enc=guess_content_type(path, data)
+
         if content_type:
             self.content_type=content_type
         else:
-            self.content_type='image/%s' % path[path.rfind('.')+1:]
-        self.__name__=path[path.rfind('/')+1:]
-        self.lmt=float(os.stat(path)[8]) or time.time()
-        self.lmh=rfc1123_date(self.lmt)
+            ext = os.path.splitext(path)[-1].replace('.', '')
+            self.content_type='image/%s' %  ext
 
+        self.__name__ = os.path.split(path)[-1]
+        stat_info = os.stat(path)
+        self.size = stat_info[stat.ST_SIZE]
+        self.lmt = float(stat_info[stat.ST_MTIME]) or time.time()
+        self.lmh = rfc1123_date(self.lmt)
 
     def index_html(self, REQUEST, RESPONSE):
         """Default document"""
@@ -67,7 +82,8 @@ class ImageFile(Acquisition.Explicit):
         RESPONSE.setHeader('Content-Type', self.content_type)
         RESPONSE.setHeader('Last-Modified', self.lmh)
         RESPONSE.setHeader('Cache-Control', self.cch)
-        header=REQUEST.get_header('If-Modified-Since', None)
+        RESPONSE.setHeader('Content-Length', str(self.size).replace('L', ''))
+        header = REQUEST.get_header('If-Modified-Since', None)
         if header is not None:
             header=header.split(';')[0]
             # Some proxies seem to send invalid date strings for this
@@ -87,7 +103,7 @@ class ImageFile(Acquisition.Explicit):
                     RESPONSE.setStatus(304)
                     return ''
 
-        return open(self.path,'rb').read()
+        return filestream_iterator(self.path, mode='rb')
 
     security.declarePublic('HEAD')
     def HEAD(self, REQUEST, RESPONSE):

@@ -175,6 +175,11 @@ Zope Changes
 
     Bugs Fixed
 
+      - Launchpad #143902: Fixed App.ImageFile to use a stream iterator to
+        output the file. Avoid loading the file content when guessing the
+        mimetype and only load the first 1024 bytes of the file when it cannot
+        be guessed from the filename.
+
       - Changed PageTemplateFile not to load the file contents on Zope startup
         anymore but on first access instead. This brings them inline with the
         zope.pagetemplate version and speeds up Zope startup.
