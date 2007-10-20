@@ -175,6 +175,10 @@ Zope Changes
 
     Bugs Fixed
 
+      - Launchpad #151020: HTTP_CHAR_SET headers containing 'x-user-defined'
+        caused a LookupError exception. Unknown encodings are from now on
+        silently discarded.
+
       - Launchpad #143902: Fixed App.ImageFile to use a stream iterator to
         output the file. Avoid loading the file content when guessing the
         mimetype and only load the first 1024 bytes of the file when it cannot
