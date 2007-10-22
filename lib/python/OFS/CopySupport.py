@@ -272,24 +272,21 @@ class CopyContainer(ExtensionClass.Base):
                 try:
                     orig_container._delObject(orig_id, suppress_events=True)
                 except TypeError:
-                    # BBB: removed in Zope 2.11
                     orig_container._delObject(orig_id)
                     warnings.warn(
-                        "%s._delObject without suppress_events is deprecated "
-                        "and will be removed in Zope 2.11." %
-                        orig_container.__class__.__name__, DeprecationWarning)
+                        "%s._delObject without suppress_events is discouraged."
+                        % orig_container.__class__.__name__,
+                        DeprecationWarning)
                 ob = aq_base(ob)
                 ob._setId(id)
 
                 try:
                     self._setObject(id, ob, set_owner=0, suppress_events=True)
                 except TypeError:
-                    # BBB: removed in Zope 2.11
                     self._setObject(id, ob, set_owner=0)
                     warnings.warn(
-                        "%s._setObject without suppress_events is deprecated "
-                        "and will be removed in Zope 2.11." %
-                        self.__class__.__name__, DeprecationWarning)
+                        "%s._setObject without suppress_events is discouraged."
+                        % self.__class__.__name__, DeprecationWarning)
                 ob = self._getOb(id)
 
                 notify(ObjectMovedEvent(ob, orig_container, orig_id, self, id))
@@ -362,11 +359,9 @@ class CopyContainer(ExtensionClass.Base):
         try:
             self._delObject(id, suppress_events=True)
         except TypeError:
-            # BBB: removed in Zope 2.11
             self._delObject(id)
             warnings.warn(
-                "%s._delObject without suppress_events is deprecated "
-                "and will be removed in Zope 2.11." %
+                "%s._delObject without suppress_events is discouraged." %
                 self.__class__.__name__, DeprecationWarning)
         ob = aq_base(ob)
         ob._setId(new_id)
@@ -376,11 +371,9 @@ class CopyContainer(ExtensionClass.Base):
         try:
             self._setObject(new_id, ob, set_owner=0, suppress_events=True)
         except TypeError:
-            # BBB: removed in Zope 2.11
             self._setObject(new_id, ob, set_owner=0)
             warnings.warn(
-                "%s._setObject without suppress_events is deprecated "
-                "and will be removed in Zope 2.11." %
+                "%s._setObject without suppress_events is discouraged." %
                 self.__class__.__name__, DeprecationWarning)
         ob = self._getOb(new_id)
 

@@ -10,7 +10,7 @@ happening to objects without have to subclass ``manage_afterAdd``,
 to register a subscriber for the appropriate event, for instance
 IObjectAddedEvent, and make it do the work.
 
-Indeed, the old methods like ``manage_afterAdd`` are now deprecated, you
+Indeed, the old methods like ``manage_afterAdd`` are now discouraged, you
 shouldn't use them anymore.
 
 Let's see how to migrate your products.
@@ -47,8 +47,7 @@ If you run this code in Zope 2.9, you will get deprecation warnings,
 telling you that::
 
     Calling Products.CoolProduct.CoolDocument.CoolDocument.manage_afterAdd
-    is deprecated when using Five, instead use event subscribers or mark
-    the class with <five:deprecatedManageAddDelete/>
+    is discouraged. You should use event subscribers instead.
 
 Using five:deprecatedManageAddDelete
 ------------------------------------
@@ -78,8 +77,8 @@ work of the super class will be done trough events, you must not redo it
 by hand. If you call the super class, you will get a warning, saying for
 instance::
 
-    CoolDocument.manage_afterAdd is deprecated and will be removed in
-    Zope 2.11, you should use an IObjectAddedEvent subscriber instead.
+    CoolDocument.manage_afterAdd is discouraged. You
+    should use an IObjectAddedEvent subscriber instead.
 
 The fact that you must "just do your work" is especially important for
 the rare cases where people subclass the ``manage_afterAdd`` of object

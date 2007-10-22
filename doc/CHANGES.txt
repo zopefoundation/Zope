@@ -9,6 +9,11 @@ Zope Changes
 
     Restructuring
 
+      - Turned deprecation warnings for manage_afterAdd, manage_beforeDelete
+        and manage_afterClone methods into discouraged warnings. These methods
+        will not be removed in Zope 2.11, but stay for the foreseeable future.
+        Using events is still highly encouraged.
+
       - Moved two implements declarations from Five into the proper classes.
 
       - Document.sequence: replaced by zope.sequencesort

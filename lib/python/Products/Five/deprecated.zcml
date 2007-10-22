@@ -1,7 +1,7 @@
 <configure xmlns="http://namespaces.zope.org/zope"
            xmlns:five="http://namespaces.zope.org/five">
 
-  <!-- deprecated in core Zope, should be fixed there in Zope 2.9 -->
+  <!-- deprecated in core Zope, should be fixed there -->
 
   <five:deprecatedManageAddDelete
       class="AccessControl.User.BasicUserFolder"/>

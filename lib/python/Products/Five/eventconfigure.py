@@ -23,7 +23,7 @@ from OFS.subscribers import deprecatedManageAddDeleteClasses
 
 def setContainerEvents():
     warnings.warn("Using <five:containerEvents/> is deprecated (it is now "
-                  "the default), it will be removed in Zope 2.11",
+                  "the default).",
                   DeprecationWarning)
 
 def setDeprecatedManageAddDelete(class_):
