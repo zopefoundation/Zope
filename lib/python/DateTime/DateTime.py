@@ -150,7 +150,7 @@ class _timezone:
 
 class _cache:
 
-    _zlst=['Brazil/Acre','Brazil/DeNoronha','Brazil/East',
+    _zlst=['Brazil/Acre','Brazil/East', #'Brazil/DeNoronha',
            'Brazil/West','Canada/Atlantic','Canada/Central',
            'Canada/Eastern','Canada/East-Saskatchewan',
            'Canada/Mountain','Canada/Newfoundland',
@@ -184,17 +184,17 @@ class _cache:
            'MEWT','SWT','FWT','EET','EEST','BT','ZP4','ZP5','ZP6',
            'WAST','CCT','JST','EAST','GST','NZT','NZST','IDLE']
 
-    _zmap={'aest':'GMT+1000', 'aedt':'GMT+1100',
-           'aus eastern standard time':'GMT+1000',
-           'sydney standard time':'GMT+1000',
-           'tasmania standard time':'GMT+1000',
-           'e. australia standard time':'GMT+1000',
+    _zmap={'aest':'GMT+10', 'aedt':'GMT+11',
+           'aus eastern standard time':'GMT+10',
+           'sydney standard time':'GMT+10',
+           'tasmania standard time':'GMT+10',
+           'e. australia standard time':'GMT+10',
            'aus central standard time':'GMT+0930',
            'cen. australia standard time':'GMT+0930',
-           'w. australia standard time':'GMT+0800',
+           'w. australia standard time':'GMT+8',
 
            'brazil/acre':'Brazil/Acre',
-           'brazil/denoronha':'Brazil/Denoronha',
+           #'brazil/denoronha':'Brazil/Denoronha',
            'brazil/east':'Brazil/East','brazil/west':'Brazil/West',
            'canada/atlantic':'Canada/Atlantic',
            'canada/central':'Canada/Central',
@@ -203,7 +203,7 @@ class _cache:
            'canada/mountain':'Canada/Mountain',
            'canada/newfoundland':'Canada/Newfoundland',
            'canada/pacific':'Canada/Pacific','canada/yukon':'Canada/Yukon',
-           'central europe standard time':'GMT+0100',
+           'central europe standard time':'GMT+1',
            'chile/continental':'Chile/Continental',
            'chile/easterisland':'Chile/EasterIsland',
            'cst':'US/Central','cuba':'Cuba','est':'US/Eastern','egypt':'Egypt',

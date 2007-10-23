@@ -17,7 +17,7 @@ import os
 import time
 import unittest
 
-from DateTime.DateTime import _findLocalTimeZoneName
+from DateTime.DateTime import _findLocalTimeZoneName, _cache
 from DateTime import DateTime
 from datetime import datetime
 import pytz
@@ -505,6 +505,14 @@ class DateTimeTests(unittest.TestCase):
         dt4 = DateTime('2007-10-04T10:00:00+05:00')
         sdt4 = datetime(2007, 10, 4, 5, 0)
         self.assertEqual(dt4.utcdatetime(), sdt4)
+    
+    def testLegacyTimezones(self):
+        # check that all the legacy timezone names can actually be looked up
+        cache = _cache()
+        for key in cache._zmap.keys():
+            tz = cache[key]
+        for key in cache._zlst:
+            tz = cache[key]
 
 
 def test_suite():
