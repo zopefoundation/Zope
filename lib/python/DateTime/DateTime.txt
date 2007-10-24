@@ -12,7 +12,7 @@ Returns the list of recognized timezone names:
 
   >>> from DateTime import Timezones
   >>> Timezones() # doctest: +ELLIPSIS
-  [...'Brazil/Acre', 'Brazil/DeNoronha', ..., 'NZST', 'IDLE']
+  [...'Brazil/Acre'... 'Brazil/DeNoronha'... 'IDLE'... 'NZST'...]
 
 
 Class DateTime

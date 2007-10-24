@@ -10,6 +10,9 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
+
+# This data is used only for testing legacy compatibility with pytz
+
 _data={
 
 

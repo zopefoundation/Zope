@@ -21,6 +21,7 @@ from DateTime.DateTime import _findLocalTimeZoneName, _cache
 from DateTime import DateTime
 from datetime import datetime
 import pytz
+import legacy
 
 try:
     __file__
@@ -505,14 +506,49 @@ class DateTimeTests(unittest.TestCase):
         dt4 = DateTime('2007-10-04T10:00:00+05:00')
         sdt4 = datetime(2007, 10, 4, 5, 0)
         self.assertEqual(dt4.utcdatetime(), sdt4)
+        self.assertEqual(dt4.asdatetime(), sdt4.replace(tzinfo=pytz.utc))
+        
+        dt5 = DateTime('2007-10-23 10:00:00 US/Eastern')
+        tz = pytz.timezone('US/Eastern')
+        sdt5 = datetime(2007, 10, 23, 10, 0, tzinfo=tz)
+        dt6 = DateTime(sdt5)
+        self.assertEqual(dt5.asdatetime(), sdt5)
+        self.assertEqual(dt6.asdatetime(), sdt5)
+        self.assertEqual(dt5, dt6)
+        self.assertEqual(dt5.asdatetime().tzinfo, tz)
+        self.assertEqual(dt6.asdatetime().tzinfo, tz)
     
     def testLegacyTimezones(self):
-        # check that all the legacy timezone names can actually be looked up
         cache = _cache()
-        for key in cache._zmap.keys():
-            tz = cache[key]
-        for key in cache._zlst:
-            tz = cache[key]
+        # The year is important here as timezones change over time
+        t1 = time.mktime(datetime(2002, 1, 1).timetuple())
+        t2 = time.mktime(datetime(2002, 7, 1).timetuple())
+        
+        for name in legacy._zlst + legacy._zmap.keys() + legacy._data.keys():
+            self.failUnless(name.lower() in cache._zidx, 'legacy timezone  %s cannot be looked up' % name)            
+        
+        failures = []
+        for name, zone in legacy.timezones.iteritems():
+            newzone = cache[name]
+            # The name of the new zone might change (eg GMT+6 rather than GMT+0600)
+            if zone.info(t1)[:2] != newzone.info(t1)[:2] or zone.info(t2)[:2] != newzone.info(t2)[:2]:
+                failures.append(name)
+                
+        expected_failures = [ # zone.info(t1)     newzone.info(t1)     zone.info(t2)     newzone.info(t2)
+            'Jamaica',        # (-18000, 0, 'EST') (-18000, 0, 'EST') (-14400, 1, 'EDT') (-18000, 0, 'EST')
+            'Turkey',         # (10800, 0, 'EET') (7200, 0, 'EET') (14400, 1, 'EET DST') (10800, 1, 'EEST')
+            'Mexico/BajaSur', # (-25200, 0, 'MST') (-25200, 0, 'MST') (-25200, 0, 'MST') (-21600, 1, 'MDT')
+            'Mexico/General', # (-21600, 0, 'CST') (-21600, 0, 'CST') (-21600, 0, 'CST') (-18000, 1, 'CDT')
+            'Canada/Yukon',   # (-32400, 0, 'YST') (-28800, 0, 'PST') (-28800, 1, 'YDT') (-25200, 1, 'PDT')
+            'Brazil/West',    # (-10800, 1, 'WDT') (-14400, 0, 'AMT') (-14400, 0, 'WST') (-14400, 0, 'AMT')
+            'Brazil/Acre',    # (-14400, 1, 'ADT') (-18000, 0, 'ACT') (-18000, 0, 'AST') (-18000, 0, 'ACT')
+            ]
+            
+        real_failures = list(set(failures).difference(set(expected_failures)))
+            
+        self.failIf(real_failures, '\n'.join(real_failures))
+            
+            
 
 
 def test_suite():
