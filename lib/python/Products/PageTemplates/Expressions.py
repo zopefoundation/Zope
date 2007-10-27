@@ -208,8 +208,6 @@ class ZopeContext(Context):
 
     def _handleText(self, text, expr):
 
-        text = self.evaluate(expr)
-
         if text is self.getDefault() or text is None:
             # XXX: should be unicode???
             return text
