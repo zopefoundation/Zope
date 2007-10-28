@@ -121,6 +121,10 @@ class HTTPRequest(BaseRequest):
     values will be looked up in the order: environment variables,
     other variables, form data, and then cookies.
     """
+
+    # The claim to implement IBrowserRequest has been made during the Zope3
+    # integration project called Five but hasn't been completed in full.
+
     implements(IBrowserRequest)
 
     _hacked_path=None
