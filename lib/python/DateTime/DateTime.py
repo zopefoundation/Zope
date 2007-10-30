@@ -451,6 +451,9 @@ class DateTime:
             </PRE>
 
             See http://en.wikipedia.org/wiki/ISO_8601 for full specs.
+            
+            Note that the Zope DateTime parser assumes timezone naive ISO
+            strings to be in UTC rather than local time as specified.
 
           - If the DateTime function is invoked with a single Numeric
             argument, the number is assumed to be a floating point value
@@ -1798,14 +1801,12 @@ class DateTime:
 
         if fields['signal'] or fields['Z']:
             tznaive = False
-            tz = 'GMT%+03d%02d' % (hour_off, min_off)
         else:
             tznaive = True
-            # Figure out what time zone it is in the local area
-            # on the given date.
-            ms = seconds - math.floor(seconds)
-            x = _calcDependentSecond2(year,month,day,hour,minute,seconds)
-            tz = self._calcTimezoneName(x, ms)
+        
+        # Differ from the specification here. To preserve backwards
+        # compatibility assume a default timezone == UTC.
+        tz = 'GMT%+03d%02d' % (hour_off, min_off)
 
         return year, month, day, hour, minute, seconds, tz, tznaive
 

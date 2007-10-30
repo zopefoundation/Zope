@@ -262,21 +262,22 @@ class DateTimeTests(unittest.TestCase):
 
     def testISO8601(self):
         # ISO8601 reference dates
-        ref0 = DateTime('2002/5/2 8:00am')
+        ref0 = DateTime('2002/5/2 8:00am GMT')
         ref1 = DateTime('2002/5/2 8:00am US/Eastern')
         ref2 = DateTime('2006/11/6 10:30')
         ref3 = DateTime('2004/06/14 14:30:15 GMT-3')
         ref4 = DateTime('2006/01/01')
-        ref5 = DateTime('2002/5/2 8:00am GMT')
 
         # Basic tests
-        # this is timezone naive and should be interpreted in the local timezone
+        # Though this is timezone naive and according to specification should
+        # be interpreted in the local timezone, to preserve backwards
+        # compatibility with previously expected behaviour.
         isoDt = DateTime('2002-05-02T08:00:00')
         self.assertEqual(ref0, isoDt)
         isoDt = DateTime('2002-05-02T08:00:00Z')
-        self.assertEqual(ref5, isoDt)
+        self.assertEqual(ref0, isoDt)
         isoDt = DateTime('2002-05-02T08:00:00+00:00')
-        self.assertEqual(ref5, isoDt)
+        self.assertEqual(ref0, isoDt)
         isoDt = DateTime('2002-05-02T08:00:00-04:00')
         self.assertEqual(ref1, isoDt)
         isoDt = DateTime('2002-05-02 08:00:00-04:00')
@@ -310,7 +311,7 @@ class DateTimeTests(unittest.TestCase):
 
         # Bug 2191: timezones with only one digit for hour
         isoDt = DateTime('20020502T080000+0')
-        self.assertEqual(ref5, isoDt)
+        self.assertEqual(ref0, isoDt)
         isoDt = DateTime('20020502 080000-4')
         self.assertEqual(ref1, isoDt)
         isoDt = DateTime('20020502T080000-400')
