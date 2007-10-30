@@ -264,9 +264,9 @@ class DateTimeTests(unittest.TestCase):
         # ISO8601 reference dates
         ref0 = DateTime('2002/5/2 8:00am GMT')
         ref1 = DateTime('2002/5/2 8:00am US/Eastern')
-        ref2 = DateTime('2006/11/6 10:30')
+        ref2 = DateTime('2006/11/6 10:30 GMT')
         ref3 = DateTime('2004/06/14 14:30:15 GMT-3')
-        ref4 = DateTime('2006/01/01')
+        ref4 = DateTime('2006/01/01 GMT')
 
         # Basic tests
         # Though this is timezone naive and according to specification should
