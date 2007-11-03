@@ -91,5 +91,3 @@ class LocalSiteView(BrowserView):
                     site_manager.registerUtility(utility, iface, name=name)
 
         return "Migration done!"
-
-        
