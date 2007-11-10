@@ -219,26 +219,20 @@ class ProductHelp(Acquisition.Implicit, ObjectManager, Item, Persistent):
     def __init__(self, id='Help', title=''):
         self.id=id
         self.title=title
-        self._catalog = None
-
-    @property
-    def catalog(self):
-        if self._catalog is None:
-            c=self._catalog=ZCatalog('catalog')
-            # clear catalog
-            for index in c.indexes():
-                c.delIndex(index)
-            for col in c.schema():
-                c.delColumn(col)
-            c.addIndex('SearchableText', 'TextIndex')
-            c.addIndex('categories', 'KeywordIndex')
-            c.addIndex('permissions', 'KeywordIndex')
-            c.addColumn('categories')
-            c.addColumn('permissions')
-            c.addColumn('title_or_id')
-            c.addColumn('url')
-            c.addColumn('id')
-        return self._catalog
+        c=self.catalog=ZCatalog('catalog')
+        # clear catalog
+        for index in c.indexes():
+            c.delIndex(index)
+        for col in c.schema():
+            c.delColumn(col)
+        c.addIndex('SearchableText', 'TextIndex')
+        c.addIndex('categories', 'KeywordIndex')
+        c.addIndex('permissions', 'KeywordIndex')
+        c.addColumn('categories')
+        c.addColumn('permissions')
+        c.addColumn('title_or_id')
+        c.addColumn('url')
+        c.addColumn('id')
 
     security.declareProtected(add_documents_images_and_files, 'addTopicForm')
     addTopicForm=DTMLFile('dtml/addTopic', globals())
