@@ -15,7 +15,7 @@
 $Id$
 """
 
-nasty_exception_str = Exception.__str__.im_func
+nasty_exception_str = getattr(Exception.__str__,'im_func',None)
 
 def ustr(v):
     """Convert any object to a plain string or unicode string,
