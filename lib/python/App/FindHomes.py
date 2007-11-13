@@ -26,7 +26,8 @@ from App.Common import package_home
 try:
     home = os.environ['SOFTWARE_HOME']
 except KeyError:
-    home = os.path.abspath(package_home(Products.__dict__))
+    import Zope2
+    home = os.path.abspath(package_home(Zope2.__dict__))
 
     home, e = os.path.split(home)
     d, e = os.path.split(home)
