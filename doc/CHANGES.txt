@@ -8,7 +8,14 @@ Zope Changes
 
       - Backported feature from Zope 2.11 to support named temporary files.
 
-  Zope 2.10.5 (unreleased)
+  Zope 2.10.5 (2007/10/30)
+
+    Other changes
+
+      - Turned deprecation warnings for manage_afterAdd, manage_beforeDelete
+        and manage_afterClone methods into discouraged warnings. These methods
+        will not be removed in Zope 2.11, but stay for the foreseeable future.
+        Using events is still highly encouraged.
 
     Bugs fixed
 
@@ -32,6 +39,10 @@ Zope Changes
 
       - Collector #2339: ZPT: fixed unicode issue when using the 'structure'
         directive
+
+      - Launchpad #151020: HTTP_CHAR_SET headers containing 'x-user-defined'
+        caused a LookupError exception. Unknown encodings are from now on
+        silently discarded.
 
   Zope 2.10.4 (2007/06/23)
 

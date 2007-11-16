@@ -68,10 +68,8 @@ def maybeWarnDeprecated(ob, method_name):
         return
     class_ = ob.__class__
     warnings.warn(
-        "%s.%s.%s is deprecated and will be removed in Zope 2.11, "
-        "you should use event subscribers instead, and meanwhile "
-        "mark the class with <five:deprecatedManageAddDelete/>"
-        % (class_.__module__, class_.__name__, method_name),
+        "%s.%s.%s is discouraged. You should use event subscribers instead." %
+        (class_.__module__, class_.__name__, method_name),
         DeprecationWarning)
 
 ##################################################

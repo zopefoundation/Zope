@@ -131,6 +131,15 @@ class ZPTUnicodeEncodingConflictResolution(ZopeTestCase):
         result = zpt.pt_render()
         self.assertEqual(result.startswith(unicode('<div>üצה</div>', 'iso-8859-15')), True)
 
+    def testBug151020(self):
+        manage_addPageTemplate(self.app, 'test', 
+                               text='<div tal:content="python: request.get(\'data\')" />', 
+                               encoding='ascii')
+        zpt = self.app['test']
+        self.app.REQUEST.set('HTTP_ACCEPT_CHARSET', 'x-user-defined, iso-8859-15')
+        self.app.REQUEST.set('data', unicode('üצה', 'iso-8859-15').encode('utf-8'))
+        result = zpt.pt_render()
+        self.assertEqual(result.startswith(unicode('<div>üצה</div>', 'iso-8859-15')), False)
 
 class ZopePageTemplateFileTests(ZopeTestCase):
 
