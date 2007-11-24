@@ -182,6 +182,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Launchpad #164783: Indexes were migrated on initial creation of a
+        ZODB.
+
       - Launchpad #151020: HTTP_CHAR_SET headers containing 'x-user-defined'
         caused a LookupError exception. Unknown encodings are from now on
         silently discarded.

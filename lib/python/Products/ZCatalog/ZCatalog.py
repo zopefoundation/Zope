@@ -177,6 +177,7 @@ class ZCatalog(Folder, Persistent, Implicit):
         self._v_total = 0
 
         self._catalog = Catalog()
+        self._migrated_280 = True
 
     def __len__(self):
         # Perform a migration of _catalog.__len__ to _catalog._length
