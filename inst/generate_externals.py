@@ -16,18 +16,17 @@
     Written by Andreas Jung, 2007
 """
 
-# Requires some local files that contain the current
-# list of externals on a per-directory basis:
-#
-# svn propget svn:externals lib/python/ >inst/lib_python.txt
-# svn propget svn:externals lib/python/zope >inst/lib_python_zope.txt
-# svn propget svn:externals lib/python/zope/app >inst/lib_python_zope_app.txt
-
 import sys
+import os
 import urllib2
 from ConfigParser import ConfigParser, NoOptionError
 
 error = sys.stderr
+
+# retrieve externals used in Zope 2
+os.system('svn propget svn:externals lib/python >lib_python.txt')
+os.system('svn propget svn:externals lib/python/zope >lib_python_zope.txt')
+os.system('svn propget svn:externals lib/python/zope/app >lib_python_zope_app.txt')
 
 # download current KGS index
 kgs_url = 'http://download.zope.org/zope3.4/versions.cfg'
