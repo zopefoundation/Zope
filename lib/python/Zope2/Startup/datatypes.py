@@ -15,6 +15,7 @@
 """Datatypes for the Zope schema for use with ZConfig."""
 
 import os
+from UserDict import UserDict
 
 from ZConfig.components.logger import logger
 from ZODB.config import ZODBDatabase
@@ -108,6 +109,13 @@ def python_dotted_path(name):
     ob = importable_name(name) # will fail in course
     return name
 
+
+class zdaemonEnvironDict(UserDict):
+    # zdaeomon 2 expects to use a 'mapping' attribute of the environ object.
+    @property
+    def mapping(self):
+        return self.data
+
 # Datatype for the root configuration object
 # (adds the softwarehome and zopehome fields; default values for some
 #  computed paths, configures the dbtab)
@@ -120,9 +128,9 @@ def root_config(section):
     section.softwarehome = swhome
     section.zopehome = os.path.dirname(os.path.dirname(swhome))
     if section.environment is None:
-        section.environment = {}
+        section.environment = zdaemonEnvironDict()
     if section.cgi_environment is None:
-        section.cgi_environment = {}
+        section.cgi_environment = zdaemonEnvironDict()
     if section.clienthome is None:
         section.clienthome = os.path.join(section.instancehome, "var")
     # set up defaults for pid_filename and lock_filename if they're
