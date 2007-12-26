@@ -30,6 +30,9 @@ except ImportError:
 import ZConfig
 from ZConfig.components.logger import loghandler
 
+from zope.event import notify
+from zope.app import appsetup
+
 logger = logging.getLogger("Zope")
 started = False
 
@@ -85,6 +88,10 @@ class ZopeStarter:
     def setConfiguration(self, cfg):
         self.cfg = cfg
 
+
+    def sendEvents(self):
+        notify(appsetup.interfaces.ProcessStarting())
+
     def prepare(self):
         self.setupInitialLogging()
         self.setupLocale()
@@ -108,8 +115,10 @@ class ZopeStarter:
         # emit a "ready" message in order to prevent the kinds of emails
         # to the Zope maillist in which people claim that Zope has "frozen"
         # after it has emitted ZServer messages.
+        
         logger.info('Ready to handle requests')
         self.setupFinalLogging()
+        self.sendEvents()
 
     def run(self):
         # the mainloop.

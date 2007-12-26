@@ -54,6 +54,10 @@ Zope Changes
 
     Features added
 
+      - Zope2 startup: Zope will now send a ProcessStarting event when it 
+        is ready to serve requests. You can subscribe to this event e.g.
+        for starting application-level threads. 
+
       - Testing.ZopeTestCase: Introduced a "ZopeLite" test layer, making it
         possible to mix ZTC and non-ZTC tests much more freely.
 
