@@ -415,9 +415,6 @@ ext_modules = [
     Extension("zope.hookable._zope_hookable",
               ["zope/hookable/_zope_hookable.c"]),
 
-    Extension("zope.thread._zope_thread",
-              ["zope/thread/_zope_thread.c"]),
-
     Extension("zope.app.container._zope_app_container_contained",
               ["zope/app/container/_zope_app_container_contained.c"],
               include_dirs = [".",
