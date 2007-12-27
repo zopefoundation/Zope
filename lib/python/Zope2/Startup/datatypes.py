@@ -111,7 +111,7 @@ def python_dotted_path(name):
 
 
 class zdaemonEnvironDict(UserDict):
-    # zdaeomon 2 expects to use a 'mapping' attribute of the environ object.
+    # zdaemon 2 expects to use a 'mapping' attribute of the environ object.
     @property
     def mapping(self):
         return self.data
