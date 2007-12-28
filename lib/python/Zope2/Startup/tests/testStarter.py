@@ -54,6 +54,7 @@ class ZopeStarterTestCase(test_logger.LoggingTestBase):
     schema = None
 
     def setUp(self):
+        from ZConfig.components.logger import loghandler
         if self.schema is None:
             ZopeStarterTestCase.schema = getSchema()
         test_logger.LoggingTestBase.setUp(self)
@@ -66,11 +67,17 @@ class ZopeStarterTestCase(test_logger.LoggingTestBase):
             pass
         Products.__path__ = [d for d in Products.__path__
                              if os.path.exists(d)]
+
         test_logger.LoggingTestBase.tearDown(self)
+
         # reset logger states
         for name in (None, 'access', 'trace'):
             logger = logging.getLogger(name)
             logger.__dict__.update(logger_states[name])
+
+    def _clearHandlers(self):
+        from ZConfig.components.logger import loghandler
+        del loghandler._reopenable_handlers[:]
 
     def get_starter(self, conf):
         starter = Zope2.Startup.get_starter()
@@ -144,6 +151,7 @@ class ZopeStarterTestCase(test_logger.LoggingTestBase):
         self.assertEqual(logger.level, 15)
         # We expect a debug handler and the startup handler:
         self.assertEqual(len(logger.handlers), 2)
+
         # XXX need to check that log messages get written to
         # sys.stderr, not that the stream identity for the startup
         # handler matches
@@ -312,6 +320,7 @@ class ZopeStarterTestCase(test_logger.LoggingTestBase):
                     os.unlink(os.path.join(TEMPNAME, name))
                 except:
                     pass
+            self._clearHandlers()
 
     def testMakeLockFile(self):
         # put something in the way (it should be deleted)
