@@ -63,6 +63,19 @@ html_template_wo_header = '''
 html_iso_8859_15_wo_header = html_template_wo_header 
 html_utf8_wo_header = unicode(html_template_wo_header, 'iso-8859-15').encode('utf-8') 
 
+xml_with_upper_attr = '''<?xml version="1.0"?>
+<foo>
+   <bar ATTR="1" />
+</foo>
+'''   
+
+html_with_upper_attr = '''<html><body>
+<foo>
+   <bar ATTR="1" />
+</foo>
+</body></html>
+'''   
+
 
 installProduct('PageTemplates')
 
@@ -240,6 +253,19 @@ class ZopePageTemplateFileTests(ZopeTestCase):
         self.assertEqual(zpt.output_encoding, 'utf-8')
         self.assertEqual(zpt.content_type, 'text/xml')
         result = zpt.pt_render() # should not raise an exception
+
+    def testXMLAttrsMustNotBeLowercased(self):
+        zpt = self._put(xml_with_upper_attr)
+        self.assertEqual(zpt.content_type, 'text/xml')
+        result = zpt.pt_render()
+     	self.assertEqual('ATTR' in result, True)		
+
+    def testHTMLAttrsAreLowerCased(self):
+        zpt = self._put(html_with_upper_attr)
+        self.content_type = 'text/html'
+        result = zpt.pt_render()
+     	self.assertEqual('ATTR' in result, False)		
+
 
 class ZPTRegressions(unittest.TestCase):
 
