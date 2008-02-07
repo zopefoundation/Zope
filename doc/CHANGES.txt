@@ -8,6 +8,9 @@ Zope Changes
 
    Bugs fixed
 
+      - Launchpad #143748: remove broken use of logging module in
+        Products.Five.fiveconfigure.handleBrokenProduct.
+
       - Launchpad #147201: treat container-class in zope.conf as a string,
         making it possible to use types from extra products directories.
 
