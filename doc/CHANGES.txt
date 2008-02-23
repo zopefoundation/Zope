@@ -8,6 +8,9 @@ Zope Changes
 
     Bugs fixed
 
+      - zope.security: switched to use standalone 3.3.3 version, which
+        contains a backport of a huge performance bugfix from the 3.4 branch.
+
       - Launchpad #164783: Indexes were migrated on initial creation of a
         ZODB.
 
