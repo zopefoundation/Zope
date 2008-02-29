@@ -227,3 +227,17 @@ class ITopicIndex(Interface):
     def clearFilteredSet(filter_id):
         """Clear the FilteredSet object specified by 'filter_id'.
         """
+
+# IIndexConfiguration was added on request by the GenericSetup community in
+# order to perform introspection on indexes in a defined way.
+# (ajung)
+
+class IIndexConfiguration(Interface):
+    """ Introspection API for pluggable indexes """
+
+    def getSettings(self):
+        """ Returns an mapping with index specific settings.
+            E.g. {'indexed_attrs' : ('SearchableText', )}.  
+            The interface does not define any specifc mapping keys.
+        """
+    

@@ -465,6 +465,9 @@ Zope Changes
 
     Features added
 
+      - added PluggableIndexes/interfaces/IIndexConfiguration (on request
+        by the GenericSetup community)
+
       - Included Zope 3.3 and corresponding Five 1.5 release.
 
       - There is now a default favicon.ico.
