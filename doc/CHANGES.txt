@@ -8,6 +8,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Launchpad #198274:  "empty" ZopePageTemplates could not be
+        unpickled.
+
   Zope 2.11 beta 1 (2007/12/29)
 
     Restructuring
