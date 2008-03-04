@@ -191,6 +191,17 @@ class ZPTUnicodeEncodingConflictResolution(ZopeTestCase):
         self.failUnless(result.startswith(unicode('<div>üצה</div>',
                         'iso-8859-15')))
 
+    def test_bug_198274(self):
+        # See https://bugs.launchpad.net/bugs/198274
+        # ZPT w/ '_text' not assigned can't be unpickled.
+        import cPickle
+        empty = ZopePageTemplate(id='empty', text=' ',
+                                 content_type='text/html',
+                                 output_encoding='ascii',
+                                )
+        state = cPickle.dumps(empty, protocol=1)
+        clone = cPickle.loads(state)
+
 class ZopePageTemplateFileTests(ZopeTestCase):
 
     def testPT_RenderWithAscii(self):
