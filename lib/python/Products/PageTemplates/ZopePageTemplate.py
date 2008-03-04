@@ -413,7 +413,8 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         # Perform on-the-fly migration to unicode.
         # Perhaps it might be better to work with the 'generation' module 
         # here?
-        if not isinstance(state['_text'], unicode):
+        _text = state.get('_text')
+        if _text is not None and not isinstance(state['_text'], unicode):
             text, encoding = convertToUnicode(state['_text'], 
                                     state.get('content_type', 'text/html'), 
                                     preferred_encodings)
