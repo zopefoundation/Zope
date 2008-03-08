@@ -161,8 +161,8 @@ class Traversable:
             # If the path starts with an empty string, go to the root first.
             path_pop()
             obj = self.getPhysicalRoot()
-            if restricted and not validate(None, None, None, obj):
-                raise Unauthorized(name)
+            if restricted:
+                validate(None, None, None, obj) # may raise Unauthorized
         else:
             obj = self
 
