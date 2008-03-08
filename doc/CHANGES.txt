@@ -8,6 +8,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Launchpad #173658:  Removed dead code in OFS.Traversable's
+        'unrestrictedTraverse' (apparent NameError).
+
       - Launchpad #198274:  "empty" ZopePageTemplates could not be
         unpickled.
 
