@@ -1061,6 +1061,13 @@ instancehome $INSTANCE
 # ZEO client storage:
 #
 # <zodb_db main>
+#   # The full mount-point syntax is:
+#   #
+#   # mount-point <localpath>[:<remotepath>]
+#   #
+#   # localpath - the path where the storage is mounted in this instance
+#   # remotepath - is the path to the object in the storage where it is mounted
+#   #              from. This defaults to whatever is supplied for localpath.
 #   mount-point /
 #   # ZODB cache, in number of objects
 #   cache-size 5000
