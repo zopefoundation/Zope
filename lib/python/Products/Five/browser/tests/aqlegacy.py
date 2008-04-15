@@ -49,6 +49,19 @@ class LegacyTemplate(BrowserView):
     def __call__(self):
         return self.template()
 
+class LegacyTemplateTwo(BrowserView):
+
+    template = ViewPageTemplateFile('falcon.pt')
+
+    def __init__(self, context, request):
+        self.__parent__ = context
+        self.context = context
+        self.request = request
+        self.template = ViewPageTemplateFile('falcon.pt')
+
+    def __call__(self):
+        return self.template()
+
 class Explicit(Acquisition.Explicit):
 
     def render(self):
