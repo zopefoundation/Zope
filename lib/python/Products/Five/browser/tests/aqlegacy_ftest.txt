@@ -163,6 +163,27 @@ Now let's try URL traversal:
   <p>The falcon has taken flight</p>
 
 
+Testing keyword arguments
+=========================
+
+ViewPageTemplateFile's take arbitrary keyword arguments:
+
+  >>> view = getMultiAdapter((self.folder, request), name='template')
+  >>> template = view.template
+  >>> print template(foo=1, bar=2)
+  <p>The falcon has taken flight</p>
+
+  XXX This fails currently with an error:
+  TypeError: __call__() got multiple values for keyword argument 'instance'
+
+  KSS is one example which passes in a keyword argument called 'instance' and
+  the Five ViewPageTemplateFile supported it. In the zope.app.pagetemplate
+  version, the first required argument is called instance.
+
+  >>> print template(instance='allowed')
+  <p>The falcon has taken flight</p>
+
+
 Clean up
 --------
 
