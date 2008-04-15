@@ -36,6 +36,22 @@ class ViewPageTemplateFile(viewpagetemplatefile.ViewPageTemplateFile):
 
     id = property(getId)
 
+    def __call__(self, __instance, *args, **keywords):
+        instance = __instance
+        namespace = self.pt_getContext(
+            request=instance.request,
+            instance=instance, args=args, options=keywords)
+        debug_flags = instance.request.debug
+        s = self.pt_render(
+            namespace,
+            showtal=getattr(debug_flags, 'showTAL', 0),
+            sourceAnnotations=getattr(debug_flags, 'sourceAnnotations', 0),
+            )
+        response = instance.request.response
+        if not response.getHeader("Content-Type"):
+            response.setHeader("Content-Type", self.content_type)
+        return s
+
     def pt_getEngine(self):
         return getEngine()
 
