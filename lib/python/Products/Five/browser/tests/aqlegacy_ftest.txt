@@ -173,12 +173,11 @@ ViewPageTemplateFile's take arbitrary keyword arguments:
   >>> print template(foo=1, bar=2)
   <p>The falcon has taken flight</p>
 
-XXX This fails currently with an error:
-TypeError: __call__() got multiple values for keyword argument 'instance'
+Passing in an argument called instance was supported by the old Five version
+of ViewPageTemplateFile, so we still need to support it.
 
-KSS is one example which passes in a keyword argument called 'instance' and
-the Five ViewPageTemplateFile supported it. In the zope.app.pagetemplate
-version, the first required argument is called instance.
+In the zope.app.pagetemplate version, the first required argument is called
+instance, though.
 
   >>> print template(instance='allowed')
   <p>The falcon has taken flight</p>
