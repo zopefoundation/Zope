@@ -16,23 +16,29 @@
 The Adding View is used to add new objects to a container. It is sort of a
 factory screen.
 
+(original: zope.app.container.browser.adding)
+
 $Id$
 """
+
 __docformat__ = 'restructuredtext'
 
-from warnings import warn
-
-import zope.component
-from zope.interface import implements
-from zope.publisher.interfaces import IPublishTraverse
+from zope.component import getMultiAdapter
+from zope.component import getUtility
+from zope.component import queryMultiAdapter
+from zope.component import queryUtility
 from zope.component.interfaces import IFactory
 from zope.event import notify
-from zope.exceptions import UserError
+from zope.interface import implements
+from zope.publisher.interfaces import IPublishTraverse
+from zope.traversing.browser.absoluteurl import absoluteURL
+from zope.exceptions.interfaces import UserError
 from zope.lifecycleevent import ObjectCreatedEvent
 
+from zope.app.container.constraints import checkFactory, checkObject
+from zope.app.container.i18n import ZopeMessageFactory as _
 from zope.app.container.interfaces import IAdding, INameChooser
 from zope.app.container.interfaces import IContainerNamesContainer
-from zope.app.container.constraints import checkFactory, checkObject
 from zope.app.publisher.browser.menu import getMenu
 
 from Acquisition import Implicit
@@ -40,10 +46,10 @@ from zExceptions import BadRequest
 from OFS.SimpleItem import SimpleItem
 
 from Products.Five import BrowserView
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
-from Products.Five.browser.pagetemplatefile import ZopeTwoPageTemplateFile
 
-class BasicAdding(Implicit, BrowserView):
+class Adding(Implicit, BrowserView):
     implements(IAdding, IPublishTraverse)
 
     def add(self, content):
@@ -57,7 +63,7 @@ class BasicAdding(Implicit, BrowserView):
         checkObject(container, name, content)
 
         if IContainerNamesContainer.providedBy(container):
-            # The container picks it's own names.
+            # The container picks its own names.
             # We need to ask it to pick one.
             name = chooser.chooseName(self.contentName or '', content)
         else:
@@ -72,7 +78,7 @@ class BasicAdding(Implicit, BrowserView):
                 # Invoke the name chooser even when we have a
                 # name. It'll do useful things with it like converting
                 # the incoming unicode to an ASCII string.
-                name = chooser.chooseName(name, container)
+                name = chooser.chooseName(name, content)
         
         content.id = name
         container._setObject(name, content)
@@ -86,85 +92,73 @@ class BasicAdding(Implicit, BrowserView):
         # XXX this is definitely not right for all or even most uses
         # of Five, but can be overridden by an AddView subclass, using
         # the class attribute of a zcml:addform directive
-        return str(zope.component.getMultiAdapter(
-            (self.context, self.request), name=u"absolute_url")) + '/manage_main'
+        return absoluteURL(self.context, self.request) + '/manage_main'
 
     # set in BrowserView.__init__
-    request = None 
+    request = None
     context = None
 
-    def renderAddButton(self):
-        warn("The renderAddButton method is deprecated, use nameAllowed",
-            DeprecationWarning, 2)
-    
-
     def publishTraverse(self, request, name):
-        """See zope.app.container.interfaces.IAdding"""
+        """See zope.publisher.interfaces.IPublishTraverse"""
         if '=' in name:
             view_name, content_name = name.split("=", 1)
             self.contentName = content_name
 
             if view_name.startswith('@@'):
                 view_name = view_name[2:]
-            return zope.component.getMultiAdapter((self, request), name=view_name)
+            return getMultiAdapter((self, request), name=view_name)
 
         if name.startswith('@@'):
             view_name = name[2:]
         else:
             view_name = name
 
-        view = zope.component.queryMultiAdapter((self, request), name=view_name)
+        view = queryMultiAdapter((self, request), name=view_name)
         if view is not None:
             return view
 
-        factory = zope.component.queryUtility(IFactory, name)
+        factory = queryUtility(IFactory, name)
         if factory is None:
-            return super(BasicAdding, self).publishTraverse(request, name)
+            return super(Adding, self).publishTraverse(request, name)
 
         return factory
 
     def action(self, type_name='', id=''):
         if not type_name:
-            raise UserError("You must select the type of object to add.")
+            raise UserError(_(u"You must select the type of object to add."))
 
         if type_name.startswith('@@'):
             type_name = type_name[2:]
 
         if '/' in type_name:
-            view_name  = type_name.split('/', 1)[0]
+            view_name = type_name.split('/', 1)[0]
         else:
             view_name = type_name
 
-        if (zope.component.queryMultiAdapter((self, self.request), name=view_name)
-            is not None):
+        if queryMultiAdapter((self, self.request),
+                                  name=view_name) is not None:
             url = "%s/%s=%s" % (
-                zope.component.getMultiAdapter((self, self.request), name=u"absolute_url"),
-                type_name, id)
+                absoluteURL(self, self.request), type_name, id)
             self.request.response.redirect(url)
             return
 
         if not self.contentName:
             self.contentName = id
 
-        factory = zope.component.getUtility(IFactory, type_name)
+        factory = getUtility(IFactory, type_name)
         content = factory()
 
         notify(ObjectCreatedEvent(content))
+
         self.add(content)
         self.request.response.redirect(self.nextURL())
-
-    def namesAccepted(self):
-        return not IContainerNamesContainer.providedBy(self.context)
 
     def nameAllowed(self):
         """Return whether names can be input by the user."""
         return not IContainerNamesContainer.providedBy(self.context)
-    
-
-class Adding(BasicAdding):
 
     menu_id = None
-    index = ZopeTwoPageTemplateFile("adding.pt")
+    index = ViewPageTemplateFile("adding.pt")
 
     def addingInfo(self):
         """Return menu data.
@@ -181,7 +175,7 @@ class Adding(BasicAdding):
                 if extra:
                     factory = extra.get('factory')
                     if factory:
-                        factory = zope.component.getUtility(IFactory, factory)
+                        factory = getUtility(IFactory, factory)
                         if not checkFactory(container, None, factory):
                             continue
                         elif item['extra']['factory'] != item['action']:
@@ -203,9 +197,11 @@ class Adding(BasicAdding):
                return True
        return False
 
+
 class ContentAdding(Adding, SimpleItem):
 
     menu_id = "add_content"
+
 
 class ObjectManagerNameChooser:
     """A name chooser for a Zope object manager.
