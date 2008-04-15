@@ -173,14 +173,31 @@ ViewPageTemplateFile's take arbitrary keyword arguments:
   >>> print template(foo=1, bar=2)
   <p>The falcon has taken flight</p>
 
-  XXX This fails currently with an error:
-  TypeError: __call__() got multiple values for keyword argument 'instance'
+XXX This fails currently with an error:
+TypeError: __call__() got multiple values for keyword argument 'instance'
 
-  KSS is one example which passes in a keyword argument called 'instance' and
-  the Five ViewPageTemplateFile supported it. In the zope.app.pagetemplate
-  version, the first required argument is called instance.
+KSS is one example which passes in a keyword argument called 'instance' and
+the Five ViewPageTemplateFile supported it. In the zope.app.pagetemplate
+version, the first required argument is called instance.
 
   >>> print template(instance='allowed')
+  <p>The falcon has taken flight</p>
+
+
+No arguments required
+=====================
+
+ViewPageTemplateFile's requires no arguments.
+
+XXX This currently fails with:
+TypeError: __call__() takes at least 2 arguments (1 given)
+
+We do call the template class in our own view code, without passing in 'self'
+as an argument. This worked so far, as the Five version didn't require any
+arguments:
+
+  >>> view = getMultiAdapter((self.folder, request), name='template_two')
+  >>> print view()
   <p>The falcon has taken flight</p>
 
 
