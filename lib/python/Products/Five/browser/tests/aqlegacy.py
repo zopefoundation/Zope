@@ -51,8 +51,6 @@ class LegacyTemplate(BrowserView):
 
 class LegacyTemplateTwo(BrowserView):
 
-    template = ViewPageTemplateFile('falcon.pt')
-
     def __init__(self, context, request):
         self.__parent__ = context
         self.context = context
