@@ -8,6 +8,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Products.Five: Resynced browser.adding with zope.app.container.
+        This fixes some minor bugs and removes deprecated code.
+
       - Launchpad #173658:  Removed dead code in OFS.Traversable's
         'unrestrictedTraverse' (apparent NameError).
 
