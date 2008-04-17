@@ -1,4 +1,3 @@
-##############################################################################
 #
 # Copyright (c) 2004, 2005 Zope Corporation and Contributors.
 # All Rights Reserved.
@@ -30,6 +29,8 @@ def getEngine():
     return _engine
 
 class ViewPageTemplateFile(viewpagetemplatefile.ViewPageTemplateFile):
+    """Page Template used as class variable of views defined as Python classes.
+    """
 
     def getId(self):
         return basename(self.filename)
