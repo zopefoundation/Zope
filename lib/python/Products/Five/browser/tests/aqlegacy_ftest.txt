@@ -186,18 +186,15 @@ instance, though.
 No arguments required
 =====================
 
-ViewPageTemplateFile's requires no arguments.
-
-XXX This currently fails with:
-TypeError: __call__() takes at least 2 arguments (1 given)
-
-We do call the template class in our own view code, without passing in 'self'
-as an argument. This worked so far, as the Five version didn't require any
-arguments:
+ViewPageTemplateFile's require no arguments, but you can only use them as
+class variables:
 
   >>> view = getMultiAdapter((self.folder, request), name='template_two')
   >>> print view()
-  <p>The falcon has taken flight</p>
+  Traceback (most recent call last):
+  ...
+  TypeError: __call__() takes at least 2 arguments (1 given)
+  
 
 
 Clean up
