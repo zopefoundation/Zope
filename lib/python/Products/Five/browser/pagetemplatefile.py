@@ -1,3 +1,4 @@
+##############################################################################
 #
 # Copyright (c) 2004, 2005 Zope Corporation and Contributors.
 # All Rights Reserved.
