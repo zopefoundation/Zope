@@ -7,11 +7,13 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+""" HTTP request management.
 
-__version__='$Revision: 1.96 $'[11:-2]
+$Id$
+"""
 
 import re, sys, os, time, random, codecs, tempfile
 from types import StringType, UnicodeType
@@ -1456,9 +1458,10 @@ class ZopeFieldStorage(FieldStorage):
     def make_file(self, binary=None):
         return tempfile.NamedTemporaryFile("w+b")
 
+
+# Zope 3 version: zope.publisher.browser.FileUpload
 class FileUpload:
-    '''\
-    File upload objects
+    '''File upload objects
 
     File upload objects are used to represent file-uploaded data.
 
@@ -1471,28 +1474,33 @@ class FileUpload:
 
     # Allow access to attributes such as headers and filename so
     # that ZClass authors can use DTML to work with FileUploads.
-    __allow_access_to_unprotected_subobjects__=1
+    __allow_access_to_unprotected_subobjects__ = 1
 
     def __init__(self, aFieldStorage):
 
-        file=aFieldStorage.file
-        if hasattr(file, '__methods__'): methods=file.__methods__
-        else: methods= ['close', 'fileno', 'flush', 'isatty',
-                        'read', 'readline', 'readlines', 'seek',
-                        'tell', 'truncate', 'write', 'writelines',
-                        '__iter__','next', 'name'] # see Collector 1837
+        file = aFieldStorage.file
+        if hasattr(file, '__methods__'):
+            methods = file.__methods__
+        else:
+            methods = ['close', 'fileno', 'flush', 'isatty',
+                'read', 'readline', 'readlines', 'seek',
+                'tell', 'truncate', 'write', 'writelines',
+                '__iter__','next', 'name'] # see Collector 1837
 
-        d=self.__dict__
+        d = self.__dict__
         for m in methods:
-            if hasattr(file,m): d[m]=getattr(file,m)
+            if hasattr(file,m):
+                d[m] = getattr(file,m)
 
-        self.headers=aFieldStorage.headers
-        self.filename=aFieldStorage.filename
+        self.headers = aFieldStorage.headers
+        self.filename = aFieldStorage.filename
 
         # Add an assertion to the rfc822.Message object that implements
         # self.headers so that managed code can access them.
-        try:    self.headers.__allow_access_to_unprotected_subobjects__ = 1
-        except: pass
+        try:
+            self.headers.__allow_access_to_unprotected_subobjects__ = 1
+        except:
+            pass
 
     def __nonzero__(self):
         """FileUpload objects are considered false if their
@@ -1502,6 +1510,7 @@ class FileUpload:
 
     def xreadlines(self):
         return self
+
 
 parse_cookie_lock=allocate_lock()
 def parse_cookie(text,
