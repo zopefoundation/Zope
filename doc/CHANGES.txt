@@ -8,6 +8,9 @@ Zope Changes
 
    Bugs fixed
 
+      - Launchpad #143813: zopectl now exits non-zero when
+        child processes fail.
+
       - Launchpad #143748: remove broken use of logging module in
         Products.Five.fiveconfigure.handleBrokenProduct.  Fixed by
         upgrading to Products.Five 1.3.11.
