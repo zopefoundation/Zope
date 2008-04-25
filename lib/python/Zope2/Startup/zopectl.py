@@ -147,6 +147,8 @@ class ZopeCtlOptions(ZDOptions):
 
 class ZopeCmd(ZDCmd):
 
+    _exitstatus = 0
+
     def _get_override(self, opt, name, svalue=None, flag=0):
         # Suppress the config file, and pass all configuration via the
         # command line.  This avoids needing to specialize the zdrun
@@ -265,7 +267,7 @@ class ZopeCmd(ZDCmd):
             cmd += '[sys.argv.append(x) for x in %s];' % argv
         cmd += 'import Zope2; app=Zope2.app(); execfile(\'%s\')' % script
         cmdline = self.get_startup_cmd(self.options.python, cmd)
-        os.system(cmdline)
+        self._exitstatus = os.system(cmdline)
 
     def help_run(self):
         print "run <script> [args] -- run a Python script with the Zope "
@@ -335,10 +337,11 @@ class ZopeCmd(ZDCmd):
             # Parent process running (execv replaces process in child
             while True:
                 try:
-                    os.waitpid(pid, 0)
+                    pid, status = os.waitpid(pid, 0)
                 except (OSError, KeyboardInterrupt):
                     continue
                 else:
+                    self._exitstatus = status
                     break
 
     def help_test(self):
@@ -364,6 +367,8 @@ def main(args=None):
         print "program:", " ".join(options.program)
         c.do_status()
         c.cmdloop()
+    else:
+        return min(c._exitstatus, 1)
 
 def _ignoreSIGCHLD(*unused):
     while 1:
@@ -393,4 +398,5 @@ if __name__ == "__main__":
         # SIGCHILD is unset, just don't bother registering a SIGCHILD
         # signal handler at all.
         signal.signal(signal.SIGCHLD, _ignoreSIGCHLD)
-    main()
+    exitstatus = main()
+    sys.exit(exitstatus)

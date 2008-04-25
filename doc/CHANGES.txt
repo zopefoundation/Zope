@@ -8,6 +8,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Launchpad #143813: zopectl now exits non-zero when
+        child processes fail.
+
       - Products.Five: Resynced browser.adding with zope.app.container.
         This fixes some minor bugs and removes deprecated code.
 
