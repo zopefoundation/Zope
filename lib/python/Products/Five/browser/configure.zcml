@@ -1,25 +1,12 @@
 <configure xmlns="http://namespaces.zope.org/zope"
            xmlns:browser="http://namespaces.zope.org/browser">
 
-  <!-- BBB 2006/05/01 - to be removed after 12 months -->
-  <browser:defaultView
-      for="Products.Five.bbb.IBrowserDefault" 
-      name="index.html"
-      />
-
   <interface
       interface="zope.publisher.interfaces.browser.IBrowserSkinType"
       />
 
   <interface
       interface="zope.app.publisher.interfaces.browser.IMenuItemType"
-      />
-
-  <!-- BBB 2006/02/18, to be removed after 12 months -->
-  <browser:layer
-      name="default"
-      interface="zope.publisher.interfaces.browser.IDefaultBrowserLayer"
-      bbb_aware="true"
       />
 
   <browser:page

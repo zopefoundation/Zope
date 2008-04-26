@@ -23,13 +23,3 @@ class IMenuItemType(IInterface):
     Menu item types are interfaces that define classes of
     menu items.
     """
-
-# BBB 2006/05/01 -- to be removed after 12 months
-import zope.deferredimport
-zope.deferredimport.deprecated(
-    "To get the default browser view of an object, use "
-    "zope.app.publisher.browser.queryDefaultViewName. To "
-    "define the default view of an object, use the "
-    "browser:defaultView directive",
-    IBrowserDefault = "Products.Five.bbb:IBrowserDefault",
-    )

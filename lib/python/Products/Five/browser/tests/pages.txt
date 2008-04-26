@@ -113,13 +113,6 @@ Test macro access from ZPT pages:
   >>> view()
   u'<html><head><title>bird macro</title></head><body>Color: gray</body></html>\n'
 
-Test whether old-style direct traversal still works with a
-five:traversable class:
-
-  >>> old_view = self.folder.unrestrictedTraverse('testoid/direct')
-  >>> old_view()
-  'Direct traversal worked'
-
 test_zpt_things:
 
   >>> view = self.folder.unrestrictedTraverse('testoid/condor.html')
