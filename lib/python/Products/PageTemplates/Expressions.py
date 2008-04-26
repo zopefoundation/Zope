@@ -279,16 +279,6 @@ class ZopeIterator(Iterator):
     def item(self):
         return super(ZopeIterator, self).item()
 
-    # This method was on the old ZTUtils.Iterator.Iterator class but
-    # isn't part of the spec.  We'll support it for a short
-    # deprecation period.
-    # BBB 2005/05/01 -- to be removed after 12 months
-    @property
-    @deprecate("The 'nextIndex' method has been deprecated and will disappear "
-               "in Zope 2.12.  Use 'iterator.index+1' instead.")
-    def nextIndex(self):
-        return self.index + 1
-
     # 'first' and 'last' are Zope 2 enhancements to the TALES iterator
     # spec.  See help/tal-repeat.stx for more info
     def first(self, name=None):
