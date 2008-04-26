@@ -15,13 +15,10 @@
 
 $Id$
 """
-from zope.interface import implements
-from zope.app.publisher.interfaces.browser import IMenuAccessView
-from zope.app.publisher.browser.menu import getMenu
-from Products.Five import BrowserView
+import zope.deferredimport
 
-class MenuAccessView(BrowserView):
-    implements(IMenuAccessView)
-
-    def __getitem__(self, menu_id):
-        return getMenu(menu_id, self.context, self.request)
+zope.deferredimport.deprecated(
+    "The Five specific view has been made obsolete. Please use the " 
+    "view from zope.app.publisher directly.",
+    MenuAccessView = 'zope.app.publisher.browser.menu.MenuAccessView',
+    )

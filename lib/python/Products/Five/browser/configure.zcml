@@ -80,7 +80,7 @@
       for="*"
       name="view_get_menu"
       permission="zope.Public"
-      class=".menu.MenuAccessView"
+      class="zope.app.publisher.browser.menu.MenuAccessView"
       allowed_interface="zope.app.publisher.interfaces.browser.IMenuAccessView"
       />
 
