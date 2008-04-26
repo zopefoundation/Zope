@@ -73,50 +73,6 @@ def test_directives():
       >>> cleanUp()
     """
 
-def test_content_deprecation():
-    """
-    Test deprecated content directive
-
-    There was a bug in the content directive deprecation code
-    which caused all code that use this directive break.
-    So we test this to make sure it works. If the content
-    directive will have been removed, this test can be removed
-    entirely as well.
-
-    First, we load the configuration file:
-
-      >>> import Products.Five.tests
-      >>> from Products.Five import zcml
-      >>> zcml.load_config('meta.zcml', Products.Five)
-      >>> zcml.load_config('directives.zcml', Products.Five.tests)
-
-    Use the <content> directives: this gives a deprecation
-    warning but should otherwise be all right. (We embed the block
-    to suppress the deprecation warning...)
-
-      >>> import warnings
-      >>> warnings.showwarning, _savewarning = lambda *args, **kw: None, warnings.showwarning
-      >>> zcml.load_string('''
-      ...   <configure xmlns="http://namespaces.zope.org/zope">
-      ...      <content class="Products.Five.tests.classes.One">
-      ...          <implements interface="Products.Five.tests.classes.IOne" />
-      ...      </content>
-      ...   </configure>
-      ...   ''')
-
-    Check that they are all right.
-
-      >>> from Products.Five.tests.classes import One, Two, IOne, ITwo
-      >>> IOne.implementedBy(One)
-      True
-
-    Clean up adapter registry and others:
-
-      >>> warnings.showwarning  = _savewarning
-      >>> from zope.testing.cleanup import cleanUp
-      >>> cleanUp()
-    """
-
 
 def test_suite():
     from Testing.ZopeTestCase import ZopeDocTestSuite

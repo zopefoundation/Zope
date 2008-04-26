@@ -8,7 +8,6 @@
   <include file="deprecated.zcml"/>
   <include file="traversing.zcml"/>
   <include package=".component" />
-  <include package=".site" />
   <include package=".browser" />
   <include package=".form" />
   <include package=".formlib" />

@@ -44,13 +44,3 @@ class ClassDirective(contentdirective.ClassDirective):
             callable = initializeClass,
             args = (self.__class,)
             )
-
-# BBB 2006/02/24, to be removed after 12 months
-class ContentDirective(contentdirective.ClassDirective):
-
-    def __init__(self, _context, class_):
-        warnings.warn_explicit(
-            "The 'content' alias for the 'class' directive has been "
-            "deprecated and will be removed in Zope 2.12.\n",
-            DeprecationWarning, _context.info.file, _context.info.line)        
-        super(ContentDirective, self).__init__(_context, class_)

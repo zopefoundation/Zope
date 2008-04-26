@@ -105,22 +105,6 @@ def implements(_context, class_, interface):
                     interface)
             )
 
-# BBB 2006/05/01 -- to be removed after 12 months
-def traversable(_context, class_):
-    warnings.warn("The five:traversable statement is no longer needed "
-                  "and will be removed in Zope 2.12.",
-                  DeprecationWarning, 2)
-
-# BBB 2006/05/01 -- to be removed after 12 months
-def defaultViewable(_context, class_):
-    warnings.warn("The five:defaultViewable statement is no longer "
-                  "needed and will be removed in Zope 2.12. \n If you rely "
-                  "on it to make 'index.html' the default view, replace it "
-                  "with <browser:defaultView name='index.html' />",
-                  DeprecationWarning, 2)
-    from Products.Five.bbb import IBrowserDefault
-    implements(_context, class_, (IBrowserDefault,))
-
 def createZope2Bridge(zope2, package, name):
     # Map a Zope 2 interface into a Zope3 interface, seated within 'package'
     # as 'name'.

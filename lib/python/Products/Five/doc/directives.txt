@@ -16,11 +16,10 @@ adapter
 
 Hook an adapter factory to an interface.
 
-content
--------
+class
+-----
 
-Declare interface and permissions on content object. Declares Zope 2
-permissions.
+Declare interface and permissions on classes. Declares Zope 2 permissions.
 
 permission
 ----------
@@ -47,17 +46,6 @@ interface
 ---------
 
 Register an interface in ZCML.
-
-factory
--------
-
-Register an object factory.
-
-modulealias
------------
-
-Provide a module under an alias name, e.g. for persistent backward
-compatability.
 
 hook
 ----
@@ -134,24 +122,6 @@ loadProductsOverrides
 
 Loads overriding ZCML in all products (``overrides.zcml``).
 
-traversable
------------
-
-This statement is now deprecated, since the functionality now is on Zope Core.
-
-Make a Zope 2 content class traversable in the Zope 3 manner using
-Five. This is used to attached views, resources and other things to
-Zope 2 objects.
-
-defaultViewable
----------------
-
-This statement is now deprecated, since the functionality now is on Zope Core.
-
-Make a Zope 2 content class use a Zope 3 default view when looking at
-it without any paths appended to it. This works then instead of
-``index_html`` in Zope 2.
-
 sizable
 -------
 
@@ -181,11 +151,3 @@ registerClass
 -------------
 
 Registers Five content with Zope 2.
-
-localsite
----------
-
-Turns a class into an implementation of ``IPossibleSite`` so that its
-instances can be serve as local sites.  Unless otherwise specified, a
-default implementation's methods will be used to make the class comply
-with the ``IPossibleSite`` interface.

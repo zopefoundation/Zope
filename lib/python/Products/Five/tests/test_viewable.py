@@ -91,8 +91,6 @@ def test_suite():
     from Testing.ZopeTestCase import FunctionalDocFileSuite
     return unittest.TestSuite((
             DocTestSuite(),
-            FunctionalDocFileSuite('viewable.txt',
-                                   package="Products.Five.tests",),
             ))
 
 if __name__ == '__main__':

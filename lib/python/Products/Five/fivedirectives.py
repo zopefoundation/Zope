@@ -36,30 +36,6 @@ class IImplementsDirective(Interface):
         value_type=GlobalObject()
         )
 
-# BBB 2006/05/01 -- to be removed after 12 months
-class ITraversableDirective(Interface):
-    """Make instances of class traversable publically.
-
-    This can be used to browse to pages, resources, etc.
-
-    Traversal can be controlled by registering an ITraverser adapter.
-    """
-    class_ = GlobalObject(
-        title=u"Class",
-        required=True
-        )
-
-# BBB 2006/05/01 -- to be removed after 12 months
-class IDefaultViewableDirective(Interface):
-    """Make instances of class viewable publically.
-
-    The default view is looked up using a IBrowserDefault adapter.
-    """
-    class_ = GlobalObject(
-        title=u"Class",
-        required=True
-        )
-
 class ISizableDirective(Interface):
     """Make instances of class send events.
     """

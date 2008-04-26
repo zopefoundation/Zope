@@ -6,10 +6,6 @@
   <include package="zope.security" file="meta.zcml" />
   <include package="zope.i18n" file="meta.zcml" />
 
-  <!-- BBB 2006/02/24, to be removed after 12 months -->
-  <include package="zope.modulealias" file="meta.zcml" />
-
-  <include package=".site" file="meta.zcml" />
   <include package=".browser" file="meta.zcml" />
   <include package=".form" file="meta.zcml" />
 
@@ -21,41 +17,10 @@
         handler="zope.app.component.metaconfigure.view"
         />
 
-    <!-- BBB 2006/02/24, to be removed after 12 months -->
-    <meta:directive
-        name="factory"
-        schema="zope.app.component.metadirectives.IFactoryDirective"
-        handler="zope.app.component.metaconfigure.factory"
-        />
-
     <meta:complexDirective
         name="class"
         schema="zope.app.component.metadirectives.IClassDirective"
         handler=".metaconfigure.ClassDirective"
-        >
-
-      <meta:subdirective
-          name="implements"
-          schema="zope.app.component.metadirectives.IImplementsSubdirective"
-          />
-
-      <meta:subdirective
-          name="require"
-          schema="zope.app.component.metadirectives.IRequireSubdirective"
-          />
-
-      <meta:subdirective
-          name="allow"
-          schema="zope.app.component.metadirectives.IAllowSubdirective"
-          />
-
-    </meta:complexDirective>
-
-    <!-- BBB 2006/02/24, to be removed after 12 months -->
-    <meta:complexDirective
-        name="content"
-        schema="zope.app.component.metadirectives.IClassDirective"
-        handler=".metaconfigure.ContentDirective"
         >
 
       <meta:subdirective
@@ -103,18 +68,6 @@
        name="implements"
        schema=".fivedirectives.IImplementsDirective"
        handler=".fiveconfigure.implements"
-       />
-
-    <meta:directive
-       name="defaultViewable"
-       schema=".fivedirectives.IDefaultViewableDirective"
-       handler=".fiveconfigure.defaultViewable"
-       />
-
-    <meta:directive
-       name="traversable"
-       schema=".fivedirectives.ITraversableDirective"
-       handler=".fiveconfigure.traversable"
        />
 
     <meta:directive

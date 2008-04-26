@@ -242,7 +242,7 @@ Default view for object
 
 	What if we traverse to the object itself?
 
-	Use five:defaultViewable and browser:defaultView
+	Use browser:defaultView
 
 %page
 
@@ -259,8 +259,6 @@ DefaultView example
 
 
 %size 4, fore "blue"
-  <five:defaultViewable class=".democontent.DemoContent" />
- 
   <browser:defaultView
      for=".democontent.IDemoContent"
      name="someview.html" />
@@ -270,8 +268,6 @@ DefaultView example
 Conclusions
 
 
-	This works much the same way as Zope 3 does too
+	This works the same way as Zope 3 does too
 
 	Can supplement existing view systems in Zope 2
-
-	Five specific code is mostly isolated in five:traversable and five:defaultViewable
