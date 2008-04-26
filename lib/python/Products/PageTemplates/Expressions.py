@@ -20,12 +20,11 @@ $Id$
 
 import logging
 
-from zope.component import getUtility
-from zope.component.interfaces import ComponentLookupError
+from zope.component import queryUtility
 from zope.interface import implements
 from zope.tales.tales import Context, Iterator
 from zope.tales.expressions import PathExpr, StringExpr, NotExpr
-from zope.tales.expressions import DeferExpr, SubPathExpr, Undefs
+from zope.tales.expressions import DeferExpr, Undefs
 from zope.tales.pythonexpr import PythonExpr
 from zope.traversing.interfaces import ITraversable
 from zope.traversing.adapters import traversePathElement
@@ -46,15 +45,6 @@ from Products.PageTemplates.interfaces import IUnicodeEncodingConflictResolver
 SecureModuleImporter = ZRPythonExpr._SecureModuleImporter()
 
 LOG = logging.getLogger('Expressions')
-
-# BBB 2005/05/01 -- remove after 12 months
-import zope.deprecation
-from zope.deprecation import deprecate
-zope.deprecation.deprecated(
-    ("StringExpr", "NotExpr", "PathExpr", "SubPathExpr", "Undefs"),
-    "Zope 2 uses the Zope 3 ZPT engine now.  Expression types can be "
-    "imported from zope.tales.expressions."
-    )
 
 # In Zope 2 traversal semantics, NotFound or Unauthorized (the Zope 2
 # versions) indicate that traversal has failed.  By default, Zope 3's
@@ -223,9 +213,8 @@ class ZopeContext(Context):
             # This should not be a problem since it won't change the old
             # default behavior
 
-            try:
-                resolver = getUtility(IUnicodeEncodingConflictResolver)
-            except ComponentLookupError:    
+            resolver = queryUtility(IUnicodeEncodingConflictResolver)
+            if resolver is None:
                 return unicode(text)
 
             try:
