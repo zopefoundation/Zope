@@ -14,31 +14,26 @@
 """Five-compatible version of ObjectWidget
 
 This is needed because ObjectWidget uses ViewPageTemplateFile whose
-macro definition is unfortunately incompatible with
-ZopeTwoPageTemplateFile.  So this subclass uses
-ZopeTwoPageTemplateFile for the template that renders the widget's
-sub-editform.  Acquisition has to be mixed in to provide the
-ZopeTwoPageTemplateFile with the proper acquisition context.
+macro definition is unfortunately incompatible with ZopeTwoPageTemplateFile.
+So this subclass uses ZopeTwoPageTemplateFile for the template that renders
+the widget's sub-editform.
 
 $Id$
 """
-import Acquisition
 import zope.app.form.browser.objectwidget
 from AccessControl import ClassSecurityInfo
 from Globals import InitializeClass as initializeClass
-from Products.Five.browser.pagetemplatefile import ZopeTwoPageTemplateFile
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
-class ObjectWidgetView(Acquisition.Explicit,
-                       zope.app.form.browser.objectwidget.ObjectWidgetView):
+class ObjectWidgetView(zope.app.form.browser.objectwidget.ObjectWidgetView):
     security = ClassSecurityInfo()
     security.declareObjectPublic()
 
-    template = ZopeTwoPageTemplateFile('objectwidget.pt')
+    template = ViewPageTemplateFile('objectwidget.pt')
 
 initializeClass(ObjectWidgetView)
 
-class ObjectWidgetClass(Acquisition.Explicit,
-                        zope.app.form.browser.objectwidget.ObjectWidget):
+class ObjectWidgetClass(zope.app.form.browser.objectwidget.ObjectWidget):
 
     def __init__(self, context, request, factory, **kw):
         super(ObjectWidgetClass, self).__init__(context, request, factory, **kw)
@@ -58,8 +53,4 @@ class ObjectWidgetClass(Acquisition.Explicit,
                 val = self.context.schema[name].default
             self.getSubWidget(name).setRenderedValue(val)
 
-def ObjectWidget(context, request, factory, **kw):
-    """Return an ObjectWidget suitable in the Five environment, with
-    right acquisition context"""
-    return ObjectWidgetClass(context, request, factory, **kw
-                             ).__of__(context.context)
+ObjectWidget = ObjectWidgetClass

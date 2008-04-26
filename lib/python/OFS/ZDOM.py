@@ -16,6 +16,8 @@ DOM implementation in ZOPE : Read-Only methods
 All standard Zope objects support DOM to a limited extent.
 """
 import Acquisition
+from Acquisition import aq_base
+from Acquisition import aq_parent
 from Globals import InitializeClass
 from AccessControl import ClassSecurityInfo
 from AccessControl.Permissions import access_contents_information
@@ -149,7 +151,7 @@ class Node:
         When this is a document this is None"""
         node = self
         if hasattr(node, 'aq_parent'):
-            node = self.aq_parent
+            node = aq_parent(self)
             return node.getOwnerDocument()
         return node
 
@@ -198,7 +200,7 @@ class Document(Acquisition.Explicit, Node):
         This is a convenience attribute that allows direct access to
         the child node that is the root element of the document.
         """
-        return self.aq_parent
+        return aq_parent(self)
 
     # Node Methods
     # ------------
@@ -219,17 +221,17 @@ class Document(Acquisition.Explicit, Node):
     def getChildNodes(self):
         """Returns a NodeList that contains all children of this node.
         If there are no children, this is a empty NodeList"""
-        return NodeList([self.aq_parent])
+        return NodeList([aq_parent(self)])
 
     def getFirstChild(self):
         """The first child of this node. If there is no such node
         this returns None."""
-        return self.aq_parent
+        return aq_parent(self)
 
     def getLastChild(self):
         """The last child of this node. If there is no such node
         this returns None."""
-        return self.aq_parent
+        return aq_parent(self)
 
     def hasChildNodes(self):
         """Returns true if the node has any children, false
@@ -324,7 +326,7 @@ class Element(Node):
         """The node immediately preceding this node.  If
         there is no such node, this returns None."""
         if hasattr(self, 'aq_parent'):
-            parent = self.aq_parent
+            parent = aq_parent(self)
             ids=list(parent.objectIds())
             id=self.id
             if type(id) is not type(''): id=id()
@@ -338,7 +340,7 @@ class Element(Node):
         """The node immediately preceding this node.  If
         there is no such node, this returns None."""
         if hasattr(self, 'aq_parent'):
-            parent = self.aq_parent
+            parent = aq_parent(self)
             ids=list(parent.objectIds())
             id=self.id
             if type(id) is not type(''): id=id()
@@ -432,7 +434,7 @@ class ElementWithTitle(Element):
 
     def getAttribute(self, name):
         """Retrieves an attribute value by name."""
-        if name=='title' and hasattr(self.aq_base, 'title'):
+        if name=='title' and hasattr(aq_base(self), 'title'):
             return self.title
         return ''
 

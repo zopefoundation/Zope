@@ -18,8 +18,24 @@ $Id$
 import Acquisition
 import zope.publisher.browser
 
-class BrowserView(Acquisition.Explicit, zope.publisher.browser.BrowserView):
-    """Five browser view
+from Products.Five.bbb import AcquisitionBBB
 
-    Mixes in explicit acquisition so that security can be acquired for
-    views"""
+
+class BrowserView(zope.publisher.browser.BrowserView, AcquisitionBBB):
+
+    # Use an explicit __init__ to work around problems with magically inserted
+    # super classes when using BrowserView as a base for viewlets.
+    def __init__(self, context, request):
+        zope.publisher.browser.BrowserView.__init__(self, context, request)
+
+    # Classes which are still based on Acquisition and access
+    # self.context in a method need to call aq_inner on it, or get a
+    # funky aq_chain. We do this here for BBB friendly purposes.
+
+    def __getParent(self):
+        return getattr(self, '_parent', Acquisition.aq_inner(self.context))
+
+    def __setParent(self, parent):
+        self._parent = parent
+
+    aq_parent = __parent__ = property(__getParent, __setParent)

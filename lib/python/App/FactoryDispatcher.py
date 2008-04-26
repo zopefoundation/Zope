@@ -66,7 +66,7 @@ class FactoryDispatcher(Acquisition.Implicit):
     _owner=UnownableOwner
 
     def __init__(self, product, dest, REQUEST=None):
-        if hasattr(product,'aq_base'): product=product.aq_base
+        product = Acquisition.aq_base(product)
         self._product=product
         self._d=dest
         if REQUEST is not None:
@@ -100,7 +100,7 @@ class FactoryDispatcher(Acquisition.Implicit):
             m=d[name]
             w=getattr(m, '_permissionMapper', None)
             if w is not None:
-                m=aqwrap(m, getattr(w,'aq_base',w), self)
+                m=aqwrap(m, Acquisition.aq_base(w), self)
 
             return m
 

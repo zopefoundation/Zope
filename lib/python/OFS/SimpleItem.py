@@ -205,14 +205,16 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
                 if match is not None:
                     error_message=error_value
 
-            if client is None: client=self
-            if not REQUEST: REQUEST=self.aq_acquire('REQUEST')
+            if client is None:
+                client = self
+            if not REQUEST:
+                REQUEST = aq_acquire(self, 'REQUEST')
 
             try:
                 if hasattr(client, 'standard_error_message'):
                     s=getattr(client, 'standard_error_message')
                 else:
-                    client = client.aq_parent
+                    client = aq_parent(client)
                     s=getattr(client, 'standard_error_message')
                 kwargs = {'error_type': error_type,
                           'error_value': error_value,
@@ -329,7 +331,7 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
                 raise ValueError('FTP List not supported on acquired objects')
             if not hasattr(ob,'aq_parent'):
                 break
-            ob=ob.aq_parent
+            ob = aq_parent(ob)
 
         stat=marshal.loads(self.manage_FTPstat(REQUEST))
         id = self.getId()

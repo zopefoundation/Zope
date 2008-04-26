@@ -18,7 +18,6 @@ $Id$
 import os.path
 
 from datetime import datetime
-import Acquisition
 
 import zope.event
 import zope.formlib
@@ -36,7 +35,7 @@ _PAGEFORM_PATH = os.path.join(_FORMLIB_DIR, 'pageform.pt')
 _SUBPAGEFORM_PATH = os.path.join(_FORMLIB_DIR, 'subpageform.pt')
 
 
-class FiveFormlibMixin(Acquisition.Explicit):
+class FiveFormlibMixin(object):
 
     # Overrides the formlib.form.FormBase.template attributes implemented 
     # using NamedTemplates. NamedTemplates using ViewPageTemplateFile (like

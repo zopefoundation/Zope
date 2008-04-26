@@ -188,7 +188,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
             if userObj:
                 break
             else:
-                current = current.aq_parent
+                current = current.__parent__
 
 
         newSecurityManager(None, userObj) # necessary?
@@ -414,7 +414,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
                         raise OverflowError
                     for name in unl:
                         dict[name]=1
-            item = getattr(item, 'aq_parent', _notfound)
+            item = getattr(item, '__parent__', _notfound)
             if item is _notfound:
                 break
         keys=dict.keys()
@@ -511,9 +511,9 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
                 for role in roles:
                     if not dup(role):
                         dict[role]=1
-            if not hasattr(obj, 'aq_parent'):
+            if getattr(obj, '__parent__', None) is None:
                 break
-            obj=obj.aq_parent
+            obj=obj.__parent__
             x=x+1
         roles=dict.keys()
         roles.sort()

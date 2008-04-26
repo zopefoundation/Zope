@@ -18,6 +18,7 @@ from urllib import quote as urllib_quote
 import xmlrpc
 from zExceptions import Forbidden, Unauthorized, NotFound
 from Acquisition import aq_base
+from Acquisition.interfaces import IAcquirer
 
 from zope.interface import implements, providedBy, Interface
 from zope.component import queryMultiAdapter
@@ -95,7 +96,7 @@ class DefaultPublishTraverse(object):
                     request.response.setStatus(200)
                     # We don't need to do the docstring security check
                     # for views, so lets skip it and return the object here.
-                    return subobject.__of__(object)
+                    return subobject
                 # No view found. Reraise the error raised by __bobo_traverse__
                 raise e
         else:
@@ -105,9 +106,10 @@ class DefaultPublishTraverse(object):
                 subobject = getattr(object, name)
             else:
                 # We try to fall back to a view:
-                subobject = queryMultiAdapter((object, request), Interface, name)                
+                subobject = queryMultiAdapter((object, request), Interface,
+                                              name)
                 if subobject is not None:
-                    return subobject.__of__(object)
+                    return subobject
             
                 # And lastly, of there is no view, try acquired attributes, but
                 # only if there is no __bobo_traverse__:
@@ -312,7 +314,9 @@ class BaseRequest:
                 except TraversalError:
                     raise KeyError(ob, name)
 
-                return ob2.__of__(ob)
+                if IAcquirer.providedBy(ob2):
+                    ob2 = ob2.__of__(ob)
+                return ob2
 
         if name == '.':
             return ob
@@ -427,7 +431,7 @@ class BaseRequest:
                 else:
                     # If we have reached the end of the path, we look to see
                     # if we can find IBrowserPublisher.browserDefault. If so,
-                    # we call it to let the object tell us how to publish it
+                    # we call it to let the object tell us how to publish it.
                     # BrowserDefault returns the object to be published
                     # (usually self) and a sequence of names to traverse to
                     # find the method to be published.
@@ -440,7 +444,8 @@ class BaseRequest:
                         not hasattr(object,'__bobo_traverse__')):
                         if object.aq_parent is not object.aq_inner.aq_parent:
                             from webdav.NullResource import NullResource
-                            object = NullResource(parents[-2], object.getId(), self).__of__(parents[-2])
+                            object = NullResource(parents[-2], object.getId(),
+                                                  self).__of__(parents[-2])
                     
                     if IBrowserPublisher.providedBy(object):
                         adapter = object
@@ -451,10 +456,9 @@ class BaseRequest:
                             # Zope2 doesn't set up its own adapters in a lot
                             # of cases so we will just use a default adapter.
                             adapter = DefaultPublishTraverse(object, self)
-                    
-                    newobject, default_path = adapter.browserDefault(self)
-                    if default_path or newobject is not object:
-                        object = newobject
+
+                    object, default_path = adapter.browserDefault(self)
+                    if default_path:
                         request._hacked_path=1
                         if len(default_path) > 1:
                             path = list(default_path)

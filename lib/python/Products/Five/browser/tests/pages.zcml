@@ -161,6 +161,13 @@
       permission="zope2.Public"
       />
 
+  <browser:page
+      for="Products.Five.tests.testing.simplecontent.ISimpleContent"
+      class=".pages.CallTemplate"
+      name="calltemplate.html"
+      permission="zope2.Public"
+      />
+
   <!-- pages from methods/functions/callables that don't have docstrings -->
   <browser:pages
       for="Products.Five.tests.testing.simplecontent.ISimpleContent"

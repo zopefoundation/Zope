@@ -18,111 +18,60 @@ $Id$
 import os
 import urllib
 
-import Acquisition
-from OFS.Traversable import Traversable as OFSTraversable
-from zope.app.publisher.browser.resources import empty
-from zope.app.publisher.fileresource import File, Image
-from zope.app.publisher.pagetemplateresource import PageTemplate
 from zope.interface import implements
 from zope.component import getMultiAdapter
-from zope.component.interfaces import IResource
-from zope.datetime import time as timeFromDateTimeString
-from zope.traversing.browser.interfaces import IAbsoluteURL
+from zope.traversing.browser import absoluteURL
+from zope.publisher.interfaces import NotFound
+from zope.publisher.interfaces.browser import IBrowserPublisher
+from zope.app.publisher.browser import fileresource, directoryresource
+from zope.app.publisher.fileresource import File, Image
+from zope.app.publisher.pagetemplateresource import PageTemplate
 
 from Products.Five.browser import BrowserView
 
-_marker = []
 
-class Resource(Acquisition.Explicit):
-    """A publishable resource
+_marker = object()
+
+class Resource(object):
+    """A mixin that changes the URL-rendering of resources (__call__).
+
+    In Zope 3, resource URLs are of the form
+    nearest_site/@@/resource_name.  Since Zope 2 didn't have support
+    for sites from the beginning of the Five integration, resource
+    URLs in Zope 2 are of the form context/++resource++resource_name.
+
+    TODO It would be good if that could be changed in the long term,
+    thus making this mixin (and probably the other classes in this
+    module) obsolete.
     """
-    implements(IResource)
-
-    def __init__(self, request):
-        self.request = request
-
     def __call__(self):
         name = self.__name__
         container = self.__parent__
 
-        # TODO Zope 3 uses site = getSite() instead of container here
-        # and the @@ resource access view
-        url = str(getMultiAdapter((container, self.request), IAbsoluteURL))
-        url = urllib.unquote(url)
+        url = urllib.unquote(absoluteURL(container, self.request))
         if not isinstance(container, DirectoryResource):
             name = '++resource++%s' % name
         return "%s/%s" % (url, name)
 
-class PageTemplateResource(BrowserView, Resource):
-    #implements(IBrowserPublisher)
+class PageTemplateResource(Resource, BrowserView):
+    implements(IBrowserPublisher)
 
-    def __browser_default__(self, request):
-        return self, ('render',)
+    def browserDefault(self, request):
+        return self.render, ()
+
+    def publishTraverse(self, request, name):
+        raise NotFound(self, name, request)
 
     def render(self):
         """Rendered content"""
         # ZPublisher might have called setBody with an incorrect URL
         # we definitely don't want that if we are plain html
-        self.request.RESPONSE.setBase(None)
+        self.request.response.setBase(None)
         pt = self.context
         return pt(self.request)
 
-class FileResource(BrowserView, Resource):
-    """A publishable file-based resource"""
-    #implements(IBrowserPublisher)
-
-    def __browser_default__(self, request):
-        return self, (request.REQUEST_METHOD,)
-
-    def GET(self):
-        """Default content"""
-        file = self.context
-        request = self.request
-        response = request.response
-
-        # HTTP If-Modified-Since header handling. This is duplicated
-        # from OFS.Image.Image - it really should be consolidated
-        # somewhere...
-        header = request.environ.get('If-Modified-Since', None)
-        if header is not None:
-            header = header.split(';')[0]
-            # Some proxies seem to send invalid date strings for this
-            # header. If the date string is not valid, we ignore it
-            # rather than raise an error to be generally consistent
-            # with common servers such as Apache (which can usually
-            # understand the screwy date string as a lucky side effect
-            # of the way they parse it).
-            try:    mod_since=long(timeFromDateTimeString(header))
-            except: mod_since=None
-            if mod_since is not None:
-                if getattr(file, 'lmt', None):
-                    last_mod = long(file.lmt)
-                else:
-                    last_mod = long(0)
-                if last_mod > 0 and last_mod <= mod_since:
-                    response.setStatus(304)
-                    return ''
-
-        response.setHeader('Content-Type', file.content_type)
-        response.setHeader('Last-Modified', file.lmh)
-
-        # Cache for one day
-        response.setHeader('Cache-Control', 'public,max-age=86400')
-        f = open(file.path, 'rb')
-        data = f.read()
-        f.close()
-
-        return data
-
-    def HEAD(self):
-        file = self.context
-        response = self.request.response
-        response = self.request.response
-        response.setHeader('Content-Type', file.content_type)
-        response.setHeader('Last-Modified', file.lmh)
-        # Cache for one day
-        response.setHeader('Cache-Control', 'public,max-age=86400')
-        return ''
+class FileResource(Resource, fileresource.FileResource):
+    pass
 
 class ResourceFactory:
 
@@ -173,8 +122,7 @@ class Directory:
         self.path = path
         self.__name__ = name
 
-class DirectoryResource(BrowserView, Resource, OFSTraversable):
-    #implements(IBrowserPublisher)
+class DirectoryResource(Resource, directoryresource.DirectoryResource):
 
     resource_factories = {
         'gif':  ImageResourceFactory,
@@ -187,27 +135,11 @@ class DirectoryResource(BrowserView, Resource, OFSTraversable):
 
     default_factory = FileResourceFactory
 
-    def __init__(self, context, request):
-        BrowserView.__init__(self, context, request)
-        # OFSTraversable.absolute_url() assumes self.REQUEST being
-        # accessible:
-        self.REQUEST = request
-
     def getId(self):
         name = self.__name__
         if not name.startswith('++resource++'):
             name = '++resource++%s' % self.__name__
         return name
-
-    def __browser_default__(self, request):
-        '''See interface IBrowserPublisher'''
-        return empty, ()
-
-    def __getitem__(self, name):
-        res = self.get(name, None)
-        if res is None:
-            raise KeyError, name
-        return res
 
     def get(self, name, default=_marker):
         path = self.context.path
@@ -229,11 +161,7 @@ class DirectoryResource(BrowserView, Resource, OFSTraversable):
         resource = factory(name, filename)(self.request)
         resource.__name__ = name
         resource.__parent__ = self
-        # XXX __of__ wrapping is usually done on traversal.
-        # However, we don't want to subclass Traversable (or do we?)
-        # The right thing should probably be a specific (and very simple)
-        # traverser that does __getitem__ and __of__.
-        return resource.__of__(self)
+        return resource
 
 class DirectoryResourceFactory(ResourceFactory):
 

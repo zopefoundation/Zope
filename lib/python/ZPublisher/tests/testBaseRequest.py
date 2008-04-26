@@ -6,6 +6,7 @@ import zope.interface
 import zope.component
 import zope.testing.cleanup
 import zope.traversing.namespace
+from zope.publisher.browser import BrowserPage
 from zope.publisher.browser import IBrowserRequest
 from zope.publisher.browser import IDefaultBrowserLayer
 from zope.traversing.interfaces import ITraversable
@@ -276,9 +277,15 @@ class TestBaseRequestZope3Views(unittest.TestCase):
 
         gsm = zope.component.getGlobalSiteManager()
 
-        # Define our 'meth' view
-        gsm.registerAdapter(DummyView, (IDummy, IDefaultBrowserLayer), None,
-                            'meth')
+        # Define the views
+        gsm.registerAdapter(DummyView, (IDummy, IDefaultBrowserLayer),
+                            zope.interface.Interface, 'meth')
+        gsm.registerAdapter(DummyPage, (IDummy, IDefaultBrowserLayer),
+                            zope.interface.Interface, 'page')
+        gsm.registerAdapter(DummyPage2, (IDummy, IDefaultBrowserLayer),
+                            zope.interface.Interface, 'page2')
+        gsm.registerAdapter(DummyPage3, (IDummy, IDefaultBrowserLayer),
+                            zope.interface.Interface, 'page3')
 
         # Bind the 'view' namespace (for @@ traversal)
         gsm.registerAdapter(zope.traversing.namespace.view,
@@ -381,6 +388,27 @@ class TestBaseRequestZope3Views(unittest.TestCase):
         r = self._makeOne(root)
         r.traverse('folder/obj/++view++meth')
         self.assertEqual(r['URL'], '/folder/obj/++view++meth')
+
+    def test_browserDefault(self):
+        # browserDefault can return self, () to indicate that the
+        # object itself wants to be published (using __call__):
+        root, folder = self._makeRootAndFolder()
+        folder._setObject('obj', DummyObjectZ3('obj'))
+        r = self._makeOne(root)
+        ob = r.traverse('folder/obj/page')
+        self.assertEqual(ob(), 'Test page')
+
+        # browserDefault can return another_object, () to indicate
+        # that that object should be published (using __call__):
+        r = self._makeOne(root)
+        ob = r.traverse('folder/obj/page2')
+        self.assertEqual(ob(), 'Test page')
+
+        # browserDefault can also return self.some_method, () to
+        # indicate that that method should be called.
+        r = self._makeOne(root)
+        ob = r.traverse('folder/obj/page3')
+        self.assertEqual(ob(), 'Test page')
 
 
 class DummyResponse(Implicit):
@@ -512,6 +540,34 @@ class DummyView(Implicit):
     def __call__(self):
         return 'view on %s' % (self.content.name)
 
+class DummyPage(BrowserPage):
+
+    # BrowserPage is an IBrowserPublisher with a browserDefault that
+    # returns self, () so that __call__ is invoked by the publisher.
+
+    def __call__(self):
+        return 'Test page'
+
+class DummyPage2(BrowserPage):
+
+    def browserDefault(self, request):
+        # intentionally return something that's not self
+        return DummyPage(self.context, request), ()
+
+    # __call__ remains unimplemented, baseclass raises NotImplementedError
+
+class DummyPage3(BrowserPage):
+
+    def browserDefault(self, request):
+        # intentionally return a method here
+        return self.foo, ()
+
+    def foo(self):
+        return 'Test page'
+
+    # __call__ remains unimplemented, baseclass raises NotImplementedError
+
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(TestBaseRequest),
@@ -519,4 +575,4 @@ def test_suite():
         ))
 
 if __name__ == '__main__':
-    unitttest.main(defaultTest='test_suite')
+    unittest.main(defaultTest='test_suite')

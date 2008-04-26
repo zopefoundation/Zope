@@ -17,6 +17,7 @@ $Id$
 
 import string, Products, Globals
 
+from Acquisition import aq_base
 
 name_trans=filter(lambda c, an=string.letters+string.digits+'_': c not in an,
                   map(chr,range(256)))
@@ -36,8 +37,7 @@ class Permission:
         self.name=name
         self._p='_'+string.translate(name,name_trans)+"_Permission"
         self.data=data
-        if hasattr(obj, 'aq_base'): obj=obj.aq_base
-        self.obj=obj
+        self.obj=aq_base(obj)
         self.default=default
 
     def getRoles(self, default=_marker):

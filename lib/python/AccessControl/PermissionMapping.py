@@ -105,7 +105,7 @@ class RoleManager:
         return r
 
     def _isBeingAccessedAsZClassDefinedInstanceMethod(self):
-        p=getattr(self,'aq_parent',None)
+        p=getattr(self,'__parent__',None)
         if p is None: return 0          # Not wrapped
         base=getattr(p, 'aq_base', None)
         return type(base) is PermissionMapper

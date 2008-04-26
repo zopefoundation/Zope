@@ -16,6 +16,7 @@
 $Id$
 """
 from Products.Five import BrowserView
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
 class SimpleView(BrowserView):
     """More docstring. Please Zope"""
@@ -39,6 +40,10 @@ class CallView(BrowserView):
     def __call__(self):
         return u"I was __call__()'ed"
 
+class CallTemplate(BrowserView):
+
+    __call__ = ViewPageTemplateFile('falcon.pt')
+
 class CallableNoDocstring:
 
     def __call__(self):
@@ -58,7 +63,7 @@ class NoDocstringView(BrowserView):
 
 class NewStyleClass(object):
     """
-    This is a testclass to verify that new style classes are ignored
+    This is a testclass to verify that new style classes work
     in browser:page
     """
 

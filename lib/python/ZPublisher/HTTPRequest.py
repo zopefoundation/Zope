@@ -1116,7 +1116,7 @@ class HTTPRequest(BaseRequest):
         clone['PARENTS']=[self['PARENTS'][-1]]
         return clone
 
-    def get_header(self, name, default=None):
+    def getHeader(self, name, default=None, literal=False):
         """Return the named HTTP header, or an optional default
         argument or None if the header is not found. Note that
         both original and CGI-ified header names are recognized,
@@ -1124,13 +1124,16 @@ class HTTPRequest(BaseRequest):
         should all return the Content-Type header, if available.
         """
         environ=self.environ
-        name=('_'.join(name.split("-"))).upper()
+        if not literal:
+            name = name.replace('-', '_').upper()
         val=environ.get(name, None)
         if val is not None:
             return val
         if name[:5] != 'HTTP_':
             name='HTTP_%s' % name
         return environ.get(name, default)
+
+    get_header = getHeader  # BBB
 
     def get(self, key, default=None, returnTaints=0,
             URLmatch=re.compile('URL(PATH)?([0-9]+)$').match,

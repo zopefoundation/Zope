@@ -17,10 +17,8 @@ import os
 import string
 from logging import getLogger
 
-from Acquisition import aq_base
-from Acquisition import aq_parent
-from Acquisition import aq_inner
-from Acquisition import aq_acquire
+from Acquisition import aq_base, aq_parent, aq_inner, aq_acquire
+from Acquisition import aq_inContextOf
 from ExtensionClass import Base
 from zope.interface import implements
 
@@ -98,10 +96,10 @@ def rolesForPermissionOn(perm, object, default=_default_roles, n=None):
                 else:
                     r = r + list(roles)
 
-        object = getattr(object, 'aq_inner', None)
+        object = aq_inner(object)
         if object is None:
             break
-        object = object.aq_parent
+        object = aq_parent(object)
 
     if r is None:
         if _embed_permission_in_roles:
@@ -295,7 +293,7 @@ class ZopeSecurityPolicy:
                         raise Unauthorized(name, value)
                 else:
                     # Try to acquire roles
-                    try: roles = container.aq_acquire('__roles__')
+                    try: roles = aq_acquire(container, '__roles__')
                     except AttributeError:
                         if containerbase is not accessedbase:
                             if self._verbose:
@@ -840,17 +838,10 @@ def verifyAcquisitionContext(user, object, object_roles=None):
             # This is a strange rule, though
             # it doesn't cause any security holes. SDH
             return 1
-        if not hasattr(object, 'aq_inContextOf'):
-            if hasattr(object, 'im_self'):
-                # This is a method.  Grab its self.
-                object=object.im_self
-            if not hasattr(object, 'aq_inContextOf'):
-                # object is not wrapped, therefore we
-                # can't determine context.
-                # Fail the access attempt.  Otherwise
-                # this would be a security hole.
-                return None
-        if not object.aq_inContextOf(ucontext, 1):
+        if hasattr(object, 'im_self'):
+            # This is a method.  Grab its self.
+            object=object.im_self
+        if not aq_inContextOf(object, ucontext, 1):
             if 'Shared' in object_roles:
                 # Old role setting. Waaa
                 object_roles=user._shared_roles(object)

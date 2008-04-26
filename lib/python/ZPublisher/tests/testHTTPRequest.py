@@ -1,6 +1,15 @@
+import sys
+import base64
 import unittest
 from urllib import quote_plus
- 
+from types import ListType, TupleType, StringType, UnicodeType
+from StringIO import StringIO
+
+from DateTime import DateTime
+from ZPublisher.HTTPRequest import HTTPRequest, record, trusted_proxies
+from ZPublisher.TaintedString import TaintedString
+from ZPublisher.Converters import type_converters
+
 TEST_LARGEFILE_DATA = '''
 --12345
 Content-Disposition: form-data; name="file"; filename="file"
@@ -13,13 +22,10 @@ test %s
 class AuthCredentialsTests( unittest.TestCase ):
 
     def _getTargetClass(self):
-        from ZPublisher.HTTPRequest import HTTPRequest
         return HTTPRequest
 
     def _makeOne(self, stdin=None, environ=None, response=None, clean=1):
-
         if stdin is None:
-            from StringIO import StringIO
             stdin = StringIO()
 
         if environ is None:
@@ -40,9 +46,6 @@ class AuthCredentialsTests( unittest.TestCase ):
         return self._getTargetClass()(stdin, environ, response, clean)
 
     def test__authUserPW_simple( self ):
-
-        import base64
-
         user_id = 'user'
         password = 'password'
         encoded = base64.encodestring( '%s:%s' % ( user_id, password ) )
@@ -57,11 +60,7 @@ class AuthCredentialsTests( unittest.TestCase ):
         self.assertEqual( password_x, password )
 
     def test__authUserPW_with_embedded_colon( self ):
-
         # http://www.zope.org/Collectors/Zope/2039
-
-        import base64
-
         user_id = 'user'
         password = 'embedded:colon'
         encoded = base64.encodestring( '%s:%s' % ( user_id, password ) )
@@ -75,43 +74,20 @@ class AuthCredentialsTests( unittest.TestCase ):
         self.assertEqual( user_id_x, user_id )
         self.assertEqual( password_x, password )
 
-class RecordTests( unittest.TestCase ):
 
-    def test_repr( self ):
-        from ZPublisher.HTTPRequest import record
-        record = record()
-        record.a = 1
-        record.b = 'foo'
-        r = repr( record )
-        d = eval( r )
-        self.assertEqual( d, record.__dict__ )
+class RecordTests(unittest.TestCase):
 
-    def test_contains(self):
-        from ZPublisher.HTTPRequest import record
-        record = record()
-        record.a = 1
-        self.assertTrue('a' in record)
+    def test_repr(self):
+        rec = record()
+        rec.a = 1
+        rec.b = 'foo'
+        r = repr(rec)
+        d = eval(r)
+        self.assertEqual(d, rec.__dict__)
 
-    def test_iter(self):
-        from ZPublisher.HTTPRequest import record
-        record = record()
-        record.a = 1
-        record.b = 2
-        record.c = 3
-        for k in record:
-            self.assertTrue(k in ('a','b','c'))
-
-    def test_len(self):
-        from ZPublisher.HTTPRequest import record
-        record = record()
-        record.a = 1
-        record.b = 2
-        record.c = 3
-        self.assertEqual(len(record), 3)
 
 class ProcessInputsTests(unittest.TestCase):
     def _getHTTPRequest(self, env):
-        from ZPublisher.HTTPRequest import HTTPRequest
         return HTTPRequest(None, env, None)
 
     def _processInputs(self, inputs):
@@ -141,9 +117,6 @@ class ProcessInputsTests(unittest.TestCase):
         # when one is found.
         # Also raises an Assertion if a string which *should* have been
         # tainted is found, or when a tainted string is not deemed dangerous.
-        from types import ListType, TupleType, StringType, UnicodeType
-        from ZPublisher.HTTPRequest import record
-        from ZPublisher.TaintedString import TaintedString
 
         retval = 0
 
@@ -221,8 +194,6 @@ class ProcessInputsTests(unittest.TestCase):
         self._onlyTaintedformHoldsTaintedStrings(req)
 
     def testSimpleMarshalling(self):
-        from DateTime import DateTime
-
         inputs = (
             ('num:int', '42'), ('fract:float', '4.2'), ('bign:long', '45'),
             ('words:string', 'Some words'), ('2tokens:tokens', 'one two'),
@@ -476,9 +447,6 @@ class ProcessInputsTests(unittest.TestCase):
         self._onlyTaintedformHoldsTaintedStrings(req)
 
     def testSimpleContainersWithTaints(self):
-        from types import ListType, TupleType
-        from ZPublisher.HTTPRequest import record
-
         inputs = (
             ('toneitem:list', '<one>'),
             ('<tkeyoneitem>:list', 'one'),
@@ -633,8 +601,6 @@ class ProcessInputsTests(unittest.TestCase):
     def testNoTaintedExceptions(self):
         # Feed tainted garbage to the conversion methods, and any exception
         # returned should be HTML safe
-        from ZPublisher.Converters import type_converters
-        from DateTime import DateTime
         for type, convert in type_converters.items():
             try:
                 convert('<html garbage>')
@@ -717,12 +683,10 @@ class RequestTests( unittest.TestCase ):
     def testRemoveStdinReferences(self):
         # Verifies that all references to the input stream go away on
         # request.close().  Otherwise a tempfile may stick around.
-        import sys
-        from StringIO import StringIO
         s = StringIO(TEST_FILE_DATA)
         env = TEST_ENVIRON.copy()
         start_count = sys.getrefcount(s)
-        from ZPublisher.HTTPRequest import HTTPRequest
+
         req = HTTPRequest(s, env, None)
         req.processInputs()
         self.assertNotEqual(start_count, sys.getrefcount(s))  # Precondition
@@ -731,10 +695,9 @@ class RequestTests( unittest.TestCase ):
 
     def testFileName(self):
         # checks fileupload object supports the filename
-        from StringIO import StringIO
         s = StringIO(TEST_LARGEFILE_DATA)
         env = TEST_ENVIRON.copy()
-        from ZPublisher.HTTPRequest import HTTPRequest
+
         req = HTTPRequest(s, env, None)
         req.processInputs()
         f = req.form.get('file')
@@ -743,11 +706,9 @@ class RequestTests( unittest.TestCase ):
     def testFileIterator(self):
         # checks fileupload object supports the iterator protocol
         # collector entry 1837
-        import sys
-        from StringIO import StringIO
         s = StringIO(TEST_FILE_DATA)
         env = TEST_ENVIRON.copy()
-        from ZPublisher.HTTPRequest import HTTPRequest
+
         req = HTTPRequest(s, env, None)
         req.processInputs()
         f=req.form.get('file')
@@ -763,8 +724,6 @@ class RequestTests( unittest.TestCase ):
             'SERVER_NAME': 'localhost',
             'SERVER_PORT': '80',
             }
-        from StringIO import StringIO
-        from ZPublisher.HTTPRequest import HTTPRequest
         from zope.publisher.base import DebugFlags
         s = StringIO('')
 
@@ -881,8 +840,6 @@ class RequestTests( unittest.TestCase ):
             'SERVER_NAME': 'localhost',
             'SERVER_PORT': '80',
             }
-        from StringIO import StringIO
-        from ZPublisher.HTTPRequest import HTTPRequest
         s = StringIO('')
 
         env = TEST_ENVIRON.copy()
@@ -902,8 +859,6 @@ class RequestTests( unittest.TestCase ):
             'REMOTE_ADDR': '127.0.0.1',
             'HTTP_X_FORWARDED_FOR': '10.1.20.30, 192.168.1.100',
             }
-        from StringIO import StringIO
-        from ZPublisher.HTTPRequest import HTTPRequest, trusted_proxies
         s = StringIO('')
 
         env = TEST_ENVIRON.copy()
@@ -925,6 +880,29 @@ class RequestTests( unittest.TestCase ):
         request = HTTPRequest(s, env, None)
         self.assertEqual(request.getClientAddr(), '')
 
+    def testGetHeader(self):
+        s = StringIO('')
+        env = TEST_ENVIRON.copy()
+        request = HTTPRequest(s, env, None)
+
+        self.assertEqual(request.getHeader('Content-Type'),
+                         'multipart/form-data; boundary=12345')
+
+        # getHeader is agnostic of case
+        self.assertEqual(request.getHeader('content-type'),
+                         'multipart/form-data; boundary=12345')
+
+        # and of dashes vs. underscores
+        self.assertEqual(request.getHeader('content_type'),
+                         'multipart/form-data; boundary=12345')
+
+        # the 'literal' argument can turn this normalization off:
+        self.assertEqual(request.getHeader('Content-Type', literal=True), None)
+
+        # the 'default' argument can be used to get something other than
+        # None when the lookup fails:
+        self.assertEqual(request.getHeader('Not-existant', default='Whatever'),
+                         'Whatever')
 
 def test_suite():
     suite = unittest.TestSuite()

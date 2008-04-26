@@ -188,18 +188,15 @@ information is used:
     </body>
   </html>
 
-Now we test a provider using a PageTemplateFile to render itself.  It must
-inherit from an Acquisition base class so that the template can use Zope 2
-security mechanisms:
+Now we test a provider using a PageTemplateFile to render itself:
 
   >>> import os, tempfile
   >>> temp_dir = tempfile.mkdtemp()
   >>> dynTemplate = os.path.join(temp_dir, 'dynamic_template.pt')
   >>> open(dynTemplate, 'w').write(
   ...   'A simple template: <tal:simple replace="python:view.my_property" />')
-  >>> from Acquisition import Explicit
   >>> from Products.Five.browser.pagetemplatefile import ZopeTwoPageTemplateFile
-  >>> class TemplateProvider(Explicit):
+  >>> class TemplateProvider(object):
   ...     zope.component.adapts(zope.interface.Interface,
   ...                           browser.IDefaultBrowserLayer,
   ...                           zope.interface.Interface)

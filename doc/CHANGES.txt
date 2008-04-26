@@ -78,7 +78,11 @@ Zope Changes
 
     Features added
 
-      - Zope2 startup: Zope will now send DatabaseOpened and    
+      - Acquisition has been made aware of __parent__ pointers. This allows
+        direct access to many Zope 3 classes without the need to mixin
+        Acquisition base classes for the security to work.
+
+      - Zope2 startup: Zope will now send DatabaseOpened and
         ProcessStarting events.
 
       - Testing.ZopeTestCase: Introduced a "ZopeLite" test layer, making it

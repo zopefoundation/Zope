@@ -1878,13 +1878,11 @@ c_rolesForPermissionOn(PyObject *perm, PyObject *object,
 
       
       /*
-        object = getattr(object, 'aq_inner', None)
+        object = aq_inner(object)
         if object is None:
             break
-        object = object.aq_parent
+        object = aq_parent(object)
        */
-      if (! aq_isWrapper(object)) 
-        break;
       {
         PyObject *tobj = aq_inner(object);
         if (tobj == NULL) 
@@ -1895,8 +1893,6 @@ c_rolesForPermissionOn(PyObject *perm, PyObject *object,
         if (object == Py_None) 
           break;
 
-        if (! aq_isWrapper(object)) 
-          break;
         tobj = aq_parent(object);
         if (tobj == NULL) 
           goto end;

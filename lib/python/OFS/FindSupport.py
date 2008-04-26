@@ -22,6 +22,7 @@ from AccessControl import ClassSecurityInfo
 from AccessControl.DTML import RestrictedDTML
 from AccessControl.Permission import name_trans
 from AccessControl.Permissions import view_management_screens
+from Acquisition import aq_base
 from DateTime import DateTime
 from DocumentTemplate.DT_Util import Eval
 from DocumentTemplate.DT_Util import InstanceDict, TemplateDict
@@ -92,9 +93,7 @@ class FindSupport(ExtensionClass.Base):
                 md=td()
                 obj_expr=(Eval(obj_expr), md, md._push, md._pop)
 
-        base=obj
-        if hasattr(obj, 'aq_base'):
-            base=obj.aq_base
+        base = aq_base(obj)
 
         if hasattr(base, 'objectItems'):
             try:    items=obj.objectItems()
@@ -118,9 +117,7 @@ class FindSupport(ExtensionClass.Base):
             if hasattr(ob, '_p_changed') and (ob._p_changed == None):
                 dflag=1
 
-            if hasattr(ob, 'aq_base'):
-                bs=ob.aq_base
-            else: bs=ob
+            bs = aq_base(ob)
             if (
                 (not obj_ids or absattr(bs.getId()) in obj_ids)
                 and
@@ -200,9 +197,7 @@ class FindSupport(ExtensionClass.Base):
                 md=td()
                 obj_expr=(Eval(obj_expr), md, md._push, md._pop)
 
-        base=obj
-        if hasattr(obj, 'aq_base'):
-            base=obj.aq_base
+        base = aq_base(obj)
 
         if not hasattr(base, 'objectItems'):
             return result
@@ -221,10 +216,7 @@ class FindSupport(ExtensionClass.Base):
             if hasattr(ob, '_p_changed') and (ob._p_changed == None):
                 dflag=1
 
-            if hasattr(ob, 'aq_base'):
-                bs=ob.aq_base
-            else: bs=ob
-
+            bs = aq_base(ob)
             if (
                 (not obj_ids or absattr(bs.getId()) in obj_ids)
                 and

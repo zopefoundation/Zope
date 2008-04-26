@@ -15,7 +15,7 @@
 
 $Id$
 """
-import Acquisition
+from Acquisition import aq_base
 from AccessControl.ZopeGuards import guarded_hasattr
 import zope.interface
 import zope.security
@@ -24,9 +24,7 @@ from zope.viewlet.manager import ViewletManagerBase as origManagerBase
 
 from Products.Five.browser.pagetemplatefile import ZopeTwoPageTemplateFile
 
-aq_base = Acquisition.aq_base
-
-class ViewletManagerBase(origManagerBase, Acquisition.Explicit):
+class ViewletManagerBase(origManagerBase):
     """A base class for Viewlet managers to work in Zope2"""
 
     def __getitem__(self, name):
@@ -40,9 +38,6 @@ class ViewletManagerBase(origManagerBase, Acquisition.Explicit):
         if viewlet is None:
             raise zope.component.interfaces.ComponentLookupError(
                 'No provider with name `%s` found.' %name)
-
-        # Wrap the viewlet for security lookups
-        viewlet = viewlet.__of__(viewlet.context)
 
         # If the viewlet cannot be accessed, then raise an
         # unauthorized error
@@ -65,7 +60,6 @@ class ViewletManagerBase(origManagerBase, Acquisition.Explicit):
         # the object has a real context from which to determine owner
         # security.
         for name, viewlet in viewlets:
-            viewlet = viewlet.__of__(viewlet.context)
             if guarded_hasattr(viewlet, 'render'):
                 results.append((name, viewlet))
         return results

@@ -20,13 +20,14 @@ from webdav.WriteLockInterface import WriteLockInterface
 from ZPublisher.Converters import type_converters
 from Globals import InitializeClass
 from Globals import DTMLFile, MessageDialog
+from Acquisition import aq_base
+from Acquisition import aq_parent
 from Acquisition import Implicit, Explicit
 from App.Common import rfc1123_date, iso8601_date
 from webdav.common import urlbase
 from ExtensionClass import Base
 from Globals import Persistent
 from Traversable import Traversable
-from Acquisition import aq_base
 from AccessControl import ClassSecurityInfo
 from AccessControl.Permissions import access_contents_information
 from AccessControl.Permissions import manage_properties
@@ -71,7 +72,7 @@ class View(App.Management.Tabs, Base):
             pre=pre+'/'
 
         r=[]
-        for d in self.aq_parent.aq_parent.manage_options:
+        for d in aq_parent(aq_parent(self)).manage_options:
             path=d['action']
             option={'label': d['label'],
                       'action': pre+path,
@@ -92,7 +93,7 @@ class View(App.Management.Tabs, Base):
             self, script, path)
 
     def meta_type(self):
-        try: return self.aq_parent.aq_parent.meta_type
+        try: return aq_parent(aq_parent(self)).meta_type
         except: return ''
 
 
@@ -489,7 +490,7 @@ class Virtual:
         pass
 
     def v_self(self):
-        return self.aq_parent.aq_parent
+        return aq_parent(aq_parent(self))
 
 
 class DefaultProperties(Virtual, PropertySheet, View):
@@ -635,7 +636,7 @@ class PropertySheets(Traversable, Implicit, App.Management.Tabs):
         return (self.webdav,)
 
     def __propsets__(self):
-        propsets=self.aq_parent.__propsets__
+        propsets = aq_parent(self).__propsets__
         __traceback_info__= propsets, type(propsets)
         return self._get_defaults() + propsets
 
@@ -684,17 +685,17 @@ class PropertySheets(Traversable, Implicit, App.Management.Tabs):
 
     security.declareProtected(manage_properties, 'addPropertySheet')
     def addPropertySheet(self, propset):
-        propsets=self.aq_parent.__propsets__
-        propsets=propsets+(propset,)
-        self.aq_parent.__propsets__=propsets
+        propsets = aq_parent(self).__propsets__
+        propsets = propsets+(propset,)
+        aq_parent(self).__propsets__ = propsets
 
     security.declareProtected(manage_properties, 'delPropertySheet')
     def delPropertySheet(self, name):
         result=[]
-        for propset in self.aq_parent.__propsets__:
+        for propset in aq_parent(self).__propsets__:
             if propset.getId() != name and  propset.xml_namespace() != name:
                 result.append(propset)
-        self.aq_parent.__propsets__=tuple(result)
+        aq_parent(self).__propsets__=tuple(result)
 
     ## DM: deletion support
     def isDeletable(self,name):
@@ -743,7 +744,7 @@ class PropertySheets(Traversable, Implicit, App.Management.Tabs):
             pre=pre+'/'
 
         r=[]
-        for d in self.aq_parent.manage_options:
+        for d in aq_parent(self).manage_options:
             r.append({'label': d['label'], 'action': pre+d['action']})
         return r
 

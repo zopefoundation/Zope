@@ -20,6 +20,9 @@ import re
 import socket
 from base64 import decodestring
 
+from Acquisition import aq_base
+from Acquisition import aq_parent
+from Acquisition import aq_inContextOf
 from Acquisition import Implicit
 from App.Management import Navigation, Tabs
 from Globals import DTMLFile, MessageDialog, Persistent, PersistentMapping
@@ -106,7 +109,7 @@ class BasicUser(Implicit):
                 for r in dict.get(userid, []):
                     local[r]=1
             inner = getattr(object, 'aq_inner', object)
-            parent = getattr(inner, 'aq_parent', None)
+            parent = getattr(inner, '__parent__', None)
             if parent is not None:
                 object = parent
                 continue
@@ -148,10 +151,10 @@ class BasicUser(Implicit):
                 else:
                     try: return r+list(roles)
                     except: return r
-            if hasattr(parent, 'aq_parent'):
+            if getattr(parent, '__parent__', None) is not None:
                 while hasattr(parent.aq_self,'aq_self'):
-                    parent=parent.aq_self
-                parent=parent.aq_parent
+                    parent = parent.aq_self
+                parent = aq_parent(parent)
             else: return r
 
     def _check_context(self, object):
@@ -160,19 +163,15 @@ class BasicUser(Implicit):
         # to prevent "stealing" access through acquisition tricks.
         # Return true if in context, false if not or if context
         # cannot be determined (object is not wrapped).
-        parent  = getattr(self, 'aq_parent', None)
-        context = getattr(parent, 'aq_parent', None)
+        parent  = getattr(self, '__parent__', None)
+        context = getattr(parent, '__parent__', None)
         if context is not None:
             if object is None:
                 return 1
-            if not hasattr(object, 'aq_inContextOf'):
-                if hasattr(object, 'im_self'):
-                    # This is a method.  Grab its self.
-                    object=object.im_self
-                if not hasattr(object, 'aq_inContextOf'):
-                    # Object is not wrapped, so return false.
-                    return 0
-            return object.aq_inContextOf(context, 1)
+            if hasattr(object, 'im_self'):
+                # This is a method.  Grab its self.
+                object=object.im_self
+            return aq_inContextOf(object, context, 1)
 
         # This is lame, but required to keep existing behavior.
         return 1
@@ -230,7 +229,7 @@ class BasicUser(Implicit):
                             return 1
                         return 0
             inner = getattr(inner_obj, 'aq_inner', inner_obj)
-            parent = getattr(inner, 'aq_parent', None)
+            parent = getattr(inner, '__parent__', None)
             if parent is not None:
                 inner_obj = parent
                 continue
@@ -751,11 +750,11 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
             request.RESPONSE.notFoundError('no default view (root default view'
                                            ' was probably deleted)')
         n = request.steps[-1]
-        # default to accessed and container as v.aq_parent
+        # default to accessed and container as v.__parent__
         a = c = request['PARENTS'][0]
         # try to find actual container
         inner = getattr(v, 'aq_inner', v)
-        innerparent = getattr(inner, 'aq_parent', None)
+        innerparent = getattr(inner, '__parent__', None)
         if innerparent is not None:
             # this is not a method, we needn't treat it specially
             c = innerparent
@@ -763,8 +762,8 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
             # this is a method, we need to treat it specially
             c = v.im_self
             c = getattr(v, 'aq_inner', v)
-        request_container = getattr(request['PARENTS'][-1], 'aq_parent', [])
-        # if pub's aq_parent or container is the request container, it
+        request_container = getattr(request['PARENTS'][-1], '__parent__', [])
+        # if pub's __parent__ or container is the request container, it
         # means pub was accessed from the root
         if a is request_container:
             a = request['PARENTS'][-1]
@@ -775,7 +774,7 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
 
     def _isTop(self):
         try:
-            return self.aq_parent.aq_base.isTopLevelPrincipiaApplicationObject
+            return aq_base(aq_parent(self)).isTopLevelPrincipiaApplicationObject
         except:
             return 0
 
@@ -990,8 +989,8 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
 
     def manage_afterAdd(self, item, container):
         if item is self:
-            if hasattr(self, 'aq_base'): self=self.aq_base
-            container.__allow_groups__=self
+            self = aq_base(self)
+            container.__allow_groups__ = self
 
     def __creatable_by_emergency_user__(self): return 1
 

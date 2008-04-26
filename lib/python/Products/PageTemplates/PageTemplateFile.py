@@ -17,7 +17,7 @@ from logging import getLogger
 import AccessControl
 from Globals import package_home, InitializeClass, DevelopmentMode
 from App.config import getConfiguration
-from Acquisition import aq_parent, aq_inner
+from Acquisition import aq_parent, aq_inner, aq_get
 from ComputedAttribute import ComputedAttribute
 from OFS.SimpleItem import SimpleItem
 from OFS.Traversable import Traversable
@@ -87,7 +87,10 @@ class PageTemplateFile(SimpleItem, Script, PageTemplate, Traversable):
         self.filename = filename
 
     def pt_getContext(self):
-        root = self.getPhysicalRoot()
+        root = None
+        meth = aq_get(self, 'getPhysicalRoot', None)
+        if meth is not None:
+            root = meth()
         context = self._getContext()
         c = {'template': self,
              'here': context,
@@ -96,7 +99,7 @@ class PageTemplateFile(SimpleItem, Script, PageTemplate, Traversable):
              'nothing': None,
              'options': {},
              'root': root,
-             'request': getattr(root, 'REQUEST', None),
+             'request': aq_get(root, 'REQUEST', None),
              'modules': SecureModuleImporter,
              }
         return c
@@ -108,12 +111,11 @@ class PageTemplateFile(SimpleItem, Script, PageTemplate, Traversable):
             kw['args'] = args
         bound_names['options'] = kw
 
-        try:
-            response = self.REQUEST.RESPONSE
+        request = aq_get(self, 'REQUEST', None)
+        if request is not None:
+            response = request.response
             if not response.headers.has_key('content-type'):
                 response.setHeader('content-type', self.content_type)
-        except AttributeError:
-            pass
 
         # Execute the template in a new security context.
         security = AccessControl.getSecurityManager()

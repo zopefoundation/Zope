@@ -36,7 +36,7 @@ def findSite(obj, iface=ISite):
     """Find a site by walking up the object hierarchy, supporting both
     the ``ILocation`` API and Zope 2 Acquisition."""
     while obj is not None and not iface.providedBy(obj):
-        obj = getattr(obj, '__parent__', aq_parent(aq_inner(obj)))
+        obj = aq_parent(aq_inner(obj))
     return obj
 
 @zope.component.adapter(zope.interface.Interface)

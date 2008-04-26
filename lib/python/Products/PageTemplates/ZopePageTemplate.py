@@ -17,6 +17,7 @@ $Id$
 import re
 import os
 import Acquisition 
+from Acquisition import aq_get
 from Globals import ImageFile, package_home, InitializeClass
 from DateTime.DateTime import DateTime
 from Shared.DC.Scripts.Script import Script 
@@ -271,7 +272,10 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
             historyComparisonResults=html_diff(rev1._text, rev2._text) )
 
     def pt_getContext(self, *args, **kw):
-        root = self.getPhysicalRoot()
+        root = None
+        meth = aq_get(self, 'getPhysicalRoot', None)
+        if meth is not None:
+            root = meth()
         context = self._getContext()
         c = {'template': self,
              'here': context,
@@ -280,7 +284,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
              'nothing': None,
              'options': {},
              'root': root,
-             'request': getattr(root, 'REQUEST', None),
+             'request': aq_get(root, 'REQUEST', None),
              'modules': SecureModuleImporter,
              }
         return c
@@ -302,12 +306,11 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
             kw['args'] = args
         bound_names['options'] = kw
 
-        try:
-            response = self.REQUEST.RESPONSE
+        request = aq_get(self, 'REQUEST', None)
+        if request is not None:
+            response = request.response
             if not response.headers.has_key('content-type'):
                 response.setHeader('content-type', self.content_type)
-        except AttributeError:
-            pass
 
         security = getSecurityManager()
         bound_names['user'] = security.getUser()

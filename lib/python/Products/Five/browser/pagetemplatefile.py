@@ -15,85 +15,84 @@
 
 $Id$
 """
-import os, sys
+from os.path import basename
+from zope.app.pagetemplate import viewpagetemplatefile
 
-from Acquisition import aq_inner
-from Globals import package_home
-from Products.PageTemplates.PageTemplateFile import PageTemplateFile
+from Acquisition import aq_get
+from AccessControl import getSecurityManager
 from Products.PageTemplates.Expressions import SecureModuleImporter
 from Products.PageTemplates.Expressions import createTrustedZopeEngine
-from zope.app.pagetemplate.viewpagetemplatefile import ViewMapper
+
+from Products.Five.bbb import AcquisitionBBB
 
 _engine = createTrustedZopeEngine()
 def getEngine():
     return _engine
 
-class ZopeTwoPageTemplateFile(PageTemplateFile):
-    """A strange hybrid between Zope 2 and Zope 3 page template.
-
-    Uses Zope 2's engine, but with security disabled and with some
-    initialization and API from Zope 3.
+class ViewPageTemplateFile(viewpagetemplatefile.ViewPageTemplateFile):
+    """Page Template used as class variable of views defined as Python classes.
     """
 
-    def __init__(self, filename, _prefix=None, content_type=None):
-        # XXX doesn't use content_type yet
+    def getId(self):
+        return basename(self.filename)
 
-        self.ZBindings_edit(self._default_bindings)
+    id = property(getId)
 
-        path = self.get_path_from_prefix(_prefix)
-        self.filename = os.path.join(path, filename)
-        if not os.path.isfile(self.filename):
-            raise ValueError("No such file", self.filename)
-
-        basepath, ext = os.path.splitext(self.filename)
-        self.__name__ = os.path.basename(basepath)
-
-        super(PageTemplateFile, self).__init__(self.filename, _prefix)
-
-    def get_path_from_prefix(self, _prefix):
-        if isinstance(_prefix, str):
-            path = _prefix
-        else:
-            if _prefix is None:
-                _prefix = sys._getframe(2).f_globals
-            path = package_home(_prefix)
-        return path
+    def __call__(self, __instance, *args, **keywords):
+        instance = __instance
+        namespace = self.pt_getContext(
+            request=instance.request,
+            instance=instance, args=args, options=keywords)
+        debug_flags = instance.request.debug
+        s = self.pt_render(
+            namespace,
+            showtal=getattr(debug_flags, 'showTAL', 0),
+            sourceAnnotations=getattr(debug_flags, 'sourceAnnotations', 0),
+            )
+        response = instance.request.response
+        if not response.getHeader("Content-Type"):
+            response.setHeader("Content-Type", self.content_type)
+        return s
 
     def pt_getEngine(self):
         return getEngine()
 
-    def pt_getContext(self):
-        try:
-            root = self.getPhysicalRoot()
-        except AttributeError:
-            try:
-                root = self.context.getPhysicalRoot()
-            except AttributeError:
-                root = None
+    def pt_getContext(self, instance, request, **kw):
+        context = super(ViewPageTemplateFile, self).pt_getContext(
+            instance, request, **kw)
 
-        # Even if the context isn't a view (when would that be exaclty?),
-        # there shouldn't be any dange in applying a view, because it
-        # won't be used.  However assuming that a lack of getPhysicalRoot
-        # implies a missing view causes problems.
-        view = self._getContext()
+        # get the root
+        obj = context['context']
+        root = None
+        meth = aq_get(obj, 'getPhysicalRoot', None)
+        if meth is not None:
+            root = meth()
 
-        here = aq_inner(self.context)
+        context.update(here=context['context'],
+                       # philiKON thinks container should be the view,
+                       # but BBB is more important than aesthetics.
+                       container=context['context'],
+                       root=root,
+                       modules=SecureModuleImporter,
+                       traverse_subpath=[],  # BBB, never really worked
+                       user = getSecurityManager().getUser()
+                       )
+        return context
 
-        request = getattr(root, 'REQUEST', None)
-        c = {'template': self,
-             'here': here,
-             'context': here,
-             'container': here,
-             'nothing': None,
-             'options': {},
-             'root': root,
-             'request': request,
-             'modules': SecureModuleImporter,
-             }
-        if view is not None:
-            c['view'] = view
-            c['views'] = ViewMapper(here, request)
+    def __get__(self, instance, type):
+        return BoundPageTemplate(self, instance)
 
-        return c
 
-ViewPageTemplateFile = ZopeTwoPageTemplateFile
+# When a view's template is accessed e.g. as template.view, a
+# BoundPageTemplate object is retured.  For BBB reasons, it needs to
+# support the aq_* methods and attributes known from Acquisition.  For
+# that it also needs to be locatable thru __parent__.
+
+class BoundPageTemplate(viewpagetemplatefile.BoundPageTemplate,
+                        AcquisitionBBB):
+
+    __parent__ = property(lambda self: self.im_self)
+
+
+# BBB
+ZopeTwoPageTemplateFile = ViewPageTemplateFile

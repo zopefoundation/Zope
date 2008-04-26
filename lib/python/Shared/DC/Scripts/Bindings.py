@@ -20,6 +20,7 @@ from AccessControl.Permissions import view_management_screens
 from AccessControl.PermissionRole import _what_not_even_god_should_do
 from AccessControl.ZopeGuards import guarded_getattr
 from Persistence import Persistent
+from Acquisition import aq_parent, aq_inner
 from string import join, strip
 import re
 
@@ -179,6 +180,13 @@ class UnauthorizedBinding:
         # Make *extra* sure that the wrapper isn't used to access
         # __call__, etc.
         if name.startswith('__'):
+            # Acquisition will nowadays try to do an getattr on all
+            # objects which aren't Acquisition wrappers, asking for a
+            # __parent__ pointer.  We don't want to raise Unauthorized
+            # in this case but simply an AttributeError.
+            if name in ('__parent__', '__name__'):
+                raise AttributeError(name)
+
             self.__you_lose()
 
         return guarded_getattr(self._wrapped, name, default)
@@ -264,11 +272,11 @@ class Bindings:
     def _getContext(self):
         # Utility for bindcode.
         while 1:
-            self = self.aq_parent
+            self = aq_parent(self)
             if not getattr(self, '_is_wrapperish', None):
-                parent = getattr(self, 'aq_parent', None)
-                inner = getattr(self, 'aq_inner', None)
-                container = getattr(inner, 'aq_parent', None)
+                parent = aq_parent(self)
+                inner = aq_inner(self)
+                container = aq_parent(inner)
                 try: getSecurityManager().validate(parent, container, '', self)
                 except Unauthorized:
                     return UnauthorizedBinding('context', self)
@@ -277,11 +285,11 @@ class Bindings:
     def _getContainer(self):
         # Utility for bindcode.
         while 1:
-            self = self.aq_inner.aq_parent
+            self = aq_parent(aq_inner(self))
             if not getattr(self, '_is_wrapperish', None):
-                parent = getattr(self, 'aq_parent', None)
-                inner = getattr(self, 'aq_inner', None)
-                container = getattr(inner, 'aq_parent', None)
+                parent = aq_parent(self)
+                inner = aq_inner(self)
+                container = aq_parent(inner)
                 try: getSecurityManager().validate(parent, container, '', self)
                 except Unauthorized:
                     return UnauthorizedBinding('container', self)

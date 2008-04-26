@@ -15,24 +15,87 @@
 
 $Id$
 """
+import urllib
 from Acquisition import aq_inner, aq_parent
 from OFS.interfaces import ITraversable
 
 from zope.interface import implements
 from zope.component import getMultiAdapter
 from zope.traversing.browser.interfaces import IAbsoluteURL
+from zope.traversing.browser.absoluteurl import _insufficientContext, _safe
 
 from Products.Five.browser import BrowserView
 
 class AbsoluteURL(BrowserView):
-    """An adapter for Zope3-style absolute_url using Zope2 methods
+    """An absolute_url adapter for generic objects in Zope 2 that
+    aren't OFS.Traversable (e.g. views, resources, etc.).
 
-    (original: zope.traversing.browser.absoluteurl)
+    This is very close to the generic implementation from
+    zope.traversing.browser, but the Zope 2 request doesn't support
+    all the methods that it uses yet.
     """
     implements(IAbsoluteURL)
 
-    def __init__(self, context, request):
-        self.context, self.request = context, request
+    def __unicode__(self):
+        return urllib.unquote(self.__str__()).decode('utf-8')
+
+    def __str__(self):
+        context = self.context
+        request = self.request
+
+        container = aq_parent(context)
+        if container is None:
+            raise TypeError(_insufficientContext)
+
+        url = str(getMultiAdapter((container, request), name='absolute_url'))
+        name = self._getContextName(context)
+        if name is None:
+            raise TypeError(_insufficientContext)
+
+        if name:
+            url += '/' + urllib.quote(name.encode('utf-8'), _safe)
+
+        return url
+
+    __call__ = __str__
+
+    def _getContextName(self, context):
+        if getattr(context, 'getId', None) is not None:
+            return context.getId()
+        getattr(context, '__name__', None)
+
+    def breadcrumbs(self):
+        context = self.context
+        request = self.request
+
+        # We do this here do maintain the rule that we must be wrapped
+        container = aq_parent(context)
+        if container is None:
+            raise TypeError(_insufficientContext)
+
+        base = tuple(getMultiAdapter((container, request),
+                                     name='absolute_url').breadcrumbs())
+
+        name = self._getContextName(context)
+        if name is None:
+            raise TypeError(_insufficientContext)
+
+        if name:
+            base += ({'name': name,
+                      'url': ("%s/%s" % (base[-1]['url'],
+                                         urllib.quote(name.encode('utf-8'),
+                                                      _safe)))
+                      }, )
+
+        return base
+
+class OFSTraversableAbsoluteURL(BrowserView):
+    """An absolute_url adapter for OFS.Traversable subclasses
+    """
+    implements(IAbsoluteURL)
+
+    def __unicode__(self):
+        return urllib.unquote(self.__str__()).decode('utf-8')
 
     def __str__(self):
         context = aq_inner(self.context)
@@ -47,10 +110,10 @@ class AbsoluteURL(BrowserView):
 
         name = context.getId()
         
-        if container is None or self._isVirtualHostRoot() \
-            or not ITraversable.providedBy(container):
-            return (
-                {'name': name, 'url': context.absolute_url()},)
+        if (container is None
+            or self._isVirtualHostRoot()
+            or not ITraversable.providedBy(container)):
+            return ({'name': name, 'url': context.absolute_url()},)
 
         view = getMultiAdapter((container, request), IAbsoluteURL)
         base = tuple(view.breadcrumbs())
@@ -66,15 +129,9 @@ class AbsoluteURL(BrowserView):
         context = aq_inner(self.context)
         return context.restrictedTraverse(virtualrootpath) == context
 
-class SiteAbsoluteURL(AbsoluteURL):
-    """An adapter for Zope3-style absolute_url using Zope2 methods
-
-    This one is just used to stop breadcrumbs from crumbing up
-    to the Zope root.
-
-    (original: zope.traversing.browser.absoluteurl)
+class RootAbsoluteURL(OFSTraversableAbsoluteURL):
+    """An absolute_url adapter for the root object (OFS.Application)
     """
-
     def breadcrumbs(self):
         context = self.context
         request = self.request

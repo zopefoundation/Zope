@@ -51,12 +51,11 @@ def test_absoluteurl():
 
     This test assures and demonstrates that the absolute url stops
     traversing through an object's parents when it has reached the
-    root object.  In Zope 3 this is marked with the IContainmentRoot
-    interface:
+    root object.
 
-      >>> from zope.interface import directlyProvides, providedBy
-      >>> from zope.traversing.interfaces import IContainmentRoot
-      >>> directlyProvides(self.folder, IContainmentRoot)
+      >>> from zope.interface import alsoProvides, noLongerProvides
+      >>> from OFS.interfaces import IApplication
+      >>> alsoProvides(self.folder, IApplication)
 
       >>> for crumb in view.breadcrumbs():
       ...     info = crumb.items()
@@ -65,8 +64,7 @@ def test_absoluteurl():
       [('name', 'test_folder_1_'), ('url', 'http://nohost/test_folder_1_')]
       [('name', 'testoid'), ('url', 'http://nohost/test_folder_1_/testoid')]
 
-      >>> directlyProvides(self.folder,
-      ...                  providedBy(self.folder) - IContainmentRoot)
+      >>> noLongerProvides(self.folder, IApplication)
 
     The absolute url view is obviously not affected by virtual hosting:
 

@@ -130,8 +130,6 @@ Next let's see what happens, if we specify a template for the viewlet manager:
   <Products.Five.viewlet.manager.<ViewletManager providing ILeftColumn> object ...>
   >>> ILeftColumn.providedBy(manager)
   True
-  >>> manager.template.meta_type
-  'Page Template (File)'
   >>> manager.update()
   >>> print manager.render().strip()
   <div class="column">
@@ -164,8 +162,6 @@ weight attribute in the viewlet:
    <class 'Products.Five.viewlet.manager.ViewletManagerBase'>)
   >>> ILeftColumn.providedBy(manager)
   True
-  >>> manager.template.meta_type
-  'Page Template (File)'
   >>> manager.update()
   >>> print manager.render().strip()
   <div class="column">

@@ -89,8 +89,7 @@ But now we register some viewlets for the manager
   >>> from zope.publisher.interfaces.browser import IDefaultBrowserLayer
   >>> from zope.publisher.interfaces.browser import IBrowserView
 
-  >>> from Acquisition import Explicit
-  >>> class WeatherBox(Explicit):
+  >>> class WeatherBox(object):
   ...     zope.interface.implements(interfaces.IViewlet)
   ...
   ...     def __init__(self, context, request, view, manager):
@@ -109,7 +108,7 @@ But now we register some viewlets for the manager
   ...     IBrowserView, ILeftColumn),
   ...     interfaces.IViewlet, name='weather')
 
-  >>> class SportBox(Explicit):
+  >>> class SportBox(object):
   ...     zope.interface.implements(interfaces.IViewlet)
   ...
   ...     def __init__(self, context, request, view, manager):
@@ -311,7 +310,7 @@ The same is true if the specified attribute does not exist:
   >>> foo.render()
   Traceback (most recent call last):
   ...
-  AttributeError: bar
+  AttributeError: 'FooViewlet' object has no attribute 'bar'
 
 To create simple template-based viewlets you can use the
 ``SimpleViewletClass()`` function. This function is very similar to its view
@@ -365,7 +364,7 @@ fully demonstrate the functionality of the base classes as well.
 The viewlet will look up the resource it was given and tries to produce the
 absolute URL for it:
 
-  >>> class JSResource(Explicit):
+  >>> class JSResource(object):
   ...     def __init__(self, request):
   ...         self.request = request
   ...
@@ -381,7 +380,7 @@ absolute URL for it:
 
 The same works for the CSS resource viewlet:
 
-  >>> class CSSResource(Explicit):
+  >>> class CSSResource(object):
   ...     def __init__(self, request):
   ...         self.request = request
   ...
@@ -487,7 +486,7 @@ different item:
 
   >>> shownColumns = []
 
-  >>> class ContentsViewletManager(Explicit):
+  >>> class ContentsViewletManager(object):
   ...     zope.interface.implements(interfaces.IViewletManager)
   ...     index = None
   ...
@@ -562,7 +561,7 @@ The Viewlets and the Final Result
 
 Now let's create a first viewlet for the manager...
 
-  >>> class NameViewlet(Explicit):
+  >>> class NameViewlet(object):
   ...
   ...     def __init__(self, context, request, view, manager):
   ...         self.__parent__ = view
@@ -635,7 +634,7 @@ that we want to see the name as a column in the table:
 Let's now write a second viewlet that will display the size of the object for
 us:
 
-  >>> class SizeViewlet(Explicit):
+  >>> class SizeViewlet(object):
   ...
   ...     def __init__(self, context, request, view, manager):
   ...         self.__parent__ = view

@@ -16,19 +16,18 @@
 $Id$
 """
 import os
-from Acquisition import Explicit
-from zope.viewlet import viewlet as orig_viewlet
+import zope.viewlet.viewlet
+from Products.Five.bbb import AcquisitionBBB
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
-from Products.Five.browser.pagetemplatefile import ZopeTwoPageTemplateFile
-
-# We add Acquisition to all the base classes to enable security machinery
-class ViewletBase(orig_viewlet.ViewletBase, Explicit):
+class ViewletBase(zope.viewlet.viewlet.ViewletBase, AcquisitionBBB):
     pass
 
-class SimpleAttributeViewlet(orig_viewlet.SimpleAttributeViewlet, Explicit):
+class SimpleAttributeViewlet(zope.viewlet.viewlet.SimpleAttributeViewlet,
+                             AcquisitionBBB):
     pass
 
-class simple(orig_viewlet.simple):
+class simple(zope.viewlet.viewlet.simple):
     # We need to ensure that the proper __init__ is called.
     __init__ = ViewletBase.__init__.im_func
 
@@ -41,7 +40,7 @@ def SimpleViewletClass(template, bases=(), attributes=None,
     # Create the base class hierarchy
     bases += (simple, ViewletBase)
 
-    attrs = {'index' : ZopeTwoPageTemplateFile(template),
+    attrs = {'index' : ViewPageTemplateFile(template),
              '__name__' : name}
     if attributes:
         attrs.update(attributes)
@@ -52,7 +51,7 @@ def SimpleViewletClass(template, bases=(), attributes=None,
     return class_
 
 
-class ResourceViewletBase(orig_viewlet.ResourceViewletBase, Explicit):
+class ResourceViewletBase(zope.viewlet.viewlet.ResourceViewletBase):
     pass
 
 def JavaScriptViewlet(path):
@@ -61,13 +60,13 @@ def JavaScriptViewlet(path):
 
     klass = type('JavaScriptViewlet',
                  (ResourceViewletBase, ViewletBase),
-                  {'index': ZopeTwoPageTemplateFile(src),
+                  {'index': ViewPageTemplateFile(src),
                    '_path': path})
 
     return klass
 
 
-class CSSResourceViewletBase(orig_viewlet.CSSResourceViewletBase):
+class CSSResourceViewletBase(zope.viewlet.viewlet.CSSResourceViewletBase):
     pass
 
 def CSSViewlet(path, media="all", rel="stylesheet"):
@@ -76,7 +75,7 @@ def CSSViewlet(path, media="all", rel="stylesheet"):
 
     klass = type('CSSViewlet',
                  (CSSResourceViewletBase, ViewletBase),
-                  {'index': ZopeTwoPageTemplateFile(src),
+                  {'index': ViewPageTemplateFile(src),
                    '_path': path,
                    '_media':media,
                    '_rel':rel})

@@ -22,7 +22,8 @@ from AccessControl import ClassSecurityInfo
 from AccessControl import getSecurityManager
 from AccessControl import Unauthorized
 from AccessControl.ZopeGuards import guarded_getattr
-from Acquisition import Acquired, aq_inner, aq_parent, aq_base
+from Acquisition import Acquired, aq_inner, aq_parent, aq_acquire, aq_base
+from Acquisition.interfaces import IAcquirer
 from zExceptions import NotFound
 from ZODB.POSException import ConflictError
 from OFS.interfaces import ITraversable
@@ -64,7 +65,7 @@ class Traversable:
         spp = self.getPhysicalPath()
             
         try:
-            toUrl = self.REQUEST.physicalPathToURL
+            toUrl = aq_acquire(self, 'REQUEST').physicalPathToURL
         except AttributeError:
             return path2url(spp[1:])
         return toUrl(spp)
@@ -78,7 +79,7 @@ class Traversable:
         """
         spp = self.getPhysicalPath()
         try:
-            toUrl = self.REQUEST.physicalPathToURL
+            toUrl = aq_acquire(self, 'REQUEST').physicalPathToURL
         except AttributeError:
             return path2url(spp) or '/'
         return toUrl(spp, relative=1) or '/'
@@ -93,7 +94,7 @@ class Traversable:
         """
         spp = self.getPhysicalPath()
         try:
-            toVirt = self.REQUEST.physicalPathToVirtualPath
+            toVirt = aq_acquire(self, 'REQUEST').physicalPathToVirtualPath
         except AttributeError:
             return path2url(spp[1:])
         return path2url(toVirt(spp))
@@ -191,7 +192,9 @@ class Traversable:
                         ns, nm = nsParse(name)
                         try:
                             next = namespaceLookup(
-                                ns, nm, obj, self.REQUEST).__of__(obj)
+                                ns, nm, obj, aq_acquire(self, 'REQUEST'))
+                            if IAcquirer.providedBy(next):
+                                next = next.__of__(obj)
                             if restricted and not validate(
                                 obj, obj, name, next):
                                 raise Unauthorized(name)
@@ -256,11 +259,10 @@ class Traversable:
 
                 except (AttributeError, NotFound, KeyError), e:
                     # Try to look for a view
-                    next = queryMultiAdapter((obj, self.REQUEST),
+                    next = queryMultiAdapter((obj, aq_acquire(self, 'REQUEST')),
                                              Interface, name)
 
                     if next is not None:
-                        next = next.__of__(obj)
                         if restricted and not validate(obj, obj, name, next):
                             raise Unauthorized(name)
                     elif bobo_traverse is not None:
