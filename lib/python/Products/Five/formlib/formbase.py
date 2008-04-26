@@ -61,6 +61,7 @@ class FormBase(FiveFormlibMixin, form.FormBase):
 class EditFormBase(FiveFormlibMixin, form.EditFormBase):
     pass
 
+
 class DisplayFormBase(FiveFormlibMixin, form.DisplayFormBase):
     pass
 
