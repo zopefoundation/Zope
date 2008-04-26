@@ -35,10 +35,6 @@ initializeClass(ObjectWidgetView)
 
 class ObjectWidgetClass(zope.app.form.browser.objectwidget.ObjectWidget):
 
-    def __init__(self, context, request, factory, **kw):
-        super(ObjectWidgetClass, self).__init__(context, request, factory, **kw)
-        self.view = ObjectWidgetView(self, request)
-
     def setRenderedValue(self, value):
         """Slightly more robust re-implementation this method."""
         # re-call setupwidgets with the content
