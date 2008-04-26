@@ -22,24 +22,6 @@ from zope.pagetemplate.pagetemplate import PageTemplateTracebackSupplement
 from zope.tales.expressions import SimpleModuleImporter
 from Products.PageTemplates.Expressions import getEngine
 
-##############################################################################
-# BBB 2005/05/01 -- to be removed after 12 months
-_ModuleImporter = SimpleModuleImporter
-ModuleImporter = SimpleModuleImporter()
-import zope.deprecation
-zope.deprecation.deprecated(
-    ('ModuleImporter', '_ModuleImporter'),
-    "Zope 2 uses the Zope 3 ZPT engine now.  ModuleImporter has moved "
-    "to zope.pagetemplate.pagetemplate.SimpleModuleImporter (this is a "
-    "class, not an instance)."
-    )
-zope.deprecation.deprecated(
-    ('PTRuntimeError', 'PageTemplateTracebackSupplement'),
-    "Zope 2 uses the Zope 3 ZPT engine now.  The object you're importing "
-    "has moved to zope.pagetemplate.pagetemplate.  This reference will "
-    "be gone in Zope 2.12.",
-    )
-##############################################################################
 
 class PageTemplate(ExtensionClass.Base,
                    zope.pagetemplate.pagetemplate.PageTemplate):

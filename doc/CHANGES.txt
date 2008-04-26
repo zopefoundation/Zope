@@ -9,6 +9,8 @@ Zope Changes
 
     Restructuring
 
+      - Removed deprecated modules from Products.PageTemplates.
+
       - Removed deprecated ZCML directives from Five including the whole
         Five.site subpackage.
 
