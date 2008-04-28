@@ -8,6 +8,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Products.Five: Fixed vocabulary lookup broken in 2.11 beta 1.
+        ZopeVocabularyRegistry wasn't hooked up on startup.
+
       - Launchpad #143813: zopectl now exits non-zero when
         child processes fail.
 
