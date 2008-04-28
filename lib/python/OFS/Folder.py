@@ -24,7 +24,6 @@ from AccessControl import Unauthorized
 from AccessControl.Permissions import add_page_templates
 from AccessControl.Permissions import add_user_folders
 from Globals import DTMLFile
-from webdav.WriteLockInterface import WriteLockInterface
 from zope.interface import implements
 
 import FindSupport
@@ -84,7 +83,6 @@ class Folder(
     a management interface and can have arbitrary properties.
     """
 
-    __implements__ = (WriteLockInterface,)
     implements(IFolder)
     meta_type='Folder'
 

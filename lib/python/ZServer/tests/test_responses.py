@@ -19,6 +19,7 @@ from ZServer.FTPResponse import FTPResponse
 from ZServer.PCGIServer import PCGIResponse
 from ZServer.FCGIServer import FCGIResponse
 from ZPublisher.Iterators import IStreamIterator
+from zope.interface import implements
 import unittest
 from cStringIO import StringIO
 
@@ -82,7 +83,7 @@ class DummyChannel:
             self.out.write(s)
 
 class test_streamiterator:
-    __implements__ = IStreamIterator
+    implements(IStreamIterator)
     data = "hello"
     done = 0
 

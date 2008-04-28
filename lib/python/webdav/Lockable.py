@@ -24,8 +24,6 @@ from zope.interface import implements
 from EtagSupport import EtagSupport
 from interfaces import ILockItem
 from interfaces import IWriteLock
-from WriteLockInterface import LockItemInterface
-from WriteLockInterface import WriteLockInterface
 
 
 class ResourceLockedError(Exception): pass
@@ -105,8 +103,7 @@ class LockableItem(EtagSupport):
 
     def wl_setLock(self, locktoken, lock):
         locks = self.wl_lockmapping(create=1)
-        if ILockItem.providedBy(lock) or \
-                LockItemInterface.isImplementedBy(lock):
+        if ILockItem.providedBy(lock):
             if locktoken == lock.getLockToken():
                 locks[locktoken] = lock
             else:
@@ -134,8 +131,7 @@ class LockableItem(EtagSupport):
             # and replace.
             if hasattr(self, '_dav_writelocks'):
                 del self._dav_writelocks
-            if IWriteLock.providedBy(self) or \
-                    WriteLockInterface.isImplementedBy(self):
+            if IWriteLock.providedBy(self):
                 self._dav_writelocks = PersistentMapping()
 
         # Call into a special hook used by LockNullResources to delete
@@ -155,6 +151,4 @@ def wl_isLocked(ob):
     return wl_isLockable(ob) and ob.wl_isLocked()
 
 def wl_isLockable(ob):
-    return (IWriteLock.providedBy(ob) or
-            WriteLockInterface.isImplementedBy(ob))
-    
+    return IWriteLock.providedBy(ob)

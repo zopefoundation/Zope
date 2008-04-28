@@ -16,6 +16,8 @@ $Id$
 """
 import struct
 from zope.contenttype import guess_content_type
+from zope.interface import implementedBy
+from zope.interface import implements
 from Globals import DTMLFile
 from Globals import InitializeClass
 from PropertyManager import PropertyManager
@@ -27,8 +29,8 @@ from AccessControl.Permissions import view as View
 from AccessControl.Permissions import ftp_access
 from AccessControl.Permissions import delete_objects
 from webdav.common import rfc1123_date
+from webdav.interfaces import IWriteLock
 from webdav.Lockable import ResourceLockedError
-from webdav.WriteLockInterface import WriteLockInterface
 from SimpleItem import Item_w__name__
 from cStringIO import StringIO
 from Globals import Persistent
@@ -77,7 +79,15 @@ class File(Persistent, Implicit, PropertyManager,
            RoleManager, Item_w__name__, Cacheable):
     """A File object is a content object for arbitrary files."""
 
-    __implements__ = (WriteLockInterface, HTTPRangeSupport.HTTPRangeInterface)
+    implements(implementedBy(Persistent),
+               implementedBy(Implicit),
+               implementedBy(PropertyManager),
+               implementedBy(RoleManager),
+               implementedBy(Item_w__name__),
+               implementedBy(Cacheable),
+               IWriteLock,
+               HTTPRangeSupport.HTTPRangeInterface,
+              )
     meta_type='File'
 
     security = ClassSecurityInfo()
@@ -726,7 +736,6 @@ class Image(File):
     as File objects.  Images also have a string representation that
     renders an HTML 'IMG' tag.
     """
-    __implements__ = (WriteLockInterface,)
     meta_type='Image'
 
     security = ClassSecurityInfo()

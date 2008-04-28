@@ -35,9 +35,6 @@ class KeywordIndex(UnIndex):
 
     This should have an _apply_index that returns a relevance score
     """
-
-    __implements__ = UnIndex.__implements__
-
     meta_type="KeywordIndex"
 
     manage_options= (

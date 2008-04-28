@@ -27,7 +27,6 @@ from OFS.SimpleItem import SimpleItem
 from ZODB.POSException import ConflictError
 from zope.interface import implements
 
-from Products.PluginIndexes import PluggableIndex
 from Products.PluginIndexes.common import safe_callable
 from Products.PluginIndexes.common.util import parseIndexRequest
 from Products.PluginIndexes.interfaces import IPluggableIndex
@@ -42,9 +41,6 @@ class UnIndex(SimpleItem):
 
     """Simple forward and reverse index.
     """
-
-    __implements__ = (PluggableIndex.UniqueValueIndex,
-                      PluggableIndex.SortIndex)
     implements(IPluggableIndex, IUniqueValueIndex, ISortIndex)
 
     def __init__(

@@ -1,4 +1,5 @@
-from Interface import Interface
+from zope.interface import Interface
+from zope.interface import implements
 
 class IStreamIterator(Interface):
     """
@@ -33,7 +34,7 @@ class filestream_iterator(file):
     fixed-sized sequence of bytes.
     """
 
-    __implements__ = (IStreamIterator,)
+    implements(IStreamIterator)
 
     def __init__(self, name, mode='r', bufsize=-1, streamsize=1<<16):
         file.__init__(self, name, mode, bufsize)

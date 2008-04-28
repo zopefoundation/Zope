@@ -23,8 +23,6 @@ from AccessControl.Permissions import manage_zcatalog_indexes
 from OFS.Folder import Folder
 from OFS.ObjectManager import IFAwareObjectManager
 from OFS.SimpleItem import SimpleItem
-from Products.PluginIndexes.common.PluggableIndex \
-        import PluggableIndexInterface
 from Products.PluginIndexes.interfaces import IPluggableIndex
 
 
@@ -37,7 +35,7 @@ class ZCatalogIndexes(IFAwareObjectManager, Folder, Persistent, Implicit):
     the requested indexes in an object manager."""
 
     # The interfaces we want to show up in our object manager
-    _product_interfaces = (PluggableIndexInterface, IPluggableIndex)
+    _product_interfaces = (IPluggableIndex,)
 
     meta_type = "ZCatalogIndex"
     manage_options = ()

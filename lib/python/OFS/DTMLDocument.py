@@ -22,7 +22,6 @@ from DTMLMethod import DTMLMethod, decapitate
 from PropertyManager import PropertyManager
 from webdav.common import rfc1123_date
 from webdav.Lockable import ResourceLockedError
-from webdav.WriteLockInterface import WriteLockInterface
 from sgmllib import SGMLParser
 from urllib import quote
 from AccessControl import getSecurityManager
@@ -38,7 +37,6 @@ class DTMLDocument(PropertyManager, DTMLMethod):
     """DTML Document objects are DocumentTemplate.HTML objects that act
        as methods whose 'self' is the DTML Document itself."""
 
-    __implements__ = (WriteLockInterface,)
     meta_type='DTML Document'
     icon     ='p_/dtmldoc'
 

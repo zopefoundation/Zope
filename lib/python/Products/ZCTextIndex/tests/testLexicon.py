@@ -71,12 +71,6 @@ class StopWordPipelineElement:
 
 class Test(unittest.TestCase):
 
-    def test_z2interfaces(self):
-        from Interface.Verify import verifyClass
-        from Products.ZCTextIndex.ILexicon import ILexicon
-
-        verifyClass(ILexicon, Lexicon)
-
     def test_z3interfaces(self):
         from Products.ZCTextIndex.interfaces import ILexicon
         from zope.interface.verify import verifyClass

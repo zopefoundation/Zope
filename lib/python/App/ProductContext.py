@@ -28,7 +28,6 @@ from HelpSys.HelpSys import ProductHelp
 from FactoryDispatcher import FactoryDispatcher
 
 from DateTime import DateTime
-from Interface.Implements import instancesOfObjectImplements
 from zope.interface import implementedBy
 
 import ZClasses # to enable 'PC.registerBaseClass()'
@@ -183,8 +182,6 @@ class ProductContext:
                 interfaces = ()
             else:
                 interfaces = tuple(implementedBy(instance_class))
-                # BBB: Will be removed in Zope 2.11.
-                interfaces += tuple(instancesOfObjectImplements(instance_class))
 
         Products.meta_types=Products.meta_types+(
             { 'name': meta_type or instance_class.meta_type,

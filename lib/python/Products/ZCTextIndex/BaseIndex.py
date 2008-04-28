@@ -29,6 +29,7 @@ from Products.ZCTextIndex.SetOps import mass_weightedIntersection, \
 
 import ZODB
 from Persistence import Persistent
+from zope.interface import implements
 
 # Instead of storing floats, we generally store scaled ints.  Binary pickles
 # can store those more efficiently.  The default SCALE_FACTOR of 1024
@@ -52,7 +53,7 @@ def unique(L):
 
 class BaseIndex(Persistent):
 
-    __implements__ = IIndex
+    implements(IIndex)
 
     def __init__(self, lexicon):
         self._lexicon = lexicon

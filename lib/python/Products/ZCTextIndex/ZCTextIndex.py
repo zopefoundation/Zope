@@ -27,8 +27,6 @@ from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.Permissions import manage_zcatalog_indexes, search_zcatalog
 from zope.interface import implements
 
-from Products.PluginIndexes.common.PluggableIndex import \
-     PluggableIndexInterface
 from Products.PluginIndexes.common.util import parseIndexRequest
 from Products.PluginIndexes.common import safe_callable
 from Products.PluginIndexes.interfaces import IPluggableIndex
@@ -38,7 +36,6 @@ from Products.ZCTextIndex.Lexicon import \
 from Products.ZCTextIndex.NBest import NBest
 from Products.ZCTextIndex.QueryParser import QueryParser
 from CosineIndex import CosineIndex
-from ILexicon import ILexicon as z2ILexicon
 from interfaces import ILexicon
 from interfaces import IZCLexicon
 from interfaces import IZCTextIndex
@@ -54,8 +51,6 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
 
     """Persistent text index.
     """
-
-    __implements__ = PluggableIndexInterface
     implements(IZCTextIndex, IPluggableIndex)
 
     ## Magic class attributes ##
@@ -89,8 +84,7 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
         if lexicon is None:
             raise LookupError, 'Lexicon "%s" not found' % escape(lexicon_id)
 
-        if not (ILexicon.providedBy(lexicon) or
-                z2ILexicon.isImplementedBy(lexicon)):
+        if not ILexicon.providedBy(lexicon):
             raise ValueError('Object "%s" does not implement '
                              'ZCTextIndex Lexicon interface'
                              % lexicon.getId())
@@ -135,8 +129,7 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
             return self._v_lexicon
         except AttributeError:
             lexicon = getattr(aq_parent(aq_inner(self)), self.lexicon_id)
-            if not (ILexicon.providedBy(lexicon) or
-                    z2ILexicon.isImplementedBy(lexicon)):
+            if not ILexicon.providedBy(lexicon):
                 raise TypeError('Object "%s" is not a ZCTextIndex Lexicon'
                                 % repr(lexicon))
             self._v_lexicon = lexicon

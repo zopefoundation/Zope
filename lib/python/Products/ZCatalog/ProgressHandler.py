@@ -18,7 +18,8 @@ import time, sys
 from logging import getLogger
 
 from DateTime.DateTime import DateTime
-from Interface import Interface
+from zope.interface import Interface
+from zope.interface import implements
 
 LOG = getLogger('ProgressHandler')
 
@@ -54,7 +55,7 @@ class IProgressHandler(Interface):
 class StdoutHandler:
     """ A simple progress handler """
 
-    __implements__ = IProgressHandler
+    implements(IProgressHandler)
 
     def __init__(self, steps=100):
         self._steps = steps
@@ -89,7 +90,7 @@ class StdoutHandler:
 class ZLogHandler(StdoutHandler):
     """ Use Zope logger"""
 
-    __implements__ = IProgressHandler
+    implements(IProgressHandler)
 
     def output(self, text):
         LOG.info(text)
@@ -98,7 +99,7 @@ class ZLogHandler(StdoutHandler):
 class FilelogHandler(StdoutHandler):
     """ Use a custom file for logging """
 
-    __implements__ = IProgressHandler
+    implements(IProgressHandler)
 
     def __init__(self, filename, steps=100):
         StdoutHandler.__init__(self, steps)

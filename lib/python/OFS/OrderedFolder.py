@@ -66,9 +66,6 @@ class OrderedFolder(OrderSupport, Folder):
 
     """ Extends the default Folder by order support.
     """
-
-    __implements__ = (OrderSupport.__implements__,
-                      Folder.__implements__)
     implements(IOrderedFolder)
     meta_type='Folder (Ordered)'
 

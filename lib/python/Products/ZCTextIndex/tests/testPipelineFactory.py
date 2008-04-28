@@ -15,10 +15,11 @@
 from unittest import TestCase, TestSuite, main, makeSuite
 from Products.ZCTextIndex.IPipelineElement import IPipelineElement
 from Products.ZCTextIndex.PipelineFactory import PipelineElementFactory
+from zope.interface import implements
 
 class NullPipelineElement:
 
-    __implements__ = IPipelineElement
+    implements(IPipelineElement)
 
     def process(source):
         pass

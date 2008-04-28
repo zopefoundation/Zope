@@ -19,6 +19,7 @@
 
 from BTrees.IIBTree import IIBucket
 from BTrees.Length import Length
+from zope.interface import implements
 
 from Products.ZCTextIndex.IIndex import IIndex
 from Products.ZCTextIndex.BaseIndex import BaseIndex, \
@@ -28,7 +29,7 @@ from Products.ZCTextIndex.okascore import score
 
 class OkapiIndex(BaseIndex):
 
-    __implements__ = IIndex
+    implements(IIndex)
 
     # BM25 free parameters.
     K1 = 1.2

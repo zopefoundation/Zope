@@ -17,7 +17,8 @@ $Id$
 
 import time
 
-from Interface import Interface
+from zope.interface import implements
+from zope.interface import Interface
 
 from webdav.common import PreconditionFailed
 
@@ -71,7 +72,7 @@ class EtagSupport:
     can be rejected according to the type of header (If-Match,
     If-None-Match).
     """
-    __implements__ = (EtagBaseInterface,)
+    implements(EtagBaseInterface)
 
     def http__etag(self, readonly=0):
         try: etag = self.__etag

@@ -21,7 +21,6 @@ from Globals import DTMLFile
 from Globals import InitializeClass
 from AccessControl import ClassSecurityInfo
 from AccessControl.Permissions import change_database_methods
-from webdav.WriteLockInterface import WriteLockInterface
 
 def SQLConnectionIDs(self):
     """Find SQL database connections in the current folder and above
@@ -120,7 +119,6 @@ class SQL(Shared.DC.ZRDB.DA.DA):
            employees/employee_id/1234/service_record
 
     """
-    __implements__ = (WriteLockInterface,)
     meta_type='Z SQL Method'
 
     security = ClassSecurityInfo()

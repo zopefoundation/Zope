@@ -13,6 +13,7 @@
 ##############################################################################
 
 """Generic parser support: exception and parse tree nodes."""
+from zope.interface import implements
 
 from BTrees.IIBTree import difference
 
@@ -28,7 +29,7 @@ class ParseError(Exception):
 
 class ParseTreeNode:
 
-    __implements__ = IQueryParseTree
+    implements(IQueryParseTree)
 
     _nodeType = None
 

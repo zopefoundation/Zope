@@ -251,7 +251,7 @@ class ZServerHTTPResponse(HTTPResponse):
 
     def setBody(self, body, title='', is_error=0, **kw):
         """ Accept either a stream iterator or a string as the body """
-        if IStreamIterator.isImplementedBy(body):
+        if IStreamIterator.providedBy(body):
             assert(self.headers.has_key('content-length'))
             # wrap the iterator up in a producer that medusa can understand
             self._bodyproducer = iterator_producer(body)

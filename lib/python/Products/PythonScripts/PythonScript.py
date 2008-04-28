@@ -28,7 +28,6 @@ from OFS.SimpleItem import SimpleItem
 from DateTime.DateTime import DateTime
 from urllib import quote
 from webdav.Lockable import ResourceLockedError
-from webdav.WriteLockInterface import WriteLockInterface
 from Shared.DC.Scripts.Script import Script, BindingsUI, defaultBindings
 from AccessControl import getSecurityManager
 from OFS.History import Historical, html_diff
@@ -86,7 +85,6 @@ class PythonScript(Script, Historical, Cacheable):
     not attempt to use the "exec" statement or certain restricted builtins.
     """
 
-    __implements__ = (WriteLockInterface,)
     meta_type='Script (Python)'
     _proxy_roles = ()
 

@@ -26,13 +26,6 @@ import HelpTopic
 
 _ignore_objects = {}
 
-try:
-    import Interface
-    _ignore_objects.update(Interface.__dict__)
-except ImportError:
-    pass
-
-
 class APIHelpTopic(HelpTopic.HelpTopic):
     """ Provides API documentation.
     """

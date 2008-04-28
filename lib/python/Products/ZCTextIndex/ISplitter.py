@@ -12,7 +12,7 @@
 #
 ##############################################################################
 
-from Interface import Interface
+from zope.interface import Interface
 
 class ISplitter(Interface):
     """A splitter."""

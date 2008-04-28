@@ -33,7 +33,6 @@ from AccessControl.Permissions import view, ftp_access, change_page_templates
 from AccessControl.Permissions import view_management_screens
 
 from webdav.Lockable import ResourceLockedError
-from webdav.WriteLockInterface import WriteLockInterface
 
 from Products.PageTemplates.PageTemplate import PageTemplate
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
@@ -67,8 +66,6 @@ class Src(Acquisition.Explicit):
 class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
                        Traversable, PropertyManager):
     "Zope wrapper for Page Template using TAL, TALES, and METAL"
-
-    __implements__ = (WriteLockInterface,)
 
     meta_type = 'Page Template'
     output_encoding = 'iso-8859-15'  # provide default for old instances
