@@ -8,6 +8,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Launchpad #213311:  Handle "unsubscriptable object" errors
+        during publishing traversal.
+
       - Products.Five: Fixed vocabulary lookup broken in 2.11 beta 1.
         ZopeVocabularyRegistry wasn't hooked up on startup.
 
