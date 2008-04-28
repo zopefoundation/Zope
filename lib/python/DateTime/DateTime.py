@@ -704,12 +704,11 @@ class DateTime:
             if isinstance(arg, DateTime):
                 """ Construct a new DateTime instance from a given DateTime instance """
                 t = arg.timeTime()
-                lt = safelocaltime(t)
-                tz = self.localZone(lt)
+                tz = arg.timezone()
                 ms = (t - math.floor(t))
                 s,d = _calcSD(t)
-                yr,mo,dy,hr,mn,sc=lt[:6]
-                sc=sc+ms
+                yr,mo,dy,hr,mn,sc = gmtime(t)[:6]
+                sc = sc + ms
 
             elif isinstance(arg, (unicode, str)) and arg.lower() in self._tzinfo._zidx:
                 # Current time, to be displayed in specified timezone
