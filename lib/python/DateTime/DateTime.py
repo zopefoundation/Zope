@@ -68,7 +68,7 @@ iso8601Match = re.compile(r'''
   (?:-?                             # one optional dash
    (?:                              # followed by:
     (?P<year_day>\d\d\d             #  three digits year day
-     (?!\d))                        #  when there's no fourth digit
+     (?!\d))                        #  when there is no fourth digit
    |                                # or:
     W                               #  one W
     (?P<week>\d\d)                  #  two digits week
@@ -586,12 +586,11 @@ class DateTime:
                 DateTime instance.
                 """
                 t = arg.timeTime()
-                lt = safelocaltime(t)
-                tz = self.localZone(lt)
+                tz = arg.timezone()
                 ms = (t - math.floor(t))
                 s,d = _calcSD(t)
-                yr,mo,dy,hr,mn,sc=lt[:6]
-                sc=sc+ms
+                yr,mo,dy,hr,mn,sc = gmtime(t)[:6]
+                sc = sc + ms
             
             elif isinstance(arg, datetime):
                 yr,mo,dy,hr,mn,sc,numerictz,tznaive=self._parse_iso8601_preserving_tznaive(arg.isoformat())

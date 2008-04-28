@@ -386,6 +386,19 @@ class DateTimeTests(unittest.TestCase):
         d = DateTime('1999/04/12')
         self.assertEqual(DateTime(d), d)
 
+    def testCopyConstructorPreservesTimezone(self):
+        # test for https://bugs.launchpad.net/zope2/+bug/200007
+        # This always worked in the local timezone, so we need at least
+        # two tests with different zones to be sure at least one of them
+        # is not local.
+        d = DateTime('2004/04/04')
+        self.assertEqual(DateTime(d).timezone(), d.timezone())
+        d2 = DateTime('2008/04/25 12:00:00 EST')
+        self.assertEqual(DateTime(d2).timezone(), d2.timezone())
+        d3 = DateTime('2008/04/25 12:00:00 PST')
+        self.assertEqual(DateTime(d3).timezone(), d3.timezone())
+
+
     def testRFC822(self):
         # rfc822 conversion
         dt = DateTime('2002-05-02T08:00:00+00:00')
