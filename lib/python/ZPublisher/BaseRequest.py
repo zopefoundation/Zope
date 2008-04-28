@@ -121,7 +121,10 @@ class DefaultPublishTraverse(object):
                     pass
 
                 # Lastly we try with key access:
-                subobject = object[name]
+                try:
+                    subobject = object[name]
+                except TypeError: # unsubscriptable
+                    raise KeyError(name)
                 
 
         # Ensure that the object has a docstring, or that the parent
