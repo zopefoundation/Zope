@@ -131,6 +131,8 @@ work. Later on, you will also have to change calls to
 ``isImplementedBy`` has been deprecated (you'll see the
 DeprecationWarnings in your Zope log).
 
+N.B.:  As of Zope 2.12, the old Zope2 interfaces are *removed*.
+
 Adapters
 --------
 

@@ -37,7 +37,6 @@ from zope.publisher.interfaces.browser import IDefaultBrowserLayer
 from zope.security.interfaces import IPermission
 
 from Products.Five import isFiveMethod
-from Products.Five.bridge import fromZ2Interface
 from Products.Five.browser.metaconfigure import page
 
 debug_mode = App.config.getConfiguration().debug_mode
@@ -104,29 +103,6 @@ def implements(_context, class_, interface):
             args = (interface.__module__ + '.' + interface.getName(),
                     interface)
             )
-
-def createZope2Bridge(zope2, package, name):
-    # Map a Zope 2 interface into a Zope3 interface, seated within 'package'
-    # as 'name'.
-    z3i = fromZ2Interface(zope2)
-
-    if name is not None:
-        z3i.__dict__['__name__'] = name
-
-    z3i.__dict__['__module__'] = package.__name__
-    setattr(package, z3i.getName(), z3i)
-
-def bridge(_context, zope2, package, name=None):
-    # Directive handler for <five:bridge> directive.
-
-    # N.B.:  We have to do the work early, or else we won't be able
-    #        to use the synthesized interface in other ZCML directives.
-    createZope2Bridge(zope2, package, name)
-
-    # Faux action, only for conflict resolution.
-    _context.action(
-        discriminator = (zope2,),
-        )
 
 def pagesFromDirectory(_context, directory, module, for_=None,
                        layer=IDefaultBrowserLayer, permission='zope.Public'):

@@ -22,7 +22,7 @@ For an implementation example, see the File class in OFS/Image.py.
 __version__='$Revision: 1.8 $'[11:-2]
 
 import re, sys
-import Interface
+from zope.interface import Interface
 
 WHITESPACE = re.compile('\s*', re.MULTILINE)
 
@@ -116,7 +116,7 @@ def expandRanges(ranges, size):
 
     return expanded
 
-class HTTPRangeInterface(Interface.Base):
+class HTTPRangeInterface(Interface):
     """Objects implementing this Interface support the HTTP Range header.
 
     Objects implementing support for the HTTP Range header will return partial

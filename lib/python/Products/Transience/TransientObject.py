@@ -30,6 +30,7 @@ import Globals
 import logging
 import sys
 from ZODB.POSException import ConflictError
+from zope.interface import implements
 
 DEBUG = int(os.environ.get('Z_TOC_DEBUG', 0))
 LOG = logging.getLogger('Zope.TransientObject')
@@ -51,12 +52,12 @@ class TransientObject(Persistent, Implicit):
     """ Dictionary-like object that supports additional methods
     concerning expiration and containment in a transient object container
     """
-    __implements__ = (ItemWithId, # randomly generate an id
-                      Transient,
-                      DictionaryLike,
-                      TTWDictionary,
-                      ImmutablyValuedMappingOfPickleableObjects
-                      )
+    implements(ItemWithId, # randomly generate an id
+               Transient,
+               DictionaryLike,
+               TTWDictionary,
+               ImmutablyValuedMappingOfPickleableObjects
+              )
 
     security = ClassSecurityInfo()
     security.setDefaultAccess('allow')
@@ -97,7 +98,7 @@ class TransientObject(Persistent, Implicit):
         # search our acquisition chain for a transient object container
         # and delete ourselves from it.
         for ob in getattr(self, 'aq_chain', []):
-            if TransientItemContainer.isImplementedBy(ob):
+            if TransientItemContainer.providedBy(ob):
                 trans_ob_container = ob
                 break
         if trans_ob_container is not None:

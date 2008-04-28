@@ -296,11 +296,19 @@ class TestPythonScriptGlobals(PythonScriptTestBase, WarningInterceptor):
         self.assertEqual(f(), [0])
         self._free_warning_output()
 
+class PythonScriptInterfaceConformanceTests(unittest.TestCase):
+
+    def test_class_conforms_to_IWriteLock(self):
+        from zope.interface.verify import verifyClass
+        from webdav.interfaces import IWriteLock
+        verifyClass(IWriteLock, PythonScript)
+
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TestPythonScriptNoAq))
     suite.addTest(unittest.makeSuite(TestPythonScriptErrors))
     suite.addTest(unittest.makeSuite(TestPythonScriptGlobals))
+    suite.addTest(unittest.makeSuite(PythonScriptInterfaceConformanceTests))
     return suite
 
 

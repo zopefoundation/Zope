@@ -629,6 +629,5 @@ class Traverse(ExtensionClass.Base):
 
 
 class SQLMethodTracebackSupplement:
-    #__implements__ = ITracebackSupplement
     def __init__(self, sql):
         self.object = sql

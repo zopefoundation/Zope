@@ -56,8 +56,6 @@ class DateRangeIndex(UnIndex):
 
     - Objects which match only during a specific interval.
     """
-
-    __implements__ = UnIndex.__implements__
     implements(IDateRangeIndex)
 
     security = ClassSecurityInfo()

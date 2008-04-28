@@ -30,7 +30,6 @@ from BTrees.IIBTree import difference, weightedIntersection
 from BTrees.OIBTree import OIBTree
 from zope.interface import implements
 
-from Products.PluginIndexes import PluggableIndex
 from Products.PluginIndexes.common import safe_callable
 from Products.PluginIndexes.common.ResultList import ResultList
 from Products.PluginIndexes.common.util import parseIndexRequest
@@ -77,8 +76,6 @@ class TextIndex(Persistent, Implicit, SimpleItem):
     This isn't exactly how things are represented in memory, many
     optimizations happen along the way.
     """
-
-    __implements__ = (PluggableIndex.PluggableIndexInterface,)
     implements(ITextIndex, IPluggableIndex)
 
     meta_type='TextIndex'

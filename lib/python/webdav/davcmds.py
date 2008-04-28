@@ -30,7 +30,6 @@ from common import isDavCollection
 from common import PreconditionFailed
 from interfaces import IWriteLock
 from LockItem import LockItem
-from WriteLockInterface import WriteLockInterface
 from xmltools import XmlParser
 
 
@@ -368,8 +367,7 @@ class Lock:
             errmsg = "403 Forbidden"
 
         try:
-            if not (IWriteLock.providedBy(obj) or
-                    WriteLockInterface.isImplementedBy(obj)):
+            if not IWriteLock.providedBy(obj):
                 if top:
                     # This is the top level object in the apply, so we
                     # do want an error
@@ -433,8 +431,7 @@ class Unlock:
             url = url + '/'
         errmsg = None
 
-        islockable = IWriteLock.providedBy(obj) or \
-                     WriteLockInterface.isImplementedBy(obj)
+        islockable = IWriteLock.providedBy(obj)
 
         if islockable:
             if obj.wl_hasLock(token):
@@ -474,8 +471,7 @@ class Unlock:
         if iscol:
             for ob in obj.objectValues():
                 if hasattr(ob, '__dav_resource__') and \
-                        (IWriteLock.providedBy(ob) or
-                         WriteLockInterface.isImplementedBy(ob)):
+                        IWriteLock.providedBy(ob):
                     uri = urljoin(url, absattr(ob.getId()))
                     self.apply(ob, token, uri, result, top=0)
         if not top:
@@ -502,8 +498,7 @@ class DeleteCollection:
         errmsg = None
         parent = aq_parent(obj)
 
-        islockable = IWriteLock.providedBy(obj) or \
-                     WriteLockInterface.isImplementedBy(obj)
+        islockable = IWriteLock.providedBy(obj)
         if parent and (not user.has_permission('Delete objects', parent)):
             # User doesn't have permission to delete this object
             errmsg = "403 Forbidden"

@@ -16,7 +16,6 @@ $Id$
 """
 import time,  App.Management, Globals, sys
 from webdav.interfaces import IWriteLock
-from webdav.WriteLockInterface import WriteLockInterface
 from ZPublisher.Converters import type_converters
 from Globals import InitializeClass
 from Globals import DTMLFile, MessageDialog
@@ -585,8 +584,7 @@ class DAVProperties(Virtual, PropertySheet, View):
     def dav__supportedlock(self):
         vself = self.v_self()
         out = '\n'
-        if IWriteLock.providedBy(vself) or \
-                WriteLockInterface.isImplementedBy(vself):
+        if IWriteLock.providedBy(vself):
             out += ('  <n:lockentry>\n'
                     '  <d:lockscope><d:exclusive/></d:lockscope>\n'
                     '  <d:locktype><d:write/></d:locktype>\n'
@@ -599,8 +597,7 @@ class DAVProperties(Virtual, PropertySheet, View):
 
         vself = self.v_self()
         out = '\n'
-        if IWriteLock.providedBy(vself) or \
-                WriteLockInterface.isImplementedBy(vself):
+        if IWriteLock.providedBy(vself):
             locks = vself.wl_lockValues(killinvalids=1)
             for lock in locks:
 

@@ -14,34 +14,21 @@
 
 from unittest import TestCase, TestSuite, main, makeSuite
 
-from Interface.Verify import verifyClass
-
-from Products.ZCTextIndex.IQueryParser import IQueryParser
-from Products.ZCTextIndex.IQueryParseTree import IQueryParseTree
-
-from Products.ZCTextIndex.QueryParser import QueryParser
-from Products.ZCTextIndex.ParseTree import ParseError, ParseTreeNode
-from Products.ZCTextIndex.ParseTree import OrNode, AndNode, NotNode
-from Products.ZCTextIndex.ParseTree import AtomNode, PhraseNode, GlobNode
-from Products.ZCTextIndex.Lexicon import Lexicon, Splitter
-
-
 class TestInterfaces(TestCase):
 
     def testInterfaces(self):
+        from zope.interface.verify import verifyClass
+        from Products.ZCTextIndex.IQueryParser import IQueryParser
+        from Products.ZCTextIndex.QueryParser import QueryParser
         verifyClass(IQueryParser, QueryParser)
-        verifyClass(IQueryParseTree, ParseTreeNode)
-        verifyClass(IQueryParseTree, OrNode)
-        verifyClass(IQueryParseTree, AndNode)
-        verifyClass(IQueryParseTree, NotNode)
-        verifyClass(IQueryParseTree, AtomNode)
-        verifyClass(IQueryParseTree, PhraseNode)
-        verifyClass(IQueryParseTree, GlobNode)
 
 
 class TestQueryParserBase(TestCase):
 
     def setUp(self):
+        from Products.ZCTextIndex.QueryParser import QueryParser
+        from Products.ZCTextIndex.Lexicon import Lexicon
+        from Products.ZCTextIndex.Lexicon import Splitter
         self.lexicon = Lexicon(Splitter())
         self.parser = QueryParser(self.lexicon)
 
@@ -56,10 +43,18 @@ class TestQueryParserBase(TestCase):
         self.assertEqual(ex_ignored, expected_ignored)
 
     def failure(self, input):
+        from Products.ZCTextIndex.ParseTree import ParseError
         self.assertRaises(ParseError, self.parser.parseQuery, input)
         self.assertRaises(ParseError, self.parser.parseQueryEx, input)
 
     def compareParseTrees(self, got, expected, msg=None):
+        from Products.ZCTextIndex.ParseTree import AndNode
+        from Products.ZCTextIndex.ParseTree import AtomNode
+        from Products.ZCTextIndex.ParseTree import GlobNode
+        from Products.ZCTextIndex.ParseTree import NotNode
+        from Products.ZCTextIndex.ParseTree import OrNode
+        from Products.ZCTextIndex.ParseTree import ParseTreeNode
+        from Products.ZCTextIndex.ParseTree import PhraseNode
         if msg is None:
             msg = repr(got)
         self.assertEqual(isinstance(got, ParseTreeNode), 1)
@@ -89,83 +84,129 @@ class TestQueryParserBase(TestCase):
 class TestQueryParser(TestQueryParserBase):
 
     def test001(self):
+        from Products.ZCTextIndex.ParseTree import AtomNode
         self.expect("foo", AtomNode("foo"))
 
     def test002(self):
+        from Products.ZCTextIndex.ParseTree import AtomNode
         self.expect("note", AtomNode("note"))
 
     def test003(self):
+        from Products.ZCTextIndex.ParseTree import AndNode
+        from Products.ZCTextIndex.ParseTree import AtomNode
         self.expect("aa and bb AND cc",
                     AndNode([AtomNode("aa"), AtomNode("bb"), AtomNode("cc")]))
 
     def test004(self):
+        from Products.ZCTextIndex.ParseTree import AtomNode
+        from Products.ZCTextIndex.ParseTree import OrNode
         self.expect("aa OR bb or cc",
                     OrNode([AtomNode("aa"), AtomNode("bb"), AtomNode("cc")]))
 
     def test005(self):
+        from Products.ZCTextIndex.ParseTree import AndNode
+        from Products.ZCTextIndex.ParseTree import AtomNode
+        from Products.ZCTextIndex.ParseTree import OrNode
         self.expect("aa AND bb OR cc AnD dd",
                     OrNode([AndNode([AtomNode("aa"), AtomNode("bb")]),
                             AndNode([AtomNode("cc"), AtomNode("dd")])]))
 
     def test006(self):
+        from Products.ZCTextIndex.ParseTree import AndNode
+        from Products.ZCTextIndex.ParseTree import AtomNode
+        from Products.ZCTextIndex.ParseTree import OrNode
         self.expect("(aa OR bb) AND (cc OR dd)",
                     AndNode([OrNode([AtomNode("aa"), AtomNode("bb")]),
                              OrNode([AtomNode("cc"), AtomNode("dd")])]))
 
     def test007(self):
+        from Products.ZCTextIndex.ParseTree import AndNode
+        from Products.ZCTextIndex.ParseTree import AtomNode
+        from Products.ZCTextIndex.ParseTree import NotNode
         self.expect("aa AND NOT bb",
                     AndNode([AtomNode("aa"), NotNode(AtomNode("bb"))]))
 
     def test010(self):
+        from Products.ZCTextIndex.ParseTree import PhraseNode
         self.expect('"foo bar"', PhraseNode(["foo", "bar"]))
 
     def test011(self):
+        from Products.ZCTextIndex.ParseTree import AndNode
+        from Products.ZCTextIndex.ParseTree import AtomNode
         self.expect("foo bar", AndNode([AtomNode("foo"), AtomNode("bar")]))
 
     def test012(self):
+        from Products.ZCTextIndex.ParseTree import PhraseNode
         self.expect('(("foo bar"))"', PhraseNode(["foo", "bar"]))
 
     def test013(self):
+        from Products.ZCTextIndex.ParseTree import AndNode
+        from Products.ZCTextIndex.ParseTree import AtomNode
         self.expect("((foo bar))", AndNode([AtomNode("foo"), AtomNode("bar")]))
 
     def test014(self):
+        from Products.ZCTextIndex.ParseTree import PhraseNode
         self.expect("foo-bar", PhraseNode(["foo", "bar"]))
 
     def test015(self):
+        from Products.ZCTextIndex.ParseTree import AndNode
+        from Products.ZCTextIndex.ParseTree import AtomNode
+        from Products.ZCTextIndex.ParseTree import NotNode
         self.expect("foo -bar", AndNode([AtomNode("foo"),
                                          NotNode(AtomNode("bar"))]))
 
     def test016(self):
+        from Products.ZCTextIndex.ParseTree import AndNode
+        from Products.ZCTextIndex.ParseTree import AtomNode
+        from Products.ZCTextIndex.ParseTree import NotNode
         self.expect("-foo bar", AndNode([AtomNode("bar"),
                                          NotNode(AtomNode("foo"))]))
 
     def test017(self):
+        from Products.ZCTextIndex.ParseTree import AndNode
+        from Products.ZCTextIndex.ParseTree import AtomNode
+        from Products.ZCTextIndex.ParseTree import NotNode
+        from Products.ZCTextIndex.ParseTree import PhraseNode
         self.expect("booh -foo-bar",
                     AndNode([AtomNode("booh"),
                              NotNode(PhraseNode(["foo", "bar"]))]))
 
     def test018(self):
+        from Products.ZCTextIndex.ParseTree import AndNode
+        from Products.ZCTextIndex.ParseTree import AtomNode
+        from Products.ZCTextIndex.ParseTree import NotNode
+        from Products.ZCTextIndex.ParseTree import PhraseNode
         self.expect('booh -"foo bar"',
                     AndNode([AtomNode("booh"),
                              NotNode(PhraseNode(["foo", "bar"]))]))
 
     def test019(self):
+        from Products.ZCTextIndex.ParseTree import AndNode
+        from Products.ZCTextIndex.ParseTree import AtomNode
         self.expect('foo"bar"',
                     AndNode([AtomNode("foo"), AtomNode("bar")]))
 
     def test020(self):
+        from Products.ZCTextIndex.ParseTree import AndNode
+        from Products.ZCTextIndex.ParseTree import AtomNode
         self.expect('"foo"bar',
                     AndNode([AtomNode("foo"), AtomNode("bar")]))
 
     def test021(self):
+        from Products.ZCTextIndex.ParseTree import AndNode
+        from Products.ZCTextIndex.ParseTree import AtomNode
         self.expect('foo"bar"blech',
                     AndNode([AtomNode("foo"), AtomNode("bar"),
                              AtomNode("blech")]))
 
     def test022(self):
+        from Products.ZCTextIndex.ParseTree import GlobNode
         self.expect("foo*", GlobNode("foo*"))
 
     def test023(self):
+        from Products.ZCTextIndex.ParseTree import AndNode
+        from Products.ZCTextIndex.ParseTree import AtomNode
+        from Products.ZCTextIndex.ParseTree import GlobNode
         self.expect("foo* bar", AndNode([GlobNode("foo*"),
                                          AtomNode("bar")]))
 
@@ -239,26 +280,35 @@ class TestQueryParser(TestQueryParserBase):
 class StopWordTestQueryParser(TestQueryParserBase):
 
     def setUp(self):
+        from Products.ZCTextIndex.QueryParser import QueryParser
+        from Products.ZCTextIndex.Lexicon import Lexicon
+        from Products.ZCTextIndex.Lexicon import Splitter
         # Only 'stop' is a stopword (but 'and' is still an operator)
         self.lexicon = Lexicon(Splitter(), FakeStopWordRemover())
         self.parser = QueryParser(self.lexicon)
 
     def test201(self):
+        from Products.ZCTextIndex.ParseTree import AtomNode
         self.expect('and/', AtomNode("and"))
 
     def test202(self):
+        from Products.ZCTextIndex.ParseTree import AtomNode
         self.expect('foo AND stop', AtomNode("foo"), ["stop"])
 
     def test203(self):
+        from Products.ZCTextIndex.ParseTree import AtomNode
         self.expect('foo AND NOT stop', AtomNode("foo"), ["stop"])
 
     def test204(self):
+        from Products.ZCTextIndex.ParseTree import AtomNode
         self.expect('stop AND foo', AtomNode("foo"), ["stop"])
 
     def test205(self):
+        from Products.ZCTextIndex.ParseTree import AtomNode
         self.expect('foo OR stop', AtomNode("foo"), ["stop"])
 
     def test206(self):
+        from Products.ZCTextIndex.ParseTree import AtomNode
         self.expect('stop OR foo', AtomNode("foo"), ["stop"])
 
     def test301(self):

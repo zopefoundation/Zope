@@ -3,13 +3,6 @@ import unittest
 
 class TestFolder(unittest.TestCase):
 
-    def test_z2interfaces(self):
-        from Interface.Verify import verifyClass
-        from OFS.Folder import Folder
-        from webdav.WriteLockInterface import WriteLockInterface
-
-        verifyClass(WriteLockInterface, Folder)
-
     def test_z3interfaces(self):
         from OFS.Folder import Folder
         from OFS.interfaces import IFolder

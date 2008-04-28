@@ -37,7 +37,6 @@ from common import isDavCollection
 from common import Locked, Conflict, PreconditionFailed, UnsupportedMediaType
 from interfaces import IWriteLock
 from Resource import Resource
-from WriteLockInterface import WriteLockInterface
 
 from zope.contenttype import guess_content_type
 
@@ -47,7 +46,6 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
     """Null resources are used to handle HTTP method calls on
     objects which do not yet exist in the url namespace."""
 
-    __implements__ = (WriteLockInterface,)
     __null_resource__=1
 
     security = ClassSecurityInfo()
@@ -105,9 +103,7 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
         parent = self.__parent__
 
         ifhdr = REQUEST.get_header('If', '')
-        if (IWriteLock.providedBy(parent) or
-                WriteLockInterface.isImplementedBy(parent)) and \
-                parent.wl_isLocked():
+        if IWriteLock.providedBy(parent) and parent.wl_isLocked():
             if ifhdr:
                 parent.dav__simpleifhandler(REQUEST, RESPONSE, col=1)
             else:
@@ -186,9 +182,7 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
             raise Forbidden, 'Cannot create collection at this location.'
 
         ifhdr = REQUEST.get_header('If', '')
-        if (IWriteLock.providedBy(parent) or
-                WriteLockInterface.isImplementedBy(parent)) and \
-                parent.wl_isLocked():
+        if IWriteLock.providedBy(parent) and parent.wl_isLocked():
             if ifhdr:
                 parent.dav__simpleifhandler(REQUEST, RESPONSE, col=1)
             else:
@@ -219,9 +213,7 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
         name = self.__name__
         parent = self.__parent__
 
-        if (IWriteLock.providedBy(parent) or
-                WriteLockInterface.isImplementedBy(parent)) and \
-                parent.wl_isLocked():
+        if IWriteLock.providedBy(parent) and parent.wl_isLocked():
             if ifhdr:
                 parent.dav__simpleifhandler(REQUEST, RESPONSE, col=1)
             else:
@@ -267,7 +259,6 @@ class LockNullResource(NullResource, OFS.SimpleItem.Item_w__name__):
     MKCOL deletes the LockNull resource from its container and replaces it
     with the target object.  An UNLOCK deletes it. """
 
-    __implements__ = (WriteLockInterface,)
     __locknull_resource__ = 1
     meta_type = 'WebDAV LockNull Resource'
 
@@ -386,9 +377,7 @@ class LockNullResource(NullResource, OFS.SimpleItem.Item_w__name__):
         # First we need to see if the parent of the locknull is locked, and
         # if the user owns that lock (checked by handling the information in
         # the If header).
-        if (IWriteLock.providedBy(parent) or
-                WriteLockInterface.isImplementedBy(parent)) and \
-                parent.wl_isLocked():
+        if IWriteLock.providedBy(parent) and parent.wl_isLocked():
             itrue = parent.dav__simpleifhandler(REQUEST, RESPONSE, 'PUT',
                                                 col=1, url=parenturl,
                                                 refresh=1)
@@ -426,8 +415,7 @@ class LockNullResource(NullResource, OFS.SimpleItem.Item_w__name__):
             raise Forbidden, sys.exc_info()[1]
 
         # Put the locks on the new object
-        if not (IWriteLock.providedBy(ob) or
-                WriteLockInterface.isImplementedBy(ob)):
+        if not IWriteLock.providedBy(ob):
             raise MethodNotAllowed, (
                 'The target object type cannot be locked')
         for token, lock in locks:
@@ -460,9 +448,7 @@ class LockNullResource(NullResource, OFS.SimpleItem.Item_w__name__):
 
         # If the parent object is locked, that information should be in the
         # if-header if the user owns a lock on the parent
-        if (IWriteLock.providedBy(parent) or
-                WriteLockInterface.isImplementedBy(parent)) and \
-                parent.wl_isLocked():
+        if IWriteLock.providedBy(parent) and parent.wl_isLocked():
             itrue = parent.dav__simpleifhandler(REQUEST, RESPONSE, 'MKCOL',
                                                 col=1, url=parenturl,
                                                 refresh=1)

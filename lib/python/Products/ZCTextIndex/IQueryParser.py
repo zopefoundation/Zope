@@ -14,9 +14,9 @@
 
 """Query Parser Interface."""
 
-import Interface
+from zope.interface import Interface
 
-class IQueryParser(Interface.Base):
+class IQueryParser(Interface):
     """Interface for Query Parsers."""
 
     def parseQuery(query):

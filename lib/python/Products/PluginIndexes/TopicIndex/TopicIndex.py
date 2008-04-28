@@ -23,7 +23,6 @@ from BTrees.OOBTree import OOBTree
 from BTrees.IIBTree import IITreeSet,intersection,union
 from zope.interface import implements
 
-from Products.PluginIndexes import PluggableIndex
 from Products.PluginIndexes.common.util import parseIndexRequest
 from Products.PluginIndexes.interfaces import IPluggableIndex
 from Products.PluginIndexes.interfaces import ITopicIndex
@@ -41,8 +40,6 @@ class TopicIndex(Persistent, SimpleItem):
     Every FilteredSet object consists of an expression and and IISet with all
     Ids of indexed objects that eval with this expression to 1.
     """
-
-    __implements__ = (PluggableIndex.PluggableIndexInterface,)
     implements(ITopicIndex, IPluggableIndex)
 
     meta_type="TopicIndex"

@@ -14,9 +14,9 @@
 
 """Index Interface."""
 
-import Interface
+from zope.interface import Interface
 
-class IIndex(Interface.Base):
+class IIndex(Interface):
     """Interface for an Index."""
 
     def length():

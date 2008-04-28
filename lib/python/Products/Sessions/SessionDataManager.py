@@ -29,6 +29,7 @@ from BrowserIdManager import isAWellFormedBrowserId, getNewBrowserId,\
      BROWSERID_MANAGER_NAME
 from ZPublisher.BeforeTraverse import registerBeforeTraverse, \
     unregisterBeforeTraverse
+from zope.interface import implements
 
 bad_path_chars_in=re.compile('[^a-zA-Z0-9-_~\,\. \/]').search
 LOG = getLogger('SessionDataManager')
@@ -80,7 +81,7 @@ class SessionDataManager(Item, Implicit, Persistent, RoleManager, Owned, Tabs):
 
     icon='misc_/CoreSessionTracking/datamgr.gif'
 
-    __implements__ = (SessionInterfaces.SessionDataManagerInterface, )
+    implements(SessionInterfaces.SessionDataManagerInterface)
 
     manage_sessiondatamgr = Globals.DTMLFile('dtml/manageDataManager',
         globals())

@@ -24,7 +24,6 @@ from AccessControl import ClassSecurityInfo
 from AccessControl.Role import RoleManager
 from webdav.common import rfc1123_date
 from webdav.Lockable import ResourceLockedError
-from webdav.WriteLockInterface import WriteLockInterface
 from ZDOM import ElementWithTitle
 from DateTime.DateTime import DateTime
 from urllib import quote
@@ -55,8 +54,6 @@ class DTMLMethod(RestrictedDTML, HTML, Acquisition.Implicit, RoleManager,
     _proxy_roles=()
     index_html=None # Prevent accidental acquisition
     _cache_namespace_keys=()
-
-    __implements__ = (WriteLockInterface,)
 
     security = ClassSecurityInfo()
     security.declareObjectProtected(View)

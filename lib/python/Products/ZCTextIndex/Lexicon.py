@@ -29,13 +29,11 @@ from zope.interface import implements
 from Products.ZCTextIndex.StopDict import get_stopdict
 from Products.ZCTextIndex.ParseTree import QueryError
 from Products.ZCTextIndex.PipelineFactory import element_factory
-from ILexicon import ILexicon as z2ILexicon
 from interfaces import ILexicon
 
 
 class Lexicon(Persistent):
 
-    __implements__ = z2ILexicon
     implements(ILexicon)
 
     def __init__(self, *pipeline):

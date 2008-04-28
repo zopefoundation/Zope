@@ -215,13 +215,6 @@ class TestZCatalog(unittest.TestCase):
     def _resolve_num(self, num):
         return self.d[num]
 
-    def test_z2interfaces(self):
-        from Interface.Verify import verifyClass
-        from Products.ZCatalog.IZCatalog import IZCatalog
-        from Products.ZCatalog.ZCatalog import ZCatalog
-
-        verifyClass(IZCatalog, ZCatalog)
-
     def test_z3interfaces(self):
         from Products.ZCatalog.interfaces import IZCatalog
         from Products.ZCatalog.ZCatalog import ZCatalog

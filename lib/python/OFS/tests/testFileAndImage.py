@@ -243,14 +243,14 @@ class FileTests(unittest.TestCase):
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0][1], self.file)
 
-    def test_z2interfaces(self):
-        from Interface.Verify import verifyClass
+    def test_z3interfaces(self):
+        from zope.interface.verify import verifyClass
         from OFS.Image import File
-        from webdav.WriteLockInterface import WriteLockInterface
+        from webdav.interfaces import IWriteLock
         from ZPublisher.HTTPRangeSupport import HTTPRangeInterface
 
         verifyClass(HTTPRangeInterface, File)
-        verifyClass(WriteLockInterface, File)
+        verifyClass(IWriteLock, File)
 
     def testUnicode(self):
         val = u'some unicode string here'
@@ -287,12 +287,12 @@ class ImageTests(FileTests):
     def testViewImageOrFile(self):
         pass # dtml method,screw it
 
-    def test_z2interfaces(self):
-        from Interface.Verify import verifyClass
+    def test_z3interfaces(self):
+        from zope.interface.verify import verifyClass
         from OFS.Image import Image
-        from webdav.WriteLockInterface import WriteLockInterface
+        from webdav.interfaces import IWriteLock
 
-        verifyClass(WriteLockInterface, Image)
+        verifyClass(IWriteLock, Image)
 
 def test_suite():
     return unittest.TestSuite((

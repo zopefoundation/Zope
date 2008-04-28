@@ -1,5 +1,5 @@
 import unittest
-from Interface.Verify import verifyClass
+from zope.interface.verify import verifyClass
 from ZPublisher.Iterators import IStreamIterator, filestream_iterator
 
 class TestFileStreamIterator(unittest.TestCase):

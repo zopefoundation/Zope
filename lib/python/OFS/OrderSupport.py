@@ -26,8 +26,7 @@ from Globals import InitializeClass
 from zope.interface import implements
 from zope.app.container.contained import notifyContainerModified
 
-from interfaces import IOrderedContainer as z3IOrderedContainer
-from IOrderSupport import IOrderedContainer as z2IOrderedContainer
+from interfaces import IOrderedContainer as IOrderedContainer
 from ObjectManager import ObjectManager
 
 
@@ -41,8 +40,7 @@ class OrderSupport(object):
     is totally user-specific.
     """
 
-    __implements__ = z2IOrderedContainer
-    implements(z3IOrderedContainer)
+    implements(IOrderedContainer)
     security = ClassSecurityInfo()
 
     has_order_support = 1

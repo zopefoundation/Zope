@@ -204,6 +204,11 @@ class ZPTUnicodeEncodingConflictResolution(ZopeTestCase):
 
 class ZopePageTemplateFileTests(ZopeTestCase):
 
+    def test_class_conforms_to_IWriteLock(self):
+        from zope.interface.verify import verifyClass
+        from webdav.interfaces import IWriteLock
+        verifyClass(IWriteLock, ZopePageTemplate)
+
     def testPT_RenderWithAscii(self):
         manage_addPageTemplate(self.app, 'test',
                                text=ascii_str, encoding='ascii')

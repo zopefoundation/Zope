@@ -42,6 +42,8 @@ from AccessControl.SecurityManagement import newSecurityManager, \
 from AccessControl.User import nobody
 from logging import getLogger
 
+from zope.interface import implements
+
 from TransientObject import TransientObject
 from Fake import FakeIOBTree
 
@@ -97,10 +99,10 @@ class TransientObjectContainer(SimpleItem):
     meta_type = "Transient Object Container"
     icon = "misc_/Transience/datacontainer.gif"
 
-    __implements__ = (ItemWithId,
-                      StringKeyedHomogeneousItemContainer,
-                      TransientItemContainer
-                      )
+    implements(ItemWithId,
+               StringKeyedHomogeneousItemContainer,
+               TransientItemContainer,
+              )
     manage_options = (
         {   'label':    'Manage',
             'action':   'manage_container',

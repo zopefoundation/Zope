@@ -14,9 +14,9 @@
 
 """Query Parser Tree Interface."""
 
-import Interface
+from zope.interface import Interface
 
-class IQueryParseTree(Interface.Base):
+class IQueryParseTree(Interface):
     """Interface for parse trees returned by parseQuery()."""
 
     def nodeType():

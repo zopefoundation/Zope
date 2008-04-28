@@ -252,13 +252,6 @@ class CosineIndexTests(ZCIndexTestsBase, testIndex.CosineIndexTest):
     # Gigabytes, pp. 180-188.  This test peeks into many internals of the
     # cosine indexer.
 
-    def test_z2interfaces(self):
-        from Interface.Verify import verifyClass
-        from Products.PluginIndexes.common.PluggableIndex \
-                import PluggableIndexInterface
-
-        verifyClass(PluggableIndexInterface, ZCTextIndex)
-
     def test_z3interfaces(self):
         from Products.PluginIndexes.interfaces import IPluggableIndex
         from Products.ZCTextIndex.interfaces import IZCTextIndex

@@ -19,7 +19,9 @@ import os
 from zope.app.publisher.browser import viewmeta
 from zope.component import zcml
 from zope.configuration.exceptions import ConfigurationError
-from zope.interface import Interface, classImplements
+from zope.interface import classImplements
+from zope.interface import implements
+from zope.interface import Interface
 from zope.publisher.interfaces.browser import IBrowserView
 from zope.publisher.interfaces.browser import IDefaultBrowserLayer
 from zope.viewlet import interfaces

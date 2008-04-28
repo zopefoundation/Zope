@@ -56,6 +56,7 @@ Summarizing the default operator rules:
 """
 
 import re
+from zope.interface import implements
 
 from Products.ZCTextIndex.IQueryParser import IQueryParser
 from Products.ZCTextIndex import ParseTree
@@ -95,7 +96,7 @@ _tokenizer_regex = re.compile(r"""
 
 class QueryParser:
 
-    __implements__ = IQueryParser
+    implements(IQueryParser)
 
     # This class is not thread-safe;
     # each thread should have its own instance

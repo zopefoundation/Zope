@@ -11,7 +11,6 @@
 #
 ##############################################################################
 
-import common.PluggableIndex as PluggableIndex
 import common.ResultList     as ResultList
 import common.UnIndex        as UnIndex
 

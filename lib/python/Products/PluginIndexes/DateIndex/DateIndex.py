@@ -84,8 +84,6 @@ class DateIndex(UnIndex, PropertyManager):
 
     """Index for dates.
     """
-
-    __implements__ = UnIndex.__implements__
     implements(IDateIndex)
 
     meta_type = 'DateIndex'

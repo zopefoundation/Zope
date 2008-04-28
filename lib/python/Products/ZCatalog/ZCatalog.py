@@ -34,14 +34,11 @@ from AccessControl.Permissions import \
     manage_zcatalog_entries, manage_zcatalog_indexes, search_zcatalog
 from ZODB.POSException import ConflictError
 import transaction
-from Products.PluginIndexes.common.PluggableIndex \
-     import PluggableIndexInterface
 from Products.PluginIndexes.interfaces import IPluggableIndex
 from zope.interface import implements
 
 from Catalog import Catalog, CatalogError
-from interfaces import IZCatalog as z3IZCatalog
-from IZCatalog import IZCatalog as z2IZCatalog
+from interfaces import IZCatalog
 from ProgressHandler import ZLogHandler
 from ZCatalogIndexes import ZCatalogIndexes
 
@@ -82,8 +79,7 @@ class ZCatalog(Folder, Persistent, Implicit):
     Python program to catalog objects.
     """
 
-    __implements__ = z2IZCatalog
-    implements(z3IZCatalog)
+    implements(IZCatalog)
 
     security = ClassSecurityInfo()
     security.setPermissionDefault(manage_zcatalog_entries, ('Manager',))
@@ -958,8 +954,8 @@ class ZCatalog(Folder, Persistent, Implicit):
         # Convert the type by finding an appropriate product which supports
         # this interface by that name.  Bleah
 
-        products = ObjectManager.all_meta_types(self, interfaces=(
-            PluggableIndexInterface, IPluggableIndex))
+        products = ObjectManager.all_meta_types(self,
+                                                interfaces=(IPluggableIndex,))
 
         p = None
 

@@ -32,6 +32,7 @@ from urlparse import urlparse, urlunparse
 from ZPublisher.BeforeTraverse import registerBeforeTraverse, \
     unregisterBeforeTraverse, queryBeforeTraverse
 import logging
+from zope.interface import implements
 
 b64_trans = string.maketrans('+/', '-.')
 b64_untrans = string.maketrans('-.', '+/')
@@ -80,7 +81,7 @@ class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
         {'label': 'Ownership', 'action':'manage_owner'}
         )
 
-    __implements__ = (SessionInterfaces.BrowserIdManagerInterface, )
+    implements(SessionInterfaces.BrowserIdManagerInterface)
 
     icon = 'misc_/Sessions/idmgr.gif'
 

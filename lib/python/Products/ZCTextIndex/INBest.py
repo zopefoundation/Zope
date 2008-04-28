@@ -20,9 +20,9 @@ number of comparisons performed overall is M * log2(N).
 """
 
 
-import Interface
+from zope.interface import Interface
 
-class INBest(Interface.Base):
+class INBest(Interface):
     """Interface for an N-Best chooser."""
 
     def add(item, score):

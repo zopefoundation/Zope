@@ -74,9 +74,9 @@ Transient Objects
     transient_object['foo'] = foo
   """
 
-import Interface
+from zope.interface import Interface
 
-class Transient(Interface.Base):
+class Transient(Interface):
     def invalidate():
         """
         Invalidate (expire) the transient object.
@@ -131,7 +131,7 @@ class Transient(Interface.Base):
         container.
         """
 
-class DictionaryLike(Interface.Base):
+class DictionaryLike(Interface):
     def keys():
         """
         Return sequence of key elements.
@@ -170,7 +170,7 @@ class DictionaryLike(Interface.Base):
 
     # DictionaryLike does NOT support copy()
 
-class ItemWithId(Interface.Base):
+class ItemWithId(Interface):
     def getId():
         """
         Returns a meaningful unique id for the object.  Note that this id
@@ -193,7 +193,7 @@ class TTWDictionary(DictionaryLike, ItemWithId):
         Call __setitem__ with key k, value v.
         """
 
-class ImmutablyValuedMappingOfPickleableObjects(Interface.Base):
+class ImmutablyValuedMappingOfPickleableObjects(Interface):
     def __setitem__(k, v):
         """
         Sets key k to value v, if k is both hashable and pickleable and
@@ -216,7 +216,7 @@ class ImmutablyValuedMappingOfPickleableObjects(Interface.Base):
         Remove the key/value pair related to key k.
         """
 
-class HomogeneousItemContainer(Interface.Base):
+class HomogeneousItemContainer(Interface):
     """
     An object which:
      1.  Contains zero or more subobjects, all of the same type.
@@ -271,7 +271,7 @@ class StringKeyedHomogeneousItemContainer(HomogeneousItemContainer):
         Returned object is acquisition-wrapped in self.
         """
 
-class TransientItemContainer(Interface.Base):
+class TransientItemContainer(Interface):
     def setTimeoutMinutes(timeout_mins):
         """
         Set the number of minutes of inactivity allowable for subobjects

@@ -24,7 +24,6 @@ from zope.interface import implements
 
 from common import generateLockToken
 from interfaces import ILockItem
-from WriteLockInterface import LockItemInterface
 
 MAXTIMEOUT = (2L**32)-1                 # Maximum timeout time
 DEFAULTTIMEOUT = 12 * 60L               # Default timeout
@@ -48,7 +47,6 @@ def validateTimeout(timeout):
 class LockItem(Persistent):
 
     implements(ILockItem)
-    __implements__ = (LockItemInterface,)
 
     # Use the Zope 2.3 declarative security to manage access
     security = ClassSecurityInfo()

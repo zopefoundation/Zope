@@ -20,11 +20,9 @@ Session APIs
 
 """
 
-import Interface
+from zope.interface import Interface
 
-class BrowserIdManagerInterface(
-    Interface.Base
-    ):
+class BrowserIdManagerInterface(Interface):
     """
     Zope Browser Id Manager interface.
 
@@ -152,9 +150,7 @@ class BrowserIdManagerInterface(
         name and current browser id.
         """
 
-class SessionDataManagerInterface(
-    Interface.Base
-    ):
+class SessionDataManagerInterface(Interface):
     """
     Zope Session Data Manager interface.
 
@@ -199,7 +195,7 @@ class SessionDataManagerInterface(
         Permission required: Access arbitrary user session data
         """
 
-class SessionDataManagerErr(Interface.Base):
+class SessionDataManagerErr(Interface):
     """
     Error raised during some session data manager operations, as
     explained in the API documentation of the Session Data Manager.
@@ -210,7 +206,7 @@ class SessionDataManagerErr(Interface.Base):
        from Products.Sessions import SessionDataManagerErr
     """
 
-class BrowserIdManagerErr(Interface.Base):
+class BrowserIdManagerErr(Interface):
     """
     Error raised during some browser id manager operations, as
     explained in the API documentation of the Browser Id Manager.

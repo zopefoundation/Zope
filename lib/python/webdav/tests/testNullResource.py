@@ -3,13 +3,6 @@ import unittest
 
 class TestLockNullResource(unittest.TestCase):
 
-    def test_z2interfaces(self):
-        from Interface.Verify import verifyClass
-        from webdav.NullResource import LockNullResource
-        from webdav.WriteLockInterface import WriteLockInterface
-
-        verifyClass(WriteLockInterface, LockNullResource)
-
     def test_z3interfaces(self):
         from webdav.interfaces import IWriteLock
         from webdav.NullResource import LockNullResource
@@ -19,13 +12,6 @@ class TestLockNullResource(unittest.TestCase):
 
 
 class TestNullResource(unittest.TestCase):
-
-    def test_z2interfaces(self):
-        from Interface.Verify import verifyClass
-        from webdav.NullResource import NullResource
-        from webdav.WriteLockInterface import WriteLockInterface
-
-        verifyClass(WriteLockInterface, NullResource)
 
     def test_z3interfaces(self):
         from webdav.interfaces import IWriteLock

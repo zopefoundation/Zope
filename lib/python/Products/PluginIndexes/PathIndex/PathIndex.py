@@ -25,7 +25,6 @@ from BTrees.IIBTree import IITreeSet, IISet, intersection, union
 from BTrees.Length import Length
 from zope.interface import implements
 
-from Products.PluginIndexes import PluggableIndex
 from Products.PluginIndexes.common import safe_callable
 from Products.PluginIndexes.common.util import parseIndexRequest
 from Products.PluginIndexes.interfaces import IPathIndex
@@ -50,8 +49,6 @@ class PathIndex(Persistent, SimpleItem):
     - the value is a mapping 'level of the path component' to
       'all docids with this path component on this level'
     """
-
-    __implements__ = (PluggableIndex.UniqueValueIndex,)
     implements(IPathIndex, IUniqueValueIndex)
 
     meta_type="PathIndex"

@@ -24,9 +24,6 @@ class FieldIndex(UnIndex):
 
     """Index for simple fields.
     """
-
-    __implements__ = UnIndex.__implements__
-
     meta_type="FieldIndex"
 
     manage_options= (
