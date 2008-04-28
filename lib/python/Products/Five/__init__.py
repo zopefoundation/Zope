@@ -22,6 +22,9 @@ from Products.Five import zcml
 from Products.Five.browser import BrowserView
 from Products.Five.skin.standardmacros import StandardMacros
 
+# hook up ZopeVocabularyRegistry
+import zope.app.schema.vocabulary
+
 # load the site's ZCML tree (usually site.zcml) upon product
 # initialization
 def initialize(context):
