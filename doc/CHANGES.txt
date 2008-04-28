@@ -8,6 +8,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Launchpad #200007: DateTime(anotherDateTime) now preserves the
+        timezone.
+
       - Launchpad #213311:  Handle "unsubscriptable object" errors
         during publishing traversal.
 
