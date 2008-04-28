@@ -245,6 +245,15 @@ class TestBaseRequest(unittest.TestCase):
         r._hold(lambda x: None)
         self.assertEqual(r._held, None)
 
+    def test_traverse_unsubscriptable(self):
+        # See https://bugs.launchpad.net/bugs/213311
+        from ZPublisher import NotFound
+        class _Object(object):
+            pass
+        root = _Object()
+        r = self._makeOne(None)
+        self.assertRaises(NotFound, r.traverse, 'not_found')
+
 
 class TestBaseRequestZope3Views(unittest.TestCase):
 
