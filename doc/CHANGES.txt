@@ -8,6 +8,9 @@ Zope Changes
 
    Bugs fixed
 
+      - Launchpad #200007: DateTime(anotherDateTime) now preserves the
+        timezone.
+
       - Launchpad #143813: zopectl now exits non-zero when
         child processes fail.
 
