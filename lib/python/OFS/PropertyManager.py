@@ -258,6 +258,16 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
                 return p.get('label', id)
         return id
 
+    security.declareProtected(access_contents_information,
+                              'propertyDescription')
+    def propertyDescription(self, id):
+        """Return a description for the given property id
+        """
+        for p in self._properties:
+            if p['id'] == id:
+                return p.get('description', '')
+        return id
+
     security.declareProtected(access_contents_information, 'propdict')
     def propdict(self):
         dict={}
