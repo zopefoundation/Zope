@@ -122,7 +122,7 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
         ('Access contents information',
          ('hasProperty', 'propertyIds', 'propertyValues','propertyItems',
           'getProperty', 'getPropertyType', 'propertyMap', 'propertyLabel',
-          'propdict', 'valid_property_id', ''),
+          'propertyDescription', 'propdict', 'valid_property_id', ''),
          ('Anonymous', 'Manager'),
          ),
         )
@@ -254,6 +254,14 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
         for p in self._properties:
             if p['id'] == id:
                 return p.get('label', id)
+        return id
+
+    def propertyDescription(self, id):
+        """Return a description for the given property id
+        """
+        for p in self._properties:
+            if p['id'] == id:
+                return p.get('description', '')
         return id
 
     def propdict(self):

@@ -21,10 +21,12 @@ import unittest
 class TestPropertyManager(unittest.TestCase):
     """Property management tests."""
 
-    def _makeOne(self, *args, **kw):
+    def _getTargetClass(self):
         from OFS.PropertyManager import PropertyManager
+        return PropertyManager
 
-        return PropertyManager(*args, **kw)
+    def _makeOne(self, *args, **kw):
+        return self._getTargetClass()(*args, **kw)
 
     def test_z3interfaces(self):
         from OFS.interfaces import IPropertyManager
@@ -51,6 +53,40 @@ class TestPropertyManager(unittest.TestCase):
         inst.manage_addProperty('prop2', ['xxx', 'yyy'], 'lines')
         self.failUnless(type(inst.getProperty('prop2')) == type(()))
         self.failUnless(type(inst.prop2) == type(()))
+
+    def test_propertyLabel_no_label_falls_back_to_id(self):
+        class NoLabel(self._getTargetClass()):
+            _properties = (
+                {'id': 'no_label', 'type': 'string'},
+            )
+        inst = NoLabel()
+        self.assertEqual(inst.propertyLabel('no_label'), 'no_label')
+
+    def test_propertyLabel_with_label(self):
+        class WithLabel(self._getTargetClass()):
+            _properties = (
+                {'id': 'with_label', 'type': 'string', 'label': 'With Label'},
+            )
+        inst = WithLabel()
+        self.assertEqual(inst.propertyLabel('with_label'), 'With Label')
+
+    def test_propertyDescription_no_description_falls_back_to_id(self):
+        class NoDescription(self._getTargetClass()):
+            _properties = (
+                {'id': 'no_description', 'type': 'string'},
+            )
+        inst = NoDescription()
+        self.assertEqual(inst.propertyDescription('no_description'), '')
+
+    def test_propertyDescription_with_description(self):
+        class WithDescription(self._getTargetClass()):
+            _properties = (
+                {'id': 'with_description', 'type': 'string',
+                 'description': 'With Description'},
+            )
+        inst = WithDescription()
+        self.assertEqual(inst.propertyDescription('with_description'),
+                         'With Description')
 
 
 class TestPropertySheet(unittest.TestCase):
