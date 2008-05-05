@@ -8,6 +8,9 @@ Zope Changes
 
     Bugs fixed
 
+      - Launchpad #142350: Display description for properties as row title,
+        if present.
+
       - Launchpad #200007: DateTime(anotherDateTime) now preserves the
         timezone.
 
