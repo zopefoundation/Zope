@@ -57,13 +57,15 @@ for name, prefix in (('lib_python', None),
         try:
             tag = CP.get('versions', full_mod_name)
             n = '/'.join(full_mod_name.split('.'))
-            url = 'svn://svn.zope.org/repos/main/%s/tags/%s/src/%s' % (full_mod_name, tag, n)
+            url = 'svn://svn.zope.org/repos/main/%s/tags/%s/src/%s' % \
+                  (full_mod_name, tag, n)
             ok = True
         except NoOptionError:
             ok = False
             print >>error, 'WARN: KGS incomplete - %s not found' % full_mod_name
 
         if not ok:
-            print >>fp, '# warning: KGS incomplete, using old URL for %s' % module
-        print >>fp, '%-20s %s' % (module, url)                
+            print >>fp, '# warning: %s not found in KGS, using old URL for %s' % \
+                        (module, module)
+        print >>fp, '%-20s %s' % (module, url)
     fp.close()
