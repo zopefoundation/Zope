@@ -66,6 +66,11 @@ create interface skeletins. Run it without arguments to get documentation.
 Revision information:
 $Id$
 """
+import warnings
+warnings.warn(
+    'The Interface package is deprecated and will be removed '
+    'in Zope 2.12. Use zope.interface instead.',
+    DeprecationWarning, stacklevel=2)
 
 from _Interface import Interface
 from Attribute import Attribute
