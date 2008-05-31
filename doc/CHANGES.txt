@@ -198,6 +198,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Switch to branch of 'zope.testbrowser' external which suppresses
+        over-the-wire tests.
+
       - Launchpad #164783: Indexes were migrated on initial creation of a
         ZODB.
 
