@@ -94,30 +94,32 @@ Zope Changes
         possible to mix ZTC and non-ZTC tests much more freely.
 
       - Testing/custom_zodb.py: added support use a different storage other
-        than DemoStorage. A dedicated FileStorage can be mount by setting the
-        $TEST_FILESTORAGE environment variable to a custom Data.fs file.  A 
-        ZEO server can be configured using the $TEST_ZEO_HOST and 
-        $TEST_ZEO_PORT environment variables. This new functionality allows us
-        to use the standard Zope testrunner for writing and running tests
-        against existing Zope installations.
+        than DemoStorage. A dedicated FileStorage can be mount by setting
+        the $TEST_FILESTORAGE environment variable to a custom Data.fs
+        file.  A ZEO server can be configured using the $TEST_ZEO_HOST and
+        $TEST_ZEO_PORT environment variables. This new functionality allows
+        us to use the standard Zope testrunner for writing and running
+        tests against existing Zope installations.
 
       - The ZPublisher HTTP request has now both the debug and locale
-        attributes available, like its Zope 3 counterpart. The debug attribute
-        was so far limited to code from the zope.* namespace in order to make
-        the Zope 3 ZPT engine work. The locale attribute provides access to an
-        zope.i18n.interfaces.locales.ILocale object with access to locale
-        related information like date / time formatting or translated language
-        and country names. Form variables of both debug and locale will shadow
-        these two attributes and their use is therefor discouraged.
+        attributes available, like its Zope 3 counterpart. The debug
+        attribute was so far limited to code from the zope.* namespace in
+        order to make the Zope 3 ZPT engine work. The locale attribute
+        provides access to an zope.i18n.interfaces.locales.ILocale object
+        with access to locale related information like date / time
+        formatting or translated language and country names. Form variables
+        of both debug and locale will shadow these two attributes and their
+        use is therefor discouraged.
 
-      - MailHost: now uses zope.sendmail for delivering the mail. With this change
-        MailHost integrates with the Zope transaction system (avoids sending dupe
-        emails in case of conflict errors). In addition MailHost now provides 
-        support for asynchronous mail delivery. The 'Use queue' configuration 
-        option will create a mail queue on the filesystem (under 
-        'Queue directory') and start a queue thread that checks the queue every
-        three seconds. This decouples the sending of mail from its delivery.
-        In addition MailHosts now supports encrypted connections through TLS/SSL.
+      - MailHost: now uses zope.sendmail for delivering the mail. With this
+        change MailHost integrates with the Zope transaction system (avoids
+        sending dupe emails in case of conflict errors). In addition
+        MailHost now provides support for asynchronous mail delivery. The
+        'Use queue' configuration option will create a mail queue on the
+        filesystem (under 'Queue directory') and start a queue thread that
+        checks the queue every three seconds. This decouples the sending of
+        mail from its delivery.  In addition MailHosts now supports
+        encrypted connections through TLS/SSL.
 
       - integrated ZODB 3.8
     
@@ -140,24 +142,26 @@ Zope Changes
 
       - PythonScripts: allow usage of Python's 'sets' module
 
-      - added 'fast_listen' directive to http-server and webdav-source-server
-        sections in etc/zope.conf in order to defer the opening of the sockets
-        until the late startup phase. This in in particular useful when running
-        Zope behind a loadbalancer (patch by Patrick Gerken).
+      - added 'fast_listen' directive to http-server and
+        webdav-source-server sections in etc/zope.conf in order to defer
+        the opening of the sockets until the late startup phase. This in in
+        particular useful when running Zope behind a loadbalancer (patch by
+        Patrick Gerken).
 
       - the ZopePageTemplate implementation now uses unicode internally.
-        Non-unicode instances are migrated on-the-fly to unicode. However this
-        will work only properly for ZPT instances formerly encoded as utf-8 or
-        ISO-8859-15. For other encodings you might set the environment variable
-        ZPT_REFERRED_ENCODING to insert your preferred encoding in front of
-        utf-8 and ISO-8859-15 within the encoding sniffer code.
+        Non-unicode instances are migrated on-the-fly to unicode. However
+        this will work only properly for ZPT instances formerly encoded as
+        utf-8 or ISO-8859-15. For other encodings you might set the
+        environment variable ZPT_REFERRED_ENCODING to insert your preferred
+        encoding in front of utf-8 and ISO-8859-15 within the encoding
+        sniffer code.
 
         In addition there is a new 'output_encodings' property that controls
         the conversion from/to unicode for WebDAV/FTP operations.
 
-      - the ZPT implementation has now a configurable option in order how to
-        deal with UnicodeDecodeErrors. A custom UnicodeEncodingConflictResolver
-        can be configured through ZCML (see
+      - the ZPT implementation has now a configurable option in order how
+        to deal with UnicodeDecodeErrors. A custom
+        UnicodeEncodingConflictResolver can be configured through ZCML (see
         Products/PageTemplates/(configure.zcml, unicodeconflictresolver.py,
         interfaces.py)
 
@@ -317,8 +321,8 @@ Zope Changes
       - No longer opens a zodb connection every time a ProductDispatcher
         is looked up.
 
-      - PageTemplate/ZRPythonExpr.py: expressions represented as unicode string
-        caused UnicodeDecodeErrors.
+      - PageTemplate/ZRPythonExpr.py: expressions represented as unicode
+        string caused UnicodeDecodeErrors.
 
       - PluginIndexes: Fixed 'parseIndexRequest' for false values.
 
@@ -913,7 +917,8 @@ Zope Changes
 
       - doc/FAQ.txt updated: should bear some resemblance to reality now.
         (PCGI stuff removed; error information updated; PID information
-        updated; upgrade procedure added; some common version questions added.)
+        updated; upgrade procedure added; some common version questions
+        added.)
 
       - Collector #1770: Fixed RestructuredText subtitle
 
@@ -1226,17 +1231,18 @@ Zope Changes
       - Collector #934: Image and File objects are now always internally
         split into small chunks even when initialized from a string.
 
-      - docutils: updated to V 0.3.5. The Zope core now contains a full copy of
-        the docutils package except some GPLed files which can not be included
-        with the Zope distribution due to license constraints on svn.zope.org.
+      - docutils: updated to V 0.3.5. The Zope core now contains a full
+        copy of the docutils package except some GPLed files which can not
+        be included with the Zope distribution due to license constraints
+        on svn.zope.org.
 
       - docutils: moved from lib/python/docutils to
         lib/python/third_party/docutils
 
-      - Collector #1557/OFS.Image: Introducing new 'alt' property. The 'alt'
-        attribute is no longer taken from the 'title' property but from the new
-        'alt' property.  The border="0" attribute is no longer part of the HTML
-        output except specified otherwise.
+      - Collector #1557/OFS.Image: Introducing new 'alt' property. The
+        'alt' attribute is no longer taken from the 'title' property but
+        from the new 'alt' property.  The border="0" attribute is no longer
+        part of the HTML output except specified otherwise.
 
       - Set a default value of '' for the new 'alt' property as not to
         break existing content.
