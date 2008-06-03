@@ -149,7 +149,7 @@ class PageTemplateFile(Item_w__name__, Script, PageTemplate, Traversable):
         self.pt_edit(text, t)
         self._cook()
         if self._v_errors:
-            LOG.error('Error in template', '\n'.join(self._v_errors))
+            LOG.error('Error in template %s' % '\n'.join(self._v_errors))
             return
         self._v_last_read = mtime
 
