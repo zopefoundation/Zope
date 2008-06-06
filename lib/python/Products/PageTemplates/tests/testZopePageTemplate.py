@@ -152,6 +152,20 @@ class ZPTUnicodeEncodingConflictResolution(ZopeTestCase):
         state = cPickle.dumps(empty, protocol=1)
         clone = cPickle.loads(state)
 
+    def testDebugFlags(self):
+        # Test for bug 229549
+        manage_addPageTemplate(self.app, 'test', 
+                               text='<div tal:content="string:foo">bar</div>', 
+                               encoding='ascii')
+        zpt = self.app['test']
+        from zope.publisher.base import DebugFlags
+        self.app.REQUEST.debug = DebugFlags()
+        self.assertEqual(zpt.pt_render(), unicode('<div>foo</div>\n'))
+        self.app.REQUEST.debug.showTAL = True
+        self.assertEqual(zpt.pt_render(), unicode('<div tal:content="string:foo">foo</div>\n'))
+        self.app.REQUEST.debug.sourceAnnotations = True
+        self.assertEqual(zpt.pt_render().startswith(unicode('<!--')), True)
+
 class ZopePageTemplateFileTests(ZopeTestCase):
 
     def testPT_RenderWithAscii(self):

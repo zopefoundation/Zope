@@ -86,7 +86,15 @@ class PageTemplate(ExtensionClass.Base,
     def pt_render(self, source=False, extra_context={}):
         c = self.pt_getContext()
         c.update(extra_context)
-        return super(PageTemplate, self).pt_render(c, source=source)
+        debug = getattr(c['request'], 'debug', None)
+        if debug is not None:
+            showtal = getattr(debug, 'showTAL', False)
+            sourceAnnotations = getattr(debug, 'sourceAnnotations', False)
+        else:
+            showtal = sourceAnnotations = False
+        return super(PageTemplate, self).pt_render(c, source=source, sourceAnnotations=sourceAnnotations,
+                   showtal=showtal)
+
 
     def pt_errors(self, namespace={}):
         self._cook_check()
