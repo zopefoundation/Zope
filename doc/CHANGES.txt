@@ -14,6 +14,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Launchpad #229549:  Don't ignore 'debug' flag when rendering
+        page templates (thanks to Eric Steele for the patch).
+
       - Fixed against-the-rules zope.conf option 'fast_listen' to read
         'fast-listen' (dash, not underscore).
 
