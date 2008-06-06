@@ -198,6 +198,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Fixed against-the-rules zope.conf option 'fast_listen' to read
+        'fast-listen' (dash, not underscore).
+
       - Switch to branch of 'zope.testbrowser' external which suppresses
         over-the-wire tests.
 
