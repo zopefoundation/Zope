@@ -975,8 +975,7 @@ instancehome $INSTANCE
   #
   # To defer the opening of the HTTP socket until the end of the 
   # startup phase: 
-  # fast_listen false
-  #
+  # fast-listen off
 </http-server>
 
 # Examples:

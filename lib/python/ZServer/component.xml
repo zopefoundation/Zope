@@ -19,10 +19,10 @@
          receive WebDAV source responses to GET requests.
        </description>
      </key>
-     <key name="fast_listen" datatype="boolean" default="on">
+     <key name="fast-listen" datatype="boolean" default="on">
        <description>
-         Defines wether the http server should listen to requests immediately
-         or only after zope is ready to run
+         Defines whether the HTTP server should listen for requests
+         immediately or only after Zope is ready to run.
        </description>
      </key>
      <key name="use-wsgi" datatype="boolean" default="off" />

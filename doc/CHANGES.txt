@@ -12,6 +12,11 @@ Zope Changes
         interfaces (on import of the Interface package).  That package
         is already gone on the trunk.
 
+    Bugs Fixed
+
+      - Fixed against-the-rules zope.conf option 'fast_listen' to read
+        'fast-listen' (dash, not underscore).
+
   Zope 2.11 rc 1 (2008/05/08)
 
     Bugs Fixed
