@@ -217,7 +217,7 @@ class HTTPResponse(BaseResponse):
             # It has already been determined.
             return
 
-        if (isinstance(status, types.ClassType)
+        if (isinstance(status, (type, types.ClassType))
          and issubclass(status, Exception)):
             status = status.__name__
 

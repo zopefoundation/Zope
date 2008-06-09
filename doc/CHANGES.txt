@@ -411,6 +411,11 @@ Zope Changes
 
       - Prevent ZPublisher from insering incorrect <base/> tags into the
         headers of plain html files served from Zope3 resource directories.
+      
+      - Changed the condtion checking for setting status of HTTPresponce from
+	if( isinstance(status, types.ClassType) and issubclass(status, Exception))
+	to if( isinstance(status, (type, types.ClassType)) and issubclass(status, Exception))
+	for fixing the failures in the module Zope2
 
     Other Changes
 
