@@ -416,6 +416,9 @@ Zope Changes
 	if( isinstance(status, types.ClassType) and issubclass(status, Exception))
 	to if( isinstance(status, (type, types.ClassType)) and issubclass(status, Exception))
 	for fixing the failures in the module Zope2
+      
+      - The Wrapper_compare function from tp_compare to tp_richcompare.
+	Also another function Wrapper_richcompare is added.
 
     Other Changes
 
