@@ -68,6 +68,7 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
     def HEAD(self, REQUEST, RESPONSE):
         """Retrieve resource information without a response message body."""
         self.dav__init(REQUEST, RESPONSE)
+        RESPONSE.setBody('', lock=True)
         raise NotFound, 'The requested resource does not exist.'
 
     # Most methods return 404 (Not Found) for null resources.
