@@ -14,6 +14,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Launchpad #239636:  Ensure that HEAD requests lock an empty body
+        for NotFound errors.
+
       - Launchpad #229549:  Don't ignore 'debug' flag when rendering
         page templates (thanks to Eric Steele for the patch).
 
