@@ -198,6 +198,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - fixed outdated transaction.commit(1) call in 
+        ZODBMountPoint.SimpleTrailblazer
+
       - Fixed against-the-rules zope.conf option 'fast_listen' to read
         'fast-listen' (dash, not underscore).
 
