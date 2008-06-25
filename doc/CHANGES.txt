@@ -11,6 +11,9 @@ Zope Changes
       - Launchpad #239636:  Ensure that HEAD requests lock an empty body
         for NotFound errors.
 
+      - fixed outdated transaction.commit(1) call in 
+        ZODBMountPoint.SimpleTrailblazer
+
   Zope 2.11.0 (2008/06/15)
 
     Restructuring

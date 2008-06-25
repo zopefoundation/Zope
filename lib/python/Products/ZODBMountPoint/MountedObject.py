@@ -60,7 +60,7 @@ class SimpleTrailblazer:
         o = context.restrictedTraverse(id)
         # Commit a subtransaction to assign the new object to
         # the correct database.
-        transaction.commit(1)
+        transaction.savepoint(optimistic=True)
         return o
 
     def traverseOrConstruct(self, path, omit_final=0):
