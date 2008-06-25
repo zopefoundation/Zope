@@ -8,6 +8,9 @@ Zope Changes
 
     Bugs fixed
 
+      - fixed outdated transaction.commit(1) call in 
+        ZODBMountPoint.SimpleTrailblazer
+
       - Launchpad #239636:  Ensure that HEAD requests lock an empty body
         for NotFound errors.
 
