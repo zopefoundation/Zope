@@ -9,6 +9,12 @@ Zope Changes
 
     Restructuring
 
+      - Removed deprecated ZTUtil.Iterator module
+
+      - Removed deprecated StructuredText module
+
+      - Removed deprecated TAL module
+
       - Removed deprecated modules from Products.PageTemplates.
 
       - Removed deprecated ZCML directives from Five including the whole
@@ -465,7 +471,7 @@ Zope Changes
         the 'logging' module
 
       - PluginIndexes/TextIndex is deprecated. Use ZCTextIndex instead
-
+  
       - the 'StructuredText' module is deprecated. Use zope.structuredtext
         instead
 

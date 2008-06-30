@@ -14,7 +14,6 @@
 """ZCatalog product"""
 
 import ZCatalog, CatalogAwareness, CatalogPathAwareness
-from Products.PluginIndexes.TextIndex import Vocabulary
 
 # BBB: ZClasses are deprecated but we don't want the warning to appear here
 import warnings
@@ -44,13 +43,6 @@ def initialize(context):
         icon='www/ZCatalog.gif',
         )
 
-    context.registerClass(
-        Vocabulary.Vocabulary,
-        permission='Add Vocabularies',
-        constructors=(Vocabulary.manage_addVocabularyForm,
-                      Vocabulary.manage_addVocabulary),
-        icon='www/Vocabulary.gif',
-        )
 
     context.registerHelp()
     context.registerHelpTitle('Zope Help')

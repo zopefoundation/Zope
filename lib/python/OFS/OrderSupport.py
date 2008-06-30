@@ -261,16 +261,8 @@ class OrderSupport(object):
         old_position = self.getObjectPosition(id)
         result = super(OrderSupport, self).manage_renameObject(id, new_id,
                                                                REQUEST)
-        try:
-            self.moveObjectToPosition(new_id, old_position,
-                                      suppress_events=True)
-        except TypeError:
-            # BBB: removed in Zope 2.11
-            self.moveObjectToPosition(new_id, old_position)
-            warnings.warn(
-                "%s.moveObjectToPosition without suppress_events is "
-                "deprecated and will be removed in Zope 2.11." %
-                self.__class__.__name__, DeprecationWarning)
+        self.moveObjectToPosition(new_id, old_position,
+                                  suppress_events=True)
         return result
 
     def tpValues(self):

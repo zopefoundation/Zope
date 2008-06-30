@@ -535,30 +535,14 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
         ob = self._getCopy(parent)
         ob._setId(name)
 
-        try:
-            orig_container._delObject(orig_id, suppress_events=True)
-        except TypeError:
-            # BBB: removed in Zope 2.11
-            orig_container._delObject(orig_id)
-            warnings.warn(
-                "%s._delObject without suppress_events is deprecated "
-                "and will be removed in Zope 2.11." %
-                orig_container.__class__.__name__, DeprecationWarning)
+        orig_container._delObject(orig_id, suppress_events=True)
 
         if existing:
             object=getattr(parent, name)
             self.dav__validate(object, 'DELETE', REQUEST)
             parent._delObject(name)
 
-        try:
-            parent._setObject(name, ob, set_owner=0, suppress_events=True)
-        except TypeError:
-            # BBB: removed in Zope 2.11
-            parent._setObject(name, ob, set_owner=0)
-            warnings.warn(
-                "%s._setObject without suppress_events is deprecated "
-                "and will be removed in Zope 2.11." %
-                parent.__class__.__name__, DeprecationWarning)
+        parent._setObject(name, ob, set_owner=0, suppress_events=True)
         ob = parent._getOb(name)
 
         notify(ObjectMovedEvent(ob, orig_container, orig_id, parent, name))

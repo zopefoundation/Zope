@@ -504,15 +504,6 @@ class ZCatalog(Folder, Persistent, Implicit):
                 '?manage_tabs_message=Reindexing%20Performed')
 
 
-    # BBB: will be removed in Zope 2.12 (like TextIndex itself)
-    security.declareProtected(manage_zcatalog_entries, 'availableSplitters')
-    def availableSplitters(self):
-        """ splitter we can add """
-        # This import will trigger a deprecation warning about TextIndex
-        from Products.PluginIndexes.TextIndex import Splitter
-        return Splitter.availableSplitters
-
-
     security.declareProtected(manage_zcatalog_entries, 'catalog_object')
     def catalog_object(self, obj, uid=None, idxs=None, update_metadata=1, pghandler=None):
         """ wrapper around catalog """
