@@ -129,8 +129,9 @@ def registerPermissions(permissions, defaultDefault=('Manager',)):
         else:
             perm, methods, default = setting
         _registeredPermissions[perm]=1
+        Products_permissions = getattr(Products, '__ac_permissions__', ())
         Products.__ac_permissions__=(
-            Products.__ac_permissions__+((perm,(),default),))
+            Products_permissions + ((perm, (), default),))
         mangled=pname(perm) # get mangled permission name
         if not hasattr(Globals.ApplicationDefaultPermissions, mangled):
             setattr(Globals.ApplicationDefaultPermissions,
