@@ -204,6 +204,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Launchpad #245649:  the Products package is now a proper
+        "namespace package" under the rules specified by setuptools.
+
       - fixed outdated transaction.commit(1) call in 
         ZODBMountPoint.SimpleTrailblazer
 

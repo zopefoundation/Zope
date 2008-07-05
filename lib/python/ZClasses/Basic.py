@@ -189,9 +189,10 @@ class ZClassPermissionsSheet(OFS.PropertySheets.PropertySheet,
     manage=Globals.DTMLFile('dtml/classPermissions', globals())
 
     def possible_permissions(self):
+        Products_permissions = getattr(Products, '__ac_permissions__', ())
         r=map(
             lambda p: p[0],
-            Products.__ac_permissions__+
+            Products_permissions +
             self.aq_acquire('_getProductRegistryData')('ac_permissions')
             )
         r.sort()
@@ -199,9 +200,10 @@ class ZClassPermissionsSheet(OFS.PropertySheets.PropertySheet,
 
     def manage_edit(self, selected=[], REQUEST=None):
         "Remove some permissions"
+        Products_permissions = getattr(Products, '__ac_permissions__', ())
         r=[]
         for p in (
-            Products.__ac_permissions__+
+            Products_permissions +
             self.aq_acquire('_getProductRegistryData')('ac_permissions')):
             if p[0] in selected:
                 r.append(p)
