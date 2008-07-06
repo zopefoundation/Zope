@@ -603,7 +603,8 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
 
     def possible_permissions(self):
         d={}
-        for p in Products.__ac_permissions__:
+        Products_permissions = getattr(Products, '__ac_permissions__', ())
+        for p in Products_permissions:
             d[p[0]]=1
         for p in self.aq_acquire('_getProductRegistryData')('ac_permissions'):
             d[p[0]]=1
