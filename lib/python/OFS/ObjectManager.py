@@ -236,7 +236,8 @@ class ObjectManager(
         return meta_types
 
     def _subobject_permissions(self):
-        return (Products.__ac_permissions__+
+        Products_permissions = getattr(Products, '__ac_permissions__', ())
+        return (Products_permissions +
                 self.aq_acquire('_getProductRegistryData')('ac_permissions')
                 )
 
