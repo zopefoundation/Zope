@@ -419,6 +419,8 @@ Zope Changes
       
       - The Wrapper_compare function from tp_compare to tp_richcompare.
 	Also another function Wrapper_richcompare is added.
+      
+      - The doc test has been slightly changed in ZPublisher to get the error message extracted correctly	 .
 
     Other Changes
 
