@@ -8,7 +8,7 @@ Zope Changes
 
     Bugs Fixed
 
-      - zope.testing : updated to 3.5.2
+      - zope.testing : updated to 3.5.3
 
       - Launchpad #245649:  the Products package is now a proper
         "namespace package" under the rules specified by setuptools.
