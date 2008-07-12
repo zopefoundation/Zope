@@ -80,6 +80,7 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
     smtp_pwd=''
     smtp_queue = False
     smtp_queue_directory = '/tmp'
+    force_tls = False
     lock = Lock()
 
     # timeout=1.0 # unused?

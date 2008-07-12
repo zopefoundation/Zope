@@ -7,6 +7,8 @@ Zope Changes
   After Zope 2.11.0
 
     Bugs Fixed
+    
+      - Launchpad #246290: fixed backward compatibility issue
 
       - zope.testing : updated to 3.5.3
 
