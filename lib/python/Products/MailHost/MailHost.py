@@ -27,7 +27,6 @@ import OFS.SimpleItem
 from AccessControl import ClassSecurityInfo
 from AccessControl.Permissions import change_configuration, view
 from AccessControl.Permissions import use_mailhost_services
-from AccessControl.Permissions import view_management_screens
 from AccessControl.Role import RoleManager
 from Globals import Persistent, DTMLFile, InitializeClass
 from DateTime import DateTime

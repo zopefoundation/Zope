@@ -16,7 +16,6 @@ __version__='$Revision: 1.18 $'[11:-2]
 from MailHost import MailBase, MailHostError
 from DocumentTemplate.DT_Util import parse_params,render_blocks
 from DocumentTemplate.DT_String import String
-from socket import gethostname
 
 class SendMailTag:
     '''the send mail tag, used like thus:
