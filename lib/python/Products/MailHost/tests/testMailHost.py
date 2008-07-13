@@ -26,8 +26,9 @@ class DummyMailHost(MailHost):
     def __init__(self, id):
         self.id = id
         self.sent = ''
-    def _send(self, mfrom, mto, messageText):
+    def _send(self, mfrom, mto, messageText, immediate=False):
         self.sent = messageText
+        self.immediate = immediate
 
 
 class TestMailHost(unittest.TestCase):
@@ -190,6 +191,22 @@ This is the message body."""
                              mfrom='sender@domain.com', subject='This is the subject',
                              body='This is the message body.')
         self.assertEqual(mailhost.sent, outmsg)
+        self.assertEqual(mailhost.immediate, False)
+
+    def testSendImmediate(self):
+        outmsg = """\
+From: sender@domain.com
+To: "Name, Nick" <recipient@domain.com>, "Foo Bar" <foo@domain.com>
+Subject: This is the subject
+
+This is the message body."""
+
+        mailhost = self._makeOne('MailHost')
+        mailhost.simple_send(mto='"Name, Nick" <recipient@domain.com>, "Foo Bar" <foo@domain.com>',
+                             mfrom='sender@domain.com', subject='This is the subject',
+                             body='This is the message body.', immediate=True)
+        self.assertEqual(mailhost.sent, outmsg)
+        self.assertEqual(mailhost.immediate, True)
 
 
 def test_suite():

@@ -7,6 +7,10 @@ Zope Changes
   After Zope 2.11.0
 
     Bugs Fixed
+
+      - Launchpad #246748: added 'immediate' option to sendXXX() methods
+        for sending a mail immediately by-passing the zope.sendmail delivery
+        mechanism
     
       - Launchpad #246290: fixed backward compatibility issue
 
