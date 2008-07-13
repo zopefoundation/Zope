@@ -155,15 +155,16 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
     security.declareProtected(use_mailhost_services, 'sendTemplate')
     def sendTemplate(trueself, self, messageTemplate,
                      statusTemplate=None, mto=None, mfrom=None,
-                     encode=None, REQUEST=None):
+                     encode=None, REQUEST=None, immediate=False):
         'render a mail template, then send it...'
         mtemplate = getattr(self, messageTemplate)
         messageText = mtemplate(self, trueself.REQUEST)
         messageText, mto, mfrom = _mungeHeaders( messageText, mto, mfrom)
         messageText=_encode(messageText, encode)
-        trueself._send(mfrom, mto, messageText)
+        trueself._send(mfrom, mto, messageText, immediate)
 
-        if not statusTemplate: return "SEND OK"
+        if not statusTemplate: 
+            return "SEND OK"
 
         try:
             stemplate=getattr(self, statusTemplate)
@@ -173,11 +174,11 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
 
     security.declareProtected(use_mailhost_services, 'send')
     def send(self, messageText, mto=None, mfrom=None, subject=None,
-             encode=None):
+             encode=None, immediate=False):
 
         messageText, mto, mfrom = _mungeHeaders( messageText, mto, mfrom, subject)
         messageText = _encode(messageText, encode)
-        self._send(mfrom, mto, messageText)
+        self._send(mfrom, mto, messageText, immediate)
 
     # This is here for backwards compatibility only. Possibly it could
     # be used to send messages at a scheduled future time, or via a mail queue?
@@ -185,11 +186,11 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
     scheduledSend = send
 
     security.declareProtected(use_mailhost_services, 'simple_send')
-    def simple_send(self, mto, mfrom, subject, body):
+    def simple_send(self, mto, mfrom, subject, body, immediate=False):
         body="From: %s\nTo: %s\nSubject: %s\n\n%s" % (
             mfrom, mto, subject, body)
 
-        self._send( mfrom, mto, body )
+        self._send(mfrom, mto, body, immediate)
 
 
     def _makeMailer(self):
@@ -218,7 +219,7 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
     @synchronized(lock)
     def _startQueueProcessorThread(self):
         """ Start thread for processing the mail queue """
-        
+
         path = self.absolute_url(1)
         if not queue_threads.has_key(path):
             thread = QueueProcessorThread()
@@ -228,7 +229,6 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
             queue_threads[path] = thread     
             LOG.info('Thread for %s started' % path)
 
-     
     security.declareProtected(view, 'queueLength')
     def queueLength(self):
         """ return length of mail queue """
@@ -268,17 +268,20 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
 
 
     security.declarePrivate('_send')
-    def _send(self, mfrom, mto, messageText):
+    def _send(self, mfrom, mto, messageText, immediate=False):
         """ Send the message """
 
-        if self.smtp_queue:
-            # Start queue processor thread, if necessary
-            self._startQueueProcessorThread()
-            delivery = QueuedMailDelivery(self.smtp_queue_directory)
+        if immediate:
+            self._makeMailer().send(mfrom, mto, messageText)
         else:
-            delivery = DirectMailDelivery(self._makeMailer())
+            if self.smtp_queue:
+                # Start queue processor thread, if necessary
+                self._startQueueProcessorThread()
+                delivery = QueuedMailDelivery(self.smtp_queue_directory)
+            else:
+                delivery = DirectMailDelivery(self._makeMailer())
 
-        delivery.send(mfrom, mto, messageText)                
+            delivery.send(mfrom, mto, messageText)
 
 InitializeClass(MailBase)
 
