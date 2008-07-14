@@ -8,6 +8,10 @@ Zope Changes
 
     Bugs Fixed
 
+      - Suppressed DeprecationWarning during import of ZPublisher.Iterators:
+        that module needs to use Z2-style interfaces in 2.11, for BBB, but
+        the Interface module itself issues the warning on import.
+
       - Launchpad #246748: added 'immediate' option to sendXXX() methods
         for sending a mail immediately by-passing the zope.sendmail delivery
         mechanism

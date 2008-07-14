@@ -1,4 +1,14 @@
-from Interface import Interface
+import warnings
+
+# The Z2 Interface module is deprecated:  in Zope 2.12, this module will use
+# Z3 interfaces instead.  Meanwhile, silence the deprecation warning.
+_existing_filters = warnings.filters[:]
+warnings.filterwarnings('ignore', category=DeprecationWarning)
+try:
+    from Interface import Interface
+finally:
+    warnings.filters[:] = _existing_filters
+    del _existing_filters
 
 class IStreamIterator(Interface):
     """
