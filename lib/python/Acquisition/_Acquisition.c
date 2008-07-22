@@ -1318,7 +1318,7 @@ static PyExtensionClass XaqWrappertype = {
   (printfunc)0,				/*tp_print*/
   (getattrfunc)0,			/*tp_getattr*/
   (setattrfunc)0,			/*tp_setattr*/
-  (cmpfunc)Wrapper_compare,    		/*tp_compare*/
+  (cmpfunc)0,    		/*tp_compare*/
   (reprfunc)Wrapper_repr,      		/*tp_repr*/
   &Wrapper_as_number,			/*tp_as_number*/
   &Wrapper_as_sequence,			/*tp_as_sequence*/
@@ -1336,7 +1336,7 @@ static PyExtensionClass XaqWrappertype = {
   "Wrapper object for implicit acquisition", /* Documentation string */
   /* tp_traverse       */ (traverseproc)Wrapper_traverse,
   /* tp_clear          */ (inquiry)Wrapper_clear,
-  /* tp_richcompare    */ (richcmpfunc)0,
+  /* tp_richcompare    */ (richcmpfunc)Wrapper_richcompare,
   /* tp_weaklistoffset */ (long)0,
   /* tp_iter           */ (getiterfunc)0,
   /* tp_iternext       */ (iternextfunc)0,

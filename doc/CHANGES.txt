@@ -421,6 +421,7 @@ Zope Changes
 	Also another function Wrapper_richcompare is added.
       
       - The doc test has been slightly changed in ZPublisher to get the error message extracted correctly	 .
+      - The changes made in Acquisition.c in implicit comparison made avail to explicit comparison also.
 
     Other Changes
 
