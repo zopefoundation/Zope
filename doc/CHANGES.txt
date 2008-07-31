@@ -1721,3 +1721,4 @@ addition
 
      - ObjectManager will now attempt to set Owner local role keyed
        to the user's id, rather than username.
+
