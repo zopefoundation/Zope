@@ -204,6 +204,8 @@ Zope Changes
 
     Bugs Fixed
 
+      - LP #253362: better dealing with malformed HTTP_ACCEPT_CHARSET headers
+
       - Launchpad #246748: added 'immediate' option to sendXXX() methods
         for sending a mail immediately by-passing the zope.sendmail delivery
         mechanism
