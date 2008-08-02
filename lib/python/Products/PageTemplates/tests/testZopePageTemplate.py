@@ -339,6 +339,23 @@ class ZopePageTemplateFileTests(ZopeTestCase):
         result = zpt.pt_render()
      	self.assertEqual('ATTR' in result, False)		
 
+class PreferredEncodingUnicodeResolverTests(unittest.TestCase):
+
+    def testPreferredCharsetResolverWithoutRequestAndWithoutEncoding(self):
+        # This test checks the edgecase where the unicode conflict resolver
+        # is called with a context object having no REQUEST
+        context = object()
+        result = PreferredCharsetResolver.resolve(context, 'üצה', None)
+        self.assertEqual(result, 'üצה')
+
+    def testPreferredCharsetResolverWithoutRequestAndWithEncoding(self):
+        # This test checks the edgecase where the unicode conflict resolver
+        # is called with a context object having no REQUEST
+        class ContextMock:
+            management_page_charset = 'iso-8859-15'
+        result = PreferredCharsetResolver.resolve(ContextMock(), 'üצה', None)
+        self.assertEqual(result, u'üצה')
+
 
 class ZPTRegressions(unittest.TestCase):
 
@@ -463,6 +480,7 @@ def test_suite():
     suite.addTests(unittest.makeSuite(ZPTMacros))
     suite.addTests(unittest.makeSuite(ZopePageTemplateFileTests))
     suite.addTests(unittest.makeSuite(ZPTUnicodeEncodingConflictResolution))
+    suite.addTests(unittest.makeSuite(PreferredEncodingUnicodeResolverTests))
     return suite
 
 if __name__ == '__main__':

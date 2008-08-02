@@ -67,6 +67,7 @@ class PreferredCharsetResolver:
         # Deal with the fact that a REQUEST is not always available.
         # In this case fall back to the encoding of the ZMI and the
         # Python default encoding.
+
         if request is None:
             charsets = [default_encoding]
             management_charset = getattr(context, 'management_page_charset', None)
