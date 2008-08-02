@@ -339,7 +339,7 @@ class ZopePageTemplateFileTests(ZopeTestCase):
         result = zpt.pt_render()
      	self.assertEqual('ATTR' in result, False)		
 
-class PreferredEncodingUnicodeResolverTests(unittest.TestCase):
+class PreferredCharsetUnicodeResolverTests(unittest.TestCase):
 
     def testPreferredCharsetResolverWithoutRequestAndWithoutEncoding(self):
         # This test checks the edgecase where the unicode conflict resolver
@@ -480,7 +480,7 @@ def test_suite():
     suite.addTests(unittest.makeSuite(ZPTMacros))
     suite.addTests(unittest.makeSuite(ZopePageTemplateFileTests))
     suite.addTests(unittest.makeSuite(ZPTUnicodeEncodingConflictResolution))
-    suite.addTests(unittest.makeSuite(PreferredEncodingUnicodeResolverTests))
+    suite.addTests(unittest.makeSuite(PreferredCharsetUnicodeResolverTests))
     return suite
 
 if __name__ == '__main__':
