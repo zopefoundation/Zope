@@ -62,25 +62,42 @@ class PreferredCharsetResolver:
 
     def resolve(self, context, text, expression):
 
-        request = context.REQUEST
+        request = getattr(context, 'REQUEST', None)
 
-        charsets = getattr(request, '__zpt_available_charsets', None)
-        if charsets is None:
-            charsets = IUserPreferredCharsets(request).getPreferredCharsets()
-
-            # add management_page_charset as one fallback
+        # Deal with the fact that a REQUEST is not always available.
+        # In this case fall back to the encoding of the ZMI and the
+        # Python default encoding.
+        if request is None:
+            charsets = [default_encoding]
             management_charset = getattr(context, 'management_page_charset', None)
             if management_charset:
-                charsets.append(management_charset)
+                charsets.insert(0, management_charset)
+        else:
+            # charsets might by cached within the request            
+            charsets = getattr(request, '__zpt_available_charsets', None)
+
+        # No uncached charsets found: investigate the HTTP_ACCEPT_CHARSET
+        # header. This code is only called if 'context' has a request 
+        # object. The condition is true because otherwise 'charsets' contains
+        # at least the default encoding of Python.
+        if charsets is None:
+
+            charsets = list()
 
             # add Python's default encoding as last fallback
             charsets.append(default_encoding)               
+
+            # include the charsets based on the HTTP_ACCEPT_CHARSET
+            # header
+            charsets = IUserPreferredCharsets(request).getPreferredCharsets() +\
+                       charsets                    
 
             # cache list of charsets
             request.__zpt_available_charsets = charsets
 
         for enc in charsets:
-            if enc == '*': continue
+            if enc == '*': 
+                continue
 
             try:
                 return unicode(text, enc)
