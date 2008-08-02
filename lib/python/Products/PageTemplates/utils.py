@@ -56,7 +56,6 @@ def charsetFromMetaEquiv(html):
 
     return None
 
-                                                                          
 
 def convertToUnicode(source, content_type, preferred_encodings):
     """ Convert 'source' to unicode.
@@ -68,7 +67,6 @@ def convertToUnicode(source, content_type, preferred_encodings):
         return unicode(source, encoding), encoding  
 
     elif content_type.startswith('text/html'):
-
         encoding = charsetFromMetaEquiv(source)
         if encoding:
             return unicode(source, encoding), encoding  
@@ -85,4 +83,3 @@ def convertToUnicode(source, content_type, preferred_encodings):
                 continue
 
     return unicode(source), None
-
