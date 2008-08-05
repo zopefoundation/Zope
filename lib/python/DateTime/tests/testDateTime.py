@@ -19,7 +19,7 @@ import unittest
 
 from DateTime.DateTime import _findLocalTimeZoneName, _cache
 from DateTime import DateTime
-from datetime import datetime
+from datetime import datetime, tzinfo, timedelta
 import pytz
 import legacy
 
@@ -33,6 +33,24 @@ else:
 
 DATADIR = os.path.dirname(os.path.abspath(f))
 del f
+
+ZERO = timedelta(0)
+
+class FixedOffset(tzinfo):
+    """Fixed offset in minutes east from UTC."""
+
+    def __init__(self, offset, name):
+        self.__offset = timedelta(minutes = offset)
+        self.__name = name
+
+    def utcoffset(self, dt):
+        return self.__offset
+
+    def tzname(self, dt):
+        return self.__name
+
+    def dst(self, dt):
+        return ZERO
 
 
 class DateTimeTests(unittest.TestCase):
@@ -561,8 +579,17 @@ class DateTimeTests(unittest.TestCase):
         real_failures = list(set(failures).difference(set(expected_failures)))
             
         self.failIf(real_failures, '\n'.join(real_failures))
-            
-            
+    
+    def testBasicTZ(self):
+        """psycopg2 supplies it's own tzinfo instances, with no `zone` attribute
+        """
+        tz = FixedOffset(60, 'GMT+1')
+        dt1 = datetime(2008, 8, 5, 12, 0, tzinfo=tz)
+        DT = DateTime(dt1)
+        dt2 = DT.asdatetime()
+        offset1 = dt1.tzinfo.utcoffset(dt1)
+        offset2 = dt2.tzinfo.utcoffset(dt2)
+        self.assertEqual(offset1, offset2)
 
 
 def test_suite():

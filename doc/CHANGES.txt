@@ -8,6 +8,10 @@ Zope Changes
 
     Bugs Fixed
 
+      - DateTime conversion of datetime objects with non-pytz tzinfo. 
+        Timezones() returns a copy of the timezone list (allows tests to run).
+        (Backport of r89373 from trunk).
+
       - LP #253362: better dealing with malformed HTTP_ACCEPT_CHARSET headers
 
 

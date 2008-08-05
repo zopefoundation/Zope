@@ -599,7 +599,8 @@ class DateTime:
                     tz = None
                 else:
                     self._timezone_naive = False
-                    tz = arg.tzinfo.zone
+                    # if we have a pytz tzinfo, use the `zone` attribute as a key
+                    tz = getattr(arg.tzinfo, 'zone', numerictz)
                 ms = sc - math.floor(sc)
                 x = _calcDependentSecond2(yr,mo,dy,hr,mn,sc)
 
@@ -1850,5 +1851,5 @@ class strftimeFormatter:
 # Module methods
 def Timezones():
     """Return the list of recognized timezone names"""
-    return PytzCache._zlst
+    return list(PytzCache._zlst)
 
