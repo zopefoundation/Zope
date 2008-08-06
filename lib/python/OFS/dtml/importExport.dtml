@@ -9,7 +9,14 @@ You can export Zope objects to a file in order to transfer
 them to a different Zope installation. You can either choose
 to download the export file to your local machine, or save it
 in the &quot;var&quot; directory of your Zope installation 
-on the server.
+on the server. 
+<br/>
+<b>Note:</b>
+Zope can export/import objects in two dfferent formats: a binary format (called
+ZEXP) and as XML. The ZEXP format is the officially supported export/import
+format if you want to use for moving data between identicial Zope
+installations. The XML export/import is unsupported (and maybe broken under
+certain circumstances. 
 </p>
 
 <form action="manage_exportObject" method="post">
@@ -23,7 +30,7 @@ on the server.
   <td align="left" valign="top">
   <input type="text" name="id" size="25" value="<dtml-if ids><dtml-var "ids[0]" html_quote></dtml-if>" class="form-element"/>
   </td>
-</tr>
+</tr>                                                                          
 <tr>
   <td align="left" valign="top">
   <div class="form-label">
@@ -46,7 +53,7 @@ on the server.
   </td>
   <td align="left" valign="top">
   <div class="form-text">
-  <input type="checkbox" name="toxml" value="Y" /> XML format?
+  <input type="checkbox" name="toxml" value="Y" /> XML format? (unsupported, see above)
   </div>
   </td>
 </tr>
