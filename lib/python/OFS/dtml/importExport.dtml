@@ -11,12 +11,13 @@ to download the export file to your local machine, or save it
 in the &quot;var&quot; directory of your Zope installation 
 on the server. 
 <br/>
+<br/>
 <b>Note:</b>
 Zope can export/import objects in two dfferent formats: a binary format (called
 ZEXP) and as XML. The ZEXP format is the officially supported export/import
-format if you want to use for moving data between identicial Zope
-installations. The XML export/import is unsupported (and maybe broken under
-certain circumstances. 
+format for moving data between <u>identicial</u> Zope installations (it is not a migration tool).
+The XML export/import is unsupported (and possibly broken under certain circumstances) - use it
+at your own risk.
 </p>
 
 <form action="manage_exportObject" method="post">
