@@ -322,7 +322,11 @@ class PythonScript(Script, Historical, Cacheable):
         g['__file__'] = getattr(self, '_filepath', None) or self.get_filepath()
         f = new.function(fcode, g, None, fadefs)
 
-        result = f(*args, **kw)
+        try:
+            result = f(*args, **kw)
+        except SystemExit:
+            raise ValueError('SystemExit can not raised with a PythonScript')
+
         if keyset is not None:
             # Store the result in the cache.
             self.ZCacheable_set(result, keywords=keyset)

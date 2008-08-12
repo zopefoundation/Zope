@@ -204,6 +204,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Launchpad #257269: 'raise SystemExit' with a PythonScript could shutdown
+        a complete Zope instance
+
       - DateTime conversion of datetime objects with non-pytz tzinfo. 
         Timezones() returns a copy of the timezone list (allows tests to run).
 
