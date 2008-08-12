@@ -204,6 +204,10 @@ Zope Changes
 
     Bugs Fixed
 
+      - Launchpad #257276: fix for possible denial-of-service attack
+        in PythonScript when passing an arbitrary module to the encode()
+        or decode() of strings.
+
       - Launchpad #257269: 'raise SystemExit' with a PythonScript could shutdown
         a complete Zope instance
 

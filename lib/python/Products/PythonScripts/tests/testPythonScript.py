@@ -226,6 +226,9 @@ class TestPythonScriptNoAq(PythonScriptTestBase):
         ps = self._newPS("raise SystemExit")
         self.assertRaises(ValueError, ps)
 
+    def testEncodingTestDotTestAllLaunchpad257276(self):
+        ps = self._newPS("return 'foo'.encode('test.testall')")
+        self.assertRaises(LookupError, ps)
 
 
 class TestPythonScriptErrors(PythonScriptTestBase):
