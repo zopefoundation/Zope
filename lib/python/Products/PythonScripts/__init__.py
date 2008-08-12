@@ -72,6 +72,8 @@ def recompile(self):
 # Python 2.5 and hopefully fixed in Python 2.4.6 release.
 
 
+# Written by Marc-Andre Lemburg (mal@lemburg.com).
+# (c) Copyright CNRI, All Rights Reserved. NO WARRANTY.
 
 def search_function(encoding):
 
