@@ -11,6 +11,8 @@ Zope Changes
       - Collector #2318: Allow override of zopectl's control socket in
         zope.conf
 
+      - integrated Hotfix-2008-08-12
+
   Zope 2.8.9 (2006/03/25)
 
     Bugs fixed
