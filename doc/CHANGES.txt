@@ -22,6 +22,9 @@ Zope Changes
       - Launchpad #229549:  Don't ignore 'debug' flag when rendering
         page templates (thanks to Eric Steele for the patch).
 
+      - integrated Hotfix-2008-08-12
+
+
   Zope 2.10.6 (2008/05/10)
 
     Bugs fixed
