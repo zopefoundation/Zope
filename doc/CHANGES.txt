@@ -14,6 +14,8 @@ Zope Changes
 
       - LP #253362: better dealing with malformed HTTP_ACCEPT_CHARSET headers
 
+      - integrated Hotfix-2008-08-12
+
 
   Zope 2.11.1 (2008/07/17)
 
