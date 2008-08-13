@@ -16,6 +16,8 @@ Zope Changes
 
       - Launchpad #234209: De-tabify ZPublisher/HTTPRequest.py
 
+      - integrated Hotfix-2008-08-12
+
   Zope 2.9.9 (2008/05/10)
 
    Bugs fixed

@@ -61,3 +61,5 @@ def recompile(self):
     if names:
         return 'The following Scripts were recompiled:\n' + '\n'.join(names)
     return 'No Scripts were found that required recompilation.'
+
+import patches
