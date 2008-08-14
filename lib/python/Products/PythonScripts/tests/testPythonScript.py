@@ -211,6 +211,14 @@ class TestPythonScriptNoAq(PythonScriptTestBase):
         f = self._filePS('complex_print')
         self.assertEqual(f.get_size(), len(f.read()))
 
+    def testRaiseSystemExitLaunchpad257269(self):
+        ps = self._newPS("raise SystemExit")
+        self.assertRaises(ValueError, ps)
+
+    def testEncodingTestDotTestAllLaunchpad257276(self):
+        ps = self._newPS("return 'foo'.encode('test.testall')")
+        self.assertRaises(LookupError, ps)
+
 
 class TestPythonScriptErrors(PythonScriptTestBase):
     
