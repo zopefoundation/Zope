@@ -222,6 +222,14 @@ class TestPythonScriptNoAq(PythonScriptTestBase):
         res = self._newPS("return DateTime('2007/12/10').strftime('%d.%m.%Y')")()
         self.assertEqual(res, '10.12.2007')
 
+    def testRaiseSystemExitLaunchpad257269(self):
+        ps = self._newPS("raise SystemExit")
+        self.assertRaises(ValueError, ps)
+
+    def testEncodingTestDotTestAllLaunchpad257276(self):
+        ps = self._newPS("return 'foo'.encode('test.testall')")
+        self.assertRaises(LookupError, ps)
+
 
 class TestPythonScriptErrors(PythonScriptTestBase):
     
