@@ -189,9 +189,8 @@ def hasPackage(name):
     '''Checks if a package has been registered with five:registerPackage.'''
     return name in [m.__name__ for m in getattr(Products, '_registered_packages', [])]
 
-@layer.onsetup
 def installPackage(name, quiet=0):
-    '''Installs a registered Python package at layer setup time.'''
+    '''Installs a registered Python package.'''
     quiet = 1 # Ignore argument
     _installPackage(name, quiet)
 
