@@ -653,6 +653,7 @@ class ObjectManager(
                 continue
             listing += [f for f in os.listdir(directory)
                         if f.endswith('.zexp') or f.endswith('.xml')]
+        listing.sort()
         return listing
 
     # FTP support methods
