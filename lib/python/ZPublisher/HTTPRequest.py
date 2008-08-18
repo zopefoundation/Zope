@@ -431,8 +431,11 @@ class HTTPRequest(BaseRequest):
         meth=None
         fs=ZopeFieldStorage(fp=fp,environ=environ,keep_blank_values=1)
         if not hasattr(fs,'list') or fs.list is None:
+            if environ.has_key('HTTP_SOAPACTION'):
+                # Stash XML request for interpretation by a SOAP-aware view
+                other['SOAPXML'] = fs.value
             # Hm, maybe it's an XML-RPC
-            if (fs.headers.has_key('content-type') and
+            elif (fs.headers.has_key('content-type') and
                 'text/xml' in fs.headers['content-type'] and
                 method == 'POST'):
                 # Ye haaa, XML-RPC!
