@@ -28,7 +28,7 @@ class Tracer:
         if exceptions:
             exception = exceptions[0]
             exceptions.remove(exception)
-            exceptionShortName = str(exception).split('.')[-1]
+            exceptionShortName = exception.__name__
             self.append('raising %s from %s' % (exceptionShortName, context))
             raise exception
 
