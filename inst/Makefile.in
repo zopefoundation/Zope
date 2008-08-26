@@ -124,8 +124,16 @@ sdist_tgz: version_txt
           ${TAR} czfh ${BASE_DIR}/${PACKAGE_NAME}.tgz \
            --exclude=${PACKAGE_NAME}.tgz\
            --exclude=.svn\
+           --exclude=.installed.cfg \
+           --exclude=.DS_Store \
            --exclude=makefile \
            --exclude=build-base \
+           --exclude=bootstrap \
+           --exclude=develop-eggs \
+           --exclude=include \
+           --exclude=parts \
+           --exclude=src \
+           --exclude=*.cfg \
            --exclude=*~ \
            --exclude=.#* ${PACKAGE_NAME} 
 	${RMRF} ${TMPDIR}/${PACKAGE_NAME}
