@@ -25,6 +25,7 @@ BUILD_FLAGS=--build-base="${BUILD_BASE}" \
 RM=rm -f
 RMRF=rm -rf
 FIND=find
+GREP=grep
 XARGS=xargs
 CD=cd
 LN=ln -sfn
@@ -103,7 +104,9 @@ uninstance:
 #              the source directory for good measure.
 clean: unbuild
 	${FIND} "${BASE_DIR}" \
-         -name '*.py[co]' -o -name '*.so' -o -name '*.o' | ${XARGS} ${RM}
+         -name '*.py[co]' -o -name '*.so' -o -name '*.o' | \
+         grep -vE "${BASE_DIR}/src|${BASE_DIR}/parts|${BASE_DIR}/eggs" | \
+         ${XARGS} ${RM}
 	${RM} "$(BASE_DIR)/lib/python/Zope2/version.txt"
 	${RMRF} build
 
@@ -112,7 +115,7 @@ version_txt:
 	printf "Zope ${MAJOR_VERSION}.${MINOR_VERSION}-${RELEASE_TAG}" >\
           "${BASE_DIR}/lib/python/Zope2/version.txt"
 
-sdist: clobber sdist_tgz
+sdist: clean sdist_tgz
 
 # sdist_tgz:   Create a tgz archive file as a source distribution.
 #
@@ -130,6 +133,7 @@ sdist_tgz: version_txt
            --exclude=build-base \
            --exclude=bootstrap \
            --exclude=develop-eggs \
+           --exclude=eggs \
            --exclude=include \
            --exclude=parts \
            --exclude=src \
