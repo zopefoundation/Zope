@@ -9,6 +9,9 @@ Zope Changes
 
     Restructuring
 
+      - Removed Examples.zexp from the skeleton. The TTW shopping cart isn't
+        any good example of Zope usage anymore.
+
       - Removed deprecated ZTUtil.Iterator module
 
       - Removed deprecated StructuredText module
