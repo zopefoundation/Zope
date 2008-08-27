@@ -5,7 +5,6 @@ When the skeleton test is run by typing 'python testSkeleton.py', it
     1. includes file framework.py
 
         1.1 locates and imports the Testing package by means of
-            - SOFTWARE_HOME environment variable
             - auto-detection
 
         1.2 locates and includes file ztc_common.py

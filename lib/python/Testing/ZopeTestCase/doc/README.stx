@@ -43,26 +43,8 @@ ZopeTestCase Readme
     Note that there is a skeleton test suite named 'testSkeleton.py' that you 
     may copy into your 'tests' directory and take it from there.
 
-    Note also that when the tests are run in an INSTANCE_HOME installation of 
-    Zope, you must set the SOFTWARE_HOME environment variable for the 'Testing' 
-    and 'ZopeTestCase' packages to be found.
-
     See the sample tests in the 'ZopeTestCase' directory for details on writing 
     your own tests.
-
-framework.py
-
-    1. Uses SOFTWARE_HOME (if set) to locate the Testing package.
-
-    2. Detects and handles INSTANCE_HOME installations of Zope. Please
-       see ENVIRONMENT.txt for the assumptions ZTC makes about its
-       environment.
-
-    3. Supports setting up a ZODB from a 'custom_zodb.py' file in
-       the 'tests' directory.
-
-    4. Allows to connect to a running ZEO server by setting the
-       ZEO_INSTANCE_HOME environment variable.
 
 testrunner.py
 
@@ -71,8 +53,7 @@ testrunner.py
     installation). If you do so, you will have to define a 'test_suite' method 
     in your modules (see examples). 
 
-    There is no need to set SOFTWARE_HOME when using the testrunner but you may
-    have to provide the -i flag when testing in an INSTANCE_HOME setup.
+    You may have to provide the -i flag when testing in an INSTANCE_HOME setup.
 
     Example: 'python /path/to/Zope/utilities/testrunner.py -q -i -a'
 

@@ -2,14 +2,9 @@
 ZTC makes the following assumptions about its environment:
 
 a) The 'ZopeTestCase' package is installed in the Zope "trunk" inside the
-   'Testing' module, which means: SOFTWARE_HOME/Testing/ZopeTestCase.
+   'Testing' module.
 
-b) A 'Products' directory exists inside SOFTWARE_HOME and INSTANCE_HOME.
-
-c) The tests (the 'tests' subdirectories) are located either below a 
-   SOFTWARE_HOME or INSTANCE_HOME, typically in Products/MyCoolProduct/tests.
-
-d) The somewhat weak assumption is that ZTC can walk up the directory tree from
+b) The somewhat weak assumption is that ZTC can walk up the directory tree from
    'tests', and find a 'Products' directory. This is how INSTANCE_HOME 
    detection works. It regrettably fails on some filesystems when symbolic 
    links are involved (a solution is detailed below, so hang on).
@@ -24,8 +19,7 @@ The non-trivial part is that INSTANCE_HOME has two distinct purposes:
 
 
 ZTC attempts to resolve this by detecting an INSTANCE_HOME for 1) but leaving
-the actual environment variable untouched so 2) works by still pointing into 
-SOFTWARE_HOME/Testing.
+the actual environment variable untouched.
 
 As soon as I allow you to set INSTANCE_HOME yourself, I lose the ability to 
 distinguish whether you mean 1) or 2) or both. 
