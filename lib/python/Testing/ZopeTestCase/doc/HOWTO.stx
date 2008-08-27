@@ -178,9 +178,6 @@ Writing Tests
           It demonstrates how to manipulate the test user's roles and permissions and how
           security is validated.
 
-        - **'testShoppingCart.py'** tests the ShoppingCart example. This test
-          uses Sessions and shows how to test a TTW Zope application.
-
         - **'testFunctional.py'** demonstrates the new functional testing features.
           Tests may call 'self.publish()' to simulate URL calls to the ZPublisher.
 
