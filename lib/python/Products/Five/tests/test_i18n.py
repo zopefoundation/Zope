@@ -15,9 +15,6 @@
 
 $Id$
 """
-import os, sys
-if __name__ == '__main__':
-    execfile(os.path.join(sys.path[0], 'framework.py'))
 
 from zope.component.testing import setUp, tearDown
 
@@ -91,6 +88,3 @@ def test_FiveTranslationService():
 def test_suite():
     from zope.testing.doctest import DocTestSuite
     return DocTestSuite(setUp=setUp, tearDown=tearDown)
-
-if __name__ == '__main__':
-    framework()

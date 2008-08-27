@@ -15,9 +15,6 @@
 
 $Id$
 """
-import os, sys
-if __name__ == '__main__':
-    execfile(os.path.join(sys.path[0], 'framework.py'))
 
 from zope.interface import implements
 from zope.size.interfaces import ISized
@@ -102,6 +99,3 @@ def test_size():
 def test_suite():
     from Testing.ZopeTestCase import ZopeDocTestSuite
     return ZopeDocTestSuite()
-
-if __name__ == '__main__':
-    framework()

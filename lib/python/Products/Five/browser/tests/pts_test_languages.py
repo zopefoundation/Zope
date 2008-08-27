@@ -15,9 +15,6 @@
 
 $Id$
 """
-import os, sys
-if __name__ == '__main__':
-    execfile(os.path.join(sys.path[0], 'framework.py'))
 
 def test_suite():
     from Testing.ZopeTestCase import installProduct, FunctionalDocFileSuite
@@ -25,6 +22,3 @@ def test_suite():
     installProduct('PlacelessTranslationService')
     return FunctionalDocFileSuite('pts_test_languages.txt',
                                   package='Products.Five.browser.tests')
-
-if __name__ == '__main__':
-    framework()

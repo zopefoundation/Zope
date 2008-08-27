@@ -15,10 +15,6 @@
 
 $Id$
 """
-import os, sys
-if __name__ == '__main__':
-    execfile(os.path.join(sys.path[0], 'framework.py'))
-
 
 class SimpleClass(object):
     """Class with no __bobo_traverse__."""
@@ -289,6 +285,3 @@ def test_view_doesnt_shadow_attribute():
 def test_suite():
     from Testing.ZopeTestCase import FunctionalDocTestSuite
     return FunctionalDocTestSuite()
-
-if __name__ == '__main__':
-    framework()

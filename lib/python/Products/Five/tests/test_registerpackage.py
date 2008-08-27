@@ -15,9 +15,7 @@
 
 $Id$
 """
-import os, sys
-if __name__ == '__main__':
-    execfile(os.path.join(sys.path[0], 'framework.py'))
+import sys
 
 # need to add the testing package to the pythonpath in order to
 # test python-packages-as-products
@@ -86,6 +84,3 @@ def test_suite():
     # Must use functional because registerPackage commits
     from Testing.ZopeTestCase import FunctionalDocTestSuite
     return FunctionalDocTestSuite()
-
-if __name__ == '__main__':
-    framework()

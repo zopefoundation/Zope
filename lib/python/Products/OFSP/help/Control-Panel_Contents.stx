@@ -15,8 +15,6 @@ Control Panel - Contents: Zope system controls
 
       'System Platform' -- The type of machine Zope is running on.
 
-      'SOFTWARE_HOME' -- The filesystem path of the core Zope software.
-
       'INSTANCE_HOME' -- The filesystem path where Zope loads add-on
       software.
 

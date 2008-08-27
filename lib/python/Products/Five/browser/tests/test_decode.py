@@ -15,9 +15,6 @@
 
 $Id$
 """
-import os, sys
-if __name__ == '__main__':
-    execfile(os.path.join(sys.path[0], 'framework.py'))
 
 def test_processInputs():
     """
@@ -54,6 +51,3 @@ def test_processInputs():
 def test_suite():
     from zope.testing.doctest import DocTestSuite
     return DocTestSuite()
-
-if __name__ == '__main__':
-    framework()

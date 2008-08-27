@@ -15,10 +15,6 @@
 
 $Id$
 """
-import os, sys
-if __name__ == '__main__':
-    execfile(os.path.join(sys.path[0], 'framework.py'))
-
 
 # These classes aren't defined in the doctest because otherwise
 # they wouldn't be picklable, and we need that to test copy/paste.
@@ -90,6 +86,3 @@ def test_suite():
     from zope.testing.doctest import DocFileSuite
     return DocFileSuite('event.txt', package="Products.Five.tests",
                         setUp=setUp, tearDown=testing.tearDown)
-
-if __name__ == '__main__':
-    framework()

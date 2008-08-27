@@ -15,9 +15,6 @@
 
 $Id$
 """
-import os, sys
-if __name__ == '__main__':
-    execfile(os.path.join(sys.path[0], 'framework.py'))
 
 def test_default_view():
     """
@@ -183,6 +180,3 @@ def test_default_method_args_marshalling():
 def test_suite():
     from Testing.ZopeTestCase import FunctionalDocTestSuite
     return FunctionalDocTestSuite()
-
-if __name__ == '__main__':
-    framework()

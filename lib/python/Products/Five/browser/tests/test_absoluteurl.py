@@ -15,9 +15,6 @@
 
 $Id$
 """
-import os, sys
-if __name__ == '__main__':
-    execfile(os.path.join(sys.path[0], 'framework.py'))
 
 def test_absoluteurl():
     """This tests the absolute url view (IAbsoluteURL or @@absolute_url),
@@ -91,6 +88,3 @@ def test_absoluteurl():
 def test_suite():
     from Testing.ZopeTestCase import ZopeDocTestSuite
     return ZopeDocTestSuite()
-
-if __name__ == '__main__':
-    framework()

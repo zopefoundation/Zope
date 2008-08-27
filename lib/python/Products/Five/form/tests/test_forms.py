@@ -15,9 +15,6 @@
 
 $Id$
 """
-import os, sys
-if __name__ == '__main__':
-    execfile(os.path.join(sys.path[0], 'framework.py'))
 
 def test_get_widgets_for_schema_fields():
     """
@@ -69,6 +66,3 @@ def test_suite():
             FunctionalDocFileSuite('forms.txt',
                                    package="Products.Five.form.tests",),
             ))
-
-if __name__ == '__main__':
-    framework()

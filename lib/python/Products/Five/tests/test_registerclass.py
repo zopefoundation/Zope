@@ -15,9 +15,6 @@
 
 $Id$
 """
-import os, sys
-if __name__ == '__main__':
-    execfile(os.path.join(sys.path[0], 'framework.py'))
 
 def test_registerClass():
     """
@@ -146,6 +143,3 @@ def test_registerClass():
 def test_suite():
     from Testing.ZopeTestCase import ZopeDocTestSuite
     return ZopeDocTestSuite()
-
-if __name__ == '__main__':
-    framework()

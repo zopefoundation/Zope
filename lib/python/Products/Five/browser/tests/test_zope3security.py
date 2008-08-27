@@ -1,6 +1,3 @@
-import os, sys
-if __name__ == '__main__':
-    execfile(os.path.join(sys.path[0], 'framework.py'))
 
 def test_check_permission():
     """Code (in Zope 3) often uses
@@ -60,6 +57,3 @@ def test_suite():
     from Testing.ZopeTestCase import FunctionalDocTestSuite
     from zope.testing.doctest import ELLIPSIS
     return FunctionalDocTestSuite(optionflags=ELLIPSIS)
-
-if __name__ == '__main__':
-    framework()
