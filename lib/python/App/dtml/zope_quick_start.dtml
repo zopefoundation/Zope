@@ -41,8 +41,6 @@ Zope after executing this command in order to log in.</b>
 
 <p>
 If you're running Zope on Windows, you'll need to use the "zpasswd.py" utility
-in your Zope installation's "bin" directory at
-<i><dtml-var "Control_Panel.getZOPE_HOME()">\bin</i>
 to create a file named <i>inituser</i> in your Zope instance home at
 <i><dtml-var "Control_Panel.getINSTANCE_HOME()"></i> that contains the
 initial administrative username and password.

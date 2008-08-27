@@ -41,7 +41,6 @@ font-size: 10pt;
 <li>Zope version: &dtml-version_txt;
 <li>Python version: &dtml-sys_version;
 <li>System Platform: &dtml-sys_platform;
-<li>SOFTWARE_HOME: &dtml-getSOFTWARE_HOME;
 <li>INSTANCE_HOME: &dtml-getINSTANCE_HOME;
 <li>CLIENT_HOME: &dtml-getCLIENT_HOME;
 <li>Process ID: &dtml-process_id; (&dtml-thread_get_ident;)

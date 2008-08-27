@@ -47,30 +47,6 @@ functions such as database and product management.
 <tr>
   <td align="left" valign="top">
   <div class="form-label">
-  SOFTWARE_HOME
-  </div>
-  </td>
-  <td align="left" valign="top">
-  <div class="form-text">
-  &dtml-getSOFTWARE_HOME;
-  </div>
-  </td>
-</tr>
-<tr>
-  <td align="left" valign="top">
-  <div class="form-label">
-  ZOPE_HOME
-  </div>
-  </td>
-  <td align="left" valign="top">
-  <div class="form-text">
-  &dtml-getZOPE_HOME;
-  </div>
-  </td>
-</tr>
-<tr>
-  <td align="left" valign="top">
-  <div class="form-label">
   INSTANCE_HOME
   </div>
   </td>
