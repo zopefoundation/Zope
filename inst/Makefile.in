@@ -105,7 +105,7 @@ uninstance:
 clean: unbuild
 	${FIND} "${BASE_DIR}" \
          -name '*.py[co]' -o -name '*.so' -o -name '*.o' | \
-         grep -vE "${BASE_DIR}/src|${BASE_DIR}/parts|${BASE_DIR}/eggs" | \
+         grep -vE "${BASE_DIR}/src|${BASE_DIR}/parts|${BASE_DIR}/eggs|${BASE_DIR}/develop" | \
          ${XARGS} ${RM}
 	${RM} "$(BASE_DIR)/lib/python/Zope2/version.txt"
 	${RMRF} build
@@ -127,17 +127,24 @@ sdist_tgz: version_txt
           ${TAR} czfh ${BASE_DIR}/${PACKAGE_NAME}.tgz \
            --exclude=${PACKAGE_NAME}.tgz\
            --exclude=.svn\
-           --exclude=.installed.cfg \
+           --exclude=${PACKAGE_NAME}/.installed.cfg \
            --exclude=.DS_Store \
-           --exclude=makefile \
-           --exclude=build-base \
-           --exclude=bootstrap \
-           --exclude=develop-eggs \
-           --exclude=eggs \
-           --exclude=include \
-           --exclude=parts \
-           --exclude=src \
-           --exclude=*.cfg \
+           --exclude=${PACKAGE_NAME}/bin \
+           --exclude=${PACKAGE_NAME}/etc \
+           --exclude=${PACKAGE_NAME}/import \
+           --exclude=${PACKAGE_NAME}/log \
+           --exclude=${PACKAGE_NAME}/var \
+           --exclude=${PACKAGE_NAME}/Products \
+           --exclude=${PACKAGE_NAME}/makefile \
+           --exclude=${PACKAGE_NAME}/build-base \
+           --exclude=${PACKAGE_NAME}/bootstrap \
+           --exclude=${PACKAGE_NAME}/develop-eggs \
+           --exclude=${PACKAGE_NAME}/develop \
+           --exclude=${PACKAGE_NAME}/eggs \
+           --exclude=${PACKAGE_NAME}/include \
+           --exclude=${PACKAGE_NAME}/parts \
+           --exclude=${PACKAGE_NAME}/src \
+           --exclude=${PACKAGE_NAME}/*.cfg \
            --exclude=*~ \
            --exclude=.#* ${PACKAGE_NAME} 
 	${RMRF} ${TMPDIR}/${PACKAGE_NAME}
