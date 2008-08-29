@@ -207,6 +207,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Launchpad #262313: respect the 'Expand macros when editing' flag
+        when editing a page template through the ZMI
+
       - Launchpad #257276: fix for possible denial-of-service attack
         in PythonScript when passing an arbitrary module to the encode()
         or decode() of strings.
