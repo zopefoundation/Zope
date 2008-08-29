@@ -24,6 +24,9 @@ Zope Changes
 
       - integrated Hotfix-2008-08-12
 
+      - Launchpad #262313: respect the 'Expand macros when editing' flag
+        when editing a page template through the ZMI
+
 
   Zope 2.10.6 (2008/05/10)
 
