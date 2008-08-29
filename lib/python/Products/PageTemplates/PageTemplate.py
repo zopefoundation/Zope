@@ -92,6 +92,8 @@ class PageTemplate(ExtensionClass.Base,
             sourceAnnotations = getattr(debug, 'sourceAnnotations', False)
         else:
             showtal = sourceAnnotations = False
+        if source:
+            showtal = True
         return super(PageTemplate, self).pt_render(c, source=source, sourceAnnotations=sourceAnnotations,
                    showtal=showtal)
 
