@@ -95,6 +95,7 @@ def search_function(encoding):
 
 
 import encodings
+import encodings.aliases # Python 2.3
 encodings._aliases = encodings.aliases.aliases
 encodings.search_function.func_code = search_function.func_code
 
