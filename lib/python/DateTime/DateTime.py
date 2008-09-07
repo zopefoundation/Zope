@@ -586,11 +586,8 @@ class DateTime:
                 DateTime instance.
                 """
                 t = arg.timeTime()
-                tz = arg.timezone()
-                ms = (t - math.floor(t))
                 s,d = _calcSD(t)
-                yr,mo,dy,hr,mn,sc = gmtime(t)[:6]
-                sc = sc + ms
+                yr,mo,dy,hr,mn,sc,tz = arg.parts()
             
             elif isinstance(arg, datetime):
                 yr,mo,dy,hr,mn,sc,numerictz,tznaive=self._parse_iso8601_preserving_tznaive(arg.isoformat())
