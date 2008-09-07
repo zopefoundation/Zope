@@ -401,8 +401,10 @@ class DateTimeTests(unittest.TestCase):
     def testCopyConstructor(self):
         d = DateTime('2004/04/04')
         self.assertEqual(DateTime(d), d)
-        d = DateTime('1999/04/12')
-        self.assertEqual(DateTime(d), d)
+        self.assertEqual(str(DateTime(d)), str(d))
+        d2 = DateTime('1999/04/12 01:00:00')
+        self.assertEqual(DateTime(d2), d2)
+        self.assertEqual(str(DateTime(d2)), str(d2))
 
     def testCopyConstructorPreservesTimezone(self):
         # test for https://bugs.launchpad.net/zope2/+bug/200007
@@ -413,8 +415,10 @@ class DateTimeTests(unittest.TestCase):
         self.assertEqual(DateTime(d).timezone(), d.timezone())
         d2 = DateTime('2008/04/25 12:00:00 EST')
         self.assertEqual(DateTime(d2).timezone(), d2.timezone())
+        self.assertEqual(str(DateTime(d2)), str(d2))
         d3 = DateTime('2008/04/25 12:00:00 PST')
         self.assertEqual(DateTime(d3).timezone(), d3.timezone())
+        self.assertEqual(str(DateTime(d3)), str(d3))
 
 
     def testRFC822(self):
