@@ -24,6 +24,9 @@ Zope Changes
 
       - integrated Hotfix-2008-08-12
 
+      - Launchpad #267545: DateTime(DateTime()) now preserves the
+        correct hour
+
       - Launchpad #262313: respect the 'Expand macros when editing' flag
         when editing a page template through the ZMI
 
