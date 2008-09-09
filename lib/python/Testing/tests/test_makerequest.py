@@ -51,7 +51,7 @@ class MakerequestTests(unittest.TestCase):
         item.REQUEST.RESPONSE.write('aaa')
         out.seek(0)
         written = out.read()
-        self.failUnless(written.startswith('Status: 200 OK\n'))
+        self.failUnless(written.startswith('Status: 200 OK\r\n'))
         self.failUnless(written.endswith('\naaa'))
 
     def test_environ(self):

@@ -207,6 +207,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Launchpad #267834: proper separation of HTTP header fields   
+        using CRLF as requested by RFC 2616.
+
       - Launchpad #267545: DateTime(DateTime()) now preserves the
         correct hour
 

@@ -254,7 +254,7 @@ class HTTPResponse(BaseResponse):
         key = name.lower()
         if accumulate_header(key):
             self.accumulated_headers = (
-                "%s%s: %s\n" % (self.accumulated_headers, name, value))
+                "%s%s: %s\r\n" % (self.accumulated_headers, name, value))
             return
         name = literal and name or key
         self.headers[name] = value
@@ -278,7 +278,7 @@ class HTTPResponse(BaseResponse):
         name = str(name)
         value = str(value)
         self.accumulated_headers = (
-            "%s%s: %s\n" % (self.accumulated_headers, name, value))
+            "%s%s: %s\r\n" % (self.accumulated_headers, name, value))
 
     __setitem__ = setHeader
 
@@ -591,7 +591,7 @@ class HTTPResponse(BaseResponse):
         headers = self.headers
         if headers.has_key(name):
             h = headers[name]
-            h = "%s%s\n\t%s" % (h,delimiter,value)
+            h = "%s%s\r\n\t%s" % (h,delimiter,value)
         else:
             h = value
         self.setHeader(name,h)
@@ -893,7 +893,7 @@ class HTTPResponse(BaseResponse):
         if self.cookies:
             headersl = headersl+self._cookie_list()
         headersl[len(headersl):] = [self.accumulated_headers, body]
-        return '\n'.join(headersl)
+        return '\r\n'.join(headersl)
 
     def write(self,data):
         """\

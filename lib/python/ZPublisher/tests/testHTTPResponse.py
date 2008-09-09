@@ -72,10 +72,10 @@ class HTTPResponseTests(unittest.TestCase):
         response = self._makeOne()
         response.setHeader('foo', 'bar')
         response.appendHeader('foo', 'foo')
-        self.assertEqual(response.headers.get('foo'), 'bar,\n\tfoo')
+        self.assertEqual(response.headers.get('foo'), 'bar,\r\n\tfoo')
         response.setHeader('xxx', 'bar')
         response.appendHeader('XXX', 'foo')
-        self.assertEqual(response.headers.get('xxx'), 'bar,\n\tfoo')
+        self.assertEqual(response.headers.get('xxx'), 'bar,\r\n\tfoo')
 
     def test_setHeader(self):
         response = self._makeOne()
