@@ -53,7 +53,11 @@ else:
         zhome = scriptdir
     shome = os.path.join(zhome, 'lib', 'python')
 
-sys.path.insert(0, shome)
+# add SOFTWARE_HOME to sys.path, but only if Zope isn't already available
+try:
+    import Zope2
+except ImportError:
+    sys.path.insert(0, shome)
 
 defaults = '--tests-pattern ^tests$ -v'.split()
 defaults += ['-m',
