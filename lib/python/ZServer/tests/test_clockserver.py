@@ -95,12 +95,7 @@ class ClockServerTests(unittest.TestCase):
                                logger=logger)
         self.assertEqual(server.handle_write(), True)
 
-    def test_handle_error(self):
-        logger = DummyLogger()
-        server = self._makeOne(method='a', period=60, user='charlie',
-                               password='brown', host='localhost',
-                               logger=logger)
-        self.assertRaises(AssertionError, server.handle_error)
+    #def test_handle_error(self):  Can't be usefully tested
 
     def test_readable(self):
         logger = DummyLogger()
