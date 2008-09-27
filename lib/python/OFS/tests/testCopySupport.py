@@ -347,7 +347,7 @@ class TestCopySupportSecurity( CopySupportTestBase ):
             if ce_regex is not None:
 
                 pattern = re.compile( ce_regex, re.DOTALL )
-                if pattern.search( e.message ) is None:
+                if pattern.search( e ) is None:
                     self.fail( "Paste failed; didn't match pattern:\n%s" % e )
 
             else:
