@@ -454,6 +454,10 @@ Zope Changes
       - Prevent ZPublisher from insering incorrect <base/> tags into the
         headers of plain html files served from Zope3 resource directories.
 
+      - zopedoctest no longer breaks if the URL contains more than one
+        question mark. It broke even when the second question mark was
+        correctly quoted.
+
     Other Changes
 
       - Disabled docutils file inclusion completely, rather than trying

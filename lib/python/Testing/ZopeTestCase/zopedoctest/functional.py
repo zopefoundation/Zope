@@ -144,7 +144,7 @@ def http(request_string, handle_errors=True):
            "SERVER_PROTOCOL": protocol,
            }
 
-    p = path.split('?')
+    p = path.split('?', 1)
     if len(p) == 1:
         env['PATH_INFO'] = p[0]
     elif len(p) == 2:

@@ -116,6 +116,17 @@ Test Server Error
   HTTP/1.1 500 Internal Server Error
   ...Content-Type: text/html...TypeError...
 
+Test parameter containing an additional '?'
+
+  >>> print http(r"""
+  ... GET /test_folder_1_?foo=bla%3Fbaz HTTP/1.1
+  ... """)
+  HTTP/1.1 200 OK
+  Content-Length: 5
+  Content-Type: text/plain; charset=iso-8859-15
+  <BLANKLINE>
+  index
+              
 Test Unauthorized
 
   >>> self.folder.index_html.manage_permission('View', ['Owner'])
