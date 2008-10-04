@@ -10,8 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-"""
-Mounted database support
+""" Mounted database support
 
 A MountedTemporaryFolder is an object that is a mount point.  It mounts a
 TemporaryStorage-backed database and masquerades as its root object.
@@ -20,23 +19,20 @@ point object is called, and that returns a Folder object that actually
 lives in another ZODB.
 
 To understand this fully, you'll need to read the source of
-ZODB.Mount.MountPoint.
+Products.TemporaryFolder.mount.MountPoint.
 
 $Id$
 """
 __version__='$Revision: 1.12 $'[11:-2]
 
-import os, os.path
-
-import Globals
-from Globals import HTMLFile
-from ZODB.Mount import MountPoint
+from App.special_dtml import DTMLFile
+from App.special_dtml import HTMLFile
 from OFS.Folder import Folder
 from OFS.SimpleItem import Item
-
-from ZODB.DB import DB
 from tempstorage.TemporaryStorage import TemporaryStorage
-from LowConflictConnection import LowConflictConnection
+from ZODB.DB import DB
+
+from Products.TemporaryFolder.mount import MountPoint
 
 ADD_TEMPORARY_FOLDER_PERM="Add Temporary Folder"
 
@@ -48,13 +44,14 @@ def constructTemporaryFolder(self, id, title=None, REQUEST=None):
     if REQUEST is not None:
         return self.manage_main(self, REQUEST, update_menu=1)
 
-
 constructTemporaryFolderForm=HTMLFile('dtml/addTemporaryFolder', globals())
+
 
 class SimpleTemporaryContainer(Folder):
     # dbtab-style container class
     meta_type = 'Temporary Folder'
     icon = 'misc_/TemporaryFolder/tempfolder.gif'
+
 
 class MountedTemporaryFolder(MountPoint, Item):
     """
@@ -73,7 +70,7 @@ class MountedTemporaryFolder(MountPoint, Item):
         self.title = title
         MountPoint.__init__(self, path='/') # Eep
 
-    manage_traceback = Globals.DTMLFile('dtml/mountfail', globals())
+    manage_traceback = DTMLFile('dtml/mountfail', globals())
 
     def _createDB(self, db=None): # huh?  db=db was original
         """ Create a mounted RAM database """

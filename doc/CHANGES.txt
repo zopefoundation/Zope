@@ -5,9 +5,19 @@ Zope Changes
   file HISTORY.txt.
 
 
-  Trunk  (unreleased)
+  Trunk (unreleased)
 
     Restructuring
+
+      - Moved exception MountedStorageError from ZODB.POSExceptions
+        to Products.TemporaryFolder.mount (now its only client).
+
+      - LP #253362:  Moved Zope2-specific module, ZODB/Mount.py, to
+        Products/TemporaryFolder/mount.py (its only client is
+        Products/TemporaryFolder/TemporaryFolder.py).
+
+      - Removed spurious import-time dependencies from
+        Products/ZODBMountPoint/MountedObject.py.
 
       - Removed Examples.zexp from the skeleton. The TTW shopping cart isn't
         any good example of Zope usage anymore.
