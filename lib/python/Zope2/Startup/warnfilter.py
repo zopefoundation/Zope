@@ -35,7 +35,7 @@ def warn_category(category):
             cat = getattr(m, klass)
         except AttributeError:
             raise ValueError("unknown warning category: %s" % `category`)
-    if (not isinstance(cat, types.ClassType) or
+    if (not isinstance(cat, (type, types.ClassType)) or
         not issubclass(cat, Warning)):
         raise ValueError("invalid warning category: %s" % `category`)
     return cat
