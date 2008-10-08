@@ -109,6 +109,12 @@ __version__='$Revision: 1.14 $'[11:-2]
 
 ParseError='Document Template Parse Error'
 
-from DT_String import String, File
-from DT_HTML import HTML, HTMLFile, HTMLDefault
+try:
+    from DT_String import String, File
+    from DT_HTML import HTML, HTMLFile, HTMLDefault
+except ImportError:
+    # See PEP-328
+    from .DT_String import String, File
+    from .DT_HTML import HTML, HTMLFile, HTMLDefault
+
 # import DT_UI # Install HTML editing

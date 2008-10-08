@@ -16,12 +16,25 @@ $Id$"""
 
 import re
 
-from html_quote import html_quote, ustr # for import by other modules, dont remove!
+try:
+    # for import by other modules, dont remove!
+    from html_quote import html_quote, ustr
+
+    from cDocumentTemplate import InstanceDict, TemplateDict
+    from cDocumentTemplate import render_blocks, safe_callable
+    from cDocumentTemplate import join_unicode
+except ImportError:
+    # See PEP-328: 
+    # for import by other modules, dont remove!
+    from .html_quote import html_quote, ustr
+
+    from .cDocumentTemplate import InstanceDict, TemplateDict
+    from .cDocumentTemplate import render_blocks, safe_callable
+    from .cDocumentTemplate import join_unicode
+
 from RestrictedPython.Guards import safe_builtins
 from RestrictedPython.Utilities import utility_builtins
 from RestrictedPython.Eval import RestrictionCapableEval
-from cDocumentTemplate import InstanceDict, TemplateDict, \
-         render_blocks, safe_callable, join_unicode
 
 test = utility_builtins['test'] # for backwards compatibility, dont remove!
 

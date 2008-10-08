@@ -12,7 +12,11 @@
 ##############################################################################
 __version__='$Revision: 1.9 $'[11:-2]
 
-from DT_Util import parse_params, name_param
+try:
+    from DT_Util import parse_params, name_param
+except ImportError:
+    # See PEP-328
+    from .DT_Util import parse_params, name_param
 
 class ReturnTag:
     name='return'
