@@ -207,8 +207,9 @@ class ZPublisherExceptionHook:
             else:
                 error_log_url = log.raising((t, v, traceback))
 
-            if (getattr(REQUEST.get('RESPONSE', None), '_error_format', '')
-                !='text/html'):
+            if (REQUEST is None or 
+                (getattr(REQUEST.get('RESPONSE', None), '_error_format', '')
+                 != 'text/html')):
                 raise t, v, traceback
 
             # Lookup a view for the exception and render it, then
