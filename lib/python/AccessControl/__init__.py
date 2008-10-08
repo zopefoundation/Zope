@@ -14,18 +14,18 @@
 from unauthorized import Unauthorized
 
 # This has to happen early so things get initialized properly
-from Implementation import setImplementation
+from AccessControl.Implementation import setImplementation
 
-from SecurityManagement import getSecurityManager, setSecurityPolicy
-from SecurityInfo import ClassSecurityInfo, ModuleSecurityInfo
-from SecurityInfo import ACCESS_PRIVATE
-from SecurityInfo import ACCESS_PUBLIC
-from SecurityInfo import ACCESS_NONE
-from SecurityInfo import secureModule, allow_module, allow_class
-from SimpleObjectPolicies import allow_type
-from ZopeGuards import full_write_guard, safe_builtins
+from AccessControl.SecurityManagement import getSecurityManager, setSecurityPolicy
+from AccessControl.SecurityInfo import ClassSecurityInfo, ModuleSecurityInfo
+from AccessControl.SecurityInfo import ACCESS_PRIVATE
+from AccessControl.SecurityInfo import ACCESS_PUBLIC
+from AccessControl.SecurityInfo import ACCESS_NONE
+from AccessControl.SecurityInfo import secureModule, allow_module, allow_class
+from AccessControl.SimpleObjectPolicies import allow_type
+from AccessControl.ZopeGuards import full_write_guard, safe_builtins
 
 ModuleSecurityInfo('AccessControl').declarePublic('getSecurityManager')
 
-import DTML
+from AccessControl import DTML
 del DTML

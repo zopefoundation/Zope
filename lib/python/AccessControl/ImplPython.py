@@ -30,7 +30,7 @@ try:
 except ImportError:
     _what_not_even_god_should_do = []
 
-from AccessControl import SecurityManagement
+from AccessControl.SecurityManagement import getSecurityManager
 from AccessControl import Unauthorized
 from AccessControl.interfaces import ISecurityPolicy
 from AccessControl.interfaces import ISecurityManager
@@ -721,7 +721,7 @@ def guarded_getattr(inst, name, default=_marker):
     # See if we can get the value doing a filtered acquire.
     # aq_acquire will either return the same value as held by
     # v or it will return an Unauthorized raised by validate.
-    validate = SecurityManagement.getSecurityManager().validate
+    validate = getSecurityManager().validate
     aq_acquire(inst, name, aq_validate, validate)
     
     return v
