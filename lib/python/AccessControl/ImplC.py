@@ -27,7 +27,8 @@ except ImportError:
     del sys.modules[__name__]
 
 
-from ImplPython import RestrictedDTML, SecurityManager, ZopeSecurityPolicy
+from AccessControl.ImplPython import RestrictedDTML
+from AccessControl.ImplPython import SecurityManager, ZopeSecurityPolicy
 
 
 class RestrictedDTML(RestrictedDTMLMixin, RestrictedDTML):
