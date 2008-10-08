@@ -10,7 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-import os, unittest, warnings
+import os, sys, unittest, warnings
 
 from Products.PythonScripts.PythonScript import PythonScript
 from AccessControl.SecurityManagement import newSecurityManager
@@ -288,13 +288,19 @@ class TestPythonScriptGlobals(PythonScriptTestBase, WarningInterceptor):
         f = self._filePS('class.__name__')
         self.assertEqual(f(), ("'foo'>", "'string'"))
 
-    def test_filepath(self):
-        # This test is meant to raise a deprecation warning.
-        # It used to fail mysteriously instead.
-        self._trap_warning_output()
-        f = self._filePS('filepath')
-        self.assertEqual(f(), [0])
-        self._free_warning_output()
+    if sys.version_info < (2, 6):
+        def test_filepath(self):
+            # This test is meant to raise a deprecation warning.
+            # It used to fail mysteriously instead.
+            self._trap_warning_output()
+            f = self._filePS('filepath')
+            self.assertEqual(f(), [0])
+            self._free_warning_output()
+    else:
+        def test_filepath(self):
+            # On Python 2.6, this now raises a TypeError.
+            f = self._filePS('filepath')
+            self.assertRaises(TypeError, f)
 
 class PythonScriptInterfaceConformanceTests(unittest.TestCase):
 
