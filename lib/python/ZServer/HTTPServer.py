@@ -45,7 +45,8 @@ from HTTPResponse import make_response
 from ZPublisher.HTTPRequest import HTTPRequest
 from App.config import getConfiguration
 
-from medusa.http_server import http_server,get_header, http_channel, VERSION_STRING
+from medusa.http_server import http_server, get_header
+from medusa.http_server import fifo, http_channel, VERSION_STRING
 import asyncore
 from medusa import counter, producers
 from medusa.test import  max_sockets
@@ -334,6 +335,10 @@ class zhttp_channel(http_channel):
 
     def __init__(self, server, conn, addr):
         http_channel.__init__(self, server, conn, addr)
+        if isinstance(self.producer_fifo, fifo):
+            self.producer_fifo_push = self.producer_fifo.push
+        else:
+            self.producer_fifo_push = self.producer_fifo.append
         requestCloseOnExec(conn)
         self.queue=[]
         self.working=0
@@ -345,7 +350,7 @@ class zhttp_channel(http_channel):
         # producers by default
         if self.closed:
             return
-        self.producer_fifo.push(producer)
+        self.producer_fifo_push(producer)
         if send: self.initiate_send()
 
     push_with_producer=push
