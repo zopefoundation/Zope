@@ -244,9 +244,10 @@ class TestPythonScriptErrors(PythonScriptTestBase):
         self.assertPSRaises(SyntaxError, path='subversive_except')
 
     def testBadImports(self):
-        self.assertPSRaises(ImportError, body="from string import *")
-        self.assertPSRaises(ImportError, body="from datetime import datetime")
-        #self.assertPSRaises(ImportError, body="import mmap")
+        from zExceptions import Unauthorized
+        self.assertPSRaises(Unauthorized, body="from string import *")
+        self.assertPSRaises(Unauthorized, body="from datetime import datetime")
+        self.assertPSRaises(Unauthorized, body="import mmap")
 
     def testAttributeAssignment(self):
         # It's illegal to assign to attributes of anything that
