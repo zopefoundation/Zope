@@ -337,8 +337,16 @@ class zhttp_channel(http_channel):
         http_channel.__init__(self, server, conn, addr)
         if isinstance(self.producer_fifo, fifo):
             self.producer_fifo_push = self.producer_fifo.push
+            self.producer_fifo_first = self.producer_fifo.first
+            self.producer_fifo_pop = self.producer_fifo.pop
         else:
             self.producer_fifo_push = self.producer_fifo.append
+            def first():
+                return self.producer_fifo[0]
+            self.producer_fifo_first = first
+            def pop():
+                del self.producer_fifo[0]
+            self.producer_fifo_pop = pop
         requestCloseOnExec(conn)
         self.queue=[]
         self.working=0
@@ -386,10 +394,10 @@ class zhttp_channel(http_channel):
             self.current_request.channel = None # break circ refs
             self.current_request=None
         while self.producer_fifo:
-            p=self.producer_fifo.first()
+            p=self.producer_fifo_first()
             if p is not None and not isinstance(p, basestring):
                 p.more() # free up resources held by producer
-            self.producer_fifo.pop()
+            self.producer_fifo_pop()
         dispatcher.close(self)
 
     def done(self):
