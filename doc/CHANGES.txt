@@ -8,6 +8,9 @@ Zope Changes
 
     Bugs fixed
 
+      - LP #142667:  Updated to ZODB-3.7.3 to fix problem with product
+        auto-refresh.
+
       - Updated to Five 1.5.8
 
       - Launchpad #245649:  the Products package is now a proper
