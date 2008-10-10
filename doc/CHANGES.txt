@@ -8,6 +8,9 @@ Zope Changes
 
    Bugs fixed
 
+      - LP #142667:  Updated to ZODB-3.6.4 to fix problem with product
+        auto-refresh.
+
       - Launchpad #267545: DateTime(DateTime()) now preserves the
         correct hour
 
