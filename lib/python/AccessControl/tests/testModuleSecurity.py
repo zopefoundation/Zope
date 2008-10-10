@@ -10,51 +10,44 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-"""Module Import Tests
-"""
+import unittest
 
-__rcs_id__='$Id$'
-__version__='$Revision: 1.4 $'[11:-2]
+class ModuleSecurityTests(unittest.TestCase):
 
-import os, sys, unittest
+    def setUp(self):
+        from AccessControl import ModuleSecurityInfo as MSI
+        MSI('AccessControl.tests.mixed_module').declarePublic('pub')
+        MSI('AccessControl.tests.public_module').declarePublic('pub')
+        MSI('AccessControl.tests.public_module.submodule').declarePublic('pub')
 
-import Testing
-import ZODB
-from AccessControl import User
-from AccessControl import Unauthorized, ModuleSecurityInfo
-from AccessControl.ZopeGuards import guarded_import
-
-ModuleSecurityInfo('AccessControl.tests.mixed_module').declarePublic('pub')
-
-ModuleSecurityInfo('AccessControl.tests.public_module').declarePublic('pub')
-ModuleSecurityInfo('AccessControl.tests.public_module.submodule'
-                   ).declarePublic('pub')
-
-class SecurityTests(unittest.TestCase):
+    def tearDown(self):
+        import sys
+        for module in ('AccessControl.tests.public_module',
+                       'AccessControl.tests.public_module.submodule',
+                       'AccessControl.tests.mixed_module',
+                       'AccessControl.tests.mixed_module.submodule',
+                       'AccessControl.tests.private_module',
+                       'AccessControl.tests.private_module.submodule',
+                      ):
+            if module in sys.modules:
+                del sys.modules[module]
 
     def assertUnauth(self, module, fromlist):
-        try:
-            guarded_import(module, fromlist=fromlist)
-        except (Unauthorized, ImportError):
-            # Passed the test.
-            pass
-        else:
-            assert 0, ('Did not protect module instance %s, %s' %
-                       (`module`, `fromlist`))
+        from zExceptions import Unauthorized
+        from AccessControl.ZopeGuards import guarded_import
+        self.assertRaises(Unauthorized,
+                          guarded_import, module, fromlist=fromlist)
 
     def assertAuth(self, module, fromlist):
-        try:
-            guarded_import(module, fromlist=fromlist)
-        except (Unauthorized, ImportError):
-            assert 0, ('Did not expose module instance %s, %s' %
-                       (`module`, `fromlist`))
+        from AccessControl.ZopeGuards import guarded_import
+        guarded_import(module, fromlist=fromlist)
 
     def testPrivateModule(self):
-        for name in '', '.submodule':
-            for fromlist in (), ('priv',):
-                self.assertUnauth(
-                    'AccessControl.tests.private_module%s' % name,
-                    fromlist)
+        self.assertUnauth('AccessControl.tests.private_module', ())
+        self.assertUnauth('AccessControl.tests.private_module', ('priv',))
+        self.assertUnauth('AccessControl.tests.private_module.submodule', ())
+        self.assertUnauth('AccessControl.tests.private_module.submodule',
+                          ('priv',))
 
     def testMixedModule(self):
         self.assertAuth('AccessControl.tests.mixed_module', ())
@@ -63,19 +56,25 @@ class SecurityTests(unittest.TestCase):
         self.assertUnauth('AccessControl.tests.mixed_module.submodule', ())
 
     def testPublicModule(self):
-        for name in '', '.submodule':
-            for fromlist in (), ('pub',):
-                self.assertAuth(
-                    'AccessControl.tests.public_module%s' % name,
-                    fromlist)
+        self.assertAuth('AccessControl.tests.public_module', ())
+        self.assertAuth('AccessControl.tests.public_module', ('pub',))
+        self.assertAuth('AccessControl.tests.public_module.submodule', ())
+        self.assertAuth('AccessControl.tests.public_module.submodule',
+                        ('pub',))
+
+    def test_public_module_asterisk_not_allowed(self):
+        self.assertUnauth('AccessControl.tests.public_module', ('*',))
+
+    def test_failed_import_keeps_MSI(self):
+        # LP #281156
+        from AccessControl import ModuleSecurityInfo as MSI
+        from AccessControl.SecurityInfo import _moduleSecurity as MS
+        from AccessControl.ZopeGuards import guarded_import
+        MSI('AccessControl.tests.nonesuch').declarePublic('pub')
+        self.failUnless('AccessControl.tests.nonesuch' in MS)
+        self.assertRaises(ImportError,
+                      guarded_import, 'AccessControl.tests.nonesuch', ())
+        self.failUnless('AccessControl.tests.nonesuch' in MS)
 
 def test_suite():
-    suite = unittest.TestSuite()
-    suite.addTest( unittest.makeSuite( SecurityTests ) )
-    return suite
-
-def main():
-    unittest.TextTestRunner().run(test_suite())
-
-if __name__ == '__main__':
-    main()
+    return unittest.makeSuite(ModuleSecurityTests)

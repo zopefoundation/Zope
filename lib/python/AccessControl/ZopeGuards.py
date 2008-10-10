@@ -259,31 +259,29 @@ def guarded_map(f, *seqs):
     return map(f, *safe_seqs)
 safe_builtins['map'] = guarded_map
 
-def guarded_import(mname, globals={}, locals={}, fromlist=None):
+def guarded_import(mname, globals=None, locals=None, fromlist=None):
+    if fromlist is None:
+        fromlist = ()
+    if '*' in fromlist:
+        raise Unauthorized, "'from %s import *' is not allowed" % mname
+    if globals is None:
+        globals = {}
+    if locals is None:
+        locals = {}
     mnameparts = mname.split('.')
     firstmname = mnameparts[0]
     validate = getSecurityManager().validate
     module = load_module(None, None, mnameparts, validate, globals, locals)
-    if module is not None:
-        if fromlist is None:
-            fromlist = ()
-        try:
-            for name in fromlist:
-                if name == '*':
-                    raise ImportError, ('"from %s import *" is not allowed'
-                                        % mname)
-                v = getattr(module, name, None)
-                if v is None:
-                    v = load_module(module, mname, [name], validate,
-                                    globals, locals)
-                if not validate(module, module, name, v):
-                    raise Unauthorized
-            else:
-                return __import__(mname, globals, locals, fromlist)
-        except Unauthorized, why:
-            raise ImportError, ('import of "%s" from "%s" is unauthorized. %s'
-                                % (name, mname, why))
-    raise ImportError, 'import of "%s" is unauthorized' % mname
+    if module is None:
+        raise Unauthorized, "import of '%s' is unauthorized" % mname
+    for name in fromlist:
+        v = getattr(module, name, None)
+        if v is None:
+            v = load_module(module, mname, [name], validate, globals, locals)
+        if not validate(module, module, name, v):
+            raise Unauthorized, ("import of '%s.%s' is unauthorized"
+                                    % (mname, name))
+    return __import__(mname, globals, locals, fromlist)
 safe_builtins['__import__'] = guarded_import
 
 class GuardedListType:
