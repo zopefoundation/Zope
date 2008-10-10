@@ -18,12 +18,13 @@ application-specific packages.
 $Id$
 """
 
-from unauthorized import Unauthorized
+import warnings
 
 from zope.interface import implements
 from zope.interface.common.interfaces import IException
 from zope.publisher.interfaces import INotFound
 from zope.security.interfaces import IForbidden
+from zExceptions.unauthorized import Unauthorized
 
 class BadRequest(Exception):
     implements(IException)
@@ -42,3 +43,29 @@ class MethodNotAllowed(Exception):
 
 class Redirect(Exception):
     pass
+
+def upgradeException(t, v):
+    # If a string exception is found, convert it to an equivalent
+    # exception defined either in builtins or zExceptions. If none of
+    # that works, tehn convert it to an InternalError and keep the
+    # original exception name as part of the exception value.
+    import zExceptions
+
+    if not isinstance(t, basestring):
+        return t, v
+
+    warnings.warn('String exceptions are deprecated starting '
+                  'with Python 2.5 and will be removed in a '
+                  'future release', DeprecationWarning)
+
+    n = None
+    if __builtins__.has_key(t):
+        n = __builtins__[t]
+    elif hasattr(zExceptions, t):
+        n = getattr(zExceptions, t)
+    if n is not None and issubclass(n, Exception):
+        t = n
+    else:
+        v = t, v
+        t = InternalError
+    return t, v

@@ -36,7 +36,7 @@ from DocumentTemplate.html_quote import html_quote
 from DocumentTemplate.ustr import ustr
 from ExtensionClass import Base
 from webdav.Resource import Resource
-from zExceptions import Redirect, InternalError
+from zExceptions import Redirect, upgradeException
 from zExceptions.ExceptionFormatter import format_exception
 from zope.interface import implements
 
@@ -185,15 +185,10 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
             error_name = 'Unknown'
             if isinstance(error_type, basestring):
                 # String Exceptions are deprecated on Python 2.5 and
-                # plain won't work at all on Python 2.6. So upgrade it
-                # to an InternalError exception but keep the original
-                # exception in the value.
+                # plain won't work at all on Python 2.6. So try to upgrade it
+                # to a real exception.
                 error_name = error_type
-                error_type = InternalError
-                error_value = (error_name, error_value)
-                warnings.warn('String exceptions are deprecated starting '
-                              'with Python 2.5 and will be removed in a '
-                              'future release', DeprecationWarning)
+                error_type, error_value = upgradeException(error_type, error_value)
             else:
                 if hasattr(error_type, '__name__'):
                     error_name = error_type.__name__
