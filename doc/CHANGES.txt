@@ -8,6 +8,14 @@ Zope Changes
 
    Bugs fixed
 
+      - 'AccessControl.ZopeGuards.guarded_import' mapped some Unauthorized
+        exceptions onto ImportErrors:  don't do that!  Also, removed
+        mutable defaults from argument list, improved tests.
+
+      - LP #281156:  'AccessControl.SecurityInfo.secureModule' dropped
+        ModuleSecurity for failed imports, obscuring later attempts to
+        import the same broken module.
+
       - LP #142667:  Updated to ZODB-3.6.4 to fix problem with product
         auto-refresh.
 
