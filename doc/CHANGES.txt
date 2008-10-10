@@ -217,6 +217,14 @@ Zope Changes
 
     Bugs Fixed
 
+      - 'AccessControl.ZopeGuards.guarded_import' mapped some Unauthorized
+        exceptions onto ImportErrors:  don't do that!  Also, removed
+        mutable defaults from argument list, improved tests.
+
+      - LP #281156:  'AccessControl.SecurityInfo.secureModule' dropped
+        ModuleSecurity for failed imports, obscuring later attempts to
+        import the same broken module.
+
       - Launchpad #267834: proper separation of HTTP header fields   
         using CRLF as requested by RFC 2616.
 

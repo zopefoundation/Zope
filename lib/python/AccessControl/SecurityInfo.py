@@ -208,10 +208,10 @@ def secureModule(mname, *imp):
     modsec = _moduleSecurity.get(mname, None)
     if modsec is None:
         return
-    del _moduleSecurity[mname]
 
     if imp:
         __import__(mname, *imp)
+    del _moduleSecurity[mname]
     module = sys.modules[mname]
     modsec.apply(module.__dict__)
     _appliedModuleSecurity[mname] = modsec
