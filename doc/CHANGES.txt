@@ -8,6 +8,9 @@ Zope Changes
 
     Bugs fixed
 
+      - LP #142667:  Updated to ZODB-3.4.5 to fix problem with product
+        auto-refresh.
+
       - Collector #2318: Allow override of zopectl's control socket in
         zope.conf
 
