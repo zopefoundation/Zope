@@ -56,7 +56,7 @@ def upgradeException(t, v):
 
     warnings.warn('String exceptions are deprecated starting '
                   'with Python 2.5 and will be removed in a '
-                  'future release', DeprecationWarning)
+                  'future release', DeprecationWarning, stacklevel=2)
 
     n = None
     if __builtins__.has_key(t):
