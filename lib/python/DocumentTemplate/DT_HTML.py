@@ -14,9 +14,9 @@
 
 $Id$"""
 
-from DT_String import String, FileMixin
-import DT_String, re
-from DT_Util import ParseError, str
+import re
+from DocumentTemplate.DT_String import String, FileMixin
+from DocumentTemplate.DT_Util import ParseError, str
 
 class dtml_re_class:
     """ This needs to be replaced before 2.4.  It's a hackaround. """
@@ -129,7 +129,7 @@ class dtml_re_class:
     def start(self, *args):
         return self._start
 
-class HTML(DT_String.String):
+class HTML(String):
     """HTML Document Templates
 
     HTML Document templates use HTML server-side-include syntax,

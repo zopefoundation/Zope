@@ -13,9 +13,9 @@
 
 import  sys, traceback
 from cStringIO import StringIO
-from DT_Util import ParseError, parse_params, render_blocks
-from DT_Util import namespace, InstanceDict
-from DT_Return import DTReturn
+from DocumentTemplate.DT_Util import ParseError, parse_params, render_blocks
+from DocumentTemplate.DT_Util import namespace, InstanceDict
+from DocumentTemplate.DT_Return import DTReturn
 
 class Try:
     """Zope DTML Exception handling

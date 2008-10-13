@@ -78,7 +78,7 @@ __doc__='''Conditional insertion
 __rcs_id__='$Id$'
 __version__='$Revision: 1.19 $'[11:-2]
 
-from DT_Util import ParseError, parse_params, name_param, str
+from DocumentTemplate.DT_Util import ParseError, parse_params, name_param, str
 
 class If:
     blockContinuations='else','elif'

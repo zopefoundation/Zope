@@ -61,9 +61,10 @@ __version__='$Revision: 1.15 $'[11:-2]
 
 from DocumentTemplate.DT_Util import ParseError, parse_params, name_param
 from string import find, split, join, atoi, atof
-StringType=type('')
 
-str=__builtins__['str']
+StringType = str
+
+str = __builtins__['str']
 
 class SQLVar:
     name='sqlvar'

@@ -159,13 +159,9 @@ import string, re, sys
 from cgi import escape
 from urllib import quote, quote_plus, unquote, unquote_plus
 
-try:
-    # for import by other modules, dont remove!
-    from html_quote import html_quote
-    from DT_Util import parse_params, name_param, str, ustr
-except ImportError:
-    from .html_quote import html_quote
-    from .DT_Util import parse_params, name_param, str, ustr
+# for import by other modules, dont remove!
+from DocumentTemplate.html_quote import html_quote
+from DocumentTemplate.DT_Util import parse_params, name_param, str, ustr
 
 from Acquisition import aq_base
 from ZPublisher.TaintedString import TaintedString

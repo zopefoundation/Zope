@@ -107,14 +107,8 @@ Document Templates may be created 4 ways:
 
 __version__='$Revision: 1.14 $'[11:-2]
 
-ParseError='Document Template Parse Error'
-
-try:
-    from DT_String import String, File
-    from DT_HTML import HTML, HTMLFile, HTMLDefault
-except ImportError:
-    # See PEP-328
-    from .DT_String import String, File
-    from .DT_HTML import HTML, HTMLFile, HTMLDefault
+from DocumentTemplate.DT_Raise import ParseError
+from DocumentTemplate.DT_String import String, File
+from DocumentTemplate.DT_HTML import HTML, HTMLFile, HTMLDefault
 
 # import DT_UI # Install HTML editing
