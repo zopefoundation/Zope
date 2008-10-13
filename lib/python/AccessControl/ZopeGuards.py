@@ -237,18 +237,18 @@ def guarded_reduce(f, seq, initial=_marker):
         return reduce(f, guarded_iter(seq), initial)
 safe_builtins['reduce'] = guarded_reduce
 
-def guarded_max(item, *items):
+def guarded_max(item, *items, **kw):
     if items:
         item = [item]
         item.extend(items)
-    return max(guarded_iter(item))
+    return max(guarded_iter(item), **kw)
 safe_builtins['max'] = guarded_max
 
-def guarded_min(item, *items):
+def guarded_min(item, *items, **kw):
     if items:
         item = [item]
         item.extend(items)
-    return min(guarded_iter(item))
+    return min(guarded_iter(item), **kw)
 safe_builtins['min'] = guarded_min
 
 def guarded_map(f, *seqs):
@@ -365,6 +365,17 @@ def builtin_guarded_apply(func, args=(), kws={}):
     return func(*arglist, **argdict)
 
 safe_builtins['apply'] = builtin_guarded_apply
+
+# Similar to min and reduce, use guarded_iter on the sequence being
+# tested and apply the original function.
+if sys.version_info >= (2, 5):
+    def guarded_any(seq):
+        return any(guarded_iter(seq))
+    safe_builtins['any'] = guarded_any
+
+    def guarded_all(seq):
+        return all(guarded_iter(seq))
+    safe_builtins['all'] = guarded_all
 
 # This metaclass supplies the security declarations that allow all
 # attributes of a class and its instances to be read and written.

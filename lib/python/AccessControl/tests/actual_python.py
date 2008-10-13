@@ -163,3 +163,14 @@ def f11():
     x += 1
 f11()
 
+def f12():
+    assert all([True, True, True]) == True
+    assert all([True, False, True]) == False
+f12()
+
+def f13():
+    assert any([True, True, True]) == True
+    assert any([True, False, True]) == True
+    assert any([False, False, False]) == False
+f13()
+

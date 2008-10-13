@@ -19,6 +19,7 @@ $Id$
 """
 
 import os, sys
+import operator
 import unittest
 from zope.testing import doctest
 import ZODB
@@ -29,6 +30,9 @@ from AccessControl.ZopeGuards \
     import guarded_getattr, get_dict_get, get_dict_pop, get_list_pop, \
     get_iter, guarded_min, guarded_max, safe_builtins, guarded_enumerate, \
     guarded_sum, guarded_apply
+
+if sys.version_info >= (2, 5):
+    from AccessControl.ZopeGuards import guarded_any, guarded_all
 
 try:
     __file__
@@ -236,11 +240,26 @@ class TestListGuards(GuardTestCase):
 
 class TestBuiltinFunctionGuards(GuardTestCase):
 
+    if sys.version_info >= (2, 5):
+        def test_all_fails(self):
+            sm = SecurityManager(1) # rejects
+            old = self.setSecurityManager(sm)
+            self.assertRaises(Unauthorized, guarded_all, [True,True,False])
+            self.setSecurityManager(old)
+
+        def test_any_fails(self):
+            sm = SecurityManager(1) # rejects
+            old = self.setSecurityManager(sm)
+            self.assertRaises(Unauthorized, guarded_any, [True,True,False])
+            self.setSecurityManager(old)
+
     def test_min_fails(self):
         sm = SecurityManager(1) # rejects
         old = self.setSecurityManager(sm)
         self.assertRaises(Unauthorized, guarded_min, [1,2,3])
         self.assertRaises(Unauthorized, guarded_min, 1,2,3)
+        self.assertRaises(Unauthorized, guarded_min,
+                          [{'x':1},{'x':2}], operator.itemgetter('x'))
         self.setSecurityManager(old)
 
     def test_max_fails(self):
@@ -248,6 +267,8 @@ class TestBuiltinFunctionGuards(GuardTestCase):
         old = self.setSecurityManager(sm)
         self.assertRaises(Unauthorized, guarded_max, [1,2,3])
         self.assertRaises(Unauthorized, guarded_max, 1,2,3)
+        self.assertRaises(Unauthorized, guarded_max, 
+                          [{'x':1},{'x':2}], operator.itemgetter('x'))
         self.setSecurityManager(old)
 
     def test_enumerate_fails(self):
@@ -263,11 +284,26 @@ class TestBuiltinFunctionGuards(GuardTestCase):
         self.assertRaises(Unauthorized, guarded_sum, [1,2,3])
         self.setSecurityManager(old)
 
+    if sys.version_info >= (2, 5):
+        def test_all_succeeds(self):
+            sm = SecurityManager() # accepts
+            old = self.setSecurityManager(sm)
+            self.assertEqual(guarded_all([True,True,False]), False)
+            self.setSecurityManager(old)
+
+        def test_any_succeeds(self):
+            sm = SecurityManager() # accepts
+            old = self.setSecurityManager(sm)
+            self.assertEquals(guarded_any([True,True,False]), True)
+            self.setSecurityManager(old)
+
     def test_min_succeeds(self):
         sm = SecurityManager() # accepts
         old = self.setSecurityManager(sm)
         self.assertEqual(guarded_min([1,2,3]), 1)
         self.assertEqual(guarded_min(1,2,3), 1)
+        self.assertEqual(guarded_min({'x':1},{'x':2}, 
+                                     key=operator.itemgetter('x')), {'x':1})
         self.setSecurityManager(old)
 
     def test_max_succeeds(self):
@@ -275,6 +311,8 @@ class TestBuiltinFunctionGuards(GuardTestCase):
         old = self.setSecurityManager(sm)
         self.assertEqual(guarded_max([1,2,3]), 3)
         self.assertEqual(guarded_max(1,2,3), 3)
+        self.assertEqual(guarded_max({'x':1},{'x':2}, 
+                                     key=operator.itemgetter('x')), {'x':2})
         self.setSecurityManager(old)
 
     def test_enumerate_succeeds(self):
