@@ -24,6 +24,7 @@ __version__ ='$Revision: 1.1.2.2 $'[11:-2]
 
 from logging import getLogger
 from ZODB.serialize import referencesf
+from ZODB.utils import z64
 from ZODB import POSException
 from ZODB.BaseStorage import BaseStorage
 from ZODB.ConflictResolution import ConflictResolvingStorage, ResolvedSerial
@@ -72,7 +73,8 @@ class TemporaryStorage(BaseStorage, ConflictResolvingStorage):
         self._conflict_cache = {}
         self._last_cache_gc = 0
         self._recently_gc_oids = [None for x in range (RECENTLY_GC_OIDS_LEN)]
-        self._oid = '\0\0\0\0\0\0\0\0'
+        self._oid = z64
+        self._ltid = z64
 
     def lastTransaction(self):
         """ Return tid for last committed transaction (for ZEO) """
