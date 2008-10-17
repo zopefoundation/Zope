@@ -9,6 +9,8 @@ Zope Changes
 
     Restructuring
 
+      - updated to ZODB 3.8.1
+
       - Moved exception MountedStorageError from ZODB.POSExceptions
         to Products.TemporaryFolder.mount (now its only client).
 
