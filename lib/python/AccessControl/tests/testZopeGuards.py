@@ -19,6 +19,7 @@ $Id$
 """
 
 import os, sys
+import operator
 import unittest
 from zope.testing import doctest
 import ZODB
@@ -28,7 +29,7 @@ from AccessControl import Unauthorized
 from AccessControl.ZopeGuards \
     import guarded_getattr, get_dict_get, get_dict_pop, get_list_pop, \
     get_iter, guarded_min, guarded_max, safe_builtins, guarded_enumerate, \
-    guarded_sum, guarded_apply
+    guarded_sum, guarded_apply, guarded_map, guarded_zip
 
 try:
     __file__
@@ -236,6 +237,22 @@ class TestListGuards(GuardTestCase):
 
 class TestBuiltinFunctionGuards(GuardTestCase):
 
+    def test_zip_fails(self):
+        sm = SecurityManager(1) # rejects
+        old = self.setSecurityManager(sm)
+        self.assertRaises(Unauthorized, guarded_zip, [1,2,3], [3,2,1])
+        self.assertRaises(Unauthorized, guarded_zip, [1,2,3], [1])
+        self.setSecurityManager(old)
+
+    def test_map_fails(self):
+        sm = SecurityManager(1) # rejects
+        old = self.setSecurityManager(sm)
+        self.assertRaises(Unauthorized, guarded_map, str, 
+                          [1,2,3])
+        self.assertRaises(Unauthorized, guarded_map, lambda x,y: x+y, 
+                          [1,2,3], [3,2,1])
+        self.setSecurityManager(old)
+
     def test_min_fails(self):
         sm = SecurityManager(1) # rejects
         old = self.setSecurityManager(sm)
@@ -261,6 +278,21 @@ class TestBuiltinFunctionGuards(GuardTestCase):
         sm = SecurityManager(1) # rejects
         old = self.setSecurityManager(sm)
         self.assertRaises(Unauthorized, guarded_sum, [1,2,3])
+        self.setSecurityManager(old)
+
+    def test_zip_succeeds(self):
+        sm = SecurityManager() # accepts
+        old = self.setSecurityManager(sm)
+        self.assertEqual(guarded_zip([1,2,3], [3,2,1]), [(1,3),(2,2),(3,1)])
+        self.assertEqual(guarded_zip([1,2,3], [1]), [(1,1)])
+        self.setSecurityManager(old)
+
+    def test_map_succeeds(self):
+        sm = SecurityManager() # accepts
+        old = self.setSecurityManager(sm)
+        self.assertEqual(guarded_map(str, [1,2,3]), ['1','2','3'])
+        self.assertEqual(guarded_map(lambda x,y: x+y, [1,2,3], [3,2,1]), 
+                         [4,4,4])
         self.setSecurityManager(old)
 
     def test_min_succeeds(self):

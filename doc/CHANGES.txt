@@ -8,6 +8,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Launchpad #282677: fixed implementation of guarded_map and
+        provided tests and implementation for guarded_zip (RestrictedPython).
+
       - updated to ZODB 3.8.1
 
       - Lauchpad #143736,#271395: fixed AttributeError' on _ltid in TempStorage
