@@ -8,6 +8,10 @@ Zope Changes
 
    Bugs fixed
 
+      - Launchpad #282677: fixed implementation of guarded_map and
+        provided tests and implementation for guarded_zip
+        (RestrictedPython).
+
       - 'AccessControl.ZopeGuards.guarded_import' mapped some Unauthorized
         exceptions onto ImportErrors:  don't do that!  Also, removed
         mutable defaults from argument list, improved tests.
