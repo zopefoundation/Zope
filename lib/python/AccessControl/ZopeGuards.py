@@ -255,9 +255,17 @@ def guarded_map(f, *seqs):
     safe_seqs = []
     for seqno in range(len(seqs)):
         seq = guarded_getitem(seqs, seqno)
-        safe_seqs.append(seq)
+        safe_seqs.append(guarded_iter(seq))
     return map(f, *safe_seqs)
 safe_builtins['map'] = guarded_map
+
+def guarded_zip(*seqs):
+    safe_seqs = []
+    for seqno in range(len(seqs)):
+        seq = guarded_getitem(seqs, seqno)
+        safe_seqs.append(guarded_iter(seq))
+    return zip(*safe_seqs)
+safe_builtins['zip'] = guarded_zip
 
 def guarded_import(mname, globals=None, locals=None, fromlist=None):
     if fromlist is None:

@@ -8,6 +8,10 @@ Zope Changes
 
     Bugs fixed
 
+      - Launchpad #282677: fixed implementation of guarded_map and
+        provided tests and implementation for guarded_zip
+        (RestrictedPython).
+
       - Lauchpad #143736,#271395: fixed AttributeError' on _ltid in TempStorage
 
       - 'AccessControl.ZopeGuards.guarded_import' mapped some Unauthorized
