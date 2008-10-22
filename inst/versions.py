@@ -1,5 +1,5 @@
 ZOPE_MAJOR_VERSION  = '2.10'
-ZOPE_MINOR_VERSION  = '6'
+ZOPE_MINOR_VERSION  = '7'
 ZOPE_BRANCH_NAME    = '$Name$'[6:] or 'no-branch'
 
 # always start prerelease branches with '0' to avoid upgrade
