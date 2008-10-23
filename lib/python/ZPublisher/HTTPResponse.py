@@ -122,6 +122,10 @@ otherTypes = os.environ.get('DONT_GZIP_MAJOR_MIME_TYPES','').lower()
 if otherTypes:
     uncompressableMimeMajorTypes += tuple(otherTypes.split(','))
 
+_CRLF = re.compile(r'\r[\n]?')
+
+def _scrubHeader(name, value):
+    return ''.join(_CRLF.split(str(name))), ''.join(_CRLF.split(str(value)))
 
 class HTTPResponse(BaseResponse):
     """\
@@ -249,8 +253,7 @@ class HTTPResponse(BaseResponse):
         literal flag is true, the case of the header name is preserved,
         otherwise word-capitalization will be performed on the header
         name on output.'''
-        name = str(name)
-        value = str(value)
+        name, value = _scrubHeader(name, value)
         key = name.lower()
         if accumulate_header(key):
             self.accumulated_headers = (
@@ -263,8 +266,7 @@ class HTTPResponse(BaseResponse):
         '''\
         Set a new HTTP return header with the given value, while retaining
         any previously set headers with the same name.'''
-        name = str(name)
-        value = str(value)
+        name, value = _scrubHeader(name, value)
         self.accumulated_headers = (
             "%s%s: %s\n" % (self.accumulated_headers, name, value))
 
@@ -559,8 +561,8 @@ class HTTPResponse(BaseResponse):
         Sets an HTTP return header "name" with value "value",
         appending it following a comma if there was a previous value
         set for the header. '''
-        name = str(name).lower()
-        value = str(value)
+        name, value = _scrubHeader(name, value)
+        name = name.lower()
 
         headers = self.headers
         if headers.has_key(name):

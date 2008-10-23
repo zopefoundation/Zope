@@ -8,6 +8,9 @@ Zope Changes
 
    Bugs fixed
 
+      - Ensure that response header values cannot embed CRLF pairs, which
+        violate the HTTP spec (RFC 2616).
+
       - Launchpad #282677: fixed implementation of guarded_map and
         provided tests and implementation for guarded_zip
         (RestrictedPython).
