@@ -8,6 +8,9 @@ Zope Changes
 
     Bugs fixed
 
+      - Ensure that response header values cannot embed CRLF pairs, which
+        violate the HTTP spec (RFC 2616).
+
       - 'AccessControl.ZopeGuards.guarded_import' mapped some Unauthorized
         exceptions onto ImportErrors:  don't do that!  Also, removed
         mutable defaults from argument list, improved tests.
