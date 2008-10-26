@@ -332,7 +332,6 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         if idxs is None:
             idxs = []
 
-        data = self.data
         index = self.uids.get(uid, None)
 
         if index is None:  # we are inserting new data
