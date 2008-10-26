@@ -198,6 +198,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Launchpad #280334: Fixed problem with 'timeout'
+        argument/attribute missing in testbrowser tests.
+
       - Fixed against-the-rules zope.conf option 'fast_listen' to read
         'fast-listen' (dash, not underscore).
 

@@ -18,6 +18,8 @@ Mostly just copy and paste from zope.testbrowser.testing.
 $Id$
 """
 
+import sys
+import socket
 import urllib2
 
 import mechanize
@@ -29,7 +31,7 @@ import zope.publisher.http
 
 class PublisherConnection(testing.PublisherConnection):
 
-    def __init__(self, host):
+    def __init__(self, host, timeout=None):
         from Testing.ZopeTestCase.zopedoctest.functional import http
         self.caller = http
         self.host = host
@@ -76,6 +78,10 @@ class PublisherHTTPHandler(urllib2.HTTPHandler):
     def http_open(self, req):
         """Open an HTTP connection having a ``urllib2`` request."""
         # Here we connect to the publisher.
+        if sys.version_info > (2, 6) and not hasattr(req, 'timeout'):
+            # Workaround mechanize incompatibility with Python
+            # 2.6. See: LP #280334
+            req.timeout = socket._GLOBAL_DEFAULT_TIMEOUT
         return self.do_open(PublisherConnection, req)
 
 
