@@ -167,9 +167,12 @@ def get_inituser():
 
 def write_inituser(fn, user, password):
     import binascii
-    import hashlib
+    try:
+        from hashlib import sha256 as sha
+    except:
+        from sha import new as sha
     fp = open(fn, "w")
-    pw = binascii.b2a_base64(hashlib.sha256(password).digest())[:-1]
+    pw = binascii.b2a_base64(sha(password).digest())[:-1]
     fp.write('%s:{SHA256}%s\n' % (user, pw))
     fp.close()
     os.chmod(fn, 0644)
