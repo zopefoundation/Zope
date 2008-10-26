@@ -45,9 +45,11 @@ from HTTPResponse import make_response
 from ZPublisher.HTTPRequest import HTTPRequest
 from App.config import getConfiguration
 
+import asyncore
+import asynchat
+
 from medusa.http_server import http_server, get_header
 from medusa.http_server import fifo, http_channel, VERSION_STRING
-import asyncore
 from medusa import counter, producers
 from medusa.test import  max_sockets
 from medusa.default_handler import unquote
@@ -335,7 +337,7 @@ class zhttp_channel(http_channel):
 
     def __init__(self, server, conn, addr):
         http_channel.__init__(self, server, conn, addr)
-        if isinstance(self.producer_fifo, fifo):
+        if isinstance(self.producer_fifo, (fifo, asynchat.fifo)):
             self.producer_fifo_push = self.producer_fifo.push
             self.producer_fifo_first = self.producer_fifo.first
             self.producer_fifo_pop = self.producer_fifo.pop
@@ -348,7 +350,7 @@ class zhttp_channel(http_channel):
                 del self.producer_fifo[0]
             self.producer_fifo_pop = pop
         requestCloseOnExec(conn)
-        self.queue=[]
+        self.queue = []
         self.working=0
         self.max_header_len = getConfiguration().http_header_max_length
 
