@@ -29,7 +29,8 @@ class Tracer:
             exception = exceptions[0]
             exceptions.remove(exception)
             exceptionShortName = exception.__name__ # KISS
-            self.append('raising %s from %s' % (exceptionShortName, context))
+            exceptionShortName = exceptionShortName.split("'")[0]
+	    self.append('raising %s from %s' % (exceptionShortName, context))
             raise exception
 
 

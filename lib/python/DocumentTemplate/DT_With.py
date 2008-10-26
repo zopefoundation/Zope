@@ -36,8 +36,10 @@
 __rcs_id__='$Id$'
 __version__='$Revision: 1.15 $'[11:-2]
 
-from DT_Util import parse_params, name_param, InstanceDict, render_blocks, str
-from DT_Util import TemplateDict
+from DocumentTemplate.DT_Util import parse_params, name_param
+from DocumentTemplate.DT_Util import InstanceDict, render_blocks, str
+from DocumentTemplate.DT_Util import TemplateDict
+
 class With:
     blockContinuations=()
     name='with'

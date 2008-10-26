@@ -18,12 +18,13 @@ __version__='$Revision: 1.22 $'[11:-2]
 
 from math import sqrt
 import re
-TupleType=type(())
+
 try:
     import Missing
     mv=Missing.Value
 except: mv=None
 
+TupleType = tuple
 
 class sequence_variables:
 

@@ -333,13 +333,17 @@ __rcs_id__='$Id$'
 __version__='$Revision: 1.62 $'[11:-2]
 
 import sys
-from DT_Util import ParseError, parse_params, name_param, str, join_unicode
-from DT_Util import render_blocks, InstanceDict, ValidationError, Eval
-from DT_Util import simple_name, add_with_prefix
 import re
-from DT_InSV import sequence_variables, opt
-TupleType=type(())
-StringTypes = (type(''), type(u''))
+
+from DocumentTemplate.DT_Util import ParseError, parse_params, name_param
+from DocumentTemplate.DT_Util import str, join_unicode
+from DocumentTemplate.DT_Util import render_blocks, InstanceDict
+from DocumentTemplate.DT_Util import ValidationError, Eval
+from DocumentTemplate.DT_Util import simple_name, add_with_prefix
+from DocumentTemplate.DT_InSV import sequence_variables, opt
+
+TupleType = tuple
+StringTypes = (str, unicode)
 
 class InFactory:
     blockContinuations=('else',)

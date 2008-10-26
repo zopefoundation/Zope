@@ -972,7 +972,7 @@ initcDocumentTemplate(void)
 
   DictInstanceType.ob_type=&PyType_Type;
 
-  UNLESS (html_quote = PyImport_ImportModule("html_quote")) return;
+  UNLESS (html_quote = PyImport_ImportModule("DocumentTemplate.html_quote")) return;
   ASSIGN(ustr, PyObject_GetAttrString(html_quote, "ustr"));
   UNLESS (ustr) return;
   ASSIGN(html_quote, PyObject_GetAttrString(html_quote, "html_quote"));

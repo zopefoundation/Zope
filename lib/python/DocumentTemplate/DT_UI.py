@@ -15,7 +15,7 @@ __doc__='''Machinery to support through-the-web editing
 $Id$'''
 __version__='$Revision: 1.15 $'[11:-2]
 
-from DT_HTML import HTML
+from DocumentTemplate.DT_HTML import HTML
 
 FactoryDefaultString="Factory Default"
 

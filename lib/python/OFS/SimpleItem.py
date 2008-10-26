@@ -36,7 +36,7 @@ from DocumentTemplate.html_quote import html_quote
 from DocumentTemplate.ustr import ustr
 from ExtensionClass import Base
 from webdav.Resource import Resource
-from zExceptions import Redirect
+from zExceptions import Redirect, upgradeException
 from zExceptions.ExceptionFormatter import format_exception
 from zope.interface import implements
 
@@ -181,16 +181,24 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
             elif type(tb) is type('') and not error_tb:
                 error_tb = tb
 
-            # turn error_type into a string
-            if hasattr(error_type, '__name__'):
-                error_type=error_type.__name__
+            # warn if error_type is a string
+            error_name = 'Unknown'
+            if isinstance(error_type, basestring):
+                # String Exceptions are deprecated on Python 2.5 and
+                # plain won't work at all on Python 2.6. So try to upgrade it
+                # to a real exception.
+                error_name = error_type
+                error_type, error_value = upgradeException(error_type, error_value)
+            else:
+                if hasattr(error_type, '__name__'):
+                    error_name = error_type.__name__
 
             if hasattr(self, '_v_eek'):
                 # Stop if there is recursion.
                 raise error_type, error_value, tb
             self._v_eek=1
 
-            if str(error_type).lower() in ('redirect',):
+            if error_name.lower() in ('redirect',):
                 raise error_type, error_value, tb
 
             if not error_message:
@@ -216,7 +224,10 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
                 else:
                     client = aq_parent(client)
                     s=getattr(client, 'standard_error_message')
-                kwargs = {'error_type': error_type,
+                # For backward compatibility, we pass 'error_name' as
+                # 'error_type' here as historically this has always
+                # been a string.
+                kwargs = {'error_type': error_name,
                           'error_value': error_value,
                           'error_tb': error_tb,
                           'error_traceback': error_tb,

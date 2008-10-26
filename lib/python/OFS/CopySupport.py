@@ -48,7 +48,7 @@ from OFS.interfaces import ICopyContainer
 from OFS.interfaces import ICopySource
 
 
-CopyError='Copy Error'
+class CopyError(Exception): pass
 
 copy_re = re.compile('^copy([0-9]*)_of_(.*)')
 

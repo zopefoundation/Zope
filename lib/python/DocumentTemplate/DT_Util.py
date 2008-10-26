@@ -16,12 +16,16 @@ $Id$"""
 
 import re
 
-from html_quote import html_quote, ustr # for import by other modules, dont remove!
+# for import by other modules, dont remove!
+from DocumentTemplate.html_quote import html_quote, ustr
+
+from DocumentTemplate.cDocumentTemplate import InstanceDict, TemplateDict
+from DocumentTemplate.cDocumentTemplate import render_blocks, safe_callable
+from DocumentTemplate.cDocumentTemplate import join_unicode
+
 from RestrictedPython.Guards import safe_builtins
 from RestrictedPython.Utilities import utility_builtins
 from RestrictedPython.Eval import RestrictionCapableEval
-from cDocumentTemplate import InstanceDict, TemplateDict, \
-         render_blocks, safe_callable, join_unicode
 
 test = utility_builtins['test'] # for backwards compatibility, dont remove!
 
@@ -29,7 +33,9 @@ LIMITED_BUILTINS = 1
 
 str=__builtins__['str'] # Waaaaa, waaaaaaaa needed for pickling waaaaa
 
-ParseError='Document Template Parse Error'
+class ParseError(Exception):
+    """Document Template Parse Error"""
+
 from zExceptions import Unauthorized as ValidationError
 
 def int_param(params,md,name,default=0, st=type('')):
@@ -235,37 +241,37 @@ def name_param(params,tag='',expr=0, attr='name', default_unnamed=1):
 
         if v[:1]=='"' and v[-1:]=='"' and len(v) > 1: # expr shorthand
             if used(attr):
-                raise ParseError, ('%s and expr given' % attr, tag)
+                raise ParseError('%s and expr given' % attr, tag)
             if expr:
                 if used('expr'):
-                    raise ParseError, ('two exprs given', tag)
+                    raise ParseError('two exprs given', tag)
                 v=v[1:-1]
                 try: expr=Eval(v)
                 except SyntaxError, v:
-                    raise ParseError, (
+                    raise ParseError(
                         '<strong>Expression (Python) Syntax error</strong>:'
                         '\n<pre>\n%s\n</pre>\n' % v[0],
                         tag)
                 return v, expr
-            else: raise ParseError, (
+            else: raise ParseError(
                 'The "..." shorthand for expr was used in a tag '
                 'that doesn\'t support expr attributes.',
                 tag)
 
         else: # name shorthand
             if used(attr):
-                raise ParseError, ('Two %s values were given' % attr, tag)
+                raise ParseError('Two %s values were given' % attr, tag)
             if expr:
                 if used('expr'):
                     # raise 'Waaaaaa', 'waaa'
-                    raise ParseError, ('%s and expr given' % attr, tag)
+                    raise ParseError('%s and expr given' % attr, tag)
                 return params[''],None
             return params['']
 
     elif used(attr):
         if expr:
             if used('expr'):
-                raise ParseError, ('%s and expr given' % attr, tag)
+                raise ParseError('%s and expr given' % attr, tag)
             return params[attr],None
         return params[attr]
     elif expr and used('expr'):
@@ -273,7 +279,7 @@ def name_param(params,tag='',expr=0, attr='name', default_unnamed=1):
         expr=Eval(name)
         return name, expr
 
-    raise ParseError, ('No %s given' % attr, tag)
+    raise ParseError('No %s given' % attr, tag)
 
 Expr_doc="""
 
@@ -386,11 +392,11 @@ def parse_params(text,
         l=len(mo_unp.group(1))
         if result:
             if parms.has_key(name):
-                if parms[name] is None: raise ParseError, (
+                if parms[name] is None: raise ParseError(
                     'Attribute %s requires a value' % name, tag)
 
                 result[name]=parms[name]
-            else: raise ParseError, (
+            else: raise ParseError(
                 'Invalid attribute name, "%s"' % name, tag)
         else:
             result['']=name
@@ -398,22 +404,22 @@ def parse_params(text,
     elif mo_unq:
         name=mo_unq.group(2)
         l=len(mo_unq.group(1))
-        if result: raise ParseError, (
+        if result: raise ParseError(
             'Invalid attribute name, "%s"' % name, tag)
         else: result['']=name
         return parse_params(text[l:],result,**parms)
     else:
         if not text or not text.strip(): return result
-        raise ParseError, ('invalid parameter: "%s"' % text, tag)
+        raise ParseError('invalid parameter: "%s"' % text, tag)
 
     if not parms.has_key(name):
-        raise ParseError, (
+        raise ParseError(
             'Invalid attribute name, "%s"' % name, tag)
 
     if result.has_key(name):
         p=parms[name]
         if type(p) is not ListType or p:
-            raise ParseError, (
+            raise ParseError(
                 'Duplicate values for attribute "%s"' % name, tag)
 
     result[name]=value

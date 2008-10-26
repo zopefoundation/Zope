@@ -103,6 +103,32 @@ CallMethodO(PyObject *self, PyObject *name,
 
 #define Build Py_BuildValue
 
+/* For obscure reasons, we need to use tp_richcompare instead of tp_compare.
+ * The comparisons here all most naturally compute a cmp()-like result.
+ * This little helper turns that into a bool result for rich comparisons.
+ */
+static PyObject *
+diff_to_bool(int diff, int op)
+{
+	PyObject *result;
+	int istrue;
+
+	switch (op) {
+		case Py_EQ: istrue = diff == 0; break;
+		case Py_NE: istrue = diff != 0; break;
+		case Py_LE: istrue = diff <= 0; break;
+		case Py_GE: istrue = diff >= 0; break;
+		case Py_LT: istrue = diff < 0; break;
+		case Py_GT: istrue = diff > 0; break;
+		default:
+			assert(! "op unknown");
+			istrue = 0; /* To shut up compiler */
+	}
+	result = istrue ? Py_True : Py_False;
+	Py_INCREF(result);
+	return result;
+}
+
 /* Declarations for objects of type Wrapper */
 
 typedef struct {
@@ -759,6 +785,13 @@ Wrapper_compare(Wrapper *self, PyObject *w)
 }
 
 static PyObject *
+Wrapper_richcompare(Wrapper *self, PyObject *w, int op)
+{
+  int diff = Wrapper_compare(self, w);
+  return diff_to_bool(diff, op);
+}
+
+static PyObject *
 Wrapper_repr(Wrapper *self)
 {
   PyObject *r;
@@ -1241,7 +1274,7 @@ static PyExtensionClass Wrappertype = {
   (printfunc)0,				/*tp_print*/
   (getattrfunc)0,			/*tp_getattr*/
   (setattrfunc)0,			/*tp_setattr*/
-  (cmpfunc)Wrapper_compare,    		/*tp_compare*/
+  (cmpfunc)0,	    			/*tp_compare*/
   (reprfunc)Wrapper_repr,      		/*tp_repr*/
   &Wrapper_as_number,			/*tp_as_number*/
   &Wrapper_as_sequence,			/*tp_as_sequence*/
@@ -1259,7 +1292,7 @@ static PyExtensionClass Wrappertype = {
   "Wrapper object for implicit acquisition", /* Documentation string */
   /* tp_traverse       */ (traverseproc)Wrapper_traverse,
   /* tp_clear          */ (inquiry)Wrapper_clear,
-  /* tp_richcompare    */ (richcmpfunc)0,
+  /* tp_richcompare    */ (richcmpfunc)Wrapper_richcompare,
   /* tp_weaklistoffset */ (long)0,
   /* tp_iter           */ (getiterfunc)0,
   /* tp_iternext       */ (iternextfunc)0,
@@ -1285,7 +1318,7 @@ static PyExtensionClass XaqWrappertype = {
   (printfunc)0,				/*tp_print*/
   (getattrfunc)0,			/*tp_getattr*/
   (setattrfunc)0,			/*tp_setattr*/
-  (cmpfunc)Wrapper_compare,    		/*tp_compare*/
+  (cmpfunc)0,    		/*tp_compare*/
   (reprfunc)Wrapper_repr,      		/*tp_repr*/
   &Wrapper_as_number,			/*tp_as_number*/
   &Wrapper_as_sequence,			/*tp_as_sequence*/
@@ -1303,7 +1336,7 @@ static PyExtensionClass XaqWrappertype = {
   "Wrapper object for implicit acquisition", /* Documentation string */
   /* tp_traverse       */ (traverseproc)Wrapper_traverse,
   /* tp_clear          */ (inquiry)Wrapper_clear,
-  /* tp_richcompare    */ (richcmpfunc)0,
+  /* tp_richcompare    */ (richcmpfunc)Wrapper_richcompare,
   /* tp_weaklistoffset */ (long)0,
   /* tp_iter           */ (getiterfunc)0,
   /* tp_iternext       */ (iternextfunc)0,

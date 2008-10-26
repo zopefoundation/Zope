@@ -20,7 +20,7 @@ __version__='$Revision: 1.42 $'[11:-2]
 
 import sys, types
 from types import StringType, UnicodeType, TupleType
-from ustr import ustr
+from DocumentTemplate.ustr import ustr
 
 import warnings
 warnings.warn('pDocumentTemplate is not longer in active use. '

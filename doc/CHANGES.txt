@@ -219,6 +219,13 @@ Zope Changes
 
     Bugs Fixed
 
+
+      - Launchpad #280334: Fixed problem with 'timeout'
+        argument/attribute missing in testbrowser tests.
+
+      - Launchpad #282677: fixed implementation of guarded_map and
+        provided tests and implementation for guarded_zip (RestrictedPython).
+
       - Lauchpad #143736,#271395: fixed AttributeError' on _ltid in TempStorage
 
       - 'AccessControl.ZopeGuards.guarded_import' mapped some Unauthorized
@@ -475,6 +482,18 @@ Zope Changes
 
       - Prevent ZPublisher from insering incorrect <base/> tags into the
         headers of plain html files served from Zope3 resource directories.
+      
+      - Changed the condition checking for setting status of
+        HTTPResponse from to account for new-style classes.
+      
+      - The Wrapper_compare function from tp_compare to tp_richcompare.
+        Also another function Wrapper_richcompare is added.
+      
+      - The doc test has been slightly changed in ZPublisher to get
+        the error message extracted correctly.
+
+      - The changes made in Acquisition.c in Implicit Acquisition
+        comparison made avail to Explicit Acquisition comparison also.
 
       - zopedoctest no longer breaks if the URL contains more than one
         question mark. It broke even when the second question mark was

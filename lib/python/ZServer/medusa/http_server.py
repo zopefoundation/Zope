@@ -528,25 +528,25 @@ class http_channel (asynchat.async_chat):
                     # no handlers, so complain
             r.error (404)
             
-    def writable (self):
-            # this is just the normal async_chat 'writable', here for comparison
-        return self.ac_out_buffer or len(self.producer_fifo)
+    #def writable (self):
+    #        # this is just the normal async_chat 'writable', here for comparison
+    #    return self.ac_out_buffer or len(self.producer_fifo)
         
-    def writable_for_proxy (self):
-            # this version of writable supports the idea of a 'stalled' producer
-            # [i.e., it's not ready to produce any output yet] This is needed by
-            # the proxy, which will be waiting for the magic combination of
-            # 1) hostname resolved
-            # 2) connection made
-            # 3) data available.
-        if self.ac_out_buffer:
-            return 1
-        elif len(self.producer_fifo):
-            p = self.producer_fifo.first()
-            if hasattr (p, 'stalled'):
-                return not p.stalled()
-            else:
-                return 1
+    #def writable_for_proxy (self):
+    #        # this version of writable supports the idea of a 'stalled' producer
+    #        # [i.e., it's not ready to produce any output yet] This is needed by
+    #        # the proxy, which will be waiting for the magic combination of
+    #        # 1) hostname resolved
+    #        # 2) connection made
+    #        # 3) data available.
+    #    if self.ac_out_buffer:
+    #        return 1
+    #    elif len(self.producer_fifo):
+    #        p = self.producer_fifo.first()
+    #        if hasattr (p, 'stalled'):
+    #            return not p.stalled()
+    #        else:
+    #            return 1
                 
                 # ===========================================================================
                 #						 HTTP Server Object

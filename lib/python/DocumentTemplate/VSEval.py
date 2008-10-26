@@ -1,6 +1,6 @@
 # alias module for backwards compatibility
 
-from DT_Util import Eval
+from DocumentTemplate.DT_Util import Eval
 
 def careful_mul(env, *factors):
     r = 1

@@ -118,12 +118,20 @@ class ExceptionHookTest(ExceptionHookTestCase):
     def testStringException1(self):
         def f():
             raise 'unauthorized', 'x'
-        self.assertRaises('unauthorized', self.call, None, None, f)
+        if sys.version_info < (2, 6):
+            self.assertRaises('unauthorized', self.call, None, None, f)
+        else:
+            # Raising a string exception causes a TypeError on Python 2.6
+            self.assertRaises(TypeError, self.call, None, None, f)
 
     def testStringException2(self):
         def f():
             raise 'redirect', 'x'
-        self.assertRaises('redirect', self.call, None, None, f)
+        if sys.version_info < (2, 6):
+            self.assertRaises('redirect', self.call, None, None, f)
+        else:
+            # Raising a string exception causes a TypeError on Python 2.6
+            self.assertRaises(TypeError, self.call, None, None, f)
 
     def testSystemExit(self):
         def f():

@@ -15,19 +15,21 @@
 
 
 try:
-    from cAccessControl import rolesForPermissionOn, \
+    from AccessControl.cAccessControl import rolesForPermissionOn, \
          PermissionRole, imPermissionRole, _what_not_even_god_should_do, \
          RestrictedDTMLMixin, aq_validate, guarded_getattr, \
          setDefaultBehaviors
-    from cAccessControl import ZopeSecurityPolicy as cZopeSecurityPolicy
-    from cAccessControl import SecurityManager as cSecurityManager
+    from AccessControl.cAccessControl import ZopeSecurityPolicy \
+        as cZopeSecurityPolicy
+    from AccessControl.cAccessControl import SecurityManager as cSecurityManager
 except ImportError:
     import sys
     # make sure a partial import doesn't pollute sys.modules
     del sys.modules[__name__]
-
-
-from ImplPython import RestrictedDTML, SecurityManager, ZopeSecurityPolicy
+    raise
+    
+from AccessControl.ImplPython import RestrictedDTML
+from AccessControl.ImplPython import SecurityManager, ZopeSecurityPolicy
 
 
 class RestrictedDTML(RestrictedDTMLMixin, RestrictedDTML):

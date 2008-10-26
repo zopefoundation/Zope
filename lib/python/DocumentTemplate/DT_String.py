@@ -16,9 +16,10 @@ import os
 import thread
 import re
 
-from DT_Util import ParseError, InstanceDict, TemplateDict, render_blocks, str
-from DT_Var import Var, Call, Comment
-from DT_Return import ReturnTag, DTReturn
+from DocumentTemplate.DT_Util import ParseError, InstanceDict
+from DocumentTemplate.DT_Util import TemplateDict, render_blocks, str
+from DocumentTemplate.DT_Var import Var, Call, Comment
+from DocumentTemplate.DT_Return import ReturnTag, DTReturn
 
 _marker = []  # Create a new marker object.
 

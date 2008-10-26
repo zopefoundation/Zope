@@ -26,7 +26,11 @@
 __rcs_id__='$Id$'
 __version__='$Revision: 1.13 $'[11:-2]
 
-from DT_Util import parse_params, name_param, render_blocks, str
+from zExceptions import upgradeException
+from DocumentTemplate.DT_Util import parse_params, name_param, render_blocks, str
+
+class InvalidErrorTypeExpression(Exception):
+    pass
 
 class Raise:
     blockContinuations=()
@@ -44,15 +48,17 @@ class Raise:
         expr=self.expr
         if expr is None:
             t=self.__name__
-            if t[-5:]=='Error' and __builtins__.has_key(t):
-                t=__builtins__[t]
         else:
             try: t=expr.eval(md)
-            except: t='Invalid Error Type Expression'
+            except: t=InvalidErrorTypeExpression
 
         try: v=render_blocks(self.section,md)
         except: v='Invalid Error Value'
-
+        
+        # String Exceptions are deprecated on Python 2.5 and
+        # plain won't work at all on Python 2.6. So try to upgrade it
+        # to a real exception.
+        t, v = upgradeException(t, v)
         raise t, v
 
     __call__=render

@@ -40,10 +40,11 @@
    as desired.
 '''
 
-from DT_Util import render_blocks, Eval, ParseError
-from DT_Util import str # Probably needed due to hysterical pickles.
 import re
 
+from DocumentTemplate.DT_Util import render_blocks, Eval, ParseError
+from DocumentTemplate.DT_Util import str # Probably needed due to
+                                         # hysterical pickles.
 
 class Let:
     blockContinuations=()

@@ -61,9 +61,10 @@ __version__='$Revision: 1.15 $'[11:-2]
 
 from DocumentTemplate.DT_Util import ParseError, parse_params, name_param
 from string import find, split, join, atoi, atof
-StringType=type('')
 
-str=__builtins__['str']
+StringType = str
+
+str = __builtins__['str']
 
 class SQLVar:
     name='sqlvar'
@@ -78,10 +79,10 @@ class SQLVar:
 
         self.args=args
         if not args.has_key('type'):
-            raise ParseError, ('the type attribute is required', 'dtvar')
+            raise ParseError('the type attribute is required', 'dtvar')
         t=args['type']
         if not valid_type(t):
-            raise ParseError, ('invalid type, %s' % t, 'dtvar')
+            raise ParseError('invalid type, %s' % t, 'dtvar')
 
     def render(self, md):
         name=self.__name__

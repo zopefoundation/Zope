@@ -2301,7 +2301,7 @@ void initcAccessControl(void) {
 	/*| from logger_wrapper import warn
 	*/
 
-	IMPORT(module, "logger_wrapper");
+	IMPORT(module, "AccessControl.logger_wrapper");
 	GETATTR(module, warn);
 	Py_DECREF(module);
 	module = NULL;
