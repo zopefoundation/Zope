@@ -13,6 +13,8 @@
 # Written by Marc-Andre Lemburg (mal@lemburg.com).
 # (c) Copyright CNRI, All Rights Reserved. NO WARRANTY.
 
+import sys
+
 def search_function(encoding):
 
     # Cache lookup
@@ -93,7 +95,7 @@ def search_function(encoding):
     # Return the registry entry
     return entry
 
-
-import encodings
-encodings.search_function.func_code = search_function.func_code
+if sys.version_info <= (2, 4, 5):
+    import encodings
+    encodings.search_function.func_code = search_function.func_code
 
