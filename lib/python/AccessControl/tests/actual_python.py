@@ -175,7 +175,7 @@ f12()
 
 def f13():
     try:
-        all
+        any
     except NameError:
         pass # Python < 2.5
     else:
