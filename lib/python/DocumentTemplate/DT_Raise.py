@@ -27,7 +27,9 @@ __rcs_id__='$Id$'
 __version__='$Revision: 1.13 $'[11:-2]
 
 from zExceptions import upgradeException
-from DocumentTemplate.DT_Util import parse_params, name_param, render_blocks, str
+from DocumentTemplate.DT_Util import name_param
+from DocumentTemplate.DT_Util import parse_params
+from DocumentTemplate.DT_Util import render_blocks
 
 class InvalidErrorTypeExpression(Exception):
     pass
