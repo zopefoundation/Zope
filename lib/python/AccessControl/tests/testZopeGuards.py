@@ -307,8 +307,11 @@ class TestBuiltinFunctionGuards(GuardTestCase):
         self.assertRaises(Unauthorized, guarded_min, [1,2,3])
         self.assertRaises(Unauthorized, guarded_min, 1,2,3)
         if MIN_MAX_TAKE_KEY:
+            class MyDict(dict):  # guard() skips 'dict' values
+                pass
             self.assertRaises(Unauthorized, guarded_min,
-                              [{'x':1},{'x':2}], operator.itemgetter('x'))
+                              MyDict(x=1), MyDict(x=2),
+                              key=operator.itemgetter('x'))
         self.setSecurityManager(old)
 
     def test_max_fails(self):
@@ -319,8 +322,11 @@ class TestBuiltinFunctionGuards(GuardTestCase):
         self.assertRaises(Unauthorized, guarded_max, [1,2,3])
         self.assertRaises(Unauthorized, guarded_max, 1,2,3)
         if MIN_MAX_TAKE_KEY:
+            class MyDict(dict):  # guard() skips 'dict' values
+                pass
             self.assertRaises(Unauthorized, guarded_max, 
-                            [{'x':1},{'x':2}], operator.itemgetter('x'))
+                              MyDict(x=1), MyDict(x=2),
+                              key=operator.itemgetter('x'))
         self.setSecurityManager(old)
 
     def test_enumerate_fails(self):
@@ -377,7 +383,9 @@ class TestBuiltinFunctionGuards(GuardTestCase):
         self.assertEqual(guarded_min([1,2,3]), 1)
         self.assertEqual(guarded_min(1,2,3), 1)
         if MIN_MAX_TAKE_KEY:
-            self.assertEqual(guarded_min({'x':1},{'x':2}, 
+            class MyDict(dict):  # guard() skips 'dict' values
+                pass
+            self.assertEqual(guarded_min(MyDict(x=1), MyDict(x=2),
                                          key=operator.itemgetter('x')),
                              {'x':1})
         self.setSecurityManager(old)
@@ -389,7 +397,9 @@ class TestBuiltinFunctionGuards(GuardTestCase):
         self.assertEqual(guarded_max([1,2,3]), 3)
         self.assertEqual(guarded_max(1,2,3), 3)
         if MIN_MAX_TAKE_KEY:
-            self.assertEqual(guarded_max({'x':1},{'x':2}, 
+            class MyDict(dict):  # guard() skips 'dict' values
+                pass
+            self.assertEqual(guarded_max(MyDict(x=1), MyDict(x=2),
                                          key=operator.itemgetter('x')),
                              {'x':2})
         self.setSecurityManager(old)
