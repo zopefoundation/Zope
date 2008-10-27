@@ -222,6 +222,8 @@ Zope Changes
       - Ensure that response header values cannot embed CRLF pairs, which
         violate the HTTP spec (RFC 2616).
 
+      - Testing.ZopeTestCase: installPackage was tied to the ZopeLite layer.
+
       - Launchpad #280334: Fixed problem with 'timeout'
         argument/attribute missing in testbrowser tests.
 
