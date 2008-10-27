@@ -44,6 +44,7 @@ Zope Changes
       - Launchpad #262313: respect the 'Expand macros when editing' flag
         when editing a page template through the ZMI
 
+      - Testing.ZopeTestCase: installPackage was tied to the ZopeLite layer.
 
   Zope 2.11.1 (2008/07/17)
 
