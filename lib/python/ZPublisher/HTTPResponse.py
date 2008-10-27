@@ -122,6 +122,10 @@ otherTypes = os.environ.get('DONT_GZIP_MAJOR_MIME_TYPES','').lower()
 if otherTypes:
     uncompressableMimeMajorTypes += tuple(otherTypes.split(','))
 
+_CRLF = re.compile(r'\r[\n]?')
+
+def _scrubHeader(name, value):
+    return ''.join(_CRLF.split(str(name))), ''.join(_CRLF.split(str(value)))
 
 class HTTPResponse(BaseResponse):
     """\
@@ -242,15 +246,14 @@ class HTTPResponse(BaseResponse):
         if lock:
              self._locked_status = 1
 
-    def setHeader(self, name, value, literal=0):
+    def setHeader(self, name, value, literal=0, scrubbed=False):
         '''\
         Sets an HTTP return header "name" with value "value", clearing
         the previous value set for the header, if one exists. If the
         literal flag is true, the case of the header name is preserved,
         otherwise the header name will be lowercased.'''
-
-        name = str(name)
-        value = str(value)
+        if not scrubbed:
+            name, value = _scrubHeader(name, value)
         key = name.lower()
         if accumulate_header(key):
             self.accumulated_headers = (
@@ -275,8 +278,7 @@ class HTTPResponse(BaseResponse):
         '''\
         Set a new HTTP return header with the given value, while retaining
         any previously set headers with the same name.'''
-        name = str(name)
-        value = str(value)
+        name, value = _scrubHeader(name, value)
         self.accumulated_headers = (
             "%s%s: %s\r\n" % (self.accumulated_headers, name, value))
 
@@ -585,8 +587,8 @@ class HTTPResponse(BaseResponse):
         Sets an HTTP return header "name" with value "value",
         appending it following a comma if there was a previous value
         set for the header. '''
-        name = str(name).lower()
-        value = str(value)
+        name, value = _scrubHeader(name, value)
+        name = name.lower()
 
         headers = self.headers
         if headers.has_key(name):
@@ -594,7 +596,7 @@ class HTTPResponse(BaseResponse):
             h = "%s%s\r\n\t%s" % (h,delimiter,value)
         else:
             h = value
-        self.setHeader(name,h)
+        self.setHeader(name,h, scrubbed=True)
 
     def isHTML(self, s):
         s = s.lstrip()
