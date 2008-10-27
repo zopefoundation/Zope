@@ -1,6 +1,3 @@
-0.9.11 (Zope 2.12 edition)
-- Bugfix: installPackage was tied to the ZopeLite layer.
-
 0.9.10 (Zope 2.11 edition)
 - Switched to Zope3 interfaces.
 - Removed broken profiler support.
