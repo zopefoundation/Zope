@@ -308,7 +308,7 @@ class TestBuiltinFunctionGuards(GuardTestCase):
         self.assertRaises(Unauthorized, guarded_min, 1,2,3)
         if MIN_MAX_TAKE_KEY:
             self.assertRaises(Unauthorized, guarded_min,
-                              [{'x':1},{'x':2}], key=operator.itemgetter('x'))
+                              [{'x':1},{'x':2}], operator.itemgetter('x'))
         self.setSecurityManager(old)
 
     def test_max_fails(self):
@@ -320,7 +320,7 @@ class TestBuiltinFunctionGuards(GuardTestCase):
         self.assertRaises(Unauthorized, guarded_max, 1,2,3)
         if MIN_MAX_TAKE_KEY:
             self.assertRaises(Unauthorized, guarded_max, 
-                            [{'x':1},{'x':2}], key=operator.itemgetter('x'))
+                            [{'x':1},{'x':2}], operator.itemgetter('x'))
         self.setSecurityManager(old)
 
     def test_enumerate_fails(self):
