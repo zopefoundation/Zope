@@ -95,7 +95,7 @@ def search_function(encoding):
     # Return the registry entry
     return entry
 
-if sys.version_info <= (2, 4, 5):
+if sys.version_info[:2] < (2, 5):
     import encodings
     encodings.search_function.func_code = search_function.func_code
 
