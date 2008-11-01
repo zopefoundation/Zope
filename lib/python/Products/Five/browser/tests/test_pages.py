@@ -66,10 +66,9 @@ def test_view_with_unwrapped_context():
 
 def test_suite():
     import unittest
-    from Testing.ZopeTestCase import installProduct, ZopeDocTestSuite
+    from Testing.ZopeTestCase import ZopeDocTestSuite
     from Testing.ZopeTestCase import ZopeDocFileSuite
     from Testing.ZopeTestCase import FunctionalDocFileSuite
-    installProduct('PythonScripts')  # for Five.tests.testing.restricted
     return unittest.TestSuite((
         ZopeDocTestSuite(),
         ZopeDocFileSuite('pages.txt', package='Products.Five.browser.tests'),
@@ -78,4 +77,3 @@ def test_suite():
         FunctionalDocFileSuite('aqlegacy_ftest.txt',
                                package='Products.Five.browser.tests'),
         ))
-    return suite
