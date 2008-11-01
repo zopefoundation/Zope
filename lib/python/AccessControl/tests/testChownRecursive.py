@@ -11,33 +11,26 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Skeleton ZopeTestCase
-
-$Id: testSkeleton.py 30245 2005-05-05 09:50:09Z shh $
-"""
-
-import os, sys
-
+import unittest
 from Testing import ZopeTestCase
-
-
 
 class TestRecursiveChangeOwnership(ZopeTestCase.ZopeTestCase):
     user_name2 = "dumdidum"
     user_pass2 = "dumdidum"
-    
+
     def afterSetUp(self):
-##        self.folder.changeOwnership(ZopeTestCase.user_name)
-        
+
         # need a second user
         ufld = self.folder['acl_users']
         ufld.userFolderAddUser(self.user_name2, self.user_pass2, [], [])
 
         # remember user objects
-        # is the __of__() call correct? is it needed? without it ownerInfo in Owned.py throws
-        # an AttributeError ...
-        self.user1 = self.folder['acl_users'].getUser(ZopeTestCase.user_name).__of__(self.folder)
-        self.user2 = self.folder['acl_users'].getUser(self.user_name2).__of__(self.folder)
+        # is the __of__() call correct? is it needed? without it ownerInfo in
+        # Owned.py throws an AttributeError ...
+        self.user1 = self.folder['acl_users'].getUser(ZopeTestCase.user_name
+                                                     ).__of__(self.folder)
+        self.user2 = self.folder['acl_users'].getUser(self.user_name2
+                                                     ).__of__(self.folder)
 
         self.folder.changeOwnership(self.user1)
 
@@ -51,25 +44,19 @@ class TestRecursiveChangeOwnership(ZopeTestCase.ZopeTestCase):
         # ensure folder is owned by user1
         owner = self.folder.getOwnerTuple()[1]
         self.assertEqual(owner, ZopeTestCase.user_name)
-        
+
         # ensure file is owned by user2
         owner = self.file.getOwnerTuple()[1]
         self.assertEqual(owner, self.user_name2)
-        
+
         self.folder.changeOwnership(self.user1, recursive=1)
-        
+
         # ensure file's ownership has changed now to user1
         owner = self.file.getOwnerTuple()[1]
         self.assertEqual(owner, ZopeTestCase.user_name)
-        
 
 
 def test_suite():
-    from unittest import TestSuite, makeSuite
-    suite = TestSuite()
-    suite.addTest(makeSuite(TestRecursiveChangeOwnership))
-    return suite
-
-if __name__ == '__main__':
-    framework()
-
+    return unittest.TestSuite((
+        unittest.makeSuite(TestRecursiveChangeOwnership),
+    ))
