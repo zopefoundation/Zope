@@ -156,7 +156,8 @@ class TestCopySupport(EventTest):
         # Test webdav COPY
         req = self.app.REQUEST
         req.environ['HTTP_DEPTH'] = 'infinity'
-        req.environ['HTTP_DESTINATION'] = '%s/subfolder/mydoc' % self.folder.absolute_url()
+        req.environ['HTTP_DESTINATION'] = ('%s/subfolder/mydoc'
+                                            % self.folder.absolute_url())
         self.folder.mydoc.COPY(req, req.RESPONSE)
         self.assertEqual(eventlog.called(),
             [('mydoc', 'ObjectCopiedEvent'),
@@ -170,7 +171,8 @@ class TestCopySupport(EventTest):
         # Test webdav MOVE
         req = self.app.REQUEST
         req.environ['HTTP_DEPTH'] = 'infinity'
-        req.environ['HTTP_DESTINATION'] = '%s/subfolder/mydoc' % self.folder.absolute_url()
+        req.environ['HTTP_DESTINATION'] = ('%s/subfolder/mydoc'
+                                            % self.folder.absolute_url())
         self.folder.mydoc.MOVE(req, req.RESPONSE)
         self.assertEqual(eventlog.called(),
             [('mydoc', 'ObjectWillBeMovedEvent'),
@@ -278,7 +280,8 @@ class TestCopySupportSublocation(EventTest):
         # Test webdav COPY
         req = self.app.REQUEST
         req.environ['HTTP_DEPTH'] = 'infinity'
-        req.environ['HTTP_DESTINATION'] = '%s/subfolder/myfolder' % self.folder.absolute_url()
+        req.environ['HTTP_DESTINATION'] = ('%s/subfolder/myfolder'
+                                            % self.folder.absolute_url())
         self.folder.myfolder.COPY(req, req.RESPONSE)
         self.assertEqual(eventlog.called(),
             [('myfolder', 'ObjectCopiedEvent'),
@@ -296,7 +299,8 @@ class TestCopySupportSublocation(EventTest):
         # Test webdav MOVE
         req = self.app.REQUEST
         req.environ['HTTP_DEPTH'] = 'infinity'
-        req.environ['HTTP_DESTINATION'] = '%s/subfolder/myfolder' % self.folder.absolute_url()
+        req.environ['HTTP_DESTINATION'] = ('%s/subfolder/myfolder'
+                                            % self.folder.absolute_url())
         self.folder.myfolder.MOVE(req, req.RESPONSE)
         self.assertEqual(eventlog.called(),
             [('myfolder', 'ObjectWillBeMovedEvent'),
