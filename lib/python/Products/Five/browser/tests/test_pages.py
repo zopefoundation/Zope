@@ -15,6 +15,7 @@
 
 $Id$
 """
+import unittest
 
 def test_view_with_unwrapped_context():
     """
@@ -65,10 +66,11 @@ def test_view_with_unwrapped_context():
     """
 
 def test_suite():
-    import unittest
-    from Testing.ZopeTestCase import ZopeDocTestSuite
-    from Testing.ZopeTestCase import ZopeDocFileSuite
     from Testing.ZopeTestCase import FunctionalDocFileSuite
+    from Testing.ZopeTestCase import ZopeDocFileSuite
+    from Testing.ZopeTestCase import ZopeDocTestSuite
+    from Testing.ZopeTestCase import installProduct
+    installProduct('PythonScripts')
     return unittest.TestSuite((
         ZopeDocTestSuite(),
         ZopeDocFileSuite('pages.txt', package='Products.Five.browser.tests'),

@@ -15,11 +15,13 @@
 
 $Id$
 """
+import unittest
 
 def test_suite():
-    import unittest
-    from Testing.ZopeTestCase import ZopeDocFileSuite
     from Testing.ZopeTestCase import FunctionalDocFileSuite
+    from Testing.ZopeTestCase import ZopeDocFileSuite
+    from Testing.ZopeTestCase import installProduct
+    installProduct('PythonScripts')
     return unittest.TestSuite((
             ZopeDocFileSuite('resource.txt',
                              package='Products.Five.browser.tests'),
