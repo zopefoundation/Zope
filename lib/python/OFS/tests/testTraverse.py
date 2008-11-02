@@ -424,9 +424,9 @@ def test_traversable():
     the wrong reason: None doesn't have a docstring so BaseRequest
     raises NotFoundError.)
 
-      >>> from Products.Five.tests.testing.simplecontent \
-      ...   import manage_addSimpleContent
-      >>> manage_addSimpleContent(self.folder, 'testoid', 'Testoid')
+      >>> from Products.Five.tests.testing import simplecontent 
+      >>> simplecontent.manage_addSimpleContent(self.folder, 'testoid',
+      ...                                       'Testoid')
       >>> from zExceptions import NotFound
       >>> try:
       ...    self.folder.testoid.unrestrictedTraverse('doesntexist')
@@ -471,9 +471,8 @@ def test_traversable():
       ... </configure>'''
       >>> zcml.load_string(configure_zcml)
 
-      >>> from Products.Five.tests.testing.fancycontent \
-      ...   import manage_addFancyContent
-      >>> info = manage_addFancyContent(self.folder, 'fancy', '')
+      >>> from Products.Five.tests.testing import fancycontent
+      >>> info = fancycontent.manage_addFancyContent(self.folder, 'fancy', '')
 
     In the following test we let the original __bobo_traverse__ method
     kick in:
@@ -510,10 +509,9 @@ def test_traversable():
     the __bobo_traverse__ is the only element used for traversal lookup).
     Let's demonstrate:
 
-      >>> from Products.Five.tests.testing.fancycontent \
-      ...     import manage_addNonTraversableFancyContent
-      >>> info = manage_addNonTraversableFancyContent(self.folder,
-      ...                                             'fancy_zope2', '')
+      >>> from Products.Five.tests.testing import fancycontent
+      >>> info = fancycontent.manage_addNonTraversableFancyContent(
+      ...                                      self.folder, 'fancy_zope2', '')
       >>> self.folder.fancy_zope2.an_attribute = 'This is an attribute'
       >>> self.folder.fancy_zope2.unrestrictedTraverse(
       ...                             'an_attribute').index_html({})
@@ -536,8 +534,7 @@ def test_traversable():
 
     Verify that after cleanup, there's no cruft left from five:traversable::
 
-      >>> from Products.Five.browser.tests.test_traversable \
-      ...     import SimpleClass
+      >>> from Products.Five.browser.tests.test_traversable import SimpleClass
       >>> hasattr(SimpleClass, '__bobo_traverse__')
       False
       >>> hasattr(SimpleClass, '__fallback_traverse__')
@@ -588,15 +585,14 @@ def test_view_doesnt_shadow_attribute():
 
     Then we create a traversable folder...
 
-      >>> from Products.Five.tests.testing.folder \
-      ...       import manage_addFiveTraversableFolder
-      >>> manage_addFiveTraversableFolder(self.folder, 'ftf')
+      >>> from Products.Five.tests.testing import folder as ftf
+      >>> ftf.manage_addFiveTraversableFolder(self.folder, 'ftf')
 
     and add an object called ``eagle`` to it:
 
-      >>> from Products.Five.tests.testing.simplecontent \
-      ...       import manage_addIndexSimpleContent
-      >>> manage_addIndexSimpleContent(self.folder.ftf, 'eagle', 'Eagle')
+      >>> from Products.Five.tests.testing import simplecontent
+      >>> simplecontent.manage_addIndexSimpleContent(self.folder.ftf,
+      ...                                            'eagle', 'Eagle')
 
     When we publish the ``ftf/eagle`` now, we expect the attribute to
     take precedence over the view during traversal:
@@ -620,7 +616,8 @@ def test_view_doesnt_shadow_attribute():
     However, acquired attributes *should* be shadowed. See discussion on
     http://codespeak.net/pipermail/z3-five/2006q2/001474.html
 
-      >>> manage_addIndexSimpleContent(self.folder, 'mouse', 'Mouse')
+      >>> simplecontent.manage_addIndexSimpleContent(self.folder,
+      ...                                            'mouse', 'Mouse')
       >>> self.folder.ftf.unrestrictedTraverse('mouse')()
       u'The mouse has been eaten by the eagle'
 
@@ -648,7 +645,7 @@ def test_suite():
     suite = unittest.TestSuite()
     suite.addTest( unittest.makeSuite( TestTraverse ) )
     from Testing.ZopeTestCase import FunctionalDocTestSuite
-    #suite.addTest( FunctionalDocTestSuite() )
+    suite.addTest( FunctionalDocTestSuite() )
     return suite
 
 if __name__ == '__main__':
