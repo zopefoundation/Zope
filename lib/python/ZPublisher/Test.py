@@ -187,6 +187,9 @@ def publish_module(module_name,
                 response=Response(stdout=stdout, stderr=stderr)
             else:
                 stdout=response.stdout
+
+            response.handle_errors = debug
+
             if request is None:
                 request=Request(stdin, environ, response)
                 # make sure that the request we hand over has the

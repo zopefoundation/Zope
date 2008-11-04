@@ -20,6 +20,7 @@ item types.
 $Id$
 """
 
+import inspect
 import warnings
 import marshal, re, sys, time
 
@@ -196,7 +197,7 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
             if hasattr(self, '_v_eek'):
                 # Stop if there is recursion.
                 raise error_type, error_value, tb
-            self._v_eek=1
+            self._v_eek = 1
 
             if error_name.lower() in ('redirect',):
                 raise error_type, error_value, tb
@@ -215,15 +216,31 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
 
             if client is None:
                 client = self
+
             if not REQUEST:
                 REQUEST = aq_acquire(self, 'REQUEST')
 
+            handle_errors = getattr(getattr(REQUEST, 'RESPONSE', None), 
+                                    'handle_errors', False)
+            # Can we re-raise the exception with a rendered-to-HTML
+            # exception value? To be able to do so, the exception
+            # constructor needs to be able to take more than two
+            # arguments (some Zope 3 exceptions can't).
+            ctor = getattr(getattr(error_type, '__init__', None), 'im_func', None)
+            can_raise = (ctor is not None and inspect.isfunction(ctor) 
+                         and len(inspect.getargspec(error_type.__init__)[0]) > 2)
+
+            if not (can_raise and handle_errors):
+                # If we have been asked not to handle errors and we
+                # can't re-raise a transformed exception don't even
+                # bother with transforming the exception into
+                # HTML. Just re-raise the original exception right
+                # away.
+                raise error_type, error_value, tb
+
             try:
-                if hasattr(client, 'standard_error_message'):
-                    s=getattr(client, 'standard_error_message')
-                else:
-                    client = aq_parent(client)
-                    s=getattr(client, 'standard_error_message')
+                s = aq_acquire(client, 'standard_error_message')
+
                 # For backward compatibility, we pass 'error_name' as
                 # 'error_type' here as historically this has always
                 # been a string.
@@ -234,7 +251,7 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
                           'error_message': error_message,
                           'error_log_url': error_log_url}
 
-                if getattr(aq_base(s),'isDocTemp',0):
+                if getattr(aq_base(s), 'isDocTemp', 0):
                     v = s(client, REQUEST, **kwargs)
                 elif callable(s):
                     v = s(**kwargs)
@@ -256,10 +273,16 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
                      "event log for full details: %s)")%(
                     html_quote(sys.exc_info()[1]),
                     ))
+
+            if handle_errors:
+                # If we've been asked to handle errors, just
+                # return the rendered exception and let the
+                # ZPublisher Exception Hook deal with it.
+                return error_type, v, tb
             raise error_type, v, tb
         finally:
             if hasattr(self, '_v_eek'): del self._v_eek
-            tb=None
+            tb = None
 
     def manage(self, URL1):
         """
