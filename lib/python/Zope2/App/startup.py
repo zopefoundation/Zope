@@ -281,7 +281,10 @@ class TransactionsManager:
         transaction.begin()
 
     def commit(self):
-        transaction.commit()
+        if hasattr(transaction, 'isDoomed') and transaction.isDoomed():
+            transaction.abort()
+        else:
+            transaction.commit()
 
     def abort(self):
         transaction.abort()
