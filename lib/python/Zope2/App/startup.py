@@ -249,7 +249,15 @@ class ZPublisherExceptionHook:
                 REQUEST['AUTHENTICATED_USER'] = AccessControl.User.nobody
 
             try:
-                f(client, REQUEST, t, v, traceback, error_log_url=error_log_url)
+                result = f(client, REQUEST, t, v, 
+                           traceback, 
+                           error_log_url=error_log_url)
+                if result is not None:
+                    t, v, traceback = result
+                    response = REQUEST.RESPONSE
+                    response.setStatus(t)
+                    response.setBody(v)
+                    return response
             except TypeError:
                 # Pre 2.6 call signature
                 f(client, REQUEST, t, v, traceback)
@@ -267,7 +275,10 @@ class TransactionsManager:
         transaction.begin()
 
     def commit(self):
-        transaction.commit()
+        if hasattr(transaction, 'isDoomed') and transaction.isDoomed():
+            transaction.abort()
+        else:
+            transaction.commit()
 
     def abort(self):
         transaction.abort()
