@@ -96,6 +96,8 @@ class DefaultPublishTraverse(object):
                     request.response.setStatus(200)
                     # We don't need to do the docstring security check
                     # for views, so lets skip it and return the object here.
+                    if IAcquirer.providedBy(subobject):
+                        subobject = subobject.__of__(object)
                     return subobject
                 # No view found. Reraise the error raised by __bobo_traverse__
                 raise e
@@ -109,6 +111,8 @@ class DefaultPublishTraverse(object):
                 subobject = queryMultiAdapter((object, request), Interface,
                                               name)
                 if subobject is not None:
+                    if IAcquirer.providedBy(subobject):
+                        subobject = subobject.__of__(object)
                     return subobject
             
                 # And lastly, of there is no view, try acquired attributes, but

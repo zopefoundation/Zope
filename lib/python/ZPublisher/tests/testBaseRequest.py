@@ -295,6 +295,8 @@ class TestBaseRequestZope3Views(unittest.TestCase):
                             zope.interface.Interface, 'page2')
         gsm.registerAdapter(DummyPage3, (IDummy, IDefaultBrowserLayer),
                             zope.interface.Interface, 'page3')
+        gsm.registerAdapter(DummyPage4, (IDummy, IDefaultBrowserLayer),
+                            zope.interface.Interface, 'page4')
 
         # Bind the 'view' namespace (for @@ traversal)
         gsm.registerAdapter(zope.traversing.namespace.view,
@@ -418,7 +420,19 @@ class TestBaseRequestZope3Views(unittest.TestCase):
         r = self._makeOne(root)
         ob = r.traverse('folder/obj/page3')
         self.assertEqual(ob(), 'Test page')
-
+        
+    def test_wrapping_implicit_acquirers(self):
+        # when the default publish traverser finds via adaptation
+        # an object providing IAcquirer, it should wrap it in the
+        # object being traversed
+        root, folder = self._makeRootAndFolder()
+        ob2 = DummyObjectZ3('ob2')
+        folder._setObject('ob2', ob2)
+        r = self._makeOne(root)
+        ob = r.traverse('folder/page4')
+        self.assertEqual(ob(), 'Test page')
+        # make sure we can acquire
+        self.assertEqual(ob.ob2, ob2)
 
 class DummyResponse(Implicit):
 
@@ -576,6 +590,9 @@ class DummyPage3(BrowserPage):
 
     # __call__ remains unimplemented, baseclass raises NotImplementedError
 
+class DummyPage4(Implicit, DummyPage):
+    # a normal page that can implicitly acquire attributes
+    pass
 
 def test_suite():
     return unittest.TestSuite((
