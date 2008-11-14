@@ -397,6 +397,7 @@ class TestTraverse( unittest.TestCase ):
         self.failUnless(
             self.folder1.unrestrictedTraverse('+something') is 'plus')
 
+
 import os, sys
 if __name__ == '__main__':
     execfile(os.path.join(sys.path[0], 'framework.py'))
@@ -468,6 +469,13 @@ def test_traversable():
       ...     name="raise-keyerror"
       ...     permission="zope2.Public"
       ...     />
+      ... <!-- an item that can be traversed to via adaptation -->
+      ... <browser:page
+      ...     for="*"
+      ...     class="Products.Five.tests.testing.fancycontent.FancyContent"
+      ...     name="acquirer"
+      ...     permission="zope2.Public"
+      ...     />
       ... </configure>'''
       >>> zcml.load_string(configure_zcml)
 
@@ -525,6 +533,13 @@ def test_traversable():
       >>> self.folder.fancy.unrestrictedTraverse(
       ...                             'an_attribute').index_html({})
       'an_attribute'
+
+    If we traverse to something via an adapter lookup and it provides IAcquirer,
+    it should get acquisition-wrapped so we can acquire attributes implicitly:
+    
+      >>> acquirer = self.folder.unrestrictedTraverse('acquirer')
+      >>> acquirer.fancy
+      <FancyContent ...>
 
 
     Clean up:

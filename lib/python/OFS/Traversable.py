@@ -263,6 +263,8 @@ class Traversable:
                                              Interface, name)
 
                     if next is not None:
+                        if IAcquirer.providedBy(next):
+                            next = next.__of__(obj)
                         if restricted and not validate(obj, obj, name, next):
                             raise Unauthorized(name)
                     elif bobo_traverse is not None:
