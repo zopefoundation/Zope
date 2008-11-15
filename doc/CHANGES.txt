@@ -219,6 +219,10 @@ Zope Changes
 
     Bugs Fixed
 
+      - Ported c69896 to Five. This fix makes it possible to provide a
+        template using Python, and not have it being set to `None` by
+        the viewlet manager directive.
+    
       - Made Five.testbrowser compatible with mechanize 0.1.7b.
 
       - Ensure that response header values cannot embed CRLF pairs, which
