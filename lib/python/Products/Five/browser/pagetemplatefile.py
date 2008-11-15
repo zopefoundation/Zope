@@ -71,10 +71,10 @@ class ViewPageTemplateFile(viewpagetemplatefile.ViewPageTemplateFile):
         if meth is not None:
             root = meth()
 
-        context.update(here=context['context'],
+        context.update(here=obj,
                        # philiKON thinks container should be the view,
                        # but BBB is more important than aesthetics.
-                       container=context['context'],
+                       container=obj,
                        root=root,
                        modules=SecureModuleImporter,
                        traverse_subpath=[],  # BBB, never really worked
