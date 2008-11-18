@@ -358,8 +358,8 @@ def newline_to_br(v, name='(Unknown name)', md={}):
     # quoted later on anyway.
     if isinstance(v, TaintedString): v = v.quoted()
     v=ustr(v)
-    if v.find('\r') >= 0: v=''.join(v.split('\r'))
-    if v.find('\n') >= 0: v='<br />\n'.join(v.split('\n'))
+    v = v.replace('\r', '')
+    v = v.replace('\n', '<br />\n')
     return v
 
 def whole_dollars(v, name='(Unknown name)', md={}):

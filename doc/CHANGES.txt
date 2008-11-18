@@ -520,6 +520,9 @@ Zope Changes
       - Added lib/python/webdav/litmus-results.txt explaining current
         test results from the litmus WebDAV torture test.
 
+      - DocumentTemplate.DT_Var.newline_to_br(): Simpler, faster implementation.
+
+
   Zope 2.10.0 beta 1 (2006/05/30)
 
     Restructuring
