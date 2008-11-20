@@ -15,7 +15,7 @@ on the server.
 <b>Note:</b>
 Zope can export/import objects in two dfferent formats: a binary format (called
 ZEXP) and as XML. The ZEXP format is the officially supported export/import
-format for moving data between <u>identicial</u> Zope installations (it is not a migration tool).
+format for moving data between <u>identical</u> Zope installations (it is not a migration tool).
 The XML export/import is unsupported (and possibly broken under certain circumstances) - use it
 at your own risk.
 </p>
