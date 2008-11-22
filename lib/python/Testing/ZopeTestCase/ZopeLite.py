@@ -229,9 +229,7 @@ from ZODB.DemoStorage import DemoStorage
 def sandbox(base=None):
     '''Returns a sandbox copy of the base ZODB.'''
     if base is None: base = Zope2.DB
-    base_storage = base._storage
-    quota = getattr(base_storage, '_quota', None)
-    storage = DemoStorage(base=base_storage, quota=quota)
+    storage = DemoStorage(base=base._storage)
     return ZODB.DB(storage)
 
 _write(' done (%.3fs)\n' % (time.time() - _start))
