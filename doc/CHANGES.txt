@@ -8,6 +8,9 @@ Zope Changes
 
     Bugs Fixed
   
+      - Testing.ZopeTestCase: Remove quota argument from DemoStorage calls in
+        preparation for ZODB 3.9.
+
   Zope 2.11.2 (2008/10/24) 
 
     Bugs Fixed
