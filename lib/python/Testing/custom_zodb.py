@@ -31,6 +31,6 @@ def getStorage():
     else:
         from ZODB.DemoStorage import DemoStorage
         LOG.info('Using DemoStorage')
-        return DemoStorage(quota=(1<<20))
+        return DemoStorage()
 
 Storage = getStorage()
