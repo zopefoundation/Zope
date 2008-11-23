@@ -184,10 +184,11 @@ def root_handler(config):
     for k,v in config.environment.items():
         os.environ[k] = v
 
-    # Add directories to the pythonpath; always insert instancehome/lib/python
+    # Add directories to the pythonpath
     instancelib = os.path.join(config.instancehome, 'lib', 'python')
     if instancelib not in config.path:
-        config.path.append(instancelib)
+        if os.path.isdir(instancelib):
+            config.path.append(instancelib)
     path = config.path[:]
     path.reverse()
     for dir in path:
@@ -195,11 +196,11 @@ def root_handler(config):
 
     # Add any product directories not already in Products.__path__.
     # Directories are added in the order they are mentioned
-    # Always insert instancehome.Products
 
     instanceprod = os.path.join(config.instancehome, 'Products')
     if instanceprod not in config.products:
-        config.products.append(instanceprod)
+        if os.path.isdir(instanceprod):
+            config.products.append(instanceprod)
 
     import Products
     L = []
