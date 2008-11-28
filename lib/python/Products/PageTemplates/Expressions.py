@@ -36,7 +36,7 @@ from MultiMapping import MultiMapping
 from Acquisition import aq_base
 from zExceptions import NotFound, Unauthorized
 
-from Products.Five.browser.providerexpression import Z2ProviderExpression
+from zope.contentprovider.tales import TALESProviderExpression
 from Products.PageTemplates import ZRPythonExpr
 from Products.PageTemplates.DeferExpr import LazyExpr
 from Products.PageTemplates.GlobalTranslationService import getGlobalTranslationService
@@ -334,7 +334,7 @@ def createZopeEngine():
     e.registerType('not', NotExpr)
     e.registerType('defer', DeferExpr)
     e.registerType('lazy', LazyExpr)
-    e.registerType('provider', Z2ProviderExpression)
+    e.registerType('provider', TALESProviderExpression)
     e.registerBaseName('modules', SecureModuleImporter)
     return e
 
