@@ -225,8 +225,7 @@ Zope Changes
 
       - After the proper introduction of parent-pointers, it's now
         wrong to acquisition-wrap content providers. We will now use
-        the "classic" content provider expression from Zope
-        3. [malthe]
+        the "classic" content provider expression from Zope 3.
     
       - Testing.ZopeTestCase: Remove quota argument from DemoStorage calls in
         preparation for ZODB 3.9.

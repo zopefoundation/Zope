@@ -86,14 +86,11 @@ class ExplicitContentProvider(Acquisition.Explicit):
         self.context = context
         self.request = request
         self.view = view
-        # Normally, a content provider should set __parent__ to view
-        # or context.  This one doesn't do this on purpose to ensure
-        # it works without.
+        # A content provider must set __parent__ to view or context.
+        self.__parent__ = context
 
     def update(self):
-        # Make sure that the content provider is acquisition wrapped.
-        assert self.aq_parent == self.context
-        assert self.aq_base == self
+        pass
 
     def render(self):
         return 'Content provider inheriting from Explicit'
