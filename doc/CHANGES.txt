@@ -7,6 +7,9 @@ Zope Changes
   Zope 2.11.3 (unreleased)
 
     Bugs Fixed
+
+      - Launchpad #174705:  ensure that the error info object exposed to a
+        'tal:on_error' handler has attributes visible to restricted code.
   
       - Testing.ZopeTestCase: Remove quota argument from DemoStorage calls in
         preparation for ZODB 3.9.
