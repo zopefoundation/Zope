@@ -227,11 +227,47 @@ class UnicodeEncodingConflictResolverTests(PlacelessSetup, unittest.TestCase):
         self.assertEqual(resolver.resolve(None, 'äüö', None),
                          u'\ufffd\ufffd\ufffd')
 
+class ZopeContextTests(unittest.TestCase):
+
+    def _getTargetClass(self):
+        from Products.PageTemplates.Expressions import ZopeContext
+        return ZopeContext
+
+    def _makeOne(self, engine=None, contexts=None):
+        if engine is None:
+            engine = self._makeEngine()
+        if contexts is None:
+            contexts = {}
+        return self._getTargetClass()(engine, contexts)
+
+    def _makeEngine(self):
+        class DummyEngine:
+            pass
+        return DummyEngine()
+
+    def test_class_conforms_to_ITALExpressionEngine(self):
+        from zope.interface.verify import verifyClass
+        from zope.tal.interfaces import ITALExpressionEngine
+        verifyClass(ITALExpressionEngine, self._getTargetClass())
+
+    def test_instance_conforms_to_ITALExpressionEngine(self):
+        from zope.interface.verify import verifyObject
+        from zope.tal.interfaces import ITALExpressionEngine
+        verifyObject(ITALExpressionEngine, self._makeOne())
+
+    def test_createErrorInfo_returns_unrestricted_object(self):
+        # See: https://bugs.launchpad.net/zope2/+bug/174705
+        context = self._makeOne()
+        info = context.createErrorInfo(AttributeError('nonesuch'), (12, 3))
+        self.failUnless(info.type is AttributeError)
+        self.assertEqual(info.__allow_access_to_unprotected_subobjects__, 1)
+
 def test_suite():
     return unittest.TestSuite((
          unittest.makeSuite(UntrustedEngineTests),
          unittest.makeSuite(TrustedEngineTests),
-         unittest.makeSuite(UnicodeEncodingConflictResolverTests)
+         unittest.makeSuite(UnicodeEncodingConflictResolverTests),
+         unittest.makeSuite(ZopeContextTests),
     ))
 
 if __name__=='__main__':

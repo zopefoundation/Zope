@@ -8,6 +8,9 @@ Zope Changes
 
     Bugs fixed
 
+      - Launchpad #174705:  ensure that the error info object exposed to a
+        'tal:on_error' handler has attributes visible to restricted code.
+
   Zope 2.10.7 (2008/10/24)
 
     Bugs fixed
