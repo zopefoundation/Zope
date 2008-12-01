@@ -226,6 +226,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Launchpad #174705:  ensure that the error info object exposed to a
+        'tal:on_error' handler has attributes visible to restricted code.
+
       - After the proper introduction of parent-pointers, it's now
         wrong to acquisition-wrap content providers. We will now use
         the "classic" content provider expression from Zope 3.

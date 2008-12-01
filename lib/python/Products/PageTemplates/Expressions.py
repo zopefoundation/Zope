@@ -22,7 +22,9 @@ import logging
 
 from zope.component import queryUtility
 from zope.interface import implements
-from zope.tales.tales import Context, Iterator
+from zope.tales.tales import Context
+from zope.tales.tales import ErrorInfo as BaseErrorInfo
+from zope.tales.tales import Iterator
 from zope.tales.expressions import PathExpr, StringExpr, NotExpr
 from zope.tales.expressions import DeferExpr, Undefs
 from zope.tales.pythonexpr import PythonExpr
@@ -234,6 +236,23 @@ class ZopeContext(Context):
             # objects
             return unicode(text)
 
+    def createErrorInfo(self, err, position):
+        # Override, returning an object accessible to untrusted code.
+        # See: https://bugs.launchpad.net/zope2/+bug/174705
+        return ErrorInfo(err, position)
+
+    def evaluateCode(self, lang, code):
+        """ See ITALExpressionEngine.
+
+        o This method is a fossil:  nobody actually calls it, but the
+          interface requires it.
+        """
+        raise NotImplementedError
+
+class ErrorInfo(BaseErrorInfo):
+    """Information about an exception passed to an on-error handler.
+    """
+    __allow_access_to_unprotected_subobjects__ = True
 
 class ZopeEngine(zope.app.pagetemplate.engine.ZopeEngine):
 
