@@ -9,8 +9,10 @@ Zope Changes
 
     Restructuring
 
-      - Moved svn:externals for 'mechanize' and 'ClientPath' to versions
-        managed outside the Zope3 trunk.
+      - Updated 'pytz' from '2007f' to '2008i'.
+
+      - Moved svn:externals for 'mechanize', 'ClientPath', and 'pytz' to
+        versions managed outside the Zope3 trunk.
 
       - Protect against non-existing zope.conf path and products directories.
         This makes it possible to run a Zope instance without a Products or
