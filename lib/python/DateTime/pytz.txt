@@ -132,7 +132,7 @@ The _zidx attribute is a list of lower-case and possibly abbreviated
 time zone names that can be mapped to offical zone names.
 
     >>> cache._zidx #doctest: +ELLIPSIS
-    ['australia/yancowinna'... 'gmt+0500'... 'europe/isle_of_man'...]
+    [... 'australia/yancowinna'... 'gmt+0500'... 'europe/isle_of_man'...]
 
 Note that there are more items in _zidx than in _zlst since there are
 multiple names for some time zones.

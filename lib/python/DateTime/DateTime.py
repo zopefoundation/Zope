@@ -1848,5 +1848,5 @@ class strftimeFormatter:
 # Module methods
 def Timezones():
     """Return the list of recognized timezone names"""
-    return list(PytzCache._zlst)
+    return sorted(list(PytzCache._zmap.values()))
 
