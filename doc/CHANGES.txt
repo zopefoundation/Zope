@@ -8,6 +8,11 @@ Zope Changes
 
     Bugs Fixed
 
+      - Updated 'pytz' from '2007f' to '2008i'.
+
+      - Moved svn:externals for 'mechanize', 'ClientPath', and 'pytz' to
+        versions managed outside the Zope3 trunk.
+
       - Launchpad #174705:  ensure that the error info object exposed to a
         'tal:on_error' handler has attributes visible to restricted code.
   

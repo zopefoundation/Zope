@@ -11,9 +11,15 @@ Function Timezones()
 Returns the list of recognized timezone names:
 
   >>> from DateTime import Timezones
-  >>> Timezones() # doctest: +ELLIPSIS
-  [...'Brazil/Acre'... 'Brazil/DeNoronha'... 'IDLE'... 'NZST'...]
+  >>> zones = set(Timezones())
 
+Almost all of the standard pytz timezones are included, with the exception
+of some commonly-used but ambiguous abbreviations, where historical Zope
+usage conflicts with the name used by pytz:
+
+  >>> import pytz
+  >>> [x for x in pytz.all_timezones if x not in zones]
+  ['CET', 'EET', 'EST', 'MET', 'MST', 'WET']
 
 Class DateTime
 ==============
