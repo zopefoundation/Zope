@@ -86,13 +86,13 @@ class PublisherMechanizeBrowser(mechanize.Browser):
     default_others = ['_http_error', '_http_request_upgrade',
                       '_http_default_error']
     default_features = ['_redirect', '_cookies', '_referer', '_refresh',
-                        '_equiv', '_basicauth', '_digestauth', '_seek' ]
+                        '_equiv', '_basicauth', '_digestauth' ]
 
     def __init__(self, *args, **kws):
         inherited_handlers = ['_unknown', '_http_error',
             '_http_request_upgrade', '_http_default_error', '_basicauth',
             '_digestauth', '_redirect', '_cookies', '_referer',
-            '_refresh', '_equiv', '_seek', '_gzip']
+            '_refresh', '_equiv', '_gzip']
 
         self.handler_classes = {"http": PublisherHTTPHandler}
         for name in inherited_handlers:
