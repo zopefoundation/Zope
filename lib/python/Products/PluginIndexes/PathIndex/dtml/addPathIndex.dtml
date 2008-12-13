@@ -9,7 +9,7 @@ A <em>PathIndex</em> indexes the physical path of all objects inside
 a catalog. It allows you to search for objects beginning or containing
 a special path component or a set of path component. A path component
 is defined as <em>/&lt;component1&gt;/&lt;component2&gt;/..../&lt;object_id&gt;
-</em>. Note: the <em>object_id</em> will <u>not</u> be indexed by the PathIndex.
+</em>.
 </p>
 
 
