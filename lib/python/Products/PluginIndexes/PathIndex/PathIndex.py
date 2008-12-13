@@ -163,7 +163,7 @@ class PathIndex(Persistent, SimpleItem):
         a tuple (path,level).
 
         level >= 0  starts searching at the given level
-        level <  0  not implemented yet
+        level <  0  match at *any* level
         """
 
         if isinstance(path, StringType):
