@@ -22,7 +22,7 @@ from Globals import Persistent, DTMLFile
 from OFS.SimpleItem import SimpleItem
 from BTrees.IOBTree import IOBTree
 from BTrees.OOBTree import OOBTree
-from BTrees.IIBTree import IITreeSet, IISet, intersection, union
+from BTrees.IIBTree import IITreeSet, IISet, intersection, union, multiunion
 from BTrees.Length import Length
 from zope.interface import implements
 
@@ -171,6 +171,12 @@ class PathIndex(Persistent, SimpleItem):
         else:
             level = int(path[1])
             path  = path[0]
+        
+        if level < 0:
+            # Search at every level, return the union of all results
+            return multiunion(
+                [self.search(path, level) 
+                 for level in xrange(self._depth + 1)])
 
         comps = filter(None, path.split('/'))
 
@@ -178,22 +184,9 @@ class PathIndex(Persistent, SimpleItem):
             return IISet(self._unindex.keys())
 
         results = None
-        if level >= 0:
-            for i, comp in enumerate(comps):
-                if not self._index.has_key(comp): return IISet()
-                if not self._index[comp].has_key(level+i): return IISet()
-                results = intersection(results, self._index[comp][level+i])
-
-        else:
-            for level in range(self._depth + 1):
-                ids = None
-                for i, comp in enumerate(comps):
-                    try:
-                        ids = intersection(ids, self._index[comp][level+i])
-                    except KeyError:
-                        break
-                else:    
-                    results = union(results, ids)
+        for i, comp in enumerate(comps):
+            if not self._index.get(comp, {}).has_key(level+i): return IISet()
+            results = intersection(results, self._index[comp][level+i])
         return results
 
     def numObjects(self):
