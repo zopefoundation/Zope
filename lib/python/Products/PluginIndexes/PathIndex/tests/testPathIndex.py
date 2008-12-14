@@ -24,19 +24,11 @@ from Products.PluginIndexes.PathIndex.PathIndex import PathIndex
 
 
 class Dummy:
-
-    meta_type="foo"
-
     def __init__( self, path):
         self.path = path
 
     def getPhysicalPath(self):
         return self.path.split('/')
-
-    def __str__( self ):
-        return '<Dummy: %s>' % self.path
-
-    __repr__ = __str__
 
 
 class PathIndexTests(unittest.TestCase):
@@ -81,7 +73,7 @@ class PathIndexTests(unittest.TestCase):
         self.assertEqual(self._index.numObjects() ,0)
         self.assertEqual(self._index.getEntryForObject(1234), None)
         self._index.unindex_object( 1234 ) # nothrow
-        self.assertEqual(self._index._apply_index({"suxpath":"xxx"}), None)
+        self.assertEqual(self._index._apply_index(dict(suxpath="xxx")), None)
 
     def testUnIndex(self):
         self._populateIndex()
@@ -114,79 +106,49 @@ class PathIndexTests(unittest.TestCase):
         self._index.unindex_object(1)
 
     def testRoot(self):
-
         self._populateIndex()
-        tests = ( ("/",0, range(1,19)), )
 
-        for comp,level,results in tests:
-            for path in [comp,"/"+comp,"/"+comp+"/"]:
-                res = self._index._apply_index(
-                                    {"path":{'query':path,"level":level}})
-                lst = list(res[0].keys())
-                self.assertEqual(lst,results)
-
-        for comp,level,results in tests:
-            for path in [comp,"/"+comp,"/"+comp+"/"]:
-                res = self._index._apply_index(
-                                    {"path":{'query':( (path,level),)}})
-                lst = list(res[0].keys())
-                self.assertEqual(lst,results)
-
-    def testRoot(self):
-
-        self._populateIndex()
-        tests = ( ("/",0, range(1,19)), )
-
-        for comp,level,results in tests:
-            for path in [comp,"/"+comp,"/"+comp+"/"]:
-                res = self._index._apply_index(
-                                    {"path":{'query':path,"level":level}})
-                lst = list(res[0].keys())
-                self.assertEqual(lst,results)
-
-        for comp,level,results in tests:
-            for path in [comp,"/"+comp,"/"+comp+"/"]:
-                res = self._index._apply_index(
-                                    {"path":{'query':( (path,level),)}})
-                lst = list(res[0].keys())
-                self.assertEqual(lst,results)
+        queries = (
+            dict(path=dict(query='/', level=0)),
+            dict(path=(('/', 0),)),
+        )
+        for q in queries:
+            res = self._index._apply_index(q)
+            self.assertEqual(list(res[0].keys()), range(1,19))
 
     def testSimpleTests(self):
-
         self._populateIndex()
         tests = [
+            # component, level, expected results
             ("aa", 0, [1,2,3,4,5,6,7,8,9]),
             ("aa", 1, [1,2,3,10,11,12] ),
             ("bb", 0, [10,11,12,13,14,15,16,17,18]),
-            ("bb", 1, [4,5,6,13,14,15] ),
-            ("bb/cc", 0, [16,17,18] ),
-            ("bb/cc", 1, [6,15] ),
-            ("bb/aa", 0, [10,11,12] ),
-            ("bb/aa", 1, [4,13] ),
-            ("aa/cc", -1, [3,7,8,9,12] ),
-            ("bb/bb", -1, [5,13,14,15] ),
-            ("18.html", 3, [18] ),
-            ("18.html", -1, [18] ),
-            ("cc/18.html", -1, [18] ),
-            ("cc/18.html", 2, [18] ),
+            ("bb", 1, [4,5,6,13,14,15]),
+            ("bb/cc", 0, [16,17,18]),
+            ("bb/cc", 1, [6,15]),
+            ("bb/aa", 0, [10,11,12]),
+            ("bb/aa", 1, [4,13]),
+            ("aa/cc", -1, [3,7,8,9,12]),
+            ("bb/bb", -1, [5,13,14,15]),
+            ("18.html", 3, [18]),
+            ("18.html", -1, [18]),
+            ("cc/18.html", -1, [18]),
+            ("cc/18.html", 2, [18]),
         ]
 
-        for comp,level,results in tests:
-            for path in [comp,"/"+comp,"/"+comp+"/"]:
-                res = self._index._apply_index(
-                                    {"path":{'query':path,"level":level}})
-                lst = list(res[0].keys())
-                self.assertEqual(lst,results)
+        for comp, level, results in tests:
+            for path in [comp, "/"+comp, "/"+comp+"/"]:
+                # Test with the level passed in as separate parameter
+                res = self._index._apply_index(dict(path=
+                    dict(query=path, level=level)))
+                self.assertEqual(list(res[0].keys()), results)
 
-        for comp,level,results in tests:
-            for path in [comp,"/"+comp,"/"+comp+"/"]:
-                res = self._index._apply_index(
-                                    {"path":{'query':( (path,level),)}})
-                lst = list(res[0].keys())
-                self.assertEqual(lst,results)
+                # Test with the level passed in as part of the path parameter
+                res = self._index._apply_index(dict(path=
+                    dict(query=((path, level),))))
+                self.assertEqual(list(res[0].keys()), results)
 
     def testComplexOrTests(self):
-
         self._populateIndex()
         tests = [
             (['aa','bb'],1,[1,2,3,4,5,6,10,11,12,13,14,15]),
@@ -194,36 +156,34 @@ class PathIndexTests(unittest.TestCase):
             ([('cc',1),('cc',2)],0,[3,6,7,8,9,12,15,16,17,18]),
         ]
 
-        for lst ,level,results in tests:
-
-            res = self._index._apply_index(
-                            {"path":{'query':lst,"level":level,"operator":"or"}})
+        for lst, level, results in tests:
+            res = self._index._apply_index(dict(path=
+                dict(query=lst, level=level, operator='or')))
             lst = list(res[0].keys())
-            self.assertEqual(lst,results)
+            self.assertEqual(lst, results)
 
     def testComplexANDTests(self):
-
         self._populateIndex()
         tests = [
-            (['aa','bb'],1,[]),
-            ([('aa',0),('bb',1)],0,[4,5,6]),
-            ([('aa',0),('cc',2)],0,[3,6,9]),
+            # Path query (as list or (path, level) tuple), level, expected
+            (['aa','bb'], 1, []),
+            ([('aa',0), ('bb',1)], 0, [4,5,6]),
+            ([('aa',0), ('cc',2)], 0, [3,6,9]),
         ]
 
-        for lst ,level,results in tests:
-            res = self._index._apply_index(
-                            {"path":{'query':lst,"level":level,"operator":"and"}})
+        for lst, level, results in tests:
+            res = self._index._apply_index(dict(path=
+                dict(query=lst, level=level, operator='and')))
             lst = list(res[0].keys())
-            self.assertEqual(lst,results)
+            self.assertEqual(lst, results)
 
     def testQueryPathReturnedInResult(self):
-
         index = self._index
         index.index_object(1, Dummy("/ff"))
         index.index_object(2, Dummy("/ff/gg"))
         index.index_object(3, Dummy("/ff/gg/3.html"))
         index.index_object(4, Dummy("/ff/gg/4.html"))
-        res = index._apply_index({'path': {'query': '/ff/gg'}})
+        res = index._apply_index(dict(path=dict(query='/ff/gg')))
         lst = list(res[0].keys())
         self.assertEqual(lst, [2, 3, 4])
 
