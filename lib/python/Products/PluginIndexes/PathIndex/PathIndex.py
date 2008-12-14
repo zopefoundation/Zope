@@ -173,6 +173,10 @@ class PathIndex(Persistent, SimpleItem):
                  for level in xrange(self._depth + 1)])
 
         comps = filter(None, path.split('/'))
+        
+        if level + len(comps) - 1 > self._depth:
+            # Our search is for a path longer than anything in the index
+            return IISet()
 
         if len(comps) == 0:
             return IISet(self._unindex.keys())
