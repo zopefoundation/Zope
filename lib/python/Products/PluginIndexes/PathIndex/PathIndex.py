@@ -184,7 +184,7 @@ class PathIndex(Persistent, SimpleItem):
             return IISet(self._unindex.keys())
 
         results = None
-        for i, comp in enumerate(comps):
+        for i, comp in reversed(list(enumerate(comps))):
             if not self._index.get(comp, {}).has_key(level+i): return IISet()
             results = intersection(results, self._index[comp][level+i])
         return results
