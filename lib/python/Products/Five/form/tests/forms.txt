@@ -42,7 +42,7 @@ We don't have access, we will not be able to get to the protected add form:
   >>> browser.open("http://localhost/test_folder_1_/ftf/+/protectedaddform.html")
   Traceback (most recent call last):
     ...
-  httperror_seek_wrapper: HTTP Error 401: Unauthorized
+  HTTPError: HTTP Error 401: Unauthorized
 
 For a protected one we need a manager account:
 
