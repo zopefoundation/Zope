@@ -31,9 +31,9 @@ from AccessControl.Permissions import take_ownership
 from AccessControl.requestmethod import requestmethod
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.SecurityManagement import getSecurityManager
+# avoid importing 'emergency_user' / 'nobody'  before set
 from AccessControl import SpecialUsers as SU
 from AccessControl.unauthorized import Unauthorized
-
 
 UnownableOwner=[]
 def ownableFilter(self):
