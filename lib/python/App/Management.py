@@ -15,18 +15,21 @@
 $Id$
 """
 
-import sys, ExtensionClass, urllib
-from Globals import DTMLFile, HTMLFile
-from Globals import InitializeClass
-from zExceptions import Redirect
+from cgi import escape
+import sys
+import urllib
+
+from zope.interface import implements
 from AccessControl import getSecurityManager, Unauthorized
 from AccessControl import ClassSecurityInfo
 from AccessControl.Permissions import view_management_screens
-from cgi import escape
-from zope.interface import implements
+import ExtensionClass
+from zExceptions import Redirect
 
-from interfaces import INavigation
-
+from App.class_init import default__class_init__ as InitializeClass
+from App.interfaces import INavigation
+from App.special_dtml import HTMLFile
+from App.special_dtml import DTMLFile
 
 class Tabs(ExtensionClass.Base):
     """Mix-in provides management folder tab support."""

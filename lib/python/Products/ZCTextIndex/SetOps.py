@@ -14,7 +14,9 @@
 
 """SetOps -- Weighted intersections and unions applied to many inputs."""
 
-from BTrees.IIBTree import IIBucket, weightedIntersection, weightedUnion
+from BTrees.IIBTree import IIBucket
+from BTrees.IIBTree import weightedIntersection
+from BTrees.IIBTree import weightedUnion
 
 from Products.ZCTextIndex.NBest import NBest
 

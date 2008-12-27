@@ -20,12 +20,15 @@ from logging import getLogger
 from datetime import date, datetime
 from datetime import tzinfo, timedelta
 
-import BTrees.Length
-from BTrees.IIBTree import IISet, union, intersection, multiunion
+from App.special_dtml import DTMLFile
+from BTrees.IIBTree import IISet
+from BTrees.IIBTree import union
+from BTrees.IIBTree import intersection
+from BTrees.IIBTree import multiunion
 from BTrees.IOBTree import IOBTree
+from BTrees.Length import Length
 from BTrees.OIBTree import OIBTree
 from DateTime.DateTime import DateTime
-from Globals import DTMLFile
 from OFS.PropertyManager import PropertyManager
 from ZODB.POSException import ConflictError
 from zope.interface import implements
@@ -110,7 +113,7 @@ class DateIndex(UnIndex, PropertyManager):
         """ Complete reset """
         self._index = IOBTree()
         self._unindex = OIBTree()
-        self._length = BTrees.Length.Length()
+        self._length = Length()
 
     def index_object( self, documentId, obj, threshold=None ):
         """index an object, normalizing the indexed value to an integer

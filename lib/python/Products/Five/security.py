@@ -23,7 +23,7 @@ from zope.security.management import thread_local
 from zope.security.simplepolicies import ParanoidSecurityPolicy
 
 from AccessControl import ClassSecurityInfo, getSecurityManager
-from Globals import InitializeClass as initializeClass
+from App.class_init import default__class_init__ as initializeClass
 
 CheckerPublicId = 'zope.Public'
 CheckerPrivateId = 'zope2.Private'

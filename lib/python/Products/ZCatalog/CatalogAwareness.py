@@ -10,16 +10,15 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-
 """ZCatalog Findable class
 
 **NOTE**: This module is deprecated, and should only be used for
   backward-compatibility.  All new code should use CatalogPathAwareness.
 """
-
 import urllib
-from Globals import DTMLFile
+
 from Acquisition import aq_base
+from App.special_dtml import DTMLFile
 
 class CatalogAware:
     """ This is a Mix-In class to make objects automaticly catalog and

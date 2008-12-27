@@ -19,9 +19,10 @@ __version__='$Revision: 1.31 $'[11:-2]
 
 import time
 
-import Globals
-from Globals import InitializeClass
-from DateTime import DateTime
+from App.class_init import default__class_init__ as InitializeClass
+from App.special_dtml import DTMLFile
+from App.ImageFile import ImageFile
+from DateTime.DateTime import DateTime
 
 class CacheManager:
     """Cache management mix-in
@@ -30,13 +31,12 @@ class CacheManager:
     _vcache_age = 60
     _history_length = 3600  # Seconds
 
-    manage_cacheParameters = Globals.DTMLFile('dtml/cacheParameters',
-                                              globals())
-    manage_cacheGC = Globals.DTMLFile('dtml/cacheGC', globals())
+    manage_cacheParameters = DTMLFile('dtml/cacheParameters', globals())
+    manage_cacheGC = DTMLFile('dtml/cacheGC', globals())
 
-    transparent_bar = Globals.ImageFile('www/transparent_bar.gif', globals())
-    store_bar = Globals.ImageFile('www/store_bar.gif', globals())
-    load_bar = Globals.ImageFile('www/load_bar.gif', globals())
+    transparent_bar = ImageFile('www/transparent_bar.gif', globals())
+    store_bar = ImageFile('www/store_bar.gif', globals())
+    load_bar = ImageFile('www/load_bar.gif', globals())
 
     def _getDB(self):
         return self._p_jar.db()
@@ -95,18 +95,22 @@ class CacheManager:
 
     # BoboPOS 2
     def cache_mean_age(self):
+        import Globals
         return Globals.Bobobase._jar.cache.cache_mean_age/60.0
 
     # BoboPOS 2
     def cache_mean_deal(self):
+        import Globals
         return Globals.Bobobase._jar.cache.cache_mean_deal*60
 
     # BoboPOS 2
     def cache_mean_deac(self):
+        import Globals
         return Globals.Bobobase._jar.cache.cache_mean_deac*60
 
     # BoboPOS 2
     def cache_last_gc_time(self):
+        import Globals
         t=Globals.Bobobase._jar.cache.cache_last_gc_time
         return time.asctime(time.localtime(t))
 

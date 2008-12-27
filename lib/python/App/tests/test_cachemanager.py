@@ -15,21 +15,7 @@
 
 $Id$
 """
-
 import unittest
-
-import ZODB
-
-from App.CacheManager import CacheManager
-
-
-class TestCacheManager(CacheManager):
-    # Derived CacheManager that fakes enough of the DatabaseManager to
-    # make it possible to test at least some parts of the CacheManager.
-
-    def __init__(self, connection):
-        self._p_jar = connection
-
 
 class DummyConnection:
 
@@ -62,23 +48,35 @@ class DummyDB:
 
 class CacheManagerTestCase(unittest.TestCase):
 
-    def setUp(self):
-        self.db = DummyDB(42, 24)
-        self.connection = DummyConnection(self.db)
-        self.manager = TestCacheManager(self.connection)
+    def _getManagerClass(self):
+        from App.CacheManager import CacheManager
+        class TestCacheManager(CacheManager):
+            # Derived CacheManager that fakes enough of the DatabaseManager to
+            # make it possible to test at least some parts of the CacheManager.
+            def __init__(self, connection):
+                self._p_jar = connection
+        return TestCacheManager
+
+    def _makeThem(self):
+        manager = self._getManagerClass()(connection)
+        return db, connection, manager
 
     def test_cache_size(self):
-        self.assertEqual(self.manager.cache_size(), 42)
-        self.db._set_sizes(12, 2)
-        self.assertEqual(self.manager.cache_size(), 12)
+        db = DummyDB(42, 24)
+        connection = DummyConnection(db)
+        manager = self._getManagerClass()(connection)
+        self.assertEqual(manager.cache_size(), 42)
+        db._set_sizes(12, 2)
+        self.assertEqual(manager.cache_size(), 12)
 
     def test_version_cache_size(self):
-        self.connection = DummyConnection(self.db, "my version")
-        self.manager = TestCacheManager(self.connection)
+        db = DummyDB(42, 24)
+        connection = DummyConnection(db, "my version")
+        manager = self._getManagerClass()(connection)
         # perform test
-        self.assertEqual(self.manager.cache_size(), 24)
-        self.db._set_sizes(12, 2)
-        self.assertEqual(self.manager.cache_size(), 2)
+        self.assertEqual(manager.cache_size(), 24)
+        db._set_sizes(12, 2)
+        self.assertEqual(manager.cache_size(), 2)
 
 
 def test_suite():

@@ -17,12 +17,17 @@ $Id$
 
 from logging import getLogger
 
-from Globals import Persistent, DTMLFile
+from App.special_dtml import DTMLFile
 from OFS.SimpleItem import SimpleItem
+from BTrees.IIBTree import IITreeSet
+from BTrees.IIBTree import IISet
+from BTrees.IIBTree import intersection
+from BTrees.IIBTree import multiunion
+from BTrees.IIBTree import union
 from BTrees.IOBTree import IOBTree
 from BTrees.OOBTree import OOBTree
-from BTrees.IIBTree import IITreeSet, IISet, intersection, union, multiunion
 from BTrees.Length import Length
+from Persistence import Persistent
 from zope.interface import implements
 
 from Products.PluginIndexes.common import safe_callable

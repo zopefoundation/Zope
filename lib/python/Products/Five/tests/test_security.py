@@ -95,7 +95,7 @@ def test_security_equivalence():
       ... '''
       >>> zcml.load_string(configure_zcml)
 
-      >>> from Globals import InitializeClass
+      >>> from App.class_init import default__class_init__ as InitializeClass
       >>> InitializeClass(Dummy2)
 
     Now we compare their access controls:

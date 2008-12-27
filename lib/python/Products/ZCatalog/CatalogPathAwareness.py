@@ -10,11 +10,11 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
+"""ZCatalog Findable class
+"""
 
-"""ZCatalog Findable class"""
-
-from Globals import DTMLFile
 from Acquisition import aq_base
+from App.special_dtml import DTMLFile
 
 class CatalogAware:
     """ This is a Mix-In class to make objects automaticly catalog and

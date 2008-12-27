@@ -13,20 +13,21 @@
 """
 Objects for packages that have been uninstalled.
 """
-import  SimpleItem, Globals, Acquisition
-from Acquisition import Acquired
-import Persistence
-from thread import allocate_lock
-
 from cgi import escape
 from logging import getLogger
+from thread import allocate_lock
+
+from Acquisition import Acquired
+from Acquisition import Explicit
+from App.special_dtml import DTMLFile
+from OFS.SimpleItem import Item
+from Persistence import Overridable
 
 broken_klasses={}
 broken_klasses_lock = allocate_lock()
 LOG = getLogger('OFS.Uninstalled')
 
-class BrokenClass(Acquisition.Explicit, SimpleItem.Item,
-                  Persistence.Overridable):
+class BrokenClass(Explicit, Item, Overridable):
     _p_changed=0
     meta_type='Broken Because Product is Gone'
     icon='p_/broken'
@@ -47,9 +48,9 @@ class BrokenClass(Acquisition.Explicit, SimpleItem.Item,
             return BrokenClass.inheritedAttribute('__getattr__')(self, name)
         raise AttributeError, escape(name)
 
-    manage=Globals.DTMLFile('dtml/brokenEdit',globals())
-    manage_main=Globals.DTMLFile('dtml/brokenEdit',globals())
-    manage_workspace=Globals.DTMLFile('dtml/brokenEdit',globals())
+    manage = DTMLFile('dtml/brokenEdit',globals())
+    manage_main = DTMLFile('dtml/brokenEdit',globals())
+    manage_workspace = DTMLFile('dtml/brokenEdit',globals())
 
 
 def Broken(self, oid, pair):

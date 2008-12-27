@@ -26,13 +26,14 @@ from zope.interface import Interface
 from zope.component.zcml import handler
 from zope.component.interface import provideInterface
 from zope.configuration.exceptions import ConfigurationError
-from zope.publisher.interfaces.browser import IBrowserRequest, \
-     IDefaultBrowserLayer
+from zope.publisher.interfaces.browser import IBrowserRequest
+from zope.publisher.interfaces.browser import IDefaultBrowserLayer
 
 import zope.app.publisher.browser.viewmeta
 import zope.app.pagetemplate.simpleviewclass
-from zope.app.publisher.browser.viewmeta import (providesCallable,
-                                                 _handle_menu, _handle_for)
+from zope.app.publisher.browser.viewmeta import providesCallable
+from zope.app.publisher.browser.viewmeta import _handle_menu
+from zope.app.publisher.browser.viewmeta import _handle_for
 
 from Products.Five.browser import BrowserView
 from Products.Five.browser.resource import FileResourceFactory
@@ -41,10 +42,12 @@ from Products.Five.browser.resource import PageTemplateResourceFactory
 from Products.Five.browser.resource import DirectoryResourceFactory
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.Five.metaclass import makeClass
-from Products.Five.security import getSecurityInfo, protectClass, protectName
+from Products.Five.security import getSecurityInfo
+from Products.Five.security import protectClass
+from Products.Five.security import protectName
 from Products.Five.security import CheckerPrivateId
 
-from Globals import InitializeClass as initializeClass
+from App.class_init import default__class_init__ as initializeClass
 
 def page(_context, name, permission, for_,
          layer=IDefaultBrowserLayer, template=None, class_=None,

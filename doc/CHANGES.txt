@@ -9,6 +9,11 @@ Zope Changes
 
     Restructuring
 
+      - Replaced  imports from the 'Globals' module throughout the 
+        tree with imports from the actual modules;  the 'Globals' module
+        was always intended to be an area for shared data, rather than
+        a "facade" for imports.
+
       - Updated 'pytz' from '2007f' to '2008i'.
 
       - Moved svn:externals for 'mechanize', 'ClientPath', and 'pytz' to

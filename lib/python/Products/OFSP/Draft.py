@@ -10,14 +10,15 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-import Globals, AccessControl.User
-from Globals import Persistent
-from Globals import InitializeClass
-from AccessControl import ClassSecurityInfo
+from AccessControl.SecurityInfo import ClassSecurityInfo
+import AccessControl.User
+from App.class_init import default__class_init__ as InitializeClass
+from App.special_dtml import HTMLFile
 from Acquisition import Implicit
 from OFS import SimpleItem
+from Persistence import Persistent
 
-manage_addPrincipiaDraftForm=Globals.HTMLFile('dtml/draftAdd',globals())
+manage_addPrincipiaDraftForm = HTMLFile('dtml/draftAdd',globals())
 def manage_addPrincipiaDraft(self, id, baseid, PATH_INFO, REQUEST=None):
     "Add a draft object"
     self._setObject(id, Draft(id, baseid, PATH_INFO))
@@ -69,20 +70,27 @@ class Draft(Persistent, Implicit, SimpleItem.Item):
                        self.id,
                        ))
 
-    def __bobo_traverse__(self, REQUEST, name):
+
+    def _getVersionBase(self):
+        import Globals  # for data
+        versionbase = getattr(Globals, 'VersionBase', {})
+        return versionbase.get(self._version)
+
+    def _bobo_traverse__(self, REQUEST, name):
         if name[-9:]=='__draft__': return getattr(self, name)
 
 
-        try: db=self._p_jar.db()
+        try:
+            db = self._p_jar.db()
         except:
             # BoboPOS 2
-            jar = Globals.VersionBase[self._version].jar
+            vb = self._getVersionBase()
+            jar = vb and vb.jar
         else:
             # ZODB 3
             jar = db.open(self._version)
             cleanup = Cleanup(jar)
             REQUEST[Cleanup]=cleanup
-
 
         dself=getdraft(self, jar)
 
@@ -94,14 +102,15 @@ class Draft(Persistent, Implicit, SimpleItem.Item):
         try: db=self._p_jar.db()
         except:
             # BoboPOS 2
-            return Globals.VersionBase[self._version].nonempty()
+            vb = self._getVersionBase()
+            return vb and vb.nonempty()
         else:
             # ZODB 3
             return not db.versionEmpty(self._version)
 
     security.declareProtected('Approve draft changes',
                               'manage_approve__draft__')
-    manage_approve__draft__=Globals.HTMLFile('dtml/draftApprove', globals())
+    manage_approve__draft__ = HTMLFile('dtml/draftApprove', globals())
 
     security.declareProtected('Approve draft changes',
                               'manage_Save__draft__')
@@ -110,7 +119,8 @@ class Draft(Persistent, Implicit, SimpleItem.Item):
         try: db=self._p_jar.db()
         except:
             # BoboPOS 2
-            Globals.VersionBase[self._version].commit(remark)
+            vb = self._getVersionBase()
+            vb.commit(remark)
         else:
             # ZODB 3
             s=self._version
@@ -128,7 +138,8 @@ class Draft(Persistent, Implicit, SimpleItem.Item):
         try: db=self._p_jar.db()
         except:
             # BoboPOS 2
-            Globals.VersionBase[self._version].abort()
+            vb = self._getVersionBase()
+            vb.abort()
         else:
             # ZODB 3
             db.abortVersion(self._version)

@@ -17,8 +17,11 @@ import os
 import string
 from logging import getLogger
 
-from Acquisition import aq_base, aq_parent, aq_inner, aq_acquire
+from Acquisition import aq_acquire
+from Acquisition import aq_base
+from Acquisition import aq_inner
 from Acquisition import aq_inContextOf
+from Acquisition import aq_parent
 from ExtensionClass import Base
 from zope.interface import implements
 
@@ -31,10 +34,11 @@ except ImportError:
     _what_not_even_god_should_do = []
 
 from AccessControl.SecurityManagement import getSecurityManager
-from AccessControl import Unauthorized
+from AccessControl.unauthorized import Unauthorized
 from AccessControl.interfaces import ISecurityPolicy
 from AccessControl.interfaces import ISecurityManager
-from AccessControl.SimpleObjectPolicies import Containers, _noroles
+from AccessControl.SimpleObjectPolicies import Containers
+from AccessControl.SimpleObjectPolicies import _noroles
 from AccessControl.ZopeGuards import guarded_getitem
 
 LOG = getLogger('ImplPython')

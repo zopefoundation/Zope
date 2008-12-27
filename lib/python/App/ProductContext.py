@@ -15,23 +15,31 @@
 $Id$
 """
 
-import stat
-import os.path, re
 from logging import getLogger
+import os
+import re
+import stat
 
+from AccessControl.Permission import registerPermissions
 from AccessControl.PermissionRole import PermissionRole
-import Globals, os, OFS.ObjectManager, OFS.misc_, Products
-import AccessControl.Permission
+from App.Common import package_home
+from App.ImageFile import ImageFile
 from App.Product import doInstall
-from HelpSys import HelpTopic, APIHelpTopic
+from DateTime.DateTime import DateTime
+from HelpSys import APIHelpTopic
+from HelpSys import HelpTopic
 from HelpSys.HelpSys import ProductHelp
-from FactoryDispatcher import FactoryDispatcher
+from OFS.misc_ import Misc_
+from OFS.misc_ import misc_
+from OFS.ObjectManager import ObjectManager
 
-from DateTime import DateTime
 from zope.interface import implementedBy
 
+from App.FactoryDispatcher import FactoryDispatcher
 import ZClasses # to enable 'PC.registerBaseClass()'
 
+# Waaaa
+import Products
 if not hasattr(Products, 'meta_types'):
     Products.meta_types=()
 if not hasattr(Products, 'meta_classes'):
@@ -120,11 +128,9 @@ class ProductContext:
             for p in permissions:
                 if isinstance(p, tuple):
                     p, default= p
-                    AccessControl.Permission.registerPermissions(
-                        ((p, (), default),))
+                    registerPermissions(((p, (), default),))
                 else:
-                    AccessControl.Permission.registerPermissions(
-                        ((p, ()),))
+                    registerPermissions(((p, ()),))
 
         ############################################################
         # Constructor permission setup
@@ -137,11 +143,10 @@ class ProductContext:
             default = ('Manager',)
 
         pr=PermissionRole(permission,default)
-        AccessControl.Permission.registerPermissions(
-            ((permission, (), default),))
+        registerPermissions(((permission, (), default),))
         ############################################################
 
-        OM=OFS.ObjectManager.ObjectManager
+        OM = ObjectManager
 
         for method in legacy:
             if isinstance(method, tuple):
@@ -183,7 +188,7 @@ class ProductContext:
             else:
                 interfaces = tuple(implementedBy(instance_class))
 
-        Products.meta_types=Products.meta_types+(
+        Products.meta_types = Products.meta_types + (
             { 'name': meta_type or instance_class.meta_type,
               # 'action': The action in the add drop down in the ZMI. This is
               #           currently also required by the _verifyObjectPaste
@@ -217,12 +222,12 @@ class ProductContext:
                 m[name+'__roles__']=pr
 
         if icon:
-            name=os.path.split(icon)[1]
-            icon=Globals.ImageFile(icon, self.__pack.__dict__)
+            name = os.path.split(icon)[1]
+            icon = ImageFile(icon, self.__pack.__dict__)
             icon.__roles__=None
-            if not hasattr(OFS.misc_.misc_, pid):
-                setattr(OFS.misc_.misc_, pid, OFS.misc_.Misc_(pid, {}))
-            getattr(OFS.misc_.misc_, pid)[name]=icon
+            if not hasattr(misc_, pid):
+                setattr(misc_, pid, Misc_(pid, {}))
+            getattr(misc_, pid)[name]=icon
 
     def registerZClass(self, Z, meta_type=None):
         #
@@ -303,7 +308,7 @@ class ProductContext:
             return
 
         help=self.getProductHelp()
-        path=os.path.join(Globals.package_home(self.__pack.__dict__),
+        path=os.path.join(package_home(self.__pack.__dict__),
                           directory)
 
         # If help directory does not exist, log a warning and return.

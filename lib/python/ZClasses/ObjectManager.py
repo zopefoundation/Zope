@@ -13,16 +13,20 @@
 """Object-manager mix-in for ZClasses
 """
 
-import OFS.ObjectManager, Globals, Products
+from App.special_dtml import DTMLFile
+from OFS.ObjectManager import ObjectManager as BaseObjectManager
+from OFS.PropertySheets import PropertySheet
+from OFS.PropertySheets import PropertySheets
+from OFS.PropertySheets import View
 
-class SubobjectsSheet(OFS.PropertySheets.PropertySheet,
-                      OFS.PropertySheets.View):
+class SubobjectsSheet(PropertySheet, View):
     """Provide management view for selecting sub-objects.
     """
-    manage=Globals.DTMLFile('dtml/subobjects', globals())
+    manage = DTMLFile('dtml/subobjects', globals())
 
     def possible_meta_types(self):
-        return self.aq_acquire('_product_meta_types')+Products.meta_types
+        import Products
+        return self.aq_acquire('_product_meta_types') + Products.meta_types
 
     def selected_meta_types(self):
         return map(lambda v: v['name'], self.getClassAttr('meta_types',()))
@@ -43,11 +47,11 @@ class SubobjectsSheet(OFS.PropertySheets.PropertySheet,
     def isFolderish(self):
         return self.getClassAttr('isPrincipiaFolderish', 0, 1)
 
-class ZObjectManagerPropertySheets(OFS.PropertySheets.PropertySheets):
+class ZObjectManagerPropertySheets(PropertySheets):
 
     subobjects=SubobjectsSheet('subobjects')
 
-class ObjectManager(OFS.ObjectManager.ObjectManager):
+class ObjectManager(BaseObjectManager):
 
     _zclass_method_meta_types=()
 
@@ -57,8 +61,7 @@ class ObjectManager(OFS.ObjectManager.ObjectManager):
 class ZObjectManager:
     """Mix-in for Object Management
     """
-
-    _zclass_=ObjectManager
+    _zclass_ = ObjectManager
 
     propertysheets=ZObjectManagerPropertySheets()
 

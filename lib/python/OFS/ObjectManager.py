@@ -15,12 +15,15 @@
 $Id$
 """
 
-import warnings
-import marshal
-import sys, fnmatch, copy, os, re
 from cgi import escape
 from cStringIO import StringIO
-from types import StringType, UnicodeType
+import copy
+import fnmatch
+import marshal
+import os
+import re
+import sys
+import warnings
 
 import App.Common
 import App.FactoryDispatcher, Products
@@ -34,16 +37,18 @@ from AccessControl.Permissions import import_export_objects
 from AccessControl import getSecurityManager
 from AccessControl.ZopeSecurityPolicy import getRoles
 from Acquisition import aq_base
+from App.class_init import default__class_init__ as InitializeClass
 from App.config import getConfiguration
-from Globals import InitializeClass
-from Globals import DTMLFile, Persistent
-from Globals import MessageDialog
-from Globals import REPLACEABLE, NOT_REPLACEABLE, UNIQUE
+from App.Dialogs import MessageDialog
+from App.special_dtml import DTMLFile
+from Globals import REPLACEABLE
+from Globals import NOT_REPLACEABLE
+from Globals import UNIQUE
+from Persistence import Persistent
 from webdav.Collection import Collection
 from webdav.Lockable import ResourceLockedError
 from webdav.NullResource import NullResource
 from zExceptions import BadRequest
-
 from ZODB.POSException import ConflictError
 from zope.interface import implements
 from zope.component.interfaces import ComponentLookupError
@@ -78,8 +83,9 @@ def checkValidId(self, id, allow_dup=0):
     # check_valid_id() will be called again later with allow_dup
     # set to false before the object is added.
 
-    if not id or not isinstance(id, StringType):
-        if isinstance(id, UnicodeType): id = escape(id)
+    if not id or not isinstance(id, str):
+        if isinstance(id, unicode):
+            id = escape(id)
         raise BadRequest, ('Empty or invalid id specified', id)
     if bad_id(id) is not None:
         raise BadRequest, (

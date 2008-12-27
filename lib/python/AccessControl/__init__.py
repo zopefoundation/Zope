@@ -11,21 +11,26 @@
 #
 ##############################################################################
 
-from unauthorized import Unauthorized
 
 # This has to happen early so things get initialized properly
 from AccessControl.Implementation import setImplementation
 
-from AccessControl.SecurityManagement import getSecurityManager, setSecurityPolicy
-from AccessControl.SecurityInfo import ClassSecurityInfo, ModuleSecurityInfo
+from AccessControl.SecurityManagement import getSecurityManager
+from AccessControl.SecurityManagement import setSecurityPolicy
+from AccessControl.SecurityInfo import ClassSecurityInfo
+from AccessControl.SecurityInfo import ModuleSecurityInfo
 from AccessControl.SecurityInfo import ACCESS_PRIVATE
 from AccessControl.SecurityInfo import ACCESS_PUBLIC
 from AccessControl.SecurityInfo import ACCESS_NONE
-from AccessControl.SecurityInfo import secureModule, allow_module, allow_class
+from AccessControl.SecurityInfo import secureModule
+from AccessControl.SecurityInfo import allow_module
+from AccessControl.SecurityInfo import allow_class
 from AccessControl.SimpleObjectPolicies import allow_type
-from AccessControl.ZopeGuards import full_write_guard, safe_builtins
+from AccessControl.unauthorized import Unauthorized  # XXX 
+from AccessControl.ZopeGuards import full_write_guard
+from AccessControl.ZopeGuards import safe_builtins
 
 ModuleSecurityInfo('AccessControl').declarePublic('getSecurityManager')
 
-from AccessControl import DTML
+from AccessControl import DTML  # XXX side effects?
 del DTML

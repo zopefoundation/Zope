@@ -17,27 +17,46 @@ This module provides helpful functions and classes for use in Python
 Scripts.  It can be accessed from Python with the statement
 "import Products.PythonScripts.standard"
 """
-
 __version__='$Revision: 1.14 $'[11:-2]
 
-from AccessControl import ModuleSecurityInfo, getSecurityManager
-security = ModuleSecurityInfo()
-
-security.declarePublic('special_formats', 'whole_dollars',
-                       'dollars_and_cents', 'structured_text',
-                       'restructured_text',
-                       'sql_quote', 'html_quote', 'url_quote',
-                       'url_quote_plus', 'newline_to_br',
-                       'thousands_commas', 'url_unquote',
-                       'url_unquote_plus', 'urlencode')
-from DocumentTemplate.DT_Var import special_formats, \
- whole_dollars, dollars_and_cents, structured_text, sql_quote, \
- html_quote, url_quote, url_quote_plus, newline_to_br, thousands_commas, \
- url_unquote, url_unquote_plus, restructured_text
 from urllib import urlencode
 
-from Globals import HTML
 from AccessControl.DTML import RestrictedDTML
+from AccessControl.SecurityInfo import ModuleSecurityInfo
+from AccessControl.SecurityManagement import getSecurityManager
+from App.special_dtml import HTML
+from DocumentTemplate.DT_Var import special_formats
+from DocumentTemplate.DT_Var import whole_dollars
+from DocumentTemplate.DT_Var import dollars_and_cents
+from DocumentTemplate.DT_Var import structured_text
+from DocumentTemplate.DT_Var import sql_quote
+from DocumentTemplate.DT_Var import html_quote
+from DocumentTemplate.DT_Var import url_quote
+from DocumentTemplate.DT_Var import url_quote_plus
+from DocumentTemplate.DT_Var import newline_to_br
+from DocumentTemplate.DT_Var import thousands_commas
+from DocumentTemplate.DT_Var import url_unquote
+from DocumentTemplate.DT_Var import url_unquote_plus
+from DocumentTemplate.DT_Var import restructured_text
+from ZPublisher.HTTPRequest import record
+
+security = ModuleSecurityInfo()
+
+security.declarePublic('special_formats',
+                       'whole_dollars',
+                       'dollars_and_cents',
+                       'structured_text',
+                       'restructured_text',
+                       'sql_quote',
+                       'html_quote',
+                       'url_quote',
+                       'url_quote_plus',
+                       'newline_to_br',
+                       'thousands_commas',
+                       'url_unquote',
+                       'url_unquote_plus',
+                       'urlencode',
+                      )
 
 security.declarePublic('DTML')
 class DTML(RestrictedDTML, HTML):
@@ -54,9 +73,6 @@ class DTML(RestrictedDTML, HTML):
 
         finally: security.removeContext(self)
 
-from ZPublisher.HTTPRequest import record
-
-security.declarePublic('Object')
 
 # We don't expose classes directly to restricted code
 class _Object(record):
@@ -85,6 +101,7 @@ class _Object(record):
     def __hash__(self):
         return id(self)
 
+security.declarePublic('Object')
 def Object(**kw):
     return _Object(**kw)
 

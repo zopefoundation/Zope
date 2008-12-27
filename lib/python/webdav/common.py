@@ -15,10 +15,15 @@
 
 __version__='$Revision: 1.18 $'[11:-2]
 
-import  time, urllib, re
-from App.Common import iso8601_date, rfc850_date, rfc1123_date
-from App.Common import aq_base
 import random
+import re
+import time
+import urllib
+
+from Acquisition import aq_base
+from App.Common import iso8601_date
+from App.Common import rfc1123_date
+from App.Common import rfc850_date
 
 _randGen = random.Random(time.time())
 

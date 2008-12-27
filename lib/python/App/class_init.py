@@ -12,8 +12,6 @@
 ##############################################################################
 
 import logging
-from AccessControl.PermissionRole import PermissionRole
-import AccessControl.Permission
 
 class ApplicationDefaultPermissions:
     _View_Permission='Manager', 'Anonymous'
@@ -21,6 +19,8 @@ class ApplicationDefaultPermissions:
 
 
 def default__class_init__(self):
+    from AccessControl.Permission import registerPermissions
+    from AccessControl.PermissionRole import PermissionRole
     dict=self.__dict__
     have=dict.has_key
     ft=type(default__class_init__)
@@ -66,7 +66,7 @@ def default__class_init__(self):
             break
 
     if self.__dict__.has_key('__ac_permissions__'):
-        AccessControl.Permission.registerPermissions(self.__ac_permissions__)
+        registerPermissions(self.__ac_permissions__)
         for acp in self.__ac_permissions__:
             pname, mnames = acp[:2]
             if len(acp) > 2:

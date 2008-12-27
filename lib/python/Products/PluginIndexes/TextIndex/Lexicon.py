@@ -17,14 +17,15 @@ mapping.
 
 """
 
-import Splitter
-from Persistence import Persistent
 from Acquisition import Implicit
-
 from BTrees.OIBTree import OIBTree
 from BTrees.IOBTree import IOBTree
-from BTrees.IIBTree import IISet, IITreeSet
+from BTrees.IIBTree import IISet
+from BTrees.IIBTree import IITreeSet
+from Persistence import Persistent
 from Products.PluginIndexes.common.randid import randid
+from Products.PluginIndexes.TextIndex.Splitter import getSplitter
+from Products.PluginIndexes.TextIndex.Splitter import splitterNames
 
 from types import StringType
 
@@ -49,10 +50,10 @@ class Lexicon(Persistent, Implicit):
         else:
             self.stop_syn = stop_syn
 
-        self.useSplitter = Splitter.splitterNames[0]
+        self.useSplitter = splitterNames[0]
         if useSplitter: self.useSplitter=useSplitter
         self.splitterParams = extra
-        self.SplitterFunc = Splitter.getSplitter(self.useSplitter)
+        self.SplitterFunc = getSplitter(self.useSplitter)
 
 
     def clear(self):
@@ -126,11 +127,10 @@ class Lexicon(Persistent, Implicit):
         while not inverse.insert(wid, word):
             wid=randid()
 
-        if isinstance(word,StringType):
+        if isinstance(word, str):
             self._lexicon[intern(word)] = wid
         else:
             self._lexicon[word] = wid
-
 
         return wid
 

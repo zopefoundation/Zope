@@ -48,6 +48,9 @@ app = None
 startup_time = asctime()
 
 def startup():
+    from App.PersistentExtra import patchPersistent
+    patchPersistent()
+
     global app
 
     # Import products

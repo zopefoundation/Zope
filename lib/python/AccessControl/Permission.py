@@ -121,6 +121,7 @@ _registerdPermission=_registeredPermissions.has_key
 def registerPermissions(permissions, defaultDefault=('Manager',)):
     """Register an __ac_permissions__ sequence.
     """
+    from App.class_init import ApplicationDefaultPermissions
     for setting in permissions:
         if _registerdPermission(setting[0]): continue
         if len(setting)==2:
@@ -133,6 +134,6 @@ def registerPermissions(permissions, defaultDefault=('Manager',)):
         Products.__ac_permissions__=(
             Products_permissions + ((perm, (), default),))
         mangled=pname(perm) # get mangled permission name
-        if not hasattr(Globals.ApplicationDefaultPermissions, mangled):
-            setattr(Globals.ApplicationDefaultPermissions,
+        if not hasattr(ApplicationDefaultPermissions, mangled):
+            setattr(ApplicationDefaultPermissions,
                     mangled, default)

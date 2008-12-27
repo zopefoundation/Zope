@@ -13,13 +13,12 @@
 ##############################################################################
 
 """Generic parser support: exception and parse tree nodes."""
+from BTrees.IIBTree import difference
 from zope.interface import implements
 
-from BTrees.IIBTree import difference
-
 from Products.ZCTextIndex.IQueryParseTree import IQueryParseTree
-from Products.ZCTextIndex.SetOps import mass_weightedIntersection, \
-                                        mass_weightedUnion
+from Products.ZCTextIndex.SetOps import mass_weightedIntersection
+from Products.ZCTextIndex.SetOps import mass_weightedUnion
 
 class QueryError(Exception):
     pass

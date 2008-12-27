@@ -15,8 +15,8 @@
 
 $Id$
 """
-import ExtensionClass
-from Globals import InitializeClass as initializeClass
+from App.class_init import default__class_init__ as InitializeClass
+from ExtensionClass import Base
 
 import zope.component
 from zope.interface import Interface
@@ -67,7 +67,7 @@ class FiveFormDirective(BaseFormDirective):
     def _processWidgets(self):
         if self._widgets:
             customWidgetsObject = makeClass(
-                'CustomWidgetsMixin', (ExtensionClass.Base,), self._widgets)
+                'CustomWidgetsMixin', (Base,), self._widgets)
             self.bases = self.bases + (customWidgetsObject,)
 
 class EditFormDirective(FiveFormDirective):

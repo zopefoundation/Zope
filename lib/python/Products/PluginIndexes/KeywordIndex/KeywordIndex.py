@@ -15,11 +15,11 @@
 $Id$
 """
 
-from types import StringType, UnicodeType
 from logging import getLogger
 
-from BTrees.OOBTree import OOSet, difference
-from Globals import DTMLFile
+from BTrees.OOBTree import difference
+from BTrees.OOBTree import OOSet
+from App.special_dtml import DTMLFile
 
 from Products.PluginIndexes.common import safe_callable
 from Products.PluginIndexes.common.UnIndex import UnIndex
@@ -95,8 +95,7 @@ class KeywordIndex(UnIndex):
         newKeywords = getattr(obj, attr, ())
         if safe_callable(newKeywords):
             newKeywords = newKeywords()
-        if (isinstance(newKeywords, StringType)
-            or isinstance(newKeywords, UnicodeType)): #Python 2.1 compat isinstance
+        if isinstance(newKeywords, basestring): #Python 2.1 compat isinstance
             return (newKeywords,)
         else:
             unique = {}

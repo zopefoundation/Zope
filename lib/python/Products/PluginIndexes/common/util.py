@@ -14,10 +14,10 @@
 
 $Id$
 """
-
-from warnings import warn
 from types import InstanceType
-from DateTime import DateTime
+from warnings import warn
+
+from DateTime.DateTime import DateTime
 
 
 class parseIndexRequest:

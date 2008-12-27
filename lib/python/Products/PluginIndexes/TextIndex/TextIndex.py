@@ -15,19 +15,25 @@
 $Id$
 """
 
-import operator, warnings
-import re
 from cgi import escape
-from types import *
 from logging import getLogger
-from Globals import Persistent, DTMLFile
+import operator
+import re
+import warnings
+
+from types import *
 
 from Acquisition import Implicit
+from App.special_dtml import DTMLFile
 from OFS.SimpleItem import SimpleItem
+from BTrees.IIBTree import difference
+from BTrees.IIBTree import IIBTree
+from BTrees.IIBTree import IIBucket
+from BTrees.IIBTree import IISet
+from BTrees.IIBTree import weightedIntersection
 from BTrees.IOBTree import IOBTree
-from BTrees.IIBTree import IIBTree, IIBucket, IISet
-from BTrees.IIBTree import difference, weightedIntersection
 from BTrees.OIBTree import OIBTree
+from Persistence import Persistent
 from zope.interface import implements
 
 from Products.PluginIndexes.common import safe_callable
@@ -35,8 +41,7 @@ from Products.PluginIndexes.common.ResultList import ResultList
 from Products.PluginIndexes.common.util import parseIndexRequest
 from Products.PluginIndexes.interfaces import IPluggableIndex
 from Products.PluginIndexes.interfaces import ITextIndex
-
-from Lexicon import Lexicon
+from Products.PluginIndexes.TextIndex.Lexicon import Lexicon
 
 LOG = getLogger('TextIndex')
 
@@ -178,9 +183,10 @@ class TextIndex(Persistent, Implicit, SimpleItem):
         self._index=IOBTree()
 
         def convertScores(scores,
-                          type=type, TupleType=TupleType, IIBTree=IIBTree
+                          type=type,
+                          IIBTree=IIBTree
                           ):
-            if type(scores) is not TupleType and type(scores) is not IIBTree():
+            if type(scores) is not tuple and type(scores) is not IIBTree():
                 scores=IIBTree(scores)
             return scores
 
@@ -190,14 +196,16 @@ class TextIndex(Persistent, Implicit, SimpleItem):
         self._unindex=IOBTree()
         convert(_unindex, self._unindex, threshold)
 
-    def histogram(self, type=type, TupleType=type(())):
+    def histogram(self, type=type):
         """Return a mapping which provides a histogram of the number of
         elements found at each point in the index."""
 
         histogram = IIBucket()
         for (key, value) in self._index.items():
-            if type(value) is TupleType: entry=1
-            else: entry = len(value)
+            if type(value) is tuple:
+                entry = 1
+            else:
+                entry = len(value)
             histogram[entry] = histogram.get(entry, 0) + 1
 
         return histogram
@@ -230,7 +238,7 @@ class TextIndex(Persistent, Implicit, SimpleItem):
         indexRow = index.get(entry, None)
 
         if indexRow is not None:
-            if type(indexRow) is TupleType:
+            if type(indexRow) is tuple:
                 # Tuples are only used for rows which have only
                 # a single entry.  Since we now need more, we'll
                 # promote it to a mapping object (dictionary).
@@ -251,7 +259,7 @@ class TextIndex(Persistent, Implicit, SimpleItem):
                 if indexRow.get(documentId, -1) != score:
                     # score changed (or new entry)
 
-                    if type(indexRow) is DictType:
+                    if type(indexRow) is dict:
                         indexRow[documentId] = score
                         if len(indexRow) > 3:
                             # Big enough to give it's own database record
@@ -281,7 +289,7 @@ class TextIndex(Persistent, Implicit, SimpleItem):
             if safe_callable(source):
                 source = source()
 
-            if not isinstance(source, UnicodeType):
+            if not isinstance(source, unicode):
                 source = str(source)
 
         except (AttributeError, TypeError):
@@ -376,13 +384,13 @@ class TextIndex(Persistent, Implicit, SimpleItem):
                 LOG.error('unindex_object tried to unindex nonexistent'
                           ' document, wid  %s, %s' % (i,wid))
                 continue
-            if type(widScores) is TupleType:
+            if type(widScores) is tuple:
                 del index[wid]
             else:
                 try:
                     del widScores[i]
                     if widScores:
-                        if type(widScores) is DictType:
+                        if type(widScores) is dict:
                             if len(widScores) == 1:
                                 # convert to tuple
                                 widScores = widScores.items()[0]
@@ -563,17 +571,17 @@ class TextIndex(Persistent, Implicit, SimpleItem):
         operandType = type(left)
         if operandType is IntType:
             left = self[left]
-        elif isinstance(left,StringType) or isinstance(left,UnicodeType):
+        elif isinstance(left,str) or isinstance(left,unicode):
             left = self[left]
-        elif operandType is ListType:
+        elif operandType is list:
             left = self.evaluate(left)
 
         operandType = type(right)
         if operandType is IntType:
             right = self[right]
-        elif isinstance(right,StringType) or isinstance(right,UnicodeType):
+        elif isinstance(right,str) or isinstance(right,unicode):
             right = self[right]
-        elif operandType is ListType:
+        elif operandType is list:
             right = self.evaluate(right)
 
         return (left, right)
@@ -581,11 +589,11 @@ class TextIndex(Persistent, Implicit, SimpleItem):
     def evaluate(self, query):
         """Evaluate a parsed query"""
         # Strip off meaningless layers
-        while isinstance(query, ListType) and len(query) == 1:
+        while isinstance(query, list) and len(query) == 1:
             query = query[0]
 
         # If it's not a list, assume a string or number
-        if not isinstance(query, ListType):
+        if not isinstance(query, list):
             return self[query]
 
         # Now we need to loop through the query and reduce
@@ -676,7 +684,7 @@ def parse2(q, default_operator, operator_dict=operator_dict):
     i = 0
     while i < len(q):
         e = q[i]
-        if isinstance(e, ListType):
+        if isinstance(e, list):
             q[i] = parse2(e, default_operator)
             if i % 2:
                 q.insert(i, default_operator)

@@ -18,18 +18,20 @@
 import math
 
 from BTrees.IOBTree import IOBTree
-from BTrees.IIBTree import IIBTree, IIBucket, IITreeSet
-from BTrees.IIBTree import intersection, difference
+from BTrees.IIBTree import IIBTree
+from BTrees.IIBTree import IIBucket
+from BTrees.IIBTree import IITreeSet
+from BTrees.IIBTree import difference
+from BTrees.IIBTree import intersection
 from BTrees.Length import Length
+from Persistence import Persistent
+from zope.interface import implements
 
 from Products.ZCTextIndex.IIndex import IIndex
 from Products.ZCTextIndex import WidCode
-from Products.ZCTextIndex.SetOps import mass_weightedIntersection, \
-                                        mass_weightedUnion
+from Products.ZCTextIndex.SetOps import mass_weightedIntersection
+from Products.ZCTextIndex.SetOps import mass_weightedUnion
 
-import ZODB
-from Persistence import Persistent
-from zope.interface import implements
 
 # Instead of storing floats, we generally store scaled ints.  Binary pickles
 # can store those more efficiently.  The default SCALE_FACTOR of 1024

@@ -87,19 +87,6 @@ class LogfileRotateHandler:
                     handler.rotate()
         logger.info("Log files rotation complete")
 
-def packHandler():
-    """ Packs the main database.  Not safe to call under a signal
-    handler, because it blocks the main thread """
-    logger.info('Packing main ZODB database')
-    import Globals
-    try:
-        db = Globals.opened[0]
-        db.pack()
-        logger.info('Database packing launched or completed successfully')
-    except:
-        logger.exception('Call to pack failed!')
-        
-
 def registerZopeSignals(loggers):
     from signal import SIGTERM, SIGINT
     try:
@@ -122,11 +109,3 @@ def registerZopeSignals(loggers):
         # no restart handler on windows.
         # Log files get 'rotated', not 'reopened'
         SignalHandler.registerHandler(SIGUSR2, LogfileRotateHandler(loggers))
-    # SIGUSR1 is nominally reserved for pack, but we dont have an
-    # implementation that is stable yet because if the signal handler
-    # fires it will be caught in the main thread and all network operations
-    # will cease until it's finished.
-    # (The above is *not* True for Windows - a different thread is used to
-    # catch the signals.  This probably could be switched on for Windows
-    # if anyone cares)
-    #SignalHandler.registerHandler(SIGUSR1, packHandler)

@@ -16,6 +16,7 @@
 $Id$
 """
 import os
+
 from zope.app.publisher.browser import viewmeta
 from zope.component import zcml
 from zope.configuration.exceptions import ConfigurationError
@@ -26,8 +27,10 @@ from zope.publisher.interfaces.browser import IBrowserView
 from zope.publisher.interfaces.browser import IDefaultBrowserLayer
 from zope.viewlet import interfaces
 
-from Globals import InitializeClass as initializeClass
-from Products.Five.security import protectClass, protectName
+from App.class_init import default__class_init__ as initializeClass
+from App.special_dtml import DTMLFile
+from Products.Five.security import protectClass
+from Products.Five.security import protectName
 from Products.Five.viewlet import manager
 from Products.Five.viewlet import viewlet
 

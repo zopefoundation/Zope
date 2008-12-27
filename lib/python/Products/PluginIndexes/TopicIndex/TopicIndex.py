@@ -17,17 +17,20 @@ $Id$
 
 from logging import getLogger
 
-from Globals import Persistent, DTMLFile
-from OFS.SimpleItem import SimpleItem
+from App.special_dtml import DTMLFile
+from BTrees.IIBTree import IITreeSet
+from BTrees.IIBTree import intersection
+from BTrees.IIBTree import union
 from BTrees.OOBTree import OOBTree
-from BTrees.IIBTree import IITreeSet,intersection,union
+from OFS.SimpleItem import SimpleItem
+from Persistence import Persistent
 from zope.interface import implements
 
 from Products.PluginIndexes.common.util import parseIndexRequest
 from Products.PluginIndexes.interfaces import IPluggableIndex
 from Products.PluginIndexes.interfaces import ITopicIndex
 
-import FilteredSet
+from Products.PluginIndexes.TopicIndex.FilteredSet import factory
 
 _marker = []
 LOG = getLogger('Zope.TopicIndex')
@@ -125,8 +128,10 @@ class TopicIndex(Persistent, SimpleItem):
         if self.filteredSets.has_key(filter_id):
             raise KeyError,\
                 'A FilteredSet with this name already exists: %s' % filter_id
-        self.filteredSets[filter_id] = \
-            FilteredSet.factory(filter_id, typeFilteredSet, expr)
+        self.filteredSets[filter_id] = factory(filter_id,
+                                               typeFilteredSet,
+                                               expr,
+                                              )
 
     def delFilteredSet(self, filter_id):
         # Delete the FilteredSet object specified by 'filter_id'.
