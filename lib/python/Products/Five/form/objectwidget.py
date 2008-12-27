@@ -32,7 +32,7 @@ class ObjectWidgetView(OWVBase):
 
     template = ViewPageTemplateFile('objectwidget.pt')
 
-initializeClass(ObjectWidgetView)
+InitializeClass(ObjectWidgetView)
 
 class ObjectWidgetClass(OWBase):
 
