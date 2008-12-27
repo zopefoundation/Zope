@@ -67,6 +67,7 @@ def stuff_Globals():
     from App.class_init import ApplicationDefaultPermissions
 
     Globals.InitializeClass = default__class_init__
+    Globals.ApplicationDefaultPermissions = ApplicationDefaultPermissions
 
     from App.special_dtml import HTML
     from App.special_dtml import HTMLFile
@@ -80,6 +81,12 @@ def stuff_Globals():
 
     from App.ImageFile import ImageFile
     Globals.ImageFile = ImageFile
+
+    # More BBB indirections
+    import OFS.ObjectManager
+    OFS.ObjectManager.UNIQUE = Globals.UNIQUE
+    OFS.ObjectManager.REPLACEABLE = Globals.REPLACEABLE
+    OFS.ObjectManager.NOT_REPLACEABLE = Globals.NOT_REPLACEABLE
 
 
 def startup():
