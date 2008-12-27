@@ -19,7 +19,6 @@ from UserDict import UserDict
 
 from ZConfig.components.logger import logger
 from ZODB.config import ZODBDatabase
-import OFS.Uninstalled
 
 # generic datatypes
 
@@ -320,6 +319,7 @@ def simpleClassFactory(jar, module, name,
                        ):
     """Class factory without ZClass support.
     """
+    import OFS.Uninstalled
     try:
         m = __import__(module, _globals, _globals, _silly)
         return getattr(m, name)
@@ -331,6 +331,7 @@ def zopeClassFactory(jar, module, name,
                      ):
     """Class factory with ZClass support.
     """
+    import OFS.Uninstalled
     try:
         if module[:1]=='*':
             # ZCLass! Yee ha!
