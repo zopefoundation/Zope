@@ -14,26 +14,21 @@
 
 $Id$
 """
+from DateTime.DateTime import DateTime
 
 class PersistentUtil:
-
-    def _datetime(self, x=None):
-        from DateTime.DateTime import DateTime
-        if x is None:
-            return DateTime()
-        return DateTime(x)
 
     def bobobase_modification_time(self):
         jar=self._p_jar
         oid=self._p_oid
         if jar is None or oid is None:
-            return self._datetime()
+            return DateTime()
 
         try:
             t = self._p_mtime
         except:
             t = 0
-        return self._datetime(t)
+        return DateTime(t)
 
     def locked_in_version(self):
         """Was the object modified in any version?
