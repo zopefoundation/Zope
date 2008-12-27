@@ -46,10 +46,48 @@ from zope.app import appsetup
 app = None
 startup_time = asctime()
 
+def stuff_Globals():
+    # Stuff BBB names into the Globals module
+    import Globals # to set data
+
+    import TreeDisplay
+    Globals.TreeDisplay = TreeDisplay
+
+    import App.Common
+    Globals.package_home = App.Common.package_home
+    Globals.attrget = App.Common.attrget
+    Globals.Dictionary = App.Common.Dictionary
+
+    from Persistence import Persistent
+    from Persistence import PersistentMapping
+    Globals.Persistent = Persistent
+    Globals.PersistentMapping = PersistentMapping
+
+    from App.class_init import default__class_init__
+    from App.class_init import ApplicationDefaultPermissions
+
+    Globals.InitializeClass = default__class_init__
+
+    from App.special_dtml import HTML
+    from App.special_dtml import HTMLFile
+    from App.special_dtml import DTMLFile
+    Globals.HTML = HTML
+    Globals.HTMLFile = HTMLFile
+    Globals.DTMLFile = DTMLFile
+
+    from App.Dialogs import MessageDialog
+    Globals.MessageDialog = MessageDialog
+
+    from App.ImageFile import ImageFile
+    Globals.ImageFile = ImageFile
+
+
 def startup():
     from App.PersistentExtra import patchPersistent
     import Globals  # to set / fetch data
     patchPersistent()
+
+    stuff_Globals() # XXX should this be optional?
 
     global app
 
