@@ -15,19 +15,30 @@
 __rcs_id__='$Id$'
 __version__='$Revision: 1.58 $'[11:-2]
 
-from DocumentTemplate.DT_Util import *
+from binascii import a2b_base64
+from binascii import b2a_base64
+from cPickle import dumps
+import re
+from string import translate
+from urllib import quote
+from urllib import unquote
+from zlib import compress
+from zlib import decompressobj
+
+#from DocumentTemplate.DT_Util import *
+from DocumentTemplate.DT_Util import add_with_prefix
+from DocumentTemplate.DT_Util import Eval
+from DocumentTemplate.DT_Util import InstanceDict
+from DocumentTemplate.DT_Util import name_param
+from DocumentTemplate.DT_Util import parse_params
+from DocumentTemplate.DT_Util import ParseError
+from DocumentTemplate.DT_Util import render_blocks
+from DocumentTemplate.DT_Util import simple_name
 from DocumentTemplate.DT_String import String
 
-from cPickle import dumps
-from string import translate
-from urllib import quote, unquote
-from zlib import compress, decompressobj
-from binascii import b2a_base64, a2b_base64
-import re
-
-tbl=''.join(map(chr, range(256)))
-tplus=tbl[:ord('+')]+'-'+tbl[ord('+')+1:]
-tminus=tbl[:ord('-')]+'+'+tbl[ord('-')+1:]
+tbl = ''.join(map(chr, range(256)))
+tplus = tbl[:ord('+')]+'-'+tbl[ord('+')+1:]
+tminus = tbl[:ord('-')]+'+'+tbl[ord('-')+1:]
 
 class Tree:
     name='tree'
@@ -36,35 +47,51 @@ class Tree:
 
     def __init__(self, blocks):
         tname, args, section = blocks[0]
-        args=parse_params(args, name=None, expr=None, nowrap=1,
-                          expand=None, leaves=None,
-                          header=None, footer=None,
-                          branches=None, branches_expr=None,
-                          sort=None, reverse=1, skip_unauthorized=1,
-                          id=None, single=1, url=None,
+        args = parse_params(args,
+                            name=None,
+                            expr=None,
+                            nowrap=1,
+                            expand=None,
+                            leaves=None,
+                            header=None,
+                            footer=None,
+                            branches=None,
+                            branches_expr=None,
+                            sort=None,
+                            reverse=1,
+                            skip_unauthorized=1,
+                            id=None,
+                            single=1,
+                            url=None,
                           # opened_decoration=None,
                           # closed_decoration=None,
                           # childless_decoration=None,
-                          assume_children=1,
-                          urlparam=None, prefix=None)
-        has_key=args.has_key
+                            assume_children=1,
+                            urlparam=None, prefix=None)
+        has_key = args.has_key
 
         if has_key('') or has_key('name') or has_key('expr'):
-            name,expr=name_param(args,'tree',1)
+            name, expr = name_param(args,'tree',1)
 
-            if expr is not None: args['expr']=expr
-            elif has_key(''): args['name']=name
-        else: name='a tree tag'
+            if expr is not None:
+                args['expr'] = expr
+            elif has_key(''):
+                args['name'] = name
+        else:
+            name='a tree tag'
 
         if has_key('branches_expr'):
             if has_key('branches'):
                 raise ParseError, _tm(
                     'branches and  and branches_expr given', 'tree')
-            args['branches_expr']=Eval(args['branches_expr']).eval
-        elif not has_key('branches'): args['branches']='tpValues'
+            args['branches_expr'] = Eval(args['branches_expr']).eval
+        elif not has_key('branches'):
+            args['branches']='tpValues'
 
-        if not has_key('id'): args['id']='tpId'
-        if not has_key('url'): args['url']='tpURL'
+        if not has_key('id'):
+            args['id'] = 'tpId'
+        if not has_key('url'):
+            args['url'] = 'tpURL'
         if not has_key('childless_decoration'):
             args['childless_decoration']=''
 
@@ -74,20 +101,23 @@ class Tree:
                 'prefix is not a simple name', 'tree')
 
         self.__name__ = name
-        self.section=section.blocks
-        self.args=args
+        self.section = section.blocks
+        self.args = args
 
 
-    def render(self,md):
-        args=self.args
-        have=args.has_key
+    def render(self, md):
+        args = self.args
+        have = args.has_key
 
-        if have('name'): v=md[args['name']]
-        elif have('expr'): v=args['expr'].eval(md)
-        else: v=md.this
-        return tpRender(v,md,self.section, self.args)
+        if have('name'):
+            v = md[args['name']]
+        elif have('expr'):
+            v = args['expr'].eval(md)
+        else:
+            v = md.this
+        return tpRender(v, md, self.section, self.args)
 
-    __call__=render
+    __call__ = render
 
 String.commands['tree']=Tree
 
@@ -374,7 +404,8 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
         dataspan=colspan-level
         output('<td%s%s valign="top" align="left">' %
                ((dataspan > 1 and (' colspan="%s"' % dataspan) or ''),
-               (have_arg('nowrap') and args['nowrap'] and ' style="white-space: nowrap"' or ''))
+               (have_arg('nowrap') and
+                args['nowrap'] and ' style="white-space: nowrap"' or ''))
                )
         output(render_blocks(section, md))
         output('</td>\n</tr>\n')
@@ -396,7 +427,8 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
                 output(doc(
                     None, md,
                     standard_html_header=(
-                        '<tr>%s<td width="16" style="white-space: nowrap"></td>'
+                        '<tr>%s'
+                        '<td width="16" style="white-space: nowrap"></td>'
                         '<td%s valign="top">'
                         % (h,
                            (dataspan > 1 and (' colspan="%s"' % dataspan)
@@ -417,7 +449,8 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
                     try: output(doc(
                         None,md,
                         standard_html_header=(
-                            '<tr>%s<td width="16" style="white-space: nowrap"></td>'
+                            '<tr>%s'
+                            '<td width="16" style="white-space: nowrap"></td>'
                             '<td%s valign="top">'
                             % (h,
                                (dataspan > 1 and
@@ -697,7 +730,8 @@ def _should_fail(x,binary=1):
     except pickle.UnpicklingError, e:
         if e[0]!='Refused': raise ValueError(x)
 
-class _junk_class: pass
+class _junk_class:
+    pass
 
 def _test():
     _should_succeed('hello')
