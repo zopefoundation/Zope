@@ -242,7 +242,7 @@ class Product(Folder, PermissionManager):
     def manage_refresh(self, REQUEST, manage_tabs_message=None):
         """Displays the refresh management screen.
         """
-        import Globals
+        import Globals  # for data
         from App.RefreshFuncs import getLastRefreshException
         from App.RefreshFuncs import isAutoRefreshEnabled
         from App.RefreshFuncs import getDependentProducts
@@ -400,7 +400,7 @@ class CompressedInputFile:
 
 def initializeProduct(productp, name, home, app):
     # Initialize a levered product
-    import Globals
+    import Globals  # to set data
     products = app.Control_Panel.Products
     fver = ''
 

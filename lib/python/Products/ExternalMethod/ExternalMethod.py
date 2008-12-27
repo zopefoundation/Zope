@@ -36,7 +36,6 @@ from App.Extensions import getPath
 from App.Extensions import FuncCode
 from App.special_dtml import DTMLFile
 from App.special_dtml import HTML
-import Globals # for data
 from OFS.SimpleItem import Item
 from OFS.SimpleItem import pretty_tb
 from Persistence import Persistent
@@ -174,30 +173,21 @@ class ExternalMethod(Item, Persistent, Explicit,
             self._v_f=self.getFunction(1)
             self._v_last_read=ts
 
-    if Globals.DevelopmentMode:
-        # In development mode we do an automatic reload
-        # if the module code changed
-        def getFuncDefaults(self):
+    def getFuncDefaults(self):
+        import Globals  # for data
+        if Globals.DevelopmentMode:
             self.reloadIfChanged()
-            if not hasattr(self, '_v_func_defaults'):
-                self._v_f = self.getFunction()
-            return self._v_func_defaults
+        if not hasattr(self, '_v_func_defaults'):
+            self._v_f = self.getFunction()
+        return self._v_func_defaults
 
-        def getFuncCode(self):
+    def getFuncCode(self):
+        import Globals  # for data
+        if Globals.DevelopmentMode:
             self.reloadIfChanged()
-            if not hasattr(self, '_v_func_code'):
-                self._v_f = self.getFunction()
-            return self._v_func_code
-    else:
-        def getFuncDefaults(self):
-            if not hasattr(self, '_v_func_defaults'):
-                self._v_f = self.getFunction()
-            return self._v_func_defaults
-
-        def getFuncCode(self):
-            if not hasattr(self, '_v_func_code'):
-                self._v_f = self.getFunction()
-            return self._v_func_code
+        if not hasattr(self, '_v_func_code'):
+            self._v_f = self.getFunction()
+        return self._v_func_code
 
     security.declareProtected(View, '__call__')
     def __call__(self, *args, **kw):
@@ -218,6 +208,7 @@ class ExternalMethod(Item, Persistent, Explicit,
         In this case, the URL parent of the object is supplied as the
         first argument.
         """
+        import Globals  # for data
 
         filePath = self.filepath()
         if filePath==None:

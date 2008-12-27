@@ -62,16 +62,13 @@ def setConfiguration(cfg):
     os.environ["SOFTWARE_HOME"] = cfg.softwarehome
     os.environ["ZOPE_HOME"] = cfg.zopehome
 
-    if "Globals" in sys.modules:
-        # XXX We *really* want to avoid this if Globals hasn't already
-        # been imported, due to circular imports.  ;-(
-        import Globals
-        Globals.data_dir = cfg.clienthome
-        # Globals does not export CLIENT_HOME
-        Globals.INSTANCE_HOME = cfg.instancehome
-        Globals.SOFTWARE_HOME = cfg.softwarehome
-        Globals.ZOPE_HOME = cfg.zopehome
-        Globals.DevelopmentMode = cfg.debug_mode
+    import Globals  # to set data
+    Globals.data_dir = cfg.clienthome
+    # Globals does not export CLIENT_HOME
+    Globals.INSTANCE_HOME = cfg.instancehome
+    Globals.SOFTWARE_HOME = cfg.softwarehome
+    Globals.ZOPE_HOME = cfg.zopehome
+    Globals.DevelopmentMode = cfg.debug_mode
 
 class DefaultConfiguration:
     """

@@ -14,16 +14,16 @@
 
 __version__='$Revision: 1.10 $'[11:-2]
 
-
-from Globals import InitializeClass
-from AccessControl import ClassSecurityInfo
-import sys, Globals
-from HelpUtil import HelpBase, classobject
-from HelpUtil import is_class, is_module
-from Globals import DTMLFile
+import sys
 from urllib import quote
 
-
+from AccessControl.SecurityInfo import ClassSecurityInfo
+from App.class_init import default__class_init__ as InitializeClass
+from App.special_dtml import DTMLFile
+from HelpSys.HelpUtil import classobject
+from HelpSys.HelpUtil import HelpBase
+from HelpSys.HelpUtil import is_class
+from HelpSys.HelpUtil import is_module
 
 
 class ObjectItem(HelpBase, classobject):

@@ -34,7 +34,7 @@ class ImageFile(Explicit):
     security = ClassSecurityInfo()
 
     def __init__(self,path,_prefix=None):
-        import Globals
+        import Globals  # for data
         if _prefix is None:
             _prefix=getConfiguration().softwarehome
         elif type(_prefix) is not type(''):

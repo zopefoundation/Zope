@@ -38,7 +38,7 @@ started = False
 
 def stuff_Globals():
     # Stuff BBB names into the Globals module
-    import Globals
+    import Globals # to set data
 
     import TreeDisplay
     Globals.TreeDisplay = TreeDisplay
@@ -86,7 +86,7 @@ def start_zope(cfg, debug_handler):
         # Don't allow any code to call start_zope() twice.
         return
 
-    stuff_Globals()
+    stuff_Globals() # XXX should this be optional?
 
     starter = get_starter()
     starter.setConfiguration(cfg)
@@ -198,7 +198,7 @@ class ZopeStarter:
         logger.error(msg)
 
     def setupPublisher(self):
-        import Globals
+        import Globals # to set data
         import ZPublisher.HTTPRequest
         import ZPublisher.Publish
         Globals.DevelopmentMode = self.cfg.debug_mode

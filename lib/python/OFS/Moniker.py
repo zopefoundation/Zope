@@ -19,7 +19,6 @@
 
 $Id$
 """
-import Globals
 
 class Moniker:
     """An object moniker is an intelligent reference to a

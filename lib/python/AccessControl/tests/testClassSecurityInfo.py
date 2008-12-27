@@ -28,7 +28,6 @@ class ClassSecurityInfoTests(unittest.TestCase):
 
         # Test setting default roles for permissions.
 
-        #import Globals  # XXX: avoiding import cycle
         from App.class_init import default__class_init__
         from ExtensionClass import Base
 

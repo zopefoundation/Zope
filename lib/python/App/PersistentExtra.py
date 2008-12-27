@@ -38,7 +38,7 @@ class PersistentUtil:
     def locked_in_version(self):
         """Was the object modified in any version?
         """
-        import Globals
+        import Globals  # for data
         jar=self._p_jar
         oid=self._p_oid
         if jar is None or oid is None: return None

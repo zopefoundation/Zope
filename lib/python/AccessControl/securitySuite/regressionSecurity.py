@@ -15,15 +15,15 @@
 
 # $Id$
 
-import os, sys, unittest
+import unittest
 
-import ZODB
-import SecurityBase
+from AccessControl.SecurityInfo import ClassSecurityInfo
+from AccessControl.SecurityManagement import getSecurityManager
+from AccessControl.User import nobody
+from AccessControl.securitySuite import SecurityBase
 from OFS.Folder import Folder
 from OFS.SimpleItem  import SimpleItem
-from AccessControl import ClassSecurityInfo,getSecurityManager
-from AccessControl.User import nobody
-import Globals
+from App.class_init import default__class_init__ as InitializeClass
 
 
 # let's define some permissions first
@@ -79,7 +79,7 @@ class TestObject(SimpleItem):
     security.setPermissionDefault(MAGIC_PERMISSION1, ("Manager","Owner"))
     security.setPermissionDefault(MAGIC_PERMISSION2, ("TestRole",))
 
-Globals.InitializeClass(TestObject)
+InitializeClass(TestObject)
 
 
 ##############################################################################
@@ -99,7 +99,7 @@ class TestFolder(Folder):
 
     security = ClassSecurityInfo()
 
-Globals.InitializeClass(TestFolder)
+InitializeClass(TestFolder)
 
 
 ##############################################################################

@@ -38,7 +38,6 @@ from App.special_dtml import DTMLFile
 from Persistence import Persistent
 from persistent import TimeStamp
 from OFS.SimpleItem import Item
-from OFS.ObjectManager import UNIQUE
 from ZPublisher.BeforeTraverse import registerBeforeTraverse
 from ZPublisher.BeforeTraverse import unregisterBeforeTraverse
 from ZPublisher.BeforeTraverse import queryBeforeTraverse

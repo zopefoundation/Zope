@@ -15,14 +15,14 @@ Functions for refreshing products.
 $Id$
 '''
 
-import os, sys
+from logging import getLogger
+import os
+import sys
 from time import time
 from traceback import format_exception
-from logging import getLogger
-import transaction
-import Products
+
 from ExtensionClass import Base
-from Globals import PersistentMapping
+from Persistence import PersistentMapping
 
 LOG = getLogger('RefreshFuncs')
 global_classes_timestamp = 0
@@ -32,9 +32,14 @@ _marker = []  # create a new marker object.
 
 refresh_exc_info = {}
 
-class dummyClass: pass
-class dummyClass2 (Base): pass
-def dummyFunc(): pass
+class dummyClass:
+    pass
+
+class dummyClass2(Base):
+    pass
+
+def dummyFunc():
+    pass
 
 ClassTypes = (type(dummyClass), type(dummyClass2))
 ModuleType = type(sys)
@@ -207,6 +212,7 @@ def getLastRefreshException(productid):
 # Functions for quickly scanning the dates of product modules.
 
 def tryFindProductDirectory(productid):
+    import Products
     path_join = os.path.join
     isdir = os.path.isdir
     exists = os.path.exists
@@ -316,6 +322,7 @@ def finishAutoRefresh(jar, productids):
 def autoRefresh(jar):
     # Must be called before there are any changes made
     # by the connection to the database!
+    import transaction
     auto_refresh_ids = checkAutoRefresh(jar)
     if auto_refresh_ids:
         finishAutoRefresh(jar, auto_refresh_ids)

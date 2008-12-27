@@ -95,23 +95,23 @@ class CacheManager:
 
     # BoboPOS 2
     def cache_mean_age(self):
-        import Globals
+        import Globals  # for data
         return Globals.Bobobase._jar.cache.cache_mean_age/60.0
 
     # BoboPOS 2
     def cache_mean_deal(self):
-        import Globals
+        import Globals  # for data
         return Globals.Bobobase._jar.cache.cache_mean_deal*60
 
     # BoboPOS 2
     def cache_mean_deac(self):
-        import Globals
+        import Globals  # for data
         return Globals.Bobobase._jar.cache.cache_mean_deac*60
 
     # BoboPOS 2
     def cache_last_gc_time(self):
-        import Globals
-        t=Globals.Bobobase._jar.cache.cache_last_gc_time
+        import Globals  # for data
+        t = Globals.Bobobase._jar.cache.cache_last_gc_time
         return time.asctime(time.localtime(t))
 
     def manage_full_sweep(self,value,REQUEST):

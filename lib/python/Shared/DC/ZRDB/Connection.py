@@ -15,35 +15,39 @@ __doc__='''Generic Database Connection Support
 $Id$'''
 __version__='$Revision: 1.39 $'[11:-2]
 
+from cgi import escape
+from cStringIO import StringIO
 from logging import getLogger
-import Globals, OFS.SimpleItem, AccessControl.Role, Acquisition, sys
-from DateTime import DateTime
-from App.Dialogs import MessageDialog
-from Globals import DTMLFile
-from Globals import InitializeClass
-from AccessControl import ClassSecurityInfo
+import string
+import sys
+
 from AccessControl.Permissions import view_management_screens
 from AccessControl.Permissions import change_database_connections
 from AccessControl.Permissions import test_database_connections
 from AccessControl.Permissions import open_close_database_connection
-from string import find, join, split
-from Aqueduct import custom_default_report
-from cStringIO import StringIO
-from Results import Results
-
-from cgi import escape
-import DocumentTemplate, RDB
+from AccessControl.Role import RoleManager
+from AccessControl.SecurityInfo import ClassSecurityInfo
+from Acquisition import Implicit
+from App.class_init import default__class_init__ as InitializeClass
+from App.Dialogs import MessageDialog
+from App.special_dtml import DTMLFile
+from DateTime.DateTime import DateTime
+from DocumentTemplate import HTML
+from OFS.SimpleItem import Item
+from Persistence import Persistent
 from zExceptions import BadRequest
 
+from Aqueduct import custom_default_report
+import RDB
+from Results import Results
 
 LOG = getLogger('ZRDB.Connection')
 
-class Connection(
-    Globals.Persistent,
-    AccessControl.Role.RoleManager,
-    OFS.SimpleItem.Item,
-    Acquisition.Implicit,
-    ):
+class Connection(Persistent,
+                 RoleManager,
+                 Item,
+                 Implicit,
+                ):
 
     security = ClassSecurityInfo()
 
@@ -54,8 +58,8 @@ class Connection(
         {'label':'Properties', 'action':'manage_properties'},
         {'label':'Test', 'action':'manage_testForm'},
         )
-        +AccessControl.Role.RoleManager.manage_options
-        +OFS.SimpleItem.Item.manage_options
+        + RoleManager.manage_options
+        + Item.manage_options
         )
 
     _v_connected=''
@@ -135,14 +139,14 @@ class Connection(
         else:
             r='This statement returned no results.'
 
-        report=DocumentTemplate.HTML(
+        report = HTML(
             '<html><body bgcolor="#ffffff" link="#000099" vlink="#555555">\n'
             '<dtml-var name="manage_tabs">\n<hr>\n%s\n\n'
             '<hr><h4>SQL Used:</strong><br>\n<pre>\n%s\n</pre>\n<hr>\n'
             '</body></html>'
             % (r, query))
 
-        report=apply(report,(self,REQUEST),{self.id:result})
+        report = apply(report,(self,REQUEST),{self.id:result})
 
         return report
 
@@ -199,7 +203,8 @@ class Connection(
         return self
 
     def sql_quote__(self, v):
-        if find(v,"\'") >= 0: v=join(split(v,"\'"),"''")
+        if string.find(v,"\'") >= 0:
+            v = string.join(string.split(v,"\'"),"''")
         return "'%s'" % v
 
 InitializeClass(Connection)

@@ -91,8 +91,8 @@ _exec('import ZODB')
 import ZODB
 _write('.')
 
-_exec('import Globals')
-import Globals
+#_exec('import Globals')
+#import Globals
 _exec('import OFS.SimpleItem')
 import OFS.SimpleItem
 _exec('import OFS.ObjectManager')
@@ -166,6 +166,7 @@ def installProduct(name, quiet=0):
 
 def _installProduct(name, quiet=0):
     '''Installs a Zope product.'''
+    from App.class_init import default__class_init__ as InitializeClass
     start = time.time()
     meta_types = []
     if _patched and not _installedProducts.has_key(name):
@@ -178,7 +179,7 @@ def _installProduct(name, quiet=0):
                                 get_folder_permissions(), raise_exc=1)
                 _installedProducts[product_name] = 1
                 Products.meta_types = Products.meta_types + tuple(meta_types)
-                Globals.InitializeClass(Folder)
+                InitializeClass(Folder)
                 if not quiet: _print('done (%.3fs)\n' % (time.time() - start))
                 break
         else:

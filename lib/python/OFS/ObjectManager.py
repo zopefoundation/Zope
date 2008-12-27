@@ -25,9 +25,6 @@ import re
 import sys
 import warnings
 
-import App.Common
-import App.FactoryDispatcher, Products
-import App.Management, Acquisition
 from AccessControl import ClassSecurityInfo
 from AccessControl.Permissions import view_management_screens
 from AccessControl.Permissions import access_contents_information
@@ -37,13 +34,15 @@ from AccessControl.Permissions import import_export_objects
 from AccessControl import getSecurityManager
 from AccessControl.ZopeSecurityPolicy import getRoles
 from Acquisition import aq_base
+from Acquisition import Implicit
 from App.class_init import default__class_init__ as InitializeClass
+from App.Common import is_acquired
 from App.config import getConfiguration
 from App.Dialogs import MessageDialog
+from App.FactoryDispatcher import ProductDispatcher
+from App.Management import Navigation
+from App.Management import Tabs
 from App.special_dtml import DTMLFile
-from Globals import REPLACEABLE
-from Globals import NOT_REPLACEABLE
-from Globals import UNIQUE
 from Persistence import Persistent
 from webdav.Collection import Collection
 from webdav.Lockable import ResourceLockedError
@@ -52,27 +51,28 @@ from zExceptions import BadRequest
 from ZODB.POSException import ConflictError
 from zope.interface import implements
 from zope.component.interfaces import ComponentLookupError
-
-import CopySupport
-from interfaces import IObjectManager
-from Traversable import Traversable
 from zope.event import notify
 from zope.app.container.contained import ObjectAddedEvent
 from zope.app.container.contained import ObjectRemovedEvent
 from zope.app.container.contained import notifyContainerModified
 from zope.app.container.interfaces import IContainer
 from zope.interface import implements
+
+from OFS.CopySupport import CopyContainer
+from OFS.interfaces import IObjectManager
+from OFS.Traversable import Traversable
 from OFS.event import ObjectWillBeAddedEvent
 from OFS.event import ObjectWillBeRemovedEvent
-import OFS.subscribers
+from OFS.subscribers import compatibilityCall
+from OFS.XMLExportImport import importXML
+from OFS.XMLExportImport import exportXML
+from OFS.XMLExportImport import magic
 
 # the name BadRequestException is relied upon by 3rd-party code
 BadRequestException = BadRequest
 
-import XMLExportImport
-customImporters={
-    XMLExportImport.magic: XMLExportImport.importXML,
-    }
+customImporters={magic: importXML,
+                }
 
 bad_id=re.compile(r'[^a-zA-Z0-9-_~,.$\(\)# @]').search
 
@@ -82,6 +82,7 @@ def checkValidId(self, id, allow_dup=0):
     # only check that the id string contains no illegal chars;
     # check_valid_id() will be called again later with allow_dup
     # set to false before the object is added.
+    import Globals  # for data
 
     if not id or not isinstance(id, str):
         if isinstance(id, unicode):
@@ -103,15 +104,15 @@ def checkValidId(self, id, allow_dup=0):
         if obj is not None:
             # An object by the given id exists either in this
             # ObjectManager or in the acquisition path.
-            flags = getattr(obj, '__replaceable__', NOT_REPLACEABLE)
+            flags = getattr(obj, '__replaceable__', Globals.NOT_REPLACEABLE)
             if hasattr(aq_base(self), id):
                 # The object is located in this ObjectManager.
-                if not flags & REPLACEABLE:
+                if not flags & Globals.REPLACEABLE:
                     raise BadRequest, (
                         'The id "%s" is invalid - it is already in use.' % id)
                 # else the object is replaceable even if the UNIQUE
                 # flag is set.
-            elif flags & UNIQUE:
+            elif flags & Globals.UNIQUE:
                 raise BadRequest, ('The id "%s" is reserved.' % id)
     if id == 'REQUEST':
         raise BadRequest, 'REQUEST is a reserved name.'
@@ -133,15 +134,14 @@ class BreakoutException(Exception):
 _marker=[]
 
 
-class ObjectManager(
-    CopySupport.CopyContainer,
-    App.Management.Navigation,
-    App.Management.Tabs,
-    Acquisition.Implicit,
-    Persistent,
-    Collection,
-    Traversable,
-    ):
+class ObjectManager(CopyContainer,
+                    Navigation,
+                    Tabs,
+                    Implicit,
+                    Persistent,
+                    Collection,
+                    Traversable,
+                   ):
 
     """Generic object manager
 
@@ -210,6 +210,7 @@ class ObjectManager(
 
     def all_meta_types(self, interfaces=None):
         # A list of products registered elsewhere
+        import Products
         external_candidates = []
 
         # Look at _product_meta_types, if there is one
@@ -261,6 +262,7 @@ class ObjectManager(
         return meta_types
 
     def _subobject_permissions(self):
+        import Products
         Products_permissions = getattr(Products, '__ac_permissions__', ())
         return (Products_permissions +
                 self.aq_acquire('_getProductRegistryData')('ac_permissions')
@@ -359,7 +361,7 @@ class ObjectManager(
             notify(ObjectAddedEvent(ob, self, id))
             notifyContainerModified(self)
 
-        OFS.subscribers.compatibilityCall('manage_afterAdd', ob, ob, self)
+        compatibilityCall('manage_afterAdd', ob, ob, self)
 
         return id
 
@@ -385,7 +387,7 @@ class ObjectManager(
         """
         ob = self._getOb(id)
 
-        OFS.subscribers.compatibilityCall('manage_beforeDelete', ob, ob, self)
+        compatibilityCall('manage_beforeDelete', ob, ob, self)
 
         if not suppress_events:
             notify(ObjectWillBeRemovedEvent(ob, self, id))
@@ -503,7 +505,7 @@ class ObjectManager(
         return vals
 
 
-    manage_addProduct=App.FactoryDispatcher.ProductDispatcher()
+    manage_addProduct = ProductDispatcher()
 
     security.declareProtected(delete_objects, 'manage_delObjects')
     def manage_delObjects(self, ids=[], REQUEST=None):
@@ -577,8 +579,10 @@ class ObjectManager(
 
         if download:
             f=StringIO()
-            if toxml: XMLExportImport.exportXML(ob._p_jar, ob._p_oid, f)
-            else:     ob._p_jar.exportFile(ob._p_oid, f)
+            if toxml:
+                exportXML(ob._p_jar, ob._p_oid, f)
+            else:
+                ob._p_jar.exportFile(ob._p_oid, f)
             if RESPONSE is not None:
                 RESPONSE.setHeader('Content-type','application/data')
                 RESPONSE.setHeader('Content-Disposition',
@@ -588,7 +592,7 @@ class ObjectManager(
         cfg = getConfiguration()
         f = os.path.join(cfg.clienthome, '%s.%s' % (id, suffix))
         if toxml:
-            XMLExportImport.exportXML(ob._p_jar, ob._p_oid, f)
+            exportXML(ob._p_jar, ob._p_oid, f)
         else:
             ob._p_jar.exportFile(ob._p_oid, f)
 
@@ -673,7 +677,7 @@ class ObjectManager(
         # check to see if we are being acquiring or not
         ob=self
         while 1:
-            if App.Common.is_acquired(ob):
+            if is_acquired(ob):
                 raise ValueError('FTP List not supported on acquired objects')
             if not hasattr(ob,'aq_parent'):
                 break

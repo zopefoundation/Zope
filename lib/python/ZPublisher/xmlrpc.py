@@ -20,16 +20,18 @@ information about XML-RPC and Zope.
 """
 
 import re
-import sys, types
-from HTTPResponse import HTTPResponse
+import sys
+import types
 import xmlrpclib
 
 from zExceptions import Unauthorized
 from ZODB.POSException import ConflictError
 
+from ZPublisher.HTTPResponse import HTTPResponse
+
 # Make DateTime.DateTime marshallable via XML-RPC
 # http://www.zope.org/Collectors/Zope/2109
-from DateTime import DateTime
+from DateTime.DateTime import DateTime
 WRAPPERS = xmlrpclib.WRAPPERS + (DateTime,)
 
 def dump_instance(self, value, write):
@@ -167,8 +169,8 @@ class Response:
             remove = [r"<[^<>]*>", r"&[A-Za-z]+;"]
             for pat in remove:
                 vstr = re.sub(pat, " ", vstr)
-            from Globals import DevelopmentMode
-            if DevelopmentMode:
+            import Globals # for data
+            if Globals.DevelopmentMode:
                 from traceback import format_exception
                 value = '\n' + ''.join(format_exception(t, vstr, tb))
             else:

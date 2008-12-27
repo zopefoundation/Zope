@@ -56,7 +56,7 @@ class SetConfigTests(unittest.TestCase):
     def testClientHomeLegacySources(self):
         import os
         import App.FindHomes
-        import Globals
+        import Globals  # for data
         import __builtin__
         self.setconfig(clienthome='foo')
         self.assertEqual(os.environ.get('CLIENT_HOME'), 'foo')
@@ -67,7 +67,7 @@ class SetConfigTests(unittest.TestCase):
     def testInstanceHomeLegacySources(self):
         import os
         import App.FindHomes
-        import Globals
+        import Globals  # for data
         import __builtin__
         self.setconfig(instancehome='foo')
         self.assertEqual(os.environ.get('INSTANCE_HOME'), 'foo')
@@ -78,7 +78,7 @@ class SetConfigTests(unittest.TestCase):
     def testSoftwareHomeLegacySources(self):
         import os
         import App.FindHomes
-        import Globals
+        import Globals  # for data
         import __builtin__
         self.setconfig(softwarehome='foo')
         self.assertEqual(os.environ.get('SOFTWARE_HOME'), 'foo')
@@ -89,7 +89,7 @@ class SetConfigTests(unittest.TestCase):
     def testZopeHomeLegacySources(self):
         import os
         import App.FindHomes
-        import Globals
+        import Globals  # for data
         import __builtin__
         self.setconfig(zopehome='foo')
         self.assertEqual(os.environ.get('ZOPE_HOME'), 'foo')
@@ -98,7 +98,7 @@ class SetConfigTests(unittest.TestCase):
         self.assertEqual(Globals.ZOPE_HOME, 'foo')
 
     def testDebugModeLegacySources(self):
-        import Globals
+        import Globals  # for data
         self.setconfig(debug_mode=True)
         self.assertEqual(Globals.DevelopmentMode, True)
         self.setconfig(debug_mode=False)

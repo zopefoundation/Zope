@@ -57,8 +57,7 @@ class PageTemplateFile(SimpleItem, Script, PageTemplate, Traversable):
     func_code = FuncCode((), 0)
     _v_last_read = 0
 
-    # needed by App.class_init.default__class_init__, often imported
-    # using the alias Globals.InitializeClass
+    # needed by App.class_init.default__class_init__
     _need__name__ = 1
 
     _default_bindings = {'name_subpath': 'traverse_subpath'}
@@ -141,7 +140,7 @@ class PageTemplateFile(SimpleItem, Script, PageTemplate, Traversable):
         return self.__name__  # Don't reveal filesystem paths
 
     def _cook_check(self):
-        import Globals
+        import Globals  # for data
         if self._v_last_read and not Globals.DevelopmentMode:
             return
         __traceback_info__ = self.filename

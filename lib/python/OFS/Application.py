@@ -549,10 +549,12 @@ class AppInitializer:
         app = self.getApp()
         if app._getInitializerFlag('virtual_hosting'):
             return
-        if not app.objectIds('Virtual Host Monster') and not hasattr(app, 'virtual_hosting'):
-            from Products.SiteAccess.VirtualHostMonster import VirtualHostMonster
-            vhm=VirtualHostMonster()
-            vhm.id='virtual_hosting'
+        if (not app.objectIds('Virtual Host Monster') and
+            not hasattr(app, 'virtual_hosting')):
+            from Products.SiteAccess.VirtualHostMonster \
+                import VirtualHostMonster
+            vhm = VirtualHostMonster()
+            vhm.id = 'virtual_hosting'
             vhm.addToContainer(app)
             app._setInitializerFlag('virtual_hosting')
             self.commit('Added virtual_hosting')

@@ -247,7 +247,7 @@ class DebugManager(Fake, Item, Implicit):
                               'rc': n[1][0]}, rd)
 
     def dbconnections(self):
-        import Globals
+        import Globals  # for data
         return Globals.DB.connectionDebugInfo()
 
 

@@ -113,7 +113,8 @@ class Version(Persistent,Implicit,RoleManager,Item):
                   'alt': self.meta_type, 'title': self.meta_type},
                  {'path': 'misc_/PageTemplates/exclamation.gif',
                           'alt': 'Deprecated object',
-                          'title': 'Version objects are deprecated and should not be used anyore.'},)
+                          'title': 'Version objects are deprecated '
+                                   'and should not be used anyore.'},)
 
     security.declareProtected(change_versions, 'manage_edit')
     def manage_edit(self, title, REQUEST=None):
@@ -128,7 +129,7 @@ class Version(Persistent,Implicit,RoleManager,Item):
     def enter(self, REQUEST, RESPONSE):
         """Begin working in a version.
         """
-        import Globals
+        import Globals  # for data
         RESPONSE.setCookie(
             Globals.VersionNameName, self.cookie,
             path=(REQUEST['BASEPATH1'] or '/'),
@@ -148,7 +149,7 @@ class Version(Persistent,Implicit,RoleManager,Item):
     def leave(self, REQUEST, RESPONSE):
         """Temporarily stop working in a version
         """
-        import Globals
+        import Globals  # for data
         RESPONSE.setCookie(
             Globals.VersionNameName,'No longer active',
             expires="Mon, 25-Jan-1999 23:59:59 GMT",
@@ -234,14 +235,16 @@ class Version(Persistent,Implicit,RoleManager,Item):
             self.cookie='/'.join(self.getPhysicalPath())
 
     def manage_beforeDelete(self, item, container):
-        import Globals
+        import Globals  # for data
         if self.nonempty():
             raise VersionException(
                 'Attempt to %sdelete a non-empty version.<br />' %
                 ((self is not item) and 'indirectly ' or ''))
 
-        try: REQUEST=self.REQUEST
-        except: pass
+        try:
+            REQUEST=self.REQUEST
+        except:
+            pass
         else:
             v=self.cookie
             if REQUEST.get(Globals.VersionNameName, '') == v:
