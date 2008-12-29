@@ -27,7 +27,7 @@ from zope.publisher.interfaces.browser import IBrowserView
 from zope.publisher.interfaces.browser import IDefaultBrowserLayer
 from zope.viewlet import interfaces
 
-from App.class_init import default__class_init__ as initializeClass
+from App.class_init import InitializeClass
 from App.special_dtml import DTMLFile
 from Products.Five.security import protectClass
 from Products.Five.security import protectName
@@ -91,7 +91,7 @@ def viewletManagerDirective(
                 )
     _context.action(
         discriminator = ('five:initialize:class', new_class),
-        callable = initializeClass,
+        callable = InitializeClass,
         args = (new_class,)
         )
 
@@ -191,6 +191,6 @@ def viewletDirective(
                 )
     _context.action(
         discriminator = ('five:initialize:class', new_class),
-        callable = initializeClass,
+        callable = InitializeClass,
         args = (new_class,)
         )

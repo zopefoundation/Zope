@@ -15,7 +15,7 @@
 $Id$
 """
 
-import string, Products, Globals
+import string
 
 from Acquisition import aq_base
 
@@ -122,6 +122,7 @@ def registerPermissions(permissions, defaultDefault=('Manager',)):
     """Register an __ac_permissions__ sequence.
     """
     from App.class_init import ApplicationDefaultPermissions
+    import Products
     for setting in permissions:
         if _registerdPermission(setting[0]): continue
         if len(setting)==2:

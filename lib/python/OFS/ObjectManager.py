@@ -35,7 +35,7 @@ from AccessControl import getSecurityManager
 from AccessControl.ZopeSecurityPolicy import getRoles
 from Acquisition import aq_base
 from Acquisition import Implicit
-from App.class_init import default__class_init__ as InitializeClass
+from App.class_init import InitializeClass
 from App.Common import is_acquired
 from App.config import getConfiguration
 from App.Dialogs import MessageDialog

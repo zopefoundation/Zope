@@ -23,7 +23,7 @@ from Acquisition import Implicit
 from AccessControl import ClassSecurityInfo
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.Permissions import change_permissions
-from App.class_init import default__class_init__ as InitializeClass
+from App.class_init import InitializeClass
 from App.Dialogs import MessageDialog
 from App.special_dtml import DTMLFile
 from ExtensionClass import Base

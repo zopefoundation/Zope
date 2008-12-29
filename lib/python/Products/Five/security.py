@@ -15,19 +15,22 @@
 
 $Id$
 """
-from zope.component import queryUtility, getUtility
-from zope.interface import implements, classProvides
-from zope.security.interfaces import IInteraction, ISecurityPolicy
+from zope.component import getUtility
+from zope.component import queryUtility
+from zope.interface import classProvides
+from zope.interface import implements
+from zope.security.checker import CheckerPublic
+from zope.security.interfaces import IInteraction
+from zope.security.interfaces import ISecurityPolicy
 from zope.security.interfaces import IPermission
 from zope.security.management import thread_local
 from zope.security.simplepolicies import ParanoidSecurityPolicy
 
-from AccessControl import ClassSecurityInfo, getSecurityManager
-from App.class_init import default__class_init__ as initializeClass
+from AccessControl.SecurityInfo import ClassSecurityInfo
+from AccessControl.SecurityManagement import getSecurityManager
 
 CheckerPublicId = 'zope.Public'
 CheckerPrivateId = 'zope2.Private'
-from zope.security.checker import CheckerPublic
 
 def getSecurityInfo(klass):
     sec = {}

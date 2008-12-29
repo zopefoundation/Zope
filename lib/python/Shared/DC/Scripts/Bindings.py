@@ -23,7 +23,7 @@ from AccessControl.PermissionRole import _what_not_even_god_should_do
 from AccessControl.ZopeGuards import guarded_getattr
 from Acquisition import aq_parent
 from Acquisition import aq_inner
-from App.class_init import default__class_init__ as InitializeClass
+from App.class_init import InitializeClass
 from Persistence import Persistent
 
 defaultBindings = {'name_context': 'context',

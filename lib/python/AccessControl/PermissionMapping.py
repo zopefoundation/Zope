@@ -22,7 +22,7 @@ $Id$
 from cgi import escape
 
 from Acquisition import ImplicitAcquisitionWrapper
-from App.class_init import default__class_init__ as InitializeClass
+from App.class_init import InitializeClass
 from ExtensionClass import Base
 from zope.interface import implements
 

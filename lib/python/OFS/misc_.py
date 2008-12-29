@@ -12,7 +12,7 @@
 ##############################################################################
 
 from AccessControl.SecurityInfo import ClassSecurityInfo
-from App.class_init import default__class_init__ as InitializeClass
+from App.class_init import InitializeClass
 from App.ImageFile import ImageFile
 
 class misc_:

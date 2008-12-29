@@ -29,7 +29,7 @@ from AccessControl.SecurityManagement import getSecurityManager
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import setSecurityManager
 from AccessControl.SpecialUsers import nobody
-from App.class_init import default__class_init__ as InitializeClass
+from App.class_init import InitializeClass
 from App.special_dtml import HTMLFile
 from BTrees.Length import Length as BTreesLength
 from BTrees.OOBTree import OOBTree

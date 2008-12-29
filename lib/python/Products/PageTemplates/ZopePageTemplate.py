@@ -27,7 +27,7 @@ from AccessControl.ZopeGuards import safe_builtins
 from Acquisition import Acquired
 from Acquisition import Explicit
 from Acquisition import aq_get
-from App.class_init import default__class_init__ as InitializeClass
+from App.class_init import InitializeClass
 from App.Common import package_home
 from App.ImageFile import ImageFile
 from DateTime.DateTime import DateTime

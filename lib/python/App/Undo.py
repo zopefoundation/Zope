@@ -21,16 +21,14 @@ from Acquisition import aq_parent
 from AccessControl import getSecurityManager
 from AccessControl import ClassSecurityInfo
 from AccessControl.Permissions import undo_changes
+from App.class_init import InitializeClass
+from App.interfaces import IUndoSupport
+from App.special_dtml import DTMLFile
 from DateTime.DateTime import DateTime
 import ExtensionClass
 import transaction
 from ZopeUndo.Prefix import Prefix
 from zope.interface import implements
-
-from App.class_init import default__class_init__ as InitializeClass
-from App.interfaces import IUndoSupport
-from App.special_dtml import DTMLFile
-
 
 class UndoSupport(ExtensionClass.Base):
 

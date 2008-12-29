@@ -27,7 +27,7 @@ from Acquisition import aq_base
 from Acquisition import aq_inner
 from Acquisition import aq_parent
 from Acquisition.interfaces import IAcquirer
-from App.class_init import default__class_init__ as InitializeClass
+from App.class_init import InitializeClass
 from OFS.interfaces import ITraversable
 from zExceptions import NotFound
 from ZODB.POSException import ConflictError

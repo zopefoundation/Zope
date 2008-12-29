@@ -29,11 +29,12 @@ from AccessControl.Permissions import manage_zcatalog_indexes
 from AccessControl.Permissions import search_zcatalog
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Implicit
-from App.class_init import default__class_init__ as InitializeClass
+from App.class_init import InitializeClass
 from App.Dialogs import MessageDialog
 from App.special_dtml import DTMLFile
 from DateTime.DateTime import DateTime
-from DocumentTemplate.DT_Util import InstanceDict, TemplateDict
+from DocumentTemplate.DT_Util import InstanceDict
+from DocumentTemplate.DT_Util import TemplateDict
 from DocumentTemplate.DT_Util import Eval
 from OFS.Folder import Folder
 from OFS.ObjectManager import ObjectManager

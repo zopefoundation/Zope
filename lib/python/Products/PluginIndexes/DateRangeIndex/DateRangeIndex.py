@@ -18,7 +18,7 @@ $Id$
 import os
 
 from AccessControl.SecurityInfo import ClassSecurityInfo
-from App.class_init import default__class_init__ as InitializeClass
+from App.class_init import InitializeClass
 from App.Common import package_home
 from App.special_dtml import DTMLFile
 from BTrees.IIBTree import IISet

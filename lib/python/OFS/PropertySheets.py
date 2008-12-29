@@ -26,7 +26,7 @@ from AccessControl.SecurityManagement import getSecurityManager
 from Acquisition import aq_base
 from Acquisition import aq_parent
 from Acquisition import Implicit, Explicit
-from App.class_init import default__class_init__ as InitializeClass
+from App.class_init import InitializeClass
 from App.Common import iso8601_date
 from App.Common import rfc1123_date
 from App.Dialogs import MessageDialog

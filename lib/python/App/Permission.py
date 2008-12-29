@@ -20,7 +20,7 @@ from AccessControl.Permissions import define_permissions
 from AccessControl.Role import RoleManager
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Implicit
-from App.class_init import default__class_init__ as InitializeClass
+from App.class_init import InitializeClass
 from App.special_dtml import DTMLFile
 from ExtensionClass import Base
 from OFS.SimpleItem import Item

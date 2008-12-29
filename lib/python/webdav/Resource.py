@@ -32,7 +32,7 @@ from AccessControl.Permissions import webdav_access
 from Acquisition import aq_base
 from Acquisition import aq_inner
 from Acquisition import aq_parent
-from App.class_init import default__class_init__ as InitializeClass
+from App.class_init import InitializeClass
 from ExtensionClass import Base
 from OFS.event import ObjectClonedEvent
 from OFS.event import ObjectWillBeMovedEvent

@@ -31,7 +31,7 @@ from Acquisition import Implicit
 from Acquisition import aq_base
 from Acquisition import aq_parent
 from Acquisition import aq_inner
-from App.class_init import default__class_init__ as InitializeClass
+from App.class_init import InitializeClass
 from App.Dialogs import MessageDialog
 from App.Management import Tabs
 from App.special_dtml import DTMLFile

@@ -48,7 +48,7 @@ from AccessControl.Owned import UnownableOwner
 from AccessControl.Permissions import manage_zclasses
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.unauthorized import Unauthorized
-from App.class_init import default__class_init__ as InitializeClass
+from App.class_init import InitializeClass
 from App.special_dtml import DTMLFile
 from OFS.Folder import Folder
 

@@ -63,10 +63,10 @@ def stuff_Globals():
     Globals.Persistent = Persistent
     Globals.PersistentMapping = PersistentMapping
 
-    from App.class_init import default__class_init__
+    from App.class_init import InitializeClass
     from App.class_init import ApplicationDefaultPermissions
 
-    Globals.InitializeClass = default__class_init__
+    Globals.InitializeClass = InitializeClass
     Globals.ApplicationDefaultPermissions = ApplicationDefaultPermissions
 
     from App.special_dtml import HTML

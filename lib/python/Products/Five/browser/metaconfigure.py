@@ -47,7 +47,7 @@ from Products.Five.security import protectClass
 from Products.Five.security import protectName
 from Products.Five.security import CheckerPrivateId
 
-from App.class_init import default__class_init__ as initializeClass
+from App.class_init import InitializeClass
 
 def page(_context, name, permission, for_,
          layer=IDefaultBrowserLayer, template=None, class_=None,
@@ -158,7 +158,7 @@ def page(_context, name, permission, for_,
     # Protect the class
     _context.action(
         discriminator = ('five:initialize:class', new_class),
-        callable = initializeClass,
+        callable = InitializeClass,
         args = (new_class,)
         )
 
@@ -320,7 +320,7 @@ def resource(_context, name, layer=IDefaultBrowserLayer, permission='zope.Public
         )
     _context.action(
         discriminator = ('five:initialize:class', new_class),
-        callable = initializeClass,
+        callable = InitializeClass,
         args = (new_class,)
         )
 
@@ -388,7 +388,7 @@ def resourceDirectory(_context, name, directory, layer=IDefaultBrowserLayer,
             )
         _context.action(
             discriminator = ('five:initialize:class', new_class),
-            callable = initializeClass,
+            callable = InitializeClass,
             args = (new_class,)
             )
 

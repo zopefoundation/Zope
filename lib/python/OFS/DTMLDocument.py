@@ -20,7 +20,7 @@ from urllib import quote
 from AccessControl import getSecurityManager
 from AccessControl.Permissions import change_dtml_methods
 from AccessControl.Permissions import change_dtml_documents
-from App.class_init import default__class_init__ as InitializeClass
+from App.class_init import InitializeClass
 from App.Dialogs import MessageDialog
 from App.special_dtml import DTMLFile
 from App.special_dtml import HTML

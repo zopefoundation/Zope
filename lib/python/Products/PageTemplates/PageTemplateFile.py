@@ -16,7 +16,7 @@ from logging import getLogger
 
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.SecurityManagement import getSecurityManager
-from App.class_init import default__class_init__ as InitializeClass
+from App.class_init import InitializeClass
 from App.Common import package_home
 from App.special_dtml import DTMLFile
 from App.config import getConfiguration
@@ -57,7 +57,7 @@ class PageTemplateFile(SimpleItem, Script, PageTemplate, Traversable):
     func_code = FuncCode((), 0)
     _v_last_read = 0
 
-    # needed by App.class_init.default__class_init__
+    # needed by App.class_init.InitializeClass
     _need__name__ = 1
 
     _default_bindings = {'name_subpath': 'traverse_subpath'}

@@ -21,7 +21,7 @@ def test_InitializeClass():
     Check when the class has an ExtensionClass as attribute.
 
     >>> import ExtensionClass
-    >>> from App.class_init import default__class_init__ as InitializeClass
+    >>> from App.class_init import InitializeClass
     >>> class AnotherClass(ExtensionClass.Base):
     ...     _need__name__ = 1
 

@@ -19,7 +19,7 @@ from AccessControl.Permissions import create_class_instances
 from AccessControl.Role import gather_permissions
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import aq_base
-from App.class_init import default__class_init__ as InitializeClass
+from App.class_init import InitializeClass
 from App.FactoryDispatcher import FactoryDispatcher
 from App.ImageFile import ImageFile
 from App.special_dtml import DTMLFile

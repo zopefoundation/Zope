@@ -29,7 +29,7 @@ from AccessControl.Role import RoleManager
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Acquired
 from Acquisition import Explicit
-from App.class_init import default__class_init__ as InitializeClass
+from App.class_init import InitializeClass
 from App.Dialogs import MessageDialog
 from App.Extensions import getObject
 from App.Extensions import getPath

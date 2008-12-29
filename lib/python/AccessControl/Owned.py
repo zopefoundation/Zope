@@ -21,7 +21,7 @@ from Acquisition import aq_get
 from Acquisition import aq_inner
 from Acquisition import aq_parent
 from App.special_dtml import DTMLFile
-from App.class_init import default__class_init__ as InitializeClass
+from App.class_init import InitializeClass
 from ExtensionClass import Base
 from zope.interface import implements
 

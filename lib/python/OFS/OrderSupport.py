@@ -21,7 +21,7 @@ from AccessControl.Permissions import access_contents_information
 from AccessControl.Permissions import manage_properties
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import aq_base
-from App.class_init import default__class_init__ as InitializeClass
+from App.class_init import InitializeClass
 from DocumentTemplate.sequence import sort
 from zope.interface import implements
 from zope.app.container.contained import notifyContainerModified

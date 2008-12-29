@@ -15,7 +15,7 @@
 
 $Id$
 """
-from App.class_init import default__class_init__ as initializeClass
+from App.class_init import InitializeClass
 from ExtensionClass import Base
 
 import zope.component
@@ -60,7 +60,7 @@ def EditViewFactory(name, schema, label, permission, layer,
     # BaseFormDirective, that means that zope.Public has been
     # translated to the CheckerPublic object
     protectClass(class_, permission)
-    initializeClass(class_)
+    InitializeClass(class_)
 
 class FiveFormDirective(BaseFormDirective):
 
@@ -123,7 +123,7 @@ def AddViewFactory(name, schema, label, permission, layer,
     # BaseFormDirective, that means that zope.Public has been
     # translated to the CheckerPublic object
     protectClass(class_, permission)
-    initializeClass(class_)
+    InitializeClass(class_)
 
 class AddFormDirective(FiveFormDirective):
 

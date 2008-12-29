@@ -15,7 +15,7 @@
 
 $Id$
 """
-from App.class_init import default__class_init__ as InitializeClass
+from App.class_init import InitializeClass
 from OFS.SimpleItem import SimpleItem
 
 from zope.i18nmessageid import MessageFactory

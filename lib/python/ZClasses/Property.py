@@ -19,7 +19,7 @@ from AccessControl.Permissions import manage_zclasses
 from AccessControl.Permissions import manage_properties
 from AccessControl.Permissions import access_contents_information
 from AccessControl.SecurityInfo import ClassSecurityInfo
-from App.class_init import default__class_init__ as InitializeClass
+from App.class_init import InitializeClass
 from App.special_dtml import DTMLFile
 from OFS.ObjectManager import ObjectManager
 from OFS.PropertySheets import FixedSchema

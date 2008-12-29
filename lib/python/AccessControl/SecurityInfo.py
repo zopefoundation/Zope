@@ -311,5 +311,5 @@ def allow_class(Class):
     sec.declareObjectPublic()
     sec.setDefaultAccess(1)
     sec.apply(Class)
-    from App.class_init import default__class_init__ as InitializeClass
+    from App.class_init import InitializeClass
     InitializeClass(Class)

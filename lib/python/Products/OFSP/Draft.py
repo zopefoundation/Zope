@@ -13,7 +13,7 @@
 
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.User import UserFolder
-from App.class_init import default__class_init__ as InitializeClass
+from App.class_init import InitializeClass
 from App.special_dtml import HTMLFile
 from Acquisition import Implicit
 from OFS.SimpleItem import Item

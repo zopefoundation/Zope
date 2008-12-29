@@ -20,7 +20,7 @@ import time
 
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Explicit
-from App.class_init import default__class_init__ as InitializeClass
+from App.class_init import InitializeClass
 from App.Common import package_home
 from App.Common import rfc1123_date
 from App.config import getConfiguration

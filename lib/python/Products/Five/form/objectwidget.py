@@ -20,8 +20,8 @@ the widget's sub-editform.
 
 $Id$
 """
-from AccessControl import ClassSecurityInfo
-from App.class_init import default__class_init__ as InitializeClass
+from AccessControl.SecurityInfo import ClassSecurityInfo
+from App.class_init import InitializeClass
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.app.form.browser.objectwidget import ObjectWidget as OWBase
 from zope.app.form.browser.objectwidget import ObjectWidgetView as OWVBase

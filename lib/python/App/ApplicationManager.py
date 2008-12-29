@@ -25,7 +25,7 @@ from AccessControl.requestmethod import requestmethod
 from AccessControl.SecurityManagement import getSecurityManager
 from Acquisition import Implicit
 from App.CacheManager import CacheManager
-from App.class_init import default__class_init__ as InitializeClass
+from App.class_init import InitializeClass
 from App.config import getConfiguration
 from App.DavLockManager import DavLockManager
 from App.Dialogs import MessageDialog

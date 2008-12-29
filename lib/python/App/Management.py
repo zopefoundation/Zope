@@ -23,15 +23,15 @@ from zope.interface import implements
 from AccessControl import getSecurityManager, Unauthorized
 from AccessControl import ClassSecurityInfo
 from AccessControl.Permissions import view_management_screens
-import ExtensionClass
-from zExceptions import Redirect
-
-from App.class_init import default__class_init__ as InitializeClass
+from App.class_init import InitializeClass
 from App.interfaces import INavigation
 from App.special_dtml import HTMLFile
 from App.special_dtml import DTMLFile
+from ExtensionClass import Base
+from zExceptions import Redirect
 
-class Tabs(ExtensionClass.Base):
+
+class Tabs(Base):
     """Mix-in provides management folder tab support."""
 
     security = ClassSecurityInfo()
@@ -161,7 +161,7 @@ class Tabs(ExtensionClass.Base):
 InitializeClass(Tabs)
 
 
-class Navigation(ExtensionClass.Base):
+class Navigation(Base):
     """Basic navigation UI support"""
 
     implements(INavigation)

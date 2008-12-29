@@ -22,7 +22,7 @@ from urllib import quote
 
 from AccessControl.Permissions import view_management_screens
 from AccessControl.SecurityInfo import ClassSecurityInfo
-from App.class_init import default__class_init__ as InitializeClass
+from App.class_init import InitializeClass
 from App.special_dtml import DTMLFile
 from DocumentTemplate.DT_Util import TemplateDict
 from OFS.SimpleItem import SimpleItem

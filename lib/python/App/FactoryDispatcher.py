@@ -22,7 +22,7 @@ from AccessControl.Owned import UnownableOwner
 from Acquisition import Acquired
 from Acquisition import aq_base
 from Acquisition import Implicit
-from App.class_init import default__class_init__ as InitializeClass
+from App.class_init import InitializeClass
 
 def _product_packages():
     """Returns all product packages including the regularly defined

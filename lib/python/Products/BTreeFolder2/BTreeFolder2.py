@@ -27,7 +27,7 @@ from AccessControl.SecurityManagement import getSecurityManager
 from AccessControl.Permissions import access_contents_information
 from AccessControl.Permissions import view_management_screens
 from Acquisition import aq_base
-from App.class_init import default__class_init__ as InitializeClass
+from App.class_init import InitializeClass
 from App.special_dtml import DTMLFile
 from BTrees.Length import Length
 from BTrees.OIBTree import OIBTree

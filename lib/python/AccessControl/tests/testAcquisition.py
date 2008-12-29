@@ -25,7 +25,7 @@ import Zope2
 Zope2.startup()
 
 from OFS.SimpleItem import SimpleItem
-from App.class_init import default__class_init__ as InitializeClass
+from App.class_init import InitializeClass
 from AccessControl import ClassSecurityInfo
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager

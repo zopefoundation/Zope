@@ -21,7 +21,7 @@ import ZODB
 import transaction
 from Acquisition import Implicit
 from AccessControl import ClassSecurityInfo
-from App.class_init import default__class_init__ as InitializeClass
+from App.class_init import InitializeClass
 from OFS.ObjectManager import ObjectManager
 from OFS.Folder import Folder
 

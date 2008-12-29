@@ -29,7 +29,7 @@ from AccessControl import ClassSecurityInfo
 from AccessControl.User import UserFolder
 from Acquisition import aq_base
 from App.ApplicationManager import ApplicationManager
-from App.class_init import default__class_init__ as InitializeClass
+from App.class_init import InitializeClass
 from App.class_init import ApplicationDefaultPermissions
 from App.config import getConfiguration
 from App.Product import doInstall

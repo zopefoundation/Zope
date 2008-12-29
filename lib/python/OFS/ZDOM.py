@@ -21,7 +21,7 @@ from Acquisition import Explicit
 from Acquisition import Implicit
 from Acquisition import aq_base
 from Acquisition import aq_parent
-from App.class_init import default__class_init__ as InitializeClass
+from App.class_init import InitializeClass
 
 
 # Node type codes

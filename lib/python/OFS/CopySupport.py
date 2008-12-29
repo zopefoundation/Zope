@@ -36,7 +36,7 @@ from AccessControl.Permissions import delete_objects
 from Acquisition import aq_base
 from Acquisition import aq_inner
 from Acquisition import aq_parent
-from App.class_init import default__class_init__ as InitializeClass
+from App.class_init import InitializeClass
 from App.Dialogs import MessageDialog
 from App.special_dtml import HTML
 from App.special_dtml import HTMLFile

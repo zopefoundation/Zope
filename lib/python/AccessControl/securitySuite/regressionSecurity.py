@@ -23,7 +23,7 @@ from AccessControl.User import nobody
 from AccessControl.securitySuite import SecurityBase
 from OFS.Folder import Folder
 from OFS.SimpleItem  import SimpleItem
-from App.class_init import default__class_init__ as InitializeClass
+from App.class_init import InitializeClass
 
 
 # let's define some permissions first

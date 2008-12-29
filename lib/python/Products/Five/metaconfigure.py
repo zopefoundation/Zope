@@ -18,7 +18,8 @@ $Id$
 import warnings
 from zope.configuration.exceptions import ConfigurationError
 from zope.app.component import contentdirective
-from Products.Five.security import protectName, initializeClass
+from App.class_init import InitializeClass
+from Products.Five.security import protectName
 
 class ClassDirective(contentdirective.ClassDirective):
 
@@ -41,6 +42,6 @@ class ClassDirective(contentdirective.ClassDirective):
     def __call__(self):
         return self.__context.action(
             discriminator = None,
-            callable = initializeClass,
+            callable = InitializeClass,
             args = (self.__class,)
             )

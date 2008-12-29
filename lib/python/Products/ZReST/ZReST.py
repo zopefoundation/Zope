@@ -17,7 +17,7 @@ import sys
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.SecurityInfo import ModuleSecurityInfo
 from Acquisition import Implicit
-from App.class_init import default__class_init__ as InitializeClass
+from App.class_init import InitializeClass
 from App.config import getConfiguration 
 from App.special_dtml import DTMLFile
 from DateTime.DateTime import DateTime

@@ -166,7 +166,7 @@ def installProduct(name, quiet=0):
 
 def _installProduct(name, quiet=0):
     '''Installs a Zope product.'''
-    from App.class_init import default__class_init__ as InitializeClass
+    from App.class_init import InitializeClass
     start = time.time()
     meta_types = []
     if _patched and not _installedProducts.has_key(name):
