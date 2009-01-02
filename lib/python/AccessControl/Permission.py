@@ -136,3 +136,7 @@ def registerPermissions(permissions, defaultDefault=('Manager',)):
         if not hasattr(Globals.ApplicationDefaultPermissions, mangled):
             setattr(Globals.ApplicationDefaultPermissions,
                     mangled, default)
+
+class ApplicationDefaultPermissions:
+    _View_Permission = ('Manager', 'Anonymous')
+    _Access_contents_information_Permission = ('Manager', 'Anonymous')
