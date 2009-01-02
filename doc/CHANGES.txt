@@ -6,6 +6,13 @@ Zope Changes
 
   Zope 2.11.3 (unreleased)
 
+    Restructuring
+
+      - Moved 'ApplicationDefaultPermissiosn' from 'App.class_init' to
+        'AccessControl.Permissions', in order to break an import cycle
+        in third-party code which avoids imports from 'Globals.'  Left
+        the class importable from its old location without deprecation.
+
     Bugs Fixed
 
       - Products.PluginIndexes.PathIndex:  backported doc fixes /
