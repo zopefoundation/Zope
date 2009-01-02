@@ -8,6 +8,9 @@ Zope Changes
 
     Bugs fixed
 
+      - Products.PluginIndexes.PathIndex:  backported doc fixes /
+        optiimizations from trunk (and ExtendedPathIndex).
+
       - Launchpad #174705:  ensure that the error info object exposed to a
         'tal:on_error' handler has attributes visible to restricted code.
 
