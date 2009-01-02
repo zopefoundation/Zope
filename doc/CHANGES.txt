@@ -8,6 +8,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Products.PluginIndexes.PathIndex:  backported doc fixes /
+        optiimizations from trunk (and ExtendedPathIndex).
+
       - Updated 'pytz' from '2007f' to '2008i'.
 
       - Moved svn:externals for 'mechanize', 'ClientPath', and 'pytz' to
