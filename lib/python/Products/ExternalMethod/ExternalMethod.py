@@ -10,24 +10,35 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-
 """External Method Product
 
 This product provides support for external methods, which allow
 domain-specific customization of web environments.
 """
 __version__='$Revision: 1.52 $'[11:-2]
-from Globals import Persistent, DTMLFile, MessageDialog, HTML
-import OFS.SimpleItem, Acquisition
-from Globals import InitializeClass
-from AccessControl import ClassSecurityInfo
+
+import os
+import stat
+import sys
+import traceback
+
 from AccessControl.Permissions import change_external_methods
 from AccessControl.Permissions import view_management_screens
 from AccessControl.Permissions import view as View
-import AccessControl.Role, sys, os, stat, traceback
+from AccessControl.Role import RoleManager
+from AccessControl.SecurityInfo import ClassSecurityInfo
+from Acquisition import Acquired
+from Acquisition import Explicit
+from App.class_init import InitializeClass
+from App.Dialogs import MessageDialog
+from App.Extensions import getObject
+from App.Extensions import getPath
+from App.Extensions import FuncCode
+from App.special_dtml import DTMLFile
+from App.special_dtml import HTML
+from OFS.SimpleItem import Item
 from OFS.SimpleItem import pretty_tb
-from App.Extensions import getObject, getPath, FuncCode
-from Globals import DevelopmentMode
+from Persistence import Persistent
 from App.Management import Navigation
 from ComputedAttribute import ComputedAttribute
 
@@ -66,8 +77,8 @@ def manage_addExternalMethod(self, id, title, module, function, REQUEST=None):
     if REQUEST is not None:
         return self.manage_main(self,REQUEST)
 
-class ExternalMethod(OFS.SimpleItem.Item, Persistent, Acquisition.Explicit,
-                     AccessControl.Role.RoleManager, Navigation):
+class ExternalMethod(Item, Persistent, Explicit,
+                     RoleManager, Navigation):
     """Web-callable functions that encapsulate external python functions.
 
     The function is defined in an external file.  This file is treated
@@ -93,9 +104,9 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, Acquisition.Explicit,
     func_code = ComputedAttribute(lambda self: self.getFuncCode())
 
 
-    ZopeTime=Acquisition.Acquired
-    HelpSys=Acquisition.Acquired
-    manage_page_header=Acquisition.Acquired
+    ZopeTime = Acquired
+    HelpSys = Acquired
+    manage_page_header = Acquired
 
     manage_options=(
         (
@@ -104,8 +115,8 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, Acquisition.Explicit,
         {'label':'Test', 'action':'',
          'help':('ExternalMethod','External-Method_Try-It.stx')},
         )
-        +OFS.SimpleItem.Item.manage_options
-        +AccessControl.Role.RoleManager.manage_options
+        + Item.manage_options
+        + RoleManager.manage_options
         )
 
     def __init__(self, id, title, module, function):
@@ -162,30 +173,21 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, Acquisition.Explicit,
             self._v_f=self.getFunction(1)
             self._v_last_read=ts
 
-    if DevelopmentMode:
-        # In development mode we do an automatic reload
-        # if the module code changed
-        def getFuncDefaults(self):
+    def getFuncDefaults(self):
+        import Globals  # for data
+        if Globals.DevelopmentMode:
             self.reloadIfChanged()
-            if not hasattr(self, '_v_func_defaults'):
-                self._v_f = self.getFunction()
-            return self._v_func_defaults
+        if not hasattr(self, '_v_func_defaults'):
+            self._v_f = self.getFunction()
+        return self._v_func_defaults
 
-        def getFuncCode(self):
+    def getFuncCode(self):
+        import Globals  # for data
+        if Globals.DevelopmentMode:
             self.reloadIfChanged()
-            if not hasattr(self, '_v_func_code'):
-                self._v_f = self.getFunction()
-            return self._v_func_code
-    else:
-        def getFuncDefaults(self):
-            if not hasattr(self, '_v_func_defaults'):
-                self._v_f = self.getFunction()
-            return self._v_func_defaults
-
-        def getFuncCode(self):
-            if not hasattr(self, '_v_func_code'):
-                self._v_f = self.getFunction()
-            return self._v_func_code
+        if not hasattr(self, '_v_func_code'):
+            self._v_f = self.getFunction()
+        return self._v_func_code
 
     security.declareProtected(View, '__call__')
     def __call__(self, *args, **kw):
@@ -206,6 +208,7 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, Acquisition.Explicit,
         In this case, the URL parent of the object is supplied as the
         first argument.
         """
+        import Globals  # for data
 
         filePath = self.filepath()
         if filePath==None:
@@ -218,7 +221,7 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, Acquisition.Explicit,
                 "external method could not be called " \
                 "because the file does not exist"
 
-        if DevelopmentMode:
+        if Globals.DevelopmentMode:
             self.reloadIfChanged()
 
         if hasattr(self, '_v_f'):

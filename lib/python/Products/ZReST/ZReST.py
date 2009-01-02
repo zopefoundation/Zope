@@ -8,20 +8,24 @@ and a HTML "formatted" version of that text.
 
 '''
 
+import docutils.core
+import docutils.io
+from docutils.writers.html4css1 import HTMLTranslator
+from docutils.writers.html4css1 import Writer
 import sys
-import docutils.core, docutils.io
-from docutils.writers.html4css1 import HTMLTranslator, Writer
 
+from AccessControl.SecurityInfo import ClassSecurityInfo
+from AccessControl.SecurityInfo import ModuleSecurityInfo
 from Acquisition import Implicit
-from Persistence import Persistent
+from App.class_init import InitializeClass
+from App.config import getConfiguration 
+from App.special_dtml import DTMLFile
+from DateTime.DateTime import DateTime
 from OFS.SimpleItem import Item
 from OFS.PropertyManager import PropertyManager
-from OFS.History import Historical, html_diff
-from Globals import InitializeClass, DTMLFile
-from AccessControl import ClassSecurityInfo
-from AccessControl import ModuleSecurityInfo
-from DateTime.DateTime import DateTime
-from App.config import getConfiguration 
+from OFS.History import Historical
+from OFS.History import html_diff
+from Persistence import Persistent
 
 modulesecurity = ModuleSecurityInfo()
 

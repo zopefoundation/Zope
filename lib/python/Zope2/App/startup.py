@@ -30,7 +30,6 @@ import transaction
 import AccessControl.User
 import App.FindHomes
 import ExtensionClass
-import Globals
 import imp
 import logging
 import OFS.Application
@@ -47,7 +46,12 @@ from zope.app import appsetup
 app = None
 startup_time = asctime()
 
+
 def startup():
+    from App.PersistentExtra import patchPersistent
+    import Globals  # to set / fetch data
+    patchPersistent()
+
     global app
 
     # Import products
@@ -92,7 +96,7 @@ def startup():
     Zope2.DB = DB
 
     # Hook for providing multiple transaction object manager undo support:
-    Globals.UndoManager=DB
+    Globals.UndoManager = DB
 
     Globals.opened.append(DB)
     import ClassFactory
@@ -130,6 +134,7 @@ def startup():
 
 
 def validated_hook(request, user):
+    import Globals # to fetch data
     newSecurityManager(request, user)
     version = request.get(Globals.VersionNameName, '')
     if version:
@@ -143,7 +148,6 @@ def validated_hook(request, user):
                 )
             Zope2.DB.removeVersionPool(version)
             raise Unauthorized, "You don't have permission to enter versions."
-
 
 
 class RequestContainer(ExtensionClass.Base):

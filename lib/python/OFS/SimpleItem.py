@@ -21,42 +21,59 @@ $Id$
 """
 
 import inspect
+import marshal
+import re
+import sys
+import time
 import warnings
-import marshal, re, sys, time
 
-import AccessControl.Role, AccessControl.Owned, App.Common
-import Globals, App.Management, Acquisition, App.Undo
-from Globals import InitializeClass
-from AccessControl import ClassSecurityInfo
-from AccessControl import getSecurityManager, Unauthorized
+from AccessControl.SecurityInfo import ClassSecurityInfo
+from AccessControl.SecurityManagement import getSecurityManager
+from AccessControl.Owned import Owned
 from AccessControl.Permissions import view as View
+from AccessControl.Role import RoleManager
+from AccessControl.unauthorized import Unauthorized
 from AccessControl.ZopeSecurityPolicy import getRoles
-from Acquisition import aq_base, aq_parent, aq_inner, aq_acquire
+from Acquisition import Acquired
+from Acquisition import aq_acquire
+from Acquisition import aq_base
+from Acquisition import aq_inner
+from Acquisition import aq_parent
+from Acquisition import Implicit
+from App.Management import Tabs
+from App.class_init import InitializeClass
+from App.special_dtml import HTML
+from App.special_dtml import DTMLFile
+from App.Undo import UndoSupport
 from ComputedAttribute import ComputedAttribute
 from DocumentTemplate.html_quote import html_quote
 from DocumentTemplate.ustr import ustr
 from ExtensionClass import Base
+from Persistence import Persistent
 from webdav.Resource import Resource
-from zExceptions import Redirect, upgradeException
+from zExceptions import Redirect
+from zExceptions import upgradeException
 from zExceptions.ExceptionFormatter import format_exception
 from zope.interface import implements
 
-import ZDOM
-from CopySupport import CopySource
-from interfaces import IItem
-from interfaces import IItemWithName
-from interfaces import ISimpleItem
-from Traversable import Traversable
-
-HTML=Globals.HTML
+from OFS.interfaces import IItem
+from OFS.interfaces import IItemWithName
+from OFS.interfaces import ISimpleItem
+from OFS.CopySupport import CopySource
+from OFS.Traversable import Traversable
+from OFS.ZDOM import Element
 
 import logging
 logger = logging.getLogger()
 
-class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
-           ZDOM.Element,
-           AccessControl.Owned.Owned,
-           App.Undo.UndoSupport,
+class Item(Base,
+           Resource,
+           CopySource,
+           Tabs,
+           Traversable,
+           Element,
+           Owned,
+           UndoSupport,
            ):
     """A common base class for simple, non-container objects."""
 
@@ -115,14 +132,14 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
     __propsets__=()
 
     manage_options=(
-        App.Undo.UndoSupport.manage_options
-        +AccessControl.Owned.Owned.manage_options
-        +({'label': 'Interfaces',
-           'action': 'manage_interfaces'},)
+        UndoSupport.manage_options
+        + Owned.manage_options
+        + ({'label': 'Interfaces',
+            'action': 'manage_interfaces'},)
         )
 
     # Attributes that must be acquired
-    REQUEST=Acquisition.Acquired
+    REQUEST = Acquired
 
     # Allow (reluctantly) access to unprotected attributes
     __allow_access_to_unprotected_subobjects__=1
@@ -159,7 +176,7 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
         # My sub-objects as used by the tree tag
         return ()
 
-    _manage_editedDialog=Globals.DTMLFile('dtml/editedDialog', globals())
+    _manage_editedDialog = DTMLFile('dtml/editedDialog', globals())
     def manage_editedDialog(self, REQUEST, **args):
         return apply(self._manage_editedDialog,(self, REQUEST), args)
 
@@ -358,10 +375,11 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
         In the case of non-Foldoid objects, the listing should contain one
         object, the object itself.
         """
+        from App.Common import is_acquired
         # check to see if we are being acquiring or not
         ob=self
         while 1:
-            if App.Common.is_acquired(ob):
+            if is_acquired(ob):
                 raise ValueError('FTP List not supported on acquired objects')
             if not hasattr(ob,'aq_parent'):
                 break
@@ -449,9 +467,10 @@ def pretty_tb(t, v, tb, as_html=1):
     return tb
 
 
-class SimpleItem(Item, Globals.Persistent,
-                 Acquisition.Implicit,
-                 AccessControl.Role.RoleManager,
+class SimpleItem(Item,
+                 Persistent,
+                 Implicit,
+                 RoleManager,
                  ):
 
     # Blue-plate special, Zope Masala

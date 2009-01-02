@@ -13,15 +13,19 @@
 
 __version__ = "$Revision: 1.8 $"[11:-2]
 
-import OFS, Acquisition, Globals
-from Globals import InitializeClass
-from AccessControl import getSecurityManager, ClassSecurityInfo
+from AccessControl.SecurityInfo import ClassSecurityInfo
+from AccessControl.SecurityManagement import getSecurityManager
+from Acquisition import aq_base
+from Acquisition import Implicit
+from App.class_init import InitializeClass
+from App.special_dtml import DTMLFile
+from OFS.SimpleItem import Item
 from webdav.Lockable import wl_isLocked
 
-class DavLockManager(OFS.SimpleItem.Item, Acquisition.Implicit):
-    id           = 'DavLockManager'
+class DavLockManager(Item, Implicit):
+    id = 'DavLockManager'
     name = title = 'WebDAV Lock Manager'
-    meta_type    = 'WebDAV Lock Manager'
+    meta_type = 'WebDAV Lock Manager'
     icon = 'p_/davlocked'
 
     security = ClassSecurityInfo()
@@ -30,7 +34,7 @@ class DavLockManager(OFS.SimpleItem.Item, Acquisition.Implicit):
                               'manage_unlockObjects')
     security.declarePrivate('unlockObjects')
 
-    manage_davlocks=manage_main=manage=Globals.DTMLFile(
+    manage_davlocks = manage_main = manage = DTMLFile(
         'dtml/davLockManager', globals())
     manage_davlocks._setName('manage_davlocks')
 
@@ -78,7 +82,7 @@ class DavLockManager(OFS.SimpleItem.Item, Acquisition.Implicit):
 
         if result is None:
             result = []
-        base = Acquisition.aq_base(obj)
+        base = aq_base(obj)
         if not hasattr(base, 'objectItems'):
             return result
         try: items = obj.objectItems()
@@ -90,7 +94,7 @@ class DavLockManager(OFS.SimpleItem.Item, Acquisition.Implicit):
             else: p = id
 
             dflag = hasattr(ob, '_p_changed') and (ob._p_changed == None)
-            bs = Acquisition.aq_base(ob)
+            bs = aq_base(ob)
             if wl_isLocked(ob):
                 li = []
                 addlockinfo = li.append

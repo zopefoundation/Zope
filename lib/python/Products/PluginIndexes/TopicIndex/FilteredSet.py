@@ -14,14 +14,13 @@
 
 $Id$
 """
-
-import sys
 from logging import getLogger
+import sys
 
-from ZODB.POSException import ConflictError
 from BTrees.IIBTree import IITreeSet
 from Persistence import Persistent
 from RestrictedPython.Eval import RestrictionCapableEval
+from ZODB.POSException import ConflictError
 from zope.interface import implements
 
 from Products.PluginIndexes.interfaces import IFilteredSet

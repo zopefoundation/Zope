@@ -2,16 +2,21 @@
 
 Defines the Traverser base class and SiteRoot class
 """
-
-from Globals import DTMLFile, MessageDialog, Persistent
-from OFS.SimpleItem import Item
-from Acquisition import Implicit, ImplicitAcquisitionWrapper
-from ExtensionClass import Base
-from ZPublisher import BeforeTraverse
-import os
 from cgi import escape
+import os
 
-from AccessRule import _swallow
+from Acquisition import Implicit
+from Acquisition import ImplicitAcquisitionWrapper
+from App.Dialogs import MessageDialog
+from App.special_dtml import DTMLFile
+from ExtensionClass import Base
+from OFS.SimpleItem import Item
+from Persistence import Persistent
+from ZPublisher.BeforeTraverse import NameCaller
+from ZPublisher.BeforeTraverse import registerBeforeTraverse
+from ZPublisher.BeforeTraverse import unregisterBeforeTraverse
+
+from Products.SiteAccess.AccessRule import _swallow
 
 SUPPRESS_SITEROOT = os.environ.has_key('SUPPRESS_SITEROOT')
 
@@ -44,7 +49,7 @@ class Traverser(Persistent, Item):
 
     def manage_beforeDelete(self, item, container):
         if item is self:
-            BeforeTraverse.unregisterBeforeTraverse(container, self.meta_type)
+            unregisterBeforeTraverse(container, self.meta_type)
 
     def manage_afterAdd(self, item, container):
         if item is self:
@@ -53,8 +58,8 @@ class Traverser(Persistent, Item):
 
             # We want the original object, not stuff in between
             container = container.this()
-            hook = BeforeTraverse.NameCaller(id)
-            BeforeTraverse.registerBeforeTraverse(container, hook,
+            hook = NameCaller(id)
+            registerBeforeTraverse(container, hook,
                                                   self.meta_type,
                                                   self.priority)
     def _setId(self, id):

@@ -17,21 +17,22 @@ Accelerated HTTP cache manager --
 
 $Id$
 '''
-
-from OFS.Cache import Cache, CacheManager
-from OFS.SimpleItem import SimpleItem
+from cgi import escape
+import httplib
 import logging
 import socket
 import time
-from Globals import InitializeClass
-from Globals import DTMLFile
-from AccessControl import ClassSecurityInfo
-from AccessControl.Permissions import view_management_screens
-import urlparse, httplib
-from cgi import escape
 from urllib import quote
-from App.Common import rfc1123_date
+import urlparse
 
+from AccessControl.Permissions import view_management_screens
+from AccessControl.SecurityInfo import ClassSecurityInfo
+from App.Common import rfc1123_date
+from App.class_init import InitializeClass
+from App.special_dtml import DTMLFile
+from OFS.Cache import Cache
+from OFS.Cache import CacheManager
+from OFS.SimpleItem import SimpleItem
 
 logger = logging.getLogger('Zope.AcceleratedHTTPCacheManager')
 

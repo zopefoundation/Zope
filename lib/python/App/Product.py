@@ -34,25 +34,26 @@
 #   on restart if there is still a product directory.
 
 
-import os, re, zlib, marshal, cPickle
 from cgi import escape
+import cPickle
+import marshal
+import os
+import re
 from urllib import quote
+import zlib
 
 import transaction
 
-import Globals, OFS.Folder, OFS.SimpleItem,  Acquisition, Products
-from Globals import InitializeClass
-import AccessControl.Owned
-from OFS.Folder import Folder
-from HelpSys.HelpSys import ProductHelp
-from AccessControl import Unauthorized
-from AccessControl import ClassSecurityInfo
+from AccessControl.Owned import UnownableOwner
 from AccessControl.Permissions import manage_zclasses
+from AccessControl.SecurityInfo import ClassSecurityInfo
+from AccessControl.unauthorized import Unauthorized
+from App.class_init import InitializeClass
+from App.special_dtml import DTMLFile
+from OFS.Folder import Folder
 
-from Factory import Factory
-from Permission import PermissionManager
-import RefreshFuncs
-from App.config import getConfiguration
+from App.Factory import Factory
+from App.Permission import PermissionManager
 
 # BBB: ZClasses are deprecated but we don't want the warning to appear here
 import warnings
@@ -69,23 +70,25 @@ finally:
 class ProductFolder(Folder):
     "Manage a collection of Products"
 
-    id        ='Products'
-    name=title='Product Management'
-    meta_type ='Product Management'
-    icon='p_/ProductFolder_icon'
+    id = 'Products'
+    name = title = 'Product Management'
+    meta_type = 'Product Management'
+    icon = 'p_/ProductFolder_icon'
 
     all_meta_types={'name': 'Product', 'action': 'manage_addProductForm',
                     'permission': manage_zclasses},
-    meta_types=all_meta_types
+    meta_types = all_meta_types
 
     # This prevents subobjects from being owned!
-    _owner=AccessControl.Owned.UnownableOwner
+    _owner = UnownableOwner
 
-    def _product(self, name): return getattr(self, name)
+    def _product(self, name):
+        return getattr(self, name)
 
-    manage_addProductForm=Globals.DTMLFile('dtml/addProduct',globals())
+    manage_addProductForm = DTMLFile('dtml/addProduct', globals())
     def manage_addProduct(self, id, title, REQUEST=None):
-        ' '
+        """ Create a product.
+        """
         i=Product(id, title)
         self._setObject(id,i)
         if REQUEST is not None:
@@ -132,7 +135,8 @@ class Product(Folder, PermissionManager):
 
 
     meta_types=(
-        ZClasses.meta_types+PermissionManager.meta_types+
+        ZClasses.meta_types +
+        PermissionManager.meta_types +
         (
             {
                 'name': Factory.meta_type,
@@ -146,23 +150,23 @@ class Product(Folder, PermissionManager):
     manage_subclassableClassNames=ZClasses.methods[
         'manage_subclassableClassNames']
 
-    manage_options=(
+    manage_options = (
         (Folder.manage_options[0],) +
         tuple(Folder.manage_options[2:]) 
         )
 
-    _properties=Folder._properties+(
+    _properties = Folder._properties+(
         {'id':'version', 'type': 'string'},
         )
 
     _reserved_names=('Help',)
 
-    manage_addPrincipiaFactoryForm=Globals.DTMLFile(
-        'dtml/addFactory',globals())
+    manage_addPrincipiaFactoryForm = DTMLFile('dtml/addFactory', globals())
     def manage_addPrincipiaFactory(
         self, id, title, object_type, initial, permission=None, REQUEST=None):
-        ' '
-        i=Factory(id, title, object_type, initial, permission)
+        """ Add a ZClass factory
+        """
+        i = Factory(id, title, object_type, initial, permission)
         self._setObject(id,i)
         factory = self._getOb(id)
         factory.initializePermission()
@@ -172,14 +176,6 @@ class Product(Folder, PermissionManager):
     def __init__(self, id, title):
         self.id=id
         self.title=title
-
-        # Workaround for unknown problem with help system and PluginIndexes product
-        # NEEDS to be fixed for 2.4 ! (ajung)
-
-        try:
-            self._setObject('Help', ProductHelp('Help', id))
-        except:
-            pass
 
     security.declarePublic('Destination')
     def Destination(self):
@@ -192,8 +188,8 @@ class Product(Folder, PermissionManager):
         return self.REQUEST['BASE4']
 
 
-    manage_traceback=Globals.DTMLFile('dtml/traceback',globals())
-    manage_readme=Globals.DTMLFile('dtml/readme',globals())
+    manage_traceback = DTMLFile('dtml/traceback', globals())
+    manage_readme = DTMLFile('dtml/readme', globals())
     def manage_get_product_readme__(self):
         for name in ('README.txt', 'README.TXT', 'readme.txt'):
             path = os.path.join(self.home, name)
@@ -208,21 +204,19 @@ class Product(Folder, PermissionManager):
         return self.id
 
     def getProductHelp(self):
+        """Returns the ProductHelp object associated with the Product.
         """
-        Returns the ProductHelp object associated
-        with the Product.
-        """
-        if not hasattr(self, 'Help'):
-            self._setObject('Help', ProductHelp('Help', self.id))
-        return self.Help
+        from HelpSys.HelpSys import ProductHelp
+        return ProductHelp('Help', self.id).__of__(self)
 
     #
     # Product refresh
     #
 
-    _refresh_dtml = Globals.DTMLFile('dtml/refresh', globals())
+    _refresh_dtml = DTMLFile('dtml/refresh', globals())
 
     def _readRefreshTxt(self, pid=None):
+        import Products
         refresh_txt = None
         if pid is None:
             pid = self.id
@@ -246,11 +240,16 @@ class Product(Folder, PermissionManager):
         return refresh_txt
 
     def manage_refresh(self, REQUEST, manage_tabs_message=None):
-        '''
-        Displays the refresh management screen.
-        '''
+        """Displays the refresh management screen.
+        """
+        import Globals  # for data
+        from App.RefreshFuncs import getLastRefreshException
+        from App.RefreshFuncs import isAutoRefreshEnabled
+        from App.RefreshFuncs import getDependentProducts
+        from App.RefreshFuncs import listRefreshableModules
+        from App.RefreshFuncs import listAutoRefreshableModules
         error_type = error_value = error_tb = None
-        exc = RefreshFuncs.getLastRefreshException(self.id)
+        exc = getLastRefreshException(self.id)
         if exc is not None:
             error_type, error_value, error_tb = exc
             exc = None
@@ -258,11 +257,11 @@ class Product(Folder, PermissionManager):
         refresh_txt = self._readRefreshTxt()
 
         # Read the persistent refresh information.
-        auto = RefreshFuncs.isAutoRefreshEnabled(self._p_jar, self.id)
-        deps = RefreshFuncs.getDependentProducts(self._p_jar, self.id)
+        auto = isAutoRefreshEnabled(self._p_jar, self.id)
+        deps = getDependentProducts(self._p_jar, self.id)
 
         # List all product modules.
-        mods = RefreshFuncs.listRefreshableModules(self.id)
+        mods = listRefreshableModules(self.id)
         loaded_modules = []
         prefix = 'Products.%s' % self.id
         prefixdot = prefix + '.'
@@ -274,7 +273,7 @@ class Product(Folder, PermissionManager):
                     name = '__init__'
             loaded_modules.append(name)
 
-        all_auto = RefreshFuncs.listAutoRefreshableProducts(self._p_jar)
+        all_auto = listAutoRefreshableProducts(self._p_jar)
         for pid in all_auto:
             # Ignore products that don't have a refresh.txt.
             if self._readRefreshTxt(pid) is None:
@@ -298,13 +297,13 @@ class Product(Folder, PermissionManager):
                                   management_view='Refresh')
 
     def manage_performRefresh(self, REQUEST=None):
-        '''
-        Attempts to perform a refresh operation.
-        '''
+        """ Attempts to perform a refresh operation.
+        """
+        from App.RefreshFuncs import performFullRefresh
         if self._readRefreshTxt() is None:
             raise Unauthorized, 'refresh.txt not found'
         message = None
-        if RefreshFuncs.performFullRefresh(self._p_jar, self.id):
+        if performFullRefresh(self._p_jar, self.id):
             from ZODB import Connection
             Connection.resetCaches() # Clears cache in future connections.
             message = 'Product refreshed.'
@@ -314,12 +313,12 @@ class Product(Folder, PermissionManager):
             return self.manage_refresh(REQUEST, manage_tabs_message=message)
 
     def manage_enableAutoRefresh(self, enable=0, REQUEST=None):
-        '''
-        Changes the auto refresh flag for this product.
-        '''
+        """ Changes the auto refresh flag for this product.
+        """
+        from App.RefreshFuncs import enableAutoRefresh
         if self._readRefreshTxt() is None:
             raise Unauthorized, 'refresh.txt not created'
-        RefreshFuncs.enableAutoRefresh(self._p_jar, self.id, enable)
+        enableAutoRefresh(self._p_jar, self.id, enable)
         if enable:
             message = 'Enabled auto refresh.'
         else:
@@ -328,12 +327,12 @@ class Product(Folder, PermissionManager):
             return self.manage_refresh(REQUEST, manage_tabs_message=message)
 
     def manage_selectDependentProducts(self, selections=(), REQUEST=None):
-        '''
-        Selects which products to refresh simultaneously.
-        '''
+        """ Selects which products to refresh simultaneously.
+        """
+        from App.RefreshFuncs import setDependentProducts
         if self._readRefreshTxt() is None:
             raise Unauthorized, 'refresh.txt not created'
-        RefreshFuncs.setDependentProducts(self._p_jar, self.id, selections)
+        setDependentProducts(self._p_jar, self.id, selections)
         if REQUEST is not None:
             return self.manage_refresh(REQUEST)
 
@@ -401,7 +400,8 @@ class CompressedInputFile:
 
 def initializeProduct(productp, name, home, app):
     # Initialize a levered product
-    products=app.Control_Panel.Products
+    import Globals  # to set data
+    products = app.Control_Panel.Products
     fver = ''
 
     if hasattr(productp, '__import_error__'): ie=productp.__import_error__
@@ -485,7 +485,7 @@ def initializeProduct(productp, name, home, app):
         return product
 
     # Give the ZClass fixup code in Application
-    Globals.__disk_product_installed__=1
+    Globals.__disk_product_installed__ = 1
     return product
 
 def ihasattr(o, name):
@@ -493,5 +493,6 @@ def ihasattr(o, name):
 
 
 def doInstall():
+    from App.config import getConfiguration
     return getConfiguration().enable_product_installation
 

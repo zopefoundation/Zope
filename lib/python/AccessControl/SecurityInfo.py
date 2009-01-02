@@ -41,9 +41,8 @@
 import sys
 from logging import getLogger
 
-import Acquisition
-
 from AccessControl.ImplPython import _what_not_even_god_should_do
+from Acquisition import Implicit
 
 LOG = getLogger('SecurityInfo')
 
@@ -57,7 +56,7 @@ ACCESS_PUBLIC  = None
 
 _marker = []
 
-class SecurityInfo(Acquisition.Implicit):
+class SecurityInfo(Implicit):
     """Encapsulate security information."""
 
     __security_info__ = 1
@@ -312,5 +311,5 @@ def allow_class(Class):
     sec.declareObjectPublic()
     sec.setDefaultAccess(1)
     sec.apply(Class)
-    from Globals import InitializeClass
+    from App.class_init import InitializeClass
     InitializeClass(Class)

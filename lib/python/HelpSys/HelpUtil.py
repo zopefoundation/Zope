@@ -15,13 +15,19 @@
 __version__='$Revision: 1.12 $'[11:-2]
 
 
-import sys, re
-import Globals, Acquisition
+import re
+import sys
+
+from Acquisition import Implicit
+from App.class_init import default__class_init__
+from App.Dialogs import MessageDialog
+from App.special_dtml import HTML
+from Persistence import Persistent
 from zope.structuredtext.html import HTMLWithImages 
 from zope.structuredtext.document import DocumentWithImages
 
 
-class HelpBase(Acquisition.Implicit):
+class HelpBase(Implicit):
     """ """
     def __bobo_traverse__(self, REQUEST, name=None):
         # A sneaky trick - we cant really _have_ an index_html
@@ -35,7 +41,7 @@ class HelpBase(Acquisition.Implicit):
         return 1
 
 
-class object(Acquisition.Implicit):
+class object(Implicit):
     def __init__(self, name, ob, op=None):
         self._name=name
         self._obj_=ob
@@ -373,15 +379,15 @@ class methodobject(object):
 
 
 
-_classtypes=(type(Globals.HTML),
-             type(Globals.Persistent),
+_classtypes=(type(HTML),
+             type(Persistent),
             )
 
 _methodtypes=(type([].sort),
-              type(Globals.default__class_init__),
-              type(Globals.HTML.manage_edit),
-              type(Globals.HTML.__changed__),
-              type(Globals.MessageDialog.manage_edit),
+              type(default__class_init__),
+              type(HTML.manage_edit),
+              type(HTML.__changed__),
+              type(MessageDialog.manage_edit),
              )
 
 def is_module(ob):

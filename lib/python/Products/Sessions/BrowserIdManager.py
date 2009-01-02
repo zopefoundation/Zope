@@ -10,29 +10,44 @@
 # FOR A PARTICULAR PURPOSE
 #
 ############################################################################
-
 __version__='$Revision: 1.20 $'[11:-2]
-import Globals
-from Persistence import Persistent
-from persistent import TimeStamp
-from Acquisition import Implicit, aq_base, aq_parent, aq_inner
+
+import binascii
+from cgi import escape
+import logging
+import random
+import re
+import string
+import sys
+import time
+from urllib import quote
+from urlparse import urlparse
+from urlparse import urlunparse
+
 from AccessControl.Owned import Owned
 from AccessControl.Role import RoleManager
+from AccessControl.SecurityInfo import ClassSecurityInfo
+from Acquisition import Implicit
+from Acquisition import aq_base
+from Acquisition import aq_parent
+from Acquisition import aq_inner
+from App.class_init import InitializeClass
+from App.Dialogs import MessageDialog
 from App.Management import Tabs
+from App.special_dtml import DTMLFile
+from Persistence import Persistent
+from persistent import TimeStamp
 from OFS.SimpleItem import Item
-from OFS.ObjectManager import UNIQUE
-from AccessControl import ClassSecurityInfo
-import SessionInterfaces
-from SessionPermissions import *
-from common import DEBUG
-import os, time, random, string, binascii, sys, re
-from cgi import escape
-from urllib import quote
-from urlparse import urlparse, urlunparse
-from ZPublisher.BeforeTraverse import registerBeforeTraverse, \
-    unregisterBeforeTraverse, queryBeforeTraverse
-import logging
+from ZPublisher.BeforeTraverse import registerBeforeTraverse
+from ZPublisher.BeforeTraverse import unregisterBeforeTraverse
+from ZPublisher.BeforeTraverse import queryBeforeTraverse
 from zope.interface import implements
+
+from Products.Sessions.SessionInterfaces import BrowserIdManagerInterface
+from Products.Sessions.SessionPermissions import ACCESS_CONTENTS_PERM
+from Products.Sessions.SessionPermissions import CHANGE_IDMGR_PERM
+from Products.Sessions.SessionPermissions import MGMT_SCREEN_PERM
+from Products.Sessions.common import DEBUG
 
 b64_trans = string.maketrans('+/', '-.')
 b64_untrans = string.maketrans('-.', '+/')
@@ -43,7 +58,7 @@ twodotsin = re.compile('(\w*\.){2,}').search
 
 _marker = []
 
-constructBrowserIdManagerForm = Globals.DTMLFile('dtml/addIdManager',globals())
+constructBrowserIdManagerForm = DTMLFile('dtml/addIdManager', globals())
 
 BROWSERID_MANAGER_NAME = 'browser_id_manager'# imported by SessionDataManager
 ALLOWED_BID_NAMESPACES = ('form', 'cookies', 'url')
@@ -81,7 +96,7 @@ class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
         {'label': 'Ownership', 'action':'manage_owner'}
         )
 
-    implements(SessionInterfaces.BrowserIdManagerInterface)
+    implements(BrowserIdManagerInterface)
 
     icon = 'misc_/Sessions/idmgr.gif'
 
@@ -256,7 +271,7 @@ class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
             return urlunparse((proto, host, path, params, query, frag))
 
     security.declareProtected(MGMT_SCREEN_PERM, 'manage_browseridmgr')
-    manage_browseridmgr = Globals.DTMLFile('dtml/manageIdManager', globals())
+    manage_browseridmgr = DTMLFile('dtml/manageIdManager', globals())
 
     security.declareProtected(CHANGE_IDMGR_PERM,
                               'manage_changeBrowserIdManager')
@@ -428,7 +443,7 @@ class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
         
     def _setId(self, id):
         if id != self.id:
-            raise Globals.MessageDialog(
+            raise MessageDialog(
                 title='Cannot rename',
                 message='You cannot rename a browser id manager, sorry!',
                 action ='./manage_main',)
@@ -553,4 +568,4 @@ def getNewBrowserId(randint=random.randint, maxint=99999999):
     return '%08i%s' % (randint(0, maxint-1), getB64TStamp())
 
 
-Globals.InitializeClass(BrowserIdManager)
+InitializeClass(BrowserIdManager)

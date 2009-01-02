@@ -14,19 +14,25 @@
 
 $Id$
 """
-import Globals, ExtensionClass, difflib
-from Globals import InitializeClass
-from DateTime import DateTime
-from Acquisition import Implicit, aq_base
-from struct import pack, unpack
 from cgi import escape
-from zExceptions import Redirect
-from AccessControl import ClassSecurityInfo
+import difflib
+from struct import pack, unpack
+
 from AccessControl.Permissions import view_history
+from AccessControl.SecurityInfo import ClassSecurityInfo
+from Acquisition import aq_base
+from Acquisition import Implicit
+from App.class_init import InitializeClass
+from App.special_dtml import DTMLFile
+from DateTime.DateTime import DateTime
+from ExtensionClass import Base
+from zExceptions import Redirect
 
-class TemporalParadox(Exception): pass
+class TemporalParadox(Exception):
+    pass
 
-class HistorySelectionError(Exception): pass
+class HistorySelectionError(Exception):
+    pass
 
 class HystoryJar:
     """A ZODB Connection-like object that provides access to data
@@ -75,7 +81,7 @@ class Historian(Implicit):
         "We aren't real, so we delegate to that that spawned us!"
         raise Redirect, REQUEST['URL2']+'/manage_change_history_page'
 
-class Historical(ExtensionClass.Base):
+class Historical(Base):
     """Mix-in class to provide a veiw that shows hystorical changes
 
     The display is similar to that used for undo, except that the transactions
@@ -97,7 +103,7 @@ class Historical(ExtensionClass.Base):
                    )
 
     security.declareProtected(view_history, 'manage_change_history_page')
-    manage_change_history_page=Globals.DTMLFile(
+    manage_change_history_page = DTMLFile(
         'dtml/history', globals(),
         HistoryBatchSize=20,
         first_transaction=0, last_transaction=20)
@@ -155,7 +161,7 @@ class Historical(ExtensionClass.Base):
     def manage_afterHistoryCopy(self): pass # ? (Hook)
 
 
-    _manage_historyComparePage=Globals.DTMLFile(
+    _manage_historyComparePage = DTMLFile(
         'dtml/historyCompare', globals(), management_view='History')
     security.declareProtected(view_history, 'manage_historyCompare')
     def manage_historyCompare(self, rev1, rev2, REQUEST,

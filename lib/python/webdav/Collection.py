@@ -17,17 +17,19 @@ $Id$
 
 from urllib import unquote
 
-from Globals import InitializeClass
-from AccessControl import getSecurityManager
-from zExceptions import MethodNotAllowed, NotFound
+from AccessControl.SecurityManagement import getSecurityManager
+from App.class_init import InitializeClass
+from zExceptions import MethodNotAllowed
+from zExceptions import NotFound
 from zope.interface import implements
 
-import davcmds
-import Lockable
-from common import Locked, PreconditionFailed
-from common import urlfix, rfc1123_date
-from interfaces import IDAVCollection
-from Resource import Resource
+from webdav.common import Locked
+from webdav.common import PreconditionFailed
+from webdav.common import rfc1123_date
+from webdav.common import urlfix
+from webdav.Lockable import wl_isLocked
+from webdav.interfaces import IDAVCollection
+from webdav.Resource import Resource
 
 
 class Collection(Resource):
@@ -82,6 +84,7 @@ class Collection(Resource):
         success, or may return 207 (Multistatus) to indicate partial
         success. Note that in Zope a DELETE currently never returns 207."""
 
+        from webdav.davcmds import DeleteCollection
 
         self.dav__init(REQUEST, RESPONSE)
         ifhdr = REQUEST.get_header('If', '')
@@ -97,12 +100,12 @@ class Collection(Resource):
 #            return RESPONSE
 
         # Level 1 of lock checking (is the collection or its parent locked?)
-        if Lockable.wl_isLocked(self):
+        if wl_isLocked(self):
             if ifhdr:
                 self.dav__simpleifhandler(REQUEST, RESPONSE, 'DELETE', col=1)
             else:
                 raise Locked
-        elif Lockable.wl_isLocked(parent):
+        elif wl_isLocked(parent):
             if ifhdr:
                 parent.dav__simpleifhandler(REQUEST, RESPONSE, 'DELETE', col=1)
             else:
@@ -117,7 +120,7 @@ class Collection(Resource):
                 # we just want to get the right token out of the header now
                 if ifhdr.find(tok) > -1:
                     token = tok
-        cmd = davcmds.DeleteCollection()
+        cmd = DeleteCollection()
         result = cmd.apply(self, token, user, REQUEST['URL'])
 
         if result:

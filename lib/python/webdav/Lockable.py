@@ -15,18 +15,19 @@
 $Id$
 """
 
-import Acquisition
-from AccessControl import ClassSecurityInfo
-from Globals import InitializeClass
-from Globals import PersistentMapping
+from AccessControl.SecurityInfo import ClassSecurityInfo
+from Acquisition import aq_base
+from App.class_init import InitializeClass
+from Persistence import PersistentMapping
 from zope.interface import implements
 
-from EtagSupport import EtagSupport
-from interfaces import ILockItem
-from interfaces import IWriteLock
+from webdav.EtagSupport import EtagSupport
+from webdav.interfaces import ILockItem
+from webdav.interfaces import IWriteLock
 
 
-class ResourceLockedError(Exception): pass
+class ResourceLockedError(Exception):
+    pass
 
 class LockableItem(EtagSupport):
 
@@ -72,7 +73,7 @@ class LockableItem(EtagSupport):
             for token, lock in locks.items():
                 if not lock.isValid():
                     del locks[token]
-            if (not locks) and hasattr(Acquisition.aq_base(self),
+            if (not locks) and hasattr(aq_base(self),
                                        '__no_valid_write_locks__'):
                 self.__no_valid_write_locks__()
             return locks
@@ -137,7 +138,7 @@ class LockableItem(EtagSupport):
         # Call into a special hook used by LockNullResources to delete
         # themselves.  Could be used by other objects who want to deal
         # with the state of empty locks.
-        if hasattr(Acquisition.aq_base(self), '__no_valid_write_locks__'):
+        if hasattr(aq_base(self), '__no_valid_write_locks__'):
             self.__no_valid_write_locks__()
 
 InitializeClass(LockableItem)

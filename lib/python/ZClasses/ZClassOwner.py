@@ -12,10 +12,13 @@
 ##############################################################################
 """Zope Classes
 """
-import ExtensionClass, Globals, ZClass, Products
-from Globals import InitializeClass
+from App.class_init import InitializeClass
+from App.special_dtml import HTMLFile
+from ExtensionClass import Base
+
 
 def manage_subclassableClassNames(self):
+    import Products
     r={}
     r.update(Products.meta_class_info)
 
@@ -26,9 +29,9 @@ def manage_subclassableClassNames(self):
     r.sort()
     return r
 
-class ZClassOwner(ExtensionClass.Base):
+class ZClassOwner(Base):
 
-    manage_addZClassForm=Globals.HTMLFile(
+    manage_addZClassForm=HTMLFile(
         'dtml/addZClass', globals(),
         default_class_='OFS.SimpleItem Item',
         CreateAFactory=1,
@@ -38,7 +41,8 @@ class ZClassOwner(ExtensionClass.Base):
                          meta_type='', CreateAFactory=0,
                          REQUEST=None, zope_object=0):
         "Add a ZClass"
-        return ZClass.manage_addZClass(
+        from ZClasses.ZClass import manage_addZClass
+        return manage_addZClass(
             self, id, title, baseclasses, meta_type, CreateAFactory,
             REQUEST, zope_object=zope_object)
 

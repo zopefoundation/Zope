@@ -15,8 +15,8 @@
 
 $Id$
 """
-import ExtensionClass
-from Globals import InitializeClass as initializeClass
+from App.class_init import InitializeClass
+from ExtensionClass import Base
 
 import zope.component
 from zope.interface import Interface
@@ -60,14 +60,14 @@ def EditViewFactory(name, schema, label, permission, layer,
     # BaseFormDirective, that means that zope.Public has been
     # translated to the CheckerPublic object
     protectClass(class_, permission)
-    initializeClass(class_)
+    InitializeClass(class_)
 
 class FiveFormDirective(BaseFormDirective):
 
     def _processWidgets(self):
         if self._widgets:
             customWidgetsObject = makeClass(
-                'CustomWidgetsMixin', (ExtensionClass.Base,), self._widgets)
+                'CustomWidgetsMixin', (Base,), self._widgets)
             self.bases = self.bases + (customWidgetsObject,)
 
 class EditFormDirective(FiveFormDirective):
@@ -123,7 +123,7 @@ def AddViewFactory(name, schema, label, permission, layer,
     # BaseFormDirective, that means that zope.Public has been
     # translated to the CheckerPublic object
     protectClass(class_, permission)
-    initializeClass(class_)
+    InitializeClass(class_)
 
 class AddFormDirective(FiveFormDirective):
 

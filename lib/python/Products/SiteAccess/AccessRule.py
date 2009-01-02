@@ -2,13 +2,15 @@
 
 Provide a simple method to set up Access Rules
 """
-
-from Globals import DTMLFile, MessageDialog
-from ZPublisher.BeforeTraverse import \
- registerBeforeTraverse, unregisterBeforeTraverse, queryBeforeTraverse, \
- NameCaller
-import os
 from cgi import escape
+import os
+
+from App.Dialogs import MessageDialog
+from App.special_dtml import DTMLFile
+from ZPublisher.BeforeTraverse import NameCaller
+from ZPublisher.BeforeTraverse import queryBeforeTraverse
+from ZPublisher.BeforeTraverse import registerBeforeTraverse
+from ZPublisher.BeforeTraverse import unregisterBeforeTraverse
 
 SUPPRESS_ACCESSRULE = os.environ.has_key('SUPPRESS_ACCESSRULE')
 

@@ -160,7 +160,7 @@ class ZopeStarter:
         logger.error(msg)
 
     def setupPublisher(self):
-        import Globals
+        import Globals # to set data
         import ZPublisher.HTTPRequest
         import ZPublisher.Publish
         Globals.DevelopmentMode = self.cfg.debug_mode

@@ -14,27 +14,33 @@ __doc__="""System management components"""
 
 __version__='$Revision: 1.94 $'[11:-2]
 
-import sys,os,time,Globals, Acquisition, os, Undo
-from logging import getLogger
-from Globals import InitializeClass
-from Globals import DTMLFile
-from OFS.ObjectManager import ObjectManager
-from OFS.Folder import Folder
-from CacheManager import CacheManager
-from DavLockManager import DavLockManager
-from DateTime.DateTime import DateTime
-from OFS import SimpleItem
-from App.config import getConfiguration
-from App.Dialogs import MessageDialog
-from Product import ProductFolder
-from version_txt import version_txt
-from cStringIO import StringIO
-from AccessControl import getSecurityManager
-from AccessControl.requestmethod import requestmethod
-from zExceptions import Redirect
-from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from cgi import escape
-import Lifetime
+from cStringIO import StringIO
+from logging import getLogger
+import os
+import sys
+import time
+
+from AccessControl.requestmethod import requestmethod
+from AccessControl.SecurityManagement import getSecurityManager
+from Acquisition import Implicit
+from App.CacheManager import CacheManager
+from App.class_init import InitializeClass
+from App.config import getConfiguration
+from App.DavLockManager import DavLockManager
+from App.Dialogs import MessageDialog
+from App.special_dtml import DTMLFile
+from App.Undo import UndoSupport
+from App.version_txt import version_txt
+from DateTime.DateTime import DateTime
+from Lifetime import shutdown
+from OFS.Folder import Folder
+from OFS.ObjectManager import ObjectManager
+from OFS.SimpleItem import Item
+from OFS.SimpleItem import SimpleItem
+from Product import ProductFolder
+from Products.PageTemplates.PageTemplateFile import PageTemplateFile
+from zExceptions import Redirect
 
 LOG = getLogger('ApplicationManager')
 
@@ -45,9 +51,9 @@ else: get_ident=thread.get_ident
 class Fake:
     def locked_in_version(self): return 0
 
-class DatabaseManager(Fake, SimpleItem.Item, Acquisition.Implicit):
+class DatabaseManager(Fake, Item, Implicit):
     """Database management (legacy) """
-    manage=manage_main=DTMLFile('dtml/dbMain', globals())
+    manage = manage_main = DTMLFile('dtml/dbMain', globals())
     manage_main._setName('manage_main')
     id        ='DatabaseManagement'
     name=title='Database Management'
@@ -69,9 +75,9 @@ class DatabaseManager(Fake, SimpleItem.Item, Acquisition.Implicit):
 
     # These need to be here rather to make tabs work correctly. This
     # needs to be revisited.
-    manage_activity=Globals.DTMLFile('dtml/activity', globals())
-    manage_cacheParameters=Globals.DTMLFile('dtml/cacheParameters', globals())
-    manage_cacheGC=Globals.DTMLFile('dtml/cacheGC', globals())
+    manage_activity = DTMLFile('dtml/activity', globals())
+    manage_cacheParameters = DTMLFile('dtml/cacheParameters', globals())
+    manage_cacheGC = DTMLFile('dtml/cacheGC', globals())
 
 InitializeClass(DatabaseManager)
 
@@ -89,7 +95,7 @@ class FakeConnection:
     def getVersion(self):
         return self.version
 
-class DatabaseChooser (SimpleItem.SimpleItem):
+class DatabaseChooser(SimpleItem):
     """Lets you choose which database to view
     """
     meta_type = 'Database Management'
@@ -140,9 +146,9 @@ class DatabaseChooser (SimpleItem.SimpleItem):
 InitializeClass(DatabaseChooser)
 
 
-class VersionManager(Fake, SimpleItem.Item, Acquisition.Implicit):
+class VersionManager(Fake, Item, Implicit):
     """Version management"""
-    manage=manage_main=DTMLFile('dtml/versionManager', globals())
+    manage=manage_main = DTMLFile('dtml/versionManager', globals())
     manage_main._setName('manage_main')
     id        ='Versions'
     name=title='Version Management'
@@ -165,9 +171,9 @@ InitializeClass(VersionManager)
 _v_rcs=None
 _v_rst=None
 
-class DebugManager(Fake, SimpleItem.Item, Acquisition.Implicit):
+class DebugManager(Fake, Item, Implicit):
     """Debug and profiling information"""
-    manage=manage_main=DTMLFile('dtml/debug', globals())
+    manage=manage_main = DTMLFile('dtml/debug', globals())
     manage_main._setName('manage_main')
     id        ='DebugInfo'
     name=title='Debug Information'
@@ -182,9 +188,9 @@ class DebugManager(Fake, SimpleItem.Item, Acquisition.Implicit):
            )
         )
 
-    manage_debug=DTMLFile('dtml/debug', globals())
+    manage_debug = DTMLFile('dtml/debug', globals())
 
-    def refcount(self, n=None, t=(type(Fake), type(Acquisition.Implicit))):
+    def refcount(self, n=None, t=(type(Fake), type(Implicit))):
         # return class reference info
         dict={}
         for m in sys.modules.values():
@@ -241,12 +247,13 @@ class DebugManager(Fake, SimpleItem.Item, Acquisition.Implicit):
                               'rc': n[1][0]}, rd)
 
     def dbconnections(self):
+        import Globals  # for data
         return Globals.DB.connectionDebugInfo()
 
 
     # Profiling support
 
-    manage_profile=DTMLFile('dtml/profile', globals())
+    manage_profile = DTMLFile('dtml/profile', globals())
 
     def manage_profile_stats(self, sort='time', limit=200, stripDirs=1, mode='stats'):
         """Return profile data if available"""
@@ -283,7 +290,7 @@ class ApplicationManager(Folder,CacheManager):
     DebugInfo=DebugManager()
     DavLocks = DavLockManager()
 
-    manage=manage_main=DTMLFile('dtml/cpContents', globals())
+    manage=manage_main = DTMLFile('dtml/cpContents', globals())
     manage_main._setName('manage_main')
 
     def version_txt(self):
@@ -309,11 +316,9 @@ class ApplicationManager(Folder,CacheManager):
         )
 
     manage_options=(
-        (
-        {'label':'Contents', 'action':'manage_main',
-         'help':('OFSP','Control-Panel_Contents.stx')},
-        )
-        +Undo.UndoSupport.manage_options
+        ({'label':'Contents', 'action':'manage_main',
+          'help':('OFSP','Control-Panel_Contents.stx')},
+         ) + UndoSupport.manage_options
         )
 
     id        ='Control_Panel'
@@ -397,8 +402,7 @@ class ApplicationManager(Folder,CacheManager):
             except:
                 user = 'unknown user'
             LOG.info("Restart requested by %s" % user)
-            #for db in Globals.opened: db.close()
-            Lifetime.shutdown(1)
+            shutdown(1)
             return """<html>
             <head><meta HTTP-EQUIV=REFRESH CONTENT="10; URL=%s/manage_main">
             </head>
@@ -413,8 +417,7 @@ class ApplicationManager(Folder,CacheManager):
         except:
             user = 'unknown user'
         LOG.info("Shutdown requested by %s" % user)
-        #for db in Globals.opened: db.close()
-        Lifetime.shutdown(0)
+        shutdown(0)
         return """<html>
         <head>
         </head>

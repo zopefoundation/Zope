@@ -13,22 +13,25 @@
 
 __version__='$Revision$'[11:-2]
 
-from Globals import InitializeClass
-from AccessControl import ClassSecurityInfo
-from AccessControl import getSecurityManager
+import re
+import string
+
+from AccessControl.SecurityInfo import ClassSecurityInfo
+from AccessControl.SecurityManagement import getSecurityManager
 from AccessControl.Permissions import view_management_screens
 from AccessControl.PermissionRole import _what_not_even_god_should_do
 from AccessControl.ZopeGuards import guarded_getattr
+from Acquisition import aq_parent
+from Acquisition import aq_inner
+from App.class_init import InitializeClass
 from Persistence import Persistent
-from Acquisition import aq_parent, aq_inner
-from string import join, strip
-import re
 
 defaultBindings = {'name_context': 'context',
                    'name_container': 'container',
                    'name_m_self': 'script',
                    'name_ns': '',
-                   'name_subpath': 'traverse_subpath'}
+                   'name_subpath': 'traverse_subpath',
+                  }
 
 _marker = []  # Create a new marker
 
@@ -55,7 +58,7 @@ class NameAssignments:
         _isLegalName = self._isLegalName
         for name, expr in self._exprs:
             if mapping.has_key(name):
-                assigned_name = strip(mapping[name])
+                assigned_name = string.strip(mapping[name])
                 if not assigned_name:
                     continue
                 if not _isLegalName(assigned_name):
@@ -101,7 +104,7 @@ class NameAssignments:
         for assigned_name in assigned_names:
             text.append('if kw.has_key("%s"):\n' % assigned_name)
             text.append('    del kw["%s"]\n'     % assigned_name)
-        codetext = join(text, '')
+        codetext = string.join(text, '')
         return (compile(codetext, '<string>', 'exec'), len(assigned_names))
 
     def _createCodeBlockForMapping(self):
@@ -117,7 +120,7 @@ class NameAssignments:
                 assigned_name = asgns[name]
                 assigned_names.append(assigned_name)
                 exprtext.append('"%s":%s,' % (assigned_name, expr))
-        text = '{%s}' % join(exprtext, '')
+        text = '{%s}' % string.join(exprtext, '')
         return self._generateCodeBlock(text, assigned_names)
 
     def _createCodeBlockForTuple(self, argNames):
@@ -143,7 +146,7 @@ class NameAssignments:
             if passedLastBoundArg:
                 # Found last of bound args.
                 break
-        text = '(%s)' % join(exprtext, '')
+        text = '(%s)' % string.join(exprtext, '')
         return self._generateCodeBlock(text, assigned_names)
 
 

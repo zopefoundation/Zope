@@ -14,20 +14,17 @@
 
 $Id$
 """
-import History
-from Globals import HTML, DTMLFile, MessageDialog
-from Globals import InitializeClass
-from SimpleItem import Item_w__name__, pretty_tb
-from zope.contenttype import guess_content_type
-from PropertyManager import PropertyManager
-from AccessControl import ClassSecurityInfo
-from AccessControl.Role import RoleManager
-from webdav.common import rfc1123_date
-from webdav.Lockable import ResourceLockedError
-from ZDOM import ElementWithTitle
-from DateTime.DateTime import DateTime
+import sys
 from urllib import quote
-import  Globals, sys, Acquisition
+
+from AccessControl.SecurityInfo import ClassSecurityInfo
+from AccessControl.Role import RoleManager
+from Acquisition import Implicit
+from App.class_init import InitializeClass
+from App.Dialogs import MessageDialog
+from App.special_dtml import DTMLFile
+from App.special_dtml import HTML
+from DateTime.DateTime import DateTime
 from AccessControl import getSecurityManager
 from AccessControl.Permissions import change_dtml_methods
 from AccessControl.Permissions import view_management_screens
@@ -36,18 +33,32 @@ from AccessControl.Permissions import view as View
 from AccessControl.Permissions import ftp_access
 from AccessControl.DTML import RestrictedDTML
 from AccessControl.requestmethod import requestmethod
-from Cache import Cacheable
+from webdav.common import rfc1123_date
+from webdav.Lockable import ResourceLockedError
 from zExceptions import Forbidden
 from zExceptions.TracebackSupplement import PathTracebackSupplement
 from ZPublisher.Iterators import IStreamIterator
+from zope.contenttype import guess_content_type
+
+from OFS.Cache import Cacheable
+from OFS.History import Historical
+from OFS.History import html_diff
+from OFS.PropertyManager import PropertyManager
+from OFS.SimpleItem import Item_w__name__
+from OFS.SimpleItem import pretty_tb
+from OFS.ZDOM import ElementWithTitle
 
 _marker = []  # Create a new marker object.
 
-class DTMLMethod(RestrictedDTML, HTML, Acquisition.Implicit, RoleManager,
-                 ElementWithTitle, Item_w__name__,
-                 History.Historical,
+class DTMLMethod(RestrictedDTML,
+                 HTML,
+                 Implicit,
+                 RoleManager,
+                 ElementWithTitle,
+                 Item_w__name__,
+                 Historical,
                  Cacheable,
-                 ):
+                ):
     """DTML Method objects are DocumentTemplate.HTML objects that act
        as methods of their containers."""
     meta_type='DTML Method'
@@ -59,12 +70,13 @@ class DTMLMethod(RestrictedDTML, HTML, Acquisition.Implicit, RoleManager,
     security.declareObjectProtected(View)
 
     # Documents masquerade as functions:
-    class func_code: pass
+    class func_code:
+        pass
     func_code=func_code()
-    func_code.co_varnames='self','REQUEST','RESPONSE'
-    func_code.co_argcount=3
+    func_code.co_varnames = 'self','REQUEST','RESPONSE'
+    func_code.co_argcount = 3
 
-    manage_options=(
+    manage_options = (
         (
             {'label':'Edit', 'action':'manage_main',
              'help':('OFSP','DTML-DocumentOrMethod_Edit.stx')},
@@ -76,10 +88,10 @@ class DTMLMethod(RestrictedDTML, HTML, Acquisition.Implicit, RoleManager,
             {'label':'Proxy', 'action':'manage_proxyForm',
              'help':('OFSP','DTML-DocumentOrMethod_Proxy.stx')},
             )
-        +History.Historical.manage_options
-        +RoleManager.manage_options
-        +Item_w__name__.manage_options
-        +Cacheable.manage_options
+        + Historical.manage_options
+        + RoleManager.manage_options
+        + Item_w__name__.manage_options
+        + Cacheable.manage_options
         )
 
     # Careful in permissiong changes--used by DTMLDocument!
@@ -375,9 +387,7 @@ class DTMLMethod(RestrictedDTML, HTML, Acquisition.Implicit, RoleManager,
                               historyComparisonResults=''):
         return DTMLMethod.inheritedAttribute('manage_historyCompare')(
             self, rev1, rev2, REQUEST,
-            historyComparisonResults=History.html_diff(
-                rev1.read(), rev2.read()
-                ))
+            historyComparisonResults = html_diff(rev1.read(), rev2.read()))
 
 InitializeClass(DTMLMethod)
 

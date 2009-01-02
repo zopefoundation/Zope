@@ -21,9 +21,6 @@ import warnings
 import re
 from urllib import unquote
 
-import webdav
-import ExtensionClass
-from Globals import InitializeClass
 from AccessControl import getSecurityManager
 from AccessControl import ClassSecurityInfo
 from AccessControl.Permissions import delete_objects
@@ -32,32 +29,46 @@ from AccessControl.Permissions import view as View
 from AccessControl.Permissions import webdav_lock_items
 from AccessControl.Permissions import webdav_unlock_items
 from AccessControl.Permissions import webdav_access
-from Acquisition import aq_base, aq_inner, aq_parent
-from zExceptions import BadRequest, MethodNotAllowed
-from zExceptions import Unauthorized, Forbidden, NotFound
-from zope.interface import implements
+from Acquisition import aq_base
+from Acquisition import aq_inner
+from Acquisition import aq_parent
+from App.class_init import InitializeClass
+from ExtensionClass import Base
+from OFS.event import ObjectClonedEvent
+from OFS.event import ObjectWillBeMovedEvent
+from OFS.subscribers import compatibilityCall
+from zExceptions import BadRequest
+from zExceptions import Forbidden
+from zExceptions import MethodNotAllowed
+from zExceptions import NotFound
+from zExceptions import Unauthorized
 from ZPublisher.HTTPRangeSupport import HTTPRangeInterface
 
-import davcmds
-import Lockable
-from common import absattr, urlfix, rfc1123_date, tokenFinder, urlbase
-from common import IfParser
-from common import isDavCollection
-from common import Locked, Conflict, PreconditionFailed
-from interfaces import IDAVResource
-from interfaces import IWriteLock
-
+from zope.interface import implements
 from zope.event import notify
 from zope.lifecycleevent import ObjectCopiedEvent
 from zope.app.container.contained import ObjectMovedEvent
 from zope.app.container.contained import notifyContainerModified
-from OFS.event import ObjectClonedEvent
-from OFS.event import ObjectWillBeMovedEvent
-import OFS.subscribers
+
+from webdav.Lockable import LockableItem
+from webdav.Lockable import wl_isLockable
+from webdav.Lockable import wl_isLocked
+from webdav.common import absattr
+from webdav.common import Conflict
+from webdav.common import IfParser
+from webdav.common import isDavCollection
+from webdav.common import Locked
+from webdav.common import PreconditionFailed
+from webdav.common import rfc1123_date
+from webdav.common import tokenFinder
+from webdav.common import urlbase
+from webdav.common import urlfix
+from webdav.interfaces import IDAVResource
+from webdav.interfaces import IWriteLock
 
 ms_dav_agent = re.compile("Microsoft.*Internet Publishing.*")
 
-class Resource(ExtensionClass.Base, Lockable.LockableItem):
+class Resource(Base, LockableItem):
 
     """The Resource mixin class provides basic WebDAV support for
     non-collection objects. It provides default implementations
@@ -116,7 +127,7 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
                              col=0, url=None, refresh=0):
         ifhdr = request.get_header('If', None)
 
-        lockable = Lockable.wl_isLockable(self)
+        lockable = wl_isLockable(self)
         if not lockable:
             # degenerate case, we shouldnt have even called this method.
             return None
@@ -218,6 +229,7 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
     security.declarePublic('OPTIONS')
     def OPTIONS(self, REQUEST, RESPONSE):
         """Retrieve communication options."""
+        import webdav
         self.dav__init(REQUEST, RESPONSE)
         RESPONSE.setHeader('Allow', ', '.join(self.__http_methods__))
         RESPONSE.setHeader('Content-Length', 0)
@@ -255,7 +267,7 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
         name = unquote(filter(None, url.split( '/')[-1]))
         parent = aq_parent(aq_inner(self))
         # Lock checking
-        if Lockable.wl_isLocked(self):
+        if wl_isLocked(self):
             if ifhdr:
                 self.dav__simpleifhandler(REQUEST, RESPONSE, 'DELETE')
             else:
@@ -285,9 +297,10 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
     security.declareProtected(webdav_access, 'PROPFIND')
     def PROPFIND(self, REQUEST, RESPONSE):
         """Retrieve properties defined on the resource."""
+        from webdav.davcmds import PropFind
         self.dav__init(REQUEST, RESPONSE)
-        cmd=davcmds.PropFind(REQUEST)
-        result=cmd.apply(self)
+        cmd = PropFind(REQUEST)
+        result = cmd.apply(self)
         # work around MSIE DAV bug for creation and modified date
         if (REQUEST.get_header('User-Agent') ==
             'Microsoft Data Access Internet Publishing Provider DAV 1.1'):
@@ -303,20 +316,21 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
     security.declareProtected(manage_properties, 'PROPPATCH')
     def PROPPATCH(self, REQUEST, RESPONSE):
         """Set and/or remove properties defined on the resource."""
+        from webdav.davcmds import PropPatch
         self.dav__init(REQUEST, RESPONSE)
         if not hasattr(aq_base(self), 'propertysheets'):
             raise MethodNotAllowed, (
                   'Method not supported for this resource.')
         # Lock checking
         ifhdr = REQUEST.get_header('If', '')
-        if Lockable.wl_isLocked(self):
+        if wl_isLocked(self):
             if ifhdr:
                 self.dav__simpleifhandler(REQUEST, RESPONSE, 'PROPPATCH')
             else:
                 raise Locked, 'Resource is locked.'
 
-        cmd=davcmds.PropPatch(REQUEST)
-        result=cmd.apply(self)
+        cmd = PropPatch(REQUEST)
+        result = cmd.apply(self)
         RESPONSE.setStatus(207)
         RESPONSE.setHeader('Content-Type', 'text/xml; charset="utf-8"')
         RESPONSE.setBody(result)
@@ -425,7 +439,7 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
         ob = parent._getOb(name)
         ob._postCopy(parent, op=0)
 
-        OFS.subscribers.compatibilityCall('manage_afterClone', ob, ob)
+        compatibilityCall('manage_afterClone', ob, ob)
 
         notify(ObjectClonedEvent(ob))
 
@@ -510,7 +524,7 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
                     raise PreconditionFailed, 'Condition failed.'
             else:
                 raise Locked, 'Destination is locked.'
-        if Lockable.wl_isLocked(self):
+        if wl_isLocked(self):
             # Lastly, we check ourselves
             if ifhdr:
                 itrue = self.dav__simpleifhandler(REQUEST, RESPONSE, 'MOVE',
@@ -567,13 +581,14 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
     security.declareProtected(webdav_lock_items, 'LOCK')
     def LOCK(self, REQUEST, RESPONSE):
         """Lock a resource"""
+        from webdav.davcmds import Lock
         self.dav__init(REQUEST, RESPONSE)
         security = getSecurityManager()
         creator = security.getUser()
         body = REQUEST.get('BODY', '')
         ifhdr = REQUEST.get_header('If', None)
         depth = REQUEST.get_header('Depth', 'infinity')
-        alreadylocked = Lockable.wl_isLocked(self)
+        alreadylocked = wl_isLocked(self)
 
         if body and alreadylocked:
             # This is a full LOCK request, and the Resource is
@@ -582,7 +597,7 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
             RESPONSE.setStatus(423)
         elif body:
             # This is a normal lock request with an XML payload
-            cmd = davcmds.Lock(REQUEST)
+            cmd = Lock(REQUEST)
             token, result = cmd.apply(self, creator, depth=depth)
             if result:
                 # Return the multistatus result (there were multiple
@@ -627,13 +642,14 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
     security.declareProtected(webdav_unlock_items, 'UNLOCK')
     def UNLOCK(self, REQUEST, RESPONSE):
         """Remove an existing lock on a resource."""
+        from webdav.davcmds import Unlock
         self.dav__init(REQUEST, RESPONSE)
         security = getSecurityManager()
         token = REQUEST.get_header('Lock-Token', '')
         url = REQUEST['URL']
         token = tokenFinder(token)
 
-        cmd = davcmds.Unlock()
+        cmd = Unlock()
         result = cmd.apply(self, token, url)
 
         if result:

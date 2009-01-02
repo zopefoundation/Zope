@@ -13,18 +13,19 @@
 """Basic Item class and class manager
 """
 
-import Globals, OFS.PropertySheets, OFS.Image, ExtensionClass
-import Acquisition, Products
+from Acquisition import Acquired
+from App.special_dtml import DTMLFile
+from OFS.Image import Image
+from OFS.PropertySheets import PropertySheet
+from OFS.PropertySheets import View
 from zExceptions import BadRequest
 
-class ZClassBasicSheet(OFS.PropertySheets.PropertySheet,
-                       OFS.PropertySheets.View):
+class ZClassBasicSheet(PropertySheet, View):
     """Provide management view for item classes
     """
+    _getZClass = Acquired
 
-    _getZClass=Acquisition.Acquired
-
-    manage=Globals.DTMLFile('dtml/itemProp', globals())
+    manage = DTMLFile('dtml/itemProp', globals())
     def manage_edit(self, meta_type='', icon='', file='',
                     class_id=None, title=None,
                     selected=(),
@@ -38,7 +39,7 @@ class ZClassBasicSheet(OFS.PropertySheets.PropertySheet,
             image=self.getClassAttr('ziconImage', None)
             if image is None:
                 self.setClassAttr('ziconImage',
-                                  OFS.Image.Image('ziconImage','',file))
+                                  Image('ziconImage','',file))
             else:
                 image.manage_upload(file)
 
@@ -71,15 +72,14 @@ class ZClassBasicSheet(OFS.PropertySheets.PropertySheet,
 
     def zClassTitle(self): return self._getZClass().title
 
-class ZClassViewsSheet(OFS.PropertySheets.PropertySheet,
-                       OFS.PropertySheets.View):
+class ZClassViewsSheet(PropertySheet, View):
     """Provide an options management view
     """
 
     def data(self):
         return self.getClassAttr('manage_options',(),1)
 
-    manage=Globals.DTMLFile('dtml/views', globals())
+    manage = DTMLFile('dtml/views', globals())
     def manage_edit(self, actions=[], helps=[], REQUEST=None):
         "Change view actions"
         options=self.data()
@@ -182,13 +182,13 @@ class ZClassViewsSheet(OFS.PropertySheets.PropertySheet,
                 self, REQUEST, manage_tabs_message=message)
 
 
-class ZClassPermissionsSheet(OFS.PropertySheets.PropertySheet,
-                             OFS.PropertySheets.View):
+class ZClassPermissionsSheet(PropertySheet, View):
     "Manage class permissions"
 
-    manage=Globals.DTMLFile('dtml/classPermissions', globals())
+    manage = DTMLFile('dtml/classPermissions', globals())
 
     def possible_permissions(self):
+        import Products
         Products_permissions = getattr(Products, '__ac_permissions__', ())
         r=map(
             lambda p: p[0],
@@ -200,6 +200,7 @@ class ZClassPermissionsSheet(OFS.PropertySheets.PropertySheet,
 
     def manage_edit(self, selected=[], REQUEST=None):
         "Remove some permissions"
+        import Products
         Products_permissions = getattr(Products, '__ac_permissions__', ())
         r=[]
         for p in (

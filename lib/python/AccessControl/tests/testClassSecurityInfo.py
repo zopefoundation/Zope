@@ -28,8 +28,7 @@ class ClassSecurityInfoTests(unittest.TestCase):
 
         # Test setting default roles for permissions.
 
-        import Globals  # XXX: avoiding import cycle
-        from App.class_init import default__class_init__
+        from App.class_init import InitializeClass
         from ExtensionClass import Base
 
         ClassSecurityInfo = self._getTargetClass()
@@ -57,7 +56,7 @@ class ClassSecurityInfoTests(unittest.TestCase):
                 pass
 
         # Do class initialization.
-        default__class_init__(Test)
+        InitializeClass(Test)
 
         # Now check the resulting class to see if the mapping was made
         # correctly. Note that this uses carnal knowledge of the internal

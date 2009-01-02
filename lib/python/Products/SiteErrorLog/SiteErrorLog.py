@@ -23,9 +23,12 @@ import logging
 from random import random
 from thread import allocate_lock
 
-import Globals
+from AccessControl.SecurityInfo import ClassSecurityInfo
+from AccessControl.SecurityManagement import getSecurityManager
+from AccessControl.unauthorized import Unauthorized
 from Acquisition import aq_base
-from AccessControl import ClassSecurityInfo, getSecurityManager, Unauthorized
+from App.class_init import InitializeClass
+from App.Dialogs import MessageDialog
 from OFS.SimpleItem import SimpleItem
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from zExceptions.ExceptionFormatter import format_exception
@@ -100,7 +103,7 @@ class SiteErrorLog (SimpleItem):
 
     def _setId(self, id):
         if id != self.id:
-            raise Globals.MessageDialog(
+            raise MessageDialog(
                 title='Invalid Id',
                 message='Cannot change the id of a SiteErrorLog',
                 action ='./manage_main',)
@@ -294,7 +297,7 @@ class SiteErrorLog (SimpleItem):
             RESPONSE.setHeader('Content-Type', 'text/plain')
         return entry['tb_text']
 
-Globals.InitializeClass(SiteErrorLog)
+InitializeClass(SiteErrorLog)
 
 
 def manage_addErrorLog(dispatcher, RESPONSE=None):

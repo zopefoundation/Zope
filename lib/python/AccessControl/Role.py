@@ -16,20 +16,23 @@ $Id$
 """
 from cgi import escape
 
-from Globals import DTMLFile, MessageDialog, Dictionary
-from Acquisition import Implicit, Acquired, aq_get
-from Globals import InitializeClass
+from Acquisition import Acquired
+from Acquisition import aq_get
+from Acquisition import aq_base
+from Acquisition import Implicit
 from AccessControl import ClassSecurityInfo
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.Permissions import change_permissions
-import ExtensionClass, PermissionMapping, Products
-from App.Common import aq_base
+from App.class_init import InitializeClass
+from App.Dialogs import MessageDialog
+from App.special_dtml import DTMLFile
+from ExtensionClass import Base
+from PermissionMapping import RoleManager
 from zope.interface import implements
 
-from interfaces import IRoleManager
-from Permission import Permission
-from requestmethod import requestmethod
-
+from AccessControl.interfaces import IRoleManager
+from AccessControl.Permission import Permission
+from AccessControl.requestmethod import requestmethod
 
 DEFAULTMAXLISTUSERS=250
 
@@ -40,7 +43,7 @@ def _isNotBeingUsedAsAMethod(self):
     return not aq_get(self, '_isBeingUsedAsAMethod_', 0)
 
 
-class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
+class RoleManager(Base, RoleManager):
 
     """An object that has configurable permissions"""
 
@@ -602,6 +605,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
         pass
 
     def possible_permissions(self):
+        import Products
         d={}
         Products_permissions = getattr(Products, '__ac_permissions__', ())
         for p in Products_permissions:

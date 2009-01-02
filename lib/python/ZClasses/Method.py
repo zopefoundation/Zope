@@ -12,33 +12,42 @@
 ##############################################################################
 """Basic Item class and class manager
 """
+from cgi import escape
+import marshal
 
-import Acquisition, ExtensionClass, Globals, OFS.PropertySheets, OFS.Folder
 from AccessControl.Permission import pname
-import App.Dialogs, ZClasses, App.Factory, App.ProductRegistry
-import ZClassOwner
-from AccessControl.PermissionMapping import aqwrap, PermissionMapper
-
+from AccessControl.PermissionMapping import aqwrap
+from AccessControl.PermissionMapping import PermissionMapper
+from App.Factory import Factory
+from App.ProductRegistry import ProductRegistryMixin
+from App.special_dtml import HTMLFile
+from ExtensionClass import Base
 from OFS.DTMLMethod import DTMLMethod
+from OFS.Folder import Folder
+from OFS.PropertySheets import PropertySheet
+from OFS.PropertySheets import View
+from Persistence import Persistent
 from Products.PythonScripts.PythonScript import PythonScript
 from zExceptions import BadRequest
-
-import marshal
-from cgi import escape
 from zope.contenttype import guess_content_type
 
-_marker=[]
-class ZClassMethodsSheet(
-    OFS.PropertySheets.PropertySheet,
-    OFS.PropertySheets.View,
-    OFS.Folder.Folder,
-    App.ProductRegistry.ProductRegistryMixin,
-    ZClassOwner.ZClassOwner):
-    "Manage instance methods"
-    id='contents'
-    icon='p_/Methods_icon'
+from ZClasses.ZClassOwner import ZClassOwner
 
-    def tpURL(self): return 'propertysheets/methods'
+_marker=[]
+
+class ZClassMethodsSheet(PropertySheet,
+                         View,
+                         Folder,
+                         ProductRegistryMixin,
+                         ZClassOwner,
+                        ):
+    """Manage instance methods
+    """
+    id = 'contents'
+    icon = 'p_/Methods_icon'
+
+    def tpURL(self):
+        return 'propertysheets/methods'
 
     ######################################################################
     # Hijinks to let us create factories and classes within classes.
@@ -46,7 +55,7 @@ class ZClassMethodsSheet(
     meta_types=(
         {'name': 'Z Class',
          'action':'manage_addZClassForm'},
-        {'name': App.Factory.Factory.meta_type,
+        {'name': Factory.meta_type,
          'action': 'manage_addPrincipiaFactoryForm'
          },
         {'name': 'Property Sheet Interface',
@@ -56,8 +65,9 @@ class ZClassMethodsSheet(
 
     def manage_addPrincipiaFactory(
         self, id, title, object_type, initial, permission=None, REQUEST=None):
-        ' '
-        i=App.Factory.Factory(id, title, object_type, initial, permission)
+        """ Add a factory.
+        """
+        i = Factory(id, title, object_type, initial, permission)
         self._setObject(id,i)
         factory = self._getOb(id)
         factory.initializePermission()
@@ -75,7 +85,7 @@ class ZClassMethodsSheet(
 
     ######################################################################
 
-    manage_addPropertyInterfaceForm=Globals.HTMLFile(
+    manage_addPropertyInterfaceForm = HTMLFile(
         'dtml/addPropertyInterface',
         globals())
 
@@ -210,7 +220,7 @@ the <dtml-var title_and_id> Folder.</P>
 
 methodattr='_ZClassMethodPermissionMapperMethod_'
 
-class MW(ExtensionClass.Base):
+class MW(Base):
 
     def __init__(self, meth): self.__dict__[methodattr]=meth
 
@@ -222,7 +232,7 @@ class MW(ExtensionClass.Base):
         if hasattr(m,'__of__'): return aqwrap(m, wrapper, parent)
         return m
 
-class MWp(Globals.Persistent):
+class MWp(Persistent):
 
     def __init__(self, meth): self.__dict__[methodattr]=meth
     __setstate__=__init__
@@ -242,7 +252,7 @@ class MWp(Globals.Persistent):
 
 
 # Backward compat. Waaaaa
-class W(Globals.Persistent, MW):
+class W(Persistent, MW):
 
     _View_Permission='_View_Permission'
 

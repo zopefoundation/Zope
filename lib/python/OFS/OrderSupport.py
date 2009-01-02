@@ -15,19 +15,19 @@
 $Id$
 """
 
-from types import StringType
 import warnings
-from AccessControl import ClassSecurityInfo
+
 from AccessControl.Permissions import access_contents_information
 from AccessControl.Permissions import manage_properties
+from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import aq_base
+from App.class_init import InitializeClass
 from DocumentTemplate.sequence import sort
-from Globals import InitializeClass
 from zope.interface import implements
 from zope.app.container.contained import notifyContainerModified
 
-from interfaces import IOrderedContainer as IOrderedContainer
-from ObjectManager import ObjectManager
+from OFS.interfaces import IOrderedContainer as IOrderedContainer
+from OFS.ObjectManager import ObjectManager
 
 
 class OrderSupport(object):
@@ -138,7 +138,7 @@ class OrderSupport(object):
                            suppress_events=False):
         """ Move specified sub-objects by delta.
         """
-        if type(ids) is StringType:
+        if type(ids) is str:
             ids = (ids,)
         min_position = 0
         objects = list(self._objects)

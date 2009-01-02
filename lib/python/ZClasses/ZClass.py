@@ -12,26 +12,39 @@
 ##############################################################################
 """Zope Classes
 """
-import Globals,  OFS.SimpleItem, OFS.PropertySheets, Products
-from Globals import InitializeClass
-import Method, Basic, Property, AccessControl.Role, re
-from AccessControl import ClassSecurityInfo
-from AccessControl.Permissions import create_class_instances
+import marshal
+import re
 
-from ZPublisher.mapply import mapply
-from ExtensionClass import Base
+from AccessControl.Permissions import create_class_instances
+from AccessControl.Role import gather_permissions
+from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import aq_base
+from App.class_init import InitializeClass
 from App.FactoryDispatcher import FactoryDispatcher
+from App.ImageFile import ImageFile
+from App.special_dtml import DTMLFile
 from ComputedAttribute import ComputedAttribute
-from Products.PythonScripts.PythonScript import PythonScript
-from zExceptions import BadRequest, Redirect
-import webdav.Collection
-import ZClasses._pmc
+from ExtensionClass import Base
+from OFS.SimpleItem import SimpleItem
+from OFS.PropertySheets import PropertySheets
+from Persistence import Persistent
+from webdav.Collection import Collection
+from zExceptions import BadRequest
+from zExceptions import Redirect
+from ZPublisher.mapply import mapply
 
 import transaction
 
-import marshal
+from ZClasses._pmc import ZClassPersistentMetaClass
+from ZClasses.Method import findMethodIds
+from ZClasses.Method import ZClassMethodsSheet
+from ZClasses.Basic import ZClassViewsSheet
+from ZClasses.Basic import ZClassBasicSheet
+from ZClasses.Basic import ZClassPermissionsSheet
+from ZClasses.Property import ZInstanceSheets
+from ZClasses.Property import ZInstanceSheetsSheet
 
+import Products
 if not hasattr(Products, 'meta_types'):
     Products.meta_types=()
 
@@ -59,7 +72,7 @@ def createZClassForBase( base_class, pack, nice_name=None, meta_type=None ):
     exec 'class %s: pass' % nice_name in d
 
     Z                 = d[nice_name]
-    Z.propertysheets  = OFS.PropertySheets.PropertySheets()
+    Z.propertysheets  = PropertySheets()
     Z._zclass_        = base_class
     Z.manage_options  = ()
 
@@ -95,11 +108,11 @@ def createZClassForBase( base_class, pack, nice_name=None, meta_type=None ):
 
 from OFS.misc_ import p_
 
-p_.ZClass_Icon=Globals.ImageFile('class.gif', globals())
+p_.ZClass_Icon = ImageFile('class.gif', globals())
 
-class PersistentClass(Base, webdav.Collection.Collection ):
+class PersistentClass(Base, Collection):
 
-    __metaclass__ = ZClasses._pmc.ZClassPersistentMetaClass
+    __metaclass__ = ZClassPersistentMetaClass
 
     # We need this class to be treated as a normal global class, even
     # though it is an instance of ZClassPersistentMetaClass.
@@ -111,7 +124,7 @@ class PersistentClass(Base, webdav.Collection.Collection ):
     def __class_init__(self):
         pass
 
-manage_addZClassForm=Globals.DTMLFile(
+manage_addZClassForm = DTMLFile(
     'dtml/addZClass', globals(),
     default_class_='OFS.SimpleItem Item',
     CreateAFactory=1,
@@ -163,6 +176,7 @@ def manage_addZClass(self, id, title='', baseclasses=[],
     self._setObject(id, Z)
 
     if CreateAFactory and meta_type:
+        from Products.PythonScripts.PythonScript import PythonScript
         self.manage_addDTMLMethod(
             id+'_addForm',
             id+' constructor input form',
@@ -210,10 +224,7 @@ def PersistentClassDict(doc=None, meta_type=None):
     return dict
 
 _marker=[]
-class ZClass( Base
-            , webdav.Collection.Collection
-            , OFS.SimpleItem.SimpleItem
-            ):
+class ZClass(Base, Collection, SimpleItem):
     """Zope Class
     """
     meta_type="Z Class"
@@ -257,16 +268,16 @@ class ZClass( Base
             except AttributeError: pass
 
         if zope_object:
-            base_classes.append(OFS.SimpleItem.SimpleItem)
+            base_classes.append(SimpleItem)
 
         zsheets_base_classes.append(ZClassSheets)
-        isheets_base_classes.append(Property.ZInstanceSheets)
+        isheets_base_classes.append(ZInstanceSheets)
 
         # Create the meta-class property sheet
         sheet_id = id+'_ZPropertySheetsClass'
         zsheets_class=type(PersistentClass)(
             sheet_id,
-            tuple(zsheets_base_classes)+(Globals.Persistent,),
+            tuple(zsheets_base_classes)+(Persistent,),
             PersistentClassDict(sheet_id, sheet_id))
         self.propertysheets=sheets=zsheets_class()
 
@@ -501,7 +512,7 @@ class ZClass( Base
         # Step one, look at all of the methods.
         # We can cheat (hee hee) and and look in the _zclass_
         # dict for wrapped objects.
-        for id in Method.findMethodIds(zclass):
+        for id in findMethodIds(zclass):
             r[id]=1
 
         # OK, now lets check out the inherited views:
@@ -555,7 +566,7 @@ class ZClass( Base
         for p in c.__ac_permissions__: d[p[0]]=None
         r=[]
         a=r.append
-        for p in AccessControl.Role.gather_permissions(c, [], d): a(p[0])
+        for p in gather_permissions(c, [], d): a(p[0])
         r.sort()
         return r
 
@@ -625,7 +636,7 @@ class ZClass( Base
 InitializeClass(ZClass)
 
 
-class ZClassSheets(OFS.PropertySheets.PropertySheets):
+class ZClassSheets(PropertySheets):
     "Manage a collection of property sheets that provide ZClass management"
 
     #isPrincipiaFolderish=1
@@ -635,13 +646,13 @@ class ZClassSheets(OFS.PropertySheets.PropertySheets):
         "Emulate standard interface for use with navigation"
         raise Redirect, URL2+'/manage_workspace'
 
-    views       = Basic.ZClassViewsSheet('views')
-    basic       = Basic.ZClassBasicSheet('basic')
-    permissions = Basic.ZClassPermissionsSheet('permissions')
+    views = ZClassViewsSheet('views')
+    basic = ZClassBasicSheet('basic')
+    permissions = ZClassPermissionsSheet('permissions')
 
     def __init__(self):
-        self.methods=Method.ZClassMethodsSheet('methods')
-        self.common=Property.ZInstanceSheetsSheet('common')
+        self.methods = ZClassMethodsSheet('methods')
+        self.common = ZInstanceSheetsSheet('common')
 
     #
     #   FTP support

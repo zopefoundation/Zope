@@ -16,20 +16,24 @@ RAM cache manager --
 
 $Id$
 '''
-
-
-from OFS.Cache import Cache, CacheManager
-from OFS.SimpleItem import SimpleItem
-from thread import allocate_lock
 from cgi import escape
+from thread import allocate_lock
 import time
-from Globals import InitializeClass
-from Globals import DTMLFile
-from AccessControl import ClassSecurityInfo
-from AccessControl.Permissions import view_management_screens
 
-try: from cPickle import Pickler, HIGHEST_PROTOCOL
-except: from pickle import Pickler, HIGHEST_PROTOCOL
+from AccessControl.Permissions import view_management_screens
+from AccessControl.SecurityInfo import ClassSecurityInfo
+from App.class_init import InitializeClass
+from App.special_dtml import DTMLFile
+from OFS.Cache import Cache
+from OFS.Cache import CacheManager
+from OFS.SimpleItem import SimpleItem
+
+try:
+    from cPickle import Pickler
+    from cPickle import HIGHEST_PROTOCOL
+except ImportError:
+    from pickle import Pickler
+    from pickle import HIGHEST_PROTOCOL
 
 _marker = []  # Create a new marker object.
 

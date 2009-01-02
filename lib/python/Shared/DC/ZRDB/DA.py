@@ -11,70 +11,87 @@
 #
 ##############################################################################
 __doc__='''Generic Database adapter'''
-
-
 __version__='$Revision: 1.116 $'[11:-2]
 
-import OFS.SimpleItem, Aqueduct, RDB, re
-import DocumentTemplate, marshal, md5, base64, Acquisition, os
-from Aqueduct import decodestring, parse
-from Aqueduct import custom_default_report, default_input_form
-from Globals import DTMLFile, MessageDialog
+import base64
+from cPickle import dumps
+from cPickle import loads
 from cStringIO import StringIO
-import sys, Globals, OFS.SimpleItem, AccessControl.Role
-from string import atoi, find, join, split, rstrip
-import DocumentTemplate, sqlvar, sqltest, sqlgroup
-from DocumentTemplate.html_quote import html_quote
+import marshal
+import md5
+import os
+import re
+import string
+import sys
 from time import time
-from zlib import compress, decompress
-from DateTime.DateTime import DateTime
-md5new=md5.new
-import ExtensionClass
-import DocumentTemplate.DT_Util
-from cPickle import dumps, loads
-from Results import Results
-from App.Extensions import getBrain
-from Globals import InitializeClass
-from AccessControl import ClassSecurityInfo
-from AccessControl import getSecurityManager
+from zlib import compress
+from zlib import decompress
+
+from AccessControl.DTML import RestrictedDTML
 from AccessControl.Permissions import change_database_methods
 from AccessControl.Permissions import use_database_methods
 from AccessControl.Permissions import view_management_screens
-from AccessControl.DTML import RestrictedDTML
+from AccessControl.Role import RoleManager
+from AccessControl.SecurityInfo import ClassSecurityInfo
+from AccessControl.SecurityManagement import getSecurityManager
+from Acquisition import Implicit
+from App.class_init import InitializeClass
+from App.Dialogs import MessageDialog
+from App.Extensions import getBrain
+from App.special_dtml import DTMLFile
+from DocumentTemplate import HTML
+from DocumentTemplate.html_quote import html_quote
+from DateTime.DateTime import DateTime
+from ExtensionClass import Base
+from BTrees.OOBTree import OOBucket as Bucket
+from OFS.SimpleItem import Item
+from Persistence import Persistent
 from webdav.Resource import Resource
 from webdav.Lockable import ResourceLockedError
 from zExceptions import BadRequest
-from BTrees.OOBTree import OOBucket as Bucket
 
+from Aqueduct import BaseQuery
+from Aqueduct import custom_default_report
+from Aqueduct import decodestring
+from Aqueduct import default_input_form
+from Aqueduct import parse
+from RDB import File
+from Results import Results
+from sqlgroup import SQLGroup
+from sqltest import SQLTest
+from sqlvar import SQLVar
+
+md5new = md5.new
 
 class DatabaseError(BadRequest):
    " base class for external relational data base connection problems "
    pass
 
 
-class nvSQL(DocumentTemplate.HTML):
+class nvSQL(HTML):
     # Non-validating SQL Template for use by SQLFiles.
     commands={}
-    for k, v in DocumentTemplate.HTML.commands.items(): commands[k]=v
-    commands['sqlvar' ]=sqlvar.SQLVar
-    commands['sqltest']=sqltest.SQLTest
-    commands['sqlgroup' ]=sqlgroup.SQLGroup
+    for k, v in HTML.commands.items():
+        commands[k]=v
+    commands['sqlvar'] = SQLVar
+    commands['sqltest'] = SQLTest
+    commands['sqlgroup' ] = SQLGroup
 
     _proxy_roles=()
 
 
-class SQL(RestrictedDTML, ExtensionClass.Base, nvSQL):
+class SQL(RestrictedDTML, Base, nvSQL):
     # Validating SQL template for Zope SQL Methods.
     pass
 
 
-class DA(
-    Aqueduct.BaseQuery,Acquisition.Implicit,
-    Globals.Persistent,
-    AccessControl.Role.RoleManager,
-    OFS.SimpleItem.Item,
-    Resource
-    ):
+class DA(BaseQuery,
+         Implicit,
+         Persistent,
+         RoleManager,
+         Item,
+         Resource
+        ):
     'Database Adapter'
 
     security = ClassSecurityInfo()
@@ -101,8 +118,8 @@ class DA(
         {'label':'Advanced', 'action':'manage_advancedForm',
          'help':('ZSQLMethods','Z-SQL-Method_Advanced.stx')},
         )
-        +AccessControl.Role.RoleManager.manage_options
-        +OFS.SimpleItem.Item.manage_options
+        + RoleManager.manage_options
+        + Item.manage_options
         )
 
     def __init__(self, id, title, connection_id, arguments, template):
@@ -221,11 +238,11 @@ class DA(
         """
         # paranoid type checking
         if type(max_rows) is not type(1):
-            max_rows=atoi(max_rows)
+            max_rows=string.atoi(max_rows)
         if type(max_cache) is not type(1):
-            max_cache=atoi(max_cache)
+            max_cache=string.atoi(max_cache)
         if type(cache_time) is not type(1):
-            cache_time=atoi(cache_time)
+            cache_time=string.atoi(cache_time)
         class_name=str(class_name)
         class_file=str(class_file)
 
@@ -304,7 +321,7 @@ class DA(
         input_src=default_input_form(self.title_or_id(),
                                      self._arg, 'manage_test',
                                      '<dtml-var manage_tabs>')
-        return DocumentTemplate.HTML(input_src)(self, REQUEST, HTTP_REFERER='')
+        return HTML(input_src)(self, REQUEST, HTTP_REFERER='')
 
     security.declareProtected(change_database_methods, 'manage_test')
     def manage_test(self, REQUEST):
@@ -319,8 +336,8 @@ class DA(
         try:
             try:
                 src, result=self(REQUEST, test__=1)
-                if find(src,'\0'):
-                    src=join(split(src,'\0'),'\n'+'-'*60+'\n')
+                if string.find(src,'\0'):
+                    src=string.join(string.split(src,'\0'),'\n'+'-'*60+'\n')
                 if result._searchable_result_columns():
                     r=custom_default_report(self.id, result)
                 else:
@@ -329,7 +346,7 @@ class DA(
                 t, v, tb = sys.exc_info()
                 r='<strong>Error, <em>%s</em>:</strong> %s' % (t, v)
 
-            report=DocumentTemplate.HTML(
+            report = HTML(
                 '<html>\n'
                 '<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">\n'
                 '<dtml-var manage_tabs>\n<hr>\n%s\n\n'
@@ -448,25 +465,31 @@ class DA(
         __traceback_supplement__ = (SQLMethodTracebackSupplement, self)
 
         if REQUEST is None:
-            if kw: REQUEST=kw
+            if kw:
+                REQUEST=kw
             else:
-                if hasattr(self, 'REQUEST'): REQUEST=self.REQUEST
-                else: REQUEST={}
+                if hasattr(self, 'REQUEST'):
+                    REQUEST=self.REQUEST
+                else:
+                    REQUEST={}
 
         # connection hook
         c = self.connection_id
         # for backwards compatability
         hk = self.connection_hook
         # go get the connection hook and call it
-        if hk: c = getattr(self, hk)()
+        if hk:
+            c = getattr(self, hk)()
            
-        try: dbc=getattr(self, c)
+        try:
+            dbc=getattr(self, c)
         except AttributeError:
             raise AttributeError, (
                 "The database connection <em>%s</em> cannot be found." % (
                 c))
 
-        try: DB__=dbc()
+        try:
+            DB__=dbc()
         except: raise DatabaseError, (
             '%s is not connected to a database' % self.id)
 
@@ -474,7 +497,8 @@ class DA(
             p=self.aq_parent
             if self._isBeingAccessedAsZClassDefinedInstanceMethod():
                 p=p.aq_parent
-        else: p=None
+        else:
+            p=None
 
         argdata=self._argdata(REQUEST)
         argdata['sql_delimiter']='\0'
@@ -483,23 +507,27 @@ class DA(
         security=getSecurityManager()
         security.addContext(self)
         try:
-            try:     query=apply(self.template, (p,), argdata)
+            try:
+                query=apply(self.template, (p,), argdata)
             except TypeError, msg:
                 msg = str(msg)
-                if find(msg,'client') >= 0:
+                if string.find(msg,'client') >= 0:
                     raise NameError("'client' may not be used as an " +
                         "argument name in this context")
                 else: raise
-        finally: security.removeContext(self)
+        finally:
+            security.removeContext(self)
 
-        if src__: return query
+        if src__:
+            return query
 
         if self.cache_time_ > 0 and self.max_cache_ > 0:
             result=self._cached_result(DB__, query, self.max_rows_, c)
         else:
             result=DB__.query(query, self.max_rows_)
 
-        if hasattr(self, '_v_brain'): brain=self._v_brain
+        if hasattr(self, '_v_brain'):
+            brain=self._v_brain
         else:
             brain=self._v_brain=getBrain(self.class_file_, self.class_name_)
 
@@ -510,15 +538,17 @@ class DA(
             f=StringIO()
             f.write(result)
             f.seek(0)
-            result=RDB.File(f,brain,p, zc)
+            result = File(f,brain,p, zc)
         else:
-            result=Results(result, brain, p, zc)
-        columns=result._searchable_result_columns()
-        if test__ and columns != self._col: self._col=columns
+            result = Results(result, brain, p, zc)
+        columns = result._searchable_result_columns()
+        if test__ and columns != self._col:
+            self._col=columns
 
         # If run in test mode, return both the query and results so
         # that the template doesn't have to be rendered twice!
-        if test__: return query, result
+        if test__:
+            return query, result
 
         return result
 
@@ -570,7 +600,7 @@ InitializeClass(DA)
 
 
 ListType=type([])
-class Traverse(ExtensionClass.Base):
+class Traverse(Base):
     """Helper class for 'traversing' searches during URL traversal
     """
     _da=None
@@ -603,7 +633,7 @@ class Traverse(ExtensionClass.Base):
         results=da(args)
         if results:
             if len(results) > 1:
-                try: return results[atoi(key)].__of__(da)
+                try: return results[string.atoi(key)].__of__(da)
                 except: raise KeyError, key
         else: raise KeyError, key
         r=results[0]

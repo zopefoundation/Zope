@@ -17,18 +17,21 @@ Folders are the basic container objects and are analogous to directories.
 $Id$
 """
 
-import AccessControl.Role, webdav.Collection
-from Globals import InitializeClass
-from AccessControl import getSecurityManager
-from AccessControl import Unauthorized
 from AccessControl.Permissions import add_page_templates
 from AccessControl.Permissions import add_user_folders
-from Globals import DTMLFile
+from AccessControl.Role import RoleManager
+from AccessControl.SecurityManagement import getSecurityManager
+from AccessControl.unauthorized import Unauthorized
+from App.class_init import InitializeClass
+from App.special_dtml import DTMLFile
+from webdav.Collection import Collection
 from zope.interface import implements
 
-import FindSupport
-import SimpleItem, ObjectManager, PropertyManager
-from interfaces import IFolder
+from OFS.FindSupport import FindSupport
+from OFS.interfaces import IFolder
+from OFS.ObjectManager import ObjectManager
+from OFS.PropertyManager import PropertyManager
+from OFS.SimpleItem import Item
 
 
 manage_addFolderForm=DTMLFile('dtml/folderAdd', globals())
@@ -70,12 +73,12 @@ def manage_addFolder(self, id, title='',
 
 
 class Folder(
-    ObjectManager.ObjectManager,
-    PropertyManager.PropertyManager,
-    AccessControl.Role.RoleManager,
-    webdav.Collection.Collection,
-    SimpleItem.Item,
-    FindSupport.FindSupport,
+    ObjectManager,
+    PropertyManager,
+    RoleManager,
+    Collection,
+    Item,
+    FindSupport,
     ):
 
     """Folders are basic container objects that provide a standard
@@ -89,15 +92,15 @@ class Folder(
     _properties=({'id':'title', 'type': 'string','mode':'wd'},)
 
     manage_options=(
-        ObjectManager.ObjectManager.manage_options+
+        ObjectManager.manage_options+
         (
         {'label':'View', 'action':'',
          'help':('OFSP','Folder_View.stx')},
         )+
-        PropertyManager.PropertyManager.manage_options+
-        AccessControl.Role.RoleManager.manage_options+
-        SimpleItem.Item.manage_options+
-        FindSupport.FindSupport.manage_options
+        PropertyManager.manage_options+
+        RoleManager.manage_options+
+        Item.manage_options+
+        FindSupport.manage_options
         )
 
     __ac_permissions__=()

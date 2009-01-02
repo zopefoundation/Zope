@@ -14,37 +14,26 @@
 
 $Id$
 """
-
-import Globals
-from DateTime import DateTime
-from Persistence import Persistent
-from zope.interface import classImplements
-from zope.interface import implements
-
-from class_init import default__class_init__
-from interfaces import IPersistentExtra
-
-
-Persistent.__class_init__ = default__class_init__
+from DateTime.DateTime import DateTime
 
 class PersistentUtil:
-
-    implements(IPersistentExtra)
 
     def bobobase_modification_time(self):
         jar=self._p_jar
         oid=self._p_oid
-        if jar is None or oid is None: return DateTime()
+        if jar is None or oid is None:
+            return DateTime()
 
         try:
-            t=self._p_mtime
-            if t is None: return DateTime()
-        except: t=0
+            t = self._p_mtime
+        except:
+            t = 0
         return DateTime(t)
 
     def locked_in_version(self):
         """Was the object modified in any version?
         """
+        import Globals  # for data
         jar=self._p_jar
         oid=self._p_oid
         if jar is None or oid is None: return None
@@ -80,8 +69,24 @@ class PersistentUtil:
         except: return 0
         return 1
 
-for k, v in PersistentUtil.__dict__.items():
-    if k[0] != '_':
-        setattr(Persistent, k, v)
 
-classImplements(Persistent, IPersistentExtra)
+_patched = False
+
+def patchPersistent():
+    global _patched
+    if _patched:
+        return
+
+    _patched = True
+
+    from zope.interface import classImplements
+    from Persistence import Persistent
+    from App.class_init import default__class_init__
+    from App.interfaces import IPersistentExtra
+    Persistent.__class_init__ = default__class_init__
+
+    for k, v in PersistentUtil.__dict__.items():
+        if k[0] != '_':
+            setattr(Persistent, k, v)
+
+    classImplements(Persistent, IPersistentExtra)

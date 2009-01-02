@@ -33,8 +33,7 @@
 
 __version__='$Revision: 1.9 $'[11:-2]
 
-
-from Globals import HTML
+from App.special_dtml import HTML
 
 MessageDialog = HTML("""
 <HTML>

@@ -11,10 +11,9 @@
 #
 ##############################################################################
 
-from Globals import InitializeClass
-from AccessControl import ClassSecurityInfo
+from AccessControl.SecurityInfo import ClassSecurityInfo
+from App.class_init import InitializeClass
 from App.ImageFile import ImageFile
-
 
 class misc_:
     "Miscellaneous product information"

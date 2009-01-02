@@ -13,11 +13,11 @@
 
 __version__='$Revision$'[11:-2]
 
-import Globals
-from Globals import InitializeClass
-from AccessControl import ClassSecurityInfo
 from AccessControl.Permissions import view_management_screens
-from Bindings import Bindings
+from AccessControl.SecurityInfo import ClassSecurityInfo
+from App.class_init import InitializeClass
+from App.special_dtml import DTMLFile
+from Shared.DC.Scripts.Bindings import Bindings
 
 class BindingsUI(Bindings):
 
@@ -31,7 +31,7 @@ class BindingsUI(Bindings):
 
     security.declareProtected(view_management_screens,
                               'ZBindingsHTML_editForm')
-    ZBindingsHTML_editForm = Globals.DTMLFile('dtml/scriptBindings', globals())
+    ZBindingsHTML_editForm = DTMLFile('dtml/scriptBindings', globals())
 
     security.declareProtected('Change bindings', 'ZBindingsHTML_editAction')
     def ZBindingsHTML_editAction(self, REQUEST):

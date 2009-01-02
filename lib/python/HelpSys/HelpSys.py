@@ -10,23 +10,23 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
+from cgi import escape
 
-import Acquisition
-from OFS.SimpleItem import Item
-from OFS.ObjectManager import ObjectManager
-from Globals import Persistent, DTMLFile, HTML
-from Globals import InitializeClass
-from AccessControl import ClassSecurityInfo
 from AccessControl.Permissions import access_contents_information
 from AccessControl.Permissions import add_documents_images_and_files
 from AccessControl.Permissions import view as View
+from AccessControl.SecurityInfo import ClassSecurityInfo
+from Acquisition import Implicit
+from App.class_init import InitializeClass
+from App.special_dtml import DTMLFile
+from App.special_dtml import HTML
+from OFS.ObjectManager import ObjectManager
+from OFS.SimpleItem import Item
+from Persistence import Persistent
 from Products.ZCatalog.ZCatalog import ZCatalog
 from Products.ZCatalog.Lazy import LazyCat
-from cgi import escape
-import Products
-import HelpTopic
 
-class HelpSys(Acquisition.Implicit, ObjectManager, Item, Persistent):
+class HelpSys(Implicit, ObjectManager, Item, Persistent):
     """
     Zope Help System
 
@@ -48,6 +48,7 @@ class HelpSys(Acquisition.Implicit, ObjectManager, Item, Persistent):
     security.declareProtected(access_contents_information, 'helpValues')
     def helpValues(self, spec=None):
         "ProductHelp objects of all Products that have help"
+        import Products
         hv=[]
         for product in self.Control_Panel.Products.objectValues():
             productHelp=product.getProductHelp()
@@ -192,7 +193,7 @@ class TreeCollection:
         return self.id
 
 
-class ProductHelp(Acquisition.Implicit, ObjectManager, Item, Persistent):
+class ProductHelp(Implicit, ObjectManager, Item, Persistent):
     """
     Manages a collection of Help Topics for a given Product.
 
@@ -240,8 +241,9 @@ class ProductHelp(Acquisition.Implicit, ObjectManager, Item, Persistent):
     security.declareProtected(add_documents_images_and_files, 'addTopic')
     def addTopic(self, id, title, REQUEST=None):
         "Add a Help Topic"
-        topic=HelpTopic.DTMLDocumentTopic(
-            HelpTopic.default_topic_content, __name__=id)
+        from HelpSys.HelpTopic import DTMLDocumentTopic
+        from HelpSys.HelpTopic import default_topic_content
+        topic = DTMLDocumentTopic(default_topic_content, __name__=id)
         topic.title=title
         self._setObject(id, topic)
         if REQUEST is not None:
@@ -297,6 +299,7 @@ class ProductHelp(Acquisition.Implicit, ObjectManager, Item, Persistent):
         return topics
 
     def all_meta_types(self):
+        import Products
         f=lambda x: x['name'] in ('Image', 'File')
         return filter(f, Products.meta_types) + self.meta_types
 

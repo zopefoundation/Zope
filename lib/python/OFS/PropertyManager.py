@@ -16,26 +16,26 @@ $Id$
 """
 
 from cgi import escape
-from types import ListType
 
-import ExtensionClass
-from Globals import InitializeClass
-from AccessControl import ClassSecurityInfo
 from AccessControl.Permissions import access_contents_information
 from AccessControl.Permissions import manage_properties
+from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import aq_base
-from Globals import DTMLFile, MessageDialog
-from Globals import Persistent
+from App.class_init import InitializeClass
+from ExtensionClass import Base
+from App.special_dtml import DTMLFile
+from App.Dialogs import MessageDialog
+from Persistence import Persistent
 from zExceptions import BadRequest
 from zope.interface import implements
 from ZPublisher.Converters import type_converters
 
-import ZDOM
-from interfaces import IPropertyManager
-from PropertySheets import DefaultPropertySheets, vps
+from OFS.interfaces import IPropertyManager
+from OFS.PropertySheets import DefaultPropertySheets
+from OFS.PropertySheets import vps
+from OFS.ZDOM import ElementWithAttributes
 
-
-class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
+class PropertyManager(Base, ElementWithAttributes):
 
     """
     The PropertyManager mixin class provides an object with
@@ -170,7 +170,7 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
 
     def _setPropValue(self, id, value):
         self._wrapperCheck(value)
-        if type(value) == ListType:
+        if type(value) == list:
             value = tuple(value)
         setattr(self,id,value)
 

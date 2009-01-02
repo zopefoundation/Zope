@@ -13,16 +13,23 @@
 """Provide management of common instance property sheets
 """
 
-import transaction
 
-import OFS.PropertySheets, Globals, OFS.SimpleItem, OFS.PropertyManager
-import Acquisition
-from Globals import InitializeClass
-from AccessControl import ClassSecurityInfo
 from AccessControl.Permission import pname
 from AccessControl.Permissions import manage_zclasses
 from AccessControl.Permissions import manage_properties
 from AccessControl.Permissions import access_contents_information
+from AccessControl.SecurityInfo import ClassSecurityInfo
+from App.class_init import InitializeClass
+from App.special_dtml import DTMLFile
+from OFS.ObjectManager import ObjectManager
+from OFS.PropertySheets import FixedSchema
+from OFS.PropertySheets import PropertySheet
+from OFS.PropertySheets import PropertySheets
+from OFS.PropertySheets import View
+from OFS.SimpleItem import Item
+from OFS.Traversable import Traversable
+from Persistence import Persistent
+import transaction
 
 class ClassCaretaker:
     def __init__(self, klass): self.__dict__['_k']=klass
@@ -41,7 +48,7 @@ class ClassCaretaker:
             klass._p_changed=1
 
 
-class ZCommonSheet(OFS.PropertySheets.PropertySheet, OFS.SimpleItem.Item):
+class ZCommonSheet(PropertySheet, Item):
     "Property Sheet that has properties common to all instances"
     meta_type="Common Instance Property Sheet"
     _properties=()
@@ -200,7 +207,7 @@ class ZCommonSheet(OFS.PropertySheets.PropertySheet, OFS.SimpleItem.Item):
     def permissionMappingPossibleValues(self):
         return self.classDefinedAndInheritedPermissions()
 
-    manage_security=Globals.DTMLFile('AccessControl/dtml/methodAccess')
+    manage_security = DTMLFile('AccessControl/dtml/methodAccess')
     def manage_getPermissionMapping(self):
         ips=self.getClassAttr('propertysheets')
         ips=getattr(ips, self.id)
@@ -252,9 +259,7 @@ property_sheet_permissions=(
     'Manage properties',
     )
 
-class ZInstanceSheet(OFS.PropertySheets.FixedSchema,
-                     OFS.PropertySheets.View,
-                    ):
+class ZInstanceSheet(FixedSchema, View):
     "Waaa this is too hard"
 
     security = ClassSecurityInfo()
@@ -285,9 +290,7 @@ def rclass(klass):
         transaction.get().register(klass)
         klass._p_changed=1
 
-class ZInstanceSheetsSheet(OFS.Traversable.Traversable,
-                           OFS.PropertySheets.View,
-                           OFS.ObjectManager.ObjectManager):
+class ZInstanceSheetsSheet(Traversable, View, ObjectManager):
     "Manage common property sheets"
 
     # Note that we need to make sure we add and remove
@@ -315,20 +318,17 @@ class ZInstanceSheetsSheet(OFS.Traversable.Traversable,
         pc.__propset_attrs__=tuple(map(lambda o: o['id'], self._objects))
         rclass(pc)
 
-    meta_types=(
-        Globals.Dictionary(name=ZCommonSheet.meta_type,
-                           action='manage_addCommonSheetForm'),
-        )
+    meta_types=({'name': ZCommonSheet.meta_type,
+                 'action': 'manage_addCommonSheetForm',
+                },)
 
     def all_meta_types(self): return self.meta_types
 
 
-    manage=Globals.DTMLFile('OFS/dtml/main',
-                            management_view='Property Sheets')
+    manage = DTMLFile('OFS/dtml/main', management_view='Property Sheets')
     manage_main = manage
     manage_main._setName('manage_main')
-    manage_addCommonSheetForm=Globals.DTMLFile('dtml/addCommonSheet',
-                                               globals())
+    manage_addCommonSheetForm = DTMLFile('dtml/addCommonSheet', globals())
 
     def manage_addCommonSheet(self, id, title, REQUEST=None):
         "Add a property sheet"
@@ -345,7 +345,7 @@ def klass_sequence(klass,attr,result=None):
             klass_sequence(klass, attr, result)
     return result
 
-class ZInstanceSheets(OFS.PropertySheets.PropertySheets, Globals.Persistent):
+class ZInstanceSheets(PropertySheets, Persistent):
     " "
     __propset_attrs__=()
     _implements_the_notional_subclassable_propertysheet_class_interface=1

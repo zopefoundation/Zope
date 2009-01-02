@@ -15,39 +15,52 @@ __doc__='''Shared classes and functions
 $Id$'''
 __version__='$Revision: 1.58 $'[11:-2]
 
-import Globals, os
-from Globals import Persistent
-import DocumentTemplate, DateTime,  re, string
-import binascii, Acquisition
-DateTime.now=DateTime.DateTime
+import binascii
 from cStringIO import StringIO
-from OFS import SimpleItem
+import os
+import re
+import string
+
 from AccessControl.Role import RoleManager
+from Acquisition import Implicit
+from App.Common import package_home
+from DateTime.DateTime import DateTime
+from DocumentTemplate import File
 from DocumentTemplate import HTML
+from OFS.SimpleItem import Item
+from Persistence import Persistent
 from zExceptions import Redirect
 
-from string import strip, replace
 
-dtml_dir=os.path.join(Globals.package_home(globals()), 'dtml')
+dtml_dir=os.path.join(package_home(globals()), 'dtml')
 
 InvalidParameter='Invalid Parameter'
 
 
-class BaseQuery(Persistent, SimpleItem.Item,
-                Acquisition.Implicit, RoleManager):
+class BaseQuery(Persistent, Item, Implicit, RoleManager):
 
-    def query_year(self): return self.query_date.year()
-    def query_month(self): return self.query_date.month()
-    def query_day(self): return self.query_date.day()
-    query_date=DateTime.now()
+    def query_year(self):
+        return self.query_date.year()
+
+    def query_month(self):
+        return self.query_date.month()
+
+    def query_day(self):
+        return self.query_date.day()
+
+    query_date = DateTime()
     manage_options=()
 
-    def quoted_input(self): return quotedHTML(self.input_src)
-    def quoted_report(self): return quotedHTML(self.report_src)
+    def quoted_input(self):
+        return quotedHTML(self.input_src)
 
-    MissingArgumentError='Bad Request'
+    def quoted_report(self):
+        return quotedHTML(self.report_src)
 
-    def _convert(self): self._arg=parse(self.arguments_src)
+    MissingArgumentError = 'Bad Request'
+
+    def _convert(self):
+        self._arg=parse(self.arguments_src)
 
     def _argdata(self, REQUEST):
 
@@ -212,9 +225,9 @@ def default_input_form(id,arguments,action='query',
             )
 
 
-custom_default_report_src=DocumentTemplate.File(
+custom_default_report_src=File(
     os.path.join(dtml_dir,'customDefaultReport.dtml'))
-custom_default_zpt_report_src=DocumentTemplate.File(
+custom_default_zpt_report_src=File(
     os.path.join(dtml_dir,'customDefaultZPTReport.dtml'))
 
 def custom_default_report(id, result, action='', no_table=0,
@@ -380,12 +393,12 @@ def quotedHTML(text,
 
 
     for re,name in character_entities:
-        text=replace(text,re,name)
+        text=string.replace(text,re,name)
 
     return text
 
 def nicify(name):
-    name=replace(string.strip(name), '_',' ')
+    name=string.replace(string.strip(name), '_',' ')
     return string.upper(name[:1])+name[1:]
 
 def decapitate(html, RESPONSE=None,

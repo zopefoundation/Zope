@@ -15,29 +15,35 @@ __doc__='''Zope registerable permissions
 $Id$'''
 __version__='$Revision: 1.9 $'[11:-2]
 
-import OFS.SimpleItem, Acquisition, Globals, ExtensionClass, AccessControl.Role
-from AccessControl import ClassSecurityInfo, Permissions
+from AccessControl.Permissions import view_management_screens
+from AccessControl.Permissions import define_permissions
+from AccessControl.Role import RoleManager
+from AccessControl.SecurityInfo import ClassSecurityInfo
+from Acquisition import Implicit
+from App.class_init import InitializeClass
+from App.special_dtml import DTMLFile
+from ExtensionClass import Base
+from OFS.SimpleItem import Item
+from Persistence import Persistent
 
-view_management_screens = Permissions.view_management_screens
-define_permissions = Permissions.define_permissions
-
-
-class Permission(
-    AccessControl.Role.RoleManager,
-    Globals.Persistent, Acquisition.Implicit, OFS.SimpleItem.Item
-    ):
-    "Model Permission meta-data"
-    meta_type='Zope Permission'
-    icon='p_/Permission_icon'
+class Permission(RoleManager,
+                 Persistent,
+                 Implicit,
+                 Item
+                ):
+    """Model Permission meta-data
+    """
+    meta_type = 'Zope Permission'
+    icon = 'p_/Permission_icon'
     security = ClassSecurityInfo()
 
     manage_options=(
         (
         {'label':'Edit', 'action':'manage_main',
-         'help':('OFSP','Zope-Permission_Edit.stx')},
+         'help':('OFSP', 'Zope-Permission_Edit.stx')},
         )
-        +AccessControl.Role.RoleManager.manage_options
-        +OFS.SimpleItem.Item.manage_options
+        + RoleManager.manage_options
+        + Item.manage_options
         )
 
     def __init__(self, id, title, name):
@@ -65,25 +71,25 @@ class Permission(
 
     def _register(self):
         # Register with the product folder
-        product=self.aq_parent
+        product = self.aq_parent
         product.aq_acquire('_manage_add_product_permission')(
             product, self.name)
 
     def _unregister(self):
         # Unregister with the product folder
-        product=self.aq_parent
+        product = self.aq_parent
         product.aq_acquire('_manage_remove_product_permission')(
             product, self.name)
 
     security.declareProtected(view_management_screens, 'manage_main')
-    manage_main=Globals.DTMLFile('dtml/editPermission',globals())
+    manage_main = DTMLFile('dtml/editPermission', globals())
 
-    index_html=None
+    index_html = None
 
-Globals.InitializeClass(Permission)
+InitializeClass(Permission)
 
 
-class PermissionManager(ExtensionClass.Base):
+class PermissionManager(Base):
 
     security = ClassSecurityInfo()
 
@@ -92,15 +98,16 @@ class PermissionManager(ExtensionClass.Base):
         },
 
     security.declareProtected(define_permissions, 'manage_addPermissionForm')
-    manage_addPermissionForm=Globals.DTMLFile('dtml/addPermission',globals())
+    manage_addPermissionForm = DTMLFile('dtml/addPermission', globals())
 
     security.declareProtected(define_permissions, 'manage_addPermission')
     def manage_addPermission(
         self, id, title, permission, REQUEST=None):
-        ' '
+        """ Add a TTW permission.
+        """
         i=Permission(id, title, permission)
-        self._setObject(id,i)
+        self._setObject(id, i)
         if REQUEST is not None:
-            return self.manage_main(self,REQUEST,update_menu=1)
+            return self.manage_main(self, REQUEST, update_menu=1)
 
-Globals.InitializeClass(PermissionManager)
+InitializeClass(PermissionManager)

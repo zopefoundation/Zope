@@ -15,37 +15,41 @@ Transient Object Container Class ('timeslice'-based design, no index).
 
 $Id$
 """
-
+from cgi import escape
+from logging import getLogger
 import math
-import time
+import os
 import random
 import sys
-import os
 import thread
-from cgi import escape
+import time
 
-import Globals
-from Globals import HTMLFile
-from TransienceInterfaces import Transient, DictionaryLike, ItemWithId,\
-     TTWDictionary, ImmutablyValuedMappingOfPickleableObjects,\
-     StringKeyedHomogeneousItemContainer, TransientItemContainer
-
+from AccessControl.SecurityInfo import ClassSecurityInfo
+from AccessControl.SecurityManagement import getSecurityManager
+from AccessControl.SecurityManagement import newSecurityManager
+from AccessControl.SecurityManagement import setSecurityManager
+from AccessControl.SpecialUsers import nobody
+from App.class_init import InitializeClass
+from App.special_dtml import HTMLFile
 from BTrees.Length import Length as BTreesLength
 from BTrees.OOBTree import OOBTree
 from BTrees.IOBTree import IOBTree
-
-from Persistence import Persistent
 from OFS.SimpleItem import SimpleItem
-from AccessControl import ClassSecurityInfo, getSecurityManager
-from AccessControl.SecurityManagement import newSecurityManager, \
-     setSecurityManager
-from AccessControl.User import nobody
-from logging import getLogger
-
+from Persistence import Persistent
 from zope.interface import implements
 
-from TransientObject import TransientObject
-from Fake import FakeIOBTree
+from Products.Transience.TransienceInterfaces import DictionaryLike
+from Products.Transience.TransienceInterfaces \
+    import ImmutablyValuedMappingOfPickleableObjects
+from Products.Transience.TransienceInterfaces import ItemWithId
+from Products.Transience.TransienceInterfaces \
+    import StringKeyedHomogeneousItemContainer
+from Products.Transience.TransienceInterfaces import Transient
+from Products.Transience.TransienceInterfaces import TransientItemContainer
+from Products.Transience.TransienceInterfaces import TTWDictionary
+
+from Products.Transience.TransientObject import TransientObject
+from Products.Transience.Fake import FakeIOBTree
 
 ADD_CONTAINER_PERM = 'Add Transient Object Container'
 MGMT_SCREEN_PERM = 'View management screens'
@@ -1116,5 +1120,5 @@ class Length2(Persistent):
         new['value'] = new['ceiling'] - new['floor']
         return new
 
-Globals.InitializeClass(TransientObjectContainer)
+InitializeClass(TransientObjectContainer)
 

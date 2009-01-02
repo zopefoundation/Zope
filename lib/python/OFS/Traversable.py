@@ -17,22 +17,27 @@ $Id$
 
 from urllib import quote
 
-from Globals import InitializeClass
-from AccessControl import ClassSecurityInfo
-from AccessControl import getSecurityManager
-from AccessControl import Unauthorized
+from AccessControl.SecurityInfo import ClassSecurityInfo
+from AccessControl.SecurityManagement import getSecurityManager
+from AccessControl.unauthorized import Unauthorized
 from AccessControl.ZopeGuards import guarded_getattr
-from Acquisition import Acquired, aq_inner, aq_parent, aq_acquire, aq_base
+from Acquisition import Acquired
+from Acquisition import aq_acquire
+from Acquisition import aq_base
+from Acquisition import aq_inner
+from Acquisition import aq_parent
 from Acquisition.interfaces import IAcquirer
+from App.class_init import InitializeClass
+from OFS.interfaces import ITraversable
 from zExceptions import NotFound
 from ZODB.POSException import ConflictError
-from OFS.interfaces import ITraversable
-import webdav
 
-from zope.interface import implements, Interface
+from zope.interface import implements
+from zope.interface import Interface
 from zope.component import queryMultiAdapter
 from zope.traversing.interfaces import TraversalError
-from zope.traversing.namespace import nsParse, namespaceLookup
+from zope.traversing.namespace import namespaceLookup
+from zope.traversing.namespace import nsParse
 
 _marker = object()
 
@@ -138,6 +143,7 @@ class Traversable:
         If true, then all of the objects along the path are validated with
         the security machinery. Usually invoked using restrictedTraverse().
         """
+        from webdav.NullResource import NullResource
         if not path:
             return self
 
@@ -245,8 +251,7 @@ class Traversable:
                                 # The item lookup may return a NullResource,
                                 # if this is the case we save it and return it
                                 # if all other lookups fail.
-                                if isinstance(next,
-                                              webdav.NullResource.NullResource):
+                                if isinstance(next, NullResource):
                                     resource = next
                                     raise KeyError(name)
                             except AttributeError:

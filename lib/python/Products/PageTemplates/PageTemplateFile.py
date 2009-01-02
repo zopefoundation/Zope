@@ -14,8 +14,11 @@
 import os
 from logging import getLogger
 
-import AccessControl
-from Globals import package_home, InitializeClass, DevelopmentMode
+from AccessControl.SecurityInfo import ClassSecurityInfo
+from AccessControl.SecurityManagement import getSecurityManager
+from App.class_init import InitializeClass
+from App.Common import package_home
+from App.special_dtml import DTMLFile
 from App.config import getConfiguration
 from Acquisition import aq_parent, aq_inner, aq_get
 from ComputedAttribute import ComputedAttribute
@@ -54,13 +57,12 @@ class PageTemplateFile(SimpleItem, Script, PageTemplate, Traversable):
     func_code = FuncCode((), 0)
     _v_last_read = 0
 
-    # needed by App.class_init.default__class_init__, often imported
-    # using the alias Globals.InitializeClass
+    # needed by App.class_init.InitializeClass
     _need__name__ = 1
 
     _default_bindings = {'name_subpath': 'traverse_subpath'}
 
-    security = AccessControl.ClassSecurityInfo()
+    security = ClassSecurityInfo()
     security.declareProtected('View management screens',
       'read', 'document_src')
 
@@ -118,7 +120,7 @@ class PageTemplateFile(SimpleItem, Script, PageTemplate, Traversable):
                 response.setHeader('content-type', self.content_type)
 
         # Execute the template in a new security context.
-        security = AccessControl.getSecurityManager()
+        security = getSecurityManager()
         bound_names['user'] = security.getUser()
         security.addContext(self)
 
@@ -138,7 +140,8 @@ class PageTemplateFile(SimpleItem, Script, PageTemplate, Traversable):
         return self.__name__  # Don't reveal filesystem paths
 
     def _cook_check(self):
-        if self._v_last_read and not DevelopmentMode:
+        import Globals  # for data
+        if self._v_last_read and not Globals.DevelopmentMode:
             return
         __traceback_info__ = self.filename
         try:

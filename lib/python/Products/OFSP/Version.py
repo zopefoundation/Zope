@@ -14,28 +14,29 @@
 
 __version__='$Revision: 1.55 $'[11:-2]
 
-import Globals, time
-from AccessControl.Role import RoleManager
-from Globals import MessageDialog
-from Globals import Persistent
-from Globals import InitializeClass
-from AccessControl import ClassSecurityInfo
+from cgi import escape
+import time
+
 from AccessControl.Permissions import change_versions
 from AccessControl.Permissions import join_leave_versions
 from AccessControl.Permissions import save_discard_version_changes
 from AccessControl.Permissions import view_management_screens
+from AccessControl.Role import RoleManager
+from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Implicit
-from OFS.SimpleItem import Item
-from Globals import HTML
+from App.class_init import InitializeClass
 from App.Dialogs import MessageDialog
+from App.special_dtml import DTMLFile
+from App.special_dtml import HTML
+from OFS.SimpleItem import Item
+from Persistence import Persistent
 from OFS.ObjectManager import BeforeDeleteException
-from cgi import escape
-
 import transaction
 
-class VersionException(BeforeDeleteException): pass
+class VersionException(BeforeDeleteException):
+    pass
 
-manage_addVersionForm=Globals.DTMLFile('dtml/versionAdd', globals())
+manage_addVersionForm = DTMLFile('dtml/versionAdd', globals())
 
 def manage_addVersion(self, id, title, REQUEST=None):
     """ """
@@ -77,23 +78,32 @@ class Version(Persistent,Implicit,RoleManager,Item):
         self.title=title
 
     security.declareProtected(join_leave_versions, 'manage_main')
-    manage_main=Globals.DTMLFile('dtml/version', globals())
+    manage_main = DTMLFile('dtml/version', globals())
 
     security.declareProtected(save_discard_version_changes, 'manage_end')
-    manage_end=Globals.DTMLFile('dtml/versionEnd', globals())
+    manage_end = DTMLFile('dtml/versionEnd', globals())
 
     security.declareProtected(view_management_screens, 'manage_editForm')
-    manage_editForm   =Globals.DTMLFile('dtml/versionEdit', globals())
+    manage_editForm = DTMLFile('dtml/versionEdit', globals())
+
+    def _getVersionBaseCookie(self):
+        import Globals  # for data
+        versionbase = getattr(Globals, 'VersionBase', {})
+        return versionbase.get(self.cookie)
 
     def title_and_id(self):
-        r=Version.inheritedAttribute('title_and_id')(self)
-        try: db=self._p_jar.db()
+        r = Version.inheritedAttribute('title_and_id')(self)
+        try:
+            db = self._p_jar.db()
         except:
             # BoboPOS 2
-            if Globals.VersionBase[self.cookie].nonempty(): return '%s *' % r
+            vbc = self._getVersionBaseCookie()
+            if vbc and vbc.nonempty():
+                return '%s *' % r
         else:
             # ZODB 3
-            if not db.versionEmpty(self.cookie): return '%s *' % r
+            if not db.versionEmpty(self.cookie):
+                return '%s *' % r
 
         return r
 
@@ -103,7 +113,8 @@ class Version(Persistent,Implicit,RoleManager,Item):
                   'alt': self.meta_type, 'title': self.meta_type},
                  {'path': 'misc_/PageTemplates/exclamation.gif',
                           'alt': 'Deprecated object',
-                          'title': 'Version objects are deprecated and should not be used anyore.'},)
+                          'title': 'Version objects are deprecated '
+                                   'and should not be used anyore.'},)
 
     security.declareProtected(change_versions, 'manage_edit')
     def manage_edit(self, title, REQUEST=None):
@@ -116,7 +127,9 @@ class Version(Persistent,Implicit,RoleManager,Item):
 
     security.declareProtected(join_leave_versions, 'enter')
     def enter(self, REQUEST, RESPONSE):
-        """Begin working in a version"""
+        """Begin working in a version.
+        """
+        import Globals  # for data
         RESPONSE.setCookie(
             Globals.VersionNameName, self.cookie,
             path=(REQUEST['BASEPATH1'] or '/'),
@@ -134,7 +147,9 @@ class Version(Persistent,Implicit,RoleManager,Item):
 
     security.declareProtected(join_leave_versions, 'leave')
     def leave(self, REQUEST, RESPONSE):
-        """Temporarily stop working in a version"""
+        """Temporarily stop working in a version
+        """
+        import Globals  # for data
         RESPONSE.setCookie(
             Globals.VersionNameName,'No longer active',
             expires="Mon, 25-Jan-1999 23:59:59 GMT",
@@ -159,10 +174,13 @@ class Version(Persistent,Implicit,RoleManager,Item):
     security.declareProtected(save_discard_version_changes, 'save')
     def save(self, remark, REQUEST=None):
         """Make version changes permanent"""
-        try: db=self._p_jar.db()
+        try:
+            db = self._p_jar.db()
         except:
             # BoboPOS 2
-            Globals.VersionBase[self.cookie].commit(remark)
+            vbc = self._getVersionBaseCookie()
+            if vbc:
+                vbc.commit(remark)
         else:
             # ZODB 3
             s=self.cookie
@@ -177,10 +195,13 @@ class Version(Persistent,Implicit,RoleManager,Item):
     security.declareProtected(save_discard_version_changes, 'discard')
     def discard(self, remark='', REQUEST=None):
         'Discard changes made during the version'
-        try: db=self._p_jar.db()
+        try:
+            db = self._p_jar.db()
         except:
             # BoboPOS 2
-            Globals.VersionBase[self.cookie].abort()
+            vbc = self._getVersionBaseCookie()
+            if vbc:
+                vbc.abort()
         else:
             # ZODB 3
             transaction.get().note(remark)
@@ -190,10 +211,12 @@ class Version(Persistent,Implicit,RoleManager,Item):
             REQUEST['RESPONSE'].redirect(REQUEST['URL1']+'/manage_main')
 
     def nonempty(self):
-        try: db=self._p_jar.db()
+        try:
+            db = self._p_jar.db()
         except:
             # BoboPOS 2
-            return Globals.VersionBase[self.cookie].nonempty()
+            vbc = self._getVersionBaseCookie()
+            return vbc and vbc.nonempty()
         else:
             # ZODB 3
             return not db.versionEmpty(self.cookie)
@@ -212,13 +235,16 @@ class Version(Persistent,Implicit,RoleManager,Item):
             self.cookie='/'.join(self.getPhysicalPath())
 
     def manage_beforeDelete(self, item, container):
+        import Globals  # for data
         if self.nonempty():
             raise VersionException(
                 'Attempt to %sdelete a non-empty version.<br />' %
                 ((self is not item) and 'indirectly ' or ''))
 
-        try: REQUEST=self.REQUEST
-        except: pass
+        try:
+            REQUEST=self.REQUEST
+        except:
+            pass
         else:
             v=self.cookie
             if REQUEST.get(Globals.VersionNameName, '') == v:

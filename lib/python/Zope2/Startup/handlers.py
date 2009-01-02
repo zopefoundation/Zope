@@ -46,8 +46,8 @@ def _setenv(name, value):
 
 def debug_mode(value):
     value and _setenv('Z_DEBUG_MODE', '1')
-    import Globals
-    Globals.DevelopmentMode = not not value
+    import Globals # to set value
+    Globals.DevelopmentMode = boolean(value)
     return value
 
 def locale(value):

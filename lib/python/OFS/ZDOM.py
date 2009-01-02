@@ -15,12 +15,13 @@ DOM implementation in ZOPE : Read-Only methods
 
 All standard Zope objects support DOM to a limited extent.
 """
-import Acquisition
+from AccessControl.SecurityInfo import ClassSecurityInfo
+from AccessControl.Permissions import access_contents_information
+from Acquisition import Explicit
+from Acquisition import Implicit
 from Acquisition import aq_base
 from Acquisition import aq_parent
-from Globals import InitializeClass
-from AccessControl import ClassSecurityInfo
-from AccessControl.Permissions import access_contents_information
+from App.class_init import InitializeClass
 
 
 # Node type codes
@@ -167,7 +168,7 @@ class Node:
 InitializeClass(Node)
 
 
-class Document(Acquisition.Explicit, Node):
+class Document(Explicit, Node):
     """
     Document Interface
     """
@@ -534,7 +535,7 @@ class NamedNodeMap:
         return None
 
 
-class Attr(Acquisition.Implicit, Node):
+class Attr(Implicit, Node):
     """
     Attr interface - The Attr interface represents an attriubte in an
     Element object. Attr objects inherit the Node Interface

@@ -17,31 +17,42 @@ $Id$
 
 import sys
 
-import Acquisition 
-import OFS.SimpleItem
-from Globals import InitializeClass
-from AccessControl import getSecurityManager
-from AccessControl import ClassSecurityInfo
+from AccessControl.SecurityInfo import ClassSecurityInfo
+from AccessControl.SecurityManagement import getSecurityManager
 from AccessControl.Permissions import view as View
 from AccessControl.Permissions import add_folders
 from AccessControl.Permissions import webdav_lock_items
 from AccessControl.Permissions import webdav_unlock_items
-from Globals import Persistent, DTMLFile
+from Acquisition import aq_base
+from Acquisition import aq_parent
+from Acquisition import Implicit
+from App.class_init import InitializeClass
+from App.special_dtml import DTMLFile
+from Persistence import Persistent
 from OFS.CopySupport import CopyError
+from OFS.SimpleItem import Item_w__name__
+from zExceptions import BadRequest
+from zExceptions import Forbidden
 from zExceptions import MethodNotAllowed
-from zExceptions import Unauthorized, NotFound, Forbidden, BadRequest
+from zExceptions import NotFound
+from zExceptions import Unauthorized
 
-import davcmds
-from common import aq_base, tokenFinder, IfParser
-from common import isDavCollection
-from common import Locked, Conflict, PreconditionFailed, UnsupportedMediaType
-from interfaces import IWriteLock
-from Resource import Resource
+from webdav.common import Conflict
+from webdav.common import IfParser
+from webdav.common import isDavCollection
+from webdav.common import Locked
+from webdav.common import PreconditionFailed
+from webdav.common import tokenFinder
+from webdav.common import UnsupportedMediaType
+from webdav.davcmds import Lock
+from webdav.davcmds import Unlock
+from webdav.interfaces import IWriteLock
+from webdav.Resource import Resource
 
 from zope.contenttype import guess_content_type
 
 
-class NullResource(Persistent, Acquisition.Implicit, Resource):
+class NullResource(Persistent, Implicit, Resource):
 
     """Null resources are used to handle HTTP method calls on
     objects which do not yet exist in the url namespace."""
@@ -233,7 +244,7 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
         parent._setObject(name, locknull)
         locknull = parent._getOb(name)
 
-        cmd = davcmds.Lock(REQUEST)
+        cmd = Lock(REQUEST)
         token, result = cmd.apply(locknull, creator, depth=depth)
         if result:
             # Return the multistatus result (there were multiple errors)
@@ -254,7 +265,7 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
 InitializeClass(NullResource)
 
 
-class LockNullResource(NullResource, OFS.SimpleItem.Item_w__name__):
+class LockNullResource(NullResource, Item_w__name__):
     """ A Lock-Null Resource is created when a LOCK command is succesfully
     executed on a NullResource, essentially locking the Name.  A PUT or
     MKCOL deletes the LockNull resource from its container and replaces it
@@ -278,7 +289,7 @@ class LockNullResource(NullResource, OFS.SimpleItem.Item_w__name__):
         # A special hook (for better or worse) called when there are no
         # valid locks left.  We have to delete ourselves from our container
         # now.
-        parent = Acquisition.aq_parent(self)
+        parent = aq_parent(self)
         if parent: parent._delObject(self.id)
 
     def __init__(self, name):
@@ -344,10 +355,10 @@ class LockNullResource(NullResource, OFS.SimpleItem.Item_w__name__):
         else:
             raise BadRequest, 'No lock token was submitted in the request'
 
-        cmd = davcmds.Unlock()
+        cmd = Unlock()
         result = cmd.apply(self, token, url)
 
-        parent = Acquisition.aq_parent(self)
+        parent = aq_parent(self)
         parent._delObject(self.id)
 
         if result:

@@ -15,22 +15,29 @@ Simple ZODB-based transient object implementation.
 
 $Id$
 """
-
 __version__='$Revision: 1.9.68.5 $'[11:-2]
 
-from Persistence import Persistent
-from Acquisition import Implicit
-import time, random, sys, os
-import thread
-from Products.Transience.TransienceInterfaces import ItemWithId, Transient, \
-     DictionaryLike, TTWDictionary, ImmutablyValuedMappingOfPickleableObjects,\
-     TransientItemContainer
-from AccessControl import ClassSecurityInfo
-import Globals
 import logging
+import os
+import random
 import sys
+import thread
+import time
+
+from AccessControl.SecurityInfo import ClassSecurityInfo
+from Acquisition import Implicit
+from App.class_init import InitializeClass
+from Persistence import Persistent
 from ZODB.POSException import ConflictError
 from zope.interface import implements
+
+from Products.Transience.TransienceInterfaces import DictionaryLike
+from Products.Transience.TransienceInterfaces import \
+                        ImmutablyValuedMappingOfPickleableObjects
+from Products.Transience.TransienceInterfaces import ItemWithId
+from Products.Transience.TransienceInterfaces import Transient
+from Products.Transience.TransienceInterfaces import TransientItemContainer
+from Products.Transience.TransienceInterfaces import TTWDictionary
 
 DEBUG = int(os.environ.get('Z_TOC_DEBUG', 0))
 LOG = logging.getLogger('Zope.TransientObject')
@@ -277,4 +284,4 @@ def lastaccessed_sort(d1, d2):
     if m1 > m2: return -1 # d1 is "less than" d2
     return 1
 
-Globals.InitializeClass(TransientObject)
+InitializeClass(TransientObject)

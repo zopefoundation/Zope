@@ -17,13 +17,13 @@ $Id$
 
 import time
 
-from AccessControl import ClassSecurityInfo
 from AccessControl.Owned import ownerInfo
-from Globals import Persistent
+from AccessControl.SecurityInfo import ClassSecurityInfo
+from Persistence import Persistent
 from zope.interface import implements
 
-from common import generateLockToken
-from interfaces import ILockItem
+from webdav.common import generateLockToken
+from webdav.interfaces import ILockItem
 
 MAXTIMEOUT = (2L**32)-1                 # Maximum timeout time
 DEFAULTTIMEOUT = 12 * 60L               # Default timeout

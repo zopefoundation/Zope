@@ -54,8 +54,8 @@ Summarizing the default operator rules:
 - these can be combined, e.g. ``foo -"foo bar"'' or ``foo -foo-bar''
 - * and ? are used for globbing (i.e. prefix search), e.g. ``foo*''
 """
-
 import re
+
 from zope.interface import implements
 
 from Products.ZCTextIndex.IQueryParser import IQueryParser

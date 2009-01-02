@@ -14,18 +14,22 @@
 
 $Id$
 """
-import time, sys
 from logging import getLogger
-import Globals
-from Globals import InitializeClass
-from Globals import DTMLFile
-from Acquisition import aq_get, aq_acquire, aq_inner, aq_parent, aq_base
+import sys
+import time
 
-from AccessControl import ClassSecurityInfo
-from AccessControl import getSecurityManager
-from AccessControl.Role import _isBeingUsedAsAMethod
-from AccessControl import Unauthorized
 from AccessControl.Permissions import view_management_screens
+from AccessControl.Role import _isBeingUsedAsAMethod
+from AccessControl.SecurityInfo import ClassSecurityInfo
+from AccessControl.SecurityManagement import getSecurityManager
+from AccessControl.unauthorized import Unauthorized
+from Acquisition import aq_acquire
+from Acquisition import aq_base
+from Acquisition import aq_get
+from Acquisition import aq_inner
+from Acquisition import aq_parent
+from App.class_init import InitializeClass
+from App.special_dtml import DTMLFile
 
 ZCM_MANAGERS = '__ZCacheManager_ids__'
 

@@ -13,19 +13,22 @@
 
 
 # Implement the manage_addProduct method of object managers
+import sys
 import types
-import Acquisition, sys, Products
-from Globals import InitializeClass
-from AccessControl import ClassSecurityInfo
+
+from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.PermissionMapping import aqwrap
 from AccessControl.Owned import UnownableOwner
-import Zope2
+from Acquisition import Acquired
+from Acquisition import aq_base
+from Acquisition import Implicit
+from App.class_init import InitializeClass
 
 def _product_packages():
     """Returns all product packages including the regularly defined
     zope2 packages and those without the Products namespace package.
     """
-    
+    import Products
     packages = {}
     for x in dir(Products):
         m = getattr(Products, x)
@@ -37,7 +40,7 @@ def _product_packages():
     
     return packages
 
-class ProductDispatcher(Acquisition.Implicit):
+class ProductDispatcher(Implicit):
     " "
     # Allow access to factory dispatchers
     __allow_access_to_unprotected_subobjects__=1
@@ -57,7 +60,7 @@ class ProductDispatcher(Acquisition.Implicit):
         dispatcher=dispatcher_class(product, self.aq_parent, REQUEST)
         return dispatcher.__of__(self)
 
-class FactoryDispatcher(Acquisition.Implicit):
+class FactoryDispatcher(Implicit):
     """Provide a namespace for product "methods"
     """
 
@@ -66,7 +69,7 @@ class FactoryDispatcher(Acquisition.Implicit):
     _owner=UnownableOwner
 
     def __init__(self, product, dest, REQUEST=None):
-        product = Acquisition.aq_base(product)
+        product = aq_base(product)
         self._product=product
         self._d=dest
         if REQUEST is not None:
@@ -100,19 +103,19 @@ class FactoryDispatcher(Acquisition.Implicit):
             m=d[name]
             w=getattr(m, '_permissionMapper', None)
             if w is not None:
-                m=aqwrap(m, Acquisition.aq_base(w), self)
+                m=aqwrap(m, aq_base(w), self)
 
             return m
 
         # Waaa
-        m='Products.%s' % p.id
+        m = 'Products.%s' % p.id
         if sys.modules.has_key(m) and sys.modules[m]._m.has_key(name):
             return sys.modules[m]._m[name]
 
         raise AttributeError, name
 
     # Provide acquired indicators for critical OM methods:
-    _setObject=_getOb=Acquisition.Acquired
+    _setObject = _getOb = Acquired
 
     # Make sure factory methods are unowned:
     _owner=UnownableOwner

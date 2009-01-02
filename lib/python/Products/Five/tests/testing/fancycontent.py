@@ -15,17 +15,18 @@
 
 $Id$
 """
-import Acquisition
-from AccessControl import ClassSecurityInfo
+from AccessControl.SecurityInfo import ClassSecurityInfo
+from Acquisition import Explicit
+from App.class_init import InitializeClass
 from OFS.SimpleItem import SimpleItem
-from Globals import InitializeClass
 
-from zope.interface import Interface, implements
+from zope.interface import implements
+from zope.interface import Interface
 
 class IFancyContent(Interface):
     pass
 
-class FancyAttribute(Acquisition.Explicit):
+class FancyAttribute(Explicit):
     """Doc test fanatics"""
 
     def __init__(self, name):

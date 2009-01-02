@@ -15,16 +15,16 @@
 $Id$
 """
 
-from Acquisition import Implicit
-from Persistence import Persistent
-from Globals import DTMLFile, InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.Permissions import manage_zcatalog_indexes
+from Acquisition import Implicit
+from App.class_init import InitializeClass
+from App.special_dtml import DTMLFile
 from OFS.Folder import Folder
 from OFS.ObjectManager import IFAwareObjectManager
 from OFS.SimpleItem import SimpleItem
+from Persistence import Persistent
 from Products.PluginIndexes.interfaces import IPluggableIndex
-
 
 _marker = []
 

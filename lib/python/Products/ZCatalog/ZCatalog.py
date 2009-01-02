@@ -15,37 +15,43 @@
 $Id$
 """
 
+import logging
+import sys
+import string
+import time
+import urllib
 from warnings import warn
-import urllib, time, sys, string, logging
 
-from Globals import DTMLFile, MessageDialog
-from Globals import InitializeClass
+from AccessControl.DTML import RestrictedDTML
+from AccessControl.Permission import name_trans
+from AccessControl.Permissions import manage_zcatalog_entries
+from AccessControl.Permissions import manage_zcatalog_indexes
+from AccessControl.Permissions import search_zcatalog
+from AccessControl.SecurityInfo import ClassSecurityInfo
+from Acquisition import Implicit
+from App.class_init import InitializeClass
+from App.Dialogs import MessageDialog
+from App.special_dtml import DTMLFile
+from DateTime.DateTime import DateTime
+from DocumentTemplate.DT_Util import InstanceDict
+from DocumentTemplate.DT_Util import TemplateDict
+from DocumentTemplate.DT_Util import Eval
 from OFS.Folder import Folder
 from OFS.ObjectManager import ObjectManager
-from DateTime import DateTime
-from Acquisition import Implicit
 from Persistence import Persistent
-from DocumentTemplate.DT_Util import InstanceDict, TemplateDict
-from DocumentTemplate.DT_Util import Eval
-from AccessControl import ClassSecurityInfo
-from AccessControl.Permission import name_trans
-from AccessControl.DTML import RestrictedDTML
-from AccessControl.Permissions import \
-    manage_zcatalog_entries, manage_zcatalog_indexes, search_zcatalog
-from ZODB.POSException import ConflictError
-import transaction
 from Products.PluginIndexes.interfaces import IPluggableIndex
+import transaction
+from ZODB.POSException import ConflictError
 from zope.interface import implements
 
-from Catalog import Catalog, CatalogError
-from interfaces import IZCatalog
-from ProgressHandler import ZLogHandler
-from ZCatalogIndexes import ZCatalogIndexes
-
+from Products.ZCatalog.Catalog import Catalog, CatalogError
+from Products.ZCatalog.interfaces import IZCatalog
+from Products.ZCatalog.ProgressHandler import ZLogHandler
+from Products.ZCatalog.ZCatalogIndexes import ZCatalogIndexes
 
 LOG = logging.getLogger('Zope.ZCatalog')
 
-manage_addZCatalogForm=DTMLFile('dtml/addZCatalog',globals())
+manage_addZCatalogForm = DTMLFile('dtml/addZCatalog', globals())
 
 def manage_addZCatalog(self, id, title,
                        vocab_id=None, # Deprecated

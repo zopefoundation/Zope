@@ -16,11 +16,11 @@ __doc__='''SQL Methods
 $Id$'''
 __version__='$Revision: 1.21 $'[11:-2]
 
-import Shared.DC.ZRDB.DA
-from Globals import DTMLFile
-from Globals import InitializeClass
-from AccessControl import ClassSecurityInfo
 from AccessControl.Permissions import change_database_methods
+from AccessControl.SecurityInfo import ClassSecurityInfo
+from App.class_init import InitializeClass
+from App.special_dtml import DTMLFile
+from Shared.DC.ZRDB.DA import DA
 
 def SQLConnectionIDs(self):
     """Find SQL database connections in the current folder and above
@@ -81,7 +81,7 @@ def manage_addZSQLMethod(self, id, title,
         REQUEST.RESPONSE.redirect(u)
     return ''
 
-class SQL(Shared.DC.ZRDB.DA.DA):
+class SQL(DA):
     """SQL Database methods
 
     SQL Database methods are used to access external SQL databases.

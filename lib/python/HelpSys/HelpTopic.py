@@ -10,19 +10,21 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
+import os
 
-import Acquisition
-from ComputedAttribute import ComputedAttribute
-from OFS.SimpleItem import Item
-from Globals import Persistent, HTML, DTMLFile, ImageFile
-from Globals import InitializeClass
-from AccessControl import ClassSecurityInfo
 from AccessControl.Permissions import access_contents_information
 from AccessControl.Permissions import view as View
+from AccessControl.SecurityInfo import ClassSecurityInfo
+from Acquisition import Implicit
+from App.class_init import InitializeClass
+from App.ImageFile import ImageFile
+from App.special_dtml import DTMLFile
+from App.special_dtml import HTML
+from ComputedAttribute import ComputedAttribute
 from OFS.DTMLDocument import DTMLDocument
 from OFS.PropertyManager import PropertyManager
-import os.path
-import Globals
+from OFS.SimpleItem import Item
+from Persistence import Persistent
 
 class HelpTopicBase:
     "Mix-in Help Topic support class"
@@ -110,7 +112,7 @@ class HelpTopicBase:
         return c
 
 
-class HelpTopic(Acquisition.Implicit, HelpTopicBase, Item, PropertyManager, Persistent):
+class HelpTopic(Implicit, HelpTopicBase, Item, PropertyManager, Persistent):
     """
     Abstract base class for Help Topics
     """

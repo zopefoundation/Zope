@@ -15,14 +15,14 @@
 
 $Id$
 """
+from App.class_init import InitializeClass
 from OFS.SimpleItem import SimpleItem
-from Globals import InitializeClass
+from Products.Five.form.objectwidget import ObjectWidget
 
 from zope.i18nmessageid import MessageFactory
 from zope.interface import implements, Interface
 from zope.schema import TextLine, Text, Object, Int, List
 from zope.app.form import CustomWidgetFactory
-from Products.Five.form.objectwidget import ObjectWidget
 
 _ = MessageFactory('formtest')
 

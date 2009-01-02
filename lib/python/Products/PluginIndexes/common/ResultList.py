@@ -11,19 +11,23 @@
 #
 ##############################################################################
 
+from BTrees.IIBTree import difference
 from BTrees.IIBTree import IIBucket
-from BTrees.IIBTree import weightedIntersection, weightedUnion, difference
-from BTrees.OOBTree import OOSet, union
+from BTrees.IIBTree import weightedIntersection
+from BTrees.IIBTree import weightedUnion
+from BTrees.OOBTree import OOSet
+from BTrees.OOBTree import union
 
 class ResultList:
 
-    def __init__(self, d, words, index, TupleType=type(())):
+    def __init__(self, d, words, index):
         self._index = index
 
-        if type(words) is not OOSet: words=OOSet(words)
+        if type(words) is not OOSet:
+            words=OOSet(words)
         self._words = words
 
-        if (type(d) is TupleType):
+        if (type(d) is tuple):
             d = IIBucket((d,))
         elif type(d) is not IIBucket:
             d = IIBucket(d)
@@ -37,13 +41,17 @@ class ResultList:
     def __nonzero__(self):
         return not not self._dict
 
-    def bucket(self): return self._dict
+    def bucket(self):
+        return self._dict
 
-    def keys(self): return self._dict.keys()
+    def keys(self):
+        return self._dict.keys()
 
-    def has_key(self, key): return self._dict.has_key(key)
+    def has_key(self, key):
+        return self._dict.has_key(key)
 
-    def items(self): return self._dict.items()
+    def items(self):
+        return self._dict.items()
 
     def __and__(self, x):
         return self.__class__(

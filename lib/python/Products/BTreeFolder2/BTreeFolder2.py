@@ -16,34 +16,36 @@
 $Id: BTreeFolder2.py,v 1.27 2004/03/17 22:49:25 urbanape Exp $
 """
 
-import sys
 from cgi import escape
-from urllib import quote
-from random import randint
-from types import StringType
 from logging import getLogger
+from random import randint
+import sys
+from urllib import quote
 
-import Globals
-from Globals import DTMLFile
-from Globals import Persistent
+from AccessControl.SecurityInfo import ClassSecurityInfo
+from AccessControl.SecurityManagement import getSecurityManager
+from AccessControl.Permissions import access_contents_information
+from AccessControl.Permissions import view_management_screens
 from Acquisition import aq_base
-from BTrees.OOBTree import OOBTree
-from BTrees.OIBTree import OIBTree, union
+from App.class_init import InitializeClass
+from App.special_dtml import DTMLFile
 from BTrees.Length import Length
-from ZODB.POSException import ConflictError
-from OFS.ObjectManager import BadRequestException, BeforeDeleteException
+from BTrees.OIBTree import OIBTree
+from BTrees.OIBTree import union
+from BTrees.OOBTree import OOBTree
+from OFS.event import ObjectWillBeAddedEvent
+from OFS.event import ObjectWillBeRemovedEvent
 from OFS.Folder import Folder
-from AccessControl import getSecurityManager, ClassSecurityInfo
-from AccessControl.Permissions import access_contents_information, \
-     view_management_screens
+from OFS.ObjectManager import BadRequestException
+from OFS.ObjectManager import BeforeDeleteException
+from OFS.subscribers import compatibilityCall
+from Persistence import Persistent
 from Products.ZCatalog.Lazy import LazyMap
+from ZODB.POSException import ConflictError
 from zope.event import notify
 from zope.app.container.contained import ObjectAddedEvent
 from zope.app.container.contained import ObjectRemovedEvent
 from zope.app.container.contained import notifyContainerModified
-from OFS.event import ObjectWillBeAddedEvent
-from OFS.event import ObjectWillBeRemovedEvent
-import OFS.subscribers
 
 
 LOG = getLogger('BTreeFolder2')
@@ -346,7 +348,7 @@ class BTreeFolder2Base (Persistent):
         if spec is None:
             spec = mti.keys() #all meta types
 
-        if isinstance(spec, StringType):
+        if isinstance(spec, str):
             spec = [spec]
         set = None
         for meta_type in spec:
@@ -448,7 +450,7 @@ class BTreeFolder2Base (Persistent):
             notify(ObjectAddedEvent(ob, self, id))
             notifyContainerModified(self)
 
-        OFS.subscribers.compatibilityCall('manage_afterAdd', ob, ob, self)
+        compatibilityCall('manage_afterAdd', ob, ob, self)
 
         return id
 
@@ -456,7 +458,7 @@ class BTreeFolder2Base (Persistent):
     def _delObject(self, id, dp=1, suppress_events=False):
         ob = self._getOb(id)
 
-        OFS.subscribers.compatibilityCall('manage_beforeDelete', ob, ob, self)
+        compatibilityCall('manage_beforeDelete', ob, ob, self)
 
         if not suppress_events:
             notify(ObjectWillBeRemovedEvent(ob, self, id))
@@ -519,7 +521,7 @@ class BTreeFolder2Base (Persistent):
         return res
 
 
-Globals.InitializeClass(BTreeFolder2Base)
+InitializeClass(BTreeFolder2Base)
 
 
 class BTreeFolder2 (BTreeFolder2Base, Folder):
@@ -532,5 +534,5 @@ class BTreeFolder2 (BTreeFolder2Base, Folder):
         BTreeFolder2Base._checkId(self, id, allow_dup)
     
 
-Globals.InitializeClass(BTreeFolder2)
+InitializeClass(BTreeFolder2)
 

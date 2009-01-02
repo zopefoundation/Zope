@@ -15,19 +15,20 @@
 $Id$
 """
 
-from Acquisition import aq_base, aq_parent, aq_inner
-from Globals import InitializeClass
+from Acquisition import aq_base
+from Acquisition import aq_inner
+from Acquisition import aq_parent
 from AccessControl import getSecurityManager
 from AccessControl import ClassSecurityInfo
 from AccessControl.Permissions import undo_changes
-from DateTime import DateTime
-import Globals, ExtensionClass
-from ZopeUndo.Prefix import Prefix
+from App.class_init import InitializeClass
+from App.interfaces import IUndoSupport
+from App.special_dtml import DTMLFile
+from DateTime.DateTime import DateTime
+import ExtensionClass
 import transaction
+from ZopeUndo.Prefix import Prefix
 from zope.interface import implements
-
-from interfaces import IUndoSupport
-
 
 class UndoSupport(ExtensionClass.Base):
 
@@ -41,7 +42,7 @@ class UndoSupport(ExtensionClass.Base):
         )
 
     security.declareProtected(undo_changes, 'manage_UndoForm')
-    manage_UndoForm=Globals.DTMLFile(
+    manage_UndoForm = DTMLFile(
         'dtml/undo',
         globals(),
         PrincipiaUndoBatchSize=20,

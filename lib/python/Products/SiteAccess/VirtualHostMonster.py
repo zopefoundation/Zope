@@ -2,17 +2,24 @@
 
 Defines the VirtualHostMonster class
 """
+import os
 
-from Globals import DTMLFile, MessageDialog, Persistent
-from Globals import InitializeClass
-from AccessControl import ClassSecurityInfo
 from AccessControl.Permissions import view as View
+from AccessControl.SecurityInfo import ClassSecurityInfo
+from Acquisition import aq_inner
+from Acquisition import aq_parent
+from Acquisition import Implicit
+from App.class_init import InitializeClass
+from App.Dialogs import MessageDialog
+from App.special_dtml import DTMLFile
 from OFS.SimpleItem import Item
-from Acquisition import Implicit, aq_inner, aq_parent
-from ZPublisher import BeforeTraverse
+from Persistence import Persistent
+from ZPublisher.BeforeTraverse import NameCaller
+from ZPublisher.BeforeTraverse import queryBeforeTraverse
+from ZPublisher.BeforeTraverse import registerBeforeTraverse
+from ZPublisher.BeforeTraverse import unregisterBeforeTraverse
 from ZPublisher.BaseRequest import quote
 from zExceptions import BadRequest
-import os
 
 from AccessRule import _swallow
 
@@ -117,11 +124,11 @@ class VirtualHostMonster(Persistent, Item, Implicit):
 
     def manage_beforeDelete(self, item, container):
         if item is self:
-            BeforeTraverse.unregisterBeforeTraverse(container, self.meta_type)
+            unregisterBeforeTraverse(container, self.meta_type)
 
     def manage_afterAdd(self, item, container):
         if item is self:
-            if BeforeTraverse.queryBeforeTraverse(container,
+            if queryBeforeTraverse(container,
                                                   self.meta_type):
                 raise BadRequest, ('This container already has a %s' %
                                    self.meta_type)
@@ -130,8 +137,8 @@ class VirtualHostMonster(Persistent, Item, Implicit):
 
             # We want the original object, not stuff in between
             container = container.this()
-            hook = BeforeTraverse.NameCaller(id)
-            BeforeTraverse.registerBeforeTraverse(container, hook,
+            hook = NameCaller(id)
+            registerBeforeTraverse(container, hook,
                                                   self.meta_type,
                                                   self.priority)
 

@@ -17,23 +17,24 @@ $Id$
 
 from string import translate
 
-import ExtensionClass
 from AccessControl import ClassSecurityInfo
 from AccessControl.DTML import RestrictedDTML
 from AccessControl.Permission import name_trans
 from AccessControl.Permissions import view_management_screens
 from Acquisition import aq_base
-from DateTime import DateTime
+from App.special_dtml import DTMLFile
+from App.class_init import InitializeClass
+from DateTime.DateTime import DateTime
 from DocumentTemplate.DT_Util import Eval
-from DocumentTemplate.DT_Util import InstanceDict, TemplateDict
-from Globals import DTMLFile
-from Globals import InitializeClass
+from DocumentTemplate.DT_Util import InstanceDict
+from DocumentTemplate.DT_Util import TemplateDict
+from ExtensionClass import Base
 from zope.interface import implements
 
-from interfaces import IFindSupport
+from OFS.interfaces import IFindSupport
 
 
-class FindSupport(ExtensionClass.Base):
+class FindSupport(Base):
 
     """Find support for Zope Folders"""
 

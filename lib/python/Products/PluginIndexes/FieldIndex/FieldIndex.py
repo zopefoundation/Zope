@@ -15,7 +15,7 @@
 $Id$
 """
 
-from Globals import DTMLFile
+from App.special_dtml import DTMLFile
 
 from Products.PluginIndexes.common.UnIndex import UnIndex
 

@@ -20,20 +20,21 @@ the widget's sub-editform.
 
 $Id$
 """
-import zope.app.form.browser.objectwidget
-from AccessControl import ClassSecurityInfo
-from Globals import InitializeClass as initializeClass
+from AccessControl.SecurityInfo import ClassSecurityInfo
+from App.class_init import InitializeClass
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from zope.app.form.browser.objectwidget import ObjectWidget as OWBase
+from zope.app.form.browser.objectwidget import ObjectWidgetView as OWVBase
 
-class ObjectWidgetView(zope.app.form.browser.objectwidget.ObjectWidgetView):
+class ObjectWidgetView(OWVBase):
     security = ClassSecurityInfo()
     security.declareObjectPublic()
 
     template = ViewPageTemplateFile('objectwidget.pt')
 
-initializeClass(ObjectWidgetView)
+InitializeClass(ObjectWidgetView)
 
-class ObjectWidgetClass(zope.app.form.browser.objectwidget.ObjectWidget):
+class ObjectWidgetClass(OWBase):
 
     def setRenderedValue(self, value):
         """Slightly more robust re-implementation this method."""

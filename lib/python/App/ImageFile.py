@@ -18,25 +18,23 @@ import os
 import stat
 import time
 
-import Acquisition
-import Globals
-from Globals import InitializeClass
-from AccessControl import ClassSecurityInfo
+from AccessControl.SecurityInfo import ClassSecurityInfo
+from Acquisition import Explicit
+from App.class_init import InitializeClass
+from App.Common import package_home
+from App.Common import rfc1123_date
 from App.config import getConfiguration
-from Globals import package_home
-from Common import rfc1123_date
-from DateTime import DateTime
-
+from DateTime.DateTime import DateTime
 from zope.contenttype import guess_content_type
-
 from ZPublisher.Iterators import filestream_iterator
 
-class ImageFile(Acquisition.Explicit):
+class ImageFile(Explicit):
     """Image objects stored in external files."""
 
     security = ClassSecurityInfo()
 
     def __init__(self,path,_prefix=None):
+        import Globals  # for data
         if _prefix is None:
             _prefix=getConfiguration().softwarehome
         elif type(_prefix) is not type(''):

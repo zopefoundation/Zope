@@ -15,11 +15,12 @@
 
 $Id$
 """
+from AccessControl.SecurityInfo import ClassSecurityInfo
+from App.class_init import InitializeClass
 from OFS.SimpleItem import SimpleItem
-from Globals import InitializeClass
-from AccessControl import ClassSecurityInfo
 
-from zope.interface import Interface, implements
+from zope.interface import implements
+from zope.interface import Interface
 
 class ISimpleContent(Interface):
     pass

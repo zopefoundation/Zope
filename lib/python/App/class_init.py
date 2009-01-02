@@ -12,15 +12,13 @@
 ##############################################################################
 
 import logging
-from AccessControl.PermissionRole import PermissionRole
-import AccessControl.Permission
 
-class ApplicationDefaultPermissions:
-    _View_Permission='Manager', 'Anonymous'
-    _Access_contents_information_Permission='Manager', 'Anonymous'
+from AccessControl.Permission import ApplicationDefaultPermissions # BBB
 
 
 def default__class_init__(self):
+    from AccessControl.Permission import registerPermissions
+    from AccessControl.PermissionRole import PermissionRole
     dict=self.__dict__
     have=dict.has_key
     ft=type(default__class_init__)
@@ -66,7 +64,7 @@ def default__class_init__(self):
             break
 
     if self.__dict__.has_key('__ac_permissions__'):
-        AccessControl.Permission.registerPermissions(self.__ac_permissions__)
+        registerPermissions(self.__ac_permissions__)
         for acp in self.__ac_permissions__:
             pname, mnames = acp[:2]
             if len(acp) > 2:
@@ -81,3 +79,5 @@ def default__class_init__(self):
                         "Class %s.%s has a security declaration for "
                         "nonexistent method %r", self.__module__,
                         self.__name__, mname)
+
+InitializeClass = default__class_init__ # instead of Globals.Initialize

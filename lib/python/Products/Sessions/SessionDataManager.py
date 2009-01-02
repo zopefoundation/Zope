@@ -11,32 +11,44 @@
 #
 ############################################################################
 
-import re, time, sys
 from logging import getLogger
-import Globals
-from OFS.SimpleItem import Item
-from ZODB.POSException import ConflictError
-from Acquisition import Implicit, Explicit, aq_base
-from Persistence import Persistent
+import re
+import sys
+import time
+
 from AccessControl.Owned import Owned
 from AccessControl.Role import RoleManager
+from AccessControl.SecurityInfo import ClassSecurityInfo
+from Acquisition import Implicit
+from Acquisition import Explicit
+from Acquisition import aq_base
+from App.class_init import InitializeClass
+from App.special_dtml import DTMLFile
 from App.Management import Tabs
-from AccessControl import ClassSecurityInfo
-import SessionInterfaces
-from SessionPermissions import *
-from common import DEBUG
-from BrowserIdManager import isAWellFormedBrowserId, getNewBrowserId,\
-     BROWSERID_MANAGER_NAME
-from ZPublisher.BeforeTraverse import registerBeforeTraverse, \
-    unregisterBeforeTraverse
+from OFS.SimpleItem import Item
+from Persistence import Persistent
+from ZPublisher.BeforeTraverse import registerBeforeTraverse
+from ZPublisher.BeforeTraverse import unregisterBeforeTraverse
+from ZODB.POSException import ConflictError
 from zope.interface import implements
+
+from Products.Sessions.SessionInterfaces import SessionDataManagerInterface
+from Products.Sessions.SessionPermissions import ACCESS_CONTENTS_PERM
+from Products.Sessions.SessionPermissions import ACCESS_SESSIONDATA_PERM
+from Products.Sessions.SessionPermissions import ARBITRARY_SESSIONDATA_PERM
+from Products.Sessions.SessionPermissions import CHANGE_DATAMGR_PERM
+from Products.Sessions.SessionPermissions import MGMT_SCREEN_PERM
+from Products.Sessions.common import DEBUG
+from Products.Sessions.BrowserIdManager import isAWellFormedBrowserId
+from Products.Sessions.BrowserIdManager import getNewBrowserId
+from Products.Sessions.BrowserIdManager import BROWSERID_MANAGER_NAME
 
 bad_path_chars_in=re.compile('[^a-zA-Z0-9-_~\,\. \/]').search
 LOG = getLogger('SessionDataManager')
 
 class SessionDataManagerErr(Exception): pass
 
-constructSessionDataManagerForm = Globals.DTMLFile('dtml/addDataManager',
+constructSessionDataManagerForm = DTMLFile('dtml/addDataManager',
     globals())
 
 ADD_SESSION_DATAMANAGER_PERM="Add Session Data Manager"
@@ -81,9 +93,9 @@ class SessionDataManager(Item, Implicit, Persistent, RoleManager, Owned, Tabs):
 
     icon='misc_/CoreSessionTracking/datamgr.gif'
 
-    implements(SessionInterfaces.SessionDataManagerInterface)
+    implements(SessionDataManagerInterface)
 
-    manage_sessiondatamgr = Globals.DTMLFile('dtml/manageDataManager',
+    manage_sessiondatamgr = DTMLFile('dtml/manageDataManager',
         globals())
 
     # INTERFACE METHODS FOLLOW
@@ -293,4 +305,4 @@ class SessionDataManagerTraverser(Persistent):
             request.set_lazy(self._requestSessionName, getSessionData)
 
 
-Globals.InitializeClass(SessionDataManager)
+InitializeClass(SessionDataManager)

@@ -21,15 +21,15 @@ $Id$
 
 from cgi import escape
 
-import ExtensionClass, Acquisition
-from Globals import InitializeClass
+from Acquisition import ImplicitAcquisitionWrapper
+from App.class_init import InitializeClass
+from ExtensionClass import Base
 from zope.interface import implements
 
-from interfaces import IPermissionMappingSupport
-from Owned import UnownableOwner
-from Permission import pname
-from requestmethod import requestmethod
-
+from AccessControl.interfaces import IPermissionMappingSupport
+from AccessControl.Owned import UnownableOwner
+from AccessControl.Permission import pname
+from AccessControl.requestmethod import requestmethod
 
 class RoleManager:
 
@@ -125,7 +125,7 @@ def setPermissionMapping(name, obj, v):
     if v: setattr(obj, name, pname(v))
     elif obj.__dict__.has_key(name): delattr(obj, name)
 
-class PM(ExtensionClass.Base):
+class PM(Base):
     _owner=UnownableOwner
 
     _View_Permission='_View_Permission'
@@ -144,23 +144,23 @@ def aqwrap(object, wrapper, parent):
     r._ugh=wrapper, object, parent
     return r
 
-class Rewrapper(ExtensionClass.Base):
+class Rewrapper(Base):
     def __of__(self, parent):
         w, m, p = self._ugh
         return m.__of__(
-            Acquisition.ImplicitAcquisitionWrapper(
+            ImplicitAcquisitionWrapper(
                 w, parent))
 
     def __getattr__(self, name):
         w, m, parent = self._ugh
         self=m.__of__(
-            Acquisition.ImplicitAcquisitionWrapper(
+            ImplicitAcquisitionWrapper(
                 w, parent))
         return getattr(self, name)
 
     def __call__(self, *args, **kw):
         w, m, parent = self._ugh
         self=m.__of__(
-            Acquisition.ImplicitAcquisitionWrapper(
+            ImplicitAcquisitionWrapper(
                 w, parent))
         return apply(self, args, kw)

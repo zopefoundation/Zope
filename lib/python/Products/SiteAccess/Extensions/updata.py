@@ -1,16 +1,14 @@
-import Zope2
-from ZPublisher.BeforeTraverse import NameCaller, rewriteBeforeTraverse
-from Products.SiteAccess.AccessRule import AccessRule
-import transaction
-
 def updata(self):
     """Convert SiteAccess objects from 1.x to 2.x"""
     _cvt_btr(self.REQUEST['PARENTS'][-1])
-    from Globals import MessageDialog
+    from App.Dialogs import MessageDialog
     return MessageDialog(title='Update Complete', message='Update Complete!',
                          action='./manage_main')
 
 def _cvt_btr(app):
+    from ZPublisher.BeforeTraverse import NameCaller
+    from ZPublisher.BeforeTraverse import rewriteBeforeTraverse
+    from Products.SiteAccess.AccessRule import AccessRule
     stack = [app]
     while stack:
         o = stack.pop()
@@ -31,6 +29,8 @@ def _cvt_btr(app):
                     rewriteBeforeTraverse(o, btr)
 
 if __name__ == '__main__':
+    import Zope2
+    import transaction
     print "Converting SiteAccess objects from 1.x to 2.x ..."
     app = Zope2.app()
     _cvt_btr(app)

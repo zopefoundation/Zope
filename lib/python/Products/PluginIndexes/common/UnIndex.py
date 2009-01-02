@@ -14,14 +14,16 @@
 
 $Id$
 """
-
-import sys
 from cgi import escape
 from logging import getLogger
+import sys
 
-from BTrees.IIBTree import IITreeSet, IISet, union, intersection
+from BTrees.IIBTree import intersection
+from BTrees.IIBTree import IITreeSet
+from BTrees.IIBTree import IISet
+from BTrees.IIBTree import union
 from BTrees.IOBTree import IOBTree
-import BTrees.Length
+from BTrees.Length import Length
 from BTrees.OOBTree import OOBTree
 from OFS.SimpleItem import SimpleItem
 from ZODB.POSException import ConflictError
@@ -109,7 +111,7 @@ class UnIndex(SimpleItem):
         if not self.indexed_attrs:
             self.indexed_attrs = [id]
 
-        self._length = BTrees.Length.Length()
+        self._length = Length()
         self.clear()
 
     def __len__(self):
@@ -119,7 +121,7 @@ class UnIndex(SimpleItem):
         return self.id
 
     def clear(self):
-        self._length = BTrees.Length.Length()
+        self._length = Length()
         self._index = OOBTree()
         self._unindex = IOBTree()
 
@@ -177,7 +179,7 @@ class UnIndex(SimpleItem):
                     # XXX swallow KeyError because it was probably
                     # removed and then _length AttributeError raised
                     pass 
-                if isinstance(self.__len__, BTrees.Length.Length):
+                if isinstance(self.__len__, Length):
                     self._length = self.__len__
                     del self.__len__ 
                 self._length.change(-1)
@@ -210,7 +212,7 @@ class UnIndex(SimpleItem):
             try:
                 self._length.change(1)
             except AttributeError:
-                if isinstance(self.__len__, BTrees.Length.Length):
+                if isinstance(self.__len__, Length):
                     self._length = self.__len__
                     del self.__len__
                 self._length.change(1)

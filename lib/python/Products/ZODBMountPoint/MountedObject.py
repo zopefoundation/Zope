@@ -24,7 +24,7 @@ from logging import getLogger
 
 import transaction
 
-from App.class_init import default__class_init__ as InitializeClass
+from App.class_init import InitializeClass
 from Acquisition import ImplicitAcquisitionWrapper
 from Acquisition import aq_base
 from Acquisition import aq_inner

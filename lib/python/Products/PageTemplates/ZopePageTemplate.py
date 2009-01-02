@@ -14,25 +14,30 @@
 
 $Id$
 """
-import re
 import os
-import Acquisition 
-from Acquisition import aq_get
-from Globals import ImageFile, package_home, InitializeClass
-from DateTime.DateTime import DateTime
-from Shared.DC.Scripts.Script import Script 
-from Shared.DC.Scripts.Signature import FuncCode
+import re
 
+from AccessControl.Permissions import change_page_templates
+from AccessControl.Permissions import ftp_access
+from AccessControl.Permissions import view
+from AccessControl.Permissions import view_management_screens
+from AccessControl.SecurityManagement import getSecurityManager
+from AccessControl.SecurityInfo import ClassSecurityInfo
+from AccessControl.ZopeGuards import safe_builtins
+from Acquisition import Acquired
+from Acquisition import Explicit
+from Acquisition import aq_get
+from App.class_init import InitializeClass
+from App.Common import package_home
+from App.ImageFile import ImageFile
+from DateTime.DateTime import DateTime
 from OFS.SimpleItem import SimpleItem
 from OFS.History import Historical, html_diff
 from OFS.Cache import Cacheable
 from OFS.Traversable import Traversable
 from OFS.PropertyManager import PropertyManager
-
-from AccessControl import getSecurityManager, safe_builtins, ClassSecurityInfo
-from AccessControl.Permissions import view, ftp_access, change_page_templates
-from AccessControl.Permissions import view_management_screens
-
+from Shared.DC.Scripts.Script import Script 
+from Shared.DC.Scripts.Signature import FuncCode
 from webdav.Lockable import ResourceLockedError
 
 from Products.PageTemplates.PageTemplate import PageTemplate
@@ -40,9 +45,9 @@ from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from Products.PageTemplates.PageTemplateFile import guess_type
 from Products.PageTemplates.Expressions import SecureModuleImporter
 
-from Products.PageTemplates.utils import encodingFromXMLPreamble, \
-         charsetFromMetaEquiv, convertToUnicode
-            
+from Products.PageTemplates.utils import encodingFromXMLPreamble
+from Products.PageTemplates.utils import charsetFromMetaEquiv
+from Products.PageTemplates.utils import convertToUnicode
 
 preferred_encodings = ['utf-8', 'iso-8859-15']
 if os.environ.has_key('ZPT_PREFERRED_ENCODING'):
@@ -50,10 +55,10 @@ if os.environ.has_key('ZPT_PREFERRED_ENCODING'):
   
 
 
-class Src(Acquisition.Explicit):
+class Src(Explicit):
     """ I am scary code """
 
-    PUT = document_src = Acquisition.Acquired
+    PUT = document_src = Acquired
     index_html = None
 
     def __before_publishing_traverse__(self, ob, request):

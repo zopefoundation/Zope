@@ -18,36 +18,41 @@ $Id$
 
 from cgi import escape
 
-from Persistence import Persistent
-import Acquisition
-from Acquisition import aq_base, aq_inner, aq_parent
-from OFS.SimpleItem import SimpleItem
-from Globals import DTMLFile, InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
-from AccessControl.Permissions import manage_zcatalog_indexes, search_zcatalog
+from AccessControl.Permissions import manage_zcatalog_indexes
+from AccessControl.Permissions import search_zcatalog
+from Acquisition import aq_base
+from Acquisition import aq_inner
+from Acquisition import aq_parent
+from Acquisition import Implicit
+from App.class_init import InitializeClass
+from App.special_dtml import DTMLFile
+from OFS.SimpleItem import SimpleItem
+from Persistence import Persistent
 from zope.interface import implements
 
 from Products.PluginIndexes.common.util import parseIndexRequest
 from Products.PluginIndexes.common import safe_callable
 from Products.PluginIndexes.interfaces import IPluggableIndex
 
-from Products.ZCTextIndex.Lexicon import \
-     Lexicon, Splitter, CaseNormalizer, StopWordRemover
+from Products.ZCTextIndex.Lexicon import CaseNormalizer
+from Products.ZCTextIndex.Lexicon import Lexicon
+from Products.ZCTextIndex.Lexicon import Splitter
+from Products.ZCTextIndex.Lexicon import StopWordRemover
 from Products.ZCTextIndex.NBest import NBest
 from Products.ZCTextIndex.QueryParser import QueryParser
-from CosineIndex import CosineIndex
-from interfaces import ILexicon
-from interfaces import IZCLexicon
-from interfaces import IZCTextIndex
-from OkapiIndex import OkapiIndex
-from PipelineFactory import element_factory
-
+from Products.ZCTextIndex.CosineIndex import CosineIndex
+from Products.ZCTextIndex.interfaces import ILexicon
+from Products.ZCTextIndex.interfaces import IZCLexicon
+from Products.ZCTextIndex.interfaces import IZCTextIndex
+from Products.ZCTextIndex.OkapiIndex import OkapiIndex
+from Products.ZCTextIndex.PipelineFactory import element_factory
 
 index_types = {'Okapi BM25 Rank':OkapiIndex,
                'Cosine Measure':CosineIndex}
 
 
-class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
+class ZCTextIndex(Persistent, Implicit, SimpleItem):
 
     """Persistent text index.
     """
@@ -315,7 +320,7 @@ LexiconQueryPerm = 'Query Vocabulary'
 LexiconMgmtPerm = 'Manage Vocabulary'
 
 
-class PLexicon(Lexicon, Acquisition.Implicit, SimpleItem):
+class PLexicon(Lexicon, Implicit, SimpleItem):
 
     """Lexicon for ZCTextIndex.
     """

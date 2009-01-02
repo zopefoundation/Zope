@@ -15,10 +15,14 @@ __doc__='''Search Interface Wizard
 $Id$'''
 __version__='$Revision: 1.22 $'[11:-2]
 
-from Globals import DTMLFile
-from Aqueduct import custom_default_report, custom_default_zpt_report, nicify, Args
 from string import join
 from cgi import escape
+
+from App.special_dtml import DTMLFile
+from Aqueduct import custom_default_report
+from Aqueduct import custom_default_zpt_report
+from Aqueduct import nicify
+from Aqueduct import Args
 from AccessControl import getSecurityManager
 
 addForm=DTMLFile('dtml/searchAdd', globals())

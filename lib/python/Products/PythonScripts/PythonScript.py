@@ -16,27 +16,38 @@
 This product provides support for Script objects containing restricted
 Python code.
 """
-
 __version__='$Revision: 1.56 $'[11:-2]
 
-import sys, os, traceback, re, marshal, new
 from logging import getLogger
-from Globals import DTMLFile, MessageDialog, package_home
-import AccessControl, OFS, RestrictedPython
-from Acquisition import aq_parent
-from OFS.SimpleItem import SimpleItem
-from DateTime.DateTime import DateTime
+import marshal
+import new
+import os
+import re
+import sys
+import traceback
 from urllib import quote
-from webdav.Lockable import ResourceLockedError
-from Shared.DC.Scripts.Script import Script, BindingsUI, defaultBindings
-from AccessControl import getSecurityManager
-from OFS.History import Historical, html_diff
-from OFS.Cache import Cacheable
-from AccessControl.ZopeGuards import get_safe_globals, guarded_getattr
-from AccessControl.requestmethod import requestmethod
 
+from AccessControl.requestmethod import requestmethod
+from AccessControl.SecurityInfo import ClassSecurityInfo
+from AccessControl.SecurityManagement import getSecurityManager
+from AccessControl.ZopeGuards import get_safe_globals, guarded_getattr
+from AccessControl.ZopeGuards import get_safe_globals, guarded_getattr
+from Acquisition import aq_parent
+from App.class_init import InitializeClass
+from App.Common import package_home
+from App.Dialogs import MessageDialog
+from App.special_dtml import DTMLFile
+from DateTime.DateTime import DateTime
+from OFS.Cache import Cacheable
+from OFS.History import Historical
+from OFS.History import html_diff
+from OFS.SimpleItem import SimpleItem
+from RestrictedPython import compile_restricted_function
+from Shared.DC.Scripts.Script import BindingsUI
+from Shared.DC.Scripts.Script import defaultBindings
+from Shared.DC.Scripts.Script import Script
+from webdav.Lockable import ResourceLockedError
 from zExceptions import Forbidden
-import Globals
 
 LOG = getLogger('PythonScripts')
 
@@ -111,7 +122,7 @@ class PythonScript(Script, Historical, Cacheable):
         self.ZBindings_edit(defaultBindings)
         self._makeFunction()
 
-    security = AccessControl.ClassSecurityInfo()
+    security = ClassSecurityInfo()
 
     security.declareObjectProtected('View')
     security.declareProtected('View', '__call__')
@@ -225,7 +236,7 @@ class PythonScript(Script, Historical, Cacheable):
             self._newfun(marshal.loads(self._code))
 
     def _compiler(self, *args, **kw):
-        return RestrictedPython.compile_restricted_function(*args, **kw)
+        return compile_restricted_function(*args, **kw)
 
     def _compile(self):
         bind_names = self.getBindingAssignments().getAssignedNamesInOrder()
@@ -509,7 +520,7 @@ class PythonScript(Script, Historical, Cacheable):
         return self.read()
 
 
-Globals.InitializeClass(PythonScript)
+InitializeClass(PythonScript)
 
 class PythonScriptTracebackSupplement:
     """Implementation of ITracebackSupplement"""

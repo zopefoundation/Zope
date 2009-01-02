@@ -14,34 +14,36 @@
 
 $Id$
 """
-import time,  App.Management, Globals, sys
-from webdav.interfaces import IWriteLock
-from ZPublisher.Converters import type_converters
-from Globals import InitializeClass
-from Globals import DTMLFile, MessageDialog
-from Acquisition import aq_base
-from Acquisition import aq_parent
-from Acquisition import Implicit, Explicit
-from App.Common import rfc1123_date, iso8601_date
-from webdav.common import urlbase
-from ExtensionClass import Base
-from Globals import Persistent
-from Traversable import Traversable
-from AccessControl import ClassSecurityInfo
+from cgi import escape
+import time
+import sys
+
 from AccessControl.Permissions import access_contents_information
 from AccessControl.Permissions import manage_properties
 from AccessControl.Permissions import view_management_screens
-from AccessControl import getSecurityManager
+from AccessControl.SecurityInfo import ClassSecurityInfo
+from AccessControl.SecurityManagement import getSecurityManager
+from Acquisition import aq_base
+from Acquisition import aq_parent
+from Acquisition import Implicit, Explicit
+from App.class_init import InitializeClass
+from App.Common import iso8601_date
+from App.Common import rfc1123_date
+from App.Dialogs import MessageDialog
+from App.Management import Tabs
+from App.special_dtml import DTMLFile
+from ExtensionClass import Base
+from Persistence import Persistent
+from Traversable import Traversable
 from webdav.common import isDavCollection
-from zExceptions import BadRequest, Redirect
-from cgi import escape
-from types import ListType
+from webdav.common import urlbase
+from webdav.interfaces import IWriteLock
+from zExceptions import BadRequest
+from zExceptions import Redirect
+from ZPublisher.Converters import type_converters
 
-# DM: we would like to import this from somewhere
-BadRequestException= 'Bad Request'
 
-
-class View(App.Management.Tabs, Base):
+class View(Tabs, Base):
     """A view of an object, typically used for management purposes
 
     This class provides bits of management framework needed by propertysheets
@@ -215,7 +217,7 @@ class PropertySheet(Traversable, Persistent, Implicit):
             else: value=[]
 
         # bleah - can't change kw name in api, so use ugly workaround.
-        if sys.modules['__builtin__'].type(value) == ListType:
+        if sys.modules['__builtin__'].type(value) == list:
             value = tuple(value)
         setattr(self, id, value)
 
@@ -242,7 +244,7 @@ class PropertySheet(Traversable, Persistent, Implicit):
                 props.append(prop)
             pself._properties=tuple(props)
 
-        if type(value) == ListType:
+        if type(value) == list:
             value = tuple(value)
         setattr(self.v_self(), id, value)
 
@@ -409,7 +411,7 @@ class PropertySheet(Traversable, Persistent, Implicit):
 
     # Web interface
 
-    manage=DTMLFile('dtml/properties', globals())
+    manage = DTMLFile('dtml/properties', globals())
 
     security.declareProtected(manage_properties, 'manage_propertiesForm')
     def manage_propertiesForm(self, URL1):
@@ -614,7 +616,7 @@ class DAVProperties(Virtual, PropertySheet, View):
 InitializeClass(DAVProperties)
 
 
-class PropertySheets(Traversable, Implicit, App.Management.Tabs):
+class PropertySheets(Traversable, Implicit, Tabs):
     """A tricky container to keep property sets from polluting
        an object's direct attribute namespace."""
 
@@ -708,7 +710,8 @@ class PropertySheets(Traversable, Implicit, App.Management.Tabs):
         '''delete all sheets identified by *ids*.'''
         for id in ids:
             if not self.isDeletable(id):
-                raise BadRequestException, 'attempt to delete undeletable property sheet: ' + id
+                raise BadRequest(
+                    'attempt to delete undeletable property sheet: ' + id)
             self.delPropertySheet(id)
         if REQUEST is not None: 
             REQUEST.RESPONSE.redirect('%s/manage' % self.absolute_url())
@@ -723,7 +726,7 @@ class PropertySheets(Traversable, Implicit, App.Management.Tabs):
     # Management interface:
 
     security.declareProtected(view_management_screens, 'manage')
-    manage=Globals.DTMLFile('dtml/propertysheets', globals())
+    manage = DTMLFile('dtml/propertysheets', globals())
 
     def manage_options(self):
         """Return a manage option data structure for me instance

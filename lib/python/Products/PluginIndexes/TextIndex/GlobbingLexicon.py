@@ -10,22 +10,19 @@
 # FOR A PARTICULAR PURPOSE
 #
 #############################################################################
-
-from Lexicon import Lexicon
-import Splitter
-
-import re, string
+import re
+import string
 
 from BTrees.IIBTree import IISet, union, IITreeSet
 from BTrees.OIBTree import OIBTree
 from BTrees.IOBTree import IOBTree
 from BTrees.OOBTree import OOBTree
 
-
-from Products.PluginIndexes.TextIndex.TextIndex import Or,Op
 from Products.PluginIndexes.common.randid import randid
-
-from types import UnicodeType
+from Products.PluginIndexes.TextIndex.TextIndex import Op
+from Products.PluginIndexes.TextIndex.TextIndex import Or
+from Products.PluginIndexes.TextIndex.Lexicon import Lexicon
+from Products.PluginIndexes.TextIndex.Splitter import getSplitter
 
 class GlobbingLexicon(Lexicon):
     """Lexicon which supports basic globbing function ('*' and '?').
@@ -59,7 +56,7 @@ class GlobbingLexicon(Lexicon):
         self.clear()
         self.useSplitter = useSplitter
         self.splitterParams = extra
-        self.SplitterFunc = Splitter.getSplitter(self.useSplitter)
+        self.SplitterFunc = getSplitter(self.useSplitter)
 
     def clear(self):
         self._lexicon = OIBTree()
@@ -253,7 +250,7 @@ class GlobbingLexicon(Lexicon):
         """
 
         # Remove characters that are meaningful in a regex
-        if not isinstance(pat, UnicodeType):
+        if not isinstance(pat, unicode):
             transTable = string.maketrans("", "")
             result = string.translate(pat, transTable,
                                       r'()&|!@#$%^{}\<>.')

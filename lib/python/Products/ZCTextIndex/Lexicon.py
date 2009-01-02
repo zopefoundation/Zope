@@ -21,15 +21,13 @@ import re
 from BTrees.IOBTree import IOBTree
 from BTrees.OIBTree import OIBTree
 from BTrees.Length import Length
-
-import ZODB
 from Persistence import Persistent
 from zope.interface import implements
 
 from Products.ZCTextIndex.StopDict import get_stopdict
 from Products.ZCTextIndex.ParseTree import QueryError
 from Products.ZCTextIndex.PipelineFactory import element_factory
-from interfaces import ILexicon
+from Products.ZCTextIndex.interfaces import ILexicon
 
 
 class Lexicon(Persistent):

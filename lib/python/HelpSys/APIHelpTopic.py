@@ -17,16 +17,16 @@ $Id$
 
 import types
 
-from AccessControl import ClassSecurityInfo
-from Globals import DTMLFile
-from Globals import InitializeClass
-from Globals import Persistent
+from AccessControl.SecurityInfo import ClassSecurityInfo
+from App.class_init import InitializeClass
+from App.special_dtml import DTMLFile
+from Persistence import Persistent
 
-import HelpTopic
+from HelpTopic import HelpTopic # XXX relative to avoid cycle
 
 _ignore_objects = {}
 
-class APIHelpTopic(HelpTopic.HelpTopic):
+class APIHelpTopic(HelpTopic):
     """ Provides API documentation.
     """
 

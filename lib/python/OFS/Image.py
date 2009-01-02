@@ -14,48 +14,53 @@
 
 $Id$
 """
+from cgi import escape
+from cStringIO import StringIO
+from mimetools import choose_boundary
 import struct
-from zope.contenttype import guess_content_type
-from zope.interface import implementedBy
-from zope.interface import implements
-from Globals import DTMLFile
-from Globals import InitializeClass
-from PropertyManager import PropertyManager
-from AccessControl import ClassSecurityInfo
-from AccessControl.Role import RoleManager
+
 from AccessControl.Permissions import change_images_and_files
 from AccessControl.Permissions import view_management_screens
 from AccessControl.Permissions import view as View
 from AccessControl.Permissions import ftp_access
 from AccessControl.Permissions import delete_objects
+from AccessControl.Role import RoleManager
+from AccessControl.SecurityInfo import ClassSecurityInfo
+from Acquisition import Implicit
+from App.class_init import InitializeClass
+from App.special_dtml import DTMLFile
+from DateTime.DateTime import DateTime
+from Persistence import Persistent
 from webdav.common import rfc1123_date
 from webdav.interfaces import IWriteLock
 from webdav.Lockable import ResourceLockedError
-from SimpleItem import Item_w__name__
-from cStringIO import StringIO
-from Globals import Persistent
-from Acquisition import Implicit
-from DateTime import DateTime
-from Cache import Cacheable
-from mimetools import choose_boundary
 from ZPublisher import HTTPRangeSupport
 from ZPublisher.HTTPRequest import FileUpload
 from ZPublisher.Iterators import filestream_iterator
 from zExceptions import Redirect
-from cgi import escape
-import transaction
+from zope.contenttype import guess_content_type
+from zope.interface import implementedBy
+from zope.interface import implements
 
-manage_addFileForm=DTMLFile('dtml/imageAdd', globals(),Kind='File',kind='file')
-def manage_addFile(self,id,file='',title='',precondition='', content_type='',
-                   REQUEST=None):
+from OFS.Cache import Cacheable
+from OFS.PropertyManager import PropertyManager
+from OFS.SimpleItem import Item_w__name__
+
+manage_addFileForm = DTMLFile('dtml/imageAdd',
+                              globals(),
+                              Kind='File',
+                              kind='file',
+                             )
+def manage_addFile(self, id, file='', title='', precondition='',
+                   content_type='', REQUEST=None):
     """Add a new File object.
 
     Creates a new File object 'id' with the contents of 'file'"""
 
-    id=str(id)
-    title=str(title)
-    content_type=str(content_type)
-    precondition=str(precondition)
+    id = str(id)
+    title = str(title)
+    content_type = str(content_type)
+    precondition = str(precondition)
 
     id, title = cookId(id, title, file)
 
@@ -498,6 +503,7 @@ class File(Persistent, Implicit, PropertyManager,
         return content_type
 
     def _read_data(self, file):
+        import transaction
 
         n=1 << 16
 

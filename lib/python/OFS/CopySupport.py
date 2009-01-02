@@ -15,23 +15,33 @@
 $Id$
 """
 
-import re, sys, tempfile
-import warnings
 from cgi import escape
-from marshal import loads, dumps
-from urllib import quote, unquote
-from zlib import compress, decompress
-
-import Globals, Moniker, ExtensionClass
+from marshal import dumps
+from marshal import loads
+import re
+import sys
+import tempfile
+from urllib import quote
+from urllib import unquote
+import warnings
+from zlib import compress
+from zlib import decompress
 import transaction
-from Globals import InitializeClass
+
 from AccessControl import ClassSecurityInfo
 from AccessControl import getSecurityManager
 from AccessControl.Permissions import view_management_screens
 from AccessControl.Permissions import copy_or_move
 from AccessControl.Permissions import delete_objects
-from Acquisition import aq_base, aq_inner, aq_parent
+from Acquisition import aq_base
+from Acquisition import aq_inner
+from Acquisition import aq_parent
+from App.class_init import InitializeClass
 from App.Dialogs import MessageDialog
+from App.special_dtml import HTML
+from App.special_dtml import HTMLFile
+from App.special_dtml import DTMLFile
+from ExtensionClass import Base
 from webdav.Lockable import ResourceLockedError
 from zExceptions import Unauthorized, BadRequest
 from ZODB.POSException import ConflictError
@@ -40,22 +50,25 @@ from zope.event import notify
 from zope.lifecycleevent import ObjectCopiedEvent
 from zope.app.container.contained import ObjectMovedEvent
 from zope.app.container.contained import notifyContainerModified
+
 from OFS.event import ObjectWillBeMovedEvent
 from OFS.event import ObjectClonedEvent
-import OFS.subscribers
-
 from OFS.interfaces import ICopyContainer
 from OFS.interfaces import ICopySource
+from OFS.Moniker import loadMoniker
+from OFS.Moniker import Moniker
+from OFS.subscribers import compatibilityCall
 
 
-class CopyError(Exception): pass
+class CopyError(Exception):
+    pass
 
 copy_re = re.compile('^copy([0-9]*)_of_(.*)')
 
 _marker=[]
 
 
-class CopyContainer(ExtensionClass.Base):
+class CopyContainer(Base):
 
     """Interface for containerish objects which allow cut/copy/paste"""
 
@@ -103,7 +116,7 @@ class CopyContainer(ExtensionClass.Base):
 
             if not ob.cb_isMoveable():
                 raise CopyError, eNotSupported % escape(id)
-            m=Moniker.Moniker(ob)
+            m = Moniker(ob)
             oblist.append(m.dump())
         cp=(1, oblist)
         cp=_cb_encode(cp)
@@ -129,7 +142,7 @@ class CopyContainer(ExtensionClass.Base):
             ob=self._getOb(id)
             if not ob.cb_isCopyable():
                 raise CopyError, eNotSupported % escape(id)
-            m=Moniker.Moniker(ob)
+            m = Moniker(ob)
             oblist.append(m.dump())
         cp=(0, oblist)
         cp=_cb_encode(cp)
@@ -185,7 +198,7 @@ class CopyContainer(ExtensionClass.Base):
         oblist = []
         app = self.getPhysicalRoot()
         for mdata in mdatas:
-            m = Moniker.loadMoniker(mdata)
+            m = loadMoniker(mdata)
             try:
                 ob = m.bind(app)
             except ConflictError:
@@ -227,7 +240,7 @@ class CopyContainer(ExtensionClass.Base):
 
                 ob._postCopy(self, op=0)
 
-                OFS.subscribers.compatibilityCall('manage_afterClone', ob, ob)
+                compatibilityCall('manage_afterClone', ob, ob)
 
                 notify(ObjectClonedEvent(ob))
 
@@ -309,7 +322,7 @@ class CopyContainer(ExtensionClass.Base):
         return result
 
     security.declareProtected(view_management_screens, 'manage_renameForm')
-    manage_renameForm=Globals.DTMLFile('dtml/renameForm', globals())
+    manage_renameForm = DTMLFile('dtml/renameForm', globals())
 
     security.declareProtected(view_management_screens, 'manage_renameObjects')
     def manage_renameObjects(self, ids=[], new_ids=[], REQUEST=None):
@@ -427,7 +440,7 @@ class CopyContainer(ExtensionClass.Base):
 
         ob._postCopy(self, op=0)
 
-        OFS.subscribers.compatibilityCall('manage_afterClone', ob, ob)
+        compatibilityCall('manage_afterClone', ob, ob)
 
         notify(ObjectClonedEvent(ob))
 
@@ -447,7 +460,7 @@ class CopyContainer(ExtensionClass.Base):
 
         app = self.getPhysicalRoot()
         for mdata in cp[1]:
-            m = Moniker.loadMoniker(mdata)
+            m = loadMoniker(mdata)
             oblist.append(m.bind(app))
         return oblist
 
@@ -527,7 +540,7 @@ class CopyContainer(ExtensionClass.Base):
 InitializeClass(CopyContainer)
 
 
-class CopySource(ExtensionClass.Base):
+class CopySource(Base):
 
     """Interface for objects which allow themselves to be copied."""
 
@@ -645,7 +658,7 @@ def cookie_path(request):
 
 
 
-fMessageDialog=Globals.HTML("""
+fMessageDialog = HTML("""
 <HTML>
 <HEAD>
 <TITLE>&dtml-title;</TITLE>

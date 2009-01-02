@@ -15,13 +15,14 @@
 $Id$
 """
 
-from Globals import DTMLFile, MessageDialog
-import AccessControl.Role
-from Globals import InitializeClass
-from AccessControl import ClassSecurityInfo
 from AccessControl.Permissions import manage_vocabulary
 from AccessControl.Permissions import query_vocabulary
+from AccessControl.Role import RoleManager
+from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Implicit
+from App.class_init import InitializeClass
+from App.Dialogs import MessageDialog
+from App.special_dtml import DTMLFile
 from Persistence import Persistent
 from OFS.SimpleItem import Item
 from zope.interface import implements
@@ -49,7 +50,7 @@ def manage_addVocabulary(self, id, title, globbing=None, extra=None,
 class _extra: pass
 
 
-class Vocabulary(Item, Persistent, Implicit, AccessControl.Role.RoleManager):
+class Vocabulary(Item, Persistent, Implicit, RoleManager):
 
     """A Vocabulary is a user-managable realization of a Lexicon object.
     """
@@ -70,8 +71,8 @@ class Vocabulary(Item, Persistent, Implicit, AccessControl.Role.RoleManager):
         {'label': 'Query', 'action': 'manage_query',
          'help': ('ZCatalog', 'Vocabulary_Query.stx')},
         )
-        +Item.manage_options
-        +AccessControl.Role.RoleManager.manage_options
+        + Item.manage_options
+        + RoleManager.manage_options
         )
 
     security.declareProtected(manage_vocabulary, 'manage_main')

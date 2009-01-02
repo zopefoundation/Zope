@@ -17,12 +17,18 @@ $Id$
 
 import os
 
-from AccessControl import ClassSecurityInfo
-from BTrees.IIBTree import IISet, IITreeSet, union, intersection, multiunion
+from AccessControl.SecurityInfo import ClassSecurityInfo
+from App.class_init import InitializeClass
+from App.Common import package_home
+from App.special_dtml import DTMLFile
+from BTrees.IIBTree import IISet
+from BTrees.IIBTree import IITreeSet
+from BTrees.IIBTree import intersection
+from BTrees.IIBTree import multiunion
+from BTrees.IIBTree import union
 from BTrees.IOBTree import IOBTree
-import BTrees.Length
+from BTrees.Length import Length
 from DateTime.DateTime import DateTime
-from Globals import package_home, DTMLFile, InitializeClass
 from zope.interface import implements
 
 from Products.PluginIndexes.common import safe_callable
@@ -125,7 +131,7 @@ class DateRangeIndex(UnIndex):
         self._since         = IOBTree()
         self._until         = IOBTree()
         self._unindex       = IOBTree() # 'datum' will be a tuple of date ints
-        self._length        = BTrees.Length.Length()
+        self._length        = Length()
 
     #
     #   PluggableIndexInterface implementation (XXX inherit assertions?)

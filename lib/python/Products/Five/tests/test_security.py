@@ -16,8 +16,9 @@
 $Id$
 """
 
-from zope.interface import Interface, implements
-from AccessControl import ClassSecurityInfo
+from zope.interface import implements
+from zope.interface import Interface
+from AccessControl.SecurityInfo import ClassSecurityInfo
 
 class ISuperDummy(Interface):
     """
@@ -95,7 +96,7 @@ def test_security_equivalence():
       ... '''
       >>> zcml.load_string(configure_zcml)
 
-      >>> from Globals import InitializeClass
+      >>> from App.class_init import InitializeClass
       >>> InitializeClass(Dummy2)
 
     Now we compare their access controls:

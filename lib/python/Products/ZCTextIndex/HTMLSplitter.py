@@ -11,12 +11,12 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+import re
+
+from zope.interface import implements
 
 from Products.ZCTextIndex.ISplitter import ISplitter
 from Products.ZCTextIndex.PipelineFactory import element_factory
-from zope.interface import implements
-
-import re
 
 class HTMLWordSplitter:
 

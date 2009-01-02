@@ -14,22 +14,23 @@
 
 $Id$
 """
-
+from cStringIO import StringIO
+import logging
 import mimetools
 import rfc822
-import time
-import logging
-from cStringIO import StringIO
 from threading import Lock
+import time
 
-import Acquisition
-import OFS.SimpleItem
-from AccessControl import ClassSecurityInfo
+from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.Permissions import change_configuration, view
 from AccessControl.Permissions import use_mailhost_services
 from AccessControl.Role import RoleManager
-from Globals import Persistent, DTMLFile, InitializeClass
-from DateTime import DateTime
+from Acquisition import Implicit
+from App.class_init import InitializeClass
+from App.special_dtml import DTMLFile
+from DateTime.DateTime import DateTime
+from Persistence import Persistent
+from OFS.SimpleItem import Item
 
 from zope.interface import implements
 from zope.sendmail.maildir import Maildir
@@ -51,11 +52,18 @@ LOG = logging.getLogger('MailHost')
 class MailHostError(Exception):
     pass
 
-manage_addMailHostForm=DTMLFile('dtml/addMailHost_form', globals())
-def manage_addMailHost( self, id, title='', smtp_host='localhost'
-                      , localhost='localhost', smtp_port=25
-                      , timeout=1.0, REQUEST=None ):
-    ' add a MailHost into the system '
+manage_addMailHostForm = DTMLFile('dtml/addMailHost_form', globals())
+def manage_addMailHost(self,
+                       id,
+                       title='',
+                       smtp_host='localhost',
+                       localhost='localhost',
+                       smtp_port=25,
+                       timeout=1.0,
+                       REQUEST=None,
+                      ):
+    """ Add a MailHost into the system.
+    """
     i = MailHost( id, title, smtp_host, smtp_port )   #create new mail host
     self._setObject( id,i )   #register it
 
@@ -65,41 +73,50 @@ def manage_addMailHost( self, id, title='', smtp_host='localhost'
 add = manage_addMailHost
 
 
-class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
+class MailBase(Implicit, Item, RoleManager):
     """a mailhost...?"""
 
     implements(IMailHost)
 
-    meta_type='Mail Host'
-    manage=manage_main=DTMLFile('dtml/manageMailHost', globals())
+    meta_type = 'Mail Host'
+    manage = manage_main = DTMLFile('dtml/manageMailHost', globals())
     manage_main._setName('manage_main')
-    index_html=None
+    index_html = None
     security = ClassSecurityInfo()
-    smtp_uid='' # Class attributes for smooth upgrades
-    smtp_pwd=''
+    smtp_uid = '' # Class attributes for smooth upgrades
+    smtp_pwd = ''
     smtp_queue = False
     smtp_queue_directory = '/tmp'
     force_tls = False
     lock = Lock()
 
-    # timeout=1.0 # unused?
+    # timeout = 1.0 # unused?
     
 
-    manage_options=(
+    manage_options = (
         (
         {'icon':'', 'label':'Edit',
          'action':'manage_main',
          'help':('MailHost','Mail-Host_Edit.stx')},
         )
-        +RoleManager.manage_options
-        +OFS.SimpleItem.Item.manage_options
+        + RoleManager.manage_options
+        + Item.manage_options
         )
 
 
-    def __init__(self, id='', title='', smtp_host='localhost', smtp_port=25, 
+    def __init__(self,
+                 id='',
+                 title='',
+                 smtp_host='localhost',
+                 smtp_port=25, 
                  force_tls=False, 
-                 smtp_uid='', smtp_pwd='', smtp_queue=False, smtp_queue_directory='/tmp'):
-        """Initialize a new MailHost instance """
+                 smtp_uid='',
+                 smtp_pwd='',
+                 smtp_queue=False,
+                 smtp_queue_directory='/tmp',
+                ):
+        """Initialize a new MailHost instance.
+        """
         self.id = id
         self.title = title
         self.smtp_host = str( smtp_host )
@@ -113,23 +130,30 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
 
     # staying for now... (backwards compatibility)
     def _init(self, smtp_host, smtp_port):
-        self.smtp_host=smtp_host
-        self.smtp_port=smtp_port
+        self.smtp_host = smtp_host
+        self.smtp_port = smtp_port
 
     security.declareProtected(change_configuration, 'manage_makeChanges')
-    def manage_makeChanges(self,title,smtp_host,smtp_port,smtp_uid='',smtp_pwd='', 
-                           smtp_queue=False, smtp_queue_directory='/tmp',
+    def manage_makeChanges(self,
+                           title,
+                           smtp_host,
+                           smtp_port,
+                           smtp_uid='',
+                           smtp_pwd='', 
+                           smtp_queue=False,
+                           smtp_queue_directory='/tmp',
                            force_tls=False, 
-                           REQUEST=None):
-        'make the changes'
+                           REQUEST=None,
+                          ):
+        """Make the changes.
+        """
+        title = str(title)
+        smtp_host = str(smtp_host)
+        smtp_port = int(smtp_port)
 
-        title=str(title)
-        smtp_host=str(smtp_host)
-        smtp_port=int(smtp_port)
-
-        self.title=title
-        self.smtp_host=smtp_host
-        self.smtp_port=smtp_port
+        self.title = title
+        self.smtp_host = smtp_host
+        self.smtp_port = smtp_port
         self.smtp_uid = smtp_uid
         self.smtp_pwd = smtp_pwd
         self.force_tls = force_tls
@@ -152,30 +176,45 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
                                    )
 
     security.declareProtected(use_mailhost_services, 'sendTemplate')
-    def sendTemplate(trueself, self, messageTemplate,
-                     statusTemplate=None, mto=None, mfrom=None,
-                     encode=None, REQUEST=None, immediate=False):
-        'render a mail template, then send it...'
+    def sendTemplate(trueself,
+                     self,
+                     messageTemplate,
+                     statusTemplate=None,
+                     mto=None,
+                     mfrom=None,
+                     encode=None,
+                     REQUEST=None,
+                     immediate=False,
+                    ):
+        """Render a mail template, then send it...
+        """
         mtemplate = getattr(self, messageTemplate)
         messageText = mtemplate(self, trueself.REQUEST)
         messageText, mto, mfrom = _mungeHeaders( messageText, mto, mfrom)
-        messageText=_encode(messageText, encode)
+        messageText = _encode(messageText, encode)
         trueself._send(mfrom, mto, messageText, immediate)
 
         if not statusTemplate: 
             return "SEND OK"
 
         try:
-            stemplate=getattr(self, statusTemplate)
+            stemplate = getattr(self, statusTemplate)
             return stemplate(self, trueself.REQUEST)
         except:
             return "SEND OK"
 
     security.declareProtected(use_mailhost_services, 'send')
-    def send(self, messageText, mto=None, mfrom=None, subject=None,
-             encode=None, immediate=False):
+    def send(self,
+             messageText,
+             mto=None,
+             mfrom=None,
+             subject=None,
+             encode=None,
+             immediate=False,
+            ):
 
-        messageText, mto, mfrom = _mungeHeaders( messageText, mto, mfrom, subject)
+        messageText, mto, mfrom = _mungeHeaders(messageText,
+                                                mto, mfrom, subject)
         messageText = _encode(messageText, encode)
         self._send(mfrom, mto, messageText, immediate)
 
@@ -186,7 +225,7 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
 
     security.declareProtected(use_mailhost_services, 'simple_send')
     def simple_send(self, mto, mfrom, subject, body, immediate=False):
-        body="From: %s\nTo: %s\nSubject: %s\n\n%s" % (
+        body = "From: %s\nTo: %s\nSubject: %s\n\n%s" % (
             mfrom, mto, subject, body)
 
         self._send(mfrom, mto, body, immediate)
@@ -199,7 +238,7 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
                           username=self.smtp_uid or None,
                           password=self.smtp_pwd or None,
                           force_tls=self.force_tls
-                          )
+                         )
 
     @synchronized(lock)
     def _stopQueueProcessorThread(self):
@@ -292,11 +331,11 @@ class MailHost(Persistent, MailBase):
 def _encode(body, encode=None):
     if encode is None:
         return body
-    mfile=StringIO(body)
-    mo=mimetools.Message(mfile)
+    mfile = StringIO(body)
+    mo = mimetools.Message(mfile)
     if mo.getencoding() != '7bit':
         raise MailHostError, 'Message already encoded'
-    newmfile=StringIO()
+    newmfile = StringIO()
     newmfile.write(''.join(mo.headers))
     newmfile.write('Content-Transfer-Encoding: %s\n' % encode)
     if not mo.has_key('Mime-Version'):
@@ -308,12 +347,12 @@ def _encode(body, encode=None):
 def _mungeHeaders( messageText, mto=None, mfrom=None, subject=None):
     """Sets missing message headers, and deletes Bcc.
        returns fixed message, fixed mto and fixed mfrom"""
-    mfile=StringIO(messageText.lstrip())
-    mo=rfc822.Message(mfile)
+    mfile = StringIO(messageText.lstrip())
+    mo = rfc822.Message(mfile)
 
     # Parameters given will *always* override headers in the messageText.
-    # This is so that you can't override or add to subscribers by adding them to
-    # the message text.
+    # This is so that you can't override or add to subscribers by adding
+    # them to # the message text.
     if subject:
         mo['Subject'] = subject
     elif not mo.getheader('Subject'):
@@ -321,7 +360,8 @@ def _mungeHeaders( messageText, mto=None, mfrom=None, subject=None):
 
     if mto:
         if isinstance(mto, basestring):
-            mto = [rfc822.dump_address_pair(addr) for addr in rfc822.AddressList(mto) ]
+            mto = [rfc822.dump_address_pair(addr)
+                        for addr in rfc822.AddressList(mto) ]
         if not mo.getheader('To'):
             mo['To'] = ','.join(mto)
     else:
@@ -329,7 +369,8 @@ def _mungeHeaders( messageText, mto=None, mfrom=None, subject=None):
         for header in ('To', 'Cc', 'Bcc'):
             v = mo.getheader(header)
             if v:
-                mto += [rfc822.dump_address_pair(addr) for addr in rfc822.AddressList(v)]
+                mto += [rfc822.dump_address_pair(addr)
+                            for addr in rfc822.AddressList(v)]
         if not mto:
             raise MailHostError, "No message recipients designated"
 

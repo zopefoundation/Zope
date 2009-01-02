@@ -14,19 +14,26 @@
 
 $Id$
 """
+import urlparse
 
-import Globals, urlparse, SpecialUsers, ExtensionClass
-from Globals import InitializeClass
-from AccessControl import ClassSecurityInfo
-from AccessControl import getSecurityManager, Unauthorized
-from AccessControl.Permissions import view_management_screens
-from AccessControl.Permissions import take_ownership
-from Acquisition import aq_get, aq_parent, aq_base, aq_inner
-from requestmethod import requestmethod
+from Acquisition import aq_base
+from Acquisition import aq_get
+from Acquisition import aq_inner
+from Acquisition import aq_parent
+from App.special_dtml import DTMLFile
+from App.class_init import InitializeClass
+from ExtensionClass import Base
 from zope.interface import implements
 
-from interfaces import IOwned
-
+from AccessControl.interfaces import IOwned
+from AccessControl.Permissions import view_management_screens
+from AccessControl.Permissions import take_ownership
+from AccessControl.requestmethod import requestmethod
+from AccessControl.SecurityInfo import ClassSecurityInfo
+from AccessControl.SecurityManagement import getSecurityManager
+# avoid importing 'emergency_user' / 'nobody'  before set
+from AccessControl import SpecialUsers as SU
+from AccessControl.unauthorized import Unauthorized
 
 UnownableOwner=[]
 def ownableFilter(self):
@@ -36,7 +43,7 @@ def ownableFilter(self):
 # Marker to use as a getattr default.
 _mark=ownableFilter
 
-class Owned(ExtensionClass.Base):
+class Owned(Base):
 
     implements(IOwned)
 
@@ -51,7 +58,7 @@ class Owned(ExtensionClass.Base):
                    )
 
     security.declareProtected(view_management_screens, 'manage_owner')
-    manage_owner=Globals.DTMLFile('dtml/owner', globals())
+    manage_owner = DTMLFile('dtml/owner', globals())
 
     security.declareProtected(view_management_screens, 'owner_info')
     def owner_info(self):
@@ -97,10 +104,10 @@ class Owned(ExtensionClass.Base):
         root=self.getPhysicalRoot()
         udb=root.unrestrictedTraverse(udb, None)
         if udb is None:
-            user = SpecialUsers.nobody
+            user = SU.nobody
         else:
             user = udb.getUserById(oid, None)
-            if user is None: user = SpecialUsers.nobody
+            if user is None: user = SU.nobody
         return user
 
     security.declarePrivate('getOwnerTuple')
@@ -134,12 +141,12 @@ class Owned(ExtensionClass.Base):
         udb = root.unrestrictedTraverse(udb_path, None)
 
         if udb is None:
-            return SpecialUsers.nobody
+            return SU.nobody
 
         user = udb.getUserById(oid, None)
 
         if user is None:
-            return SpecialUsers.nobody
+            return SU.nobody
 
         return user.__of__(udb)
 
@@ -258,8 +265,7 @@ class Owned(ExtensionClass.Base):
         else:
             # Otherwise change the ownership
             user=getSecurityManager().getUser()
-            if (SpecialUsers.emergency_user and
-                aq_base(user) is SpecialUsers.emergency_user):
+            if (SU.emergency_user and aq_base(user) is SU.emergency_user):
                 __creatable_by_emergency_user__=getattr(
                     self,'__creatable_by_emergency_user__', None)
                 if (__creatable_by_emergency_user__ is None or

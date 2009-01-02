@@ -15,23 +15,23 @@
 
 This provides generic script support
 """
-
 __version__='$Revision$'[11:-2]
 
-from Globals import InitializeClass
-from Globals import DTMLFile
-from AccessControl import ClassSecurityInfo
-from AccessControl.Permissions import view_management_screens
-from OFS.SimpleItem import SimpleItem
 from string import join
 from urllib import quote
-from BindingsUI import BindingsUI
-from Bindings import defaultBindings
+
+from AccessControl.Permissions import view_management_screens
+from AccessControl.SecurityInfo import ClassSecurityInfo
+from App.class_init import InitializeClass
+from App.special_dtml import DTMLFile
 from DocumentTemplate.DT_Util import TemplateDict
+from OFS.SimpleItem import SimpleItem
 from zExceptions import Redirect
 
+from Shared.DC.Scripts.BindingsUI import BindingsUI
+from Shared.DC.Scripts.Bindings import defaultBindings
 # Temporary:
-from Signature import FuncCode
+from Shared.DC.Scripts.Signature import FuncCode
 
 class Script(SimpleItem, BindingsUI):
     """Web-callable script mixin

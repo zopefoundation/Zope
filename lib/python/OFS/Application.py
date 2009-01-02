@@ -21,18 +21,21 @@ from cgi import escape
 from StringIO import StringIO
 from warnings import warn
 
-import Globals, Products, App.Product, App.ProductRegistry
+import Products
+import App.Product
+import App.ProductRegistry
 import transaction
-from Globals import InitializeClass
 from AccessControl import ClassSecurityInfo
 from AccessControl.User import UserFolder
 from Acquisition import aq_base
 from App.ApplicationManager import ApplicationManager
+from App.class_init import InitializeClass
+from App.class_init import ApplicationDefaultPermissions
 from App.config import getConfiguration
 from App.Product import doInstall
-from App.ProductContext import ProductContext
 from DateTime import DateTime
 from HelpSys.HelpSys import HelpSys
+from Persistence import Persistent
 from webdav.NullResource import NullResource
 from zExceptions import Redirect as RedirectException, Forbidden
 
@@ -47,24 +50,26 @@ from misc_ import Misc_
 
 LOG = getLogger('Application')
 
-class Application(Globals.ApplicationDefaultPermissions,
-                  ZDOM.Root, Folder.Folder,
-                  App.ProductRegistry.ProductRegistry, FindSupport):
-
+class Application(ApplicationDefaultPermissions,
+                  ZDOM.Root,
+                  Folder.Folder,
+                  App.ProductRegistry.ProductRegistry,
+                  FindSupport,
+                 ):
     """Top-level system object"""
 
     implements(IApplication)
 
     security = ClassSecurityInfo()
 
-    title ='Zope'
-    __defined_roles__=('Manager','Anonymous','Owner')
-    web__form__method='GET'
-    isTopLevelPrincipiaApplicationObject=1
-    _isBeingUsedAsAMethod_=0
+    title = 'Zope'
+    __defined_roles__ = ('Manager','Anonymous','Owner')
+    web__form__method = 'GET'
+    isTopLevelPrincipiaApplicationObject = 1
+    _isBeingUsedAsAMethod_ = 0
 
     # Create the help system object
-    HelpSys=HelpSys('HelpSys')
+    HelpSys = HelpSys('HelpSys')
 
     p_=misc_.p_
     misc_=misc_.misc_
@@ -78,7 +83,7 @@ class Application(Globals.ApplicationDefaultPermissions,
     # UserFolder is deleted. This is necessary to allow people
     # to replace the top-level UserFolder object.
 
-    __allow_groups__=UserFolder()
+    __allow_groups__ = UserFolder()
 
     # Set the universal default method to index_html
     _object_manager_browser_default_id = 'index_html'
@@ -87,19 +92,21 @@ class Application(Globals.ApplicationDefaultPermissions,
 
     def __init__(self):
         # Initialize users
-        uf=UserFolder()
-        self.__allow_groups__=uf
+        uf = UserFolder()
+        self.__allow_groups__ = uf
         self._setObject('acl_users', uf)
 
         # Initialize control panel
-        cpl=ApplicationManager()
+        cpl = ApplicationManager()
         cpl._init()
         self._setObject('Control_Panel', cpl)
         transaction.get().note("Created Zope Application")
 
     def id(self):
-        try:    return self.REQUEST['SCRIPT_NAME'][1:]
-        except: return self.title
+        try:
+            return self.REQUEST['SCRIPT_NAME'][1:]
+        except:
+            return self.title
 
     def title_and_id(self):
         return self.title
@@ -120,17 +127,24 @@ class Application(Globals.ApplicationDefaultPermissions,
 
     def __bobo_traverse__(self, REQUEST, name=None):
 
-        try: return getattr(self, name)
-        except AttributeError: pass
-        try: return self[name]
-        except KeyError: pass
-        method=REQUEST.get('REQUEST_METHOD', 'GET')
+        try:
+            return getattr(self, name)
+        except AttributeError:
+            pass
+
+        try:
+            return self[name]
+        except KeyError:
+            pass
+
+        method = REQUEST.get('REQUEST_METHOD', 'GET')
         if not method in ('GET', 'POST'):
             return NullResource(self, name, REQUEST).__of__(self)
 
         # Waaa. unrestrictedTraverse calls us with a fake REQUEST.
         # There is proabably a better fix for this.
-        try: REQUEST.RESPONSE.notFoundError("%s\n%s" % (name, method))
+        try:
+            REQUEST.RESPONSE.notFoundError("%s\n%s" % (name, method))
         except AttributeError:
             raise KeyError, name
 
@@ -286,7 +300,7 @@ class Application(Globals.ApplicationDefaultPermissions,
 InitializeClass(Application)
 
 
-class Expired(Globals.Persistent):
+class Expired(Persistent):
 
     icon='p_/broken'
 
@@ -345,7 +359,7 @@ class AppInitializer:
 
         # Ensure that Control Panel exists.
         if not hasattr(app, 'Control_Panel'):
-            cpl=ApplicationManager()
+            cpl = ApplicationManager()
             cpl._init()
             app._setObject('Control_Panel', cpl)
             self.commit('Added Control_Panel')
@@ -535,15 +549,18 @@ class AppInitializer:
         app = self.getApp()
         if app._getInitializerFlag('virtual_hosting'):
             return
-        if not app.objectIds('Virtual Host Monster') and not hasattr(app, 'virtual_hosting'):
-            from Products.SiteAccess.VirtualHostMonster import VirtualHostMonster
-            vhm=VirtualHostMonster()
-            vhm.id='virtual_hosting'
+        if (not app.objectIds('Virtual Host Monster') and
+            not hasattr(app, 'virtual_hosting')):
+            from Products.SiteAccess.VirtualHostMonster \
+                import VirtualHostMonster
+            vhm = VirtualHostMonster()
+            vhm.id = 'virtual_hosting'
             vhm.addToContainer(app)
             app._setInitializerFlag('virtual_hosting')
             self.commit('Added virtual_hosting')
 
     def check_zglobals(self):
+        import Globals
         if not doInstall():
             return
 
@@ -615,7 +632,7 @@ def install_products(app):
     meta_types=[]
     done={}
 
-    debug_mode = App.config.getConfiguration().debug_mode
+    debug_mode = getConfiguration().debug_mode
 
     transaction.get().note('Prior to product installs')
     transaction.commit()
@@ -673,7 +690,7 @@ def import_products():
     done={}
 
     products = get_products()
-    debug_mode = App.config.getConfiguration().debug_mode
+    debug_mode = getConfiguration().debug_mode
 
     for priority, product_name, index, product_dir in products:
         if done.has_key(product_name):
@@ -739,6 +756,7 @@ def get_folder_permissions():
 def install_product(app, product_dir, product_name, meta_types,
                     folder_permissions, raise_exc=0, log_exc=1):
 
+    from App.ProductContext import ProductContext
     path_join=os.path.join
     isdir=os.path.isdir
     exists=os.path.exists
@@ -846,6 +864,7 @@ def install_product(app, product_dir, product_name, meta_types,
 
 def install_package(app, module, init_func, raise_exc=False, log_exc=True):
     """Installs a Python package like a product."""
+    from App.ProductContext import ProductContext
     try:
         product = App.Product.initializeProduct(module,
                                                 module.__name__,
@@ -878,13 +897,16 @@ def install_standards(app):
         return
 
     # Install the replaceable standard objects
+    from App.Common import package_home
+    from App.special_dtml import DTMLFile
     from Products.PageTemplates.PageTemplateFile import PageTemplateFile
-    std_dir = os.path.join(Globals.package_home(globals()), 'standard')
+
+    std_dir = os.path.join(package_home(globals()), 'standard')
     wrote = 0
     for fn in os.listdir(std_dir):
         base, ext = os.path.splitext(fn)
         if ext == '.dtml':
-            ob = Globals.DTMLFile(base, std_dir)
+            ob = DTMLFile(base, std_dir)
             fn = base
             if hasattr(app, fn):
                 continue

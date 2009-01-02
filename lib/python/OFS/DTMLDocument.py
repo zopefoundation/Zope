@@ -14,20 +14,25 @@
 
 $Id$
 """
-from Globals import InitializeClass
-from ZPublisher.Converters import type_converters
-from Globals import HTML, DTMLFile, MessageDialog
-from zope.contenttype import guess_content_type
-from DTMLMethod import DTMLMethod, decapitate
-from PropertyManager import PropertyManager
-from webdav.common import rfc1123_date
-from webdav.Lockable import ResourceLockedError
 from sgmllib import SGMLParser
 from urllib import quote
+
 from AccessControl import getSecurityManager
 from AccessControl.Permissions import change_dtml_methods
 from AccessControl.Permissions import change_dtml_documents
+from App.class_init import InitializeClass
+from App.Dialogs import MessageDialog
+from App.special_dtml import DTMLFile
+from App.special_dtml import HTML
+from OFS.DTMLMethod import decapitate
+from OFS.DTMLMethod import DTMLMethod
+from webdav.common import rfc1123_date
+from webdav.Lockable import ResourceLockedError
 from zExceptions.TracebackSupplement import PathTracebackSupplement
+from zope.contenttype import guess_content_type
+from ZPublisher.Converters import type_converters
+
+from OFS.PropertyManager import PropertyManager
 
 done='done'
 

@@ -15,16 +15,16 @@
 $Id$
 """
 
-from AccessControl import getSecurityManager
-from AccessControl import Unauthorized
+from AccessControl.SecurityManagement import getSecurityManager
+from AccessControl.unauthorized import Unauthorized
 from AccessControl.Permissions import add_page_templates
 from AccessControl.Permissions import add_user_folders
-from Globals import DTMLFile
+from App.special_dtml import DTMLFile
 from zope.interface import implements
 
-from Folder import Folder
-from interfaces import IOrderedFolder
-from OrderSupport import OrderSupport
+from OFS.Folder import Folder
+from OFS.interfaces import IOrderedFolder
+from OFS.OrderSupport import OrderSupport
 
 manage_addOrderedFolderForm = DTMLFile('dtml/addOrderedFolder', globals())
 

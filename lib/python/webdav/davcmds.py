@@ -20,17 +20,22 @@ from cStringIO import StringIO
 from urllib import quote
 
 import transaction
-from AccessControl import getSecurityManager
+from AccessControl.SecurityManagement import getSecurityManager
+from Acquisition import aq_base
 from Acquisition import aq_parent
 from OFS.PropertySheets import DAVProperties
-from zExceptions import BadRequest, Forbidden
+from zExceptions import BadRequest
+from zExceptions import Forbidden
 
-from common import absattr, aq_base, urlfix, urlbase, urljoin
-from common import isDavCollection
-from common import PreconditionFailed
-from interfaces import IWriteLock
-from LockItem import LockItem
-from xmltools import XmlParser
+from webdav.common import absattr
+from webdav.common import urlbase
+from webdav.common import urlfix
+from webdav.common import urljoin
+from webdav.common import isDavCollection
+from webdav.common import PreconditionFailed
+from webdav.interfaces import IWriteLock
+from webdav.LockItem import LockItem
+from webdav.xmltools import XmlParser
 
 
 def safe_quote(url, mark=r'%'):
