@@ -24,9 +24,9 @@ deprecated("import TreeDisplay directly",
           )
 
 deprecated("import from App.Common instead",
-           package_home = 'App.Common.package_home',
-           attrget = 'App.Common.attrget',
-           Dictionary = 'App.Common.Dictionary',
+           package_home = 'App.Common:package_home',
+           attrget = 'App.Common:attrget',
+           Dictionary = 'App.Common:Dictionary',
           )
 
 deprecated("import from Persistence instead",
