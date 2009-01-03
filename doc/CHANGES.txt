@@ -8,7 +8,11 @@ Zope Changes
 
     Restructuring
 
-      - Moved 'ApplicationDefaultPermissiosn' from 'App.class_init' to
+      - Added 'InitializeClass' alias in 'App.class_init' to ease migration.
+        In Zope 2.12 it will be recommended to import 'InitializeClass' from
+        'App.class_init' instead of 'Globals'.
+
+      - Moved 'ApplicationDefaultPermissions' from 'App.class_init' to
         'AccessControl.Permissions', in order to break an import cycle
         in third-party code which avoids imports from 'Globals.'  Left
         the class importable from its old location without deprecation.

@@ -79,3 +79,5 @@ def default__class_init__(self):
                         "Class %s.%s has a security declaration for "
                         "nonexistent method %r", self.__module__,
                         self.__name__, mname)
+
+InitializeClass = default__class_init__ # future name
