@@ -7,21 +7,24 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+"""Class initialization.
+
+$Id$
+"""
 
 import logging
 
 from AccessControl.Permission import ApplicationDefaultPermissions # BBB
 
-
-def default__class_init__(self):
+def InitializeClass(self):
     from AccessControl.Permission import registerPermissions
     from AccessControl.PermissionRole import PermissionRole
     dict=self.__dict__
     have=dict.has_key
-    ft=type(default__class_init__)
+    ft=type(InitializeClass)
     dict_items=dict.items()
 
     for name, v in dict_items:
@@ -71,7 +74,7 @@ def default__class_init__(self):
                 roles = acp[2]
                 pr = PermissionRole(pname, roles)
             else:
-                pr=PermissionRole(pname)
+                pr = PermissionRole(pname)
             for mname in mnames:
                 setattr(self, mname+'__roles__', pr)
                 if mname and not hasattr(self, mname):
@@ -80,4 +83,4 @@ def default__class_init__(self):
                         "nonexistent method %r", self.__module__,
                         self.__name__, mname)
 
-InitializeClass = default__class_init__ # instead of Globals.Initialize
+default__class_init__ = InitializeClass # BBB: old name
