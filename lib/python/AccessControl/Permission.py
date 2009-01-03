@@ -7,7 +7,7 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
 """Permissions
@@ -121,7 +121,6 @@ _registerdPermission=_registeredPermissions.has_key
 def registerPermissions(permissions, defaultDefault=('Manager',)):
     """Register an __ac_permissions__ sequence.
     """
-    from App.class_init import ApplicationDefaultPermissions
     import Products
     for setting in permissions:
         if _registerdPermission(setting[0]): continue
@@ -140,5 +139,5 @@ def registerPermissions(permissions, defaultDefault=('Manager',)):
                     mangled, default)
 
 class ApplicationDefaultPermissions:
-    _View_Permission='Manager', 'Anonymous'
-    _Access_contents_information_Permission='Manager', 'Anonymous'
+    _View_Permission = ('Manager', 'Anonymous')
+    _Access_contents_information_Permission = ('Manager', 'Anonymous')
