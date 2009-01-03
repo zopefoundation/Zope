@@ -27,11 +27,7 @@ from AccessControl.Permission import ApplicationDefaultPermissions
 from App.Common import package_home, attrget, Dictionary
 from App.config import getConfiguration as _getConfiguration
 from Persistence import Persistent, PersistentMapping
-from App.class_init import default__class_init__
-
-# Nicer alias for class initializer.
-InitializeClass = default__class_init__
-
+from App.class_init import InitializeClass, default__class_init__
 from App.special_dtml import HTML, HTMLFile, DTMLFile
 from App.Dialogs import MessageDialog
 from App.ImageFile import ImageFile
