@@ -15,8 +15,7 @@
 $Id$
 """
 
-import string, Products, Globals
-
+import string, Products
 
 name_trans=filter(lambda c, an=string.letters+string.digits+'_': c not in an,
                   map(chr,range(256)))
@@ -133,8 +132,8 @@ def registerPermissions(permissions, defaultDefault=('Manager',)):
         Products.__ac_permissions__=(
             Products_permissions + ((perm, (), default),))
         mangled=pname(perm) # get mangled permission name
-        if not hasattr(Globals.ApplicationDefaultPermissions, mangled):
-            setattr(Globals.ApplicationDefaultPermissions,
+        if not hasattr(ApplicationDefaultPermissions, mangled):
+            setattr(ApplicationDefaultPermissions,
                     mangled, default)
 
 class ApplicationDefaultPermissions:
