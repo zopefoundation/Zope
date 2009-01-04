@@ -26,6 +26,7 @@ from zope.security.interfaces import IPermission
 from zope.security.management import thread_local
 from zope.security.simplepolicies import ParanoidSecurityPolicy
 
+from App.class_init import InitializeClass as initializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.SecurityManagement import getSecurityManager
 
