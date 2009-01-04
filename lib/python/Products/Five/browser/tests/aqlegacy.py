@@ -71,6 +71,7 @@ class ExplicitWithTemplate(Acquisition.Explicit):
 
 class Implicit(Acquisition.Implicit):
 
+    index_html = None  # we don't want to acquire this!
     def render(self):
         return 'Implicit'
 
