@@ -15,6 +15,12 @@
 
 $Id$
 """
+from zope.deferredimport import deprecated
+
+deprecated("Please import InitializeClass from App.class_init",
+           initializeClass = 'App.class_init:InitializeClass',
+          )
+
 from zope.component import getUtility
 from zope.component import queryUtility
 from zope.interface import classProvides
@@ -26,7 +32,6 @@ from zope.security.interfaces import IPermission
 from zope.security.management import thread_local
 from zope.security.simplepolicies import ParanoidSecurityPolicy
 
-from App.class_init import InitializeClass as initializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.SecurityManagement import getSecurityManager
 
