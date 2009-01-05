@@ -31,6 +31,7 @@ class VersionTextTestCase(unittest.TestCase):
 
     def _resetModuleGlobals(self):
         from App import version_txt
+        version_txt._filename = 'version.txt'
         version_txt._version_file = None
         version_txt._version_string = None
         version_txt._zope_version = None
@@ -45,7 +46,9 @@ class VersionTextTestCase(unittest.TestCase):
         os.close(f)
 
     def test_without_version_txt(self):
+        from App import version_txt
         from App.version_txt import getZopeVersion
+        version_txt._filename = ''
         self.assertEqual(getZopeVersion(), (-1, -1, -1, '', -1))
 
     def test_with_version_txt_final(self):
