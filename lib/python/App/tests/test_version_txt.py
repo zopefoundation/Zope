@@ -36,7 +36,7 @@ class VersionTextTestCase(unittest.TestCase):
         version_txt._version_string = None
         version_txt._zope_version = None
 
-    def writeVersion(self, s):
+    def _writeVersion(self, s):
         import os
         import tempfile
         from App import version_txt 
@@ -46,19 +46,20 @@ class VersionTextTestCase(unittest.TestCase):
         os.close(f)
 
     def test_without_version_txt(self):
+        import os
         from App import version_txt
-        from App.version_txt import getZopeVersion
-        version_txt._filename = ''
-        self.assertEqual(getZopeVersion(), (-1, -1, -1, '', -1))
+        version_txt._filename = 'NONESUCHFILESHOULDEXIST'
+        self.failIf(os.path.exists(version_txt._get_filename()))
+        self.assertEqual(version_txt.getZopeVersion(), (-1, -1, -1, '', -1))
 
     def test_with_version_txt_final(self):
         from App.version_txt import getZopeVersion
-        self.writeVersion("Zope 2.6.1 (source release, python 2.1, linux2)")
+        self._writeVersion("Zope 2.6.1 (source release, python 2.1, linux2)")
         self.assertEqual(getZopeVersion(), (2, 6, 1, '', -1))
 
     def test_with_version_txt_beta(self):
         from App.version_txt import getZopeVersion
-        self.writeVersion("Zope 2.6.1b2 (source release, python 2.1, linux2)")
+        self._writeVersion("Zope 2.6.1b2 (source release, python 2.1, linux2)")
         self.assertEqual(getZopeVersion(), (2, 6, 1, 'b', 2))
 
 
