@@ -14,24 +14,29 @@
 
 $id$
 """
-import os, sys, re
+import os
+import re
+import sys
 import Zope2
 
+_location = os.path.dirname(Zope2.__file__)
+_filename = 'version.txt'
+
+_version_file = None
 _version_string = None
 _zope_version = None
 
-def _test_reset():
-    # Needed for testing.
-    global _version_string, _zope_version
-    _version_string = None
-    _zope_version = None
+def _get_filename():
+    if _version_file is not None:
+        return _version_file
+    return os.path.join(_location, _filename)
 
 def _prep_version_data():
     global _version_string, _zope_version
     if _version_string is None:
         v = sys.version_info
         pyver = "python %d.%d.%d, %s" % (v[0], v[1], v[2], sys.platform)
-        fn = os.path.join(os.path.dirname(Zope2.__file__), 'version.txt')
+        fn = _get_filename()
         expr = re.compile(
             r'(?P<product>[A-Za-z0-9]+) +(?P<major>[0-9]+)'
             '\.(?P<minor>[0-9]+)\.(?P<micro>[0-9]+)'

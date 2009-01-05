@@ -15,41 +15,51 @@
 
 $Id$
 """
-import os
 import unittest
-import Zope2
-import App.version_txt
 
 class VersionTextTestCase(unittest.TestCase):
 
     def setUp(self):
-        self.fn = os.path.join(os.path.dirname(Zope2.__file__), "version.txt")
-        App.version_txt._test_reset()
+        self._resetModuleGlobals()
 
     def tearDown(self):
-        try:
-            os.unlink(self.fn)
-        except OSError:
-            pass
+        import os
+        from App.version_txt import _version_file
+        if _version_file is not None:
+            os.unlink(_version_file)
+        self._resetModuleGlobals()
+
+    def _resetModuleGlobals(self):
+        from App import version_txt
+        version_txt._filename = 'version.txt'
+        version_txt._version_file = None
+        version_txt._version_string = None
+        version_txt._zope_version = None
 
     def writeVersion(self, s):
-        f = open(self.fn, 'w')
-        f.write(s)
-        f.close()
+        import os
+        import tempfile
+        from App import version_txt 
+        assert version_txt._version_file is None
+        f, version_txt._version_file = tempfile.mkstemp()
+        os.write(f, s)
+        os.close(f)
 
     def test_without_version_txt(self):
-        self.assertEqual(App.version_txt.getZopeVersion(),
-                         (-1, -1, -1, '', -1))
+        from App import version_txt
+        from App.version_txt import getZopeVersion
+        version_txt._filename = ''
+        self.assertEqual(getZopeVersion(), (-1, -1, -1, '', -1))
 
     def test_with_version_txt_final(self):
+        from App.version_txt import getZopeVersion
         self.writeVersion("Zope 2.6.1 (source release, python 2.1, linux2)")
-        self.assertEqual(App.version_txt.getZopeVersion(),
-                         (2, 6, 1, '', -1))
+        self.assertEqual(getZopeVersion(), (2, 6, 1, '', -1))
 
     def test_with_version_txt_beta(self):
+        from App.version_txt import getZopeVersion
         self.writeVersion("Zope 2.6.1b2 (source release, python 2.1, linux2)")
-        self.assertEqual(App.version_txt.getZopeVersion(),
-                         (2, 6, 1, 'b', 2))
+        self.assertEqual(getZopeVersion(), (2, 6, 1, 'b', 2))
 
 
 def test_suite():
