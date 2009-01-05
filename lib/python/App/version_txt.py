@@ -17,9 +17,8 @@ $id$
 import os
 import re
 import sys
-import Zope2
 
-_location = os.path.dirname(Zope2.__file__)
+_location = None
 _filename = 'version.txt'
 
 _version_file = None
@@ -27,8 +26,12 @@ _version_string = None
 _zope_version = None
 
 def _get_filename():
+    global _location
     if _version_file is not None:
         return _version_file
+    if _location is None:
+        import Zope2
+        _location = os.path.dirname(Zope2.__file__)
     return os.path.join(_location, _filename)
 
 def _prep_version_data():
