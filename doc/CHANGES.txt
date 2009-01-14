@@ -9,6 +9,9 @@ Zope Changes
 
     Restructuring
 
+      - Avoid deprecation warnings for the md5 and sha modules in Python 2.6
+        by adding conditional imports for the hashlib module.
+
       - Replaced  imports from the 'Globals' module throughout the 
         tree with imports from the actual modules;  the 'Globals' module
         was always intended to be an area for shared data, rather than

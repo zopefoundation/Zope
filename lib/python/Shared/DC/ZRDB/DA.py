@@ -18,7 +18,6 @@ from cPickle import dumps
 from cPickle import loads
 from cStringIO import StringIO
 import marshal
-import md5
 import os
 import re
 import string
@@ -61,7 +60,6 @@ from sqlgroup import SQLGroup
 from sqltest import SQLTest
 from sqlvar import SQLVar
 
-md5new = md5.new
 
 class DatabaseError(BadRequest):
    " base class for external relational data base connection problems "

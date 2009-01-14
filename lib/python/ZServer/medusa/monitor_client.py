@@ -9,9 +9,12 @@ import socket
 import string
 import sys
 import os
-
-import md5
 import time
+
+try:
+    from hashlib import md5
+except:
+    from md5 import new as md5
 
 class stdin_channel (asyncore.file_dispatcher):
     def handle_read (self):
@@ -84,7 +87,7 @@ class encrypted_monitor_client (monitor_client):
             return data
             
 def hex_digest (s):
-    m = md5.md5()
+    m = md5()
     m.update (s)
     return string.join (
             map (lambda x: hex (ord (x))[2:], map (None, m.digest())),

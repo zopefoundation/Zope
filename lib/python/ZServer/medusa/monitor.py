@@ -7,11 +7,15 @@
 
 RCS_ID = '$Id$'
 
-import md5
 import socket
 import string
 import sys
 import time
+
+try:
+    from hashlib import md5
+except:
+    from md5 import new as md5
 
 if RCS_ID.startswith('$Id: '):
     VERSION = string.split(RCS_ID)[2]
@@ -195,7 +199,7 @@ class monitor_server (asyncore.dispatcher):
                 )
         
 def hex_digest (s):
-    m = md5.md5()
+    m = md5()
     m.update (s)
     return string.joinfields (
             map (lambda x: hex (ord (x))[2:], map (None, m.digest())),

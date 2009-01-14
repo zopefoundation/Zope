@@ -13,7 +13,12 @@
 
 __version__='$Revision: 1.9 $'[11:-2]
 
-import sha, binascii
+try:
+    from hashlib import sha1 as sha
+except:
+    from sha import new as sha
+
+import binascii
 from binascii import b2a_base64, a2b_base64
 from random import choice, randrange
 
@@ -68,7 +73,7 @@ class SSHADigestScheme:
     def encrypt(self, pw):
         pw = str(pw)
         salt = self.generate_salt()
-        return b2a_base64(sha.new(pw + salt).digest() + salt)[:-1]
+        return b2a_base64(sha(pw + salt).digest() + salt)[:-1]
 
     def validate(self, reference, attempt):
         try:
@@ -77,7 +82,7 @@ class SSHADigestScheme:
             # Not valid base64.
             return 0
         salt = ref[20:]
-        compare = b2a_base64(sha.new(attempt + salt).digest() + salt)[:-1]
+        compare = b2a_base64(sha(attempt + salt).digest() + salt)[:-1]
         return (compare == reference)
 
 registerScheme('SSHA', SSHADigestScheme())
@@ -86,10 +91,10 @@ registerScheme('SSHA', SSHADigestScheme())
 class SHADigestScheme:
 
     def encrypt(self, pw):
-        return b2a_base64(sha.new(pw).digest())[:-1]
+        return b2a_base64(sha(pw).digest())[:-1]
 
     def validate(self, reference, attempt):
-        compare = b2a_base64(sha.new(attempt).digest())[:-1]
+        compare = b2a_base64(sha(attempt).digest())[:-1]
         return (compare == reference)
 
 registerScheme('SHA', SHADigestScheme())

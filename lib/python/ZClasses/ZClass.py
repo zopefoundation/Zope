@@ -345,9 +345,13 @@ class ZClass(Base, Collection, SimpleItem):
         self._zbases=copy._zbases
 
     def _new_class_id(self):
-        import md5, base64, time
+        try:
+            from hashlib import md5
+        except:
+            from md5 import new as md5
+        import base64, time
 
-        id=md5.new()
+        id=md5()
         id.update(self.absolute_url())
         id.update(str(time.time()))
         id=id.digest()

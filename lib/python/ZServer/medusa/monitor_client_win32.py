@@ -10,10 +10,14 @@ import socket
 import string
 import sys
 import thread
-import md5
+
+try:
+    from hashlib import md5
+except:
+    from md5 import new as md5
 
 def hex_digest (s):
-    m = md5.md5()
+    m = md5()
     m.update (s)
     return string.join (
             map (lambda x: hex (ord (x))[2:], map (None, m.digest())),
