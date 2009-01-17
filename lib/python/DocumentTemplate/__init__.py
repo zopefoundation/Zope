@@ -20,3 +20,6 @@ __version__='$Revision: 1.18 $'[11:-2]
 
 from DocumentTemplate.DT_String import String, File
 from DocumentTemplate.DT_HTML import HTML, HTMLDefault, HTMLFile
+
+# Register the dtml-tree tag
+import TreeDisplay
