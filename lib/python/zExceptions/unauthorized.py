@@ -14,6 +14,7 @@
 $Id$
 """
 
+from types import StringType
 from zope.interface import implements
 from zope.security.interfaces import IUnauthorized
 
@@ -37,7 +38,7 @@ class Unauthorized(Exception):
         provides are added to needed.
         """
         if name is None and (
-            not isinstance(message, basestring) or len(message.split()) <= 1):
+            not isinstance(message, StringType) or len(message.split()) <= 1):
             # First arg is a name, not a message
             name=message
             message=None
@@ -52,17 +53,8 @@ class Unauthorized(Exception):
 
         self.needed=needed
 
-    # Python has deprecated the message attribute of exceptions in 2.6. We
-    # will keep it for this exception and avoid the warning.
-    def _get_message(self, message):
-        return self._message
-    def _set_message(self, message):
-        self._message = message
-    message = property(_get_message, _set_message)
-
     def __str__(self):
-        if self.message is not None:
-            return self.message
+        if self.message is not None: return self.message
         if self.name is not None:
             return ("You are not allowed to access '%s' in this context"
                     % self.name)
@@ -70,6 +62,7 @@ class Unauthorized(Exception):
             return ("You are not allowed to access '%s' in this context"
                     % self.getValueName())
         return repr(self)
+
 
     def getValueName(self):
         v=self.value
