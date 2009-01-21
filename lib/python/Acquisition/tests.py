@@ -1636,6 +1636,9 @@ def test_proxying():
     ...     def __contains__(self, key):
     ...         print 'contains', repr(key)
     ...         return key == 5
+    ...     def __iter__(self):
+    ...         print 'iterating...'
+    ...         return iter((42,))
 
     The naked class behaves like this:
 
@@ -1646,6 +1649,9 @@ def test_proxying():
     >>> 5 in c
     contains 5
     True
+    >>> list(c)
+    iterating...
+    [42]
 
     Let's put c in the context of i:
 
@@ -1660,6 +1666,58 @@ def test_proxying():
     >>> 5 in i.c
     contains 5
     True
+    >>> list(i.c)
+    iterating...
+    [42]
+
+    Let's let's test the same again with an explicit wrapper:
+
+    >>> import Acquisition
+    >>> class Impl(Acquisition.Explicit):
+    ...     pass
+
+    >>> class C(Acquisition.Explicit):
+    ...     def __getitem__(self, key):
+    ...         print 'getitem', key
+    ...         if key == 4:
+    ...             raise IndexError
+    ...         return key
+    ...     def __contains__(self, key):
+    ...         print 'contains', repr(key)
+    ...         return key == 5
+    ...     def __iter__(self):
+    ...         print 'iterating...'
+    ...         return iter((42,))
+
+    The naked class behaves like this:
+
+    >>> c = C()
+    >>> 3 in c
+    contains 3
+    False
+    >>> 5 in c
+    contains 5
+    True
+    >>> list(c)
+    iterating...
+    [42]
+
+    Let's put c in the context of i:
+
+    >>> i = Impl()
+    >>> i.c = c
+
+    Now check that __contains__ is properly used:
+
+    >>> 3 in i.c # c.__of__(i)
+    contains 3
+    False
+    >>> 5 in i.c
+    contains 5
+    True
+    >>> list(i.c)
+    iterating...
+    [42]
 
     """
 

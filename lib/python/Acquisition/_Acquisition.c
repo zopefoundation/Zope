@@ -38,7 +38,8 @@ static PyObject *py__add__, *py__sub__, *py__mul__, *py__div__,
   *py__long__, *py__float__, *py__oct__, *py__hex__,
   *py__getitem__, *py__setitem__, *py__delitem__,
   *py__getslice__, *py__setslice__, *py__delslice__,  *py__contains__,
-  *py__len__, *py__of__, *py__call__, *py__repr__, *py__str__, *py__cmp__;
+  *py__len__, *py__of__, *py__call__, *py__repr__, *py__str__, *py__cmp__,
+  *py__iter__;
 
 static PyObject *Acquired=0;
 
@@ -82,6 +83,7 @@ init_py_names(void)
   INIT_PY_NAME(__repr__);
   INIT_PY_NAME(__str__);
   INIT_PY_NAME(__cmp__);
+  INIT_PY_NAME(__iter__);
   
 #undef INIT_PY_NAME
 }
@@ -817,6 +819,12 @@ Wrapper_contains(Wrapper *self, PyObject *v)
   return c;
 }
 
+static PyObject * 
+Wrapper_iter(Wrapper *self)
+{
+  return CallMethodO(OBJECT(self), py__iter__, NULL, NULL); 
+}
+
 static PySequenceMethods Wrapper_as_sequence = {
 	(inquiry)Wrapper_length,		/*sq_length*/
 	(binaryfunc)Wrapper_add,		/*sq_concat*/
@@ -1222,7 +1230,7 @@ static PyExtensionClass Wrappertype = {
   /* tp_clear          */ (inquiry)Wrapper_clear,
   /* tp_richcompare    */ (richcmpfunc)0,
   /* tp_weaklistoffset */ (long)0,
-  /* tp_iter           */ (getiterfunc)0,
+  (getiterfunc)Wrapper_iter,		/*tp_iter*/
   /* tp_iternext       */ (iternextfunc)0,
   /* tp_methods        */ Wrapper_methods,
   /* tp_members        */ 0,
@@ -1266,7 +1274,7 @@ static PyExtensionClass XaqWrappertype = {
   /* tp_clear          */ (inquiry)Wrapper_clear,
   /* tp_richcompare    */ (richcmpfunc)0,
   /* tp_weaklistoffset */ (long)0,
-  /* tp_iter           */ (getiterfunc)0,
+  (getiterfunc)Wrapper_iter,		/*tp_iter*/
   /* tp_iternext       */ (iternextfunc)0,
   /* tp_methods        */ Wrapper_methods,
   /* tp_members        */ 0,

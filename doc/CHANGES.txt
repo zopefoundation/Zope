@@ -19,6 +19,8 @@ Zope Changes
 
     Bugs Fixed
 
+      - Acquisition wrappers now correctly proxy __iter__.
+
       - Products.PluginIndexes.PathIndex:  backported doc fixes /
         optiimizations from trunk (and ExtendedPathIndex).
 
