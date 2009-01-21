@@ -237,6 +237,8 @@ Zope Changes
 
     Bugs Fixed
 
+      - Acquisition wrappers now correctly proxy __iter__.
+
       - Launchpad #174705:  ensure that the error info object exposed to a
         'tal:on_error' handler has attributes visible to restricted code.
 
