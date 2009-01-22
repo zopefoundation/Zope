@@ -237,6 +237,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Specified height/width of icons in ZMI listings so the table doesn't
+        jump around while loading.
+
       - Acquisition wrappers now correctly proxy __iter__.
 
       - Launchpad #174705:  ensure that the error info object exposed to a

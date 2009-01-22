@@ -133,7 +133,7 @@ function toggleSelect() {
   <a href="&dtml.url_quote-sequence-key;/manage_workspace">
   <dtml-in om_icons mapping>
   <img src="&dtml-BASEPATH1;/&dtml.url_quote-path;" alt="&dtml.missing-alt;" 
-   title="&dtml.missing-title;" border="0" /></dtml-in></a>
+   title="&dtml.missing-title;" border="0" width="16" height="16"/></dtml-in></a>
   <dtml-else>
 
   <dtml-if icon>
