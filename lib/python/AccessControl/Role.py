@@ -18,6 +18,7 @@ from cgi import escape
 
 from Acquisition import Acquired
 from Acquisition import aq_base
+from Acquisition import aq_get
 from AccessControl import ClassSecurityInfo
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.Permissions import change_permissions
@@ -33,6 +34,12 @@ from AccessControl.Permission import Permission
 from AccessControl.requestmethod import requestmethod
 
 DEFAULTMAXLISTUSERS=250
+
+def _isBeingUsedAsAMethod(self):
+    return aq_get(self, '_isBeingUsedAsAMethod_', 0)
+
+def _isNotBeingUsedAsAMethod(self):
+    return not aq_get(self, '_isBeingUsedAsAMethod_', 0)
 
 
 class RoleManager(Base, RoleManager):

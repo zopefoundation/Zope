@@ -91,6 +91,19 @@ class RoleManager:
                 REQUEST,
                 manage_tabs_message='The permission mapping has been updated')
 
+    def _isBeingUsedAsAMethod(self, REQUEST =None, wannaBe=0):
+        try:
+            if hasattr(self, 'aq_self'):
+                r=self.aq_acquire('_isBeingUsedAsAMethod_')
+            else:
+                r=self._isBeingUsedAsAMethod_
+        except: r=0
+
+        if REQUEST is not None:
+            if not r != (not wannaBe): REQUEST.response.notFoundError()
+
+        return r
+
 InitializeClass(RoleManager)
 
 
