@@ -40,6 +40,38 @@ def _product_packages():
     
     return packages
 
+
+class Product(object):
+    """Model a non-persistent product wrapper.
+    """
+
+    security = ClassSecurityInfo()
+
+    meta_type='Product'
+    icon='p_/Product_icon'
+    version=''
+    configurable_objects_=()
+    import_error_=None
+    thisIsAnInstalledProduct = True
+    title = 'This is a non-persistent product wrapper.'
+
+    def __init__(self, id):
+        self.id=id
+
+    security.declarePublic('Destination')
+    def Destination(self):
+        "Return the destination for factory output"
+        return self
+
+    def getProductHelp(self):
+        """Returns the ProductHelp object associated with the Product.
+        """
+        from HelpSys.HelpSys import ProductHelp
+        return ProductHelp('Help', self.id).__of__(self)
+
+InitializeClass(Product)
+
+
 class ProductDispatcher(Implicit):
     " "
     # Allow access to factory dispatchers
@@ -49,13 +81,18 @@ class ProductDispatcher(Implicit):
         return self.__bobo_traverse__(None, name)
 
     def __bobo_traverse__(self, REQUEST, name):
-        product=self.aq_acquire('_getProducts')()._product(name)
-
         # Try to get a custom dispatcher from a Python product
         dispatcher_class=getattr(
             _product_packages().get(name, None),
             '__FactoryDispatcher__',
             FactoryDispatcher)
+
+        productfolder = self.aq_acquire('_getProducts')()
+        try:
+            product = productfolder._product(name)
+        except AttributeError:
+            # If we do not have a persistent product entry, return 
+            product = Product(name)
 
         dispatcher=dispatcher_class(product, self.aq_parent, REQUEST)
         return dispatcher.__of__(self)

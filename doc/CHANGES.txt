@@ -9,6 +9,10 @@ Zope Changes
 
     Restructuring
 
+      - The persistent product registry is not required for starting Zope
+        anymore. `enable-product-installation` can be set to off if you don't
+        rely on the functionality provided by the registry.
+
       - ZClasses have been deprecated for two major releases. They have been
         removed in this version of Zope.
 
