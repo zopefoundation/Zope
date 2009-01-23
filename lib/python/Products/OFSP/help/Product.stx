@@ -5,7 +5,6 @@ Product - Zope extension.
     Products allow you to extend Zope by creating new types of addable Zope
     objects.
 
-    A Product contains other objects such as ZClasses and Factories
-    which allows you
+    A Product contains other objects such as Factories which allows you
     to make your objects available via the product add list.
 

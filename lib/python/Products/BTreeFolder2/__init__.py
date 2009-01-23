@@ -25,8 +25,3 @@ def initialize(context):
                       BTreeFolder2.manage_addBTreeFolder),
         icon='btreefolder2.gif',
         )
-
-    #context.registerHelp()
-    #context.registerHelpTitle('Zope Help')
-
-    context.registerBaseClass(BTreeFolder2.BTreeFolder2)

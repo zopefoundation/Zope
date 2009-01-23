@@ -321,10 +321,6 @@ class IManageable(Interface):
         """
         """
 
-    def class_manage_path():
-        """
-        """
-
 
 # XXX: might contain non-API methods and outdated comments;
 #      not synced with ZopeBook API Reference;
@@ -889,15 +885,6 @@ class IApplication(IFolder, IContainmentRoot):
     def getPhysicalRoot():
         """
         """
-
-    def fixupZClassDependencies(rebuild=0):
-        """
-        """
-
-    def checkGlobalRegistry():
-        """Check the global (zclass) registry for problems, which can
-        be caused by things like disk-based products being deleted.
-        Return true if a problem is found"""
 
 
 ##################################################

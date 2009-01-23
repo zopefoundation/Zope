@@ -23,8 +23,8 @@ from App.special_dtml import DTMLFile
 class CatalogAware:
     """ This is a Mix-In class to make objects automaticly catalog and
     uncatalog themselves in Zope, and to provide some other basic
-    attributes that are useful to catalog.  Note that if your class or
-    ZClass subclasses CatalogAware, it will only catalog itself when
+    attributes that are useful to catalog.  Note that if your class
+    subclasses CatalogAware, it will only catalog itself when
     it is added or copied in Zope.  If you make changes to your own
     object, you are responsible for calling your object's index_object
     method. """

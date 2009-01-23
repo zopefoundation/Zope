@@ -28,7 +28,6 @@ from App.Product import doInstall
 from DateTime.DateTime import DateTime
 from HelpSys import APIHelpTopic
 from HelpSys import HelpTopic
-from HelpSys.HelpSys import ProductHelp
 from OFS.misc_ import Misc_
 from OFS.misc_ import misc_
 from OFS.ObjectManager import ObjectManager
@@ -36,7 +35,6 @@ from OFS.ObjectManager import ObjectManager
 from zope.interface import implementedBy
 
 from App.FactoryDispatcher import FactoryDispatcher
-import ZClasses # to enable 'PC.registerBaseClass()'
 
 # Waaaa
 import Products
@@ -228,41 +226,6 @@ class ProductContext:
             if not hasattr(misc_, pid):
                 setattr(misc_, pid, Misc_(pid, {}))
             getattr(misc_, pid)[name]=icon
-
-    def registerZClass(self, Z, meta_type=None):
-        #
-        #   Convenience method, now deprecated -- clients should
-        #   call 'ZClasses.createZClassForBase()' themselves at
-        #   module import time, passing 'globals()', so that the
-        #   ZClass will be available immediately.
-        #
-        base_class=Z._zclass_
-        if meta_type is None:
-            if hasattr(base_class, 'meta_type'): meta_type=base_class.meta_type
-            else:                                meta_type=base_class.__name__
-
-        module=base_class.__module__
-        name=base_class.__name__
-
-        key="%s/%s" % (module, name)
-
-        if module[:9]=='Products.': module=module.split('.')[1]
-        else: module=module.split('.')[0]
-
-        info="%s: %s" % (module, name)
-
-        Products.meta_class_info[key]=info # meta_type
-        Products.meta_classes[key]=Z
-
-    def registerBaseClass(self, base_class, meta_type=None):
-        #
-        #   Convenience method, now deprecated -- clients should
-        #   call 'ZClasses.createZClassForBase()' themselves at
-        #   module import time, passing 'globals()', so that the
-        #   ZClass will be available immediately.
-        #
-        Z = ZClasses.createZClassForBase( base_class, self.__pack )
-        return Z
 
     def getProductHelp(self):
         """

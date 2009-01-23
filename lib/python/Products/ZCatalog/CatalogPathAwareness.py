@@ -19,8 +19,8 @@ from App.special_dtml import DTMLFile
 class CatalogAware:
     """ This is a Mix-In class to make objects automaticly catalog and
     uncatalog themselves in Zope, and to provide some other basic
-    attributes that are useful to catalog.  Note that if your class or
-    ZClass subclasses CatalogAware, it will only catalog itself when
+    attributes that are useful to catalog.  Note that if your class
+    subclasses CatalogAware, it will only catalog itself when
     it is added or copied in Zope.  If you make changes to your own
     object, you are responsible for calling your object's index_object
     method. """
@@ -119,16 +119,3 @@ class CatalogAware:
             for item in obj.objectValues():
                 self.reindex_all(item)
         return 'done!'
-
-class CatalogPathAware(CatalogAware):
-    """
-    This is a stub class that gets registered in __init__.py as a
-    ZClass base class.  Its reason for existance is to make the name
-    that shows up in the ZClass Product list different than 'ZCatalog:
-    CatalogAware', which is the name registered by
-    CatalogAwareness.CatalogAware.  The fix should *really* be to
-    change the product registry to keep the whole module/class path
-    and to make the ZClass add UI show the whole path, but this is
-    nontrivial, we don't want to spend a lot of time on ZClasses, and
-    this works.
-    """

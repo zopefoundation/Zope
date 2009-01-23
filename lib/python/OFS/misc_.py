@@ -52,7 +52,6 @@ class p_:
     InstalledProduct_icon=ImageFile('App/www/installedProduct.gif')
     BrokenProduct_icon=ImageFile('App/www/brokenProduct.gif')
     Product_icon=ImageFile('App/www/product.gif')
-    Factory_icon=ImageFile('App/www/factory.gif')
     Permission_icon=ImageFile('App/www/permission.gif')
     ProductFolder_icon=ImageFile('App/www/productFolder.gif')
     PyPoweredSmall_Gif=ImageFile('App/www/PythonPoweredSmall.gif')
@@ -62,8 +61,7 @@ class p_:
     zopelogo_jpg=ImageFile('App/www/zopelogo.jpg')
 
     Properties_icon=ImageFile('OFS/www/Properties_icon.gif')
-    Methods_icon=ImageFile('ZClasses/methods.gif')
-    Propertysheets_icon=ImageFile('ZClasses/propertysheets.gif')
+    Propertysheets_icon=ImageFile('OFS/www/Properties_icon.gif')
 
     ProductHelp_icon=ImageFile('HelpSys/images/productHelp.gif')
     HelpTopic_icon=ImageFile('HelpSys/images/helpTopic.gif')

@@ -18,12 +18,7 @@ def ClassFactory(jar, module, name,
                   _silly=('__doc__',), _globals={},
                   ):
     try:
-        if module[:1]=='*':
-            # ZCLass! Yee ha!
-            return jar.root()['ZGlobals'][module]
-        else:
-            m=__import__(module, _globals, _globals, _silly)
-
+        m=__import__(module, _globals, _globals, _silly)
         return getattr(m, name)
     except:
         return OFS.Uninstalled.Broken(jar, None, (module, name))

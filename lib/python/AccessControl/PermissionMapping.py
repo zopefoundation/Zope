@@ -91,25 +91,6 @@ class RoleManager:
                 REQUEST,
                 manage_tabs_message='The permission mapping has been updated')
 
-    def _isBeingUsedAsAMethod(self, REQUEST =None, wannaBe=0):
-        try:
-            if hasattr(self, 'aq_self'):
-                r=self.aq_acquire('_isBeingUsedAsAMethod_')
-            else:
-                r=self._isBeingUsedAsAMethod_
-        except: r=0
-
-        if REQUEST is not None:
-            if not r != (not wannaBe): REQUEST.response.notFoundError()
-
-        return r
-
-    def _isBeingAccessedAsZClassDefinedInstanceMethod(self):
-        p=getattr(self,'__parent__',None)
-        if p is None: return 0          # Not wrapped
-        base=getattr(p, 'aq_base', None)
-        return type(base) is PermissionMapper
-
 InitializeClass(RoleManager)
 
 

@@ -19,7 +19,6 @@ import sys
 import time
 
 from AccessControl.Permissions import view_management_screens
-from AccessControl.Role import _isBeingUsedAsAMethod
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.SecurityManagement import getSecurityManager
 from AccessControl.unauthorized import Unauthorized
@@ -48,12 +47,7 @@ def managersExist(ob):
     return 0
 
 def filterCacheTab(ob):
-    if _isBeingUsedAsAMethod(ob):
-        # Show tab when in a ZClass def that uses Cacheable as a base.
-        parent = aq_parent(aq_inner(ob))
-        return isCacheable(parent)
-    else:
-        return managersExist(ob)
+    return managersExist(ob)
 
 def filterCacheManagers(orig, container, name, value, extra):
     '''
@@ -150,34 +144,12 @@ class Cacheable:
         '''
         return self.__enabled and self.ZCacheable_getCache()
 
-    security.declareProtected(ViewManagementScreensPermission,
-                              'ZCacheable_isAMethod')
-    def ZCacheable_isAMethod(self):
-        '''
-        Returns 1 when this object is a ZClass method.
-        '''
-        m = _isBeingUsedAsAMethod(self)
-        return m
-
     security.declarePrivate('ZCacheable_getObAndView')
     def ZCacheable_getObAndView(self, view_name):
         """
-        If this object is a method of a ZClass and we're working
-        with the primary view, uses the ZClass instance as ob
-        and our own ID as the view_name.  Otherwise returns
-        self and view_name unchanged.
+        Returns self and view_name unchanged.
         """
-        ob = self
-        if not view_name and self.ZCacheable_isAMethod():
-            # This is a ZClass method.
-            ob = aq_parent(aq_inner(self))
-            if isCacheable(ob):
-                view_name = self.getId()
-            else:
-                # Both the parent and the child have to be
-                # cacheable.
-                ob = self
-        return ob, view_name
+        return self, view_name
 
     security.declarePrivate('ZCacheable_get')
     def ZCacheable_get(self, view_name='', keywords=None,
@@ -253,8 +225,6 @@ class Cacheable:
         #   mtime_func
         #   self.mtime
         #   self.__class__.mtime
-        #   (if in a ZClass) zclass_instance.mtime
-        #                    zclass_instance.__class__.mtime
         mtime = 0
         if mtime_func:
             # Allow mtime_func to influence the mod time.
@@ -264,14 +234,6 @@ class Cacheable:
         klass = getattr(base, '__class__', None)
         if klass:
             mtime = max(getattr(klass, '_p_mtime', mtime), mtime)
-        if self.ZCacheable_isAMethod():
-            # This is a ZClass method.
-            instance = aq_parent(aq_inner(self))
-            base = aq_base(instance)
-            mtime = max(getattr(base, '_p_mtime', mtime), mtime)
-            klass = getattr(base, '__class__', None)
-            if klass:
-                mtime = max(getattr(klass, '_p_mtime', mtime), mtime)
         return mtime
 
     security.declareProtected(ViewManagementScreensPermission,
@@ -340,8 +302,7 @@ class Cacheable:
     security.declareProtected(ChangeCacheSettingsPermission,
                               'ZCacheable_setEnabled')
     def ZCacheable_setEnabled(self, enabled=0, REQUEST=None):
-        '''Changes the enabled flag. Normally used only when
-        setting up cacheable ZClass methods.'''
+        '''Changes the enabled flag.'''
         self.__enabled = enabled and 1 or 0
         if REQUEST is not None:
             return self.ZCacheable_manage(

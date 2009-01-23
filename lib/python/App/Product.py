@@ -34,38 +34,22 @@
 #   on restart if there is still a product directory.
 
 
-from cgi import escape
 import cPickle
-import marshal
 import os
 import re
-from urllib import quote
 import zlib
 
 import transaction
 
 from AccessControl.Owned import UnownableOwner
-from AccessControl.Permissions import manage_zclasses
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.unauthorized import Unauthorized
 from App.class_init import InitializeClass
 from App.special_dtml import DTMLFile
 from OFS.Folder import Folder
 
-from App.Factory import Factory
 from App.Permission import PermissionManager
 
-# BBB: ZClasses are deprecated but we don't want the warning to appear here
-import warnings
-warnings.filterwarnings('ignore', message='^ZClasses', append=1)
-try:
-    import ZClasses
-finally:
-    del warnings.filters[-1]
-    try:
-        del __warningregistry__
-    except NameError:
-        pass
 
 class ProductFolder(Folder):
     "Manage a collection of Products"
@@ -75,24 +59,11 @@ class ProductFolder(Folder):
     meta_type = 'Product Management'
     icon = 'p_/ProductFolder_icon'
 
-    all_meta_types={'name': 'Product', 'action': 'manage_addProductForm',
-                    'permission': manage_zclasses},
-    meta_types = all_meta_types
-
     # This prevents subobjects from being owned!
     _owner = UnownableOwner
 
     def _product(self, name):
         return getattr(self, name)
-
-    manage_addProductForm = DTMLFile('dtml/addProduct', globals())
-    def manage_addProduct(self, id, title, REQUEST=None):
-        """ Create a product.
-        """
-        i=Product(id, title)
-        self._setObject(id,i)
-        if REQUEST is not None:
-            return self.manage_main(self,REQUEST,update_menu=1)
 
     def _canCopy(self, op=0):
         return 0
@@ -111,7 +82,6 @@ class Product(Folder, PermissionManager):
     version=''
     configurable_objects_=()
     import_error_=None
-    _isBeingUsedAsAMethod_=1
 
     def new_version(self,
                     _intending=re.compile(r"[0-9]+").search, #TS
@@ -135,20 +105,8 @@ class Product(Folder, PermissionManager):
 
 
     meta_types=(
-        ZClasses.meta_types +
-        PermissionManager.meta_types +
-        (
-            {
-                'name': Factory.meta_type,
-                'action': 'manage_addPrincipiaFactoryForm'
-                },
-            )
+        PermissionManager.meta_types
         )
-
-    manage_addZClassForm=ZClasses.methods['manage_addZClassForm']
-    manage_addZClass    =ZClasses.methods['manage_addZClass']
-    manage_subclassableClassNames=ZClasses.methods[
-        'manage_subclassableClassNames']
 
     manage_options = (
         (Folder.manage_options[0],) +
@@ -160,18 +118,6 @@ class Product(Folder, PermissionManager):
         )
 
     _reserved_names=('Help',)
-
-    manage_addPrincipiaFactoryForm = DTMLFile('dtml/addFactory', globals())
-    def manage_addPrincipiaFactory(
-        self, id, title, object_type, initial, permission=None, REQUEST=None):
-        """ Add a ZClass factory
-        """
-        i = Factory(id, title, object_type, initial, permission)
-        self._setObject(id,i)
-        factory = self._getOb(id)
-        factory.initializePermission()
-        if REQUEST is not None:
-            return self.manage_main(self,REQUEST,update_menu=1)
 
     def __init__(self, id, title):
         self.id=id
@@ -199,9 +145,6 @@ class Product(Folder, PermissionManager):
 
     def permissionMappingPossibleValues(self):
         return self.possible_permissions()
-
-    def zclass_product_name(self):
-        return self.id
 
     def getProductHelp(self):
         """Returns the ProductHelp object associated with the Product.
@@ -238,63 +181,6 @@ class Product(Folder, PermissionManager):
                     # Not found here.
                     pass
         return refresh_txt
-
-    def manage_refresh(self, REQUEST, manage_tabs_message=None):
-        """Displays the refresh management screen.
-        """
-        import Globals  # for data
-        from App.RefreshFuncs import getLastRefreshException
-        from App.RefreshFuncs import isAutoRefreshEnabled
-        from App.RefreshFuncs import getDependentProducts
-        from App.RefreshFuncs import listRefreshableModules
-        from App.RefreshFuncs import listAutoRefreshableModules
-        error_type = error_value = error_tb = None
-        exc = getLastRefreshException(self.id)
-        if exc is not None:
-            error_type, error_value, error_tb = exc
-            exc = None
-
-        refresh_txt = self._readRefreshTxt()
-
-        # Read the persistent refresh information.
-        auto = isAutoRefreshEnabled(self._p_jar, self.id)
-        deps = getDependentProducts(self._p_jar, self.id)
-
-        # List all product modules.
-        mods = listRefreshableModules(self.id)
-        loaded_modules = []
-        prefix = 'Products.%s' % self.id
-        prefixdot = prefix + '.'
-        lpdot = len(prefixdot)
-        for name, module in mods:
-            if name == prefix or name[:lpdot] == prefixdot:
-                name = name[lpdot:]
-                if not name:
-                    name = '__init__'
-            loaded_modules.append(name)
-
-        all_auto = listAutoRefreshableProducts(self._p_jar)
-        for pid in all_auto:
-            # Ignore products that don't have a refresh.txt.
-            if self._readRefreshTxt(pid) is None:
-                all_auto.remove(pid)
-        auto_other = filter(lambda productId, myId=self.id:
-                            productId != myId, all_auto)
-
-        # Return rendered DTML.
-        return self._refresh_dtml(REQUEST,
-                                  id=self.id,
-                                  refresh_txt=refresh_txt,
-                                  error_type=error_type,
-                                  error_value=error_value,
-                                  error_tb=error_tb,
-                                  devel_mode=Globals.DevelopmentMode,
-                                  auto_refresh_enabled=auto,
-                                  auto_refresh_other=auto_other,
-                                  dependent_products=deps,
-                                  loaded_modules=loaded_modules,
-                                  manage_tabs_message=manage_tabs_message,
-                                  management_view='Refresh')
 
     def manage_performRefresh(self, REQUEST=None):
         """ Attempts to perform a refresh operation.
@@ -484,8 +370,6 @@ def initializeProduct(productp, name, home, app):
         transaction.abort()
         return product
 
-    # Give the ZClass fixup code in Application
-    Globals.__disk_product_installed__ = 1
     return product
 
 def ihasattr(o, name):

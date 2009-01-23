@@ -139,25 +139,6 @@ class Tabs(Base):
         out.append(last)
         return '/'.join(out)
 
-    security.declarePublic('class_manage_path')
-    def class_manage_path(self):
-        if self.__class__.__module__[:1] != '*':
-            return
-        path = getattr(self.__class__, '_v_manage_path_roles', None)
-        if path is None:
-            meta_type = self.meta_type
-            for zclass in self.getPhysicalRoot()._getProductRegistryData(
-                'zclasses'):
-                if zclass['meta_type'] == meta_type:
-                    break
-            else:
-                self.__class__._v_manage_path_roles = ''
-                return
-            path = self.__class__._v_manage_path_roles = (
-                '%(product)s/%(id)s' % zclass)
-        if path:
-            return '/Control_Panel/Products/%s/manage_workspace' % path
-
 InitializeClass(Tabs)
 
 

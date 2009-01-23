@@ -176,15 +176,6 @@ class TestInitialization( unittest.TestCase ):
         self.failUnless('Owner' in app.__ac_roles__)
         self.failUnless('Authenticated' in app.__ac_roles__)
 
-    def test_install_zglobals(self):
-        from BTrees.OOBTree import OOBTree
-        self.configure(good_cfg)
-        i = self.getOne()
-        i.install_zglobals()
-        root = i.getApp()._p_jar.root()
-        self.failUnless(root.has_key('ZGlobals'))
-        self.failUnless(isinstance(root['ZGlobals'], OOBTree))
-
     def test_install_inituser(self):
         fname = os.path.join(TEMPNAME, 'inituser')
         f = open(fname, 'w')

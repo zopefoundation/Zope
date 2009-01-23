@@ -6,14 +6,12 @@
 
 <p class="form-help">
 This interface is used to define how the operations of this object 
-correspond to the operations defined by your product or ZClass.
+correspond to the operations defined by your product.
 </p>
 
 <p class="form-help">
-The first column below lists the permissions for this object.  The second 
-specifies the permissions that should have this permission in this product 
-or ZClass. For ZClass methods, only permissions that are defined for the 
-ZClass are permitted.
+The first column below lists the permissions for this object. The second
+specifies the permissions that should have this permission in this product.
 </p>
 
 <p class="form-help">

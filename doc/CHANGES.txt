@@ -9,6 +9,9 @@ Zope Changes
 
     Restructuring
 
+      - ZClasses have been deprecated for two major releases. They have been
+        removed in this version of Zope.
+
       - Avoid deprecation warnings for the md5 and sha modules in Python 2.6
         by adding conditional imports for the hashlib module.
 

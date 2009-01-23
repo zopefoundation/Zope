@@ -48,7 +48,6 @@ automatically be provided under that name when the script is called.
   This is the <dtml-with expr="aq_inner.aq_parent">&dtml-meta_type;
   "&dtml.missing.html_quote-title_or_id;"</dtml-with>, in which this
   script is located.  This doesn't change unless you move the script.
-  If the script is in a ZClass, the Container is the class instance.
   <br /><br />
   Recommended value: <code>container</code>
   </div>

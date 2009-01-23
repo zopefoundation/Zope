@@ -297,8 +297,6 @@ Module utils
 
         setupCoreSessions(app=None)
 
-        setupZGlobals(app=None)
-
         setupSiteErrorLog(app=None)
 
         startZServer(number_of_threads=1, log=None)

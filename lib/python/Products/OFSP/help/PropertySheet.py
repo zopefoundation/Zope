@@ -27,8 +27,7 @@ class PropertySheet:
 
         Return a namespace string usable as an xml namespace
         for this property set. This may be an empty string if
-        there is no default namespace for a given property sheet
-        (especially property sheets added in ZClass definitions).
+        there is no default namespace for a given property sheet.
 
         Permission -- Python only
 

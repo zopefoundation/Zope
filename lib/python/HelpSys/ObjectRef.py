@@ -124,11 +124,9 @@ class ObjectRef(HelpBase):
             if is_class(v) and hasattr(v, 'meta_type') and \
                hasattr(v, '__ac_permissions__'):
                 if callable(v.meta_type):
-                    try: meta_type=v.meta_type()
-                    except:
-                        # Ack. probably a ZClass :(
-                        meta_type=None
-                else: meta_type=v.meta_type
+                    meta_type=v.meta_type()
+                else:
+                    meta_type=v.meta_type
                 if (meta_type is not None) and (meta_type not in hidden):
                     dict[meta_type]=ObjectItem(k, v)
             if is_module(v) and hasattr(v, '__path__'):

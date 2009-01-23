@@ -66,7 +66,6 @@ class Application(ApplicationDefaultPermissions,
     __defined_roles__ = ('Manager','Anonymous','Owner')
     web__form__method = 'GET'
     isTopLevelPrincipiaApplicationObject = 1
-    _isBeingUsedAsAMethod_ = 0
 
     # Create the help system object
     HelpSys = HelpSys('HelpSys')
@@ -213,77 +212,6 @@ class Application(ApplicationDefaultPermissions,
         # We're at the base of the path.
         return ('',)
 
-    security.declarePrivate('fixupZClassDependencies')
-    def fixupZClassDependencies(self, rebuild=0):
-        # Note that callers should not catch exceptions from this method
-        # to ensure that the transaction gets aborted if the registry
-        # cannot be rebuilt for some reason. Returns true if any ZClasses
-        # were registered as a result of the call or the registry was
-        # rebuilt.
-        jar=self._p_jar
-        result=0
-
-        if rebuild:
-            from BTrees.OOBTree import OOBTree
-            jar.root()['ZGlobals'] = OOBTree()
-            result = 1
-
-        zglobals =jar.root()['ZGlobals']
-        reg_has_key=zglobals.has_key
-
-        products=self.Control_Panel.Products
-        for product in products.objectValues():
-            items=list(product.objectItems())
-            finished_dict={}
-            finished = finished_dict.has_key
-            while items:
-                name, ob = items.pop()
-                base=aq_base(ob)
-                if finished(id(base)):
-                    continue
-                finished_dict[id(base)] = None
-                try:
-                    # Try to re-register ZClasses if they need it.
-                    if hasattr(base,'_register') and hasattr(base,'_zclass_'):
-                        class_id=getattr(base._zclass_, '__module__', None)
-                        if class_id and not reg_has_key(class_id):
-                            ob._register()
-                            result=1
-                            if not rebuild:
-                                LOG.info('Registered ZClass: %s' % ob.id)
-                    # Include subobjects.
-                    if hasattr(base, 'objectItems'):
-                        m = list(ob.objectItems())
-                        items.extend(m)
-                    # Try to find ZClasses-in-ZClasses.
-                    if hasattr(base, 'propertysheets'):
-                        ps = ob.propertysheets
-                        if (hasattr(ps, 'methods') and
-                            hasattr(ps.methods, 'objectItems')):
-                            m = list(ps.methods.objectItems())
-                            items.extend(m)
-                except:
-                    LOG.warn('Broken objects exist in product %s.' % product.id,
-                             exc_info=sys.exc_info())
-
-        return result
-
-    security.declarePrivate('checkGlobalRegistry')
-    def checkGlobalRegistry(self):
-        """Check the global (zclass) registry for problems, which can
-        be caused by things like disk-based products being deleted.
-        Return true if a problem is found"""
-        try:
-            keys=list(self._p_jar.root()['ZGlobals'].keys())
-        except:
-            LOG.error(
-                'A problem was found when checking the global product '\
-                'registry.  This is probably due to a Product being '\
-                'uninstalled or renamed.  The traceback follows.',
-                exc_info=sys.exc_info())
-            return 1
-        return 0
-
     security.declarePrivate('_setInitializerFlag')
     def _setInitializerFlag(self, flag):
         if self._initializer_registry is None:
@@ -346,13 +274,11 @@ class AppInitializer:
         self.install_session_data_manager()
         self.install_browser_id_manager()
         self.install_required_roles()
-        self.install_zglobals()
         self.install_inituser()
         self.install_errorlog()
         self.install_products()
         self.install_standards()
         self.install_virtual_hosting()
-        self.check_zglobals()
 
     def install_cp_and_products(self):
         app = self.getApp()
@@ -507,16 +433,6 @@ class AppInitializer:
                 app.__ac_roles__=app.__ac_roles__ + ('Authenticated',)
                 self.commit('Added Authenticated role')
 
-    def install_zglobals(self):
-        app = self.getApp()
-
-        # Make sure we have ZGlobals
-        root=app._p_jar.root()
-        if not root.has_key('ZGlobals'):
-            from BTrees.OOBTree import OOBTree
-            root['ZGlobals'] = OOBTree()
-            self.commit('Added ZGlobals')
-
     def install_inituser(self):
         app = self.getApp()
 
@@ -558,61 +474,6 @@ class AppInitializer:
             vhm.addToContainer(app)
             app._setInitializerFlag('virtual_hosting')
             self.commit('Added virtual_hosting')
-
-    def check_zglobals(self):
-        import Globals
-        if not doInstall():
-            return
-
-        app = self.getApp()
-
-        # Check for dangling pointers (broken zclass dependencies) in the
-        # global class registry. If found, rebuild the registry. Note that
-        # if the check finds problems but fails to successfully rebuild the
-        # registry we abort the transaction so that we don't leave it in an
-        # indeterminate state.
-
-        did_fixups=0
-        bad_things=0
-        try:
-            if app.checkGlobalRegistry():
-                LOG.info(
-                    'Beginning attempt to rebuild the global ZClass registry.')
-                app.fixupZClassDependencies(rebuild=1)
-                did_fixups=1
-                LOG.info(
-                    'The global ZClass registry has successfully been rebuilt.')
-                transaction.get().note('Rebuilt global product registry')
-                transaction.commit()
-        except:
-            bad_things=1
-            LOG.error('The attempt to rebuild the registry failed.',
-                       exc_info=True)
-            transaction.abort()
-
-        # Now we need to see if any (disk-based) products were installed
-        # during intialization. If so (and the registry has no errors),
-        # there may still be zclasses dependent on a base class in the
-        # newly installed product that were previously broken and need to
-        # be fixed up. If any really Bad Things happened (dangling pointers
-        # were found in the registry but it couldn't be rebuilt), we don't
-        # try to do anything to avoid making the problem worse.
-        if (not did_fixups) and (not bad_things):
-
-            # App.Product.initializeProduct will set this if a disk-based
-            # product was added or updated and we are not a ZEO client.
-            if getattr(Globals, '__disk_product_installed__', None):
-                try:
-                    LOG.info('New disk product detected, determining if we need '
-                             'to fix up any ZClasses.')
-                    if app.fixupZClassDependencies():
-                        LOG.info('Repaired broken ZClass dependencies.')
-                        self.commit('Repaired broked ZClass dependencies')
-                except:
-                    LOG.error('Attempt to fixup ZClass dependencies after '
-                              'detecting an updated disk-based product failed.',
-                              exc_info=sys.exc_info())
-                    transaction.abort()
 
     def install_products(self):
         app = self.getApp()

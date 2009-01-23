@@ -23,7 +23,7 @@ class PropertySheets:
     instances.
 
     Objects that support property sheets (objects that support the
-    PropertyManager interface or ZClass objects) have a
+    PropertyManager interface) have a
     'propertysheets' attribute (a PropertySheets instance) that is the
     collection of PropertySheet objects. The PropertySheets object
     exposes an interface much like a Python mapping, so that

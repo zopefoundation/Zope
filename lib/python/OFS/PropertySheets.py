@@ -290,8 +290,6 @@ class PropertySheet(Traversable, Persistent, Implicit):
 
     def _propertyMap(self):
         # Return a tuple of mappings, giving meta-data for properties.
-        # Some ZClass instances dont seem to have an _properties, so
-        # we have to fake it...
         return self.p_self()._properties
 
     security.declareProtected(access_contents_information, 'propertyMap')
@@ -767,43 +765,6 @@ class DefaultPropertySheets(PropertySheets):
         return (self.default, self.webdav)
 
 InitializeClass(DefaultPropertySheets)
-
-
-class FixedSchema(PropertySheet):
-    """A Fixed-schema property sheet has no control over it's schema
-
-    It gets its schema from another proprtysheet but has control over
-    its value storage.
-
-    This mix-in is used for ZClass instance proprtysheets, which store
-    their data in instances, but get their schema from the
-    proprtysheet managed in the ZClass.
-    """
-
-    def __init__(self, id, base, md=None):
-        FixedSchema.inheritedAttribute('__init__')(self, id, md)
-        self._base=base
-
-    def _propertyMap(self):
-        # Return a tuple of mappings, giving meta-data for properties.
-        r = []
-        for d in self._base._propertyMap():
-            d = d.copy()
-            mode = d.get('mode', 'wd')
-            if 'd' in mode:
-                d['mode']=filter(lambda c: c != 'd', mode)
-            r.append(d)
-
-        return tuple(r)
-
-    def propertyMap(self):
-        return self._propertyMap()
-
-    def property_extensible_schema__(self):
-        return 0
-        return self._base._extensible
-
-InitializeClass(FixedSchema)
 
 
 class vps(Base):

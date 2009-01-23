@@ -136,10 +136,7 @@ class ProductRegistryMixin:
     def _manage_remove_product_data(self, type, product, id):
         values=filter(
             lambda d, product=product, id=id:
-            not (d['product'] in
-                 (product,
-                  'methods' # hack to get around inner ZClass reg. bug
-                  ) and d['id']==id),
+            not (d['product']==product and d['id']==id),
             self.aq_maybe('_getProductRegistryData')(type)
             )
 
@@ -159,9 +156,6 @@ class ProductRegistry(ProductRegistryMixin):
     _product_meta_types=()
     _product_permissions=()
     _product_ac_permissions=()
-
-    _product_zclasses=() # product, id, meta_type, class
-
 
     def _getProductRegistryMetaTypes(self): return self._product_meta_types
     def _setProductRegistryMetaTypes(self, v): self._product_meta_types=v

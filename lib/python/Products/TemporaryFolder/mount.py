@@ -62,7 +62,7 @@ class MountPoint(persistent.Persistent, Implicit):
     _v_data = None
     _v_connect_error = None
 
-    def __init__(self, path, params=None, classDefsFromRoot=1):
+    def __init__(self, path, params=None, classDefsFromRoot=None):
         '''
         @arg path The path within the mounted database from which
         to derive the root.
@@ -74,10 +74,6 @@ class MountPoint(persistent.Persistent, Implicit):
         and use the existing database.  Include the class name of
         the storage.  For example,
         ZEO params might be "ZODB.ZEOClient localhost 1081".
-
-        @arg classDefsFromRoot If true (the default), MountPoint will
-        try to get ZClass definitions from the root database rather
-        than the mounted database.
         '''
         # The only reason we need a __mountpoint_id is to
         # be sure we don't close a database prematurely when
@@ -90,7 +86,6 @@ class MountPoint(persistent.Persistent, Implicit):
             params = self.__mountpoint_id
         self._params = repr(params)
         self._path = path
-        self._classDefsFromRoot = classDefsFromRoot
 
     def _createDB(self):
         '''Gets the database object, usually by creating a Storage object
@@ -111,9 +106,6 @@ class MountPoint(persistent.Persistent, Implicit):
                 db = self._createDB()
                 newMount = 1
                 dbs[params] = (db, {self.__mountpoint_id:1})
-
-                if getattr(self, '_classDefsFromRoot', 1):
-                    db.classFactory = parentClassFactory
             else:
                 db, mounts = dbInfo
                 # Be sure this object is in the list of mount points.

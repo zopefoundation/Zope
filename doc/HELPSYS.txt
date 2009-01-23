@@ -2,7 +2,7 @@ Zope Help System
 
   The Zope Help System provides context-sensitive on-line help for
   Zope users. The system is flexible and can provide help for
-  Python and ZClass-based Zope Products.
+  Python Zope Products.
   
   In the future the Help System will be expanded to provide additional
   help including API documentation.
@@ -30,23 +30,7 @@ Architecture
   In general you get access to the Help System through the help system
   object which has methods for drawing help buttons. This object lives
   in the Zope application object and has an id of 'HelpSys'.
-  
-Writing Help for ZClasses
 
-  Suppose you've created an addable type of object with ZClasses.
-  You'd like the management screens of your objects to have help
-  buttons just like the standard Zope management screens.
-  
-  First create some Help Topics though the web which document your
-  management screens. Do this by going to your ZClass's Product and
-  creating new Help Topics inside the Product Help object.
-  
-  Next go to your ZClass and click on the 'Views' management tab. On
-  this screen you define your object's management views. Each view has
-  a name, a method, and optionally a help topic. If you select a help
-  topic for a view, a help button will be drawn on that management
-  view and it will be linked to the help topic you select.
-  
 Writing Help for Python Products
 
   To support help your Python product needs to register help topics

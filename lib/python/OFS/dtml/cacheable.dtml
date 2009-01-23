@@ -2,18 +2,7 @@
 <dtml-var manage_tabs>
 
 <form action="&dtml-absolute_url;" method="POST">
-<dtml-if ZCacheable_isAMethod>
 
-<input type="checkbox" name="enable" value="1"<dtml-if 
-ZCacheable_enabled> checked="checked"</dtml-if
->><span class="form-label">Cache this view of the object</span>
-<br>
-<div class="form-element">
-<input class="form-element" type="submit" name="ZCacheable_setEnabled:method" 
- value="Save Changes">
-</div>
-
-<dtml-else>
 <div class="form-element">
 <span class="form-label">
 Cache this object using:
@@ -42,8 +31,6 @@ Cache this object using:
 <input class="form-element" type="submit" 
  name="ZCacheable_invalidate:method" value="Invalidate">
 </div>
-</dtml-if>
-
 </dtml-if>
 
 <dtml-var ZCacheable_configHTML>

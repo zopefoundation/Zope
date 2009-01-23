@@ -68,16 +68,6 @@ def setupCoreSessions(app):
 
 
 @layer.appcall
-def setupZGlobals(app):
-    '''Sets up the ZGlobals BTree required by ZClasses.'''
-    root = app._p_jar.root()
-    if not root.has_key('ZGlobals'):
-        from BTrees.OOBTree import OOBTree
-        root['ZGlobals'] = OOBTree()
-        transaction.commit()
-
-
-@layer.appcall
 def setupSiteErrorLog(app):
     '''Sets up the error_log object required by ZPublisher.'''
     if not hasattr(app, 'error_log'):
@@ -158,7 +148,6 @@ def makelist(arg):
 __all__ = [
     'setupCoreSessions',
     'setupSiteErrorLog',
-    'setupZGlobals',
     'startZServer',
     'importObjectFromFile',
     'appcall',

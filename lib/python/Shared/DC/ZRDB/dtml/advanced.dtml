@@ -91,38 +91,6 @@ directory of this Zope installation.
     <input name="class_file" size="30" value="&dtml-class_file_;">
     </td>
   </tr>
-
-<dtml-if manage_product_zclass_info>
-  <tr>
-    <td align="left" valign="top" colspan="2">
-    <div class="form-text">
-    <br />
-    You may specify a <strong>ZClass</strong> for the data records.
-    </div>
-    </td>
-  </tr>
-  <tr>
-    <td align="left" valign="top">
-    <div class="form-label">
-    ZClass
-    </div>
-    </td>
-    <td align="left" valign="top">
-    <div class="form-element">
-           <select name="zclass">
-             <option value="">No ZClass</option>
-	     <dtml-in manage_product_zclass_info mapping>
-               <dtml-with "_(v='%s/%s' % (product, id))">
-                 <option value="&dtml-v;" &dtml-selected;>
-		    &dtml-product; &dtml-id;
-		    (&dtml-meta_type;)</option>
-	       </dtml-with>
-	     </dtml-in>
-	   </select>
-    </div>
-    </td>
-  </tr>
-</dtml-if>
   <tr>
     <td align="left" valign="top">
     </td>

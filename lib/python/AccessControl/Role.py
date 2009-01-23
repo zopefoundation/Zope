@@ -17,9 +17,7 @@ $Id$
 from cgi import escape
 
 from Acquisition import Acquired
-from Acquisition import aq_get
 from Acquisition import aq_base
-from Acquisition import Implicit
 from AccessControl import ClassSecurityInfo
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.Permissions import change_permissions
@@ -36,12 +34,6 @@ from AccessControl.requestmethod import requestmethod
 
 DEFAULTMAXLISTUSERS=250
 
-def _isBeingUsedAsAMethod(self):
-    return aq_get(self, '_isBeingUsedAsAMethod_', 0)
-
-def _isNotBeingUsedAsAMethod(self):
-    return not aq_get(self, '_isBeingUsedAsAMethod_', 0)
-
 
 class RoleManager(Base, RoleManager):
 
@@ -54,11 +46,6 @@ class RoleManager(Base, RoleManager):
     manage_options=(
         {'label':'Security', 'action':'manage_access',
          'help':('OFSP','Security.stx'),
-         'filter': _isNotBeingUsedAsAMethod,
-         },
-        {'label':'Define Permissions', 'action':'manage_access',
-         'help':('OFSP','Security_Define-Permissions.stx'),
-         'filter': _isBeingUsedAsAMethod,
          },
         )
 
@@ -137,7 +124,6 @@ class RoleManager(Base, RoleManager):
     def manage_role(self, role_to_manage, permissions=[], REQUEST=None):
         """Change the permissions given to the given role.
         """
-        self._isBeingUsedAsAMethod(REQUEST, 0)
         for p in self.ac_inherited_permissions(1):
             name, value = p[:2]
             p=Permission(name,value,self)
@@ -156,7 +142,6 @@ class RoleManager(Base, RoleManager):
     def manage_acquiredPermissions(self, permissions=[], REQUEST=None):
         """Change the permissions that acquire.
         """
-        self._isBeingUsedAsAMethod(REQUEST, 0)
         for p in self.ac_inherited_permissions(1):
             name, value = p[:2]
             p=Permission(name,value,self)
@@ -243,7 +228,6 @@ class RoleManager(Base, RoleManager):
         are acquired, in addition to the ones specified, otherwise the
         permissions are restricted to only the designated roles.
         """
-        self._isBeingUsedAsAMethod(REQUEST, 0)
         for p in self.ac_inherited_permissions(1):
             name, value = p[:2]
             if name==permission_to_manage:
@@ -259,26 +243,19 @@ class RoleManager(Base, RoleManager):
                 escape(permission_to_manage))
 
     _normal_manage_access=DTMLFile('dtml/access', globals())
-
-    _method_manage_access=DTMLFile('dtml/methodAccess', globals())
     manage_reportUserPermissions=DTMLFile('dtml/reportUserPermissions', globals())
 
     security.declareProtected(change_permissions, 'manage_access')
     def manage_access(self, REQUEST, **kw):
         """Return an interface for making permissions settings.
         """
-        if hasattr(self, '_isBeingUsedAsAMethod') and \
-           self._isBeingUsedAsAMethod():
-            return apply(self._method_manage_access,(), kw)
-        else:
-            return apply(self._normal_manage_access,(), kw)
+        return apply(self._normal_manage_access,(), kw)
 
     security.declareProtected(change_permissions, 'manage_changePermissions')
     @requestmethod('POST')
     def manage_changePermissions(self, REQUEST):
         """Change all permissions settings, called by management screen.
         """
-        self._isBeingUsedAsAMethod(REQUEST, 0)
         valid_roles=self.valid_roles()
         indexes=range(len(valid_roles))
         have=REQUEST.has_key

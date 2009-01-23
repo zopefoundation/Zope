@@ -1479,7 +1479,7 @@ class FileUpload:
     '''
 
     # Allow access to attributes such as headers and filename so
-    # that ZClass authors can use DTML to work with FileUploads.
+    # that protected code can use DTML to work with FileUploads.
     __allow_access_to_unprotected_subobjects__ = 1
 
     def __init__(self, aFieldStorage):

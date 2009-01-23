@@ -86,8 +86,6 @@
          'checked' or ' '">
         <input type="checkbox" name="selections:list"
          value="&dtml-sequence-item;" &dtml-checked; />
-        <a href="../&dtml-sequence-item;/manage_refresh"
-         >&dtml-sequence-item;</a><br />
        </dtml-let>
       </dtml-in>
       <input type="submit" name="manage_selectDependentProducts:method"

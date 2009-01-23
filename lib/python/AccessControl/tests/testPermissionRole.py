@@ -44,13 +44,6 @@ class RestrictiveObject(Implicit):
 class PermissiveObject(Explicit):
     _Edit_Things__Permission = ['Anonymous']
 
-class ZClassMethodish(Implicit):
-    # Think of this as a method that should only be visible to users
-    # who have the edit permission.
-    _View_Permission = '_Edit_Things__Permission'
-    _Edit_Things__Permission = ''
-    _Delete_Permission = ''
-
 
 def assertPRoles(ob, permission, expect):
     """
@@ -117,15 +110,6 @@ class PermissionRoleTests (unittest.TestCase):
         assertPRoles(o, ViewPermission,       ('Anonymous',))
         assertPRoles(o, EditThingsPermission, ('Manager','Owner',))
         assertPRoles(o, DeletePermission,     ('Manager',))
-
-    def testPermissionMapping(self):
-        app = AppRoot()
-        app.c = ImplicitContainer()
-        app.c.o = ZClassMethodish()
-        o = app.c.o
-        assertPRoles(o, ViewPermission,       ('Manager','Owner',))
-        assertPRoles(o, EditThingsPermission, ())
-        assertPRoles(o, DeletePermission,     ())
 
     def testPermissionRoleSupportsGetattr(self):
         a = PermissionRole('a')

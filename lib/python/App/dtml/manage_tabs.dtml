@@ -113,12 +113,7 @@
     </dtml-if>
     <strong>
     <dtml-if meta_type>
-      <dtml-if class_manage_path>
-    <a href="&dtml-BASEPATH1;&dtml-class_manage_path;"
-       title="Manage the ZClass of this object">&dtml-meta_type;</a>
-      <dtml-else>
-    &dtml-meta_type;
-      </dtml-if>
+      &dtml-meta_type;
     <dtml-else>
     Object
     </dtml-if> 

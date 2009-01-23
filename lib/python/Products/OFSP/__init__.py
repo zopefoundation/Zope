@@ -17,28 +17,10 @@ __version__='$Revision: 1.38 $'[11:-2]
 import Version, OFS.Image, OFS.Folder, AccessControl.User
 import OFS.DTMLMethod, OFS.DTMLDocument, OFS.PropertySheets
 import OFS.OrderedFolder
-import ZClasses.ObjectManager
 
 from AccessControl.Permissions import add_documents_images_and_files
 from AccessControl.Permissions import add_folders
-from ZClasses import createZClassForBase
 from App.ImageFile import ImageFile
-
-createZClassForBase( OFS.DTMLMethod.DTMLMethod, globals()
-                   , 'ZDTMLMethod', 'DTML Method' )
-createZClassForBase( OFS.DTMLDocument.DTMLDocument, globals()
-                   , 'ZDTMLDocument', 'DTML Document' )
-createZClassForBase( OFS.Image.Image, globals()
-                   , 'ZImage', 'Image' )
-createZClassForBase( OFS.Image.File, globals()
-                   , 'ZFile', 'File' )
-createZClassForBase( OFS.Folder.Folder, globals()
-                   , 'ZFolder', 'Folder' )
-createZClassForBase( OFS.OrderedFolder.OrderedFolder, globals() )
-createZClassForBase( AccessControl.User.UserFolder, globals()
-                   , 'ZUserFolder', 'User Folder' )
-createZClassForBase( AccessControl.User.User, globals()
-                   , 'ZUser', 'User' )
 
 misc_={
     'version.gif':ImageFile('images/version.gif', globals())
@@ -109,27 +91,6 @@ def initialize(context):
         icon='images/UserFolder_icon.gif',
         legacy=(AccessControl.User.manage_addUserFolder,),
         )
-
-    ## Those both classes are relicts. We only withdraw them from the Add menu.
-    ## This way people will stop using them. They are undocumented anyway. 
-    ## People also have the chance to softly migrate their data and stop using the
-    ## versions they still use.
-
-    #context.registerClass(
-    #    Version.Version,
-    #    constructors=(Version.manage_addVersionForm,
-    #                  Version.manage_addVersion),
-    #    icon='images/version.gif'
-    #    )
-
-    #context.registerClass(
-    #    Draft.Draft,
-    #    constructors=(Draft.manage_addPrincipiaDraftForm,
-    #             Draft.manage_addPrincipiaDraft),
-    #    icon='images/draft.gif'
-    #    )
-
-    context.registerZClass(ZClasses.ObjectManager.ZObjectManager)
 
     context.registerHelp()
     context.registerHelpTitle('Zope Help')

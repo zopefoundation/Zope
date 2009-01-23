@@ -100,11 +100,7 @@ class FindSupport(Base):
             try:    items=obj.objectItems()
             except: return result
         else:
-            if getattr(base, 'meta_type', None) == 'Z Class':
-                try:    items=obj.propertysheets.methods.objectItems()
-                except: return result
-            else:
-                return result
+            return result
 
         try: add_result=result.append
         except:
@@ -145,14 +141,9 @@ class FindSupport(Base):
                 add_result((p, ob))
                 dflag=0
 
-            is_zclass = getattr(bs, 'meta_type', None) == 'Z Class'
-            if search_sub and (hasattr(bs, 'objectItems') or is_zclass):
-                if is_zclass:
-                    subob = ob.propertysheets.methods
-                    sub_p = '%s/propertysheets/methods' % p
-                else:
-                    subob = ob
-                    sub_p = p
+            if search_sub and (hasattr(bs, 'objectItems')):
+                subob = ob
+                sub_p = p
                 self.ZopeFind(subob, obj_ids, obj_metatypes,
                                    obj_searchterm, obj_expr,
                                    obj_mtime, obj_mspec,

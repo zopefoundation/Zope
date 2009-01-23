@@ -317,7 +317,7 @@ def minimalClassFactory(jar, module, name,
 def simpleClassFactory(jar, module, name,
                        _silly=('__doc__',), _globals={},
                        ):
-    """Class factory without ZClass support.
+    """Class factory.
     """
     import OFS.Uninstalled
     try:
@@ -325,28 +325,6 @@ def simpleClassFactory(jar, module, name,
         return getattr(m, name)
     except:
         return OFS.Uninstalled.Broken(jar, None, (module, name))
-
-def zopeClassFactory(jar, module, name,
-                     _silly=('__doc__',), _globals={},
-                     ):
-    """Class factory with ZClass support.
-    """
-    import OFS.Uninstalled
-    try:
-        if module[:1]=='*':
-            # ZCLass! Yee ha!
-            return jar.root()['ZGlobals'][module]
-        else:
-            m=__import__(module, _globals, _globals, _silly)
-
-        return getattr(m, name)
-    except:
-        return OFS.Uninstalled.Broken(jar, None, (module, name))
-
-# There used to be an "autoClassFactory" whose docstring read "If not the root
-# connection, use the class factory from the root database, otherwise use the
-# Zope class factory."  This no longer works with the implementation of
-# mounted databases, so we just use the zopeClassFactory as the default
 
 try:
     from zope.app.twisted.server import ServerFactory

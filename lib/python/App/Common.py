@@ -103,12 +103,6 @@ def is_acquired(ob, hasattr=hasattr, aq_base=aq_base, absattr=absattr):
         except KeyError:
             pass
 
-    if hasattr(parent,'_objects'):
-        # XXX This is really icky
-        # This ugly mess is for ZClass methods I think
-        if absId+' ' in parent.objectIds():
-            return 0
-
     if hasattr(aq_base(ob), 'isTopLevelPrincipiaApplicationObject') and \
             ob.isTopLevelPrincipiaApplicationObject:
         # This object the top level

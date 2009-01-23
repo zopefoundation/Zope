@@ -7,8 +7,6 @@
       class="AccessControl.User.BasicUserFolder"/>
 
   <five:deprecatedManageAddDelete
-      class="App.Factory.Factory"/>
-  <five:deprecatedManageAddDelete
       class="App.Permission.Permission"/>
 
   <five:deprecatedManageAddDelete
@@ -42,10 +40,5 @@
       class="Products.ZCatalog.CatalogAwareness.CatalogAware"/>
   <five:deprecatedManageAddDelete
       class="Products.ZCatalog.CatalogPathAwareness.CatalogAware"/>
-
-  <five:deprecatedManageAddDelete
-      class="ZClasses.Property.ZCommonSheet"/>
-  <five:deprecatedManageAddDelete
-      class="ZClasses.ZClass.ZClass"/>
 
 </configure>

@@ -106,8 +106,6 @@ What You Get
 
           - **'setupCoreSessions'** creates the Zope sessioning objects in the test ZODB.
 
-          - **'setupZGlobals'** creates the ZGlobals BTree required by ZClasses.
-
           - **'setupSiteErrorLog'** creates the error_log object required by ZPublisher.
 
           - **'startZServer'** starts a ZServer thread on the local host. Use this if the

@@ -13,18 +13,11 @@
 __doc__='''Generic Database adapter'''
 __version__='$Revision: 1.116 $'[11:-2]
 
-import base64
-from cPickle import dumps
-from cPickle import loads
 from cStringIO import StringIO
-import marshal
-import os
 import re
 import string
 import sys
 from time import time
-from zlib import compress
-from zlib import decompress
 
 from AccessControl.DTML import RestrictedDTML
 from AccessControl.Permissions import change_database_methods
@@ -35,7 +28,6 @@ from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.SecurityManagement import getSecurityManager
 from Acquisition import Implicit
 from App.class_init import InitializeClass
-from App.Dialogs import MessageDialog
 from App.Extensions import getBrain
 from App.special_dtml import DTMLFile
 from DocumentTemplate import HTML
@@ -51,7 +43,6 @@ from zExceptions import BadRequest
 
 from Aqueduct import BaseQuery
 from Aqueduct import custom_default_report
-from Aqueduct import decodestring
 from Aqueduct import default_input_form
 from Aqueduct import parse
 from RDB import File
@@ -102,7 +93,6 @@ class DA(BaseQuery,
     cache_time_=0
     max_cache_=100
     class_name_=class_file_=''
-    _zclass=None
     allow_simple_one_argument_traversal=None
     template_class=SQL
     connection_hook=None
@@ -204,7 +194,7 @@ class DA(BaseQuery,
     security.declareProtected(change_database_methods, 'manage_advanced')
     def manage_advanced(self, max_rows, max_cache, cache_time,
                         class_name, class_file, direct=None,
-                        REQUEST=None, zclass='', connection_hook=None):
+                        REQUEST=None, connection_hook=None):
         """Change advanced properties
 
         The arguments are:
@@ -253,21 +243,9 @@ class DA(BaseQuery,
 
         self.connection_hook = connection_hook
 
-        if zclass:
-            for d in self.aq_acquire('_getProductRegistryData')('zclasses'):
-                if ("%s/%s" % (d.get('product'),d.get('id'))) == zclass:
-                    self._zclass=d['meta_class']
-                    break
-
-
         if REQUEST is not None:
             m="ZSQL Method advanced settings have been set"
             return self.manage_advancedForm(self,REQUEST,manage_tabs_message=m)
-##            return self.manage_editedDialog(REQUEST)
-
-    #def getFindContent(self):
-    #    """Return content for use by the Find machinery."""
-    #    return '%s\n%s' % (self.arguments_src, self.src)
 
     security.declareProtected(view_management_screens, 'PrincipiaSearchSource')
     def PrincipiaSearchSource(self):
@@ -493,8 +471,6 @@ class DA(BaseQuery,
 
         if hasattr(self, 'aq_parent'):
             p=self.aq_parent
-            if self._isBeingAccessedAsZClassDefinedInstanceMethod():
-                p=p.aq_parent
         else:
             p=None
 
@@ -529,16 +505,13 @@ class DA(BaseQuery,
         else:
             brain=self._v_brain=getBrain(self.class_file_, self.class_name_)
 
-        zc=self._zclass
-        if zc is not None: zc=zc._zclass_
-
         if type(result) is type(''):
             f=StringIO()
             f.write(result)
             f.seek(0)
-            result = File(f,brain,p, zc)
+            result = File(f,brain,p, None)
         else:
-            result = Results(result, brain, p, zc)
+            result = Results(result, brain, p, None)
         columns = result._searchable_result_columns()
         if test__ and columns != self._col:
             self._col=columns
@@ -573,28 +546,7 @@ class DA(BaseQuery,
     def connected(self):
         return getattr(getattr(self, self.connection_id), 'connected')()
 
-
-    security.declareProtected(change_database_methods,
-                              'manage_product_zclass_info')
-    def manage_product_zclass_info(self):
-        r=[]
-        Z=self._zclass
-        Z=getattr(Z, 'aq_self', Z)
-        for d in self.aq_acquire('_getProductRegistryData')('zclasses'):
-            z=d['meta_class']
-            if hasattr(z._zclass_,'_p_deactivate'):
-                # Eek, persistent
-                continue
-            x={}
-            x.update(d)
-            x['selected'] = (z is Z) and 'selected' or ''
-            del x['meta_class']
-            r.append(x)
-
-        return r
-
 InitializeClass(DA)
-
 
 
 ListType=type([])
