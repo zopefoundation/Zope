@@ -25,17 +25,6 @@ ObjectManager with OrderSupport - Contents: Edit contained objects.
       in the database and remains fixed until it is changed by another
       user.
 
-    Versions
-
-      If you are currently working in a version there will be a
-      notice at the top of the list of objects indicating this.
-
-      If there is a red diamond following the name of an object this
-      indicates that the object has been modified in the version you
-      are currently working in. If there is a red diamond with a lock
-      after an object, this indicates the the object has been modified
-      in another version.
-
   Controls
 
     '[Checkbox]' -- Selects the object in order to perform operations

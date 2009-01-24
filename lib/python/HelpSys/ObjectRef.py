@@ -118,7 +118,7 @@ class ObjectRef(HelpBase):
     def hs_search_mod(self, mod, dict):
         # Root through a module for things that look like
         # createable object classes.
-        hidden=('Control Panel', 'Principia Draft', 'simple item',
+        hidden=('Control Panel', 'simple item',
                 'Broken Because Product is Gone')
         for k, v in mod.__dict__.items():
             if is_class(v) and hasattr(v, 'meta_type') and \

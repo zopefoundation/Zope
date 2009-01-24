@@ -119,16 +119,6 @@
     </dtml-if> 
     at <dtml-var expr="tabs_path_default(REQUEST)">
     </strong>
-    <dtml-if locked_in_version>
-      <dtml-if modified_in_version>
-        <img src="&dtml-BASEPATH1;/p_/locked"
-         alt="This item has been modified in this version" />
-      <dtml-else>
-        <img src="&dtml-BASEPATH1;/p_/lockedo"
-         alt="This item has been modified in another version" />
-              (<em>&dtml-locked_in_version;</em>)
-      </dtml-if>
-    </dtml-if>
     <dtml-if wl_isLocked>
      <img src="&dtml-BASEPATH1;/p_/davlocked"
       alt="This item has been locked by WebDAV"
@@ -137,20 +127,24 @@
     </div>
     </td>
   <dtml-if "_.has_key('help_topic') and _.has_key('help_product')">
+  <dtml-if "HelpSys.helpLink(help_product, help_topic)">
   <td align="right" valign="top">
   <div class="std-text">
   <dtml-var "HelpSys.helpLink(help_product, help_topic)">
   </div>
   </td>
+  </dtml-if>
   <dtml-else>
   <dtml-if manage_options>
   <dtml-with "_(option=manage_options[a_])">
   <dtml-if "option.has_key('help')">
+  <dtml-if "HelpSys.helpLink(option['help'][0], option['help'][1])">
   <td align="right" valign="top">
   <div class="std-text">
   <dtml-var "HelpSys.helpLink(option['help'][0], option['help'][1])">
   </div>
   </td>
+  </dtml-if>
   </dtml-if>
   </dtml-with>
   </dtml-if>
@@ -158,11 +152,6 @@
   </tr>
   </table>
 
-<dtml-if Zope-Version>
-<div class="system-msg">
-<em>You are currently working in version <a href="&dtml-SERVER_URL;&dtml-Zope-Version;/manage_main">&dtml-Zope-Version;</a></em>
-</div>
-</dtml-if>
 </dtml-unless>
 
 <dtml-if manage_tabs_message>

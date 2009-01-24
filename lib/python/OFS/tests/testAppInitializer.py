@@ -209,14 +209,10 @@ class TestInitialization( unittest.TestCase ):
         self.configure(good_cfg)
         i = self.getOne()
         i.install_products() # required
-        i .install_standards()
+        i.install_standards()
         app = i.getApp()
-        self.assertEqual(app.index_html.meta_type, 'DTML Method')
+        self.assertEqual(app.index_html.meta_type, 'Page Template')
         self.assertEqual(app.standard_error_message.meta_type, 'DTML Method')
-        self.assertEqual(app.standard_html_header.meta_type, 'DTML Method')
-        self.assertEqual(app.standard_html_footer.meta_type, 'DTML Method')
-        self.assertEqual(getattr(app, 'standard_template.pt').meta_type,
-                         'Page Template')
         self.failUnless(hasattr(app, '_standard_objects_have_been_added'))
 
 

@@ -2,9 +2,6 @@ Product - Zope extension.
   
   Description
 
-    Products allow you to extend Zope by creating new types of addable Zope
-    objects.
+    Products were an old mechanism by which you could extend Zope.
 
-    A Product contains other objects such as Factories which allows you
-    to make your objects available via the product add list.
-
+    The product concept is deprecated.

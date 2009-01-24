@@ -28,14 +28,12 @@ from App.CacheManager import CacheManager
 from App.class_init import InitializeClass
 from App.config import getConfiguration
 from App.DavLockManager import DavLockManager
-from App.Dialogs import MessageDialog
 from App.special_dtml import DTMLFile
 from App.Undo import UndoSupport
 from App.version_txt import version_txt
 from DateTime.DateTime import DateTime
 from Lifetime import shutdown
 from OFS.Folder import Folder
-from OFS.ObjectManager import ObjectManager
 from OFS.SimpleItem import Item
 from OFS.SimpleItem import SimpleItem
 from Product import ProductFolder
@@ -48,10 +46,8 @@ try: import thread
 except: get_ident=lambda: 0
 else: get_ident=thread.get_ident
 
-class Fake:
-    def locked_in_version(self): return 0
 
-class DatabaseManager(Fake, Item, Implicit):
+class DatabaseManager(Item, Implicit):
     """Database management (legacy) """
     manage = manage_main = DTMLFile('dtml/dbMain', globals())
     manage_main._setName('manage_main')
@@ -87,13 +83,10 @@ class FakeConnection:
 
     def __init__(self, db, parent_jar):
         self._db = db
-        self.version = parent_jar.getVersion()
 
     def db(self):
         return self._db
 
-    def getVersion(self):
-        return self.version
 
 class DatabaseChooser(SimpleItem):
     """Lets you choose which database to view
@@ -146,21 +139,12 @@ class DatabaseChooser(SimpleItem):
 InitializeClass(DatabaseChooser)
 
 
-class VersionManager(Fake, Item, Implicit):
+class VersionManager(Item, Implicit):
     """Version management"""
-    manage=manage_main = DTMLFile('dtml/versionManager', globals())
-    manage_main._setName('manage_main')
+
     id        ='Versions'
     name=title='Version Management'
     meta_type ='Version Management'
-    icon='p_/VersionManagement_icon'
-
-    manage_options=(
-        (
-        {'label':'Version', 'action':'manage_main',
-         'help':('OFSP','Version-Management_Version.stx')},
-        )
-        )
 
 InitializeClass(VersionManager)
 
@@ -171,7 +155,7 @@ InitializeClass(VersionManager)
 _v_rcs=None
 _v_rst=None
 
-class DebugManager(Fake, Item, Implicit):
+class DebugManager(Item, Implicit):
     """Debug and profiling information"""
     manage=manage_main = DTMLFile('dtml/debug', globals())
     manage_main._setName('manage_main')
@@ -190,7 +174,7 @@ class DebugManager(Fake, Item, Implicit):
 
     manage_debug = DTMLFile('dtml/debug', globals())
 
-    def refcount(self, n=None, t=(type(Fake), type(Implicit))):
+    def refcount(self, n=None, t=(type(Implicit), )):
         # return class reference info
         dict={}
         for m in sys.modules.values():
@@ -286,7 +270,6 @@ class ApplicationManager(Folder,CacheManager):
     __roles__=('Manager',)
     isPrincipiaFolderish=1
     Database= DatabaseChooser('Database') #DatabaseManager()
-    Versions= VersionManager()
     DebugInfo=DebugManager()
     DavLocks = DavLockManager()
 
@@ -305,8 +288,6 @@ class ApplicationManager(Folder,CacheManager):
     _objects=(
         {'id': 'Database',
          'meta_type': Database.meta_type},
-        {'id': 'Versions',
-         'meta_type': Versions.meta_type},
         {'id': 'DavLocks',
          'meta_type': DavLocks.meta_type},
         {'id': 'Products',
@@ -338,22 +319,6 @@ class ApplicationManager(Folder,CacheManager):
 
     def __init__(self):
         self.Products=ProductFolder()
-
-
-# Note by brian:
-#
-# This __setstate__ does not seem to work - it creates a new ProductFolder
-# and adds it to the CP instance if needed, but the resulting PF does not
-# seem to be persistent ;( Rather than spend much time figuring out why,
-# I just added a check in Application.open_bobobase to create the PF if
-# it is needed (this is where several other b/c checks are done anyway.)
-#
-#
-#    def __setstate__(self, v):
-#        ApplicationManager.inheritedAttribute('__setstate__')(self, v)
-#        if not hasattr(self, 'Products'):
-#            self.Products=ProductFolder()
-
 
     def _canCopy(self, op=0):
         return 0
@@ -466,36 +431,6 @@ class ApplicationManager(Folder,CacheManager):
                 file.close()
                 info.append(data.strip())
         return info
-
-
-    def version_info(self):
-        r=[]
-        try: db=self._p_jar.db()
-        except: raise ValueError, """
-        Sorry, <em>Version management</em> is only supported if you use ZODB 3.
-        """
-        for v in db.versions():
-            if db.versionEmpty(v): continue
-            r.append({'id': v})
-        return r
-
-    @requestmethod('POST')
-    def manage_saveVersions(self, versions, REQUEST=None):
-        "Commit some versions"
-        db=self._p_jar.db()
-        for v in versions:
-            db.commitVersion(v)
-        if REQUEST is not None:
-            REQUEST['RESPONSE'].redirect(REQUEST['URL1']+'/manage_main')
-
-    @requestmethod('POST')
-    def manage_discardVersions(self, versions, REQUEST=None):
-        "Discard some versions"
-        db=self._p_jar.db()
-        for v in versions:
-            db.abortVersion(v)
-        if REQUEST is not None:
-            REQUEST['RESPONSE'].redirect(REQUEST['URL1']+'/manage_main')
 
     def getSOFTWARE_HOME(self):
         return getConfiguration().softwarehome

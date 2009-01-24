@@ -41,9 +41,6 @@ class CacheManager:
     def _getDB(self):
         return self._p_jar.db()
 
-    def _inVersion(self):
-        return self._p_jar.getVersion() and True or False
-
     def cache_length(self):
         return self._getDB().cacheSize()
 
@@ -54,20 +51,13 @@ class CacheManager:
         return self._getDB().objectCount()
 
     def cache_age(self):
-        if self._inVersion():
-            return self._vcache_age
-        else:
-            return self._cache_age
+        return self._cache_age
 
     def manage_cache_age(self,value,REQUEST):
         "set cache age"
         db = self._getDB()
-        if self._inVersion():
-            self._vcache_age = value
-            db.setVersionCacheDeactivateAfter(value)
-        else:
-            self._cache_age = value
-            db.setCacheDeactivateAfter(value)
+        self._cache_age = value
+        db.setCacheDeactivateAfter(value)
 
         if REQUEST is not None:
             response=REQUEST['RESPONSE']
@@ -75,18 +65,12 @@ class CacheManager:
 
     def cache_size(self):
         db = self._getDB()
-        if self._inVersion():
-            return db.getVersionCacheSize()
-        else:
-            return db.getCacheSize()
+        return db.getCacheSize()
 
     def manage_cache_size(self,value,REQUEST):
         "set cache size"
         db = self._getDB()
-        if self._inVersion():
-            db.setVersionCacheSize(value)
-        else:
-            db.setCacheSize(value)
+        db.setCacheSize(value)
 
         if REQUEST is not None:
             response=REQUEST['RESPONSE']

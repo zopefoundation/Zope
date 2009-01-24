@@ -30,9 +30,6 @@ Control Panel - Contents: Zope system controls
       'Database Management' -- Provides access to the database
       management functions such as packing and cache management.
 
-      'Version Management' -- Provides access to version management
-      functions, including version commit and abort.
-
       'Product Management' -- Provides access to management functions
       for installed Zope Products.
 

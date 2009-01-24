@@ -19,12 +19,9 @@ $Id$
 """
 import os
 import glob
-import warnings
 import logging
 
 import App.config
-from App.Product import initializeProduct
-from App.ProductContext import ProductContext
 import Products
 import Zope2
 

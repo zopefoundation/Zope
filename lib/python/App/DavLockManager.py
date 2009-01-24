@@ -43,8 +43,6 @@ class DavLockManager(Item, Implicit):
          'help': ('OFSP', 'DavLocks-ManageLocks.stx'), },
         )
 
-    def locked_in_version(self): return 0
-
     def findLockedObjects(self, frompath=''):
         app = self.getPhysicalRoot()
 

@@ -4,8 +4,4 @@ Product Management: Contains Zope Products.
 
     The Product Management Folder contains installed Zope Products.
 
-    There are two types of Zope products, Python Products which are
-    installed in the filesystem and
-    Products created through the web. 
-
-
+    The notion of installed Zope products is deprecated.

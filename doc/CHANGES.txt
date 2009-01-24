@@ -9,6 +9,19 @@ Zope Changes
 
     Restructuring
 
+      - No longer show the Help! links in the ZMI, if there is no help
+        available. The help system depends on the product registry.
+
+      - Updated the quick start page and simplified the standard content.
+        The default index_html is now a page template.
+
+      - Removed deprecated Draft and Version support from Products.OFSP.
+        Also removed version handling from the control panel. Versions are
+        no longer supported on the ZODB level.
+
+      - Removed left-overs of the deprecated persistent product distribution
+        mechanism.
+
       - The persistent product registry is not required for starting Zope
         anymore. `enable-product-installation` can be set to off if you don't
         rely on the functionality provided by the registry.

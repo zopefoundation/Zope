@@ -2,27 +2,13 @@
 <html>
 <head>
 <title>Zope QuickStart</title>
-<dtml-let ag="REQUEST.get('HTTP_USER_AGENT', '')"
-     is_nav4="ag[:9] == 'Mozilla/4' and _.string.find(ag, 'MSIE') < 0"
-     zmi_embedded_css="1">
-<dtml-if is_nav4>
-<style type="text/css">
-<!--
-
-<dtml-var manage_page_style.css>
-
--->
-</style>
-<dtml-else>
 <link rel="stylesheet" type="text/css" href="&dtml-BASEPATH1;/manage_page_style.css">
-</dtml-if>
-</dtml-let>
 </head>
 <body bgcolor="#ffffff" link="#000099" alink="#000099" vlink="#000099">
 
 <dtml-var "manage_form_title(this(), _,
            form_title='Zope Quick Start',
-	   )">
+           )">
 
 <dtml-if expr="not PARENTS[0].acl_users.hasUsers()">
 <div class="system-msg">
@@ -33,17 +19,10 @@ user account.
 </h3>
 
 <p>
-If you're running Zope on UNIX or Linux, you can create an administrative
-user account via the "zopectl adduser" command from a shell.  <b>Note: You'll
-need to shut Zope itself down before "zopectl adduser" will work.  Restart
-Zope after executing this command in order to log in.</b>
-</p>
-
-<p>
-If you're running Zope on Windows, you'll need to use the "zpasswd.py" utility
-to create a file named <i>inituser</i> in your Zope instance home at
-<i><dtml-var "Control_Panel.getINSTANCE_HOME()"></i> that contains the
-initial administrative username and password.
+You can create an administrative user account via the "zopectl adduser"
+command from a shell.  <b>Note: You'll need to shut Zope itself down before
+"zopectl adduser" will work.  Restart Zope after executing this command in
+order to log in.</b>
 </p>
 
 </div>
@@ -67,15 +46,6 @@ web applications.
 
 <li>
 <p>
-<a href="manage_importObject?file=Examples.zexp&amp;set_owner:int=1">Import</a>
-and then check out the <b>new</b> <a href="Examples">example Zope
-applications</a>. These examples show you simple working Zope
-applications that you can copy and modify.
-</p>
-</li>
-
-<li>
-<p>
 Go to the main <a href="http://www.zope.org/Documentation/" target="_new">
 Documentation Overview</a> on <a href="http://www.zope.org" target="_new">Zope.org</a>.  
 Here you will find pointers to official and community contributed documentation.
@@ -94,28 +64,9 @@ users from around the world.
 
 <li>
 <p>
-Browse and search the integrated, <a href="HelpSys" target="zope_help">
-Online Help System</a> which contains documentation on 
-the various kinds of components you'll find in Zope.
-</p>
-</li>
-
-<li>
-<p>
 Go directly to the <a href="&dtml-BASEPATH1;/manage" target="_top">
 Zope Management Interface</a> if you'd like to start working with Zope 
-right away.  <strong>NOTE:  Some versions of Microsoft Internet Explorer,
-(specifically IE 5.01 and early versions of IE 5.5) may have problems
-displaying Zope management pages.  If you cannot view the management pages,
-try upgrading your IE installation to the latest release version, or use
-a different browser.</strong>
-</p>
-</li>
-
-<li>
-<p>
-Find out about <a href="http://www.zope.com/" target="_new">Zope 
-Corporation</a>, the publishers of Zope.
+right away.
 </p>
 </li>
 

@@ -1,4 +1,6 @@
-<dtml-var standard_html_header>
+<html>
+<head><title>&dtml-title_or_id;</title></head>
+<body bgcolor="#FFFFFF">
 
 <dtml-if error_message>
  <dtml-var error_message>
@@ -44,4 +46,5 @@
 
 </dtml-if>
 
-<dtml-var standard_html_footer>
+</body>
+</html>

@@ -112,6 +112,9 @@ class HelpSys(Implicit, ObjectManager, Item, Persistent):
         # Generate an <a href...> tag linking to a help topic. This
         # is a little lighter weight than the help button approach.
         basepath=self.REQUEST['BASEPATH1']
+        products = self.Control_Panel.Products.objectIds()
+        if product not in products:
+            return None
         help_url='%s/Control_Panel/Products/%s/Help/%s' % (
             basepath,
             product,

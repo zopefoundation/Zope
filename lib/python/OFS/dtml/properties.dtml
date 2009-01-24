@@ -25,12 +25,6 @@
 <dtml-var manage_tabs>
 </dtml-with>
 
-<dtml-if Principia-Version>
-<p>
-<em>You are currently working in version &dtml-Principia-Version;</em>
-</p>
-</dtml-if Principia-Version>
-
 <form action="&dtml-URL1;" method="post">
 <dtml-if propertyMap>
 <p class="form-help">

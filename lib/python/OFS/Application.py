@@ -753,7 +753,6 @@ def install_package(app, module, init_func, raise_exc=False, log_exc=True):
 
 def install_standards(app):
     # Check to see if we've already done this before
-    # Don't do it twice (Casey)
     if getattr(app, '_standard_objects_have_been_added', 0):
         return
 
@@ -763,22 +762,21 @@ def install_standards(app):
     from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 
     std_dir = os.path.join(package_home(globals()), 'standard')
-    wrote = 0
+    wrote = False
     for fn in os.listdir(std_dir):
         base, ext = os.path.splitext(fn)
         if ext == '.dtml':
+            if hasattr(app, base):
+                continue
             ob = DTMLFile(base, std_dir)
-            fn = base
-            if hasattr(app, fn):
-                continue
             app.manage_addProduct['OFSP'].manage_addDTMLMethod(
-                id=fn, file=open(ob.raw))
+                id=base, file=open(ob.raw))
         elif ext in ('.pt', '.zpt'):
-            ob = PageTemplateFile(fn, std_dir, __name__=fn)
-            if hasattr(app, fn):
+            if hasattr(app, base):
                 continue
+            ob = PageTemplateFile(fn, std_dir, __name__=fn)
             app.manage_addProduct['PageTemplates'].manage_addPageTemplate(
-                id=fn, title='', text=open(ob.filename))
+                id=base, title='', text=open(ob.filename))
         elif ext in ('.ico', '.gif', '.png'):
             if hasattr(app, fn):
                 continue
@@ -786,10 +784,7 @@ def install_standards(app):
                 id=fn, title='', file=open(os.path.join(std_dir, fn)))
         else:
             continue
-        wrote = 1
-        # Below is icky and sneaky since it makes these impossible to delete
-        #ob.__replaceable__ = Globals.REPLACEABLE
-        #setattr(Application, fn, ob)
+        wrote = True
     if wrote:
         app._standard_objects_have_been_added = 1
         transaction.get().note('Installed standard objects')

@@ -73,7 +73,6 @@ td {
 <span class="std-text">Logged in as <strong>&dtml-AUTHENTICATED_USER;</strong></span> &nbsp;&nbsp;
 <br />
 <select class="form-element" name=":action" onChange="window.parent.manage_main.location.href='&dtml-BASEPATH1;/'+this.options[this.selectedIndex].value">
-<option value="zope_quick_start">Zope Quick Start</option>
 <dtml-if "AUTHENTICATED_USER.getUserName() != 'Anonymous User'">
 <option value="manage_zmi_prefs">Set Preferences</option>
 <option value="manage_zmi_logout">Logout</option>

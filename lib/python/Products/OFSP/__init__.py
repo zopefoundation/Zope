@@ -14,20 +14,13 @@ __doc__='''Object system core
 $Id$'''
 __version__='$Revision: 1.38 $'[11:-2]
 
-import Version, OFS.Image, OFS.Folder, AccessControl.User
+import OFS.Image, OFS.Folder, AccessControl.User
 import OFS.DTMLMethod, OFS.DTMLDocument, OFS.PropertySheets
 import OFS.OrderedFolder
 
 from AccessControl.Permissions import add_documents_images_and_files
 from AccessControl.Permissions import add_folders
-from App.ImageFile import ImageFile
 
-misc_={
-    'version.gif':ImageFile('images/version.gif', globals())
-    }
-
-# This is the new way to initialize products.  It is hoped
-# that this more direct mechanism will be more understandable.
 def initialize(context):
 
     context.registerClass(

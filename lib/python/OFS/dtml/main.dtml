@@ -154,16 +154,6 @@ function toggleSelect() {
   <a href="&dtml.url_quote-sequence-key;/manage_workspace">
   &dtml-sequence-key; <dtml-if title>(&dtml-title;)</dtml-if>
   </a>
-  <dtml-if locked_in_version>
-    <dtml-if modified_in_version>
-      <img src="&dtml-BASEPATH1;/p_/locked"
-       alt="This item has been modified in this version" />
-    <dtml-else>
-      <img src="&dtml-BASEPATH1;/p_/lockedo"
-       alt="This item has been modified in another version" />
-       (<em>&dtml-locked_in_version;</em>)
-    </dtml-if>
-  </dtml-if>
   <dtml-try>
     <dtml-if "wl_isLocked()==1">
       <img src="/p_/davlocked">

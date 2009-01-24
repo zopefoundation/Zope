@@ -51,14 +51,6 @@ class IPersistentExtra(Interface):
         """
         """
 
-    def locked_in_version():
-        """Was the object modified in any version?
-        """
-
-    def modified_in_version():
-        """Was the object modified in this version?
-        """
-
 
 # XXX: might contain non-API methods and outdated comments;
 #      not synced with ZopeBook API Reference;

@@ -10,8 +10,7 @@ WebDAV Lock Management - Manage Locks
   such as crashes, etc.  In many cases, locks might just time out
   before this becomes a problem.  In cases where it's not, this
   control panel object may be used to locate locked resources inside
-  of Zope and clear *ALL* of their WebDAV writelocks.  **This does not 
-  clear locks caused by use of Versions**.
+  of Zope and clear *ALL* of their WebDAV writelocks.
 
  Controls
 

@@ -30,45 +30,6 @@ class PersistentUtil:
             t = 0
         return DateTime(t)
 
-    def locked_in_version(self):
-        """Was the object modified in any version?
-        """
-        import Globals  # for data
-        jar=self._p_jar
-        oid=self._p_oid
-        if jar is None or oid is None: return None
-        try: mv=jar.modifiedInVersion
-        except: pass
-        else: return mv(oid)
-
-        # BoboPOS 2 code:
-        oid=self._p_oid
-        return (oid
-                and Globals.VersionBase.locks.has_key(oid)
-                and Globals.VersionBase.verify_lock(oid)
-                and 'some version')
-
-    def modified_in_version(self):
-        """Was the object modified in this version?
-        """
-        jar=self._p_jar
-        oid=self._p_oid
-        if jar is None or oid is None: return None
-        try: mv=jar.modifiedInVersion
-        except: pass
-        else: return mv(oid)==jar.getVersion()
-
-        # BoboPOS 2 code:
-        jar=self._p_jar
-        if jar is None:
-            if hasattr(self,'aq_parent') and hasattr(self.aq_parent, '_p_jar'):
-                jar=self.aq_parent._p_jar
-            if jar is None: return 0
-        if not jar.name: return 0
-        try: jar.db[self._p_oid]
-        except: return 0
-        return 1
-
 
 _patched = False
 

@@ -136,15 +136,6 @@ functions such as database and product management.
   <a href="&dtml.url_quote-sequence-key;/manage_workspace">
   &dtml-title;
   </a>
-  <dtml-if locked_in_version>
-    <dtml-if modified_in_version>
-      <img src="&dtml-BASEPATH1;/p_/locked"
-       alt="This item has been modified in this version" />
-    <dtml-else>
-      <img src="&dtml-BASEPATH1;/p_/lockedo"
-       alt="This item has been modified in another version" />
-    </dtml-if>
-  </dtml-if>
   </div>
   </td>
 </tr>

@@ -16,11 +16,6 @@
       class="OFS.Cache.CacheManager"/>
 
   <five:deprecatedManageAddDelete
-      class="Products.OFSP.Draft.Draft"/>
-  <five:deprecatedManageAddDelete
-      class="Products.OFSP.Version.Version"/>
-
-  <five:deprecatedManageAddDelete
       class="Products.PythonScripts.PythonScript.PythonScript"/>
 
   <five:deprecatedManageAddDelete

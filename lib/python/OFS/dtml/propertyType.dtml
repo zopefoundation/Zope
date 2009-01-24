@@ -6,12 +6,6 @@
 <body bgcolor="#FFFFFF" link="#000099" vlink="#555555">
 <dtml-var manage_tabs>
 
-<dtml-if Principia-Version>
-<p>
-<em>You are currently working in version &dtml-Principia-Version;</em>
-</p>
-</dtml-if Principia-Version>
-
 <dtml-unless props>
   <dtml-if ids>
     <dtml-call expr="REQUEST.set('props', [])">

@@ -34,10 +34,7 @@
 #   on restart if there is still a product directory.
 
 
-import cPickle
 import os
-import re
-import zlib
 
 import transaction
 
@@ -85,27 +82,6 @@ class Product(Folder, PermissionManager):
     version=''
     configurable_objects_=()
     import_error_=None
-
-    def new_version(self,
-                    _intending=re.compile(r"[0-9]+").search, #TS
-                    ):
-        # Return a new version number based on the existing version.
-        v=str(self.version)
-        if not v: return '1.0'
-        match = _intending(v)
-        if match is None:
-            return v
-        while 1:
-            # Find the last set of digits.
-            m = _intending(v, match.end())
-            if m is None:
-                break
-            else:
-                match = m
-        start = match.start()
-        end = match.end()
-        return v[:start] + str(1 + int(v[start:end])) + v[end:]
-
 
     meta_types=(
         PermissionManager.meta_types
@@ -228,65 +204,6 @@ class Product(Folder, PermissionManager):
 InitializeClass(Product)
 
 
-class CompressedOutputFile:
-    def __init__(self, rot):
-        self._c=zlib.compressobj()
-        self._r=[]
-        self._rot=rot
-        rot.encrypt('')
-
-    def write(self, s):
-        self._r.append(self._rot.encryptmore(self._c.compress(s)))
-
-    def getdata(self):
-        self._r.append(self._rot.encryptmore(self._c.flush()))
-        return ''.join(self._r)
-
-class CompressedInputFile:
-    _done=0
-    def __init__(self, f, rot):
-        self._c=zlib.decompressobj()
-        self._b=''
-        if isinstance(rot, str):
-            import rotor
-            rot=rotor.newrotor(rot)
-        self._rot=rot
-        rot.decrypt('')
-        self._f=f
-
-    def _next(self):
-        if self._done: return
-        l=self._f.read(8196)
-        if not l:
-            l=self._c.flush()
-            self._done=1
-        else:
-            l=self._c.decompress(self._rot.decryptmore(l))
-        self._b=self._b+l
-
-    def read(self, l=None):
-        if l is None:
-            while not self._done: self._next()
-            l=len(self._b)
-        else:
-            while l > len(self._b) and not self._done: self._next()
-        r=self._b[:l]
-        self._b=self._b[l:]
-
-        return r
-
-    def readline(self):
-        l=self._b.find('\n')
-        while l < 0 and not self._done:
-            self._next()
-            l=self._b.find('\n')
-        if l < 0: l=len(self._b)
-        else: l=l+1
-        r=self._b[:l]
-        self._b=self._b[l:]
-        return r
-
-
 def initializeProduct(productp, name, home, app):
     # Initialize a levered product
     import Globals  # to set data
@@ -318,15 +235,8 @@ def initializeProduct(productp, name, home, app):
                     return old
     except: pass
 
-    try:
-        f=CompressedInputFile(open(home+'/product.dat','rb'), name+' shshsh')
-    except:
-        f=fver and (" (%s)" % fver)
-        product=Product(name, 'Installed product %s%s' % (name,f))
-    else:
-        meta=cPickle.Unpickler(f).load()
-        product=app._p_jar.importFile(f)
-        product._objects=meta['_objects']
+    f = fver and (" (%s)" % fver)
+    product=Product(name, 'Installed product %s%s' % (name,f))
 
     if old is not None:
         app._manage_remove_product_meta_type(product)
@@ -336,7 +246,6 @@ def initializeProduct(productp, name, home, app):
             except: pass
 
     products._setObject(name, product)
-    #product.__of__(products)._postCopy(products)
     product.icon='p_/InstalledProduct_icon'
     product.version=fver
     product.home=home
