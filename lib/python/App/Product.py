@@ -59,6 +59,9 @@ class ProductFolder(Folder):
     meta_type = 'Product Management'
     icon = 'p_/ProductFolder_icon'
 
+    all_meta_types=()
+    meta_types=()
+
     # This prevents subobjects from being owned!
     _owner = UnownableOwner
 
