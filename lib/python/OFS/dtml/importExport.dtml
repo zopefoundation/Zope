@@ -10,6 +10,7 @@ them to a different Zope installation. You can either choose
 to download the export file to your local machine, or save it
 in the &quot;var&quot; directory of your Zope installation 
 on the server. 
+<!--
 <br/>
 <br/>
 <b>Note:</b>
@@ -18,6 +19,7 @@ ZEXP) and as XML. The ZEXP format is the officially supported export/import
 format for moving data between <u>identical</u> Zope installations (it is not a migration tool).
 The XML export/import is unsupported (and possibly broken under certain circumstances) - use it
 at your own risk.
+-->
 </p>
 
 <form action="manage_exportObject" method="post">
@@ -48,6 +50,7 @@ at your own risk.
   </div>
   </td>
 </tr>  
+<!--
 <tr>
   <td align="left" valign="top">
   &nbsp;
@@ -58,6 +61,7 @@ at your own risk.
   </div>
   </td>
 </tr>
+-->
 <tr>
   <td></td>
   <td align="left" valign="top">
