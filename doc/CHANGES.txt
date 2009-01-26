@@ -9,6 +9,8 @@ Zope Changes
 
     Restructuring
 
+      - Using ZODB 3.9
+
       - Disabled the XML export on the UI level - the export functionality
         however is still available on the Python level.
 
