@@ -45,7 +45,7 @@ stuff = {}
 def _getDB():
     db = stuff.get('db')
     if not db:
-        ds = DemoStorage(quota=(1<<20))
+        ds = DemoStorage()
         db = ZODB.DB(ds, pool_size=60)
         conn = db.open()
         root = conn.root()

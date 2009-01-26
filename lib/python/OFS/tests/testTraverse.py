@@ -87,7 +87,7 @@ class TestTraverse( unittest.TestCase ):
         from ZODB.DB import DB
         from ZODB.DemoStorage import DemoStorage
 
-        s = DemoStorage(quota=(1<<20))
+        s = DemoStorage()
         self.connection = DB(s).open()
 
         try:

@@ -29,7 +29,7 @@ def _getApp():
 
     app = stuff.get('app', None)
     if not app:
-        ds = DemoStorage(quota=(1<<20))
+        ds = DemoStorage()
         db = ZODB.DB(ds)
         conn = db.open()
         root = conn.root()

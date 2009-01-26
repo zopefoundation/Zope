@@ -62,7 +62,7 @@ def makeConnection():
     import ZODB
     from ZODB.DemoStorage import DemoStorage
 
-    s = DemoStorage(quota=(1<<20))
+    s = DemoStorage()
     return ZODB.DB( s ).open()
 
 class CopySupportTestBase(unittest.TestCase):
