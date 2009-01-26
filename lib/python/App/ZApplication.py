@@ -45,7 +45,12 @@ class ZApplicationWrapper:
         if version_support is not None and REQUEST is not None:
             version=REQUEST.get(version_support,'')
         else: version=''
-        conn=db.open(version)
+    
+#        conn=db.open(version)
+        # 'version' argument no longer support with ZODB 3.9.
+        # The cruft for version_support can likely be removed!?
+        # (ajung, 2009/01/26)
+        conn = db.open()
 
         if connection_open_hooks:
             for hook in connection_open_hooks:
