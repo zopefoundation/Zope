@@ -5,6 +5,9 @@ Zope2.startup()
 
 import transaction
 
+from zope.testing import cleanup
+from Products.Five import zcml
+
 from Testing.makerequest import makerequest
 
 from AccessControl.SecurityManagement import newSecurityManager
@@ -55,11 +58,26 @@ class TestFolder(Folder):
 
 
 from Products.Five.eventconfigure import setDeprecatedManageAddDelete
-setDeprecatedManageAddDelete(TestItem)
-setDeprecatedManageAddDelete(TestFolder)
+
+class HookLayer:
+
+    @classmethod
+    def setUp(cls):
+        cleanup.cleanUp()
+        zcml._initialized = 0
+        zcml.load_site()
+        setDeprecatedManageAddDelete(TestItem)
+        setDeprecatedManageAddDelete(TestFolder)
+
+    @classmethod
+    def tearDown(cls):
+        cleanup.cleanUp()
+        zcml._initialized = 0
 
 
 class HookTest(unittest.TestCase):
+
+    layer = HookLayer
 
     def setUp(self):
         self.app = makerequest(Zope2.app())
