@@ -8,7 +8,7 @@
 #####################################################################
 
 # Place the Zope major version number below.
-ZOPE_VERS=2.10
+ZOPE_VERS=2.11
 
 # Place the optimal target version number for Zope (as returned by sys.version)
 # below
