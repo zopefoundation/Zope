@@ -20,7 +20,7 @@ Now we create a site object with a stub component registry:
 
   >>> from OFS.ObjectManager import ObjectManager
   >>> from zope.interface import alsoProvides
-  >>> from zope.app.component.interfaces import ISite
+  >>> from zope.location.interfaces import ISite
 
   >>> components = object()
   >>> site = ObjectManager()

@@ -15,7 +15,7 @@
 
 $Id$
 """
-from zope.app.component.interfaces import ISite
+from zope.location.interfaces import ISite
 from OFS.interfaces import IObjectManager
 
 class IObjectManagerSite(IObjectManager, ISite):

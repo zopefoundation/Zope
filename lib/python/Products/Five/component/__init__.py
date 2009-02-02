@@ -19,7 +19,7 @@ import zope.interface
 import zope.component
 import zope.event
 from zope.component.interfaces import IComponentLookup
-from zope.app.component.interfaces import ISite, IPossibleSite
+from zope.location.interfaces import ISite, IPossibleSite
 from zope.app.publication.zopepublication import BeforeTraverseEvent
 
 import ExtensionClass

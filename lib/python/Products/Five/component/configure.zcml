@@ -4,7 +4,7 @@
   <adapter factory=".siteManagerAdapter" />
 
   <subscriber
-      for="zope.app.component.interfaces.ISite
+      for="zope.location.interfaces.ISite
            zope.app.publication.interfaces.IBeforeTraverseEvent"
       handler="zope.app.component.site.threadSiteSubscriber"
       />

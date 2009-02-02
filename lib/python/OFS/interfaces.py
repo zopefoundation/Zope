@@ -28,7 +28,7 @@ from webdav.interfaces import IDAVCollection
 from webdav.interfaces import IDAVResource
 
 from zope.traversing.interfaces import IContainmentRoot
-from zope.app.component.interfaces import IPossibleSite
+from zope.location.interfaces import IPossibleSite
 
 class IOrderedContainer(Interface):
 

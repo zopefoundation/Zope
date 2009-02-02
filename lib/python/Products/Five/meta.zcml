@@ -19,23 +19,23 @@
 
     <meta:complexDirective
         name="class"
-        schema="zope.app.component.metadirectives.IClassDirective"
+        schema="zope.security.metadirectives.IClassDirective"
         handler=".metaconfigure.ClassDirective"
         >
 
       <meta:subdirective
           name="implements"
-          schema="zope.app.component.metadirectives.IImplementsSubdirective"
+          schema="zope.security.metadirectives.IImplementsSubdirective"
           />
 
       <meta:subdirective
           name="require"
-          schema="zope.app.component.metadirectives.IRequireSubdirective"
+          schema="zope.security.metadirectives.IRequireSubdirective"
           />
 
       <meta:subdirective
           name="allow"
-          schema="zope.app.component.metadirectives.IAllowSubdirective"
+          schema="zope.security.metadirectives.IAllowSubdirective"
           />
 
     </meta:complexDirective>
