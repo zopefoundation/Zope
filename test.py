@@ -93,7 +93,7 @@ if ihome:
 else:
     defaults += ['--test-path', shome]
 
-from zope.testing import testrunner
+from zope.testing.testrunner import options
 
 def load_config_file(option, opt, config_file, *ignored):
     config_file = os.path.abspath(config_file)
@@ -101,7 +101,7 @@ def load_config_file(option, opt, config_file, *ignored):
     import Zope2
     Zope2.configure(config_file)
 
-testrunner.setup.add_option(
+options.setup.add_option(
     '--config-file', action="callback", type="string", dest='config_file',
     callback=load_config_file,
     help="""\
@@ -112,10 +112,12 @@ def filter_warnings(option, opt, *ignored):
     import warnings
     warnings.simplefilter('ignore', Warning, append=True)
 
-testrunner.other.add_option(
+options.other.add_option(
     '--nowarnings', action="callback", callback=filter_warnings,
     help="""\
 Install a filter to suppress warnings emitted by code.
 """)
+
+from zope.testing import testrunner
 
 sys.exit(testrunner.run(defaults))

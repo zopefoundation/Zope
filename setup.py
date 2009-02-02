@@ -415,12 +415,12 @@ ext_modules = [
     Extension("zope.hookable._zope_hookable",
               ["zope/hookable/_zope_hookable.c"]),
 
-    Extension("zope.app.container._zope_app_container_contained",
-              ["zope/app/container/_zope_app_container_contained.c"],
+    Extension("zope.container._zope_container_contained",
+              ["zope/container/_zope_container_contained.c"],
               include_dirs = [".",
                               "persistent",
                               "zope/proxy",
-                              "zope/app/container"],
+                              "zope/container"],
               depends = [
                  "persistent/cPersistence.h",
                  "zope/proxy/_zope_proxy_proxy.c",
