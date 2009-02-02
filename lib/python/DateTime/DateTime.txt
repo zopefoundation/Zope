@@ -1,4 +1,3 @@
-====================
 The DateTime package
 ====================
 
@@ -6,7 +5,7 @@ Encapsulation of date/time values.
 
 
 Function Timezones()
-====================
+--------------------
 
 Returns the list of recognized timezone names:
 
@@ -22,7 +21,7 @@ usage conflicts with the name used by pytz:
   ['CET', 'EET', 'EST', 'MET', 'MST', 'WET']
 
 Class DateTime
-==============
+--------------
 
 DateTime objects represent instants in time and provide interfaces for
 controlling its representation without affecting the absolute value of
@@ -481,7 +480,7 @@ General formats from previous DateTime
     >>> dt.PreciseTime()
     '13:45:00.000'
 
-* ``PreciseAMPM()``return the time string for the object:
+* ``PreciseAMPM()`` returns the time string for the object:
 
     >>> dt.PreciseAMPM()
     '01:45:00.000 pm'
