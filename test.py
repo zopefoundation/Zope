@@ -84,6 +84,10 @@ defaults += ['-m',
              '|'
              'zope[.]app'
              ')[.]']
+
+# The paste.txt doctest relies on zope.publisher being installed as egg
+defaults += ['-t', '!/zope/publisher.*/paste[.]txt']
+
 if ihome:
     ihome = os.path.abspath(ihome)
     defaults += ['--path', os.path.join(ihome, 'lib', 'python')]
