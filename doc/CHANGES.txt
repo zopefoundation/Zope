@@ -19,6 +19,9 @@ Zope Changes
 
     Bugs fixed
 
+      - LP/#324876: tighened regex for detecting the charset
+        from a meta-equiv header
+
       - Acquisition wrappers now correctly proxy __iter__.
 
       - Products.PluginIndexes.PathIndex:  backported doc fixes /
