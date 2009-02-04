@@ -9,8 +9,10 @@ Zope Changes
 
     Restructuring
 
+      - Make use of the new zope.container and zope.site packages.
+
       - Updated to newer versions of zope packages. Removed long deprecated
-        defaultSkin, layer and skin ZCML directives.
+        layer and skin ZCML directives.
 
       - Disabled the XML export on the UI level - the export functionality
         however is still available on the Python level.

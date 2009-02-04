@@ -48,8 +48,8 @@ from ZODB.POSException import ConflictError
 from zope.interface import implements
 from zope.event import notify
 from zope.lifecycleevent import ObjectCopiedEvent
-from zope.app.container.contained import ObjectMovedEvent
-from zope.app.container.contained import notifyContainerModified
+from zope.container.contained import ObjectMovedEvent
+from zope.container.contained import notifyContainerModified
 
 from OFS.event import ObjectWillBeMovedEvent
 from OFS.event import ObjectClonedEvent

@@ -21,7 +21,7 @@ from Products.Five.component.interfaces import IObjectManagerSite
 
 from zope.component.globalregistry import base
 from zope.component.persistentregistry import PersistentComponents
-from zope.app.component.hooks import clearSite
+from zope.site.hooks import setSite
 
 
 class ObjectManagerSiteView(BrowserView):
@@ -59,6 +59,6 @@ class ObjectManagerSiteView(BrowserView):
         # it can't be found anymore.  So, for the rest of this request
         # (which will be over in about 20 CPU cycles), already clear
         # the local site from the thread local.
-        clearSite()
+        setSite()
 
         self.context.setSiteManager(None)

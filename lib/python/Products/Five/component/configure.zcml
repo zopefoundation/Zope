@@ -6,12 +6,12 @@
   <subscriber
       for="zope.location.interfaces.ISite
            zope.app.publication.interfaces.IBeforeTraverseEvent"
-      handler="zope.app.component.site.threadSiteSubscriber"
+      handler="zope.site.site.threadSiteSubscriber"
       />
 
   <subscriber
       for="zope.app.publication.interfaces.IEndRequestEvent"
-      handler="zope.app.component.site.clearThreadSiteSubscriber"
+      handler="zope.site.site.clearThreadSiteSubscriber"
       />
 
   <browser:page

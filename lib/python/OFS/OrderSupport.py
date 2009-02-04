@@ -24,7 +24,7 @@ from Acquisition import aq_base
 from App.class_init import InitializeClass
 from DocumentTemplate.sequence import sort
 from zope.interface import implements
-from zope.app.container.contained import notifyContainerModified
+from zope.container.contained import notifyContainerModified
 
 from OFS.interfaces import IOrderedContainer as IOrderedContainer
 from OFS.ObjectManager import ObjectManager

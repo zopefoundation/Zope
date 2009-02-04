@@ -72,7 +72,7 @@
   <adapter
       for="OFS.interfaces.IObjectManager"
       factory=".adding.ObjectManagerNameChooser"
-      provides="zope.app.container.interfaces.INameChooser"
+      provides="zope.container.interfaces.INameChooser"
       />
 
   <!-- Menu access -->

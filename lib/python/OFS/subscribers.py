@@ -29,8 +29,8 @@ from ZODB.POSException import ConflictError
 import zope.component
 import zope.interface
 import zope.location.interfaces
-from zope.app.container.contained import dispatchToSublocations
-from zope.app.container.interfaces import IObjectMovedEvent
+from zope.container.contained import dispatchToSublocations
+from zope.container.interfaces import IObjectMovedEvent
 from zope.lifecycleevent.interfaces import IObjectCopiedEvent
 
 deprecatedManageAddDeleteClasses = []

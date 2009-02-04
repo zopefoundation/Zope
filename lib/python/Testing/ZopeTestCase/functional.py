@@ -31,8 +31,8 @@ def savestate(func):
     '''
     from AccessControl.SecurityManagement import getSecurityManager
     from AccessControl.SecurityManagement import setSecurityManager
-    from zope.app.component.hooks import getSite
-    from zope.app.component.hooks import setSite
+    from zope.site.hooks import getSite
+    from zope.site.hooks import setSite
 
     def wrapped_func(*args, **kw):
         sm, site = getSecurityManager(), getSite()

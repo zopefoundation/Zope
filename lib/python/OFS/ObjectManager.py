@@ -52,10 +52,10 @@ from ZODB.POSException import ConflictError
 from zope.interface import implements
 from zope.component.interfaces import ComponentLookupError
 from zope.event import notify
-from zope.app.container.contained import ObjectAddedEvent
-from zope.app.container.contained import ObjectRemovedEvent
-from zope.app.container.contained import notifyContainerModified
-from zope.app.container.interfaces import IContainer
+from zope.container.contained import ObjectAddedEvent
+from zope.container.contained import ObjectRemovedEvent
+from zope.container.contained import notifyContainerModified
+from zope.container.interfaces import IContainer
 from zope.interface import implements
 
 from OFS.CopySupport import CopyContainer

@@ -30,6 +30,11 @@ from zope.component import getUtility
 from zope.component import queryMultiAdapter
 from zope.component import queryUtility
 from zope.component.interfaces import IFactory
+from zope.container.constraints import checkFactory, checkObject
+from zope.container.i18n import ZopeMessageFactory as _
+from zope.container.interfaces import IContainerNamesContainer
+from zope.container.interfaces import INameChooser
+
 from zope.event import notify
 from zope.interface import implements
 from zope.publisher.interfaces import IPublishTraverse
@@ -37,10 +42,7 @@ from zope.traversing.browser.absoluteurl import absoluteURL
 from zope.exceptions.interfaces import UserError
 from zope.lifecycleevent import ObjectCreatedEvent
 
-from zope.app.container.constraints import checkFactory, checkObject
-from zope.app.container.i18n import ZopeMessageFactory as _
-from zope.app.container.interfaces import IAdding, INameChooser
-from zope.app.container.interfaces import IContainerNamesContainer
+from zope.app.container.interfaces import IAdding
 from zope.app.publisher.browser.menu import getMenu
 
 from zExceptions import BadRequest

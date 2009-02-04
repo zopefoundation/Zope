@@ -32,11 +32,6 @@ redefinePermission
 
 Redefine a permission in included ZCML as another one.
 
-skin
-----
-
-Declare a skin, consisting of layers.
-
 utility
 -------
 
@@ -73,11 +68,6 @@ defaultView
 Declare the name of the view that should be used for the default when viewing
 the object; i.e. when the object is traversed to without a view.
 
-defaultSkin
------------
-
-Declare the default skin used.
-
 editform
 --------
 
@@ -87,11 +77,6 @@ addform
 --------
 
 Create an add form based on a schema.
-
-layer
------
-
-Declare a layer.
 
 menu
 ----

@@ -12,7 +12,7 @@
 #
 ##############################################################################
 """
-Use 'structured monkey patching' to enable zope.app.container event sending for
+Use 'structured monkey patching' to enable zope.container event sending for
 Zope 2 objects.
 
 $Id$

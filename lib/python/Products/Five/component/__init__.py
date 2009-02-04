@@ -29,8 +29,8 @@ from ZPublisher.BeforeTraverse import registerBeforeTraverse
 from ZPublisher.BeforeTraverse import unregisterBeforeTraverse
 
 # Hook up custom component architecture calls
-import zope.app.component.hooks
-zope.app.component.hooks.setHooks()
+from zope.site.hooks import setHooks
+setHooks()
 
 def findSite(obj, iface=ISite):
     """Find a site by walking up the object hierarchy, supporting both

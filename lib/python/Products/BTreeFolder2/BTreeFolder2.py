@@ -43,9 +43,9 @@ from Persistence import Persistent
 from Products.ZCatalog.Lazy import LazyMap
 from ZODB.POSException import ConflictError
 from zope.event import notify
-from zope.app.container.contained import ObjectAddedEvent
-from zope.app.container.contained import ObjectRemovedEvent
-from zope.app.container.contained import notifyContainerModified
+from zope.container.contained import ObjectAddedEvent
+from zope.container.contained import ObjectRemovedEvent
+from zope.container.contained import notifyContainerModified
 
 
 LOG = getLogger('BTreeFolder2')
