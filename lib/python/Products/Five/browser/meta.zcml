@@ -101,6 +101,15 @@
         handler=".metaconfigure.resourceDirectory"
         />
 
+
+    <!-- misc. directives -->
+
+    <meta:directive
+        name="defaultSkin"
+        schema="zope.app.publisher.browser.metadirectives.IDefaultSkinDirective"
+        handler="zope.app.publisher.browser.metaconfigure.defaultSkin"
+        />
+
   </meta:directives>
 
 </configure>

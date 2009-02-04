@@ -31,6 +31,21 @@ It works when we explicitly use the skin that includes that layer:
   ...
   The eagle has landed
 
+Or when we make that skin the default skin:
+
+  >>> zcml.load_string('''
+  ...   <browser:defaultSkin
+  ...       xmlns:browser="http://namespaces.zope.org/browser"
+  ...       name="TestSkin" />
+  ... ''')
+
+  >>> print http(r"""
+  ... GET /test_folder_1_/testoid/eagle.html HTTP/1.1
+  ... """)
+  HTTP/1.1 200 OK
+  ...
+  The eagle has landed
+
 
 Clean up
 --------
