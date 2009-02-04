@@ -19,6 +19,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - LP/#324876: tighened regex for detecting the charset
+        from a meta-equiv header
+
       - configure script: setting ZOPE_VERS to '2.11'
 
       - Acquisition wrappers now correctly proxy __iter__.

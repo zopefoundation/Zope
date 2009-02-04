@@ -20,7 +20,15 @@ import re
 
 
 xml_preamble_reg = re.compile(r'^<\?xml.*?encoding="(.*?)".*?\?>', re.M)
-http_equiv_reg = re.compile(r'(<meta.*?http\-equiv.*?content-type.*?>)', re.I|re.M|re.S)
+# This regular expression is defined extremely carelessly. It starts
+#  with a tag beginning with 'meta' and extends until an arbitrary
+#  'content-type' (maybe in a completely unrelated element).
+#  Tighten the expression a bit.
+#  Note that using a regular expression at all is unreliable as it does
+#  not know about e.g. HTML comments. A robust solution would need to
+#  use an HTML parser to locate the 'meta' tag.
+#http_equiv_reg = re.compile(r'(<meta.*?http\-equiv.*?content-type.*?>)', re.I|re.M|re.S)
+http_equiv_reg = re.compile(r'(<meta\s+[^>]*?http\-equiv[^>]*?content-type.*?>)', re.I|re.M|re.S)
 http_equiv_reg2 = re.compile(r'charset.*?=.*?(?P<charset>[\w\-]*)', re.I|re.M|re.S)
 
 def encodingFromXMLPreamble(xml):
