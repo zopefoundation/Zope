@@ -18,9 +18,8 @@ $Id: ZopePageTemplate.py 71579 2006-12-17 20:26:10Z andreasjung $
 
 import re 
 
-
 xml_preamble_reg = re.compile(r'^<\?xml.*?encoding="(.*?)".*?\?>', re.M)
-http_equiv_reg = re.compile(r'(<meta.*?http\-equiv.*?content-type.*?>)', re.I|re.M|re.S)
+http_equiv_reg = re.compile(r'(<meta\s+[^>]*?http\-equiv[^>]*?content-type.*?>)', re.I|re.M|re.S)
 http_equiv_reg2 = re.compile(r'charset.*?=.*?(?P<charset>[\w\-]*)', re.I|re.M|re.S)
 
 def encodingFromXMLPreamble(xml):
