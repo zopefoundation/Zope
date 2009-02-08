@@ -508,8 +508,8 @@ Zope Changes
 
       - Collector #2209: ZTUtils module could not be used inside ZPT
 
-      - Collector #2208: rewriting/setting the 'charset' part of the
-        content-type HTTP header will be done only for 'text/*'
+      - Collector #2208: rewriting/setting the  ``charset`` part of the
+        content-type HTTP header will be done only for text/*
 
       - Call setDefaultSkin on new requests created as the result of
         ConflictError retries.
@@ -540,10 +540,11 @@ Zope Changes
 
       - Collector #2063: cleaned up some mess in MailHost.sendTemplate()
 
-      - View and attribute lookup order was changed to the following:
+      - View and attribute lookup order was changed to the following::
            1. Unacquired attributes
            2. Views
            3. Acquired attributes
+
         According to consensus in z3-five mailing list:
         http://codespeak.net/pipermail/z3-five/2006q2/001474.html
 
@@ -663,7 +664,7 @@ Zope Changes
         You can run Twisted by installing Twisted (2.1 recommended) and
         replacing the http-server section with a server section in
         zope.conf. It is not possible to run a Twisted server together with
-        a ZServer at the same time.
+        a ZServer at the same time::
 
           <server>
             address 8080
@@ -705,15 +706,15 @@ Zope Changes
         of periodic callables.
 
         To use, create a "clock-server" directive section anywhere
-        in your zope.conf file, like so:
+        in your zope.conf file, like so::
 
-         <clock-server>
-            method /do_stuff
-            period 60
-            user admin
-            password 123
-            host localhost
-         </clock-server>
+             <clock-server>
+                method /do_stuff
+                period 60
+                user admin
+                password 123
+                host localhost
+             </clock-server>
 
         Any number of clock-server sections may be defined within a
         single zope.conf.  Note that you must specify a
@@ -1634,9 +1635,8 @@ Zope Changes
 
      - ZReST: the charset used in the rendered HTML was not set to the
        corresponding output_encoding property of the ZReST instance. In
-addition
-       changing the encodings through the Properties tab did not re-render
-       the HTML.
+       addition changing the encodings through the Properties tab did not
+       re-render the HTML.
 
      - Collector #1234: an exception triple passed to LOG() was not
        propagated properly to the logging module of Python
