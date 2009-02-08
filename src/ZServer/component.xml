@@ -1,0 +1,107 @@
+<component prefix="ZServer.datatypes">
+
+  <abstracttype name="ZServer.server">
+    <description>
+      The "server" type is used to describe a single type of server
+      instance.  The value for a server section is an object with the
+      ServerFactory interface.
+    </description>
+  </abstracttype>
+
+  <sectiontype name="http-server"
+               datatype=".HTTPServerFactory"
+               implements="ZServer.server">
+     <key name="address" datatype="inet-binding-address"/>
+     <key name="force-connection-close" datatype="boolean" default="off"/>
+     <key name="webdav-source-clients">
+       <description>
+         Regular expression used to identify clients who should
+         receive WebDAV source responses to GET requests.
+       </description>
+     </key>
+     <key name="fast-listen" datatype="boolean" default="on">
+       <description>
+         Defines whether the HTTP server should listen for requests
+         immediately or only after Zope is ready to run.
+       </description>
+     </key>
+     <key name="use-wsgi" datatype="boolean" default="off" />
+  </sectiontype>
+
+  <sectiontype name="webdav-source-server"
+               datatype=".WebDAVSourceServerFactory"
+               implements="ZServer.server">
+     <key name="address" datatype="inet-binding-address"/>
+     <key name="force-connection-close" datatype="boolean" default="off"/>
+     <key name="use-wsgi" datatype="boolean" default="off" />
+  </sectiontype>
+
+  <sectiontype name="persistent-cgi"
+               datatype=".PCGIServerFactory"
+               implements="ZServer.server">
+    <key name="path" datatype="existing-file"/>
+  </sectiontype>
+
+  <sectiontype name="fast-cgi"
+               datatype=".FCGIServerFactory"
+               implements="ZServer.server">
+    <key name="address" datatype="socket-binding-address"/>
+  </sectiontype>
+
+  <sectiontype name="ftp-server"
+               datatype=".FTPServerFactory"
+               implements="ZServer.server">
+     <key name="address" datatype="inet-binding-address"/>
+  </sectiontype>
+
+  <sectiontype name="monitor-server"
+               datatype=".MonitorServerFactory"
+               implements="ZServer.server">
+     <key name="address" datatype="inet-binding-address"/>
+  </sectiontype>
+
+  <sectiontype name="icp-server"
+               datatype=".ICPServerFactory"
+               implements="ZServer.server">
+     <key name="address" datatype="inet-binding-address"/>
+  </sectiontype>
+
+  <sectiontype name="clock-server"
+               datatype=".ClockServerFactory"
+               implements="ZServer.server">
+     <key name="method" datatype="string">
+       <description>
+       The traversal path (from the Zope root) to an
+       executable Zope method (Python Script, external method, product
+       method, etc).  The method must take no arguments.  Ex: "/site/methodname"
+       </description>
+     </key>
+     <key name="period" datatype="integer" default="60">
+     <description>
+       The number of seconds between each clock "tick" (and
+       thus each call to the above "method").  The lowest number
+       providable here is typically 30 (this is the asyncore mainloop
+       "timeout" value).  The default is 60.  Ex: "30"
+     </description>
+     </key>
+     <key name="user" datatype="string">
+     <description>
+       A zope username. Ex: "admin"
+     </description>
+     </key>
+     <key name="password" datatype="string">
+     <description>
+      The password for the zope username provided above.  Careful: this
+      is obviously not encrypted in the config file. Ex: "123"
+     </description>
+     </key>
+     <key name="host" datatype="string">
+     <description>
+       The hostname passed in via the "Host:" header in the
+       faux request.  Could be useful if you have virtual host rules
+       set up inside Zope itself. Ex: "www.example.com"
+     </description>
+     </key>
+  </sectiontype>
+
+</component>

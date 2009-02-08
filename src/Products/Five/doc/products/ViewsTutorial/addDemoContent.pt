@@ -1,0 +1,46 @@
+<h1 tal:replace="structure context/manage_page_header">Header</h1>
+
+<h2 tal:define="form_title string:Add Demo Content"
+    tal:replace="structure context/manage_form_title">Form Title</h2>
+
+<p class="form-help">
+Add Demo Content
+</p>
+
+<form action="." method="post"
+   tal:attributes="action request/ACTUAL_URL">
+<table cellspacing="0" cellpadding="2" border="0">
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-label">
+    Id
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <input type="text" name="add_input_name" size="40" />
+    </td>
+  </tr>
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-label">
+    Title
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <input type="text" name="title" size="40" />
+    </td>
+  </tr>
+  <tr>
+    <td align="left" valign="top">
+    </td>
+    <td align="left" valign="top">
+    <div class="form-element">
+    <input class="form-element" type="submit" name="submit_add"
+     value=" Add " />
+    </div>
+    </td>
+  </tr>
+</table>
+</form>
+
+<h1 tal:replace="structure context/manage_page_footer">Footer</h1>

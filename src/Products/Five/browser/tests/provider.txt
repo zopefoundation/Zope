@@ -1,0 +1,228 @@
+=================
+Content Providers
+=================
+
+We need some tests for the Zope2 versions of the TAL directives for provider.
+To this end we have copied the tests from zope.contentprovider and made them
+work with Five.  We have defined a muber of relevant views which use the
+new tal expression in providers.zcml:
+
+  >>> from zope.contentprovider import interfaces
+  >>> import Products.Five.browser.tests
+  >>> from Products.Five import zcml
+  >>> zcml.load_config("configure.zcml", Products.Five)
+  >>> zcml.load_config('provider.zcml', package=Products.Five.browser.tests)
+
+Content Providers
+-----------------
+
+Content Provider is a term from the Java world that refers to components that
+can provide HTML content. It means nothing more! How the content is found and
+returned is totally up to the implementation. The Zope 3 touch to the concept
+is that content providers are multi-adapters that are looked up by the
+context, request (and thus the layer/skin), and view they are displayed in.
+
+So let's create a simple content provider:
+
+  >>> import zope.interface
+  >>> import zope.component
+  >>> from zope.publisher.interfaces import browser
+
+  >>> class MessageBox(object):
+  ...     zope.interface.implements(interfaces.IContentProvider)
+  ...     zope.component.adapts(zope.interface.Interface,
+  ...                           browser.IDefaultBrowserLayer,
+  ...                           zope.interface.Interface)
+  ...     message = u'My Message'
+  ...
+  ...     def __init__(self, context, request, view):
+  ...         self.__parent__ = view
+  ...
+  ...     def update(self):
+  ...         pass
+  ...
+  ...     def render(self):
+  ...         return u'<div class="box">%s</div>' %self.message
+
+The ``update()`` method is executed during phase one. Since no state needs to
+be calculated and no data is modified by this simple content provider, it is
+an empty implementation. The ``render()`` method implements phase 2 of the
+process. We can now instantiate the content provider (manually) and render it:
+
+  >>> box = MessageBox(None, None, None)
+  >>> box.render()
+  u'<div class="box">My Message</div>'
+
+Since our content provider did not require the context, request or view to
+create its HTML content, we were able to pass trivial dummy values into the
+constructor. Also note that the provider must have a parent (using the
+``__parent__`` attribute) specified at all times. The parent must be the view
+the provider appears in.
+
+The TALES ``provider`` Expression
+---------------------------------
+
+The ``provider`` expression will look up the name of the content provider,
+call it and return the HTML content. The first step, however, will be to
+register our content provider with the component architecture:
+
+  >>> zope.component.provideAdapter(MessageBox, name='mypage.MessageBox')
+
+The content provider must be registered by name, since the TALES expression
+uses the name to look up the provider at run time.
+
+  >>> from Products.Five.tests.testing.simplecontent import manage_addSimpleContent
+  >>> manage_addSimpleContent(self.folder, 'content_obj', 'ContentObj')
+  >>> content = self.folder.content_obj
+
+Finally we publish the view:
+
+  >>> print http(r'''
+  ... GET /test_folder_1_/content_obj/main.html HTTP/1.1
+  ... ''')
+  HTTP/1.1 200 OK
+  ...
+  <html>
+    <body>
+      <h1>My Web Page</h1>
+      <div class="left-column">
+        <div class="box">My Message</div>
+      </div>
+      <div class="main">
+        Content here
+      </div>
+    </body>
+  </html>
+
+Failure to lookup a Content Provider
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  >>> print http(r'''
+  ... GET /test_folder_1_/content_obj/error.html HTTP/1.1
+  ... ''', handle_errors=False)
+  Traceback (most recent call last):
+    ...
+  ContentProviderLookupError: ...mypage.UnknownName...
+
+Additional Data from TAL
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+The ``provider`` expression allows also for transferring data from the TAL
+context into the content provider. This is accomplished by having the content
+provider implement an interface that specifies the attributes and provides
+``ITALNamespaceData``:
+
+  >>> import zope.schema
+  >>> class IMessageText(zope.interface.Interface):
+  ...     message = zope.schema.Text(title=u'Text of the message box')
+
+  >>> zope.interface.directlyProvides(IMessageText,
+  ...                                 interfaces.ITALNamespaceData)
+
+Now the message box can receive its text from the TAL environment:
+
+  >>> class DynamicMessageBox(MessageBox):
+  ...     zope.interface.implements(IMessageText)
+
+  >>> zope.component.provideAdapter(
+  ...     DynamicMessageBox, provides=interfaces.IContentProvider,
+  ...     name='mypage.DynamicMessageBox')
+
+Now we should get two message boxes with different text:
+
+  >>> print http(r'''
+  ... GET /test_folder_1_/content_obj/namespace.html HTTP/1.1
+  ... ''')
+  HTTP/1.1 200 OK
+  ...
+  <html>
+    <body>
+      <h1>My Web Page</h1>
+      <div class="left-column">
+        <div class="box">Hello World!</div>
+        <div class="box">Hello World again!</div>
+      </div>
+      <div class="main">
+        Content here
+      </div>
+    </body>
+  </html>
+
+Finally, a content provider can also implement several ``ITALNamespaceData``:
+
+  >>> class IMessageType(zope.interface.Interface):
+  ...     type = zope.schema.TextLine(title=u'The type of the message box')
+
+  >>> zope.interface.directlyProvides(IMessageType,
+  ...                                 interfaces.ITALNamespaceData)
+
+We'll change our message box content provider implementation a bit, so the new
+information is used:
+
+  >>> class BetterDynamicMessageBox(DynamicMessageBox):
+  ...     zope.interface.implements(IMessageType)
+  ...     type = None
+  ...
+  ...     def render(self):
+  ...         return u'<div class="box,%s">%s</div>' %(self.type, self.message)
+
+  >>> zope.component.provideAdapter(
+  ...     BetterDynamicMessageBox, provides=interfaces.IContentProvider,
+  ...     name='mypage.MessageBox')
+
+  >>> print http(r'''
+  ... GET /test_folder_1_/content_obj/namespace2.html HTTP/1.1
+  ... ''')
+  HTTP/1.1 200 OK
+  ...
+  <html>
+    <body>
+      <h1>My Web Page</h1>
+      <div class="left-column">
+        <div class="box,error">Hello World!</div>
+        <div class="box,warning">Hello World again!</div>
+      </div>
+      <div class="main">
+        Content here
+      </div>
+    </body>
+  </html>
+
+Now we test a provider using a PageTemplateFile to render itself:
+
+  >>> import os, tempfile
+  >>> temp_dir = tempfile.mkdtemp()
+  >>> dynTemplate = os.path.join(temp_dir, 'dynamic_template.pt')
+  >>> open(dynTemplate, 'w').write(
+  ...   'A simple template: <tal:simple replace="python:view.my_property" />')
+  >>> from Products.Five.browser.pagetemplatefile import ZopeTwoPageTemplateFile
+  >>> class TemplateProvider(object):
+  ...     zope.component.adapts(zope.interface.Interface,
+  ...                           browser.IDefaultBrowserLayer,
+  ...                           zope.interface.Interface)
+  ...
+  ...     def __init__(self, context, request, view):
+  ...         self.__parent__ = view
+  ...         self.context = context
+  ...         self.request = request
+  ...         self.view = view
+  ...
+  ...     def update(self):
+  ...         pass
+  ...     # Is there a better way to tell it to look in the current dir?
+  ...     render = ZopeTwoPageTemplateFile(dynTemplate, temp_dir)
+  ...     my_property = 'A string for you'
+
+  >>> zope.component.provideAdapter(TemplateProvider, name='mypage.TemplateProvider', provides=interfaces.IContentProvider)
+  >>> print http(r'''
+  ... GET /test_folder_1_/content_obj/template_based.html HTTP/1.1
+  ... ''')
+  HTTP/1.1 200 OK
+  ...
+  A simple template: A string for you
+
+ Cleanup
+ -------
+
+  >>> import shutil
+  >>> shutil.rmtree(temp_dir)

@@ -1,0 +1,107 @@
+<dtml-var manage_page_header>
+<dtml-var manage_tabs>
+
+<form action="manage_advanced" method="post">
+<table>
+
+<table cellspacing="0" cellpadding="2" border="0">
+  	<tr>
+    <td align="left" valign="top">
+    <div class="form-optional">
+    Connection Hook
+    </div>
+    </td>
+	  <td align="LEFT" valign="TOP">
+	    <input type="TEXT" name="connection_hook" size="40"
+                   value="<dtml-var connection_hook null="" missing="" html_quote>">
+	  </td>
+	</tr>
+
+
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-label">
+    Maximum rows to retrieve
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <input name="max_rows:int" size="10" value="&dtml-max_rows_;">
+    </td>
+  </tr>
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-label">
+    Maximum results to cache
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <input name="max_cache:int" size="10" value="&dtml-max_cache_;">
+    </td>
+  </tr>
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-label">
+    Maximum time (sec) to cache
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <input name="cache_time:int" size="10" value="&dtml-cache_time_;">
+    </td>
+  </tr>
+<dtml-if da_has_single_argument>
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-label">
+     Allow "simple" direct traversal
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <input name="direct" type="checkbox" <dtml-if 
+     allow_simple_one_argument_traversal>checked</dtml-if> />
+    </td>
+  </tr>
+</dtml-if>
+  <tr>
+    <td align="left" valign="top" colspan="2">
+    <div class="form-text">
+<br />
+You may specify a <strong>class</strong> for the data records.  This
+class must be defined in a file that resides in the <code>Extensions</code>
+directory of this Zope installation.
+    </div>
+    </td>
+  </tr>
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-label">
+    Class Name
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <input name="class_name" size="30" value="&dtml-class_name_;">
+    </td>
+  </tr>
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-label">
+    Class File
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <input name="class_file" size="30" value="&dtml-class_file_;">
+    </td>
+  </tr>
+  <tr>
+    <td align="left" valign="top">
+    </td>
+    <td align="left" valign="top">
+    <div class="form-element">
+    <input class="form-element" type="submit" name="submit" 
+     value="Save Changes">
+    </div>
+    </td>
+  </tr>
+</table>
+</form>
+
+<dtml-var manage_page_footer>

@@ -1,0 +1,59 @@
+<dtml-var manage_page_header>
+
+<dtml-var "manage_form_title(this(), _,
+           form_title='Add DateRangeIndex')">
+
+<p class="form-help">
+A DateRangeIndex takes the name of two input attributes; one containing the
+start date of the range, the second the end of the range. This index is filled
+with range information based on those two markers. You can then search for
+objects for those where a given date falls within the range.
+</p>
+
+<form action="manage_addDateRangeIndex" method="POST">
+<table cellspacing="0" cellpadding="2" border="0">
+ <tr>
+  <td align="left" valign="top">
+  <div class="form-label"> 
+  Id
+  </div>
+  </td>
+  <td align="left" valign="top">
+   <input type="text" name="id" size="40" />
+  </td>
+ </tr>
+ <tr>
+  <td align="left" valign="top">
+  <div class="form-label"> 
+  Since field
+  </div>
+  </td>
+  <td align="left" valign="top">
+   <input type="text" name="extra.since_field:record" size="40" />
+  </td>
+ </tr>
+ <tr>
+  <td align="left" valign="top">
+  <div class="form-label"> 
+  Until field
+  </div>
+  </td>
+  <td align="left" valign="top">
+   <input type="text" name="extra.until_field:record" size="40" />
+  </td>
+ </tr>
+  <tr>
+    <td align="left" valign="top">
+    </td>
+    <td align="left" valign="top">
+    <div class="form-element">
+    <input class="form-element" type="submit" name="submit" 
+     value=" Add " /> 
+    </div>
+    </td>
+  </tr>
+</table>
+</form>
+
+<dtml-var manage_page_footer>
+

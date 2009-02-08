@@ -1,0 +1,1 @@
+<html metal:define-macro="dogmacro"><head><title>dog macro</title></head><body>Breed: <metal:block define-slot="breed" /></body></html>

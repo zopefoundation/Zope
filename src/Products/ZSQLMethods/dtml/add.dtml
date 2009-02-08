@@ -1,0 +1,105 @@
+<dtml-var manage_page_header>
+
+<dtml-var "manage_form_title(this(), _,
+           form_title='Add SQL Method',
+           help_product='ZSQLMethods',
+           help_topic='Z-SQL-Method_Add.stx'
+	   )">
+
+<dtml-if SQLConnectionIDs>
+<p class="form-help">
+A SQL Method allows you to access a SQL database. For more information see 
+the <a href="http://www.zope.org/Documentation/Guides/ZSQL">Z SQL Methods 
+User's Guide</a>.
+</p>
+
+<p class="form-help">
+In the form below <EM>connection id</EM> is the name of the SQL Database 
+Connection to use. <EM>Arguments</EM> is a list of variables which the
+SQL Method accepts. <EM>Query template</EM> is a template of the SQL 
+statement which the SQL Method will execute.
+</p>
+
+<form action="manage_addZSQLMethod" method="post">
+<table cellspacing="0" cellpadding="2" border="0">
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-label">
+    Id
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <input type="text" name="id" size="40" value="" />
+    </td>
+  </tr>
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-optional">
+    Title
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <input type="text" name="title" size="40" />
+    </td>
+  </tr>
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-label">
+    Connection Id
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <div class="form-element">
+    <select name="connection_id">
+              <dtml-in SQLConnectionIDs>
+                <option value="&dtml-sequence-item;">
+                &dtml-sequence-key;</option>
+              </dtml-in>
+    </select>
+    </div>
+    </td>
+  </tr>
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-optional">
+    Arguments
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <textarea name="arguments" cols="40" rows="4"></textarea>
+    </td>
+  </tr>
+  <tr>
+    <td align="left" valign="top" colspan="2">
+    <span class="form-label">Query Template</span>
+    <br />
+    <div style="width: 100%;">
+    <textarea style="width: 100%;" name="template:text" rows="9" cols="60"
+     wrap="off">select * from data</textarea></div>
+    </td>
+  </tr>
+  <tr>
+    <td align="left" valign="top" colspan="2">
+    <div class="form-element">
+    <input class="form-element" type="submit" name="submit" 
+     value=" Add " /> 
+    <input class="form-element" type="submit" name="submit" 
+     value=" Add and Edit " /> 
+    <input class="form-element" type="submit" name="submit" 
+     value=" Add and Test " /> 
+    </div>
+    </td>
+  </tr>
+</table>
+</form>
+
+
+<dtml-else>
+<p class="form-text">
+There are no SQL database connections.  You need to add a Zope 
+SQL database connection before you can create a Zope SQL Method.
+</p>
+
+</dtml-if>
+
+<dtml-var manage_page_footer>

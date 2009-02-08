@@ -1,0 +1,56 @@
+Allowing Import of Modules
+
+  Scripts are able to import a small number of Python modules for
+  which there are security declarations.  These include 'string',
+  'math', and 'random'.  The only way to make other Python modules
+  available for import is to add security declarations to them in the
+  filesystem.
+
+  MyScriptModules
+
+    The simplest way to allow import of a module is to create your own
+    simple custom Product.  To make this Product:
+
+    1. Create a subdirectory of your Zope installation's "Products"
+       directory. The name of the directory doesn't really matter; Let's
+       call it 'MyScriptModules'.
+
+    2. Create a file in this subdirectory called '__init__.py'.
+
+    3. Add the following lines to your '__init__.py'::
+
+      from Products.PythonScripts.Utility import allow_module, allow_class
+      from AccessControl import ModuleSecurityInfo, ClassSecurityInfo
+      from App.class_init import InitializeClass
+
+    4. For each module to which you want to allow access, add
+       security declarations in '__init__.py'.
+
+  Security Declarations
+
+    You will need to write different security declarations depending
+    on how much of a module you want to expose.  You should import the
+    module at the Python command line, and use 'dir(<module_name>)' to
+    examine its contents.  Names starting with underscore ('_') may be
+    safely ignored.  Be wary of dangerous modules, such as 'sys' and
+    'os', which may be exposed by the module.
+
+    You can handle a module, such as 'base64', that contains only safe
+    functions by writing 'allow_module("module_name")'.
+
+    To allow access to only some names, in a module with dangerous
+    contents, you can write::
+
+      ModuleSecurityInfo('module_name').declarePublic('name1',
+      'name2', ...)
+
+    If the module contains a class that you want to use, you will need
+    to add the following::
+
+      from <module_name> import <class>
+      allow_class(<class>)
+
+    Certain modules, such as 'sha', provide extension types instead of
+    classes.  Security declarations typically cannot be added to
+    extension types, so the only way to use this sort of module is to
+    write a Python wrapper class, or use External Methods.

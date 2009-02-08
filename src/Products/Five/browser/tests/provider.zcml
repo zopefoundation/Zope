@@ -1,0 +1,39 @@
+<configure xmlns:browser="http://namespaces.zope.org/browser"
+           xmlns:meta="http://namespaces.zope.org/meta">
+
+  <!-- make the zope2.Public permission work -->
+  <meta:redefinePermission from="zope2.Public" to="zope.Public" />
+
+  <!-- stuff for content providers -->
+  <browser:page
+      for="Products.Five.tests.testing.simplecontent.ISimpleContent"
+      template="provider_messagebox.pt"
+      name="main.html"
+      permission="zope2.Public"
+      />
+  <browser:page
+      for="Products.Five.tests.testing.simplecontent.ISimpleContent"
+      template="provider_error.pt"
+      name="error.html"
+      permission="zope2.Public"
+      />
+  <browser:page
+      for="Products.Five.tests.testing.simplecontent.ISimpleContent"
+      template="provider_namespace.pt"
+      name="namespace.html"
+      permission="zope2.Public"
+      />
+  <browser:page
+      for="Products.Five.tests.testing.simplecontent.ISimpleContent"
+      template="provider_namespace2.pt"
+      name="namespace2.html"
+      permission="zope2.Public"
+      />
+  <browser:page
+      for="Products.Five.tests.testing.simplecontent.ISimpleContent"
+      template="provider_template_based.pt"
+      name="template_based.html"
+      permission="zope2.View"
+      />
+
+</configure>

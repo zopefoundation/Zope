@@ -1,0 +1,80 @@
+<dtml-var manage_page_header>
+<dtml-with "_(management_view='Define Permissions')">
+<dtml-if manage_tabs><dtml-var manage_tabs></dtml-if>
+</dtml-with>
+
+
+<p class="form-help">
+This interface is used to define how the operations of this object 
+correspond to the operations defined by your product.
+</p>
+
+<p class="form-help">
+The first column below lists the permissions for this object. The second
+specifies the permissions that should have this permission in this product.
+</p>
+
+<p class="form-help">
+In general, any permissions that include operations that change (mutate) 
+an object should be disabled. The listing below shows the current permission 
+mappings for this item.
+</p>
+
+
+xx
+
+<dtml-with "_(valid=permissionMappingPossibleValues())">
+<form action="manage_setPermissionMapping" method="post">
+
+<table width="100%" cellpadding="2" cellspacing="0" border="0">
+  <tr class="list-header">
+  <td align="left" valign="top">
+  <div class="form-label">
+  Permission for this object
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <div class="form-label">
+  Permissions that correspond <br>
+  to (i.e. have) this permission
+  </div>
+  </td>
+  </tr>
+  <dtml-in manage_getPermissionMapping mapping>
+<dtml-if sequence-odd>
+  <tr class="row-normal">
+<dtml-else>
+  <tr class="row-hilite">
+</dtml-if>
+  <td align="left" valign="top">
+  <div class="form-text">
+  &dtml-permission_name;
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <div class="form-element">
+  <input type="hidden" name="permission_names:list" value="&dtml-permission_name;" />
+  <select name="class_permissions:list">
+  <option value=""<dtml-unless 
+   class_permission> selected</dtml-unless>>(disabled)</option>
+  <dtml-in valid>
+  <option<dtml-if "_['sequence-item']==class_permission"
+  > selected</dtml-if>>&dtml-sequence-item;</option>
+  </dtml-in>
+  </select>
+  </div>
+  </td>
+  </tr>
+  </dtml-in>
+  <tr>
+  <td colspan="2" align="center">
+  <div class="form-element">
+  <input type="submit" name="submit" value="Save Changes">
+  </div>
+  </td>
+  </tr>
+</table>
+</form>
+</dtml-with>
+
+<dtml-var manage_page_footer>

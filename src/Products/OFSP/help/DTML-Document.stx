@@ -1,0 +1,13 @@
+DTML Document: Content object.
+
+  Description  
+
+    A DTML Document contains web-editable content.  A DTML Document
+    roughly corresponds to a web page.
+
+    DTML Documents can contain scripting commands in Document
+    Template Markup Language (DTML), which allows for dynamic
+    behavior.
+
+    Unlike DTML Methods, DTML Documents have properties and lookup
+    variables in their own namespace.

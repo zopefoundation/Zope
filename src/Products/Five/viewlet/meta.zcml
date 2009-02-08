@@ -1,0 +1,21 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:meta="http://namespaces.zope.org/meta">
+
+  <meta:directives namespace="http://namespaces.zope.org/browser">
+
+    <meta:directive
+        name="viewlet"
+        schema="zope.viewlet.metadirectives.IViewletDirective"
+        handler=".metaconfigure.viewletDirective"
+        />
+
+    <meta:directive
+        name="viewletManager"
+        schema="zope.viewlet.metadirectives.IViewletManagerDirective"
+        handler=".metaconfigure.viewletManagerDirective"
+        />
+
+  </meta:directives>
+
+</configure>

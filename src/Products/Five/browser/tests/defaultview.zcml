@@ -1,0 +1,31 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:browser="http://namespaces.zope.org/browser"
+           xmlns:five="http://namespaces.zope.org/five">
+
+  <browser:page
+      for="Products.Five.tests.testing.simplecontent.ISimpleContent"
+      name="eagledefaultview.txt"
+      class=".pages.SimpleView"
+      attribute="mouse"
+      permission="zope2.Public"
+      />
+
+  <browser:page
+      for="Products.Five.tests.testing.simplecontent.ISimpleContent"
+      name="index.html"
+      class=".pages.SimpleView"
+      attribute="eagle"
+      permission="zope2.Public"
+      />
+
+  <class class="Products.Five.tests.testing.simplecontent.IIndexSimpleContent">
+    <require permission="zope2.Public"
+             attributes="index_html"/>
+  </class>
+
+  <browser:defaultView
+      for="Products.Five.tests.testing.simplecontent.IIndexSimpleContent"
+      name="index_html"
+      />
+
+</configure>

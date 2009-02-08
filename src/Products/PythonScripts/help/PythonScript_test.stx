@@ -1,0 +1,18 @@
+Test View: Test a Script (Python)
+  
+    Description
+
+        This view allows you to test a Script (Python) instance.
+        
+    Controls
+
+        If a Script has no parameters, when the "Test" tab is
+        visited the return value of the script will be presented in
+        the manage_main frame.
+
+        However, if a Script instance has parameters, a form
+        will be presented with fields for "Parameter" and "Value",
+        changeable on a per-parameter basis.  These accept string
+        values.  The 'Run Script' button runs the script after the
+        'Parameter' and 'Value' fields have been filled in, and
+        returns the results in the manage_main frame.

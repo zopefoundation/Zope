@@ -1,0 +1,12 @@
+result = []
+for c in 'abcdef':
+    result.append({'a-c': (c <= 'c') or None,
+                   'd-f': (c >= 'd') and 2})
+return result == [
+  {'a-c': 1, 'd-f': 0},
+  {'a-c': 1, 'd-f': 0},
+  {'a-c': 1, 'd-f': 0},
+  {'a-c': None, 'd-f': 2},
+  {'a-c': None, 'd-f': 2},
+  {'a-c': None, 'd-f': 2},
+]

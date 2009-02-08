@@ -1,0 +1,51 @@
+<dtml-var manage_page_header>
+
+<dtml-var "manage_form_title(this(), _,
+           form_title='Add PathIndex',
+	   )">
+
+<p class="form-help">
+A <em>PathIndex</em> indexes the physical path of all objects inside
+a catalog. It allows you to search for objects beginning or containing
+a special path component or a set of path component. A path component
+is defined as <em>/&lt;component1&gt;/&lt;component2&gt;/..../&lt;object_id&gt;
+</em>.
+</p>
+
+
+<form action="manage_addPathIndex" method="post" enctype="multipart/form-data">
+<table cellspacing="0" cellpadding="2" border="0">
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-label">
+    Id
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <input type="text" name="id" size="40" />
+    </td>
+  </tr>
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-optional">
+    Type
+    </div>
+    </td>
+    <td align="left" valign="top">
+    PathIndex
+    </td>
+  </tr>
+  <tr>
+    <td align="left" valign="top">
+    </td>
+    <td align="left" valign="top">
+    <div class="form-element">
+    <input class="form-element" type="submit" name="submit" 
+     value=" Add " /> 
+    </div>
+    </td>
+  </tr>
+</table>
+</form>
+
+<dtml-var manage_page_footer>

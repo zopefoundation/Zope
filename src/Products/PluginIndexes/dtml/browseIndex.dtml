@@ -1,0 +1,62 @@
+<dtml-var manage_page_header>
+<dtml-var manage_tabs>
+
+<dtml-call "REQUEST.RESPONSE.setHeader('Content-Type', 'text/html; charset=UTF-8')" >
+
+<p class="form-text">
+The index "&dtml-getId;" contains <dtml-var items fmt=collection-length thousands_commas> distinct values
+</p>
+
+<dtml-let size="20"> <!-- batch size -->
+
+  <div class="form-text">
+    <dtml-in items previous size=size start=query_start >
+        <a href="&dtml-URL;?query_start=&dtml-previous-sequence-start-number;">
+        [Previous <dtml-var previous-sequence-size> entries]
+      </a>
+    </dtml-in>
+    <dtml-in items next size=size start=query_start >
+      <a href="&dtml-URL;?query_start=&dtml-next-sequence-start-number;">
+        [Next <dtml-var next-sequence-size> entries]
+      </a>
+    </dtml-in>
+  </div>
+
+  <table border="1" align="center" width="100%" class="form-help">
+    <dtml-in items start=query_start size=size>
+      <tr>
+        <td>
+          <dtml-if "meta_type in ('DateIndex',)">
+            <dtml-comment><!--
+              DateIndexes store dates packed into an integer, unpack
+              into year, month, day, hour and minute, no seconds and UTC.
+            --></dtml-comment>
+            <dtml-var "DateTime((_['sequence-key'] / 535680),
+                                (_['sequence-key'] / 44640 ) % 12,
+                                (_['sequence-key'] / 1440  ) % 31,
+                                (_['sequence-key'] / 60    ) % 24,
+                                (_['sequence-key']         ) % 60,
+                                0, 'UTC')">
+          <dtml-else>
+            &dtml-sequence-key; 
+          </dtml-if>
+        </td>
+        <td>   
+          <ul>
+            <dtml-let v="_['sequence-item']">
+              <dtml-if "isinstance(v, int)">
+                <li><a href="<dtml-var "getpath(v)">"<dtml-var "getpath(v)"></a></li>    
+              <dtml-else>
+                <dtml-in "v.keys()">
+                  <li> <a href="<dtml-var "getpath(_['sequence-item'])">"><dtml-var "getpath(_['sequence-item'])"></a></li>
+                </dtml-in>
+              </dtml-if>
+            </dtml-let>
+          </ul>
+        </td>
+      </tr>
+    </dtml-in>
+  </table>
+</dtml-let>
+
+<dtml-var manage_page_footer>

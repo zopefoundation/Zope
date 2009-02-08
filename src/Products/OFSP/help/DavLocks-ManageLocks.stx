@@ -1,0 +1,35 @@
+WebDAV Lock Management - Manage Locks
+
+ Description
+
+  This view allows you to manage WebDAV WriteLocks.  WebDAV, as an
+  extension to the HTTP Protocol, allows the users to create *Write
+  Locks* as a way of trying to avoid the "lost updates problem".
+  However, sometimes WriteLocks may become abandoned.  This may be due 
+  to users forgetting to unlock their resources, software failures
+  such as crashes, etc.  In many cases, locks might just time out
+  before this becomes a problem.  In cases where it's not, this
+  control panel object may be used to locate locked resources inside
+  of Zope and clear *ALL* of their WebDAV writelocks.
+
+ Controls
+
+  'Path' -- This lets you enter a path (based off the root of the Zope 
+  site) to filter down the list of locked objects.  Clicking 'Go'
+  executes the filter.
+
+  When locked objects are found, they are listed one per line with a
+  checkbox that can be used to select the item.  Also listed in each
+  line is information about the lock(s) on the object - the user who
+  created the lock (identified by the path to the user folder the user 
+  is defined in), and the locktoken that identifies the lock.  In the
+  majority of cases, there should only be one lock per object.
+
+  '[Checkbox]' -- Selects locked items.
+
+  'Select All' -- This button marks all items displayed as selected.
+
+  'Deselect All' -- After 'Select All' has been clicked, it changes to 
+  say 'Deselect All'.  Clicking this deselects all displayed items.
+
+  'Unlock objects' -- Unlocks the selected items.

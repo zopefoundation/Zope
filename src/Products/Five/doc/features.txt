@@ -1,0 +1,47 @@
+=============
+Five features
+=============
+
+Five features are mostly Zope 3 features, though Five has some extras,
+and some limitations.
+
+ZCML
+====
+
+ZCML is the Zope Configuration Markup Language, an XML application.
+Zope 3 (and Five) code consists of a lot of components that can be
+plugged together using ZCML.
+
+If you put a ``site.zcml`` in the home directory of your Zope
+instance, this is the root of the ZCML tree. An example of
+``site.zcml`` is in ``site.zcml.in``. If you don't place a
+``site.zcml``, Five falls back on ``fallback.zcml``.
+
+ZCML in Five has special directive, ``five:loadProducts``, to load the
+ZCML (``meta.zcml``, ``configure.zcml``) of all installed Zope 2
+products, if available.
+
+Another special directive, ``five:loadProductsOverrides`` is available
+to load any overriding ZCML (``overrides.zcml``) in these products. In
+the ``overrides.zcml`` you can override existing views or adapters, in
+this or in other products.
+
+Security declarations
+=====================
+
+Five aims to eradicate ``declareProtected``, ``ClassSecurityInfo`` and
+``initializeClass`` from your Zope 2 code.
+
+In order to do this, Five provides the Zope 3 way of declaring
+permissions from ZCML, but uses the Zope 2 mechanisms to actually set
+them. To declare permissions for methods and templates on views you
+use the ``permission`` attribute on the ``browser:page`` directive,
+and specify a Zope 2 permission (given a Zope 3 name). You can find a
+list of these permissions in ``permissions.zcml`` in Five. The
+permission check takes place before the view is executed.
+
+The ``class`` directive can also be used to declare permissions on
+Zope 2 content classes. Note however that these permissions will be
+ignored by views anyway, as they are trusted -- it only serves to
+protect directly exposed methods on content classes (the Python
+scripts and the ZPublisher).

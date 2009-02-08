@@ -1,0 +1,79 @@
+<dtml-var manage_page_header>
+<dtml-var manage_tabs>
+
+<p class="form-help">
+
+<form method="post" action="manage_setPreferences">
+
+<table border="0" cellspacing="2" cellpadding="2">
+
+<tr>
+  <th align="left" width="20%">Vocabulary to use</th>
+
+  <td align="left">
+    <select name="vocabulary">  
+      <dtml-in "superValues('Vocabulary')">
+        <dtml-if "getId()==vocabulary_id">
+          <option value="&dtml-id;" selected>
+            &dtml-id; <dtml-var title fmt="(%s)" null html_quote>
+          </option> 
+        <dtml-else>
+          <option value="&dtml-id;">
+            &dtml-id; <dtml-var title fmt="(%s)" null html_quote>
+          </option> 
+        </dtml-if>
+      </dtml-in>
+    </select>
+    
+ </td>
+
+ <td>
+   <em>Warning:</em> changing the vocabulary makes only sense when after 
+   creating the index and before indexing any objects. The index will be cleared
+   when you change the vocabulary after indexing objects.
+ </td>
+</tr> 
+
+<dtml-comment>
+<tr>
+  <th align="left">Splitter</th>
+  <td>
+    <select name="splitter"> 
+      <dtml-in availableSplitters>
+        <dtml-if "_.getitem('sequence-key')==useSplitter"> 
+           <option value="&dtml-sequence-key;" selected>&dtml-sequence-item;
+        <dtml-else>
+           <option value="&dtml-sequence-key;">&dtml-sequence-item;
+        </dtml-if>
+      </dtml-in>
+    </select>
+  </td>
+</tr>
+
+<tr>
+  <th align="left">Default text operator</th>
+  <td>
+    <select name="text_operator"> 
+      <dtml-in "operators.keys()">
+        <dtml-if "_.getitem('sequence-item')==useOperator"> 
+           <option value="&dtml-sequence-item;" selected>&dtml-sequence-item;
+        <dtml-else>
+           <option value="&dtml-sequence-item;">&dtml-sequence-item;
+        </dtml-if>
+      </dtml-in>
+    </select>
+  </td>
+</tr>
+</dtml-comment>
+
+<tr>
+  <td colspan="3">
+    <input type="submit" value="Save changes">
+  </td>
+</tr>
+
+</table>
+
+</form>
+
+<dtml-var manage_page_footer>

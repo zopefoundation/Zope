@@ -1,0 +1,146 @@
+<dtml-var manage_page_header>
+<dtml-var manage_tabs>
+
+<p class="form-help">
+The Control Panel provides access to system information and management 
+functions such as database and product management.  
+</p>
+
+<form action="&dtml-URL1;" method="post" onSubmit="">
+<table cellspacing="0" cellpadding="2" border="0">
+<tr>
+  <td align="left" valign="top">
+  <div class="form-label">
+  Zope Version
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <div class="form-text">
+  &dtml-version_txt;
+  </div>
+  </td>
+</tr>
+<tr>
+  <td align="left" valign="top">
+  <div class="form-label">
+  Python Version
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <div class="form-text">
+  &dtml-sys_version;
+  </div>
+  </td>
+</tr>
+<tr>
+  <td align="left" valign="top">
+  <div class="form-label">
+  System Platform
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <div class="form-text">
+  &dtml-sys_platform;
+  </div>
+  </td>
+</tr>
+<tr>
+  <td align="left" valign="top">
+  <div class="form-label">
+  INSTANCE_HOME
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <div class="form-text">
+  &dtml-getINSTANCE_HOME;
+  </div>
+  </td>
+</tr>
+<tr>
+  <td align="left" valign="top">
+  <div class="form-label">
+  CLIENT_HOME
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <div class="form-text">
+  &dtml-getCLIENT_HOME;
+  </div>
+  </td>
+</tr>
+<tr>
+  <td align="left" valign="top">
+  <div class="form-label">
+  Network Services
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <div class="form-text">
+  <dtml-in getServers>
+    &dtml-sequence-key; (&dtml-sequence-item;)<br>
+  </dtml-in>
+  </div>
+  </td>
+</tr>
+<tr>
+  <td align="left" valign="top">
+  <div class="form-label">
+  Process Id
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <div class="form-text">
+  &dtml-process_id; (&dtml-thread_get_ident;)
+  </div>
+  </td>
+</tr>
+<tr>
+  <td align="left" valign="top">
+  <div class="form-label">
+  Running For
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <div class="form-text">
+  &dtml-process_time;
+  </div>
+  </td>
+</tr>
+
+<tr>
+  <td align="left" valign="top">
+  &nbsp;
+  </td>
+  <td align="left" valign="top">
+  <div class="form-element">
+  <dtml-if manage_restartable>
+  <input type="submit" name="manage_restart:action" value="Restart" />
+  </dtml-if>
+  <input type="submit" name="manage_shutdown:action" value="Shutdown" />
+  </div>
+  </td>
+</tr>
+</table>
+</form>
+
+<p>
+<table cellspacing="0" cellpadding="2" border="0">
+<dtml-in objectItems>
+<tr>
+  <td width="16" align="left" valign="top">
+  <a href="&dtml.url_quote-sequence-key;/manage_workspace">
+  <img src="&dtml-BASEPATH1;/&dtml-icon;" alt="" border="0" /></a>
+  </td>
+  <td align="left" valign="top">
+  <div class="list-item">
+  <a href="&dtml.url_quote-sequence-key;/manage_workspace">
+  &dtml-title;
+  </a>
+  </div>
+  </td>
+</tr>
+</dtml-in objectValues>
+</table>
+</p>
+
+<dtml-var manage_page_footer>

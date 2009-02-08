@@ -1,0 +1,307 @@
+<style type="text/css"> <!-- li { margin: 1em } --> </style>
+
+ZopeTestCase API Reference
+
+    A nicely rendered version of this document can be found at
+    http://zope.org/Members/shh/ZopeTestCaseWiki/ApiReference
+
+
+
+Module Testing.ZopeTestCase
+
+    Top-level package exposing names from contained modules
+
+    Constants
+
+        folder_name
+
+        user_name
+
+        user_password
+
+        user_role
+
+        standard_permissions
+
+        portal_name
+
+    Functions
+
+        hasProduct(name)
+
+        installProduct(name, quiet=0)
+
+        app()
+
+        close(app)
+
+        main()
+
+        _print(msg)
+
+        ZopeDocTestSuite(module=None, **kw)
+
+        ZopeDocFileSuite(*paths, **kw)
+
+        FunctionalDocTestSuite(module=None, **kw)
+
+        FunctionalDocFileSuite(*paths, **kw)
+
+    Classes
+
+        TestCase
+
+        ZopeTestCase
+
+        FunctionalTestCase
+
+        PortalTestCase
+
+        Sandboxed
+
+        Functional
+
+        WarningsHook
+
+    Modules
+
+        ZopeLite as Zope
+
+        utils
+
+        doctest
+
+        transaction
+
+
+
+Module ZopeLite
+
+    Lightweight replacement for the Zope module
+
+    Constants
+
+        DB
+
+    Functions
+
+        hasProduct(name)
+
+        installProduct(name, quiet=0)
+
+        app(connection=None)
+
+        sandbox(base=None)
+
+        startup()
+
+        _print(msg)
+
+
+
+Module base
+
+    Basic infrastructure for Zope testing
+
+    Functions
+
+        app()
+
+        close(app)
+
+    Classes
+
+        TestCase
+
+
+
+Class TestCase
+
+    Base test case for Zope testing
+    (derived from unittest.TestCase)
+
+    Interfaces
+
+        implements(IZopeTestCase)
+
+    Methods
+
+        afterSetUp()
+
+        beforeTearDown()
+
+        afterClear()
+
+        beforeSetUp()
+
+        beforeClose()
+
+
+
+Module ZopeTestCase
+
+    Test case and fixture for Zope testing
+
+    Constants
+
+        folder_name
+
+        user_name
+
+        user_password
+
+        user_role
+
+        standard_permissions
+
+    Classes
+
+        ZopeTestCase
+
+        FunctionalTestCase
+
+
+
+Class ZopeTestCase
+
+    Base test case for Zope testing
+    (derived from base.TestCase)
+
+    Interfaces
+
+        implements(IZopeSecurity)
+
+    Methods
+
+        setRoles(roles, name=user_name)
+
+        setPermissions(permissions, role=user_role)
+
+        login(name=user_name)
+
+        logout()
+
+
+
+Class FunctionalTestCase
+
+    Convenience class for functional unit testing
+    (derived from Functional and ZopeTestCase)
+
+    Interfaces
+
+        *See base classes*
+
+    Methods
+
+        *See base classes*
+
+
+
+Module PortalTestCase
+
+    Test case and fixture for testing CMF-based applications
+
+    Constants
+
+        portal_name
+
+        user_name
+
+        user_password
+
+    Classes
+
+        PortalTestCase
+
+
+
+Class PortalTestCase
+
+    Base test case for CMF testing
+    (derived from base.TestCase)
+
+    Interfaces
+
+        implements(IPortalTestCase, IPortalSecurity)
+
+    Methods
+
+        getPortal()
+
+        createMemberarea(name)
+
+        setRoles(roles, name=user_name)
+
+        setPermissions(permissions, role='Member')
+
+        login(name=user_name)
+
+        logout()
+
+
+
+Module sandbox
+
+    ZODB sandbox support
+
+    Classes
+
+        Sandboxed
+
+
+
+Class Sandboxed
+
+    Sandbox support mix-in for xTestCases
+
+    Interfaces
+
+        *No interfaces*
+
+    Methods
+
+        *No public methods*
+
+
+
+Module functional
+
+    Functional testing support
+
+    Classes
+
+        Functional
+
+
+
+Class Functional
+
+    Functional testing mix-in for xTestCases
+
+    Interfaces
+
+        implements(IFunctional)
+
+    Methods
+
+        publish(path, basic=None, env=None, extra=None, request_method='GET', stdin=None)
+
+
+
+Module utils
+
+    Utility functions to extend the test environment
+
+    Functions
+
+        setupCoreSessions(app=None)
+
+        setupSiteErrorLog(app=None)
+
+        startZServer(number_of_threads=1, log=None)
+
+        importObjectFromFile(container, filename, quiet=0)
+
+        appcall(func, *args, **kw)
+

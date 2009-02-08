@@ -1,0 +1,572 @@
+Testing forms
+=============
+
+Before we can begin, we need to set up a few things.  We need a
+manager account:
+
+  >>> uf = self.folder.acl_users
+  >>> uf._doAddUser('manager', 'r00t', ['Manager'], [])
+
+We need to configure all of Five for the functional test:
+
+  >>> import Products.Five.form.tests
+  >>> from Products.Five import zcml
+  >>> zcml.load_config('configure.zcml', package=Products.Five)
+  >>> zcml.load_config('configure.zcml', package=Products.Five.form.tests)
+
+Finally, we need to setup a traversable folder.  Otherwise, Five won't
+get to to do its view lookup:
+
+  >>> from Products.Five.tests.testing import manage_addFiveTraversableFolder
+  >>> manage_addFiveTraversableFolder(self.folder, 'ftf')
+
+Let's set up a testbrowser:
+
+  >>> from Products.Five.testbrowser import Browser
+  >>> browser = Browser()
+  >>> browser.addHeader('Accept-Language', 'en-US')
+
+Add forms
+---------
+
+We can add objects to containers (object managers) through add forms.
+An unprotected form can be accessed with anonymously:
+
+  >>> browser.open("http://localhost/test_folder_1_/ftf/+/addfieldcontent.html")
+  >>> print browser.headers
+  Status: 200 ...
+  ...
+
+We don't have access, we will not be able to get to the protected add form:
+
+  >>> browser.open("http://localhost/test_folder_1_/ftf/+/protectedaddform.html")
+  Traceback (most recent call last):
+      ...
+  HTTPError: HTTP Error 401: Unauthorized
+
+For a protected one we need a manager account:
+
+  >>> browser.addHeader('Authorization', 'Basic manager:r00t')
+  >>> browser.open("http://localhost/test_folder_1_/ftf/+/protectedaddform.html")
+  >>> print browser.headers
+  Status: 200 ... 
+  ...
+
+
+Now let's add a piece of our sample content object to test more things
+on it:
+
+  >>> ctl = browser.getControl(name="field.title")
+  >>> ctl.value = 'title'
+  >>> ctl = browser.getControl(name="add_input_name")
+  >>> ctl.value = 'edittest'
+  >>> browser.getControl(name="UPDATE_SUBMIT").click()
+
+Having added this piece of content, we can access it under its URL:
+
+  >>> browser.open("http://localhost/test_folder_1_/ftf/edittest")
+  >>> print browser.headers
+  Status: 200 ... 
+  ...
+
+We can also verify that the title was set correctly, and the not
+specified attribute is the default value:
+
+  >>> edittest = self.folder.ftf.edittest
+  >>> edittest.title
+  u'title'
+  >>> edittest.description #XXX shouldn't we get a u'' here???
+
+We can also verify that the IObjectCreatedEvent was fired, and the test
+subscriber we registered set a flag indicating such:
+
+  >>> edittest._created_flag
+  True
+
+Because the process of adding an object often sets attributes after the
+object is created and added, and IObjectModified event should also have been
+fired:
+
+  >>> edittest._modified_flag
+  True
+  >>> del edittest._modified_flag
+
+Edit forms
+----------
+
+First, it's important to note that forms validate user input.
+Therefore, if we specify invalid data, our object won't change:
+
+  >>> browser.open("http://localhost/test_folder_1_/ftf/edittest/@@edit.html")
+  >>> ctl = browser.getControl(name="field.title")
+  >>> ctl.value = ''
+  >>> ctl = browser.getControl(name="field.description")
+  >>> ctl.value = 'BarDescription'
+  >>> browser.getControl(name="UPDATE_SUBMIT").click()
+  >>> print browser.headers
+  Status: 200 ... 
+  ...
+  >>> print browser.contents
+  <html>
+  ...
+            There are <strong>1</strong> input errors.
+  ...
+
+We will see that nothing has changed:
+
+  >>> edittest.title
+  u'title'
+  >>> edittest.description #XXX shouldn't we get a u'' here???
+  >>> getattr(edittest, '_modified_flag', False)
+  False
+
+However, when we specify the correct fields:
+
+  >>> browser.open("http://localhost/test_folder_1_/ftf/edittest/@@edit.html")
+  >>> ctl = browser.getControl(name="field.title")
+  >>> ctl.value = 'FooTitle'
+  >>> ctl = browser.getControl(name="field.description")
+  >>> ctl.value = 'FooDescription'
+  >>> browser.getControl(name="UPDATE_SUBMIT").click()
+  >>> print browser.headers
+  Status: 200 ... 
+  ...
+
+We will see that something has changed:
+
+  >>> edittest.title
+  u'FooTitle'
+  >>> edittest.description
+  u'FooDescription'
+
+And that the event has been fired:
+
+  >>> edittest._modified_flag
+  True
+  >>> del edittest._modified_flag
+
+Widget Overrides
+----------------
+
+We have an alternate add form for IFieldContent which uses a TextArea widget
+via and override in the zcml.  Let's ensure that that works:
+
+  >>> print http(r"""
+  ... GET /test_folder_1_/ftf/+/addwidgetoverride.html HTTP/1.1
+  ... """, handle_errors=False)
+  HTTP/1.1 200 OK
+  ...
+  ...<textarea
+  ...
+
+  >>> print http(r"""
+  ... POST /test_folder_1_/ftf/+/addwidgetoverride.html HTTP/1.1
+  ... Authorization: Basic manager:r00t
+  ... Content-Type: multipart/form-data; boundary=---------------------------968064918930967154199105236
+  ... Content-Length: 527
+  ...
+  ... -----------------------------968064918930967154199105236
+  ... Content-Disposition: form-data; name="field.title"
+  ...
+  ... title2
+  ... -----------------------------968064918930967154199105236
+  ... Content-Disposition: form-data; name="field.description"
+  ...
+  ... Blah
+  ... -----------------------------968064918930967154199105236
+  ... Content-Disposition: form-data; name="UPDATE_SUBMIT"
+  ...
+  ... Add
+  ... -----------------------------968064918930967154199105236
+  ... Content-Disposition: form-data; name="add_input_name"
+  ...
+  ... edittest2
+  ... -----------------------------968064918930967154199105236--
+  ... """, handle_errors=False)
+  HTTP/1.1 302 Moved Temporarily
+  ...
+  Location: http://localhost/test_folder_1_/ftf/manage_main
+  ...
+
+We also indicated that all fields for this view should be set before adding
+the content, this means that no IObjectModified event should have been fired
+
+  >>> edittest2 = self.folder.ftf.edittest2
+  >>> edittest2.title
+  u'title2'
+  >>> edittest2.description
+  u'Blah'
+  >>> edittest2._created_flag
+  True
+
+  >>> getattr(edittest2, '_modified_flag', False)
+  False
+
+
+Unicode-safety of forms
+-----------------------
+
+Even though ZPublisher does not support unicode, automatically
+generated forms do.  In the following we will enter the following two
+chinese sequences (How do you do? and I'm doing good) in forms
+(they're encoded in UTF-8 here):
+
+  >>> ni_hao = '\xe4\xbd\xa0\xe5\xa5\xbd'
+  >>> wo_hen_hao = '\346\210\221\345\276\210\345\245\275'
+
+First, it's imaginable that we make a mistake and enter one of the
+phrases in the integer field:
+
+  >>> print http(r"""
+  ... POST /test_folder_1_/ftf/+/addfieldcontent.html HTTP/1.1
+  ... Authorization: Basic manager:r00t
+  ... Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7
+  ... Content-Type: multipart/form-data; boundary=---------------------------968064918930967154199105236
+  ... Content-Length: 418
+  ...
+  ... -----------------------------968064918930967154199105236
+  ... Content-Disposition: form-data; name="field.title"
+  ...
+  ... ChineseTitle
+  ... -----------------------------968064918930967154199105236
+  ... Content-Disposition: form-data; name="field.description"
+  ...
+  ... ChineseDescription
+  ... -----------------------------968064918930967154199105236
+  ... Content-Disposition: form-data; name="field.somenumber"
+  ...
+  ... %s
+  ... -----------------------------968064918930967154199105236
+  ... Content-Disposition: form-data; name="UPDATE_SUBMIT"
+  ...
+  ... Add
+  ... -----------------------------968064918930967154199105236
+  ... Content-Disposition: form-data; name="add_input_name"
+  ...
+  ... unicodetest
+  ... -----------------------------968064918930967154199105236--
+  ... """ % ni_hao, handle_errors=False)
+  HTTP/1.1 200 OK
+  ...
+            There are <strong>1</strong> input errors.
+  ...
+
+When we enter the unicode data in the right fields (the text fields),
+the form will submit correctly and create the object:
+
+  >>> print http(r"""
+  ... POST /test_folder_1_/ftf/+/addfieldcontent.html HTTP/1.1
+  ... Authorization: Basic manager:r00t
+  ... Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7
+  ... Content-Type: multipart/form-data; boundary=---------------------------968064918930967154199105236
+  ... Content-Length: 418
+  ...
+  ... -----------------------------968064918930967154199105236
+  ... Content-Disposition: form-data; name="field.title"
+  ...
+  ... %s
+  ... -----------------------------968064918930967154199105236
+  ... Content-Disposition: form-data; name="field.description"
+  ...
+  ... %s
+  ... -----------------------------968064918930967154199105236
+  ... Content-Disposition: form-data; name="field.somenumber"
+  ...
+  ... 0
+  ... -----------------------------968064918930967154199105236
+  ... Content-Disposition: form-data; name="UPDATE_SUBMIT"
+  ...
+  ... Add
+  ... -----------------------------968064918930967154199105236
+  ... Content-Disposition: form-data; name="add_input_name"
+  ...
+  ... unicodetest
+  ... -----------------------------968064918930967154199105236--
+  ... """ % (ni_hao, wo_hen_hao), handle_errors=False)
+  HTTP/1.1 302 Moved Temporarily
+  ...
+  Location: http://localhost/test_folder_1_/ftf/manage_main
+  ...
+
+We can test the object has the correct values, as unicode strings, of
+course:
+
+  >>> unicodetest = self.folder.ftf.unicodetest
+  >>> unicodetest.title == ni_hao.decode('utf-8')
+  True
+  >>> unicodetest.description == wo_hen_hao.decode('utf-8')
+  True
+  >>> unicodetest.somenumber
+  0
+
+Of course, the same should apply to edit forms.  First, we happen to
+again make the mistake of entering unicode data in the integer field:
+
+  >>> print http(r"""
+  ... POST /test_folder_1_/ftf/unicodetest/@@edit.html HTTP/1.1
+  ... Authorization: Basic manager:r00t
+  ... Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7
+  ... Content-Type: multipart/form-data; boundary=---------------------------968064918930967154199105236
+  ... Content-Length: 418
+  ...
+  ... -----------------------------968064918930967154199105236
+  ... Content-Disposition: form-data; name="field.title"
+  ...
+  ... ChineseTitle
+  ... -----------------------------968064918930967154199105236
+  ... Content-Disposition: form-data; name="field.description"
+  ...
+  ... ChineseDescription
+  ... -----------------------------968064918930967154199105236
+  ... Content-Disposition: form-data; name="field.somenumber"
+  ...
+  ... %s
+  ... -----------------------------968064918930967154199105236
+  ... Content-Disposition: form-data; name="UPDATE_SUBMIT"
+  ...
+  ... Change
+  ... -----------------------------968064918930967154199105236--
+  ... """ % ni_hao, handle_errors=False)
+  HTTP/1.1 200 OK
+  ...
+            There are <strong>1</strong> input errors.
+  ...
+
+We see that the object hasn't changed:
+
+  >>> unicodetest.title == ni_hao.decode('utf-8')
+  True
+  >>> unicodetest.description == wo_hen_hao.decode('utf-8')
+  True
+  >>> unicodetest.somenumber
+  0
+
+Now we provide some valid form data:
+
+  >>> print http(r"""
+  ... POST /test_folder_1_/ftf/unicodetest/@@edit.html HTTP/1.1
+  ... Authorization: Basic manager:r00t
+  ... Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7
+  ... Content-Type: multipart/form-data; boundary=---------------------------968064918930967154199105236
+  ... Content-Length: 418
+  ...
+  ... -----------------------------968064918930967154199105236
+  ... Content-Disposition: form-data; name="field.title"
+  ...
+  ... %s
+  ... -----------------------------968064918930967154199105236
+  ... Content-Disposition: form-data; name="field.description"
+  ...
+  ... %s
+  ... -----------------------------968064918930967154199105236
+  ... Content-Disposition: form-data; name="field.somenumber"
+  ...
+  ... 1
+  ... -----------------------------968064918930967154199105236
+  ... Content-Disposition: form-data; name="UPDATE_SUBMIT"
+  ...
+  ... Change
+  ... -----------------------------968064918930967154199105236--
+  ... """ % (wo_hen_hao, ni_hao), handle_errors=False)
+  HTTP/1.1 200 OK
+  ...
+
+We see that the object's data has changed:
+
+  >>> unicodetest.title == wo_hen_hao.decode('utf-8')
+  True
+  >>> unicodetest.description == ni_hao.decode('utf-8')
+  True
+  >>> unicodetest.somenumber
+  1
+
+Let's also not forget about List widgets.  Let's see if we can add an
+element to the list:
+
+  >>> print http(r"""
+  ... POST /test_folder_1_/ftf/unicodetest/@@edit.html HTTP/1.1
+  ... Authorization: Basic manager:r00t
+  ... Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7
+  ... Content-Type: multipart/form-data; boundary=---------------------------968064918930967154199105236
+  ... Content-Length: 418
+  ...
+  ... -----------------------------968064918930967154199105236
+  ... Content-Disposition: form-data; name="field.title"
+  ...
+  ... %s
+  ... -----------------------------968064918930967154199105236
+  ... Content-Disposition: form-data; name="field.description"
+  ...
+  ... %s
+  ... -----------------------------968064918930967154199105236
+  ... Content-Disposition: form-data; name="field.somenumber"
+  ...
+  ... 1
+  ... -----------------------------968064918930967154199105236
+  ... Content-Disposition: form-data; name="field.somelist.add"
+  ...
+  ... Add Some item
+  ... -----------------------------968064918930967154199105236
+  ... Content-Disposition: form-data; name="field.somelist.count"
+  ...
+  ... 0
+  ... -----------------------------968064918930967154199105236--
+  ... """ % (wo_hen_hao, ni_hao), handle_errors=False)
+  HTTP/1.1 200 OK
+  ...
+  ...<input class="textType" id="field.somelist.0." name="field.somelist.0." size="20" type="text" value=""  />...
+  ...
+
+Now, let's enter some more Chinese:
+
+  >>> de_guo = '\345\276\267\345\233\275'
+
+  >>> print http(r"""
+  ... POST /test_folder_1_/ftf/unicodetest/@@edit.html HTTP/1.1
+  ... Authorization: Basic manager:r00t
+  ... Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7
+  ... Content-Type: multipart/form-data; boundary=---------------------------968064918930967154199105236
+  ... Content-Length: 418
+  ...
+  ... -----------------------------968064918930967154199105236
+  ... Content-Disposition: form-data; name="field.title"
+  ...
+  ... %s
+  ... -----------------------------968064918930967154199105236
+  ... Content-Disposition: form-data; name="field.description"
+  ...
+  ... %s
+  ... -----------------------------968064918930967154199105236
+  ... Content-Disposition: form-data; name="field.somenumber"
+  ...
+  ... 1
+  ... -----------------------------968064918930967154199105236
+  ... Content-Disposition: form-data; name="field.somelist.0."
+  ...
+  ... %s
+  ... -----------------------------968064918930967154199105236
+  ... Content-Disposition: form-data; name="field.somelist.count"
+  ...
+  ... 1
+  ... -----------------------------968064918930967154199105236
+  ... Content-Disposition: form-data; name="UPDATE_SUBMIT"
+  ...
+  ... Change
+  ... -----------------------------968064918930967154199105236--
+  ... """ % (wo_hen_hao, ni_hao, de_guo), handle_errors=False)
+  HTTP/1.1 200 OK
+  ...
+
+The object's data will have changed accordingly:
+
+  >>> unicodetest.somelist == [de_guo.decode('utf-8')]
+  True
+
+
+Object widget:
+--------------
+
+A little more complex is the ``ObjectWidget``.  Here we simply test
+that the edit form works:
+
+  >>> from Products.Five.form.tests.schemacontent import \
+  ...     manage_addComplexSchemaContent
+  >>> n = manage_addComplexSchemaContent(self.folder.ftf, 'objecttest')
+
+  >>> print http(r"""
+  ... GET /test_folder_1_/ftf/objecttest/@@edit.html HTTP/1.1
+  ... """, handle_errors=False)
+  HTTP/1.1 200 OK
+  ...
+
+
+i18n:
+-----
+
+Let's set up a German testbrowser:
+
+  >>> from Products.Five.testbrowser import Browser
+  >>> browser = Browser()
+  >>> browser.addHeader('Accept-Language', 'de')
+  >>> browser.addHeader('Authorization', 'Basic manager:r00t')
+
+And now the add form in German:
+
+  >>> browser.open("http://localhost/test_folder_1_/ftf/+/addfieldcontent.html")
+  >>> print browser.contents
+  <html>
+  ...Felderinhalt hinzuf...
+  ...Eine kurz...Titel...
+  ...Eine ausf...Beschreibung...
+  ...Irgendeine Zahl...
+  ...Irgendeine Liste...
+  ...hinzuf...
+  ...Auffrischen...
+  ...Hinzuf...
+  ...Objektname...
+
+The same with an input error:
+
+  >>> ctl = browser.getControl(name="field.somenumber")
+  >>> ctl.value = '0'
+  >>> browser.getControl(name="UPDATE_SUBMIT").click()
+  >>> print browser.contents
+  <html>
+  ...Felderinhalt hinzuf...
+  ...Ein Fehler ist aufgetreten...
+  ...Es gab <strong>1</strong> Eingabefehler...
+  ...Eine kurz...Titel...
+  ...Erforderliche Eingabe fehlt...
+  ...Eine ausf...Beschreibung...
+  ...Irgendeine Zahl...
+  ...Irgendeine Liste...
+  ...hinzuf...
+  ...Auffrischen...
+  ...Hinzuf...
+  ...Objektname...
+
+And now the translated edit form:
+
+  >>> from Products.Five.form.tests.schemacontent import \
+  ...     manage_addFieldContent
+  >>> dummy = manage_addFieldContent(self.folder.ftf, 'i18ntest', 'titel')
+
+  >>> browser.open("http://localhost/test_folder_1_/ftf/i18ntest/edit.html")
+  >>> print browser.contents
+  <html>
+  ...Felderinhalt bearbeiten...
+  ...Eine kurz...Titel...
+  ...Eine ausf...Beschreibung...
+  ...Irgendeine Zahl...
+  ...Irgendeine Liste...
+  ...hinzuf...
+  ...Auffrischen...
+  ...Abschicken...
+
+Again with an input error:
+
+  >>> ctl = browser.getControl(name="field.title")
+  >>> ctl.value = ''
+  >>> browser.getControl(name="UPDATE_SUBMIT").click()
+  >>> print browser.contents
+  <html>
+  ...Felderinhalt bearbeiten...
+  ...Ein Fehler ist aufgetreten...
+  ...Es gab <strong>1</strong> Eingabefehler...
+  ...Eine kurz...Titel...
+  ...Erforderliche Eingabe fehlt...
+  ...Eine ausf...Beschreibung...
+  ...Irgendeine Zahl...
+  ...Irgendeine Liste...
+  ...hinzuf...
+  ...Auffrischen...
+  ...Abschicken...
+
+
+Clean up
+--------
+
+Finally, we need to clean up:
+
+  >>> from zope.app.testing.placelesssetup import tearDown
+  >>> tearDown()

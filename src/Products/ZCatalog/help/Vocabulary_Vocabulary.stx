@@ -1,0 +1,9 @@
+Vocabulary - Vocabulary: Description here
+
+  Description
+
+    Vocabularies display a list of all the unique words that are
+    indexed by a Catalog or Catalogs that use this Vocabulary object.
+    This view allows you to browse all of the words in the Vocabulary.
+
+    Currently, Vocabularies are only used by TextIndexes.

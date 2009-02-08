@@ -1,0 +1,25 @@
+Version 1.0.2
+
+  - Made CMFBTreeFolder compatible with CMF 1.5+
+
+Version 1.0.1
+
+  - ConflictError was swallowed by _delObject. This could break code
+    expecting to do cleanups before deletion.
+
+  - Renamed hasObject() to has_key().  hasObject() conflicted with
+    another product.
+
+  - You can now visit objects whose names have a trailing space.
+
+Version 1.0
+
+  - BTreeFolder2s now use an icon contributed by Chris Withers.
+
+  - Since recent ZODB releases have caused minor corruption in BTrees,
+    there is now a manage_cleanup method for fixing damaged BTrees
+    contained in BTreeFolders.
+
+Version 0.5.1
+
+  - Fixed the CMFBTreeFolder constructor.

@@ -1,0 +1,29 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML lang="en">
+<HEAD>
+<TITLE>Add Help Topic</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
+<h2>Add Help Topic</h2>
+
+<form action="addTopic" method="post">
+<table>
+<tr valign="top">
+  <th>Id</th>
+  <td><input type="text" name="id"></td>
+</tr>
+
+<tr valign="top">
+  <th>Title</th>
+  <td><input type="text" name="title"></td>
+</tr>
+
+<tr valign="top">
+  <td colspan="2"><input type="submit" value="Add"></td>
+</tr>
+</table>
+</form>
+
+
+</body>
+</html>

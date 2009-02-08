@@ -1,0 +1,7 @@
+Product - Zope extension.
+  
+  Description
+
+    Products were an old mechanism by which you could extend Zope.
+
+    The product concept is deprecated.

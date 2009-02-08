@@ -1,0 +1,27 @@
+Image - Edit: Image Properties.
+
+  Description
+
+    This view allows you to edit Image properties.
+
+  Form Elements
+
+    'Title' -- The optional title of the Image.
+
+    'Content type' -- The content type of the Image. Zope will try to
+    guess an appropriate content type when you upload an Image.
+
+    'Preview' -- Displays a preview version of the actual image
+    content. If an image is very large, the preview may be scaled to a 
+    smaller size.
+
+    'Last Modified' -- The time that the object was last changed.
+
+    'File Size' -- The size (in bytes) of the image data.
+
+    'File Data' -- The file to upload. Use the 'Browse...' button to
+    select a local file.
+
+    'Upload' -- Uploads the file.
+
+

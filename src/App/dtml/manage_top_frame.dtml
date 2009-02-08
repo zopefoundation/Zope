@@ -1,0 +1,36 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+<title></title>
+<link rel="stylesheet" type="text/css" href="&dtml-BASEPATH1;/manage_page_style.css">
+</head>
+<body bgcolor="#6699cc" link="#000099" alink="#000099" vlink="#000099" 
+ marginwidth="0" marginheight="0">
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+<tr>
+<td width="180" align="left" valign="top"><a 
+href="http://www.zope.org/" target="_new"><img src="&dtml-BASEPATH1;/p_/zopelogo_jpg"
+height="32" width="90" border="0" alt="" />
+</td>
+<td align="right" valign="top">
+<div class="form-element">
+<form action="&dtml-BASEPATH1;/" method="POST" target="manage_main">
+<span class="std-text">Logged in as <strong>&dtml-AUTHENTICATED_USER;</strong></span> &nbsp;&nbsp;
+
+<select class="form-element" name=":action" onChange="window.parent.manage_main.location.href='&dtml-BASEPATH1;/'+this.options[this.selectedIndex].value">
+<dtml-if "AUTHENTICATED_USER.getUserName() != 'Anonymous User'">
+<option value="manage_zmi_prefs">Set Preferences</option>
+<option value="manage_zmi_logout">Logout</option>
+</dtml-if>
+</select> 
+<input class="form-element" type="submit" name="submit" value=" Go " />
+&nbsp;
+</form>
+</div>
+</td>
+</tr>
+</table>
+
+</body>
+</html>

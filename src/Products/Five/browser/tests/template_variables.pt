@@ -1,0 +1,23 @@
+View is a view: <tal:block 
+  content="python:hasattr(view,'context') and hasattr(view, 'request')" />
+Context is testoid: <tal:block content="python:context.id == 'testoid'" />
+Context.aq_parent is test_folder_1_: <tal:block 
+  content="python:context.aq_parent.id =='test_folder_1_'" />
+Container is context: <tal:block content="python:container is context" />
+Here is context: <tal:block content="python:here is context"/>
+Nothing is None: <tal:block content="python:nothing is None"/>
+Default works: <tal:block replace="non_existent_var|default" />True
+Root is the application: <tal:block 
+  replace="python:repr(root).find('Application') != -1" />
+Template is a template: <tal:block 
+  replace="python:'ViewPageTemplateFile' in repr(template)" />
+Traverse_subpath exists and is empty: <tal:block 
+  replace="python:traverse_subpath == []" />
+Request is a request: <tal:block 
+  replace="python:getattr(request, 'RESPONSE', None) is not None" />
+User is manager: <tal:block replace="python:str(user) == 'manager'" />
+Options exist: <tal:block replace="python:options is not None" />
+Attrs exist: <tal:block replace="python:attrs is not None" />
+Repeat exists: <tal:block replace="python:repeat is not None" />
+Loop exists: <tal:block replace="python:loop is not None" />
+Modules exists: <tal:block replace="python:modules is not None" />
