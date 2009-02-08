@@ -1,1 +1,0 @@
-"""DBTab tests package"""

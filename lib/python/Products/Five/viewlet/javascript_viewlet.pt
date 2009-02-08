@@ -1,3 +1,0 @@
-<script type="text/javascript" src="some-library.js"
-        tal:attributes="src view/getURL">
-</script>

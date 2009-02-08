@@ -1,1 +1,0 @@
-<tal:text tal:replace="structure context/zope_quick_start" />

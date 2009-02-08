@@ -1,1 +1,0 @@
-<p tal:content="python:1+1">Some content</p>
