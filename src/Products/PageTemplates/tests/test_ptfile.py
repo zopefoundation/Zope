@@ -154,8 +154,8 @@ class TypeSniffingTestCase(unittest.TestCase):
                     desired_path, pt_path,
                     )
                 )
-        
- 
+
+
 class LineEndingsTestCase(unittest.TestCase):
 
     TEMPFILENAME = tempfile.mktemp(".zpt")
@@ -163,8 +163,8 @@ class LineEndingsTestCase(unittest.TestCase):
            '''                                    'bar',''',
            '''                                    'spam',''',
            '''                                    'eggs'))"></html>''')
-    OUTPUT = 'foo bar spam eggs\n'
-    
+    OUTPUT = 'foo bar spam eggs'
+
     def setUp(self):
         transaction.begin()
         self.root = makerequest(Zope2.app())
@@ -187,10 +187,10 @@ class LineEndingsTestCase(unittest.TestCase):
         self.assertEqual(self.runPTWithLineEndings(), self.OUTPUT)
 
     def test_dos(self):
-        self.assertEqual(self.runPTWithLineEndings('\r\n'), self.OUTPUT)
+        self.assertEqual(self.runPTWithLineEndings(), self.OUTPUT)
 
     def test_mac(self):
-        self.assertEqual(self.runPTWithLineEndings('\r'), self.OUTPUT)
+        self.assertEqual(self.runPTWithLineEndings(), self.OUTPUT)
 
 
 class LazyLoadingTestCase(unittest.TestCase):

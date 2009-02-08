@@ -41,7 +41,7 @@ A browser page that is a Page Template.
 
   >>> view = self.folder.unrestrictedTraverse('testoid/owl.html')
   >>> view()
-  u'<p>2</p>\n'
+  u'<p>2</p>'
 
 A browser page that is a PageTemplate plus a view class:
 
@@ -49,7 +49,7 @@ A browser page that is a PageTemplate plus a view class:
   >>> isinstance(view, SimpleView)
   True
   >>> view()
-  u'<p>The falcon has taken flight</p>\n'
+  u'<p>The falcon has taken flight</p>'
 
 Test pages that have been registered through the cumulative
 <browser:pages> directive:
