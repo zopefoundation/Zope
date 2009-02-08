@@ -68,12 +68,10 @@ class TestReST(unittest.TestCase):
                              output_encoding=encoding, 
                              initial_header_level=level)
 
-            expected = '<h%d><a id="hello-world" name="hello-world">Hello World</a></h%d>' %\
-                        (level+1, level+1) 
+            expected = '<h%d>Hello World</h%d>' % (level+1, level+1)
             self.assertEqual(expected in html, True)
 
-            expected = '<h%d><a id="von-v-geln-und-fen" name="von-v-geln-und-fen">Von Vögeln und Öfen</a></h%d>' %\
-                        (level+1, level+1) 
+            expected = '<h%d>Von Vögeln und Öfen</h%d>' % (level+1, level+1)
             self.assertEqual(expected in html, True)
 
     def testWithSingleSubtitle(self):
