@@ -47,6 +47,8 @@ script to finish building Zope::
 Creating a Zope Instance
 ------------------------
 
+XXX:  Make this not a lie!
+
 Once you've performed the install step, to begin actually using
 Zope, you will need to create an "instance home", which is a
 directory that contains configuration and data for a Zope server
