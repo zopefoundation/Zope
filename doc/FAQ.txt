@@ -1,7 +1,6 @@
 Zope Installation Frequently Asked Questions
 --------------------------------------------
 
-
   Installing Zope
 
     1. On certain Unix platforms (usually Solaris) I get a "checksum 
@@ -27,7 +26,7 @@ Zope Installation Frequently Asked Questions
        changing the line: do('make')  to: do('make -k').
 
     3. I am having trouble building Zope on my OpenBSD system.  I get
-       some wierd compilation errors.
+       some weird compilation errors.
 
        Make sure you unpack Zope using GNU tar; you will not get any
        error messages with OpenBSD's standard tar, but your installation
@@ -59,7 +58,6 @@ Zope Installation Frequently Asked Questions
 
        Look in the error log for your web server for details of the error.
 
-
     2. I have installed Zope, and when I go to the URL in my web
        browser, I get a password prompt. Although I type in the correct
        username and password, I keep getting prompted. What is going on?
@@ -74,24 +72,15 @@ Zope Installation Frequently Asked Questions
        Zope. See the doc/WEBVSERVER.txt file for information on correctly
        configuring your web server to pass authentication information.
 
-
     3. I have installed Zope, and when I go to the URL in my web
        browser, I get a "Connection refused" error.
 
        Probably this means that Zope has failed to start.  You should try 
        to start Zope in the foreground and look for error messages.
 
-       On Linux / Unix / OSX, you can do this by giving the command
-       "./bin/runzope" or "./bin/zopectl fg"  in your zope instance
-       (they are equivalent).
-
-       On Windows, navigate to the Zope folder in your Start Menu and 
-       click on "Run Zope in Console". A console window with process 
-       startup information will be displayed.
-
-       If there are errors, the last error shown should explain
-       what went wrong.
-
+       You can do this by giving the command "./bin/zopectl fg" in your
+       Zope instance. If there are errors, the last error shown should
+       explain what went wrong.
 
     4. When I go to a URL for an application that isn't running, it
        takes quite a while to startup.  Why is that?
@@ -101,21 +90,7 @@ Zope Installation Frequently Asked Questions
        take a while. Packing your Zope database at regular intervals
        can reduce startup time.
 
-
-    5. I have Zope with the Oracle Database adapter installed, and can't
-       get it running. Why?
-
-       If you have Oracle installed, you need to ensure that the
-       environment variable "ORACLE_HOME" is in the environment of
-       the running application. You can do this by adding a line to 
-       the <environment> section of etc/zope.conf, such as:
-
-       <environment>
-           ORACLE_HOME /foo/bar/
-       </environment>
-
-
-    6. I have forgotten the only password used to access the site or
+    5. I have forgotten the only password used to access the site or
        I have modified the security settings in such a way that even
        I can't get access.  How do I fix it?
 
@@ -133,8 +108,8 @@ Zope Installation Frequently Asked Questions
 
        As the emergency user, you are allowed to create user folders
        and user accounts as well as adjust security settings but you
-       are not allowed to create objects like DTML methods or folders.
-       This is a safety precaution.
+       are not allowed to create objects like folders. This is a
+       safety precaution.
 
        See more details in the file SECURITY.TXT.
 
@@ -174,87 +149,36 @@ Zope Installation Frequently Asked Questions
 
   Upgrading from Earlier Versions of Zope
 
-    1. How can I upgrade to Zope 2.8?
+    1. How can I upgrade to the latest Zope 2 version?
 
        The usual procedure when installing a new version of Zope is:
 
-       - Create a new instance (see doc/INSTALL.txt).
+       - Create a new environment (see doc/INSTALL.txt).
 
-       - Copy the var/Data.fs file from your old instance into your 
-         new instance's var/ directory. 
+       - Include your application code in the environment.
 
-         It is best to do this while the old instance is not running; 
-         alternatively, you can use repozo.py as described at 
-         http://www.zope.org/Wikis/ZODB/FileStorageBackup 
-         to make a live backup, then create a new Data.fs from that
-         backup in your new instance.
-
-         Keep your old Data.fs in the old instance as a backup.
-        
-       - Copy the Products and Extensions directories from your old 
-         instance into the new instance.
-
-         Leave the old instance directories intact as a backup.
+       - Copy your database files, (often var/Data.fs) from your old
+         environment into your new environment's var/ directory.
+         Only do this while the old database files are not in use.
  
        - Update etc/zope.conf with any changes you made in your
-         old instance.  (Likewise for zeo.conf if you are using zeo.)
+         old environment.
 
-       - Start the new instance. (Be sure the old instance is not running.)
+       - Start the new application process. (Be sure the old process
+         is not running.)
 
-       - Update any ZCatalogs as described below. 
-
-       - Update any Python Scripts. This is not strictly necessary,
-         but it will make Zope restart somewhat faster.  Visit this URL 
-         in your browser:
-
-         http://.../manage_addProduct/PythonScripts/recompile
-
-
-    2. After moving my old Data.fs to Zope 2.8 I get an 
-       "AttributeError, _length" when trying to use the ZCatalog?
-
-       In Zope 2.8 we cleaned up the index implementations and therefore
-       you need to migrate every single ZCatalog manually.
-
-       Notice: **YOU SHOULD BACKUP YOUR var/Data.fs file before starting 
-       the migration**, see http://www.zope.org/Wikis/ZODB/FileStorageBackup 
-       for backup instructions.
-
-       To perform the migration:
-
-        - go to the ZMI 
-
-        - click on your ZCatalog instance (or portal_catalog inside
-          your CMF or Plone instance)
-
-        - you will get an "AttributeError, _length"...don't panic
-
-        - call the "manage_convertIndexes" method of the ZCatalog 
-          (by replacing the "manage_main" part of the URL with
-           "manage_convertIndexes")
-
-        - depending on the size of your ZCatalog the migration may
-          take a while
-
-        - after the conversion a message will appear: "Indexes
-          converted and reindexed"
-
-
-    3. CMF doesn't work!
+    2. CMF doesn't work!
 
         Check that you have a recent stable version of CMF.
-        As of Zope 2.8.0, you need at least CMF-1.4.8.  
         CMF is available at http://www.zope.org/Products/CMF/
 
-
-    4. Plone doesn't work!
+    3. Plone doesn't work!
 
         All Plone versions require a certain Zope version.
         Check the Plone release informations on http://www.plone.org
 
 
   General
-
 
     1. My browser is giving a message, 'Sorry, an error occurred.'
        How do I find out what the real error is?
@@ -271,11 +195,10 @@ Zope Installation Frequently Asked Questions
        In general, error_log will show the *traceback* for errors.
        This traceback explains the error message. 
 
-       Occassionally you won't see any error message. Rather, the HTML 
+       Occasionally you won't see any error message. Rather, the HTML 
        source will contain the last good HTML returned by the request
        before the error occurred. This is due to caching by the
        browser.  Clear your cache and view the HTML source again.
-
 
     2. I'm using Python 2.x and I'm having a problem ...
 

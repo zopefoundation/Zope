@@ -15,12 +15,12 @@ Prerequisites
 System requirements when building from source
 
 - A supported version of Python, including the development support if
-  installed from system-level packages.  Supported versions include::
+  installed from system-level packages.  Supported versions include:
 
-  o 2.4.x, (x >= 4)
+  * 2.5.x, (x >= 4)
 
-  o 2.5.x
-  
+  * 2.6.x
+
 - Zope needs the Python ``zlib`` module to be importable.  If you are
   building your own Python from source, please be sure that you have the
   headers installed which correspond to your system's ``zlib``.
@@ -145,7 +145,7 @@ by directing your browser to::
 
   http://yourhost:8080/manage
 
-.. where 'yourhost' is the DNS name or IP address of the machine
+where 'yourhost' is the DNS name or IP address of the machine
 running Zope.  If you changed the HTTP port as described, use the port
 you configured.
 
@@ -165,22 +165,11 @@ start. You can access the Zope Book at:
 
 http://www.zope.org/Documentation/Books/ZopeBook
 
-Integrating Zope With An Existing Webserver
---------------------------------------------
-
-Zope doesn't require any existing webserver to run, but you can
-integrate it with other webservers as necessary.  See the
-``doc/WEBSERVER.txt`` file for more information about configuring Zope
-with an existing web server.  There is also information about integrating
-Zope with existing webservers on the Zope.org website.
-
 Troubleshooting
 ---------------
 
-- This version of Zope requires Python 2.4.4 or better, including
-  2.5.x.  It may run with Python 2.6.x, although this configuration
-  is not supported in this version of Zope.  It will *not* run with
-  Python 3.x.
+- This version of Zope requires Python 2.5.4 or better, including
+  2.6.x.  It will *not* run with Python 3.x.
 
 - The Python you run Zope with *must* have threads compiled in,
   which is the case for a vanilla build.  Warning: Zope will not run

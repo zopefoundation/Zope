@@ -1,24 +1,22 @@
 How to build and install Zope from source code on Windows.
 ----------------------------------------------------------
-These instructions appear to work for 2.7 and the trunk:
 
 * Ensure you have the correct MSVC version installed for the
   version of Python you will be using.
-  
+
 * Install (or build from sources) Python
   http://www.python.org
-  
+
 * Install (or build from sources) the Python for Windows extensions
   http://sourceforge.net/projects/pywin32/
 
-* Unpack the Zope source distribution or pull from CVS.  Change
-  to that directory.
+* Unpack the Zope source distribution. Change to that directory.
 
 * Execute:
   % python.exe inst\configure.py
   It should say something like:
   >
-  > - Zope top-level binary directory will be c:\Zope-2.7.
+  > - Zope top-level binary directory will be c:\Zope-2.12.
   > - Makefile written.
   >
   > Next, run the Visual C++ batch file "VCVARS32.bat" and then "nmake".
@@ -32,16 +30,6 @@ These instructions appear to work for 2.7 and the trunk:
 * As instructed, execute 'nmake install'.  A few warnings will be generated, 
   but they can be ignored.  The last message in the build process should be:
   > Zope binaries installed successfully.
-
-* If you are running from CVS, the build may fail:
-  See http://collector.zope.org/Zope/1530
-  > running install_data
-  > error: can't copy 'version.txt': no matching files
-  > NMAKE : fatal error U1077: '"e:\src\python-2.3-cvs\pcbuild\python.exe"' : return code '0x1'
-  > Stop.
-
-  If you see this error, edit setup.py and comment the line referencing 
-  'version.txt'
 
 * Zope itself has now been installed.  We need to create an instance.  Run:
   % python.exe {install_path}\bin\mkzopeinstance.py
