@@ -19,13 +19,16 @@ Zope Changes
 
     Bugs fixed
 
+      - LP/#143873: Fixed problems when no HTTP_ACCEPT_CHARSET is in the
+        request. This required an update of zope.publisher to 3.3.3.
+
       - LP/#324876: tighened regex for detecting the charset
         from a meta-equiv header
 
       - Acquisition wrappers now correctly proxy __iter__.
 
       - Products.PluginIndexes.PathIndex:  backported doc fixes /
-        optiimizations from trunk (and ExtendedPathIndex).
+        optimizations from trunk (and ExtendedPathIndex).
 
       - Launchpad #174705:  ensure that the error info object exposed to a
         'tal:on_error' handler has attributes visible to restricted code.
