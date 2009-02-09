@@ -1,28 +1,21 @@
-Welcome to The Zope Source Release
-==================================
+Introduction
+------------
 
-Zope is an open-source web application server.
+Zope2 is an open-source web application server.
 
-This document provides some general information about the Zope source
-release and provides links to other documents.
+This document provides some general information about Zope2 and provides
+links to other documents.
 
 Installation information can be found in ``doc/INSTALL.txt``.  Other
-documentation is also in the "doc" directory and in the Zope.org
+documentation is also in the "doc" directory and in the zope.org
 documentation section at http://www.zope.org/Documentation/.
 
 General Zope information is available at http://www.zope.org/
 
-Report problems with this release on the Zope mailing list
-(zope@zope.org) To subscribe to the list send mail to
-zope-request@zope.org with "subscribe" in the subject line.
-
-Introduction
+Installation
 ------------
 
-The source release is intended for tinkerers, those who want to use
-Zope components separately, people who want to use their own Python,
-and people who work on platforms that are not supported by a binary
-distribution.
+Follow the instructions in ``doc/INSTALL.txt`` to install Zope.
 
 License
 -------
@@ -30,15 +23,18 @@ License
 The Zope License is included in ``ZopePublicLicense.txt``.  Send your
 feedback about the license to zope-license@zope.org.
 
-Installing Zope
----------------
-
-Follow the instructions in ``doc/INSTALL.txt`` to install Zope.
-
-Reporting bugs
---------------
+Bug tracker
+-----------
 
 Bugs reports should be made through the Zope bugtracker at
 https://bugs.launchpad.net/zope2.  A bug report should contain detailed
 information about how to reproduce the bug, error messages (see
 ``/error_log`` within the ZMI or ``var/event.log``).
+
+Mailing list
+------------
+
+You can contact and discuss the development of Zope2 itself on the Zope
+mailing list (zope@zope.org). To subscribe to the list send mail to
+zope-request@zope.org with "subscribe" in the subject line.
+
