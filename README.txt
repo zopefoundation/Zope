@@ -6,7 +6,7 @@ Zope is an open-source web application server.
 This document provides some general information about the Zope source
 release and provides links to other documents.
 
-Installation information can be found in ``Zope/doc/INSTALL.txt``.  Other
+Installation information can be found in ``doc/INSTALL.txt``.  Other
 documentation is also in the "doc" directory and in the Zope.org
 documentation section at http://www.zope.org/Documentation/.
 
@@ -33,12 +33,12 @@ feedback about the license to zope-license@zope.org.
 Installing Zope
 ---------------
 
-Follow the instructions in ``Zope/doc/INSTALL.txt`` to install Zope.
+Follow the instructions in ``doc/INSTALL.txt`` to install Zope.
 
 Reporting bugs
 --------------
 
 Bugs reports should be made through the Zope bugtracker at
-http://collector.zope.org/Zope.  A bug report should contain detailed
+https://bugs.launchpad.net/zope2.  A bug report should contain detailed
 information about how to reproduce the bug, error messages (see
-/error_log within the ZMI or var/event.log)
+``/error_log`` within the ZMI or ``var/event.log``).
