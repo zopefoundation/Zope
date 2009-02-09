@@ -216,18 +216,18 @@ class SiteErrorLog (SimpleItem):
                 LOG.error('Error while logging', exc_info=sys.exc_info())
             else:
                 if self.copy_to_zlog:
-                    self._do_copy_to_zlog(now,strtype,str(url),tb_text)
+                    self._do_copy_to_zlog(now,strtype,entry_id,str(url),tb_text)
                 return '%s/showEntry?id=%s' % (self.absolute_url(), entry_id)
         finally:
             info = None
 
-    def _do_copy_to_zlog(self,now,strtype,url,tb_text):
+    def _do_copy_to_zlog(self,now,strtype,entry_id,url,tb_text):
         when = _rate_restrict_pool.get(strtype,0)
         if now>when:
             next_when = max(when, now-_rate_restrict_burst*_rate_restrict_period)
             next_when += _rate_restrict_period
             _rate_restrict_pool[strtype] = next_when
-            LOG.error('%s\n%s' % (url, tb_text.rstrip()))
+            LOG.error('%s %s\n%s' % (entry_id, url, tb_text.rstrip()))
 
     security.declareProtected(use_error_logging, 'getProperties')
     def getProperties(self):

@@ -269,6 +269,12 @@ Zope Changes
         for more time zones and up to date daylight saving time
         information.
 
+      - SiteErrorLog now includes the entry id in the information copied to
+        the event log. This allowes you to correlate a user error report with
+        the event log after a restart, or let's you find the REQUEST
+        information in the SiteErrorLog when looking at a traceback in the
+        event log.
+
     Bugs Fixed
 
       - Specified height/width of icons in ZMI listings so the table doesn't
