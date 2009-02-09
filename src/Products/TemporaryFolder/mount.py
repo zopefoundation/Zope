@@ -139,7 +139,7 @@ class MountPoint(persistent.Persistent, Implicit):
         if jar is None:
             # Get _p_jar from parent.
             self._p_jar = jar = parent._p_jar
-        conn = db.open(version=jar.getVersion())
+        conn = db.open()
 
         # Add an attribute to the connection which
         # makes it possible for us to find the primary

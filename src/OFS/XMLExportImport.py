@@ -38,7 +38,6 @@ def exportXML(jar, oid, file=None):
     elif type(file) is str: file=open(file,'w+b')
     write=file.write
     write('<?xml version="1.0"?>\012<ZopeData>\012')
-    version=jar._version
     ref=referencesf
     oids=[oid]
     done_oids={}
@@ -49,8 +48,15 @@ def exportXML(jar, oid, file=None):
         del oids[0]
         if done(oid): continue
         done_oids[oid]=1
-        try: p, serial = load(oid, version)
-        except: pass # Ick, a broken reference
+        try:
+            try:
+                p, serial = load(oid)
+            except TypeError:
+                # Some places inside the ZODB 3.9 still want a version
+                # argument, for example TmpStore from Connection.py
+                p, serial = load(oid, None)
+        except:
+            pass # Ick, a broken reference
         else:
             ref(p, oids)
             write(XMLrecord(oid,len(p),p))

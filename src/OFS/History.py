@@ -117,8 +117,7 @@ class Historical(Base):
             first=request.get('first_transaction', first)
             last=request.get('last_transaction',last)
 
-
-        r=self._p_jar.db().history(self._p_oid, None, last)
+        r=self._p_jar.db().history(self._p_oid, size=last)
         if r is None:
             # storage doesn't support history
             return ()

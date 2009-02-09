@@ -30,6 +30,7 @@ from App.config import getConfiguration
 
 TEMPNAME = tempfile.mktemp()
 TEMPPRODUCTS = os.path.join(TEMPNAME, "Products")
+TEMPVAR = os.path.join(TEMPNAME, "var")
 
 def getSchema():
     startup = os.path.dirname(os.path.realpath(Zope2.Startup.__file__))
@@ -57,10 +58,12 @@ class StartupTestCase(unittest.TestCase):
             text.replace("<<INSTANCE_HOME>>", TEMPNAME))
         os.mkdir(TEMPNAME)
         os.mkdir(TEMPPRODUCTS)
+        os.mkdir(TEMPVAR)
         try:
             conf, handler = ZConfig.loadConfigFile(schema, sio)
         finally:
             os.rmdir(TEMPPRODUCTS)
+            os.rmdir(TEMPVAR)
             os.rmdir(TEMPNAME)
         self.assertEqual(conf.instancehome, TEMPNAME)
         return conf, handler
@@ -198,8 +201,6 @@ class StartupTestCase(unittest.TestCase):
                 mount-point                    /
                 cache-size                     5000
                 pool-size                      7
-                version-pool-size              3
-                version-cache-size             100
             </zodb_db>
             """)
         self.assertEqual(conf.databases[0].config.connection_class.__name__,

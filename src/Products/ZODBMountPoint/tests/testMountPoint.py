@@ -37,7 +37,7 @@ class TestDBConfig:
     def __init__(self, fname, mpoints):
         self.fname = fname
         self.mpoints = mpoints
-        
+
     def getDB(self):
         from ZODB.config import DemoStorage
         from ZODB.Connection import Connection
@@ -45,18 +45,25 @@ class TestDBConfig:
         self.name = self.fname
         self.base = None
         self.path = os.path.join(os.path.dirname(__file__),  self.fname)
-        self.create = None
-        self.read_only = None
-        self.quota = None
         self.cache_size = 5000
-        self.pool_size = 7
-        self.version_pool_size = 3
-        self.version_cache_size = 100
-        self.mount_points = self.mpoints
-        self.connection_class = Connection
+        self.cache_size_bytes = 0
         self.class_factory = None
-        self.storage = DemoStorage(self)
+        self.connection_class = Connection
         self.container_class = None
+        self.create = None
+        self.factories = ()
+        self.historical_pool_size = 3
+        self.historical_cache_size = 1000
+        self.historical_cache_size_bytes = 0
+        self.historical_timeout = 300
+        self.mount_points = self.mpoints
+        self.pool_size = 7
+        self.pool_timeout = 1<<31
+        self.quota = None
+        self.read_only = None
+        self.storage = DemoStorage(self)
+        self.version_cache_size = 100
+        self.version_pool_size = 3
         return ZopeDatabase(self)
 
     def getSectionName(self):

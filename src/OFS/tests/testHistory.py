@@ -60,7 +60,7 @@ class HistoryTests(unittest.TestCase):
         for i in range(3):
             entry = r[i]
             # check no new keys show up without testing
-            self.assertEqual(len(entry.keys()),7)
+            self.assertEqual(len(entry.keys()),6)
             # the transactions are in newest-first order
             self.assertEqual(entry['description'],'Change %i' % (3-i))
             self.failUnless('key' in entry) 
@@ -72,8 +72,7 @@ class HistoryTests(unittest.TestCase):
                 # check times are increasing
                 self.failUnless(entry['time']<r[i-1]['time'])
             self.assertEqual(entry['user_name'],'')
-            self.assertEqual(entry['version'],'')
-            
+
     def test_manage_historyCopy(self):
         # we assume this works 'cos it's tested above
         r = self.ps.manage_change_history()

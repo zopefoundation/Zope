@@ -72,15 +72,9 @@ class MountedTemporaryFolder(MountPoint, Item):
 
     manage_traceback = DTMLFile('dtml/mountfail', globals())
 
-    def _createDB(self, db=None): # huh?  db=db was original
+    def _createDB(self):
         """ Create a mounted RAM database """
-        db = DB(TemporaryStorage())
-        # the connection in 2.5.X - 2.6.1 was a "low conflict connection",
-        # but this caused synchronization problems.  For 2.6.2, we want
-        # to reenable read conflict errors, so we use a default connection
-        # type.
-        #db.klass = LowConflictConnection
-        return db
+        return DB(TemporaryStorage())
 
     def _getMountRoot(self, root):
         sdc = root.get('folder', None)
