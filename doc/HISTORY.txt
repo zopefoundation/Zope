@@ -4,11 +4,22 @@ Zope History
   Zope. Change information for the current release can be found
   in the file CHANGES.txt.
 
-Zope Changes
+  Zope 2.11.3 (unreleased)
 
-  This file contains change information for the current Zope release.
-  Change information for previous versions of Zope can be found in the
-  file HISTORY.txt.
+    Bugs Fixed
+
+      - configure script: setting ZOPE_VERS to '2.11'
+
+      - Products.PluginIndexes.PathIndex:  backported doc fixes /
+        optiimizations from trunk (and ExtendedPathIndex).
+
+      - Updated 'pytz' from '2007f' to '2008i'.
+
+      - Moved svn:externals for 'mechanize', 'ClientPath', and 'pytz' to
+        versions managed outside the Zope3 trunk.
+  
+      - Testing.ZopeTestCase: Remove quota argument from DemoStorage calls in
+        preparation for ZODB 3.9.
 
   Zope 2.11.2 (2008/10/24) 
 
@@ -243,6 +254,32 @@ Zope Changes
         evaluation of objects that implemented __len__ instead of checking
         them against None. Replaced a number of "if not obj" with
         "if obj is None".
+
+  Zope 2.10.8 (unreleased)
+
+    Restructuring
+
+      - Added 'InitializeClass' alias in 'App.class_init' to ease migration.
+        In Zope 2.12 it will be recommended to import 'InitializeClass' from
+        'App.class_init' instead of 'Globals'.
+
+      - Moved 'ApplicationDefaultPermissions' from 'App.class_init' to
+        'AccessControl.Permissions', in order to break an import cycle
+        in third-party code which avoids imports from 'Globals.'  Left
+        the class importable from its old location without deprecation.
+
+    Bugs fixed
+
+      - LP/#143873: Fixed problems when no HTTP_ACCEPT_CHARSET is in the
+        request. This required an update of zope.publisher to 3.3.3.
+
+      - LP/#324876: tighened regex for detecting the charset
+        from a meta-equiv header
+
+      - Acquisition wrappers now correctly proxy __iter__.
+
+      - Launchpad #174705:  ensure that the error info object exposed to a
+        'tal:on_error' handler has attributes visible to restricted code.
 
   Zope 2.10.7 (2008/10/24)
 
