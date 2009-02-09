@@ -10,6 +10,409 @@ Zope Changes
   Change information for previous versions of Zope can be found in the
   file HISTORY.txt.
 
+  Zope 2.10.7 (2008/10/24)
+
+    Bugs fixed
+
+      - Ensure that response header values cannot embed CRLF pairs, which
+        violate the HTTP spec (RFC 2616).
+
+      - Launchpad #282677: fixed implementation of guarded_map and
+        provided tests and implementation for guarded_zip
+        (RestrictedPython).
+
+      - Lauchpad #143736,#271395: fixed AttributeError' on _ltid in TempStorage
+
+      - 'AccessControl.ZopeGuards.guarded_import' mapped some Unauthorized
+        exceptions onto ImportErrors:  don't do that!  Also, removed
+        mutable defaults from argument list, improved tests.
+
+      - LP #281156:  'AccessControl.SecurityInfo.secureModule' dropped
+        ModuleSecurity for failed imports, obscuring later attempts to
+        import the same broken module.
+
+      - LP #142667:  Updated to ZODB-3.7.3 to fix problem with product
+        auto-refresh.
+
+      - Updated to Five 1.5.8
+
+      - Launchpad #245649:  the Products package is now a proper
+        "namespace package" under the rules specified by setuptools.
+
+      - Fixed outdated transaction.commit(1) call in 
+        ZODBMountPoint.SimpleTrailblazer
+
+      - Launchpad #239636:  Ensure that HEAD requests lock an empty body
+        for NotFound errors.
+
+      - Launchpad #229549:  Don't ignore 'debug' flag when rendering
+        page templates (thanks to Eric Steele for the patch).
+
+      - integrated Hotfix-2008-08-12
+
+      - Launchpad #267545: DateTime(DateTime()) now preserves the
+        correct hour
+
+      - Launchpad #262313: respect the 'Expand macros when editing' flag
+        when editing a page template through the ZMI
+
+
+  Zope 2.10.6 (2008/05/10)
+
+    Bugs fixed
+
+      - Launchpad #142350: Display description for properties as row title,
+        if present.
+
+      - Launchpad #200007: DateTime(anotherDateTime) now preserves the
+        timezone.
+
+      - Launchpad #213311:  Handle "unsubscriptable object" errors
+        during publishing traversal.
+
+      - Launchpad #143813: zopectl now exits non-zero when
+        child processes fail.
+
+      - Launchpad #173658:  Removed dead code in OFS.Traversable's
+        'unrestrictedTraverse' (apparent NameError).
+
+      - Launchpad #198274:  "empty" ZopePageTemplates could not be
+        unpickled.
+
+      - zope.security: switched to use standalone 3.3.3 version, which
+        contains a backport of a huge performance bugfix from the 3.4 branch.
+
+      - Launchpad #164783: Indexes were migrated on initial creation of a
+        ZODB.
+
+  Zope 2.10.5 (2007/10/30)
+
+    Other changes
+
+      - Turned deprecation warnings for manage_afterAdd, manage_beforeDelete
+        and manage_afterClone methods into discouraged warnings. These methods
+        will not be removed in Zope 2.11, but stay for the foreseeable future.
+        Using events is still highly encouraged.
+
+    Bugs fixed
+
+      - Launchpad #147201: treat container-class in zope.conf as a string,
+        making it possible to use types from extra products directories.
+
+      - Collector #2358: backported fix making 'Products' package a real
+        "namespace package" from the trunk.
+
+      - Collector #2287: form ':record' objects did not implement enough of
+        the mapping interface.
+
+      - Collector #2352: fix in OFS.Traversable
+
+      - Collector #2346: username logging in FCGI crashed the server
+
+      - ZopePageTemplate's pt_edit did not recognize content type arguments
+        which had a charset information included.
+
+      - Collector #2332: SessionDataManger: don't swallow ConflictErrors
+
+      - Collector #2339: ZPT: fixed unicode issue when using the 'structure'
+        directive
+
+      - Launchpad #151020: HTTP_CHAR_SET headers containing 'x-user-defined'
+        caused a LookupError exception. Unknown encodings are from now on
+        silently discarded.
+
+  Zope 2.10.4 (2007/06/23)
+
+    Other changes
+
+      - updated to ZODB 3.7.1
+
+      - updated to Zope 3.3.2
+
+      - updated to Five 1.5.5
+
+    Bugs fixed
+
+      - Collector #1306: Missing acquisition context on local roles screen.
+
+      - Collector #2153: Supporting unquoted cookies with spaces.
+
+      - The REQUEST no longer accepts holds after it has been closed.
+
+      - Collector #1441: WebDAV compatibility with Windows Web Folders
+        restored by adding a configuration variable that controls the
+        sending of the non-standard MS-Author-Via and Public
+        headers. Thanks for PatrickD for the the hard work coming up
+        with an initial patch.  
+        (http://zope.org/Collectors/Zope/1441)
+
+      - Fixed bug in ZPublisher.BaseRequest with persistent site managers. An
+        EndRequestEvent was thrown after the ZODB connection was already
+        closed and thus the site manager not being available anymore.
+
+      - Collector #2295: Comments in PythonScripts could lead to syntax
+        errors
+
+      - Collector #2307: ObjectCopiedEvent not dispatched to sublocations.
+
+      - Collector #2304: fixed markup issue in ptEdit.zpt
+
+      - Collector #2260: fixed Examples.zexp
+
+      - Collector #2320: HTTPResponse setHeader lowercased keys but getHeader
+        did not, causing lookups of 'Content-Type' to fail
+
+      - Collector #2321: Skip trusted proxies when extracting the client IP
+        address from the request.
+
+      - Collector #2318: Allow override of zopectl's control socket in
+        zope.conf
+
+      - Collector #2316: correctly unpack DateTimeIndex dates when browsing the
+        index.
+
+      - Collector #1866: a 304 HTTP status should not have a content length.
+  
+      - Collector #2300: delimit *all* HTTP Response headers with CRLF.
+
+  Zope 2.10.3 (2007/03/25)
+
+    Bugs fixed
+
+      - Collector #2298: webdav.Resource.COPY and webdav.Resource.MOVE did
+        not send the expected copy/move events.
+
+      - Collector #2296: Fixed import of ZClass products, broken by removal
+        of BBB support for pasting objects whose meta_type info was
+        permission-free.
+
+      - Collector #2294: Protected DOS-able ControlPanel methods with the
+        same 'requestmethod' wrapper.
+
+      - Collector #2294: Protected various security mutators with a new
+        'postonly' decorator.  The decorator limits method publishing to
+        POST requests only, and is a backport from Zope 2.11's requestmethod
+        decorator factory.
+
+      - Collector #2289: restored compatibility with PTProfiler
+    
+      - No longer opens a zodb connection every time a ProductDispatcher
+        is looked up.
+
+      - Collector #2288: @ and + should not be quoted when forming
+        request URLs in BaseRequest and HTTPRequest
+
+      - Undeprecated 'zLOG', which will remain a backward-compatibility
+        shim for the Python logging module.
+
+      - PageTemplate/ZRPythonExpr.py: expressions represented as unicode string
+        caused UnicodeDecodeErrors. 
+
+  Zope 2.10.2 (2007/01/26)
+
+    Bugs fixed
+
+      - Updated Zope 3 to bugfix release 3.3.1.
+
+      - Collector #2261: Acquisition when creating objects via Webdav.
+
+      - Collector #2269: fixed broken FTP support for ZPT
+
+  Zope 2.10.2 beta 1 (2007/01/14)
+
+    Bugs fixed
+
+      - Fixed Collector #2190: Calls to
+        zope.security.management.checkPermission aren't rerouted to
+        Zope 2's security policy.
+
+        NOTE: If you already have a Zope 2.10 instance running, you
+        will either have to recreate it or add the following lines to
+        the end of the etc/site.zcml file::
+
+          <securityPolicy
+                component="Products.Five.security.FiveSecurityPolicy" />
+
+      - Fixed Collector #2223: Evaluation of booleans in TALES and the
+        'default' variable.
+
+      - Reverted backward-incompatible fix for Collector #2191.
+
+      - Fixed the creation of lib/python/Zope2/version.txt
+
+      - added Python 2.4.4 as optimal Python version to 'configure'
+
+      - the ZopePageTemplate implementation now uses unicode
+        internally.  Non-unicode instances are migrated on-the-fly to
+        unicode. However this will work only properly for ZPT
+        instances formerly encoded as utf-8 or ISO-8859-15. For other
+        encodings you might set the environment variable
+        ZPT_REFERRED_ENCODING to insert your preferred encoding in
+        front of utf-8 and ISO-8859-15 within the encoding sniffer
+        code. In addition there is a new 'output_encodings' property
+        that controls the conversion from/to unicode for WebDAV/FTP
+        operations.
+
+      - the ZPT implementation has now a configurable option in order
+        how to deal with UnicodeDecodeErrors. A custom
+        UnicodeEncodingConflictResolver can be configured through ZCML
+        (see Products/PageTemplates/(configure.zcml,
+        unicodeconflictresolver.py, interfaces.py)
+
+  Zope 2.10.1 (2006-11-22)
+
+    Bugs fixed
+
+      - Collector #2191: extended DateTime parser for better support
+        to the ISO8601 specification.
+
+      - Reworking of _cached_result in Shared.DC.ZRDB.DA.DA:
+
+        - fixed KeyError reported in Collector #2212
+
+        - fixed two memory leaks that occurred under high load
+
+        - fixed broken cache keys for people using the obscure 
+          Shared.DC.ZRDB.DA.DA.connection_hook
+
+        - fixed incorrect cache ordering resulting in newer results
+          being dumped when the cache became too large.
+
+      - Collector #2232: Can't call DTML templates from Page Templates
+
+      - Collector #2213: Can't edit "old" ZopePageTemplate instances.
+
+      - Collector #2237: 'make' doesn't tell you to run 'make inplace'
+        before running 'make instance'.
+
+      - Collector #2235: A number of ZCatalog methods were doing boolean
+        evaluation of objects that implemented __len__ instead of checking
+        them against None. Replaced a number of "if not obj" with
+        "if obj is None".
+
+      - Collector #2208: rewriting/setting the 'charset' part of the
+        content-type HTTP header will be done only for 'text/*'
+
+      - Collector #2209: ZTUtils module could not be used inside ZPT
+
+      - Collector #2206: Set PYTHONPATH to include existing PYTHONPATH
+        in skel/bin/zopectl.in and skel/bin/runzope.in
+
+
+  Zope 2.10.0 (2006/10/04)
+
+    Bugs fixed
+
+  
+  Zope 2.10.0 RC 1 (2006/09/25)
+
+    Bugs fixed
+
+      - Call setDefaultSkin on new requests created as the result of
+        ConflictError retries.
+
+      - Collector #2187: PUT_factory broken
+      
+  Zope 2.10.0 beta 2 (2006/09/17)
+
+    Bugs fixed
+
+      - Collector #2117: Don't choke in 'unrestrictedTraverse' for '+'
+        path elements.
+
+      - Collector #2185: Log username for FCGI requests.
+
+      - Collector #2152: Fixed MailHost documentation; simple_send does not
+        process or validate its arguments in any way.
+
+      - Collector #2175: ZTUtils.make_hidden_input did not escape
+        double-quotes.
+
+      - Collector #2176: Fixed bad logging call.
+
+      - Collector #1907: Moved 'alt' property from File to Image.
+
+      - Collector #1983: Specifying session-resolution-seconds >= 1200 caused
+        Zope startup to fail.
+
+      - Collector #2169: webdav.Resource.COPY did not send ObjectClonedEvent.
+
+      - Collector #2178: Fix ZopeTestCase doctest support for layers
+
+  Zope 2.10.0 beta 2 (2006/08/20)
+
+    Bugs Fixed
+
+      - Collector #2155: Fix wrong parameter being passed to
+        logger's error() method, with tests.
+
+      - Updated Five to stable 1.5 release.
+
+      - Traversal order changes were causing WebDAV requests which used
+        acquisition to fail.
+
+      - Collector #2157: Expose name of broken class in SystemError raised
+        from '__getstate__' of a broken instance.
+
+      - Usage of 'urljoin' in 'webdav.davcmds' could lead to wrongly
+        constructed urls.
+
+      - Fix #2141: TALES doesn't traverse correctly over 'repeat'
+        variable
+
+      - reStructuredText/ZReST: setting raw_enabled to 0 for security
+        reasons
+
+      - Collector #2113:  'zopectl test' masked Ctrl-C.
+
+      - OFS Image: Image and File updated to use isinstance(data, str)
+        and raises TypeError upon encountering unicode objects.
+
+      - OFS Application: Updated deprecation warnings.
+        Support for '__ac_permissions__' and 'meta_types' will be removed in
+        Zope 2.11, 'methods' support might remain longer.
+
+      - Collector #2136: Map ResourceLockedError to the correct response code.
+
+      - Collector #2016: DemoStorage couldn't wrap base storages without
+                         an '_oid' attribute.
+
+      - Collector #2118: Empty TALES path expressions are allowed
+        in Zope 2.
+
+      - Acquisition wrappers now correctly proxy __contains__.
+
+      - Collector #2116: sequence.sort() did not work properly
+        locale related comparison methods
+
+      - Collector #2122: fixed missing is_proxying_match definition
+        in ZServer/HTTPServer
+
+      - Collector 2077: fixed problem with ACTUAL_URL and SiteRoot
+
+      - Collector #2073: fixed misbehaviour of OFS.Owned.changeOwnership
+
+      - Collector #2063: cleaned up some mess in MailHost.sendTemplate()
+
+      - View and attribute lookup order was changed to the following:
+           1. Unacquired attributes
+           2. Views
+           3. Acquired attributes
+        According to consensus in z3-five mailing list:
+        http://codespeak.net/pipermail/z3-five/2006q2/001474.html
+        
+      - The defaultView directive now only looks up views, not attributes.
+
+      - Collector #2178: Fix ZopeTestCase doctest support for layers
+
+    Other Changes
+
+      - Disabled docutils file inclusion completely, rather than trying
+        to jigger it via configuration settings.
+
+      - Returned to the "classic" './configure && make && make install'
+        recipe, dropping the use of 'zpkg' for building Zope2 releases.
+
   Zope 2.10.0 beta 1 (2006/05/30)
 
     Restructuring
