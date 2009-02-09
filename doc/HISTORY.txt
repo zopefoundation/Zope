@@ -10,6 +10,240 @@ Zope Changes
   Change information for previous versions of Zope can be found in the
   file HISTORY.txt.
 
+  Zope 2.11.2 (2008/10/24) 
+
+    Bugs Fixed
+
+      - updated to ZODB 3.8.1
+
+      - DateTime conversion of datetime objects with non-pytz tzinfo. 
+        Timezones() returns a copy of the timezone list (allows tests to run).
+        (Backport of r89373 from trunk).
+
+      - LP #253362: better dealing with malformed HTTP_ACCEPT_CHARSET headers
+
+      - Testing.ZopeTestCase: installPackage was tied to the ZopeLite layer.
+
+  Zope 2.11.1 (2008/07/17)
+
+    Bugs Fixed
+
+      - Suppressed DeprecationWarning during import of ZPublisher.Iterators:
+        that module needs to use Z2-style interfaces in 2.11, for BBB, but
+        the Interface module itself issues the warning on import.
+
+      - Launchpad #246748: added 'immediate' option to sendXXX() methods
+        for sending a mail immediately by-passing the zope.sendmail delivery
+        mechanism
+    
+      - Launchpad #246290: fixed backward compatibility issue
+
+      - zope.testing : updated to 3.5.3
+
+      - zope.viewlets: updated to 3.4.2
+
+      - zope.sendmail: updated to 3.5.0 (fixing Launchpad #230831)
+
+  Zope 2.11.0 (2008/06/15)
+
+    Restructuring
+
+      - Noted long-standing but silent deprecation of Zope2-style
+        interfaces (on import of the Interface package).  That package
+        is already gone on the trunk.
+
+    Bugs Fixed
+
+      - Launchpad #229549:  Don't ignore 'debug' flag when rendering
+        page templates (thanks to Eric Steele for the patch).
+
+      - Fixed against-the-rules zope.conf option 'fast_listen' to read
+        'fast-listen' (dash, not underscore).
+
+  Zope 2.11 rc 1 (2008/05/08)
+
+    Bugs Fixed
+
+      - Launchpad #142350: Display description for properties as row title,
+        if present.
+
+      - Launchpad #200007: DateTime(anotherDateTime) now preserves the
+        timezone.
+
+      - Launchpad #213311:  Handle "unsubscriptable object" errors
+        during publishing traversal.
+
+      - Products.Five: Fixed vocabulary lookup broken in 2.11 beta 1.
+        ZopeVocabularyRegistry wasn't hooked up on startup.
+
+      - Launchpad #143813: zopectl now exits non-zero when
+        child processes fail.
+
+      - Products.Five: Resynced browser.adding with zope.app.container.
+        This fixes some minor bugs and removes deprecated code.
+
+      - Launchpad #173658:  Removed dead code in OFS.Traversable's
+        'unrestrictedTraverse' (apparent NameError).
+
+      - Launchpad #198274:  "empty" ZopePageTemplates could not be
+        unpickled.
+
+  Zope 2.11 beta 1 (2007/12/29)
+
+    Restructuring
+
+      - Moved two implements declarations from Five into the proper classes.
+
+      - Document.sequence: replaced by zope.sequencesort
+
+      - All Products folders as well as the zope and zope.app folders are
+        declared as setuptools namespace packages now. See
+        http://peak.telecommunity.com/DevCenter/setuptools#namespace-packages
+        for more information about namespace packages.
+
+      - ZPT: removed display of ZPT warnings since warnings were
+        removed from the zope.pagetemplate implementation     
+
+      - Ship Zope with a standard docutils 0.4 distribution, instead
+        of a patched one.  Both trusted and untrusted code are still
+        protected against unwanted file inclusion.
+
+      - Removed ZGadflyDA (deprecated since Zope 2.9). The code is
+        still available from svn.zope.org/Products.ZGadflyDA.
+
+      - Removed OFS.content_types (deprecated since Zope 2.9)
+
+      - Undeprecated 'zLOG', which will remain a backward-compatibility
+        shim for the Python logging module.
+
+      - Indexes: Removed unused parameters from '_apply_index' methods.
+
+      - Removed deprecated support for product initialization based on
+        '__ac_permissions__' and 'meta_types' attributes.
+
+      - reStructuredText/ZReST: setting raw_enabled to 0 for security
+        reasons
+
+      - OFS Image: Image and File updated to use isinstance(data, str)
+        and raises TypeError upon encountering unicode objects.
+
+      - OFS Application: Updated deprecation warnings.
+        Support for '__ac_permissions__' and 'meta_types' will be removed in
+        Zope 2.11, 'methods' support might remain longer.
+
+    Features added
+
+      - Zope2 startup: Zope will now sends DatabaseOpened and
+        ProcessStarting events during startup
+
+      - Testing.ZopeTestCase: Introduced a "ZopeLite" test layer, making it
+        possible to mix ZTC and non-ZTC tests much more freely.
+
+      - Testing/custom_zodb.py: added support use a different storage other
+        than DemoStorage. A dedicated FileStorage can be mount by setting the
+        $TEST_FILESTORAGE environment variable to a custom Data.fs file.  A 
+        ZEO server can be configured using the $TEST_ZEO_HOST and 
+        $TEST_ZEO_PORT environment variables. This new functionality allows us
+        to use the standard Zope testrunner for writing and running tests
+        against existing Zope installations.
+
+      - The ZPublisher HTTP request has now both the debug and locale
+        attributes available, like its Zope 3 counterpart. The debug attribute
+        was so far limited to code from the zope.* namespace in order to make
+        the Zope 3 ZPT engine work. The locale attribute provides access to an
+        zope.i18n.interfaces.locales.ILocale object with access to locale
+        related information like date / time formatting or translated language
+        and country names. Form variables of both debug and locale will shadow
+        these two attributes and their use is therefor discouraged.
+
+      - MailHost: now uses zope.sendmail for delivering the mail. With this
+        change MailHost integrates with the Zope transaction system (avoids
+        sending dupe emails in case of conflict errors). In addition MailHost
+        now provides support for asynchronous mail delivery. The 'Use queue'
+        configuration option will create a mail queue on the filesystem (under
+        'Queue directory') and start a queue thread that checks the queue
+        every three seconds. This decouples the sending of mail from its
+        delivery.  In addition MailHosts now supports encrypted connections
+        through TLS/SSL.
+
+      - integrated ZODB 3.8 (featuring BLOB support)
+    
+      - integrated latest Zope3 components (aka Zope 3.4)
+
+      - Support for using zopectl on Windows has been added. All commands are
+        supported and there are two Windows specific ones: install and remove,
+        which install or remove the Windows service. The start, stop and
+        restart commands handle the Windows service. In order to use them, you
+        need to call 'bin\zopectl install' once.
+
+      - ZCatalog result objects (catalog brains) now have an interface,
+        ZCatalog.interfaces.ICatalogBrain.
+
+      - PythonScripts: allow usage of Python's 'sets' module
+
+      - added 'fast_listen' directive to http-server and webdav-source-server
+        sections in etc/zope.conf in order to defer the opening of the sockets
+        until the late startup phase. This in in particular useful when running
+        Zope behind a loadbalancer (patch by Patrick Gerken).
+
+      - AccessControl.Role: added new method
+        manage_getUserRolesAndPermissions().
+
+      - AccessControl: the form behind the "Security" tab has a new form
+        for user-related reporting of permissions and roles
+
+      - Zope 3-based exception views can now be registered in ZCML for
+        various exceptions that can be raised by Zope. Registering an
+        exception view can be done like this::
+
+          <browser:page
+            for="zope.publisher.interfaces.INotFound"
+            class=".view.SomeView"
+            name="index.html"
+            permission="zope.Public" />
+
+        Relevant exceptions that can have views are:
+
+        o zope.interface.common.interfaces.IException
+
+        o zope.publisher.interfaces.INotFound
+
+        o zope.security.interfaces.IForbidden
+
+        o zope.security.interfaces.IUnauthorized
+
+        Note that the name has to be 'index.html' for the exception
+        view to work. (patch by Sidnei da Silva from Enfold,
+        integration by Martijn Faassen (Startifact) for Infrae)
+
+      - DateTime now uses pytz for time zone data. This means support
+        for more time zones and up to date daylight saving time
+        information.
+
+    Bugs Fixed
+
+      - Collector #2113:  'zopectl test' masked Ctrl-C.
+
+      - Collector #2190: Calls to zope.security.management.checkPermission
+        weren't rerouted to Zope 2's security policy.
+
+        NOTE: If you already have a Zope 2.10 instance running, you
+        will either have to recreate it or add the following lines to
+        the end of the etc/site.zcml file::
+
+          <securityPolicy
+                component="Products.Five.security.FiveSecurityPolicy" />
+
+      - Collector #2223: Evaluation of booleans in TALES and the
+        'default' variable.
+
+      - Collector #2213: Can't edit "old" ZopePageTemplate instances.
+
+      - Collector #2235: A number of ZCatalog methods were doing boolean
+        evaluation of objects that implemented __len__ instead of checking
+        them against None. Replaced a number of "if not obj" with
+        "if obj is None".
+
   Zope 2.10.7 (2008/10/24)
 
     Bugs fixed
