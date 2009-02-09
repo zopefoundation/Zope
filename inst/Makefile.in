@@ -93,7 +93,6 @@ testinst: instance
 
 # uninstance:  Remove the instance files made by testinstance (w/ prejudice)
 uninstance:
-	${RMRF} "${BASE_DIR}/bin"
 	${RMRF} "${BASE_DIR}/etc"
 	${RMRF} "${BASE_DIR}/import"
 	${RMRF} "${BASE_DIR}/log"
