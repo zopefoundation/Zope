@@ -6,6 +6,14 @@ Zope Changes
 
   Zope 2.10.8 (unreleased)
 
+    Features added
+
+      - SiteErrorLog now includes the entry id in the information copied to
+        the event log. This allowes you to correlate a user error report with
+        the event log after a restart, or let's you find the REQUEST
+        information in the SiteErrorLog when looking at a traceback in the
+        event log.
+
     Restructuring
 
       - Added 'InitializeClass' alias in 'App.class_init' to ease migration.

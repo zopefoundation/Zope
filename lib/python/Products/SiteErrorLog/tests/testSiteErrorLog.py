@@ -14,6 +14,7 @@ import transaction
 
 import sys
 import unittest
+import logging
 
 
 class SiteErrorLogTests(unittest.TestCase):
@@ -27,10 +28,18 @@ class SiteErrorLogTests(unittest.TestCase):
                 from Products.SiteErrorLog.SiteErrorLog import SiteErrorLog
                 self.app._setObject('error_log', SiteErrorLog())
             self.app.manage_addDTMLMethod('doc', '')
+            
+            self.logger = logging.getLogger('Zope.SiteErrorLog')
+            self.log = logging.handlers.BufferingHandler(sys.maxint)
+            self.logger.addHandler(self.log)
+            self.old_level = self.logger.level
+            self.logger.setLevel(logging.ERROR)
         except:
             self.tearDown()
 
     def tearDown(self):
+        self.logger.removeHandler(self.log)
+        self.logger.setLevel(self.old_level)
         transaction.abort()
         self.app._p_jar.close()
 
@@ -120,6 +129,22 @@ class SiteErrorLogTests(unittest.TestCase):
         # Now look at the SiteErrorLog, it must have the same number of 
         # log entries
         self.assertEquals(len(sel_ob.getLogEntries()), previous_log_length)
+
+    def testEntryID(self):
+        elog = self.app.error_log
+
+        # Create a predictable error
+        try:
+            raise AttributeError, "DummyAttribute"
+        except AttributeError:
+            info = sys.exc_info()
+            elog.raising(info)
+
+        entries = elog.getLogEntries()
+        entry_id = entries[0]['id']
+
+        self.assertTrue(entry_id in self.log.buffer[-1].msg, 
+                        (entry_id, self.log.buffer[-1].msg))
 
     def testCleanup(self):
         # Need to make sure that the __error_log__ hook gets cleaned up
