@@ -35,7 +35,10 @@ os.environ['ZOPETESTCASE'] = '1'
 sys.setcheckinterval(2500)
 
 # Shut up if we are not in control of the import process
-_quiet = sys.modules.has_key('Zope2')
+#_quiet = sys.modules.has_key('Zope2')
+
+# Always shut up
+_quiet = True
 
 def _print(msg):
     '''Writes 'msg' to stderr and flushes the stream.'''
