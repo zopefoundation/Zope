@@ -82,7 +82,7 @@ def main():
 
     instancehome = skeltarget
     zopehome = os.path.dirname(os.path.dirname(script))
-    softwarehome = os.path.join(zopehome, "lib", "python")
+    softwarehome = os.path.join(zopehome, "src")
     configfile = os.path.join(instancehome, 'etc', 'zope.conf')
     if skelsrc is None:
         # default to using stock Zope skeleton source
