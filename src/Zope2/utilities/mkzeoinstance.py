@@ -25,5 +25,8 @@ if softwarehome not in sys.path:
 
 from ZEO.mkzeoinst import ZEOInstanceBuilder
 
-if __name__ == "__main__":
+def main():
     ZEOInstanceBuilder().run()
+
+if __name__ == "__main__":
+    main()
