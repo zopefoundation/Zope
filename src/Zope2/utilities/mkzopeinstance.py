@@ -86,9 +86,7 @@ def main():
     configfile = os.path.join(instancehome, 'etc', 'zope.conf')
     if skelsrc is None:
         # default to using stock Zope skeleton source
-#        skelsrc = os.path.join(zopehome, "skel")
-        # 'utilites' dir moved to Zope2.utilities
-        skelsrc = os.path.join(zopehome, "..", "..", "skel")
+        skelsrc = os.path.join(os.path.dirname(__file__), "skel")
 
     inituser = os.path.join(instancehome, "inituser")
     if not (user or os.path.exists(inituser)):
