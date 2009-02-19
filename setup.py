@@ -264,6 +264,7 @@ setup(name='Zope2',
       entry_points={
          'console_scripts' : [
             'mkzopeinstance=utilities.mkzopeinstance:main',
+            'zpasswd=utilities.zpasswd:main',
         ]
       },
       )
