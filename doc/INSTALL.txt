@@ -59,7 +59,7 @@ script::
 
 You will be asked to provide a user name and password for an
 administrator's account during ``mkzopeinstance``.  To see the available
-ommand-line options, run the script with the ``--help`` option::
+command-line options, run the script with the ``--help`` option::
 
   $ bin/mkzopeinstance --help
 
