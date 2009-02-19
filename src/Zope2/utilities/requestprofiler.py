@@ -701,7 +701,7 @@ If the --help argument is given, detailed usage docs are provided."""
     return usage
 
 
-if __name__ == '__main__':
+def main():
     if len(sys.argv) == 1:
         print usage()
         sys.exit(0)
@@ -838,3 +838,6 @@ if __name__ == '__main__':
         traceback.print_exc()
         print usage()
         sys.exit(0)
+
+if __name__ == '__main__':
+    main()
