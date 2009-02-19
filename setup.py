@@ -40,11 +40,9 @@ setup(name='Zope2',
       description='Zope2 application server / web framework',
       author='Zope Corporation and Contributors',
       author_email='zope-dev@zope.org',
-      long_description=open("README.txt").read() + "\n" +
-                       open(os.path.join("doc", "CHANGES.txt")).read(),
+      long_description=file("README.txt").read() + "\n" +
+                       file(os.path.join("doc", "CHANGES.txt")).read(),
 
-      long_description='',
-      
       packages=find_packages('src'),
       package_dir={'': 'src'},
 
