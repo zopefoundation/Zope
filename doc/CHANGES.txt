@@ -11,7 +11,7 @@ Trunk (unreleased)
 Restructuring
 +++++++++++++
 
-- Updated to ZODB 3.9.0a10. ZODB-level version support has been
+- Updated to ZODB 3.9.0a11. ZODB-level version support has been
   removed and ZopeUndo now is part of Zope2.
 
 - The Zope2 SVN trunk is now a buildout pulling in all dependencies as
