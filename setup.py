@@ -13,6 +13,7 @@
 ##############################################################################
 """Setup for the Acquisition egg package
 """
+import os
 from setuptools import setup, find_packages, Extension
 
 EXTENSIONCLASS_INCLUDEDIRS = ['include', 'src']
@@ -39,6 +40,9 @@ setup(name='Zope2',
       description='Zope2 application server / web framework',
       author='Zope Corporation and Contributors',
       author_email='zope-dev@zope.org',
+      long_description=open("README.txt").read() + "\n" +
+                       open(os.path.join("doc", "CHANGES.txt")).read(),
+
       long_description='',
       
       packages=find_packages('src'),
