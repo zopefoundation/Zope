@@ -48,30 +48,6 @@ setup(name='Zope2',
       packages=find_packages('src'),
       package_dir={'': 'src'},
 
-      data_files=[
-        ('skel', ['skel/README.txt']),
-        ('skel/bin', ['skel/bin/runzope.bat.in',
-                      'skel/bin/runzope.in',
-                      'skel/bin/zopectl.bat.in',
-                      'skel/bin/zopectl.in',
-                      'skel/bin/zopeservice.py.in',
-                     ]),
-        ('skel/etc', ['skel/etc/site.zcml',
-                      'skel/etc/zope.conf.in',
-                     ]),
-        ('skel/etc/package-includes', []),
-        ('skel/Extensions', ['skel/Extensions/README.txt']),
-        ('skel/import', ['skel/import/README.txt',
-                         'skel/import/ZopeTutorialExamples.zexp',
-                        ]),
-        ('skel/lib/python', ['skel/lib/python/README.txt.in' ]),
-        ('skel/log', ['skel/log/README.txt']),
-        ('skel/Products', ['skel/Products/__init__.py',
-                           'skel/Products/README.txt',
-                          ]),
-        ('skel/var', ['skel/var/README.txt']),
-      ],
-
       ext_modules=[
 
         # AccessControl
@@ -265,4 +241,10 @@ setup(name='Zope2',
 
       include_package_data=True,
       zip_safe=False,
+      entry_points={
+         'console_scripts' : [
+            'mkzopeinstance=Zope2.utilities.mkzopeinstance:main',
+            'zpasswd=Zope2.utilities.zpasswd:main',
+        ]
+      },
       )

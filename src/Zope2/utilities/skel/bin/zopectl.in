@@ -8,6 +8,7 @@ SOFTWARE_HOME="<<SOFTWARE_HOME>>"
 PYTHONPATH="$SOFTWARE_HOME:$PYTHONPATH"
 export PYTHONPATH INSTANCE_HOME SOFTWARE_HOME
 
-ZOPE_RUN="$SOFTWARE_HOME/Zope2/Startup/run.py"
+ZOPE2PATH=`${PYTHON} -c "import os, Zope2; print os.path.dirname(Zope2.__file__)" `
+ZDCTL="$ZOPE2PATH/Startup/zopectl.py"
 
-exec "$PYTHON" "$ZOPE_RUN" -C "$CONFIG_FILE" "$@"
+exec "$PYTHON" "$ZDCTL" -C "$CONFIG_FILE" "$@"
