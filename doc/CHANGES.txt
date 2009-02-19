@@ -8,6 +8,18 @@ file HISTORY.txt.
 Trunk (unreleased)
 ------------------
 
+Known issues
+++++++++++++
+
+- Running Zope on Windows is not yet supported in this alpha release.
+  More specifically the generated startup scripts need to be adjusted,
+  while the code itself should work fine.
+
+- ZODB 3.9.0a11 does not work on Windows with Python 2.6 yet.
+
+- There is no old-style full tarball release that resembles the prior
+  releases of Zope at this point.
+
 Restructuring
 +++++++++++++
 
