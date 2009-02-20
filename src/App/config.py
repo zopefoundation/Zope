@@ -48,26 +48,28 @@ def setConfiguration(cfg):
 
     from App import FindHomes
     import __builtin__
-    __builtin__.CLIENT_HOME = FindHomes.CLIENT_HOME = cfg.clienthome
-    __builtin__.INSTANCE_HOME = FindHomes.INSTANCE_HOME = cfg.instancehome
-    __builtin__.SOFTWARE_HOME = FindHomes.SOFTWARE_HOME = cfg.softwarehome
-    __builtin__.ZOPE_HOME = FindHomes.ZOPE_HOME = cfg.zopehome
-
-    # XXX make sure the environment variables, if set, don't get out
-    # of sync.  This is needed to support 3rd-party code written to
-    # support Zope versions prior to 2.7.
     import os
-    os.environ["CLIENT_HOME"] = cfg.clienthome
-    os.environ["INSTANCE_HOME"] = cfg.instancehome
-    os.environ["SOFTWARE_HOME"] = cfg.softwarehome
-    os.environ["ZOPE_HOME"] = cfg.zopehome
-
     import Globals  # to set data
-    Globals.data_dir = cfg.clienthome
+
+    __builtin__.CLIENT_HOME = FindHomes.CLIENT_HOME = cfg.clienthome
+    os.environ["CLIENT_HOME"] = cfg.clienthome
     # Globals does not export CLIENT_HOME
+    Globals.data_dir = cfg.clienthome
+
+    __builtin__.INSTANCE_HOME = FindHomes.INSTANCE_HOME = cfg.instancehome
+    os.environ["INSTANCE_HOME"] = cfg.instancehome
     Globals.INSTANCE_HOME = cfg.instancehome
-    Globals.SOFTWARE_HOME = cfg.softwarehome
-    Globals.ZOPE_HOME = cfg.zopehome
+
+    if hasattr(cfg, 'softwarehome') and cfg.softwarehome is not None:
+        __builtin__.SOFTWARE_HOME = FindHomes.SOFTWARE_HOME = cfg.softwarehome
+        os.environ["SOFTWARE_HOME"] = cfg.softwarehome
+        Globals.SOFTWARE_HOME = cfg.softwarehome
+
+    if hasattr(cfg, 'zopehome') and cfg.zopehome is not None:
+        __builtin__.ZOPE_HOME = FindHomes.ZOPE_HOME = cfg.zopehome
+        os.environ["ZOPE_HOME"] = cfg.zopehome
+        Globals.ZOPE_HOME = cfg.zopehome
+
     Globals.DevelopmentMode = cfg.debug_mode
 
 class DefaultConfiguration:
@@ -78,8 +80,10 @@ class DefaultConfiguration:
         from App import FindHomes
         self.clienthome = FindHomes.CLIENT_HOME
         self.instancehome = FindHomes.INSTANCE_HOME
-        self.softwarehome = FindHomes.SOFTWARE_HOME
-        self.zopehome = FindHomes.ZOPE_HOME
+        if hasattr(FindHomes, 'SOFTWARE_HOME'):
+            self.softwarehome = FindHomes.SOFTWARE_HOME
+        if hasattr(FindHomes, 'ZOPE_HOME'):
+            self.zopehome = FindHomes.ZOPE_HOME
         self.dbtab = None
         self.debug_mode = True
         self.enable_product_installation = True

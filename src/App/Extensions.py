@@ -17,7 +17,7 @@ Extensions currently include external methods and pluggable brains.
 $Id$'''
 __version__='$Revision: 1.23 $'[11:-2]
 
-import os, zlib, imp
+import os, imp
 import Products
 from zExceptions import NotFound
 path_split=os.path.split
@@ -91,10 +91,17 @@ def getPath(prefix, name, checkProduct=1, suffixes=('',)):
     if result is None:
         import App.config
         cfg = App.config.getConfiguration()
-        sw=os.path.dirname(os.path.dirname(cfg.softwarehome))
-        for home in (cfg.instancehome, sw):
+        locations = []
+        locations.append(cfg.instancehome)
+        sw = getattr(cfg, 'softwarehome', None)
+        if sw is not None:
+            sw = os.path.dirname(sw)
+            locations.append(sw)
+        for home in locations:
             r=_getPath(home, prefix, name, suffixes)
-            if r is not None: result = r
+            if r is not None:
+                result = r
+        del locations
 
     if result is None:
         try:

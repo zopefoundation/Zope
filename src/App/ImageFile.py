@@ -15,6 +15,7 @@
 __version__='$Revision: 1.20 $'[11:-2]
 
 import os
+import os.path
 import stat
 import time
 
@@ -28,15 +29,21 @@ from DateTime.DateTime import DateTime
 from zope.contenttype import guess_content_type
 from ZPublisher.Iterators import filestream_iterator
 
+import Zope2
+PREFIX = os.path.realpath(
+    os.path.join(os.path.dirname(Zope2.__file__), os.path.pardir)
+    )
+
+
 class ImageFile(Explicit):
     """Image objects stored in external files."""
 
     security = ClassSecurityInfo()
 
-    def __init__(self,path,_prefix=None):
+    def __init__(self, path, _prefix=None):
         import Globals  # for data
         if _prefix is None:
-            _prefix=getConfiguration().softwarehome
+            _prefix=getattr(getConfiguration(), 'softwarehome', PREFIX)
         elif type(_prefix) is not type(''):
             _prefix=package_home(_prefix)
         path = os.path.join(_prefix, path)

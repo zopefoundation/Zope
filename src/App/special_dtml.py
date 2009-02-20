@@ -19,6 +19,12 @@ from App.config import getConfiguration
 
 LOG = getLogger('special_dtml')
 
+import Zope2
+PREFIX = os.path.realpath(
+    os.path.join(os.path.dirname(Zope2.__file__), os.path.pardir)
+    )
+
+
 class HTML(DocumentTemplate.HTML,Persistence.Persistent,):
     "Persistent HTML Document Templates"
 
@@ -32,14 +38,16 @@ class ClassicHTMLFile(DocumentTemplate.HTMLFile,MethodObject.Method,):
     _need__name__=1
     _v_last_read=0
 
-    def __init__(self,name,_prefix=None, **kw):
-        if _prefix is None: _prefix=getConfiguration().softwarehome
+    def __init__(self, name, _prefix=None, **kw):
+        if _prefix is None:
+            _prefix = getattr(getConfiguration(), 'softwarehome', PREFIX)
+            import pdb; pdb.set_trace()
         elif type(_prefix) is not type(''):
-            _prefix=Common.package_home(_prefix)
+            _prefix = Common.package_home(_prefix)
         args=(self, os.path.join(_prefix, name + '.dtml'))
         if not kw.has_key('__name__'):
-            kw['__name__']=os.path.split(name)[-1]
-        apply(ClassicHTMLFile.inheritedAttribute('__init__'),args,kw)
+            kw['__name__'] = os.path.split(name)[-1]
+        apply(ClassicHTMLFile.inheritedAttribute('__init__'), args, kw)
 
     def _cook_check(self):
         if Globals.DevelopmentMode:

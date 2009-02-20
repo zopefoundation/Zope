@@ -433,10 +433,12 @@ class ApplicationManager(Folder,CacheManager):
         return info
 
     def getSOFTWARE_HOME(self):
-        return getConfiguration().softwarehome
+        cfg = getConfiguration()
+        return getattr(cfg, 'softwarehome', None)
 
     def getZOPE_HOME(self):
-        return getConfiguration().zopehome
+        cfg = getConfiguration()
+        return getattr(cfg, 'zopehome', None)
 
     def getINSTANCE_HOME(self):
         return getConfiguration().instancehome

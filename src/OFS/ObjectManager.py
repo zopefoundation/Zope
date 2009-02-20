@@ -659,7 +659,10 @@ class ObjectManager(CopyContainer,
     def list_imports(self):
         listing = []
         cfg = getConfiguration()
-        paths = [cfg.zopehome]
+        paths = []
+        zopehome = getattr(cfg, 'zopehome', None)
+        if zopehome is not None and cfg.zopehome is not None:
+            paths.append(zopegome)
         if not cfg.instancehome in paths:
             paths.append(cfg.instancehome)
         for impath in paths:

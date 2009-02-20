@@ -20,42 +20,30 @@ import os
 import sys
 
 import Products
-from App.Common import package_home
-
 
 try:
     home = os.environ['SOFTWARE_HOME']
 except KeyError:
-    import Zope2
-    home = os.path.abspath(package_home(Zope2.__dict__))
-
-    home, e = os.path.split(home)
-    d, e = os.path.split(home)
-    if e == '.':
-        home = d
-    d, e = os.path.split(home)
-    if e == '..':
-        home = os.path.dirname(d)
-
-home = os.path.realpath(home)
-__builtin__.SOFTWARE_HOME = SOFTWARE_HOME = home
+    pass
+else:
+    home = os.path.realpath(home)
+    __builtin__.SOFTWARE_HOME = SOFTWARE_HOME = home
 
 try:
     zhome = os.environ['ZOPE_HOME']
 except KeyError:
-    zhome = os.path.join(home, '..', '..')
-
-__builtin__.ZOPE_HOME = ZOPE_HOME = os.path.realpath(zhome)
+    pass
+else:
+    zhome = os.path.realpath(zhome)
+    __builtin__.ZOPE_HOME = ZOPE_HOME = zhome
 
 try:
     chome = os.environ['INSTANCE_HOME']
 except KeyError:
-    chome = home
-    d, e = os.path.split(chome)
-    if e == 'python':
-        d, e = os.path.split(d)
-        if e == 'lib':
-            chome = d or os.getcwd()
+    import Zope2
+    base = os.path.dirname(Zope2.__file__)
+    base = os.path.join(base, os.path.pardir, os.path.pardir)
+    chome = os.path.realpath(base)
 else:
     chome = os.path.realpath(chome)
     inst_ppath = os.path.join(chome, 'lib', 'python')

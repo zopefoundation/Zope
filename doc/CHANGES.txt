@@ -23,6 +23,10 @@ Known issues
 Restructuring
 +++++++++++++
 
+- Made the specification of `SOFTWARE_HOME` and `ZOPE_HOME` optional. In
+  addition `INSTANCE_HOME` is no longer required to run the tests of a
+  source checkout of Zope.
+
 - Removed the `test` command from zopectl. The test.py script it was relying
   on does no longer exist.
 
