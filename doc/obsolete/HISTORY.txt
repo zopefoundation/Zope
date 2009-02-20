@@ -562,7 +562,7 @@ Zope History
         "if obj is None".
 
       - Collector #2208: rewriting/setting the 'charset' part of the
-        content-type HTTP header will be done only for 'text/*'
+        content-type HTTP header will be done only for `text/*`
 
       - Collector #2209: ZTUtils module could not be used inside ZPT
 
@@ -666,12 +666,14 @@ Zope History
       - Collector #2063: cleaned up some mess in MailHost.sendTemplate()
 
       - View and attribute lookup order was changed to the following:
-           1. Unacquired attributes
-           2. Views
-           3. Acquired attributes
+
+        1. Unacquired attributes
+        2. Views
+        3. Acquired attributes
+
         According to consensus in z3-five mailing list:
         http://codespeak.net/pipermail/z3-five/2006q2/001474.html
-        
+
       - The defaultView directive now only looks up views, not attributes.
 
       - Collector #2178: Fix ZopeTestCase doctest support for layers
