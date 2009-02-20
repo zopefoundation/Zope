@@ -71,7 +71,9 @@ class StartupTestCase(unittest.TestCase):
     def test_load_config_template(self):
         schema = self.schema
         cfg = getConfiguration()
-        fn = os.path.join(cfg.zopehome, "skel", "etc", "zope.conf.in")
+        import Zope2.utilities
+        base = os.path.dirname(Zope2.utilities.__file__)
+        fn = os.path.join(base, "skel", "etc", "zope.conf.in")
         f = open(fn)
         text = f.read()
         f.close()
