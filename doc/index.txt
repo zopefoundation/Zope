@@ -12,6 +12,7 @@ Contents:
 
    CHANGES.txt
    INSTALL.txt
+   SECURITY.txt
    ZOPE3.txt
    SETUID.txt
    SIGNALS.txt
