@@ -168,8 +168,8 @@ htmlhelp_basename = 'Zopedocsdoc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, document class [howto/manual]).
 latex_documents = [
-  ('index', 'Zopedocs.tex', ur'Zope docs Documentation',
-   ur'AJ', 'manual'),
+  ('index', 'Zope2docs.tex', ur'Zope 2 Documentation',
+   ur'Zope Developers Community', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
