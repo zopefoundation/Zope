@@ -14,6 +14,7 @@ Contents:
    INSTALL.txt
    ZOPE3.txt
    SETUID.txt
+   CREDITS.txt
 
 Indices and tables
 ==================
