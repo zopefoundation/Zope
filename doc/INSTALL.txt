@@ -29,8 +29,8 @@ System requirements when building from source
   (gcc recommended).
 
 
-Building Zope
--------------
+Building Zope using zc.buildout
+-------------------------------
 
 Zope is built using the ``zc.buildout`` library, which needs to be
 "boostrapped" with your Python version.  E.g.::
@@ -42,6 +42,18 @@ The boostrap script creates a ``buildout`` script in ``bin``;  run this
 script to finish building Zope::
 
   $ bin/buildout
+
+Installing Zope using easy_install
+----------------------------------
+
+Zope can be installed using ``easy_install`` either using a global
+easy_install installation or within a virtualized Python environment
+(using ``virtualenv``)::
+
+  $ /path/to/easy_install Zope2
+
+This will create the related scripts like ``mkzopeinstance`` within the
+``bin`` folder of you global or virtualized Python environment.
 
 
 Creating a Zope Instance
