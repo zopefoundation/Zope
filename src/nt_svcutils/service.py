@@ -372,5 +372,5 @@ class Service(win32serviceutil.ServiceFramework):
 # Real __main__ bootstrap code is in the instance's service module.
 if __name__ == '__main__':
     print "This is a framework module - you don't run it directly."
-    print "See your $SOFTWARE_HOME\bin directory for the service script."
+    print "See your installation directory for the service script."
     sys.exit(1)

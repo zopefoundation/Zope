@@ -1,14 +1,10 @@
 #! /bin/sh
 
 PYTHON="<<PYTHON>>"
-ZOPE_HOME="<<ZOPE_HOME>>"
 INSTANCE_HOME="<<INSTANCE_HOME>>"
 CONFIG_FILE="<<INSTANCE_HOME>>/etc/zope.conf"
-SOFTWARE_HOME="<<SOFTWARE_HOME>>"
-PYTHONPATH="$SOFTWARE_HOME:$PYTHONPATH"
-export PYTHONPATH INSTANCE_HOME SOFTWARE_HOME
+export INSTANCE_HOME
 
-ZOPE2PATH=`${PYTHON} -c "import os, Zope2; print os.path.dirname(Zope2.__file__)" `
-ZOPE_RUN="$ZOPE2PATH/Startup/run.py"
+ZOPE_RUN="<<ZOPE2PATH>>/Startup/run.py"
 
 exec "$PYTHON" "$ZOPE_RUN" -C "$CONFIG_FILE" "$@"

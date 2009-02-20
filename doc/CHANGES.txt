@@ -23,6 +23,10 @@ Known issues
 Restructuring
 +++++++++++++
 
+- Removed the specification of `SOFTWARE_HOME` and `ZOPE_HOME` from the
+  standard instance scripts.
+  [hannosch]
+
 - Made the specification of `SOFTWARE_HOME` and `ZOPE_HOME` optional. In
   addition `INSTANCE_HOME` is no longer required to run the tests of a
   source checkout of Zope.

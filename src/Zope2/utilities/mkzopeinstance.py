@@ -29,7 +29,6 @@ to create a Zope instance home.
 
 import getopt
 import os
-import shutil
 import sys
 import copyzopeskel
 
@@ -81,8 +80,6 @@ def main():
             )
 
     instancehome = skeltarget
-    zopehome = os.path.dirname(os.path.dirname(script))
-    softwarehome = os.path.join(zopehome, "src")
     configfile = os.path.join(instancehome, 'etc', 'zope.conf')
     if skelsrc is None:
         # default to using stock Zope skeleton source
@@ -113,12 +110,14 @@ def main():
         # we're on UNIX or we have a nonstandard Windows setup
         PYTHON = PYTHONW = sys.executable
 
+    import Zope2
+    zope2path = os.path.realpath(os.path.dirname(Zope2.__file__))
+
     kw = {
         "PYTHON":PYTHON,
         "PYTHONW":PYTHONW,
         "INSTANCE_HOME": instancehome,
-        "SOFTWARE_HOME": softwarehome,
-        "ZOPE_HOME": zopehome,
+        "ZOPE2PATH": zope2path,
         }
 
     copyzopeskel.copyskel(skelsrc, skeltarget, None, None, **kw)

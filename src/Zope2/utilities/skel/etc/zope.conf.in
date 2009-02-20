@@ -23,7 +23,6 @@
 # ZConfig "defines" used for later textual substitution
 
 %define INSTANCE <<INSTANCE_HOME>>
-%define ZOPE <<ZOPE_HOME>>
 
 # Directive: instancehome
 #

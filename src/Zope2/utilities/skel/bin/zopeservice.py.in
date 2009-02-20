@@ -82,32 +82,13 @@ import sys, os
 
 # these are replacements from mkzopeinstance
 PYTHON = r'<<PYTHON>>'
-SOFTWARE_HOME=r'<<SOFTWARE_HOME>>'
 INSTANCE_HOME = r'<<INSTANCE_HOME>>'
-ZOPE_HOME = r'<<ZOPE_HOME>>'
 
-ZOPE_RUN = r'%s\Zope2\Startup\run.py' % SOFTWARE_HOME
+ZOPE_RUN = r'<<ZOPE2PATH>>\Zope2\Startup\run.py'
 CONFIG_FILE= os.path.join(INSTANCE_HOME, 'etc', 'zope.conf')
 PYTHONSERVICE_EXE=r'%s\bin\PythonService.exe' % ZOPE_HOME
 
-# Setup the environment, so sub-processes see these variables
-for check_dir in (os.path.join(SOFTWARE_HOME, 'third_party', 'docutils', 'extras'),
-                  os.path.join(SOFTWARE_HOME, 'third_party', 'docutils'),
-                  SOFTWARE_HOME,
-                  ):
-    parts = os.environ.get("PYTHONPATH", "").split(os.pathsep)
-    if check_dir not in parts:
-        parts = filter(None, [check_dir] + parts)
-        os.environ["PYTHONPATH"] = os.pathsep.join(parts)
-
 os.environ["INSTANCE_HOME"] = INSTANCE_HOME
-
-# Ensure SOFTWARE_HOME is on our current sys.path so we can import the
-# nt_svcutils package.  Note we don't need the docutils dirs in sys.path, as
-# only Zope itself (our child process) uses it, and that happens via
-# PYTHONPATH
-if SOFTWARE_HOME not in sys.path:
-    sys.path.insert(0, SOFTWARE_HOME)
 
 from nt_svcutils.service import Service
 
