@@ -1,10 +1,11 @@
 Signals (POSIX only)
+====================
 
-  Signals are a POSIX inter-process communications mechanism.
-  If you are using Windows then this documentation does not apply.
+Signals are a POSIX inter-process communications mechanism.
+If you are using Windows then this documentation does not apply.
 
-  Zope responds to signals which are sent to the process id
-  specified in the file '$INSTANCE_HOME/var/Z2.pid'::
+Zope responds to signals which are sent to the process id
+specified in the file '$INSTANCE_HOME/var/Z2.pid'::
 
     SIGHUP  - close open database connections, then restart the server
               process. A idiom for restarting a Zope server is:
