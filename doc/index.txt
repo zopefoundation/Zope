@@ -13,6 +13,7 @@ Contents:
    CHANGES.txt
    INSTALL.txt
    ZOPE3.txt
+   SETUID.txt
 
 Indices and tables
 ==================
