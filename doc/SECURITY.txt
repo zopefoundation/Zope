@@ -59,17 +59,17 @@ Note that you may also add an optional third component to the line in the
 access file to restrict access by domain.  For example, the line::
 
     mario:nintendoRules:*.mydomain.com
- 
+
 in your 'access' file will only allow permit emergency user access
-from *.mydomain.com machines. Attempts to access the system from
+from `*.mydomain.com` machines. Attempts to access the system from
 other domains will fail, even if the correct emergency user name
 and password are used.
 
 Please note that if you use the ZServer monitor capability, you will
 need to run with a clear text password.
 
-Setting permissions on the var directory.
------------------------------------------
+Setting permissions on the var directory
+----------------------------------------
 
 You need to set permissions on the Zope var directory.
 Zope needs to read and write data from its var directory. Before
