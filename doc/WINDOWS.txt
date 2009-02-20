@@ -54,4 +54,4 @@ How to build and install Zope from source code on Windows.
   Once installed, it can be started any number of ways:
   - python {zope_instance}\zope_service.py start
   - Control Panel
-  - net start service_short_name (eg, "net start Zope_-1227678699"
+  - net start service_short_name (eg, `net start Zope_-1227678699`)
