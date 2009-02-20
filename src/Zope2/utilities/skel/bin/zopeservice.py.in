@@ -84,7 +84,7 @@ import sys, os
 PYTHON = r'<<PYTHON>>'
 INSTANCE_HOME = r'<<INSTANCE_HOME>>'
 
-ZOPE_RUN = r'<<ZOPE2PATH>>\Zope2\Startup\run.py'
+ZOPE_RUN = r'<<ZOPE2PATH>>\Startup\run.py'
 CONFIG_FILE= os.path.join(INSTANCE_HOME, 'etc', 'zope.conf')
 PYTHONSERVICE_EXE=r'%s\bin\PythonService.exe' % ZOPE_HOME
 

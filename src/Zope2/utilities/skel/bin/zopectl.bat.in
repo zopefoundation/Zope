@@ -1,5 +1,5 @@
 @set PYTHON=<<PYTHON>>
 @set INSTANCE_HOME=<<INSTANCE_HOME>>
 @set CONFIG_FILE=%INSTANCE_HOME%\etc\zope.conf
-@set ZDCTL=<<ZOPE2PATH>>\Zope2\Startup\zopectl.py
+@set ZDCTL=<<ZOPE2PATH>>\Startup\zopectl.py
 "%PYTHON%" "%ZDCTL%" -C "%CONFIG_FILE%" %1 %2 %3 %4 %5 %6 %7
