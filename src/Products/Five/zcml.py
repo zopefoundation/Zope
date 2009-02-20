@@ -16,6 +16,7 @@
 $Id$
 """
 import os
+import os.path
 from zope.configuration import xmlconfig
 
 _initialized = False
@@ -30,9 +31,15 @@ def load_site():
         return
     _initialized = True
 
+    import Globals
+    Globals.INSTANCE_HOME
+
     # load instance site configuration file
-    site_zcml = os.path.join(INSTANCE_HOME, "etc", "site.zcml")
-    skel_site_zcml = os.path.join(INSTANCE_HOME, "skel", "etc", "site.zcml")
+    site_zcml = os.path.join(Globals.INSTANCE_HOME, "etc", "site.zcml")
+
+    import Zope2.utilities
+    zope_utilities = os.path.dirname(Zope2.utilities.__file__)
+    skel_site_zcml = os.path.join(zope_utilities, "skel", "etc", "site.zcml")
     
     if os.path.exists(site_zcml):
         file = site_zcml
