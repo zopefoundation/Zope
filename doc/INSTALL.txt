@@ -160,10 +160,10 @@ by selecting different management functions with the tabs at the top
 of the frame.
 
 If you haven't used Zope before, you should head to the Zope web
-site and read some documentation. The Zope Book is a good place to
-start. You can access the Zope Book at:
+site and read some documentation. The Zope Documentation section is
+a good place to start. You can access it at:
 
-http://www.zope.org/Documentation/Books/ZopeBook
+http://docs.zope.org/
 
 Troubleshooting
 ---------------
