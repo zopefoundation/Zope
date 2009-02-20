@@ -16,6 +16,7 @@ Contents:
    ZOPE3.txt
    SETUID.txt
    SIGNALS.txt
+   DEBUGGING.txt
    CREDITS.txt
 
 Indices and tables
