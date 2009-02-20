@@ -294,59 +294,6 @@ class ZopeCmd(ZDCmd):
     def help_adduser(self):
         print "adduser <name> <password> -- add a Zope management user"
 
-    def do_test(self, arg):
-        args = filter(None, arg.split(' '))
-
-        # test.py lives in $ZOPE_HOME/bin
-        zope_home = os.getenv('ZOPE_HOME')
-
-        if zope_home is None:
-            software_home = os.getenv('SOFTWARE_HOME')
-            zope_home = os.path.abspath('%s/../..' % software_home)
-
-        if not os.path.isdir(zope_home):
-            print "Can't find test.py -- set ZOPE_HOME before running!"
-            return
-
-        script = os.path.join(zope_home, 'bin', 'test.py')
-        if not os.path.exists(script):
-            script = os.path.join(zope_home, 'test.py') # no inplace build!
-        assert os.path.exists(script)
-
-        # Supply our config file by default.
-        if '--config-file' not in args and '-C' not in args:
-            args.insert(0, self.options.configfile)
-            args.insert(0, '--config-file')
-
-        # Default to dots.
-        if '-v' not in args and '-q' not in args:
-            args.insert(0, '-v')
-
-        args.insert(0, script)
-        args.insert(0, self.options.python)
-
-        print 'Running tests via: %s' % ' '.join(args)
-        if WIN:
-            # Windows process handling is quite different
-            os.system(' '.join(args))
-        else:
-            pid = os.fork()
-            if pid == 0:  # child
-                os.execv(self.options.python, args)
-
-            # Parent process running (execv replaces process in child
-            while True:
-                try:
-                    pid, status = os.waitpid(pid, 0)
-                except (OSError, KeyboardInterrupt):
-                    continue
-                else:
-                    self._exitstatus = status
-                    break
-
-    def help_test(self):
-        print "test [args]+ -- run unit / functional tests."
-        print "                See $ZOPE_HOME/bin/test.py --help for syntax."
 
 def main(args=None):
     # This is exactly like zdctl.main(), but uses ZopeCtlOptions and

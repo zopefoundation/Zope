@@ -23,6 +23,9 @@ Known issues
 Restructuring
 +++++++++++++
 
+- Removed the `test` command from zopectl. The test.py script it was relying
+  on does no longer exist.
+
 - Updated to ZODB 3.9.0a11. ZODB-level version support has been
   removed and ZopeUndo now is part of Zope2.
 
