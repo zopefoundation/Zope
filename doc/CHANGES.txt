@@ -27,6 +27,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Launchpad ##332168: Connection.py: do not expose DB connection strings
+        through exceptions
+
       - LP/#324876: tighened regex for detecting the charset
         from a meta-equiv header
 
