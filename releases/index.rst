@@ -1,11 +1,8 @@
-Release specific information
-============================
-
-Contents
---------
+Zope 2.12
+=========
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
-   2.12/index
+   2.12/CHANGES.rst
 

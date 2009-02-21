@@ -8,6 +8,13 @@ Zope 2 related documentation and articles
    zope2book/source/index
    zdgbook/source/index
    articles/index
+
+Release information
+===================
+
+.. toctree::
+   :maxdepth: 2
+
    releases/index
 
 Indices and tables
