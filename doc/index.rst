@@ -10,14 +10,14 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-   CHANGES.txt
-   INSTALL.txt
-   SECURITY.txt
-   ZOPE3.txt
-   SETUID.txt
-   SIGNALS.txt
-   DEBUGGING.txt
-   CREDITS.txt
+   CHANGES.rst
+   INSTALL.rst
+   SECURITY.rst
+   ZOPE3.rst
+   SETUID.rst
+   SIGNALS.rst
+   DEBUGGING.rst
+   CREDITS.rst
 
 Indices and tables
 ==================
