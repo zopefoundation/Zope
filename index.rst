@@ -5,13 +5,13 @@
 Welcome to Zope 2 documentation and articles's documentation!
 =============================================================
 
-Contents:
+ZODB articles:
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
+   :glob: 
 
-   ZODB1.rst
-   ZODB2.rst
+   articles/*
 
 Indices and tables
 ==================
