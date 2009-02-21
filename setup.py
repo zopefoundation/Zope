@@ -41,7 +41,7 @@ setup(name='Zope2',
       author='Zope Corporation and Contributors',
       author_email='zope-dev@zope.org',
       long_description=file("README.txt").read() + "\n" +
-                       file(os.path.join("doc", "CHANGES.txt")).read(),
+                       file(os.path.join("doc", "CHANGES.rst")).read(),
 
       packages=find_packages('src'),
       package_dir={'': 'src'},
