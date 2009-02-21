@@ -18,8 +18,6 @@ from zope.component import provideUtility
 from zope.traversing.adapters import DefaultTraversable
 from Products.PageTemplates.tests import util
 from Products.PageTemplates.PageTemplate import PageTemplate
-from Products.PageTemplates.GlobalTranslationService import \
-     setGlobalTranslationService
 from Products.PageTemplates.interfaces import IUnicodeEncodingConflictResolver
 from Products.PageTemplates.unicodeconflictresolver import DefaultUnicodeEncodingConflictResolver
 from AccessControl import SecurityManager
@@ -31,16 +29,6 @@ class AqPageTemplate(Implicit, PageTemplate):
 
 class Folder(util.Base):
     pass
-
-class TestTranslationService:
-    def translate(self, domain, msgid, mapping=None, *args, **kw):
-        maps = []
-        if mapping is not None:
-            # Get a deterministic, sorted representation of dicts.
-            for k, v in mapping.items():
-                maps.append('%s:%s' % (`k`, `v`))
-            maps.sort()
-        return "[%s](%s/{%s})" % (domain, msgid, ','.join(maps))
 
 
 class UnitTestSecurityPolicy:
@@ -162,11 +150,6 @@ class HTMLTests(zope.component.testing.PlacelessSetup, unittest.TestCase):
     def checkI18nTranslate(self):
         self.assert_expected(self.folder.t, 'CheckI18nTranslate.html')
 
-    def checkI18nTranslateHooked(self):
-        old_ts = setGlobalTranslationService(TestTranslationService())
-        self.assert_expected(self.folder.t, 'CheckI18nTranslateHooked.html')
-        setGlobalTranslationService(old_ts)
-
     def checkImportOldStyleClass(self):
         self.assert_expected(self.folder.t, 'CheckImportOldStyleClass.html')
 
@@ -181,7 +164,3 @@ class HTMLTests(zope.component.testing.PlacelessSetup, unittest.TestCase):
 
 def test_suite():
     return unittest.makeSuite(HTMLTests, 'check')
-
-if __name__=='__main__':
-   main()
-

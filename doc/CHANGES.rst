@@ -23,6 +23,9 @@ Known issues
 Restructuring
 +++++++++++++
 
+- Switched Products.PageTemplates to directly use zope.i18n.translate and
+  removed the GlobalTranslationService hook.
+
 - Removed bridging code from Product.Five for PlacelessTranslationService
   and Localizer. Neither of the two is actually using this anymore.
 

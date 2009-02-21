@@ -21,6 +21,7 @@ $Id$
 import logging
 
 from zope.component import queryUtility
+from zope.i18n import translate
 from zope.interface import implements
 from zope.tales.tales import Context
 from zope.tales.tales import ErrorInfo as BaseErrorInfo
@@ -41,7 +42,6 @@ from zExceptions import NotFound, Unauthorized
 from zope.contentprovider.tales import TALESProviderExpression
 from Products.PageTemplates import ZRPythonExpr
 from Products.PageTemplates.DeferExpr import LazyExpr
-from Products.PageTemplates.GlobalTranslationService import getGlobalTranslationService
 from Products.PageTemplates.interfaces import IUnicodeEncodingConflictResolver
 
 SecureModuleImporter = ZRPythonExpr._SecureModuleImporter()
@@ -169,9 +169,9 @@ class ZopeContext(Context):
         self._vars_stack = [vars]
 
     def translate(self, msgid, domain=None, mapping=None, default=None):
-        context = self.contexts.get('context')
-        return getGlobalTranslationService().translate(
-            domain, msgid, mapping=mapping,
+        context = self.contexts.get('request')
+        return translate(
+            msgid, domain=domain, mapping=mapping,
             context=context, default=default)
 
     def evaluateBoolean(self, expr):

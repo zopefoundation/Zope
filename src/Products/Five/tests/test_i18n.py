@@ -53,37 +53,6 @@ def test_directive():
       u'Dies ist eine explizite Nachricht'
     """
 
-def test_FiveTranslationService():
-    """
-    Test FiveTranslationService. First we need the GlobalTranslationService:
-
-      >>> from Products.PageTemplates import GlobalTranslationService
-      >>> GTS = GlobalTranslationService.getGlobalTranslationService()
-
-    Now, take an arbitrary message id from an arbitrary domain:
-
-      >>> from zope.i18nmessageid import MessageFactory
-      >>> from zope.i18n import translate
-      >>> _ = MessageFactory('random')
-      >>> msg = _(u'explicit-msg', u'This is an explicit message')
-
-    By default, the i18n message is translated by the DummyTranslationService:
-
-      >>> GTS.translate('default', msg, target_language='test')
-      u'This is an explicit message'
-
-    Now, register the TestMessageFallbackDomain:
-
-      >>> from zope.component import provideUtility
-      >>> from zope.i18n.testmessagecatalog import TestMessageFallbackDomain
-      >>> provideUtility(TestMessageFallbackDomain)
-
-    The i18n message is now translated by the TestMessageFallbackDomain:
-
-      >>> GTS.translate('default', msg, target_language='test')
-      u'[[random][explicit-msg (This is an explicit message)]]'
-    """
-
 
 def test_suite():
     from zope.testing.doctest import DocTestSuite

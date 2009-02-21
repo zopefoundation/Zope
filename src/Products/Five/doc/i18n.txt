@@ -4,14 +4,6 @@ Internationalization
 Translation
 -----------
 
-Five registers its own translation service mockup with the Page
-Templates machinery and prevents any other product from also doing so.
-That means, Five always assumes control over ZPT i18n.  When a certain
-domain has not been registered the Zope 3 way, Five's translation
-service will see that the utility lookup fails and use the next
-available fallback translation service.  In case of no other
-translation service installed, that is just a dummy fallback.
-
 To register Zope 3 style translation domains, use the following ZCML
 statement::
 
