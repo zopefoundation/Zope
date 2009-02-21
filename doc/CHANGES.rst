@@ -134,6 +134,9 @@ Features added
 Bugs Fixed
 ++++++++++
 
+- Launchpad ##332168: Connection.py: do not expose DB connection strings
+  through exceptions
+
 - Specified height/width of icons in ZMI listings so the table doesn't
   jump around while loading.
 

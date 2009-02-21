@@ -194,9 +194,9 @@ class Connection(Persistent,
             except:
                 t, v, tb = sys.exc_info()
                 raise BadRequest, (
-                    '<strong>Invalid connection string: </strong><CODE>%s</CODE><br>\n'
+                    '<strong>Error connecting to DB.</strong><br>\n'
                     '<!--\n%s\n%s\n-->\n'
-                    % (s,t,v)), tb
+                    % (t,v)), tb
         finally: tb=None
         self._v_connected=DateTime()
 
