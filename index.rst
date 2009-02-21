@@ -16,10 +16,3 @@ Release information
    :maxdepth: 2
 
    releases/index
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`search`
-
