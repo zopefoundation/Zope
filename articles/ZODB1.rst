@@ -9,7 +9,7 @@ cover some of the more advanced features of ZODB for Python
 programmers.
 
 ZODB is a database for Python objects that comes with
-"Zope":http://www.zope.org.  If you've ever worked with a
+`Zope <http://www.zope.org>`_.  If you've ever worked with a
 relational database, like PostgreSQL, MySQL, or Oracle, than you
 should be familiar with the role of a database.  It's a long term
 or short term storage for your application data.
@@ -56,8 +56,8 @@ To set up a ZODB, you must first install it.  ZODB comes with
 Zope, so the easiest way to install ZODB is to install Zope and
 use the ZODB that comes with your Zope installation.  For those of
 you who don't want all of Zope, but just ZODB, see the
-instructions for downloading StandaloneZODB from the "ZODB web
-page":http://www.zope.org/Wikis/ZODB/FrontPage
+instructions for downloading StandaloneZODB from the `ZODB web
+page <http://www.zope.org/Wikis/ZODB/FrontPage>`_.
 
 StandaloneZODB can be installed into your system's Python
 libraries using the standard 'distutils' Python module.
@@ -385,12 +385,11 @@ machines.
 
 ZODB Resources
 
--   Andrew Kuchling's "ZODB pages":http://www.amk.ca/zodb/
+- `Andrew Kuchling's "ZODB pages" <http://www.amk.ca/zodb/>`_
 
--   Zope.org "ZODB Wiki":http://www.zope.org/Wikis/ZODB/FrontPage
+- `Zope.org "ZODB Wiki" <http://www.zope.org/Wikis/ZODB/FrontPage>`_
 
--   Jim Fulton's "Introduction to the Zope Object
-    Database":http://www.python.org/workshops/2000-01/proceedings/papers/fulton/zodb3.html
+- `Jim Fulton's "Introduction to the Zope Object Database" <http://www.python.org/workshops/2000-01/proceedings/papers/fulton/zodb3.html>`_
 
 
 
