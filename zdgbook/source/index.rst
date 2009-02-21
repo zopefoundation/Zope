@@ -19,9 +19,3 @@ Contents
    AppendixA.rst
    AppendixB.rst
 
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`search`
-

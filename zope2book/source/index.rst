@@ -42,9 +42,3 @@ Contents
    AppendixE.rst
    Contributions.rst
 
-Indices and tables
-------------------
-
-* :ref:`genindex`
-* :ref:`search`
-
