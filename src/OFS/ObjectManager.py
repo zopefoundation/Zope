@@ -17,13 +17,13 @@ $Id$
 
 from cgi import escape
 from cStringIO import StringIO
+from logging import getLogger
 import copy
 import fnmatch
 import marshal
 import os
 import re
 import sys
-import warnings
 
 from AccessControl import ClassSecurityInfo
 from AccessControl.Permissions import view_management_screens
@@ -48,7 +48,6 @@ from webdav.Collection import Collection
 from webdav.Lockable import ResourceLockedError
 from webdav.NullResource import NullResource
 from zExceptions import BadRequest
-from ZODB.POSException import ConflictError
 from zope.interface import implements
 from zope.component.interfaces import ComponentLookupError
 from zope.event import notify
@@ -56,7 +55,6 @@ from zope.container.contained import ObjectAddedEvent
 from zope.container.contained import ObjectRemovedEvent
 from zope.container.contained import notifyContainerModified
 from zope.container.interfaces import IContainer
-from zope.interface import implements
 
 from OFS.CopySupport import CopyContainer
 from OFS.interfaces import IObjectManager
@@ -72,6 +70,8 @@ from OFS.XMLExportImport import magic
 NOT_REPLACEABLE = 0
 REPLACEABLE = 1
 UNIQUE = 2
+
+LOG = getLogger('ObjectManager')
 
 # the name BadRequestException is relied upon by 3rd-party code
 BadRequestException = BadRequest
@@ -662,7 +662,7 @@ class ObjectManager(CopyContainer,
         paths = []
         zopehome = getattr(cfg, 'zopehome', None)
         if zopehome is not None and cfg.zopehome is not None:
-            paths.append(zopegome)
+            paths.append(zopehome)
         if not cfg.instancehome in paths:
             paths.append(cfg.instancehome)
         for impath in paths:
