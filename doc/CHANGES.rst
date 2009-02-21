@@ -23,6 +23,9 @@ Known issues
 Restructuring
 +++++++++++++
 
+- Removed bridging code from Product.Five for PlacelessTranslationService
+  and Localizer. Neither of the two is actually using this anymore.
+
 - Removed the specification of `SOFTWARE_HOME` and `ZOPE_HOME` from the
   standard instance scripts.
   [hannosch]

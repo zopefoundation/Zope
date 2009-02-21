@@ -16,11 +16,8 @@
 $Id$
 """
 from Acquisition import aq_get
-from zope.interface import implements
 from zope.i18n.interfaces import IFallbackTranslationDomainFactory
 from zope.i18n.interfaces import ITranslationDomain
-from zope.i18n.interfaces import IUserPreferredLanguages
-from zope.i18n.negotiator import normalize_lang
 from zope.component import queryUtility
 from zope.i18nmessageid import Message
 from zope.publisher.interfaces.browser import IBrowserRequest
@@ -68,45 +65,6 @@ class FiveTranslationService:
                 context = aq_get(context, 'REQUEST', None)
         return util.translate(msgid, mapping=mapping, context=context,
                               target_language=target_language, default=default)
-
-class LocalizerLanguages(object):
-    """Languages adapter that chooses languages according to Localizer
-    settings."""
-    implements(IUserPreferredLanguages)
-
-    def __init__(self, context):
-        self.context = context
-
-    def getPreferredLanguages(self):
-        if not hasattr(self.context, 'AcceptLanguage'):
-            return []
-            
-        accept_language = self.context.AcceptLanguage
-        langs = []
-        for lang, node in accept_language.children.items():
-            # Localizer may use xx_YY and xx-YY as language codes,
-            # while Zope expect xx-yy only, so we normalize the code here.
-            langs.append((node.get_quality(), normalize_lang(lang)))
-            langs.extend([(n.get_quality(), l) for l, n
-                          in node.children.items()])
-        langs.sort()
-        langs.reverse()
-        langs = [l for q, l in langs]
-        if '' in langs:
-            langs.remove('')
-        return langs
-
-class PTSLanguages(object):
-    """Languages adapter that chooses languages like
-    PlacelessTranslationService."""
-    implements(IUserPreferredLanguages)
-
-    def __init__(self, context):
-        self.context = context
-
-    def getPreferredLanguages(self):
-        from Products.PlacelessTranslationService.Negotiator import getLangPrefs
-        return getLangPrefs(self.context)
 
 # Hook that will be used by Products.PageTemplates.GlobalTranslationService
 _fallback_translation_service = None
