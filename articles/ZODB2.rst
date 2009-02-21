@@ -308,7 +308,7 @@ To abort a transaction, you need to call the 'abort' method of the
 transactions object::
 
     >>> import transaction
-    >>>  transaction.abort()
+    >>> transaction.abort()
 
     This will throw away all the currently changed objects and start a
     new, empty transaction.
