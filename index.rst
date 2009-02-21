@@ -6,6 +6,7 @@ Contents
    :maxdepth: 1
 
    zope2book/source/index.rst
+   zdgbook/source/index.rst
    articles/index.rst
 
 Indices and tables
