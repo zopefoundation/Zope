@@ -1,6 +1,6 @@
 
-Contents
-========
+Zope 2 related documentation and articles
+=========================================
 
 .. toctree::
    :maxdepth: 1
