@@ -8,6 +8,9 @@ Zope Changes
 
    Bugs fixed
 
+      - Launchpad ##332168: Connection.py: do not expose DB connection strings
+        through exceptions
+
   Zope 2.9.10 (2008/10/24)
 
    Bugs fixed
