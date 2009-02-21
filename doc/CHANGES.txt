@@ -27,6 +27,9 @@ Zope Changes
 
     Bugs fixed
 
+      - Launchpad ##332168: Connection.py: do not expose DB connection strings
+        through exceptions
+
       - LP/#143873: Fixed problems when no HTTP_ACCEPT_CHARSET is in the
         request. This required an update of zope.publisher to 3.3.3.
 
