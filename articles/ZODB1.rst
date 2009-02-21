@@ -91,8 +91,8 @@ Now, you have changed the persistent database by adding a new
 object, but this change is so far only temporary.  In order to
 make the change permanent, you must commit the current
 transaction::
-
-      >>> get_transaction().commit()
+      >>> import transaction
+      >>> transaction.commit()
 
 Transactions group of lots of changes in one atomic operation.  In
 a later article, I'll show you how this is a very powerful
@@ -152,7 +152,7 @@ list or dictionary that is already stored in the database, then
 the change will *not* take effect.  Consider this example::
 
       >>> root['employees'].append('Bill')
-      >>> get_transaction().commit()
+      >>> transaction.commit()
     
 You would expect this to work, but it doesn't.  The reason for
 this is that ZODB cannot detect that the 'employees' list
@@ -165,7 +165,7 @@ simplest is to re-assign the changed object::
       >>> employees = root['employees']
       >>> employees.append('Bill')
       >>> root['employees'] = employees
-      >>> get_transaction().commit()
+      >>> _transaction.commit()
 
 Here, you move the employees list to a local variable, change the
 list, and then *reassign* the list back into the database and
@@ -208,7 +208,7 @@ Now, you can put Employee objects in your database::
       ...     employee.setName(name)
       ...     employees.append(employee)
       >>> root['employees']=employees
-      >>> get_transaction().commit()
+      >>> transaction.commit()
 
 Don't forget to call 'commit()', so that the changes you have made
 so far are committed to the database, and a new transaction is
@@ -219,14 +219,14 @@ database. For example you can change Bob's name to "Robert"::
 
       >>> bob=root['employees'][2]
       >>> bob.setName('Robert')
-      >>> get_transaction().commit()
+      >>> transaction.commit()
 
 You can even change attributes of persistent instaces without
 calling methods::
 
       >>> bob=root['employees'][2]
       >>> bob._coffee_prefs=('Cream', 'Sugar')
-      >>> get_transaction().commit()
+      >>> transaction.commit()
 
 It doesn't matter whether you change an attribute directly, or
 whether it's changed by a method.  As you can tell, all of the
@@ -285,6 +285,7 @@ examples used so far::
       from ZODB.FileStorage import FileStorage
       from ZODB.PersistentMapping import PersistentMapping
       from Persistence import Persistent
+      import transaction
 
       class Employee(Persistent):
           """An employee"""
@@ -334,7 +335,7 @@ examples used so far::
               employees[name]=Employee(name)
 
           root['employees'] = employees  # reassign to change
-          get_transaction().commit()
+          transaction.commit()
           print "Employee %s added." % name
           print
 

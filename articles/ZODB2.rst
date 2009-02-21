@@ -307,7 +307,8 @@ anything.
 To abort a transaction, you need to call the 'abort' method of the
 transactions object::
 
-      get_transaction().abort()
+    >>> import transaction
+    >>>  transaction.abort()
 
     This will throw away all the currently changed objects and start a
     new, empty transaction.
@@ -341,8 +342,8 @@ subtransactions.
 You can commit or abort a subtransaction by calling either
 commit() or abort() with an argument of 1::
 
-      get_transaction().commit(1) # or
-      get_transaction().abort(1)
+      transaction.commit(1) # or
+      transaction.abort(1)
 
 Subtransactions offer you a nice way to "batch" all of your "all
 or none" actions into smaller "all or none" actions while still
