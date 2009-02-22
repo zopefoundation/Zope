@@ -1,6 +1,24 @@
 Relational Database Connectivity
 ================================
 
+Preliminary remark
+------------------
+This chapter explains you how to access a relational databases directly through
+SQL. The alternative and modern way integrating a RDBMS with Zope is using an
+Object-Relational-Mapper (ORM). An ORM abstracts the SQL layer and allows you
+to deal with database tables, rows etc. like standard Python objects.
+
+The most common and most flexible ORM in the
+Python world is `SQLAlchemy <http://www.sqlalchemy.org>`_ . You can not use
+SQLAlchemy directly within Zope because the transaction system of the RDBMS
+must participate with Zope transaction. This integration layer is implemented
+through the `zope.sqlalchemy <http://pypi.python.org/pypi/zope.sqlalchemy>`_
+module.
+
+Introduction
+------------
+
+
 The Zope Object Database (ZODB) is used to store all the pages,
 files and other objects you create. It is fast and requires almost
 no setting up or maintenance.  Like a filesystem, it is especially
