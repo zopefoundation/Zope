@@ -1,6 +1,23 @@
 Basic DTML
 ==========
 
+Preliminary remark (for the Zope 2.12 edition)
+----------------------------------------------
+DTML has been the primary markup language within Zope for a long time.  However
+the *recommended* primary markup language within Zope is nowadays ZPT (Zope
+Page Templates). ZPT is your choice for generating markupish output like HTML
+or XML. The usage of DTML should be limited where you have to generate
+non-markupish output like text files or other formats. Since DTML is pretty old
+it really does support features like internationalization or unicode very well.
+In addition the syntax of DTML is not always very easy to understand. You have
+to learn DTML to some point if you intend to use ZSQL methods (for RDBMS
+integration with Zope) - but even for the RDBMS integration we have better
+solutions like Object-Relational-Mappers (check with the chapter about
+relational database connectivity).
+
+Introduction
+------------
+
 DTML (Document Template Markup Language) is a templating facility which
 supports the creation of dynamic HTML and text. In Zope it is most often used
 when you want to generate non-HTML or non-XML content, like parts of SQL

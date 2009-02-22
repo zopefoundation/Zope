@@ -1,8 +1,8 @@
 Relational Database Connectivity
 ================================
 
-Preliminary remark
-------------------
+Preliminary remark (for the Zope 2.12 edition)
+----------------------------------------------
 This chapter explains you how to access a relational databases directly through
 SQL. The alternative and modern way integrating a RDBMS with Zope is using an
 Object-Relational-Mapper (ORM). An ORM abstracts the SQL layer and allows you
