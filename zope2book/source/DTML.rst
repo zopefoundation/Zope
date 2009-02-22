@@ -15,8 +15,6 @@ Basic DTML
     better solutions like Object-Relational-Mappers (check with the chapter about
     relational database connectivity).
 
-Introduction
-------------
 
 DTML (Document Template Markup Language) is a templating facility which
 supports the creation of dynamic HTML and text. In Zope it is most often used

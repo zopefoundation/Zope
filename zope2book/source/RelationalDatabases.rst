@@ -16,9 +16,6 @@ Relational Database Connectivity
     through the `zope.sqlalchemy <http://pypi.python.org/pypi/zope.sqlalchemy>`_
     module.
 
-Introduction
-------------
-
 
 The Zope Object Database (ZODB) is used to store all the pages,
 files and other objects you create. It is fast and requires almost
