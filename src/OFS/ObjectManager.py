@@ -54,7 +54,6 @@ from zope.event import notify
 from zope.container.contained import ObjectAddedEvent
 from zope.container.contained import ObjectRemovedEvent
 from zope.container.contained import notifyContainerModified
-from zope.container.interfaces import IContainer
 
 from OFS.CopySupport import CopyContainer
 from OFS.interfaces import IObjectManager
@@ -156,7 +155,7 @@ class ObjectManager(CopyContainer,
     # The claim to implement IContainer has been made during the Zope3
     # integration project called Five but hasn't been completed in full.
 
-    implements(IObjectManager, IContainer)
+    implements(IObjectManager)
 
     security = ClassSecurityInfo()
     security.declareObjectProtected(access_contents_information)
@@ -765,6 +764,9 @@ class ObjectManager(CopyContainer,
                 break
         return marshal.dumps((mode,0,0,1,owner,group,0,mtime,mtime,mtime))
 
+    def __delitem__(self, name):
+        return self.manage_delObjects(ids=[name])
+
     def __getitem__(self, key):
         v=self._getOb(key, None)
         if v is not None: return v
@@ -774,6 +776,34 @@ class ObjectManager(CopyContainer,
             if request.maybe_webdav_client and not method in ('GET', 'POST'):
                 return NullResource(self, key, request).__of__(self)
         raise KeyError, key
+
+    def __setitem__(self, key, value):
+        return self._setObject(key, value)
+
+    def __contains__(self, name):
+        return name in self.objectIds()
+
+    def __iter__(self):
+        return iter(self.objectIds())
+
+    def __len__(self):
+        return len(self.objectIds())
+
+    security.declareProtected(access_contents_information, 'get')
+    def get(self, key, default=None):
+        return self._getOb(key, default)
+
+    security.declareProtected(access_contents_information, 'keys')
+    def keys(self):
+        return self.objectIds()
+
+    security.declareProtected(access_contents_information, 'get')
+    def items(self):
+        return self.objectItems()
+
+    security.declareProtected(access_contents_information, 'values')
+    def values(self):
+        return self.objectValues()
 
 # Don't InitializeClass, there is a specific __class_init__ on ObjectManager
 # InitializeClass(ObjectManager)

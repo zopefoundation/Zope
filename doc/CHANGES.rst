@@ -114,7 +114,24 @@ Restructuring
 Features added
 ++++++++++++++
 
-- Acquisition has been made aware of __parent__ pointers. This allows
+- OFS.ObjectManager now fully implements the zope.container.IContainer
+  interface. For the last Zope2 releases it already claimed to implement the
+  interface, but didn't actually full-fill the interface contract. This means
+  you can start using more commonly used Python idioms to access objects inside
+  object managers. Complete dictionary-like access and container methods
+  including iteration are now supported. For each class derived from
+  ObjectManager you can use for any instance om: `om.keys()` instead of
+  `om.objectIds()`, `om.values()` instead of `om.objectValues()`, but also
+  `om.items()`, `ob.get('id')`, `ob['id']`, `'id' in om`, `iter(om)`,
+  `len(om)`, `om['id'] = object()` instead of `om._setObject('id', object())`
+  and `del ob['id']`. Should contained items of the object manager have ids
+  equal to any of the new method names, the objects will override the method,
+  as expected in Acquisition enabled types. Adding new objects into object
+  managers by those new names will no longer work, though. The added methods
+  call the already existing methods internally, so if a derived type overwrote
+  those, the new interface will provide the same functionality.
+
+- Acquisition has been made aware of `__parent__` pointers. This allows
   direct access to many Zope 3 classes without the need to mixin
   Acquisition base classes for the security to work.
 

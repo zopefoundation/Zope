@@ -14,6 +14,7 @@
 
 $Id$
 """
+from zope.container.interfaces import IContainer
 from zope.interface import Attribute
 from zope.interface import Interface
 from zope.schema import Bool, BytesLine, Tuple
@@ -474,7 +475,7 @@ class ICopyContainer(Interface):
 #      based on OFS.ObjectManager.ObjectManager
 class IObjectManager(IZopeObject, ICopyContainer, INavigation, IManageable,
                      IAcquirer, IPersistent, IDAVCollection, ITraversable,
-                     IPossibleSite):
+                     IPossibleSite, IContainer):
     """Generic object manager
 
     This interface provides core behavior for collections of heterogeneous
@@ -579,10 +580,6 @@ class IObjectManager(IZopeObject, ICopyContainer, INavigation, IManageable,
         """Import an object from a file"""
 
     def _importObjectFromFile(filepath, verify=1, set_owner=1):
-        """
-        """
-
-    def __getitem__(key):
         """
         """
 

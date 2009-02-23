@@ -1,19 +1,22 @@
 import unittest
 
+from zope.app.testing.placelesssetup import PlacelessSetup
+
 from AccessControl.Owned import EmergencyUserCannotOwn
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
 from AccessControl.User import User # before SpecialUsers
 from AccessControl.SpecialUsers import emergency_user, nobody, system
+from Acquisition import aq_base
 from Acquisition import Implicit
 from App.config import getConfiguration
 from logging import getLogger
 from OFS.ObjectManager import ObjectManager
 from OFS.SimpleItem import SimpleItem
-from zope.app.testing.placelesssetup import PlacelessSetup
 import Products.Five
 from Products.Five import zcml
 from Products.Five.eventconfigure import setDeprecatedManageAddDelete
+from zExceptions import BadRequest
 
 logger = getLogger('OFS.subscribers')            
 
@@ -87,7 +90,6 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         return ObjectManagerWithIItem
 
     def _makeOne( self, *args, **kw ):
-
         return self._getTargetClass()( *args, **kw ).__of__( FauxRoot() )
 
     def test_z3interfaces(self):
@@ -98,175 +100,102 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         verifyClass(IObjectManager, ObjectManager)
 
     def test_setObject_set_owner_with_no_user( self ):
-
         om = self._makeOne()
-
         newSecurityManager( None, None )
-
         si = SimpleItem( 'no_user' )
-
         om._setObject( 'no_user', si )
-
         self.assertEqual( si.__ac_local_roles__, None )
 
     def test_setObject_set_owner_with_emergency_user( self ):
         om = self._makeOne()
-
         newSecurityManager( None, emergency_user )
-
         si = SimpleItem( 'should_fail' )
-
         self.assertEqual( si.__ac_local_roles__, None )
-
         self.assertRaises( EmergencyUserCannotOwn
                          , om._setObject, 'should_fail', si )
 
     def test_setObject_set_owner_with_system_user( self ):
-
         om = self._makeOne()
-
         newSecurityManager( None, system )
-
         si = SimpleItem( 'system' )
-
         self.assertEqual( si.__ac_local_roles__, None )
-
         om._setObject( 'system', si )
-
         self.assertEqual( si.__ac_local_roles__, None )
 
     def test_setObject_set_owner_with_anonymous_user( self ):
-
         om = self._makeOne()
-
         newSecurityManager( None, nobody )
-
         si = SimpleItem( 'anon' )
-
         self.assertEqual( si.__ac_local_roles__, None )
-
         om._setObject( 'anon', si )
-
         self.assertEqual( si.__ac_local_roles__, None )
 
     def test_setObject_set_owner_with_user( self ):
-
         om = self._makeOne()
-
         user = User( 'user', '123', (), () ).__of__( FauxRoot() )
-
         newSecurityManager( None, user )
-
         si = SimpleItem( 'user_creation' )
-
         self.assertEqual( si.__ac_local_roles__, None )
-
         om._setObject( 'user_creation', si )
-
         self.assertEqual( si.__ac_local_roles__, { 'user': ['Owner'] } )
 
     def test_setObject_set_owner_with_faux_user( self ):
-
         om = self._makeOne()
-
         user = FauxUser( 'user_id', 'user_login' ).__of__( FauxRoot() )
-
         newSecurityManager( None, user )
-
         si = SimpleItem( 'faux_creation' )
-
         self.assertEqual( si.__ac_local_roles__, None )
-
         om._setObject( 'faux_creation', si )
-
         self.assertEqual( si.__ac_local_roles__, { 'user_id': ['Owner'] } )
 
     def test_setObject_no_set_owner_with_no_user( self ):
-
         om = self._makeOne()
-
         newSecurityManager( None, None )
-
         si = SimpleItem( 'should_be_okay' )
-
         self.assertEqual( si.__ac_local_roles__, None )
-
         om._setObject( 'should_be_okay', si, set_owner=0 )
-
         self.assertEqual( si.__ac_local_roles__, None )
 
     def test_setObject_no_set_owner_with_emergency_user( self ):
-
         om = self._makeOne()
-
         newSecurityManager( None, emergency_user )
-
         si = SimpleItem( 'should_be_okay' )
-
         self.assertEqual( si.__ac_local_roles__, None )
-
         om._setObject( 'should_be_okay', si, set_owner=0 )
-
         self.assertEqual( si.__ac_local_roles__, None )
 
     def test_setObject_no_set_owner_with_system_user( self ):
-
         om = self._makeOne()
-
         newSecurityManager( None, system )
-
         si = SimpleItem( 'should_be_okay' )
-
         self.assertEqual( si.__ac_local_roles__, None )
-
         om._setObject( 'should_be_okay', si, set_owner=0 )
-
         self.assertEqual( si.__ac_local_roles__, None )
 
     def test_setObject_no_set_owner_with_anonymous_user( self ):
-
         om = self._makeOne()
-
         newSecurityManager( None, nobody )
-
         si = SimpleItem( 'should_be_okay' )
-
         self.assertEqual( si.__ac_local_roles__, None )
-
         om._setObject( 'should_be_okay', si, set_owner=0 )
-
         self.assertEqual( si.__ac_local_roles__, None )
 
     def test_setObject_no_set_owner_with_user( self ):
-
         om = self._makeOne()
-
         user = User( 'user', '123', (), () ).__of__( FauxRoot() )
-
         newSecurityManager( None, user )
-
         si = SimpleItem( 'should_be_okay' )
-
         self.assertEqual( si.__ac_local_roles__, None )
-
         om._setObject( 'should_be_okay', si, set_owner=0 )
-
         self.assertEqual( si.__ac_local_roles__, None )
 
     def test_setObject_no_set_owner_with_faux_user( self ):
-
         om = self._makeOne()
-
         user = FauxUser( 'user_id', 'user_login' ).__of__( FauxRoot() )
-
         newSecurityManager( None, user )
-
         si = SimpleItem( 'should_be_okay' )
-
         self.assertEqual( si.__ac_local_roles__, None )
-
         om._setObject( 'should_be_okay', si, set_owner=0 )
-
         self.assertEqual( si.__ac_local_roles__, None )
 
     def test_delObject_before_delete(self):
@@ -382,7 +311,6 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         om._setObject('.bashrc', si)
 
     def test_setObject_checkId_bad(self):
-        from zExceptions import BadRequest
         om = self._makeOne()
         si = SimpleItem('111')
         om._setObject('111', si)
@@ -400,6 +328,116 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         self.assertRaises(BadRequest, om._setObject, '111', si)
         self.assertRaises(BadRequest, om._setObject, 'REQUEST', si)
         self.assertRaises(BadRequest, om._setObject, '/', si)
+
+    def test_getsetitem(self):
+        om = self._makeOne()
+        si1 = SimpleItem('1')
+        si2 = SimpleItem('2')
+        om['1'] = si1
+        self.failUnless('1' in om)
+        self.failUnless(si1 in om.objectValues())
+        self.failUnless('1' in om.objectIds())
+        om['2'] = si2
+        self.failUnless('2' in om)
+        self.failUnless(si2 in om.objectValues())
+        self.failUnless('2' in om.objectIds())
+        self.assertRaises(BadRequest, om._setObject, '1', si2)
+        self.assertRaises(BadRequest, om.__setitem__, '1', si2)
+
+    def test_delitem(self):
+        om = self._makeOne()
+        si1 = SimpleItem('1')
+        si2 = SimpleItem('2')
+        om['1'] = si1
+        om['2'] = si2
+        self.failUnless('1' in om)
+        self.failUnless('2' in om)
+        del om['1']
+        self.failIf('1' in om)
+        self.failUnless('2' in om)
+        om._delObject('2')
+        self.failIf('2' in om)
+
+    def test_iterator(self):
+        om = self._makeOne()
+        si1 = SimpleItem('1')
+        si2 = SimpleItem('2')
+        om['1'] = si1
+        om['2'] = si2
+        iterator = iter(om)
+        self.failUnless(hasattr(iterator, '__iter__'))
+        self.failUnless(hasattr(iterator, 'next'))
+        result = [i for i in iterator]
+        self.failUnless('1' in result)
+        self.failUnless('2' in result)
+
+    def test_len(self):
+        om = self._makeOne()
+        si1 = SimpleItem('1')
+        si2 = SimpleItem('2')
+        om['1'] = si1
+        om['2'] = si2
+        self.failUnless(len(om) == 2)
+
+    def test_get(self):
+        om = self._makeOne()
+        si1 = SimpleItem('1')
+        self.assertRaises(BadRequest, om.__setitem__, 'get', si1)
+        om['1'] = si1
+        self.failUnless(om.get('1') == si1)
+        # A contained item overwrites the method
+        self.failUnless(hasattr(om.get, 'im_func'))
+        om.__dict__['get'] = si1
+        self.failUnless(aq_base(om.get) is si1)
+        self.failUnless(aq_base(om['get']) is si1)
+        # Once the object is gone, the method is back
+        del om['get']
+        self.failUnless(hasattr(om.get, 'im_func'))
+
+    def test_items(self):
+        om = self._makeOne()
+        si1 = SimpleItem('1')
+        self.assertRaises(BadRequest, om.__setitem__, 'items', si1)
+        om['1'] = si1
+        self.failUnless(('1', si1) in om.items())
+        # A contained item overwrites the method
+        self.failUnless(hasattr(om.items, 'im_func'))
+        om.__dict__['items'] = si1
+        self.failUnless(aq_base(om.items) is si1)
+        self.failUnless(aq_base(om['items']) is si1)
+        # Once the object is gone, the method is back
+        del om['items']
+        self.failUnless(hasattr(om.items, 'im_func'))
+
+    def test_keys(self):
+        om = self._makeOne()
+        si1 = SimpleItem('1')
+        self.assertRaises(BadRequest, om.__setitem__, 'keys', si1)
+        om['1'] = si1
+        self.failUnless('1' in om.keys())
+        # A contained item overwrites the method
+        self.failUnless(hasattr(om.keys, 'im_func'))
+        om.__dict__['keys'] = si1
+        self.failUnless(aq_base(om.keys) is si1)
+        self.failUnless(aq_base(om['keys']) is si1)
+        # Once the object is gone, the method is back
+        del om['keys']
+        self.failUnless(hasattr(om.keys, 'im_func'))
+
+    def test_values(self):
+        om = self._makeOne()
+        si1 = SimpleItem('1')
+        self.assertRaises(BadRequest, om.__setitem__, 'values', si1)
+        om['1'] = si1
+        self.failUnless(si1 in om.values())
+        # A contained item overwrites the method
+        self.failUnless(hasattr(om.values, 'im_func'))
+        om.__dict__['values'] = si1
+        self.failUnless(aq_base(om.values) is si1)
+        self.failUnless(aq_base(om['values']) is si1)
+        # Once the object is gone, the method is back
+        del om['values']
+        self.failUnless(hasattr(om.values, 'im_func'))
 
     def test_list_imports(self):
         om = self._makeOne()
