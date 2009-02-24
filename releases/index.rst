@@ -1,5 +1,8 @@
-Zope 2.12
-=========
+Zope Release Information
+========================
+
+Zope 2.12 Releases
+------------------
 
 .. toctree::
    :maxdepth: 2
@@ -7,22 +10,22 @@ Zope 2.12
    2.12/index
 
 
-Zope 2.11
-=========
+Zope 2.11 Releases
+------------------
 
-- `Changelog <http://svn.zope.org/Zope/branches/2.11/doc/CHANGES.txt?view=markup>`_
+- `2.11 branch changelog <http://svn.zope.org/Zope/branches/2.11/doc/CHANGES.txt?view=markup>`_
 
-Zope 2.10
-=========
+Zope 2.10 Releases
+------------------
 
-- `Changelog <http://svn.zope.org/Zope/branches/2.10/doc/CHANGES.txt?view=markup>`_
+- `2.10 branch changelog <http://svn.zope.org/Zope/branches/2.10/doc/CHANGES.txt?view=markup>`_
 
-Zope 2.9
-=========
+Zope 2.9 Releases
+-----------------
 
-- `Changelog <http://svn.zope.org/Zope/branches/2.9/doc/CHANGES.txt?view=markup>`_
+- `2.9 branch changelog <http://svn.zope.org/Zope/branches/2.9/doc/CHANGES.txt?view=markup>`_
 
-Zope 2.8
-=========
+Zope 2.8 Releases
+-----------------
 
-- `Changelog <http://svn.zope.org/Zope/branches/2.8/doc/CHANGES.txt?view=markup>`_
+- `2.8 branch changelog <http://svn.zope.org/Zope/branches/2.8/doc/CHANGES.txt?view=markup>`_
