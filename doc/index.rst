@@ -7,6 +7,7 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
+   WHATSNEW.rst
    CHANGES.rst
    INSTALL.rst
    SECURITY.rst
