@@ -22,6 +22,7 @@ Options:
 -d/--dir  -- the dir in which the instance home should be created
 -u/--user NAME:PASSWORD -- set the user name and password of the initial user
 -s/--skelsrc -- the dir from which skeleton files should be copied
+-p/--python -- the Python interpreter to use
 
 When run without arguments, this script will ask for the information necessary
 to create a Zope instance home.
@@ -35,8 +36,8 @@ import copyzopeskel
 def main():
     try:
         opts, args = getopt.getopt(sys.argv[1:],
-            "hu:d:s:",
-            ["help", "user=", "dir=", "skelsrc="]
+            "hu:d:s:p:",
+            ["help", "user=", "dir=", "skelsrc=", "python="]
             )
     except getopt.GetoptError, msg:
         usage(sys.stderr, msg)
@@ -47,6 +48,7 @@ def main():
     password = None
     skeltarget = None
     skelsrc = None
+    python = None
 
     for opt, arg in opts:
         if opt in ("-d", "--dir"):
@@ -58,6 +60,11 @@ def main():
             skelsrc = os.path.abspath(os.path.expanduser(arg))
             if not skelsrc:
                 usage(sys.stderr, "skelsrc must not be empty")
+                sys.exit(2)
+        if opt in ("-p", "--python"):
+            python = os.path.abspath(os.path.expanduser(arg))
+            if not os.path.exists(python) and os.path.isfile(python):
+                usage(sys.stderr, "The Python interpreter does not exist.")
                 sys.exit(2)
         if opt in ("-h", "--help"):
             usage(sys.stdout)
@@ -95,20 +102,23 @@ def main():
     # installer).  Thus, sys.executable may not be the executable we use.
     # We still provide both PYTHON and PYTHONW, but PYTHONW should never
     # need be used.
-    psplit = os.path.split(sys.executable)
+    if python is None:
+        python = sys.executable
+    
+    psplit = os.path.split(python)
     exedir = os.path.join(*psplit[:-1])
     pythonexe = os.path.join(exedir, 'python.exe')
     pythonwexe = os.path.join(exedir, 'pythonw.exe')
 
     if ( os.path.isfile(pythonwexe) and os.path.isfile(pythonexe) and
-         (sys.executable in [pythonwexe, pythonexe]) ):
+         (python in [pythonwexe, pythonexe]) ):
         # we're using a Windows build with both python.exe and pythonw.exe
         # in the same directory
         PYTHON = pythonexe
         PYTHONW = pythonwexe
     else:
         # we're on UNIX or we have a nonstandard Windows setup
-        PYTHON = PYTHONW = sys.executable
+        PYTHON = PYTHONW = python
 
     import Zope2
     zope2path = os.path.realpath(os.path.dirname(Zope2.__file__))

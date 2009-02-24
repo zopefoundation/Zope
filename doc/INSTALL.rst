@@ -59,15 +59,18 @@ This will create the related scripts like ``mkzopeinstance`` within the
 Creating a Zope Instance
 ------------------------
 
-XXX:  Make this not a lie!
-
 Once you've performed the install step, to begin actually using
 Zope, you will need to create an "instance home", which is a
 directory that contains configuration and data for a Zope server
 process.  The instance home is created using the ``mkzopeinstance``
 script::
 
-  $ /bin/mkzopeinstance
+  $ bin/mkzopeinstance
+
+If you use Zope from SVN, you will need to specify the Python interpreter
+to use for the instance explicitly::
+
+  $ bin/mkzopeinstance --python=bin/zopepy
 
 You will be asked to provide a user name and password for an
 administrator's account during ``mkzopeinstance``.  To see the available
