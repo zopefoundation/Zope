@@ -247,3 +247,80 @@ no longer needs Acquisition wrapping for the Acquisition machinery to
 understand this. The next time you want to use a package or make your own code
 more reusable outside of Zope2, this should be of tremendous help.
 
+
+Object managers and IContainer
+------------------------------
+
+One of the fundamental parts of Zope2 is the object file system as implemented
+in the `OFS` package. A central part of this package is an underlying class
+called `ObjectManager`. It is a base class of the standard Folder used
+for many container-ish classes inside Zope2.
+
+The API to access objects in an object manager or to add objects to one has
+been written many years ago. Since those times Python itself has gotten
+standard ways to access objects in containers and work with them. Those Python
+API's are most familiar to most developers working with Zope. The Zope
+components libraries have formalized those API's into the general IContainer
+interface in the zope.container package. In this version of Zope2 the standard
+OFS ObjectManager fully implements this IContainer interface in addition to its
+old API.
+
+ >>> from zope.container.interfaces import IContainer
+ >>> from OFS.ObjectManager import ObjectManager
+ >>> IContainer.implementedBy(ObjectManager)
+ True
+
+You can now write any of your code in a way that no longer ties it to object
+managers alone, but can support any class implementing IContainer instead. In
+conjunction with the Acquisition changes above, this will increase your chances
+of being able to reuse existing packages not specifically written for Zope2 in
+a major way.
+
+Here's an example of how you did work with object managers before::
+
+  >>> from OFS.Folder import Folder
+  >>> from OFS.SimpleItem import SimpleItem
+
+  >>> folder = Folder('folder')
+  >>> item1 = SimpleItem('item1')
+  >>> item2 = SimpleItem('item1')
+
+  >>> result = folder._setObject('item1', item1)
+  >>> result = folder._setObject('item2', item2)
+
+  >>> folder.objectIds()
+  ['item1', 'item2']
+
+  >>> folder.objectValues()
+  [<SimpleItem at folder/>, <SimpleItem at folder/>]
+
+  >>> if folder.hasObject('item2')
+  ...     folder._delObject('item2')
+
+Instead of this special API, you can now use::
+
+  >>> from OFS.Folder import Folder
+  >>> from OFS.SimpleItem import SimpleItem
+
+  >>> folder = Folder('folder')
+  >>> item1 = SimpleItem('item1')
+  >>> item2 = SimpleItem('item1')
+
+  >>> folder['item1'] = item1
+  >>> folder['item2'] = item2
+
+  >>> folder.keys()
+  ['item1', 'item2']
+
+  >>> folder.values()
+  [<SimpleItem at folder/>, <SimpleItem at folder/>]
+
+  >>> folder.get('item1')
+  <SimpleItem at folder/>
+
+  >>> if 'item2' in folder:
+  ...     del folder['item2']
+
+  >>> folder.items()
+  [('item1', <SimpleItem at folder/>)]
+
