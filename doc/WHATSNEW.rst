@@ -91,19 +91,19 @@ As with every release of Zope2 this version has removed various modules
 which have been deprecated in prior versions.
 
 Most notably ZClasses and supporting modules have been removed entirely from
-Zope2. As a result the persistent product registry has been optional, but is
-still enabled by default. If your application does not rely on the registry you
-can now disable the registry by specifying::
+Zope2. As a result the persistent product registry has been made optional, but
+is still enabled by default. If your application does not rely on the registry,
+you can now disable it by specifying::
 
   enable-product-installation off
 
-inside your `zope.conf` file. As a result Zope will no longer write any new
-transactions to your database during startup.
+inside your `zope.conf` file. With the option turned off Zope will no longer
+write any new transactions to your database during startup in most cases.
 
 With the upgrade to ZODB 3.9 database-level version support is no longer
-available. Many of the modules in Products.OFSP have been removed as a result.
-The low level API to load objects from the database has lost its version
-argument as a result of this.
+available. Many of the modules in `Products.OFSP` have been removed as a
+result. The low level API to load objects from the database has lost its
+version argument as a result of this.
 
 
 Documentation updates
@@ -127,25 +127,26 @@ step in the integration story for Zope components based technology into Zope2.
 While integrating the Zope component architecture and its many concepts into
 Zope2 an integration layer called Five (Zope 2 + 3) has been created. One of
 the major reasons for the necessity of an integration layer has been in the way
-Zope2 was tightly coupled to the concept of Acquisition. Especially the entire
-security machinery has been relying on this.
+Zope2 was tightly coupled to the concept of Acquisition. The entire security
+machinery, object traversal and publication has been relying on this.
 
 All classes, which wanted to interact with Zope2 in any non-trivial way, had to
 inherit from the Acquisition base classes. As a result almost no external
 package could directly work inside Zope2 but required an integration layer.
 
 With this version of Zope2 classes do have a second option of providing
-location awareness to the Zope API's in a transparent way. The second option is
-now the `zope.location <http://pypi.python.org/pypi/zope.location>`_ API as
-described by the ILocation interface.
+location awareness to Zope API's in a transparent way. The second option is the
+`zope.location <http://pypi.python.org/pypi/zope.location>`_ API as described
+by the ILocation interface.
 
 Classes implementing this interface get `__parent__` pointers set to their
 container object, when being put into the container. Code that operates on such
 objects can then walk up the containment hierarchy by following the pointers.
 In Acquisition based classes no information would be stored on the objects, but
-Acquisition wrappers are constructed around the objects which would hold the
-container references. The Acquisition wrapping relies on the objects to provide
-an `__of__` method as done by the Acquisition base classes.
+Acquisition wrappers are constructed around the objects instead. Only those
+wrappers would hold the container references. The Acquisition wrapping relies
+on the objects to provide an `__of__` method as done by the Acquisition base
+classes.
 
 The standard way of getting the container of an instance is to call::
 
@@ -153,11 +154,11 @@ The standard way of getting the container of an instance is to call::
   
   container = aq_parent(instance)
 
-There are various `aq_*` methods around for various other tasks related to
-locating objects in the containment hierarchy. So far virtually all objects
-in Zope2 would participate in this Acquisition and thus most often people
-relied on Acquisition wrappers to be found around their objects. This caused
-code to rely on accessing the `aq_*` methods as attributes of the wrapper::
+There are various `aq_*` methods available for various other tasks related to
+locating objects in the containment hierarchy. So far virtually all objects in
+Zope2 would participate in Acquisition. As a side-effect many people relied on
+Acquisition wrappers to be found around their objects. This caused code to rely
+on accessing the `aq_*` methods as attributes of the wrapper::
 
   container = instance.aq_parent
 
@@ -172,9 +173,9 @@ it with a proper interface check::
       instance = instance.__of__(container)
 
 In addition to this check you should no longer rely on the `aq_*` methods to be
-available as attributes anymore. While all code inside Zope2 itself still
-supports this, it does no longer rely on those but makes proper use of the
-function provided by the Acquisition package.
+available as attributes. While all code inside Zope2 itself still supports
+this, it does no longer rely on thosem but makes proper use of the functions
+provided by the Acquisition package.
 
 To understand the interaction between the new and old approach here is a
 little example::
@@ -253,7 +254,7 @@ Object managers and IContainer
 
 One of the fundamental parts of Zope2 is the object file system as implemented
 in the `OFS` package. A central part of this package is an underlying class
-called `ObjectManager`. It is a base class of the standard Folder used
+called `ObjectManager`. It is a base class of the standard `Folder` used
 for many container-ish classes inside Zope2.
 
 The API to access objects in an object manager or to add objects to one has
@@ -270,8 +271,8 @@ old API.
  >>> IContainer.implementedBy(ObjectManager)
  True
 
-You can now write any of your code in a way that no longer ties it to object
-managers alone, but can support any class implementing IContainer instead. In
+You can now write your code in a way that no longer ties it to object managers
+alone, but can support any class implementing IContainer instead. In
 conjunction with the Acquisition changes above, this will increase your chances
 of being able to reuse existing packages not specifically written for Zope2 in
 a major way.
