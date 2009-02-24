@@ -242,6 +242,8 @@ Instead you can now do::
   ...         container = aq_parent(self.context)
 
 As the zope.publisher BrowserView supports the ILocation interface, all of this
-works automatically. The next time you want to use a package or make your own
-code more reusable outside of Zope2, this should be of tremendous help.
+works automatically. A view considers its context as its parent as before, but
+no longer needs Acquisition wrapping for the Acquisition machinery to
+understand this. The next time you want to use a package or make your own code
+more reusable outside of Zope2, this should be of tremendous help.
 
