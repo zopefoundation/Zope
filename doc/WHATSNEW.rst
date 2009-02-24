@@ -117,3 +117,131 @@ So far the Zope2 Book, the Zope Developers Guide and many smaller articles
 have been converted to reStructuredText and their content updated.
 
 
+Acquisition redux
+-----------------
+
+The short technical version of this change is: "Acquisition has been made aware
+of __parent__ pointers". What sounds like a small change is actually a major
+step in the integration story for Zope components based technology into Zope2.
+
+While integrating the Zope component architecture and its many concepts into
+Zope2 an integration layer called Five (Zope 2 + 3) has been created. One of
+the major reasons for the necessity of an integration layer has been in the way
+Zope2 was tightly coupled to the concept of Acquisition. Especially the entire
+security machinery has been relying on this.
+
+All classes, which wanted to interact with Zope2 in any non-trivial way, had to
+inherit from the Acquisition base classes. As a result almost no external
+package could directly work inside Zope2 but required an integration layer.
+
+With this version of Zope2 classes do have a second option of providing
+location awareness to the Zope API's in a transparent way. The second option is
+now the `zope.location <http://pypi.python.org/pypi/zope.location>`_ API as
+described by the ILocation interface.
+
+Classes implementing this interface get `__parent__` pointers set to their
+container object, when being put into the container. Code that operates on such
+objects can then walk up the containment hierarchy by following the pointers.
+In Acquisition based classes no information would be stored on the objects, but
+Acquisition wrappers are constructed around the objects which would hold the
+container references. The Acquisition wrapping relies on the objects to provide
+an `__of__` method as done by the Acquisition base classes.
+
+The standard way of getting the container of an instance is to call::
+
+  from Acquisition import aq_parent
+  
+  container = aq_parent(instance)
+
+There are various `aq_*` methods around for various other tasks related to
+locating objects in the containment hierarchy. So far virtually all objects
+in Zope2 would participate in this Acquisition and thus most often people
+relied on Acquisition wrappers to be found around their objects. This caused
+code to rely on accessing the `aq_*` methods as attributes of the wrapper::
+
+  container = instance.aq_parent
+
+While all the existing API's still work as before, Acquisition now respects
+`__parent__` pointers to find the container for an object. It will also not
+unconditionally try to call the `__of__` method of objects anymore, but protect
+it with a proper interface check::
+
+  from Acquisition.interfaces import IAcquirer
+
+  if IAcquirer.providedBy(instance):
+      instance = instance.__of__(container)
+
+In addition to this check you should no longer rely on the `aq_*` methods to be
+available as attributes anymore. While all code inside Zope2 itself still
+supports this, it does no longer rely on those but makes proper use of the
+function provided by the Acquisition package.
+
+To understand the interaction between the new and old approach here is a
+little example::
+
+  >>> class O(object):
+  ...     def __init__(self, name):
+  ...         self.__name__ = str(name)
+  ...     def __repr__(self):
+  ...         return self.__class__.__name__ + self.__name__
+
+  # Create an Acquisition variant of the class:
+
+  >>> from Acquisition import Implicit
+  >>> class I(O, Implicit):
+  ...     pass
+
+  >>> i1 = I(1)
+  >>> i2 = I(2)
+  >>> o1 = O(1)
+  >>> o2 = O(2)
+
+  # Provide the containment hints:
+
+  >>> i2 = i2.__of__(i1)
+  >>> o1.__parent__ = i2
+  >>> o2.__parent__ = o1
+
+  # Test the containtment chain:
+
+  >>> from Acquisition import aq_parent
+  >>> aq_parent(o1)
+  I2
+
+  >>> from Acquisition import aq_chain
+  >>> aq_chain(o2)
+  [O2, O1, I2, I1]
+
+  # Explicit pointers take precedence over Acquisition wrappers:
+
+  >>> i3 = I(3)
+  >>> i3 = i3.__of__(i2)
+  >>> i3.__parent__ = o1
+
+  >>> aq_chain(i3)
+  [I3, O1, I2, I1]
+
+For a less abstract example, you so far had to do::
+
+  >>> from Acquisition import aq_inner
+  >>> from Acquisition import aq_parent
+  >>> from Products import Five
+
+  >>> class MyView(Five.browser.BrowserView):
+  ...
+  ...     def do_something(self):
+  ...         container = aq_parent(aq_inner(self.context))
+
+Instead you can now do::
+
+  >>> import zope.publisher.browser
+
+  >>> class MyView(zope.publisher.browser.BrowserView):
+  ...
+  ...     def do_something(self):
+  ...         container = aq_parent(self.context)
+
+As the zope.publisher BrowserView supports the ILocation interface, all of this
+works automatically. The next time you want to use a package or make your own
+code more reusable outside of Zope2, this should be of tremendous help.
+
