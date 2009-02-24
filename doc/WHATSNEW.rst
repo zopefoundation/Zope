@@ -284,7 +284,7 @@ Here's an example of how you did work with object managers before::
 
   >>> folder = Folder('folder')
   >>> item1 = SimpleItem('item1')
-  >>> item2 = SimpleItem('item1')
+  >>> item2 = SimpleItem('item2')
 
   >>> result = folder._setObject('item1', item1)
   >>> result = folder._setObject('item2', item2)
@@ -305,7 +305,7 @@ Instead of this special API, you can now use::
 
   >>> folder = Folder('folder')
   >>> item1 = SimpleItem('item1')
-  >>> item2 = SimpleItem('item1')
+  >>> item2 = SimpleItem('item2')
 
   >>> folder['item1'] = item1
   >>> folder['item2'] = item2
