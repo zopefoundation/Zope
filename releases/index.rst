@@ -28,4 +28,4 @@ Zope 2.9 Releases
 Zope 2.8 Releases
 -----------------
 
-- `2.8 branch changelog <http://svn.zope.org/Zope/branches/2.8/doc/CHANGES.txt?view=markup>`_
+- `2.8 branch changelog <http://svn.zope.org/Zope/branches/Zope-2_8-branch/doc/CHANGES.txt?view=markup>`_
