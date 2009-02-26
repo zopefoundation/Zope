@@ -5,9 +5,7 @@ Building and installing Zope from source
 Welcome to Zope!  This document describes building and installing
 Zope on UNIX and Linux.
 
-See ``doc/WINDOWS.txt`` for information about Windows.  See the
-``doc/PLATFORMS`` directory for notes about various other platforms.
-
+See ``doc/WINDOWS.rst`` for information about Windows.
 
 Prerequisites
 -------------
@@ -197,4 +195,4 @@ Troubleshooting
   you built Python from source all the configuration information
   should already be available.
 
-- See ``doc/CHANGES.txt`` for important notes on this version of Zope.
+- See ``doc/CHANGES.rst`` for important notes on this version of Zope.
