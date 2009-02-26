@@ -5,7 +5,7 @@ This file contains change information for the current Zope release.
 Change information for previous versions of Zope can be found in the
 file HISTORY.txt.
 
-Trunk (2009/02/28)
+Trunk (unreleased)
 ------------------
 
 Known issues
@@ -15,10 +15,19 @@ Known issues
   More specifically the generated startup scripts need to be adjusted,
   while the code itself should work fine.
 
-- ZODB 3.9.0a11 does not work on Windows with Python 2.6 yet.
+- ZODB 3.9.0a12 does not work on Windows with Python 2.6 yet.
 
 - There is no old-style full tarball release that resembles the prior
   releases of Zope at this point.
+
+Restructuring
++++++++++++++
+
+- Updated to ZODB 3.9.0a12.
+
+
+2.12.0a1 (2009-02-26)
+---------------------
 
 Restructuring
 +++++++++++++
