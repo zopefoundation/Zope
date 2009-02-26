@@ -25,6 +25,11 @@ Restructuring
 
 - Updated to ZODB 3.9.0a12.
 
+- Removed the `getPackages` wrapper from setup.py which would force all
+  versions to an exact requirement. This made it impossible to require
+  newer versions of the dependencies. This kind of KGS information needs
+  to be expressed in a different way.
+
 
 2.12.0a1 (2009-02-26)
 ---------------------
