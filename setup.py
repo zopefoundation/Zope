@@ -34,7 +34,7 @@ def getPackages(packages):
 
 
 setup(name='Zope2',
-      version = '2.12.dev',
+      version = '2.12.0.a1',
       url='http://www.zope.org',
       license='ZPL 2.1',
       description='Zope2 application server / web framework',
