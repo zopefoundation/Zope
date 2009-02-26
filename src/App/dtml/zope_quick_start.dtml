@@ -37,7 +37,7 @@ pointers to get you started:
 <ul>
 <li>
 <p>
-<a href="http://www.zope.org/Documentation/ZopeBook/" target="_new">Read The 
+<a href="http://docs.zope.org/zope2book/" target="_new">Read The 
 Fine Manual</a>.  This document guides you through the whole process of
 learning Zope, from logging in for the first time to creating your own
 web applications.
@@ -46,7 +46,7 @@ web applications.
 
 <li>
 <p>
-Go to the main <a href="http://www.zope.org/Documentation/" target="_new">
+Go to the main <a href="http://docs.zope.org/" target="_new">
 Documentation Overview</a> on <a href="http://www.zope.org" target="_new">Zope.org</a>.  
 Here you will find pointers to official and community contributed documentation.
 </p>
