@@ -21,7 +21,7 @@ License
 -------
 
 The Zope License is included in ``ZopePublicLicense.txt``.  Send your
-feedback about the license to zope-license@zope.org.
+feedback about the license to zope-dev@zope.org.
 
 Bug tracker
 -----------
