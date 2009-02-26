@@ -32,10 +32,6 @@ def getPackages(packages):
         result.append('%s==%s' % (package, version))
     return result
 
-long_description=file("README.txt").read() + "\n" + file(os.path.join("doc", "CHANGES.rst")).read()
-
-file('/tmp/xx.rst', 'w').write(long_description)
-
 setup(name='Zope2',
       version = '2.12.0.a1',
       url='http://www.zope.org',
