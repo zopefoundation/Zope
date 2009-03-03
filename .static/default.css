@@ -10,7 +10,7 @@ body {
     margin: 0;
     padding: 0;
     -x-system-font:none;
-    background:#474747 url(http://zode01.lovelysystems.com/body_bg.png) repeat-x scroll left top;
+    background:#474747 url(http://docs.zope.org/_static/body_bg.png) repeat-x scroll left top;
     color:#333333;
 }
 
