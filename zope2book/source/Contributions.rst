@@ -4,8 +4,8 @@ Contributions
 Contributors to this book include Amos Latteier, Michel Pelletier,
 Chris McDonough, Evan Simpson, Tom Deprez, Paul Everitt, Bakhtiar
 A. Hamid, Geir Baekholt, Thomas Reulbach, Paul Winkler, Peter Sabaini,
-Andrew Veitch, Kevin Carlson, Joel Burton, John DeStefano, and the
-Zope Community.
+Andrew Veitch, Kevin Carlson, Joel Burton, John DeStefano, Tres Seaver,
+Hanno Schlicting, and the Zope Community.
 
 Amos and Michel wrote the entirety of the first edition of this
 book, and kept the online version of the book current up until Zope
@@ -52,14 +52,16 @@ related to object orientation, using the Zope management interface,
 acquisition, installation, services, virtual hosting, sessions, and
 DTML name lookup rules.
 
-Tres Seaver moved the text into the Zope Subversion repository, and
-helped with the conversion of the text from ``Structured Text``
-to ``ReStructured Text``.
-
 Jo <jo at winfix dot it> has contributed a number of spelling corrections.
 
 John DeStefano edited chapters of the book in a post-2.7-edition mode.
 
+Tres Seaver moved the text into the Zope Subversion repository, and
+helped with the conversion of the text from ``Structured Text``
+to ``ReStructured Text``.
+
+Hanno Schlicting did te remainter of the ``ReStructured Text`` conversion,
+and completed the integration with Sphinx.
+
 Anyone who added a comment to the online BackTalk edition of the
 first online edition of this book contributed greatly.  Thank you!
-
