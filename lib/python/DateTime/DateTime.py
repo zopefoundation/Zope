@@ -356,6 +356,8 @@ class DateTime:
     def __setstate__(self, state):
         self.__dict__.clear()  # why doesn't Python's unpickler do this?
         self.__dict__.update(state)
+        if '_micros' not in state:
+            self._micros = self._upgrade_old()
 
     def _parse_args(self, *args, **kw):
         """Return a new date-time object.
