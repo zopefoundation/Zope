@@ -27,10 +27,16 @@ Zope Changes
 
     Bugs Fixed
 
-      - Launchpad ##332168: Connection.py: do not expose DB connection strings
-        through exceptions
+      - Launchpad #290254, DateTime/DateTime.py:
+        added '__setstate__' to cope with old pickles missing a '_micros'
+        attribute;  Python's pickling support was creating a new instance,
+        *with* a '_micros' attribute, but not clearing that attribute before
+        updating the instance dict with the unpickled state.
 
-      - LP/#324876: tighened regex for detecting the charset
+      - Launchpad #332168, Shared/DC/RDBMS/Connection.py:
+        do not expose DB connection strings through exceptions
+
+      - Launchpad #324876: tighened regex for detecting the charset
         from a meta-equiv header
 
       - configure script: setting ZOPE_VERS to '2.11'

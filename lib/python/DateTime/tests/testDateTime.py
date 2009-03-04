@@ -211,13 +211,60 @@ class DateTimeTests(unittest.TestCase):
         self.failUnless(dt != dt1)
         self.failUnless(not (dt == dt1))
 
-    def testUpgradeOldInstances(self):
+    def test_compare_old_instances(self):
         # Compare dates that don't have the _micros attribute yet
+        # (e.g., from old pickles).
         dt = DateTime('1997/1/1')
         dt1 = DateTime('1997/2/2')
+        dt._millis = dt._micros / 1000
         del dt._micros
+        dt1._millis = dt1._micros / 1000
         del dt1._micros
         self.testCompareOperations(dt, dt1)
+
+    def test_compare_old_new_instances(self):
+        # Compare a date without _micros attribute (e.g., from an old
+        # pickle) with one that does.
+        dt = DateTime('1997/1/1')
+        dt1 = DateTime('1997/2/2')
+        dt._millis = dt._micros / 1000
+        del dt._micros
+        self.testCompareOperations(dt, dt1)
+
+    def test_compare_new_old_instances(self):
+        # Compare a date with _micros attribute with one that does not
+        # (e.g., from an old pickle).
+        dt = DateTime('1997/1/1')
+        dt1 = DateTime('1997/2/2')
+        dt1._millis = dt._micros / 1000
+        del dt1._micros
+        self.testCompareOperations(dt, dt1)
+
+    def test_strftime_old_instance(self):
+        # https://bugs.launchpad.net/zope2/+bug/290254
+        # Ensure that dates without _micros attribute (e.g., from old
+        # pickles) still render correctly in strftime.
+        ISO = '2001-10-10T00:00:00+02:00'
+        dt = DateTime(ISO)
+        dt._millis = dt._micros / 1000
+        del dt._micros
+        self.assertEqual(dt.strftime('%Y'), '2001')
+
+        # Now, create one via pickling / unpickling.
+        from cPickle import dumps, loads
+        self.assertEqual(loads(dumps(dt)).strftime('%Y'), '2001')
+
+    def test___setstate___without_micros(self):
+        ISO = '2001-10-10T00:00:00+02:00'
+        dt = DateTime(ISO)
+        micros = dt._micros
+        dt._millis = dt._micros / 1000
+        del dt._micros
+        state = dt.__dict__
+
+        dt1 = DateTime()
+        dt1.__setstate__(state)
+        self.assertEqual(dt1._micros, micros)
 
     def testTZ2(self):
         # Time zone manipulation test 2
