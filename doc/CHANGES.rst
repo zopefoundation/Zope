@@ -23,6 +23,8 @@ Known issues
 Restructuring
 +++++++++++++
 
+- Updated to DateTime 2.12.0.
+
 - Updated to ZODB 3.9.0a12.
 
 - Removed the `getPackages` wrapper from setup.py which would force all
