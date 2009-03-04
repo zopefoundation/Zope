@@ -50,6 +50,9 @@ def main():
     skelsrc = None
     python = None
 
+    if check_buildout():
+        python = os.path.abspath('bin/zopepy')
+
     for opt, arg in opts:
         if opt in ("-d", "--dir"):
             skeltarget = os.path.abspath(os.path.expanduser(arg))
@@ -185,6 +188,15 @@ def write_inituser(fn, user, password):
     fp.write('%s:{SHA}%s\n' % (user, pw))
     fp.close()
     os.chmod(fn, 0644)
+
+def check_buildout():
+    """ Are we running from within a buildout which supplies 'zopepy'?
+    """
+    if os.path.exists('buildout.cfg'):
+        from ConfigParser import RawConfigParser
+        parser = RawConfigParser()
+        parser.read('buildout.cfg')
+        return 'zopepy' in parser.sections()
 
 if __name__ == "__main__":
     main()
