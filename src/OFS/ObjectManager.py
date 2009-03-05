@@ -789,6 +789,9 @@ class ObjectManager(CopyContainer,
     def __len__(self):
         return len(self.objectIds())
 
+    def __nonzero__(self):
+        return True
+
     security.declareProtected(access_contents_information, 'get')
     def get(self, key, default=None):
         return self._getOb(key, default)

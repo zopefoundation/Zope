@@ -379,6 +379,10 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         om['2'] = si2
         self.failUnless(len(om) == 2)
 
+    def test_nonzero(self):
+        om = self._makeOne()
+        self.failUnless(om)
+
     def test_get(self):
         om = self._makeOne()
         si1 = SimpleItem('1')

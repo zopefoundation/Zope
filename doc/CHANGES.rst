@@ -32,6 +32,10 @@ Restructuring
   newer versions of the dependencies. This kind of KGS information needs
   to be expressed in a different way.
 
+Bugs Fixed
+++++++++++
+
+- Object managers should evaluate to True in a boolean test.
 
 2.12.0a1 (2009-02-26)
 ---------------------
