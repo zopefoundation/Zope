@@ -60,8 +60,8 @@ Tres Seaver moved the text into the Zope Subversion repository, and
 helped with the conversion of the text from ``Structured Text``
 to ``ReStructured Text``.
 
-Hanno Schlicting did te remainter of the ``ReStructured Text`` conversion,
-and completed the integration with Sphinx.
+Hanno Schlichting did the remainder of the ``ReStructured Text`` conversion,
+completed the integration with Sphinx and rewrote many chapters for Zope 2.12.
 
 Anyone who added a comment to the online BackTalk edition of the
 first online edition of this book contributed greatly.  Thank you!
