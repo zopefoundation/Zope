@@ -134,25 +134,30 @@ All classes, which wanted to interact with Zope2 in any non-trivial way, had to
 inherit from the Acquisition base classes. As a result almost no external
 package could directly work inside Zope2 but required an integration layer.
 
-With this version of Zope2 classes do have a second option of providing
-location awareness to Zope API's in a transparent way. The second option is the
-`zope.location <http://pypi.python.org/pypi/zope.location>`_ API as described
-by the ILocation interface.
+With this version of Zope2, objects have a new option of providing location
+awareness to Zope APIs. This new option is to provide an explicit parent
+pointer in the ``__parent__`` attribute, much like specified by the ILocation
+API from `zope.location <http://pypi.python.org/pypi/zope.location>`_. Browser
+views and other location-dependent components implement ILocation already.
 
-Classes implementing this interface get `__parent__` pointers set to their
-container object, when being put into the container. Code that operates on such
-objects can then walk up the containment hierarchy by following the pointers.
-In Acquisition based classes no information would be stored on the objects, but
-Acquisition wrappers are constructed around the objects instead. Only those
-wrappers would hold the container references. The Acquisition wrapping relies
-on the objects to provide an `__of__` method as done by the Acquisition base
-classes.
+Classes adhering to this convention need to get `__parent__` pointers set to
+their container object, when being put into the container. Code that operates
+on such objects can then walk up the containment hierarchy by following the
+pointers. In Acquisition based classes no information would be stored on the
+objects, but Acquisition wrappers are constructed around the objects instead.
+Only those wrappers would hold the container references. The Acquisition
+wrapping relies on the objects to provide an `__of__` method as done by the
+Acquisition base classes.
 
-The standard way of getting the container of an instance is to call::
+The most common way of getting the container of an instance is to call::
 
   from Acquisition import aq_parent
   
   container = aq_parent(instance)
+
+For instances providing the ILocation interface the common way is::
+
+  container = instance.__parent__
 
 There are various `aq_*` methods available for various other tasks related to
 locating objects in the containment hierarchy. So far virtually all objects in
@@ -174,53 +179,58 @@ it with a proper interface check::
 
 In addition to this check you should no longer rely on the `aq_*` methods to be
 available as attributes. While all code inside Zope2 itself still supports
-this, it does no longer rely on thosem but makes proper use of the functions
+this, it does no longer rely on those but makes proper use of the functions
 provided by the Acquisition package.
 
 To understand the interaction between the new and old approach here is a
 little example::
 
-  >>> class O(object):
+  >>> class Location(object):
   ...     def __init__(self, name):
-  ...         self.__name__ = str(name)
+  ...         self.__name__ = name
   ...     def __repr__(self):
-  ...         return self.__class__.__name__ + self.__name__
+  ...         return self.__name__
 
   # Create an Acquisition variant of the class:
 
-  >>> from Acquisition import Implicit
-  >>> class I(O, Implicit):
+  >>> import Acquisition
+  >>> class Implicit(Location, Acquisition.Implicit):
   ...     pass
 
-  >>> i1 = I(1)
-  >>> i2 = I(2)
-  >>> o1 = O(1)
-  >>> o2 = O(2)
+  # Create two implicit instances:
+
+  >>> root = Implicit('root')
+  >>> folder = Implicit('folder')
+
+  # And two new Acquisition-free instances:
+
+  >>> container = Location('container')
+  >>> item = Location('item')
 
   # Provide the containment hints:
 
-  >>> i2 = i2.__of__(i1)
-  >>> o1.__parent__ = i2
-  >>> o2.__parent__ = o1
+  >>> folder = folder.__of__(root)
+  >>> container.__parent__ = folder
+  >>> item.__parent__ = container
 
   # Test the containtment chain:
 
   >>> from Acquisition import aq_parent
-  >>> aq_parent(o1)
-  I2
+  >>> aq_parent(container)
+  folder
 
   >>> from Acquisition import aq_chain
-  >>> aq_chain(o2)
-  [O2, O1, I2, I1]
+  >>> aq_chain(item)
+  [item, container, folder, root]
 
   # Explicit pointers take precedence over Acquisition wrappers:
 
-  >>> i3 = I(3)
-  >>> i3 = i3.__of__(i2)
-  >>> i3.__parent__ = o1
+  >>> item2 = Implicit('item2')
+  >>> item2 = item2.__of__(folder)
+  >>> item2.__parent__ = container
 
-  >>> aq_chain(i3)
-  [I3, O1, I2, I1]
+  >>> aq_chain(item2)
+  [item2, container, folder, root]
 
 For a less abstract example, you so far had to do::
 
