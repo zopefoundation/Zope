@@ -618,7 +618,7 @@ class ObjectManager(CopyContainer,
             raise BadRequest, 'Invalid file name %s' % escape(file)
 
         cfg = getConfiguration()
-        for impath in (cfg.instancehome, getattr(cfg, 'zopehome', '')):
+        for impath in self._getImportPaths():
             filepath = os.path.join(impath, 'import', file)
             if os.path.exists(filepath):
                 break
@@ -655,8 +655,7 @@ class ObjectManager(CopyContainer,
         ob=self._getOb(id)
         ob.manage_changeOwnershipType(explicit=0)
 
-    def list_imports(self):
-        listing = []
+    def _getImportPaths(self):
         cfg = getConfiguration()
         paths = []
         zopehome = getattr(cfg, 'zopehome', None)
@@ -664,7 +663,11 @@ class ObjectManager(CopyContainer,
             paths.append(zopehome)
         if not cfg.instancehome in paths:
             paths.append(cfg.instancehome)
-        for impath in paths:
+        return paths
+
+    def list_imports(self):
+        listing = []
+        for impath in self._getImportPaths():
             directory = os.path.join(impath, 'import')
             if not os.path.isdir(directory):
                 continue
