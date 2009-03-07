@@ -29,13 +29,6 @@ example instead.
 $Id$
 """
 
-import os, sys
-if __name__ == '__main__':
-    execfile(os.path.join(sys.path[0], 'framework.py'))
-
-#os.environ['STUPID_LOG_FILE'] = os.path.join(os.getcwd(), 'zLOG.log')
-#os.environ['STUPID_LOG_SEVERITY'] = '0'
-
 from Testing import ZopeTestCase
 
 from Testing.ZopeTestCase import transaction
@@ -198,7 +191,4 @@ def test_suite():
     suite.addTest(makeSuite(TestWebserver))
     suite.addTest(makeSuite(TestSandboxedWebserver))
     return suite
-
-if __name__ == '__main__':
-    framework()
 

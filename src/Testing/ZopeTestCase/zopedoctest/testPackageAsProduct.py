@@ -15,10 +15,6 @@
 $Id$
 """
 
-import os, sys
-if __name__ == '__main__':
-    execfile(os.path.join(sys.path[0], 'framework.py'))
-
 from unittest import TestSuite
 from Testing import ZopeTestCase
 from Testing.ZopeTestCase import ZopeLite
@@ -116,7 +112,4 @@ def test_suite():
         ))
     else:
         return TestSuite()
-
-if __name__ == '__main__':
-    framework()
 

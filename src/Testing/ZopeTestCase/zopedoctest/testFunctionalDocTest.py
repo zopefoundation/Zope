@@ -15,10 +15,6 @@
 $Id$
 """
 
-import os, sys
-if __name__ == '__main__':
-    execfile(os.path.join(sys.path[0], 'framework.py'))
-
 from unittest import TestSuite
 from Testing.ZopeTestCase import installProduct
 from Testing.ZopeTestCase import FunctionalDocTestSuite
@@ -66,7 +62,4 @@ def test_suite():
         FunctionalDocTestSuite(setUp=setUp),
         FunctionalDocFileSuite('FunctionalDocTest.txt', setUp=setUp),
     ))
-
-if __name__ == '__main__':
-    framework()
 

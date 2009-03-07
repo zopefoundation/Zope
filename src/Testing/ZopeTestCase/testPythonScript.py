@@ -25,10 +25,6 @@ modify the test user's security credentials:
 $Id$
 """
 
-import os, sys
-if __name__ == '__main__':
-    execfile(os.path.join(sys.path[0], 'framework.py'))
-
 from Testing import ZopeTestCase
 
 ZopeTestCase.installProduct('PythonScripts')
@@ -196,7 +192,4 @@ def test_suite():
     suite = TestSuite()
     suite.addTest(makeSuite(TestPythonScript))
     return suite
-
-if __name__ == '__main__':
-    framework()
 

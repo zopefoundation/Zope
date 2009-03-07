@@ -15,10 +15,6 @@
 $Id$
 """
 
-import os, sys
-if __name__ == '__main__':
-    execfile(os.path.join(sys.path[0], 'framework.py'))
-
 from Testing import ZopeTestCase
 
 from Testing.ZopeTestCase.placeless import setUp, tearDown
@@ -91,7 +87,4 @@ def test_suite():
     suite = TestSuite()
     suite.addTest(makeSuite(TestPlacelessSetUp))
     return suite
-
-if __name__ == '__main__':
-    framework()
 

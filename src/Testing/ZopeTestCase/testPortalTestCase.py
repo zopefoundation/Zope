@@ -21,10 +21,6 @@ quick way of getting started.
 $Id$
 """
 
-import os, sys
-if __name__ == '__main__':
-    execfile(os.path.join(sys.path[0], 'framework.py'))
-
 from Testing import ZopeTestCase
 
 from Acquisition import aq_base
@@ -522,7 +518,4 @@ def test_suite():
     suite.addTest(makeSuite(TestWrappingUserFolder))
     suite.addTest(makeSuite(TestSetUpRaises))
     return suite
-
-if __name__ == '__main__':
-    framework()
 

@@ -21,10 +21,6 @@ quick way of getting started.
 $Id$
 """
 
-import os, sys
-if __name__ == '__main__':
-    execfile(os.path.join(sys.path[0], 'framework.py'))
-
 import transaction
 
 from Testing.ZopeTestCase import base
@@ -462,7 +458,4 @@ def test_suite():
     suite.addTest(makeSuite(TestRequestGarbage2))
     suite.addTest(makeSuite(TestRequestGarbage3))
     return suite
-
-if __name__ == '__main__':
-    framework()
 
