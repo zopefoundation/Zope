@@ -15,8 +15,9 @@
 NOTE: This is *not* an example TestCase. Do not
 use this file as a blueprint for your own tests!
 
-See testPythonScript.py for example test cases. See testSkeleton.py for a
-quick way of getting started.
+See testPythonScript.py and testShoppingCart.py for
+example test cases. See testSkeleton.py for a quick
+way of getting started.
 
 $Id$
 """
