@@ -35,6 +35,9 @@ Restructuring
 Bugs Fixed
 ++++++++++
 
+- PageTemplates: Made PreferredCharsetResolver work with new kinds of contexts
+  that are not acquisition wrapped.
+
 - Object managers should evaluate to True in a boolean test.
 
 2.12.0a1 (2009-02-26)

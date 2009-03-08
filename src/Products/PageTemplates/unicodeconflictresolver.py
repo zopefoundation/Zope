@@ -10,15 +10,20 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
+"""Unicode conflict resolution.
+
+$Id$
+"""
 
 import sys
 
+from Acquisition import aq_get
+from Products.PageTemplates.interfaces import IUnicodeEncodingConflictResolver
 from zope.interface import implements
 from zope.i18n.interfaces import IUserPreferredCharsets
 
-from Products.PageTemplates.interfaces import IUnicodeEncodingConflictResolver
-
 default_encoding = sys.getdefaultencoding()
+
 
 class DefaultUnicodeEncodingConflictResolver:
     """ This resolver implements the old-style behavior and will 
@@ -53,6 +58,7 @@ class Z2UnicodeEncodingConflictResolver:
             encoding = getattr(context, 'management_page_charset', default_encoding)
             return unicode(text, encoding, self.mode)
 
+
 class PreferredCharsetResolver:
     """ A resolver that tries use the encoding information
         from the HTTP_ACCEPT_CHARSET header.
@@ -62,7 +68,7 @@ class PreferredCharsetResolver:
 
     def resolve(self, context, text, expression):
 
-        request = getattr(context, 'REQUEST', None)
+        request = aq_get(context, 'REQUEST', None)
 
         # Deal with the fact that a REQUEST is not always available.
         # In this case fall back to the encoding of the ZMI and the
@@ -74,7 +80,7 @@ class PreferredCharsetResolver:
             if management_charset:
                 charsets.insert(0, management_charset)
         else:
-            # charsets might by cached within the request            
+            # charsets might by cached within the request
             charsets = getattr(request, '__zpt_available_charsets', None)
 
         # No uncached charsets found: investigate the HTTP_ACCEPT_CHARSET
@@ -86,12 +92,12 @@ class PreferredCharsetResolver:
             charsets = list()
 
             # add Python's default encoding as last fallback
-            charsets.append(default_encoding)               
+            charsets.append(default_encoding)
 
             # include the charsets based on the HTTP_ACCEPT_CHARSET
             # header
             charsets = IUserPreferredCharsets(request).getPreferredCharsets() +\
-                       charsets                    
+                       charsets
 
             # cache list of charsets
             request.__zpt_available_charsets = charsets
