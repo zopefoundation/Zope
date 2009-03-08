@@ -13,7 +13,7 @@
 
 """ Some helper methods 
 
-$Id: ZopePageTemplate.py 71579 2006-12-17 20:26:10Z andreasjung $
+$Id$
 """
 
 import re 
