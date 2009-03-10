@@ -24,7 +24,7 @@ a permission in addition to selecting to acquire permissions.
 <div>
     <form action="manage_reportUserPermissions" method="GET">
         Username:
-        <input type="text" name="user_id" size="20" />
+        <input type="text" name="user" size="20" />
         <input type="submit" value="Show me the user permissions and roles in the context of the current object" />
     </form>
 </div>

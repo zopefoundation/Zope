@@ -27,6 +27,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - "Permission tab": correct wrong form parameter for
+        the user-permission report
+
       - Launchpad #290254, DateTime/DateTime.py:
         added '__setstate__' to cope with old pickles missing a '_micros'
         attribute;  Python's pickling support was creating a new instance,
