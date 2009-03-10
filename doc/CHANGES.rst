@@ -35,6 +35,9 @@ Restructuring
 Bugs Fixed
 ++++++++++
 
+- "Permission tab": correct wrong form parameter for
+  the user-permission report
+
 - PageTemplates: Made PreferredCharsetResolver work with new kinds of contexts
   that are not acquisition wrapped.
 
