@@ -29,7 +29,7 @@ os.system('svn propget svn:externals lib/python/zope >lib_python_zope.txt')
 os.system('svn propget svn:externals lib/python/zope/app >lib_python_zope_app.txt')
 
 # download current KGS index
-kgs_url = 'http://download.zope.org/zope3.4/versions.cfg'
+kgs_url = 'http://download.zope.org/zope3.4/3.4.0/versions.cfg'
 open('kgs.ini', 'w').write(urllib2.urlopen(kgs_url).read())
 CP = ConfigParser()
 CP.read('kgs.ini')
