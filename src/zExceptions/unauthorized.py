@@ -23,6 +23,11 @@ class Unauthorized(Exception):
     """
     implements(IUnauthorized)
 
+    def _get_message(self):
+        return self._message
+
+    message = property(_get_message,)
+
     def __init__(self, message=None, value=None, needed=None, name=None, **kw):
         """Possible signatures:
 
@@ -44,7 +49,7 @@ class Unauthorized(Exception):
             message=None
 
         self.name=name
-        self.message=message
+        self._message=message
         self.value=value
 
         if kw:
