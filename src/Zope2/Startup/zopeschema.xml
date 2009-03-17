@@ -462,14 +462,13 @@
     </description>
   </key>
 
-  <key name="zserver-read-only-mode" datatype="boolean" default="off"
-       handler="zserver_read_only_mode">
+  <key name="zserver-read-only-mode" datatype="boolean" default="off">
     <description>
-      If this variable is set, then the database is opened in read
-      only mode.  If this variable is set to a string parsable by
-      DateTime.DateTime, then the database is opened read-only as of
-      the time given.  Note that changes made by another process after
-      the database has been opened are not visible.
+      If this variable is set, then the server will not create or write
+      to any log, pid, or lock files when running.  Note that this option
+      does *not* govern opening storages in read-only mode:  for that
+      use, please use the appropriate flag in the section which configures
+      each storage.
     </description>
   </key>
 
@@ -794,9 +793,9 @@
   <key name="read-only-database" datatype="boolean"
        handler="read_only_database">
      <description>
-     If this directive is set to "on", the main Zope
-     FileStorage-backed ZODB database will be opened in read-only
-     mode.
+      Deprecated option, no longer has any effect.  To configure opening
+      storages in read-only mode:  please use the appropriate flag in the
+      section which configures each storage.
      </description>
      <metadefault>off</metadefault>
   </key>

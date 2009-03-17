@@ -35,6 +35,13 @@ Restructuring
 Bugs Fixed
 ++++++++++
 
+- Launchpad#344098: in ``skel/etc/zope.conf.ing``, replaced commented-out
+  ``read-only-database`` option, which is deprecated, with pointers to the
+  appropos sections of ZODB's ``component.xml``.  Updated the description
+  of the ``zserver-read-only-mode`` directive to indicate its correct
+  semantics (suppressing log / pid / lock files).  Added deprecation to the
+  ``read-only-database`` option, which has had no effect since Zope 2.6.
+
 - "Permission tab": correct wrong form parameter for
   the user-permission report
 

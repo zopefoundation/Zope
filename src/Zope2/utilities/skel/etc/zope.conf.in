@@ -736,19 +736,6 @@ instancehome $INSTANCE
 #    database-quota-size 1000000
 
 
-# Directive: read-only-database
-#
-# Description:
-#     This causes the main Zope FileStorage-backed ZODB to be opened in
-#     read-only mode.
-#
-# Default: off
-#
-# Example:
-#
-#    read-only-database on
-
-
 # Directive: zeo-client-name
 #
 # Description:
@@ -1040,6 +1027,8 @@ instancehome $INSTANCE
 <zodb_db main>
     # Main FileStorage database
     <filestorage>
+      # See .../ZODB/component.xml for directives (sectiontype
+      # "filestorage").
       path $INSTANCE/var/Data.fs
     </filestorage>
     mount-point /
@@ -1070,6 +1059,8 @@ instancehome $INSTANCE
 #   # ZODB cache, in number of objects
 #   cache-size 5000
 #   <zeoclient>
+#     # See .../ZODB/component.xml for directives (sectiontype
+#     # "zeoclient").
 #     server localhost:8100
 #     storage 1
 #     name zeostorage

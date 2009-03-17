@@ -59,10 +59,6 @@ def datetime_format(value):
     value and _setenv('DATETIME_FORMAT', value)
     return value
 
-def zserver_read_only_mode(value):
-    value and _setenv('ZOPE_READ_ONLY', '1')
-    return value
-
 def automatically_quote_dtml_request_data(value):
     not value and _setenv('ZOPE_DTML_REQUEST_AUTOQUOTE', '0')
     return value
@@ -98,7 +94,14 @@ def database_quota_size(value):
     return value
 
 def read_only_database(value):
-    value and _setenv('ZOPE_READ_ONLY', '1')
+    # This handler exists only for BBB:  using the 'read-only-database'
+    # directive in a config file is deprecated.
+    if value is not None:
+        import warnings
+        warnings.warn("The 'read-only-database' configuration option is "
+                    "deprecated; please use the correct optoin inside the "
+                    "section defining the appropriate storage.",
+                    DeprecationWarning, stacklevel=2)
     return value
 
 def zeo_client_name(value):
