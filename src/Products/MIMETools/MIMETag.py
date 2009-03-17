@@ -15,6 +15,7 @@ __version__='$Revision: 1.12 $'[11:-2]
 
 from DocumentTemplate.DT_Util import *
 from DocumentTemplate.DT_String import String
+from MimeWriter import MimeWriter
 from cStringIO import StringIO
 import mimetools
 
@@ -126,7 +127,6 @@ class MIMETag:
 
 
     def render(self, md):
-        from MimeWriter import MimeWriter # deprecated since Python 2.3!
         contents=[]
         IO = StringIO()
         IO.write("Mime-Version: 1.0\n")
