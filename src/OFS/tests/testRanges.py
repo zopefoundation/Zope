@@ -1,6 +1,7 @@
 ##############################################################################
 #
-# Copyright (c) 2002 Zope Corporation and Contributors. All Rights Reserved.
+# Copyright (c) 2002-2009 Zope Corporation and Contributors.
+# All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
@@ -10,19 +11,7 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-import os, sys, unittest
-
-import string, random, cStringIO, time, re
-import ZODB
-import transaction
-from OFS.Application import Application
-from OFS.Folder import manage_addFolder
-from OFS.Image import manage_addFile
-from Testing.makerequest import makerequest
-from webdav.common import rfc1123_date
-
-from mimetools import Message
-from multifile import MultiFile
+import unittest
 
 def makeConnection():
     import ZODB
@@ -35,6 +24,9 @@ def createBigFile():
     # Create a file that is several 1<<16 blocks of data big, to force the
     # use of chained Pdata objects.
     # Make sure we create a file that isn't of x * 1<<16 length! Coll #671
+    import cStringIO
+    import random
+    import string
     size = (1<<16) * 5 + 12345
     file = cStringIO.StringIO()
 
@@ -51,6 +43,13 @@ BIGFILE = createBigFile()
 class TestRequestRange(unittest.TestCase):
     # Test case setup and teardown
     def setUp(self):
+        import cStringIO
+        import string
+        import transaction
+        from OFS.Application import Application
+        from OFS.Folder import manage_addFolder
+        from OFS.Image import manage_addFile
+        from Testing.makerequest import makerequest
         self.responseOut = cStringIO.StringIO()
         self.connection = makeConnection()
         try:
@@ -80,8 +79,11 @@ class TestRequestRange(unittest.TestCase):
             raise
 
     def tearDown(self):
-        try: self.app._delObject(TESTFOLDER_NAME)
-        except AttributeError: pass
+        import transaction
+        try:
+            self.app._delObject(TESTFOLDER_NAME)
+        except AttributeError:
+            pass
         transaction.abort()
         self.app._p_jar.sync()
         self.connection.close()
@@ -102,11 +104,12 @@ class TestRequestRange(unittest.TestCase):
 
         # Chop off any printed headers (only when response.write was used)
         if body:
-            body = string.split(body, '\r\n\r\n', 1)[1]
+            body = body.split('\r\n\r\n', 1)[1]
 
         return body + rv
 
     def createLastModifiedDate(self, offset=0):
+        from webdav.common import rfc1123_date
         return rfc1123_date(self.file._p_mtime + offset)
 
     def expectUnsatisfiable(self, range):
@@ -173,8 +176,12 @@ class TestRequestRange(unittest.TestCase):
             'Incorrect range returned, expected %s, got %s' % (
                 `self.data[start:end]`, `body`))
 
-    def expectMultipleRanges(self, range, sets, draft=0,
-            rangeParse=re.compile('bytes\s*(\d+)-(\d+)/(\d+)')):
+    def expectMultipleRanges(self, range, sets, draft=0):
+        import cStringIO
+        from mimetools import Message
+        from multifile import MultiFile
+        import re
+        rangeParse = re.compile('bytes\s*(\d+)-(\d+)/(\d+)')
         req = self.app.REQUEST
         rsp = req.RESPONSE
 
@@ -191,7 +198,7 @@ class TestRequestRange(unittest.TestCase):
         self.failIf(rsp.getHeader('content-range'),
             'The Content-Range header should not be set!')
 
-        ct = string.split(rsp.getHeader('content-type'), ';')[0]
+        ct = rsp.getHeader('content-type').split(';')[0]
         draftprefix = draft and 'x-' or ''
         self.failIf(ct != 'multipart/%sbyteranges' % draftprefix,
             "Incorrect Content-Type set. Expected 'multipart/%sbyteranges', "
