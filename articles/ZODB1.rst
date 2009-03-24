@@ -165,7 +165,7 @@ simplest is to re-assign the changed object::
       >>> employees = root['employees']
       >>> employees.append('Bill')
       >>> root['employees'] = employees
-      >>> _transaction.commit()
+      >>> transaction.commit()
 
 Here, you move the employees list to a local variable, change the
 list, and then *reassign* the list back into the database and
