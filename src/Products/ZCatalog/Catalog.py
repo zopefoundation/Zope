@@ -1,3 +1,4 @@
+
 ##############################################################################
 #
 # Copyright (c) 2002 Zope Corporation and Contributors. All Rights Reserved.
@@ -477,7 +478,9 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
             if r is not None:
                 r, u = r
                 w, rs = weightedIntersection(rs, r)
-        
+                if not rs:
+                   break       
+
         if rs is None:
             # None of the indexes found anything to do with the request
             # We take this to mean that the query was empty (an empty filter)

@@ -35,7 +35,10 @@ Restructuring
 Bugs Fixed
 ++++++++++
 
-- Launchpad#344098: in ``skel/etc/zope.conf.ing``, replaced commented-out
+- Launchpad #348223: optimize catalog query by breaking out early from loop
+  over indexes if the result set is already empty.
+
+- Launchpad #344098: in ``skel/etc/zope.conf.ing``, replaced commented-out
   ``read-only-database`` option, which is deprecated, with pointers to the
   appropos sections of ZODB's ``component.xml``.  Updated the description
   of the ``zserver-read-only-mode`` directive to indicate its correct
@@ -187,7 +190,7 @@ Features added
 Bugs Fixed
 ++++++++++
 
-- Launchpad ##332168: Connection.py: do not expose DB connection strings
+- Launchpad #332168: Connection.py: do not expose DB connection strings
   through exceptions
 
 - Specified height/width of icons in ZMI listings so the table doesn't
