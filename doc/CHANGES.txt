@@ -27,6 +27,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Launchpad #348223: optimize catalog query by breaking out early from
+        loop over indexes if the result set is already empty.
+
       - "Permission tab": correct wrong form parameter for
         the user-permission report
 
