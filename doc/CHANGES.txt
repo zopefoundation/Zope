@@ -27,6 +27,9 @@ Zope Changes
 
     Bugs fixed
 
+      - Launchpad #348223: optimize catalog query by breaking out early from
+        loop over indexes if the result set is already empty.
+
       - Launchpad ##332168: Connection.py: do not expose DB connection strings
         through exceptions
 
