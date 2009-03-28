@@ -32,6 +32,9 @@ Restructuring
   newer versions of the dependencies. This kind of KGS information needs
   to be expressed in a different way.
 
+- removed `extras_require` section from setup.py (this might possibly
+  break legacy code).
+
 Bugs Fixed
 ++++++++++
 
