@@ -183,13 +183,18 @@ class XMLRPCResponseTests(unittest.TestCase):
 
     def test_functionattribute(self):
         # Cannot marshal functions or methods, obviously
+        import sys
         import xmlrpclib
         def foo(): pass
         body = FauxInstance(public=foo)
         faux = FauxResponse()
         response = self._makeOne(faux)
         response.setBody(body)
-        self.assertRaises(xmlrpclib.Fault, xmlrpclib.loads, faux._body)
+        if sys.version_info < (2, 6):
+            self.assertRaises(xmlrpclib.Fault, xmlrpclib.loads, faux._body)
+        else:
+            func = xmlrpclib.loads(faux._body)
+            self.assertEqual(func, (({'public': {}},), None))
 
     def test_emptystringattribute(self):
         # Test an edge case: attribute name '' is possible,
