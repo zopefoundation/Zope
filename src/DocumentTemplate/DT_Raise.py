@@ -49,7 +49,7 @@ class Raise:
     def render(self,md):
         expr = self.expr
         if expr is None:
-            t = self.__name__
+            t = __builtins__.get(self.__name__, RuntimeError)
         else:
             try:
                 t = expr.eval(md)
