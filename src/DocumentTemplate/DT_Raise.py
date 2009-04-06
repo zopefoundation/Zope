@@ -42,20 +42,24 @@ class Raise:
     def __init__(self, blocks):
 
         tname, args, section = blocks[0]
-        self.section=section.blocks
-        args=parse_params(args, type='', expr='')
+        self.section = section.blocks
+        args = parse_params(args, type='', expr='')
         self.__name__, self.expr = name_param(args, 'raise', 1, attr='type')
 
     def render(self,md):
-        expr=self.expr
+        expr = self.expr
         if expr is None:
-            t=self.__name__
+            t = self.__name__
         else:
-            try: t=expr.eval(md)
-            except: t=InvalidErrorTypeExpression
+            try:
+                t = expr.eval(md)
+            except:
+                t = InvalidErrorTypeExpression
 
-        try: v=render_blocks(self.section,md)
-        except: v='Invalid Error Value'
+        try:
+            v = render_blocks(self.section, md)
+        except:
+            v = 'Invalid Error Value'
         
         # String Exceptions are deprecated on Python 2.5 and
         # plain won't work at all on Python 2.6. So try to upgrade it
@@ -63,4 +67,4 @@ class Raise:
         t, v = upgradeException(t, v)
         raise t, v
 
-    __call__=render
+    __call__ = render
