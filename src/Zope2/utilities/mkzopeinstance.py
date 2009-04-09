@@ -123,8 +123,7 @@ def main():
         # we're on UNIX or we have a nonstandard Windows setup
         PYTHON = PYTHONW = python
 
-    import Zope2
-    zope2path = os.path.realpath(os.path.dirname(Zope2.__file__))
+    zope2path = get_zope2path(PYTHON)
 
     kw = {
         "PYTHON":PYTHON,
@@ -197,6 +196,16 @@ def check_buildout():
         parser = RawConfigParser()
         parser.read('buildout.cfg')
         return 'zopepy' in parser.sections()
+
+def get_zope2path(python):
+    """ Get Zope2 path from selected Python interpreter.
+    """
+    p = os.popen('"%s" -c"import os, Zope2; '
+                 'print os.path.realpath(os.path.dirname(Zope2.__file__))"' % python)
+    try:
+        return p.readline()[:-1]
+    finally:
+        p.close()
 
 if __name__ == "__main__":
     main()
