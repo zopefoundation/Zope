@@ -201,7 +201,7 @@ def get_zope2path(python):
     """ Get Zope2 path from selected Python interpreter.
     """
     p = os.popen('"%s" -c"import os, Zope2; '
-                 'print os.path.realpath(os.path.dirname(Zope2.__file__))"' % python)
+        'print os.path.realpath(os.path.dirname(Zope2.__file__))"' % python)
     try:
         return p.readline()[:-1]
     finally:
