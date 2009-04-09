@@ -56,14 +56,8 @@ def main():
     for opt, arg in opts:
         if opt in ("-d", "--dir"):
             skeltarget = os.path.abspath(os.path.expanduser(arg))
-            if not skeltarget:
-                usage(sys.stderr, "dir must not be empty")
-                sys.exit(2)
         if opt in ("-s", "--skelsrc"):
             skelsrc = os.path.abspath(os.path.expanduser(arg))
-            if not skelsrc:
-                usage(sys.stderr, "skelsrc must not be empty")
-                sys.exit(2)
         if opt in ("-p", "--python"):
             python = os.path.abspath(os.path.expanduser(arg))
             if not os.path.exists(python) and os.path.isfile(python):
@@ -73,9 +67,6 @@ def main():
             usage(sys.stdout)
             sys.exit()
         if opt in ("-u", "--user"):
-            if not arg:
-                usage(sys.stderr, "user must not be empty")
-                sys.exit(2)
             if not ":" in arg:
                 usage(sys.stderr, "user must be specified as name:password")
                 sys.exit(2)
