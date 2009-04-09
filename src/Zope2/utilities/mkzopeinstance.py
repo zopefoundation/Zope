@@ -60,9 +60,6 @@ def main():
             skelsrc = os.path.abspath(os.path.expanduser(arg))
         if opt in ("-p", "--python"):
             python = os.path.abspath(os.path.expanduser(arg))
-            if not os.path.exists(python) and os.path.isfile(python):
-                usage(sys.stderr, "The Python interpreter does not exist.")
-                sys.exit(2)
         if opt in ("-h", "--help"):
             usage(sys.stdout)
             sys.exit()
@@ -71,6 +68,10 @@ def main():
                 usage(sys.stderr, "user must be specified as name:password")
                 sys.exit(2)
             user, password = arg.split(":", 1)
+
+    if python is not None and not os.path.isfile(python):
+        usage(sys.stderr, "The Python interpreter does not exist.")
+        sys.exit(2)
 
     if not skeltarget:
         # interactively ask for skeltarget and initial user name/passwd.
