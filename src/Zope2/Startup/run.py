@@ -43,9 +43,9 @@ def _setconfig(configfile=None):
     opts = options.ZopeOptions()
     if configfile:
         opts.configfile = configfile
-        opts.realize(doc="Sorry, no option docs yet.", raise_getopt_errs=0)
+        opts.realize(raise_getopt_errs=0)
     else:
-        opts.realize(doc="Sorry, no option docs yet.")
+        opts.realize()
 
     handlers.handleConfig(opts.configroot, opts.confighandlers)
     import App.config
