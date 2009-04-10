@@ -56,12 +56,14 @@ def string_list(arg):
     return arg.split()
 
 class ZopeCtlOptions(ZDOptions):
-    """Zope controller options.
+    # Zope controller options.
+    # 
+    # After initialization, this should look very much like a
+    # zdaemon.zdctl.ZDCtlOptions instance.  Many of the attributes are
+    # initialized from different sources, however.
 
-    After initialization, this should look very much like a
-    zdaemon.zdctl.ZDCtlOptions instance.  Many of the attributes are
-    initialized from different sources, however.
-    """
+    __doc__ = __doc__
+    
 
     positional_args_allowed = 1
     program = "zopectl"
@@ -73,7 +75,7 @@ class ZopeCtlOptions(ZDOptions):
     # same logging for zdctl as for the Zope appserver.  There still
     # needs to be a way to set a logfile for zdctl.
     logsectionname = None
-
+    
     def __init__(self):
         ZDOptions.__init__(self)
         self.add("program", "runner.program", "p:", "program=",
