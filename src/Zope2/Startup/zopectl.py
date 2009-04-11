@@ -129,7 +129,7 @@ class ZopeCtlOptions(ZDOptions):
             self.sockname = config.runner.socket_name
         else:
             self.sockname = os.path.join(self.clienthome, "zopectlsock")
-        self.python = sys.executable
+        self.python = config.python or sys.executable
         self.zdrun = os.path.join(os.path.dirname(zdaemon.__file__),
                                   "zdrun.py")
         if WIN:

@@ -945,4 +945,14 @@
    </description>
   </multisection>
 
+    <key name="python" datatype="existing-path"
+         required="no">
+      <description>
+        Path to the Python interpreter for use by zdaemon.
+        Defaults to sys.executable.
+        Needed for buildout-based instances to supply a python
+        that has all the correct eggs on the path.
+      </description>
+    </key>
+
 </schema>
