@@ -23,6 +23,12 @@ Known issues
 Restructuring
 +++++++++++++
 
+- If the <permission /> ZCML directive is used to declare a permission that
+  does not exist, the permission will now be created automatically, defaulting
+  to being granted to the Manager role only. This means it is possible to
+  create new permissions using ZCML only. The permission will Permissions that
+  already exist will not be changed.
+
 - Using <require set_schema="..." /> or <require set_attributes="..." /> in
   the <class /> directive now emits a warning rather than an error. The
   concept of protecting attribute 'set' does not exist in Zope 2, but it

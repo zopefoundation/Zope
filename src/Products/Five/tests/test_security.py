@@ -374,6 +374,76 @@ def test_checkPermission():
       >>> tearDown()
     """
 
+def test_register_permission():
+    """This test demonstrates that if the <permission /> directive is used
+    to create a permission that does not already exist, it is created on 
+    startup, with roles defaulting to Manager.
+
+      >>> from zope.app.testing.placelesssetup import setUp, tearDown
+      >>> setUp()
+
+    First, we need to configure the relevant parts of Five.
+
+      >>> import Products.Five
+      >>> from Products.Five import zcml
+      >>> zcml.load_config('meta.zcml', Products.Five)
+      >>> zcml.load_config('permissions.zcml', Products.Five)
+
+    We can now register a permission in ZCML:
+
+      >>> configure_zcml = '''
+      ... <configure xmlns="http://namespaces.zope.org/zope">
+      ...
+      ...   <permission
+      ...       id="Products.Five.tests.DummyPermission"
+      ...       title="Five: Dummy permission"
+      ...       />
+      ...
+      ... </configure>
+      ... '''
+      >>> zcml.load_string(configure_zcml)
+      
+    The permission will be made available globally, with default role set
+    of ('Manager',).
+      
+      >>> from pprint import pprint
+      >>> pprint(self.app.rolesOfPermission('Five: Dummy permission'))
+      [{'name': 'Anonymous', 'selected': ''},
+       {'name': 'Authenticated', 'selected': ''},
+       {'name': 'Manager', 'selected': 'SELECTED'},
+       {'name': 'Owner', 'selected': ''}]
+
+    Let's also ensure that permissions are not overwritten if they exist
+    already:
+      
+      >>> from AccessControl.Permission import _registeredPermissions
+      >>> import Products
+      >>> _registeredPermissions['Five: Other dummy'] = 1
+      >>> Products.__ac_permissions__ += (('Five: Other dummy', (), (),),)
+      >>> self.app.manage_permission('Five: Other dummy', roles=['Anonymous'])
+
+      >>> configure_zcml = '''
+      ... <configure xmlns="http://namespaces.zope.org/zope">
+      ...
+      ...   <permission
+      ...       id="Products.Five.tests.OtherDummy"
+      ...       title="Five: Other dummy"
+      ...       />
+      ...
+      ... </configure>
+      ... '''
+      >>> zcml.load_string(configure_zcml)
+
+      >>> from pprint import pprint
+      >>> pprint(self.app.rolesOfPermission('Five: Other dummy'))
+      [{'name': 'Anonymous', 'selected': 'SELECTED'},
+       {'name': 'Authenticated', 'selected': ''},
+       {'name': 'Manager', 'selected': ''},
+       {'name': 'Owner', 'selected': ''}]
+
+      >>> tearDown()
+    """
+
 def test_suite():
     from Testing.ZopeTestCase import ZopeDocTestSuite
     return ZopeDocTestSuite()
