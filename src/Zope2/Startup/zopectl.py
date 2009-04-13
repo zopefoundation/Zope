@@ -256,18 +256,16 @@ class ZopeCmd(ZDCmd):
         print "debug -- run the Zope debugger to inspect your database"
         print "         manually using a Python interactive shell"
 
-    def do_run(self, arg):
-        tup = arg.split(' ')
-        if not arg:
+    def do_run(self, args):
+        if not args:
             print "usage: run <script> [args]"
             return
-        # remove -c and add script as sys.argv[0]
-        script = tup[0]
-        cmd = 'import sys; sys.argv.pop(); sys.argv.append(\'%s\');'  % script
-        if len(tup) > 1:
-            argv = tup[1:]
-            cmd += '[sys.argv.append(x) for x in %s];' % argv
-        cmd += 'import Zope2; app=Zope2.app(); execfile(\'%s\')' % script
+        # replace sys.argv
+        script = args.split(' ')[0]
+        cmd = (
+            "import sys; sys.argv[:]=%r.split(' ');"
+            "import Zope2; app=Zope2.app(); execfile(%r)"
+            ) % (args,script)
         cmdline = self.get_startup_cmd(self.options.python, cmd)
         self._exitstatus = os.system(cmdline)
 
