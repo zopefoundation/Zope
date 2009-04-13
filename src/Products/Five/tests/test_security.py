@@ -18,6 +18,7 @@ $Id$
 
 from zope.interface import implements
 from zope.interface import Interface
+from zope.schema import TextLine
 from AccessControl.SecurityInfo import ClassSecurityInfo
 
 class ISuperDummy(Interface):
@@ -50,6 +51,16 @@ class Dummy2(Dummy1):
     security.declareProtected('View management screens', 'bar')
     security.declarePrivate('baz')
     security.declareProtected('View management screens', 'keg')
+
+class IDummy3(Interface):
+    attr = TextLine(title=u"Attribute")
+
+class Dummy3:
+    implements(IDummy3)
+    attr = None
+
+class Dummy4:
+    foo = None
 
 def test_security_equivalence():
     """This test demonstrates that the traditional declarative security of
@@ -216,6 +227,56 @@ def test_allowed_interface():
       >>> getRoles(view, 'superMethod', view.superMethod, ('Def',))
       ('Manager',)
 
+      >>> tearDown()
+    """
+
+def test_set_warnings():
+    """This test demonstrates that set_attributes and set_schema will result
+    in warnings, not errors. This type of protection doesn't make sense in
+    Zope 2, but we want to be able to re-use pure Zope 3 packages that use
+    them without error.
+
+      >>> from zope.app.testing.placelesssetup import setUp, tearDown
+      >>> setUp()
+
+    Before we can make security declarations through ZCML, we need to
+    register the directive and the permission:
+
+      >>> import Products.Five
+      >>> from Products.Five import zcml
+      >>> zcml.load_config('meta.zcml', Products.Five)
+      >>> zcml.load_config('permissions.zcml', Products.Five)
+
+    Now we provide some ZCML declarations for ``Dummy1``:
+
+      >>> configure_zcml = '''
+      ... <configure xmlns="http://namespaces.zope.org/zope">
+      ...
+      ...   <class class="Products.Five.tests.test_security.Dummy3">
+      ...       <require
+      ...           permission="zope2.View"
+      ...           interface="Products.Five.tests.test_security.IDummy3"
+      ...           />
+      ...       <require
+      ...           permission="cmf.ModifyPortalContent"
+      ...           set_schema="Products.Five.tests.test_security.IDummy3"
+      ...           />
+      ...   </class>
+      ...
+      ...   <class class="Products.Five.tests.test_security.Dummy4">
+      ...       <require
+      ...           permission="cmf.ModifyPortalContent"
+      ...           set_attributes="foo"
+      ...           />
+      ...   </class>
+      ...
+      ... </configure>
+      ... '''
+      
+      Running this should not throw an exception (but will print a warning to
+      stderr)
+      
+      >>> zcml.load_string(configure_zcml)
       >>> tearDown()
     """
 

@@ -16,12 +16,11 @@
 $Id$
 """
 import warnings
-from zope.configuration.exceptions import ConfigurationError
-from zope.app.component import contentdirective
+from zope.security import metaconfigure
 from App.class_init import InitializeClass
 from Products.Five.security import protectName
 
-class ClassDirective(contentdirective.ClassDirective):
+class ClassDirective(metaconfigure.ClassDirective):
 
     def __protectName(self, name, permission_id):
         self.__context.action(
@@ -30,14 +29,17 @@ class ClassDirective(contentdirective.ClassDirective):
             args = (self.__class, name, permission_id)
             )
 
-    def __protectSetAttributes(self, attributes, permissions):
-        raise ConfigurationError('set_attributes parameter not supported.')
+    def __protectSetAttributes(self, names, permission_id):
+        warnings.warn("The set_attribute option of the <require /> directive is not supported in Zope 2. " + \
+                      "Ignored for %s" % str(self.__class), stacklevel=3)
 
-    def __proctectSetSchema(self, schema, permission):
-        raise ConfigurationError('set_schema parameter not supported.')
+    def __protectSetSchema(self, schema, permission):
+        warnings.warn("The set_schema option of the <require /> directive is not supported in Zope 2. " + \
+                      "Ignored for %s" % str(self.__class), stacklevel=3)
 
     def __mimic(self, _context, class_):
-        raise ConfigurationError('like_class parameter not supported.')
+        warnings.warn("The like_class option of the <require /> directive is not supported in Zope 2. " + \
+                      "Ignored for %s" % str(self.__class), stacklevel=3)
 
     def __call__(self):
         return self.__context.action(

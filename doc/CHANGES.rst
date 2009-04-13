@@ -23,6 +23,11 @@ Known issues
 Restructuring
 +++++++++++++
 
+- Using <require set_schema="..." /> or <require set_attributes="..." /> in
+  the <class /> directive now emits a warning rather than an error. The
+  concept of protecting attribute 'set' does not exist in Zope 2, but it
+  should be possible to re-use packages that do declare such protection.
+
 - Updated to DateTime 2.12.0.
 
 - Updated to ZODB 3.9.0a12.
