@@ -34,6 +34,8 @@ Restructuring
   concept of protecting attribute 'set' does not exist in Zope 2, but it
   should be possible to re-use packages that do declare such protection.
 
+- Updated to Acquisition 2.12.1.
+
 - Updated to DateTime 2.12.0.
 
 - Updated to ZODB 3.9.0a12.
