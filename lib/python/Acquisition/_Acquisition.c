@@ -822,7 +822,7 @@ Wrapper_contains(Wrapper *self, PyObject *v)
 static PyObject * 
 Wrapper_iter(Wrapper *self)
 {
-  return CallMethodO(OBJECT(self), py__iter__, NULL, NULL); 
+  return PyObject_GetIter(self->obj);
 }
 
 static PySequenceMethods Wrapper_as_sequence = {
