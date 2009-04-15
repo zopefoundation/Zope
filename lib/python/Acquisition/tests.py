@@ -1719,6 +1719,26 @@ def test_proxying():
     iterating...
     [42]
 
+    Finally let's check that https://bugs.launchpad.net/zope2/+bug/360761
+    has been fixed:
+
+    >>> class C(Acquisition.Implicit):
+    ...     l=[1,2,3]
+    ...     def __getitem__(self, i):
+    ...         return self.l[i]
+
+    >>> c1 = C()
+    >>> type(iter(c1))
+    <type 'iterator'>
+    >>> list(c1)
+    [1, 2, 3]
+
+    >>> c2 = C().__of__(c1)
+    >>> type(iter(c2))
+    <type 'iterator'>
+    >>> list(c2)
+    [1, 2, 3]
+
     """
 
 
