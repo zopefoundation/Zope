@@ -39,7 +39,7 @@ from AccessControl.Permission import pname
 
 import Products
 
-from Globals import ApplicationDefaultPermissions
+from AccessControl.Permission import ApplicationDefaultPermissions
 
 CheckerPublicId = 'zope.Public'
 CheckerPrivateId = 'zope2.Private'
