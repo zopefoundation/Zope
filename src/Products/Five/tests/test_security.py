@@ -406,12 +406,9 @@ def test_register_permission():
     The permission will be made available globally, with default role set
     of ('Manager',).
       
-      >>> from pprint import pprint
-      >>> pprint(self.app.rolesOfPermission('Five: Dummy permission'))
-      [{'name': 'Anonymous', 'selected': ''},
-       {'name': 'Authenticated', 'selected': ''},
-       {'name': 'Manager', 'selected': 'SELECTED'},
-       {'name': 'Owner', 'selected': ''}]
+      >>> roles = self.app.rolesOfPermission('Five: Dummy permission')
+      >>> sorted(r['name'] for r in roles if r['selected'])
+      ['Manager']
 
     Let's also ensure that permissions are not overwritten if they exist
     already:
@@ -434,12 +431,9 @@ def test_register_permission():
       ... '''
       >>> zcml.load_string(configure_zcml)
 
-      >>> from pprint import pprint
-      >>> pprint(self.app.rolesOfPermission('Five: Other dummy'))
-      [{'name': 'Anonymous', 'selected': 'SELECTED'},
-       {'name': 'Authenticated', 'selected': ''},
-       {'name': 'Manager', 'selected': ''},
-       {'name': 'Owner', 'selected': ''}]
+      >>> roles = self.app.rolesOfPermission('Five: Other dummy')
+      >>> sorted(r['name'] for r in roles if r['selected'])
+      ['Anonymous']
 
       >>> tearDown()
     """
