@@ -44,6 +44,9 @@ script to finish building Zope::
 Installing Zope using easy_install
 ----------------------------------
 
+.. note:: Installation using ``easy_install`` is not fully supported
+      right now
+
 Zope can be installed using ``easy_install`` either using a global
 easy_install installation or within a virtualized Python environment
 (using ``virtualenv``)::
