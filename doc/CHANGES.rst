@@ -5,8 +5,9 @@ This file contains change information for the current Zope release.
 Change information for previous versions of Zope can be found in the
 file HISTORY.txt.
 
-Trunk (unreleased)
-------------------
+
+2.12.0a2 (2009-04-17)
+---------------------
 
 Known issues
 ++++++++++++
