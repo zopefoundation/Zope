@@ -1,15 +1,17 @@
 import unittest
 
-TEST_LARGEFILE_DATA = '''
---12345
-Content-Disposition: form-data; name="file"; filename="file"
-Content-Type: application/octet-stream
+class RecordTests(unittest.TestCase):
 
-test %s
+    def test_repr(self):
+        from ZPublisher.HTTPRequest import record
+        rec = record()
+        rec.a = 1
+        rec.b = 'foo'
+        r = repr(rec)
+        d = eval(r)
+        self.assertEqual(d, rec.__dict__)
 
-''' % ('test' * 1000)
-
-class AuthCredentialsTests( unittest.TestCase ):
+class HTTPRequestTests(unittest.TestCase):
 
     def _getTargetClass(self):
         from ZPublisher.HTTPRequest import HTTPRequest
@@ -22,6 +24,9 @@ class AuthCredentialsTests( unittest.TestCase ):
 
         if environ is None:
             environ = {}
+
+        if 'REQUEST_METHOD' not in environ:
+            environ['REQUEST_METHOD'] = 'GET'
 
         if 'SERVER_NAME' not in environ:
             environ['SERVER_NAME'] = 'http://localhost'
@@ -36,59 +41,6 @@ class AuthCredentialsTests( unittest.TestCase ):
             response = _FauxResponse()
 
         return self._getTargetClass()(stdin, environ, response, clean)
-
-    def test__authUserPW_simple( self ):
-        import base64
-        user_id = 'user'
-        password = 'password'
-        encoded = base64.encodestring( '%s:%s' % ( user_id, password ) )
-        auth_header = 'basic %s' % encoded
-
-        environ = { 'HTTP_AUTHORIZATION': auth_header }
-        request = self._makeOne( environ=environ )
-
-        user_id_x, password_x = request._authUserPW()
-
-        self.assertEqual( user_id_x, user_id )
-        self.assertEqual( password_x, password )
-
-    def test__authUserPW_with_embedded_colon( self ):
-        # http://www.zope.org/Collectors/Zope/2039
-        import base64
-        user_id = 'user'
-        password = 'embedded:colon'
-        encoded = base64.encodestring( '%s:%s' % ( user_id, password ) )
-        auth_header = 'basic %s' % encoded
-
-        environ = { 'HTTP_AUTHORIZATION': auth_header }
-        request = self._makeOne( environ=environ )
-
-        user_id_x, password_x = request._authUserPW()
-
-        self.assertEqual( user_id_x, user_id )
-        self.assertEqual( password_x, password )
-
-
-class RecordTests(unittest.TestCase):
-
-    def test_repr(self):
-        from ZPublisher.HTTPRequest import record
-        rec = record()
-        rec.a = 1
-        rec.b = 'foo'
-        r = repr(rec)
-        d = eval(r)
-        self.assertEqual(d, rec.__dict__)
-
-
-class ProcessInputsTests(unittest.TestCase):
-
-    def _getTargetClass(self):
-        from ZPublisher.HTTPRequest import HTTPRequest
-        return HTTPRequest
-
-    def _makeOne(self, environ):
-        return self._getTargetClass()(None, environ, None)
 
     def _processInputs(self, inputs):
         from urllib import quote_plus
@@ -105,7 +57,7 @@ class ProcessInputsTests(unittest.TestCase):
 
         env = {'SERVER_NAME': 'testingharnas', 'SERVER_PORT': '80'}
         env['QUERY_STRING'] = query_string
-        req = self._makeOne(env)
+        req = self._makeOne(environ=env)
         req.processInputs()
         self._noFormValuesInOther(req)
         return req
@@ -176,7 +128,7 @@ class ProcessInputsTests(unittest.TestCase):
                 "Key %s not correctly reproduced in tainted; expected %r, "
                 "got %r" % (key, req.form[key], req.taintedform[key]))
 
-    def testNoMarshalling(self):
+    def test_processInputs_wo_marshalling(self):
         inputs = (
             ('foo', 'bar'), ('spam', 'eggs'),
             ('number', '1'),
@@ -196,7 +148,7 @@ class ProcessInputsTests(unittest.TestCase):
         self._noTaintedValues(req)
         self._onlyTaintedformHoldsTaintedStrings(req)
 
-    def testSimpleMarshalling(self):
+    def test_processInputs_w_simple_marshalling(self):
         from DateTime.DateTime import DateTime
         inputs = (
             ('num:int', '42'), ('fract:float', '4.2'), ('bign:long', '45'),
@@ -225,7 +177,7 @@ class ProcessInputsTests(unittest.TestCase):
         self._noTaintedValues(req)
         self._onlyTaintedformHoldsTaintedStrings(req)
 
-    def testUnicodeConversions(self):
+    def test_processInputs_w_unicode_conversions(self):
         inputs = (('ustring:ustring:utf8', 'test\xc2\xae'),
                   ('utext:utext:utf8', 'test\xc2\xae\ntest\xc2\xae\n'),
                   ('utokens:utokens:utf8', 'test\xc2\xae test\xc2\xae'),
@@ -250,7 +202,7 @@ class ProcessInputsTests(unittest.TestCase):
         self._noTaintedValues(req)
         self._onlyTaintedformHoldsTaintedStrings(req)
 
-    def testSimpleContainers(self):
+    def test_processInputs_w_simple_containers(self):
         inputs = (
             ('oneitem:list', 'one'),
             ('alist:list', 'one'), ('alist:list', 'two'),
@@ -281,7 +233,7 @@ class ProcessInputsTests(unittest.TestCase):
         self._noTaintedValues(req)
         self._onlyTaintedformHoldsTaintedStrings(req)
 
-    def testMarshallIntoSequences(self):
+    def test_processInputs_w_marshalling_into_sequences(self):
         inputs = (
             ('ilist:int:list', '1'), ('ilist:int:list', '2'),
             ('ilist:list:int', '3'),
@@ -301,7 +253,7 @@ class ProcessInputsTests(unittest.TestCase):
         self._noTaintedValues(req)
         self._onlyTaintedformHoldsTaintedStrings(req)
 
-    def testRecordsWithSequences(self):
+    def test_processInputs_w_records_w_sequences(self):
         inputs = (
             ('onerec.name:record', 'foo'),
             ('onerec.tokens:tokens:record', 'one two'),
@@ -340,7 +292,7 @@ class ProcessInputsTests(unittest.TestCase):
         self._noTaintedValues(req)
         self._onlyTaintedformHoldsTaintedStrings(req)
 
-    def testDefaults(self):
+    def test_processInputs_w_defaults(self):
         inputs = (
             ('foo:default:int', '5'),
 
@@ -388,7 +340,7 @@ class ProcessInputsTests(unittest.TestCase):
         self._noTaintedValues(req)
         self._onlyTaintedformHoldsTaintedStrings(req)
 
-    def testNoMarshallingWithTaints(self):
+    def test_processInputs_wo_marshalling_w_Taints(self):
         inputs = (
             ('foo', 'bar'), ('spam', 'eggs'),
             ('number', '1'),
@@ -408,7 +360,7 @@ class ProcessInputsTests(unittest.TestCase):
         self._taintedKeysAlsoInForm(req)
         self._onlyTaintedformHoldsTaintedStrings(req)
 
-    def testSimpleMarshallingWithTaints(self):
+    def test_processInputs_w_simple_marshalling_w_taints(self):
         inputs = (
             ('<tnum>:int', '42'), ('<tfract>:float', '4.2'),
             ('<tbign>:long', '45'),
@@ -428,7 +380,7 @@ class ProcessInputsTests(unittest.TestCase):
         self._taintedKeysAlsoInForm(req)
         self._onlyTaintedformHoldsTaintedStrings(req)
 
-    def testUnicodeWithTaints(self):
+    def test_processInputs_w_unicode_w_taints(self):
         inputs = (('tustring:ustring:utf8', '<test\xc2\xae>'),
                   ('tutext:utext:utf8', '<test\xc2\xae>\n<test\xc2\xae\n>'),
 
@@ -450,7 +402,7 @@ class ProcessInputsTests(unittest.TestCase):
         self._taintedKeysAlsoInForm(req)
         self._onlyTaintedformHoldsTaintedStrings(req)
 
-    def testSimpleContainersWithTaints(self):
+    def test_processInputs_w_simple_containers_w_taints(self):
         inputs = (
             ('toneitem:list', '<one>'),
             ('<tkeyoneitem>:list', 'one'),
@@ -497,7 +449,7 @@ class ProcessInputsTests(unittest.TestCase):
         self._taintedKeysAlsoInForm(req)
         self._onlyTaintedformHoldsTaintedStrings(req)
 
-    def testRecordsWithSequencesAndTainted(self):
+    def test_processInputs_w_records_w_sequences_tainted(self):
         inputs = (
             ('tinitonerec.tokens:tokens:record', '<one> two'),
             ('tdeferonerec.tokens:tokens:record', 'one <two>'),
@@ -545,7 +497,7 @@ class ProcessInputsTests(unittest.TestCase):
         self._taintedKeysAlsoInForm(req)
         self._onlyTaintedformHoldsTaintedStrings(req)
 
-    def testDefaultsWithTaints(self):
+    def test_processInputs_w_defaults_w_taints(self):
         inputs = (
             ('tfoo:default', '<5>'),
 
@@ -597,12 +549,12 @@ class ProcessInputsTests(unittest.TestCase):
         self._taintedKeysAlsoInForm(req)
         self._onlyTaintedformHoldsTaintedStrings(req)
 
-    def testTaintedAttributeRaises(self):
+    def test_processInputs_w_tainted_attribute_raises(self):
         input = ('taintedattr.here<be<taint:record', 'value',)
 
         self.assertRaises(ValueError, self._processInputs, input)
 
-    def testNoTaintedExceptions(self):
+    def test_processInputs_w_tainted_values_cleans_exceptions(self):
         # Feed tainted garbage to the conversion methods, and any exception
         # returned should be HTML safe
         from DateTime.DateTime import DateTime
@@ -617,7 +569,7 @@ class ProcessInputsTests(unittest.TestCase):
                 self.failIf('<' in e,
                     '%s converter does not quote unsafe value!' % type)
 
-    def testNameWithDotAsTuple(self):
+    def test_processInputs_w_dotted_name_as_tuple(self):
         # Collector #500
         inputs = (
             ('name.:tuple', 'name with dot as tuple'),)
@@ -632,39 +584,342 @@ class ProcessInputsTests(unittest.TestCase):
         self._noTaintedValues(req)
         self._onlyTaintedformHoldsTaintedStrings(req)
 
-    def testCookieParsing(self):
+    def test_processInputs_w_cookie_parsing(self):
         env = {'SERVER_NAME': 'testingharnas', 'SERVER_PORT': '80'}
 
         env['HTTP_COOKIE'] = 'foo=bar; baz=gee'
-        req = self._makeOne(env)
+        req = self._makeOne(environ=env)
         self.assertEquals(req.cookies['foo'], 'bar')
         self.assertEquals(req.cookies['baz'], 'gee')
 
         env['HTTP_COOKIE'] = 'foo=bar; baz="gee, like, e=mc^2"'
-        req = self._makeOne(env)
+        req = self._makeOne(environ=env)
         self.assertEquals(req.cookies['foo'], 'bar')
         self.assertEquals(req.cookies['baz'], 'gee, like, e=mc^2')
 
         # Collector #1498: empty cookies
         env['HTTP_COOKIE'] = 'foo=bar; hmm; baz=gee'
-        req = self._makeOne(env)
+        req = self._makeOne(environ=env)
         self.assertEquals(req.cookies['foo'], 'bar')
         self.assertEquals(req.cookies['hmm'], '')
         self.assertEquals(req.cookies['baz'], 'gee')
 
-	# Unquoted multi-space cookies
+	    # Unquoted multi-space cookies
         env['HTTP_COOKIE'] = 'single=cookie data; ' \
 	                     'quoted="cookie data with unquoted spaces"; ' \
 			     'multi=cookie data with unquoted spaces; ' \
 			     'multi2=cookie data with unquoted spaces'
-        req = self._makeOne(env)
+        req = self._makeOne(environ=env)
         self.assertEquals(req.cookies['single'], 'cookie data')
-        self.assertEquals(req.cookies['quoted'], 
+        self.assertEquals(req.cookies['quoted'],
 	                              'cookie data with unquoted spaces')
-        self.assertEquals(req.cookies['multi'], 
+        self.assertEquals(req.cookies['multi'],
 	                              'cookie data with unquoted spaces')
-        self.assertEquals(req.cookies['multi2'], 
+        self.assertEquals(req.cookies['multi2'],
 	                              'cookie data with unquoted spaces')
+
+
+
+    def test_close_removes_stdin_references(self):
+        # Verifies that all references to the input stream go away on
+        # request.close().  Otherwise a tempfile may stick around.
+        import sys
+        from StringIO import StringIO
+        s = StringIO(TEST_FILE_DATA)
+        start_count = sys.getrefcount(s)
+
+        req = self._makeOne(stdin=s, environ=TEST_ENVIRON.copy())
+        req.processInputs()
+        self.assertNotEqual(start_count, sys.getrefcount(s))  # Precondition
+        req.close()
+        self.assertEqual(start_count, sys.getrefcount(s))  # The test
+
+    def test_processInputs_w_large_input_gets_tempfile(self):
+        # checks fileupload object supports the filename
+        from StringIO import StringIO
+        s = StringIO(TEST_LARGEFILE_DATA)
+
+        req = self._makeOne(stdin=s, environ=TEST_ENVIRON.copy())
+        req.processInputs()
+        f = req.form.get('file')
+        self.assert_(f.name)
+
+    def test_processInputs_with_file_upload_gets_iterator(self):
+        # checks fileupload object supports the iterator protocol
+        # collector entry 1837
+        from StringIO import StringIO
+        s = StringIO(TEST_FILE_DATA)
+
+        req = self._makeOne(stdin=s, environ=TEST_ENVIRON.copy())
+        req.processInputs()
+        f=req.form.get('file')
+        self.assertEqual(list(f),['test\n'])
+        f.seek(0)
+        self.assertEqual(f.next(),'test\n')
+        f.seek(0)
+        self.assertEqual(f.xreadlines(),f)
+
+    def test__authUserPW_simple( self ):
+        import base64
+        user_id = 'user'
+        password = 'password'
+        encoded = base64.encodestring( '%s:%s' % ( user_id, password ) )
+        auth_header = 'basic %s' % encoded
+
+        environ = { 'HTTP_AUTHORIZATION': auth_header }
+        request = self._makeOne( environ=environ )
+
+        user_id_x, password_x = request._authUserPW()
+
+        self.assertEqual( user_id_x, user_id )
+        self.assertEqual( password_x, password )
+
+    def test__authUserPW_with_embedded_colon( self ):
+        # http://www.zope.org/Collectors/Zope/2039
+        import base64
+        user_id = 'user'
+        password = 'embedded:colon'
+        encoded = base64.encodestring( '%s:%s' % ( user_id, password ) )
+        auth_header = 'basic %s' % encoded
+
+        environ = { 'HTTP_AUTHORIZATION': auth_header }
+        request = self._makeOne( environ=environ )
+
+        user_id_x, password_x = request._authUserPW()
+
+        self.assertEqual( user_id_x, user_id )
+        self.assertEqual( password_x, password )
+
+    def test_debug_not_in_qs_still_gets_attr(self):
+        from zope.publisher.base import DebugFlags
+        # when accessing request.debug we will see the DebugFlags instance
+        request = self._makeOne()
+        self.assert_(isinstance(request.debug, DebugFlags))
+        # It won't be available through dictonary lookup, though
+        self.assert_(request.get('debug') is None)
+
+    def test_debug_in_qs_gets_form_var(self):
+        env = {'QUERY_STRING': 'debug=1'}
+
+        # request.debug will actually yield a 'debug' form variable
+        # if it exists
+        request = self._makeOne(environ=env)
+        request.processInputs()
+        self.assertEqual(request.debug, '1')
+        self.assertEqual(request.get('debug'), '1')
+        self.assertEqual(request['debug'], '1')
+
+        # we can still override request.debug with a form variable or directly
+
+    def test_debug_override_via_form_other(self):
+        request = self._makeOne()
+        request.processInputs()
+        request.form['debug'] = '1'
+        self.assertEqual(request.debug, '1')
+        request['debug'] = '2'
+        self.assertEqual(request.debug, '2')
+
+    def test_locale_property_accessor(self):
+        from zope.component import provideAdapter
+        from zope.publisher.browser import BrowserLanguages
+        from zope.publisher.interfaces.http import IHTTPRequest
+        from zope.i18n.interfaces import IUserPreferredLanguages
+        from zope.i18n.interfaces.locales import ILocale
+        from ZPublisher.HTTPRequest import _marker
+
+        provideAdapter(BrowserLanguages, [IHTTPRequest],
+                       IUserPreferredLanguages)
+
+        env = {'HTTP_ACCEPT_LANGUAGE': 'en'}
+        request = self._makeOne(environ=env)
+
+        # before accessing request.locale for the first time, request._locale
+        # is still a marker
+        self.assert_(request._locale is _marker)
+
+        # when accessing request.locale we will see an ILocale
+        self.assert_(ILocale.providedBy(request.locale))
+
+        # and request._locale has been set
+        self.assert_(request._locale is request.locale)
+
+        # It won't be available through dictonary lookup, though
+        self.assert_(request.get('locale') is None)
+
+    def test_locale_in_qs(self):
+        from zope.component import provideAdapter
+        from zope.publisher.browser import BrowserLanguages
+        from zope.publisher.interfaces.http import IHTTPRequest
+        from zope.i18n.interfaces import IUserPreferredLanguages
+        from zope.i18n.interfaces.locales import ILocale
+
+        provideAdapter(BrowserLanguages, [IHTTPRequest],
+                       IUserPreferredLanguages)
+
+        # request.locale will actually yield a 'locale' form variable
+        # if it exists
+        env = {'HTTP_ACCEPT_LANGUAGE': 'en', 'QUERY_STRING': 'locale=1'}
+        request = self._makeOne(environ=env)
+        request.processInputs()
+
+        self.assertEqual(request.locale, '1')
+        self.assertEqual(request.get('locale'), '1')
+        self.assertEqual(request['locale'], '1')
+
+    def test_locale_property_override_via_form_other(self):
+        from zope.component import provideAdapter
+        from zope.publisher.browser import BrowserLanguages
+        from zope.publisher.interfaces.http import IHTTPRequest
+        from zope.i18n.interfaces import IUserPreferredLanguages
+        from zope.i18n.interfaces.locales import ILocale
+
+        provideAdapter(BrowserLanguages, [IHTTPRequest],
+                       IUserPreferredLanguages)
+        env = {'HTTP_ACCEPT_LANGUAGE': 'en'}
+
+        # we can still override request.locale with a form variable
+        request = self._makeOne(environ=env)
+        request.processInputs()
+
+        self.assert_(ILocale.providedBy(request.locale))
+
+        request.form['locale'] = '1'
+        self.assertEqual(request.locale, '1')
+
+        request['locale'] = '2'
+        self.assertEqual(request.locale, '2')
+
+    def test_locale_semantics(self):
+        from zope.component import provideAdapter
+        from zope.publisher.browser import BrowserLanguages
+        from zope.publisher.interfaces.http import IHTTPRequest
+        from zope.i18n.interfaces import IUserPreferredLanguages
+        from zope.i18n.interfaces.locales import ILocale
+
+        provideAdapter(BrowserLanguages, [IHTTPRequest],
+                       IUserPreferredLanguages)
+        env_ = {'HTTP_ACCEPT_LANGUAGE': 'en'}
+
+        # we should also test the correct semantics of the locale
+        for httplang in ('it', 'it-ch', 'it-CH', 'IT', 'IT-CH', 'IT-ch'):
+            env = env_.copy()
+            env['HTTP_ACCEPT_LANGUAGE'] = httplang
+            request = self._makeOne(environ=env)
+            locale = request.locale
+            self.assert_(ILocale.providedBy(locale))
+            parts = httplang.split('-')
+            lang = parts.pop(0).lower()
+            territory = variant = None
+            if parts:
+                territory = parts.pop(0).upper()
+            if parts:
+                variant = parts.pop(0).upper()
+            self.assertEqual(locale.id.language, lang)
+            self.assertEqual(locale.id.territory, territory)
+            self.assertEqual(locale.id.variant, variant)
+
+    def test_locale_fallback(self):
+        from zope.component import provideAdapter
+        from zope.publisher.browser import BrowserLanguages
+        from zope.publisher.interfaces.http import IHTTPRequest
+        from zope.i18n.interfaces import IUserPreferredLanguages
+        from zope.i18n.interfaces.locales import ILocale
+
+        provideAdapter(BrowserLanguages, [IHTTPRequest],
+                       IUserPreferredLanguages)
+
+        env = {'HTTP_ACCEPT_LANGUAGE': 'en', 'HTTP_ACCEPT_LANGUAGE': 'xx'}
+
+        # Now test for non-existant locale fallback
+        request = self._makeOne(environ=env)
+        locale = request.locale
+
+        self.assert_(ILocale.providedBy(locale))
+        self.assert_(locale.id.language is None)
+        self.assert_(locale.id.territory is None)
+        self.assert_(locale.id.variant is None)
+
+    def test_method_GET(self):
+        env = {'REQUEST_METHOD': 'GET'}
+        request = self._makeOne(environ=env)
+        self.assertEqual(request.method, 'GET')
+
+    def test_method_GET(self):
+        env = {'REQUEST_METHOD': 'POST'}
+        request = self._makeOne(environ=env)
+        self.assertEqual(request.method, 'POST')
+
+    def test_getClientAddr_wo_trusted_proxy(self):
+        env = {'REMOTE_ADDR': '127.0.0.1',
+               'HTTP_X_FORWARDED_FOR': '10.1.20.30, 192.168.1.100'}
+        request = self._makeOne(environ=env)
+        self.assertEqual(request.getClientAddr(), '127.0.0.1')
+
+    def test_getClientAddr_one_trusted_proxy(self):
+        from ZPublisher.HTTPRequest import trusted_proxies
+        env = {'REMOTE_ADDR': '127.0.0.1',
+               'HTTP_X_FORWARDED_FOR': '10.1.20.30, 192.168.1.100' }
+
+        orig = trusted_proxies[:]
+        try:
+            trusted_proxies.append('127.0.0.1')
+            request = self._makeOne(environ=env)
+            self.assertEqual(request.getClientAddr(), '192.168.1.100')
+        finally:
+            trusted_proxies[:] = orig
+
+    def test_getClientAddr_trusted_proxy_last(self):
+        from ZPublisher.HTTPRequest import trusted_proxies
+        env = {'REMOTE_ADDR': '192.168.1.100',
+               'HTTP_X_FORWARDED_FOR': '10.1.20.30, 192.168.1.100'}
+
+        orig = trusted_proxies[:]
+        try:
+            trusted_proxies.append('192.168.1.100')
+            request = self._makeOne(environ=env)
+            self.assertEqual(request.getClientAddr(), '10.1.20.30')
+        finally:
+            trusted_proxies[:] = orig
+
+    def test_getClientAddr_trusted_proxy_no_REMOTE_ADDR(self):
+        from ZPublisher.HTTPRequest import trusted_proxies
+        env = {'HTTP_X_FORWARDED_FOR': '10.1.20.30, 192.168.1.100'}
+
+        orig = trusted_proxies[:]
+        try:
+            trusted_proxies.append('192.168.1.100')
+            request = self._makeOne(environ=env)
+            self.assertEqual(request.getClientAddr(), '')
+        finally:
+            trusted_proxies[:] = orig
+
+    def test_getHeader_exact(self):
+        request = self._makeOne(environ=TEST_ENVIRON.copy())
+        self.assertEqual(request.getHeader('content-type'),
+                         'multipart/form-data; boundary=12345')
+
+    def test_getHeader_case_insensitive(self):
+        request = self._makeOne(environ=TEST_ENVIRON.copy())
+        self.assertEqual(request.getHeader('Content-Type'),
+                         'multipart/form-data; boundary=12345')
+
+    def test_getHeader_underscore_is_dash(self):
+        request = self._makeOne(environ=TEST_ENVIRON.copy())
+        self.assertEqual(request.getHeader('content_type'),
+                         'multipart/form-data; boundary=12345')
+
+    def test_getHeader_literal_turns_off_case_normalization(self):
+        request = self._makeOne(environ=TEST_ENVIRON.copy())
+        self.assertEqual(request.getHeader('Content-Type', literal=True), None)
+
+    def test_getHeader_nonesuch(self):
+        request = self._makeOne(environ=TEST_ENVIRON.copy())
+        self.assertEqual(request.getHeader('none-such'), None)
+
+    def test_getHeader_nonesuch_with_default(self):
+        request = self._makeOne(environ=TEST_ENVIRON.copy())
+        self.assertEqual(request.getHeader('Not-existant', default='Whatever'),
+                         'Whatever')
 
 TEST_ENVIRON = {
     'CONTENT_TYPE': 'multipart/form-data; boundary=12345',
@@ -683,256 +938,17 @@ test
 --12345--
 '''
 
+TEST_LARGEFILE_DATA = '''
+--12345
+Content-Disposition: form-data; name="file"; filename="file"
+Content-Type: application/octet-stream
 
-class RequestTests( unittest.TestCase ):
+test %s
 
-    def _getTargetClass(self):
-        from ZPublisher.HTTPRequest import HTTPRequest
-        return HTTPRequest
-
-    def _makeOne(self, stdin, environ, response, clean=0):
-        return self._getTargetClass()(stdin, environ, response, clean)
-
-    def testRemoveStdinReferences(self):
-        # Verifies that all references to the input stream go away on
-        # request.close().  Otherwise a tempfile may stick around.
-        import sys
-        from StringIO import StringIO
-        s = StringIO(TEST_FILE_DATA)
-        env = TEST_ENVIRON.copy()
-        start_count = sys.getrefcount(s)
-
-        req = self._makeOne(s, env, None)
-        req.processInputs()
-        self.assertNotEqual(start_count, sys.getrefcount(s))  # Precondition
-        req.close()
-        self.assertEqual(start_count, sys.getrefcount(s))  # The test
-
-    def testFileName(self):
-        # checks fileupload object supports the filename
-        from StringIO import StringIO
-        s = StringIO(TEST_LARGEFILE_DATA)
-        env = TEST_ENVIRON.copy()
-
-        req = self._makeOne(s, env, None)
-        req.processInputs()
-        f = req.form.get('file')
-        self.assert_(f.name)
-
-    def testFileIterator(self):
-        # checks fileupload object supports the iterator protocol
-        # collector entry 1837
-        from StringIO import StringIO
-        s = StringIO(TEST_FILE_DATA)
-        env = TEST_ENVIRON.copy()
-
-        req = self._makeOne(s, env, None)
-        req.processInputs()
-        f=req.form.get('file')
-        self.assertEqual(list(f),['test\n'])
-        f.seek(0)
-        self.assertEqual(f.next(),'test\n')
-        f.seek(0)
-        self.assertEqual(f.xreadlines(),f)
-
-    def testDebug(self):
-        from zope.publisher.base import DebugFlags
-        from StringIO import StringIO
-        TEST_ENVIRON = {
-            'REQUEST_METHOD': 'GET',
-            'SERVER_NAME': 'localhost',
-            'SERVER_PORT': '80',
-            }
-        s = StringIO('')
-
-        # when accessing request.debug we will see the DebugFlags instance
-        env = TEST_ENVIRON.copy()
-        request = self._makeOne(s, env, None)
-        self.assert_(isinstance(request.debug, DebugFlags))
-        # It won't be available through dictonary lookup, though
-        self.assert_(request.get('debug') is None)
-
-        # request.debug will actually yield a 'debug' form variable
-        # if it exists
-        env = TEST_ENVIRON.copy()
-        env['QUERY_STRING'] = 'debug=1'
-        request = self._makeOne(s, env, None)
-        request.processInputs()
-        self.assertEqual(request.debug, '1')
-        self.assertEqual(request.get('debug'), '1')
-        self.assertEqual(request['debug'], '1')
-
-        # we can still override request.debug with a form variable or directly
-        env = TEST_ENVIRON.copy()
-        request = self._makeOne(s, env, None)
-        request.processInputs()
-        self.assert_(isinstance(request.debug, DebugFlags))
-        request.form['debug'] = '1'
-        self.assertEqual(request.debug, '1')
-        request['debug'] = '2'
-        self.assertEqual(request.debug, '2')
-
-    def testLocale(self):
-        TEST_ENVIRON = {
-            'HTTP_ACCEPT_LANGUAGE': 'en',
-            'REQUEST_METHOD': 'GET',
-            'SERVER_NAME': 'localhost',
-            'SERVER_PORT': '80',
-            }
-        from StringIO import StringIO
-        from ZPublisher.HTTPRequest import HTTPRequest
-        from zope.component import provideAdapter
-        from zope.publisher.browser import BrowserLanguages
-        from zope.publisher.interfaces.http import IHTTPRequest
-        from zope.i18n.interfaces import IUserPreferredLanguages
-        from zope.i18n.interfaces.locales import ILocale
-
-        provideAdapter(BrowserLanguages, [IHTTPRequest],
-                       IUserPreferredLanguages)
-        s = StringIO('')
-
-        # before accessing request.locale for the first time, request._locale
-        # is still a marker
-        from ZPublisher.HTTPRequest import _marker
-        env = TEST_ENVIRON.copy()
-        request = self._makeOne(s, env, None)
-        self.assert_(request._locale is _marker)
-        # when accessing request.locale we will see an ILocale
-        self.assert_(ILocale.providedBy(request.locale))
-        # and request._locale has been set
-        self.assert_(request._locale is request.locale)
-        # It won't be available through dictonary lookup, though
-        self.assert_(request.get('locale') is None)
-
-        # request.locale will actually yield a 'locale' form variable
-        # if it exists
-        env = TEST_ENVIRON.copy()
-        env['QUERY_STRING'] = 'locale=1'
-        request = self._makeOne(s, env, None)
-        request.processInputs()
-        self.assertEqual(request.locale, '1')
-        self.assertEqual(request.get('locale'), '1')
-        self.assertEqual(request['locale'], '1')
-
-        # we can still override request.locale with a form variable
-        env = TEST_ENVIRON.copy()
-        request = self._makeOne(s, env, None)
-        request.processInputs()
-        self.assert_(ILocale.providedBy(request.locale))
-        request.form['locale'] = '1'
-        self.assertEqual(request.locale, '1')
-        request['locale'] = '2'
-        self.assertEqual(request.locale, '2')
-
-        # we should also test the correct semantics of the locale
-        for httplang in ('it', 'it-ch', 'it-CH', 'IT', 'IT-CH', 'IT-ch'):
-            env = TEST_ENVIRON.copy()
-            env['HTTP_ACCEPT_LANGUAGE'] = httplang
-            request = self._makeOne(s, env, None)
-            locale = request.locale
-            self.assert_(ILocale.providedBy(locale))
-            parts = httplang.split('-')
-            lang = parts.pop(0).lower()
-            territory = variant = None
-            if parts:
-                territory = parts.pop(0).upper()
-            if parts:
-                variant = parts.pop(0).upper()
-            self.assertEqual(locale.id.language, lang)
-            self.assertEqual(locale.id.territory, territory)
-            self.assertEqual(locale.id.variant, variant)
-
-        # Now test for non-existant locale fallback
-        env = TEST_ENVIRON.copy()
-        env['HTTP_ACCEPT_LANGUAGE'] = 'xx'
-        request = self._makeOne(s, env, None)
-        locale = request.locale
-        self.assert_(ILocale.providedBy(locale))
-        self.assert_(locale.id.language is None)
-        self.assert_(locale.id.territory is None)
-        self.assert_(locale.id.variant is None)
-
-    def testMethod(self):
-        from StringIO import StringIO
-        TEST_ENVIRON = {
-            'REQUEST_METHOD': 'GET',
-            'SERVER_NAME': 'localhost',
-            'SERVER_PORT': '80',
-            }
-        s = StringIO('')
-
-        env = TEST_ENVIRON.copy()
-        request = self._makeOne(s, env, None)
-        self.assertEqual(request.method, 'GET')
-        
-        env = TEST_ENVIRON.copy()
-        env['REQUEST_METHOD'] = 'post'
-        request = self._makeOne(s, env, None)
-        self.assertEqual(request.method, 'POST')
-
-    def testTrustedProxies(self):
-        from StringIO import StringIO
-        from ZPublisher.HTTPRequest import trusted_proxies
-        TEST_ENVIRON = {
-            'REQUEST_METHOD': 'GET',
-            'SERVER_NAME': 'localhost',
-            'SERVER_PORT': '80',
-            'REMOTE_ADDR': '127.0.0.1',
-            'HTTP_X_FORWARDED_FOR': '10.1.20.30, 192.168.1.100',
-            }
-        s = StringIO('')
-
-        env = TEST_ENVIRON.copy()
-        request = self._makeOne(s, env, None)
-        self.assertEqual(request.getClientAddr(), '127.0.0.1')
-
-        trusted_proxies.append('127.0.0.1')
-        request = self._makeOne(s, env, None)
-        self.assertEqual(request.getClientAddr(), '192.168.1.100')
-
-        trusted_proxies[0] = '192.168.1.100' 
-        env = TEST_ENVIRON.copy()
-        env['REMOTE_ADDR'] = '192.168.1.100'
-        request = self._makeOne(s, env, None)
-        self.assertEqual(request.getClientAddr(), '10.1.20.30')
-
-        env = TEST_ENVIRON.copy()
-        del env['REMOTE_ADDR']
-        request = self._makeOne(s, env, None)
-        self.assertEqual(request.getClientAddr(), '')
-
-    def testGetHeader(self):
-        from StringIO import StringIO
-        s = StringIO('')
-        env = TEST_ENVIRON.copy()
-        request = self._makeOne(s, env, None)
-
-        self.assertEqual(request.getHeader('Content-Type'),
-                         'multipart/form-data; boundary=12345')
-
-        # getHeader is agnostic of case
-        self.assertEqual(request.getHeader('content-type'),
-                         'multipart/form-data; boundary=12345')
-
-        # and of dashes vs. underscores
-        self.assertEqual(request.getHeader('content_type'),
-                         'multipart/form-data; boundary=12345')
-
-        # the 'literal' argument can turn this normalization off:
-        self.assertEqual(request.getHeader('Content-Type', literal=True), None)
-
-        # the 'default' argument can be used to get something other than
-        # None when the lookup fails:
-        self.assertEqual(request.getHeader('Not-existant', default='Whatever'),
-                         'Whatever')
+''' % ('test' * 1000)
 
 def test_suite():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(AuthCredentialsTests, 'test'))
     suite.addTest(unittest.makeSuite(RecordTests, 'test'))
-    suite.addTest(unittest.makeSuite(ProcessInputsTests, 'test'))
-    suite.addTest(unittest.makeSuite(RequestTests, 'test'))
+    suite.addTest(unittest.makeSuite(HTTPRequestTests, 'test'))
     return suite
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='test_suite')
