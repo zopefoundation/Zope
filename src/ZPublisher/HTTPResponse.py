@@ -725,7 +725,8 @@ class HTTPResponse(BaseResponse):
             t, v, tb = sys.exc_info()
 
         if t == 'Unauthorized' or t == Unauthorized or (
-            isinstance(t, (type, types.ClassType)) and issubclass(t, Unauthorized)):
+            isinstance(t, (type, types.ClassType)) and
+                issubclass(t, Unauthorized)):
             t = 'Unauthorized'
             self._unauthorized()
 
