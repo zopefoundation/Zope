@@ -2,7 +2,7 @@ What's new in Zope 2.12
 =======================
 
 The article explains the new high-level features and changes found in this
-version of Zope2.
+version of Zope 2.
 
 You can have a look at the `detailed change log <CHANGES.html>`_ to learn
 about all minor new features and bugs being solved in this release.
@@ -11,38 +11,37 @@ about all minor new features and bugs being solved in this release.
 Support for newer Python versions
 ---------------------------------
 
-Zope2 has supported and required Python 2.4 since its 2.9 release in
-summer 2006. Later versions of Python have so far been incompatible with
-Zope2.
+Zope 2 has supported and required Python 2.4 since its 2.9 release in summer
+2006. Later versions of Python have so far been unsupported by Zope 2.
 
-This version of Zope2 adds support for both Python 2.5 and 2.6 at the same
+This version of Zope 2 adds support for both Python 2.5 and 2.6 at the same
 time. As Python 2.4 is no longer maintained itself, it is no longer officially
-supported by this Zope2 version. There is however no code in Zope2 yet which
-requires Python 2.5, so applications built on top of Zope2 should still
+supported by this Zope 2 version. There is however no code in Zope 2 yet which
+requires Python 2.5, so applications built on top of Zope 2 should still
 continue to run with Python 2.4.
 
 Python 3 is a backwards incompatible release of Python and not supported. At
 this point there is no concrete roadmap for adoption of Python 3. It is
-expected to be a question of multiple major Zope2 releases or years, though.
+expected to be a question of multiple major Zope 2 releases or years, though.
 
 
 Fully eggified
 --------------
 
-Zope2 itself is now fully eggified and compatible with `setuptools
+Zope 2 itself is now fully eggified and compatible with `setuptools
 <http://pypi.python.org/pypi/setuptools>`_. You can use popular tools like
 `easy_install <http://peak.telecommunity.com/DevCenter/EasyInstall>`_ or
-`zc.buildout <http://pypi.python.org/pypi/zc.buildout>`_ to install Zope2.
+`zc.buildout <http://pypi.python.org/pypi/zc.buildout>`_ to install Zope 2.
 
-Releases of Zope2 can be found at and will be installable from the Python
+Releases of Zope 2 can be found at and will be installable from the Python
 package index at http://pypi.python.org/pypi/Zope2.
 
-The repackaging of Zope2 into an eggified form and accompanying changes to the
+The repackaging of Zope 2 into an eggified form and accompanying changes to the
 file system layout have caused a number of changes. The environment variables
 `SOFTWARE_HOME` and `ZOPE_HOME` are no longer available nor set in the control
-scripts. If you need to access data files inside the Zope2 package, you can for
-example use `import os, OFS; os.path.dirname(OFS.__file__)` to locate the files
-inside the OFS package.
+scripts. If you need to access data files inside the Zope 2 package, you can
+for example use `import os, OFS; os.path.dirname(OFS.__file__)` to locate the
+files inside the OFS package.
 
 In general it is discouraged to rely on the `lib/python` and `Products`
 directories to make code available to the running Zope process. While these
@@ -53,27 +52,31 @@ standard Python mechanisms. To create isolated Python environments both
 <http://pypi.python.org/pypi/virtualenv>`_ are in wide-spread use.
 
 
-Latest version of Zope Components
----------------------------------
+Zope Toolkit
+------------
 
-This version of Zope2 is compatible with and is based on Zope 3.5.
+This version of Zope 2 is based on the Zope Toolkit. The Zope Toolkit is an
+extraction of the reusable and wildly used packages of the former Zope 3
+project. The Zope Toolkit is focused on supporting frameworks and applications,
+rather than trying to be one itself. Parts of the Zope Toolkit are used by
+Zope 2, Plone, Grok, Repoze.bfg, and by many other different applications and
+frameworks.
 
-A major focus of the new version of the Zope component libraries was to
-refactor package dependencies to generate more maintainable and better
-structured code. Based on this effort the number of packages included by
-Zope2 could be dramatically reduced from about 120 additional packages to
-just over 60. The total code size of Zope2 and its dependencies has decreased
-by over 200,000 lines of code as a result.
+A major focus of the Zope Toolkit was to refactor package dependencies to
+generate more maintainable and better structured code. Based on this effort
+the number of packages included by Zope 2 could be dramatically reduced from
+about 120 additional packages to just over 60. The total code size of Zope 2
+and its dependencies has decreased by over 200,000 lines of code as a result.
 
-You can find more information about the changes in Zope 3.5 at
-http://download.zope.org/zope3.5/. Upgrade information from Zope 3.4 to 3.5
-can be found at http://docs.zope.org/zope3docs/migration/34to35.html.
+You can find more information about the changes in the Zope Toolkit at
+http://docs.zope.org/zopetoolkit/. Upgrade information from Zope 3 to the Zope
+Toolkit can be found at http://docs.zope.org/zopetoolkit/migration/index.html.
 
 
 ZODB 3.9
 --------
 
-This version of Zope2 includes the latest version of the `ZODB (3.9)
+This version of Zope 2 includes the latest version of the `ZODB (3.9)
 <http://pypi.python.org/pypi/ZODB3>`_. It has a multitude of new configuration
 options and bug fixes. File storages have gotten native support for blob
 storages and demo storages have been expanded extensively. There is a large
@@ -87,11 +90,11 @@ You can read more about the detailed changes in the `ZODB3 change log
 Module cleanup
 --------------
 
-As with every release of Zope2 this version has removed various modules
+As with every release of Zope 2 this version has removed various modules
 which have been deprecated in prior versions.
 
 Most notably ZClasses and supporting modules have been removed entirely from
-Zope2. As a result the persistent product registry has been made optional, but
+Zope 2. As a result the persistent product registry has been made optional, but
 is still enabled by default. If your application does not rely on the registry,
 you can now disable it by specifying::
 
@@ -109,11 +112,11 @@ version argument as a result of this.
 Documentation updates
 ---------------------
 
-Zope2 now uses `Sphinx <http://sphinx.pocoo.org/>`_ to create pleasant HTML
+Zope 2 now uses `Sphinx <http://sphinx.pocoo.org/>`_ to create pleasant HTML
 representations of its documentation. An effort is underway to update the
 publicly available documentation using Sphinx at http://docs.zope.org/.
 
-So far the Zope2 Book, the Zope Developers Guide and many smaller articles
+So far the Zope 2 Book, the Zope Developers Guide and many smaller articles
 have been converted to reStructuredText and their content updated.
 
 
@@ -122,19 +125,19 @@ Acquisition redux
 
 The short technical version of this change is: "Acquisition has been made aware
 of __parent__ pointers". What sounds like a small change is actually a major
-step in the integration story for Zope components based technology into Zope2.
+step in the integration story for Zope components based technology into Zope 2.
 
 While integrating the Zope component architecture and its many concepts into
-Zope2 an integration layer called Five (Zope 2 + 3) has been created. One of
+Zope 2 an integration layer called Five (Zope 2 + 3) has been created. One of
 the major reasons for the necessity of an integration layer has been in the way
-Zope2 was tightly coupled to the concept of Acquisition. The entire security
+Zope 2 was tightly coupled to the concept of Acquisition. The entire security
 machinery, object traversal and publication has been relying on this.
 
-All classes, which wanted to interact with Zope2 in any non-trivial way, had to
-inherit from the Acquisition base classes. As a result almost no external
-package could directly work inside Zope2 but required an integration layer.
+All classes, which wanted to interact with Zope 2 in any non-trivial way, had
+to inherit from the Acquisition base classes. As a result almost no external
+package could directly work inside Zope 2 but required an integration layer.
 
-With this version of Zope2, objects have a new option of providing location
+With this version of Zope 2, objects have a new option of providing location
 awareness to Zope APIs. This new option is to provide an explicit parent
 pointer in the ``__parent__`` attribute, much like specified by the ILocation
 API from `zope.location <http://pypi.python.org/pypi/zope.location>`_. Browser
@@ -161,7 +164,7 @@ For instances providing the ILocation interface the common way is::
 
 There are various `aq_*` methods available for various other tasks related to
 locating objects in the containment hierarchy. So far virtually all objects in
-Zope2 would participate in Acquisition. As a side-effect many people relied on
+Zope 2 would participate in Acquisition. As a side-effect many people relied on
 Acquisition wrappers to be found around their objects. This caused code to rely
 on accessing the `aq_*` methods as attributes of the wrapper::
 
@@ -178,7 +181,7 @@ it with a proper interface check::
       instance = instance.__of__(container)
 
 In addition to this check you should no longer rely on the `aq_*` methods to be
-available as attributes. While all code inside Zope2 itself still supports
+available as attributes. While all code inside Zope 2 itself still supports
 this, it does no longer rely on those but makes proper use of the functions
 provided by the Acquisition package.
 
@@ -256,23 +259,23 @@ As the zope.publisher BrowserView supports the ILocation interface, all of this
 works automatically. A view considers its context as its parent as before, but
 no longer needs Acquisition wrapping for the Acquisition machinery to
 understand this. The next time you want to use a package or make your own code
-more reusable outside of Zope2, this should be of tremendous help.
+more reusable outside of Zope 2, this should be of tremendous help.
 
 
 Object managers and IContainer
 ------------------------------
 
-One of the fundamental parts of Zope2 is the object file system as implemented
+One of the fundamental parts of Zope 2 is the object file system as implemented
 in the `OFS` package. A central part of this package is an underlying class
 called `ObjectManager`. It is a base class of the standard `Folder` used
-for many container-ish classes inside Zope2.
+for many container-ish classes inside Zope 2.
 
 The API to access objects in an object manager or to add objects to one has
 been written many years ago. Since those times Python itself has gotten
 standard ways to access objects in containers and work with them. Those Python
 API's are most familiar to most developers working with Zope. The Zope
 components libraries have formalized those API's into the general IContainer
-interface in the zope.container package. In this version of Zope2 the standard
+interface in the zope.container package. In this version of Zope 2 the standard
 OFS ObjectManager fully implements this IContainer interface in addition to its
 old API.
 
@@ -284,7 +287,7 @@ old API.
 You can now write your code in a way that no longer ties it to object managers
 alone, but can support any class implementing IContainer instead. In
 conjunction with the Acquisition changes above, this will increase your chances
-of being able to reuse existing packages not specifically written for Zope2 in
+of being able to reuse existing packages not specifically written for Zope 2 in
 a major way.
 
 Here's an example of how you did work with object managers before::
