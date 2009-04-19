@@ -6,7 +6,7 @@ Change information for previous versions of Zope can be found in the
 file HISTORY.txt.
 
 
-2.12.0a2 (2009-04-17)
+2.12.0a2 (2009-04-19)
 ---------------------
 
 Known issues
@@ -20,6 +20,8 @@ Known issues
 
 - There is no old-style full tarball release that resembles the prior
   releases of Zope at this point.
+
+- easy_install support not fully functional yet.
 
 Restructuring
 +++++++++++++
