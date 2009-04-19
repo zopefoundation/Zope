@@ -392,7 +392,8 @@ def test_register_permission():
     We can now register a permission in ZCML:
 
       >>> configure_zcml = '''
-      ... <configure xmlns="http://namespaces.zope.org/zope">
+      ... <configure xmlns="http://namespaces.zope.org/zope"
+      ...            i18n_domain="fivetest">
       ...
       ...   <permission
       ...       id="Products.Five.tests.DummyPermission"
@@ -420,7 +421,8 @@ def test_register_permission():
       >>> self.app.manage_permission('Five: Other dummy', roles=['Anonymous'])
 
       >>> configure_zcml = '''
-      ... <configure xmlns="http://namespaces.zope.org/zope">
+      ... <configure xmlns="http://namespaces.zope.org/zope"
+      ...            i18n_domain="fivetest">
       ...
       ...   <permission
       ...       id="Products.Five.tests.OtherDummy"
