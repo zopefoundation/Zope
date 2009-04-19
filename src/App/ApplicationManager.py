@@ -139,18 +139,6 @@ class DatabaseChooser(SimpleItem):
 InitializeClass(DatabaseChooser)
 
 
-class VersionManager(Item, Implicit):
-    """Version management"""
-
-    id        ='Versions'
-    name=title='Version Management'
-    meta_type ='Version Management'
-
-InitializeClass(VersionManager)
-
-
-
-
 # refcount snapshot info
 _v_rcs=None
 _v_rst=None

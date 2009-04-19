@@ -23,6 +23,10 @@ Known issues
 Restructuring
 +++++++++++++
 
+- Added automatic inline migration for databases created with older Zope
+  versions. The `Versions` screen from the `Control_Panel` is now
+  automatically removed on Zope startup.
+
 - Removed more unused code of the versions support feature including the
   Globals.VersionNameName constant.
 

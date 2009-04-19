@@ -140,6 +140,7 @@ class HelpTopic(Implicit, HelpTopicBase, Item, PropertyManager, Persistent):
         self._v_last_read = mtime
 
     def _check_for_update(self):
+        import Globals
         if Globals.DevelopmentMode:
             try:    mtime=os.stat(self.file)[8]
             except: mtime=0

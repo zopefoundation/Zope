@@ -289,6 +289,17 @@ class AppInitializer:
             cpl._init()
             app._setObject('Control_Panel', cpl)
             self.commit('Added Control_Panel')
+        else:
+            # Inline migration of old databases
+            cp = app.Control_Panel
+            ids = [i['id'] for i in cp._objects]
+            if 'Versions' in ids:
+                new = []
+                for entry in cp._objects:
+                    if entry['id'] != 'Versions':
+                        new.append(entry)
+                cp._objects = tuple(new)
+                self.commit('Removed Control_Panel.Versions')
 
         # b/c: Ensure that a ProductFolder exists.
         if not hasattr(aq_base(app.Control_Panel), 'Products'):
