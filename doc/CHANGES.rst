@@ -27,6 +27,8 @@ Restructuring
 Bugs Fixed
 ++++++++++
 
+- Launchpad #363780:  preserve request interfaces and class, as well as
+  response class, when cloning an HTTPRequest.
 
 2.12.0a3 (2009-04-19)
 ---------------------

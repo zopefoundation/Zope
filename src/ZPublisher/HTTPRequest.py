@@ -32,6 +32,8 @@ from urllib import splitport
 
 from zope.i18n.interfaces import IUserPreferredLanguages
 from zope.i18n.locales import locales, LoadLocaleError
+from zope.interface import directlyProvidedBy
+from zope.interface import directlyProvides
 from zope.interface import implements
 from zope.publisher.base import DebugFlags
 from zope.publisher.interfaces.browser import IBrowserRequest
@@ -268,9 +270,7 @@ class HTTPRequest(BaseRequest):
         if path[:vhbl] == vhbase:
             path = path[vhbl:]
         else:
-            raise ValueError, (
-                'Url does not match virtual hosting context'
-                )
+            raise ValueError('Url does not match virtual hosting context')
         vrpp = other.get('VirtualRootPhysicalPath', ('',))
         return list(vrpp) + map(unquote, path)
 
@@ -1150,7 +1150,7 @@ class HTTPRequest(BaseRequest):
         # match that of the current request), a ValueError will
         # be raised.
         if url.find(self.script) != 0:
-            raise ValueError, 'Different namespace.'
+            raise ValueError('Different namespace.')
         path = url[len(self.script):]
         while path and path[0] == '/':
             path = path[1:]
@@ -1201,8 +1201,13 @@ class HTTPRequest(BaseRequest):
         environ['REQUEST_METHOD'] = 'GET'
         if self._auth:
             environ['HTTP_AUTHORIZATION'] = self._auth
-        clone = HTTPRequest(None, environ, HTTPResponse(), clean=1)
+        if self.response is not None:
+            response = self.response.__class__()
+        else:
+            response = None
+        clone = self.__class__(None, environ, response, clean=1)
         clone['PARENTS'] = [self['PARENTS'][-1]]
+        directlyProvides(clone, *directlyProvidedBy(self))
         return clone
 
     def getHeader(self, name, default = None, literal = False):

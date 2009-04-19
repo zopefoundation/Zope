@@ -921,6 +921,61 @@ class HTTPRequestTests(unittest.TestCase):
         self.assertEqual(request.getHeader('Not-existant', default='Whatever'),
                          'Whatever')
 
+    def test_clone_updates_method_to_GET(self):
+        request = self._makeOne(environ={'REQUEST_METHOD': 'POST'})
+        request['PARENTS'] = [object()]
+        clone = request.clone()
+        self.assertEqual(clone.method, 'GET')
+
+    def test_clone_keeps_preserves__auth(self):
+        request = self._makeOne()
+        request['PARENTS'] = [object()]
+        request._auth = 'foobar'
+        clone = request.clone()
+        self.assertEqual(clone._auth, 'foobar')
+
+    def test_clone_doesnt_re_clean_environ(self):
+        request = self._makeOne()
+        request.environ['HTTP_CGI_AUTHORIZATION'] = 'lalalala'
+        request['PARENTS'] = [object()]
+        clone = request.clone()
+        self.assertEqual(clone.environ['HTTP_CGI_AUTHORIZATION'], 'lalalala')
+
+    def test_clone_keeps_only_last_PARENT(self):
+        PARENTS = [object(), object()]
+        request = self._makeOne()
+        request['PARENTS'] = PARENTS
+        clone = request.clone()
+        self.assertEqual(clone['PARENTS'], PARENTS[1:])
+
+    def test_clone_preserves_response_class(self):
+        class DummyResponse:
+            pass
+        request = self._makeOne(None, TEST_ENVIRON.copy(), DummyResponse())
+        request['PARENTS'] = [object()]
+        clone = request.clone()
+        self.failUnless(isinstance(clone.response, DummyResponse))
+
+    def test_clone_preserves_request_subclass(self):
+        class SubRequest(self._getTargetClass()):
+            pass
+        request = SubRequest(None, TEST_ENVIRON.copy(), None)
+        request['PARENTS'] = [object()]
+        clone = request.clone()
+        self.failUnless(isinstance(clone, SubRequest))
+
+    def test_clone_preserves_direct_interfaces(self):
+        from zope.interface import directlyProvides
+        from zope.interface import Interface
+        class IFoo(Interface):
+            pass
+        request = self._makeOne()
+        request['PARENTS'] = [object()]
+        directlyProvides(request, IFoo)
+        clone = request.clone()
+        self.failUnless(IFoo.providedBy(clone))
+
+
 TEST_ENVIRON = {
     'CONTENT_TYPE': 'multipart/form-data; boundary=12345',
     'REQUEST_METHOD': 'POST',
