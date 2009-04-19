@@ -23,9 +23,8 @@ connection_open_hooks = []
 
 class ZApplicationWrapper:
 
-    def __init__(self, db, name, klass= None, klass_args= (),
-                 version_cookie_name=None):
-        self._stuff = db, name, version_cookie_name
+    def __init__(self, db, name, klass= None, klass_args=()):
+        self._stuff = db, name
         if klass is not None:
             conn=db.open()
             root=conn.root()
@@ -35,21 +34,12 @@ class ZApplicationWrapper:
             conn.close()
             self._klass=klass
 
-
     # This hack is to overcome a bug in Bobo!
     def __getattr__(self, name):
         return getattr(self._klass, name)
 
     def __bobo_traverse__(self, REQUEST=None, name=None):
-        db, aname, version_support = self._stuff
-        if version_support is not None and REQUEST is not None:
-            version=REQUEST.get(version_support,'')
-        else: version=''
-    
-#        conn=db.open(version)
-        # 'version' argument no longer support with ZODB 3.9.
-        # The cruft for version_support can likely be removed!?
-        # (ajung, 2009/01/26)
+        db, aname = self._stuff
         conn = db.open()
 
         if connection_open_hooks:
@@ -75,7 +65,7 @@ class ZApplicationWrapper:
 
 
     def __call__(self, connection=None):
-        db, aname, version_support = self._stuff
+        db, aname = self._stuff
 
         if connection is None:
             connection=db.open()

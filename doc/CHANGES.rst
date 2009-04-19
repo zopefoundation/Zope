@@ -9,9 +9,6 @@ file HISTORY.txt.
 Trunk
 -----
 
-2.12.0a2 (2009-04-19)
----------------------
-
 Known issues
 ++++++++++++
 
@@ -21,10 +18,20 @@ Known issues
 
 - ZODB 3.9.0a12 does not work on Windows with Python 2.6 yet.
 
-- There is no old-style full tarball release that resembles the prior
-  releases of Zope at this point.
-
 - easy_install support not fully functional yet.
+
+Restructuring
++++++++++++++
+
+- Removed more unused code of the versions support feature including the
+  Globals.VersionNameName constant.
+
+Bugs Fixed
+++++++++++
+
+
+2.12.0a2 (2009-04-19)
+---------------------
 
 Restructuring
 +++++++++++++

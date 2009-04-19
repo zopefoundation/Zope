@@ -14,7 +14,6 @@
 """
 
 from zope.component import queryMultiAdapter
-from AccessControl.SecurityManagement import getSecurityManager
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
 from Acquisition import aq_acquire
@@ -24,7 +23,7 @@ from Acquisition import aq_parent
 from App.config import getConfiguration
 from time import asctime
 from types import StringType, ListType
-from zExceptions import Unauthorized, Redirect
+from zExceptions import Redirect
 from ZODB.POSException import ConflictError
 import transaction
 import AccessControl.User
@@ -33,7 +32,6 @@ import ExtensionClass
 import imp
 import logging
 import OFS.Application
-import os
 import sys
 import ZODB
 import App.ZApplication
@@ -108,8 +106,8 @@ def startup():
     # Set up the "app" object that automagically opens
     # connections
     app = App.ZApplication.ZApplicationWrapper(
-        DB, 'Application', OFS.Application.Application, (),
-        Globals.VersionNameName)
+        DB, 'Application', OFS.Application.Application, ()
+    )
     Zope2.bobo_application = app
 
     # Initialize the app object
@@ -134,20 +132,7 @@ def startup():
 
 
 def validated_hook(request, user):
-    import Globals # to fetch data
     newSecurityManager(request, user)
-    version = request.get(Globals.VersionNameName, '')
-    if version:
-        object = aq_parent(user)
-        if not getSecurityManager().checkPermission(
-            'Join/leave Versions', object):
-            request['RESPONSE'].setCookie(
-                Globals.VersionNameName,'No longer active',
-                expires="Mon, 25-Jan-1999 23:59:59 GMT",
-                path=(request['BASEPATH1'] or '/'),
-                )
-            Zope2.DB.removeVersionPool(version)
-            raise Unauthorized, "You don't have permission to enter versions."
 
 
 class RequestContainer(ExtensionClass.Base):

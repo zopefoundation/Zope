@@ -66,9 +66,6 @@ deprecated("import from OFS.ObjectManager instead",
 del deprecated
 
 DevelopmentMode = False
-VersionNameName='Zope-Version'
 
 # XXX ZODB stashes the main database object here
 opened = []
-
-

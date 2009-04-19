@@ -12,12 +12,11 @@
 #
 ##############################################################################
 
-import os, sys, unittest, tempfile, cStringIO
+import os, unittest, tempfile, cStringIO
 
 from logging import getLogger
 
-import ZODB
-from OFS.Application import Application, AppInitializer, get_products
+from OFS.Application import Application, AppInitializer
 import Zope2.Startup
 import ZConfig
 from App.config import getConfiguration, setConfiguration
@@ -55,7 +54,7 @@ def getSchema():
 def getApp():
     from App.ZApplication import ZApplicationWrapper
     DB = getConfiguration().dbtab.getDatabase('/')
-    return ZApplicationWrapper(DB, 'Application', Application, (), 'foo')()
+    return ZApplicationWrapper(DB, 'Application', Application, ())()
 
 original_config = None
 
