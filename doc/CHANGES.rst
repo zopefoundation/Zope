@@ -6,8 +6,11 @@ Change information for previous versions of Zope can be found in the
 file HISTORY.txt.
 
 
-Trunk
------
+2.12.0a3 (2009-04-19)
+---------------------
+
+The generated tarball for the 2.12.0a2 source release was incomplete, due to
+a setuptools and Subversion 1.6 incompatibility.
 
 Known issues
 ++++++++++++
@@ -29,10 +32,6 @@ Restructuring
 
 - Removed more unused code of the versions support feature including the
   Globals.VersionNameName constant.
-
-Bugs Fixed
-++++++++++
-
 
 2.12.0a2 (2009-04-19)
 ---------------------
