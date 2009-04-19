@@ -6,6 +6,9 @@ Change information for previous versions of Zope can be found in the
 file HISTORY.txt.
 
 
+Trunk
+-----
+
 2.12.0a2 (2009-04-19)
 ---------------------
 
