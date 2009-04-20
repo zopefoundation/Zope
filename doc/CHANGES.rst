@@ -23,6 +23,7 @@ Known issues
 Restructuring
 +++++++++++++
 
+- Updated to zdaemon 2.0.4.
 
 Bugs Fixed
 ++++++++++
