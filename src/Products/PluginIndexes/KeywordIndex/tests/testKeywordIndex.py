@@ -148,9 +148,7 @@ class TestKeywordIndex( unittest.TestCase ):
             kw = sortedUnique(v.foo())
             self.assertEqual(entry, kw)
 
-        assert (len( self._index.uniqueValues( 'foo' ) ) == len( values )-1,
-                len(values)-1)
-
+        assert len( self._index.uniqueValues( 'foo' ) ) == len( values )-1
         assert self._index._apply_index( self._noop_req ) is None
 
         self._checkApply( self._all_req, values[:-1])
