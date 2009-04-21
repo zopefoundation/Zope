@@ -9,16 +9,8 @@ import sys
 from xmlrpclib import Server
 from ConfigParser import ConfigParser
 
-CP = ConfigParser()
-CP.read(['versions.cfg'])
 
-server = Server('http://pypi.python.org/pypi')
-links = list()
-
-dirname = sys.argv[1]
-
-for package in CP.options('versions'):
-    version = CP.get('versions', package)
+def write_index(package, version):
     print >>sys.stderr, 'Package %s==%s' % (package, version)
     dest_dir = os.path.join(dirname, package)
     if not os.path.exists(dest_dir):
@@ -33,3 +25,16 @@ for package in CP.options('versions'):
         print >>fp, '<br/>'
     print >>fp, '</body></html>'
     fp.close()
+
+CP = ConfigParser()
+CP.read(['versions.cfg'])
+
+server = Server('http://pypi.python.org/pypi')
+links = list()
+dirname = sys.argv[1]
+
+write_index('Zope2', '2.12.0a3')
+
+for package in CP.options('versions'):
+    version = CP.get('versions', package)
+    write_index(package, version)
