@@ -22,7 +22,10 @@ def write_index(package, version):
 
     fp = file(index_html, 'w')
     print >>fp, '<html><body>'
-    for d in server.package_urls(package, version):
+    lst = server.package_urls(package, version)
+    if not lst:
+        raise RuntimeError('Package contains no release files: %s==%s' % (package, version))
+    for d in lst:
         link = '<a href="%s">%s</a>' % (d['url'], d['filename'])
         print >>fp, link
         print >>fp, '<br/>'
