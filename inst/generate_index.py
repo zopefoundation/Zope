@@ -6,6 +6,7 @@ in combination with easy_install -i <some_url>
 
 import os
 import sys
+import urlparse
 from xmlrpclib import Server
 from ConfigParser import RawConfigParser as ConfigParser
 
@@ -23,12 +24,19 @@ def write_index(package, version):
     fp = file(index_html, 'w')
     print >>fp, '<html><body>'
     lst = server.package_urls(package, version)
-    if not lst:
-        raise RuntimeError('Package contains no release files: %s==%s' % (package, version))
-    for d in lst:
-        link = '<a href="%s">%s</a>' % (d['url'], d['filename'])
+    if lst:
+        for d in lst:
+            link = '<a href="%s">%s</a>' % (d['url'], d['filename'])
+            print >>fp, link
+            print >>fp, '<br/>'
+    else:
+        rel_data = server.release_data(package, version)
+        download_url = rel_data['download_url']
+        filename = os.path.basename(urlparse.urlparse(download_url)[2])
+        link = '<a href="%s">%s</a>' % (download_url, filename)
         print >>fp, link
         print >>fp, '<br/>'
+
     print >>fp, '</body></html>'
     fp.close()
 
