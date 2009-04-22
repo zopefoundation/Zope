@@ -25,17 +25,19 @@ def write_index(package, version):
     print >>fp, '<html><body>'
     lst = server.package_urls(package, version)
     if lst:
+        # package hosted on PyPI
         for d in lst:
             link = '<a href="%s">%s</a>' % (d['url'], d['filename'])
             print >>fp, link
             print >>fp, '<br/>'
     else:
+        # for externally hosted packages we need to rely on the 
+        # download_url metadata
         rel_data = server.release_data(package, version)
         download_url = rel_data['download_url']
         filename = os.path.basename(urlparse.urlparse(download_url)[2])
         link = '<a href="%s">%s</a>' % (download_url, filename)
         print >>fp, link
-        print >>fp, '<br/>'
 
     print >>fp, '</body></html>'
     fp.close()
