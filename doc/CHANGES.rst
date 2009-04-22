@@ -25,6 +25,8 @@ Restructuring
 
 - Updated to zdaemon 2.0.4.
 
+- Removed unused `Zope2.Startup.start_zope` function
+
 Bugs Fixed
 ++++++++++
 

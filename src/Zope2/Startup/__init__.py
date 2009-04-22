@@ -43,23 +43,6 @@ def get_starter():
     else:
         return UnixZopeStarter()
 
-def start_zope(cfg, debug_handler):
-    """The function called by run.py which starts a Zope appserver."""
-    global started
-    if started:
-        # Don't allow any code to call start_zope() twice.
-        return
-
-    starter = get_starter()
-    starter.setConfiguration(cfg)
-    starter.prepare()
-
-    started = True
-    try:
-        starter.run()
-    finally:
-        started = False
-
 
 class ZopeStarter:
     """This is a class which starts a Zope server.
