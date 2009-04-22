@@ -7,8 +7,10 @@ in combination with easy_install -i <some_url>
 import os
 import sys
 from xmlrpclib import Server
-from ConfigParser import ConfigParser
+from ConfigParser import RawConfigParser as ConfigParser
 
+# packages containing upper-case letters
+upper_names = ('ClientForm', 'RestrictedPython', 'ZConfig', 'ZODB3') 
 
 def write_index(package, version):
     print >>sys.stderr, 'Package %s==%s' % (package, version)
@@ -36,5 +38,12 @@ dirname = sys.argv[1]
 write_index('Zope2', '2.12.0a3')
 
 for package in CP.options('versions'):
+
+    # options() returns all options in lowercase but
+    # we must preserve the case for package names
+    for name in upper_names:
+        if name.lower() == package:
+            package = name
+            break
     version = CP.get('versions', package)
     write_index(package, version)
