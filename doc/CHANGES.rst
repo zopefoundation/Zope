@@ -6,32 +6,14 @@ Change information for previous versions of Zope can be found in the
 file HISTORY.txt.
 
 
-trunk (unreleased)
-------------------
-
-Known issues
-++++++++++++
-
-- Running Zope on Windows is not yet supported in this alpha release.
-  More specifically the generated startup scripts need to be adjusted,
-  while the code itself should work fine.
-
-- ZODB 3.9.0a12 does not work on Windows with Python 2.6 yet.
-
-- easy_install support not fully functional yet.
-
-Restructuring
-+++++++++++++
-
-- Updated to zdaemon 2.0.4.
-
-- Removed unused `Zope2.Startup.start_zope` function
+2.12.0a4 (2009-04-24)
+---------------------
 
 Bugs Fixed
 ++++++++++
 
-- Launchpad #363780:  preserve request interfaces and class, as well as
-  response class, when cloning an HTTPRequest.
+- fixed versions.cfg in order to support zope.z2release for 
+  creating a proper index structure
 
 2.12.0a3 (2009-04-19)
 ---------------------
