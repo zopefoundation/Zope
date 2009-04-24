@@ -37,6 +37,8 @@ Mailing list
 ============
 
 You can contact and discuss Zope2 on the Zope mailing list (zope@zope.org).
-To subscribe to the list send mail to zope-request@zope.org with "subscribe"
+To subscribe to the list send mail to zope-request@zope.org with ``subscribe``
 in the subject line.
 
+You can also subscribe online from here:
+http://mail.zope.org/mailman/listinfo/zope
