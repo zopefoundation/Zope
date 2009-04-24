@@ -44,14 +44,11 @@ script to finish building Zope::
 Installing Zope using easy_install
 ----------------------------------
 
-.. note:: Installation using ``easy_install`` is not fully supported
-      right now
-
 Zope can be installed using ``easy_install`` either using a global
 easy_install installation or within a virtualized Python environment
 (using ``virtualenv``)::
 
-  $ /path/to/easy_install Zope2
+  $ /path/to/easy_install -i http://download.zope.org/Zope2/index/<Zope version> Zope2
 
 This will create the related scripts like ``mkzopeinstance`` within the
 ``bin`` folder of you global or virtualized Python environment.
