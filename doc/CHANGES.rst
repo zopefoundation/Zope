@@ -5,10 +5,8 @@ This file contains change information for the current Zope release.
 Change information for previous versions of Zope can be found in the
 file HISTORY.txt.
 
-
 Trunk (unreleased)
 ------------------
-
 
 2.12.0a4 (2009-04-24)
 ---------------------
@@ -24,6 +22,17 @@ Bugs Fixed
 
 The generated tarball for the 2.12.0a2 source release was incomplete, due to
 a setuptools and Subversion 1.6 incompatibility.
+
+Known issues
+++++++++++++
+
+- Running Zope on Windows is not yet supported in this alpha release.
+  More specifically the generated startup scripts need to be adjusted,
+  while the code itself should work fine.
+
+- ZODB 3.9.0a12 does not work on Windows with Python 2.6 yet.
+
+- easy_install support not fully functional yet.
 
 Restructuring
 +++++++++++++
