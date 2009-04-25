@@ -8,6 +8,12 @@ file HISTORY.txt.
 Trunk (unreleased)
 ------------------
 
+Bugs Fixed
+++++++++++
+
+- ZPublisher response.setBody: don't append Accept-Encoding to Vary header if
+  it is already present - this can make cache configuration difficult.
+
 2.12.0a4 (2009-04-24)
 ---------------------
 
