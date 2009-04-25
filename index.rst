@@ -8,6 +8,7 @@ Zope 2 related documentation and articles
    zope2book/source/index
    zdgbook/source/index
    articles/index
+   zodbguide/index
 
 Release information
 ===================
