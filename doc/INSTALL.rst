@@ -56,6 +56,9 @@ easy_install installation or within a virtualized Python environment
 This will create the related scripts like ``mkzopeinstance`` within the
 ``bin`` folder of you global or virtualized Python environment.
 
+Using ``virtualenv`` is **highly recommended**. Otherwise you may encounter
+unexpected conflicts with already installed packages.
+
 
 Creating a Zope Instance
 ------------------------
