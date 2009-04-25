@@ -385,7 +385,7 @@ machines.
 
 ZODB Resources
 
-- `Andrew Kuchling's "ZODB pages" <http://www.amk.ca/zodb/>`_
+- `Andrew Kuchling's "ZODB pages" <http://web.archive.org/web/20030606003753/http://amk.ca/zodb/>`_ (archived)
 
 - `Zope.org "ZODB Wiki" <http://www.zope.org/Wikis/ZODB/FrontPage>`_
 
