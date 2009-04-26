@@ -518,7 +518,7 @@ class TestBaseRequestZope3Views(unittest.TestCase, BaseRequest_factory):
 
     def _setDefaultViewName(self, name):
         from zope.component import getGlobalSiteManager
-        from zope.component.interfaces import IDefaultViewName
+        from zope.publisher.interfaces import IDefaultViewName
         from zope.publisher.browser import IBrowserRequest
         gsm = getGlobalSiteManager()
         gsm.registerAdapter(name, (self._dummyInterface(), IBrowserRequest),

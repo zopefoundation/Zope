@@ -16,14 +16,15 @@ import sys
 import unittest
 import logging
 
+from zope.interface.common.interfaces import IException
+from zope.publisher.skinnable import setDefaultSkin
 from zope.publisher.interfaces import INotFound
 from zope.security.interfaces import IUnauthorized
 from zope.security.interfaces import IForbidden
-from zope.interface.common.interfaces import IException
 
 from zope.app.testing import ztapi
 from zope.app.testing.placelesssetup import PlacelessSetup
-from zope.publisher.browser import setDefaultSkin
+
 
 class ExceptionHookTestCase(unittest.TestCase):
 
@@ -162,7 +163,6 @@ class ExceptionHookTest(ExceptionHookTestCase):
             getConfiguration().conflict_error_log_level = old_value
 
     def testConflictErrorCount(self):
-        from ZPublisher import Retry
         from ZODB.POSException import ConflictError
         def f():
             raise ConflictError
@@ -397,7 +397,6 @@ class ExceptionViewsTest(PlacelessSetup, ExceptionHookTestCase):
         self.failUnless("Exception View: InternalError" in str(v), v)
 
     def testRedirectNoExceptionView(self):
-        from ZPublisher.HTTPResponse import HTTPResponse
         from zExceptions import Redirect
         ztapi.browserView(IException, u'index.html', CustomExceptionView)
         def f():

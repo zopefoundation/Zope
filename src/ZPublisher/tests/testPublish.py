@@ -1,5 +1,7 @@
-from zope.publisher.browser import setDefaultSkin
+from zope.interface import implements
 from zope.publisher.interfaces.browser import IDefaultBrowserLayer
+from zope.publisher.interfaces.browser import IBrowserRequest
+from zope.publisher.skinnable import setDefaultSkin
 from ZPublisher import Retry
 from ZODB.POSException import ConflictError
 
@@ -88,6 +90,8 @@ class Response:
 class Request:
     """Mock Request to replace ZPublisher.HTTPRequest.HTTPRequest.
     """
+
+    implements(IBrowserRequest)
 
     args = ()
 

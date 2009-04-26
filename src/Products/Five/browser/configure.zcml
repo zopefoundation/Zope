@@ -2,10 +2,6 @@
            xmlns:browser="http://namespaces.zope.org/browser">
 
   <interface
-      interface="zope.publisher.interfaces.browser.IBrowserSkinType"
-      />
-
-  <interface
       interface="zope.app.publisher.interfaces.browser.IMenuItemType"
       />
 

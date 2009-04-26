@@ -6,6 +6,7 @@
   <include file="i18n.zcml" />
   <include file="event.zcml"/>
   <include file="deprecated.zcml"/>
+  <include file="publisher.zcml"/>
   <include file="traversing.zcml"/>
   <include package=".component" />
   <include package=".browser" />

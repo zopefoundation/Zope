@@ -21,7 +21,8 @@ from Request import Request
 from maybe_lock import allocate_lock
 from mapply import mapply
 from zExceptions import Redirect
-from zope.publisher.browser import setDefaultSkin
+from zope.publisher.interfaces import ISkinnable
+from zope.publisher.skinnable import setDefaultSkin
 from zope.security.management import newInteraction, endInteraction
 
 class Retry(Exception):
@@ -164,8 +165,10 @@ def publish(request, module_name, after_list, debug=0,
             # Only reachable if Retry is raised and request supports retry.
             newrequest=request.retry()
             request.close()  # Free resources held by the request.
+
             # Set the default layer/skin on the newly generated request
-            setDefaultSkin(newrequest)
+            if ISkinnable.providedBy(newrequest):
+                setDefaultSkin(newrequest)
             try:
                 return publish(newrequest, module_name, after_list, debug)
             finally:
@@ -199,7 +202,8 @@ def publish_module_standard(module_name,
             # make sure that the request we hand over has the
             # default layer/skin set on it; subsequent code that
             # wants to look up views will likely depend on it
-            setDefaultSkin(request)
+            if ISkinnable.providedBy(request):
+                setDefaultSkin(request)
 
             response = publish(request, module_name, after_list, debug=debug)
         except SystemExit, v:

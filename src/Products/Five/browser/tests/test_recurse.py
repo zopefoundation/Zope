@@ -43,7 +43,7 @@ def test_recursion():
 
       >>> from zope.component import provideAdapter
       >>> from zope.publisher.interfaces.browser import IBrowserRequest
-      >>> from zope.component.interfaces import IDefaultViewName
+      >>> from zope.publisher.interfaces import IDefaultViewName
       >>> provideAdapter(u'view', (IRecurse, IBrowserRequest), IDefaultViewName)
 
     Here comes the actual test:

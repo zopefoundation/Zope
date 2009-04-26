@@ -1,0 +1,23 @@
+<configure xmlns="http://namespaces.zope.org/zope">
+
+  <interface interface="zope.publisher.interfaces.browser.IBrowserSkinType" />
+
+  <interface
+      interface="zope.publisher.interfaces.browser.IDefaultBrowserLayer"
+      type="zope.publisher.interfaces.browser.IBrowserSkinType"
+      />
+
+  <class class="ZPublisher.HTTPRequest.HTTPRequest">
+    <implements
+        interface="zope.annotation.interfaces.IAttributeAnnotatable"
+        />
+  </class>
+
+  <adapter
+      name="default"
+      factory="zope.publisher.browser.getDefaultSkin"
+      for="zope.publisher.interfaces.browser.IBrowserRequest"
+      provides="zope.publisher.interfaces.IDefaultSkin"
+      />
+
+</configure>

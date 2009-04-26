@@ -16,21 +16,17 @@ $Id$
 """
 from urllib import quote as urllib_quote
 import xmlrpc
-from zExceptions import Forbidden, Unauthorized, NotFound
+from zExceptions import Forbidden, NotFound
 from Acquisition import aq_base
 from Acquisition.interfaces import IAcquirer
 
-from zope.interface import implements, providedBy, Interface
+from zope.interface import implements, Interface
 from zope.component import queryMultiAdapter
-from zope.component import getSiteManager
-from zope.component.interfaces import ComponentLookupError
 from zope.event import notify
 from zope.app.publication.interfaces import EndRequestEvent
 from zope.app.publisher.browser import queryDefaultViewName
 from zope.publisher.interfaces import IPublishTraverse
-from zope.component.interfaces import IDefaultViewName
 from zope.publisher.interfaces.browser import IBrowserPublisher
-from zope.publisher.interfaces.browser import IBrowserRequest
 from zope.traversing.interfaces import TraversalError
 from zope.traversing.namespace import nsParse, namespaceLookup
 
@@ -42,6 +38,7 @@ def quote(text):
 
 try:
     from ExtensionClass import Base
+    from ZPublisher.Converters import type_converters
     class RequestContainer(Base):
         __roles__=None
         def __init__(self,**kw):

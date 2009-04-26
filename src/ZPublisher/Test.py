@@ -195,8 +195,10 @@ def publish_module(module_name,
                 # make sure that the request we hand over has the
                 # default layer/skin set on it; subsequent code that
                 # wants to look up views will likely depend on it
-                from zope.publisher.browser import setDefaultSkin
-                setDefaultSkin(request)
+                from zope.publisher.interfaces import ISkinnable
+                from zope.publisher.skinnable import setDefaultSkin
+                if ISkinnable.providedBy(request):
+                    setDefaultSkin(request)
 
             for k, v in extra.items(): request[k]=v
             response = publish(request, module_name, after_list, debug=debug)
