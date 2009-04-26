@@ -16,6 +16,9 @@ Zope Changes
 
     Restructuring
 
+      - Updated to include all new versions from the final Zope 3.4.0 release
+        (http://download.zope.org/zope3.4/3.4.0/).
+
       - Added 'InitializeClass' alias in 'App.class_init' to ease migration.
         In Zope 2.12 it will be recommended to import 'InitializeClass' from
         'App.class_init' instead of 'Globals'.
