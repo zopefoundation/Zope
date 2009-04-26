@@ -180,6 +180,20 @@ class HTTPResponseTests(unittest.TestCase):
                 'Set-Cookie: '
                 'violation="http://www.ietf.org/rfc/rfc2616.txt"\r\n')
 
+    def test_setBody_compression_vary(self):
+        # Vary header should be added here
+        response = self._makeOne()
+        response.enableHTTPCompression(REQUEST={'HTTP_ACCEPT_ENCODING': 'gzip'})
+        response.setBody('foo'*100) # body must get smaller on compression
+        self.assertEqual('Accept-Encoding' in response.getHeader('Vary'), True)
+        # But here it would be unnecessary
+        response = self._makeOne()
+        response.enableHTTPCompression(REQUEST={'HTTP_ACCEPT_ENCODING': 'gzip'})
+        response.setHeader('Vary', 'Accept-Encoding,Accept-Language')
+        before = response.getHeader('Vary')
+        response.setBody('foo'*100)
+        self.assertEqual(before, response.getHeader('Vary'))
+
 
 def test_suite():
     suite = unittest.TestSuite()
