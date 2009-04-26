@@ -108,7 +108,7 @@ class Functional(sandbox.Sandboxed):
 class ResponseWrapper:
     '''Decorates a response object with additional introspective methods.'''
 
-    _bodyre = re.compile('^$^\n(.*)', re.MULTILINE | re.DOTALL)
+    _bodyre = re.compile('\r\n\r\n(.*)', re.MULTILINE | re.DOTALL)
 
     def __init__(self, response, outstream, path):
         self._response = response

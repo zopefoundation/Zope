@@ -221,7 +221,7 @@ class HTTPResponse(BaseResponse):
             # It has already been determined.
             return
 
-        if (isinstance(status, types.ClassType)
+        if (isinstance(status, (type, types.ClassType))
          and issubclass(status, Exception)):
             status = status.__name__
 
@@ -246,17 +246,18 @@ class HTTPResponse(BaseResponse):
         if lock:
              self._locked_status = 1
 
-    def setHeader(self, name, value, literal=0):
+    def setHeader(self, name, value, literal=0, scrubbed=False):
         '''\
         Sets an HTTP return header "name" with value "value", clearing
         the previous value set for the header, if one exists. If the
         literal flag is true, the case of the header name is preserved,
         otherwise the header name will be lowercased.'''
-        name, value = _scrubHeader(name, value)
+        if not scrubbed:
+            name, value = _scrubHeader(name, value)
         key = name.lower()
         if accumulate_header(key):
             self.accumulated_headers = (
-                "%s%s: %s\n" % (self.accumulated_headers, name, value))
+                "%s%s: %s\r\n" % (self.accumulated_headers, name, value))
             return
         name = literal and name or key
         self.headers[name] = value
@@ -279,7 +280,7 @@ class HTTPResponse(BaseResponse):
         any previously set headers with the same name.'''
         name, value = _scrubHeader(name, value)
         self.accumulated_headers = (
-            "%s%s: %s\n" % (self.accumulated_headers, name, value))
+            "%s%s: %s\r\n" % (self.accumulated_headers, name, value))
 
     __setitem__ = setHeader
 
@@ -592,10 +593,10 @@ class HTTPResponse(BaseResponse):
         headers = self.headers
         if headers.has_key(name):
             h = headers[name]
-            h = "%s%s\n\t%s" % (h,delimiter,value)
+            h = "%s%s\r\n\t%s" % (h,delimiter,value)
         else:
             h = value
-        self.setHeader(name,h)
+        self.setHeader(name,h, scrubbed=True)
 
     def isHTML(self, s):
         s = s.lstrip()
@@ -894,7 +895,7 @@ class HTTPResponse(BaseResponse):
         if self.cookies:
             headersl = headersl+self._cookie_list()
         headersl[len(headersl):] = [self.accumulated_headers, body]
-        return '\n'.join(headersl)
+        return '\r\n'.join(headersl)
 
     def write(self,data):
         """\

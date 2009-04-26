@@ -102,7 +102,7 @@ class TestRequestRange(unittest.TestCase):
 
         # Chop off any printed headers (only when response.write was used)
         if body:
-            body = string.split(body, '\n\n', 1)[1]
+            body = string.split(body, '\r\n\r\n', 1)[1]
 
         return body + rv
 
