@@ -53,7 +53,7 @@ def test_get_widgets_for_schema_fields():
 
     Clean up:
 
-      >>> from zope.app.testing.placelesssetup import tearDown
+      >>> from zope.component.testing import tearDown
       >>> tearDown()
     """
 

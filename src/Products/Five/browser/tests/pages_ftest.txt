@@ -156,5 +156,5 @@ or a __call__ object that's callable, such as a ViewPageTemplateFile:
 Clean up
 --------
 
-  >>> from zope.app.testing.placelesssetup import tearDown
+  >>> from zope.component.testing import tearDown
   >>> tearDown()

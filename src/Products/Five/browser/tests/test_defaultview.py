@@ -81,7 +81,7 @@ def test_default_view():
 
     Clean up:
 
-      >>> from zope.app.testing.placelesssetup import tearDown
+      >>> from zope.component.testing import tearDown
       >>> tearDown()
     """
 

@@ -16,14 +16,12 @@ import sys
 import unittest
 import logging
 
+from zope.component.testing import PlacelessSetup
 from zope.interface.common.interfaces import IException
 from zope.publisher.skinnable import setDefaultSkin
 from zope.publisher.interfaces import INotFound
 from zope.security.interfaces import IUnauthorized
 from zope.security.interfaces import IForbidden
-
-from zope.app.testing import ztapi
-from zope.app.testing.placelesssetup import PlacelessSetup
 
 
 class ExceptionHookTestCase(unittest.TestCase):
@@ -329,12 +327,24 @@ class CustomExceptionView:
     def __call__(self):
         return "Exception View: %s" % self.context.__class__.__name__
 
+def registerExceptionView(for_):
+    from zope.interface import Interface
+    from zope.component import getGlobalSiteManager
+    from zope.publisher.interfaces.browser import IDefaultBrowserLayer
+    gsm = getGlobalSiteManager()
+    gsm.registerAdapter(
+        CustomExceptionView,
+        required=(for_, IDefaultBrowserLayer),
+        provided=Interface,
+        name=u'index.html',
+    )
+
 class ExceptionViewsTest(PlacelessSetup, ExceptionHookTestCase):
 
     def testCustomExceptionViewUnauthorized(self):
         from ZPublisher.HTTPResponse import HTTPResponse
         from AccessControl import Unauthorized
-        ztapi.browserView(IUnauthorized, u'index.html', CustomExceptionView)
+        registerExceptionView(IUnauthorized)
         def f():
             raise Unauthorized, 1
         request = self._makeRequest()
@@ -347,7 +357,7 @@ class ExceptionViewsTest(PlacelessSetup, ExceptionHookTestCase):
     def testCustomExceptionViewForbidden(self):
         from ZPublisher.HTTPResponse import HTTPResponse
         from zExceptions import Forbidden
-        ztapi.browserView(IForbidden, u'index.html', CustomExceptionView)
+        registerExceptionView(IForbidden)
         def f():
             raise Forbidden, "argh"
         request = self._makeRequest()
@@ -360,7 +370,7 @@ class ExceptionViewsTest(PlacelessSetup, ExceptionHookTestCase):
     def testCustomExceptionViewNotFound(self):
         from ZPublisher.HTTPResponse import HTTPResponse
         from zExceptions import NotFound
-        ztapi.browserView(INotFound, u'index.html', CustomExceptionView)
+        registerExceptionView(INotFound)
         def f():
             raise NotFound, "argh"
         request = self._makeRequest()
@@ -373,7 +383,7 @@ class ExceptionViewsTest(PlacelessSetup, ExceptionHookTestCase):
     def testCustomExceptionViewBadRequest(self):
         from ZPublisher.HTTPResponse import HTTPResponse
         from zExceptions import BadRequest
-        ztapi.browserView(IException, u'index.html', CustomExceptionView)
+        registerExceptionView(IException)
         def f():
             raise BadRequest, "argh"
         request = self._makeRequest()
@@ -386,7 +396,7 @@ class ExceptionViewsTest(PlacelessSetup, ExceptionHookTestCase):
     def testCustomExceptionViewInternalError(self):
         from ZPublisher.HTTPResponse import HTTPResponse
         from zExceptions import InternalError
-        ztapi.browserView(IException, u'index.html', CustomExceptionView)
+        registerExceptionView(IException)
         def f():
             raise InternalError, "argh"
         request = self._makeRequest()
@@ -398,7 +408,7 @@ class ExceptionViewsTest(PlacelessSetup, ExceptionHookTestCase):
 
     def testRedirectNoExceptionView(self):
         from zExceptions import Redirect
-        ztapi.browserView(IException, u'index.html', CustomExceptionView)
+        registerExceptionView(IException)
         def f():
             raise Redirect, "http://zope.org/"
         request = self._makeRequest()

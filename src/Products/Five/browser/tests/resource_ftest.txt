@@ -130,5 +130,5 @@ We also can traverse into sub-directories:
 Clean up
 --------
 
-  >>> from zope.app.testing.placelesssetup import tearDown
+  >>> from zope.component.testing import tearDown
   >>> tearDown()

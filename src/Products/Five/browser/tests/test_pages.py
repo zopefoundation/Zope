@@ -61,7 +61,7 @@ def test_view_with_unwrapped_context():
 
     Clean up:
 
-    >>> from zope.app.testing.placelesssetup import tearDown
+    >>> from zope.component.testing import tearDown
     >>> tearDown()
     """
 

@@ -18,7 +18,7 @@ $Id$
 
 def test_boilerplate():
     """
-      >>> from zope.app.testing.placelesssetup import setUp, tearDown
+      >>> from zope.component.testing import setUp, tearDown
       >>> setUp()
 
       >>> import Products.Five.tests

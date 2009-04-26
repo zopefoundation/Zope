@@ -361,6 +361,18 @@ links into HTML headers, since those two are so very common. I am only going
 to demonstrate the helper functions here, since those demonstrations will
 fully demonstrate the functionality of the base classes as well.
 
+  >>> from zope.interface import Interface
+  >>> from zope.component import getGlobalSiteManager
+  >>> from zope.publisher.interfaces.browser import IDefaultBrowserLayer
+  >>> def registerResource(name, factory):
+  ...     gsm = getGlobalSiteManager()
+  ...     gsm.registerAdapter(
+  ...         factory,
+  ...         required=(IDefaultBrowserLayer, ),
+  ...         provided=Interface,
+  ...         name=name,
+  ...     )
+
 The viewlet will look up the resource it was given and tries to produce the
 absolute URL for it:
 
@@ -371,8 +383,7 @@ absolute URL for it:
   ...     def __call__(self):
   ...         return '/@@/resource.js'
 
-  >>> from zope.app.testing import ztapi
-  >>> ztapi.browserResource('resource.js', JSResource)
+  >>> registerResource('resource.js', JSResource)
   >>> JSViewlet = viewlet.JavaScriptViewlet('resource.js')
   >>> print JSViewlet(content, request, view, manager).render().strip()
   <script type="text/javascript" src="/@@/resource.js">
@@ -387,7 +398,7 @@ The same works for the CSS resource viewlet:
   ...     def __call__(self):
   ...         return '/@@/resource.css'
 
-  >>> ztapi.browserResource('resource.css', CSSResource)
+  >>> registerResource('resource.css', CSSResource)
 
   >>> CSSViewlet = viewlet.CSSViewlet('resource.css')
   >>> print CSSViewlet(content, request, view, manager).render().strip()

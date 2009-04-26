@@ -544,7 +544,7 @@ def test_traversable():
 
     Clean up:
 
-      >>> from zope.app.testing.placelesssetup import tearDown
+      >>> from zope.component.testing import tearDown
       >>> tearDown()
 
     Verify that after cleanup, there's no cruft left from five:traversable::
@@ -652,7 +652,7 @@ def test_view_doesnt_shadow_attribute():
 
     Clean up:
 
-      >>> from zope.app.testing.placelesssetup import tearDown
+      >>> from zope.component.testing import tearDown
       >>> tearDown()
     """
 

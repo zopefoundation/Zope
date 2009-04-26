@@ -67,7 +67,7 @@ def test_security_equivalence():
     Zope 2 can be replaced by ZCML statements without any loss of
     information.
 
-      >>> from zope.app.testing.placelesssetup import setUp, tearDown
+      >>> from zope.component.testing import setUp, tearDown
       >>> setUp()
 
     We start out with two classes, ``Dummy1`` and ``Dummy2``.  They
@@ -162,7 +162,7 @@ def test_allowed_interface():
     """This test demonstrates that allowed_interface security declarations work
     as expected.
 
-      >>> from zope.app.testing.placelesssetup import setUp, tearDown
+      >>> from zope.component.testing import setUp, tearDown
       >>> setUp()
 
     Before we can make security declarations through ZCML, we need to
@@ -236,7 +236,7 @@ def test_set_warnings():
     Zope 2, but we want to be able to re-use pure Zope 3 packages that use
     them without error.
 
-      >>> from zope.app.testing.placelesssetup import setUp, tearDown
+      >>> from zope.component.testing import setUp, tearDown
       >>> setUp()
 
     Before we can make security declarations through ZCML, we need to
@@ -284,7 +284,7 @@ def test_checkPermission():
     """
     Test checkPermission
 
-      >>> from zope.app.testing.placelesssetup import setUp, tearDown
+      >>> from zope.component.testing import setUp, tearDown
       >>> setUp()
 
     Zope 3 has a function zope.security.checkPermission which provides
@@ -379,7 +379,7 @@ def test_register_permission():
     to create a permission that does not already exist, it is created on 
     startup, with roles defaulting to Manager.
 
-      >>> from zope.app.testing.placelesssetup import setUp, tearDown
+      >>> from Testing.ZopeTestCase.placeless import setUp, tearDown
       >>> setUp()
 
     First, we need to configure the relevant parts of Five.

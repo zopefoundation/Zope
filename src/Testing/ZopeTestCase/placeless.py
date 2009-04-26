@@ -15,7 +15,41 @@
 $Id$
 """
 
-from zope.app.testing.placelesssetup import setUp, tearDown
+from zope.component.testing import PlacelessSetup as CAPlacelessSetup
+from zope.component.eventtesting import PlacelessSetup as EventPlacelessSetup
+from zope.container.testing import PlacelessSetup as ContainerPlacelessSetup
+from zope.i18n.testing import PlacelessSetup as I18nPlacelessSetup
+from zope.security.management import newInteraction
+from zope.security.testing import addCheckerPublic
+
+
+class PlacelessSetup(CAPlacelessSetup,
+                     EventPlacelessSetup,
+                     I18nPlacelessSetup,
+                     ContainerPlacelessSetup):
+
+    def setUp(self, doctesttest=None):
+        CAPlacelessSetup.setUp(self)
+        EventPlacelessSetup.setUp(self)
+        ContainerPlacelessSetup.setUp(self)
+        I18nPlacelessSetup.setUp(self)
+
+        addCheckerPublic()
+        newInteraction()
+
+
+ps = PlacelessSetup()
+setUp = ps.setUp
+
+def tearDown():
+    tearDown_ = ps.tearDown
+    def tearDown(doctesttest=None):
+        tearDown_()
+    return tearDown
+
+tearDown = tearDown()
+
+del ps
 
 # For convenience
 from Products.Five import zcml

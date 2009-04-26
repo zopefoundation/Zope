@@ -50,5 +50,5 @@ Or when we make that skin the default skin:
 Clean up
 --------
 
-  >>> from zope.app.testing.placelesssetup import tearDown
+  >>> from zope.component.testing import tearDown
   >>> tearDown()

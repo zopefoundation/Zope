@@ -8,6 +8,12 @@ file HISTORY.txt.
 Trunk (unreleased)
 ------------------
 
+Restructuring
++++++++++++++
+
+- Removed the dependency on `zope.app.testing` in favor of providing a more
+  minimal placeless setup as part of ZopeTestCase for our own tests.
+
 Bugs Fixed
 ++++++++++
 
@@ -28,17 +34,6 @@ Bugs Fixed
 
 The generated tarball for the 2.12.0a2 source release was incomplete, due to
 a setuptools and Subversion 1.6 incompatibility.
-
-Known issues
-++++++++++++
-
-- Running Zope on Windows is not yet supported in this alpha release.
-  More specifically the generated startup scripts need to be adjusted,
-  while the code itself should work fine.
-
-- ZODB 3.9.0a12 does not work on Windows with Python 2.6 yet.
-
-- easy_install support not fully functional yet.
 
 Restructuring
 +++++++++++++

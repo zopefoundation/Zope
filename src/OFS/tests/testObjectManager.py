@@ -1,6 +1,6 @@
 import unittest
 
-from zope.app.testing.placelesssetup import PlacelessSetup
+from zope.component.testing import PlacelessSetup
 
 from AccessControl.Owned import EmergencyUserCannotOwn
 from AccessControl.SecurityManagement import newSecurityManager

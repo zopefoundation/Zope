@@ -166,7 +166,7 @@ def test_menu():
 
     Clean up:
 
-      >>> from zope.app.testing.placelesssetup import tearDown
+      >>> from zope.component.testing import tearDown
       >>> tearDown()
     """
 

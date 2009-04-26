@@ -19,7 +19,6 @@ __docformat__ = 'restructuredtext'
 
 import unittest
 from Testing.ZopeTestCase import FunctionalDocFileSuite
-from zope.app.testing import setup
 from zope.interface import Interface
 from zope.interface import implements
 from zope.viewlet import interfaces
@@ -77,11 +76,6 @@ class DynamicTempBox(object):
     weight = 0
     city = {'name': 'Los Angeles, CA', 'temp': 78}
 
-def setUp(test):
-    setup.placefulSetUp()
-
-def tearDown(test):
-    setup.placefulTearDown()
 
 def test_suite():
     return unittest.TestSuite([

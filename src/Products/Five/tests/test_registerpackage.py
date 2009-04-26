@@ -26,7 +26,7 @@ def test_registerPackage():
     """
     Testing registerPackage
 
-      >>> from zope.app.testing.placelesssetup import setUp, tearDown
+      >>> from zope.component.testing import setUp, tearDown
       >>> setUp()
       >>> import Products
       >>> import Products.Five

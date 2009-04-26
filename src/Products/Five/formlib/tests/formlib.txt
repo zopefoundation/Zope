@@ -82,5 +82,5 @@ Clean up
 
 Finally, we need to clean up:
 
-  >>> from zope.app.testing.placelesssetup import tearDown
+  >>> from zope.component.testing import tearDown
   >>> tearDown()
