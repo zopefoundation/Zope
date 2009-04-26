@@ -72,10 +72,10 @@ class HTTPResponseTests(unittest.TestCase):
         response = self._makeOne()
         response.setHeader('foo', 'bar')
         response.appendHeader('foo', 'foo')
-        self.assertEqual(response.headers.get('foo'), 'bar,\n\tfoo')
+        self.assertEqual(response.headers.get('foo'), 'bar,\r\n\tfoo')
         response.setHeader('xxx', 'bar')
         response.appendHeader('XXX', 'foo')
-        self.assertEqual(response.headers.get('xxx'), 'bar,\n\tfoo')
+        self.assertEqual(response.headers.get('xxx'), 'bar,\r\n\tfoo')
 
     def test_setHeader(self):
         response = self._makeOne()
@@ -151,7 +151,7 @@ class HTTPResponseTests(unittest.TestCase):
         response.addHeader('Location',
                            'http://www.ietf.org/rfc/\r\nrfc2616.txt')
         self.assertEqual(response.accumulated_headers,
-                         'Location: http://www.ietf.org/rfc/rfc2616.txt\n')
+                         'Location: http://www.ietf.org/rfc/rfc2616.txt\r\n')
 
     def test_appendHeader_drops_CRLF(self):
         # RFC2616 disallows CRLF in a header value.
@@ -176,8 +176,9 @@ class HTTPResponseTests(unittest.TestCase):
         response.setHeader('Set-Cookie',
                        'violation="http://www.ietf.org/rfc/\r\nrfc2616.txt"')
         self.assertEqual(response.accumulated_headers,
-                'Set-Cookie: allowed="OK"\n' +
-                'Set-Cookie: violation="http://www.ietf.org/rfc/rfc2616.txt"\n')
+                'Set-Cookie: allowed="OK"\r\n' +
+                'Set-Cookie: '
+                'violation="http://www.ietf.org/rfc/rfc2616.txt"\r\n')
 
 
 def test_suite():

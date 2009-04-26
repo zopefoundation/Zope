@@ -27,6 +27,9 @@ Zope Changes
 
     Bugs fixed
 
+      - Launchpad #267834: proper separation of HTTP header fields    
+        using CRLF as requested by RFC 2616. (merged 90980, 92625)
+
       - Launchpad #348223: optimize catalog query by breaking out early from
         loop over indexes if the result set is already empty.
 
