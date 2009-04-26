@@ -27,6 +27,10 @@ Zope Changes
 
     Bugs fixed
 
+      - ZPublisher response.setBody: don't append Accept-Encoding to Vary
+        header if it is already present - this can make cache configuration
+        difficult. (merged 99493)
+
       - Launchpad #267834: proper separation of HTTP header fields    
         using CRLF as requested by RFC 2616. (merged 90980, 92625)
 

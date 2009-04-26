@@ -398,7 +398,9 @@ class HTTPResponse(BaseResponse):
                         # was ignored anyway, so cache should not
                         # vary on it. Otherwise if not forced, cache should
                         # respect Accept-Encoding client header
-                        self.appendHeader('Vary','Accept-Encoding')
+                        vary = self.getHeader('Vary')
+                        if vary is None or 'Accept-Encoding' not in vary: 
+                            self.appendHeader('Vary','Accept-Encoding')
         return self
 
     def enableHTTPCompression(self,REQUEST={},force=0,disable=0,query=0):
