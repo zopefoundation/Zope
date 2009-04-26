@@ -11,6 +11,10 @@ Trunk (unreleased)
 Restructuring
 +++++++++++++
 
+- No longer depend on `zope.app.locales`. Zope2 uses almost none of the
+  translations provided in the package and is not required for most projects.
+  The decision to include locales is left to the application developer now.
+
 - Removed the dependency on `zope.app.testing` in favor of providing a more
   minimal placeless setup as part of ZopeTestCase for our own tests.
 
