@@ -25,6 +25,19 @@ Zope Changes
         in third-party code which avoids imports from 'Globals.'  Left
         the class importable from its old location without deprecation.
 
+      - configure script: setting ZOPE_VERS to '2.11'
+
+      - Products.PluginIndexes.PathIndex:  backported doc fixes /
+        optimizations from trunk (and ExtendedPathIndex).
+
+      - Updated 'pytz' from '2007f' to '2008i'.
+
+      - Moved svn:externals for 'mechanize', 'ClientPath', and 'pytz' to
+        versions managed outside the Zope3 trunk.
+
+      - Testing.ZopeTestCase: Remove quota argument from DemoStorage calls in
+        preparation for ZODB 3.9.
+
     Bugs Fixed
 
       - ZPublisher response.setBody: don't append Accept-Encoding to Vary
@@ -52,23 +65,10 @@ Zope Changes
       - Launchpad #324876: tighened regex for detecting the charset
         from a meta-equiv header
 
-      - configure script: setting ZOPE_VERS to '2.11'
-
-      - Acquisition wrappers now correctly proxy __iter__.
-
-      - Products.PluginIndexes.PathIndex:  backported doc fixes /
-        optimizations from trunk (and ExtendedPathIndex).
-
-      - Updated 'pytz' from '2007f' to '2008i'.
-
-      - Moved svn:externals for 'mechanize', 'ClientPath', and 'pytz' to
-        versions managed outside the Zope3 trunk.
-
       - Launchpad #174705:  ensure that the error info object exposed to a
         'tal:on_error' handler has attributes visible to restricted code.
-  
-      - Testing.ZopeTestCase: Remove quota argument from DemoStorage calls in
-        preparation for ZODB 3.9.
+
+      - Acquisition wrappers now correctly proxy __iter__.
 
   Zope 2.11.2 (2008/10/24) 
 
