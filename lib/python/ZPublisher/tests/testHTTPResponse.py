@@ -30,13 +30,91 @@ class HTTPResponseTests(unittest.TestCase):
             response.setStatus(exc_type)
             self.assertEqual(response.status, code)
 
-    def test_setCookie(self):
+    def test_setCookie_no_attrs(self):
         response = self._makeOne()
-        response.setCookie('foo', 'bar', path='/')
+        response.setCookie('foo', 'bar')
+        cookie = response.cookies.get('foo', None)
+        self.assertEqual(len(cookie), 1)
+        self.assertEqual(cookie.get('value'), 'bar')
+
+        cookies = response._cookie_list()
+        self.assertEqual(len(cookies), 1)
+        self.assertEqual(cookies[0], 'Set-Cookie: foo="bar"')
+
+    def test_setCookie_w_expires(self):
+        EXPIRES = 'Wed, 31-Dec-97 23:59:59 GMT'
+        response = self._makeOne()
+        response.setCookie('foo', 'bar', expires=EXPIRES)
         cookie = response.cookies.get('foo', None)
         self.failUnless(cookie)
         self.assertEqual(cookie.get('value'), 'bar')
+        self.assertEqual(cookie.get('expires'), EXPIRES)
+
+        cookies = response._cookie_list()
+        self.assertEqual(len(cookies), 1)
+        self.assertEqual(cookies[0],
+                         'Set-Cookie: foo="bar"; Expires=%s' % EXPIRES)
+
+    def test_setCookie_w_domain(self):
+        response = self._makeOne()
+        response.setCookie('foo', 'bar', domain='example.com')
+        cookie = response.cookies.get('foo', None)
+        self.assertEqual(len(cookie), 2)
+        self.assertEqual(cookie.get('value'), 'bar')
+        self.assertEqual(cookie.get('domain'), 'example.com')
+
+        cookies = response._cookie_list()
+        self.assertEqual(len(cookies), 1)
+        self.assertEqual(cookies[0],
+                         'Set-Cookie: foo="bar"; Domain=example.com')
+
+    def test_setCookie_w_path(self):
+        response = self._makeOne()
+        response.setCookie('foo', 'bar', path='/')
+        cookie = response.cookies.get('foo', None)
+        self.assertEqual(len(cookie), 2)
+        self.assertEqual(cookie.get('value'), 'bar')
         self.assertEqual(cookie.get('path'), '/')
+
+        cookies = response._cookie_list()
+        self.assertEqual(len(cookies), 1)
+        self.assertEqual(cookies[0], 'Set-Cookie: foo="bar"; Path=/')
+
+    def test_setCookie_w_comment(self):
+        response = self._makeOne()
+        response.setCookie('foo', 'bar', comment='COMMENT')
+        cookie = response.cookies.get('foo', None)
+        self.assertEqual(len(cookie), 2)
+        self.assertEqual(cookie.get('value'), 'bar')
+        self.assertEqual(cookie.get('comment'), 'COMMENT')
+
+        cookies = response._cookie_list()
+        self.assertEqual(len(cookies), 1)
+        self.assertEqual(cookies[0], 'Set-Cookie: foo="bar"; Comment=COMMENT')
+
+    def test_setCookie_w_secure_true_value(self):
+        response = self._makeOne()
+        response.setCookie('foo', 'bar', secure='SECURE')
+        cookie = response.cookies.get('foo', None)
+        self.assertEqual(len(cookie), 2)
+        self.assertEqual(cookie.get('value'), 'bar')
+        self.assertEqual(cookie.get('secure'), 'SECURE')
+
+        cookies = response._cookie_list()
+        self.assertEqual(len(cookies), 1)
+        self.assertEqual(cookies[0], 'Set-Cookie: foo="bar"; Secure')
+
+    def test_setCookie_w_secure_false_value(self):
+        response = self._makeOne()
+        response.setCookie('foo', 'bar', secure='')
+        cookie = response.cookies.get('foo', None)
+        self.assertEqual(len(cookie), 2)
+        self.assertEqual(cookie.get('value'), 'bar')
+        self.assertEqual(cookie.get('secure'), '')
+
+        cookies = response._cookie_list()
+        self.assertEqual(len(cookies), 1)
+        self.assertEqual(cookies[0], 'Set-Cookie: foo="bar"')
 
     def test_expireCookie(self):
         response = self._makeOne()
