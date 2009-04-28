@@ -857,6 +857,10 @@ class HTTPResponse(BaseResponse):
                     cookie = '%s; Comment=%s' % (cookie,v)
                 elif name == 'secure' and v:
                     cookie = '%s; Secure' % cookie
+                # Some browsers recognize this cookie attribute
+                # and block read/write access via JavaScript
+                elif name == 'http_only' and v:
+                    cookie = '%s; HTTPOnly' % cookie
             cookie_list.append(cookie)
 
         # Should really check size of cookies here!

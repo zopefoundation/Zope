@@ -18,6 +18,13 @@ Restructuring
 - Removed the dependency on `zope.app.testing` in favor of providing a more
   minimal placeless setup as part of ZopeTestCase for our own tests.
 
+Features Added
+++++++++++++++
+
+- Addeed support for an optional 'HTTPOnly' attribute of cookies (see
+  http://www.owasp.org/index.php/HTTPOnly).  Patch from Stephan Hofmockel,
+  via https://bugs.launchpad.net/zope2/+bug/367393 .
+
 Bugs Fixed
 ++++++++++
 

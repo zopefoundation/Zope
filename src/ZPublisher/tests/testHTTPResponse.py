@@ -125,6 +125,30 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(cookie.get('max_age'), 0)
         self.assertEqual(cookie.get('path'), '/')
 
+    def test_setCookie_w_httponly_true_value(self):
+        response = self._makeOne()
+        response.setCookie('foo', 'bar', http_only=True)
+        cookie = response.cookies.get('foo', None)
+        self.assertEqual(len(cookie), 2)
+        self.assertEqual(cookie.get('value'), 'bar')
+        self.assertEqual(cookie.get('http_only'), True)
+
+        cookie_list = response._cookie_list()
+        self.assertEqual(len(cookie_list), 1)
+        self.assertEqual(cookie_list[0], 'Set-Cookie: foo="bar"; HTTPOnly')
+
+    def test_setCookie_w_httponly_false_value(self):
+        response = self._makeOne()
+        response.setCookie('foo', 'bar', http_only=False)
+        cookie = response.cookies.get('foo', None)
+        self.assertEqual(len(cookie), 2)
+        self.assertEqual(cookie.get('value'), 'bar')
+        self.assertEqual(cookie.get('http_only'), False)
+
+        cookie_list = response._cookie_list()
+        self.assertEqual(len(cookie_list), 1)
+        self.assertEqual(cookie_list[0], 'Set-Cookie: foo="bar"')
+
     def test_expireCookie1160(self):
         # Verify that the cookie is expired even if an expires kw arg is passed
         # http://zope.org/Collectors/Zope/1160
