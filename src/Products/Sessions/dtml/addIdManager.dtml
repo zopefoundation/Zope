@@ -150,6 +150,16 @@ by interacting with the Zope sessioning machinery.
     <INPUT TYPE="checkbox" NAME="cookiesecure">
   </TD>
 </TR>
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <div class="form-label">
+      Make cookie not aviable from JavaScript
+    </div>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <INPUT TYPE="checkbox" NAME="cookiehttponly">
+  </TD>
+</TR>
 
 
 </TR> <TR> <TD></TD> <TD>

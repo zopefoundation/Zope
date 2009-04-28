@@ -134,6 +134,19 @@
      <dtml-if getCookieSecure>CHECKED</dtml-if>>
   </TD>
 </TR>
+
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <div class="form-label">
+      Make cookie not aviable from JavaScript 
+    </div>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <INPUT TYPE="checkbox" NAME="cookiehttponly"
+     <dtml-if getCookieHTTPOnly>CHECKED</dtml-if>>
+  </TD>
+</TR>
+
 <TR>
   <TD></TD>
   <TD><BR><INPUT class="form-element" TYPE="SUBMIT" VALUE=" Change "></TD>
@@ -141,4 +154,3 @@
 </TABLE>
 </FORM>
 <dtml-var manage_page_footer>
-

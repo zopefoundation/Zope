@@ -70,12 +70,13 @@ LOG = logging.getLogger('Zope.BrowserIdManager')
 def constructBrowserIdManager(
     self, id=BROWSERID_MANAGER_NAME, title='', idname='_ZopeId',
     location=('cookies', 'form'), cookiepath='/', cookiedomain='',
-    cookielifedays=0, cookiesecure=0, auto_url_encoding=0, REQUEST=None
+    cookielifedays=0, cookiesecure=0, cookiehttponly=0, auto_url_encoding=0,
+    REQUEST=None
     ):
     """ """
     ob = BrowserIdManager(id, title, idname, location, cookiepath,
                           cookiedomain, cookielifedays, cookiesecure,
-                          auto_url_encoding)
+                          cookiehttponly, auto_url_encoding)
     self._setObject(id, ob)
     ob = self._getOb(id)
     if REQUEST is not None:
@@ -115,7 +116,7 @@ class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
     def __init__(self, id, title='', idname='_ZopeId',
                  location=('cookies', 'form'), cookiepath=('/'),
                  cookiedomain='', cookielifedays=0, cookiesecure=0,
-                 auto_url_encoding=0):
+                 cookiehttponly=0, auto_url_encoding=0):
         self.id = str(id)
         self.title = str(title)
         self.setBrowserIdName(idname)
@@ -124,6 +125,7 @@ class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
         self.setCookieDomain(cookiedomain)
         self.setCookieLifeDays(cookielifedays)
         self.setCookieSecure(cookiesecure)
+        self.setCookieHTTPOnly(cookiehttponly)
         self.setAutoUrlEncoding(auto_url_encoding)
 
     def manage_afterAdd(self, item, container):
@@ -278,7 +280,7 @@ class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
     def manage_changeBrowserIdManager(
         self, title='', idname='_ZopeId', location=('cookies', 'form'),
         cookiepath='/', cookiedomain='', cookielifedays=0, cookiesecure=0,
-        auto_url_encoding=0, REQUEST=None
+        cookiehttponly=0, auto_url_encoding=0,  REQUEST=None
         ):
         """ """
         self.title = str(title)
@@ -287,6 +289,7 @@ class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
         self.setCookieDomain(cookiedomain)
         self.setCookieLifeDays(cookielifedays)
         self.setCookieSecure(cookiesecure)
+        self.setCookieHTTPOnly(cookiehttponly)
         self.setBrowserIdNamespaces(location)
         self.setAutoUrlEncoding(auto_url_encoding)
         self.updateTraversalData()
@@ -377,6 +380,16 @@ class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
         """ """
         return self.cookie_domain
 
+    security.declareProtected(CHANGE_IDMGR_PERM, 'setCookieHTTPOnly')
+    def setCookieHTTPOnly(self, http_only):
+        """ sets cookie 'HTTPOnly' on or off """
+        self.cookie_http_only = bool(http_only)
+
+    security.declareProtected(ACCESS_CONTENTS_PERM, 'getCookieHTTPOnly')
+    def getCookieHTTPOnly(self):
+        """ retrieve the 'HTTPOnly' flag """
+        return self.cookie_http_only
+
     security.declareProtected(CHANGE_IDMGR_PERM, 'setCookieSecure')
     def setCookieSecure(self, secure):
         """ sets cookie 'secure' element for id cookie """
@@ -387,7 +400,7 @@ class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
         """ """
         return self.cookie_secure
 
-    security.declareProtected(CHANGE_IDMGR_PERM, 'setCookieSecure')
+    security.declareProtected(CHANGE_IDMGR_PERM, 'setAutoUrlEncoding')
     def setAutoUrlEncoding(self, auto_url_encoding):
         """ sets 'auto url encoding' on or off """
         self.auto_url_encoding = not not auto_url_encoding
@@ -424,8 +437,11 @@ class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
             expires = now() + self.cookie_life_days * 86400
             # Wdy, DD-Mon-YYYY HH:MM:SS GMT
             expires = strftime('%a %d-%b-%Y %H:%M:%S GMT',gmtime(expires))
+        
+        # cookie attributes managed by BrowserIdManager
         d = {'domain':self.cookie_domain,'path':self.cookie_path,
-             'secure':self.cookie_secure,'expires':expires}
+             'secure':self.cookie_secure,'http_only': self.cookie_http_only,
+             'expires':expires}
 
         if self.cookie_secure:
             URL1 = REQUEST.get('URL1', None)

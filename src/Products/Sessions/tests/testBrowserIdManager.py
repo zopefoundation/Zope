@@ -116,6 +116,10 @@ class TestBrowserIdManager(TestCase):
         self.m.setCookieSecure(1)
         self.failUnless( self.m.getCookieSecure() == 1 )
 
+    def testSetCookieHTTPOnly(self):
+        self.m.setCookieHTTPOnly(True)
+        self.assertEqual( self.m.getCookieHTTPOnly(), True )
+
     def testGetBrowserIdCookie(self):
         token = self.m.getBrowserId()
         self.m.REQUEST.browser_id_ = token
@@ -223,6 +227,29 @@ class TestBrowserIdManager(TestCase):
                     (keystring, key))
         self.failUnless( html == expected )
 
+    def testHTTPOnlyCookieAttribute(self):
+        self.m.setCookieHTTPOnly(True)
+        self.failUnless(self.m.getBrowserId())
+        resp_cookies = self.req.RESPONSE.cookies
+        session_cookie = resp_cookies[self.m.browserid_name]
+        self.assertEqual(session_cookie['http_only'], True)
+
+    def testSecureCookieAttribute_correct_url(self):
+        self.m.setCookieSecure(1)
+        self.req['URL1'] = 'https://www.test.org'
+        self.failUnless(self.m.getBrowserId())
+        resp_cookies = self.req.RESPONSE.cookies
+        session_cookie = resp_cookies[self.m.browserid_name]
+        self.assertEqual(session_cookie['secure'], True)
+
+    # This test document the 'feature':
+    # return a browser ID but dont set the cookie 
+    def testSecureCookieAttribute_wrong_url(self):
+        self.m.setCookieSecure(1)
+        self.req['URL1'] = 'http://www.test.org'
+        self.failUnless(self.m.getBrowserId())
+        self.assertEqual( self.req.RESPONSE.cookies, {} )
+    
     def testAutoUrlEncoding(self):
         self.m.setAutoUrlEncoding(1)
         self.m.setBrowserIdNamespaces(('url',))
