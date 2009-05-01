@@ -16,6 +16,10 @@ Zope Changes
 
     Restructuring
 
+      - Updated to match all new versions from the yet-unreleased Zope 3.4.1
+        release (`http://svn.zope.org/zope.release/branches/3.4/
+        releases/controlled-packages.cfg?rev=99659`).
+
       - Updated to include all new versions from the final Zope 3.4.0 release
         (http://download.zope.org/zope3.4/3.4.0/).
 
