@@ -18,6 +18,8 @@ Restructuring
 - Removed the dependency on `zope.app.testing` in favor of providing a more
   minimal placeless setup as part of ZopeTestCase for our own tests.
 
+- updated to ZODB 3.9.0b1
+
 Features Added
 ++++++++++++++
 
