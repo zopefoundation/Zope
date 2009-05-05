@@ -64,6 +64,7 @@ class TestDBConfig:
         self.storage = DemoStorage(self)
         self.version_cache_size = 100
         self.version_pool_size = 3
+        self.allow_implicit_cross_references = False
         return ZopeDatabase(self)
 
     def getSectionName(self):
