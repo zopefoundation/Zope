@@ -195,10 +195,10 @@ class MountingTests(unittest.TestCase):
         transaction.abort()
         # Close the main connection
         app._p_jar.close()
-        self.assertEqual(app._p_jar._opened, None)
+        self.assertEqual(app._p_jar.opened, None)
         # Check that secondary connections have been closed too
-        self.assertEqual(conn1._opened, None)
-        self.assertEqual(conn2._opened, None)
+        self.assertEqual(conn1.opened, None)
+        self.assertEqual(conn2.opened, None)
 
 
 def test_suite():
