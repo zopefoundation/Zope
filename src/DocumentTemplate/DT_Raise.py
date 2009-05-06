@@ -27,6 +27,7 @@ __rcs_id__='$Id$'
 __version__='$Revision: 1.13 $'[11:-2]
 
 from zExceptions import upgradeException
+from zExceptions import convertExceptionType
 from DocumentTemplate.DT_Util import name_param
 from DocumentTemplate.DT_Util import parse_params
 from DocumentTemplate.DT_Util import render_blocks
@@ -49,12 +50,16 @@ class Raise:
     def render(self,md):
         expr = self.expr
         if expr is None:
-            t = __builtins__.get(self.__name__, RuntimeError)
+            t = convertExceptionType(self.__name__)
+            if t is None:
+                t = RuntimeError
         else:
             try:
                 t = expr.eval(md)
             except:
-                t = InvalidErrorTypeExpression
+                t = convertExceptionType(self.__name__)
+                if t is None:
+                    t = InvalidErrorTypeExpression
 
         try:
             v = render_blocks(self.section, md)
