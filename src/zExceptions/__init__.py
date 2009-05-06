@@ -18,6 +18,7 @@ application-specific packages.
 $Id$
 """
 
+from types import ClassType
 import warnings
 
 from zope.interface import implements
@@ -44,28 +45,32 @@ class MethodNotAllowed(Exception):
 class Redirect(Exception):
     pass
 
+def convertExceptionType(name):
+    import zExceptions
+    etype = None
+    if __builtins__.has_key(name):
+        etype = __builtins__[name]
+    elif hasattr(zExceptions, name):
+        etype = getattr(zExceptions, name)
+    if (etype is not None and
+        isinstance(etype, (type, ClassType)) and
+        issubclass(etype, Exception)):
+        return etype
+
 def upgradeException(t, v):
     # If a string exception is found, convert it to an equivalent
     # exception defined either in builtins or zExceptions. If none of
     # that works, tehn convert it to an InternalError and keep the
     # original exception name as part of the exception value.
-    import zExceptions
+    if isinstance(t, basestring):
+        warnings.warn('String exceptions are deprecated starting '
+                    'with Python 2.5 and will be removed in a '
+                    'future release', DeprecationWarning, stacklevel=2)
 
-    if not isinstance(t, basestring):
-        return t, v
-
-    warnings.warn('String exceptions are deprecated starting '
-                  'with Python 2.5 and will be removed in a '
-                  'future release', DeprecationWarning, stacklevel=2)
-
-    n = None
-    if __builtins__.has_key(t):
-        n = __builtins__[t]
-    elif hasattr(zExceptions, t):
-        n = getattr(zExceptions, t)
-    if n is not None and issubclass(n, Exception):
-        t = n
-    else:
-        v = t, v
-        t = InternalError
+        etype = convertExceptionType(t)
+        if etype is not None:
+            t = etype
+        else:
+            v = t, v
+            t = InternalError
     return t, v
