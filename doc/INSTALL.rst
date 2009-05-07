@@ -54,7 +54,7 @@ easy_install installation or within a virtualized Python environment
   $ bin/easy_install -i http://download.zope.org/Zope2/index/<Zope version> Zope2
 
 This will create the related scripts like ``mkzopeinstance`` within the
-``bin`` folder of you global or virtualized Python environment.
+``bin`` folder of your global or virtualized Python environment.
 
 Using ``virtualenv`` is **highly recommended**. Otherwise you may encounter
 unexpected conflicts with already installed packages.
