@@ -8,6 +8,8 @@ Zope Changes
 
     Bugs fixed
 
+      - Launchpad #373299: Removed bogus string exception in OFS.CopySupport.
+
   Zope 2.8.10 (2008/10/24)
 
     Bugs fixed

@@ -32,7 +32,8 @@ from zExceptions import Unauthorized, BadRequest
 from webdav.Lockable import ResourceLockedError
 
 
-CopyError='Copy Error'
+class CopyError(Exception):
+    pass
 
 copy_re = re.compile('^copy([0-9]*)_of_(.*)')
 
