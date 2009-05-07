@@ -237,15 +237,24 @@ class Item(Base,
             if not REQUEST:
                 REQUEST = aq_acquire(self, 'REQUEST')
 
-            handle_errors = getattr(getattr(REQUEST, 'RESPONSE', None), 
+            handle_errors = getattr(getattr(REQUEST, 'RESPONSE', None),
                                     'handle_errors', False)
             # Can we re-raise the exception with a rendered-to-HTML
             # exception value? To be able to do so, the exception
             # constructor needs to be able to take more than two
             # arguments (some Zope 3 exceptions can't).
-            ctor = getattr(getattr(error_type, '__init__', None), 'im_func', None)
-            can_raise = (ctor is not None and inspect.isfunction(ctor) 
-                         and len(inspect.getargspec(error_type.__init__)[0]) > 2)
+            ctor = getattr(error_type, '__init__', None)
+            if inspect.ismethoddescriptor(ctor):
+                # If it's a method descriptor, it means we've got a
+                # base ``__init__`` method that was not overriden,
+                # likely from the base ``Exception`` class.
+                can_raise = True
+            else:
+                if inspect.ismethod(ctor):
+                    ctor = getattr(ctor, 'im_func', None)
+                can_raise = (
+                    ctor is not None and inspect.isfunction(ctor)
+                    and len(inspect.getargspec(error_type.__init__)[0]) > 2)
 
             if not (can_raise and handle_errors):
                 # If we have been asked not to handle errors and we

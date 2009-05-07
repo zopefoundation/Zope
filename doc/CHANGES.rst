@@ -36,6 +36,13 @@ Features Added
 Bugs Fixed
 ++++++++++
 
+- RESPONSE.handle_errors was wrongly set (to debug, should have been
+  ``not debug``). Also, the check for exception constructor arguments
+  didn't account for exceptions that didn't override the ``__init__``
+  (which are most of them). The combination of those two problems
+  caused the ``standard_error_message`` not to be called. Fixes
+  https://bugs.edge.launchpad.net/zope2/+bug/372632 .
+
 - DocumentTemplate.DT_Raise:  use new 'zExceptions.convertExceptionType'
   API to allow raising non-builtin exceptions.
   Fixes https://bugs.launchpad.net/zope2/+bug/372629 , which prevented
@@ -50,7 +57,7 @@ Bugs Fixed
 Bugs Fixed
 ++++++++++
 
-- fixed versions.cfg in order to support zope.z2release for 
+- fixed versions.cfg in order to support zope.z2release for
   creating a proper index structure
 
 2.12.0a3 (2009-04-19)
