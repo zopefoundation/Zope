@@ -8,6 +8,8 @@ Zope Changes
 
    Bugs fixed
 
+      - Launchpad #373299: Removed bogus string exception in OFS.CopySupport.
+
       - Launchpad ##332168: Connection.py: do not expose DB connection strings
         through exceptions
 

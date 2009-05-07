@@ -347,7 +347,7 @@ class TestCopySupportSecurity( CopySupportTestBase ):
             if ce_regex is not None:
 
                 pattern = re.compile( ce_regex, re.DOTALL )
-                if pattern.search( e ) is None:
+                if pattern.search(str(e)) is None:
                     self.fail( "Paste failed; didn't match pattern:\n%s" % e )
 
             else:
@@ -418,8 +418,6 @@ class TestCopySupportSecurity( CopySupportTestBase ):
 
     def test_copy_cant_create_target_metatype_not_supported( self ):
 
-        from OFS.CopySupport import CopyError
-
         folder1, folder2 = self._initFolders()
         folder2.all_meta_types = ()
 
@@ -449,8 +447,6 @@ class TestCopySupportSecurity( CopySupportTestBase ):
 
     def test_move_cant_read_source( self ):
 
-        from OFS.CopySupport import CopyError
-
         folder1, folder2 = self._initFolders()
         folder2.all_meta_types = FILE_META_TYPES
 
@@ -469,8 +465,6 @@ class TestCopySupportSecurity( CopySupportTestBase ):
 
     def test_move_cant_create_target_metatype_not_supported( self ):
 
-        from OFS.CopySupport import CopyError
-
         folder1, folder2 = self._initFolders()
         folder2.all_meta_types = ()
 
@@ -483,8 +477,6 @@ class TestCopySupportSecurity( CopySupportTestBase ):
                                    )
 
     def test_move_cant_create_target_metatype_not_allowed( self ):
-
-        from OFS.CopySupport import CopyError
 
         folder1, folder2 = self._initFolders()
         folder2.all_meta_types = FILE_META_TYPES
@@ -503,7 +495,6 @@ class TestCopySupportSecurity( CopySupportTestBase ):
 
     def test_move_cant_delete_source( self ):
 
-        from OFS.CopySupport import CopyError
         from AccessControl.Permissions import delete_objects as DeleteObjects
 
         folder1, folder2 = self._initFolders()
