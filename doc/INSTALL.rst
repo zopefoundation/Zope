@@ -74,7 +74,7 @@ script::
 If you use Zope from SVN, you will need to specify the Python interpreter
 to use for the instance explicitly::
 
-  $ bin/mkzopeinstance --python=bin/zopepy
+  $ bin/mkzopeinstance --python=$PWD/bin/zopepy
 
 You will be asked to provide a user name and password for an
 administrator's account during ``mkzopeinstance``.  To see the available
