@@ -27,6 +27,8 @@ Zope Changes
 
     Bugs fixed
 
+      - Launchpad #373299: Removed bogus string exception in OFS.CopySupport.
+
       - ZPublisher response.setBody: don't append Accept-Encoding to Vary
         header if it is already present - this can make cache configuration
         difficult. (merged 99493)
