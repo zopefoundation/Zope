@@ -243,6 +243,7 @@ class Item(Base,
             # exception value? To be able to do so, the exception
             # constructor needs to be able to take more than two
             # arguments (some Zope 3 exceptions can't).
+            can_raise = False
             ctor = getattr(error_type, '__init__', None)
             if inspect.ismethoddescriptor(ctor):
                 # If it's a method descriptor, it means we've got a
@@ -252,9 +253,14 @@ class Item(Base,
             else:
                 if inspect.ismethod(ctor):
                     ctor = getattr(ctor, 'im_func', None)
-                can_raise = (
-                    ctor is not None and inspect.isfunction(ctor)
-                    and len(inspect.getargspec(error_type.__init__)[0]) > 2)
+                if inspect.isbuiltin(ctor):
+                    # In Python 2.4, the ``__init__`` method of the
+                    # base ``Exception`` class is a ``builtin
+                    # method``.
+                    can_raise = True
+                elif ctor is not None and inspect.isfunction(ctor):
+                    can_raise = (
+                        len(inspect.getargspec(error_type.__init__)[0]) > 2)
 
             if not (can_raise and handle_errors):
                 # If we have been asked not to handle errors and we
