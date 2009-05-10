@@ -83,6 +83,7 @@ class MountingTests(unittest.TestCase):
         databases = [TestDBConfig('test_main.fs', ['/']).getDB(),
                      TestDBConfig('test_mount1.fs', ['/mount1']).getDB(),
                      TestDBConfig('test_mount2.fs', ['/mount2']).getDB(),
+                     TestDBConfig('test_mount3.fs', ['/i/mount3']).getDB(),
                      ]
         mount_points = {}
         mount_factories = {}
@@ -102,13 +103,21 @@ class MountingTests(unittest.TestCase):
         root = conn.root()
         root['Application'] = app = Application()
         self.app = app
+        install_products(app, 'ZCatalog', 'PluginIndexes', 'OFSP')
+        # login
+        from AccessControl.User import system
+        from AccessControl.SecurityManagement import newSecurityManager
+        newSecurityManager(None, system)
         transaction.commit()  # Get app._p_jar set
-        manage_addMounts(app, ('/mount1', '/mount2'))
+        manage_addMounts(app, ('/mount1', '/mount2', '/i/mount3'))
         transaction.commit()  # Get the mount points ready
 
 
 
     def tearDown(self):
+        # logout
+        from AccessControl.SecurityManagement import noSecurityManager
+        noSecurityManager()
         App.config.setConfiguration(original_config)
         transaction.abort()
         self.app._p_jar.close()
@@ -120,6 +129,7 @@ class MountingTests(unittest.TestCase):
     def testRead(self):
         self.assertEqual(self.app.mount1.id, 'mount1')
         self.assertEqual(self.app.mount2.id, 'mount2')
+        self.assertEqual(self.app.i.mount3.id, 'mount3')
 
     def testWrite(self):
         app = self.app
@@ -144,6 +154,7 @@ class MountingTests(unittest.TestCase):
         self.assertEqual(getMountPoint(self.app.mount1)._path, '/mount1')
         self.assert_(getMountPoint(self.app.mount2) is not None)
         self.assertEqual(getMountPoint(self.app.mount2)._path, '/mount2')
+        self.assertEqual(getMountPoint(self.app.i.mount3)._path, '/i/mount3')
         del self.app.mount2
         self.app.mount2 = Folder()
         self.app.mount2.id = 'mount2'
@@ -160,8 +171,13 @@ class MountingTests(unittest.TestCase):
                     {'status': 'Ok',
                      'path': '/mount2',
                      'name': 'test_mount2.fs',
-                     'exists': 1}]
-        self.assertEqual(expected, status)
+                     'exists': 1},
+                    {'status': 'Ok',
+                     'path': '/i/mount3',
+                     'name': 'test_mount3.fs',
+                     'exists': 1},
+                    ]
+        self.assertEqual(sorted(expected), sorted(status))
         del self.app.mount2
         status = manage_getMountStatus(self.app)
         expected = [{'status': 'Ok',
@@ -171,8 +187,14 @@ class MountingTests(unittest.TestCase):
                     {'status': 'Ready to create',
                      'path': '/mount2',
                      'name': 'test_mount2.fs',
-                     'exists': 0}]
-        self.assertEqual(expected, status)
+                     'exists': 0},
+                    {'status': 'Ok',
+                     'path': '/i/mount3',
+                     'name': 'test_mount3.fs',
+                     'exists': 1},
+
+                    ]
+        self.assertEqual(sorted(expected), sorted(status))
         self.app.mount2 = Folder('mount2')
         status = manage_getMountStatus(self.app)
         expected = [{'status': 'Ok',
@@ -182,8 +204,13 @@ class MountingTests(unittest.TestCase):
                     {'status': '** Something is in the way **',
                      'path': '/mount2',
                      'name': 'test_mount2.fs',
-                     'exists': 1}]
-        self.assertEqual(expected, status)
+                     'exists': 1},
+                    {'status': 'Ok',
+                     'path': '/i/mount3',
+                     'name': 'test_mount3.fs',
+                     'exists': 1},
+                    ]
+        self.assertEqual(sorted(expected), sorted(status))
 
     def test_close(self):
         app = self.app
@@ -192,6 +219,7 @@ class MountingTests(unittest.TestCase):
         app.a3 = '3'
         conn1 = app.mount1._p_jar
         conn2 = app.mount2._p_jar
+        conn3 = app.i.mount3._p_jar
         transaction.abort()
         # Close the main connection
         app._p_jar.close()
@@ -199,6 +227,22 @@ class MountingTests(unittest.TestCase):
         # Check that secondary connections have been closed too
         self.assertEqual(conn1.opened, None)
         self.assertEqual(conn2.opened, None)
+        self.assertEqual(conn3.opened, None)
+
+def install_products(app, *prod):
+    """auxiliary function to install products *prod* (by names)."""
+    from OFS.Application import get_folder_permissions, get_products, install_product
+
+    folder_permissions = get_folder_permissions()
+    meta_types=[]
+    done={}
+    products = get_products()
+    for priority, product_name, index, product_dir in products:
+        if product_name not in prod or product_name in done: continue
+        done[product_name]=1
+        install_product(app, product_dir, product_name, meta_types,
+                        folder_permissions, raise_exc=True)
+        
 
 
 def test_suite():

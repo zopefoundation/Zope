@@ -23,6 +23,9 @@ Restructuring
 Features Added
 ++++++++++++++
 
+- Launchpad #373583: ZODBMountPoint - fixed broken mount support and 
+  extended the test suite.
+
 - Launchpad #373621: catching and logging exceptions that could cause
   leaking of worker threads.
 
