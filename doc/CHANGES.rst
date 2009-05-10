@@ -23,6 +23,9 @@ Restructuring
 Features Added
 ++++++++++++++
 
+- Launchpad #373658: traversal using (un)restrictedTraverse 
+  no longer depends no the existence of a request 
+
 - Launchpad #373583: ZODBMountPoint - fixed broken mount support and 
   extended the test suite.
 

@@ -154,6 +154,7 @@ class Traversable:
             path = list(path)
 
         REQUEST = {'TraversalRequestNameStack': path}
+        web_request = getattr(self, 'REQUEST', None)
         path.reverse()
         path_pop = path.pop
 
@@ -198,7 +199,7 @@ class Traversable:
                         ns, nm = nsParse(name)
                         try:
                             next = namespaceLookup(
-                                ns, nm, obj, aq_acquire(self, 'REQUEST'))
+                                ns, nm, obj, web_request).__of__(obj)
                             if IAcquirer.providedBy(next):
                                 next = next.__of__(obj)
                             if restricted and not validate(
@@ -264,7 +265,7 @@ class Traversable:
 
                 except (AttributeError, NotFound, KeyError), e:
                     # Try to look for a view
-                    next = queryMultiAdapter((obj, aq_acquire(self, 'REQUEST')),
+                    next = queryMultiAdapter((obj, web_request),
                                              Interface, name)
 
                     if next is not None:
