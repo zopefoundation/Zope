@@ -24,10 +24,14 @@ Features Added
 ++++++++++++++
 
 - Launchpad #373621: catching and logging exceptions that could cause
-  leaking of worker threads
+  leaking of worker threads.
 
 - Launchpad #373577: setting up standard logging earlier within the startup
-  phase for improving the analysis of startup errors
+  phase for improving the analysis of startup errors.
+
+- Launchpad #373601: abort transaction before connection close in order to
+  prevent connection leaks in case of persistent changes after the main
+  transaction is closed.
 
 - zExceptions.convertExceptionType:  new API, breaking out conversion of
   exception names to exception types from 'upgradeException'.
