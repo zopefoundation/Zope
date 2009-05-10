@@ -26,6 +26,9 @@ Features Added
 - Launchpad #373621: catching and logging exceptions that could cause
   leaking of worker threads
 
+- Launchpad #373577: setting up standard logging earlier within the startup
+  phase for improving the analysis of startup errors
+
 - zExceptions.convertExceptionType:  new API, breaking out conversion of
   exception names to exception types from 'upgradeException'.
 

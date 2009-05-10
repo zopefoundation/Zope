@@ -86,6 +86,7 @@ class ZopeStarter:
         self.setupServers()
         # drop privileges after setting up servers
         self.dropPrivileges()
+        self.setupFinalLogging()
         self.makeLockFile()
         self.makePidFile()
         self.setupInterpreter()
@@ -100,7 +101,6 @@ class ZopeStarter:
         # after it has emitted ZServer messages.
         
         logger.info('Ready to handle requests')
-        self.setupFinalLogging()
         self.sendEvents()
 
     def run(self):
