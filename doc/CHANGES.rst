@@ -23,6 +23,9 @@ Restructuring
 Features Added
 ++++++++++++++
 
+- Launchpad #373621: catching and logging exceptions that could cause
+  leaking of worker threads
+
 - zExceptions.convertExceptionType:  new API, breaking out conversion of
   exception names to exception types from 'upgradeException'.
 
