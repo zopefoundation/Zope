@@ -5,8 +5,36 @@ This file contains change information for the current Zope release.
 Change information for previous versions of Zope can be found in the
 file HISTORY.txt.
 
-Trunk (2009/05/06)
+Trunk (unreleased)
 ------------------
+
+Features Added
+++++++++++++++
+
+- zExceptions.convertExceptionType:  new API, breaking out conversion of
+  exception names to exception types from 'upgradeException'.
+
+Bugs Fixed
+++++++++++
+
+- Fix BBB regression which prevented setting browser ID cookies from
+  browser ID managers created before the 'HTTPOnly' feature landed.
+  https://bugs.launchpad.net/bugs/374816
+
+- RESPONSE.handle_errors was wrongly set (to debug, should have been
+  ``not debug``). Also, the check for exception constructor arguments
+  didn't account for exceptions that didn't override the ``__init__``
+  (which are most of them). The combination of those two problems
+  caused the ``standard_error_message`` not to be called. Fixes
+  https://bugs.launchpad.net/zope2/+bug/372632 .
+
+- DocumentTemplate.DT_Raise:  use new 'zExceptions.convertExceptionType'
+  API to allow raising non-builtin exceptions.
+  Fixes https://bugs.launchpad.net/zope2/+bug/372629 , which prevented
+  viewing the "Try" tab of a script with no parameters.
+
+Zope 2.12.0b1 (2009/05/06)
+--------------------------
 
 Restructuring
 +++++++++++++
@@ -23,9 +51,6 @@ Restructuring
 Features Added
 ++++++++++++++
 
-- zExceptions.convertExceptionType:  new API, breaking out conversion of
-  exception names to exception types from 'upgradeException'.
-
 - Extended BrowserIdManager to expose the 'HTTPOnly' attribute for its
   cookie. Also via https://bugs.launchpad.net/zope2/+bug/367393 .
 
@@ -35,18 +60,6 @@ Features Added
 
 Bugs Fixed
 ++++++++++
-
-- RESPONSE.handle_errors was wrongly set (to debug, should have been
-  ``not debug``). Also, the check for exception constructor arguments
-  didn't account for exceptions that didn't override the ``__init__``
-  (which are most of them). The combination of those two problems
-  caused the ``standard_error_message`` not to be called. Fixes
-  https://bugs.edge.launchpad.net/zope2/+bug/372632 .
-
-- DocumentTemplate.DT_Raise:  use new 'zExceptions.convertExceptionType'
-  API to allow raising non-builtin exceptions.
-  Fixes https://bugs.launchpad.net/zope2/+bug/372629 , which prevented
-  viewing the "Try" tab of a script with no parameters.
 
 - ZPublisher response.setBody: don't append Accept-Encoding to Vary header if
   it is already present - this can make cache configuration difficult.

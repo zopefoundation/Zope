@@ -102,6 +102,7 @@ class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
 
     # BBB
     auto_url_encoding = 0
+    cookie_http_only = 0
 
     def __init__(self, id, title='', idname='_ZopeId',
                  location=('cookies', 'form'), cookiepath=('/'),

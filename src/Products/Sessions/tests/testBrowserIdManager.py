@@ -451,6 +451,17 @@ class TestBrowserIdManager(unittest.TestCase):
         self.assertEqual(response.cookies['bid'],
                          {'path': '/', 'value': 'xxx', 'http_only': True})
 
+    def test__setCookie_http_only_missing_attr(self):
+        # See https://bugs.launchpad.net/bugs/374816
+        response = DummyResponse(cookies={})
+        request = DummyRequest(RESPONSE=response, URL1='https://example.com/')
+        mgr = self._makeOne(request)
+        del mgr.cookie_http_only # pre-2.12 instances didn't have this
+        mgr.setBrowserIdName('bid')
+        mgr._setCookie('xxx', request)
+        self.assertEqual(response.cookies['bid'],
+                         {'path': '/', 'value': 'xxx'})
+
     def test__setId_same_id_noop(self):
         mgr = self._makeOne(name='foo')
         mgr._setId('foo')
