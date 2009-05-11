@@ -10,11 +10,9 @@
 # FOR A PARTICULAR PURPOSE
 #
 ############################################################################
-"""
+""" Session APIs
 
-Session APIs
-
-  See Also
+o See Also
 
     - "Transient Object API":../../Transience/Help/TransienceInterfaces.py
 
@@ -22,36 +20,42 @@ Session APIs
 
 from zope.interface import Interface
 
-class BrowserIdManagerInterface(Interface):
-    """
-    Zope Browser Id Manager interface.
+class IBrowserIdManager(Interface):
+    """ Zope Browser Id Manager interface.
 
     A Zope Browser Id Manager is responsible for assigning ids to site
     visitors, and for servicing requests from Session Data Managers
     related to the browser id.
     """
-    def encodeUrl(url, style='querystring'):
+    def hasBrowserId():
+        """ Return true if there is a browser id for the current request.
+
+        o Permission required: Access contents information
+
+        o Does *not* raise an error if the request contains a broken
+          browser id.
         """
-        Encodes a provided URL with the current request's browser id
-        and returns the result.  Two forms of URL-encoding are supported:
-        'querystring' and 'inline'.  'querystring' is the default.
 
-        If the 'querystring' form is used, the browser id name/value pair
-        are postfixed onto the URL as a query string.  If the 'inline'
-        form is used, the browser id name/value pair are prefixed onto
-        the URL as the first two path segment elements.
+    def getBrowserId(create=1):
+        """ Return a browser id for the current request.
 
-        For example:
+        o If create is false, return None if there is no browser id associated
+          with the current request.
+          
+        o If create is true, return a newly-created browser id if
+          there is no browser id associated with the current request.
+          
+        o This method is useful in conjunction with 'getBrowserIdName' if you
+          wish to embed the browser-id-name/browser-id combination as a hidden
+          value in a POST-based form.
+          
+        o The browser id is opaque, has no business meaning, and its length,
+          type, and composition are subject to change.
 
-         The call encodeUrl('http://foo.com/amethod', style='querystring')
-         might return 'http://foo.com/amethod?_ZopeId=as9dfu0adfu0ad'.
+        o Permission required: Access contents information
 
-         The call encodeUrl('http://foo.com/amethod, style='inline')
-         might return 'http://foo.com/_ZopeId/as9dfu0adfu0ad/amethod'.
-
-        Permission required: Access contents information
-
-        Raises:  BrowserIdManagerErr.  If there is no current browser id.
+        o Raises BrowserIdManagerErr if an ill-formed browser id
+          is found in REQUEST.
         """
 
     def getBrowserIdName():
@@ -59,30 +63,6 @@ class BrowserIdManagerInterface(Interface):
         Returns a string with the name of the cookie/form variable which is
         used by the current browser id manager as the name to look up when
         attempting to obtain the browser id value.  For example, '_ZopeId'.
-
-        Permission required: Access contents information
-        """
-
-    def getBrowserId(create=1):
-        """
-        If create=0, returns a the current browser id or None if there
-        is no browser id associated with the current request.  If create=1,
-        returns the current browser id or a newly-created browser id if
-        there is no browser id associated with the current request.  This
-        method is useful in conjunction with getBrowserIdName if you wish to
-        embed the browser-id-name/browser-id combination as a hidden value in
-        a POST-based form.  The browser id is opaque, has no business meaning,
-        and its length, type, and composition are subject to change.
-
-        Permission required: Access contents information
-
-        Raises:  BrowserIdManagerErr.  If ill-formed browser id
-        is found in REQUEST.
-        """
-
-    def hasBrowserId():
-        """
-        Returns true if there is a browser id for this request.
 
         Permission required: Access contents information
         """
@@ -98,61 +78,94 @@ class BrowserIdManagerInterface(Interface):
         Raises:  BrowserIdManagerErr.  If there is no current browser id.
         """
 
-    def isBrowserIdFromForm():
-        """
-        Returns true if browser id comes from a form variable (query
-        string or post).
-
-        Permission required: Access contents information
-
-        Raises:  BrowserIdManagerErr.  If there is no current browser id.
-        """
-
     def isBrowserIdFromCookie():
+        """ Return true if browser id comes from a cookie.
+
+        o Permission required: Access contents information
+
+        o Raise BrowserIdManagerErr if there is no current browser id.
         """
-        Returns true if browser id comes from a cookie.
 
-        Permission required: Access contents information
+    def isBrowserIdFromForm():
+        """ Return true if browser id comes from a form variable.
+        
+        o Variable may come from either the query string or a post.
 
-        Raises:  BrowserIdManagerErr.  If there is no current browser id.
+        o Permission required: Access contents information
+
+        o Raise BrowserIdManagerErr if there is no current browser id.
+        """
+
+    def isBrowserIdFromUrl():
+        """ Return true if browser id comes from a cookie.
+
+        o Permission required: Access contents information
+
+        o Raise BrowserIdManagerErr if there is no current browser id.
         """
 
     def flushBrowserIdCookie():
-        """
-        Deletes the browser id cookie from the client browser, iff the
-        'cookies' browser id namespace is being used.
+        """ Deletes the browser id cookie from the client browser.
 
-        Permission required: Access contents information
+        o Permission required: Access contents information
 
-        Raises:  BrowserIdManagerErr.  If the 'cookies' namespace isn't
-        a browser id namespace at the time of the call.
+        o Raise BrowserIdManagerErr if the 'cookies' namespace isn't
+          a browser id namespace.
         """
 
     def setBrowserIdCookieByForce(bid):
-        """
-        Sets the browser id cookie to browser id 'bid' by force.
-        Useful when you need to 'chain' browser id cookies across domains
-        for the same user (perhaps temporarily using query strings).
+        """ Sets the browser id cookie to browser id 'bid' by force.
 
-        Permission required: Access contents information
+        o Useful when you need to 'chain' browser id cookies across domains
+          for the same user (perhaps temporarily using query strings).
 
-        Raises:  BrowserIdManagerErr.  If the 'cookies' namespace isn't
-        a browser id namespace at the time of the call.
+        o Permission required: Access contents information
+
+        o Raise BrowserIdManagerErr if the 'cookies' namespace isn't
+          a browser id namespace.
         """
 
     def getHiddenFormField():
+        """ Return a string usable as a hidden form field for the browser id.
+        
+        o String is of the form::
+
+          <input type="hidden" name="_ZopeId" value="H7HJGYUFGFyHKH*" />
+
+        o name and the value represent the current browser id
+          name and current browser id.
         """
-        Returns a string in the form:
 
-        <input type="hidden" name="_ZopeId" value="H7HJGYUFGFyHKH*">
+    def encodeUrl(url, style='querystring'):
+        """ Encode a given URL with the current browser id.
+        
+        o Two forms of URL-encoding are supported: 'querystring' and 'inline'.
+        
+        o 'querystring' is the default.
 
-        Where the name and the value represent the current browser id
-        name and current browser id.
+        o If the 'querystring' form is used, the browser id name/value pair
+          are postfixed onto the URL as a query string.
+          
+        o If the 'inline' form is used, the browser id name/value pair
+          are prefixed onto the URL as the first two path segment elements.
+
+        o For example:
+
+          - The call encodeUrl('http://foo.com/amethod', style='querystring')
+            might return 'http://foo.com/amethod?_ZopeId=as9dfu0adfu0ad'.
+
+          - The call encodeUrl('http://foo.com/amethod, style='inline')
+            might return 'http://foo.com/_ZopeId/as9dfu0adfu0ad/amethod'.
+
+        o Permission required: Access contents information
+
+        o Raise BrowserIdManagerErr if there is no current browser id.
         """
 
-class SessionDataManagerInterface(Interface):
-    """
-    Zope Session Data Manager interface.
+BrowserIdManagerInterface = IBrowserIdManager # BBB
+
+class ISessionDataManager(Interface):
+    """ Zope Session Data Manager interface.
 
     A Zope Session Data Manager is responsible for maintaining Session
     Data Objects, and for servicing requests from application code
@@ -160,59 +173,61 @@ class SessionDataManagerInterface(Interface):
     Id Manager to provide information about browser ids.
     """
     def getBrowserIdManager():
-        """
-        Returns the nearest acquirable browser id manager.
+        """ Return the nearest acquirable browser id manager.
 
-        Raises SessionDataManagerErr if no browser id manager can be found.
+        o Raise SessionDataManagerErr if no browser id manager can be found.
 
-        Permission required: Access session data
+        o Permission required: Access session data
         """
 
     def getSessionData(create=1):
-        """
-        Returns a Session Data Object associated with the current
-        browser id.  If there is no current browser id, and create is true,
-        returns a new Session Data Object.  If there is no current
-        browser id and create is false, returns None.
+        """ Return a Session Data Object for the current browser id.
+        
+        o If there is no current browser id, and create is true,
+          return a new Session Data Object.
+          
+        o If there is no current browser id and create is false, returns None.
 
-        Permission required: Access session data
+        o Permission required: Access session data
         """
 
     def hasSessionData():
-        """
-        Returns true if a Session Data Object associated with the
-        current browser id is found in the Session Data Container.  Does
-        not create a Session Data Object if one does not exist.
+        """ Does a Session Data Object exist for the current browser id?
 
-        Permission required: Access session data
+        o Do not create a Session Data Object if one does not exist.
+
+        o Permission required: Access session data
         """
 
     def getSessionDataByKey(key):
+        """ Return a Session Data Object associated with 'key'.
+        
+        o If there is no Session Data Object associated with 'key',
+          return None.
+
+        o Permission required: Access arbitrary user session data
         """
-        Returns a Session Data Object associated with 'key'.  If there is
-        no Session Data Object associated with 'key' return None.
 
-        Permission required: Access arbitrary user session data
-        """
+SessionDataManagerInterface = ISessionDataManager  # BBB
 
-class SessionDataManagerErr(Interface):
-    """
-    Error raised during some session data manager operations, as
-    explained in the API documentation of the Session Data Manager.
+class SessionDataManagerErr(ValueError):
+    """ Error raised during some session data manager operations
+    
+    o See ISesseionDataManager.
 
-    This exception may be caught in PythonScripts.  A successful
-    import of the exception for PythonScript use would need to be::
+    o This exception may be caught in PythonScripts.  A successful
+      import of the exception for PythonScript use would need to be::
 
        from Products.Sessions import SessionDataManagerErr
     """
 
-class BrowserIdManagerErr(Interface):
-    """
-    Error raised during some browser id manager operations, as
-    explained in the API documentation of the Browser Id Manager.
+class BrowserIdManagerErr(ValueError):
+    """ Error raised during some browser id manager operations
+    
+    o See IBrowserIdManager methods.
 
-    This exception may be caught in PythonScripts.  A successful
-    import of the exception for PythonScript use would need to be::
+    o This exception may be caught in PythonScripts.  A successful
+      import of the exception for PythonScript use would need to be::
 
        from Products.Sessions import BrowserIdManagerErr
     """

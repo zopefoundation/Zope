@@ -32,7 +32,7 @@ from ZPublisher.BeforeTraverse import unregisterBeforeTraverse
 from ZODB.POSException import ConflictError
 from zope.interface import implements
 
-from Products.Sessions.SessionInterfaces import SessionDataManagerInterface
+from Products.Sessions.SessionInterfaces import ISessionDataManager
 from Products.Sessions.SessionPermissions import ACCESS_CONTENTS_PERM
 from Products.Sessions.SessionPermissions import ACCESS_SESSIONDATA_PERM
 from Products.Sessions.SessionPermissions import ARBITRARY_SESSIONDATA_PERM
@@ -93,7 +93,7 @@ class SessionDataManager(Item, Implicit, Persistent, RoleManager, Owned, Tabs):
 
     icon='misc_/CoreSessionTracking/datamgr.gif'
 
-    implements(SessionDataManagerInterface)
+    implements(ISessionDataManager)
 
     manage_sessiondatamgr = DTMLFile('dtml/manageDataManager',
         globals())
