@@ -332,7 +332,7 @@ class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
         if not (type(path) is type('') and not badcookiecharsin(path)):
             raise BrowserIdManagerErr,'Bad cookie path %s' % escape(repr(path))
         self.cookie_path = path
-    
+
     security.declareProtected(ACCESS_CONTENTS_PERM, 'getCookiePath')
     def getCookiePath(self):
         """ """
@@ -437,7 +437,7 @@ class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
             expires = now() + self.cookie_life_days * 86400
             # Wdy, DD-Mon-YYYY HH:MM:SS GMT
             expires = strftime('%a %d-%b-%Y %H:%M:%S GMT',gmtime(expires))
-        
+
         # cookie attributes managed by BrowserIdManager
         d = {'domain':self.cookie_domain,'path':self.cookie_path,
              'secure':self.cookie_secure,'http_only': self.cookie_http_only,
@@ -449,14 +449,14 @@ class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
                 return # should we raise an exception?
             if string.split(URL1,':')[0] != 'https':
                 return # should we raise an exception?
-         
+
         cookies = REQUEST.RESPONSE.cookies
         cookie = cookies[self.browserid_name]= {}
         for k,v in d.items():
             if v:
                 cookie[k] = v #only stuff things with true values
         cookie['value'] = bid
-        
+
     def _setId(self, id):
         if id != self.id:
             raise MessageDialog(
@@ -487,7 +487,7 @@ class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
     def hasTraversalHook(self, parent):
         name = TRAVERSAL_APPHANDLE
         return not not queryBeforeTraverse(parent, name)
-                       
+
 class BrowserIdManagerTraverser(Persistent):
     def __call__(self, container, request, browser_id=None,
                  browser_id_ns=None,
