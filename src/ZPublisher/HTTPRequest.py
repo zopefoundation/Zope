@@ -1684,7 +1684,7 @@ def parse_cookie(text,
         release()
 
     if not already_have(name):
-        result[name] = value
+        result[name] = unquote(value)
 
     return apply(parse_cookie,(text[l:],result))
 

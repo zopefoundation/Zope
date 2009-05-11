@@ -23,6 +23,7 @@ from zExceptions import Unauthorized, Redirect
 from zExceptions.ExceptionFormatter import format_exception
 from ZPublisher import BadRequest, InternalError, NotFound
 from cgi import escape
+from urllib import quote
 
 nl2sp = maketrans('\n',' ')
 
@@ -842,7 +843,7 @@ class HTTPResponse(BaseResponse):
             # quoted cookie attr values, so only the value part
             # of name=value pairs may be quoted.
 
-            cookie = 'Set-Cookie: %s="%s"' % (name, attrs['value'])
+            cookie = 'Set-Cookie: %s="%s"' % (name, quote(attrs['value']))
             for name, v in attrs.items():
                 name = name.lower()
                 if name == 'expires':
