@@ -43,7 +43,7 @@ from ZPublisher.BeforeTraverse import unregisterBeforeTraverse
 from ZPublisher.BeforeTraverse import queryBeforeTraverse
 from zope.interface import implements
 
-from Products.Sessions.SessionInterfaces import BrowserIdManagerInterface
+from Products.Sessions.SessionInterfaces import IBrowserIdManager
 from Products.Sessions.SessionPermissions import ACCESS_CONTENTS_PERM
 from Products.Sessions.SessionPermissions import CHANGE_IDMGR_PERM
 from Products.Sessions.SessionPermissions import MGMT_SCREEN_PERM
@@ -82,24 +82,14 @@ def constructBrowserIdManager(
     if REQUEST is not None:
         return self.manage_main(self, REQUEST, update_menu=1)
     
-class BrowserIdManagerErr(Exception): pass
+class BrowserIdManagerErr(ValueError): # BBB
+    pass
     
 class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
-    """ browser id management class """
-
+    """ browser id management class
+    """
+    implements(IBrowserIdManager)
     meta_type = 'Browser Id Manager'
-
-    manage_options=(
-        {'label': 'Settings',
-         'action':'manage_browseridmgr',
-         },
-        {'label': 'Security', 'action':'manage_access'},
-        {'label': 'Ownership', 'action':'manage_owner'}
-        )
-
-    implements(BrowserIdManagerInterface)
-
-    icon = 'misc_/Sessions/idmgr.gif'
 
     security = ClassSecurityInfo()
     security.declareObjectPublic()
@@ -110,7 +100,7 @@ class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
     security.setPermissionDefault(ACCESS_CONTENTS_PERM,['Manager','Anonymous'])
     security.setPermissionDefault(CHANGE_IDMGR_PERM, ['Manager'])
 
-    # backwards-compatibility for pre-2.6 instances
+    # BBB
     auto_url_encoding = 0
 
     def __init__(self, id, title='', idname='_ZopeId',
@@ -128,30 +118,19 @@ class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
         self.setCookieHTTPOnly(cookiehttponly)
         self.setAutoUrlEncoding(auto_url_encoding)
 
-    def manage_afterAdd(self, item, container):
-        """ Maybe add our traversal hook """
-        self.updateTraversalData()
-
-    def manage_beforeDelete(self, item, container):
-        """ Remove our traversal hook if it exists """
-        self.unregisterTraversalHook()
-
+    # IBrowserIdManager
     security.declareProtected(ACCESS_CONTENTS_PERM, 'hasBrowserId')
     def hasBrowserId(self):
-        """ Returns true if there is a current browser id, but does
-        not create a browser id for the current request if one doesn't
-        already exist """
-        if self.getBrowserId(create=0): return 1
+        """ See IBrowserIdManager.
+        """
+        try:
+            return self.getBrowserId(create=0) is not None
+        except BrowserIdManagerErr:
+            return False
                 
     security.declareProtected(ACCESS_CONTENTS_PERM, 'getBrowserId')
     def getBrowserId(self, create=1):
-        """
-        Examines the request and hands back browser id value or
-        None if no id exists.  If there is no browser id
-        and if 'create' is true, create one.  If cookies are are
-        an allowable id namespace and create is true, set one.  Stuff
-        the id and the namespace it was found in into the REQUEST object
-        for further reference during this request.
+        """ See IBrowserIdManager.
         """
         REQUEST = self.REQUEST
         # let's see if bid has already been attached to request
@@ -162,10 +141,9 @@ class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
             if not isAWellFormedBrowserId(bid):
                 # somebody screwed with the REQUEST instance during
                 # this request.
-                raise BrowserIdManagerErr, (
-                    'Ill-formed browserid in REQUEST.browser_id_:  %s' % 
-                    escape(bid)
-                    )
+                raise BrowserIdManagerErr(
+                                'Ill-formed browserid in '
+                                'REQUEST.browser_id_:  %s' % escape(bid))
             return bid
         # fall through & ck form/cookie namespaces if bid is not in request.
         tk = self.browserid_name
@@ -196,71 +174,84 @@ class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
         # implies a return of None if:
         # (not create=1) and (invalid or ((not in req) and (not in ns)))
 
-    security.declareProtected(ACCESS_CONTENTS_PERM, 'flushBrowserIdCookie')
-    def flushBrowserIdCookie(self):
-        """ removes the bid cookie from the client browser """
-        if 'cookies' not in self.browserid_namespaces:
-            raise BrowserIdManagerErr,('Cookies are not now being used as a '
-                                       'browser id namespace, thus the '
-                                       'browserid cookie cannot be flushed.')
-        self._setCookie('deleted', self.REQUEST, remove=1)
+    security.declareProtected(ACCESS_CONTENTS_PERM, 'getBrowserIdName')
+    def getBrowserIdName(self):
+        """ See IBrowserIdManager.
+        """
+        return self.browserid_name
 
-    security.declareProtected(ACCESS_CONTENTS_PERM,'setBrowserIdCookieByForce')
-    def setBrowserIdCookieByForce(self, bid):
-        """ """
-        if 'cookies' not in self.browserid_namespaces:
-            raise BrowserIdManagerErr,('Cookies are not now being used as a '
-                                       'browser id namespace, thus the '
-                                       'browserid cookie cannot be forced.')
-        self._setCookie(bid, self.REQUEST)
+    security.declareProtected(ACCESS_CONTENTS_PERM, 'isBrowserIdNew')
+    def isBrowserIdNew(self):
+        """ See IBrowserIdManager.
+        """
+        if not self.getBrowserId(create=False):
+            raise BrowserIdManagerErr('There is no current browser id.')
+        # ns will be None if new
+        return getattr(self.REQUEST, 'browser_id_ns_', None) is None
 
     security.declareProtected(ACCESS_CONTENTS_PERM, 'isBrowserIdFromCookie')
     def isBrowserIdFromCookie(self):
-        """ returns true if browser id is from REQUEST.cookies """
-        if not self.getBrowserId(): # make sure the bid is stuck on REQUEST
-            raise BrowserIdManagerErr, 'There is no current browser id.'
+        """ See IBrowserIdManager.
+        """
+        if not self.getBrowserId(create=False):
+            raise BrowserIdManagerErr('There is no current browser id.')
         if getattr(self.REQUEST, 'browser_id_ns_') == 'cookies':
             return 1
 
     security.declareProtected(ACCESS_CONTENTS_PERM, 'isBrowserIdFromForm')
     def isBrowserIdFromForm(self):
-        """ returns true if browser id is from REQUEST.form """
-        if not self.getBrowserId(): # make sure the bid is stuck on REQUEST
-            raise BrowserIdManagerErr, 'There is no current browser id.'
+        """ See IBrowserIdManager.
+        """
+        if not self.getBrowserId(create=False):
+            raise BrowserIdManagerErr('There is no current browser id.')
         if getattr(self.REQUEST, 'browser_id_ns_') == 'form':
             return 1
 
     security.declareProtected(ACCESS_CONTENTS_PERM, 'isBrowserIdFromUrl')
     def isBrowserIdFromUrl(self):
-        """ returns true if browser id is from first element of the
-        URL """
-        if not self.getBrowserId(): # make sure the bid is stuck on REQUEST
-            raise BrowserIdManagerErr, 'There is no current browser id.'
+        """ See IBrowserIdManager.
+        """
+        if not self.getBrowserId(create=False):
+            raise BrowserIdManagerErr('There is no current browser id.')
         if getattr(self.REQUEST, 'browser_id_ns_') == 'url':
             return 1
 
-    security.declareProtected(ACCESS_CONTENTS_PERM, 'isBrowserIdNew')
-    def isBrowserIdNew(self):
+    security.declareProtected(ACCESS_CONTENTS_PERM, 'flushBrowserIdCookie')
+    def flushBrowserIdCookie(self):
+        """ See IBrowserIdManager.
         """
-        returns true if browser id is 'new', meaning the id exists
-        but it has not yet been acknowledged by the client (the client
-        hasn't sent it back to us in a cookie or in a formvar).
+        if 'cookies' not in self.browserid_namespaces:
+            raise BrowserIdManagerErr(
+                            'Cookies are not now being used as a '
+                            'browser id namespace, thus the '
+                            'browserid cookie cannot be flushed.')
+        self._setCookie('deleted', self.REQUEST, remove=1)
+
+    security.declareProtected(ACCESS_CONTENTS_PERM,'setBrowserIdCookieByForce')
+    def setBrowserIdCookieByForce(self, bid):
+        """ See IBrowserIdManager.
         """
-        if not self.getBrowserId(): # make sure the id is stuck on REQUEST
-            raise BrowserIdManagerErr, 'There is no current browser id.'
-        # ns will be None if new, negating None below returns 1, which
-        # would indicate that it's new on this request
-        return getattr(self.REQUEST, 'browser_id_ns_', None) == None
+        if 'cookies' not in self.browserid_namespaces:
+            raise BrowserIdManagerErr(
+                            'Cookies are not now being used as a '
+                            'browser id namespace, thus the '
+                            'browserid cookie cannot be forced.')
+        self._setCookie(bid, self.REQUEST)
+
+    security.declareProtected(ACCESS_CONTENTS_PERM, 'getHiddenFormField')
+    def getHiddenFormField(self):
+        """ See IBrowserIdManager.
+        """
+        s = '<input type="hidden" name="%s" value="%s" />'
+        return s % (self.getBrowserIdName(), self.getBrowserId())
     
     security.declareProtected(ACCESS_CONTENTS_PERM, 'encodeUrl')
     def encodeUrl(self, url, style='querystring', create=1):
-        """
-        encode a URL with the browser id as a postfixed query string
-        element or inlined into the url depending on the 'style' parameter
+        """ See IBrowserIdManager.
         """
         bid = self.getBrowserId(create)
         if bid is None:
-            raise BrowserIdManagerErr, 'There is no current browser id.'
+            raise BrowserIdManagerErr('There is no current browser id.')
         name = self.getBrowserIdName()
         if style == 'querystring': # encode bid in querystring
             if '?' in url:
@@ -272,42 +263,17 @@ class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
             path = '/%s/%s%s' % (name, bid, path)
             return urlunparse((proto, host, path, params, query, frag))
 
-    security.declareProtected(MGMT_SCREEN_PERM, 'manage_browseridmgr')
-    manage_browseridmgr = DTMLFile('dtml/manageIdManager', globals())
-
-    security.declareProtected(CHANGE_IDMGR_PERM,
-                              'manage_changeBrowserIdManager')
-    def manage_changeBrowserIdManager(
-        self, title='', idname='_ZopeId', location=('cookies', 'form'),
-        cookiepath='/', cookiedomain='', cookielifedays=0, cookiesecure=0,
-        cookiehttponly=0, auto_url_encoding=0,  REQUEST=None
-        ):
-        """ """
-        self.title = str(title)
-        self.setBrowserIdName(idname)
-        self.setCookiePath(cookiepath)
-        self.setCookieDomain(cookiedomain)
-        self.setCookieLifeDays(cookielifedays)
-        self.setCookieSecure(cookiesecure)
-        self.setCookieHTTPOnly(cookiehttponly)
-        self.setBrowserIdNamespaces(location)
-        self.setAutoUrlEncoding(auto_url_encoding)
-        self.updateTraversalData()
-        if REQUEST is not None:
-            msg = '/manage_browseridmgr?manage_tabs_message=Changes saved'
-            REQUEST.RESPONSE.redirect(self.absolute_url()+msg)
-
+    # Non-IBrowserIdManager accessors / mutators.
     security.declareProtected(CHANGE_IDMGR_PERM, 'setBrowserIdName')
     def setBrowserIdName(self, k):
-        """ sets browser id name string """
-        if not (type(k) is type('') and k and not badidnamecharsin(k)):
-            raise BrowserIdManagerErr,'Bad id name string %s' % escape(repr(k))
-        self.browserid_name = k
+        """ Set browser id name string
 
-    security.declareProtected(ACCESS_CONTENTS_PERM, 'getBrowserIdName')
-    def getBrowserIdName(self):
-        """ """
-        return self.browserid_name
+        o Enforce "valid" values.
+        """
+        if not (type(k) is type('') and k and not badidnamecharsin(k)):
+            raise BrowserIdManagerErr(
+                            'Bad id name string %s' % escape(repr(k)))
+        self.browserid_name = k
 
     security.declareProtected(CHANGE_IDMGR_PERM, 'setBrowserIdNamespaces')
     def setBrowserIdNamespaces(self, ns):
@@ -316,9 +282,8 @@ class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
         """
         for name in ns:
             if name not in ALLOWED_BID_NAMESPACES:
-                raise BrowserIdManagerErr, (
-                    'Bad browser id namespace %s' % repr(name)
-                    )
+                raise BrowserIdManagerErr(
+                            'Bad browser id namespace %s' % repr(name))
         self.browserid_namespaces = tuple(ns)
 
     security.declareProtected(ACCESS_CONTENTS_PERM, 'getBrowserIdNamespaces')
@@ -330,7 +295,8 @@ class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
     def setCookiePath(self, path=''):
         """ sets cookie 'path' element for id cookie """
         if not (type(path) is type('') and not badcookiecharsin(path)):
-            raise BrowserIdManagerErr,'Bad cookie path %s' % escape(repr(path))
+            raise BrowserIdManagerErr(
+                            'Bad cookie path %s' % escape(repr(path)))
         self.cookie_path = path
 
     security.declareProtected(ACCESS_CONTENTS_PERM, 'getCookiePath')
@@ -342,10 +308,9 @@ class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
     def setCookieLifeDays(self, days):
         """ offset for id cookie 'expires' element """
         if type(days) not in (type(1), type(1.0)):
-            raise BrowserIdManagerErr,(
-                'Bad cookie lifetime in days %s (requires integer value)'
-                % escape(repr(days))
-                )
+            raise BrowserIdManagerErr(
+                            'Bad cookie lifetime in days %s '
+                            '(requires integer value)' % escape(repr(days)))
         self.cookie_life_days = int(days)
 
     security.declareProtected(ACCESS_CONTENTS_PERM, 'getCookieLifeDays')
@@ -357,22 +322,21 @@ class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
     def setCookieDomain(self, domain):
         """ sets cookie 'domain' element for id cookie """
         if type(domain) is not type(''):
-            raise BrowserIdManagerErr, (
-                'Cookie domain must be string: %s' % escape(repr(domain))
-                )
+            raise BrowserIdManagerErr(
+                            'Cookie domain must be string: %s'
+                                % escape(repr(domain)))
         if not domain:
             self.cookie_domain = ''
             return
         if not twodotsin(domain):
-            raise BrowserIdManagerErr, (
-                'Cookie domain must contain at least two dots (e.g. '
-                '".zope.org" or "www.zope.org") or it must be left blank. : '
-                '%s' % escape(`domain`)
-                )
+            raise BrowserIdManagerErr(
+                            'Cookie domain must contain at least two dots '
+                            '(e.g. ".zope.org" or "www.zope.org") or it must '
+                            'be left blank. : ' '%s' % escape(`domain`))
         if badcookiecharsin(domain):
-            raise BrowserIdManagerErr, (
-                'Bad characters in cookie domain %s' % escape(`domain`)
-                )
+            raise BrowserIdManagerErr(
+                            'Bad characters in cookie domain %s'
+                                % escape(`domain`))
         self.cookie_domain = domain
 
     security.declareProtected(ACCESS_CONTENTS_PERM, 'getCookieDomain')
@@ -416,15 +380,6 @@ class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
         for this browser id """
         return 'url' in self.browserid_namespaces
 
-    security.declareProtected(ACCESS_CONTENTS_PERM, 'getHiddenFormField')
-    def getHiddenFormField(self):
-        """
-        Convenience method which returns a hidden form element
-        representing the current browser id name and browser id
-        """
-        s = '<input type="hidden" name="%s" value="%s">'
-        return s % (self.getBrowserIdName(), self.getBrowserId())
-
     def _setCookie(
         self, bid, REQUEST, remove=0, now=time.time, strftime=time.strftime,
         gmtime=time.gmtime
@@ -459,13 +414,15 @@ class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
 
     def _setId(self, id):
         if id != self.id:
-            raise MessageDialog(
-                title='Cannot rename',
-                message='You cannot rename a browser id manager, sorry!',
-                action ='./manage_main',)
+            raise ValueError('Cannot rename a browser id manager')
+
+    # Jukes for handling URI-munged browser IDS
+    def hasTraversalHook(self, parent):
+        name = TRAVERSAL_APPHANDLE
+        return not not queryBeforeTraverse(parent, name)
 
     def updateTraversalData(self):
-        if self.isUrlInBidNamespaces():
+        if 'url' in self.browserid_namespaces:
             self.registerTraversalHook()
         else:
             self.unregisterTraversalHook()
@@ -484,9 +441,47 @@ class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
             priority = 40 # "higher" priority than session data traverser
             registerBeforeTraverse(parent, hook, name, priority)
 
-    def hasTraversalHook(self, parent):
-        name = TRAVERSAL_APPHANDLE
-        return not not queryBeforeTraverse(parent, name)
+    # ZMI
+    icon = 'misc_/Sessions/idmgr.gif'
+    manage_options=({'label': 'Settings', 'action':'manage_browseridmgr'},
+                    {'label': 'Security', 'action':'manage_access'},
+                    {'label': 'Ownership', 'action':'manage_owner'},
+                   )
+
+    def manage_afterAdd(self, item, container):
+        """ Maybe add our traversal hook """
+        self.updateTraversalData()
+
+    def manage_beforeDelete(self, item, container):
+        """ Remove our traversal hook if it exists """
+        self.unregisterTraversalHook()
+
+    security.declareProtected(MGMT_SCREEN_PERM, 'manage_browseridmgr')
+    manage_browseridmgr = DTMLFile('dtml/manageIdManager', globals())
+
+    security.declareProtected(CHANGE_IDMGR_PERM,
+                              'manage_changeBrowserIdManager')
+    def manage_changeBrowserIdManager(
+        self, title='', idname='_ZopeId', location=('cookies', 'form'),
+        cookiepath='/', cookiedomain='', cookielifedays=0, cookiesecure=0,
+        cookiehttponly=0, auto_url_encoding=0,  REQUEST=None
+        ):
+        """ """
+        self.title = str(title)
+        self.setBrowserIdName(idname)
+        self.setCookiePath(cookiepath)
+        self.setCookieDomain(cookiedomain)
+        self.setCookieLifeDays(cookielifedays)
+        self.setCookieSecure(cookiesecure)
+        self.setCookieHTTPOnly(cookiehttponly)
+        self.setBrowserIdNamespaces(location)
+        self.setAutoUrlEncoding(auto_url_encoding)
+        self.updateTraversalData()
+        if REQUEST is not None:
+            msg = '/manage_browseridmgr?manage_tabs_message=Changes saved'
+            REQUEST.RESPONSE.redirect(self.absolute_url()+msg)
+
+InitializeClass(BrowserIdManager)
 
 class BrowserIdManagerTraverser(Persistent):
     def __call__(self, container, request, browser_id=None,
@@ -583,5 +578,3 @@ def getNewBrowserId(randint=random.randint, maxint=99999999):
     """
     return '%08i%s' % (randint(0, maxint-1), getB64TStamp())
 
-
-InitializeClass(BrowserIdManager)
