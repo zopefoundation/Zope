@@ -23,6 +23,9 @@ Restructuring
 Features Added
 ++++++++++++++
 
+- Launchpad #374719: introducing new ZPublisher events:
+  PubStart, PubSuccess, PubFailure, PubAfterTraversal and PubBeforeCommit
+
 - Launchpad #373583: ZODBMountPoint - fixed broken mount support and 
   extended the test suite.
 
