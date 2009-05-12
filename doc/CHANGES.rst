@@ -14,10 +14,6 @@ Features Added
 - zExceptions.convertExceptionType:  new API, breaking out conversion of
   exception names to exception types from 'upgradeException'.
 
-- Launchpad #375322: the <environment> section within the zope.conf
-  file is now a multisection in order to provide a more modular configuration
-  support.
-
 - Launchpad #374719: introducing new ZPublisher events:
   PubStart, PubSuccess, PubFailure, PubAfterTraversal and PubBeforeCommit.
   

@@ -292,14 +292,14 @@
     </description>
   </multisection>
 
-  <multisection type="environment" attribute="environment" name="*">
+  <section type="environment" attribute="environment" name="*">
     <description>
      A section which allows a user to define arbitrary key-value pairs for
      use as environment variables during Zope's run cycle.  It
      is not recommended to set system-related environment variables such as
      PYTHONPATH within this section.
     </description>
-  </multisection>
+  </section>
 
   <key name="instancehome" datatype="existing-directory"
        required="yes">
