@@ -52,7 +52,7 @@ Features Added
 - Extended BrowserIdManager to expose the 'HTTPOnly' attribute for its
   cookie. Also via https://bugs.launchpad.net/zope2/+bug/367393 .
 
-- Addeed support for an optional 'HTTPOnly' attribute of cookies (see
+- Added support for an optional 'HTTPOnly' attribute of cookies (see
   http://www.owasp.org/index.php/HTTPOnly).  Patch from Stephan Hofmockel,
   via https://bugs.launchpad.net/zope2/+bug/367393 .
 
