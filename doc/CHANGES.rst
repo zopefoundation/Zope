@@ -23,6 +23,10 @@ Restructuring
 Features Added
 ++++++++++++++
 
+- Launchpad #375322: the <environment> section within the zope.conf
+  file is now a multisection in order to provide a more modular configuration
+  support.
+  
 - Launchpad #374729: Encoding cookie values to avoid issues with
   firewalls and security proxies.
 

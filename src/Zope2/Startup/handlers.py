@@ -184,8 +184,10 @@ def root_handler(config):
     """
 
     # Set environment variables
-    for k,v in config.environment.items():
-        os.environ[k] = v
+    d = {}
+    for s in config.environment: 
+        d.update(s)
+    os.environ.update(d)
 
     # Add directories to the pythonpath
     instancelib = os.path.join(config.instancehome, 'lib', 'python')
