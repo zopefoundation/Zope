@@ -24,6 +24,10 @@ from zExceptions import Redirect
 from zope.publisher.interfaces import ISkinnable
 from zope.publisher.skinnable import setDefaultSkin
 from zope.security.management import newInteraction, endInteraction
+from zope.event import notify
+
+from pubevents import PubStart, PubSuccess, PubFailure, \
+     PubBeforeCommit, PubAfterTraversal
 
 class Retry(Exception):
     """Raise this to retry a request
@@ -76,6 +80,7 @@ def publish(request, module_name, after_list, debug=0,
     response=None
 
     try:
+        notify(PubStart(request))
         # TODO pass request here once BaseRequest implements IParticipation
         newInteraction()
 
@@ -110,6 +115,8 @@ def publish(request, module_name, after_list, debug=0,
 
         object=request.traverse(path, validated_hook=validated_hook)
 
+        notify(PubAfterTraversal(request))
+
         if transactions_manager:
             transactions_manager.recordMetaData(object, request)
 
@@ -122,12 +129,18 @@ def publish(request, module_name, after_list, debug=0,
         if result is not response:
             response.setBody(result)
 
+        notify(PubBeforeCommit(request))
+
         if transactions_manager:
             transactions_manager.commit()
         endInteraction()
 
+        notify(PubSuccess(request))
+
         return response
     except:
+        # save in order to give 'PubFailure' the original exception info
+        exc_info = sys.exc_info()
         # DM: provide nicer error message for FTP
         sm = None
         if response is not None:
@@ -141,6 +154,7 @@ def publish(request, module_name, after_list, debug=0,
                 debug_mode and compact_traceback()[-1] or ''))
 
         if err_hook is not None:
+            retry = False
             if parents:
                 parents=parents[0]
             try:
@@ -157,10 +171,15 @@ def publish(request, module_name, after_list, debug=0,
                                         sys.exc_info()[1],
                                         sys.exc_info()[2],
                                         )
+                    retry = True
             finally:
-                if transactions_manager:
-                    transactions_manager.abort()
-                endInteraction()
+                # Note: 'abort's can fail. Nevertheless, we want end request handling
+                try: 
+                    if transactions_manager:
+                        transactions_manager.abort()
+                finally:
+                    endInteraction()
+                    notify(PubFailure(request, exc_info, retry))
 
             # Only reachable if Retry is raised and request supports retry.
             newrequest=request.retry()
@@ -175,9 +194,13 @@ def publish(request, module_name, after_list, debug=0,
                 newrequest.close()
 
         else:
-            if transactions_manager:
-                transactions_manager.abort()
-            endInteraction()
+            # Note: 'abort's can fail. Nevertheless, we want end request handling
+            try:
+                if transactions_manager:
+                    transactions_manager.abort()
+            finally:
+                endInteraction()
+                notify(PubFailure(request, exc_info, False))
             raise
 
 

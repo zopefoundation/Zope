@@ -101,9 +101,23 @@ class StartupTestCase(unittest.TestCase):
               NSYNC doesnt
             </environment>
             """)
-        items = conf.environment.items()
+        items = conf.environment[0].items()
         items.sort()
         self.assertEqual(items, [("FEARFACTORY", "rocks"), ("NSYNC","doesnt")])
+        conf, handler = self.load_config_text("""\
+            # instancehome is here since it's required
+            instancehome <<INSTANCE_HOME>>
+            <environment>
+              FEARFACTORY rocks
+            </environment>
+            <environment>
+              NSYNC doesnt
+            </environment>
+            """)
+        self.assertEqual(len(conf.environment), 2)
+        # in principle, we should test the handler as well
+        #  But this would have vast side effects
+        #  Thus, we test with a non regression test
 
     def test_ms_author_via(self):
         import webdav

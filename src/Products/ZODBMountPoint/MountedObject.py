@@ -59,9 +59,7 @@ class SimpleTrailblazer:
         factory = guarded_getattr(dispatcher, 'manage_addFolder')
         factory(id)
         o = context.restrictedTraverse(id)
-        # Commit a subtransaction to assign the new object to
-        # the correct database.
-        transaction.savepoint(optimistic=True)
+        context._p_jar.add(o.aq_base)
         return o
 
     def traverseOrConstruct(self, path, omit_final=0):

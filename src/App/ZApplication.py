@@ -80,4 +80,5 @@ class Cleanup:
         self._jar = jar
 
     def __del__(self):
+        transaction.abort()
         self._jar.close()

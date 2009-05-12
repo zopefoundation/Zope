@@ -14,8 +14,31 @@ Features Added
 - zExceptions.convertExceptionType:  new API, breaking out conversion of
   exception names to exception types from 'upgradeException'.
 
+- Launchpad #375322: the <environment> section within the zope.conf
+  file is now a multisection in order to provide a more modular configuration
+  support.
+
+- Launchpad #374719: introducing new ZPublisher events:
+  PubStart, PubSuccess, PubFailure, PubAfterTraversal and PubBeforeCommit.
+  
 Bugs Fixed
 ++++++++++
+
+- Launchpad #374729: Encoding cookie values to avoid issues with
+  firewalls and security proxies.
+
+- Launchpad #373583: ZODBMountPoint - fixed broken mount support and 
+  extended the test suite.
+
+- Launchpad #373621: catching and logging exceptions that could cause
+  leaking of worker threads.
+
+- Launchpad #373577: setting up standard logging earlier within the startup
+  phase for improving the analysis of startup errors.
+
+- Launchpad #373601: abort transaction before connection close in order to
+  prevent connection leaks in case of persistent changes after the main
+  transaction is closed.
 
 - Fix BBB regression which prevented setting browser ID cookies from
   browser ID managers created before the 'HTTPOnly' feature landed.
@@ -50,11 +73,13 @@ Restructuring
 
 Features Added
 ++++++++++++++
+- zExceptions.convertExceptionType:  new API, breaking out conversion of
+  exception names to exception types from 'upgradeException'.
 
 - Extended BrowserIdManager to expose the 'HTTPOnly' attribute for its
   cookie. Also via https://bugs.launchpad.net/zope2/+bug/367393 .
 
-- Addeed support for an optional 'HTTPOnly' attribute of cookies (see
+- Added support for an optional 'HTTPOnly' attribute of cookies (see
   http://www.owasp.org/index.php/HTTPOnly).  Patch from Stephan Hofmockel,
   via https://bugs.launchpad.net/zope2/+bug/367393 .
 
