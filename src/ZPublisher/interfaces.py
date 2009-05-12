@@ -18,7 +18,7 @@ class IPubStart(IPubEvent):
 class IPubEnd(IPubEvent):
     '''Event notified after request processing.
 
-    Note that a retried request ends before the retrieal, the retrial
+    Note that a retried request ends before the retrial, the retrial
     itself is considered a new event.
     '''
 
