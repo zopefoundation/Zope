@@ -59,7 +59,7 @@ class SimpleTrailblazer:
         factory = guarded_getattr(dispatcher, 'manage_addFolder')
         factory(id)
         o = context.restrictedTraverse(id)
-        context._p_jar.add(o.aq_base)
+        context._p_jar.add(aq_base(o))
         return o
 
     def traverseOrConstruct(self, path, omit_final=0):
