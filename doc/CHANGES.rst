@@ -40,7 +40,7 @@ Bugs Fixed
   transaction is closed.
 
 - Fix BBB regression which prevented setting browser ID cookies from
-  browser ID managers created before the 'HTTPOnly' feature landed.
+  browser ID managers created before the ``HTTPOnly`` feature landed.
   https://bugs.launchpad.net/bugs/374816
 
 - RESPONSE.handle_errors was wrongly set (to debug, should have been
@@ -61,11 +61,11 @@ Zope 2.12.0b1 (2009/05/06)
 Restructuring
 +++++++++++++
 
-- No longer depend on `zope.app.locales`. Zope2 uses almost none of the
+- No longer depend on ``zope.app.locales``. Zope2 uses almost none of the
   translations provided in the package and is not required for most projects.
   The decision to include locales is left to the application developer now.
 
-- Removed the dependency on `zope.app.testing` in favor of providing a more
+- Removed the dependency on ``zope.app.testing`` in favor of providing a more
   minimal placeless setup as part of ZopeTestCase for our own tests.
 
 - updated to ZODB 3.9.0b1
@@ -73,12 +73,12 @@ Restructuring
 Features Added
 ++++++++++++++
 - zExceptions.convertExceptionType:  new API, breaking out conversion of
-  exception names to exception types from 'upgradeException'.
+  exception names to exception types from ``upgradeException``.
 
-- Extended BrowserIdManager to expose the 'HTTPOnly' attribute for its
+- Extended BrowserIdManager to expose the ``HTTPOnly`` attribute for its
   cookie. Also via https://bugs.launchpad.net/zope2/+bug/367393 .
 
-- Added support for an optional 'HTTPOnly' attribute of cookies (see
+- Added support for an optional ``HTTPOnly`` attribute of cookies (see
   http://www.owasp.org/index.php/HTTPOnly).  Patch from Stephan Hofmockel,
   via https://bugs.launchpad.net/zope2/+bug/367393 .
 
@@ -107,7 +107,7 @@ Restructuring
 +++++++++++++
 
 - Added automatic inline migration for databases created with older Zope
-  versions. The `Versions` screen from the `Control_Panel` is now
+  versions. The ``Versions`` screen from the ``Control_Panel`` is now
   automatically removed on Zope startup.
 
 - Removed more unused code of the versions support feature including the
@@ -136,12 +136,12 @@ Restructuring
 
 - Updated to ZODB 3.9.0a12.
 
-- Removed the `getPackages` wrapper from setup.py which would force all
+- Removed the ``getPackages`` wrapper from setup.py which would force all
   versions to an exact requirement. This made it impossible to require
   newer versions of the dependencies. This kind of KGS information needs
   to be expressed in a different way.
 
-- removed `extras_require` section from setup.py (this might possibly
+- removed ``extras_require`` section from setup.py (this might possibly
   break legacy code).
 
 Bugs Fixed
@@ -177,15 +177,15 @@ Restructuring
 - Removed bridging code from Product.Five for PlacelessTranslationService
   and Localizer. Neither of the two is actually using this anymore.
 
-- Removed the specification of `SOFTWARE_HOME` and `ZOPE_HOME` from the
+- Removed the specification of ``SOFTWARE_HOME`` and ``ZOPE_HOME`` from the
   standard instance scripts.
   [hannosch]
 
-- Made the specification of `SOFTWARE_HOME` and `ZOPE_HOME` optional. In
-  addition `INSTANCE_HOME` is no longer required to run the tests of a
+- Made the specification of ``SOFTWARE_HOME`` and ``ZOPE_HOME`` optional. In
+  addition ``INSTANCE_HOME`` is no longer required to run the tests of a
   source checkout of Zope.
 
-- Removed the `test` command from zopectl. The test.py script it was relying
+- Removed the ``test`` command from zopectl. The test.py script it was relying
   on does no longer exist.
 
 - Updated to ZODB 3.9.0a11. ZODB-level version support has been
@@ -216,7 +216,7 @@ Restructuring
   mechanism.
 
 - The persistent product registry is not required for starting Zope
-  anymore. `enable-product-installation` can be set to off if you don't
+  anymore. ``enable-product-installation`` can be set to off if you don't
   rely on the functionality provided by the registry.
 
 - ZClasses have been deprecated for two major releases. They have been
@@ -265,21 +265,22 @@ Features added
 - OFS.ObjectManager now fully implements the zope.container.IContainer
   interface. For the last Zope2 releases it already claimed to implement the
   interface, but didn't actually full-fill the interface contract. This means
-  you can start using more commonly used Python idioms to access objects inside
-  object managers. Complete dictionary-like access and container methods
-  including iteration are now supported. For each class derived from
-  ObjectManager you can use for any instance om: `om.keys()` instead of
-  `om.objectIds()`, `om.values()` instead of `om.objectValues()`, but also
-  `om.items()`, `ob.get('id')`, `ob['id']`, `'id' in om`, `iter(om)`,
-  `len(om)`, `om['id'] = object()` instead of `om._setObject('id', object())`
-  and `del ob['id']`. Should contained items of the object manager have ids
-  equal to any of the new method names, the objects will override the method,
-  as expected in Acquisition enabled types. Adding new objects into object
-  managers by those new names will no longer work, though. The added methods
-  call the already existing methods internally, so if a derived type overwrote
-  those, the new interface will provide the same functionality.
+  you can start using more commonly used Python idioms to access objects
+  inside object managers. Complete dictionary-like access and container
+  methods including iteration are now supported. For each class derived from
+  ObjectManager you can use for any instance om: ``om.keys()`` instead of
+  ``om.objectIds()``, ``om.values()`` instead of ``om.objectValues()``, but
+  also ``om.items()``, ``ob.get('id')``, ``ob['id']``, ``'id' in om``,
+  ``iter(om)``, ``len(om)``, ``om['id'] = object()`` instead of
+  ``om._setObject('id', object())`` and ``del ob['id']``. Should contained
+  items of the object manager have ids equal to any of the new method names,
+  the objects will override the method, as expected in Acquisition enabled
+  types. Adding new objects into object managers by those new names will no
+  longer work, though. The added methods call the already existing methods
+  internally, so if a derived type overwrote those, the new interface will
+  provide the same functionality.
 
-- Acquisition has been made aware of `__parent__` pointers. This allows
+- Acquisition has been made aware of ``__parent__`` pointers. This allows
   direct access to many Zope 3 classes without the need to mixin
   Acquisition base classes for the security to work.
 
@@ -313,7 +314,7 @@ Bugs Fixed
   the "classic" content provider expression from Zope 3.
 
 - Ported c69896 to Five. This fix makes it possible to provide a
-  template using Python, and not have it being set to `None` by
+  template using Python, and not have it being set to ``None`` by
   the viewlet manager directive.
 
 - Made Five.testbrowser compatible with mechanize 0.1.7b.
