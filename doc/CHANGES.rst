@@ -11,6 +11,9 @@ Trunk (unreleased)
 Restructuring
 +++++++++++++
 
+- Use ``IAdding`` interface from ``zope.browser``, rather than
+  ``zope.app.container``.
+
 - No longer depend on ``zope.app.appsetup``;  use the event implementations
   from ``zope.processlifetime`` instead.
 

@@ -18,6 +18,7 @@ $Id$
 from App.class_init import InitializeClass
 from ExtensionClass import Base
 
+from zope.browser.interfaces import IAdding
 import zope.component
 from zope.interface import Interface
 from zope.i18nmessageid import MessageFactory
@@ -25,7 +26,6 @@ _ = MessageFactory('zope')
 
 from zope.app.publisher.browser.menumeta import menuItemDirective
 from zope.app.form.browser.metaconfigure import BaseFormDirective
-from zope.app.container.interfaces import IAdding
 
 from Products.Five.form import EditView, AddView
 from Products.Five.metaclass import makeClass

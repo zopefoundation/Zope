@@ -46,7 +46,7 @@
   <!-- .democontent.IDemoContent views -->
 
   <browser:page
-      for="zope.app.container.interfaces.IAdding"
+      for="zope.browser.interfaces.IAdding"
       name="addDemoContent.html"
       template="addDemoContent.pt"
       class=".browser.DemoContentAddView"
