@@ -8,6 +8,12 @@ file HISTORY.txt.
 Trunk (unreleased)
 ------------------
 
+Restructuring
++++++++++++++
+
+- No longer depend on ``zope.app.appsetup``;  use the event implementations
+  from ``zope.processlifetime`` instead.
+
 Features Added
 ++++++++++++++
 

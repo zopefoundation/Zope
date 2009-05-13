@@ -11,27 +11,25 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-
-""" Startup package.  Responsible for startup configuration of Zope """
-
+""" Startup package.  Responsible for startup configuration of Zope.
+"""
 import logging
 import os
+from re import compile
 import sys
 import socket
-from re import compile
-from socket import gethostbyaddr
-try:
+
+try: # XXX:  YAGNI
     import twisted.internet.reactor
     _use_twisted = True
 except ImportError:
     _use_twisted = True
     
-
-import ZConfig
+from ZConfig import ConfigurationError
 from ZConfig.components.logger import loghandler
 
 from zope.event import notify
-from zope.app import appsetup
+from zope.processlifetime import ProcessStarting
 
 logger = logging.getLogger("Zope")
 started = False
@@ -73,7 +71,7 @@ class ZopeStarter:
 
 
     def sendEvents(self):
-        notify(appsetup.interfaces.ProcessStarting())
+        notify(ProcessStarting())
 
     def prepare(self):
         self.setupInitialLogging()
@@ -110,11 +108,11 @@ class ZopeStarter:
             config = getConfiguration()
             import ZServer
             if config.twisted_servers and config.servers:
-                raise ZConfig.ConfigurationError(
+                raise ConfigurationError(
                     "You can't run both ZServer servers and twisted servers.")
-            if config.twisted_servers:
+            if config.twisted_servers: # XXX: YAGNI
                 if not _use_twisted:
-                    raise ZConfig.ConfigurationError(
+                    raise ConfigurationError(
                         "You do not have twisted installed.")
                 twisted.internet.reactor.run()
                 # Storing the exit code in the ZServer even for twisted, 
@@ -183,7 +181,7 @@ class ZopeStarter:
             try:
                 import locale
             except:
-                raise ZConfig.ConfigurationError(
+                raise ConfigurationError(
                     'The locale module could not be imported.\n'
                     'To use localization options, you must ensure\n'
                     'that the locale module is compiled into your\n'
@@ -192,7 +190,7 @@ class ZopeStarter:
             try:
                 locale.setlocale(locale.LC_ALL, locale_id)
             except:
-                raise ZConfig.ConfigurationError(
+                raise ConfigurationError(
                     'The specified locale "%s" is not supported by your'
                     'system.\nSee your operating system documentation for '
                     'more\ninformation on locale support.' % locale_id
@@ -231,8 +229,8 @@ class ZopeStarter:
             try:
                 servers.append(server.create())
             except socket.error,e:
-                raise ZConfig.ConfigurationError(socket_err
-                                                 % (server.servertype(),e[1]))
+                raise ConfigurationError(socket_err
+                                           % (server.servertype(),e[1]))
         self.cfg.servers = servers
 
     def dropPrivileges(self):
@@ -382,9 +380,10 @@ def check_python_version():
     python_version = sys.version.split()[0]
     optimum_version = '2.3.4'
     if python_version < '2.3.4':
-        raise ZConfig.ConfigurationError(
-            'Invalid python version: %s, the optimal version is %s or higher' %
-            (python_version, optimum_version))
+        raise ConfigurationError(
+                    'Invalid python version: %s; '
+                    'the optimal version is %s or higher' %
+                        (python_version, optimum_version))
 
 
 def dropPrivileges(cfg):
@@ -405,7 +404,7 @@ def dropPrivileges(cfg):
                'start as root (change the effective-user directive '
                'in zope.conf)')
         logger.critical(msg)
-        raise ZConfig.ConfigurationError(msg)
+        raise ConfigurationError(msg)
 
     try:
         uid = int(effective_user)
@@ -415,7 +414,7 @@ def dropPrivileges(cfg):
         except KeyError:
             msg = "Can't find username %r" % effective_user
             logger.error(msg)
-            raise ZConfig.ConfigurationError(msg)
+            raise ConfigurationError(msg)
         uid = pwrec[2]
     else:
         try:
@@ -423,13 +422,13 @@ def dropPrivileges(cfg):
         except KeyError:
             msg = "Can't find uid %r" % uid
             logger.error(msg)
-            raise ZConfig.ConfigurationError(msg)
+            raise ConfigurationError(msg)
     gid = pwrec[3]
 
     if uid == 0:
         msg = 'Cannot start Zope with the effective user as the root user'
         logger.error(msg)
-        raise ZConfig.ConfigurationError(msg)
+        raise ConfigurationError(msg)
 
     try:
         import initgroups
@@ -451,4 +450,4 @@ def _name2Ips(host, isIp_=compile(r'(\d+\.){3}').match):
     identify it by its ip (and not the host name).
     '''
     if isIp_(host): return [host]
-    return gethostbyaddr(host)[2]
+    return socket.gethostbyaddr(host)[2]

@@ -19,7 +19,7 @@ from setuptools import setup, find_packages, Extension
 EXTENSIONCLASS_INCLUDEDIRS = ['include', 'src']
 
 params = dict(name='Zope2',
-    version='2.12.0b1',
+    version='2.12.0b2dev',
     url='http://www.zope.org',
     license='ZPL 2.1',
     description='Zope2 application server / web framework',
@@ -128,6 +128,7 @@ params = dict(name='Zope2',
       'zope.lifecycleevent',
       'zope.location',
       'zope.pagetemplate',
+      'zope.processlifetime',
       'zope.proxy',
       'zope.publisher',
       'zope.schema',
