@@ -16,6 +16,9 @@ Features Added
 
 - Launchpad #374719: introducing new ZPublisher events:
   PubStart, PubSuccess, PubFailure, PubAfterTraversal and PubBeforeCommit.
+
+- Testing.ZopeTestCase: Include a copy of ZODB.tests.warnhook to silence
+  a DeprecationWarning under Python 2.6.
   
 Bugs Fixed
 ++++++++++

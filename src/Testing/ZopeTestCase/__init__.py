@@ -43,7 +43,7 @@ from base import TestCase
 from base import app
 from base import close
 
-from ZODB.tests.warnhook import WarningsHook
+from warnhook import WarningsHook
 from unittest import main
 
 from zopedoctest import ZopeDocTestSuite
