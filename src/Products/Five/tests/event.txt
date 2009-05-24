@@ -56,7 +56,7 @@ framework's ones, so ours will be called first. This has the effect that
 printed events will be in their "natural" order::
 
   >>> from zope.component.interfaces import IObjectEvent, IRegistrationEvent
-  >>> from zope.container.interfaces import IObjectMovedEvent
+  >>> from zope.lifecycleevent.interfaces import IObjectMovedEvent
   >>> from zope.lifecycleevent.interfaces import IObjectCopiedEvent
   >>> from OFS.interfaces import IObjectWillBeMovedEvent
   >>> from OFS.interfaces import IObjectClonedEvent

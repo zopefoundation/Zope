@@ -23,7 +23,7 @@ from zope.configuration.exceptions import ConfigurationError
 from zope.interface import classImplements
 from zope.interface import implements
 from zope.interface import Interface
-from zope.publisher.interfaces.browser import IBrowserView
+from zope.browser.interfaces import IBrowserView
 from zope.publisher.interfaces.browser import IDefaultBrowserLayer
 from zope.viewlet import interfaces
 

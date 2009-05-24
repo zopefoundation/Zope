@@ -51,8 +51,8 @@ from zExceptions import BadRequest
 from zope.interface import implements
 from zope.component.interfaces import ComponentLookupError
 from zope.event import notify
-from zope.container.contained import ObjectAddedEvent
-from zope.container.contained import ObjectRemovedEvent
+from zope.lifecycleevent import ObjectAddedEvent
+from zope.lifecycleevent import ObjectRemovedEvent
 from zope.container.contained import notifyContainerModified
 
 from OFS.CopySupport import CopyContainer

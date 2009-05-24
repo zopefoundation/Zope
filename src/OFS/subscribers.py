@@ -30,7 +30,7 @@ import zope.component
 import zope.interface
 import zope.location.interfaces
 from zope.container.contained import dispatchToSublocations
-from zope.container.interfaces import IObjectMovedEvent
+from zope.lifecycleevent.interfaces import IObjectMovedEvent
 from zope.lifecycleevent.interfaces import IObjectCopiedEvent
 
 deprecatedManageAddDeleteClasses = []

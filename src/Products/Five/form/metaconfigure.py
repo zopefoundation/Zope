@@ -25,7 +25,7 @@ _ = MessageFactory('zope')
 
 from zope.app.publisher.browser.menumeta import menuItemDirective
 from zope.app.form.browser.metaconfigure import BaseFormDirective
-from zope.app.container.interfaces import IAdding
+from zope.browser.interfaces import IAdding
 
 from Products.Five.form import EditView, AddView
 from Products.Five.metaclass import makeClass

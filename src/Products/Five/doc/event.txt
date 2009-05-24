@@ -131,7 +131,7 @@ zcml, so in ``configure.zcml`` we'll add::
     ...
       <subscriber
           for="Products.CoolProduct.interfaces.ICoolDocument
-               zope.container.interfaces.IObjectAddedEvent"
+               zope.lifecycleevent.interfaces.IObjectAddedEvent"
           handler="Products.CoolProduct.CoolDocument.addedCoolDocument"
           />
     ...
@@ -214,7 +214,7 @@ And replace the subscriber with::
     ...
       <subscriber
           for="Products.CoolProduct.interfaces.ICoolDocument
-               zope.container.interfaces.IObjectMovedEvent"
+               zope.lifecycleevent.interfaces.IObjectMovedEvent"
           handler="Products.CoolProduct.CoolDocument.movedCoolDocument"
           />
     ...

@@ -19,14 +19,18 @@ Features Added
 
 - Testing.ZopeTestCase: Include a copy of ZODB.tests.warnhook to silence
   a DeprecationWarning under Python 2.6.
-  
+
+- Updated packages: pytz 2009g, zope.browser 1.2, zope.container 3.8.2,
+  zope.lifecycleevent 3.5.2, zope.location 3.5.4, zope.publisher 3.7.0,
+  zope.testing 3.7.4.
+
 Bugs Fixed
 ++++++++++
 
 - Launchpad #374729: Encoding cookie values to avoid issues with
   firewalls and security proxies.
 
-- Launchpad #373583: ZODBMountPoint - fixed broken mount support and 
+- Launchpad #373583: ZODBMountPoint - fixed broken mount support and
   extended the test suite.
 
 - Launchpad #373621: catching and logging exceptions that could cause

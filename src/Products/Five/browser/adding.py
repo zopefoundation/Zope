@@ -42,7 +42,7 @@ from zope.traversing.browser.absoluteurl import absoluteURL
 from zope.exceptions.interfaces import UserError
 from zope.lifecycleevent import ObjectCreatedEvent
 
-from zope.app.container.interfaces import IAdding
+from zope.browser.interfaces import IAdding
 from zope.app.publisher.browser.menu import getMenu
 
 from zExceptions import BadRequest
@@ -55,7 +55,7 @@ class BasicAdding(BrowserView):
     implements(IAdding, IPublishTraverse)
 
     def add(self, content):
-        """See zope.app.container.interfaces.IAdding
+        """See zope.browser.interfaces.IAdding
         """
         container = self.context
         name = self.contentName
@@ -90,7 +90,7 @@ class BasicAdding(BrowserView):
     contentName = None # usually set by Adding traverser
 
     def nextURL(self):
-        """See zope.app.container.interfaces.IAdding"""
+        """See zope.browser.interfaces.IAdding"""
         # XXX this is definitely not right for all or even most uses
         # of Five, but can be overridden by an AddView subclass, using
         # the class attribute of a zcml:addform directive

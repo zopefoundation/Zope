@@ -87,7 +87,7 @@ But now we register some viewlets for the manager
 
   >>> import zope.component
   >>> from zope.publisher.interfaces.browser import IDefaultBrowserLayer
-  >>> from zope.publisher.interfaces.browser import IBrowserView
+  >>> from zope.browser.interfaces import IBrowserView
 
   >>> class WeatherBox(object):
   ...     zope.interface.implements(interfaces.IViewlet)

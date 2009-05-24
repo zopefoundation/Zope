@@ -43,8 +43,8 @@ from Persistence import Persistent
 from Products.ZCatalog.Lazy import LazyMap
 from ZODB.POSException import ConflictError
 from zope.event import notify
-from zope.container.contained import ObjectAddedEvent
-from zope.container.contained import ObjectRemovedEvent
+from zope.lifecycleevent import ObjectAddedEvent
+from zope.lifecycleevent import ObjectRemovedEvent
 from zope.container.contained import notifyContainerModified
 
 
