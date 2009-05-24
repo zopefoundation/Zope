@@ -27,6 +27,7 @@ Features Added
   * zope.app.appsetup 3.11
   * zope.app.component 3.8.2
   * zope.app.container 3.8.0
+  * zope.app.form 3.8.0
   * zope.app.http 3.6.0
   * zope.app.interface 3.5.0
   * zope.app.pagetemplate 3.6.0
