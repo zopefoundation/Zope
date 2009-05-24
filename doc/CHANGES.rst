@@ -22,6 +22,7 @@ Features Added
 
 - Updated packages:
 
+  * python-gettext 1.0
   * pytz 2009g
   * zope.app.applicationcontrol = 3.5.0
   * zope.app.appsetup 3.11
