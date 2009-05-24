@@ -17,13 +17,11 @@ $Id$
 """
 import os.path
 
-from datetime import datetime
-
 import zope.event
 import zope.formlib
 import zope.lifecycleevent
 from zope import interface
-from zope.formlib import interfaces, form, namedtemplate
+from zope.formlib import interfaces, form
 from zope.i18nmessageid import MessageFactory
 _ = MessageFactory("zope")
 

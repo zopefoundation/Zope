@@ -24,7 +24,7 @@ from zope.interface import implements, Interface
 from zope.component import queryMultiAdapter
 from zope.event import notify
 from zope.app.publication.interfaces import EndRequestEvent
-from zope.app.publisher.browser import queryDefaultViewName
+from zope.publisher.defaultview import queryDefaultViewName
 from zope.publisher.interfaces import IPublishTraverse
 from zope.publisher.interfaces.browser import IBrowserPublisher
 from zope.traversing.interfaces import TraversalError

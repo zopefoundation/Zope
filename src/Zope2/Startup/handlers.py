@@ -8,7 +8,6 @@ from socket import gethostbyaddr
 try:
     import twisted.internet
     from twisted.application.service import MultiService
-    import zope.app.appsetup.interfaces
     import zope.app.twisted.main
 
     import twisted.web2.wsgi

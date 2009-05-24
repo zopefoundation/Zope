@@ -39,7 +39,7 @@ import Zope2
 import ZPublisher
 
 from zope.event import notify
-from zope.app import appsetup
+from zope.processlifetime import DatabaseOpened
 
 app = None
 startup_time = asctime()
@@ -82,7 +82,7 @@ def startup():
         else:
             DB = ZODB.DB(m.Storage, databases=databases)
 
-    notify(appsetup.interfaces.DatabaseOpened(DB))
+    notify(DatabaseOpened(DB))
 
     Globals.BobobaseName = DB.getName()
 

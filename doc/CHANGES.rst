@@ -20,9 +20,30 @@ Features Added
 - Testing.ZopeTestCase: Include a copy of ZODB.tests.warnhook to silence
   a DeprecationWarning under Python 2.6.
 
-- Updated packages: pytz 2009g, zope.browser 1.2, zope.container 3.8.2,
-  zope.lifecycleevent 3.5.2, zope.location 3.5.4, zope.publisher 3.7.0,
-  zope.testing 3.7.4.
+- Updated packages:
+
+  * pytz 2009g
+  * zope.app.applicationcontrol = 3.5.0
+  * zope.app.appsetup 3.11
+  * zope.app.component 3.8.2
+  * zope.app.container 3.8.0
+  * zope.app.http 3.6.0
+  * zope.app.interface 3.5.0
+  * zope.app.pagetemplate 3.6.0
+  * zope.app.publication 3.7.0
+  * zope.app.publisher 3.8.0
+  * zope.browser 1.2
+  * zope.component 3.7.0
+  * zope.componentvocabulary 1.0
+  * zope.container 3.8.2
+  * zope.formlib 3.6.0
+  * zope.lifecycleevent 3.5.2
+  * zope.location 3.5.4
+  * zope.processlifetime 1.0
+  * zope.publisher 3.8.0
+  * zope.security 3.7.0
+  * zope.testing 3.7.4
+  * zope.traversing 3.7.0
 
 Bugs Fixed
 ++++++++++

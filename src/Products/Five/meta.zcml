@@ -13,8 +13,8 @@
 
     <meta:directive
         name="view"
-        schema="zope.app.component.metadirectives.IViewDirective"
-        handler="zope.app.component.metaconfigure.view"
+        schema="zope.component.zcml.IViewDirective"
+        handler="zope.component.zcml.view"
         />
 
     <meta:complexDirective

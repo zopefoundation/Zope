@@ -16,9 +16,3 @@ e.g. Fields and Actions in order to define and select fields and to add
 actions to your form.
 
 See Products.Five.formlib.tests for a minimal example.
-
-Note:
------
-
-Currently zope.formlib.page and zope.formlib.namedtemplate are not
-supported in Five.

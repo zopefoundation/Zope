@@ -31,7 +31,7 @@ import ZConfig
 from ZConfig.components.logger import loghandler
 
 from zope.event import notify
-from zope.app import appsetup
+from zope.processlifetime import ProcessStarting
 
 logger = logging.getLogger("Zope")
 started = False
@@ -73,7 +73,7 @@ class ZopeStarter:
 
 
     def sendEvents(self):
-        notify(appsetup.interfaces.ProcessStarting())
+        notify(ProcessStarting())
 
     def prepare(self):
         self.setupInitialLogging()
