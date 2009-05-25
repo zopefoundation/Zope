@@ -8,6 +8,18 @@ file HISTORY.txt.
 Trunk (unreleased)
 ------------------
 
+Restructuring
++++++++++++++
+
+- Use ``IBrowserView`` interface from ``zope.browser.interfaces``, rather than
+  ``zope.publisher.interfaces.browser``.
+
+- Use ``IAdding`` interface from ``zope.browser.interfaces``, rather than
+  ``zope.app.container``.
+
+- No longer depend on ``zope.app.appsetup``;  use the event implementations
+  from ``zope.processlifetime`` instead.
+
 Features Added
 ++++++++++++++
 
