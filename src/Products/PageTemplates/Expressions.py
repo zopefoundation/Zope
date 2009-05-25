@@ -32,7 +32,7 @@ from zope.tales.pythonexpr import PythonExpr
 from zope.traversing.interfaces import ITraversable
 from zope.traversing.adapters import traversePathElement
 from zope.proxy import removeAllProxies
-import zope.app.pagetemplate.engine
+from zope.app.pagetemplate.engine import ZopeEngine
 
 import OFS.interfaces
 from MultiMapping import MultiMapping
@@ -254,7 +254,7 @@ class ErrorInfo(BaseErrorInfo):
     """
     __allow_access_to_unprotected_subobjects__ = True
 
-class ZopeEngine(zope.app.pagetemplate.engine.ZopeEngine):
+class ZopeEngine(ZopeEngine):
 
     _create_context = ZopeContext
 
