@@ -11,6 +11,10 @@ Trunk (unreleased)
 Restructuring
 +++++++++++++
 
+- Use ``zope.pagetemplate.engine`` instead of ``zope.app.pagetemplate.engine``.
+  (update to versions 3.5.0 and 3.7.0, respectively, along with version 3.8.1
+  of ``zope.app.publisher``).
+
 - Use ``IBrowserView`` interface from ``zope.browser.interfaces``, rather than
   ``zope.publisher.interfaces.browser``.
 
