@@ -22,15 +22,17 @@ import os
 from inspect import ismethod
 
 from zope import component
+from zope.interface import implements
 from zope.interface import Interface
 from zope.component.zcml import handler
 from zope.component.interface import provideInterface
 from zope.configuration.exceptions import ConfigurationError
-from zope.publisher.interfaces.browser import IBrowserRequest
+from zope.publisher.interfaces import NotFound
 from zope.publisher.interfaces.browser import IDefaultBrowserLayer
+from zope.publisher.interfaces.browser import IBrowserPublisher
+from zope.publisher.interfaces.browser import IBrowserRequest
 
 import zope.app.publisher.browser.viewmeta
-import zope.app.pagetemplate.simpleviewclass
 from zope.app.publisher.browser.viewmeta import providesCallable
 from zope.app.publisher.browser.viewmeta import _handle_menu
 from zope.app.publisher.browser.viewmeta import _handle_for
@@ -405,9 +407,24 @@ class ViewMixinForAttributes(BrowserView,
     def __call__(self):
         return getattr(self, self.__page_attribute__)
 
-class ViewMixinForTemplates(BrowserView,
-                            zope.app.pagetemplate.simpleviewclass.simple):
-    pass
+class ViewMixinForTemplates(BrowserView):
+    # Cloned from zope.app.pagetemplate.simpleviewclass.simple
+    implements(IBrowserPublisher)
+
+    def browserDefault(self, request):
+        return self, ()
+
+    def publishTraverse(self, request, name):
+        if name == 'index.html':
+            return self.index
+
+        raise NotFound(self, name, request)
+
+    def __getitem__(self, name):
+        return self.index.macros[name]
+
+    def __call__(self, *args, **kw):
+        return self.index(*args, **kw)
 
 def makeClassForTemplate(filename, globals=None, used_for=None,
                          bases=(), cdict=None, name=u''):

@@ -16,7 +16,9 @@
 $Id$
 """
 from os.path import basename
-from zope.app.pagetemplate import viewpagetemplatefile
+from zope.component import getMultiAdapter
+from zope.pagetemplate.pagetemplatefile import PageTemplateFile
+from zope.pagetemplate.engine import TrustedAppPT
 
 from Acquisition import aq_get
 from AccessControl import getSecurityManager
@@ -29,9 +31,14 @@ _engine = createTrustedZopeEngine()
 def getEngine():
     return _engine
 
-class ViewPageTemplateFile(viewpagetemplatefile.ViewPageTemplateFile):
+class ViewPageTemplateFile(TrustedAppPT, PageTemplateFile):
     """Page Template used as class variable of views defined as Python classes.
     """
+    def __init__(self, filename, _prefix=None, content_type=None):
+        _prefix = self.get_path_from_prefix(_prefix)
+        super(ViewPageTemplateFile, self).__init__(filename, _prefix)
+        if content_type is not None:
+            self.content_type = content_type
 
     def getId(self):
         return basename(self.filename)
@@ -61,40 +68,68 @@ class ViewPageTemplateFile(viewpagetemplatefile.ViewPageTemplateFile):
         return getEngine()
 
     def pt_getContext(self, instance, request, **kw):
-        context = super(ViewPageTemplateFile, self).pt_getContext(
-            instance, request, **kw)
+        namespace = super(ViewPageTemplateFile, self).pt_getContext(**kw)
+        namespace['request'] = request
+        namespace['view'] = instance
+        namespace['context'] = context = instance.context
+        namespace['views'] = ViewMapper(context, request)
 
         # get the root
-        obj = context['context']
+        obj = context
         root = None
         meth = aq_get(obj, 'getPhysicalRoot', None)
         if meth is not None:
             root = meth()
 
-        context.update(here=obj,
-                       # philiKON thinks container should be the view,
-                       # but BBB is more important than aesthetics.
-                       container=obj,
-                       root=root,
-                       modules=SecureModuleImporter,
-                       traverse_subpath=[],  # BBB, never really worked
-                       user = getSecurityManager().getUser()
-                       )
-        return context
+        namespace.update(here=obj,
+                         # philiKON thinks container should be the view,
+                         # but BBB is more important than aesthetics.
+                         container=obj,
+                         root=root,
+                         modules=SecureModuleImporter,
+                         traverse_subpath=[],  # BBB, never really worked
+                         user = getSecurityManager().getUser()
+                        )
+        return namespace
 
     def __get__(self, instance, type):
         return BoundPageTemplate(self, instance)
 
+
+class ViewMapper(object):
+    def __init__(self, ob, request):
+        self.ob = ob
+        self.request = request
+
+    def __getitem__(self, name):
+        return getMultiAdapter((self.ob, self.request), name=name)
 
 # When a view's template is accessed e.g. as template.view, a
 # BoundPageTemplate object is retured.  For BBB reasons, it needs to
 # support the aq_* methods and attributes known from Acquisition.  For
 # that it also needs to be locatable thru __parent__.
 
-class BoundPageTemplate(viewpagetemplatefile.BoundPageTemplate,
-                        AcquisitionBBB):
+class BoundPageTemplate(AcquisitionBBB):
+    def __init__(self, pt, ob):
+        object.__setattr__(self, 'im_func', pt)
+        object.__setattr__(self, 'im_self', ob)
 
+    macros = property(lambda self: self.im_func.macros)
+    filename = property(lambda self: self.im_func.filename)
     __parent__ = property(lambda self: self.im_self)
+
+    def __call__(self, *args, **kw):
+        if self.im_self is None:
+            im_self, args = args[0], args[1:]
+        else:
+            im_self = self.im_self
+        return self.im_func(im_self, *args, **kw)
+
+    def __setattr__(self, name, v):
+        raise AttributeError("Can't set attribute", name)
+
+    def __repr__(self):
+        return "<BoundPageTemplateFile of %r>" % self.im_self
 
 
 # BBB

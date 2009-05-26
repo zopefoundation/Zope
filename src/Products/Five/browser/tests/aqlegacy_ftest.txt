@@ -176,9 +176,6 @@ ViewPageTemplateFile's take arbitrary keyword arguments:
 Passing in an argument called instance was supported by the old Five version
 of ViewPageTemplateFile, so we still need to support it.
 
-In the zope.app.pagetemplate version, the first required argument is called
-instance, though.
-
   >>> print template(instance='allowed')
   <p>The falcon has taken flight</p>
 

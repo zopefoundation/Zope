@@ -18,10 +18,10 @@ Zope2 depends on the following zope.app packages directly:
 - [_] zope.app.form
       o Products.Five.form.*
 
-- [_] zope.app.pagetemplate 
-      o Products.PageTemplates.Expressions
-      o Products.Five.browser.pagetemplatefile
-      o Products.Five.browser.metaconfigure
+- [X] zope.app.pagetemplate 
+      * Products.PageTemplates.Expressions
+      * Products.Five.browser.pagetemplatefile
+      * Products.Five.browser.metaconfigure
 
 - [_] zope.app.publication 
       o ZPublisher.BaseRequest

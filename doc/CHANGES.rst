@@ -11,6 +11,9 @@ Trunk (unreleased)
 Restructuring
 +++++++++++++
 
+- Removed all use of ``zope.app.pagetemplate`` by cloning / simplifying
+  client code.
+
 - Use ``zope.pagetemplate.engine`` instead of ``zope.app.pagetemplate.engine``.
   (update to versions 3.5.0 and 3.7.0, respectively, along with version 3.8.1
   of ``zope.app.publisher``).
