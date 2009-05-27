@@ -16,6 +16,9 @@ Restructuring
 Features Added
 ++++++++++++++
 
+* Updated packages:
+
+  - zope.app.cache 3.6.0
 
 Bugs Fixed
 ++++++++++
