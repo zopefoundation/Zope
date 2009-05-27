@@ -18,7 +18,8 @@ Features Added
 
 * Updated packages:
 
-  - zope.app.cache 3.6.0
+  - zope.app.cache = 3.6.0
+  - zope.app.pagetemplate = 3.7.1
 
 Bugs Fixed
 ++++++++++
