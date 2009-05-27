@@ -16,7 +16,7 @@ How to build and install Zope from source code on Windows.
   % python.exe inst\configure.py
   It should say something like:
   >
-  > - Zope top-level binary directory will be c:\Zope-2.12.
+  > - Zope top-level binary directory will be c:\Zope-2.13.
   > - Makefile written.
   >
   > Next, run the Visual C++ batch file "VCVARS32.bat" and then "nmake".

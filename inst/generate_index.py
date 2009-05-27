@@ -49,7 +49,7 @@ server = Server('http://pypi.python.org/pypi')
 links = list()
 dirname = sys.argv[1]
 
-write_index('Zope2', '2.12.0a3')
+write_index('Zope2', '2.13.0dev')
 
 for package in CP.options('versions'):
 

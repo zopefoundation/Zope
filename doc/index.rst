@@ -1,5 +1,5 @@
 
-Zope 2.12 specific documentation
+Zope 2.13 specific documentation
 ================================
 
 Contents:
