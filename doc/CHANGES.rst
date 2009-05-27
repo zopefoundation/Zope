@@ -11,6 +11,8 @@ Trunk (unreleased)
 Restructuring
 +++++++++++++
 
+* Integrated zLOG package back into this package.
+
 * Updated documentation to new version number.
 
 Features Added
