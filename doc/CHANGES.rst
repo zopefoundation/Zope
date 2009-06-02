@@ -22,6 +22,7 @@ Features Added
 
   - zope.app.cache = 3.6.0
   - zope.app.pagetemplate = 3.7.1
+  - zope.contenttype = 3.4.2
   - zope.server = 3.6.0
 
 Bugs Fixed
