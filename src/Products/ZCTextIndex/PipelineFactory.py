@@ -13,8 +13,7 @@
 ##############################################################################
 from zope.interface import implements
 
-from Products.ZCTextIndex.IPipelineElementFactory \
-     import IPipelineElementFactory
+from Products.ZCTextIndex.interfaces import IPipelineElementFactory
 
 class PipelineElementFactory:
 

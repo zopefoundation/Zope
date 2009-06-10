@@ -15,7 +15,7 @@ import re
 
 from zope.interface import implements
 
-from Products.ZCTextIndex.ISplitter import ISplitter
+from Products.ZCTextIndex.interfaces import ISplitter
 from Products.ZCTextIndex.PipelineFactory import element_factory
 
 class HTMLWordSplitter:

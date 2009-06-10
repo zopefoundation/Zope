@@ -16,7 +16,7 @@
 from BTrees.IIBTree import difference
 from zope.interface import implements
 
-from Products.ZCTextIndex.IQueryParseTree import IQueryParseTree
+from Products.ZCTextIndex.interfaces import IQueryParseTree
 from Products.ZCTextIndex.SetOps import mass_weightedIntersection
 from Products.ZCTextIndex.SetOps import mass_weightedUnion
 

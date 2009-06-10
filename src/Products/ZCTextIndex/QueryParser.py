@@ -58,7 +58,7 @@ import re
 
 from zope.interface import implements
 
-from Products.ZCTextIndex.IQueryParser import IQueryParser
+from Products.ZCTextIndex.interfaces import IQueryParser
 from Products.ZCTextIndex import ParseTree
 
 # Create unique symbols for token types.

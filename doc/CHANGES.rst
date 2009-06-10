@@ -11,14 +11,17 @@ Trunk (unreleased)
 Restructuring
 +++++++++++++
 
-* Integrated zLOG package back into this package.
+- Centralize interfaces defined in Products.ZCTextIndex,  leaving BBB
+  imports behind in old locations.
 
-* Updated documentation to new version number.
+- Integrated zLOG package back into this package.
+
+- Updated documentation to new version number.
 
 Features Added
 ++++++++++++++
 
-* Updated packages:
+- Updated packages:
 
   - zope.app.cache = 3.6.0
   - zope.app.pagetemplate = 3.7.1

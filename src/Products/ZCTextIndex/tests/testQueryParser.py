@@ -18,7 +18,7 @@ class TestInterfaces(TestCase):
 
     def testInterfaces(self):
         from zope.interface.verify import verifyClass
-        from Products.ZCTextIndex.IQueryParser import IQueryParser
+        from Products.ZCTextIndex.interfaces import IQueryParser
         from Products.ZCTextIndex.QueryParser import QueryParser
         verifyClass(IQueryParser, QueryParser)
 

@@ -27,8 +27,8 @@ from BTrees.Length import Length
 from Persistence import Persistent
 from zope.interface import implements
 
-from Products.ZCTextIndex.IIndex import IIndex
 from Products.ZCTextIndex import WidCode
+from Products.ZCTextIndex.interfaces import IIndex
 from Products.ZCTextIndex.SetOps import mass_weightedIntersection
 from Products.ZCTextIndex.SetOps import mass_weightedUnion
 

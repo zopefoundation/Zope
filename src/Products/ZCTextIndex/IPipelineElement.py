@@ -12,18 +12,4 @@
 #
 ##############################################################################
 
-from zope.interface import Interface
-
-class IPipelineElement(Interface):
-
-    def process(source):
-        """Provide a text processing step.
-
-        Process a source sequence of words into a result sequence.
-        """
-
-    def processGlob(source):
-        """Process, passing through globbing metacharaters.
-
-        This is an optional method; if it is not used, process() is used.
-        """
+from Products.ZCTextIndex.interfaces import IPipelineElement # BBB

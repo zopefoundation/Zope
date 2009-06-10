@@ -21,7 +21,7 @@ from BTrees.IIBTree import IIBucket
 from BTrees.Length import Length
 from zope.interface import implements
 
-from Products.ZCTextIndex.IIndex import IIndex
+from Products.ZCTextIndex.interfaces import IIndex
 from Products.ZCTextIndex.BaseIndex import BaseIndex
 from Products.ZCTextIndex.BaseIndex import inverse_doc_frequency
 from Products.ZCTextIndex.BaseIndex import scaled_int

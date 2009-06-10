@@ -24,10 +24,10 @@ from BTrees.Length import Length
 from Persistence import Persistent
 from zope.interface import implements
 
+from Products.ZCTextIndex.interfaces import ILexicon
 from Products.ZCTextIndex.StopDict import get_stopdict
 from Products.ZCTextIndex.ParseTree import QueryError
 from Products.ZCTextIndex.PipelineFactory import element_factory
-from Products.ZCTextIndex.interfaces import ILexicon
 
 
 class Lexicon(Persistent):

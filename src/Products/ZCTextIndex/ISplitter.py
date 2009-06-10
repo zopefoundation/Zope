@@ -12,10 +12,4 @@
 #
 ##############################################################################
 
-from zope.interface import Interface
-
-class ISplitter(Interface):
-    """A splitter."""
-
-    def process(text):
-        """Run the splitter over the input text, returning a list of terms."""
+from Products.ZCTextIndex.interfaces import ISplitter # BBB

@@ -13,7 +13,7 @@
 ##############################################################################
 
 from unittest import TestCase, TestSuite, main, makeSuite
-from Products.ZCTextIndex.IPipelineElement import IPipelineElement
+from Products.ZCTextIndex.interfaces import IPipelineElement
 from Products.ZCTextIndex.PipelineFactory import PipelineElementFactory
 from zope.interface import implements
 
