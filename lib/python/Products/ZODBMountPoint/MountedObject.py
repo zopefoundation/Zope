@@ -24,14 +24,15 @@ from logging import getLogger
 
 import transaction
 
-import Globals
-import Acquisition
-from Acquisition import aq_base, aq_inner, aq_parent
+from App.class_init import default__class_init__ as InitializeClass
+from Acquisition import ImplicitAcquisitionWrapper
+from Acquisition import aq_base
+from Acquisition import aq_inner
+from Acquisition import aq_parent
 from AccessControl.ZopeGuards import guarded_getattr
 from OFS.SimpleItem import SimpleItem
 from OFS.Folder import Folder
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
-from ZODB.POSException import MountedStorageError, ConnectionStateError
 
 LOG = getLogger('Zope.ZODBMountPoint')
 
@@ -215,11 +216,6 @@ class MountedObject(SimpleItem):
     def _logConnectException(self):
         '''Records info about the exception that just occurred.
         '''
-        try:
-            from cStringIO import StringIO
-        except:
-            from StringIO import StringIO
-        import traceback
         exc = sys.exc_info()
         LOG.error('Failed to mount database. %s (%s)' % exc[:2], exc_info=exc)
         f=StringIO()
@@ -234,7 +230,7 @@ class MountedObject(SimpleItem):
         try:
             return self._getOrOpenObject(parent)
         except:
-            return Acquisition.ImplicitAcquisitionWrapper(self, parent)
+            return ImplicitAcquisitionWrapper(self, parent)
 
 
     def _test(self, parent):
@@ -279,7 +275,7 @@ class MountedObject(SimpleItem):
         return "%s(id=%s)" % (self.__class__.__name__, repr(self.id))
 
 
-Globals.InitializeClass(MountedObject)
+InitializeClass(MountedObject)
 
 
 def getMountPoint(ob):
