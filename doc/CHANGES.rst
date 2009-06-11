@@ -5,6 +5,18 @@ This file contains change information for the current Zope release.
 Change information for previous versions of Zope can be found in the
 file HISTORY.txt.
 
+
+Zope 2.12.0 b3 (unreleased)
+---------------------------
+
+Features Added
+++++++++++++++
+
+- Updated packages:
+
+  * ZODB 3.9.0b2
+
+
 Zope 2.12.0 b2 (2009/05/27)
 ---------------------------
 
