@@ -27,6 +27,8 @@ Features Added
   - zope.app.pagetemplate = 3.7.1
   - zope.contenttype = 3.4.2
   - zope.server = 3.6.0
+  - zope.testing = 3.7.5
+  - ZConfig = 2.7.0
   - ZODB = 3.9.0b2
 
 Bugs Fixed
