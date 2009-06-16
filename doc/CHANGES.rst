@@ -25,10 +25,12 @@ Features Added
 
   - zope.app.cache = 3.6.0
   - zope.app.pagetemplate = 3.7.1
+  - zope.app.publisher = 3.8.2
   - zope.contenttype = 3.4.2
   - zope.server = 3.6.0
   - zope.testing = 3.7.5
-  - ZConfig = 2.7.0
+  - zope.traversing = 3.7.1
+  - ZConfig = 2.7.1
   - ZODB = 3.9.0b2
 
 Bugs Fixed
