@@ -24,11 +24,12 @@ Zope2 depends on the following zope.app packages directly:
       * Products.Five.browser.metaconfigure
 
 - [_] zope.app.publication 
-      o ZPublisher.BaseRequest
-      o Products.Five.component
+      o ZPublisher.BaseRequest (for ``EndRequestEvent``)
+      o Products.Five.component (for ``IBeginRequestEvent``,
+        ``IEndRequestEvent``, and ``BeforeTraverseEvent``.)
 
 - [_] zope.app.publisher 
-      o ZPublisher.BaseRequest
+      * ZPublisher.BaseRequest
       o Products.Five.browser.adding (for ``getMenu``)
       o Products/Five/browser/configure.zcml (for ``IMenuItemType``,
         ``MenuAccessView``, and ``IMenuAccessView``)
