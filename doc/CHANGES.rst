@@ -16,6 +16,10 @@ Features Added
 
   * ZODB 3.9.0b2
 
+Bugs Fixed
+++++++++++
+
+- Correctly handle unauthorized exceptions in the ZPublisherExceptionHook.
 
 Zope 2.12.0 b2 (2009/05/27)
 ---------------------------
