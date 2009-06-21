@@ -24,6 +24,7 @@ from App.config import getConfiguration
 from time import asctime
 from types import StringType, ListType
 from zExceptions import Redirect
+from zExceptions import Unauthorized
 from ZODB.POSException import ConflictError
 import transaction
 import AccessControl.User
@@ -170,7 +171,7 @@ class ZPublisherExceptionHook:
                 if t.lower() in ('unauthorized', 'redirect'):
                     raise
             else:
-                if t is SystemExit or t is Redirect:
+                if t is SystemExit or t is Redirect or t is Unauthorized:
                     raise
 
                 if issubclass(t, ConflictError):
