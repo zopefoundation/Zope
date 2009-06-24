@@ -117,6 +117,9 @@ class ZCatalog(Folder, Persistent, Implicit):
         {'label': 'Advanced',           # TAB: Advanced
          'action': 'manage_catalogAdvanced',
          'help':('ZCatalog','ZCatalog_Advanced.stx')},
+        {'label': 'Report',               # TAB: Undo
+         'action': 'manage_catalogReport',
+         'help': ('ZCatalog','ZCatalog_Report.stx')},
         {'label': 'Undo',               # TAB: Undo
          'action': 'manage_UndoForm',
          'help': ('OFSP','Undo.stx')},
@@ -151,13 +154,21 @@ class ZCatalog(Folder, Persistent, Implicit):
     manage_catalogAdvanced = DTMLFile('dtml/catalogAdvanced', globals())
 
     security.declareProtected(manage_zcatalog_entries,
+                              'manage_catalogReport')
+    manage_catalogReport = DTMLFile('dtml/catalogReport',
+                                     globals())
+
+    security.declareProtected(manage_zcatalog_entries,
                               'manage_objectInformation')
     manage_objectInformation = DTMLFile('dtml/catalogObjectInformation',
                                         globals())
 
+
     Indexes = ZCatalogIndexes()
 
     threshold=10000
+    long_query_time = 0.01
+    
     _v_total=0
     _v_transaction = None
 
@@ -180,6 +191,8 @@ class ZCatalog(Folder, Persistent, Implicit):
 
         self._catalog = Catalog()
         self._migrated_280 = True
+
+        self.long_query_time = 0.01
 
     def __len__(self):
         # Perform a migration of _catalog.__len__ to _catalog._length
@@ -996,6 +1009,50 @@ class ZCatalog(Folder, Persistent, Implicit):
 
     def delColumn(self, name):
         return self._catalog.delColumn(name)
+    
+    #
+    # Catalog report methods
+    #
+    
+    security.declareProtected(manage_zcatalog_entries, 'getCatalogReport')
+    def getCatalogReport(self):
+        """ Reports about the duration of queries """
+
+        
+        #sort_by, sort_reverse = self._getSortInfo()
+        sort_by, sort_reverse = ('duration',True)
+        rval = self._catalog.getCatalogReport().report()
+        
+        if sort_by:
+            rval.sort(lambda e1, e2, sort_by=sort_by:
+                      cmp(e1[sort_by], e2[sort_by]))
+            if sort_reverse:
+                rval.reverse()
+
+        return rval
+
+    security.declareProtected(manage_zcatalog_entries, 'manage_resetCatalogReport')
+    def manage_resetCatalogReport(self,REQUEST=None, RESPONSE=None, URL1=None):
+        """ resets the catalog reports """
+
+        self._catalog.getCatalogReport().reset()
+
+        if REQUEST and RESPONSE:
+            RESPONSE.redirect(
+              URL1 +
+              '/manage_catalogReport?manage_tabs_message=Report%20Cleared')    
+
+    security.declareProtected(manage_zcatalog_entries, 'manage_editCatalogReport')
+    def manage_editCatalogReport(self, RESPONSE, URL1, long_query_time=0.01, REQUEST=None):
+        """ edit the long query time """
+        if type(long_query_time) is not type(1.0):
+            long_query_time=float(long_query_time)
+
+        # transform to seconds
+        self.long_query_time = long_query_time
+
+        RESPONSE.redirect(
+            URL1 + '/manage_catalogReport?manage_tabs_message=Long Query Time%20Changed')
 
 
 InitializeClass(ZCatalog)

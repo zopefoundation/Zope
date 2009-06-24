@@ -1,0 +1,116 @@
+<dtml-var manage_page_header>
+<dtml-var manage_tabs>
+
+<p class="form-help"> 
+   <strong>Catalog Report</strong> reports slow catalog queries to identify queries that are performing badly.
+</p>
+
+
+<table width="100%" cellspacing="0" cellpadding="2" border="0">
+        <tr class="list-header" >
+	 <td align="left" valign="top">
+           <div class="list-nav">
+             Mean Duration&nbsp;[ms]
+           </div>
+         </td>
+	 <td align="left" valign="top">
+           <div class="list-nav">
+             Hits
+           </div>
+         </td>
+	 <td align="left" valign="top">
+           <div class="list-nav">
+             Query Key
+           </div>
+         </td>	 
+         <td align="left" valign="top">
+           <div class="list-nav">
+             Recent Duration [ms]
+           </div>
+         </td>
+        </tr>
+        <dtml-if getCatalogReport>
+        <dtml-in getCatalogReport mapping>
+        <dtml-if sequence-odd>
+        <tr class="row-normal">
+        <dtml-else>
+        <tr class="row-hilite">
+        </dtml-if>
+         <td align="left" valign="top">
+         <div class="list-item">
+         <dtml-var expr="'%3.2f' % duration">
+         </div>
+         </td>
+         <td align="left" valign="top">
+         <div class="list-item">
+         &dtml-counter;
+         </div>
+         </td>
+         <td align="left" valign="top">
+         <div class="list-item">
+         &dtml-query;
+         </div>
+         </td>
+	 <td align="left" valign="top">
+         <div class="list-item">
+           <dtml-var expr="'%3.2f' % last['duration']">
+           [<dtml-in  expr="last['details']" sort mapping>
+	     &dtml-id;:&nbsp;<dtml-var expr="'%3.2f' % duration">
+           </dtml-in>]
+           
+         </div>
+         </td>
+        </tr>
+        </dtml-in>
+        <tr>
+         <td colspan="2" align="left" valign="top">
+           <p class="form-help">Resetting the catalog report will reinitialize the report log.</p>
+         </td>
+         <td colspan="2" align="right" valign="top">
+           <form action="manage_resetCatalogReport" method=POST>
+             <div class="form-element">
+                <input class="form-element" type="submit" value="Reset Report">
+             </div>
+           </form>
+         </td>
+        </tr>
+       
+        <dtml-else>
+        <tr>
+         <td colspan="4" >
+          <div class="list-item">
+            Report is empty.
+          </div>
+         </td>
+        </tr>	
+       </dtml-if>
+       <tr class="section-bar">
+        <td colspan="4" align="left">
+          <div class="form-label">
+            Settings
+          </div>
+        </td>
+       </tr>
+       <tr >
+        <td colspan="2" align="left" valign="top">
+          <p class="form-help">Only report slow queries that took more than "long_query_time" seconds to execute.</p>
+        </td>
+        <td colspan="2" align="right" valign="top">
+         <form action="manage_editCatalogReport" method=POST>
+            <div class="form-element">
+               <input name="long_query_time:float" value="&dtml-long_query_time;" />
+               <input class="form-element" type="submit" value="Set Long Query Time">
+            </div>
+         </form>
+        </td>
+       </tr>
+    </table>
+
+
+
+<dtml-var manage_page_footer>
+
+
+
+
+

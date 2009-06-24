@@ -29,6 +29,7 @@ from BTrees.IOBTree import IOBTree
 from Lazy import LazyMap, LazyCat, LazyValues
 from CatalogBrains import AbstractCatalogBrain, NoBrainer
 
+from CatalogReport import CatalogReport
 
 LOG = logging.getLogger('Zope.ZCatalog')
 
@@ -85,8 +86,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
             self._v_brains = brains
 
         self.updateBrains()
-
-    
+        
     def __len__(self):
         return self._length()
 
@@ -468,12 +468,21 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         # Note that if the indexes find query arguments, but the end result
         # is an empty sequence, we do nothing
 
+
+        cr = self.getCatalogReport(request)
+        cr.start()
+
         for i in self.indexes.keys():
             index = self.getIndex(i)
             _apply_index = getattr(index, "_apply_index", None)
             if _apply_index is None:
                 continue
+
+            cr.split(i)
+
             r = _apply_index(request)
+
+            cr.split(i)
 
             if r is not None:
                 r, u = r
@@ -481,6 +490,9 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                 if not rs:
                    break       
 
+        cr.stop()
+        
+        
         if rs is None:
             # None of the indexes found anything to do with the request
             # We take this to mean that the query was empty (an empty filter)
@@ -737,6 +749,17 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         return self.search(args, sort_index, reverse, sort_limit, _merge)
                 
     __call__ = searchResults
+
+
+    def getCatalogReport(self,request=None):
+        """
+            Reports about the duration of queries
+        """
+
+        threshold = getattr(self.aq_parent,'long_query_time',0.01)
+        cr = CatalogReport(self,request,threshold)
+
+        return cr
 
 
 class CatalogSearchArgumentsMap:
