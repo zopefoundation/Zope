@@ -23,27 +23,24 @@ $Id$
 
 __docformat__ = 'restructuredtext'
 
-from warnings import warn
-
+from zope.app.publisher.browser.menu import getMenu
+from zope.browser.interfaces import IAdding
 from zope.component import getMultiAdapter
 from zope.component import getUtility
 from zope.component import queryMultiAdapter
 from zope.component import queryUtility
 from zope.component.interfaces import IFactory
-from zope.container.constraints import checkFactory, checkObject
+from zope.container.constraints import checkFactory
+from zope.container.constraints import checkObject
 from zope.container.i18n import ZopeMessageFactory as _
 from zope.container.interfaces import IContainerNamesContainer
 from zope.container.interfaces import INameChooser
-
 from zope.event import notify
+from zope.exceptions.interfaces import UserError
 from zope.interface import implements
+from zope.lifecycleevent import ObjectCreatedEvent
 from zope.publisher.interfaces import IPublishTraverse
 from zope.traversing.browser.absoluteurl import absoluteURL
-from zope.exceptions.interfaces import UserError
-from zope.lifecycleevent import ObjectCreatedEvent
-
-from zope.browser.interfaces import IAdding
-from zope.app.publisher.browser.menu import getMenu
 
 from zExceptions import BadRequest
 from OFS.SimpleItem import SimpleItem
@@ -51,7 +48,8 @@ from OFS.SimpleItem import SimpleItem
 from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
-class BasicAdding(BrowserView):
+
+class Adding(BrowserView):
     implements(IAdding, IPublishTraverse)
 
     def add(self, content):
@@ -80,8 +78,8 @@ class BasicAdding(BrowserView):
                 # Invoke the name chooser even when we have a
                 # name. It'll do useful things with it like converting
                 # the incoming unicode to an ASCII string.
-                name = chooser.chooseName(name, container)
-        
+                name = chooser.chooseName(name, content)
+
         content.id = name
         container._setObject(name, content)
         self.contentName = name # Set the added object Name
@@ -94,17 +92,11 @@ class BasicAdding(BrowserView):
         # XXX this is definitely not right for all or even most uses
         # of Five, but can be overridden by an AddView subclass, using
         # the class attribute of a zcml:addform directive
-        return str(getMultiAdapter((self.context, self.request),
-                                   name=u"absolute_url")) + '/manage_main'
+        return absoluteURL(self.context, self.request) + '/manage_main'
 
     # set in BrowserView.__init__
     request = None
     context = None
-
-    def renderAddButton(self):
-        warn("The renderAddButton method is deprecated, use nameAllowed",
-            DeprecationWarning, 2)
-    
 
     def publishTraverse(self, request, name):
         """See zope.publisher.interfaces.IPublishTraverse"""
@@ -127,7 +119,7 @@ class BasicAdding(BrowserView):
 
         factory = queryUtility(IFactory, name)
         if factory is None:
-            return super(BasicAdding, self).publishTraverse(request, name)
+            return super(Adding, self).publishTraverse(request, name)
 
         return factory
 
@@ -143,11 +135,10 @@ class BasicAdding(BrowserView):
         else:
             view_name = type_name
 
-        if (queryMultiAdapter((self, self.request), name=view_name)
-            is not None):
+        if queryMultiAdapter((self, self.request),
+                                  name=view_name) is not None:
             url = "%s/%s=%s" % (
-                getMultiAdapter((self, self.request), name=u"absolute_url"),
-                type_name, id)
+                absoluteURL(self, self.request), type_name, id)
             self.request.response.redirect(url)
             return
 
@@ -162,15 +153,9 @@ class BasicAdding(BrowserView):
         self.add(content)
         self.request.response.redirect(self.nextURL())
 
-    def namesAccepted(self):
-        return not IContainerNamesContainer.providedBy(self.context)
-
     def nameAllowed(self):
         """Return whether names can be input by the user."""
         return not IContainerNamesContainer.providedBy(self.context)
-
-
-class Adding(BasicAdding):
 
     menu_id = None
     index = ViewPageTemplateFile("adding.pt")
