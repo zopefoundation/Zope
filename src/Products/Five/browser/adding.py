@@ -206,9 +206,9 @@ class ContentAdding(Adding, SimpleItem):
 class ObjectManagerNameChooser:
     """A name chooser for a Zope object manager.
     """
-    
+
     implements(INameChooser)
-    
+
     def __init__(self, context):
         self.context = context
 
@@ -248,10 +248,10 @@ class ObjectManagerNameChooser:
             i += 1
             try:
                 self.context._getOb(n)
-            except AttributeError:
+            except (AttributeError, KeyError):
                 break
             n = name + '-' + str(i) + suffix
-            
+
         # Make sure the name is valid.  We may have started with
         # something bad.
         self.checkName(n, object)
