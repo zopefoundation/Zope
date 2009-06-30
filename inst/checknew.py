@@ -6,6 +6,10 @@ def main():
     from pkg_resources import parse_requirements
     from setuptools.package_index import PackageIndex
 
+    import socket
+    print 'Setting socket time out to %d seconds' % 3
+    socket.setdefaulttimeout(3)
+
     ws = pkg_resources.require('Zope2')
     pi = PackageIndex()
 
