@@ -1,3 +1,4 @@
+# XXX: Products.PluginIndexes.TextIndex no longer exists
 import os, sys
 sys.path.insert(0, '.')
 try:
@@ -28,8 +29,8 @@ from unittest import TestCase, TestSuite, JUnitTextTestRunner,\
 import transaction
 
 from Products.PluginIndexes.FieldIndex.FieldIndex import FieldIndex
-from Products.PluginIndexes.TextIndex.TextIndex import TextIndex
-from Products.PluginIndexes.TextIndex.Lexicon import  Lexicon
+#from Products.PluginIndexes.TextIndex.TextIndex import TextIndex
+#from Products.PluginIndexes.TextIndex.Lexicon import  Lexicon
 from Products.PluginIndexes.KeywordIndex.KeywordIndex import KeywordIndex
 
 from Testing.makerequest import makerequest
