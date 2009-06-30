@@ -1,17 +1,18 @@
+# XXX: Products.PluginIndexes.TextIndex no longer exists
 import os,sys
 import unittest
 
 import Zope2
 from Products.ZCatalog.ZCatalog import ZCatalog
 
-from Products.PluginIndexes.TextIndex import Splitter
+#from Products.PluginIndexes.TextIndex import Splitter
 
 # This patch pretends the ZCatalog is using the Unicode Splitter
 # but by default the ZCatalog/TextIndexes uses the standard
 # non-unicode-aware ZopeSplitter
 
-Splitter.availableSplitters =    [ ("UnicodeSplitter" , "Unicode-aware splitter")]
-Splitter.splitterNames =    [ "UnicodeSplitter" ]
+#Splitter.availableSplitters =    [ ("UnicodeSplitter" , "Unicode-aware splitter")]
+#Splitter.splitterNames =    [ "UnicodeSplitter" ]
 
 
 class TO:
