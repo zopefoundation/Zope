@@ -24,15 +24,20 @@ Features Added
 - Updated packages:
 
   - pytz = 2009j
+  - zc.buildout = 1.3.0
   - zope.app.appsetup = 3.12.0
   - zope.app.cache = 3.6.0
   - zope.app.pagetemplate = 3.7.1
   - zope.app.publication = 3.8.1
   - zope.app.publisher = 3.8.3
   - zope.app.testing = 3.7.0
+  - zope.app.wsgi = 3.6.0
+  - zope.app.zcmlfiles = 3.5.5
   - zope.contenttype = 3.4.2
   - zope.dublincore = 3.4.3
   - zope.i18nmessageid = 3.5.0
+  - zope.index = 3.5.2
+  - zope.interface = 3.5.2
   - zope.server = 3.6.0
   - zope.testing = 3.7.5
   - zope.traversing = 3.7.1
