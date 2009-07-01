@@ -10,24 +10,30 @@ def main():
     print 'Setting socket time out to %d seconds' % 3
     socket.setdefaulttimeout(3)
 
-    ws = pkg_resources.require('Zope2')
-    pi = PackageIndex()
+    env = pkg_resources.Environment()
+    env.scan()
 
     names = []
     installed = []
-    for dist in ws:
-        name = dist.project_name
-        if name not in names:
-            names.append(name)
-            installed.append(dict(
-                dist=dist,
-                name=name,
-                req=parse_requirements(name).next(),
-                ))
+    for name in env:
+        if name == 'python':
+            continue
+        distributions = env[name]
+        for dist in distributions:
+            name = dist.project_name
+            if name not in names:
+                names.append(name)
+                installed.append(dict(
+                    dist=dist,
+                    name=name,
+                    req=parse_requirements(name).next(),
+                    ))
 
     def _key(value):
         return value['name']
     installed.sort(key=_key)
+
+    pi = PackageIndex()
 
     upgrade = False
     for info in installed:
@@ -46,7 +52,8 @@ def main():
 
 
 def help():
-    print("Use this script via ./bin/zopepy inst/checknew.py.")
+    print("Use this script via ./bin/allpy inst/checknew.py.")
+    print("You need to use the alltests.cfg config file for buildout.")
 
 
 if __name__ == '__main__':
