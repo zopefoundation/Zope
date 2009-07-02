@@ -171,7 +171,8 @@ class ZPublisherExceptionHook:
                 if t.lower() in ('unauthorized', 'redirect'):
                     raise
             else:
-                if t is SystemExit or t is Redirect or t is Unauthorized:
+                if (t is SystemExit or
+                    issubclass(t, Redirect) or issubclass(t, Unauthorized)):
                     raise
 
                 if issubclass(t, ConflictError):
