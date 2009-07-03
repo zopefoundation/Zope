@@ -19,6 +19,8 @@ Features Added
 Bugs Fixed
 ++++++++++
 
+- App.Product: ProductHelp was broken since Zope 2.12.0a1.
+
 - ObjectManagerNameChooser now also works with BTreeFolder2.
 
 - Correctly handle unauthorized exceptions in the ZPublisherExceptionHook.
