@@ -8,8 +8,6 @@ ZCatalog Tutorial
 
     o What is it?  What's it for?  Why's it so cool?
 
-    o Installing ZCatalog
-
     o ZCatalog Objects
 
     o Example using ZCatalog
@@ -71,25 +69,6 @@ ZCatalog Tutorial
     is being developed in conjunction with the Zope Portal Toolkit
     effort.  However, the 'ZCatalog' product is managed as its own
     module in CVS.
-
-  Installing ZCatalog
-
-    'ZCatalog' can be downloaded from the Zope download area and is
-    also a module in the public CVS for Zope.  Untar it while in the
-    root directory of your Zope installation::
-
-      $ cd Zope-2.0.0a3-src/
-      $ tar xzf ../ZCatalog-x.x.tgz
-
-    Windows users can use WinZip or a similar utility to accomplish
-    the same thing.
-
-    Also, Zope 2.0.0a3 does not have the latest version of UnIndex and
-    UnTextIndex which fix a couple of bugs in the alpha 3 versions.
-    The latest CVS of the SearchIndex packages *must* be used.
-
-    Remember, you have to restart your Zope server before you will see
-    'ZCatalog'.
 
   ZCatalog Objects
 
