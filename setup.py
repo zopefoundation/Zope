@@ -76,21 +76,6 @@ params = dict(name='Zope2',
 
       # indexes
       Extension(
-            name='Products.PluginIndexes.TextIndex.Splitter.'
-                 'ZopeSplitter.ZopeSplitter',
-            sources=['src/Products/PluginIndexes/TextIndex/Splitter/'
-                     'ZopeSplitter/src/ZopeSplitter.c']),
-      Extension(
-            name='Products.PluginIndexes.TextIndex.Splitter.'
-                 'ISO_8859_1_Splitter.ISO_8859_1_Splitter',
-            sources=['src/Products/PluginIndexes/TextIndex/Splitter/'
-                     'ISO_8859_1_Splitter/src/ISO_8859_1_Splitter.c']),
-      Extension(
-            name='Products.PluginIndexes.TextIndex.Splitter.'
-                 'UnicodeSplitter.UnicodeSplitter',
-            sources=['src/Products/PluginIndexes/TextIndex/Splitter/'
-                     'UnicodeSplitter/src/UnicodeSplitter.c']),
-      Extension(
             name='Products.ZCTextIndex.stopper',
             sources=['src/Products/ZCTextIndex/stopper.c']),
       Extension(

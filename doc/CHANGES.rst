@@ -19,6 +19,8 @@ Features Added
 Restructuring
 +++++++++++++
 
+- PluginIndexes: Removed deprecated TextIndex.
+
 - HelpSys now uses ZCTextIndex instead of the deprecated TextIndex. Please
   update your Zope databases by deleting the Product registrations in the
   Control Panel and restarting Zope.

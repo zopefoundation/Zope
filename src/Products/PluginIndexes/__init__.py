@@ -21,20 +21,7 @@ import DateRangeIndex.DateRangeIndex
 from Products.PluginIndexes.common import ResultList
 from Products.PluginIndexes.common import UnIndex
 
-# BBB: TextIndex is deprecated but we don't want the warning to appear here
-import warnings
-warnings.filterwarnings('ignore', message='^Using TextIndex', append=1)
-try:
-    import TextIndex.TextIndex
-finally:
-    del warnings.filters[-1]
-    try:
-        del __warningregistry__
-    except NameError:
-        pass
-
-_indexes =  ('TextIndex',
-             'KeywordIndex',
+_indexes =  ('KeywordIndex',
              'FieldIndex',
              'PathIndex',
              'TopicIndex',

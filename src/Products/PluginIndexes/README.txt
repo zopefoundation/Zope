@@ -47,33 +47,7 @@ Changes to Indexes:
   - new index type
 
 
- Changes to TextIndex:
-
-  - ZMI allows to select a different vocabulary. To use a vocabulary different
-    from the ZCatalogs default vocabulary 'Vocabulary' you must create a new
-    Vocabulary through the ZMI of the ZCatalog. After creating the vocabulary you
-    can choose the vocabulary on the ZMI management screen for the text index.
-
-  - the default operator might be overridden by specifying a new one
-    as 'operator' (see below)
-
-  - removed direct dependency from Splitter module. Splitter is now
-    acquired from used vocabulary
-    
-  - usage of the 'textindex_operator' is deprecated
-
-  - lots of internal rework
-
-
-Changes to Vocabulary:
-
-  - added Splitter selection on the add formular
-
-
 Changes to ZCatalog
-
-  - Vocabulary.py moved to Products/PluginIndexes/TextIndex. A wrapper 
-    for backward compatibility is in place
 
   - added ZCatalogIndexes.py to provide access to indexes with pluggable
     index interface
