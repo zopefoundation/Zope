@@ -21,7 +21,7 @@ ZCatalog - Indexes: Manage Catalog Indexes
         index.
         
         '[Type of Index]' -- You have the choice between four types of
-        Indexes, called 'TextIndex', 'FieldIndex', 'KeywordIndex' and
+        Indexes, called 'ZCTextIndex', 'FieldIndex', 'KeywordIndex' and
         'PathIndex'.  Please refer to the table below to see a
         description of each Index.
         
@@ -30,7 +30,7 @@ ZCatalog - Indexes: Manage Catalog Indexes
         This table lists the different Index types and describes their
         purpose.
         
-        'TextIndex' -- TextIndexes break content up into individual
+        'ZCTextIndex' -- Text indexes break content up into individual
         words. These indexes are often refered to as *full-text
         indexes*. Text indexes sort results by score, meaning they
         return 'hits' in order from the most relevant to the lest
