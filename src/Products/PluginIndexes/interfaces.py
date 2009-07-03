@@ -160,38 +160,8 @@ class IPathIndex(Interface):
     """
 
 
-class IVocabulary(Interface):
-
-    """A Vocabulary is a user-managable realization of a Lexicon object.
-    """
-
-
-class ITextIndex(Interface):
-
-    """Full-text index.
-
-    There is a ZCatalog UML model that sheds some light on what is
-    going on here.  '_index' is a BTree which maps word ids to mapping
-    from document id to score.  Something like:
-
-      {'bob' : {1 : 5, 2 : 3, 42 : 9}}
-      {'uncle' : {1 : 1}}
-
-    The '_unindex' attribute is a mapping from document id to word
-    ids.  This mapping allows the catalog to unindex an object:
-
-      {42 : ('bob', 'is', 'your', 'uncle')
-
-    This isn't exactly how things are represented in memory, many
-    optimizations happen along the way.
-    """
-
-    def getLexicon(vocab_id=None):
-        """Get the Lexicon in use.
-        """
-
-
 class IFilteredSet(Interface):
+
     """A pre-calculated result list based on an expression.
     """
 
