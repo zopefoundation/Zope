@@ -16,8 +16,17 @@ Features Added
 
   * ZODB 3.9.0b2
 
+Restructuring
++++++++++++++
+
+- HelpSys now uses ZCTextIndex instead of the deprecated TextIndex. Please
+  update your Zope databases by deleting the Product registrations in the
+  Control Panel and restarting Zope.
+
 Bugs Fixed
 ++++++++++
+
+- HelpSys: ProductHelp no longer depends on PluginIndexes initialization.
 
 - App.Product: ProductHelp was broken since Zope 2.12.0a1.
 

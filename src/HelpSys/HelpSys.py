@@ -23,8 +23,16 @@ from App.special_dtml import HTML
 from OFS.ObjectManager import ObjectManager
 from OFS.SimpleItem import Item
 from Persistence import Persistent
+from Products.PluginIndexes.KeywordIndex.KeywordIndex import KeywordIndex
 from Products.ZCatalog.ZCatalog import ZCatalog
 from Products.ZCatalog.Lazy import LazyCat
+from Products.ZCTextIndex.OkapiIndex import OkapiIndex
+from Products.ZCTextIndex.Lexicon import CaseNormalizer
+from Products.ZCTextIndex.HTMLSplitter import HTMLWordSplitter
+from Products.ZCTextIndex.Lexicon import StopWordRemover
+from Products.ZCTextIndex.ZCTextIndex import PLexicon
+from Products.ZCTextIndex.ZCTextIndex import ZCTextIndex
+
 
 class HelpSys(Implicit, ObjectManager, Item, Persistent):
     """
@@ -221,17 +229,19 @@ class ProductHelp(Implicit, ObjectManager, Item, Persistent):
         )
 
     def __init__(self, id='Help', title=''):
-        self.id=id
-        self.title=title
-        c=self.catalog=ZCatalog('catalog')
-        # clear catalog
-        for index in c.indexes():
-            c.delIndex(index)
-        for col in c.schema():
-            c.delColumn(col)
-        c.addIndex('SearchableText', 'TextIndex')
-        c.addIndex('categories', 'KeywordIndex')
-        c.addIndex('permissions', 'KeywordIndex')
+        self.id = id
+        self.title = title
+        c = self.catalog = ZCatalog('catalog')
+
+        l = PLexicon('lexicon', '', HTMLWordSplitter(), CaseNormalizer(),
+                     StopWordRemover())
+        c._setObject('lexicon', l)
+        i = ZCTextIndex('SearchableText', caller=c, index_factory=OkapiIndex,
+                        lexicon_id=l.id)
+        # not using c.addIndex because it depends on Product initialization
+        c._catalog.addIndex('SearchableText', i)
+        c._catalog.addIndex('categories', KeywordIndex('categories'))
+        c._catalog.addIndex('permissions', KeywordIndex('permissions'))
         c.addColumn('categories')
         c.addColumn('permissions')
         c.addColumn('title_or_id')
