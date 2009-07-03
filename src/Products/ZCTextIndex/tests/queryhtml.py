@@ -1,3 +1,4 @@
+# XXX: Products.PluginIndexes.TextIndex no longer exists
 import os
 from time import clock
 
@@ -27,7 +28,7 @@ def path2url(p):
     i += len(marker)
     return "http://www.python.org" + p[i:]
 
-from Products.PluginIndexes.TextIndex.TextIndex import And, Or
+#from Products.PluginIndexes.TextIndex.TextIndex import And, Or
 from Products.ZCTextIndex.tests.indexhtml import MySplitter
 from Products.ZCTextIndex.NBest import NBest
 
@@ -106,8 +107,8 @@ if __name__ == "__main__":
             VERBOSE += 1
         if o == '-f':
             FSPATH = v
-        if o == '-T':
-            TEXTINDEX = 1
+#        if o == '-T':
+#            TEXTINDEX = 1
 
     fs = FileStorage(FSPATH, read_only=1)
     db = ZODB.DB(fs, cache_size=10000)

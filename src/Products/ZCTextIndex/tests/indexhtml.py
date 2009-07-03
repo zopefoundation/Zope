@@ -8,6 +8,7 @@ Will create an index of all files in dir or its subdirectories.
 options:
 -f data.fs  -- the path to the filestorage datafile
 """
+# XXX: Products.PluginIndexes.TextIndex no longer exists
 from __future__ import nested_scopes
 
 import os
@@ -47,14 +48,14 @@ class MySplitter:
             return stopdict.get(w, w)
         return filter(None, map(lookup, words))
 
-def make_old_index():
-    from Products.PluginIndexes.TextIndex.TextIndex import TextIndex
-    from Products.PluginIndexes.TextIndex.Lexicon  import Lexicon
-    from Products.ZCTextIndex.StopDict import get_stopdict
-
-    l = Lexicon(get_stopdict())
-    l.SplitterFunc = MySplitter()
-    return TextIndex("read", lexicon=l)
+#def make_old_index():
+#    from Products.PluginIndexes.TextIndex.TextIndex import TextIndex
+#    from Products.PluginIndexes.TextIndex.Lexicon  import Lexicon
+#    from Products.ZCTextIndex.StopDict import get_stopdict
+#
+#    l = Lexicon(get_stopdict())
+#    l.SplitterFunc = MySplitter()
+#    return TextIndex("read", lexicon=l)
 
 def main(db, root, dir):
     rt["index"] = index = INDEX()
@@ -135,8 +136,8 @@ if __name__ == "__main__":
             PACK_INTERVAL = int(v)
         if o == '-n':
             LIMIT = int(v)
-        if o == '-T':
-            INDEX = make_old_index
+#        if o == '-T':
+#            INDEX = make_old_index
 
     if len(args) != 1:
         print "Expected on argument"
