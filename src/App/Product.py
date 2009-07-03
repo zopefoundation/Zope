@@ -99,8 +99,18 @@ class Product(Folder, PermissionManager):
     _reserved_names=('Help',)
 
     def __init__(self, id, title):
+        from HelpSys.HelpSys import ProductHelp
+
         self.id=id
         self.title=title
+
+        # Workaround for unknown problem with help system and PluginIndexes product
+        # NEEDS to be fixed for 2.4 ! (ajung)
+
+        try:
+            self._setObject('Help', ProductHelp('Help', id))
+        except:
+            pass
 
     security.declarePublic('Destination')
     def Destination(self):
@@ -129,7 +139,9 @@ class Product(Folder, PermissionManager):
         """Returns the ProductHelp object associated with the Product.
         """
         from HelpSys.HelpSys import ProductHelp
-        return ProductHelp('Help', self.id).__of__(self)
+        if not hasattr(self, 'Help'):
+            self._setObject('Help', ProductHelp('Help', self.id))
+        return self.Help
 
     #
     # Product refresh
