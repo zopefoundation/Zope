@@ -547,12 +547,10 @@ def get_products():
                 if ( os.path.exists(os.path.join(fullpath, '__init__.py')) or
                      os.path.exists(os.path.join(fullpath, '__init__.pyo')) or
                      os.path.exists(os.path.join(fullpath, '__init__.pyc')) ):
-                    # import PluginIndexes 1st (why?)
-                    priority = (name != 'PluginIndexes')
                     # i is used as sort ordering in case a conflict exists
                     # between Product names.  Products will be found as
                     # per the ordering of Products.__path__
-                    products.append((priority, name, i, product_dir))
+                    products.append((0, name, i, product_dir))
         i = i + 1
     products.sort()
     return products

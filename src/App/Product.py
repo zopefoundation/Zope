@@ -101,16 +101,9 @@ class Product(Folder, PermissionManager):
     def __init__(self, id, title):
         from HelpSys.HelpSys import ProductHelp
 
-        self.id=id
-        self.title=title
-
-        # Workaround for unknown problem with help system and PluginIndexes product
-        # NEEDS to be fixed for 2.4 ! (ajung)
-
-        try:
-            self._setObject('Help', ProductHelp('Help', id))
-        except:
-            pass
+        self.id = id
+        self.title = title
+        self._setObject('Help', ProductHelp('Help', id))
 
     security.declarePublic('Destination')
     def Destination(self):
