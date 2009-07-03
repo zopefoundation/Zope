@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# XXX: Products.PluginIndexes.TextIndex and Vocabulary no longer exist
 
 # Regression test for ZCatalog
 
@@ -20,7 +21,7 @@ import Zope2
 import ZODB, ZODB.FileStorage
 import transaction
 
-from Products.ZCatalog import ZCatalog,Vocabulary
+from Products.ZCatalog import ZCatalog #,Vocabulary
 from Products.ZCatalog.Catalog import CatalogError
 import Persistence
 import ExtensionClass
@@ -91,8 +92,8 @@ class testCatalog(Persistence.Persistent,unittest.TestCase):
         self.keywords = []
         self.maxfiles = maxfiles
 
-        self._vocabulary = Vocabulary.Vocabulary('Vocabulary',
-                            'Vocabulary', globbing=1)
+#        self._vocabulary = Vocabulary.Vocabulary('Vocabulary',
+#                            'Vocabulary', globbing=1)
         self._catalog    = ZCatalog.ZCatalog("zcatalog")
         self._catalog.addIndex('to',      'TextIndex')
         self._catalog.addIndex('sender',  'TextIndex')
