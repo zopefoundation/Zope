@@ -277,11 +277,11 @@ class UnIndex(SimpleItem):
         return datum
 
     def numObjects(self):
-        """ return number of indexed objects """
+        """Return the number of indexed objects."""
         return len(self._unindex)
 
     def indexSize(self):
-        """ return of distinct values indexed"""
+        """Return the size of the index in terms of distinct values."""
         return len(self)
 
     def unindex_object(self, documentId):

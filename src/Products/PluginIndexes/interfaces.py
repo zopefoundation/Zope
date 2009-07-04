@@ -68,11 +68,10 @@ class IPluggableIndex(Interface):
         """
 
     def numObjects():
-        """Return the number of indexed objects"""
+        """Return the number of indexed objects."""
 
-# XXX: not implemented by TextIndex and TopicIndex
-#    def indexSize():
-#        """Return the size of the index in terms of distinct values"""
+    def indexSize():
+        """Return the size of the index in terms of distinct values."""
 
     def clear():
         """Empty the index"""

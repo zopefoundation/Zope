@@ -85,6 +85,11 @@ class TopicIndex(Persistent, SimpleItem):
         return 1
 
     def numObjects(self):
+        """Return the number of indexed objects."""
+        return "n/a"
+
+    def indexSize(self):
+        """Return the size of the index in terms of distinct values."""
         return "n/a"
 
     def search(self,filter_id):
