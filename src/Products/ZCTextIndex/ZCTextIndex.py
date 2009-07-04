@@ -18,9 +18,11 @@ $Id$
 
 from cgi import escape
 
-from AccessControl.SecurityInfo import ClassSecurityInfo
+from AccessControl.Permissions import manage_vocabulary
 from AccessControl.Permissions import manage_zcatalog_indexes
+from AccessControl.Permissions import query_vocabulary
 from AccessControl.Permissions import search_zcatalog
+from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import aq_base
 from Acquisition import aq_inner
 from Acquisition import aq_parent
@@ -316,8 +318,8 @@ def manage_addLexicon(self, id, title='', elements=[], REQUEST=None):
 
 # I am borrowing the existing vocabulary permissions for now to avoid
 # adding new permissions. This may change when old style Vocabs go away
-LexiconQueryPerm = 'Query Vocabulary'
-LexiconMgmtPerm = 'Manage Vocabulary'
+LexiconQueryPerm = query_vocabulary
+LexiconMgmtPerm = manage_vocabulary
 
 
 class PLexicon(Lexicon, Implicit, SimpleItem):

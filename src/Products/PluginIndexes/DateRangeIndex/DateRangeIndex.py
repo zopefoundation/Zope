@@ -17,6 +17,8 @@ $Id$
 
 import os
 
+from AccessControl.Permissions import manage_zcatalog_indexes
+from AccessControl.Permissions import view
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from App.class_init import InitializeClass
 from App.Common import package_home
@@ -37,9 +39,6 @@ from Products.PluginIndexes.common.util import parseIndexRequest
 from Products.PluginIndexes.interfaces import IDateRangeIndex
 
 _dtmldir = os.path.join( package_home( globals() ), 'dtml' )
-
-VIEW_PERMISSION         = 'View'
-INDEX_MGMT_PERMISSION   = 'Manage ZCatalogIndex Entries'
 
 
 class DateRangeIndex(UnIndex):
@@ -88,13 +87,13 @@ class DateRangeIndex(UnIndex):
         self._edit(since_field, until_field)
         self.clear()
 
-    security.declareProtected(VIEW_PERMISSION, 'getSinceField')
+    security.declareProtected(view, 'getSinceField')
     def getSinceField(self):
         """Get the name of the attribute indexed as start date.
         """
         return self._since_field
 
-    security.declareProtected(VIEW_PERMISSION, 'getUntilField')
+    security.declareProtected(view, 'getUntilField')
     def getUntilField(self):
         """Get the name of the attribute indexed as end date.
         """
@@ -102,7 +101,7 @@ class DateRangeIndex(UnIndex):
 
     manage_indexProperties = DTMLFile( 'manageDateRangeIndex', _dtmldir )
 
-    security.declareProtected(INDEX_MGMT_PERMISSION, 'manage_edit')
+    security.declareProtected(manage_zcatalog_indexes, 'manage_edit')
     def manage_edit( self, since_field, until_field, REQUEST ):
         """
         """
@@ -120,7 +119,7 @@ class DateRangeIndex(UnIndex):
         self._since_field = since_field
         self._until_field = until_field
 
-    security.declareProtected(INDEX_MGMT_PERMISSION, 'clear')
+    security.declareProtected(manage_zcatalog_indexes, 'clear')
     def clear( self ):
         """
             Start over fresh.
@@ -303,7 +302,7 @@ class DateRangeIndex(UnIndex):
     #
     #   ZCatalog needs this, although it isn't (yet) part of the interface.
     #
-    security.declareProtected(VIEW_PERMISSION , 'numObjects')
+    security.declareProtected(view , 'numObjects')
     def numObjects( self ):
         """ """
         return len( self._unindex )
