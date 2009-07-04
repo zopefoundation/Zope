@@ -193,11 +193,11 @@ class PathIndex(Persistent, SimpleItem):
         return results
 
     def numObjects(self):
-        """ return the number distinct values """
+        """Return the number of indexed objects."""
         return len(self._unindex)
 
     def indexSize(self):
-        """ return the number of indexed objects"""
+        """Return the size of the index in terms of distinct values."""
         return len(self)
 
     def __len__(self):

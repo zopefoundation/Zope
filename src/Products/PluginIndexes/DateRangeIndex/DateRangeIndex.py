@@ -300,18 +300,6 @@ class DateRangeIndex(UnIndex):
         return result, ( self._since_field, self._until_field )
 
     #
-    #   ZCatalog needs this, although it isn't (yet) part of the interface.
-    #
-    security.declareProtected(view , 'numObjects')
-    def numObjects( self ):
-        """ """
-        return len( self._unindex )
-
-    def indexSize(self):
-        """ """
-        return len(self)
-
-    #
     #   Helper functions.
     #
     def _insertForwardIndexEntry( self, since, until, documentId ):

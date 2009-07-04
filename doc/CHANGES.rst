@@ -28,6 +28,8 @@ Restructuring
 Bugs Fixed
 ++++++++++
 
+- PluginIndexes: Added 'indexSize' to IPluggableIndex.
+
 - HelpSys: ProductHelp no longer depends on PluginIndexes initialization.
 
 - App.Product: ProductHelp was broken since Zope 2.12.0a1.
