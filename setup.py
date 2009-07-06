@@ -29,6 +29,7 @@ params = dict(name='Zope2',
                      file(os.path.join("doc", "CHANGES.rst")).read(),
 
     packages=find_packages('src'),
+    namespace_packages=['Products'],
     package_dir={'': 'src'},
 
     ext_modules=[
