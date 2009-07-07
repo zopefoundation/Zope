@@ -1,5 +1,3 @@
-#! /usr/bin/env python2.1
-
 """MH mail indexer.
 
 To index messages from a single folder (messages defaults to 'all'):
