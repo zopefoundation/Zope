@@ -756,7 +756,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
             Reports about the duration of queries
         """
 
-        threshold = getattr(self.aq_parent,'long_query_time',0.01)
+        threshold = getattr(self.aq_parent,'long_query_time',0.1)
         cr = CatalogReport(self,request,threshold)
 
         return cr

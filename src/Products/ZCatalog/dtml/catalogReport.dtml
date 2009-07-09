@@ -2,7 +2,7 @@
 <dtml-var manage_tabs>
 
 <p class="form-help"> 
-   <strong>Catalog Report</strong> reports slow catalog queries to identify queries that are performing badly.
+   <strong>Slow Query Report</strong> discovers catalog queries that are performing badly.
 </p>
 
 
@@ -93,7 +93,7 @@
        </tr>
        <tr >
         <td colspan="2" align="left" valign="top">
-          <p class="form-help">Only report slow queries that took more than "long_query_time" seconds to execute.</p>
+          <p class="form-help">Only report slow queries that took more than "long_query_time" seconds to execute (default:&nbsp;0.1&nbsp;s).</p>
         </td>
         <td colspan="2" align="right" valign="top">
          <form action="manage_editCatalogReport" method=POST>

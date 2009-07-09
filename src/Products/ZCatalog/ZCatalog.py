@@ -117,9 +117,9 @@ class ZCatalog(Folder, Persistent, Implicit):
         {'label': 'Advanced',           # TAB: Advanced
          'action': 'manage_catalogAdvanced',
          'help':('ZCatalog','ZCatalog_Advanced.stx')},
-        {'label': 'Report',               # TAB: Undo
+        {'label': 'Slow Query Report',  # TAB: Slow Query Report
          'action': 'manage_catalogReport',
-         'help': ('ZCatalog','ZCatalog_Report.stx')},
+        },
         {'label': 'Undo',               # TAB: Undo
          'action': 'manage_UndoForm',
          'help': ('OFSP','Undo.stx')},
@@ -167,7 +167,7 @@ class ZCatalog(Folder, Persistent, Implicit):
     Indexes = ZCatalogIndexes()
 
     threshold=10000
-    long_query_time = 0.01
+    long_query_time = 0.1
     
     _v_total=0
     _v_transaction = None
@@ -192,7 +192,7 @@ class ZCatalog(Folder, Persistent, Implicit):
         self._catalog = Catalog()
         self._migrated_280 = True
 
-        self.long_query_time = 0.01
+        self.long_query_time = 0.1
 
     def __len__(self):
         # Perform a migration of _catalog.__len__ to _catalog._length
@@ -1043,7 +1043,7 @@ class ZCatalog(Folder, Persistent, Implicit):
               '/manage_catalogReport?manage_tabs_message=Report%20Cleared')    
 
     security.declareProtected(manage_zcatalog_entries, 'manage_editCatalogReport')
-    def manage_editCatalogReport(self, RESPONSE, URL1, long_query_time=0.01, REQUEST=None):
+    def manage_editCatalogReport(self, RESPONSE, URL1, long_query_time=0.1, REQUEST=None):
         """ edit the long query time """
         if type(long_query_time) is not type(1.0):
             long_query_time=float(long_query_time)
