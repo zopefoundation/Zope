@@ -47,3 +47,5 @@ Features Added
 Bugs Fixed
 ++++++++++
 
+- LP #397861: exporting $PYTHON in generated 'zopectl' for fixing import issue
+  with "bin/zopectl adduser"
