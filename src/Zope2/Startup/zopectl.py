@@ -346,4 +346,4 @@ if __name__ == "__main__":
         # signal handler at all.
         signal.signal(signal.SIGCHLD, _ignoreSIGCHLD)
     exitstatus = main()
-    exit(exitstatus)
+    sys.exit(exitstatus)
