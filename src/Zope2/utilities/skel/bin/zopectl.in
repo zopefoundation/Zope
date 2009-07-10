@@ -4,6 +4,7 @@ PYTHON="<<PYTHON>>"
 INSTANCE_HOME="<<INSTANCE_HOME>>"
 CONFIG_FILE="<<INSTANCE_HOME>>/etc/zope.conf"
 export INSTANCE_HOME
+export PYTHON
 
 ZDCTL="<<ZOPE2PATH>>/Startup/zopectl.py"
 

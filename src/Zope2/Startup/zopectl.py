@@ -129,7 +129,7 @@ class ZopeCtlOptions(ZDOptions):
             self.sockname = config.runner.socket_name
         else:
             self.sockname = os.path.join(self.clienthome, "zopectlsock")
-        self.python = config.python or sys.executable
+        self.python = os.environ.get('PYTHON', config.python) or sys.executable
         self.zdrun = os.path.join(os.path.dirname(zdaemon.__file__),
                                   "zdrun.py")
         if WIN:
@@ -346,4 +346,4 @@ if __name__ == "__main__":
         # signal handler at all.
         signal.signal(signal.SIGCHLD, _ignoreSIGCHLD)
     exitstatus = main()
-    sys.exit(exitstatus)
+    exit(exitstatus)

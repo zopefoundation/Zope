@@ -28,6 +28,9 @@ Restructuring
 Bugs Fixed
 ++++++++++
 
+- LP #397861: exporting $PYTHON in generated 'zopectl' for fixing import issue
+  with "bin/zopectl adduser"
+
 - PluginIndexes: Added 'indexSize' to IPluggableIndex.
 
 - HelpSys: ProductHelp no longer depends on PluginIndexes initialization.
