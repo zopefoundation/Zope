@@ -167,29 +167,24 @@ class ZPublisherExceptionHook:
 
     def __call__(self, published, REQUEST, t, v, traceback):
         try:
-            if isinstance(t, StringType):
-                if t.lower() in ('unauthorized', 'redirect'):
-                    raise
-            else:
-                if (t is SystemExit or
-                    issubclass(t, Redirect) or issubclass(t, Unauthorized)):
-                    raise
+            if t is SystemExit or issubclass(t, Redirect):
+                raise
 
+            if issubclass(t, ConflictError):
+                self.logConflicts(v, REQUEST)
+                raise ZPublisher.Retry(t, v, traceback)
+
+            if t is ZPublisher.Retry:
+                try:
+                    v.reraise()
+                except:
+                    # we catch the re-raised exception so that it gets
+                    # stored in the error log and gets rendered with
+                    # standard_error_message
+                    t, v, traceback = sys.exc_info()
                 if issubclass(t, ConflictError):
-                    self.logConflicts(v, REQUEST)
-                    raise ZPublisher.Retry(t, v, traceback)
-
-                if t is ZPublisher.Retry:
-                    try:
-                        v.reraise()
-                    except:
-                        # we catch the re-raised exception so that it gets
-                        # stored in the error log and gets rendered with
-                        # standard_error_message
-                        t, v, traceback = sys.exc_info()
-                    if issubclass(t, ConflictError):
-                        # ouch, a user saw this conflict error :-(
-                        self.unresolved_conflict_errors += 1
+                    # ouch, a user saw this conflict error :-(
+                    self.unresolved_conflict_errors += 1
 
             try:
                 log = aq_acquire(published, '__error_log__', containment=1)
