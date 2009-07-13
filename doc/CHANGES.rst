@@ -39,7 +39,7 @@ Bugs Fixed
 
 - ObjectManagerNameChooser now also works with BTreeFolder2.
 
-- Correctly handle unauthorized exceptions in the ZPublisherExceptionHook.
+- Correctly handle exceptions in the ZPublisherExceptionHook.
 
 Zope 2.12.0 b2 (2009/05/27)
 ---------------------------
