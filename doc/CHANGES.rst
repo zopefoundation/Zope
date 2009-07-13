@@ -14,7 +14,19 @@ Features Added
 
 - Updated packages:
 
-  * ZODB 3.9.0b2
+  - ZConfig = 2.7.1
+  - ZODB = 3.9.0b2
+  - pytz = 2009j
+  - zope.app.component = 3.8.3
+  - zope.app.pagetemplate = 3.7.1
+  - zope.app.publisher = 3.8.3
+  - zope.app.zcmlfiles = 3.5.5
+  - zope.contenttype = 3.4.2
+  - zope.dublincore = 3.4.3
+  - zope.index = 3.5.2
+  - zope.interface = 3.5.2
+  - zope.testing = 3.7.6
+  - zope.traversing = 3.7.1
 
 - Added support to indexing datetime values to the PluginIndexes
   DateRangeIndex. The DateIndex already had this feature.
