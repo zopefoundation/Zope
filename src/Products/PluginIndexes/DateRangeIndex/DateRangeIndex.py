@@ -16,6 +16,7 @@ $Id$
 """
 
 import os
+from datetime import datetime
 
 from AccessControl.Permissions import manage_zcatalog_indexes
 from AccessControl.Permissions import view
@@ -385,10 +386,10 @@ class DateRangeIndex(UnIndex):
     def _convertDateTime( self, value ):
         if value is None:
             return value
-        if isinstance(value, str):
+        if isinstance(value, (str, datetime)):
             dt_obj = DateTime( value )
             value = dt_obj.millis() / 1000 / 60 # flatten to minutes
-        if isinstance(value, DateTime):
+        elif isinstance(value, DateTime):
             value = value.millis() / 1000 / 60 # flatten to minutes
         result = int( value )
         if isinstance(result, long): # this won't work (Python 2.3)
