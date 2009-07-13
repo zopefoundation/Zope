@@ -16,6 +16,9 @@ Features Added
 
   * ZODB 3.9.0b2
 
+- Added support to indexing datetime values to the PluginIndexes
+  DateRangeIndex. The DateIndex already had this feature.
+
 Restructuring
 +++++++++++++
 

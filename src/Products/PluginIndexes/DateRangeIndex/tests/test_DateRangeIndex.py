@@ -141,6 +141,35 @@ class DRI_Tests( unittest.TestCase ):
         bad = Dummy( 'bad', long(sys.maxint) + 1, long(sys.maxint) + 1 )
         work.index_object( 0, bad )
 
+    def test_datetime(self):
+        from datetime import datetime
+        before = datetime(2009, 7, 11, 0, 0)
+        start = datetime(2009, 7, 13, 5, 15)
+        between = datetime(2009, 7, 13, 5, 45)
+        stop = datetime(2009, 7, 13, 6, 30)
+        after = datetime(2009, 7, 14, 0, 0)
+
+        dummy = Dummy('test', start, stop)
+        work = DateRangeIndex( 'work', 'start', 'stop' )
+        work.index_object(0, dummy)
+
+        assert work.getEntryForObject(0) == (20790915, 20790990)
+
+        results, used = work._apply_index( { 'work' : before } )
+        assert len(results) == 0
+
+        results, used = work._apply_index( { 'work' : start } )
+        assert len(results) == 1
+
+        results, used = work._apply_index( { 'work' : between } )
+        assert len(results) == 1
+
+        results, used = work._apply_index( { 'work' : stop } )
+        assert len(results) == 1
+
+        results, used = work._apply_index( { 'work' : after } )
+        assert len(results) == 0
+
 
 def test_suite():
     suite = unittest.TestSuite()
