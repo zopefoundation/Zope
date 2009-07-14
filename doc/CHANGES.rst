@@ -5,6 +5,9 @@ This file contains change information for the current Zope release.
 Change information for previous versions of Zope can be found in the
 file HISTORY.txt.
 
+after Zope 2.12.0 b3 (unreleased)
+---------------------------------
+
 
 Zope 2.12.0 b3 (2009/07/15)
 ---------------------------
