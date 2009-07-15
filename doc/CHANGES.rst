@@ -8,6 +8,9 @@ file HISTORY.txt.
 after Zope 2.12.0 b3 (unreleased)
 ---------------------------------
 
+- Updated packages:
+
+  - zope.testing = 3.7.7
 
 Zope 2.12.0 b3 (2009/07/15)
 ---------------------------
