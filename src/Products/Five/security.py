@@ -166,16 +166,17 @@ def create_permission_from_permission_directive(permission, event):
     """When a new IPermission utility is registered (via the <permission />
     directive), create the equivalent Zope2 style permission.
     """
-    
+
     global _registeredPermissions
-    
-    zope2_permission = permission.title
+
+    # Zope 2 uses string, not unicode yet
+    zope2_permission = str(permission.title)
     roles = ('Manager',)
-    
+
     if not _registeredPermissions.has_key(zope2_permission):
         _registeredPermissions[zope2_permission] = 1
-        
+
         Products.__ac_permissions__ += ((zope2_permission, (), roles,),)
-        
+
         mangled = pname(zope2_permission)
         setattr(ApplicationDefaultPermissions, mangled, roles)
