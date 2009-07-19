@@ -322,8 +322,7 @@ def _ignoreSIGCHLD(*unused):
         try: os.waitpid(-1, os.WNOHANG)
         except OSError: break
 
-
-if __name__ == "__main__":
+def run():
     # we don't care to be notified of our childrens' exit statuses.
     # this prevents zombie processes from cluttering up the process
     # table when zopectl start/stop is used interactively.
@@ -347,3 +346,6 @@ if __name__ == "__main__":
         signal.signal(signal.SIGCHLD, _ignoreSIGCHLD)
     exitstatus = main()
     sys.exit(exitstatus)
+
+if __name__ == '__main__':
+    run()
