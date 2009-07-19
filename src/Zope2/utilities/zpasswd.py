@@ -1,5 +1,3 @@
-#!/usr/bin/env python2.4
-
 ##############################################################################
 #
 # Copyright (c) 2001,2002 Zope Corporation and Contributors.
