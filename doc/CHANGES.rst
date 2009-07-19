@@ -8,9 +8,17 @@ file HISTORY.txt.
 after Zope 2.12.0 b3 (unreleased)
 ---------------------------------
 
+Features Added
+++++++++++++++
+
 - Updated packages:
 
   - zope.testing = 3.7.7
+
+Bugs Fixed
+++++++++++
+
+- Five: Fixed the permissions creation feature added in Zope 2.12.0a2.
 
 Zope 2.12.0 b3 (2009/07/15)
 ---------------------------
