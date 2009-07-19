@@ -1,10 +1,10 @@
 ## This script requires:
-## - python2.4
+## - python >= 2.4
 ## - Zope 3's zope.testbrowser package:
 ##   http://www.zope.org/Members/benji_york/ZopeTestbrowser-0.9.0.tgz
 ##
 ## The just run:
-## $python2.4 generate_conflicts.py
+## $python generate_conflicts.py
 import base64
 import string
 import threading

@@ -20,6 +20,9 @@ Bugs Fixed
 
 - Five: Fixed the permissions creation feature added in Zope 2.12.0a2.
 
+- LP #399633: fixed interpreter paths
+
+
 Zope 2.12.0 b3 (2009/07/15)
 ---------------------------
 
