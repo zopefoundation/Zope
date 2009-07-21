@@ -96,18 +96,18 @@ class DRI_Tests( unittest.TestCase ):
 
         empty = DateRangeIndex( 'empty' )
 
-        assert empty.getEntryForObject( 1234 ) is None
+        self.failUnless(empty.getEntryForObject( 1234 ) is None)
         empty.unindex_object( 1234 ) # shouldn't throw
 
-        assert not empty.uniqueValues( 'foo' )
-        assert not empty.uniqueValues( 'foo', 1 )
+        self.failIf(empty.uniqueValues( 'foo' ))
+        self.failIf(empty.uniqueValues( 'foo', 1 ))
 
-        assert empty._apply_index( { 'zed' : 12345 } ) is None
+        self.failUnless(empty._apply_index( { 'zed' : 12345 } ) is None)
 
         result, used = empty._apply_index( { 'empty' : 12345 } )
 
-        assert not result
-        assert used == ( None, None )
+        self.failIf(result)
+        self.assertEqual(used, ( None, None ))
 
     def test_retrieval( self ):
 
@@ -117,21 +117,20 @@ class DRI_Tests( unittest.TestCase ):
             work.index_object( i, dummies[i] )
 
         for i in range( len( dummies ) ):
-            assert work.getEntryForObject( i ) == dummies[i].datum()
+            self.assertEqual(work.getEntryForObject( i ), dummies[i].datum())
 
         for value in range( -1, 15 ):
 
             matches = matchingDummies( value )
             results, used = work._apply_index( { 'work' : value } )
-            assert used == ( 'start', 'stop' )
+            self.assertEqual(used, ( 'start', 'stop' ))
 
-            assert len( matches ) == len( results ), ( '%s: %s == %s'
-               % ( value, map( lambda x: x.name(), matches ), results ) )
+            self.assertEqual(len( matches ), len( results ))
 
             matches.sort( lambda x, y: cmp( x.name(), y.name() ) )
 
             for result, match in map( None, results, matches ):
-                assert work.getEntryForObject( result ) == match.datum()
+                self.assertEqual(work.getEntryForObject(result), match.datum())
 
     def test_longdates( self ):
         self.assertRaises(OverflowError, self._badlong )
@@ -153,22 +152,22 @@ class DRI_Tests( unittest.TestCase ):
         work = DateRangeIndex( 'work', 'start', 'stop' )
         work.index_object(0, dummy)
 
-        assert work.getEntryForObject(0) == (20790915, 20790990)
+        self.assertEqual(work.getEntryForObject(0), (20790915, 20790990))
 
         results, used = work._apply_index( { 'work' : before } )
-        assert len(results) == 0
+        self.assertEqual(len(results), 0)
 
         results, used = work._apply_index( { 'work' : start } )
-        assert len(results) == 1
+        self.assertEqual(len(results), 1)
 
         results, used = work._apply_index( { 'work' : between } )
-        assert len(results) == 1
+        self.assertEqual(len(results), 1)
 
         results, used = work._apply_index( { 'work' : stop } )
-        assert len(results) == 1
+        self.assertEqual(len(results), 1)
 
         results, used = work._apply_index( { 'work' : after } )
-        assert len(results) == 0
+        self.assertEqual(len(results), 0)
 
 
 def test_suite():
