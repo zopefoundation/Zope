@@ -41,15 +41,15 @@ def main():
         usage(sys.stderr, msg)
         sys.exit(2)
 
-    script = os.path.abspath(sys.argv[0])
+    script_path = os.path.abspath(os.path.dirname(sys.argv[0]))
     user = None
     password = None
     skeltarget = None
     skelsrc = None
     python = None
 
-    if check_buildout():
-        python = os.path.abspath('bin/zopepy')
+    if check_buildout(script_path):
+        python = os.path.join(script_path, 'zopepy')
 
     for opt, arg in opts:
         if opt in ("-d", "--dir"):
@@ -127,6 +127,7 @@ def main():
         "PYTHON":PYTHON,
         "PYTHONW":PYTHONW,
         "INSTANCE_HOME": instancehome,
+        "ZOPE_SCRIPTS": script_path,
         "ZOPE2PATH": zope2path,
         }
 
@@ -186,24 +187,30 @@ def write_inituser(fn, user, password):
     fp.close()
     os.chmod(fn, 0644)
 
-def check_buildout():
+def check_buildout(script_path):
     """ Are we running from within a buildout which supplies 'zopepy'?
     """
-    if os.path.exists('buildout.cfg'):
+    buildout_cfg = os.path.join(os.path.dirname(script_path), 'buildout.cfg')
+    if os.path.exists(buildout_cfg):
         from ConfigParser import RawConfigParser
         parser = RawConfigParser()
-        parser.read('buildout.cfg')
+        parser.read(buildout_cfg)
         return 'zopepy' in parser.sections()
 
 def get_zope2path(python):
     """ Get Zope2 path from selected Python interpreter.
     """
-    p = os.popen('"%s" -c"import os, Zope2; '
-        'print os.path.realpath(os.path.dirname(Zope2.__file__))"' % python)
+    zope2file = ''
+    p = os.popen('"%s" -c"import Zope2; print Zope2.__file__"' % python)
     try:
-        return p.readline()[:-1]
+        zope2file = p.readline()[:-1]
     finally:
         p.close()
+    if not zope2file:
+        # fall back to current Python interpreter
+        import Zope2
+        zope2file = Zope2.__file__
+    return os.path.abspath(os.path.dirname(os.path.dirname(zope2file)))
 
 if __name__ == "__main__":
     main()

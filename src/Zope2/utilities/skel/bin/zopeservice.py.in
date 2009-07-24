@@ -81,14 +81,18 @@ Usage:
 import sys, os
 
 # these are replacements from mkzopeinstance
-PYTHON = r'<<PYTHON>>'
 INSTANCE_HOME = r'<<INSTANCE_HOME>>'
+ZOPE_SCRIPTS = r'<<ZOPE_SCRIPTS>>'
+ZOPE2PATH = r'<<ZOPE2PATH>>'
 
-ZOPE_RUN = r'<<ZOPE2PATH>>\Startup\run.py'
-CONFIG_FILE= os.path.join(INSTANCE_HOME, 'etc', 'zope.conf')
-PYTHONSERVICE_EXE=r'%s\bin\PythonService.exe' % ZOPE_HOME
+ZOPE_RUN = os.path.join(ZOPE_SCRIPTS, 'runzope')
+CONFIG_FILE = os.path.join(INSTANCE_HOME, 'etc', 'zope.conf')
+PYTHONSERVICE_EXE = os.path.join(ZOPE_SCRIPTS, 'PythonService.exe')
 
 os.environ["INSTANCE_HOME"] = INSTANCE_HOME
+
+# XXX: we need to find nt_svcutils.service
+sys.path[0:0] = [ZOPE2PATH]
 
 from nt_svcutils.service import Service
 
@@ -105,8 +109,8 @@ class InstanceService(Service):
     if os.path.isfile(PYTHONSERVICE_EXE):
         _exe_name_ = PYTHONSERVICE_EXE
 
-    process_runner = PYTHON
-    process_args = '"%s" -C "%s"' % (ZOPE_RUN, CONFIG_FILE)
+    process_runner = ZOPE_RUN
+    process_args = '-C "%s"' % CONFIG_FILE
 
 if __name__ == '__main__':
     import win32serviceutil
