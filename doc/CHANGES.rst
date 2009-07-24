@@ -15,8 +15,13 @@ Features Added
 
   - zope.testing = 3.7.7
 
+- scripts: Added 'runzope' and 'zopectl' as entry points for instance scripts.
+
 Bugs Fixed
 ++++++++++
+
+- mkzopeinstance: Made instance scripts more suitable for egg based installs.
+  If you are using a customized skel, it has to be updated.
 
 - Five: Fixed the permissions creation feature added in Zope 2.12.0a2.
 

@@ -38,7 +38,7 @@ How to build and install Zope from source code on Windows.
   username/password for the admin user.
 
 * We are now ready to start zope.  Run:
-  % {zope_instance}\run_zope.bat.
+  % {zope_instance}\bin\runzope.bat
   Zope should start with nice log messages being printed to
   stdout.  When Zope is ready, you should see:
   > ------
@@ -47,11 +47,12 @@ How to build and install Zope from source code on Windows.
   Press Ctrl+C to stop this instance of the server.
 
 * Optionally, install as a Windows service.  Execute:
-  % python {zope_instance}\zope_service.py
+  % python {zope_instance}\bin\zopeservice.py
   to see the valid options.  You may want something like:
-  % python {zope_instance}\zope_service.py --startup=auto install
+  % python {zope_instance}\bin\zopeservice.py --startup=auto install
 
   Once installed, it can be started any number of ways:
-  - python {zope_instance}\zope_service.py start
+  - % {zope_instance}\bin\zopectl.bat start
+  - % python {zope_instance}\bin\zopeservice.py start
   - Control Panel
-  - net start service_short_name (eg, `net start Zope_-1227678699`)
+  - % net start service_short_name (eg, `net start Zope_-1227678699`)

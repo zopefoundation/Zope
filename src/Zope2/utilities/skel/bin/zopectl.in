@@ -3,9 +3,8 @@
 PYTHON="<<PYTHON>>"
 INSTANCE_HOME="<<INSTANCE_HOME>>"
 CONFIG_FILE="<<INSTANCE_HOME>>/etc/zope.conf"
+ZDCTL="<<ZOPE_SCRIPTS>>/zopectl"
 export INSTANCE_HOME
 export PYTHON
 
-ZDCTL="<<ZOPE2PATH>>/Startup/zopectl.py"
-
-exec "$PYTHON" "$ZDCTL" -C "$CONFIG_FILE" "$@"
+exec "$ZDCTL" -C "$CONFIG_FILE" "$@"

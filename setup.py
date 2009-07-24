@@ -143,6 +143,8 @@ params = dict(name='Zope2',
        'console_scripts' : [
           'mkzeoinstance=Zope2.utilities.mkzeoinstance:main',
           'mkzopeinstance=Zope2.utilities.mkzopeinstance:main',
+          'runzope=Zope2.Startup.run:run',
+          'zopectl=Zope2.Startup.zopectl:run',
           'zpasswd=Zope2.utilities.zpasswd:main',
       ]
     },
