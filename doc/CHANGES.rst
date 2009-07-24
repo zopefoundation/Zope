@@ -25,12 +25,17 @@ Features Added
 
   - zope.app.appsetup = 3.12.0
   - zope.app.cache = 3.6.0
+  - zope.app.form = 3.8.1
   - zope.app.publication = 3.8.1
-  - zope.app.testing = 3.7.0
+  - zope.app.publisher = 3.8.4
+  - zope.app.testing = 3.7.1
   - zope.app.wsgi = 3.6.0
   - zope.app.zcmlfiles = 3.6.0
+  - zope.component = 3.7.1
   - zope.i18nmessageid = 3.5.0
   - zope.server = 3.6.0
+  - zope.site = 3.6.2
+  - zope.testing = 3.8.0
 
 Bugs Fixed
 ++++++++++
