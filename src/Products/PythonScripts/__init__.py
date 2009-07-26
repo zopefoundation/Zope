@@ -12,12 +12,9 @@
 ##############################################################################
 __doc__='''Python Scripts Product Initialization
 $Id$'''
-__version__='$Revision: 1.13 $'[11:-2]
 
 import PythonScript
-try:
-    import standard
-except: pass
+import standard
 
 # Temporary
 from Shared.DC import Scripts
