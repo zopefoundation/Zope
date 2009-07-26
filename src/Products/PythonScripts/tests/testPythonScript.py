@@ -10,7 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-import os, sys, unittest, warnings
+import os, unittest, warnings
 
 from Products.PythonScripts.PythonScript import PythonScript
 from AccessControl.SecurityManagement import newSecurityManager
@@ -295,21 +295,24 @@ class TestPythonScriptGlobals(PythonScriptTestBase, WarningInterceptor):
 
     def test__name__(self):
         f = self._filePS('class.__name__')
-        self.assertEqual(f(), ("'foo'>", "'string'"))
+        self.assertEqual(f(), ("'script.foo'>", "'string'"))
 
-    if sys.version_info < (2, 6):
-        def test_filepath(self):
-            # This test is meant to raise a deprecation warning.
-            # It used to fail mysteriously instead.
+    def test_filepath(self):
+        # This test is meant to raise a deprecation warning.
+        # It used to fail mysteriously instead.
+        def warnMe(message):
+            warnings.warn(message, stacklevel=2)
+
+        try:
+            f = self._filePS('filepath')
             self._trap_warning_output()
-            f = self._filePS('filepath')
-            self.assertEqual(f(), [0])
+            results = f._exec({'container': warnMe}, (), {})
             self._free_warning_output()
-    else:
-        def test_filepath(self):
-            # On Python 2.6, this now raises a TypeError.
-            f = self._filePS('filepath')
-            self.assertRaises(TypeError, f)
+            warning = self._our_stderr_stream.getvalue()
+            self.failUnless('UserWarning: foo' in warning)
+        except TypeError, e:
+            self.fail(e)
+
 
 class PythonScriptInterfaceConformanceTests(unittest.TestCase):
 

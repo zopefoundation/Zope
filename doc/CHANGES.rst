@@ -20,6 +20,8 @@ Features Added
 Bugs Fixed
 ++++++++++
 
+- PythonScript: Fixed small Python 2.6 compatibility issue.
+
 - mkzopeinstance: Made instance scripts more suitable for egg based installs.
   If you are using a customized skel, it has to be updated.
 
