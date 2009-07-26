@@ -7,16 +7,16 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-
 """Python Scripts Product
 
 This product provides support for Script objects containing restricted
 Python code.
+
+$Id$
 """
-__version__='$Revision: 1.56 $'[11:-2]
 
 from logging import getLogger
 import marshal
@@ -273,7 +273,14 @@ class PythonScript(Script, Historical, Cacheable):
         g = get_safe_globals()
         g['_getattr_'] = guarded_getattr
         g['__debug__'] = __debug__
-        g['__name__'] = None
+        # it doesn't really matter what __name__ is, *but*
+        # - we need a __name__
+        #   (see testPythonScript.TestPythonScriptGlobals.test__name__)
+        # - it should not contain a period, so we can't use the id
+        #   (see https://bugs.launchpad.net/zope2/+bug/142731/comments/4)
+        # - with Python 2.6 it should not be None
+        #   (see testPythonScript.TestPythonScriptGlobals.test_filepath)
+        g['__name__'] = 'script'
 
         l = {}
         exec code in g, l
