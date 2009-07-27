@@ -231,7 +231,7 @@ class PythonScript(Script, Historical, Cacheable):
             self._compile()
             self._v_change = 1
         elif self._code is None:
-            self._v_ft = self._v_f = None
+            self._v_ft = None
         else:
             self._newfun(marshal.loads(self._code))
 
@@ -248,7 +248,7 @@ class PythonScript(Script, Historical, Cacheable):
         self.warnings = tuple(r[2])
         if errors:
             self._code = None
-            self._v_ft = self._v_f = None
+            self._v_ft = None
             self._setFuncSignature((), (), 0)
             # Fix up syntax errors.
             filestring = '  File "<string>",'
@@ -284,11 +284,11 @@ class PythonScript(Script, Historical, Cacheable):
 
         l = {}
         exec code in g, l
-        self._v_f = f = l.values()[0]
+        f = l.values()[0]
         self._v_ft = (f.func_code, g, f.func_defaults or ())
         return f
 
-    def _makeFunction(self, dummy=0): # CMFCore.FSPythonScript uses dummy arg.
+    def _makeFunction(self):
         self.ZCacheable_invalidate()
         self._compile()
         if not (aq_parent(self) is None or hasattr(self, '_filepath')):
