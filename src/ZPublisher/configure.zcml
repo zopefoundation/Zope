@@ -1,5 +1,5 @@
 <configure xmlns="http://namespaces.zope.org/zope">
 
-  <include package="ZPublisher" file="publisher.zcml"/>
+  <include file="publisher.zcml"/>
 
 </configure>

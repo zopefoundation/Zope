@@ -11,6 +11,8 @@ Trunk (unreleased)
 Restructuring
 +++++++++++++
 
+- Moved ``Products/Five/publisher.zcml`` into the ZPublisher package.
+
 - Moved ``Products/Five/event.zcml`` into the OFS package.
 
 - Removed no longer maintained ``configure, make, make install`` related
