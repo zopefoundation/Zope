@@ -11,6 +11,9 @@ Trunk (unreleased)
 Restructuring
 +++++++++++++
 
+- Removed no longer maintained ``configure, make, make install`` related
+  installation files. Zope2 can only be installed via its setup.py.
+
 - Centralize interfaces defined in Products.ZCTextIndex, leaving BBB
   imports behind in old locations.
 

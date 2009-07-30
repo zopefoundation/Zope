@@ -1,8 +1,0 @@
-@set PYTHON=<<PYTHON>>
-@set ZEO_HOME=<<ZEO_HOME>>
-@set SOFTWARE_HOME=%ZEO_HOME%\lib\python
-@set INSTANCE_HOME=<<INSTANCE_HOME>>
-@set CONFIG_FILE=%INSTANCE_HOME%\etc\zeo.conf
-@set PYTHONPATH=<<SOFTWARE_HOME>>
-@set ZEO_RUN=%SOFTWARE_HOME%\ZEO\runzeo.py
-"%PYTHON%" "%ZEO_RUN%" -C "%CONFIG_FILE%" %1 %2 %3 %4 %5
