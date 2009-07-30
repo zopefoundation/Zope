@@ -11,7 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Setup for the Acquisition egg package
+"""Setup for the Zope2 package
 """
 import os
 from setuptools import setup, find_packages, Extension
