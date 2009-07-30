@@ -14,6 +14,8 @@ Restructuring
 - Moved zope.security-style permission registrations from Products.Five into
   the AccessControl package.
 
+- Moved ``Products/Five/i18n.zcml`` into the ZPublisher package.
+
 - Moved ``Products/Five/publisher.zcml`` into the ZPublisher package.
 
 - Moved ``Products/Five/event.zcml`` into the OFS package.

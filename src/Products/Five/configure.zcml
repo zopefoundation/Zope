@@ -3,7 +3,6 @@
 
   <include file="meta.zcml" />
   <include file="permissions.zcml" />
-  <include file="i18n.zcml" />
   <include file="deprecated.zcml"/>
   <include file="traversing.zcml"/>
 
