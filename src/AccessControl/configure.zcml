@@ -1,0 +1,5 @@
+<configure xmlns="http://namespaces.zope.org/zope">
+
+  <include file="permissions.zcml"/>
+
+</configure>

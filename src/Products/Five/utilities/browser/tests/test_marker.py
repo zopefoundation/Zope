@@ -22,11 +22,12 @@ def test_editview():
 
       >>> from zope.component.testing import setUp, tearDown
       >>> setUp()
+      >>> import AccessControl
       >>> import Products.Five
       >>> import Products.Five.utilities
       >>> from Products.Five import zcml
       >>> zcml.load_config('meta.zcml', Products.Five)
-      >>> zcml.load_config('permissions.zcml', Products.Five)
+      >>> zcml.load_config('permissions.zcml', AccessControl)
       >>> zcml.load_config('configure.zcml', Products.Five.utilities)
       >>> from Products.Five.utilities.browser.marker import EditView
       >>> from Products.Five.tests.testing.simplecontent import SimpleContent

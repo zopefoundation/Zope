@@ -27,8 +27,9 @@ from Products.Five.tests.adapters import Adaptable
 
 
 def setupZCML():
+    import AccessControl
     zcml.load_config('meta.zcml', Products.Five)
-    zcml.load_config('permissions.zcml', Products.Five)
+    zcml.load_config('permissions.zcml', AccessControl)
     zcml.load_config('directives.zcml', Products.Five.tests)
 
 

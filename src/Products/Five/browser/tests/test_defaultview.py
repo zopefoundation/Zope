@@ -112,10 +112,11 @@ def test_default_method_args_marshalling():
 
     First, we load the configuration file:
 
+      >>> import AccessControl
       >>> import Products.Five.tests
       >>> from Products.Five import zcml
       >>> zcml.load_config('meta.zcml', Products.Five)
-      >>> zcml.load_config("permissions.zcml", Products.Five)
+      >>> zcml.load_config("permissions.zcml", AccessControl)
       >>> zcml.load_config('directives.zcml', Products.Five.tests)
 
     Define a view, with a single attribute and the name of the view

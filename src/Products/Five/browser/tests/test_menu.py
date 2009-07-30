@@ -23,10 +23,11 @@ def test_menu():
     Before we can start we need to set up a few things.  For menu
     configuration, we have to start a new interaction:
 
+      >>> import AccessControl
       >>> import Products.Five.browser.tests
       >>> from Products.Five import zcml
       >>> zcml.load_config("meta.zcml", Products.Five)
-      >>> zcml.load_config("permissions.zcml", Products.Five)
+      >>> zcml.load_config("permissions.zcml", AccessControl)
       >>> zcml.load_config('menu.zcml', package=Products.Five.browser.tests)
 
       >>> from Products.Five.security import newInteraction

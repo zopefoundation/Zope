@@ -1,0 +1,104 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           i18n_domain="Zope2">
+
+  <permission
+    id="zope2.Public"
+    title="Public, everyone can access"
+    />
+
+  <permission
+    id="zope2.Private"
+    title="Private, only accessible from trusted code"
+    />
+
+  <permission
+    id="zope2.AccessContentsInformation"
+    title="Access contents information"
+    />
+
+  <permission
+    id="zope2.ChangeImagesFiles"
+    title="Change Images and Files"
+    />
+
+  <permission
+    id="zope2.ChangeConfig"
+    title="Change configuration"
+    />
+
+  <permission
+    id="zope2.ChangePermissions"
+    title="Change permissions"
+    />
+
+  <permission
+    id="zope2.CopyOrMove"
+    title="Copy or Move"
+    />
+
+  <permission
+    id="zope2.DefinePermissions"
+    title="Define permissions"
+    />
+
+  <permission
+    id="zope2.DeleteObjects"
+    title="Delete objects"
+    />
+
+  <permission
+    id="zope2.FTPAccess"
+    title="FTP access"
+    />
+
+  <permission
+    id="zope2.ImportExport"
+    title="Import/Export objects"
+    />
+
+  <permission
+    id="zope2.ManageProperties"
+    title="Manage properties"
+    />
+
+  <permission
+    id="zope2.ManageUsers"
+    title="Manage users"
+    />
+
+  <permission
+    id="zope2.Undo"
+    title="Undo changes"
+    />
+
+  <permission
+    id="zope2.View"
+    title="View"
+    />
+
+  <permission
+    id="zope2.ViewHistory"
+    title="View History"
+    />
+
+  <permission
+    id="zope2.ViewManagementScreens"
+    title="View management screens"
+    />
+
+  <permission
+    id="zope2.WebDAVLock"
+    title="WebDAV Lock items"
+    />
+
+  <permission
+    id="zope2.WebDAVUnlock"
+    title="WebDAV Unlock items"
+    />
+
+  <permission
+    id="zope2.WebDAVAccess"
+    title="WebDAV access"
+    />
+
+</configure>
