@@ -1,5 +1,5 @@
 <configure xmlns="http://namespaces.zope.org/zope">
 
-  <include package="OFS" file="event.zcml"/>
+  <include file="event.zcml"/>
 
 </configure>

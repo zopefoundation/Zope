@@ -4,10 +4,12 @@
   <include file="meta.zcml" />
   <include file="permissions.zcml" />
   <include file="i18n.zcml" />
-  <include file="event.zcml"/>
   <include file="deprecated.zcml"/>
   <include file="publisher.zcml"/>
   <include file="traversing.zcml"/>
+
+  <include package="OFS "/>
+
   <include package=".component" />
   <include package=".browser" />
   <include package=".form" />

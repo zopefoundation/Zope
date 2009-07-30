@@ -11,6 +11,8 @@ Trunk (unreleased)
 Restructuring
 +++++++++++++
 
+- Moved ``Products/Five/event.zcml`` into the OFS package.
+
 - Removed no longer maintained ``configure, make, make install`` related
   installation files. Zope2 can only be installed via its setup.py.
 

@@ -1,0 +1,22 @@
+<configure xmlns="http://namespaces.zope.org/zope">
+
+  <!-- Enable object event dispatcher -->
+  <include package="zope.component" />
+
+  <!-- Adapter giving sublocations for ObjectManagers, used
+       by dispatchToSublocations -->
+  <adapter factory=".subscribers.ObjectManagerSublocations" />
+
+  <!-- dispatch IObjectWillBeMovedEvent with "bottom-up" semantics -->
+  <subscriber handler=".subscribers.dispatchObjectWillBeMovedEvent" />
+
+  <!-- dispatch IObjectMovedEvent with "top-down" semantics -->
+  <subscriber handler=".subscribers.dispatchObjectMovedEvent" />
+
+  <!-- dispatch IObjectClonedEvent with "top-down" semantics -->
+  <subscriber handler=".subscribers.dispatchObjectClonedEvent" />
+
+  <!-- dispatch IObjectCopiedEvent with "top-down" semantics -->
+  <subscriber handler=".subscribers.dispatchObjectCopiedEvent" />
+
+</configure>

@@ -74,7 +74,8 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         super(ObjectManagerTests, self).setUp()
         self.saved_cfg_debug_mode = getConfiguration().debug_mode
         zcml.load_config('meta.zcml', Products.Five)
-        zcml.load_config('event.zcml', Products.Five)
+        import OFS
+        zcml.load_config('event.zcml', OFS)
         zcml.load_config('deprecated.zcml', Products.Five)
         setDeprecatedManageAddDelete(ItemForDeletion)
 
