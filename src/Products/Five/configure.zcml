@@ -4,8 +4,8 @@
   <include file="meta.zcml" />
   <include file="permissions.zcml" />
   <include file="deprecated.zcml"/>
-  <include file="traversing.zcml"/>
 
+  <include package="zope.traversing" />
   <include package="OFS "/>
   <include package="ZPublisher" />
 
