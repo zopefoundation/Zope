@@ -37,6 +37,12 @@ from zope.app.publisher.browser.viewmeta import providesCallable
 from zope.app.publisher.browser.viewmeta import _handle_menu
 from zope.app.publisher.browser.viewmeta import _handle_for
 
+from AccessControl.security import getSecurityInfo
+from AccessControl.security import protectClass
+from AccessControl.security import protectName
+from AccessControl.security import CheckerPrivateId
+from App.class_init import InitializeClass
+
 from Products.Five.browser import BrowserView
 from Products.Five.browser.resource import FileResourceFactory
 from Products.Five.browser.resource import ImageResourceFactory
@@ -44,12 +50,7 @@ from Products.Five.browser.resource import PageTemplateResourceFactory
 from Products.Five.browser.resource import DirectoryResourceFactory
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.Five.metaclass import makeClass
-from Products.Five.security import getSecurityInfo
-from Products.Five.security import protectClass
-from Products.Five.security import protectName
-from Products.Five.security import CheckerPrivateId
 
-from App.class_init import InitializeClass
 
 def page(_context, name, permission, for_,
          layer=IDefaultBrowserLayer, template=None, class_=None,

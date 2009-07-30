@@ -30,7 +30,7 @@ def test_menu():
       >>> zcml.load_config("permissions.zcml", AccessControl)
       >>> zcml.load_config('menu.zcml', package=Products.Five.browser.tests)
 
-      >>> from Products.Five.security import newInteraction
+      >>> from AccessControl.security import newInteraction
       >>> newInteraction()
 
     Now for some actual testing... Let's look up the menu we registered:

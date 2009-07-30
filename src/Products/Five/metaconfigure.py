@@ -17,8 +17,8 @@ $Id$
 """
 import warnings
 from zope.security import metaconfigure
+from AccessControl.security import protectName
 from App.class_init import InitializeClass
-from Products.Five.security import protectName
 
 class ClassDirective(metaconfigure.ClassDirective):
 

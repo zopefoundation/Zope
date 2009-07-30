@@ -151,7 +151,7 @@ def test_security_equivalence():
 
     Before we end we should clean up after ourselves:
 
-      >>> from Products.Five.security import clearSecurityInfo
+      >>> from AccessControl.security import clearSecurityInfo
       >>> clearSecurityInfo(Dummy1)
       >>> clearSecurityInfo(Dummy2)
 
@@ -292,8 +292,8 @@ def test_checkPermission():
     has the permission to access an object.  The function delegates to
     the security policy's checkPermission() method.
 
-    Five has the same function, Five.security.checkPermission, but in
-    a Zope2-compatible implementation.  It too uses the currently
+    Zope2 has the same function, AccessControl.security.checkPermission,
+    but in a Zope2-compatible implementation.  It too uses the currently
     active security policy of Zope 2 for the actual permission
     checking.
 
@@ -310,7 +310,7 @@ def test_checkPermission():
 
     a) zope2.Public (which should always be available to everyone)
 
-      >>> from Products.Five.security import checkPermission
+      >>> from AccessControl.security import checkPermission
       >>> checkPermission('zope2.Public', self.folder)
       True
 
@@ -342,7 +342,7 @@ def test_checkPermission():
       >>> from zope.security.management import endInteraction
       >>> endInteraction()
 
-      >>> from Products.Five.security import newInteraction
+      >>> from AccessControl.security import newInteraction
       >>> newInteraction()
 
     a) zope2.Public (which should always be available to everyone)

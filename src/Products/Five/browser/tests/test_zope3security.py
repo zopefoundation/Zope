@@ -11,7 +11,7 @@ def test_check_permission():
       ...     xmlns="http://namespaces.zope.org/zope"
       ...     xmlns:browser="http://namespaces.zope.org/browser">
       ...   <securityPolicy
-      ...       component="Products.Five.security.FiveSecurityPolicy" />
+      ...       component="AccessControl.security.SecurityPolicy" />
       ...   <configure package="Products.Five.browser.tests">
       ...     <browser:page
       ...         for="OFS.interfaces.IFolder"

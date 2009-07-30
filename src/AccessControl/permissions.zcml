@@ -1,6 +1,13 @@
 <configure xmlns="http://namespaces.zope.org/zope"
            i18n_domain="Zope2">
 
+  <!-- Create permissions declared in ZCML if they don't exist already -->
+  <subscriber
+        for="zope.security.interfaces.IPermission
+             zope.component.interfaces.IRegistered"
+        handler=".security.create_permission_from_permission_directive"
+        />
+
   <permission
     id="zope2.Public"
     title="Public, everyone can access"

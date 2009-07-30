@@ -11,6 +11,8 @@ Trunk (unreleased)
 Restructuring
 +++++++++++++
 
+- Moved ``Products/Five/security.py`` into the AccessControl package.
+
 - Moved ``Products/Five/traversing.zcml`` directly into the configure.zcml.
 
 - Moved zope.security-style permission registrations from Products.Five into

@@ -21,6 +21,6 @@
 
 
   <securityPolicy
-      component="Products.Five.security.FiveSecurityPolicy" />
+      component="AccessControl.security.SecurityPolicy" />
 
 </configure>

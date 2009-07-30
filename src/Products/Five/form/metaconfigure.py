@@ -26,10 +26,12 @@ _ = MessageFactory('zope')
 from zope.app.publisher.browser.menumeta import menuItemDirective
 from zope.app.form.browser.metaconfigure import BaseFormDirective
 from zope.browser.interfaces import IAdding
+from zope.publisher.interfaces.browser import IDefaultBrowserLayer
+
+from AccessControl.security import protectClass
 
 from Products.Five.form import EditView, AddView
 from Products.Five.metaclass import makeClass
-from Products.Five.security import protectClass
 from Products.Five.browser.pagetemplatefile import ZopeTwoPageTemplateFile
 from Products.Five.browser.metaconfigure import makeClassForTemplate
 

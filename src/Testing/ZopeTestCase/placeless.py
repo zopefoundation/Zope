@@ -19,8 +19,8 @@ from zope.component.testing import PlacelessSetup as CAPlacelessSetup
 from zope.component.eventtesting import PlacelessSetup as EventPlacelessSetup
 from zope.container.testing import PlacelessSetup as ContainerPlacelessSetup
 from zope.i18n.testing import PlacelessSetup as I18nPlacelessSetup
-from zope.security.management import newInteraction
 from zope.security.testing import addCheckerPublic
+from AccessControl.security import newInteraction
 
 
 class PlacelessSetup(CAPlacelessSetup,
