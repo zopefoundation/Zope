@@ -11,22 +11,7 @@
 #
 ##############################################################################
 """Wrapper to integrate reStructuredText into Zope
-
-This implementation requires docutils 0.4.0+ from http://docutils.sf.net/
 """
-
-try:
-    import docutils
-except ImportError:
-    raise ImportError, 'Please install docutils 0.4.0+ from http://docutils.sourceforge.net/#download.'
-
-version = docutils.__version__.split('.')
-if not (version >= ['0', '4', '0'] or  version >= ['0', '4']):
-    raise ImportError, """Old version of docutils found:
-Got: %(version)s, required: 0.4.0+
-Please remove docutils from %(path)s and replace it with a new version. You
-can download docutils at http://docutils.sourceforge.net/#download.
-""" % {'version' : docutils.__version__, 'path' : docutils.__path__[0] }
 
 # Disable inclusion of files for security reasons.  We do this by
 # changing the default value of the ``file_insertion_enabled``
@@ -37,7 +22,7 @@ for title, options, conf in docutils.parsers.rst.Parser.settings_spec[2]:
         conf['default'] = 0
         break
 
-import sys, os, locale
+import sys
 from App.config import getConfiguration
 from docutils.core import publish_parts
 
@@ -53,7 +38,7 @@ initial_header_level = getConfiguration().rest_header_level or default_level
 # default language used for internal translations and language mappings for DTD
 # elements
 default_lang = 'en'
-default_language_code = getConfiguration().rest_language_code or default_language
+default_language_code = getConfiguration().rest_language_code or default_lang
 
 
 class Warnings:
@@ -111,11 +96,11 @@ def HTML(src,
          initial_header_level = initial_header_level,
          warnings = None,
          settings = {}):
-    """ render HTML from a reStructuredText string 
+    """ render HTML from a reStructuredText string
 
         - 'src'  -- string containing a valid reST document
 
-        - 'writer' -- docutils writer 
+        - 'writer' -- docutils writer
 
         - 'report_level' - verbosity of reST parser
 
@@ -124,15 +109,15 @@ def HTML(src,
         - 'input_encoding' - encoding of the reST input string
 
         - 'output_encoding' - encoding of the rendered HTML output
-        
+
         - 'report_level' - verbosity of reST parser
 
         - 'language_code' - docutils language
-        
+
         - 'initial_header_level' - level of the first header tag
-        
+
         - 'warnings' - will be overwritten with a string containing the warnings
-        
+
         - 'settings' - dict of settings to pass in to Docutils, with priority
 
     """
@@ -155,12 +140,11 @@ def HTML(src,
                   'level': initial_header_level+1,
                   'subtitle': parts['subtitle'],
              }
-    
+
     body = '%(docinfo)s%(body)s' % {
                   'docinfo': parts['docinfo'],
                   'body': parts['body'],
              }
-
 
     output = ''
     if parts['title']:
@@ -169,7 +153,6 @@ def HTML(src,
         output = output + subheader
     output = output + body
 
-    
     warnings = ''.join(warning_stream.messages)
 
     if output_encoding != 'unicode':
