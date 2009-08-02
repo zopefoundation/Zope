@@ -56,6 +56,11 @@ Features Added
 Bugs Fixed
 ++++++++++
 
+- Made C extensions work for 64-bit Python 2.5.x / 2.6.x.
+
+- Unfutzed test failures due to use of naive timezones with ``datetime``
+  instances.
+
 - LP #397861: exporting $PYTHON in generated 'zopectl' for fixing import issue
   with "bin/zopectl adduser"
 

@@ -21,6 +21,17 @@ static char Record_module_documentation[] =
 
 /* ----------------------------------------------------- */
 
+#if PY_VERSION_HEX < 0x02050000 && !defined(PY_SSIZE_T_MIN)
+typedef int Py_ssize_t;
+typedef Py_ssize_t (*lenfunc)(PyObject *);
+typedef PyObject *(*ssizeargfunc)(PyObject *, Py_ssize_t);
+typedef PyObject *(*ssizessizeargfunc)(PyObject *, Py_ssize_t, Py_ssize_t);
+typedef int(*ssizeobjargproc)(PyObject *, Py_ssize_t, PyObject *);
+typedef int(*ssizessizeobjargproc)(PyObject *, Py_ssize_t, Py_ssize_t, PyObject *);
+#define PY_SSIZE_T_MAX INT_MAX
+#define PY_SSIZE_T_MIN INT_MIN
+#endif
+
 static void PyVar_Assign(PyObject **v, PyObject *e) { Py_XDECREF(*v); *v=e;}
 #define ASSIGN(V,E) PyVar_Assign(&(V),(E))
 #define UNLESS(E) if(!(E))
@@ -41,10 +52,10 @@ staticforward PyExtensionClass RecordType;
 
 /* ---------------------------------------------------------------- */
 
-static int
+static Py_ssize_t
 Record_init(Record *self)
 {
-  int l;
+  Py_ssize_t l;
 
   UNLESS(self->schema)
     UNLESS(self->schema=PyObject_GetAttr(OBJECT(self->ob_type),
@@ -67,7 +78,7 @@ static PyObject *
 Record___setstate__(Record *self, PyObject *args)
 {
   PyObject *state=0, *parent, **d;
-  int l, ls, i;
+  Py_ssize_t l, ls, i;
 
   if((l=Record_init(self)) < 0) return NULL;
 
@@ -102,7 +113,7 @@ static PyObject *
 Record___getstate__( Record *self, PyObject *args)
 {
   PyObject *r, **d, *v;
-  int i, l;
+  Py_ssize_t i, l;
 
   UNLESS(self->data) return PyTuple_New(0);
 
@@ -162,7 +173,7 @@ Record_dealloc(Record *self)
 static PyObject *
 Record_getattr(Record *self, PyObject *name)
 {
-  int l, i;
+  Py_ssize_t l, i;
   PyObject *io;
 
   if((l=Record_init(self)) < 0) return NULL;
@@ -197,7 +208,7 @@ Record_getattr(Record *self, PyObject *name)
 static int
 Record_setattr(Record *self, PyObject *name, PyObject *v)
 {
-  int l, i;
+  Py_ssize_t l, i;
   PyObject *io;
 
   if((l=Record_init(self)) < 0) return -1;
@@ -225,7 +236,8 @@ Record_setattr(Record *self, PyObject *name, PyObject *v)
 static int
 Record_compare(Record *v, Record *w)
 {
-  int lv, lw, i, c;
+  Py_ssize_t lv, lw, i;
+  int c;
   PyObject **dv, **dw;
 
   if((lv=Record_init(v)) < 0) return -1;
@@ -258,7 +270,7 @@ Record_concat(Record *self, PyObject *bb)
 }
 
 static PyObject *
-Record_repeat(Record *self, int n)
+Record_repeat(Record *self, Py_ssize_t n)
 {
   PyErr_SetString(PyExc_TypeError,
 		  "Record objects do not support repetition");
@@ -280,10 +292,10 @@ IndexError(int i)
 }
 
 static PyObject *
-Record_item(Record *self, int i)
+Record_item(Record *self, Py_ssize_t i)
 {
   PyObject *o;
-  int l;
+  Py_ssize_t l;
 
   if((l=Record_init(self)) < 0) return NULL;
   if(i < 0 || i >= l) return IndexError(i);
@@ -296,7 +308,7 @@ Record_item(Record *self, int i)
 }
 
 static PyObject *
-Record_slice(Record *self, int ilow, int ihigh)
+Record_slice(Record *self, Py_ssize_t ilow, Py_ssize_t ihigh)
 {
   PyErr_SetString(PyExc_TypeError,
 		  "Record objects do not support slicing");
@@ -304,9 +316,9 @@ Record_slice(Record *self, int ilow, int ihigh)
 }
 
 static int
-Record_ass_item(Record *self, int i, PyObject *v)
+Record_ass_item(Record *self, Py_ssize_t i, PyObject *v)
 {
-  int l;
+  Py_ssize_t l;
 
   if((l=Record_init(self)) < 0) return -1;
   if(i < 0 || i >= l)
@@ -335,13 +347,13 @@ Record_ass_slice(Record *self, int ilow, int ihigh, PyObject *v)
 }
 
 static PySequenceMethods Record_as_sequence = {
-  (inquiry)Record_init,			/*sq_length*/
+  (lenfunc)Record_init,			/*sq_length*/
   (binaryfunc)Record_concat,		/*sq_concat*/
-  (intargfunc)Record_repeat,		/*sq_repeat*/
-  (intargfunc)Record_item,		/*sq_item*/
-  (intintargfunc)Record_slice,		/*sq_slice*/
-  (intobjargproc)Record_ass_item,	/*sq_ass_item*/
-  (intintobjargproc)Record_ass_slice,	/*sq_ass_slice*/
+  (ssizeargfunc)Record_repeat,		/*sq_repeat*/
+  (ssizeargfunc)Record_item,		/*sq_item*/
+  (ssizessizeargfunc)Record_slice,		/*sq_slice*/
+  (ssizeobjargproc)Record_ass_item,	/*sq_ass_item*/
+  (ssizessizeobjargproc)Record_ass_slice,	/*sq_ass_slice*/
 };
 
 /* -------------------------------------------------------------- */
@@ -349,7 +361,7 @@ static PySequenceMethods Record_as_sequence = {
 static PyObject *
 Record_subscript(Record *self, PyObject *key)
 {
-  int i, l;
+  Py_ssize_t i, l;
   PyObject *io;
 
   if((l=Record_init(self)) < 0) return NULL;
@@ -389,7 +401,7 @@ Record_subscript(Record *self, PyObject *key)
 static int
 Record_ass_sub(Record *self, PyObject *key, PyObject *v)
 {
-  int i, l;
+  Py_ssize_t i, l;
   PyObject *io;
 
   if((l=Record_init(self)) < 0) return -1;
@@ -422,7 +434,7 @@ Record_ass_sub(Record *self, PyObject *key, PyObject *v)
 }
 
 static PyMappingMethods Record_as_mapping = {
-  (inquiry)Record_init,		/*mp_length*/
+  (lenfunc)Record_init,		/*mp_length*/
   (binaryfunc)Record_subscript,		/*mp_subscript*/
   (objobjargproc)Record_ass_sub,	/*mp_ass_subscript*/
 };

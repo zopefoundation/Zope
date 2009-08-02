@@ -54,6 +54,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#if PY_VERSION_HEX < 0x02050000 && !defined(PY_SSIZE_T_MIN)
+typedef int Py_ssize_t;
+typedef Py_ssize_t (*lenfunc)(PyObject *);
+typedef PyObject *(*ssizeargfunc)(PyObject *, Py_ssize_t);
+typedef PyObject *(*ssizessizeargfunc)(PyObject *, Py_ssize_t, Py_ssize_t);
+typedef int(*ssizeobjargproc)(PyObject *, Py_ssize_t, PyObject *);
+typedef int(*ssizessizeobjargproc)(PyObject *, Py_ssize_t, Py_ssize_t, PyObject *);
+#define PY_SSIZE_T_MAX INT_MAX
+#define PY_SSIZE_T_MIN INT_MIN
+#endif
+
 
 static void
 PyVar_Assign(PyObject **v,  PyObject *e)
@@ -349,9 +360,9 @@ static void PermissionRole_dealloc(PermissionRole *self);
 static PyObject *PermissionRole_getattro(PermissionRole *self, PyObject *name);
 
 static PyObject *imPermissionRole_of(imPermissionRole *self, PyObject *parent);
-static int imPermissionRole_length(imPermissionRole *self);
+static Py_ssize_t imPermissionRole_length(imPermissionRole *self);
 static PyObject *imPermissionRole_get(imPermissionRole *self,
-	int item);
+	Py_ssize_t item);
 static void imPermissionRole_dealloc(imPermissionRole *self);
 
 static PyObject *rolesForPermissionOn(PyObject *self, PyObject *args);
@@ -593,16 +604,16 @@ static PyMethodDef imPermissionRole_methods[] = {
 };
 
 static PySequenceMethods imSequenceMethods = {
-	(inquiry) imPermissionRole_length,	/* sq_length	*/
+	(lenfunc) imPermissionRole_length,	/* sq_length	*/
 	(binaryfunc) NULL,			/* sq_concat	*/
-	(intargfunc) NULL,			/* sq_repeat	*/
-	(intargfunc) imPermissionRole_get,	/* sq_item	*/
-	(intintargfunc) NULL,			/* sq_slice	*/
-	(intobjargproc)  NULL,			/* sq_ass_item	*/
-	(intintobjargproc) NULL,		/* sq_ass_slice */
+	(ssizeargfunc) NULL,			/* sq_repeat	*/
+	(ssizeargfunc) imPermissionRole_get,	/* sq_item	*/
+	(ssizessizeargfunc) NULL,			/* sq_slice	*/
+	(ssizeobjargproc)  NULL,			/* sq_ass_item	*/
+	(ssizessizeobjargproc) NULL,		/* sq_ass_slice */
 	(objobjproc) NULL,			/* sq_contains	*/
 	(binaryfunc) NULL,			/* sq_inplace_concat */
-	(intargfunc) NULL			/* sq_inplace_repeat */
+	(ssizeargfunc) NULL			/* sq_inplace_repeat */
 };
 
 static PyExtensionClass imPermissionRoleType = {
@@ -1613,9 +1624,9 @@ imPermissionRole_of(imPermissionRole *self, PyObject *value) {
 /*
 ** imPermissionRole_length
 */
-static int imPermissionRole_length(imPermissionRole *self) {
+static Py_ssize_t imPermissionRole_length(imPermissionRole *self) {
 
-	int l;
+	Py_ssize_t l;
 	PyObject *v;
 	PyObject *pa;
 
@@ -1654,7 +1665,7 @@ static int imPermissionRole_length(imPermissionRole *self) {
 */
 
 static PyObject *imPermissionRole_get(imPermissionRole *self,
-	int item) {
+	Py_ssize_t item) {
 
 	PyObject *v;
 	PyObject *pa;
