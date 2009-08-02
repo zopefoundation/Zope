@@ -387,7 +387,7 @@ class DateRangeIndex(UnIndex):
         if value is None:
             return value
         if isinstance(value, (str, datetime)):
-            dt_obj = DateTime( value )
+            dt_obj = DateTime(value)
             value = dt_obj.millis() / 1000 / 60 # flatten to minutes
         elif isinstance(value, DateTime):
             value = value.millis() / 1000 / 60 # flatten to minutes
