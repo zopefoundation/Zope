@@ -13,7 +13,7 @@ Features Added
 
 - Updated packages:
 
-  - ZODB3 = 3.9.0b4
+  - ZODB3 = 3.9.0b5
   - zope.testing = 3.7.7
 
 - scripts: Added 'runzope' and 'zopectl' as entry points for instance scripts.
