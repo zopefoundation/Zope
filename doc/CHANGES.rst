@@ -8,6 +8,12 @@ file HISTORY.txt.
 after Zope 2.12.0 b4 (unreleased)
 ---------------------------------
 
+Bugs Fixed
+++++++++++
+
+- Made the version information show up again, based on pkg_resources
+  distribution information instead of the no longer existing version.txt.
+
 
 Zope 2.12.0 b4 (2008/08/06)
 ---------------------------------
