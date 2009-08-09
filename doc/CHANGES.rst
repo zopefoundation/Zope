@@ -8,6 +8,13 @@ file HISTORY.txt.
 after Zope 2.12.0 b4 (unreleased)
 ---------------------------------
 
+Features Added
+++++++++++++++
+
+- Updated packages:
+
+  - Acquisition = 2.12.3
+
 Bugs Fixed
 ++++++++++
 
