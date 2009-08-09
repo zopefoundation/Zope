@@ -18,7 +18,6 @@ $Id$
 import unittest
 import Testing
 import Zope2
-Zope2.startup()
 
 from Products.PluginIndexes.PathIndex.PathIndex import PathIndex
 
