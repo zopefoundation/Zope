@@ -37,6 +37,11 @@ Restructuring
 Features Added
 ++++++++++++++
 
+- The send method of MailHost now supports unicode messages and
+  email.Message.Message objects.  It also now accepts charset and
+  msg_type parameters to help with character, header and body
+  encoding.
+
 - Updated packages:
 
   - zope.app.appsetup = 3.12.0
@@ -55,6 +60,12 @@ Features Added
 
 Bugs Fixed
 ++++++++++
+
+- Fixed issue with sending text containing ':' from MailHost.
+
+- MailHost will now ensure the headers it sets are 7bit.
+
+- MailHost no longer generates garbage when given unicode input.
 
 - Made C extensions work for 64-bit Python 2.5.x / 2.6.x.
 
