@@ -434,7 +434,9 @@ def _mungeHeaders(messageText, mto=None, mfrom=None, subject=None,
     if subject:
         # remove any existing header otherwise we get two
         del mo['Subject']
-        mo['Subject'] = Header(subject, charset)
+        # Perhaps we should ignore errors here and pass 8bit strings
+        # on encoding errors
+        mo['Subject'] = Header(subject, charset, errors='replace')
     elif not mo.get('Subject'):
         mo['Subject'] = '[No Subject]'
 
@@ -491,9 +493,9 @@ def _encode_address_string(text, charset):
     try:
         name.decode('us-ascii')
     except UnicodeDecodeError:
-        # Encoded strings need an extra space
-        # XXX: should we be this tolerant of encoding errors here?
-        charset = Charset(charset)
-        name = charset.header_encode(name)
-    header.append(formataddr((name, addr)))
+        if charset:
+            charset = Charset(charset)
+            name = charset.header_encode(name)
+    # We again replace rather than raise an error or pass an 8bit string
+    header.append(formataddr((name, addr)), errors='replace')
     return header
