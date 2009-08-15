@@ -30,7 +30,6 @@ except ImportError:
 import email.Charset
 # We import from a private module here because the email module
 # doesn't provide a good public address list parser
-from email._parseaddr import AddressList as _AddressList
 import uu
 
 from threading import Lock
@@ -68,6 +67,7 @@ LOG = logging.getLogger('MailHost')
 email.Charset.add_charset("utf-8", email.Charset.QP, email.Charset.QP, "utf-8")
 formataddr = emailutils.formataddr
 parseaddr = emailutils.parseaddr
+getaddresses = emailutils.getaddresses
 CHARSET_RE = re.compile('charset=[\'"]?([\w-]+)[\'"]?', re.IGNORECASE)
 
 class MailHostError(Exception):
@@ -442,7 +442,7 @@ def _mungeHeaders(messageText, mto=None, mfrom=None, subject=None,
 
     if mto:
         if isinstance(mto, basestring):
-            mto = [formataddr(addr) for addr in _AddressList(mto).addresslist]
+            mto = [formataddr(addr) for addr in getaddresses((mto,))]
         if not mo.get('To'):
             mo['To'] = ', '.join(str(_encode_address_string(e, charset))
                                  for e in mto)
@@ -452,8 +452,7 @@ def _mungeHeaders(messageText, mto=None, mfrom=None, subject=None,
         for header in ('To', 'Cc', 'Bcc'):
             v = ','.join(mo.get_all(header) or [])
             if v:
-                mto += [formataddr(addr) for addr in
-                        _AddressList(v).addresslist]
+                mto += [formataddr(addr) for addr in getaddresses((v,))]
         if not mto:
             raise MailHostError, "No message recipients designated"
 
