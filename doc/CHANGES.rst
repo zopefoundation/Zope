@@ -44,19 +44,29 @@ Features Added
 
 - Updated packages:
 
+  - roman = 1.4.0
+  - zope.app.applicationcontrol = 3.5.1
   - zope.app.appsetup = 3.12.0
   - zope.app.cache = 3.6.0
   - zope.app.form = 3.8.1
+  - zope.app.i18n = 3.6.1
   - zope.app.publication = 3.8.1
-  - zope.app.publisher = 3.8.4
+  - zope.app.renderer = 3.5.1
+  - zope.app.security = 3.7.1
   - zope.app.testing = 3.7.1
   - zope.app.wsgi = 3.6.0
   - zope.app.zcmlfiles = 3.6.0
+  - zope.browsermenu = 3.9.0
+  - zope.browserresource = 3.9.0
   - zope.component = 3.7.1
   - zope.i18nmessageid = 3.5.0
+  - zope.index = 3.6.0
+  - zope.location = 3.6.0
+  - zope.ptresource = 3.9.0
+  - zope.securitypolicy = 3.6.1
   - zope.server = 3.6.0
   - zope.site = 3.6.2
-  - zope.testing = 3.8.0
+  - zope.testing = 3.8.1
 
 Bugs Fixed
 ++++++++++
