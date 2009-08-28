@@ -14,6 +14,16 @@ Features Added
 - Updated packages:
 
   - Acquisition = 2.12.3
+  - pytz = 2009l
+  - tempstorage = 2.11.2
+  - transaction = 1.0.0
+  - ZODB3 = 3.9.0c1
+  - zope.app.basicskin = 3.4.1
+  - zope.app.form = 3.8.1
+  - zope.component = 3.7.1
+  - zope.copypastemove = 3.5.2
+  - zope.i18n = 3.7.1
+  - zope.security = 3.7.1
 
 Bugs Fixed
 ++++++++++
