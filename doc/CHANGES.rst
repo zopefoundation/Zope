@@ -67,6 +67,7 @@ Features Added
   - zope.server = 3.6.0
   - zope.site = 3.6.2
   - zope.testing = 3.8.1
+  - zope.viewlet = 3.6.1
 
 Bugs Fixed
 ++++++++++
