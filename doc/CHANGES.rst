@@ -45,6 +45,7 @@ Features Added
 - Updated packages:
 
   - roman = 1.4.0
+  - zc.buildout = 1.4.1
   - zope.app.applicationcontrol = 3.5.1
   - zope.app.appsetup = 3.12.0
   - zope.app.cache = 3.6.0
