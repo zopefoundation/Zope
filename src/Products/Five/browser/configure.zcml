@@ -2,7 +2,7 @@
            xmlns:browser="http://namespaces.zope.org/browser">
 
   <interface
-      interface="zope.app.publisher.interfaces.browser.IMenuItemType"
+      interface="zope.browsermenu.interfaces.IMenuItemType"
       />
 
   <browser:page
@@ -76,8 +76,8 @@
       for="*"
       name="view_get_menu"
       permission="zope.Public"
-      class="zope.app.publisher.browser.menu.MenuAccessView"
-      allowed_interface="zope.app.publisher.interfaces.browser.IMenuAccessView"
+      class="zope.browsermenu.menu.MenuAccessView"
+      allowed_interface="zope.browsermenu.interfaces.IMenuAccessView"
       />
 
 </configure>

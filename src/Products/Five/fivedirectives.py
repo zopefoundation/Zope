@@ -16,7 +16,7 @@
 $Id$
 """
 from zope.interface import Interface
-from zope.app.publisher.browser.metadirectives import IBasicResourceInformation
+from zope.browserresource.metadirectives import IBasicResourceInformation
 from zope.security.zcml import Permission
 from zope.configuration.fields import GlobalObject, Tokens, PythonIdentifier
 from zope.configuration.fields import Bool

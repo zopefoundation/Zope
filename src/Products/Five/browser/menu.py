@@ -19,6 +19,6 @@ import zope.deferredimport
 
 zope.deferredimport.deprecated(
     "The Five specific view has been made obsolete. Please use the " 
-    "view from zope.app.publisher directly.",
-    MenuAccessView = 'zope.app.publisher.browser.menu.MenuAccessView',
+    "view from zope.browsermenu directly.",
+    MenuAccessView = 'zope.browsermenu.menu.MenuAccessView',
     )

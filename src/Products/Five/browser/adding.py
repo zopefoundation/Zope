@@ -23,8 +23,8 @@ $Id$
 
 __docformat__ = 'restructuredtext'
 
-from zope.app.publisher.browser.menu import getMenu
 from zope.browser.interfaces import IAdding
+from zope.browsermenu.menu import getMenu
 from zope.component import getMultiAdapter
 from zope.component import getUtility
 from zope.component import queryMultiAdapter

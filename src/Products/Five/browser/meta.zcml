@@ -8,33 +8,33 @@
 
     <meta:directive
         name="menu"
-        schema="zope.app.publisher.browser.metadirectives.IMenuDirective"
-        handler="zope.app.publisher.browser.menumeta.menuDirective"
+        schema="zope.browsermenu.metadirectives.IMenuDirective"
+        handler="zope.browsermenu.metaconfigure.menuDirective"
         />
 
     <meta:complexDirective
         name="menuItems"
-        schema="zope.app.publisher.browser.metadirectives.IMenuItemsDirective"
-        handler="zope.app.publisher.browser.menumeta.menuItemsDirective"
+        schema="zope.browsermenu.metadirectives.IMenuItemsDirective"
+        handler="zope.browsermenu.metaconfigure.menuItemsDirective"
         >
 
       <meta:subdirective
           name="menuItem"
-          schema="zope.app.publisher.browser.metadirectives.IMenuItemSubdirective"
+          schema="zope.browsermenu.metadirectives.IMenuItemSubdirective"
           />
 
     </meta:complexDirective>
 
     <meta:directive
         name="menuItem"
-        schema="zope.app.publisher.browser.metadirectives.IMenuItemDirective"
-        handler="zope.app.publisher.browser.menumeta.menuItemDirective"
+        schema="zope.browsermenu.metadirectives.IMenuItemDirective"
+        handler="zope.browsermenu.metaconfigure.menuItemDirective"
         />
 
     <meta:directive
         name="addMenuItem"
-        schema="zope.app.publisher.browser.metadirectives.IAddMenuItemDirective"
-        handler="zope.app.publisher.browser.menumeta.addMenuItem"
+        schema="zope.browsermenu.metadirectives.IAddMenuItemDirective"
+        handler="zope.browsermenu.metaconfigure.addMenuItem"
         />
 
 
@@ -42,46 +42,45 @@
 
     <meta:complexDirective
         name="view"
-        schema="zope.app.publisher.browser.metadirectives.IViewDirective"
+        schema="zope.browserpage.metadirectives.IViewDirective"
         handler=".metaconfigure.view"
         >
 
       <meta:subdirective
           name="page"
-          schema="zope.app.publisher.browser.metadirectives.IViewPageSubdirective"
+          schema="zope.browserpage.metadirectives.IViewPageSubdirective"
           />
 
       <meta:subdirective
           name="defaultPage"
-          schema="zope.app.publisher.browser.metadirectives.IViewDefaultPageSubdirective"
+          schema="zope.browserpage.metadirectives.IViewDefaultPageSubdirective"
           />
 
     </meta:complexDirective>
 
     <meta:directive
         name="defaultView"
-        schema="zope.app.publisher.browser.metadirectives.IDefaultViewDirective"
-        handler="zope.app.publisher.browser.metaconfigure.defaultView"
+        schema="zope.publisher.zcml.IDefaultViewDirective"
+        handler="zope.publisher.zcml.defaultView"
         />
-
 
     <!-- browser pages -->
 
     <meta:directive
         name="page"
-        schema="zope.app.publisher.browser.metadirectives.IPageDirective"
+        schema="zope.browserpage.metadirectives.IPageDirective"
         handler=".metaconfigure.page"
         />
 
     <meta:complexDirective
         name="pages"
-        schema="zope.app.publisher.browser.metadirectives.IPagesDirective"
+        schema="zope.browserpage.metadirectives.IPagesDirective"
         handler=".metaconfigure.pages"
         >
 
       <meta:subdirective
           name="page"
-          schema="zope.app.publisher.browser.metadirectives.IPagesPageSubdirective"
+          schema="zope.browserpage.metadirectives.IPagesPageSubdirective"
           />
 
     </meta:complexDirective>
@@ -91,13 +90,13 @@
 
     <meta:directive
         name="resource"
-        schema="zope.app.publisher.browser.metadirectives.IResourceDirective"
+        schema="zope.browserresource.metadirectives.IResourceDirective"
         handler=".metaconfigure.resource"
         />
 
     <meta:directive
         name="resourceDirectory"
-        schema="zope.app.publisher.browser.metadirectives.IResourceDirectoryDirective"
+        schema="zope.browserresource.metadirectives.IResourceDirectoryDirective"
         handler=".metaconfigure.resourceDirectory"
         />
 
@@ -106,8 +105,8 @@
 
     <meta:directive
         name="defaultSkin"
-        schema="zope.app.publisher.browser.metadirectives.IDefaultSkinDirective"
-        handler="zope.app.publisher.browser.metaconfigure.defaultSkin"
+        schema="zope.publisher.zcml.IDefaultSkinDirective"
+        handler="zope.publisher.zcml.defaultSkin"
         />
 
   </meta:directives>

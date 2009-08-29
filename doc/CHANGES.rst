@@ -52,6 +52,7 @@ Features Added
   - zope.app.form = 3.8.1
   - zope.app.i18n = 3.6.1
   - zope.app.publication = 3.8.1
+  - zope.app.publisher = 3.9.0
   - zope.app.renderer = 3.5.1
   - zope.app.security = 3.7.1
   - zope.app.testing = 3.7.1
@@ -60,14 +61,17 @@ Features Added
   - zope.browsermenu = 3.9.0
   - zope.browserresource = 3.9.0
   - zope.component = 3.7.1
+  - zope.container = 3.9.0
   - zope.i18nmessageid = 3.5.0
   - zope.index = 3.6.0
   - zope.location = 3.6.0
   - zope.ptresource = 3.9.0
+  - zope.publisher = 3.9.0
   - zope.securitypolicy = 3.6.1
   - zope.server = 3.6.0
   - zope.site = 3.6.2
   - zope.testing = 3.8.1
+  - zope.traversing = 3.7.2
   - zope.viewlet = 3.6.1
 
 Bugs Fixed

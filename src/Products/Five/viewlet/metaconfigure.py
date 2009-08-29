@@ -17,7 +17,7 @@ $Id$
 """
 import os
 
-from zope.app.publisher.browser import viewmeta
+from zope.browserpage.metaconfigure import _handle_for
 from zope.component import zcml
 from zope.configuration.exceptions import ConfigurationError
 from zope.interface import Interface
@@ -65,7 +65,7 @@ def viewletManagerDirective(
         new_class = manager.ViewletManager(name, provides, bases=(class_, ))
 
     # Register interfaces
-    viewmeta._handle_for(_context, for_)
+    _handle_for(_context, for_)
     zcml.interface(_context, view)
 
     # register a viewlet manager
@@ -161,7 +161,7 @@ def viewletDirective(
                                                attributes=kwargs)
 
     # Register the interfaces.
-    viewmeta._handle_for(_context, for_)
+    _handle_for(_context, for_)
     zcml.interface(_context, view)
 
     # register viewlet

@@ -18,14 +18,14 @@ $Id$
 import os
 import urllib
 
+import zope.browserresource.directory
+import zope.browserresource.file
+from zope.browserresource.file import File
 from zope.interface import implements
-from zope.component import getMultiAdapter
 from zope.traversing.browser import absoluteURL
 from zope.publisher.interfaces import NotFound
 from zope.publisher.interfaces.browser import IBrowserPublisher
-from zope.app.publisher.browser import fileresource, directoryresource
-from zope.app.publisher.fileresource import File, Image
-from zope.app.publisher.pagetemplateresource import PageTemplate
+from zope.ptresource.ptresource import PageTemplate
 
 from Products.Five.browser import BrowserView
 
@@ -70,7 +70,7 @@ class PageTemplateResource(Resource, BrowserView):
         pt = self.context
         return pt(self.request)
 
-class FileResource(Resource, fileresource.FileResource):
+class FileResource(Resource, zope.browserresource.file.FileResource):
     pass
 
 class ResourceFactory:
@@ -111,7 +111,7 @@ class FileResourceFactory(ResourceFactory):
 class ImageResourceFactory(ResourceFactory):
     """A factory for Image resources"""
 
-    factory = Image
+    factory = File
     resource = FileResource
 
 
@@ -122,7 +122,8 @@ class Directory:
         self.path = path
         self.__name__ = name
 
-class DirectoryResource(Resource, directoryresource.DirectoryResource):
+class DirectoryResource(Resource,
+                        zope.browserresource.directory.DirectoryResource):
 
     resource_factories = {
         'gif':  ImageResourceFactory,

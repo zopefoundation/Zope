@@ -23,7 +23,7 @@ from zope.interface import Interface
 from zope.i18nmessageid import MessageFactory
 _ = MessageFactory('zope')
 
-from zope.app.publisher.browser.menumeta import menuItemDirective
+from zope.browsermenu.metaconfigure import menuItemDirective
 from zope.app.form.browser.metaconfigure import BaseFormDirective
 from zope.browser.interfaces import IAdding
 from zope.publisher.interfaces.browser import IDefaultBrowserLayer

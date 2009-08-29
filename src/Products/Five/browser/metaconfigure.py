@@ -32,10 +32,10 @@ from zope.publisher.interfaces.browser import IDefaultBrowserLayer
 from zope.publisher.interfaces.browser import IBrowserPublisher
 from zope.publisher.interfaces.browser import IBrowserRequest
 
-import zope.app.publisher.browser.viewmeta
-from zope.app.publisher.browser.viewmeta import providesCallable
-from zope.app.publisher.browser.viewmeta import _handle_menu
-from zope.app.publisher.browser.viewmeta import _handle_for
+import zope.browserpage.metaconfigure
+from zope.browserpage.metaconfigure import providesCallable
+from zope.browserpage.metaconfigure import _handle_menu
+from zope.browserpage.metaconfigure import _handle_for
 
 from AccessControl.security import getSecurityInfo
 from AccessControl.security import protectClass
@@ -165,7 +165,7 @@ def page(_context, name, permission, for_,
         args = (new_class,)
         )
 
-class pages(zope.app.publisher.browser.viewmeta.pages):
+class pages(zope.browserpage.metaconfigure.pages):
 
     def page(self, _context, name, attribute='__call__', template=None,
              menu=None, title=None):
@@ -178,7 +178,7 @@ class pages(zope.app.publisher.browser.viewmeta.pages):
 
 # view (named view with pages)
 
-class view(zope.app.publisher.browser.viewmeta.view):
+class view(zope.browserpage.metaconfigure.view):
 
     def __call__(self):
         (_context, name, for_, permission, layer, class_,
@@ -396,7 +396,7 @@ def resourceDirectory(_context, name, directory, layer=IDefaultBrowserLayer,
             )
 
 class ViewMixinForAttributes(BrowserView,
-                             zope.app.publisher.browser.viewmeta.simple):
+                             zope.browserpage.metaconfigure.simple):
 
     # For some reason, the 'simple' baseclass doesn't implement this
     # mandatory method (see https://bugs.launchpad.net/zope3/+bug/129296)

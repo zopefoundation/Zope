@@ -36,7 +36,7 @@ def test_menu():
     Now for some actual testing... Let's look up the menu we registered:
 
       >>> from zope.publisher.browser import TestRequest
-      >>> from zope.app.publisher.browser.menu import getMenu
+      >>> from zope.browsermenu.menu import getMenu
 
       >>> request = TestRequest()
       >>> menu = getMenu('testmenu', self.folder, request)
