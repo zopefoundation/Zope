@@ -70,6 +70,7 @@ Features Added
   - zope.securitypolicy = 3.6.1
   - zope.server = 3.6.0
   - zope.site = 3.6.2
+  - zope.testbrowser = 3.7.0a1
   - zope.testing = 3.8.1
   - zope.traversing = 3.7.2
   - zope.viewlet = 3.6.1
