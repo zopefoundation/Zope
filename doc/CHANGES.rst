@@ -48,6 +48,8 @@ Features Added
 Bugs Fixed
 ++++++++++
 
+- LP #418454: FTP server did not work with Python 2.6.X
+
 - PythonScript: Fixed small Python 2.6 compatibility issue.
 
 - mkzopeinstance: Made instance scripts more suitable for egg based installs.
