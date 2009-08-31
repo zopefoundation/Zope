@@ -78,6 +78,8 @@ Features Added
 Bugs Fixed
 ++++++++++
 
+- LP #418454: FTP server did not work with Python 2.6.X
+
 - Fixed issue with sending text containing ':' from MailHost.
 
 - MailHost will now ensure the headers it sets are 7bit.
