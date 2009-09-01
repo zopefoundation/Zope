@@ -31,12 +31,12 @@ Building Zope using zc.buildout
 -------------------------------
 
 Zope is built using the ``zc.buildout`` library, which needs to be
-"boostrapped" with your Python version.  E.g.::
+"bootstrapped" with your Python version.  E.g.::
 
   $ cd /path/to/zope
   $ /path/to/your/python bootstrap/bootstrap.py
 
-The boostrap script creates a ``buildout`` script in ``bin``;  run this
+The bootstrap script creates a ``buildout`` script in ``bin``;  run this
 script to finish building Zope::
 
   $ bin/buildout
@@ -50,7 +50,7 @@ easy_install installation or within a virtualized Python environment
 
   $ virtualenv --no-site-packages my_zope
   $ cd my_zope
-  $ source bin/my_zope
+  $ source bin/activate
   $ bin/easy_install -i http://download.zope.org/Zope2/index/<Zope version> Zope2
 
 This will create the related scripts like ``mkzopeinstance`` within the
@@ -130,7 +130,7 @@ When starting Zope, if you see errors indicating that an address is in
 use, then you will have to supply arguments to runzope to change the ports
 used for HTTP or FTP. The default HTTP and FTP ports used by Zope are
 8080 and 8021 respectively. You can change the ports used by
-editing ./etc/zope.conf apropriately.
+editing ./etc/zope.conf appropriately.
 
 The section in the configuration file looks like this::
 
