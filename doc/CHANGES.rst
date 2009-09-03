@@ -17,7 +17,7 @@ Features Added
   - pytz = 2009l
   - tempstorage = 2.11.2
   - transaction = 1.0.0
-  - ZODB3 = 3.9.0c2
+  - ZODB3 = 3.9.0c3
   - zope.app.basicskin = 3.4.1
   - zope.app.form = 3.8.1
   - zope.component = 3.7.1
