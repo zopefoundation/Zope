@@ -49,6 +49,11 @@ Zope 2.12.0 b4 (2008/08/06)
 Features Added
 ++++++++++++++
 
+- The send method of MailHost now supports unicode messages and
+  email.Message.Message objects.  It also now accepts charset and
+  msg_type parameters to help with character, header and body
+  encoding.
+
 - Updated packages:
 
   - ZODB3 = 3.9.0b5

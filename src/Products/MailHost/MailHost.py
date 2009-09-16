@@ -14,10 +14,24 @@
 
 $Id$
 """
-from cStringIO import StringIO
 import logging
-import mimetools
-import rfc822
+import re
+from cStringIO import StringIO
+from copy import deepcopy
+from email.Header import Header
+from email.Charset import Charset
+from email import message_from_string
+from email.Message import Message
+from email import Encoders
+try:
+    import email.utils as emailutils
+except ImportError:
+    import email.Utils as emailutils
+import email.Charset
+# We import from a private module here because the email module
+# doesn't provide a good public address list parser
+import uu
+
 from threading import Lock
 import time
 
@@ -48,6 +62,13 @@ from mailer import SMTPMailer
 queue_threads = {}  # maps MailHost path -> queue processor threada
 
 LOG = logging.getLogger('MailHost')
+
+# Encode utf-8 emails as Quoted Printable by default
+email.Charset.add_charset("utf-8", email.Charset.QP, email.Charset.QP, "utf-8")
+formataddr = emailutils.formataddr
+parseaddr = emailutils.parseaddr
+getaddresses = emailutils.getaddresses
+CHARSET_RE = re.compile('charset=[\'"]?([\w-]+)[\'"]?', re.IGNORECASE)
 
 class MailHostError(Exception):
     pass
@@ -91,7 +112,6 @@ class MailBase(Implicit, Item, RoleManager):
     lock = Lock()
 
     # timeout = 1.0 # unused?
-    
 
     manage_options = (
         (
@@ -185,18 +205,19 @@ class MailBase(Implicit, Item, RoleManager):
                      encode=None,
                      REQUEST=None,
                      immediate=False,
+                     charset=None,
+                     msg_type=None,
                     ):
         """Render a mail template, then send it...
         """
         mtemplate = getattr(self, messageTemplate)
         messageText = mtemplate(self, trueself.REQUEST)
-        messageText, mto, mfrom = _mungeHeaders( messageText, mto, mfrom)
-        messageText = _encode(messageText, encode)
-        trueself._send(mfrom, mto, messageText, immediate)
+        trueself.send(messageText, mto=mto, mfrom=mfrom,
+                      encode=encode, immediate=immediate,
+                      charset=charset, msg_type=msg_type)
 
-        if not statusTemplate: 
+        if not statusTemplate:
             return "SEND OK"
-
         try:
             stemplate = getattr(self, statusTemplate)
             return stemplate(self, trueself.REQUEST)
@@ -211,10 +232,15 @@ class MailBase(Implicit, Item, RoleManager):
              subject=None,
              encode=None,
              immediate=False,
+             charset=None,
+             msg_type=None,
             ):
-
-        messageText, mto, mfrom = _mungeHeaders(messageText,
-                                                mto, mfrom, subject)
+        messageText, mto, mfrom = _mungeHeaders(messageText, mto, mfrom,
+                                                subject, charset, msg_type)
+        # This encode step is mainly for BBB, encoding should be
+        # automatic if charset is passed.  The automated charset-based
+        # encoding will be preferred if both encode and charset are
+        # provided.
         messageText = _encode(messageText, encode)
         self._send(mfrom, mto, messageText, immediate)
 
@@ -327,68 +353,148 @@ InitializeClass(MailBase)
 class MailHost(Persistent, MailBase):
     """persistent version"""
 
+def uu_encoder(msg):
+    """For BBB only, don't send uuencoded emails"""
+    orig = StringIO(msg.get_payload())
+    encdata = StringIO()
+    uu.encode(orig, encdata)
+    msg.set_payload(encdata.getvalue())
+
+# All encodings supported by mimetools for BBB
+ENCODERS = {
+    'base64': Encoders.encode_base64,
+    'quoted-printable': Encoders.encode_quopri,
+    '7bit': Encoders.encode_7or8bit,
+    '8bit': Encoders.encode_7or8bit,
+    'x-uuencode': uu_encoder,
+    'uuencode':  uu_encoder,
+    'x-uue': uu_encoder,
+    'uue': uu_encoder,
+    }
 
 def _encode(body, encode=None):
+    """Manually sets an encoding and encodes the message if not
+    already encoded."""
     if encode is None:
         return body
-    mfile = StringIO(body)
-    mo = mimetools.Message(mfile)
-    if mo.getencoding() != '7bit':
+    mo = message_from_string(body)
+    current_coding = mo['Content-Transfer-Encoding']
+    if current_coding == encode:
+        # already encoded correctly, may have been automated
+        return body
+    if mo['Content-Transfer-Encoding'] not in ['7bit', None]:
         raise MailHostError, 'Message already encoded'
-    newmfile = StringIO()
-    newmfile.write(''.join(mo.headers))
-    newmfile.write('Content-Transfer-Encoding: %s\n' % encode)
-    if not mo.has_key('Mime-Version'):
-        newmfile.write('Mime-Version: 1.0\n')
-    newmfile.write('\n')
-    mimetools.encode(mfile, newmfile, encode)
-    return newmfile.getvalue()
+    if encode in ENCODERS:
+        ENCODERS[encode](mo)
+        if not mo['Content-Transfer-Encoding']:
+            mo['Content-Transfer-Encoding'] =  encode
+        if not mo['Mime-Version']:
+            mo['Mime-Version'] =  '1.0'
+    return mo.as_string()
 
-def _mungeHeaders( messageText, mto=None, mfrom=None, subject=None):
+def _mungeHeaders(messageText, mto=None, mfrom=None, subject=None,
+                  charset=None, msg_type=None):
     """Sets missing message headers, and deletes Bcc.
        returns fixed message, fixed mto and fixed mfrom"""
-    mfile = StringIO(messageText.lstrip())
-    mo = rfc822.Message(mfile)
+    # If we have been given unicode fields, attempt to encode them
+    if isinstance(messageText, unicode):
+        messageText = _try_encode(messageText, charset)
+    if isinstance(mto, unicode):
+        mto = _try_encode(mto, charset)
+    if isinstance(mfrom, unicode):
+        mfrom = _try_encode(mfrom, charset)
+    if isinstance(subject, unicode):
+        subject = _try_encode(subject, charset)
+
+    if isinstance(messageText, Message):
+        # We already have a message, make a copy to operate on
+        mo = deepcopy(messageText)
+    else:
+        # Otherwise parse the input message
+        mo = message_from_string(messageText)
+
+    if msg_type and not mo.get('Content-Type'):
+        # we don't use get_content_type because that has a default
+        # value of 'text/plain'
+        mo.set_type(msg_type)
+    charset_match = CHARSET_RE.search(mo['Content-Type'] or '')
+    if charset and not charset_match:
+        # Don't change the charset if already set
+        # This encodes the payload automatically based on the default
+        # encoding for the charset
+        mo.set_charset(charset)
+    elif charset_match and not charset:
+        # If a charset parameter was provided use it for header encoding below,
+        # Otherwise, try to use the charset provided in the message.
+        charset = charset_match.groups()[0]
 
     # Parameters given will *always* override headers in the messageText.
     # This is so that you can't override or add to subscribers by adding
     # them to # the message text.
     if subject:
-        mo['Subject'] = subject
-    elif not mo.getheader('Subject'):
+        # remove any existing header otherwise we get two
+        del mo['Subject']
+        # Perhaps we should ignore errors here and pass 8bit strings
+        # on encoding errors
+        mo['Subject'] = Header(subject, charset, errors='replace')
+    elif not mo.get('Subject'):
         mo['Subject'] = '[No Subject]'
 
     if mto:
         if isinstance(mto, basestring):
-            mto = [rfc822.dump_address_pair(addr)
-                        for addr in rfc822.AddressList(mto) ]
-        if not mo.getheader('To'):
-            mo['To'] = ','.join(mto)
+            mto = [formataddr(addr) for addr in getaddresses((mto,))]
+        if not mo.get('To'):
+            mo['To'] = ', '.join(str(_encode_address_string(e, charset))
+                                 for e in mto)
     else:
+        # If we don't have recipients, extract them from the message
         mto = []
         for header in ('To', 'Cc', 'Bcc'):
-            v = mo.getheader(header)
+            v = ','.join(mo.get_all(header) or [])
             if v:
-                mto += [rfc822.dump_address_pair(addr)
-                            for addr in rfc822.AddressList(v)]
+                mto += [formataddr(addr) for addr in getaddresses((v,))]
         if not mto:
             raise MailHostError, "No message recipients designated"
 
     if mfrom:
-        mo['From'] = mfrom
+        # XXX: do we really want to override an explicitly set From
+        # header in the messageText
+        del mo['From']
+        mo['From'] = _encode_address_string(mfrom, charset)
     else:
-        if mo.getheader('From') is None:
+        if mo.get('From') is None:
             raise MailHostError,"Message missing SMTP Header 'From'"
         mfrom = mo['From']
 
-    if mo.getheader('Bcc'):
-        mo.__delitem__('Bcc')
+    if mo.get('Bcc'):
+        del mo['Bcc']
 
-    if not mo.getheader('Date'):
+    if not mo.get('Date'):
         mo['Date'] = DateTime().rfc822()
 
-    mo.rewindbody()
-    finalmessage = mo
-    finalmessage = mo.__str__() + '\n' + mfile.read()
-    mfile.close()
-    return finalmessage, mto, mfrom
+    return mo.as_string(), mto, mfrom
+
+def _try_encode(text, charset):
+    """Attempt to encode using the default charset if none is
+    provided.  Should we permit encoding errors?"""
+    if charset:
+        return text.encode(charset)
+    else:
+        return text.encode()
+
+def _encode_address_string(text, charset):
+    """Split the email into parts and use header encoding on the name
+    part if needed. We do this because the actual addresses need to be
+    ASCII with no encoding for most SMTP servers, but the non-address
+    parts should be encoded appropriately."""
+    header = Header()
+    name, addr = parseaddr(text)
+    try:
+        name.decode('us-ascii')
+    except UnicodeDecodeError:
+        if charset:
+            charset = Charset(charset)
+            name = charset.header_encode(name)
+    # We again replace rather than raise an error or pass an 8bit string
+    header.append(formataddr((name, addr)), errors='replace')
+    return header
