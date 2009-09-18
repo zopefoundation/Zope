@@ -5,29 +5,6 @@ import logging
 from re import compile
 from socket import gethostbyaddr
 
-try:
-    import twisted.internet
-    from twisted.application.service import MultiService
-    import zope.app.twisted.main
-
-    import twisted.web2.wsgi
-    import twisted.web2.server
-    import twisted.web2.log
-    
-    try:
-        from twisted.web2.http import HTTPFactory
-    except ImportError:
-        from twisted.web2.channel.http import HTTPFactory
-    
-    from zope.component import provideUtility
-    from zope.app.twisted.server import ServerType, SSLServerType
-    from zope.app.twisted.interfaces import IServerType
-    from ZPublisher.WSGIPublisher import publish_module
-    
-    _use_twisted = True
-except ImportError:
-    _use_twisted = False
-
 # top-level key handlers
 
 
@@ -228,23 +205,6 @@ def root_handler(config):
                         config.cgi_environment,
                         config.port_base)
 
-    if not config.twisted_servers:
-        config.twisted_servers = []
-    else:
-        # Set number of threads (reuse zserver_threads variable)
-        twisted.internet.reactor.suggestThreadPoolSize(config.zserver_threads)
-
-        # Create a root service
-        rootService = MultiService()
-
-        for server in config.twisted_servers:
-            service = server.create(None)
-            service.setServiceParent(rootService)
-
-        rootService.startService()
-        twisted.internet.reactor.addSystemEventTrigger(
-            'before', 'shutdown', rootService.stopService)
-
     # set up trusted proxies
     if config.trusted_proxies:
         import ZPublisher.HTTPRequest
@@ -264,23 +224,12 @@ def handleConfig(config, multihandler):
 
 # DM 2004-11-24: added
 def _name2Ips(host, isIp_=compile(r'(\d+\.){3}').match):
-    '''map a name *host* to the sequence of its ip addresses;
+    """Map a name *host* to the sequence of its ip addresses.
+
     use *host* itself (as sequence) if it already is an ip address.
     Thus, if only a specific interface on a host is trusted,
     identify it by its ip (and not the host name).
-    '''
-    if isIp_(host): return [host]
+    """
+    if isIp_(host):
+        return [host]
     return gethostbyaddr(host)[2]
-
-
-# Twisted support:
-
-def createHTTPFactory(ignored):
-    resource = twisted.web2.wsgi.WSGIResource(publish_module)
-    resource = twisted.web2.log.LogWrapperResource(resource)
-
-    return HTTPFactory(twisted.web2.server.Site(resource))
-
-if _use_twisted:
-    http = ServerType(createHTTPFactory, 8080)
-    provideUtility(http, IServerType, 'Zope2-HTTP')

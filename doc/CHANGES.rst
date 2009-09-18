@@ -11,6 +11,9 @@ Trunk (unreleased)
 Restructuring
 +++++++++++++
 
+- Removed experimental support for configuring the Twisted HTTP server
+  as an alternative to ``ZServer``.
+
 - Moved ``Products/Five/security.py`` into the AccessControl package.
 
 - Moved ``Products/Five/traversing.zcml`` directly into the configure.zcml.

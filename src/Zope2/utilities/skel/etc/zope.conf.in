@@ -1005,14 +1005,6 @@ instancehome $INSTANCE
 #    user admin
 #    password 123
 #  </clock-server>
-#
-#  <server>
-#    # This uses Twisted as the web-server. You must install Twisted 
-#    # separately. You can't run Twisted and ZServer at same time.
-#    address 8080
-#    type Zope2-HTTP
-#  </server>
-
 
 # Database (zodb_db) section
 #
