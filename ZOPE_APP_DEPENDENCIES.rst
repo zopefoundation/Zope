@@ -25,8 +25,10 @@ Zope2 depends on the following zope.app packages directly:
       * Products.Five.browser.metaconfigure
 
 - [_] zope.app.publication 
-      o ZPublisher.BaseRequest (for ``EndRequestEvent``)
-      o Products.Five.component (for ``BeforeTraverseEvent``)
+      o ZPublisher.BaseRequest (imports ``EndRequestEvent``)
+      o Products.Five.component (imports ``BeforeTraverseEvent``;
+        ZCML registers subscribers for ``IBeforeTraverseEvent``
+        and ``IEndRequestEvent``)
 
 - [X] zope.app.publisher 
       * ZPublisher.BaseRequest
@@ -50,8 +52,12 @@ Zope2 depends on the following zope.app packages directly:
 
 This shell script can be used to verify the direct dependencies::
 
-  #! /bin/sh
-  for f in $(find src/ -name "*.py" | xargs grep -l "zope\.app"); do
+  #! /bin/bash
+  python=$(find src/ -name "*.py" | xargs grep -l "zope\.app")
+  zcml=$(find src/ -name "*.zcml" | xargs grep -l "zope\.app")
+  doctest=$(find src/ -name "*.txt" | grep -v "egg-info" |
+            xargs grep -l "zope\.app")
+  for f in $python $zcml $doctest; do
       echo ====================================================
       echo $f
       echo ====================================================
@@ -63,6 +69,7 @@ Zope2 has transitive dependencies on these packages:
 - [_] zope.app.applicationcontrol 
       o zope.traversing
       o zope.app.publication
+      o zope.app.twisted
 
 - [_] zope.app.basicskin 
       o zope.app.form
