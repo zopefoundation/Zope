@@ -16,7 +16,8 @@ Zope2 depends on the following zope.app packages directly:
       * Products/Five/browser/doc/products/ViewsTutorial/configure.zcml
 
 - [_] zope.app.form
-      o Products.Five.form.*
+      o Products.Five.form.* (should be factored out into a separate
+        package, maybe ``five.forms``)
 
 - [X] zope.app.pagetemplate 
       * Products.PageTemplates.Expressions
@@ -25,21 +26,37 @@ Zope2 depends on the following zope.app packages directly:
 
 - [_] zope.app.publication 
       o ZPublisher.BaseRequest (for ``EndRequestEvent``)
-      o Products.Five.component (for ``IBeginRequestEvent``,
-        ``IEndRequestEvent``, and ``BeforeTraverseEvent``.)
+      o Products.Five.component (for ``BeforeTraverseEvent``)
 
 - [X] zope.app.publisher 
       * ZPublisher.BaseRequest
-      o Products.Five.browser.adding (for ``getMenu``)
-      o Products/Five/browser/configure.zcml (for ``IMenuItemType``,
+      * Products.Five.browser.adding (for ``getMenu``)
+      * Products/Five/browser/configure.zcml (for ``IMenuItemType``,
         ``MenuAccessView``, and ``IMenuAccessView``)
-      o Products.Five.viewlet.metaconfigure (for ``viewmeta``)
-      o Products.Five.form.metaconfigure (for ``menuItemDirective``)
-      o Products.Five.fivedirectives (for ``IBasicResourceInformation``)
+      * Products.Five.viewlet.metaconfigure (for ``viewmeta``)
+      * Products.Five.form.metaconfigure (for ``menuItemDirective``)
+      * Products.Five.fivedirectives (for ``IBasicResourceInformation``)
 
 - [_] zope.app.schema 
-      o Products.Five
+      o Products.Five (imports ``zope.app.schema.vocabulary`` for
+        side-effects ?!).
 
+- [_] zope.app.twisted
+      o Zope2.Startup.datatypes (conditionally imports ``ServerFactory``)
+      o Zope2.Startup.handlers (conditionally imports ``ServerType``,
+      ``SSLServerType``, ``IServerType``;  worse, conditionally imports
+      ``zope.app.twisted.main`` for side effects, which includes pulling
+      back ``zope.app.appsetup`` as well as adding ``zope.app.wsgi``?!)
+
+This shell script can be used to verify the direct dependencies::
+
+  #! /bin/sh
+  for f in $(find src/ -name "*.py" | xargs grep -l "zope\.app"); do
+      echo ====================================================
+      echo $f
+      echo ====================================================
+      grep "zope\.app" $f
+   done
 
 Zope2 has transitive dependencies on these packages:
 
