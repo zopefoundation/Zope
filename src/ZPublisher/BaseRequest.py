@@ -206,10 +206,13 @@ class BaseRequest:
         else: other.update(kw)
         self.other=other
 
-    def close(self):
+    def clear(self):
         self.other.clear()
-        notify(EndRequestEvent(None, self))
         self._held=None
+
+    def close(self):
+        self.clear()
+        notify(EndRequestEvent(None, self))
 
     def processInputs(self):
         """Do any input processing that could raise errors

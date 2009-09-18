@@ -184,7 +184,7 @@ class HTTPRequest(BaseRequest):
         r.retry_count = self.retry_count
         return r
 
-    def close(self):
+    def clear(self):
         # Clear all references to the input stream, possibly
         # removing tempfiles.
         self.stdin = None
@@ -194,7 +194,7 @@ class HTTPRequest(BaseRequest):
         # one.  Without this, there's the possibility of memory leaking
         # after every request.
         self._lazies = {}
-        BaseRequest.close(self)
+        BaseRequest.clear(self)
 
     def setServerURL(self, protocol=None, hostname=None, port=None):
         """ Set the parts of generated URLs. """
@@ -1171,7 +1171,7 @@ class HTTPRequest(BaseRequest):
         except:
             rsp.exception()
         if object is None:
-            req.close()
+            req.clear()
             raise rsp.errmsg, sys.exc_info()[1]
 
         # The traversal machinery may return a "default object"
@@ -1191,7 +1191,7 @@ class HTTPRequest(BaseRequest):
         if name != os.path.split(path)[-1]:
             object = req.PARENTS[0]
 
-        req.close()
+        req.clear()
         return object
 
     def clone(self):

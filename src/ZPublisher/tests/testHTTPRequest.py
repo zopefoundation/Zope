@@ -975,6 +975,19 @@ class HTTPRequestTests(unittest.TestCase):
         clone = request.clone()
         self.failUnless(IFoo.providedBy(clone))
 
+    def test_resolve_url_doesnt_send_endrequestevent(self):
+        import zope.event
+        events = []
+        zope.event.subscribers.append(events.append)
+        request = self._makeOne()
+        request['PARENTS'] = [object()]
+        try:
+            request.resolve_url(request.script + '/')
+        finally:
+            zope.event.subscribers.remove(events.append)
+        self.failIf(len(events),
+            "HTTPRequest.resolve_url should not emit events")
+
 
 TEST_ENVIRON = {
     'CONTENT_TYPE': 'multipart/form-data; boundary=12345',
