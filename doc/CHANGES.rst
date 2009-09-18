@@ -15,6 +15,11 @@ Features Added
 
   - ZODB3 = 3.9.0
 
+Bugs Fixed
+++++++++++
+
+- LP #414757 (backported from Zope trunk): don't emit a IEndRequestEvent when
+  clearing a cloned request.
 
 Zope 2.12.0 c1 (2009/09/04)
 ---------------------------
