@@ -39,13 +39,13 @@ Zope2 depends on the following zope.app packages directly:
       * Products.Five.form.metaconfigure (for ``menuItemDirective``)
       * Products.Five.fivedirectives (for ``IBasicResourceInformation``)
 
-- [_] zope.app.schema 
-      o Products.Five (imports ``zope.app.schema.vocabulary`` for
+- [X] zope.app.schema 
+      * Products.Five (imports ``zope.app.schema.vocabulary`` for
         side-effects ?!).
 
-- [_] zope.app.twisted
-      o Zope2.Startup.datatypes (conditionally imports ``ServerFactory``)
-      o Zope2.Startup.handlers (conditionally imports ``ServerType``,
+- [X] zope.app.twisted
+      * Zope2.Startup.datatypes (conditionally imports ``ServerFactory``)
+      * Zope2.Startup.handlers (conditionally imports ``ServerType``,
       ``SSLServerType``, ``IServerType``;  worse, conditionally imports
       ``zope.app.twisted.main`` for side effects, which includes pulling
       back ``zope.app.appsetup`` as well as adding ``zope.app.wsgi``?!)

@@ -11,6 +11,9 @@ Trunk (unreleased)
 Restructuring
 +++++++++++++
 
+- Cloned ``ZopeVocabularyRegistry`` from ``zope.app.schema``, and added
+  sane registration of it during initialization of Five.
+
 - Removed experimental support for configuring the Twisted HTTP server
   as an alternative to ``ZServer``.
 
