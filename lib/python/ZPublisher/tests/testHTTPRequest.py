@@ -66,6 +66,20 @@ class AuthCredentialsTestsa( unittest.TestCase ):
         self.assertEqual( user_id_x, user_id )
         self.assertEqual( password_x, password )
 
+    def test_resolve_url_doesnt_send_endrequestevent(self):
+        import zope.event
+        events = []
+        zope.event.subscribers.append(events.append)
+        request = self._makeOne()
+        request['PARENTS'] = [object()]
+        try:
+            request.resolve_url(request.script + '/')
+        finally:
+            zope.event.subscribers.remove(events.append)
+        self.failIf(len(events),
+            "HTTPRequest.resolve_url should not emit events")
+
+
 class RecordTests( unittest.TestCase ):
 
     def test_repr( self ):

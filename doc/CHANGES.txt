@@ -4,6 +4,13 @@ Zope Changes
   Change information for previous versions of Zope can be found in the
   file HISTORY.txt.
 
+  Zope 2.10.10 (Unreleased)
+
+    Bugs fixed
+
+      - LP #414757 (backported from Zope trunk): don't emit a IEndRequestEvent
+        when clearing a cloned request.
+
   Zope 2.10.9 (2009/08/06)
 
     Restructuring
