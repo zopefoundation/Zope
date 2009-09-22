@@ -11,12 +11,6 @@
   <import package="tempstorage"/>
   <import package="Zope2.Startup" file="warnfilter.xml"/>
 
-  <sectiontype name="server" datatype="Zope2.Startup.datatypes.TwistedServerFactory">
-    <key name="type" required="yes" />
-    <key name="address" datatype="inet-address" />
-    <key name="backlog" datatype="integer" default="50" />
-  </sectiontype>
-
   <sectiontype name="logger" datatype=".LoggerFactory">
     <description>
       This "logger" type only applies to access and request ("trace")
@@ -878,7 +872,6 @@
      <metadefault>on</metadefault>
   </key>
 
-  <multisection type="server" name="*" attribute="twisted_servers" />
   <multisection type="ZServer.server" name="*" attribute="servers"/>
 
   <key name="port-base" datatype="integer" default="0">

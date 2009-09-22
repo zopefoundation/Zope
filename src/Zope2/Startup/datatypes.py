@@ -325,12 +325,3 @@ def simpleClassFactory(jar, module, name,
         return getattr(m, name)
     except:
         return OFS.Uninstalled.Broken(jar, None, (module, name))
-
-try:
-    from zope.app.twisted.server import ServerFactory
-    class TwistedServerFactory(ServerFactory):
-        pass
-except ImportError:
-    class TwistedServerFactory:
-        def __init__(self, section):
-            raise ImportError("You do not have twisted installed.")

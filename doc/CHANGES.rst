@@ -21,6 +21,9 @@ Features Added
 Bugs Fixed
 ++++++++++
 
+- Backported removal of experimental support for configuring the Twisted HTTP
+  server as an alternative to ``ZServer``.
+
 - Backported fix for timezone issues in date index tests from trunk.
 
 - LP #414757 (backported from Zope trunk): don't emit a IEndRequestEvent when
