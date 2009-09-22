@@ -82,6 +82,12 @@ command-line options, run the script with the ``--help`` option::
 
   $ bin/mkzopeinstance --help
 
+.. note::
+  The traditional ``inplace`` build is no longer supported. You are not 
+  encouraged to create a Zope instance within your buildout or virtualenv
+  environment.
+
+
 
 Starting Zope as a Daemon
 -------------------------
