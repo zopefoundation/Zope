@@ -16,18 +16,6 @@ $Id$
 """
 
 import unittest
-import Testing
-import Zope2
-Zope2.startup()
-
-from datetime import date, datetime, tzinfo, timedelta
-import time
-from types import IntType, FloatType
-
-from DateTime import DateTime
-
-from Products.PluginIndexes.DateIndex.DateIndex import DateIndex, Local
-
 
 class Dummy:
 
@@ -48,67 +36,86 @@ class Dummy:
 ###############################################################################
 # excerpted from the Python module docs
 ###############################################################################
-ZERO = timedelta(0)
-HOUR = timedelta(hours=1)
-def first_sunday_on_or_after(dt):
-    days_to_go = 6 - dt.weekday()
-    if days_to_go:
-        dt += timedelta(days_to_go)
-    return dt
 
-# In the US, DST starts at 2am (standard time) on the first Sunday in April.
-DSTSTART = datetime(1, 4, 1, 2)
-# and ends at 2am (DST time; 1am standard time) on the last Sunday of Oct.
-# which is the first Sunday on or after Oct 25.
-DSTEND = datetime(1, 10, 25, 1)
+def _getEastern():
+    from datetime import date
+    from datetime import datetime
+    from datetime import timedelta
+    from datetime import tzinfo
+    ZERO = timedelta(0)
+    HOUR = timedelta(hours=1)
+    def first_sunday_on_or_after(dt):
+        days_to_go = 6 - dt.weekday()
+        if days_to_go:
+            dt += timedelta(days_to_go)
+        return dt
 
-class USTimeZone(tzinfo):
+    # In the US, DST starts at 2am (standard time) on the first Sunday in
+    # April...
+    DSTSTART = datetime(1, 4, 1, 2)
+    # and ends at 2am (DST time; 1am standard time) on the last Sunday of
+    # October, which is the first Sunday on or after Oct 25.
+    DSTEND = datetime(1, 10, 25, 1)
 
-    def __init__(self, hours, reprname, stdname, dstname):
-        self.stdoffset = timedelta(hours=hours)
-        self.reprname = reprname
-        self.stdname = stdname
-        self.dstname = dstname
+    class USTimeZone(tzinfo):
 
-    def __repr__(self):
-        return self.reprname
+        def __init__(self, hours, reprname, stdname, dstname):
+            self.stdoffset = timedelta(hours=hours)
+            self.reprname = reprname
+            self.stdname = stdname
+            self.dstname = dstname
 
-    def tzname(self, dt):
-        if self.dst(dt):
-            return self.dstname
-        else:
-            return self.stdname
+        def __repr__(self):
+            return self.reprname
 
-    def utcoffset(self, dt):
-        return self.stdoffset + self.dst(dt)
+        def tzname(self, dt):
+            if self.dst(dt):
+                return self.dstname
+            else:
+                return self.stdname
 
-    def dst(self, dt):
-        if dt is None or dt.tzinfo is None:
-            # An exception may be sensible here, in one or both cases.
-            # It depends on how you want to treat them.  The default
-            # fromutc() implementation (called by the default astimezone()
-            # implementation) passes a datetime with dt.tzinfo is self.
-            return ZERO
-        assert dt.tzinfo is self
+        def utcoffset(self, dt):
+            return self.stdoffset + self.dst(dt)
 
-        # Find first Sunday in April & the last in October.
-        start = first_sunday_on_or_after(DSTSTART.replace(year=dt.year))
-        end = first_sunday_on_or_after(DSTEND.replace(year=dt.year))
+        def dst(self, dt):
+            if dt is None or dt.tzinfo is None:
+                # An exception may be sensible here, in one or both cases.
+                # It depends on how you want to treat them.  The default
+                # fromutc() implementation (called by the default astimezone()
+                # implementation) passes a datetime with dt.tzinfo is self.
+                return ZERO
+            assert dt.tzinfo is self
 
-        # Can't compare naive to aware objects, so strip the timezone from
-        # dt first.
-        if start <= dt.replace(tzinfo=None) < end:
-            return HOUR
-        else:
-            return ZERO
+            # Find first Sunday in April & the last in October.
+            start = first_sunday_on_or_after(DSTSTART.replace(year=dt.year))
+            end = first_sunday_on_or_after(DSTEND.replace(year=dt.year))
 
-Eastern  = USTimeZone(-5, "Eastern",  "EST", "EDT")
+            # Can't compare naive to aware objects, so strip the timezone from
+            # dt first.
+            if start <= dt.replace(tzinfo=None) < end:
+                return HOUR
+            else:
+                return ZERO
+
+    return USTimeZone(-5, "Eastern",  "EST", "EDT")
+
 ###############################################################################
 
 
 class DI_Tests(unittest.TestCase):
-    def setUp(self):
-        self._values = (
+
+    def _getTargetClass(self):
+        from Products.PluginIndexes.DateIndex.DateIndex import DateIndex
+        return DateIndex
+
+    def _makeOne(self, id='date'):
+        return self._getTargetClass()(id)
+
+    def _getValues(self):
+        from DateTime import DateTime
+        from datetime import date
+        from datetime import datetime
+        return [
             (0, Dummy('a', None)),                            # None
             (1, Dummy('b', DateTime(0))),                     # 1055335680
             (2, Dummy('c', DateTime('2002-05-08 15:16:17'))), # 1072667236
@@ -120,29 +127,15 @@ class DI_Tests(unittest.TestCase):
             (8, Dummy('g', date(2034,2,5))),                  # 1073599200
             (9, Dummy('h', datetime(2034,2,5,15,20,5))),      # (varies)
             (10, Dummy('i', datetime(2034,2,5,10,17,5,
-                                     tzinfo=Eastern))),       # 1073600117
-        )
-        self._index = DateIndex('date')
-        self._noop_req  = {'bar': 123}
-        self._request   = {'date': DateTime(0)}
-        self._min_req   = {'date': {'query': DateTime('2032-05-08 15:16:17'),
-            'range': 'min'}}
-        self._max_req   = {'date': {'query': DateTime('2032-05-08 15:16:17'),
-            'range': 'max'}}
-        self._range_req = {'date': {'query':(DateTime('2002-05-08 15:16:17'),
-                                    DateTime('2062-05-08 15:16:17')),
-                           'range': 'min:max'}}
-        self._zero_req  = {'date': 0}
-        self._none_req  = {'date': None}
-        self._float_req = {'date': 1072742620.0}
-        self._int_req   = {'date': 1072742900}
+                                     tzinfo=_getEastern()))), # 1073600117
+        ]
 
-    def _populateIndex( self ):
-        for k, v in self._values:
-            self._index.index_object(k, v)
+    def _populateIndex(self, index):
+        for k, v in self._getValues():
+            index.index_object(k, v)
 
-    def _checkApply(self, req, expectedValues):
-        result, used = self._index._apply_index(req)
+    def _checkApply(self, index, req, expectedValues):
+        result, used = index._apply_index(req)
         if hasattr(result, 'keys'):
             result = result.keys()
         self.failUnlessEqual(used, ('date',))
@@ -152,8 +145,12 @@ class DI_Tests(unittest.TestCase):
             self.failUnless(k in result)
 
     def _convert(self, dt):
-        if type(dt) in (FloatType, IntType):
-            yr, mo, dy, hr, mn = time.gmtime(dt)[:5]
+        from time import gmtime
+        from datetime import date
+        from datetime import datetime
+        from Products.PluginIndexes.DateIndex.DateIndex import Local
+        if isinstance(dt, (float, int)):
+            yr, mo, dy, hr, mn = gmtime(dt)[:5]
         elif type(dt) is date:
             yr, mo, dy, hr, mn = dt.timetuple()[:5]
         elif type(dt) is datetime:
@@ -171,37 +168,50 @@ class DI_Tests(unittest.TestCase):
         from Products.PluginIndexes.interfaces import IUniqueValueIndex
         from zope.interface.verify import verifyClass
 
-        verifyClass(IDateIndex, DateIndex)
-        verifyClass(IPluggableIndex, DateIndex)
-        verifyClass(ISortIndex, DateIndex)
-        verifyClass(IUniqueValueIndex, DateIndex)
+        verifyClass(IDateIndex, self._getTargetClass())
+        verifyClass(IPluggableIndex, self._getTargetClass())
+        verifyClass(ISortIndex, self._getTargetClass())
+        verifyClass(IUniqueValueIndex, self._getTargetClass())
 
     def test_empty(self):
-        empty = self._index
+        from DateTime import DateTime
+        index = self._makeOne()
 
-        self.failUnlessEqual(len(empty), 0)
-        self.failUnlessEqual(len(empty.referencedObjects()), 0)
+        self.failUnlessEqual(len(index), 0)
+        self.failUnlessEqual(len(index.referencedObjects()), 0)
 
-        self.failUnless(empty.getEntryForObject(1234) is None)
+        self.failUnless(index.getEntryForObject(1234) is None)
         marker = []
-        self.failUnless(empty.getEntryForObject(1234, marker) is marker)
-        empty.unindex_object(1234) # shouldn't throw
+        self.failUnless(index.getEntryForObject(1234, marker) is marker)
+        index.unindex_object(1234) # shouldn't throw
 
-        self.failUnless(empty.hasUniqueValuesFor('date'))
-        self.failIf(empty.hasUniqueValuesFor('foo'))
-        self.failUnlessEqual(len(empty.uniqueValues('date')), 0)
+        self.failUnless(index.hasUniqueValuesFor('date'))
+        self.failIf(index.hasUniqueValuesFor('foo'))
+        self.failUnlessEqual(len(index.uniqueValues('date')), 0)
 
-        self.failUnless(empty._apply_index({'zed': 12345}) is None)
+        self.failUnless(index._apply_index({'zed': 12345}) is None)
 
-        self._checkApply(self._request, [])
-        self._checkApply(self._min_req, [])
-        self._checkApply(self._max_req, [])
-        self._checkApply(self._range_req, [])
+        self._checkApply(index,
+                         {'date': DateTime(0)}, [])
+        self._checkApply(index,
+                         {'date': {'query': DateTime('2032-05-08 15:16:17'),
+                                   'range': 'min'}},
+                         [])
+        self._checkApply(index,
+                         {'date': {'query': DateTime('2032-05-08 15:16:17'),
+                                   'range': 'max'}},
+                         [])
+        self._checkApply(index,
+                         {'date': {'query':(DateTime('2002-05-08 15:16:17'),
+                                            DateTime('2062-05-08 15:16:17')),
+                                   'range': 'min:max'}},
+                         [])
 
     def test_retrieval( self ):
-        self._populateIndex()
-        values = self._values
-        index = self._index
+        from DateTime import DateTime
+        index = self._makeOne()
+        self._populateIndex(index)
+        values = self._getValues()
 
         self.failUnlessEqual(len(index), len(values) - 2) # One dupe, one empty
         self.failUnlessEqual(len(index.referencedObjects()), len(values) - 1)
@@ -214,30 +224,43 @@ class DI_Tests(unittest.TestCase):
 
         for k, v in values:
             if v.date():
-                self.failUnlessEqual(self._index.getEntryForObject(k),
+                self.failUnlessEqual(index.getEntryForObject(k),
                     self._convert(v.date()))
 
         self.failUnlessEqual(len(index.uniqueValues('date')), len(values) - 2)
-        self.failUnless(index._apply_index(self._noop_req) is None)
+        self.failUnless(index._apply_index({'bar': 123}) is None)
 
-        self._checkApply(self._request, values[1:2])
-        self._checkApply(self._min_req, values[3:6] + values[8:])
-        self._checkApply(self._max_req, values[1:4] + values[6:8])
-        self._checkApply(self._range_req, values[2:] )
-        self._checkApply(self._float_req, [values[6]] )
-        self._checkApply(self._int_req, [values[7]] )
+        self._checkApply(index,
+                         {'date': DateTime(0)}, values[1:2])
+        self._checkApply(index,
+                         {'date': {'query': DateTime('2032-05-08 15:16:17'),
+                                   'range': 'min'}},
+                         values[3:6] + values[8:])
+        self._checkApply(index,
+                         {'date': {'query': DateTime('2032-05-08 15:16:17'),
+                                   'range': 'max'}},
+                         values[1:4] + values[6:8])
+        self._checkApply(index,
+                         {'date': {'query':(DateTime('2002-05-08 15:16:17'),
+                                            DateTime('2062-05-08 15:16:17')),
+                                   'range': 'min:max'}},
+                         values[2:] )
+        self._checkApply(index,
+                         {'date': 1072742620.0}, [values[6]])
+        self._checkApply(index,
+                         {'date': 1072742900}, [values[7]])
 
     def test_naive_convert_to_utc(self):
-        values = self._values
-        index = self._index
+        index = self._makeOne()
+        values = self._getValues()
         index.index_naive_time_as_local = False
-        self._populateIndex()
+        self._populateIndex(index)
         for k, v in values[9:]:
             # assert that the timezone is effectively UTC for item 9,
             # and still correct for item 10
             yr, mo, dy, hr, mn = v.date().utctimetuple()[:5]
             val = (((yr * 12 + mo) * 31 + dy) * 24 + hr) * 60 + mn
-            self.failUnlessEqual(self._index.getEntryForObject(k), val)
+            self.failUnlessEqual(index.getEntryForObject(k), val)
 
     def test_removal(self):
         """ DateIndex would hand back spurious entries when used as a
@@ -246,10 +269,11 @@ class DI_Tests(unittest.TestCase):
             None. The catalog consults a sort_index's
             documentToKeyMap() to build the brains.
         """
-        values = self._values
-        index = self._index
-        self._populateIndex()
-        self._checkApply(self._int_req, [values[7]])
+        values = self._getValues()
+        index = self._makeOne()
+        self._populateIndex(index)
+        self._checkApply(index,
+                         {'date': 1072742900}, [values[7]])
         index.index_object(7, None)
         self.failIf(7 in index.documentToKeyMap().keys())
 

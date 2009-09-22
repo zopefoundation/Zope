@@ -18,6 +18,8 @@ Features Added
 Bugs Fixed
 ++++++++++
 
+- Backported fix for timezone issues in date index tests from trunk.
+
 - LP #414757 (backported from Zope trunk): don't emit a IEndRequestEvent when
   clearing a cloned request.
 
