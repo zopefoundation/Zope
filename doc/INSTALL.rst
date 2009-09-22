@@ -83,7 +83,7 @@ command-line options, run the script with the ``--help`` option::
   $ bin/mkzopeinstance --help
 
 .. note::
-  The traditional ``inplace`` build is no longer supported. You are not 
+  The traditional ``inplace`` build is no longer supported. You are now
   encouraged to create a Zope instance within your buildout or virtualenv
   environment.
 
