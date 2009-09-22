@@ -15,6 +15,9 @@ Features Added
 
   - ZODB3 = 3.9.0
 
+- Backported clone of ``ZopeVocabularyRegistry`` from ``zope.app.schema``, and
+  sane registration of it during initialization of Five product.
+
 Bugs Fixed
 ++++++++++
 

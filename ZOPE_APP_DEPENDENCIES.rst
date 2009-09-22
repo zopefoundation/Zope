@@ -36,9 +36,9 @@ Zope2 depends on the following zope.app packages directly:
       o Products.Five.form.metaconfigure (for ``menuItemDirective``)
       o Products.Five.fivedirectives (for ``IBasicResourceInformation``)
 
-- [_] zope.app.schema 
-      o Products.Five
-
+- [X] zope.app.schema 
+      * Products.Five (imports ``zope.app.schema.vocabulary`` for
+        side-effects ?!).
 
 Zope2 has transitive dependencies on these packages:
 
