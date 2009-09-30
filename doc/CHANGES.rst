@@ -64,6 +64,9 @@ Bugs Fixed
 
 - MailHost no longer generates garbage when given unicode input.
 
+- MailHost manage form no longer interprets the value None as a string
+  in user and password fields.
+
 - Made C extensions work for 64-bit Python 2.5.x / 2.6.x.
 
 - Unfutzed test failures due to use of naive timezones with ``datetime``

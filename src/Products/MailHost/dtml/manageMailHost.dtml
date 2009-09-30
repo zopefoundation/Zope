@@ -56,7 +56,7 @@
     </td>
     <td align="left" valign="top">
     <input type="text" name="smtp_uid" size="15"
-     value="&dtml-smtp_uid;"/>
+     value="&dtml.null-smtp_uid;"/>
     </td>
     <td>
     <span class="form-help">(optional for SMTP AUTH)</span>
@@ -70,7 +70,7 @@
     </td>
     <td align="left" valign="top">
     <input type="password" name="smtp_pwd" size="15"
-     value="&dtml-smtp_pwd;"/>
+     value="&dtml.null-smtp_pwd;"/>
     </td>
     <td>
     <span class="form-help">(optional for SMTP AUTH)</span>
