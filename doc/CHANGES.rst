@@ -88,6 +88,9 @@ Bugs Fixed
 
 - LP #399633: fixed interpreter paths
 
+- MailHost manage form no longer interprets the value None as a string
+  in user and password fields.
+
 
 Zope 2.12.0 b3 (2009/07/15)
 ---------------------------
