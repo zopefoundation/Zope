@@ -5,6 +5,19 @@ This file contains change information for the current Zope release.
 Change information for previous versions of Zope can be found in the
 file HISTORY.txt.
 
+Zope 2.12.1 (unreleased)
+------------------------
+
+Bugs Fixed
+++++++++++
+
+- Updated packages:
+
+  - ZODB3 = 3.9.1  (fixes bug where blob conflict errors hung commits)
+
+- Assorted documentation cleanups, including a script to rebuild HTML
+  documentation on Windows.
+
 Zope 2.12.0 final  (2009/10/01)
 -------------------------------
 
