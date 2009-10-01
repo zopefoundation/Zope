@@ -31,7 +31,8 @@ Building Zope using zc.buildout
 -------------------------------
 
 Zope is built using the ``zc.buildout`` library, which needs to be
-"bootstrapped" with your Python version.  E.g.::
+"bootstrapped" with your Python version. You have to download the Zope 2
+source distribution from `PyPI <http://pypi.python.org/pypi/Zope2>`_ first.  E.g.::
 
   $ cd /path/to/zope
   $ /path/to/your/python bootstrap/bootstrap.py
