@@ -14,5 +14,4 @@ Contents:
    SETUID.rst
    SIGNALS.rst
    DEBUGGING.rst
-   CREDITS.rst
 
