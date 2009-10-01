@@ -10,6 +10,7 @@ Contents:
    WHATSNEW.rst
    CHANGES.rst
    INSTALL.rst
+   USERS.rst
    SECURITY.rst
    SETUID.rst
    SIGNALS.rst
