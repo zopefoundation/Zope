@@ -11,7 +11,6 @@ Contents:
    CHANGES.rst
    INSTALL.rst
    SECURITY.rst
-   ZOPE3.rst
    SETUID.rst
    SIGNALS.rst
    DEBUGGING.rst
