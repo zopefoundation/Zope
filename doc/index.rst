@@ -8,11 +8,11 @@ Contents:
    :maxdepth: 2
 
    WHATSNEW.rst
-   CHANGES.rst
    INSTALL.rst
    USERS.rst
    SECURITY.rst
    SETUID.rst
    SIGNALS.rst
    DEBUGGING.rst
+   CHANGES.rst
 
