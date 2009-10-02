@@ -11,6 +11,8 @@ Zope Changes
       - LP #414757 (backported from Zope trunk): don't emit a IEndRequestEvent
         when clearing a cloned request.
 
+      - updated to ZODB 3.8.4
+
   Zope 2.11.4 (2009/08/06)
 
     Restructuring
