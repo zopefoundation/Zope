@@ -60,7 +60,7 @@ class Service(win32serviceutil.ServiceFramework):
         # ...and from that, we can look up the other needed bits
         # from the registry:
         self._svc_display_name_ = self.getReg('DisplayName')
-        self._svc_command_ = self.getReg('Command',keyname='PythonClass')
+        self._svc_command_ = self.getReg('command',keyname='PythonClass')
         
         win32serviceutil.ServiceFramework.__init__(self, args)
 
@@ -268,26 +268,29 @@ class Service(win32serviceutil.ServiceFramework):
     def stop(self,pid):
         # call the method that any subclasses out there may implement:
         self.onStop()
-        # Stop the child process by sending signals to the special named event.
-        
-          
         
         winver = sys.getwindowsversion()
+        # This is unfortunately needed because runzope.exe is a setuptools
+        # generated .exe that spawns off a sub process, so pid would give us
+        # the wrong event name.
+        child_pid = int(
+            open(self.getReg('pid_filename',keyname='PythonClass')).read()
+            )
         
+        # Stop the child process by sending signals to the special named event.
         for sig, timeout in (
             (signal.SIGINT, 30), # We give it 90 seconds to shutdown normally.
             (signal.SIGTERM, 10) # If that doesn't stop things, we give it 30
                                  # seconds to do a "fast" shutdown.
             ):
-            event_name = "Zope-%d-%d" % (pid, sig)
+            # See the Signals.WinSignalHandler module for
+            # the source of this event name
+            event_name = "Zope-%d-%d" % (child_pid,sig)
             # sys.getwindowsversion() -> major, minor, build, platform_id, ver_string
             # for platform_id, 2==VER_PLATFORM_WIN32_NT
             if winver[0] >= 5 and winver[3] == 2:
                 event_name = "Global\\" + event_name
             try:
-                # XXX This no longer works, see bug #443005 on Launchpad
-                # This is likely because cmd in now a setuptools-generated .exe
-                # Any ideas?
                 he = win32event.OpenEvent(win32event.EVENT_MODIFY_STATE, 0,
                                           event_name)
             except win32event.error, details:

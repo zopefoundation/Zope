@@ -212,6 +212,11 @@ class ZopeCmd(ZDCmd):
             args = [opt, svalue]
         return args
 
+    def do_start(self, arg):
+        # signal to Zope that it is being managed
+        # (to indicate it's web-restartable)
+        os.putenv('ZMANAGED', '1')
+
     ## START OF WINDOWS ONLY STUFF
     
     if WIN:
@@ -225,6 +230,7 @@ class ZopeCmd(ZDCmd):
             self.zd_status = None
             return
 
+        do_start = do_windows('start')
         do_stop = do_windows('stop')
         do_restart = do_windows('restart')
 
@@ -242,6 +248,11 @@ class ZopeCmd(ZDCmd):
                     self.options.configfile
                     )
                 InstanceClass.setReg('command',command)
+                
+                # This is unfortunately needed because runzope.exe is a setuptools
+                # generated .exe that spawns off a sub process, so pid would give us
+                # the wrong event name.
+                InstanceClass.setReg('pid_filename',self.options.configroot.pid_filename)
 
         def help_install(self):
             print "install -- Installs Zope as a Windows service."
@@ -251,17 +262,13 @@ class ZopeCmd(ZDCmd):
         def help_remove(self):
             print "remove -- Removes the Zope Windows service."
 
+        do_windebug = do_windows('debug')
+        
+        def help_windebug(self):
+            print "windebug -- Runs the Zope Windows service in the foreground, in debug mode."
+
     ## END OF WINDOWS ONLY STUFF
             
-    def do_start(self, arg):
-        # signal to Zope that it is being managed
-        # (to indicate it's web-restartable)
-        os.putenv('ZMANAGED', '1')
-        if WIN:
-            do_windows('start')(self,arg)
-        else:
-            ZDCmd.do_start(self, arg)
-
     def get_startup_cmd(self, python, more):
         cmdline = ( '%s -c "from Zope2 import configure;'
                     'configure(%r);' %
