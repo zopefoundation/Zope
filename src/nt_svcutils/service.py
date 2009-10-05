@@ -112,10 +112,6 @@ class Service(win32serviceutil.ServiceFramework):
         # A hook for subclasses to override
         pass
 
-    def createProcess(self, cmd):
-        self.start_time = time.time()
-        return self.createProcessCaptureIO(cmd)
-
     def logmsg(self, event):
         # log a service event using servicemanager.LogMsg
         try:
@@ -305,7 +301,9 @@ class Service(win32serviceutil.ServiceFramework):
         self.backoff_interval *= 2
         return True
 
-    def createProcessCaptureIO(self, cmd):
+    def createProcess(self, cmd):
+        self.start_time = time.time()
+        
         hInputRead, hInputWriteTemp = self.newPipe()
         hOutReadTemp, hOutWrite = self.newPipe()
         pid = win32api.GetCurrentProcess()
