@@ -63,102 +63,23 @@ class Service(win32serviceutil.ServiceFramework):
         self._svc_command_ = self.getReg('Command',keyname='PythonClass')
         
         win32serviceutil.ServiceFramework.__init__(self, args)
-        
+
+        # Don't use the service name as the event source name:        
         servicemanager.SetEventSourceName(self.evtlog_name)
+        
         # Create an event which we will use to wait on.
         # The "service stop" request will set this event.
         # We create it inheritable so we can pass it to the child process, so
         # it too can act on the stop event.
         sa = win32security.SECURITY_ATTRIBUTES()
         sa.bInheritHandle = True
-
         self.hWaitStop = win32event.CreateEvent(sa, 0, 0, None)
-        self.redirect_thread = None
 
-    @classmethod
-    def openKey(cls,serviceName,keyname=None):
-        keypath = "System\\CurrentControlSet\\Services\\"+serviceName
-        if keyname:
-            keypath += ('\\'+keyname)
-        return win32api.RegOpenKey(win32con.HKEY_LOCAL_MACHINE,keypath,0,win32con.KEY_ALL_ACCESS)
-    
-    @classmethod
-    def setReg(cls,name,value,serviceName=None,keyname='PythonClass'):
-        if not serviceName:
-            serviceName = cls._svc_name_
-        key = cls.openKey(serviceName,keyname)
-        try:
-            win32api.RegSetValueEx(key, name, 0, win32con.REG_SZ, value)
-        finally:
-            win32api.RegCloseKey(key)
-
-    def getReg(self,name,keyname=None):
-        key = self.openKey(self._svc_name_,keyname)
-        return win32api.RegQueryValueEx(key,name)[0]
-    
-    def SvcStop(self):
-        # Before we do anything, tell the SCM we are starting the stop process.
-        self.ReportServiceStatus(win32service.SERVICE_STOP_PENDING)
-        self.onStop()
-        # Set the stop event - the main loop takes care of termination.
-        win32event.SetEvent(self.hWaitStop)
-
-    # SvcStop only gets triggered when the user explictly stops (or restarts)
-    # the service.  To shut the service down cleanly when Windows is shutting
-    # down, we also need to hook SvcShutdown.
-    SvcShutdown = SvcStop
-
-    def onStop(self):
-        # A hook for subclasses to override
-        pass
-
-    def logmsg(self, event):
-        # log a service event using servicemanager.LogMsg
-        try:
-            servicemanager.LogMsg(servicemanager.EVENTLOG_INFORMATION_TYPE,
-                                  event,
-                                  (self._svc_name_,
-                                   " (%s)" % self._svc_display_name_))
-        except win32api.error, details:
-            # Failed to write a log entry - most likely problem is
-            # that the event log is full.  We don't want this to kill us
-            try:
-                print "FAILED to write INFO event", event, ":", details
-            except IOError:
-                pass
-
-    def _dolog(self, func, msg):
-        try:
-            fullmsg = "%s (%s): %s" % \
-                      (self._svc_name_, self._svc_display_name_, msg)
-            func(fullmsg)
-        except win32api.error, details:
-            # Failed to write a log entry - most likely problem is
-            # that the event log is full.  We don't want this to kill us
-            try:
-                print "FAILED to write event log entry:", details
-                print msg
-            except IOError:
-                # And if running as a service, its likely our sys.stdout
-                # is invalid
-                pass
-
-    def info(self, s):
-        self._dolog(servicemanager.LogInfoMsg, s)
-
-    def warning(self, s):
-        self._dolog(servicemanager.LogWarningMsg, s)
-
-    def error(self, s):
-        self._dolog(servicemanager.LogErrorMsg, s)
-
+    ### ServiceFramework methods
+        
     def SvcDoRun(self):
         # indicate to Zope that the process is daemon managed (restartable)
         os.environ['ZMANAGED'] = '1'
-
-        # XXX the restart behavior is different here than it is for
-        # zdaemon.zdrun.  we should probably do the same thing in both
-        # places.
 
         # daemon behavior:  we want to to restart the process if it
         # dies, but if it dies too many times, we need to give up.
@@ -177,75 +98,35 @@ class Service(win32serviceutil.ServiceFramework):
         # the cumulative backoff seconds counter
         self.backoff_cumulative = 0
 
+        self.ReportServiceStatus(win32service.SERVICE_START_PENDING)
         self.logmsg(servicemanager.PYS_SERVICE_STARTED)
-
         while 1:
-            info = self.createProcess(self._svc_command_)
-            # info is (hProcess, hThread, pid, tid)
-            self.hZope = info[0] # process handle
-            if self.backoff_interval > BACKOFF_INITIAL_INTERVAL:
-                # make a note that we've created a process after backing
-                # off?
-                self.info("created process")
-            if not (self.run() and self.checkRestart()):
+            self.hZope, hThread, pid, tid = self.createProcess(self._svc_command_)
+            self.ReportServiceStatus(win32service.SERVICE_RUNNING)
+            keep_running = self.run()
+            if not keep_running:
+                # The daemon process has asked to stop
                 break
-
-        self.ReportServiceStatus(win32service.SERVICE_STOP_PENDING)
-        # Stop the child process by opening the special named event.
-        # We give it 90 seconds to shutdown normally.  If that doesn't
-        # stop things, we give it 30 seconds to do a "fast" shutdown.
-        # After that, we just knock it on the head.
-        winver = sys.getwindowsversion()
-        for sig, timeout in ((signal.SIGINT, 30), (signal.SIGTERM, 10)):
-            event_name = "Zope-%d-%d" % (info[2], sig)
-            # sys.getwindowsversion() -> major, minor, build, platform_id, ver_string
-            # for platform_id, 2==VER_PLATFORM_WIN32_NT
-            if winver[0] >= 5 and winver[3] == 2:
-                event_name = "Global\\" + event_name
-            try:
-                he = win32event.OpenEvent(win32event.EVENT_MODIFY_STATE, 0,
-                                          event_name)
-            except win32event.error, details:
-                if details[0] == winerror.ERROR_FILE_NOT_FOUND:
-                    # process already dead!
-                    break
-                # no other expected error - report it.
-                self.warning("Failed to open child shutdown event %s"
-                             % (event_name,))
-                continue
-
-            win32event.SetEvent(he)
-            # It should be shutting down now - wait for termination, reporting
-            # progress as we go.
-            for i in range(timeout):
-                self.ReportServiceStatus(win32service.SERVICE_STOP_PENDING)
-                rc = win32event.WaitForSingleObject(self.hZope, 3000)
-                if rc == win32event.WAIT_OBJECT_0:
-                    break
-            # Process terminated - no need to try harder.
-            if rc == win32event.WAIT_OBJECT_0:
+            # should we attempt a restart?
+            if not self.checkRestart():
+                # No, we should not
                 break
-
         self.ReportServiceStatus(win32service.SERVICE_STOP_PENDING)
-        # If necessary, kill it
-        if win32process.GetExitCodeProcess(self.hZope)==win32con.STILL_ACTIVE:
-            win32api.TerminateProcess(self.hZope, 3)
-        self.ReportServiceStatus(win32service.SERVICE_STOP_PENDING)
-
-        # Wait for the redirect thread - it should have died as the remote
-        # process terminated.
-        # As we are shutting down, we do the join with a little more care,
-        # reporting progress as we wait (even though we never will <wink>)
-        if self.redirect_thread is not None:
-            for i in range(5):
-                self.redirect_thread.join(1)
-                self.ReportServiceStatus(win32service.SERVICE_STOP_PENDING)
-                if not self.redirect_thread.isAlive():
-                    break
-            else:
-                self.warning("Redirect thread did not stop!")
+        self.stop(pid)
+        self.ReportServiceStatus(win32service.SERVICE_STOPPED)
         self.logmsg(servicemanager.PYS_SERVICE_STOPPED)
 
+    def SvcStop(self):
+        # Set the stop event - the main loop takes care of termination.
+        win32event.SetEvent(self.hWaitStop)
+
+    # SvcStop only gets triggered when the user explictly stops (or restarts)
+    # the service.  To shut the service down cleanly when Windows is shutting
+    # down, we also need to hook SvcShutdown.
+    SvcShutdown = SvcStop
+
+    ### Helper methods
+    
     def run(self):
         """Monitor the daemon process.
 
@@ -259,24 +140,19 @@ class Service(win32serviceutil.ServiceFramework):
                                                0, # bWaitAll
                                                win32event.INFINITE)
         if rc == win32event.WAIT_OBJECT_0:
-            # user sent a stop service request
+            # a stop service request was recieved
             keep_running = False
         elif rc == win32event.WAIT_OBJECT_0 + 1:
-            # user did not send a service stop request, but
             # the process died; this may be an error condition
             status = win32process.GetExitCodeProcess(self.hZope)
-            # exit status 0 means the user caused a clean shutdown,
-            # presumably via the web interface.  Any other status
-            # is an error that gets written to the event log.
-            if status != 0:
-                # This should never block - the child process terminating
-                # has closed the redirection pipe, so our thread dies.
-                self.redirect_thread.join(5)
-                if self.redirect_thread.isAlive():
-                    self.warning("Redirect thread did not stop!")
-                self.warning("process terminated with exit code %d.\n%s" \
-                             % (status, "".join(self.captured_blocks)))
+            # exit status 0 means a clean shutdown,
+            # presumably via the web interface.
             keep_running = status != 0
+            if keep_running:
+                # Any other status is an error so we write it and
+                # any output to the event log
+                self.warning("Process terminated with exit code %d.\n%s" \
+                             % (status, self.getCapturedOutput()))
         else:
             # No other valid return codes.
             assert 0, rc
@@ -285,10 +161,13 @@ class Service(win32serviceutil.ServiceFramework):
     def checkRestart(self):
         # this was an abormal shutdown.
         if self.backoff_cumulative > BACKOFF_MAX:
-            self.error("restarting too frequently; quit")
+            self.error("Attempted restarting more than %s times, aborting."
+                       % BACKOFF_MAX)
             return False
-        self.warning("sleep %s to avoid rapid restarts"
-                     % self.backoff_interval)
+        self.warning(
+            "Process died unexpectedly, will attempt restart after %s seconds."
+            % self.backoff_interval
+            )
         if time.time() - self.start_time > BACKOFF_CLEAR_TIME:
             self.backoff_interval = BACKOFF_INITIAL_INTERVAL
             self.backoff_cumulative = 0
@@ -339,18 +218,19 @@ class Service(win32serviceutil.ServiceFramework):
         hInputWrite.Close()
 
         # start a thread collecting output
-        t = threading.Thread(target=self.redirectCaptureThread,
-                             args = (hOutRead,))
+        t = threading.Thread(
+            target=self.outputCaptureThread,
+            args = (hOutRead,)
+            )
         t.start()
-        self.redirect_thread = t
+        self.output_thread = t
         return info
 
-    def redirectCaptureThread(self, handle):
+    def outputCaptureThread(self, handle):
         # Only one of these running at a time, and handling both stdout and
         # stderr on a single handle.  The read data is never referenced until
         # the thread dies - so no need for locks around self.captured_blocks.
         self.captured_blocks = []
-        #self.info("Redirect thread starting")
         while 1:
             try:
                 ec, data = win32file.ReadFile(handle, CHILDCAPTURE_BLOCK_SIZE)
@@ -363,7 +243,12 @@ class Service(win32serviceutil.ServiceFramework):
             self.captured_blocks.append(data)
             del self.captured_blocks[CHILDCAPTURE_MAX_BLOCKS:]
         handle.Close()
-        #self.info("Redirect capture thread terminating")
+
+    def getCapturedOutput(self):
+        self.output_thread.join(5)
+        if self.output_thread.isAlive():
+            self.warning("Output capturing thread failed to terminate!")
+        return "".join(self.captured_blocks)
 
     def newPipe(self):
         sa = win32security.SECURITY_ATTRIBUTES()
@@ -380,8 +265,131 @@ class Service(win32serviceutil.ServiceFramework):
         pipe.Close()
         return dup
 
-# Real __main__ bootstrap code is in the instance's service module.
-if __name__ == '__main__':
-    print "This is a framework module - you don't run it directly."
-    print "See your installation directory for the service script."
-    sys.exit(1)
+    def stop(self,pid):
+        # call the method that any subclasses out there may implement:
+        self.onStop()
+        # Stop the child process by sending signals to the special named event.
+        
+          
+        
+        winver = sys.getwindowsversion()
+        
+        for sig, timeout in (
+            (signal.SIGINT, 30), # We give it 90 seconds to shutdown normally.
+            (signal.SIGTERM, 10) # If that doesn't stop things, we give it 30
+                                 # seconds to do a "fast" shutdown.
+            ):
+            event_name = "Zope-%d-%d" % (pid, sig)
+            # sys.getwindowsversion() -> major, minor, build, platform_id, ver_string
+            # for platform_id, 2==VER_PLATFORM_WIN32_NT
+            if winver[0] >= 5 and winver[3] == 2:
+                event_name = "Global\\" + event_name
+            try:
+                # XXX This no longer works, see bug #443005 on Launchpad
+                # This is likely because cmd in now a setuptools-generated .exe
+                # Any ideas?
+                he = win32event.OpenEvent(win32event.EVENT_MODIFY_STATE, 0,
+                                          event_name)
+            except win32event.error, details:
+                # no other expected error - report it.
+                self.warning("Failed to open child shutdown event %s"
+                             % (event_name,))
+                continue
+
+            win32event.SetEvent(he)
+            # It should be shutting down now - wait for termination, reporting
+            # progress as we go.
+            for i in range(timeout):
+                # wait for one second
+                rc = win32event.WaitForSingleObject(self.hZope, 1000)
+                if rc == win32event.WAIT_OBJECT_0:
+                    break
+            # Process terminated - no need to try harder.
+            if rc == win32event.WAIT_OBJECT_0:
+                break
+
+        if win32process.GetExitCodeProcess(self.hZope)==win32con.STILL_ACTIVE:
+            # None of the signals worked, so kill the process
+            self.warning(
+                "Terminating process as it could not be gracefully ended"
+                )
+            win32api.TerminateProcess(self.hZope, 3)
+
+        output = self.getCapturedOutput()
+        if output:
+            self.info("Process terminated with output:\n"+output)
+                
+    ### Overridable subclass methods
+
+    def onStop(self):
+        # A hook for subclasses to override.
+        # Called just before the service is stopped.
+        pass
+
+    ### Registry interaction methods
+    
+    @classmethod
+    def openKey(cls,serviceName,keyname=None):
+        keypath = "System\\CurrentControlSet\\Services\\"+serviceName
+        if keyname:
+            keypath += ('\\'+keyname)
+        return win32api.RegOpenKey(
+            win32con.HKEY_LOCAL_MACHINE,keypath,0,win32con.KEY_ALL_ACCESS
+            )
+    
+    @classmethod
+    def setReg(cls,name,value,serviceName=None,keyname='PythonClass'):
+        if not serviceName:
+            serviceName = cls._svc_name_
+        key = cls.openKey(serviceName,keyname)
+        try:
+            win32api.RegSetValueEx(key, name, 0, win32con.REG_SZ, value)
+        finally:
+            win32api.RegCloseKey(key)
+
+    def getReg(self,name,keyname=None):
+        key = self.openKey(self._svc_name_,keyname)
+        return win32api.RegQueryValueEx(key,name)[0]
+    
+    ### Logging methods
+        
+    def logmsg(self, event):
+        # log a service event using servicemanager.LogMsg
+        try:
+            servicemanager.LogMsg(servicemanager.EVENTLOG_INFORMATION_TYPE,
+                                  event,
+                                  (self._svc_name_,
+                                   " (%s)" % self._svc_display_name_))
+        except win32api.error, details:
+            # Failed to write a log entry - most likely problem is
+            # that the event log is full.  We don't want this to kill us
+            try:
+                print "FAILED to write INFO event", event, ":", details
+            except IOError:
+                pass
+
+    def _dolog(self, func, msg):
+        try:
+            fullmsg = "%s (%s): %s" % \
+                      (self._svc_name_, self._svc_display_name_, msg)
+            func(fullmsg)
+        except win32api.error, details:
+            # Failed to write a log entry - most likely problem is
+            # that the event log is full.  We don't want this to kill us
+            try:
+                print "FAILED to write event log entry:", details
+                print msg
+            except IOError:
+                # And if running as a service, its likely our sys.stdout
+                # is invalid
+                pass
+
+    def info(self, s):
+        self._dolog(servicemanager.LogInfoMsg, s)
+
+    def warning(self, s):
+        self._dolog(servicemanager.LogWarningMsg, s)
+
+    def error(self, s):
+        self._dolog(servicemanager.LogErrorMsg, s)
+
