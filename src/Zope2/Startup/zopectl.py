@@ -253,7 +253,7 @@ class ZopeCmd(ZDCmd):
 
     def get_startup_cmd(self, python, more):
         cmdline = ( '%s -c "from Zope2 import configure;'
-                    'configure(\'%s\');' %
+                    'configure(%r);' %
                     (python, self.options.configfile)
                     )
         return cmdline + more + '\"'
