@@ -90,6 +90,17 @@ if sys.platform[:3].lower() == "win":
 def string_list(arg):
     return arg.split()
 
+def quote_command(command):
+    print " ".join(command)
+    # Quote the program name, so it works even if it contains spaces
+    command = " ".join(['"%s"' % x for x in command])
+    if WIN:
+        # odd, but true: the windows cmd processor can't handle more than
+        # one quoted item per string unless you add quotes around the
+        # whole line.
+        command = '"%s"' % command
+    return command
+
 class ZopeCtlOptions(ZDOptions):
     # Zope controller options.
     # 
@@ -266,18 +277,19 @@ class ZopeCmd(ZDCmd):
         os.system(cmdline)
 
     def do_foreground(self, arg):
-        if WIN:
-            # Adding arguments to the program is not supported on Windows
-            # and the runzope script doesn't put you in debug-mode either
-            ZDCmd.do_foreground(self, arg)
-        else:
-            self.options.program[1:1] = ["-X", "debug-mode=on"]
-            try:
-                ZDCmd.do_foreground(self, arg)
-            finally:
-                self.options.program.remove("-X")
-                self.options.program.remove("debug-mode=on")
-
+        program = self.options.program
+        local_additions = []
+        if not program.count('-X'):
+            local_additions += ['-X']
+        if not program.count('debug-mode=on'):
+            local_additions += ['debug-mode=on']
+        program[1:1] = local_additions
+        command = quote_command(program)
+        try:
+            return os.system(command)
+        finally:
+            for addition in local_additions: program.remove(addition)
+            
     def help_debug(self):
         print "debug -- run the Zope debugger to inspect your database"
         print "         manually using a Python interactive shell"
