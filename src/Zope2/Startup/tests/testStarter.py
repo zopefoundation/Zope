@@ -17,6 +17,7 @@ import cStringIO
 import errno
 import logging
 import os
+import random
 import sys
 import tempfile
 import unittest
@@ -183,14 +184,18 @@ class ZopeStarterTestCase(test_logger.LoggingTestBase):
         self.assertEqual(_n, 10)
 
     def testSetupServers(self):
+        # We generate a random port number to test against, so that multiple
+        # test runs of this at the same time can succeed
+        port = random.randint(10000, 50000)
         conf = self.load_config_text("""
             instancehome <<INSTANCE_HOME>>
             <http-server>
-                address 18092
+                address %(http)s
             </http-server>
             <ftp-server>
-               address 18093
-            </ftp-server>""")
+               address %(ftp)s
+            </ftp-server>""" % dict(http=port, ftp=port+1)
+        )
         starter = self.get_starter(conf)
         # do the job the 'handler' would have done (call prepare)
         for server in conf.servers:
@@ -205,30 +210,6 @@ class ZopeStarterTestCase(test_logger.LoggingTestBase):
         finally:
             del conf.servers # should release servers
             pass
-
-        # The rest sets up a conflict by using the same port for the HTTP
-        # and FTP servers, relying on socket.bind() to raise an "address
-        # already in use" exception.  However, because the sockets specify
-        # SO_REUSEADDR, socket.bind() may not raise that exception.
-        # See <http://zope.org/Collectors/Zope/1104> for gory details.
-
-        ## conf = self.load_config_text("""
-        ##     instancehome <<INSTANCE_HOME>>
-        ##     <http-server>
-        ##         address 18092
-        ##     </http-server>
-        ##     <ftp-server>
-        ##        # conflict
-        ##        address 18092
-        ##     </ftp-server>""")
-        ## starter = self.get_starter(conf)
-        ## # do the job the 'handler' would have done (call prepare)
-        ## for server in conf.servers:
-        ##     server.prepare('', None, 'Zope2', {}, None)
-        ## try:
-        ##     self.assertRaises(ZConfig.ConfigurationError, starter.setupServers)
-        ## finally:
-        ##     del conf.servers
 
     def testDropPrivileges(self):
         # somewhat incomplete because we we're never running as root

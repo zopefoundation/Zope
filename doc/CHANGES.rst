@@ -11,6 +11,10 @@ Trunk (unreleased)
 Restructuring
 +++++++++++++
 
+- Changed startup server tests in Zope2 to use a randomized port number, to
+  allow the nightly buildbot to run the tests at the same time for multiple
+  configurations without the port being already in use.
+
 - Cloned ``ZopeVocabularyRegistry`` from ``zope.app.schema``, and added
   sane registration of it during initialization of Five.
 
