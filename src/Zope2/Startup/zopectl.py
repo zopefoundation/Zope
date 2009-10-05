@@ -51,6 +51,41 @@ from ZConfig.datatypes import existing_dirpath
 WIN = False
 if sys.platform[:3].lower() == "win":
     WIN = True
+    import win32serviceutil
+    from nt_svcutils import service
+    
+    def do_windows(command):
+        def inner(self,arg):
+
+            INSTANCE_HOME = self.options.directory
+            name = 'Zope'+str(hash(INSTANCE_HOME.lower()))
+            display_name = 'Zope instance at '+INSTANCE_HOME
+
+            # This class exists only so we can take advantage of
+            # win32serviceutil.HandleCommandLine, it is never
+            # instantiated.
+            class InstanceService(service.Service):
+                _svc_name_ = name
+                _svc_display_name_ = display_name
+                _svc_description_ = "A Zope application instance running as a service"
+
+            # getopt sucks :-(
+            argv = [sys.argv[0]]
+            argv.extend(arg.split())
+            argv.append(command)
+
+            # we need to supply this manually as HandleCommandLine guesses wrong
+            serviceClassName = os.path.splitext(service.__file__)[0]+'.Service'
+            
+            err = win32serviceutil.HandleCommandLine(
+                InstanceService,
+                serviceClassName,
+                argv=argv,
+                )
+
+            return err,InstanceService
+            
+        return inner
 
 def string_list(arg):
     return arg.split()
@@ -132,11 +167,6 @@ class ZopeCtlOptions(ZDOptions):
         self.python = os.environ.get('PYTHON', config.python) or sys.executable
         self.zdrun = os.path.join(os.path.dirname(zdaemon.__file__),
                                   "zdrun.py")
-        if WIN:
-            # Add the path to the zopeservice.py script, which is needed for
-            # some of the Windows specific commands
-            servicescript = os.path.join(self.directory, 'bin', 'zopeservice.py')
-            self.servicescript = '"%s" %s' % (self.python, servicescript)
 
         self.exitcodes = [0, 2]
         if self.logfile is None and config.eventlog is not None:
@@ -171,6 +201,8 @@ class ZopeCmd(ZDCmd):
             args = [opt, svalue]
         return args
 
+    ## START OF WINDOWS ONLY STUFF
+    
     if WIN:
         def get_status(self):
             # get_status from zdaemon relies on *nix specific socket handling.
@@ -182,46 +214,40 @@ class ZopeCmd(ZDCmd):
             self.zd_status = None
             return
 
-        def do_stop(self, arg):
-            # Stop the Windows service
-            program = "%s stop" % self.options.servicescript
-            print program
-            os.system(program)
-
-        def do_restart(self, arg):
-            # Restart the Windows service
-            program = "%s restart" % self.options.servicescript
-            print program
-            os.system(program)
+        do_stop = do_windows('stop')
+        do_restart = do_windows('restart')
 
         # Add extra commands to install and remove the Windows service
 
-        def do_install(self, arg):
-            program = "%s install" % self.options.servicescript
-            print program
-            os.system(program)
+        def do_install(self,arg):
+            err,InstanceClass = do_windows('install')(self,arg)
+            if not err:
+                # If we installed successfully, put info in registry for the
+                # real Service class to use:
+                command = '"%s" -C "%s"' % (
+                    # This gives us the instance script for buildout instances
+                    # and the install script for classic instances.
+                    os.path.join(os.path.split(sys.argv[0])[0],'runzope'),
+                    self.options.configfile
+                    )
+                InstanceClass.setReg('command',command)
 
         def help_install(self):
             print "install -- Installs Zope as a Windows service."
 
-        def do_remove(self, arg):
-            program = "%s remove" % self.options.servicescript
-            print program
-            os.system(program)
+        do_remove = do_windows('remove')
 
         def help_remove(self):
             print "remove -- Removes the Zope Windows service."
 
+    ## END OF WINDOWS ONLY STUFF
+            
     def do_start(self, arg):
         # signal to Zope that it is being managed
         # (to indicate it's web-restartable)
         os.putenv('ZMANAGED', '1')
         if WIN:
-            # On Windows start the service, this fails with a reasonable
-            # error message as long as the service is not installed
-            program = "%s start" % self.options.servicescript
-            print program
-            os.system(program)
+            do_windows('start')(self,arg)
         else:
             ZDCmd.do_start(self, arg)
 

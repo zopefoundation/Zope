@@ -1,6 +1,6 @@
 ##############################################################################
 #
-# Copyright (c) 2003 Zope Corporation and Contributors.
+# Copyright (c) 2003-2009 Zope Corporation and Contributors.
 # All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
@@ -50,26 +50,21 @@ class Service(win32serviceutil.ServiceFramework):
     should be created in the instance home.
     """
 
-    # The PythonService model requires that an actual on-disk class declaration
-    # represent a single service.  Thus, the definitions below for the instance
-    # must be overridden in a subclass in a file within the instance home for
-    # each instance.
-    # The values below are just examples.
-    _svc_name_ = r'Zope-Instance'
-    _svc_display_name_ = r'Zope instance at C:\Zope-Instance'
-
-    process_runner = r'C:\Program Files\Zope-2.7.0-a1\bin\python.exe'
-    process_args = r'{path_to}\run.py -C {path_to}\zope.conf'
     evtlog_name = 'Zope'
 
     def __init__(self, args):
+
+        # We get passed in the service name
+        self._svc_name_ = args[0]
+
+        # ...and from that, we can look up the other needed bits
+        # from the registry:
+        self._svc_display_name_ = self.getReg('DisplayName')
+        self._svc_command_ = self.getReg('Command',keyname='PythonClass')
+        
         win32serviceutil.ServiceFramework.__init__(self, args)
-        # Just say "Zope", instead of "Zope_-xxxxx"
-        try:
-            servicemanager.SetEventSourceName(self.evtlog_name)
-        except AttributeError:
-            # old pywin32 - that's ok.
-            pass
+        
+        servicemanager.SetEventSourceName(self.evtlog_name)
         # Create an event which we will use to wait on.
         # The "service stop" request will set this event.
         # We create it inheritable so we can pass it to the child process, so
@@ -80,6 +75,27 @@ class Service(win32serviceutil.ServiceFramework):
         self.hWaitStop = win32event.CreateEvent(sa, 0, 0, None)
         self.redirect_thread = None
 
+    @classmethod
+    def openKey(cls,serviceName,keyname=None):
+        keypath = "System\\CurrentControlSet\\Services\\"+serviceName
+        if keyname:
+            keypath += ('\\'+keyname)
+        return win32api.RegOpenKey(win32con.HKEY_LOCAL_MACHINE,keypath,0,win32con.KEY_ALL_ACCESS)
+    
+    @classmethod
+    def setReg(cls,name,value,serviceName=None,keyname='PythonClass'):
+        if not serviceName:
+            serviceName = cls._svc_name_
+        key = cls.openKey(serviceName,keyname)
+        try:
+            win32api.RegSetValueEx(key, name, 0, win32con.REG_SZ, value)
+        finally:
+            win32api.RegCloseKey(key)
+
+    def getReg(self,name,keyname=None):
+        key = self.openKey(self._svc_name_,keyname)
+        return win32api.RegQueryValueEx(key,name)[0]
+    
     def SvcStop(self):
         # Before we do anything, tell the SCM we are starting the stop process.
         self.ReportServiceStatus(win32service.SERVICE_STOP_PENDING)
@@ -168,15 +184,12 @@ class Service(win32serviceutil.ServiceFramework):
         self.logmsg(servicemanager.PYS_SERVICE_STARTED)
 
         while 1:
-            # We pass *this* file and the handle as the first 2 params, then
-            # the 'normal' startup args.
-            # See the bottom of this script for how that is handled.
-            cmd = '"%s" %s' % (self.process_runner, self.process_args)
-            info = self.createProcess(cmd)
+            info = self.createProcess(self._svc_command_)
             # info is (hProcess, hThread, pid, tid)
             self.hZope = info[0] # process handle
-            # XXX why the test before the log message?
             if self.backoff_interval > BACKOFF_INITIAL_INTERVAL:
+                # make a note that we've created a process after backing
+                # off?
                 self.info("created process")
             if not (self.run() and self.checkRestart()):
                 break
