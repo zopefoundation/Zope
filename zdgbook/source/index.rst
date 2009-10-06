@@ -1,14 +1,11 @@
 Zope Developer's Guide
 ======================
 
-Contents
---------
-
 .. toctree::
    :maxdepth: 2
 
-   Outline.rst
    Introduction.rst
+   GettingStarted.rst
    ComponentsAndInterfaces.rst
    ObjectPublishing.rst
    Products.rst

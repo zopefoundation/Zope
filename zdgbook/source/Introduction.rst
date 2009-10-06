@@ -51,6 +51,10 @@ to the Zope API, but rather a practical guide to applying Zope's
 services to develop and deploy your own web applications.  This book
 covers the following topics:
 
+*Getting Started*
+  This chapter provides a brief overview of installation and getting
+  started with application development.
+
 *Components and Interfaces*
   Zope is moving toward a component-centric development model.  This
   chapter describes the new component model in Zope and how Zope
