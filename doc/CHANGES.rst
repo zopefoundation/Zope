@@ -18,6 +18,13 @@ Bugs Fixed
 - Assorted documentation cleanups, including a script to rebuild HTML
   documentation on Windows.
 
+- Refactored Windows Service support to not need or use zopeservice.py
+  in instances. This makes buildout-based instances work on Windows.
+
+- LP #440490: zopectl fg|adduser|run|debug now work on Windows.
+
+- LP #443005: zopectl stop works once more on Windows.
+
 Zope 2.12.0 final  (2009/10/01)
 -------------------------------
 
