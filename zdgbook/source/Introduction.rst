@@ -2,6 +2,9 @@
 Introduction
 ############
 
+Overview
+========
+
 Zope 2 is a free and open-source, object-oriented web application
 server written in the Python programming language.  The term ZOPE is
 an acronym for "Z Object Publishing Environment" (the Z doesn't
@@ -44,6 +47,9 @@ will be in Python.  There are a number of great resources and books
 for learning Python; the best online resource is the `python.org web
 site <http://www.python.org/>`_ and many books can be found on the
 shelves of your local bookstore.
+
+Organization of the book
+========================
 
 This book describes Zope's services to the developer from a hands on,
 example-oriented standpoint.  This book is not a complete reference
