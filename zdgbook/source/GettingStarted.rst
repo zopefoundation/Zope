@@ -44,7 +44,7 @@ and `buildout` script inside `bin` directory.
 
   $ cd poll/poll.build
   $ touch buildout.cfg
-  $ wget -c http://download.zope.org/Zope2/index/2.12.0/versions.cfg
+  $ wget -c http://svn.zope.org/repos/main/zc.buildout/trunk/bootstrap/bootstrap.py
   $ python2.6 bootstrap.py
 
 Installing Zope 2
@@ -60,7 +60,7 @@ recipes.
   [buildout]
   parts = zope2
           instance
-  extends = http://svn.zope.org/repos/main/Zope/tags/2.12.0/versions.cfg
+  extends = http://download.zope.org/Zope2/index/2.12.0/versions.cfg
 
   [zope2]
   recipe = zc.recipe.egg
