@@ -60,7 +60,7 @@ recipes.
   [buildout]
   parts = zope2
           instance
-  extends = http://svn.zope.org/*checkout*/Zope/branches/2.12/versions.cfg
+  extends = http://svn.zope.org/repos/main/Zope/tags/2.12.0/versions.cfg
 
   [zope2]
   recipe = zc.recipe.egg

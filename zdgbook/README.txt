@@ -39,3 +39,9 @@ http://mail.zope.org/mailman/listinfo/zope-dev
 
 .. _Sphinx: http://sphinx.pocoo.org/
 .. _virtualenv: http://pypi.python.org/pypi/virtualenv/
+
+TODO
+----
+
+- Split Testing and Debugging chapter
+- Add getting started code inside examples
