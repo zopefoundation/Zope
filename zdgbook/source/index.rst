@@ -14,5 +14,3 @@ Zope Developer's Guide
    Security.rst
    TestingAndDebugging.rst
    AppendixA.rst
-   AppendixB.rst
-
