@@ -328,11 +328,13 @@ Now we can run application instance again.
 Adding application instance
 ===========================
 
-Visit ZMI and select `POLL` from drop-down box.  And fill the form and
-you can see that it tells that poll is installed.
+Visit ZMI and select `POLL` from the drop-down box.  It will display
+the add-form created earlier.  You can provide the ID as `poll` and
+submit the form.  After submitting, it should display a message:
+"POLL Installed: poll".
 
 Adding the main page to POLL
----------------------------
+============================
 
 In this section we will try to add a main page to POLL application.
 So that we can acces POLL application like this:
@@ -343,11 +345,11 @@ content like this::
 
   <html>
   <head>
-    <title>Welcome to POLL</title>
+    <title>Welcome to POLL!</title>
   </head>
   <body>
 
-  <h2>Welcome to POLL</h2>
+  <h2>Welcome to POLL!</h2>
 
   </body>
   </html>
@@ -360,11 +362,11 @@ this::
 
       index_html = PageTemplateFile("index_html", globals())
 
-Now you can see that it display the main page when you access:
-http://localhost:8080/poll .
+Restart the Zope. Now you can see that it display the main page when
+you access: http://localhost:8080/poll .
 
 Summary
--------
+=======
 
-This chapter covered installation beginning a simple project in Zope
-2.
+This chapter covered installation and beginning a simple project in
+Zope 2.
