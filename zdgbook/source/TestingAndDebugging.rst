@@ -2,19 +2,19 @@
 Testing and Debugging
 #####################
 
-As you develop Zope applications you will run into problems. This
-chapter covers debugging and testing techniques that can help
-you. The Zope debugger allow you to peek inside a running process and
-find exactly what is going wrong. Unit testing allows you to automate
-the testing process to ensure that your code still works correctly as
-you change it. Finally, Zope provides logging facilities which allow
-you to emit warnings and error messages.
+As you develop Zope applications you will run into problems.  This
+chapter covers debugging and testing techniques that can help you.
+The Zope debugger allow you to peek inside a running process and find
+exactly what is going wrong.  Unit testing allows you to automate the
+testing process to ensure that your code still works correctly as you
+change it.  Finally, Zope provides logging facilities which allow you
+to emit warnings and error messages.
 
 
 Debugging
 =========
 
-Zope provides debugging information through a number of sources. It
+Zope provides debugging information through a number of sources.  It
 also allows you a couple avenues for getting information about Zope
 as it runs.
 
@@ -56,21 +56,21 @@ Product Refresh Settings
 ------------------------
 
 As of Zope 2.4 there is a *Refresh* view on all Control Panel
-Products. Refresh allows you to reload your product's modules as you
-change them, rather than having to restart Zope to see your
-changes. The *Refresh* view provides the same debugging functionality
+Products.  Refresh allows you to reload your product's modules as you
+change them, rather than having to restart Zope to see your changes.
+The *Refresh* view provides the same debugging functionality
 previously provided by Shane Hathaway's Refresh Product.
 
 To turn on product refresh capabilities place a 'refresh.txt' file in
-your product's directory. Then visit the *Refresh* view of your
-product in the management interface. Here you can manually reload
-your product's modules with the *Refresh this product* button. This
+your product's directory.  Then visit the *Refresh* view of your
+product in the management interface.  Here you can manually reload
+your product's modules with the *Refresh this product* button.  This
 allows you to immediately see the effect of your changes, without
-restarting Zope. You can also turn on automatic refreshing which
+restarting Zope.  You can also turn on automatic refreshing which
 causes Zope to frequently check for changes to your modules and
-refresh your product when it detects that your files have
-changed. Since automatic refresh causes Zope to run more slowly, it
-is a good idea to only turn it on for a few products at a time.
+refresh your product when it detects that your files have changed.
+Since automatic refresh causes Zope to run more slowly, it is a good
+idea to only turn it on for a few products at a time.
 
 Debug Mode
 ----------
@@ -140,7 +140,7 @@ Simulating HTTP Requests
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 Now for an example. Remember, for this example to work, you *must*
-shut down Zope. Go to your Zope's 'lib/python' directory and fire up
+shut down Zope.  Go to your Zope's 'lib/python' directory and fire up
 Python and import 'Zope' and 'ZPublisher'::
 
   $ cd lib/python
@@ -154,24 +154,23 @@ Here you have run the Python interpreter (which is where using the
 debugger takes place) and imported two modules, 'Zope' and
 'ZPublisher'.  If Python complains about an 'ImportError' and not
 being able to find either module, then you are probably in the wrong
-directory, or you have not compiled Zope properly. If you get this
+directory, or you have not compiled Zope properly.  If you get this
 message::
 
-  ZODB.POSException.StorageSystemError: Could not lock the
-  database file. There must be another process that has opened
-  the file.
+  ZODB.POSException.StorageSystemError: Could not lock the database
+  file.  There must be another process that has opened the file.
 
-This tells you that Zope is currently running. Shutdown Zope and
-try again.
+This tells you that Zope is currently running.  Shutdown Zope and try
+again.
 
-The 'Zope' module is the main Zope application module. When you
-import 'Zope' it sets up Zope. 'ZPublisher' is the Zope ORB. See
+The 'Zope' module is the main Zope application module.  When you
+import 'Zope' it sets up Zope.  'ZPublisher' is the Zope ORB.  See
 Chapter 2 for more information about 'ZPublisher'.
 
 You can use the 'ZPublisher.Zope' function to simulate an HTTP
-request. Pass the function a URL relative the your root Zope
-object. Here is an example of how to simulate an HTTP request from
-the debugger::
+request.  Pass the function a URL relative the your root Zope object.
+Here is an example of how to simulate an HTTP request from the
+debugger::
 
   >>> ZPublisher.Zope('')
   Status: 200 OK
@@ -356,7 +355,7 @@ continue, your breakpoint is next::
   -> def postnews(self, N)
 
 Now you are here, at your method.  To be sure, tell the debugger to
-show you where you are in the code with the 'l' command. Now you can
+show you where you are in the code with the 'l' command.  Now you can
 examine variable and perform all the debugging tasks that the Python
 debugger provides.  From here, with a little knowledge of the Python
 debugger, you should be able to do any kind of debugging task that is
@@ -517,15 +516,15 @@ It's much better to write tests when you're working on code than to
 wait until you're all done and then write tests.
 
 You should write tests that exercise discrete "units" of
-functionality. In other words, write simple, specific tests that test
-one capability. A good place to start is with interfaces and
-classes. Classes and especially interfaces already define units of
+functionality.  In other words, write simple, specific tests that
+test one capability.  A good place to start is with interfaces and
+classes.  Classes and especially interfaces already define units of
 work which you may wish to test.
 
 Since you can't possibly write tests for every single capability and
 special case, you should focus on testing the riskiest parts of your
-code. The riskiest parts are those that would be the most disastrous
-if they failed. You may also want to test particularly tricky or
+code.  The riskiest parts are those that would be the most disastrous
+if they failed.  You may also want to test particularly tricky or
 frequently changed things.
 
 Here's an example test script that tests the 'News' class defined
@@ -575,11 +574,11 @@ Zope Test Fixtures
 ------------------
 
 One issue that you'll run into when unit testing is that you may need
-to set up a Zope environment in order to test your products. You can
-solve this problem in two ways. First, you can structure your product
-so that much of it can be tested without Zope (as you did in the last
-section). Second, you can create a test fixture that sets up a Zope
-environment for testing.
+to set up a Zope environment in order to test your products.  You can
+solve this problem in two ways.  First, you can structure your
+product so that much of it can be tested without Zope (as you did in
+the last section).  Second, you can create a test fixture that sets
+up a Zope environment for testing.
 
 To create a test fixture for Zope you'll need to:
 
@@ -640,15 +639,15 @@ of these steps::
       fix_path()
       main()
 
-This example shows a fairly complete Zope test fixture. If your Zope
+This example shows a fairly complete Zope test fixture.  If your Zope
 tests only needs to import Zope modules and packages you can skip
 getting a Zope application object and closing the database
 transaction.
 
 Some times you may run into trouble if your test assuming that there
-is a current Zope request. There are two ways to deal with this. One
-is to use the 'makerequest' utility module to create a fake
-request. For example::
+is a current Zope request.  There are two ways to deal with this.
+One is to use the 'makerequest' utility module to create a fake
+request.  For example::
 
   class MyTest(unittest.TestCase):
       ...
@@ -659,12 +658,13 @@ request. For example::
           self.app=makerequest.makerequest(Zope.app())
 
 This will create a Zope application object that is wrapped in a
-request. This will enable code that expects to acquire a 'REQUEST'
+request.  This will enable code that expects to acquire a 'REQUEST'
 attribute work correctly.
 
 Another solution to testing methods that expect a request is to use
-the 'ZPublisher.Zope' function described earlier. Using this approach
-you can simulate HTTP requests in your unit tests. For example::
+the 'ZPublisher.Zope' function described earlier.  Using this
+approach you can simulate HTTP requests in your unit tests.  For
+example::
 
   import ZPublisher
 
@@ -678,7 +678,7 @@ you can simulate HTTP requests in your unit tests. For example::
                           e={'some':'environment', 'variable':'settings'})
 
 If the 's' argument is passed to 'ZPublisher.Zope' then no output
-will be sent to 'sys.stdout'. If you want to capture the output of
+will be sent to 'sys.stdout'.  If you want to capture the output of
 the publishing request and compare it to an expected value you'll
 need to do something like this::
 
@@ -690,14 +690,14 @@ need to do something like this::
   assert f.getvalue() == expected_output
 
 Here's a final note on unit testing with a Zope test fixture: you may
-find Zope helpful. ZEO allows you to test an application while it
-continues to serve other users. It also speeds Zope start up time
+find Zope helpful.  ZEO allows you to test an application while it
+continues to serve other users.  It also speeds Zope start up time
 which can be a big relief if you start and stop Zope frequently while
 testing.
 
 Despite all the attention we've paid to Zope testing fixtures, you
 should probably concentrate on unit tests that don't require a Zope
-test fixture. If you can't test much without Zope there is a good
+test fixture.  If you can't test much without Zope there is a good
 chance that your product would benefit from some refactoring to make
 it simpler and less dependent on the Zope framework.
 
@@ -705,7 +705,7 @@ Logging
 =======
 
 Zope provides a framework for logging information to Zope's
-application log. You can configure Zope to write the application log
+application log.  You can configure Zope to write the application log
 to a file, syslog, or other back-end.
 
 The logging API defined in the 'zLOG' module.  This module provides
@@ -742,21 +742,21 @@ messages::
   LOG('my app', DEBUG, 'a debugging message')
 
 You can use 'LOG' in much the same way as you would use print
-statements to log debugging information while Zope is running. You
+statements to log debugging information while Zope is running.  You
 should remember that Zope can be configured to ignore log messages
-below certain levels of severity. If you are not seeing your logging
+below certain levels of severity.  If you are not seeing your logging
 messages, make sure that Zope is configured to write them to the
 application log.
 
 In general the debugger is a much more powerful way to locate
-problems than using the logger. However, for simple debugging tasks
+problems than using the logger.  However, for simple debugging tasks
 and for issuing warnings the logger works just fine.
 
 Other Testing and Debugging Facilities
 ======================================
 
 There is a few other testing and debugging techniques and tools not
-commonly used to test Zope. In this section we'll mention several of
+commonly used to test Zope.  In this section we'll mention several of
 them.
 
 Debug Logging
@@ -777,24 +777,24 @@ is necessary for the *requestprofiler.py* script to run.  The
 *requestprofiler.py* script has quite a few options which you can
 learn about with the '--help' switch.
 
-In general debug log analysis should be a last resort. Use it when
+In general debug log analysis should be a last resort.  Use it when
 Zope is hanging and normal debugging and profiling is not helping you
 solve your problem.
 
 HTTP Benchmarking
 -----------------
 
-HTTP load testing is notoriously inaccurate. However, it is useful to
-have a sense of how many requests your server can support. Zope does
-not come with any HTTP load testing tools, but there are many
-available. Apache's 'ab' program is a widely used free tool that can
+HTTP load testing is notoriously inaccurate.  However, it is useful
+to have a sense of how many requests your server can support.  Zope
+does not come with any HTTP load testing tools, but there are many
+available.  Apache's 'ab' program is a widely used free tool that can
 load your server with HTTP requests.
 
 Summary
 =======
 
-Zope provides a number of different debugging and testing
-facilities. The debugger allows you to interactively test your
-applications. Unit tests allow help you make sure that your
-application is develops correctly. The logger allows you to do simple
-debugging and issue warnings.
+Zope provides a number of different debugging and testing facilities.
+The debugger allows you to interactively test your applications.
+Unit tests allow help you make sure that your application is develops
+correctly.  The logger allows you to do simple debugging and issue
+warnings.
