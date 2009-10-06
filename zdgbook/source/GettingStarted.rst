@@ -17,7 +17,7 @@ Directory Structure
 ===================
 
 To begin the application development, create a directory structure to
-place Python packages and build system.
+place Python packages and build related files.
 
 ::
 
@@ -25,20 +25,20 @@ place Python packages and build system.
   $ mkdir poll/poll_build
   $ mkdir poll/poll.main
 
-All build related things can be added inside `poll_build` directory.
-And the main Python package can be added inside `poll.main`
-directory.  The ``poll`` will be a a namespace package created using
-the functionality provided by `pkg_resources` module included in
+All build related files can be added inside `poll_build` directory.
+The main Python package can be added inside `poll.main` directory.
+The ``poll`` will be a a namespace package created using the
+functionality provided by `pkg_resources` module included in
 setuptools.
 
 Bootstraping the Build
 ======================
 
-You should have Python 2.5 or 2.6 already installed in your system.
-To start the build process, download and run `bootstrap.py` to
-install `setuptools` and `zc.buildout` packages.  The `bootstrap.py`
-will create the directory structure and `buildout` script inside
-`bin` directory.
+You should have Python 2.5 or 2.6 installed in your system.  To start
+the build process, download and run `bootstrap.py`.  The
+`bootstrap.py` will download and install `setuptools` and
+`zc.buildout` packages.  Also it will create the directory structure
+and `buildout` script inside `bin` directory.
 
 ::
 
@@ -52,7 +52,8 @@ Installing Zope 2
 
 From Zope 2.12 onwards Zope 2 is distributed in egg format.  To
 install Zope 2 egg and create an instance, update buildout
-configuration file (``buildout.cfg``).
+configuration file (``buildout.cfg``) with appropriate parts and
+recipes.
 
 ::
 
