@@ -2,7 +2,7 @@
 Testing and Debugging
 #####################
 
-As you develop Zope applications you will run into problems.  This
+As you develop Zope applications you may run into problems.  This
 chapter covers debugging and testing techniques that can help you.
 The Zope debugger allow you to peek inside a running process and find
 exactly what is going wrong.  Unit testing allows you to automate the
