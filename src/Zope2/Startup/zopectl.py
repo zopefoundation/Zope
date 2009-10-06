@@ -51,9 +51,55 @@ from ZConfig.datatypes import existing_dirpath
 WIN = False
 if sys.platform[:3].lower() == "win":
     WIN = True
+    import win32serviceutil
+    from nt_svcutils import service
+    
+    def do_windows(command):
+        def inner(self,arg):
+
+            INSTANCE_HOME = self.options.directory
+            name = 'Zope'+str(hash(INSTANCE_HOME.lower()))
+            display_name = 'Zope instance at '+INSTANCE_HOME
+
+            # This class exists only so we can take advantage of
+            # win32serviceutil.HandleCommandLine, it is never
+            # instantiated.
+            class InstanceService(service.Service):
+                _svc_name_ = name
+                _svc_display_name_ = display_name
+                _svc_description_ = "A Zope application instance running as a service"
+
+            # getopt sucks :-(
+            argv = [sys.argv[0]]
+            argv.extend(arg.split())
+            argv.append(command)
+
+            # we need to supply this manually as HandleCommandLine guesses wrong
+            serviceClassName = os.path.splitext(service.__file__)[0]+'.Service'
+            
+            err = win32serviceutil.HandleCommandLine(
+                InstanceService,
+                serviceClassName,
+                argv=argv,
+                )
+
+            return err,InstanceService
+            
+        return inner
 
 def string_list(arg):
     return arg.split()
+
+def quote_command(command):
+    print " ".join(command)
+    # Quote the program name, so it works even if it contains spaces
+    command = " ".join(['"%s"' % x for x in command])
+    if WIN:
+        # odd, but true: the windows cmd processor can't handle more than
+        # one quoted item per string unless you add quotes around the
+        # whole line.
+        command = '"%s"' % command
+    return command
 
 class ZopeCtlOptions(ZDOptions):
     # Zope controller options.
@@ -132,11 +178,6 @@ class ZopeCtlOptions(ZDOptions):
         self.python = os.environ.get('PYTHON', config.python) or sys.executable
         self.zdrun = os.path.join(os.path.dirname(zdaemon.__file__),
                                   "zdrun.py")
-        if WIN:
-            # Add the path to the zopeservice.py script, which is needed for
-            # some of the Windows specific commands
-            servicescript = os.path.join(self.directory, 'bin', 'zopeservice.py')
-            self.servicescript = '"%s" %s' % (self.python, servicescript)
 
         self.exitcodes = [0, 2]
         if self.logfile is None and config.eventlog is not None:
@@ -171,6 +212,13 @@ class ZopeCmd(ZDCmd):
             args = [opt, svalue]
         return args
 
+    def do_start(self, arg):
+        # signal to Zope that it is being managed
+        # (to indicate it's web-restartable)
+        os.putenv('ZMANAGED', '1')
+
+    ## START OF WINDOWS ONLY STUFF
+    
     if WIN:
         def get_status(self):
             # get_status from zdaemon relies on *nix specific socket handling.
@@ -182,52 +230,48 @@ class ZopeCmd(ZDCmd):
             self.zd_status = None
             return
 
-        def do_stop(self, arg):
-            # Stop the Windows service
-            program = "%s stop" % self.options.servicescript
-            print program
-            os.system(program)
-
-        def do_restart(self, arg):
-            # Restart the Windows service
-            program = "%s restart" % self.options.servicescript
-            print program
-            os.system(program)
+        do_start = do_windows('start')
+        do_stop = do_windows('stop')
+        do_restart = do_windows('restart')
 
         # Add extra commands to install and remove the Windows service
 
-        def do_install(self, arg):
-            program = "%s install" % self.options.servicescript
-            print program
-            os.system(program)
+        def do_install(self,arg):
+            err,InstanceClass = do_windows('install')(self,arg)
+            if not err:
+                # If we installed successfully, put info in registry for the
+                # real Service class to use:
+                command = '"%s" -C "%s"' % (
+                    # This gives us the instance script for buildout instances
+                    # and the install script for classic instances.
+                    os.path.join(os.path.split(sys.argv[0])[0],'runzope'),
+                    self.options.configfile
+                    )
+                InstanceClass.setReg('command',command)
+                
+                # This is unfortunately needed because runzope.exe is a setuptools
+                # generated .exe that spawns off a sub process, so pid would give us
+                # the wrong event name.
+                InstanceClass.setReg('pid_filename',self.options.configroot.pid_filename)
 
         def help_install(self):
             print "install -- Installs Zope as a Windows service."
 
-        def do_remove(self, arg):
-            program = "%s remove" % self.options.servicescript
-            print program
-            os.system(program)
+        do_remove = do_windows('remove')
 
         def help_remove(self):
             print "remove -- Removes the Zope Windows service."
 
-    def do_start(self, arg):
-        # signal to Zope that it is being managed
-        # (to indicate it's web-restartable)
-        os.putenv('ZMANAGED', '1')
-        if WIN:
-            # On Windows start the service, this fails with a reasonable
-            # error message as long as the service is not installed
-            program = "%s start" % self.options.servicescript
-            print program
-            os.system(program)
-        else:
-            ZDCmd.do_start(self, arg)
+        do_windebug = do_windows('debug')
+        
+        def help_windebug(self):
+            print "windebug -- Runs the Zope Windows service in the foreground, in debug mode."
 
+    ## END OF WINDOWS ONLY STUFF
+            
     def get_startup_cmd(self, python, more):
         cmdline = ( '%s -c "from Zope2 import configure;'
-                    'configure(\'%s\');' %
+                    'configure(%r);' %
                     (python, self.options.configfile)
                     )
         return cmdline + more + '\"'
@@ -240,18 +284,19 @@ class ZopeCmd(ZDCmd):
         os.system(cmdline)
 
     def do_foreground(self, arg):
-        if WIN:
-            # Adding arguments to the program is not supported on Windows
-            # and the runzope script doesn't put you in debug-mode either
-            ZDCmd.do_foreground(self, arg)
-        else:
-            self.options.program[1:1] = ["-X", "debug-mode=on"]
-            try:
-                ZDCmd.do_foreground(self, arg)
-            finally:
-                self.options.program.remove("-X")
-                self.options.program.remove("debug-mode=on")
-
+        program = self.options.program
+        local_additions = []
+        if not program.count('-X'):
+            local_additions += ['-X']
+        if not program.count('debug-mode=on'):
+            local_additions += ['debug-mode=on']
+        program[1:1] = local_additions
+        command = quote_command(program)
+        try:
+            return os.system(command)
+        finally:
+            for addition in local_additions: program.remove(addition)
+            
     def help_debug(self):
         print "debug -- run the Zope debugger to inspect your database"
         print "         manually using a Python interactive shell"
