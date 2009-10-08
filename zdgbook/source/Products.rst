@@ -5,18 +5,12 @@ Zope Products
 Introduction
 ============
 
-Zope *products* extend Zope with new functionality. Products most
-often provide new addable objects, but they can also extend Zope with
-new DTML tags, new ZClass base classes, and other services.
-
-There are two ways to create products in Zope, through the web, and
-with files in the filesystem. In this chapter we are going to look at
-building products on the file system. For information on through the
-web products, and ZClasses see the *Zope Book*, Chapter 12.
-
-In comparison to through the web products, filesystem products
+Zope *products* extend Zope with new functionality.  Products most
+often provide new addable objects.  In this chapter, we are going to
+look at building products on the file system.  Filesystem products
 require more overhead to build, but offer more power and flexibility,
-and they can be developed with familiar tools such as Emacs and CVS.
+and they can be developed with familiar tools such as text editors
+and version controlling systems.
 
 Soon we will make the examples referenced in this chapter available
 for download as an example product.  Until that time, you will see
@@ -34,19 +28,18 @@ Consider Alternatives
 ---------------------
 
 Before you jump into the development of a product you should consider
-the alternatives. Would your problem be better solved with ZClasses,
-External Methods, or Python Scripts? Products excel at extending Zope
-with new addable classes of objects. If this does not figure
-centrally in your solution, you should look elsewhere. Products, like
-External Methods allow you to write unrestricted Python code on the
+the alternatives.  Would your problem be better solved with External
+Methods, or Python Scripts? Products excel at extending Zope with new
+addable classes of objects.  If this does not figure centrally in
+your solution, you should look elsewhere.  Products, like External
+Methods allow you to write unrestricted Python code on the
 filesystem.
-
 
 Starting with Interfaces
 ------------------------
 
 The first step in creating a product is to create one or more
-interfaces which describe the product. See Chapter 1 for more
+interfaces which describe the product.  See Chapter 2 for more
 information on interfaces and how to create them.
 
 Creating interfaces before you build an implementation is a good idea
@@ -56,29 +49,28 @@ your requirements.
 Consider this interface for a multiple choice poll component (see
 `Poll.py <examples/Poll.py>`_)::
 
-  from Interface import Base
+  from zope.interface import Interface
 
-  class Poll(Base):
+  class IPoll(Interface):
       "A multiple choice poll"
 
-      def castVote(self, index):
+      def castVote(index):
           "Votes for a choice"
 
-      def getTotalVotes(self):
+      def getTotalVotes():
           "Returns total number of votes cast"
 
-      def getVotesFor(self, index):
+      def getVotesFor(index):
           "Returns number of votes cast for a given response"
 
-      def getResponses(self):
+      def getResponses():
           "Returns the sequence of responses"
 
-      def getQuestion(self):
+      def getQuestion():
           "Returns the question
 
-How you name your interfaces is entirely up to you. Here we've
-decided not to use an "I" or any other special indicator in the name
-of the interface.
+How you name your interfaces is entirely up to you.  Here we've
+decided to use prefix "I" in the name of the interface.
 
 Implementing Interfaces
 -----------------------
@@ -90,7 +82,7 @@ Here is a prototype of a 'PollImplemtation' class that implements the
 interface you just examined (see `PollImplementation.py
 <examples/PollImplementation.py>`_)::
 
-  from Poll import Poll
+  from poll import Poll
 
   class PollImplementation:
       """
@@ -101,7 +93,7 @@ interface you just examined (see `PollImplementation.py
       number of votes.
       """
 
-      __implements__ = Poll
+      implements(IPoll)
 
       def __init__(self, question, responses):
           self._question = question
@@ -279,11 +271,11 @@ constructor::
 
   class PollProduct(..., Item):
 
-      meta_type='Poll'
+      meta_type = 'Poll'
       ...
 
       def __init__(self, id, question, responses):
-          self.id=id
+          self.id = id
           self._question = question
           self._responses = responses
           self._votes = {}
@@ -331,7 +323,7 @@ OFS.PropertyManager
 
 This base class provides your product with the ability to have
 user-managed instance attributes. See the *API Reference* for more
-details. This base class is optional.
+details.  This base class is optional.
 
 Your class may specify that it has one or more predefined properties,
 by specifying a '_properties' class attribute. For example::
@@ -393,7 +385,7 @@ Here's an example of how to declare security on the poll class::
   class PollProduct(...):
       ...
 
-      security=ClassSecurityInfo()
+      security = ClassSecurityInfo()
 
       security.declareProtected('Use Poll', 'castVote')
       def castVote(self, index):
@@ -449,14 +441,14 @@ its glory (see "PollProduct.py":examples/PollProduct.py)::
       number of votes.
       """
 
-      __implements__=Poll
+      implements(IPoll)
 
-      meta_type='Poll'
+      meta_type = 'Poll'
 
-      security=ClassSecurityInfo()
+      security = ClassSecurityInfo()
 
       def __init__(self, id, question, responses):
-          self.id=id
+          self.id = id
           self._question = question
           self._responses = responses
           self._votes = {}
@@ -502,7 +494,7 @@ Registering Products
 
 Products are Python packages that live in 'lib/python/Products'.
 Products are loaded into Zope when Zope starts up. This process is
-called *product initialization*. During product initialization, each
+called *product initialization*.  During product initialization, each
 product is given a chance to register its capabilities with Zope.
 
 Product Initialization
@@ -518,24 +510,24 @@ is an example '__init__.py' file::
   def initialize(registrar):
       registrar.registerClass(
           PollProduct,
-          constructors = (addForm, addFunction),
+          constructors=(addForm, addFunction),
           )
 
 This function makes one call to the registrar object which registers
 a class as an addable object.  The registrar figures out the name to
 put in the product add list by looking at the 'meta_type' of the
-class. Zope also deduces a permission based on the class's meta-type,
-in this case *Add Polls* (Zope automatically pluralizes "Poll" by
-adding an "s").  The 'constructors' argument is a tuple of objects
-consisting of two functions: an add form which is called when a user
-selects the object from the product add list, and the add method
-which is the method called by the add form. Note that these functions
-are protected by the constructor permission.
+class.  Zope also deduces a permission based on the class's
+meta-type, in this case *Add Polls* (Zope automatically pluralizes
+"Poll" by adding an "s").  The 'constructors' argument is a tuple of
+objects consisting of two functions: an add form which is called when
+a user selects the object from the product add list, and the add
+method which is the method called by the add form.  Note that these
+functions are protected by the constructor permission.
 
 Note that you cannot restrict which types of containers can contain
-instances of your classes. In other words, when you register a class,
-it will appear in the product add list in folders if the user has the
-constructor permission.
+instances of your classes.  In other words, when you register a
+class, it will appear in the product add list in folders if the user
+has the constructor permission.
 
 See the *API Reference* for more information on the
 'ProductRegistrar' interface.
@@ -544,23 +536,23 @@ Factories and Constructors
 --------------------------
 
 Factories allow you to create Zope objects that can be added to
-folders and other object managers. Factories are discussed in Chapter
-12 of the *Zope Book*. The basic work a factory does is to put a name
-into the product add list and associate a permission and an action
-with that name. If you have the required permission then the name
-will appear in the product add list, and when you select the name
-from the product add list, the action method will be called.
+folders and other object managers.  Factories are discussed in
+Chapter 12 of the *Zope Book*.  The basic work a factory does is to
+put a name into the product add list and associate a permission and
+an action with that name.  If you have the required permission then
+the name will appear in the product add list, and when you select the
+name from the product add list, the action method will be called.
 
 Products use Zope factory capabilities to allow instances of product
 classes to be created with the product add list.  In the above
 example of product initialization you saw how a factory is created by
-the product registrar. Now let's see how to create the add form and
+the product registrar.  Now let's see how to create the add form and
 the add list.
 
 The add form is a function that returns an HTML form that allows a
-users to create an instance of your product class. Typically this
+users to create an instance of your product class.  Typically this
 form collects that id and title of the instance along with other
-relevant data. Here's a very simple add form function for the poll
+relevant data.  Here's a very simple add form function for the poll
 class::
 
         def addForm():
@@ -579,18 +571,18 @@ class::
             </body>
             </html>"""
 
-Notice how the action of the form is 'addFunction'. Also notice how
-the lines of the response are marshalled into a sequence. See Chapter
-2 for more information about argument marshalling and object
+Notice how the action of the form is 'addFunction'.  Also notice how
+the lines of the response are marshalled into a sequence.  See
+Chapter 2 for more information about argument marshalling and object
 publishing.
 
 It's also important to include a HTML 'head' tag in the add
-form. This is necessary so that Zope can set the base URL to make
+form.  This is necessary so that Zope can set the base URL to make
 sure that the relative link to the 'addFunction' works correctly.
 
 The add function will be passed a 'FactoryDispatcher' as its first
 argument which proxies the location (usually a Folder) where your
-product was added. The add function may also be passed any form
+product was added.  The add function may also be passed any form
 variables which are present in your add form according to normal
 object publishing rules.
 
@@ -613,17 +605,17 @@ was added.
 'ObjectManager' where your product was added.
 
 Notice how it calls the '_setObject()' method of the destination
-'ObjectManager' class to add the poll to the folder. See the *API
+'ObjectManager' class to add the poll to the folder.  See the *API
 Reference* for more information on the 'ObjectManager' interface.
 
 
-The add function should also check the validity of its input. For
+The add function should also check the validity of its input.  For
 example the add function should complain if the question or response
 arguments are not of the correct type.
 
 Finally you should recognize that the constructor functions are *not*
-methods on your product class. In fact they are called before any
-instances of your product class are created. The constructor
+methods on your product class.  In fact they are called before any
+instances of your product class are created.  The constructor
 functions are published on the web so they need to have doc strings,
 and are protected by a permission defined in during product
 initialization.
@@ -631,10 +623,10 @@ initialization.
 Testing
 -------
 
-Now you're ready to register your product with Zope. You need to add
-the add form and add method to the poll module. Then you should
+Now you're ready to register your product with Zope.  You need to add
+the add form and add method to the poll module.  Then you should
 create a 'Poll' directory in your 'lib/python/Products' directory and
-add the 'Poll.py', 'PollProduct.py', and '__init__.py' files. Then
+add the 'Poll.py', 'PollProduct.py', and '__init__.py' files.  Then
 restart Zope.
 
 Now login to Zope as a manager and visit the web management
@@ -645,16 +637,16 @@ problems, if any and restart Zope. If you are tired of all this
 restarting, take a look at the *Refresh* facility covered in Chapter
 7.
 
-Now go to the root folder. Select *Poll* from the product add
-list. Notice how you are taken to the add form. Provide an id, a
-question, and a list of responses and click *Add*. Notice how you get
-a black screen. This is because your add method does not return
-anything. Notice also that your poll has a broken icon, and only has
-the management views. Don't worry about these problems now, you'll
-find out how to fix these problems in the next section.
+Now go to the root folder. Select *Poll* from the product add list.
+Notice how you are taken to the add form.  Provide an id, a question,
+and a list of responses and click *Add*.  Notice how you get a black
+screen.  This is because your add method does not return anything.
+Notice also that your poll has a broken icon, and only has the
+management views.  Don't worry about these problems now, you'll find
+out how to fix these problems in the next section.
 
 Now you should build some DTML Methods and Python Scripts to test
-your poll instance. Here's a Python Script to figure out voting
+your poll instance.  Here's a Python Script to figure out voting
 percentages::
 
         ## Script (Python) "getPercentFor"
@@ -803,7 +795,7 @@ example::
   class PollProduct(...):
     ...
 
-    editForm=DTMLFile('dtml/edit', globals())
+    editForm = DTMLFile('dtml/edit', globals())
     ...
 
 This creates a DTML Method on your class which is defined in the
@@ -833,7 +825,7 @@ example::
   class PollProduct(...):
     ...
 
-    _editForm=DTMLFile('dtml/edit', globals())
+    _editForm = DTMLFile('dtml/edit', globals())
 
     def editForm(self, ...):
         ...
@@ -1033,8 +1025,8 @@ in your product's constructor. For example::
         def initialize(registrar):
             registrar.registerClass(
                 PollProduct,
-                constructors = (addForm, addFunction),
-                icon = 'www/poll.gif'
+                constructors=(addForm, addFunction),
+                icon='www/poll.gif'
                 )
 
 Notice how in this example, the icon is identified as being within
@@ -1119,20 +1111,20 @@ Other User Interfaces
 ---------------------
 
 In addition to providing a through the web management interface your
-products may also support many other user interfaces. You product
+products may also support many other user interfaces.  You product
 might have no web management interfaces, and might be controlled
-completely through some other network protocol. Zope provides
-interfaces and support for FTP, WebDAV and XML-RPC. If this isn't
+completely through some other network protocol.  Zope provides
+interfaces and support for FTP, WebDAV and XML-RPC.  If this isn't
 enough you can add other protocols.
 
 FTP and WebDAV Interfaces
 -------------------------
 
 Both FTP and WebDAV treat Zope objects like files and
-directories. See Chapter 2 for more information on FTP and WebDAV.
+directories.  See Chapter 3 for more information on FTP and WebDAV.
 
 By simply sub-classing from 'SimpleItem.Item' and 'ObjectManager' if
-necessary, you gain basic FTP and WebDAV support. Without any work
+necessary, you gain basic FTP and WebDAV support.  Without any work
 your objects will appear in FTP directory listings and if your class
 is an 'ObjectManager' its contents will be accessible via FTP and
 WebDAV.  See Chapter 2 for more information on implementing FTP and
@@ -1141,44 +1133,43 @@ WebDAV support.
 XML-RPC and Network Services
 ----------------------------
 
-XML-RPC is covered in Chapter 2. All your product's methods can be
-accessible via XML-RPC. However, if your are implementing network
+XML-RPC is covered in Chapter 2.  All your product's methods can be
+accessible via XML-RPC.  However, if your are implementing network
 services, you should explicitly plan one or more methods for use with
 XML-RPC.
 
 Since XML-RPC allows marshalling of simple strings, lists, and
 dictionaries, your XML-RPC methods should only accept and return
-these types. These methods should never accept or return Zope
-objects. XML-RPC also does not support 'None' so you should use zero
+these types.  These methods should never accept or return Zope
+objects.  XML-RPC also does not support 'None' so you should use zero
 or something else in place of 'None'.
 
-Another issue to consider when using XML-RPC is security. Many
-XML-RPC clients still don't support HTTP basic
-authorization. Depending on which XML-RPC clients you anticipate, you
-may wish to make your XML-RPC methods public and accept
-authentication credentials as arguments to your methods.
+Another issue to consider when using XML-RPC is security.  Many
+XML-RPC clients still don't support HTTP basic authorization.
+Depending on which XML-RPC clients you anticipate, you may wish to
+make your XML-RPC methods public and accept authentication
+credentials as arguments to your methods.
 
 Content Management Framework Interface
 --------------------------------------
 
-The "Content Management Framework":http://cmf.zope.org is an evolving
-content management extension for Zope. It provides a number of
-interfaces and conventions for content objects. If you wish to
+The `Content Management Framework <http://cmf.zope.org>` is an
+evolving content management extension for Zope.  It provides a number
+of interfaces and conventions for content objects.  If you wish to
 support the CMF you should consult the CMF user interface guidelines
 and interface documentation.
 
-
 Supporting the CMF interfaces is not a large burden if you already
-support the Zope management interface. You should consider supporting
-the CMF if your product class handles user manageable content such as
-documents, images, business forms, etc.
+support the Zope management interface.  You should consider
+supporting the CMF if your product class handles user manageable
+content such as documents, images, business forms, etc.
 
 Packaging Products
 ------------------
 
-Zope products are normally packaged as tarballs. You should create
+Zope products are normally packaged as tarballs.  You should create
 your product tarball in such a way as to allow it to be unpacked in
-the Products directory. For example, 'cd' to the Products directory
+the Products directory.  For example, 'cd' to the Products directory
 and then issue a 'tar' comand like so::
 
   $ tar zcvf MyProduct-1.0.1.tgz MyProduct
@@ -1194,53 +1185,49 @@ fully packaged Python product.
 Product Information Files
 -------------------------
 
-Along with your Python and DTML files you should include some
+Along with your Python and ZPT files you should include some
 information about your product in its root directory.
 
-'README.txt' -- Provides basic information about your product.  Zope
-will parse this file as "structured
-text":http://www.zope.org/Members/millejoh/structuredText and make it
-available on the *README* view of your product in the control panel.
+- `README.txt` -- Provides basic information about your product.
+   Zope will parse this file as StructuredText and make it available
+   on the *README* view of your product in the control panel.
 
-'VERSION.txt' -- Contains the name and version of your product on a
-single line. For example, 'Multiple Choice Poll 1.1.0'.  Zope will
-display this information as the 'version' property of your product in
-the control panel.
+- `VERSION.txt` -- Contains the name and version of your product on a
+  single line. For example, 'Multiple Choice Poll 1.1.0'.  Zope will
+  display this information as the 'version' property of your product
+  in the control panel.
 
-'LICENSE.txt' -- Contains your product license, or a link to it.
+- `LICENSE.txt` -- Contains your product license, or a link to it.
 
-You may also wish to provide additional information. Here are some
+You may also wish to provide additional information.  Here are some
 suggested optional files to include with your product.
 
-'INSTALL.txt' -- Provides special instructions for installing
-the product and components on which it depends. This file is
-only optional if your product does not require more than an
-ungzip/untar into a Zope installation to work.
+- `INSTALL.txt` -- Provides special instructions for installing the
+  product and components on which it depends.  This file is only
+  optional if your product does not require more than an ungzip/untar
+  into a Zope installation to work.
 
-'TODO.txt' -- This file should make clear where this product
-release needs work, and what the product author intends to do
-about it.
+- `TODO.txt` -- This file should make clear where this product
+  release needs work, and what the product author intends to do about
+  it.
 
-'CHANGES.txt' and 'HISTORY.txt' -- 'CHANGES.txt' should
-enumerate changes made in particular product versions from the
-last release of the product. Optionally, a 'HISTORY.txt' file
-can be used for older changes, while 'CHANGES.txt' lists only
-recent changes.
+- `CHANGES.txt` and `HISTORY.txt` -- 'CHANGES.txt' should enumerate
+  changes made in particular product versions from the last release
+  of the product. Optionally, a 'HISTORY.txt' file can be used for
+  older changes, while 'CHANGES.txt' lists only recent changes.
 
-'DEPENDENCIES.txt' -- Lists dependencies including required os
-platform, required Python version, required Zope version,
-required Python packages, and required Zope products.
+- `DEPENDENCIES.txt` -- Lists dependencies including required os
+  platform, required Python version, required Zope version, required
+  Python packages, and required Zope products.
 
 Product Directory Layout
 ------------------------
 
-By convention your product will contain a number of
-sub-directories. Some of these directories have already been
-discussed in this chapter. Here is a summary of them.
+By convention your product will contain a number of sub-directories.
+Some of these directories have already been discussed in this
+chapter. Here is a summary of them.
 
-  'dtml' -- Contains your DTML files.
-
-  'www' -- Contains your icon files.
+  'www' -- Contains your icon & ZPT files.
 
   'help' -- Contains your help files.
 
@@ -1249,62 +1236,29 @@ discussed in this chapter. Here is a summary of them.
 It is not necessary to include these directories if your don't have
 anything to go in them.
 
-
-Product Frameworks
-==================
-
-Creating Zope products is a complex business. There are a number of
-frameworks available to help ease the burden of creating products.
-Different frameworks focus on different aspects of product
-construction.
-
-ZClass Base Classes
--------------------
-
-As an alternative to creating full blown products you may choose to
-create Python base classes which can be used by ZClasses. This allows
-you to focus on application logic and use ZClasses to take care of
-management interface issues.
-
-The chief drawback to this approach is that your code will be split
-between a ZClass and a Python base class. This makes it harder to
-edit and to visualize.
-
-See the *Zope Book* for more information on ZClasses.
-
-TransWarp and ZPatterns
------------------------
-
-TransWarp and ZPatterns are two related product framework packages by
-Phillip Eby and Ty Sarna.  You can find out more information on
-TransWarp from the "TransWarp Home
-Page":http://www.zope.org/Members/pje/Wikis/TransWarp/HomePage.  More
-information on ZPatterns can be found at the "ZPatterns Home
-Page":http://www.zope.org/Members/pje/Wikis/ZPatterns/HomePage
-
 Evolving Products
 =================
 
 As you develop your product classes you will generally make a series
-of product releases. While you don't know in advance how your product
-will change, when it does change there are measures that you can take
-to minimize problems.
+of product releases.  While you don't know in advance how your
+product will change, when it does change there are measures that you
+can take to minimize problems.
 
 Evolving Classes
 ----------------
 
 Issues can occur when you change your product class because instances
-of these classes are generally persistent. This means that instances
-created with an old class will start using a new class. If your class
-changes drastically this can break existing instances.
+of these classes are generally persistent.  This means that instances
+created with an old class will start using a new class.  If your
+class changes drastically this can break existing instances.
 
 The simplest way to handle this situation is to provide class
-attributes as defaults for newly added attributes. For example if the
-latest version of your class expects an 'improved_spam' instance
+attributes as defaults for newly added attributes.  For example if
+the latest version of your class expects an 'improved_spam' instance
 attribute while earlier versions only sported 'spam' attributes, you
 may wish to define an 'improved_spam' class attribute in your new
 class so your old objects won't break when they run with your new
-class. You might set 'improved_spam' to None in your class, and in
+class.  You might set 'improved_spam' to None in your class, and in
 methods where you use this attribute you may have to take into
 account that it may be None. For example::
 
@@ -1324,20 +1278,20 @@ Another solution is to use the standard Python pickling hook
 '__setstate__', however, this is in general more error prone and
 complex.
 
-A third option is to create a method to update old instances. Then
-you can manually call this method on instances to update to
-them. Note, this won't work unless the instances function well enough
-to be accessible via the Zope management screens.
+A third option is to create a method to update old instances.  Then
+you can manually call this method on instances to update to them.
+Note, this won't work unless the instances function well enough to be
+accessible via the Zope management screens.
 
 While you are developing a product you won't have to worry too much
 about these details, since you can always delete old instances that
-break with new class definitions. However, once you release your
+break with new class definitions.  However, once you release your
 product and other people start using it, then you need to start
 planning for the eventuality of upgrading.
 
 Another nasty problem that can occur is breakage caused by renaming
-your product classes. You should avoid this since it breaks all
-existing instances. If you really must change your class name,
+your product classes.  You should avoid this since it breaks all
+existing instances.  If you really must change your class name,
 provide aliases to it using the old name.  You may however, change
 your class's base classes without causing these kinds of problems.
 
@@ -1355,27 +1309,22 @@ change the interfaces they are using or implementing.
 
 The general solution is to create simple interfaces in the first
 place, and create new ones when you need to change an existing
-interface. If your new interfaces are compatible with your existing
+interface.  If your new interfaces are compatible with your existing
 interfaces you can indicate this by making your new interfaces extend
-your old ones. If your new interface replaces an old one but does not
-extend it you should give it a new name such as,
-'WidgetWithBellsOn'. Your components should continue to support the
+your old ones.  If your new interface replaces an old one but does
+not extend it you should give it a new name such as,
+'WidgetWithBellsOn'.  Your components should continue to support the
 old interface in addition to the new one for a few releases.
 
 Conclusion
 ==========
 
 Migrating your components into fully fledged Zope products is a
-process with a number of steps. There are many details to keep track
-of. However, if you follow the recipe laid out in this chapter you
+process with a number of steps.  There are many details to keep track
+of.  However, if you follow the recipe laid out in this chapter you
 should have no problems.
 
-As Zope grows and evolves we want to simplify the Zope development
-model. We hope to remove much of the management interface details
-from product development. We also want to move to a fuller component
-framework that makes better use of interfaces.
-
-Nevertheless, Zope products are a powerful framework for building web
-applications. By creating products you can take advantage of Zope's
-features including security, scalability, through the web management,
-and collaboration.
+Zope products are a powerful framework for building web applications.
+By creating products you can take advantage of Zope's features
+including security, scalability, through the web management, and
+collaboration.
