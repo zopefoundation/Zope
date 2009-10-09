@@ -257,7 +257,7 @@ Finally we can register it like this (update `__init__.py`)::
       registrar.registerClass(PollMain,
                               constructors=(manage_addPollMain, addPollMain))
 
-The application is now ready to install. But we need to make some
+The application is now ready to install.  But we need to make some
 changes in `poll_build` to recognize this package by Zope 2.
 
 Adding poll.main to build
@@ -283,8 +283,8 @@ part.
          poll.main
   ...
 
-And finally we need to add a new option to include the ZCML file.
-So, that the package will be recognized by Zope.
+And finally we need to add a new option to include the ZCML file.  So
+that the package will be recognized by Zope.
 
 ::
 
