@@ -40,35 +40,37 @@ Let's take a look at this step by step.  Here, you see two Python
 class statements.  The first class statement creates the *interface*,
 and the second class statement creates the *implementation*.
 
-The first class statement creates the 'IHello' interface.  This
-interface describes one method, called 'hello'.  Notice that there is
-no implementation for this method, interfaces do not define behavior,
-they just describe a specification.
+The first class statement creates the ``IHello`` interface.  This
+interface describes one method, called ``hello``.  Notice that there
+is no implementation for this method, interfaces do not define
+behavior, they just describe a specification.
 
-The second 'class' statement creates the 'HelloComponent' class.
-This class is the actual component that *does* what 'IHello'
+The second ``class`` statement creates the ``HelloComponent`` class.
+This class is the actual component that *does* what ``IHello``
 *describes*.  This is usually referred to as the *implementation* of
-'IHello'.  In order for you to know what interfaces 'HelloComponent'
-implements, it must somehow associate itself with an interface.  The
-'implements' function call inside the class does just that.  It says,
-"I implement these interfaces".  In this case, 'HelloComponent'
-asserts that it implements one interface, 'IHello'.
+``IHello``.  In order for you to know what interfaces
+``HelloComponent`` implements, it must somehow associate itself with
+an interface.  The ``implements`` function call inside the class does
+just that.  It says, "I implement these interfaces".  In this case,
+``HelloComponent`` asserts that it implements one interface,
+``IHello``.
 
 The interface describes how you would work with the object, but it
 doesn't dictate how that description is implemented.  For example,
-here's a more complex implementation of the 'Hello' interface::
+here's a more complex implementation of the ``Hello`` interface::
 
-      import xmlrpclib
-      class XMLRPCHello:
+  import xmlrpclib
+  class XMLRPCHello:
 
-          implementats(IHello)
+      implementats(IHello)
 
-          def hello(self, name):
-              """
-              Delegates the hello call to a remote object using XML-RPC.
-              """
-              s = xmlrpclib.Server('http://www.zope.org/')
-              return s.hello(name)
+      def hello(self, name):
+          """Delegates the hello call to a remote object
+          using XML-RPC.
+
+          """
+          s = xmlrpclib.Server('http://www.zope.org/')
+          return s.hello(name)
 
 This component contacts a remote server and gets its hello greeting
 from a remote component.
@@ -144,13 +146,13 @@ The first step to creating a component, as you've been shown, is to
 create an interface.
 
 Interface objects can be conveniently constructed using the Python
-'class' statement.  Keep in mind that this syntax can be a little
+``class`` statement.  Keep in mind that this syntax can be a little
 misleading, because interfaces are *not* classes.  It is important to
 understand that using Python's class syntax is just a convenience,
 and that the resulting object is an *interface*, not a class.
 
 To create an interface object using Python's class syntax, create a
-Python class that subclasses from 'zope.interface.Interface'::
+Python class that subclasses from ``zope.interface.Interface``::
 
   from zope.interface import Interface
 
@@ -161,15 +163,15 @@ Python class that subclasses from 'zope.interface.Interface'::
 
 This interface does not implement behavior for its methods, it just
 describes an interface that a typical "Hello" object would realize.
-By subclassing the 'zope.interface.Interface' interface, the
-resulting object 'Hello' is an interface object. The Python
+By subclassing the ``zope.interface.Interface`` interface, the
+resulting object ``Hello`` is an interface object. The Python
 interpreter confirms this::
 
   >>> IHello
   <InterfaceClass __main__.IHello>
 
-Now, you can associate the 'Hello' Interface with your new, concrete
-class in which you define your user behavior. For example::
+Now, you can associate the ``Hello`` Interface with your new concrete
+class in which you define your user behavior.  For example::
 
   class HelloComponent:
 
@@ -178,13 +180,13 @@ class in which you define your user behavior. For example::
       def hello(self, name):
           return "Hello %s!" % name
 
-This new class, 'HelloComponent' is a concrete class that implements
-the 'Hello' interface.  A class can realize more than one interface.
-For example, say you had an interface called 'Item' that described
-how an object worked as an item in a "Container" object.  If you
-wanted to assert that 'HelloComponent' instances realized the 'Item'
-interface as well as 'Hello', you can provide a sequence of Interface
-objects to the 'HelloComponent' class::
+This new class, ``HelloComponent`` is a concrete class that
+implements the ``Hello`` interface.  A class can realize more than
+one interface.  For example, say you had an interface called 'Item'
+that described how an object worked as an item in a "Container"
+object.  If you wanted to assert that ``HelloComponent`` instances
+realized the ``Item`` interface as well as ``Hello``, you can provide
+a sequence of Interface objects to the 'HelloComponent' class::
 
   class HelloComponent:
 
@@ -195,7 +197,7 @@ The Interface Model
 ===================
 
 Interfaces can extend other interfaces.  For example, let's extend
-the 'IHello' interface by adding an additional method::
+the ``IHello`` interface by adding an additional method::
 
   class ISmartHello(IHello):
       """A Hello object that remembers who it's greeted"""
@@ -204,21 +206,21 @@ the 'IHello' interface by adding an additional method::
           """Returns the name of the last person greeted."""
 
 
-'ISmartHello' extends the 'IHello' interface.  It does this by using
-the same syntax a class would use to subclass another class.
+``ISmartHello`` extends the ``IHello`` interface.  It does this by
+using the same syntax a class would use to subclass another class.
 
-Now, you can ask the 'ISmartHello' for a list of the interfaces it
-extends with 'getBases'::
+Now, you can ask the ``ISmartHello`` for a list of the interfaces it
+extends with ``getBases``::
 
   >>> ISmartHello.getBases()
   (<InterfaceClass __main__.IHello>,)
 
 An interface can extend any number of other interfaces, and
-'getBases' will return that list of interfaces for you.  If you want
-to know if 'ISmartHello' extends any other interface, you could call
-'getBases' and search through the list, but a convenience method
-called 'extends' is provided that returns true or false for this
-purpose::
+``getBases`` will return that list of interfaces for you.  If you
+want to know if ``ISmartHello`` extends any other interface, you
+could call ``getBases`` and search through the list, but a
+convenience method called ``extends`` is provided that returns true
+or false for this purpose::
 
   >>> ISmartHello.extends(IHello)
   True
@@ -227,8 +229,8 @@ purpose::
   >>> ISmartHello.extends(ISandwich)
   False
 
-Here you can see 'extends' can be used to determine if one interface
-extends another.
+Here you can see ``extends`` can be used to determine if one
+interface extends another.
 
 You may notice a similarity between interfaces extending from other
 interfaces and classes sub-classing from other classes.  This *is* a
@@ -257,7 +259,6 @@ right up to an interface and ask it for its *names*::
   >>> User.names()
   ['getUserName', 'getFavoriteColor', 'getPassword']
 
-
 Interfaces can also give you more interesting information about their
 items.  Interface objects can return a list of '(name, description)'
 tuples about their items by calling the *namesAndDescriptions*
@@ -271,26 +272,26 @@ For example::
   ('getPassword', <Interface.Method.Method object at 80fded8>)]
 
 As you can see, the "description" of the Interface's three items in
-these cases are all 'Method' objects.  Description objects can be
-either 'Attribute' or 'Method' objects.  Attributes, methods, and
+these cases are all `Method` objects.  Description objects can be
+either 'Attribute' or `Method` objects.  Attributes, methods, and
 interface objects implement the following interface::
 
-- 'getName()' -- Returns the name of the object.
+- `getName()` -- Returns the name of the object.
 
-- 'getDoc()' -- Returns the documentation for the object.
+- `getDoc()` -- Returns the documentation for the object.
 
 Method objects provide a way to describe rich meta-data about Python
 methods. Method objects have the following methods:
 
-- 'getSignatureInfo()' -- Returns a dictionary describing the method
+- `getSignatureInfo()` -- Returns a dictionary describing the method
   parameters.
 
-- 'getSignatureString()' -- Returns a human-readable string
+- `getSignatureString()` -- Returns a human-readable string
   representation of the method's signature.
 
 For example::
 
-  >>> m=User.namesAndDescriptions()[0][1]
+  >>> m = User.namesAndDescriptions()[0][1]
   >>> m
   <Interface.Method.Method object at 80f38f0>
   >>> m.getSignatureString()
@@ -299,8 +300,8 @@ For example::
   {'varargs': None, 'kwargs': None, 'optional': {'fullName': 1}, 
   'required': (), 'positional': ('fullName',)}  
 
-You can use 'getSignatureInfo' to find out the names and types of
-the method parameters.
+You can use `getSignatureInfo` to find out the names and types of the
+method parameters.
 
 
 Checking Implementation
@@ -308,12 +309,12 @@ Checking Implementation
 
 You can ask an interface if a certain class or instance that you hand
 it implements that interface.  For example, say you want to know if
-instances of the 'HelloComponent' class implement 'Hello'::
+instances of the `HelloComponent` class implement 'Hello'::
 
   IHello.implementedBy(HelloComponent)
 
 This is a true expression.  If you had an instance of
-'HelloComponent', you can also ask the interface if that instance
+`HelloComponent`, you can also ask the interface if that instance
 implements the interface::
 
   IHello.implementedBy(my_hello_instance)
@@ -326,7 +327,7 @@ Conclusion
 ==========
 
 Interfaces provide a simple way to describe your Python objects.  By
-using interfaces you document your objects' capabilities.  As Zope
+using interfaces you document capabilities of objects.  As Zope
 becomes more component oriented, your objects will fit right in.
 While components and interfaces are forward looking technologies,
 they are useful today for documentation and verification.
