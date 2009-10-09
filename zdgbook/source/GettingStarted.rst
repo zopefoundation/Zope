@@ -176,7 +176,7 @@ Next we need to add the minimum meta data required for the package in
                         "Zope2"],
       )
 
-We need to add two more things to be recognized by Zope.  First,
+We need to add two more files to be recognized by Zope.  First,
 define this call-back function in `src/poll/main/__init__.py`.
 
 ::
