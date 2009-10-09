@@ -181,7 +181,7 @@ define this call-back function in `src/poll/main/__init__.py`.
 
 ::
 
-  def initialize(context):
+  def initialize(registrar):
       pass
 
 And in the ZCML file add these few lines.
@@ -200,12 +200,12 @@ Creating Installable Application
 
 We need three things to make an installable application.
 
- - Form object created using ZPT (manage_addPollMain)
- - A function to define form action (addPollMain)
- - A class to define toplevel application object (PollMain).
+- Form object created using ZPT (manage_addPollMain)
+- A function to define form action (addPollMain)
+- A class to define toplevel application object (PollMain).
 
-And we need to register these things using the `context` passed to
-`initialize` method.
+And we need to register the class along with form and add function
+using the `registrar` object passed to the `initialize` function.
 
 We can define all these things in `app.py` and the form template as
 `manage_addPollMain_form.zpt`.
@@ -253,9 +253,9 @@ Finally we can register it like this (update `__init__.py`)::
 
   from poll.main.app import PollMain, manage_addPollMain, addPollMain
 
-  def initialize(context):
-      context.registerClass(PollMain,
-                            constructors=(manage_addPollMain, addPollMain))
+  def initialize(registrar):
+      registrar.registerClass(PollMain,
+                              constructors=(manage_addPollMain, addPollMain))
 
 The application is now ready to install. But we need to make some
 changes in `poll_build` to recognize this package by Zope 2.
