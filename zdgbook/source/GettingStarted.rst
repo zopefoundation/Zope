@@ -27,9 +27,8 @@ place Python packages and build related files.
 
 All build related files can be added inside `poll_build` directory.
 The main Python package can be added inside `poll.main` directory.
-The ``poll`` will be a a namespace package created using the
-functionality provided by `pkg_resources` module included in
-setuptools.
+We can make the ``poll``, a namespace package using the functionality
+provided by `pkg_resources` module included in setuptools.
 
 Bootstraping the Build
 ======================
