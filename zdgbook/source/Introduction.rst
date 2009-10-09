@@ -62,9 +62,9 @@ covers the following topics:
   started with application development.
 
 *Components and Interfaces*
-  Zope is moving toward a component-centric development model.  This
-  chapter describes the new component model in Zope and how Zope
-  components are described through interfaces.
+  Zope use a component-centric development model.  This chapter
+  describes the component model in Zope and how Zope components are
+  described through interfaces.
 
 *Object Publishing*
   Developing applications for Zope involves more than just creating a
