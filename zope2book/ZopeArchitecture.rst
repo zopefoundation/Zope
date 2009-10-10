@@ -247,7 +247,7 @@ Zope consists of several different components that work together
 to help you build web applications.  Zope's fundamental components
 are shown in the following figure and explained below:
 
-.. image:: ../Figures/zopearchitecture.png
+.. image:: Figures/zopearchitecture.png
 
 ZServer
 -------

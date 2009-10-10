@@ -102,7 +102,7 @@ will be uploaded to Zope when the "Add" button on the "Add File" form is
 selected.  Try choosing a file on your local computer, such as a Word file
 (.doc) or a Portable Document Format (.pdf) file.
 
-.. figure:: ../Figures/addfile.jpg
+.. figure:: Figures/addfile.jpg
 
    Adding a PDF File Object
 
@@ -118,7 +118,7 @@ local computer will appear in the Workspace pane.  Look at its *Edit* view.
 Here you will see that Zope has guessed the content type, as shown in the
 figure below.
 
-.. figure:: ../Figures/fileobject.jpg
+.. figure:: Figures/fileobject.jpg
 
    Editing an Uploaded PDF File Object
 
@@ -149,7 +149,7 @@ Viewing Files
 You can view a file in the Workspace frame by clicking the *View* tab in a
 File object's management screen. 
 
-.. figure:: ../Figures/viewingfile.jpg
+.. figure:: Figures/viewingfile.jpg
 
    Viewing an Uploaded PDF File Object
 
@@ -268,7 +268,7 @@ the *Edit* view of the page template, which displays a textarea in which
 you can edit the template.  Click on the "SalesPage" template.  You will
 see something like the following screen:
 
-.. figure:: ../Figures/salespage.jpg
+.. figure:: Figures/salespage.jpg
 
    Default Page Template Content
 
@@ -315,7 +315,7 @@ You can view a Page Template in the Workspace frame by clicking the *Test*
 tab from the template's management screen.  Click the *Test* tab of the
 SalesPage template, and you will see something like the following figure:
 
-.. figure:: ../Figures/viewingpt.png
+.. figure:: Figures/viewingpt.png
 
    Viewing a Page Template
 
@@ -403,7 +403,7 @@ the *Edit* view of the Script (Python), which gives you a textarea in which
 you can edit the template.  Click on the 'SalesScript' icon.  You will see
 something like the following:
 
-.. figure:: ../Figures/scriptdefault.png
+.. figure:: Figures/scriptdefault.png
 
    Default Script Content
 
@@ -428,7 +428,7 @@ may require that you provide values for the script's *parameters* before
 you can view the results.  Click the *Test* tab of the SalesScript object,
 and you will see something like the following figure:
 
-.. figure:: ../Figures/testscript.png
+.. figure:: Figures/testscript.png
 
    Testing a Script
 
@@ -670,7 +670,7 @@ object named *calculateCompoundingInterest*.  The display method uses the
 value returned by the script in the resulting display.  You will see the
 following result:
 
-.. figure:: ../Figures/interestdisplay.png
+.. figure:: Figures/interestdisplay.png
 
    Result of the Interest Application
 

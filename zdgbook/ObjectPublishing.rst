@@ -40,7 +40,7 @@ passes the response back to your web browser.
 
 The publishing process is summarized in [2-1]
 
-.. figure:: ../Figures/2-1.png
+.. figure:: Figures/2-1.png
 
    2.1 Object publishing
 
@@ -98,7 +98,7 @@ can publish objects with URLs. For example, the URL
 object hierarchy, find the 'monkey' object and call its 'screech'
 method.
 
-.. figure:: ../Figures/2-2.png
+.. figure:: Figures/2-2.png
 
    2.2 Traversal path through an object hierarchy
 

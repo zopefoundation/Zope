@@ -47,7 +47,7 @@ download the Win32 executable installer from the
 typically named something like "Zope-2.X.X-win32-x86.exe" where the "X"'s
 refer to the current Zope version number.
 
-.. figure:: ../Figures/download-zope.png
+.. figure:: Figures/download-zope.png
 
    Current stable Zope release for Windows
 
@@ -59,11 +59,11 @@ which you downloaded the file, and double-click on the file's
 icon.  The installer then begins to walk you through the
 installation process.
 
-.. figure:: ../Figures/installer-package-icon.png
+.. figure:: Figures/installer-package-icon.png
 
    Zope installer
 
-.. figure:: ../Figures/installer-first-screen.png
+.. figure:: Figures/installer-first-screen.png
 
    Beginning the installer
 
@@ -71,7 +71,7 @@ Click *Next*. The installer asks for an installation path. The default is
 usually acceptable, though you are, of course, free to choose another path.
 Then click *Next*. You then can choose which components to install.
 
-.. figure:: ../Figures/component-selection.png
+.. figure:: Figures/component-selection.png
 
    Select components
 
@@ -83,14 +83,14 @@ are running Windows 98 or ME, on which such services are not available. If
 you are only running Zope for personal use, there is no need to run it as a
 service.
 
-.. figure:: ../Figures/start-as-service.png
+.. figure:: Figures/start-as-service.png
 
    Server options
 
 Upon clicking *Next*, the installer takes you to the "Instance Setup"
 Screen.
 
-.. figure:: ../Figures/instance-path.png
+.. figure:: Figures/instance-path.png
 
    Instance setup
 
@@ -105,7 +105,7 @@ account. You use this account to log in for the first time and create more
 users. Note that the installer does not ask you to verify your password, so
 be careful not to mis-type it.
 
-.. figure:: ../Figures/instance-passwd.png
+.. figure:: Figures/instance-passwd.png
 
    Administrative password
 
@@ -113,7 +113,7 @@ Click *Next* after entering a password. The installer presents an overview,
 form which you can commence installation by clicking *Install*. After a few
 moments, the Zope installer will present you with a "Completion" screen.
 
-.. figure:: ../Figures/installer-complete.png
+.. figure:: Figures/installer-complete.png
 
    Installation completion
 
@@ -387,7 +387,7 @@ same machine on which you installed Zope, and browse to the URL
 If your Zope instance has been properly installed, and you're visiting the
 correct URL, you will be presented with the Zope "QuickStart" screen.
 
-.. figure:: ../Figures/quickstart.png
+.. figure:: Figures/quickstart.png
 
    Zope QuickStart
 
@@ -408,7 +408,7 @@ Successful contact with Zope via this URL will result in an authentication
 dialog, into which you can enter the "initial" username and password you
 chose when you installed Zope.  You will then be presented with the ZMI.
 
-.. figure:: ../Figures/zmi.png
+.. figure:: Figures/zmi.png
 
    The Zope Management Interface (ZMI)
 
@@ -421,7 +421,7 @@ Controlling the Zope Process with the Control Panel
 When you are using the ZMI, you can use the Zope *Control Panel* to control
 the Zope process.  Find and click the **Control_Panel** object in ZMI.
 
-.. figure:: ../Figures/controlpanel.jpg
+.. figure:: Figures/controlpanel.jpg
 
    The Control Panel
 

@@ -42,7 +42,7 @@ Choose *ZCatalog* from the product add list to create a ZCatalog
 object within a subfolder named 'Zoo'.  This takes you to the
 ZCatalog add form, as shown in the figure below.
 
-.. figure:: ../Figures/creatingzcatalog.png
+.. figure:: Figures/creatingzcatalog.png
 
    ZCatalog add form
 
@@ -77,7 +77,7 @@ the data necessary to perform fast searching.
 In the contents view of the *AnimalCatalog* ZCatalog, choose
 *ZCTextIndex Lexicon*, and give it an id of *zooLexicon*
 
-.. figure:: ../Figures/creatinglexicon.png
+.. figure:: Figures/creatinglexicon.png
 
    ZCTextIndex Lexicon add form
 
@@ -91,7 +91,7 @@ Documents (*PrincipiaSearchSource* is an API method of all DTML
 Document and Method objects).  Note that *zooLexicon* is
 preselected in the *Lexicon* menu.
 
-.. figure:: ../Figures/creatingtextindex.png
+.. figure:: Figures/creatingtextindex.png
 
    ZCTextIndex add form
 
@@ -195,7 +195,7 @@ To create search and report forms, make sure you are inside the
 add list.  Select the *AnimalCatalog* ZCatalog as the searchable
 object, as shown in the figure below.
 
-.. figure:: ../Figures/creatingsearchinterface.png
+.. figure:: Figures/creatingsearchinterface.png
 
    Creating a search form for a ZCatalog
 
@@ -268,7 +268,7 @@ instead of a list of pages in a book.
 In Zope 2.6, indexes can be added and removed from a ZCatalog
 using the "pluggable" index interface as shown in the figure below:
 
-.. figure:: ../Figures/managingindexes.png
+.. figure:: Figures/managingindexes.png
 
    Managing indexes
 
@@ -822,7 +822,7 @@ select box will contain the exact value of an authors name, and
 thus match against one or more of the news objects.  Your search
 form should look now like the figure below.
 
-.. figure:: ../Figures/uniqueauthorsform.png
+.. figure:: Figures/uniqueauthorsform.png
 
    Range searching and unique Authors
 

@@ -117,7 +117,7 @@ structure - expand the *ZopeZoo* folder by clicking the little plus sign
 next to the icon.  Similarly expand the zoo subfolders.  You'll see
 something like the figure below.
 
-.. figure:: ../Figures/zoo1.png
+.. figure:: Figures/zoo1.png
 
    Zoo folder structure
 

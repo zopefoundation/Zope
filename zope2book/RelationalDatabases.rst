@@ -148,7 +148,7 @@ connect successfully to the database. This specification, called a
 example, the figure below shows the PostgreSQL database connection
 add form.
 
-.. figure:: ../Figures/psycopg.png
+.. figure:: Figures/psycopg.png
 
    PostgreSQL Database Connection
 
@@ -184,7 +184,7 @@ source and other properties of the Database Connection.  This is useful
 if you want to move your Database Connection from one data source to
 another. The figure below shows the *Properties* view.
 
-.. figure:: ../Figures/10-3.png
+.. figure:: Figures/10-3.png
 
    The Properties view
 
@@ -238,7 +238,7 @@ see that there is an *employees* table, and if you click on the
 *plus symbol*, the table expands to show four columns, *emp_id*,
 *first*, *last* and *salary* as shown in [10-3].
 
-.. figure:: ../Figures/10-4.png
+.. figure:: Figures/10-4.png
 
    Browsing the Database Connection
 
@@ -288,7 +288,7 @@ employee.  Select *Z SQL Method* from the *Add List*.  This will
 take you to the add form for Z SQL Methods, as shown in the figure
 below.
 
-.. figure:: ../Figures/10-5.png
+.. figure:: Figures/10-5.png
 
    The Add form for Z SQL Methods
 
@@ -361,7 +361,7 @@ your two new methods by inserting some new employees in the
 *hire_employee* Method and click the *Test* tab.  This will take you
 to the *Test* view of the Method, as shown in the figure below.
 
-.. figure:: ../Figures/10-6.png
+.. figure:: Figures/10-6.png
 
    The hire_employee Test view
 
@@ -948,7 +948,7 @@ Z SQL can acquire information from other objects and be used to
 modify the SQL query.  Consider the below figure, which shows a
 collection of Folders in a organization's website.
 
-.. figure:: ../Figures/10-7.png
+.. figure:: Figures/10-7.png
 
    Folder structure of an organizational website
 
@@ -1302,7 +1302,7 @@ application, caching can dramatically improve performance.
 To control caching, go to the *Advanced* tab of a SQL Method. You have
 three different cache controls as shown in the figure below.
 
-.. figure:: ../Figures/10-8.png
+.. figure:: Figures/10-8.png
 
    Caching controls for Z SQL Methods
 

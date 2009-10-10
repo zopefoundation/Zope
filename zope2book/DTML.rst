@@ -287,7 +287,7 @@ that you typed in to the form.  Instead you will see the
 provided by DTML by way of the tags you've inserted.  You should
 see something like the figure below:
 
-.. figure:: ../Figures/9-1_bobsfeedbags.png
+.. figure:: Figures/9-1_bobsfeedbags.png
 
    Viewing the pricelist method
 
@@ -519,7 +519,7 @@ execute it.  Fill out the form and click the *Submit* button. If
 all goes well you should see a thank you message that includes
 your name and email address, much like the figure below:
 
-.. figure:: ../Figures/aardvarkview.png
+.. figure:: Figures/aardvarkview.png
 
    Result of submitting the infoForm method
 
@@ -645,7 +645,7 @@ opposed to getting to it by submitting the 'infoForm' method?
 Click on the 'infoAction' method and then click the *View* tab.
 You will see results not unlike those in the figure below.
 
-.. figure:: ../Figures/infokeyerror.png
+.. figure:: Figures/infokeyerror.png
 
    DTML error resulting from a failed variable lookup
 
@@ -708,7 +708,7 @@ contents::
 Now view the 'welcome' method. It should look like a simple web
 page with the word *welcome*, as shown in the figure below.
 
-.. figure:: ../Figures/welcomedtml.png
+.. figure:: Figures/welcomedtml.png
 
    Welcome method
 
@@ -735,7 +735,7 @@ of web pages.
 Now revisit the 'welcome' method and click its *View* tab again.
 You will see something like the figure below:
 
-.. figure:: ../Figures/welcomegreen.png
+.. figure:: Figures/welcomegreen.png
 
    Welcome method with custom header
 
@@ -1286,7 +1286,7 @@ Create a DTML Method with the following body::
 This code displayed the following file listing, as shown in the
 figure below.
 
-.. figure:: ../Figures/4-4.png
+.. figure:: Figures/4-4.png
 
    Iterating over a list of files
 
@@ -1348,7 +1348,7 @@ sequence.  For example, you can make your file library easier to
 read by putting it in an HTML table and making every other table
 row an alternating color, like this, as shown in the figure below.
 
-.. figure:: ../Figures/4-5.png
+.. figure:: Figures/4-5.png
 
    File listing with alternating row colors
 

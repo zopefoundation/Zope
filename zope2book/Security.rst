@@ -228,7 +228,7 @@ To create a new account, visit the root Zope folder. Click on
 the object named *acl_users*.  Click the *Add* button to create
 a new user.
 
-.. figure:: ../Figures/6-1.png
+.. figure:: Figures/6-1.png
 
    Adding a user to a user folder
 
@@ -495,7 +495,7 @@ The emergency user cannot create new "content", "logic" or
 attempting to use the emergency user account in trying to
 create a new object is shown below.
 
-.. figure:: ../Figures/6-2.png
+.. figure:: Figures/6-2.png
 
    Error caused by trying to create a new object when logged in
    as the emergency user
@@ -787,7 +787,7 @@ The default Zope permissions are described in `appendix A
 <http://www.zope.org/Documentation/Books/ZDG/current/AppendixA.stx>`_
 of the Zope Developer's Guide.
 
-.. figure:: ../Figures/6-3.png     
+.. figure:: Figures/6-3.png     
 
    Security settings for a mail host object
 
@@ -805,7 +805,7 @@ You can set a security policy on almost any Zope object. To set
 a security policy on an object, go the object's *Security* tab.
 For example, click on the security tab of the root folder.
 
-.. figure:: ../Figures/6-4.png
+.. figure:: Figures/6-4.png
 
    Security policy for the root folder
 
@@ -989,7 +989,7 @@ Role *Manager*.  Steve can now log directly into the Sales folder to
 manage his area of control by pointing his browser to
 *http://www.zopezoo.org/Sales/manage*.
 
-.. figure:: ../Figures/6-5.png
+.. figure:: Figures/6-5.png
 
    Managing the Sales folder
 
@@ -1257,7 +1257,7 @@ similar to how UNIX keeps track of the owner of a file.
 You find out how an object is owned by viewing the *Ownership*
 management tab, as shown in the figure below.
 
-.. figure:: ../Figures/6-6.png
+.. figure:: Figures/6-6.png
 
    Managing ownership settings
 
@@ -1331,7 +1331,7 @@ Script (Python) that sends email so that when it executes it has the
 "Manager" role. Visit the Proxy management tab on your Python
 script, as shown in the figure below.
 
-.. figure:: ../Figures/6-7.png
+.. figure:: Figures/6-7.png
 
    Proxy role management
 

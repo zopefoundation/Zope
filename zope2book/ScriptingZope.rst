@@ -118,7 +118,7 @@ how to vaccinate a hippo from Python. The figure
 below shows a slightly updated object hierarchy that contains
 a script named *vaccinateHippo.py*. 
 
-.. figure:: ../Figures/zoo-again.png 
+.. figure:: Figures/zoo-again.png 
 
    A collection of objects and scripts
 
@@ -204,7 +204,7 @@ rarely ever used in practice.
 
 Recall our Zoo example introduced earlier in this chapter.
 
-.. figure:: ../Figures/zoo.png 
+.. figure:: Figures/zoo.png 
 
    Zope Zoo Example hierarchy
 
@@ -293,7 +293,7 @@ found. Think of it this way: objects are looked up one at a
 time, and once an object is found, it will not be looked up
 again.  For example, imagine this folder structure:
 
-.. figure:: ../Figures/acquisition.png
+.. figure:: Figures/acquisition.png
 
    Acquisition example folder structure
 
@@ -430,7 +430,7 @@ your form types something that cannot be converted to an integer
 (such as "22 going on 23") then Zope will raise an exception as
 shown in the figure below.
 
-.. figure:: ../Figures/8-3.png
+.. figure:: Figures/8-3.png
 
    Parameter conversion error
 
@@ -896,7 +896,7 @@ The easiest way to script Zope with Word is to tell word to open a
 document and then type a Zope script URL as the file name as shown in
 [8-9].
 
-.. figure:: ../Figures/8-9.png
+.. figure:: Figures/8-9.png
 
    Calling a URL with Microsoft Word
 

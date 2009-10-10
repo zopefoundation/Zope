@@ -67,7 +67,7 @@ corner of the tree. The root folder is the "topmost" container of Zope
 objects: almost everything meaningful in your Zope instance lives inside
 the root folder.
 
-.. figure:: ../Figures/navigator.jpg
+.. figure:: Figures/navigator.jpg
   
    The Navigator Frame
 
@@ -86,7 +86,7 @@ currently managing.  When you first log into Zope, the root folder is
 displayed as the current object.  The workspace gives you information about
 the current object and lets you manage it.
 
-.. figure:: ../Figures/workspace.jpg
+.. figure:: Figures/workspace.jpg
 
    The Workspace Frame
 
@@ -140,7 +140,7 @@ current login name, along with a pull-down box that lets you select:
   logging out using this method, try closing and reopening your browser to
   log out.
 
-.. figure:: ../Figures/statusframe.jpg
+.. figure:: Figures/statusframe.jpg
  
    The Status Frame
 
@@ -158,7 +158,7 @@ select *Folder* from the add list.  At this point, you'll be taken to an
 add form that collects information about the new folder, as shown in the
 figure below.
 
-.. figure:: ../Figures/addfolder.jpg
+.. figure:: Figures/addfolder.jpg
 
    Folder add form
 
@@ -240,7 +240,7 @@ To rename the *copy_of_zoo* folder, select the folder by checking the check
 box to the left of the folder. Then click the *Rename* button.  This will
 take you to the rename form.
 
-.. figure:: ../Figures/renamezoo.jpg
+.. figure:: Figures/renamezoo.jpg
 
    Renaming an Object
 
@@ -295,7 +295,7 @@ folder disappears. You can get it back by undoing the delete action.
 
 Click the *Undo* tab, as shown in the figure below.
 
-.. figure:: ../Figures/delzoo.jpg
+.. figure:: Figures/delzoo.jpg
 
    The Undo view
 
@@ -358,7 +358,7 @@ lists, and other data structures.  All properties are managed via the
 you will be taken to the properties management view, as seen in the figure
 below.
 
-.. figure:: ../Figures/rootproperties.jpg
+.. figure:: Figures/rootproperties.jpg
 
    The Properties Management View
 
