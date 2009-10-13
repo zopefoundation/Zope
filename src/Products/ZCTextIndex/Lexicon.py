@@ -76,7 +76,8 @@ class Lexicon(Persistent):
     def termToWordIds(self, text):
         last = _text2list(text)
         for element in self._pipeline:
-            last = element.process(last)
+            process = getattr(element, "process_post_glob", element.process) 
+            last = process(last)
         wids = []
         for word in last:
             wids.append(self._wids.get(word, 0))
