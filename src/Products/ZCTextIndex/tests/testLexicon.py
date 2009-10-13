@@ -94,6 +94,28 @@ class Test(unittest.TestCase):
         wids = lexicon.termToWordIds('boxes')
         self.assertEqual(wids, [0])
 
+    def testTermToWordIdsWithProcess_post_glob(self):
+        """This test is for added process_post_glob"""
+        class AddedSplitter(Splitter):
+            def process_post_glob(self, lst):
+                assert lst == ['dogs']
+                return ['dogs']
+        lexicon = Lexicon(AddedSplitter())
+        wids = lexicon.sourceToWordIds('cats and dogs')
+        wids = lexicon.termToWordIds('dogs')
+        self.assertEqual(wids, [3])
+
+    def testMissingTermToWordIdsWithProcess_post_glob(self):
+        """This test is for added process_post_glob"""
+        class AddedSplitter(Splitter):
+            def process_post_glob(self, lst):
+                assert lst == ['dogs']
+                return ['fox']
+        lexicon = Lexicon(AddedSplitter())
+        wids = lexicon.sourceToWordIds('cats and dogs')
+        wids = lexicon.termToWordIds('dogs')
+        self.assertEqual(wids, [0])
+
     def testOnePipelineElement(self):
         lexicon = Lexicon(Splitter(), StupidPipelineElement('dogs', 'fish'))
         wids = lexicon.sourceToWordIds('cats and dogs')
