@@ -48,8 +48,8 @@ class APIHelpTopic(HelpTopic):
                 if type(v)==types.ClassType:
                     # A class.
                     self.apis.append(APIDoc(v, 0))
-                elif (hasattr(v, 'isImplementedByInstancesOf')):
-                    # A scarecrow interface.
+                elif (hasattr(v, 'implementedBy')):
+                    # A zope.interface.Interface.
                     self.apis.append(APIDoc(v, 1))
                 elif type(v)==types.FunctionType:
                     # A function
