@@ -211,8 +211,10 @@ class BaseRequest:
         self._held=None
 
     def close(self):
-        self.clear()
         notify(EndRequestEvent(None, self))
+        # subscribers might need the zodb, so `clear` must come afterwards
+        # (since `self._held=None` might close the connection, see above)
+        self.clear()
 
     def processInputs(self):
         """Do any input processing that could raise errors
