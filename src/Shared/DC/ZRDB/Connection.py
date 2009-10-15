@@ -70,7 +70,7 @@ class Connection(Persistent,
         self.edit(title, connection_string, check)
 
     def __setstate__(self, state):
-        Globals.Persistent.__setstate__(self, state)
+        Persistent.__setstate__(self, state)
         if self.connection_string:
             try: self.connect(self.connection_string)
             except:
