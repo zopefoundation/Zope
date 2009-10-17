@@ -25,6 +25,8 @@ Bugs Fixed
 
 - LP #443005: zopectl stop works once more on Windows.
 
+- LP #453723: zopectl start works again on non-Windows platforms.
+
 Zope 2.12.0 final  (2009/10/01)
 -------------------------------
 
