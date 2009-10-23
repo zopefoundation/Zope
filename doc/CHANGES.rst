@@ -13,7 +13,7 @@ Bugs Fixed
 
 - Updated packages:
 
-  - ZODB3 = 3.9.1  (fixes bug where blob conflict errors hung commits)
+  - ZODB3 = 3.9.3  (fixes bug where blob conflict errors hung commits)
 
 - Assorted documentation cleanups, including a script to rebuild HTML
   documentation on Windows.
