@@ -1719,8 +1719,9 @@ def test_proxying():
     iterating...
     [42]
 
-    Finally let's check that https://bugs.launchpad.net/zope2/+bug/360761
-    has been fixed:
+    Next let's check that the wrapper's __iter__ proxy falls back
+    to using the object's __getitem__ if it has no __iter__.  See
+    https://bugs.launchpad.net/zope2/+bug/360761 .
 
     >>> class C(Acquisition.Implicit):
     ...     l=[1,2,3]
@@ -1738,6 +1739,59 @@ def test_proxying():
     <type 'iterator'>
     >>> list(c2)
     [1, 2, 3]
+
+    The __iter__proxy should also pass the wrapped object as self to
+    the __iter__ of objects defining __iter__::
+
+    >>> class C(Acquisition.Implicit):
+    ...     def __iter__(self):
+    ...         print 'iterating...'
+    ...         for i in range(5):
+    ...             yield i, self.aq_parent.name
+    >>> c = C()
+    >>> i = Impl()
+    >>> i.c = c
+    >>> i.name = 'i'
+    >>> list(i.c)
+    iterating...
+    [(0, 'i'), (1, 'i'), (2, 'i'), (3, 'i'), (4, 'i')]
+
+    And it should pass the wrapped object as self to
+    the __getitem__ of objects without an __iter__::
+
+    >>> class C(Acquisition.Implicit):
+    ...     def __getitem__(self, i):
+    ...         return self.aq_parent.l[i]
+    >>> c = C()
+    >>> i = Impl()
+    >>> i.c = c
+    >>> i.l = range(5)
+    >>> list(i.c)
+    [0, 1, 2, 3, 4]
+
+    Finally let's make sure errors are still correctly raised after having
+    to use a modified version of `PyObject_GetIter` for iterator support::
+
+    >>> class C(Acquisition.Implicit):
+    ...     pass
+    >>> c = C()
+    >>> i = Impl()
+    >>> i.c = c
+    >>> list(i.c)
+    Traceback (most recent call last):
+      ...
+    TypeError: iteration over non-sequence
+
+    >>> class C(Acquisition.Implicit):
+    ...     def __iter__(self):
+    ...         return [42]
+    >>> c = C()
+    >>> i = Impl()
+    >>> i.c = c
+    >>> list(i.c)
+    Traceback (most recent call last):
+      ...
+    TypeError: iter() returned non-iterator of type 'list'
 
     """
 
