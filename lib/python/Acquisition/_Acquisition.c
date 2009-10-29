@@ -819,10 +819,35 @@ Wrapper_contains(Wrapper *self, PyObject *v)
   return c;
 }
 
+/* Support for iteration cannot rely on the internal implementation of
+   `PyObject_GetIter`, since the `self` passed into `__iter__` and
+   `__getitem__` should be acquisition-wrapped (also see LP 360761): The
+   wrapper obviously supports the iterator protocol so simply calling
+   `PyObject_GetIter(OBJECT(self))` results in an infinite recursion.
+   Instead the base object needs to be checked and the wrapper must only
+   be used when actually calling `__getitem__` or setting up a sequence
+   iterator. */
 static PyObject * 
 Wrapper_iter(Wrapper *self)
 {
-  return PyObject_GetIter(self->obj);
+  PyObject *obj = self->obj;
+  PyObject *res;
+  if ((res=PyObject_GetAttr(OBJECT(self),py__iter__))) {
+      ASSIGN(res,PyObject_CallFunction(res,NULL,NULL));
+      if (res != NULL && !PyIter_Check(res)) {
+          PyErr_Format(PyExc_TypeError,
+                   "iter() returned non-iterator "
+                   "of type '%.100s'",
+                   res->ob_type->tp_name);
+          Py_DECREF(res);
+          res = NULL;
+      }
+  } else if (PySequence_Check(obj)) {
+      ASSIGN(res,PySeqIter_New(OBJECT(self)));
+  } else {
+      res = PyErr_Format(PyExc_TypeError, "iteration over non-sequence");
+  }
+  return res;
 }
 
 static PySequenceMethods Wrapper_as_sequence = {

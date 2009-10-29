@@ -8,6 +8,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - LP #360761 (backported from Acquisition trunk): fix iteration proxy
+        to pass `self` acquisition-wrapped into `__iter__` and `__getitem__`.
+
       - LP #414757 (backported from Zope trunk): don't emit a IEndRequestEvent
         when clearing a cloned request.
 
