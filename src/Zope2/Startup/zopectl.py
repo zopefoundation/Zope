@@ -83,7 +83,8 @@ if sys.platform[:3].lower() == "win":
                 argv=argv,
                 )
 
-            return err,InstanceService
+            self.InstanceClass = InstanceService
+            return err
             
         return inner
 
@@ -238,7 +239,7 @@ class ZopeCmd(ZDCmd):
         # Add extra commands to install and remove the Windows service
 
         def do_install(self,arg):
-            err,InstanceClass = do_windows('install')(self,arg)
+            err = do_windows('install')(self,arg)
             if not err:
                 # If we installed successfully, put info in registry for the
                 # real Service class to use:
@@ -248,12 +249,13 @@ class ZopeCmd(ZDCmd):
                     os.path.join(os.path.split(sys.argv[0])[0],'runzope'),
                     self.options.configfile
                     )
-                InstanceClass.setReg('command',command)
+                self.InstanceClass.setReg('command',command)
                 
                 # This is unfortunately needed because runzope.exe is a setuptools
                 # generated .exe that spawns off a sub process, so pid would give us
                 # the wrong event name.
-                InstanceClass.setReg('pid_filename',self.options.configroot.pid_filename)
+                self.InstanceClass.setReg('pid_filename',self.options.configroot.pid_filename)
+            return err
 
         def help_install(self):
             print "install -- Installs Zope as a Windows service."
