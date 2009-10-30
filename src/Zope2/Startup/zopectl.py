@@ -51,15 +51,16 @@ from ZConfig.datatypes import existing_dirpath
 WIN = False
 if sys.platform[:3].lower() == "win":
     WIN = True
+    import pywintypes
+    import win32service
     import win32serviceutil
     from nt_svcutils import service
     
     def do_windows(command):
         def inner(self,arg):
 
-            INSTANCE_HOME = self.options.directory
-            name = 'Zope'+str(hash(INSTANCE_HOME.lower()))
-            display_name = 'Zope instance at '+INSTANCE_HOME
+            name = self.get_service_name()
+            display_name = 'Zope instance at '+self.options.directory
 
             # This class exists only so we can take advantage of
             # win32serviceutil.HandleCommandLine, it is never
@@ -222,16 +223,26 @@ class ZopeCmd(ZDCmd):
     ## START OF WINDOWS ONLY STUFF
     
     if WIN:
-        def get_status(self):
-            # get_status from zdaemon relies on *nix specific socket handling.
-            # We just don't support getting the status and sending actions to
-            # the control server on Windows. This could be extended to ask for
-            # the status of the Windows service though
-            self.zd_up = 0
-            self.zd_pid = 0
-            self.zd_status = None
-            return
 
+        def get_service_name(self):
+            return 'Zope'+str(hash(self.options.directory.lower()))
+            
+        def get_status(self):
+            sn = self.get_service_name()
+            try:
+                stat = win32serviceutil.QueryServiceStatus(sn)[1]
+                self.zd_up = 1
+            except pywintypes.error, err:
+                if err[0] == 1060:
+                    # Service not installed
+                    stat = win32service.SERVICE_STOPPED
+                    self.zd_up = 0
+                else:
+                    raise
+
+            self.zd_pid = (stat == win32service.SERVICE_RUNNING) and -1 or 0
+            self.zd_status = "args=%s" % self.options.program
+            
         do_start = do_windows('start')
         do_stop = do_windows('stop')
         do_restart = do_windows('restart')
