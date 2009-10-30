@@ -308,6 +308,8 @@ class ZopeCmd(ZDCmd):
         command = quote_command(program)
         try:
             return os.system(command)
+        except KeyboardInterrupt:
+            pass
         finally:
             for addition in local_additions: program.remove(addition)
             
