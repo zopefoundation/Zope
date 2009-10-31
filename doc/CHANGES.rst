@@ -15,6 +15,7 @@ Bugs Fixed
 
   - ZODB3 = 3.9.3  (fixes bug where blob conflict errors hung commits)
   - Acquisition = 2.12.4 (fixes problems with iteration support)
+  - setuptools = 0.6c11
 
 - Assorted documentation cleanups, including a script to rebuild HTML
   documentation on Windows.
