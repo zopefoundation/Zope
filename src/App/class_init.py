@@ -77,7 +77,10 @@ def InitializeClass(self):
                 pr = PermissionRole(pname)
             for mname in mnames:
                 setattr(self, mname+'__roles__', pr)
-                if mname and not hasattr(self, mname):
+                if (mname and mname not in ('context', 'request') and
+                    not hasattr(self, mname)):
+                    # don't complain about context or request, as they are
+                    # frequently not available as class attributes
                     logging.getLogger("Init").warning(
                         "Class %s.%s has a security declaration for "
                         "nonexistent method %r", self.__module__,

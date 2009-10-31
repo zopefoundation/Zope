@@ -17,6 +17,9 @@ Bugs Fixed
   - Acquisition = 2.12.4 (fixes problems with iteration support)
   - setuptools = 0.6c11
 
+- LP #411732: Silence security declaration warnings for context and request
+  on views protected by an interface.
+
 - Assorted documentation cleanups, including a script to rebuild HTML
   documentation on Windows.
 
