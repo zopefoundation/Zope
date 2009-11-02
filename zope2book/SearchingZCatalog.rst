@@ -1069,7 +1069,7 @@ FieldIndex Record Attributes
       Searches for all objects with values smaller than
       the maximum of the values passed in the 'query' parameter.
 
-    'minmax'
+    'min:max'
       Searches for all objects with values smaller than the maximum of the
       values passed in the 'query' parameter and larger than the minimum of
       the values passwd in the 'query' parameter. 
@@ -1095,7 +1095,7 @@ Or::
   zcat = context.AnimalCatalog
   results=zcat(population_count={
                    'query': [ 5, 10 ],
-                   'range': 'minmax'}
+                   'range': 'min:max'}
               )
 
 This query mathches all animals with population count
@@ -1213,7 +1213,7 @@ FieldIndex:
       Searches for all objects with values smaller than
       the maximum of the values passed in the 'query' parameter.
 
-    'minmax'
+    'min:max'
       Searches for all objects with values smaller
       than the maximum of the values passed in the 'query'
       parameter and larger than the minimum of the values passwd
