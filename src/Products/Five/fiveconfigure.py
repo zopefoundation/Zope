@@ -225,7 +225,7 @@ def cleanUp():
     _register_monkies = []
 
     global _meta_type_regs
-    Products.meta_types = tuple([ info for info in Products.meta_types
+    Products.meta_types = tuple([ info for info in getattr(Products, 'meta_types', [])
                                   if info['name'] not in _meta_type_regs ])
     _meta_type_regs = []
 
