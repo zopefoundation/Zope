@@ -13,6 +13,10 @@ Features Added
 
 - Include bytes limited cache size in the cache parameters ZMI screen.
 
+- Officially supporting Python 2.6 only (with inofficial support for
+  Python 2.5) but dropping any support and responsibility for
+  Python 2.4.
+
 Bugs Fixed
 ++++++++++
 
