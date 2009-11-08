@@ -17,8 +17,6 @@ This class is mixed into the database manager in App.ApplicationManager.
 $Id$'''
 __version__='$Revision: 1.31 $'[11:-2]
 
-import time
-
 from App.class_init import InitializeClass
 from App.special_dtml import DTMLFile
 from App.ImageFile import ImageFile
@@ -43,6 +41,9 @@ class CacheManager:
 
     def cache_length(self):
         return self._getDB().cacheSize()
+
+    def cache_length_bytes(self):
+        return self._getDB().getCacheSizeBytes()
 
     def cache_detail_length(self):
         return self._getDB().cacheDetailSize()
@@ -75,28 +76,6 @@ class CacheManager:
         if REQUEST is not None:
             response=REQUEST['RESPONSE']
             response.redirect(REQUEST['URL1']+'/manage_cacheParameters')
-
-
-    # BoboPOS 2
-    def cache_mean_age(self):
-        import Globals  # for data
-        return Globals.Bobobase._jar.cache.cache_mean_age/60.0
-
-    # BoboPOS 2
-    def cache_mean_deal(self):
-        import Globals  # for data
-        return Globals.Bobobase._jar.cache.cache_mean_deal*60
-
-    # BoboPOS 2
-    def cache_mean_deac(self):
-        import Globals  # for data
-        return Globals.Bobobase._jar.cache.cache_mean_deac*60
-
-    # BoboPOS 2
-    def cache_last_gc_time(self):
-        import Globals  # for data
-        t = Globals.Bobobase._jar.cache.cache_last_gc_time
-        return time.asctime(time.localtime(t))
 
     def manage_full_sweep(self,value,REQUEST):
         "Perform a full sweep through the cache"

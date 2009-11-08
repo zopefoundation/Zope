@@ -42,6 +42,19 @@
 </tr>
 
 <tr>
+  <td align="left">
+  <div class="form-label">
+  Target memory size per cache in bytes
+  </div>
+  </td>
+  <td>
+  <div class="form-text">
+  &dtml-cache_length_bytes;
+  </div>
+  </td>
+</tr>
+
+<tr>
   <td align="left" colspan=2>
   <div class="form-label">
   Total number of objects in each cache:

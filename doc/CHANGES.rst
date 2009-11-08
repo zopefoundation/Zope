@@ -8,6 +8,11 @@ file HISTORY.txt.
 Zope 2.12.2 (unreleased)
 ------------------------
 
+Features Added
+++++++++++++++
+
+- Include bytes limited cache size in the cache parameters ZMI screen.
+
 Bugs Fixed
 ++++++++++
 
@@ -17,8 +22,8 @@ Bugs Fixed
 Zope 2.12.1 (2009/11/02)
 ------------------------
 
-Bugs Fixed
-++++++++++
+Features Added
+++++++++++++++
 
 - Updated packages:
 
@@ -34,6 +39,9 @@ Bugs Fixed
 
 - Refactored Windows Service support to not need or use zopeservice.py
   in instances. This makes buildout-based instances work on Windows.
+
+Bugs Fixed
+++++++++++
 
 - LP #440490: zopectl fg|adduser|run|debug now work on Windows.
 
