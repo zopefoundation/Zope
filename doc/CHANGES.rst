@@ -11,6 +11,8 @@ Trunk (unreleased)
 Restructuring
 +++++++++++++
 
+- Requiring Python 2.6 officially
+
 - Changed startup server tests in Zope2 to use a randomized port number, to
   allow the nightly buildbot to run the tests at the same time for multiple
   configurations without the port being already in use.

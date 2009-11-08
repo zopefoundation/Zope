@@ -15,8 +15,6 @@ available:
 - A supported version of Python, including the development support if
   installed from system-level packages.  Supported versions include:
 
-  * 2.5.x, (x >= 4)
-
   * 2.6.x
 
 - Zope needs the Python ``zlib`` module to be importable.  If you are
@@ -335,8 +333,8 @@ a good place to start. You can access it at http://docs.zope.org/
 Troubleshooting
 ===============
 
-- This version of Zope requires Python 2.5.4 or better, including
-  2.6.x.  It will *not* run with Python 3.x.
+- This version of Zope requires Python 2.6.  
+  It will *not* run with Python 3.x.
 
 - The Python you run Zope with *must* have threads compiled in,
   which is the case for a vanilla build.  Warning: Zope will not run
