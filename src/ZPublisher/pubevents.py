@@ -10,7 +10,7 @@ for detailed time related analysis, inline request monitoring.
 from zope.interface import implements
 
 from interfaces import IPubStart, IPubSuccess, IPubFailure, \
-     IPubAfterTraversal, IPubBeforeCommit
+     IPubAfterTraversal, IPubBeforeCommit, IPubBeforeAbort
 
 class _Base(object):
     """PubEvent base class."""
@@ -42,3 +42,10 @@ class PubAfterTraversal(_Base):
 class PubBeforeCommit(_Base):
     """notified immediately before the commit."""
     implements(IPubBeforeCommit)
+
+class PubBeforeAbort(_Base):
+    """notified immediately before an abort."""
+    implements(IPubBeforeAbort)
+    
+    def __init__(self, request, exc_info, retry):
+        self.request, self.exc_info, self.retry = request, exc_info, retry

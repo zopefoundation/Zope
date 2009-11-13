@@ -11,6 +11,10 @@ Zope 2.12.2 (unreleased)
 Features Added
 ++++++++++++++
 
+- Added IPubBeforeAbort event to mirror IPubBeforeCommit in failure scenarios.
+  This event is fired just before IPubFailure, but, crucially, while the
+  transaction is still open.
+
 - Include bytes limited cache size in the cache parameters ZMI screen.
 
 - Officially supporting Python 2.6 only (with inofficial support for

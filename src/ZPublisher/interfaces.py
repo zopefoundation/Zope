@@ -41,5 +41,12 @@ class IPubAfterTraversal(IPubEvent):
 
 class IPubBeforeCommit(IPubEvent):
     """notified immediately before the transaction commit (i.e. after the main
-    request processing is finished.
+    request processing is finished).
     """
+
+class IPubBeforeAbort(IPubEvent):
+    """notified immediately before the transaction abort (i.e. after the main
+    request processing is finished, and there was an error).
+    """
+    exc_info = Attribute('''The exception info as returned by 'sys.exc_info()'.''')
+    retry = Attribute('Whether the request will be retried')

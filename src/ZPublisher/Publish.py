@@ -27,7 +27,7 @@ from zope.security.management import newInteraction, endInteraction
 from zope.event import notify
 
 from pubevents import PubStart, PubSuccess, PubFailure, \
-     PubBeforeCommit, PubAfterTraversal
+     PubBeforeCommit, PubAfterTraversal, PubBeforeAbort
 
 class Retry(Exception):
     """Raise this to retry a request
@@ -173,8 +173,12 @@ def publish(request, module_name, after_list, debug=0,
                                         )
                     retry = True
             finally:
+                
                 # Note: 'abort's can fail. Nevertheless, we want end request handling
                 try: 
+                    
+                    notify(PubBeforeAbort(request, exc_info, retry))
+                    
                     if transactions_manager:
                         transactions_manager.abort()
                 finally:
@@ -196,6 +200,9 @@ def publish(request, module_name, after_list, debug=0,
         else:
             # Note: 'abort's can fail. Nevertheless, we want end request handling
             try:
+                
+                notify(PubBeforeAbort(request, exc_info, False))
+                
                 if transactions_manager:
                     transactions_manager.abort()
             finally:
