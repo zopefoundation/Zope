@@ -175,12 +175,12 @@ def publish(request, module_name, after_list, debug=0,
             finally:
                 
                 # Note: 'abort's can fail. Nevertheless, we want end request handling
-                try: 
-                    
-                    notify(PubBeforeAbort(request, exc_info, retry))
-                    
-                    if transactions_manager:
-                        transactions_manager.abort()
+                try:                     
+                    try:
+                        notify(PubBeforeAbort(request, exc_info, retry))
+                    finally:                    
+                        if transactions_manager:
+                            transactions_manager.abort()
                 finally:
                     endInteraction()
                     notify(PubFailure(request, exc_info, retry))
@@ -198,18 +198,18 @@ def publish(request, module_name, after_list, debug=0,
                 newrequest.close()
 
         else:
+            
             # Note: 'abort's can fail. Nevertheless, we want end request handling
-            try:
-                
-                notify(PubBeforeAbort(request, exc_info, False))
-                
-                if transactions_manager:
-                    transactions_manager.abort()
+            try:                     
+                try:
+                    notify(PubBeforeAbort(request, exc_info, False))
+                finally:
+                    if transactions_manager:
+                        transactions_manager.abort()
             finally:
                 endInteraction()
-                notify(PubFailure(request, exc_info, False))
+                notify(PubFailure(request, exc_info, retry))
             raise
-
 
 def publish_module_standard(module_name,
                    stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr,
