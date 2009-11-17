@@ -25,7 +25,6 @@ import marshal
 import re
 import sys
 import time
-import warnings
 
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.SecurityManagement import getSecurityManager
@@ -118,7 +117,7 @@ class Item(Base,
     # Alias id to __name__, which will make tracebacks a good bit nicer:
     __name__=ComputedAttribute(lambda self: self.getId())
 
-    # Name, relative to SOFTWARE_URL of icon used to display item
+    # Name, relative to BASEPATH1 of icon used to display item
     # in folder listings.
     icon=''
 

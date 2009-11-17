@@ -339,7 +339,7 @@ class IItem(IZopeObject, IManageable, IFTPAccess, IDAVResource,
 
     icon = BytesLine(
         title=u"Icon",
-        description=u"Name of icon, relative to SOFTWARE_URL",
+        description=u"Name of icon, relative to BASEPATH1",
         )
 
     def getId():
