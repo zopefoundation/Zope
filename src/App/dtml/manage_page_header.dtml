@@ -2,7 +2,7 @@
 <html>
 <head>
 <dtml-unless management_page_charset>
-<dtml-call "REQUEST.set('management_page_charset','iso-8859-1')">
+<dtml-call "REQUEST.set('management_page_charset','utf-8')">
 </dtml-unless>
 <meta http-equiv="content-type" content="text/html;charset=&dtml-management_page_charset;" />
 <dtml-call "RESPONSE.setHeader('content-type','text/html;charset='+management_page_charset)">
