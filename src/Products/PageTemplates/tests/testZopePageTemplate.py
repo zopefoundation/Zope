@@ -337,7 +337,7 @@ class ZopePageTemplateFileTests(ZopeTestCase):
         zpt = self._put(html_with_upper_attr)
         self.content_type = 'text/html'
         result = zpt.pt_render()
-     	self.assertEqual('ATTR' in result, False)		
+        self.assertEqual('ATTR' in result, False)
 
 class PreferredCharsetUnicodeResolverTests(unittest.TestCase):
 
