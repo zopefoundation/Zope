@@ -11,6 +11,9 @@ Zope 2.12.2 (unreleased)
 Features Added
 ++++++++++++++
 
+- Updated the default value for ``management_page_charset`` from iso-8859-1
+  to the nowadays more standard utf-8.
+
 - Added IPubBeforeAbort event to mirror IPubBeforeCommit in failure scenarios.
   This event is fired just before IPubFailure, but, crucially, while the
   transaction is still open.
