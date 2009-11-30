@@ -8,6 +8,8 @@ Zope Changes
 
     Bugs Fixed
 
+      - LP #490514:  preserve tainting when calling into DTML from ZPT.
+
       - LP #360761 (backported from Acquisition trunk): fix iteration proxy
         to pass `self` acquisition-wrapped into `__iter__` and `__getitem__`.
 
