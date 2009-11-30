@@ -27,8 +27,11 @@ Features Added
 Bugs Fixed
 ++++++++++
 
+- LP #490514:  preserve tainting when calling into DTML from ZPT.
+
 - Avoid possible errors on test tear-down in Products.Five.fiveconfigure's
   cleanUp() function if Products.meta_types has not been set
+
 
 Zope 2.12.1 (2009/11/02)
 ------------------------
