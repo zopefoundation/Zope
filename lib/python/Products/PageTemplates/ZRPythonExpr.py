@@ -69,6 +69,8 @@ def call_with_ns(f, ns, arg=1):
     this = ns.get('context', ns.get('here'))
     td.this = this
     request = ns.get('request', {})
+    if hasattr(request, 'taintWrapper'):
+        request = request.taintWrapper()
     td._push(request)
     td._push(InstanceDict(td.this, td))
     td._push(ns)
