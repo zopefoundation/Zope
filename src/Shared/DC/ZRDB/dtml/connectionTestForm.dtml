@@ -21,7 +21,7 @@ using the form below. Click <em>submit query</em> to run the query.
   <td align="left" valign="top">
   <div class="form-element">
   <input class="form-element" type="submit" name="submit" 
-   value="Submit Query">
+   value="Submit Query" tabindex="2">
   </div>
   </td>
 </tr>

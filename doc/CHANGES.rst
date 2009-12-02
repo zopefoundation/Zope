@@ -60,6 +60,8 @@ Features Added
 Bugs Fixed
 ++++++++++
 
+- LP #491249:  fix tabindex on ZRDB connection test form.
+
 - LP #490514:  preserve tainting when calling into DTML from ZPT.
 
 - LP #414757: Don't send a request closed event from a cloned request.
