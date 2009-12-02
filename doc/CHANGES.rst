@@ -27,6 +27,8 @@ Features Added
 Bugs Fixed
 ++++++++++
 
+- LP #491249:  fix tabindex on ZRDB connection test form.
+
 - LP #490514:  preserve tainting when calling into DTML from ZPT.
 
 - Avoid possible errors on test tear-down in Products.Five.fiveconfigure's
