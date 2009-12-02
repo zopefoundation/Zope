@@ -60,6 +60,8 @@ Features Added
 Bugs Fixed
 ++++++++++
 
+- LP #490514:  preserve tainting when calling into DTML from ZPT.
+
 - LP #414757: Don't send a request closed event from a cloned request.
 
 - LP #418454: FTP server did not work with Python 2.6.X

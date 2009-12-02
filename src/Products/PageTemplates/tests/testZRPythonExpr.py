@@ -39,6 +39,18 @@ class MiscTests(unittest.TestCase):
 
         result = call_with_ns(_find_request, names)
         self.assertEqual(result, {})
+
+    def test_call_with_request_preserves_tainting(self):
+        from Products.PageTemplates.ZRPythonExpr import call_with_ns
+        class Request(dict):
+            def taintWrapper(self):
+                return {'tainted': 'found'}
+        context = ['context']
+        here = ['here']
+        names = {'context' : context, 'here': here, 'request' : Request()}
+
+        found = call_with_ns(lambda td: td['tainted'], names)
+        self.assertEqual(found, 'found')
  
 def test_suite():
     return unittest.makeSuite(MiscTests)
