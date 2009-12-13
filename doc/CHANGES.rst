@@ -27,6 +27,12 @@ Features Added
 Bugs Fixed
 ++++++++++
 
+- Fixed a regression in Products.PageTemplates that meant filesystem templates
+  using Products.Five.browser.pagetemplatefile would treat TALES path
+  expressions (but not python expressions) as protected code and so attempt
+  to apply security. See original issue here:
+  http://codespeak.net/pipermail/z3-five/2007q2/002185.html
+
 - LP #491249:  fix tabindex on ZRDB connection test form.
 
 - LP #490514:  preserve tainting when calling into DTML from ZPT.
