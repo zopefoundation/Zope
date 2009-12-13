@@ -42,15 +42,15 @@ class ViewPageTemplateFileTests(unittest.TestCase):
         from zope.tales.pythonexpr import PythonExpr
         from zope.contentprovider.tales import TALESProviderExpression
         from Products.PageTemplates.DeferExpr import LazyExpr
-        from Products.PageTemplates.Expressions import ZopePathExpr
+        from Products.PageTemplates.Expressions import TrustedZopePathExpr
         from Products.PageTemplates.Expressions import SecureModuleImporter
 
         vptf = self._makeOne('seagull.pt')
         engine = vptf.pt_getEngine()
-        self.assertEqual(engine.types['standard'], ZopePathExpr)
-        self.assertEqual(engine.types['path'], ZopePathExpr)
-        self.assertEqual(engine.types['exists'], ZopePathExpr)
-        self.assertEqual(engine.types['nocall'], ZopePathExpr)
+        self.assertEqual(engine.types['standard'], TrustedZopePathExpr)
+        self.assertEqual(engine.types['path'], TrustedZopePathExpr)
+        self.assertEqual(engine.types['exists'], TrustedZopePathExpr)
+        self.assertEqual(engine.types['nocall'], TrustedZopePathExpr)
         self.assertEqual(engine.types['string'], StringExpr)
         self.assertEqual(engine.types['python'], PythonExpr)
         self.assertEqual(engine.types['not'], NotExpr)
