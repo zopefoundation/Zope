@@ -185,6 +185,440 @@ found. So in the next statement we just have to test whether
 the *updateInfo* variable is None, and if not, we know we can
 call it.
 
+ 
+Using External Methods
+----------------------
+
+Sometimes the security constraints imposed by Python-based
+Scripts, DTML and ZPT get in your way. For example, you
+might want to read files from disk, or access the network,
+or use some advanced libraries for things like regular
+expressions or image processing.  In these cases you can use
+*External Methods*.   We encountered External Methods briefly
+in the chapter entitled `Using Basic Zope Objects <BasicObjects.html>`_ .
+Now we will explore them in more detail.
+
+To create and edit External Methods you need access
+to the filesystem. This makes editing these scripts more
+cumbersome since you can't edit them right in your web
+browser. However, requiring access to the server's filesystem
+provides an important security control. If a user has access
+to a server's filesystem they already have the ability to harm
+Zope. So by requiring that unrestricted scripts be edited on
+the filesystem, Zope ensures that only people who are already
+trusted have access.
+
+External Method code is created and edited in files on the Zope
+server in the *Extensions* directory. This directory is located in
+the top-level Zope directory. Alternately you can create and edit
+your External Methods in an *Extensions* directory inside an
+installed Zope product directory, or in your INSTANCE_HOME
+directory if you have one. See the chapter entitled "Installing
+and Starting Zope":InstallingZope.html>`_ for more about
+INSTANCE_HOME.
+
+Let's take an example. Create a file named *example.py* in the
+Zope *Extensions* directory on your server. In the file, enter the
+following code::
+
+  def hello(name="World"):
+      return "Hello %s." % name 
+
+You've created a Python function in a Python module. But you have
+not yet created an External Method from it. To do so, we must add
+an External Method object in Zope.
+
+To add an External Method, choose *External Method* from the
+product add list. You will be taken to a form where you must
+provide an id. Type "hello" into the *Id* field, type "hello" in
+the *Function name* field, and type "example" in the *Module name*
+field. Then click the *Add* button.  You should now see a new
+External Method object in your folder. Click on it. You should be
+taken to the *Properties* view of your new External Method as
+shown in the figure below.
+
+.. figure:: Figures/8-7.png
+
+   External Method *Properties* view
+
+Note that if you wish to create several related External
+Methods, you do not need to create multiple modules on the
+filesystem.  You can define any number of functions in one
+module, and add an External Method to Zope for each
+function. For each of these External Methods, the *module
+name* would be the same, but *function name* would vary.
+
+Now test your new script by going to the *Test* view. You should
+see a greeting. You can pass different names to the script by
+specifying them in the URL. For example,
+'hello?name=Spanish+Inquisition'.
+
+This example is exactly the same as the "hello world" example that
+you saw for Python-based scripts. In fact, for simple string
+processing tasks like this, scripts offer a better solution since
+they are easier to work with.
+
+The main reasons to use an External Method are to access
+the filesystem or network, or to use Python packages that are
+not available to restricted scripts.
+
+For example, a Script (Python) cannot access environment variables
+on the host system. One could access them using an External
+Method, like so::
+
+  def instance_home():
+     import os
+     return os.environ.get('INSTANCE_HOME')
+
+Regular expressions are another useful tool that are restricted
+from Scripts.  Let's look at an example.  Assume we want to get
+the body of an HTML Page (everything between the 'body' and
+'/body' tags)::
+
+  import re
+  pattern = r"<\s*body.*?>(.*?)</body>"
+  regexp = re.compile(pattern, re.IGNORECASE + re.DOTALL)
+
+  def extract_body(htmlstring):
+      """
+      If htmlstring is a complete HTML page, return the string
+      between (the first) <body> ... </body> tags
+      """
+      matched = regexp.search(htmlpage)
+      if matched is None: return "No match found"
+      body = matched.group(1)
+      return body 
+
+Note that we import the 're' module and define the regular
+expression at the module level, instead of in the function itself;
+the 'extract_body()' function will find it anyway. Thus, the
+regular expression is compiled once, when Zope first loads the
+External Method, rather than every time this External Method is
+called.  This is a common optimization tactic.
+
+Now put this code in a module called 'my_extensions.py'. Add an
+'External Method' with an id of 'body_external_m'; specify
+'my_extensions' for the 'Module Name' to use and, 'extract_body'
+for 'Function Name'.
+
+You could call this for example in a 'Script (Python)' called
+'store_html' like this::
+
+  ## Script (Python) "store_html"
+  ##
+
+  # code to get 'htmlpage' goes here...
+  htmlpage = "some string, perhaps from an uploaded file"
+  # now extract the body
+  body = context.body_external_m(htmlpage)
+  # now do something with 'body' ...
+
+... assuming that body_external_m can be acquired by store_html.
+This is obviously not a complete example; you would want
+to get a real HTML page instead of a hardcoded one, and you would
+do something sensible with the value returned by your External
+Method. 
+
+Creating Thumbnails from Images
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Here is an example External Method that uses the Python Imaging
+Library (PIL) to create a thumbnail version of an existing Image
+object in a Folder.  Enter the following code in a file named
+*Thumbnail.py* in the *Extensions* directory::
+
+  def makeThumbnail(self, original_id, size=200):
+      """
+      Makes a thumbnail image given an image Id when called on a Zope
+      folder.
+
+      The thumbnail is a Zope image object that is a small JPG
+      representation of the original image. The thumbnail has an
+      'original_id' property set to the id of the full size image
+      object.
+      """
+
+      import PIL 
+      from StringIO import StringIO
+      import os.path 
+      # none of the above imports would be allowed in Script (Python)!
+
+      # Note that PIL.Image objects expect to get and save data
+      # from the filesystem; so do Zope Images. We can get around 
+      # this and do everything in memory by using StringIO.
+
+      # Get the original image data in memory.
+      original_image=getattr(self, original_id)
+      original_file=StringIO(str(original_image.data))
+
+      # create the thumbnail data in a new PIL Image. 
+      image=PIL.Image.open(original_file)
+      image=image.convert('RGB')
+      image.thumbnail((size,size))
+
+      # get the thumbnail data in memory.
+      thumbnail_file=StringIO()
+      image.save(thumbnail_file, "JPEG") 
+      thumbnail_file.seek(0)
+
+      # create an id for the thumbnail
+      path, ext=os.path.splitext(original_id)
+      thumbnail_id=path + '.thumb.jpg'
+
+      # if there's an old thumbnail, delete it
+      if thumbnail_id in self.objectIds():
+          self.manage_delObjects([thumbnail_id])
+
+      # create the Zope image object for the new thumbnail
+      self.manage_addProduct['OFSP'].manage_addImage(thumbnail_id,
+                                                     thumbnail_file,
+                                                     'thumbnail image')
+
+      # now find the new zope object so we can modify 
+      # its properties.
+      thumbnail_image=getattr(self, thumbnail_id)
+      thumbnail_image.manage_addProperty('original_id', original_id, 'string')
+
+Notice that the first parameter to the above function is called
+*self*. This parameter is optional. If *self* is the first parameter 
+to an External Method function definition, it will be assigned 
+the value of the calling context (in this case, a folder). 
+It can be used much like the *context* we have seen in 
+Scripts (Python).
+
+You must have PIL installed for this example to work. Installing
+PIL is beyond the scope of this book, but note that it is
+important to choose a version of PIL that is compatible with the
+version of Python that is used by your version of Zope. See the
+"PythonWorks
+website":http://www.pythonware.com/products/pil/index.htm for more
+information on PIL.  
+
+To continue our example, create an External Method named
+*makeThumbnail* that uses the *makeThumbnail* function in the
+*Thumbnail* module.
+
+Now you have a method that will create a thumbnail image. You can
+call it on a Folder with a URL like
+*ImageFolder/makeThumbnail?original_id=Horse.gif* This would
+create a thumbnail image named 'Horse.thumb.jpg'.
+
+You can use a script to loop through all the images in a folder and
+create thumbnail images for them. Create a Script (Python) named
+*makeThumbnails*::
+
+  ## Script (Python) "makeThumbnails"
+  ##
+  for image_id in context.objectIds('Image'):
+      context.makeThumbnail(image_id)
+
+This will loop through all the images in a folder and create a
+thumbnail for each one.
+
+Now call this script on a folder with images in it. It will create a
+thumbnail image for each contained image. Try calling the
+*makeThumbnails* script on the folder again and you'll notice it created
+thumbnails of your thumbnails. This is no good. You need to change the
+*makeThumbnails* script to recognize existing thumbnail images and not
+make thumbnails of them. Since all thumbnail images have an
+*original_id* property you can check for that property as a way of
+distinguishing between thumbnails and normal images::
+
+  ## Script (Python) "makeThumbnails"
+  ##
+  for image in context.objectValues('Image'):
+      if not image.hasProperty('original_id'):
+          context.makeThumbnail(image.getId())
+
+Delete all the thumbnail images in your folder and try calling your
+updated *makeThumbnails* script on the folder. It seems to work
+correctly now.
+
+Now with a little DTML you can glue your script and External Method
+together. Create a DTML Method called *displayThumbnails*::
+
+  <dtml-var standard_html_header>
+
+  <dtml-if updateThumbnails>
+    <dtml-call makeThumbnails>
+  </dtml-if>
+
+  <h2>Thumbnails</h2>
+
+  <table><tr valign="top">
+
+  <dtml-in expr="objectValues('Image')">
+    <dtml-if original_id>
+      <td>
+        <a href="&dtml-original_id;"><dtml-var sequence-item></a>
+        <br />
+        <dtml-var original_id>
+      </td> 
+    </dtml-if>
+  </dtml-in>
+
+  </tr></table>
+
+  <form>
+  <input type="submit" name="updateThumbnails"
+         value="Update Thumbnails" />
+  </form>
+
+  <dtml-var standard_html_footer>
+
+When you call this DTML Method on a folder it will loop through all the
+images in the folder and display all the thumbnail images and link them
+to the originals as shown in the figure below.
+
+.. figure:: Figures/8-8.png
+
+   Displaying thumbnail images
+
+This DTML Method also includes a form that allows you to update the
+thumbnail images. If you add, delete or change the images in your
+folder you can use this form to update your thumbnails.
+
+This example shows a good way to use scripts, External Methods and DTML
+together. Python takes care of the logic while the DTML handles
+presentation. Your External Methods handle external packages 
+such as PIL while your scripts do simple processing of Zope objects.
+Note that you could just as easily use a Page Template instead of DTML.
+  
+Processing XML with External Methods
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+You can use External Methods to do nearly anything. One interesting
+thing that you can do is to communicate using XML. You can generate and
+process XML with External Methods.
+
+Zope already understands some kinds of XML messages such as
+XML-RPC and WebDAV. As you create web applications that communicate
+with other systems you may want to have the ability to receive XML
+messages. You can receive XML a number of ways: you can read XML files
+from the file system or over the network, or you can define scripts
+that take XML arguments which can be called by remote systems.
+
+Once you have received an XML message you must process the XML to find
+out what it means and how to act on it.  Let's take a quick look at how
+you might parse XML manually using Python. Suppose you want to connect
+your web application to a "Jabber":http://www.jabber.com/ chat
+server. You might want to allow users to message you and receive
+dynamic responses based on the status of your web application. For
+example suppose you want to allow users to check the status of animals
+using instant messaging. Your application should respond to XML instant
+messages like this::
+
+  <message to="cage_monitor@zopezoo.org" from="user@host.com">
+    <body>monkey food status</body>
+  </message>
+
+You could scan the body of the message for commands, call a script
+and return responses like this::
+
+  <message to="user@host.com" from="cage_monitor@zopezoo.org">
+    <body>Monkeys were last fed at 3:15</body>
+  </message>
+
+Here is a sketch of how you could implement this XML messaging
+facility in your web application using an External Method::
+
+  # Uses Python 2.x standard xml processing packages.  See
+  # http://www.python.org/doc/current/lib/module-xml.sax.html for
+  # information about Python's SAX (Simple API for XML) support If
+  # you are using Python 1.5.2 you can get the PyXML package. See
+  # http://pyxml.sourceforge.net for more information about PyXML.
+
+  from xml.sax import parseString
+  from xml.sax.handler import ContentHandler
+
+  class MessageHandler(ContentHandler):
+      """
+      SAX message handler class
+
+      Extracts a message's to, from, and body
+      """
+
+      inbody=0
+      body=""
+
+      def startElement(self, name, attrs):
+          if name=="message":
+              self.recipient=attrs['to']
+              self.sender=attrs['from']
+          elif name=="body":
+              self.inbody=1
+
+      def endElement(self, name):
+          if name=="body":
+              self.inbody=0
+
+      def characters(self, content):
+          if self.inbody:
+              self.body=self.body + content
+
+  def receiveMessage(self, message):
+      """
+      Called by a Jabber server
+      """
+      handler=MessageHandler()
+      parseString(message, handler)
+
+      # call a script that returns a response string
+      # given a message body string
+      response_body=self.getResponse(handler.body)
+
+      # create a response XML message
+      response_message="""
+        <message to="%s" from="%s">
+          <body>%s</body>
+        </message>""" % (handler.sender, handler.recipient, response_body)
+
+      # return it to the server
+      return response_message
+
+The *receiveMessage* External Method uses Python's SAX (Simple API
+for XML) package to parse the XML message. The *MessageHandler*
+class receives callbacks as Python parses the message. The handler
+saves information its interested in. The External Method uses the
+handler class by creating an instance of it, and passing it to the
+*parseString* function. It then figures out a response message by
+calling *getResponse* with the message body. The *getResponse*
+script (which is not shown here) presumably scans the body for
+commands, queries the web applications state and returns some
+response. The *receiveMessage* method then creates an XML message
+using response and the sender information and returns it.
+
+The remote server would use this External Method by calling the
+*receiveMessage* method using the standard HTTP POST
+command. Voila, you've implemented a custom XML chat server that
+runs over HTTP.
+
+External Method Gotchas
+~~~~~~~~~~~~~~~~~~~~~~~
+
+While you are essentially unrestricted in what you can do in an
+External Method, there are still some things that
+are hard to do.
+
+While your Python code can do as it pleases if you want to
+work with the Zope framework you need to respect its
+rules. While programming with the Zope framework is too
+advanced a topic to cover here, there are a few things that
+you should be aware of.
+
+Problems can occur if you hand instances of your own
+classes to Zope and expect them to work like Zope
+objects. For example, you cannot define a class in your
+External Method and assign an instance of this class as an
+attribute of a Zope object. This causes problems with
+Zope's persistence machinery.  If you need to create new
+kinds of persistent objects, it's time to learn about
+writing Zope Products. Writing a Product is beyond the
+scope of this book. You can learn more by reading the
+"Zope Developers'
+Guide":http://www.zope.org/Documentation/Books/ZDG/current
+
+
 Advanced Acquisition 
 --------------------
 

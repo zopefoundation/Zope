@@ -322,8 +322,8 @@ SalesPage template, and you will see something like the following figure:
 You can also view a Page Template by visiting its Zope URL directly.
 
 
-Logic Objects:  Script (Python) Objects
-=======================================
+Logic Objects:  Script (Python) Objects and External Methods
+============================================================
 
 "Logic" objects in Zope are objects that typically perform some sort of
 "heavy lifting" or "number crunching" in support of presentation objects.
@@ -345,11 +345,10 @@ be displayed meaningfully in a browser.  However, the return value of a
 logic object can almost always be displayed in a browser, even if the logic
 object does not return HTML.
 
-There is one kind of logic objects supported by stock Zope: *Script (Python)*
-objects.
-
-The stock logic objects are written in the syntax of the *Python* scripting
-language. Python is a general-purpose programming language. You are encouraged
+There are two kinds of logic objects supported by stock Zope: *Script
+(Python)* objects and *External Methods*.  These stock logic objects are
+written in the syntax of the *Python* scripting language. Python is a
+general-purpose programming language. You are encouraged
 to read the `Python Tutorial <http://docs.python.org/tutorial/>`_
 in order to understand the syntax and semantics of the example Script (Python)
 objects shown throughout this chapter and throughout this book. And don't
@@ -486,6 +485,109 @@ You may also type the "double-pound" quoted text into the "body" textarea,
 along with the actual script lines, and the "double-pound" quoted text will
 be "auto-magically" turned into bindings and parameters for the Script
 (Python) object.
+
+
+External Methods
+----------------
+
+External Method objects are another type of logic object.  They are very
+similar to Script (Python) objects; in fact, they are scripted in the
+Python programming language, and they are used for the same purpose.  There
+are a few important differences:
+
+- External Methods are not editable using the Zope Management Interface.
+  Instead, their "modules" need to be created on the file system of your
+  Zope server in a special subdirectory of your Zope directory named
+  'Extensions'.
+
+- Because External Methods are not editable via the Zope Management
+  Interface, their execution is not constrained by the Zope "security
+  machinery".  This means that, unlike Script (Python) objects, External
+  Methods can import and execute essentially arbitrary Python code and
+  access files on your Zope server's file system.
+
+- External Methods do not support the concept of "bindings" (which we have
+  not discussed much yet, but please just make note for now).
+
+External methods are often useful as an "escape hatch" when Zope's security
+policy prevents you from using a Script (Python) object or DTML to do a
+particular job that requires more access than is "safe" in
+through-the-web-editable scripts.  For example, a Script (Python) object
+cannot write to files on your server's filesystem that an External Method
+may.
+
+Testing an External Method Object
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+You can test an External Method in the Workspace frame by clicking the
+*Test* tab from the External Method's management screen.  When you test an
+External Method, its output is displayed in your browser.  Unlike Script
+(Python) objects, External Methods provide no mechanism for specifying
+parameter values during testing.  However, like Script (Python) objects,
+their output is influenced by values in a query string when you visit them
+directly.
+
+Click the *Test* tab of the SalesEM object, and you will see something like
+the following figure:
+
+.. figure:: Figures/testem.png
+
+   Testing an External Method
+
+If an External Method does not require parameters (or has defaults for its
+parameters, as in the example above), you may visit its URL directly to see
+its output.
+
+Provide alternate values via a query string to influence the execution of
+the External Method.  For example, visiting the SalesEM external Method via
+'http://localhost:8080/Sales/SalesEM?name=Fred' will display the following
+output::
+
+    Hello, Fred from the Sales external method
+
+Astute readers will note that the 'id' provided by the output is *not* the
+'id' of the External Method ('SalesEM'), but is instead the 'id' of the
+"containing" folder, which is named 'Sales'!  This is a demonstration of
+the fact that External Methods (as well as Script (Python) objects) are
+mostly meant to be used in the "context" of another object, which is often
+a Folder.  This is why they are named `methods <ObjectOrientation.html>`_.
+Typically, you don't often want to access information about the External
+Method or Script itself; all the "interesting" information is usually kept
+in other objects (like Folders).  An External Method or Script (Python)
+object "knows about" its context and can display information about the
+context without much fuss.
+
+
+Creating and Editing an External Method File
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Minimize the browser you're using to access the ZMI.  In your Zope's
+INSTANCE_HOME (the place where your Zope instance lives; see the
+Installation chapter for details), locate the subfolder named 'Extensions'.
+Navigate into this folder and create a text file with the name
+'SalesEM.py'.  
+
+Within this file, save the following content::
+
+  def SalesEM(self, name="Chris"):
+      id = self.id
+      return 'Hello, %s from the %s external method' % (name, id)
+
+Creating an External Method Object
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Before you can use an External Method from within Zope, you need to create
+an External Method object in the ZMI that "refers to" the function in the
+file that you just created.  Bring back your browser window and visit the
+ZMI.  Navigate to the Sales folder and select *External Method* from the
+Add list.  The Add form for an External Method will appear.  Provide an
+'Id' of "SalesEM", a 'Title' of "Sales External Method", a 'Module Name' of
+"SalesEM", and a 'Function Name' of "SalesEM".
+
+Then click *Add* at the bottom of the Add form.
+
+
+
 
 SQL Methods:  Another Kind of Logic Object
 ------------------------------------------
