@@ -77,7 +77,7 @@ Zope2 has transitive dependencies on these packages:
 - [_] zope.app.debug 
       o zope.app.testing
 
-- [_] zope.app.dependable 
+- [X] zope.app.dependable 
       o zope.container
       o zope.app.testing
 
@@ -101,7 +101,6 @@ Zope2 has transitive dependencies on these packages:
 
 - [_] zope.app.testing 
       o zope.viewlet
-      o zope.container
       o zope.copypastemve
       o zope.error
       o zope.dublincore
