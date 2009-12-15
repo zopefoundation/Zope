@@ -24,7 +24,7 @@ Zope2 depends on the following zope.app packages directly:
       * Products.Five.browser.pagetemplatefile
       * Products.Five.browser.metaconfigure
 
-- [x] zope.app.publication
+- [X] zope.app.publication
       o ZPublisher.BaseRequest (imports ``EndRequestEvent``)
       o Products.Five.component (imports ``BeforeTraverseEvent``;
         ZCML registers subscribers for ``IBeforeTraverseEvent``
@@ -81,13 +81,13 @@ Zope2 has transitive dependencies on these packages:
       o zope.container
       o zope.app.testing
 
-- [_] zope.app.exception 
+- [X] zope.app.exception 
       o zope.app.publication
 
-- [_] zope.app.http 
+- [X] zope.app.http 
       o zope.app.publication
 
-- [_] zope.app.interface 
+- [X] zope.app.interface 
       o zope.app.component
 
 - [_] zope.app.localpermission 
