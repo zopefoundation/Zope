@@ -11,6 +11,19 @@ Zope 2.12.2 (unreleased)
 Features Added
 ++++++++++++++
 
+- Updated packages:
+
+  - ZODB3 = 3.9.4
+  - docutils = 0.6
+  - pytz = 2009r
+  - zope.dottedname = 3.4.6
+  - zope.i18n = 3.7.2
+  - zope.interface = 3.5.3
+  - zope.minmax = 1.1.1
+  - zope.security = 3.7.2
+  - zope.session = 3.9.2
+  - zope.tal = 3.5.2
+
 - Updated the default value for ``management_page_charset`` from iso-8859-1
   to the nowadays more standard utf-8.
 
