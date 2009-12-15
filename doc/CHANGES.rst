@@ -11,6 +11,9 @@ Trunk (unreleased)
 Restructuring
 +++++++++++++
 
+- Removed the dependency on zope.app.publication in favor of new versions of
+  zope.publisher and zope.traversing.
+
 - Requiring Python 2.6 officially
 
 - Changed startup server tests in Zope2 to use a randomized port number, to

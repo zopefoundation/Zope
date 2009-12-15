@@ -135,7 +135,6 @@ params = dict(name='Zope2',
       'zope.traversing',
       'zope.viewlet',
       'zope.app.form',
-      'zope.app.publication',
       'zope.app.schema',
     ],
 

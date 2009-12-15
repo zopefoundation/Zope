@@ -24,7 +24,7 @@ Zope2 depends on the following zope.app packages directly:
       * Products.Five.browser.pagetemplatefile
       * Products.Five.browser.metaconfigure
 
-- [_] zope.app.publication 
+- [x] zope.app.publication
       o ZPublisher.BaseRequest (imports ``EndRequestEvent``)
       o Products.Five.component (imports ``BeforeTraverseEvent``;
         ZCML registers subscribers for ``IBeforeTraverseEvent``
