@@ -157,12 +157,16 @@ class DTMLDocument(PropertyManager, DTMLMethod):
 InitializeClass(DTMLDocument)
 
 
-default_dd_html="""<dtml-var standard_html_header>
-<h2><dtml-var title_or_id></h2>
+default_dd_html="""<html>
+  <head><title><dtml-var title_or_id></title>
+  </head>
+  <body bgcolor="#FFFFFF">
+    <h2><dtml-var title_or_id></h2>
 <p>
 This is the <dtml-var id> Document.
 </p>
-<dtml-var standard_html_footer>"""
+</body>
+</html>"""
 
 addForm=DTMLFile('dtml/documentAdd', globals())
 

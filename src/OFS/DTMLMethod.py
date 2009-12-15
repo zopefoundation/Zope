@@ -442,13 +442,17 @@ def decapitate(html, RESPONSE=None):
     return html[spos + eolen:]
 
 
-default_dm_html="""<dtml-var standard_html_header>
+default_dm_html="""<html>
+  <head><title><dtml-var title_or_id></title>
+  </head>
+  <body bgcolor="#FFFFFF">
 <h2><dtml-var title_or_id> <dtml-var document_title></h2>
 <p>
 This is the <dtml-var document_id> Document
 in the <dtml-var title_and_id> Folder.
 </p>
-<dtml-var standard_html_footer>"""
+  </body>
+</html>"""
 
 addForm=DTMLFile('dtml/methodAdd', globals())
 

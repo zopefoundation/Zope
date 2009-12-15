@@ -175,10 +175,14 @@ class DTMLDocumentTopic(HelpTopicBase, DTMLDocument):
 
 
 default_topic_content="""\
-<dtml-var standard_html_header>
+<html>
+  <head><title><dtml-var title_or_id></title>
+  </head>
+  <body bgcolor="#FFFFFF">
 <h2><dtml-var title></h2>
 <p>This is the <dtml-var id> Help Topic.</p>
-<dtml-var standard_html_footer>
+</body>
+</html>
 """
 
 class DTMLTopic(HelpTopic):
@@ -239,9 +243,13 @@ class STXTopic(TextTopic):
         return self.htmlfile(self, REQUEST)
 
     htmlfile = HTML("""\
-<dtml-var standard_html_header>
-<dtml-var obj fmt="structured-text">
-<dtml-var standard_html_footer>""")
+    <html>
+      <head><title><dtml-var title_or_id></title>
+      </head>
+      <body bgcolor="#FFFFFF">
+        <dtml-var obj fmt="structured-text">
+      </body>
+    </html>""")
 
 
 class ReSTTopic(TextTopic):
@@ -261,9 +269,13 @@ class ReSTTopic(TextTopic):
         return self.htmlfile(self, REQUEST)
 
     htmlfile = HTML("""\
-<dtml-var standard_html_header>
-<dtml-var obj fmt="restructured-text">
-<dtml-var standard_html_footer>""")
+    <html>
+      <head><title><dtml-var title_or_id></title>
+      </head>
+      <body bgcolor="#FFFFFF">
+        <dtml-var obj fmt="restructured-text">
+      </body>
+    </html>""")
     
 
 class ImageTopic(HelpTopic):
