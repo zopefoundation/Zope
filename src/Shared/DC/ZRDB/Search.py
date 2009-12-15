@@ -79,8 +79,9 @@ def manage_addZSearch(self, report_id, report_title, report_style,
 
         self.manage_addDocument(
             report_id,report_title,
-            ('<dtml-var standard_html_header>\n%s\n'
-             '<dtml-var standard_html_footer>' %
+            ('<html><head><title><dtml-var title_or_id></title>'
+             '</head><body bgcolor="#FFFFFF">\n%s\n'
+             '</body></html>' %
              join(map(lambda q, report_style=report_style:
                       custom_default_report(q.id, q, no_table=report_style), qs),
                   '\n<hr>\n')))
@@ -166,7 +167,8 @@ def default_input_form(arguments,action='query',
         items=arguments.items()
         return (
             "%s\n%s%s" % (
-                '<dtml-var standard_html_header>\n%s\n'
+                '<html><head><title><dtml-var title_or_id></title>'
+                '</head><body bgcolor="#FFFFFF">\n%s\n'
                 '<form action="%s" method="get">\n'
                 '<h2><dtml-var document_title></h2>\n'
                 'Enter query parameters:<br>'
@@ -193,18 +195,19 @@ def default_input_form(arguments,action='query',
                 '\n<tr><td colspan=2 align=center>\n'
                 '<input type="SUBMIT" name="SUBMIT" value="Submit Query">\n'
                 '</td></tr>\n</table>\n</form>\n'
-                '<dtml-var standard_html_footer>\n'
+                '</body></html>\n'
                 )
             )
     else:
         return (
-            '<dtml-var standard_html_header>\n%s\n'
+            '<html><head><title><dtml-var title_or_id></title>'
+            '</head><body bgcolor="#FFFFFF">\n%s\n'
             '<form action="%s" method="get">\n'
             '<h2><dtml-var document_title></h2>\n'
             'This query requires no input.<p>\n'
             '<input type="SUBMIT" name="SUBMIT" value="Submit Query">\n'
             '</form>\n'
-            '<dtml-var standard_html_footer>\n'
+            '</body></html>\n'
             % (tabs, action)
             )
 
