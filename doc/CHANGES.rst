@@ -40,7 +40,7 @@ Features Added
 Bugs Fixed
 ++++++++++
 
-- LP #496941:  Remove all mention of ``standard_html_header`` and
+- LP #496961:  Remove all mention of ``standard_html_header`` and
   ``standard_html_footer`` from default DTML content.
 
 - Fixed a regression in Products.PageTemplates that meant filesystem templates
