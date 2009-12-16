@@ -93,6 +93,11 @@ Zope2 has transitive dependencies on these packages:
 - [_] zope.app.localpermission 
       o zope.app.security
 
+- [_] zope.app.pagetemplate
+      (this package has no zope.app dependencies of its own anymore and should
+       be renamed to reflect this or its commonly used parts be extracted)
+      o zope.viewlet
+
 - [_] zope.app.security 
       * zope.viewlet
       * zope.traversing
