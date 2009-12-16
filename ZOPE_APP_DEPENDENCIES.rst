@@ -66,10 +66,10 @@ This shell script can be used to verify the direct dependencies::
 
 Zope2 has transitive dependencies on these packages:
 
-- [_] zope.app.applicationcontrol 
-      o zope.traversing
-      o zope.app.publication
-      o zope.app.twisted
+- [X] zope.app.applicationcontrol 
+      * zope.traversing
+      * zope.app.publication
+      * zope.app.twisted
 
 - [_] zope.app.basicskin 
       o zope.app.form
@@ -94,18 +94,18 @@ Zope2 has transitive dependencies on these packages:
       o zope.app.security
 
 - [_] zope.app.security 
-      o zope.viewlet
-      o zope.traversing
+      * zope.viewlet
+      * zope.traversing
       o zope.testbrowser
       o zope.app.*
 
 - [_] zope.app.testing 
-      o zope.viewlet
+      * zope.viewlet
       o zope.copypastemve
-      o zope.error
-      o zope.dublincore
+      * zope.error
+      * zope.dublincore
       o zope.formlib
-      o zope.traversing
+      * zope.traversing
       o zope.testbrowser
-      o zope.site
+      * zope.site
       o zope.app.*
