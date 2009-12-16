@@ -101,7 +101,7 @@ Zope2 has transitive dependencies on these packages:
 
 - [_] zope.app.testing 
       * zope.viewlet
-      o zope.copypastemve
+      * zope.copypastemve
       * zope.error
       * zope.dublincore
       o zope.formlib
