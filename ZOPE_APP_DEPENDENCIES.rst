@@ -72,6 +72,7 @@ Zope2 has transitive dependencies on these packages:
       * zope.app.twisted
 
 - [_] zope.app.basicskin 
+      (this package has no zope.app dependencies of its own anymore)
       o zope.app.form
 
 - [_] zope.app.debug 
