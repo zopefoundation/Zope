@@ -75,9 +75,6 @@ Zope2 has transitive dependencies on these packages:
       (this package has no zope.app dependencies of its own anymore)
       o zope.app.form
 
-- [_] zope.app.debug 
-      o zope.app.testing
-
 - [X] zope.app.dependable 
       * zope.container
       * zope.app.testing
@@ -91,19 +88,16 @@ Zope2 has transitive dependencies on these packages:
 - [X] zope.app.interface 
       * zope.app.component
 
-- [_] zope.app.localpermission 
-      o zope.app.security
-
 - [_] zope.app.pagetemplate
       (this package has no zope.app dependencies of its own anymore and should
        be renamed to reflect this or its commonly used parts be extracted)
       o zope.viewlet
 
-- [_] zope.app.security 
+- [X] zope.app.security 
       * zope.viewlet
       * zope.traversing
-      o zope.testbrowser
-      o zope.app.*
+      * zope.testbrowser
+      * zope.app.*
 
 - [_] zope.app.testing 
       * zope.viewlet
@@ -114,4 +108,4 @@ Zope2 has transitive dependencies on these packages:
       * zope.traversing
       o zope.testbrowser
       * zope.site
-      o zope.app.*
+      * zope.app.*
