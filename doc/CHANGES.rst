@@ -11,6 +11,9 @@ Trunk (unreleased)
 Restructuring
 +++++++++++++
 
+- We no longer depend on the ``zope-functional-testing`` extra of
+  zope.testbrowser.
+
 - Removed the dependency on zope.app.publication in favor of new versions of
   zope.publisher and zope.traversing.
 
