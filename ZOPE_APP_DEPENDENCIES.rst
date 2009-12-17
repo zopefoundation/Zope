@@ -106,6 +106,6 @@ Zope2 has transitive dependencies on these packages:
       * zope.dublincore
       o zope.formlib
       * zope.traversing
-      o zope.testbrowser
+      * zope.testbrowser
       * zope.site
       * zope.app.*
