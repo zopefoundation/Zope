@@ -17,7 +17,7 @@ Zope2 depends on the following zope.app packages directly:
 
 - [_] zope.app.form
       o Products.Five.form.* (should be factored out into a separate
-        package, maybe ``five.forms``)
+        package, maybe ``five.formlib``)
 
 - [X] zope.app.pagetemplate 
       * Products.PageTemplates.Expressions
@@ -98,12 +98,12 @@ Zope2 has transitive dependencies on these packages:
       * zope.testbrowser
       * zope.app.*
 
-- [_] zope.app.testing 
+- [X] zope.app.testing 
       * zope.viewlet
       * zope.copypastemve
       * zope.error
       * zope.dublincore
-      o zope.formlib
+      * zope.formlib
       * zope.traversing
       * zope.testbrowser
       * zope.site
