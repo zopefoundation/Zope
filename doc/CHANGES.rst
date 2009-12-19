@@ -24,6 +24,9 @@ Features Added
   - zope.session = 3.9.2
   - zope.tal = 3.5.2
 
+- Enhanced the internals of the DateRangeIndex based on an idea from
+  experimental.daterangeindexoptimisations, thanks to Matt Hamilton.
+
 - Updated the default value for ``management_page_charset`` from iso-8859-1
   to the nowadays more standard utf-8.
 
