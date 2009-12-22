@@ -87,11 +87,9 @@ Zope2 has transitive dependencies on these packages:
 - [X] zope.app.interface 
       * zope.app.component
 
-- [_] zope.app.pagetemplate
-      (this package has no zope.app dependencies of its own anymore and should
-       be renamed to reflect this or its commonly used parts be extracted)
+- [X] zope.app.pagetemplate
       x zope.viewlet
-      o zope.formlib
+      x zope.formlib
 
 - [X] zope.app.security 
       * zope.viewlet
