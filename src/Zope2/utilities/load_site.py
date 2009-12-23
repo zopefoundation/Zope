@@ -245,8 +245,8 @@ def upload_html(object, f):
             body = ("<!--#var standard_html_header-->\n\n" +
                     body + "\n\n<!--#var standard_html_footer-->")
         else:
-            body = ("<html><head><title><dtml-var title_or_id></title>
-                     </head><body bgcolor="#FFFFFF">\n\n" +
+            body = ("<html><head><title><dtml-var title_or_id></title>"
+                    "</head><body bgcolor=\"#FFFFFF\">\n\n" +
                      body + "\n\n</body></html>")
 
     else:
