@@ -5,6 +5,14 @@ This file contains change information for the current Zope release.
 Change information for previous versions of Zope can be found in the
 file HISTORY.txt.
 
+Zope 2.12.3 (unreleased)
+------------------------
+
+Bugs Fixed
+++++++++++
+
+- Fixed a SyntaxError in utilities/load_site.py script.
+
 Zope 2.12.2 (2009-12-22)
 ------------------------
 
