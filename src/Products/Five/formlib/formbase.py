@@ -1,6 +1,6 @@
 from zope.deferredimport import deprecated
 
-deprecated("Please import from five.formlib",
+deprecated("Please import from five.formlib.formbase",
     FiveFormlibMixin = 'five.formlib.formbase:FiveFormlibMixin',
     FormBase = 'five.formlib.formbase:FormBase',
     EditFormBase = 'five.formlib.formbase:EditFormBase',
