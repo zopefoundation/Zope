@@ -1,35 +1,5 @@
-<configure
-    xmlns="http://namespaces.zope.org/zope"
-    xmlns:meta="http://namespaces.zope.org/meta">
+<configure xmlns="http://namespaces.zope.org/zope">
 
-  <meta:directives namespace="http://namespaces.zope.org/browser">
-
-    <meta:complexDirective
-        name="editform"
-        schema="zope.app.form.browser.metadirectives.IEditFormDirective"
-        handler=".metaconfigure.EditFormDirective"
-        >
-
-      <meta:subdirective
-          name="widget"
-          schema="zope.app.form.browser.metadirectives.IWidgetSubdirective"
-          />
-
-    </meta:complexDirective>
-
-    <meta:complexDirective
-        name="addform"
-        schema="zope.app.form.browser.metadirectives.IAddFormDirective"
-        handler=".metaconfigure.AddFormDirective"
-        >
-
-      <meta:subdirective
-          name="widget"
-          schema="zope.app.form.browser.metadirectives.IWidgetSubdirective"
-          />
-
-    </meta:complexDirective>
-
-  </meta:directives>
+  <include package="five.formlib" file="meta.zcml" />
 
 </configure>

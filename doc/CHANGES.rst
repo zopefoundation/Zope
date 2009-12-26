@@ -11,6 +11,9 @@ Trunk (unreleased)
 Restructuring
 +++++++++++++
 
+- Moved zope.formlib / zope.app.form integration into a separate package
+  called five.formlib.
+
 - We no longer depend on the ``zope-functional-testing`` extra of
   zope.testbrowser.
 

@@ -1,14 +1,5 @@
-<configure xmlns="http://namespaces.zope.org/zope"
-           xmlns:browser="http://namespaces.zope.org/browser">
+<configure xmlns="http://namespaces.zope.org/zope">
 
-  <include package="zope.app.form.browser" />
-
-  <browser:page
-      for="*"
-      name="form_macros"
-      permission="zope2.View"
-      class=".macros.FormMacros"
-      allowed_interface="zope.interface.common.mapping.IItemMapping"
-      />
+  <include package="five.formlib" />
 
 </configure>

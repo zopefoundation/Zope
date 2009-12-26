@@ -1,117 +1,20 @@
-##############################################################################
-#
-# Copyright (c) 2006 Zope Corporation and Contributors.
-# All Rights Reserved.
-#
-# This software is subject to the provisions of the Zope Public License,
-# Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
-# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
-# WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-# WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE.
-#
-##############################################################################
-"""Five baseclasses for zope.formlib.form
-
-$Id$
-"""
-import os.path
-
-import zope.event
-import zope.formlib
-import zope.lifecycleevent
-from zope import interface
-from zope.formlib import interfaces, form
-from zope.i18nmessageid import MessageFactory
-_ = MessageFactory("zope")
-
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from Products.Five.browser.decode import processInputs, setPageEncoding
-
-_FORMLIB_DIR = os.path.dirname(zope.formlib.__file__)
-_PAGEFORM_PATH = os.path.join(_FORMLIB_DIR, 'pageform.pt')
-_SUBPAGEFORM_PATH = os.path.join(_FORMLIB_DIR, 'subpageform.pt')
-
-
-class FiveFormlibMixin(object):
-
-    # Overrides the formlib.form.FormBase.template attributes implemented 
-    # using NamedTemplates. NamedTemplates using ViewPageTemplateFile (like
-    # formlib does by default) cannot work in Zope2.
-
-    # XXX Maybe we need to have Five-compatible NamedTemplates?
-
-    template = ViewPageTemplateFile(_PAGEFORM_PATH)
-
-    # Overrides formlib.form.FormBase.update. Make sure user input is
-    # decoded first and the page encoding is set before proceeding.
-
-    def update(self):
-        processInputs(self.request)
-        setPageEncoding(self.request)
-        super(FiveFormlibMixin, self).update()
-
-
-class FormBase(FiveFormlibMixin, form.FormBase):
-    pass
-
-
-class EditFormBase(FiveFormlibMixin, form.EditFormBase):
-    pass
-
-
-class DisplayFormBase(FiveFormlibMixin, form.DisplayFormBase):
-    pass
-
-
-class AddFormBase(FiveFormlibMixin, form.AddFormBase):
-    pass
-
-
-class PageForm(FormBase):
-
-    interface.implements(interfaces.IPageForm)
-
-Form = PageForm
-
-
-class PageEditForm(EditFormBase):
-
-    interface.implements(interfaces.IPageForm)
-
-EditForm = PageEditForm
-
-
-class PageDisplayForm(DisplayFormBase):
-
-    interface.implements(interfaces.IPageForm)
-
-DisplayForm = PageDisplayForm
-
-
-class PageAddForm(AddFormBase):
-
-    interface.implements(interfaces.IPageForm)
-
-AddForm = PageAddForm
-
-
-class SubPageForm(FormBase):
-
-    template = ViewPageTemplateFile(_SUBPAGEFORM_PATH)
-
-    interface.implements(interfaces.ISubPageForm)
-
-
-class SubPageEditForm(EditFormBase):
-
-    template = ViewPageTemplateFile(_SUBPAGEFORM_PATH)
-
-    interface.implements(interfaces.ISubPageForm)
-
-
-class SubPageDisplayForm(DisplayFormBase):
-
-    template = ViewPageTemplateFile(_SUBPAGEFORM_PATH)
-
-    interface.implements(interfaces.ISubPageForm)
+# BBB
+from five.formlib.formbase import _FORMLIB_DIR
+from five.formlib.formbase import _PAGEFORM_PATH
+from five.formlib.formbase import _SUBPAGEFORM_PATH
+from five.formlib.formbase import FiveFormlibMixin
+from five.formlib.formbase import FormBase
+from five.formlib.formbase import EditFormBase
+from five.formlib.formbase import DisplayFormBase
+from five.formlib.formbase import AddFormBase
+from five.formlib.formbase import PageForm
+from five.formlib.formbase import Form
+from five.formlib.formbase import PageEditForm
+from five.formlib.formbase import EditForm
+from five.formlib.formbase import PageDisplayForm
+from five.formlib.formbase import DisplayForm
+from five.formlib.formbase import PageAddForm
+from five.formlib.formbase import AddForm
+from five.formlib.formbase import SubPageForm
+from five.formlib.formbase import SubPageEditForm
+from five.formlib.formbase import SubPageDisplayForm

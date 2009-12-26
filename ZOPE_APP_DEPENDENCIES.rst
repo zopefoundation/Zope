@@ -15,8 +15,8 @@ Zope2 depends on the following zope.app packages directly:
       * Products.Five.browser.metaconfigure
       * Products/Five/browser/doc/products/ViewsTutorial/configure.zcml
 
-- [_] zope.app.form
-      o Products.Five.form.* (should be factored out into a separate
+- [X] zope.app.form
+      x Products.Five.form.* (should be factored out into a separate
         package, maybe ``five.formlib``)
 
 - [X] zope.app.pagetemplate 
