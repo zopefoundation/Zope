@@ -71,7 +71,7 @@ class HTTPRequestTests(unittest.TestCase):
         # Also raises an Assertion if a string which *should* have been
         # tainted is found, or when a tainted string is not deemed dangerous.
         from ZPublisher.HTTPRequest import record
-        from ZPublisher.TaintedString import TaintedString
+        from Shared.TaintedString import TaintedString
 
         retval = 0
 
@@ -1015,8 +1015,12 @@ test %s
 
 ''' % ('test' * 1000)
 
+
 def test_suite():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(RecordTests, 'test'))
-    suite.addTest(unittest.makeSuite(HTTPRequestTests, 'test'))
+    suite.addTest(unittest.makeSuite(RecordTests))
+    suite.addTest(unittest.makeSuite(HTTPRequestTests))
     return suite
+
+if __name__ == '__main__':
+    unittest.main(defaultTest='test_suite')

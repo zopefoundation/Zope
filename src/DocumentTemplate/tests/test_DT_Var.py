@@ -44,14 +44,13 @@ class TestNewlineToBr(doctest.DocTestCase):
         True
         """
 
-
     def test_newline_to_br_tainted(self):
         """
         >>> text = '''
         ... <li>line one</li>
         ... <li>line two</li>
         ... '''
-        >>> from ZPublisher.TaintedString import TaintedString
+        >>> from Shared.TaintedString import TaintedString
         >>> tainted = TaintedString(text)
         >>> print DT_Var.newline_to_br(tainted)
         <br />

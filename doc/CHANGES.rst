@@ -11,6 +11,9 @@ Trunk (unreleased)
 Restructuring
 +++++++++++++
 
+- Moved TaintedString from ZPublisher to Shared.
+  This resolves a circular import issue.
+
 - Moved zope.formlib / zope.app.form integration into a separate package
   called five.formlib.
 

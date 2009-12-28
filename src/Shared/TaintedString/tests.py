@@ -7,20 +7,25 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+""" TaintedString tests.
+
+$Id$
+"""
 
 import unittest
 
 class TestTaintedString(unittest.TestCase):
+
     def setUp(self):
         self.unquoted = '<test attr="&">'
         self.quoted = '&lt;test attr=&quot;&amp;&quot;&gt;'
         self.tainted = self._getClass()(self.unquoted)
 
     def _getClass(self):
-        from ZPublisher.TaintedString import TaintedString
+        from Shared.TaintedString import TaintedString
         return TaintedString
 
     def testStr(self):
@@ -152,21 +157,8 @@ class TestTaintedString(unittest.TestCase):
 
 def test_suite():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestTaintedString, 'test'))
+    suite.addTest(unittest.makeSuite(TestTaintedString))
     return suite
 
-def main():
-    unittest.TextTestRunner().run(test_suite())
-
-def debug():
-    test_suite().debug()
-
-def pdebug():
-    import pdb
-    pdb.run('debug()')
-
-if __name__=='__main__':
-    if len(sys.argv) > 1:
-        globals()[sys.argv[1]]()
-    else:
-        main()
+if __name__ == '__main__':
+    unittest.main(defaultTest='test_suite')

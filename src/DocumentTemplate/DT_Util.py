@@ -12,9 +12,13 @@
 ##############################################################################
 """DTML Utilities
 
-$Id$"""
+$Id$
+"""
 
 import re
+import string
+from types import BuiltinFunctionType
+from types import FunctionType
 
 # for import by other modules, dont remove!
 from DocumentTemplate.html_quote import html_quote, ustr
@@ -26,6 +30,8 @@ from DocumentTemplate.cDocumentTemplate import join_unicode
 from RestrictedPython.Guards import safe_builtins
 from RestrictedPython.Utilities import utility_builtins
 from RestrictedPython.Eval import RestrictionCapableEval
+
+from Shared.TaintedString import TaintedString
 
 test = utility_builtins['test'] # for backwards compatibility, dont remove!
 
@@ -68,48 +74,41 @@ if LIMITED_BUILTINS:
             f = NotBindable(f)
         setattr(TemplateDict, name, f)
 
-try:
-    # Wrap the string module so it can deal with TaintedString strings.
-    from ZPublisher.TaintedString import TaintedString
-    from types import FunctionType, BuiltinFunctionType, StringType
-    import string
+# Wrap the string module so it can deal with TaintedString strings.
+class StringModuleWrapper:
 
-    class StringModuleWrapper:
-        def __getattr__(self, key):
-            attr = getattr(string, key)
-            if (isinstance(attr, FunctionType) or
-                isinstance(attr, BuiltinFunctionType)):
-                return StringFunctionWrapper(attr)
-            else:
-                return attr
+    def __getattr__(self, key):
+        attr = getattr(string, key)
+        if (isinstance(attr, FunctionType) or
+            isinstance(attr, BuiltinFunctionType)):
+            return StringFunctionWrapper(attr)
+        else:
+            return attr
 
-    class StringFunctionWrapper:
-        def __init__(self, method):
-            self._method = method
+class StringFunctionWrapper:
 
-        def __call__(self, *args, **kw):
-            tainted = 0
-            args = list(args)
-            for i in range(len(args)):
-                if isinstance(args[i], TaintedString):
-                    tainted = 1
-                    args[i] = str(args[i])
-            for k, v in kw.items():
-                if isinstance(v, TaintedString):
-                    tainted = 1
-                    kw[k] = str(v)
-            args = tuple(args)
+    def __init__(self, method):
+        self._method = method
 
-            retval = self._method(*args, **kw)
-            if tainted and isinstance(retval, StringType) and '<' in retval:
-                retval = TaintedString(retval)
-            return retval
+    def __call__(self, *args, **kw):
+        tainted = 0
+        args = list(args)
+        for i in range(len(args)):
+            if isinstance(args[i], TaintedString):
+                tainted = 1
+                args[i] = str(args[i])
+        for k, v in kw.items():
+            if isinstance(v, TaintedString):
+                tainted = 1
+                kw[k] = str(v)
+        args = tuple(args)
 
-    TemplateDict.string = StringModuleWrapper()
+        retval = self._method(*args, **kw)
+        if tainted and isinstance(retval, str) and '<' in retval:
+            retval = TaintedString(retval)
+        return retval
 
-except ImportError:
-    # Use the string module already defined in RestrictedPython.Utilities
-    pass
+TemplateDict.string = StringModuleWrapper()
 
 # The functions below are meant to bind to the TemplateDict.
 

@@ -38,12 +38,12 @@ from zope.interface import implements
 from zope.publisher.base import DebugFlags
 from zope.publisher.interfaces.browser import IBrowserRequest
 
+from Shared.TaintedString import TaintedString
 from ZPublisher.BaseRequest import BaseRequest
 from ZPublisher.BaseRequest import quote
 from ZPublisher.Converters import get_converter
 from ZPublisher.HTTPResponse import HTTPResponse
 from ZPublisher.maybe_lock import allocate_lock
-from ZPublisher.TaintedString import TaintedString
 
 # Flags
 SEQUENCE = 1

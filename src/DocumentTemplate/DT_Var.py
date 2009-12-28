@@ -7,10 +7,10 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-__doc__='''Variable insertion parameters
+"""Variable insertion parameters
 
     When inserting variables, parameters may be specified to
     control how the data will be formatted.  In HTML source, the
@@ -149,14 +149,10 @@ Evaluating expressions without rendering results
    A 'call' tag is provided for evaluating named objects or expressions
    without rendering the result.
 
-
-''' # '
-
-__rcs_id__='$Id$'
-__version__='$Revision: 1.60 $'[11:-2]
+$Id$
+"""
 
 import string, re, sys
-from cgi import escape
 from urllib import quote, quote_plus, unquote, unquote_plus
 
 # for import by other modules, dont remove!
@@ -164,8 +160,8 @@ from DocumentTemplate.html_quote import html_quote
 from DocumentTemplate.DT_Util import parse_params, name_param, str, ustr
 
 from Acquisition import aq_base
-from ZPublisher.TaintedString import TaintedString
-from zope.structuredtext.html import HTMLWithImages, HTML
+from Shared.TaintedString import TaintedString
+from zope.structuredtext.html import HTML
 from zope.structuredtext.document import DocumentWithImages
 from App.config import getConfiguration
 
