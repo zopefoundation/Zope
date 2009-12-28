@@ -7,21 +7,15 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
 """Package of template utility classes and functions.
 
 $Id$
 """
-# BBB 2005/05/01 -- to be removed after 12 months
-import zope.deferredimport
-zope.deferredimport.define(
-    Iterator = 'ZTUtils.Iterator:Iterator'
-    )
 
 from Tree import encodeExpansion, decodeExpansion, a2b, b2a
-from SimpleTree import SimpleTreeMaker
 
 __allow_access_to_unprotected_subobjects__ = 1
 __roles__ = None
