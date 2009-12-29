@@ -116,10 +116,10 @@ Zope2 depends on some packages only via transitive test dependencies.
 - [ ] zope.copy
       o zope.location
       o zope.site
-      o zope.copypastemove
+      * zope.copypastemove
 
-- [ ] zope.copypastemove
-      o zope.container
+- [X] zope.copypastemove
+      * zope.container
 
 - [ ] zope.datetime
       o zope.app.form

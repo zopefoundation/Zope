@@ -75,7 +75,7 @@ Features Added
   - zope.browserresource = 3.10.2
   - zope.component = 3.8.0
   - zope.configuration = 3.7.0
-  - zope.container = 3.10.0
+  - zope.container = 3.10.1
   - zope.contentprovider = 3.6.1
   - zope.contenttype = 3.5.0
   - zope.copypastemove = 3.6.0
