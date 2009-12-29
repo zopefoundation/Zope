@@ -92,7 +92,7 @@ Features Added
   - zope.site = 3.8.0
   - zope.testbrowser = 3.7.0
   - zope.testing = 3.8.3
-  - zope.traversing = 3.11.0
+  - zope.traversing = 3.12.0
   - zope.viewlet = 3.7.0
 
 Bugs Fixed
