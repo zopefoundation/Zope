@@ -15,3 +15,12 @@ Release information
    :maxdepth: 2
 
    releases/index
+
+Maintenance
+===========
+
+.. toctree::
+   :maxdepth: 2
+
+   maintenance/index
+
