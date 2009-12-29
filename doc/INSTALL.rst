@@ -233,16 +233,16 @@ and see if there are any errors preventing zope from starting.
   For this to work on Windows, the Zope instance must be installed as
   a Service. This is done with::
 
-    bin\zopectl install
+    bin/zopectl install
 
   If you later want to remove this Service, do the following::
 
-    bin\zopectl remove
+    bin/zopectl remove
 
   For the full list of options available for setting up Zope as a
   Windows Service, do::
 
-    bin\zopectl install --help
+    bin/zopectl install --help
 
 .. highlight:: bash
 
@@ -264,7 +264,7 @@ also work at the command line.
 
   .. code-block:: none
 
-    bin\zopectl install --startup=auto
+    bin/zopectl install --startup=auto
 
 Configuring Zope
 ================
