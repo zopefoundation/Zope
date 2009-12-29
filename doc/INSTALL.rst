@@ -136,11 +136,16 @@ command-line options, run the script with the ``--help`` option::
 Creating a buildout-based Zope Instance
 =======================================
 
-If you wish to use buildout to manage your Zope instance, then the
+If you wish to use buildout to manage your Zope instance, there are recipes
+like `plone.recipe.zope2instance`__ that automate everything.
+
+  __ http://pypi.python.org/pypi/plone.recipe.zope2instance
+
+If you're a power user and want to drop to the basics, then the
 instance is created as follows:
 
 * Create a directory for your instance. In this directory, create a
-  ``etc``, ``logs`` and ``var`` subdirectories.
+  ``etc``, ``log`` and ``var`` subdirectories.
 
 * Download the following file into your instance directory:
 
@@ -185,6 +190,8 @@ used.
    python $INSTANCE/bin/py[.exe on Windows]
  
    instancehome $INSTANCE
+
+   <rest of the stuff that goes into a zope.conf, e.g. databases and log files.>
 
 .. highlight:: bash
 
