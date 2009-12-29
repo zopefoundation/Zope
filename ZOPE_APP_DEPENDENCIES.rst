@@ -114,7 +114,7 @@ Zope2 Dependencies on ``zope`` Packages
 Zope2 depends on some packages only via transitive test dependencies.
 
 - [ ] zope.copy
-      o zope.location
+      * zope.location
       o zope.site
       * zope.copypastemove
 
