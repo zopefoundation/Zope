@@ -3,11 +3,24 @@ Maintenance information
 
 .. note::
 
-   This is internal documentation for Zope 2 developer having
+   This is internal documentation for Zope 2 developers having
    to create official Zope 2 releases
 
 Zope 2.12+ release process
 --------------------------
+
+Maintainers 
++++++++++++
+
+The following persons have access to the ``Zope2`` package on PyPI
+(in order release new versions):
+
+- Hanno Schlichting
+- Tres Seaver
+- Andreas Jung
+
+Steps for creating a new Zope 2 release
++++++++++++++++++++++++++++++++++++++++
 
 - update version information:
 
