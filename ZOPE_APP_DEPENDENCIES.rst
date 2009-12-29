@@ -107,3 +107,15 @@ Zope2 has transitive dependencies on these packages:
       * zope.testbrowser
       * zope.site
       * zope.app.*
+
+Zope2 Dependencies on ``zope`` Packages
+=======================================
+
+Zope2 depends on some packages only via transitive test dependencies.
+
+- [ ] zope.copy
+
+- [ ] zope.copypastemove
+
+- [ ] zope.dublincore
+
