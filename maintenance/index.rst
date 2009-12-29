@@ -23,7 +23,7 @@ Zope 2.12+ release process
 
 - create the release specfic download index on download.zope.org
   (requires login credentials on download.zope.org. In case of
-   problems contact the Jens Vagelpohl)
+  problems contact Jens Vagelpohl)
   
   - login to download.zope.org
 
@@ -35,6 +35,9 @@ Zope 2.12+ release process
      
     /var/zope/zope2index/bin/z2_kgs tags/2.12.2 /var/www/download.zope.org/Zope2/index/2.12.2
 
-   
- 
+- update version information on zope2.zope.org
+
+  - login on https://zope2.zope.org into the Plone site  
+
+
 
