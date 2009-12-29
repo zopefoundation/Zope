@@ -123,10 +123,10 @@ Zope2 depends on some packages only via transitive test dependencies.
 
 - [ ] zope.datetime
       o zope.app.form
-      o zope.dublincore
+      * zope.dublincore
 
-- [ ] zope.dublincore
-      o zope.lifecycleevent
+- [X] zope.dublincore
+      * zope.lifecycleevent
 
 
 Questionable packages that need further evaluation:
