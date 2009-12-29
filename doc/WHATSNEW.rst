@@ -16,9 +16,8 @@ Zope 2 has supported and required Python 2.4 since its 2.9 release in summer
 
 This version of Zope 2 adds support for both Python 2.5 and 2.6 at the same
 time. As Python 2.4 is no longer maintained itself, it is no longer officially
-supported by this Zope 2 version. There is however no code in Zope 2 yet which
-requires Python 2.5, so applications built on top of Zope 2 should still
-continue to run with Python 2.4.
+supported by this Zope 2 version. Python 2.4 on 64-bit platforms is known to
+be incompatible with Zope 2.12. On 32-bit it could work at your own risk.
 
 Python 3 is a backwards incompatible release of Python and not supported. At
 this point there is no concrete roadmap for adoption of Python 3. It is
@@ -52,25 +51,29 @@ standard Python mechanisms. To create isolated Python environments both
 <http://pypi.python.org/pypi/virtualenv>`_ are in wide-spread use.
 
 
-Zope Toolkit
-------------
+Zope 3
+------
 
-This version of Zope 2 is based on the Zope Toolkit. The Zope Toolkit is an
-extraction of the reusable and wildly used packages of the former Zope 3
-project. The Zope Toolkit is focused on supporting frameworks and applications,
-rather than trying to be one itself. Parts of the Zope Toolkit are used by
-Zope 2, Plone, Grok, Repoze.bfg, and by many other different applications and
-frameworks.
+This version of Zope 2 does no longer includes a full version of the Zope 3
+application server nor a specific release of it. Instead it includes a minimal
+set of packages from the former Zope 3 project. Only those packages actually
+used by Zope 2 itself are still included. Examples of such packages include
+zope.interface, zope.component, zope.i18n, zope.tal and many more.
 
-A major focus of the Zope Toolkit was to refactor package dependencies to
-generate more maintainable and better structured code. Based on this effort
-the number of packages included by Zope 2 could be dramatically reduced from
-about 120 additional packages to just over 60. The total code size of Zope 2
-and its dependencies has decreased by over 200,000 lines of code as a result.
+Zope 2.12 marks a transitionary release, where a number of zope.app packages
+are still included. An ongoing effort to refactor those packages into more
+reusable and minimal packages is going on and will result in no zope.app
+packages being used or shipped with anymore as part of Zope 2. Based on
+current progress Zope 2.13 will no longer ship with any zope.app packages.
 
-You can find more information about the changes in the Zope Toolkit at
-http://docs.zope.org/zopetoolkit/. Upgrade information from Zope 3 to the Zope
-Toolkit can be found at http://docs.zope.org/zopetoolkit/migration/index.html.
+If you are using zope.app packages inside your own codebase, you should make
+sure to declare these as dependencies of your packages or otherwise follow the
+refactoring effort and remove your dependency on these packages.
+
+As a result of this refocussing on more minimal dependencies, the number of
+packages included by Zope 2 could be dramatically reduced from about 120
+additional packages to just over 70. The total code size of Zope 2 and its
+dependencies has decreased by over 200,000 lines of code as a result.
 
 
 ZODB 3.9
