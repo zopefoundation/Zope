@@ -66,6 +66,35 @@ Features Added
   msg_type parameters to help with character, header and body
   encoding.
 
+- Updated packages:
+
+  - zope.annotation = 3.5.0
+  - zope.app.form = 3.12.1
+  - zope.browsermenu = 3.9.0
+  - zope.browserpage = 3.11.0
+  - zope.browserresource = 3.10.2
+  - zope.component = 3.8.0
+  - zope.configuration = 3.7.0
+  - zope.container = 3.10.0
+  - zope.contentprovider = 3.6.1
+  - zope.contenttype = 3.5.0
+  - zope.copypastemove = 3.6.0
+  - zope.dublincore = 3.6.0
+  - zope.filerepresentation = 3.6.0
+  - zope.formlib = 3.10.0
+  - zope.i18nmessageid = 3.5.0
+  - zope.location = 3.8.2
+  - zope.ptresource = 3.9.0
+  - zope.publisher = 3.11.0
+  - zope.schema = 3.6.0
+  - zope.securitypolicy = 3.6.1
+  - zope.sendmail = 3.6.1
+  - zope.site = 3.8.0
+  - zope.testbrowser = 3.7.0
+  - zope.testing = 3.8.3
+  - zope.traversing = 3.11.0
+  - zope.viewlet = 3.7.0
+
 Bugs Fixed
 ++++++++++
 
