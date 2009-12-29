@@ -15,12 +15,15 @@ Maintainers
 The following persons have access to the ``Zope2`` package on PyPI
 (in order release new versions):
 
-- Hanno Schlichting
+- Hanno Schlichting (in charge for Windows eggs)
 - Tres Seaver
 - Andreas Jung
 
 Steps for creating a new Zope 2 release
 +++++++++++++++++++++++++++++++++++++++
+
+- check the versions.cfg file for outdated or updated
+  packages and update version information where necessary
 
 - update version information:
 
@@ -44,7 +47,7 @@ Steps for creating a new Zope 2 release
     
      sudo su - zope
 
-  - create the download index::
+  - create the download index (e.g. for Zope 2.12.2)::
      
     /var/zope/zope2index/bin/z2_kgs tags/2.12.2 /var/www/download.zope.org/Zope2/index/2.12.2
 
