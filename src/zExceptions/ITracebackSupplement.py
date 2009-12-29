@@ -17,8 +17,8 @@ $Id$
 """
 
 
-from Interface import Interface
-from Interface.Attribute import Attribute
+from zope.interface import Interface
+from zope.interface import Attribute
 
 class ITracebackSupplement(Interface):
     """Provides valuable information to supplement an exception traceback.
