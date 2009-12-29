@@ -90,7 +90,7 @@ Features Added
   - zope.schema = 3.6.0
   - zope.securitypolicy = 3.6.1
   - zope.sendmail = 3.6.1
-  - zope.site = 3.8.0
+  - zope.site = 3.9.0
   - zope.testbrowser = 3.7.0
   - zope.testing = 3.8.3
   - zope.traversing = 3.12.0
