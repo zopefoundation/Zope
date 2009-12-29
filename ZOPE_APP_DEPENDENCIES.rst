@@ -114,8 +114,34 @@ Zope2 Dependencies on ``zope`` Packages
 Zope2 depends on some packages only via transitive test dependencies.
 
 - [ ] zope.copy
+      o zope.location
+      o zope.site
+      o zope.copypastemove
 
 - [ ] zope.copypastemove
+      o zope.container
+
+- [ ] zope.datetime
+      o zope.app.form
+      o zope.dublincore
 
 - [ ] zope.dublincore
+      o zope.lifecycleevent
+
+
+Questionable packages that need further evaluation:
+
+- [ ] zope.authentication
+
+- [ ] zope.broken
+
+- [ ] zope.cachedescriptors
+
+- [ ] zope.deferredimport
+
+- [ ] zope.exceptions
+
+- [ ] zope.filerepresentation
+
+- [ ] zope.proxy
 
