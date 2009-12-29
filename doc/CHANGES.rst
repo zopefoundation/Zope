@@ -54,7 +54,7 @@ Restructuring
 - Centralize interfaces defined in Products.ZCTextIndex, leaving BBB
   imports behind in old locations.
 
-- Integrated zLOG package back into this package.
+- Integrated zLOG package back into this distribution.
 
 - Updated documentation to new version number.
 
