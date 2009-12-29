@@ -66,9 +66,6 @@ Features Added
   msg_type parameters to help with character, header and body
   encoding.
 
-- We know depend on the official Zope Toolkit and its known-good-set of
-  packages.
-
 Bugs Fixed
 ++++++++++
 
