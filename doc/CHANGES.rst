@@ -13,6 +13,12 @@ Bugs Fixed
 
 - Fixed a SyntaxError in utilities/load_site.py script.
 
+Features Added
+++++++++++++++
+
+- Moved zope.formlib / zope.app.form integration into a separate package
+  called five.formlib.
+
 Zope 2.12.2 (2009-12-22)
 ------------------------
 

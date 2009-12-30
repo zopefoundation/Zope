@@ -32,8 +32,6 @@ v1.3
 v1.4
 ----
 
-- namedtemplate in Five.formlib?
-
 - l10n (philikon)
 
 - Figure out where add-view redirects should go.

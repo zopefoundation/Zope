@@ -232,15 +232,6 @@
       class=".pages.SimpleView"
       permission="zope2.Public"
       />
-      
-  <!-- XXX this should really be in Five.form.tests -->
-
-  <!-- protected edit form for permission check -->
-  <browser:editform
-      schema="Products.Five.tests.testing.simplecontent.ISimpleContent"
-      name="protectededitform.html"
-      permission="zope2.ViewManagementScreens"
-      />
 
   <!-- stuff that we'll override in overrides.zcml -->
   <browser:page

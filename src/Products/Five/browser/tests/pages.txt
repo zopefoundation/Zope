@@ -258,7 +258,7 @@ High-level security
 
   >>> protected_view_names = [
   ...     'eagle.txt', 'falcon.html', 'owl.html', 'flamingo.html',
-  ...     'condor.html', 'protectededitform.html']
+  ...     'condor.html']
   >>> 
   >>> public_view_names = [
   ...     'public_attribute_page',
