@@ -4,6 +4,13 @@ Zope Changes
   Change information for previous versions of Zope can be found in the
   file HISTORY.txt.
 
+  Zope 2.11.6 (2009/12/30)
+
+    Bugs Fixed
+
+      - Fixed improper handling of IF_MODIFIED_SINCE header
+        inside Five/browser/resource.py
+
   Zope 2.11.5 (2009/12/22)
 
     Bugs Fixed
