@@ -11,7 +11,7 @@
 #
 ##############################################################################
 
-import os, sys, unittest
+import unittest
 
 from DocumentTemplate.sequence.SortEx import *
 from DocumentTemplate.sequence.tests.ztestlib import *
