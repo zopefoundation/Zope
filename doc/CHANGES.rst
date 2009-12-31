@@ -99,6 +99,9 @@ Features Added
 Bugs Fixed
 ++++++++++
 
+- LP #143444: add labels to checkboxes / radio buttons on import / export
+  form.
+
 - LP #496961:  Remove all mention of ``standard_html_header`` and
   ``standard_html_footer`` from default DTML content.
 
