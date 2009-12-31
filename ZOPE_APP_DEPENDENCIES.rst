@@ -138,9 +138,9 @@ Questionable dependencies
 - [ ] zope.broken (this is really just one interface, merge into ZODB3!)
       o zope.container
 
-- [ ] zope.cachedescriptors (this is only used for the Lazy implementation)
+- [X] zope.cachedescriptors
       * zope.container
-      o zope.formlib
+      * zope.formlib
 
 - [ ] zope.deferredimport (we should stop using it)
       o Zope2
