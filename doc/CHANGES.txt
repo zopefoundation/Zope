@@ -8,6 +8,9 @@ Zope Changes
 
     Bugs fixed
 
+      - LP #143444: add labels to checkboxes / radio buttons on
+        import / export form.
+
       - fixed improper usage of the IF_MODIFIED_SINCE header inside
         Five/browser/resource.py
 
