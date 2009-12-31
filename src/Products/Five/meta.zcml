@@ -2,8 +2,8 @@
     xmlns="http://namespaces.zope.org/zope"
     xmlns:meta="http://namespaces.zope.org/meta">
 
+  <include package="AccessControl" file="meta.zcml" />
   <include package="zope.component" file="meta.zcml" />
-  <include package="zope.security" file="meta.zcml" />
   <include package="zope.i18n" file="meta.zcml" />
 
   <include package=".browser" file="meta.zcml" />
@@ -15,35 +15,6 @@
         name="view"
         schema="zope.component.zcml.IViewDirective"
         handler="zope.component.zcml.view"
-        />
-
-    <meta:complexDirective
-        name="class"
-        schema="zope.security.metadirectives.IClassDirective"
-        handler=".metaconfigure.ClassDirective"
-        >
-
-      <meta:subdirective
-          name="implements"
-          schema="zope.security.metadirectives.IImplementsSubdirective"
-          />
-
-      <meta:subdirective
-          name="require"
-          schema="zope.security.metadirectives.IRequireSubdirective"
-          />
-
-      <meta:subdirective
-          name="allow"
-          schema="zope.security.metadirectives.IAllowSubdirective"
-          />
-
-    </meta:complexDirective>
-
-    <meta:directive
-        name="securityPolicy"
-        schema="zope.security.zcml.ISecurityPolicyDirective"
-        handler="zope.security.zcml.securityPolicy"
         />
 
   </meta:directives>

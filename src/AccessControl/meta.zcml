@@ -1,0 +1,41 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:meta="http://namespaces.zope.org/meta">
+
+  <include package="zope.component" file="meta.zcml" />
+  <include package="zope.security" file="meta.zcml" />
+
+  <meta:directives namespace="http://namespaces.zope.org/zope">
+
+    <meta:complexDirective
+        name="class"
+        schema="zope.security.metadirectives.IClassDirective"
+        handler=".metaconfigure.ClassDirective"
+        >
+
+      <meta:subdirective
+          name="implements"
+          schema="zope.security.metadirectives.IImplementsSubdirective"
+          />
+
+      <meta:subdirective
+          name="require"
+          schema="zope.security.metadirectives.IRequireSubdirective"
+          />
+
+      <meta:subdirective
+          name="allow"
+          schema="zope.security.metadirectives.IAllowSubdirective"
+          />
+
+    </meta:complexDirective>
+
+    <meta:directive
+        name="securityPolicy"
+        schema="zope.security.zcml.ISecurityPolicyDirective"
+        handler="zope.security.zcml.securityPolicy"
+        />
+
+  </meta:directives>
+
+</configure>
