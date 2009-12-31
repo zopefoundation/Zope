@@ -133,13 +133,13 @@ Questionable dependencies
 =========================
 
 - [X] zope.authentication (seems to be used for some ILogin related stuff)
-      x zope.publisher
+      * zope.publisher
 
-- [ ] zope.broken (this is really just one interface, merge into ZODB3?)
+- [ ] zope.broken (this is really just one interface, merge into ZODB3!)
       o zope.container
 
 - [ ] zope.cachedescriptors (this is only used for the Lazy implementation)
-      o zope.container
+      * zope.container
       o zope.formlib
 
 - [ ] zope.deferredimport (we should stop using it)
