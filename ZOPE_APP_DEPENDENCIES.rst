@@ -129,19 +129,65 @@ Zope2 depends on some packages only via transitive test dependencies.
       * zope.lifecycleevent
 
 
-Questionable packages that need further evaluation:
+Questionable dependencies
+=========================
 
-- [ ] zope.authentication
+- [ ] zope.authentication (seems to be used for some ILogin related stuff)
+      o zope.publisher
 
-- [ ] zope.broken
+- [ ] zope.broken (this is really just one interface, merge into ZODB3?)
+      o zope.container
 
-- [ ] zope.cachedescriptors
+- [ ] zope.cachedescriptors (this is only used for the Lazy implementation)
+      o zope.container
+      o zope.formlib
 
-- [ ] zope.deferredimport
+- [ ] zope.deferredimport (we should stop using it)
+      o Zope2
+
+- [ ] zope.filerepresentation (only used for the IDirectoryFactory interface)
+      o zope.container
+      o zope.site
+
+Further merge tasks
+===================
 
 - [ ] zope.exceptions
+      Our own zExceptions should be merged with it in some way. There's a good
+      deal of similar code.
 
-- [ ] zope.filerepresentation
+Security
+========
+
+The relationship between AccessControl and zope.security is unclear. Right now
+Five plugs in AccessControl into the zope.security machinery. But large parts
+of it aren't applicable like the entire zope.proxy machinery. The specific way
+of how "interactions" work with the zope.publisher are also pretty muddy.
 
 - [ ] zope.proxy
+      o zope.annotation
+      o zope.app.form
+      o zope.browserresource
+      o zope.component
+      o zope.deferredimport
+      o zope.location
+      o zope.pagetemplate
+      o zope.publisher
+      o zope.security
+      o zope.traversing
 
+- [ ] zope.security
+      o zope.app.form
+      o zope.authentication
+      o zope.browsermenu
+      o zope.browserpage
+      o zope.browserresource
+      o zope.component
+      o zope.container
+      o zope.formlib
+      o zope.pagetemplate
+      o zope.ptresource
+      o zope.publisher
+      o zope.sendmail
+      o zope.traversing
+      o zope.viewlet
