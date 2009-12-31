@@ -12,4 +12,4 @@
 ##############################################################################
 
 
-from SortEx import *
+from zope.sequencesort.ssort import *
