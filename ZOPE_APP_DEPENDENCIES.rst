@@ -132,8 +132,8 @@ Zope2 depends on some packages only via transitive test dependencies.
 Questionable dependencies
 =========================
 
-- [ ] zope.authentication (seems to be used for some ILogin related stuff)
-      o zope.publisher
+- [X] zope.authentication (seems to be used for some ILogin related stuff)
+      x zope.publisher
 
 - [ ] zope.broken (this is really just one interface, merge into ZODB3?)
       o zope.container
