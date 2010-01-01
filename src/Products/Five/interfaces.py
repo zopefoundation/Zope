@@ -15,11 +15,9 @@
 
 $Id$
 """
-from zope.interface.interfaces import IInterface
 
-class IMenuItemType(IInterface):
-    """Menu item type
+from zope.deferredimport import deprecated
 
-    Menu item types are interfaces that define classes of
-    menu items.
-    """
+deprecated("Please import from zope.browsermenu.interfaces",
+    IMenuItemType = 'zope.browsermenu.interfaces:IMenuItemType',
+)
