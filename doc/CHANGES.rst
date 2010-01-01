@@ -11,6 +11,9 @@ Trunk (unreleased)
 Restructuring
 +++++++++++++
 
+- Removed the deprecated ``five:containerEvents`` directive, which had been
+  a no-op for quite a while.
+
 - Removed Products.Five.fivedirectives.IBridgeDirective - a leftover from the
   Interface to zope.interface bridging code.
 

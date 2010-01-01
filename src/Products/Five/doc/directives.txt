@@ -91,11 +91,6 @@ Declare menuItems
 five ``http://namespaces.zope.org/five``
 ========================================
 
-implements
-----------
-
-Make a class declare it implements an interface.
-
 loadProducts
 ------------
 
@@ -112,13 +107,6 @@ sizable
 
 Retrieve size information for a Zope 2 content class via a Zope 3
 style ``ISized`` adapter.
-
-containerEvents
----------------
-
-Make events be sent for Zope 2 container objects, instead of calling old
-methods like ``manage_afterAdd``. These old methods will still be called
-for classes specified in a ``deprecatedManageAddDelete`` directive.
 
 deprecatedManageAddDelete
 -------------------------

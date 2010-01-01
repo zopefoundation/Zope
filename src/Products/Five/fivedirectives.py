@@ -47,9 +47,6 @@ class ISizableDirective(Interface):
         required=True
         )
 
-class IContainerEventsDirective(Interface):
-    """Global switch to enable container events
-    """
 
 class IDeprecatedManageAddDeleteDirective(Interface):
     """Call manage_afterAdd & co for these contained content classes.

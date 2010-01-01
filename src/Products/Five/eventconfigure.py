@@ -18,13 +18,7 @@ Zope 2 objects.
 $Id$
 """
 
-import warnings
 from OFS.subscribers import deprecatedManageAddDeleteClasses
-
-def setContainerEvents():
-    warnings.warn("Using <five:containerEvents/> is deprecated (it is now "
-                  "the default).",
-                  DeprecationWarning)
 
 def setDeprecatedManageAddDelete(class_):
     """Instances of the class will still see their old methods called."""
@@ -32,13 +26,6 @@ def setDeprecatedManageAddDelete(class_):
 
 def cleanUp():
     deprecatedManageAddDeleteClasses[:] = []
-
-def containerEvents(_context):
-    _context.action(
-        discriminator=None,
-        callable=setContainerEvents,
-        args=(),
-        )
 
 def deprecatedManageAddDelete(_context, class_):
     _context.action(

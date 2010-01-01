@@ -36,12 +36,6 @@
        />
 
     <meta:directive
-       name="containerEvents"
-       schema=".fivedirectives.IContainerEventsDirective"
-       handler=".eventconfigure.containerEvents"
-       />
-
-    <meta:directive
        name="deprecatedManageAddDelete"
        schema=".fivedirectives.IDeprecatedManageAddDeleteDirective"
        handler=".eventconfigure.deprecatedManageAddDelete"
