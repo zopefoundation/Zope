@@ -83,18 +83,6 @@ class EngineTestsBase(PlacelessSetup):
         ec = self._makeContext()
         self.failUnless(ec.evaluate('x | nothing') is None)
 
-    def DONT_test_evaluate_with_empty_element(self):
-        # empty path elements aren't supported anymore, for the lack
-        # of a use case
-        ec = self._makeContext()
-        self.assertEqual(ec.evaluate('d/'), 'blank')
-
-    def DONT_test_evaluate_with_empty_element_and_alternative(self):
-        # empty path elements aren't supported anymore, for the lack
-        # of a use case
-        ec = self._makeContext()
-        self.assertEqual(ec.evaluate('d/ | nothing'), 'blank')
-
     def test_evaluate_dict_key_as_underscore(self):
         ec = self._makeContext()
         self.assertEqual(ec.evaluate('d/_'), 'under')
@@ -131,13 +119,13 @@ class EngineTestsBase(PlacelessSetup):
         ec.endScope()
 
     def test_defer_expression_returns_wrapper(self):
-        from Products.PageTemplates.DeferExpr import DeferWrapper
+        from zope.tales.expressions import DeferWrapper
         ec = self._makeContext()
         defer = ec.evaluate('defer: b')
         self.failUnless(isinstance(defer, DeferWrapper))
 
     def test_lazy_expression_returns_wrapper(self):
-        from Products.PageTemplates.DeferExpr import LazyWrapper
+        from zope.tales.expressions import LazyWrapper
         ec = self._makeContext()
         lazy = ec.evaluate('lazy: b')
         self.failUnless(isinstance(lazy, LazyWrapper))
@@ -269,6 +257,3 @@ def test_suite():
          unittest.makeSuite(UnicodeEncodingConflictResolverTests),
          unittest.makeSuite(ZopeContextTests),
     ))
-
-if __name__=='__main__':
-    main()

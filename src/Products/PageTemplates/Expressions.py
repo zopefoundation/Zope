@@ -26,6 +26,7 @@ from zope.interface import implements
 from zope.pagetemplate.engine import ZopeEngine as Z3Engine
 from zope.proxy import removeAllProxies
 from zope.tales.expressions import DeferExpr
+from zope.tales.expressions import LazyExpr
 from zope.tales.expressions import NotExpr
 from zope.tales.expressions import PathExpr
 from zope.tales.expressions import StringExpr
@@ -45,7 +46,6 @@ from zExceptions import Unauthorized
 
 from zope.contentprovider.tales import TALESProviderExpression
 from Products.PageTemplates import ZRPythonExpr
-from Products.PageTemplates.DeferExpr import LazyExpr
 from Products.PageTemplates.interfaces import IUnicodeEncodingConflictResolver
 
 SecureModuleImporter = ZRPythonExpr._SecureModuleImporter()

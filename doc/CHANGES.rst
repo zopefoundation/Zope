@@ -11,6 +11,8 @@ Trunk (unreleased)
 Restructuring
 +++++++++++++
 
+- Ported the lazy expression into zope.tales and require a new version of it.
+
 - Updated Five documentation to clarify its role in regard to Zope packages.
 
 - Removed the deprecated ``five:containerEvents`` directive, which had been
