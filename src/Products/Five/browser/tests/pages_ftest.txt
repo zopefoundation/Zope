@@ -19,7 +19,7 @@ Docstrings
 ----------
 
 In Zope 2, objects normally have to have a docstring in order to be
-published.  This crazy requirement luckily isn't true for Zope 3, so
+published.  This crazy requirement luckily isn't true for zope.publisher, so
 it should be possible to write docstring-less view classes that are
 still published through ZPublisher.
 

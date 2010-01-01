@@ -18,9 +18,9 @@ Content Providers
 
 Content Provider is a term from the Java world that refers to components that
 can provide HTML content. It means nothing more! How the content is found and
-returned is totally up to the implementation. The Zope 3 touch to the concept
-is that content providers are multi-adapters that are looked up by the
-context, request (and thus the layer/skin), and view they are displayed in.
+returned is totally up to the implementation. The Zope touch to the concept is
+that content providers are multi-adapters that are looked up by the context,
+request (and thus the layer/skin), and view they are displayed in.
 
 So let's create a simple content provider:
 

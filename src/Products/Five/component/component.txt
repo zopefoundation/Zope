@@ -5,7 +5,7 @@ Local component look-up
 -----------------------------
 
 In order to do context-based component look-up, the Component
-Architecture adapts the context to ``IComponentLookup``.  Zope 3's
+Architecture adapts the context to ``IComponentLookup``.  zope.site's
 default adapter uses the ``ILocation`` API to walk up the object tree
 and find a site that way.  Five provides its own adapter that also
 supports acquisitional parents.

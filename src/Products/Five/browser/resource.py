@@ -35,7 +35,7 @@ _marker = object()
 class Resource(object):
     """A mixin that changes the URL-rendering of resources (__call__).
 
-    In Zope 3, resource URLs are of the form
+    In zope.browserresource, resource URLs are of the form
     nearest_site/@@/resource_name.  Since Zope 2 didn't have support
     for sites from the beginning of the Five integration, resource
     URLs in Zope 2 are of the form context/++resource++resource_name.

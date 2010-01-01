@@ -13,7 +13,7 @@
 ##############################################################################
 """Five-specific directive handlers
 
-These directives are specific to Five and have no equivalents in Zope 3.
+These directives are specific to Five and have no equivalents outside of it.
 
 $Id$
 """

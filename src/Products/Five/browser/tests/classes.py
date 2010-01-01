@@ -19,7 +19,7 @@ from zope.interface import Interface, implements
 from Products.Five import BrowserView
 
 class IOne(Interface):
-    """This is a Zope 3 interface.
+    """This is an interface.
     """
 
 class One(object):

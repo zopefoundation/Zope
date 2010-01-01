@@ -43,7 +43,7 @@ def findSite(obj, iface=ISite):
 @zope.interface.implementer(IComponentLookup)
 def siteManagerAdapter(ob):
     """Look-up a site manager/component registry for local component
-    lookup.  This is registered in place of the one in Zope 3 so that
+    lookup.  This is registered in place of the one in zope.site so that
     we lookup using acquisition in addition to the ``ILocation`` API.
     """
     site = findSite(ob)

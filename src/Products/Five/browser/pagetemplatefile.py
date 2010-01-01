@@ -47,8 +47,8 @@ class ViewPageTemplateFile(TrustedAppPT, PageTemplateFile):
 
     def __call__(self, __instance, *args, **keywords):
         # Work around BBB foul. Before Zope 2.12 there was no first argument
-        # but the Zope 3 version has one called instance. Some people used
-        # instance as an additional keyword argument.
+        # but the zope.pagetemplate version has one called instance. Some
+        # people used instance as an additional keyword argument.
         instance = __instance
         namespace = self.pt_getContext(
             request=instance.request,
