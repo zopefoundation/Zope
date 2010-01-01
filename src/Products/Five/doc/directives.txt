@@ -1,9 +1,9 @@
-=================================
-ZCML Directives supported by Five
-=================================
+===================================
+ZCML Directives supported by Zope 2
+===================================
 
-Five tries to use the Zope 3 ZCML directives where possible, though
-does sometimes subset the possible attributes. It also introduces a
+Zope 2 tries to use the directives from zope.* packages where possible,
+though does sometimes subset the possible attributes. It also introduces a
 few directives of its own under the ``five`` namespace.
 
 Directives are listed per namespace, in alphabetic order.
@@ -24,8 +24,7 @@ Declare interface and permissions on classes. Declares Zope 2 permissions.
 permission
 ----------
 
-Way to make Zope 2 permissions available to Five, ``title`` is
-permission name.
+Way to make Zope 2 permissions available, ``title`` is permission name.
 
 redefinePermission
 ------------------
@@ -53,8 +52,7 @@ browser ``http://namespaces.zope.org/browser``
 page
 ----
 
-Declare a page view for an interface. Permission is a Zope 2
-permission.
+Declare a page view for an interface. Permission is a Zope 2 permission.
 
 pages
 -----
@@ -105,7 +103,7 @@ Loads overriding ZCML in all products (``overrides.zcml``).
 sizable
 -------
 
-Retrieve size information for a Zope 2 content class via a Zope 3
+Retrieve size information for a Zope 2 content class via a zope.size
 style ``ISized`` adapter.
 
 deprecatedManageAddDelete
@@ -123,4 +121,4 @@ Loads all files with .pt extension in a directory as pages.
 registerClass
 -------------
 
-Registers Five content with Zope 2.
+Registers Zope 2 content classes with Zope 2.

@@ -4,8 +4,7 @@ Internationalization
 Translation
 -----------
 
-To register Zope 3 style translation domains, use the following ZCML
-statement::
+To register translation domains, use the following ZCML statement::
 
   <i18n:registerTranslations directory="locales" />
 

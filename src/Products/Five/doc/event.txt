@@ -1,8 +1,7 @@
-Events in Zope 2.9
-==================
+Events in Zope 2
+================
 
-Zope 2.9 (and Zope 2.8 when using Five 1.2) introduces a big change:
-Zope 3 style container events.
+Zope 2 supports zope.lifecycleevent style events including container events.
 
 With container events, you finally have the ability to react to things
 happening to objects without have to subclass ``manage_afterAdd``,
@@ -39,11 +38,11 @@ current path. Code like::
             super(CoolDocument, self).manage_beforeDelete(item, container)
             getToolByName(self, 'portal_cool').unregisterCool(self)
 
-This would be the best practice in Zope 2.8. Note the use of ``super()``
-to call the base class, which is often omitted because people "know"
-that SimpleItem for instance doesn't do anything in these methods.
+This had been the best practice in old Zope 2 versions. Note the use of
+``super()`` to call the base class, which is often omitted because people
+"know" that SimpleItem for instance doesn't do anything in these methods.
 
-If you run this code in Zope 2.9, you will get deprecation warnings,
+If you run this code today, you will get deprecation warnings,
 telling you that::
 
     Calling Products.CoolProduct.CoolDocument.CoolDocument.manage_afterAdd
@@ -70,7 +69,7 @@ methods, and ask it to still call them in the proper manner. So Zope
 will be sending events when an object is added, for instance, and in
 addition call your old ``manage_afterAdd`` method.
 
-One subtlety here is that you may have to modify you methods to just do
+One subtlety here is that you may have to modify your methods to just do
 their work, and not call their super class. This is necessary because
 proper events are already dispatched to all relevant classes, and the
 work of the super class will be done trough events, you must not redo it
@@ -90,8 +89,7 @@ code. This would be bad.
 Using subscribers
 -----------------
 
-In the long run, and before Zope 2.11 where ``manage_afterAdd`` and
-friends will be removed, you will want to use proper subscribers.
+In the long run, you will want to use proper subscribers.
 
 First, you'll have to write a subscriber that "does the work", for
 instance::
@@ -157,7 +155,7 @@ of the removed object wouldn't know what happens to them, and for
 instance they wouldn't have any way of doing some cleanup before they
 disappear.
 
-To solve these two problems, Zope 3 has an additional mechanism by which
+To solve these two problems, Zope has an additional mechanism by which
 any IObjectEvent is redispatched using multi-adapters of the form ``(ob,
 event)``, so that a subscriber can be specific about the type of object
 it's interested in. Furthermore, this is done recursively for all
@@ -189,8 +187,7 @@ respect to events (but you might want to read the full story in
 Five/tests/event.txt).
 
 The first use case is the one where the object has to be aware of its
-path, like in the CoolDocument example above. That's strictly a Zope 2
-concern, as Zope 3 has others ways to deal with this.
+path, like in the CoolDocument example above.
 
 In Zope 2 an object has a new path through creation, copy or move
 (rename is a kind of move). The events sent during these three
@@ -200,7 +197,7 @@ IObjectMovedEvent.
 
 So to react to new paths, we have to subscribe to IObjectMovedEvent, but
 this will also get us any IObjectRemovedEvent, which we'll have to
-filter out by hand (this is unfortunate, and due to the way the Zope 3
+filter out by hand (this is unfortunate, and due to the way the Zope
 interface hierarchy is organized). So to fix the CoolDocument
 configuration we have to add::
 
@@ -282,5 +279,5 @@ of the one to which the event was redispatched using the
 multi-subscribers we have registered.)
 
 The ``IObjectWillBe...`` events are specific to Zope 2 (and imported
-from ``OFS.interfaces``). Zope 3 doesn't really need them, as object
-identity is often enough.
+from ``OFS.interfaces``). zope.lifecycleevent doesn't really need them, as
+object identity is often enough.
