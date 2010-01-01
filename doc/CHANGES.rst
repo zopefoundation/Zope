@@ -11,6 +11,8 @@ Trunk (unreleased)
 Restructuring
 +++++++++++++
 
+- Moved ``cmf.*`` permissions into Products.CMFCore.
+
 - Moved general OFS related ZCML directives from Products.Five into the OFS
   package itself.
 
