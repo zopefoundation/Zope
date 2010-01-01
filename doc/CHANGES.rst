@@ -11,6 +11,9 @@ Trunk (unreleased)
 Restructuring
 +++++++++++++
 
+- Removed Products.Five.fivedirectives.IBridgeDirective - a leftover from the
+  Interface to zope.interface bridging code.
+
 - Marked the ``<five:implements />`` as officially deprecated. The standard
   ``<class />`` directive allows the same.
 

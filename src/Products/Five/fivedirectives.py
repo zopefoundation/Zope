@@ -18,7 +18,7 @@ $Id$
 from zope.interface import Interface
 from zope.browserresource.metadirectives import IBasicResourceInformation
 from zope.security.zcml import Permission
-from zope.configuration.fields import GlobalObject, Tokens, PythonIdentifier
+from zope.configuration.fields import GlobalObject, Tokens
 from zope.configuration.fields import Bool
 from zope.schema import ASCII, TextLine
 
@@ -59,26 +59,6 @@ class IDeprecatedManageAddDeleteDirective(Interface):
         required=True,
         )
 
-
-class IBridgeDirective(Interface):
-    """Bridge from a Zope 2 interface to an equivalent Zope3 interface.
-    """
-    zope2 = GlobalObject(
-        title=u"Zope2",
-        required=True
-        )
-
-    package = GlobalObject(
-        title=u"Target package",
-        required=True
-        )
-
-    name = PythonIdentifier(
-        title=u"Zope3 Interface name",
-        description=u"If not supplied, the new interface will have the same "
-                    u"name as the source interface.",
-        required=False
-        )
 
 class IPagesFromDirectoryDirective(IBasicResourceInformation):
     """Register each file in a skin directory as a page resource
