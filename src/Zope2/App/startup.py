@@ -205,7 +205,7 @@ class ZPublisherExceptionHook:
             # raise the rendered value as the exception value
             # (basically the same that 'raise_standardErrorMessage'
             # does. The view is named 'index.html' because that's what
-            # Zope 3 uses as well.
+            # zope.publisher uses as well.
             view = queryMultiAdapter((v, REQUEST), name=u'index.html')
             if view is not None:
                 v = view()

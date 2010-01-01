@@ -241,7 +241,7 @@ class Item(Base,
             # Can we re-raise the exception with a rendered-to-HTML
             # exception value? To be able to do so, the exception
             # constructor needs to be able to take more than two
-            # arguments (some Zope 3 exceptions can't).
+            # arguments (some Zope exceptions can't).
             can_raise = False
             ctor = getattr(error_type, '__init__', None)
             if inspect.ismethoddescriptor(ctor):

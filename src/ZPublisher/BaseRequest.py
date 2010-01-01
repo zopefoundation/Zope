@@ -711,8 +711,7 @@ def old_validation(groups, request, auth,
 # types during publishing, we ensure the same publishing rules in
 # both versions. The downside is that this needs to be extended as
 # new built-in types are added and future Python versions are
-# supported. That happens rarely enough that hopefully we'll be on
-# Zope 3 by then :)
+# supported.
 
 import types
 

@@ -220,7 +220,7 @@ def test_checkPermission():
       >>> from zope.component.testing import setUp, tearDown
       >>> setUp()
 
-    Zope 3 has a function zope.security.checkPermission which provides
+    zope.security has a function zope.security.checkPermission which provides
     an easy way of checking whether the currently authenticated user
     has the permission to access an object.  The function delegates to
     the security policy's checkPermission() method.

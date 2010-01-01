@@ -112,13 +112,3 @@ Visit a BTreeFolder2 instance through the web as a manager.  Add
 "manage_cleanup" to the end of the URL and request that URL.  It may
 take some time to load and fix the entire structure.  If problems are
 detected, information will be added to the event log.
-
-
-Future
-======
-
-BTreeFolder2 will be maintained for Zope 2.  Zope 3, however, is not
-likely to require BTreeFolder, since the intention is to make Zope 3
-folders gracefully expand to support many items.
-
-

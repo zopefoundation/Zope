@@ -32,8 +32,7 @@ Example
 from zope.tales.expressions import DeferWrapper, DeferExpr
 _marker = object()
 
-# TODO These should really be integrated into the Zope 3 ZPT
-# implementation (zope.tales)
+# TODO These should really be integrated into the zope.tales implementation
 
 class LazyWrapper(DeferWrapper):
     """Wrapper for lazy: expression

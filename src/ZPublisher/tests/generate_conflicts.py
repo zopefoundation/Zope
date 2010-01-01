@@ -1,7 +1,6 @@
 ## This script requires:
 ## - python >= 2.4
-## - Zope 3's zope.testbrowser package:
-##   http://www.zope.org/Members/benji_york/ZopeTestbrowser-0.9.0.tgz
+## - zope.testbrowser
 ##
 ## The just run:
 ## $python generate_conflicts.py

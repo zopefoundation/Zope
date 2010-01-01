@@ -1579,7 +1579,7 @@ class ZopeFieldStorage(FieldStorage):
         return tempfile.NamedTemporaryFile("w+b")
 
 
-# Zope 3 version: zope.publisher.browser.FileUpload
+# Original version: zope.publisher.browser.FileUpload
 class FileUpload:
     '''File upload objects
 

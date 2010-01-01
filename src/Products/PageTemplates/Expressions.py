@@ -53,16 +53,16 @@ SecureModuleImporter = ZRPythonExpr._SecureModuleImporter()
 LOG = logging.getLogger('Expressions')
 
 # In Zope 2 traversal semantics, NotFound or Unauthorized (the Zope 2
-# versions) indicate that traversal has failed.  By default, Zope 3's
-# TALES engine doesn't recognize them as such which is why we extend
-# Zope 3's list here and make sure our implementation of the TALES
+# versions) indicate that traversal has failed.  By default, zope.tales'
+# engine doesn't recognize them as such which is why we extend its
+# list here and make sure our implementation of the TALES
 # Path Expression uses them
 ZopeUndefs = Undefs + (NotFound, Unauthorized)
 
 def boboAwareZopeTraverse(object, path_items, econtext):
     """Traverses a sequence of names, first trying attributes then items.
 
-    This uses Zope 3 path traversal where possible and interacts
+    This uses zope.traversing path traversal where possible and interacts
     correctly with objects providing OFS.interface.ITraversable when
     necessary (bobo-awareness).
     """
@@ -82,7 +82,7 @@ def boboAwareZopeTraverse(object, path_items, econtext):
 def trustedBoboAwareZopeTraverse(object, path_items, econtext):
     """Traverses a sequence of names, first trying attributes then items.
 
-    This uses Zope 3 path traversal where possible and interacts
+    This uses zope.traversing path traversal where possible and interacts
     correctly with objects providing OFS.interface.ITraversable when
     necessary (bobo-awareness).
     """
@@ -205,7 +205,7 @@ class ZopeContext(Context):
 
     def evaluateBoolean(self, expr):
         value = self.evaluate(expr)
-        # here we override the normal Zope 3 behaviour.  Zope 3
+        # here we override the normal zope.tales behaviour. zope.tales
         # doesn't care about the default in a boolean expression,
         # while we do (Zope 2 legacy, see the
         # BooleanAttributesAndDefault.html test case)

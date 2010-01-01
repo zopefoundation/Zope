@@ -10,7 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-"""Zope Page Template module (wrapper for the Zope 3 ZPT implementation)
+"""Zope Page Template module (wrapper for the zope.pagetemplate implementation)
 
 $Id$
 """
