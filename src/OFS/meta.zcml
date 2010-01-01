@@ -1,0 +1,39 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:meta="http://namespaces.zope.org/meta">
+
+  <meta:directives namespace="http://namespaces.zope.org/five">
+
+    <meta:directive
+       name="loadProducts"
+       schema="zope.configuration.xmlconfig.IInclude"
+       handler=".metaconfigure.loadProducts"
+       />
+
+    <meta:directive
+       name="loadProductsOverrides"
+       schema="zope.configuration.xmlconfig.IInclude"
+       handler=".metaconfigure.loadProductsOverrides"
+       />
+
+    <meta:directive
+       name="deprecatedManageAddDelete"
+       schema=".metadirectives.IDeprecatedManageAddDeleteDirective"
+       handler=".metaconfigure.deprecatedManageAddDelete"
+       />
+
+    <meta:directive
+       name="registerClass"
+       schema=".metadirectives.IRegisterClassDirective"
+       handler=".metaconfigure.registerClass"
+       />
+
+    <meta:directive
+       name="registerPackage"
+       schema=".metadirectives.IRegisterPackageDirective"
+       handler=".metaconfigure.registerPackage"
+       />
+
+  </meta:directives>
+
+</configure>

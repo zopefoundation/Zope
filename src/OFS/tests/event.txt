@@ -33,9 +33,9 @@ work inside a database::
 We'll use a few simple classes (defined in python code for picklability)
 for our tests.
 
-  >>> from Products.Five.tests.test_event import MyApp, MyContent
-  >>> from Products.Five.tests.test_event import MyFolder, MyBTreeFolder
-  >>> from Products.Five.tests.test_event import MyOrderedFolder
+  >>> from OFS.tests.test_event import MyApp, MyContent
+  >>> from OFS.tests.test_event import MyFolder, MyBTreeFolder
+  >>> from OFS.tests.test_event import MyOrderedFolder
 
   >>> app = MyApp('')
   >>> root['app'] = app
@@ -92,7 +92,7 @@ Finally we need to load the subscribers configuration::
 We need at least one fake deprecated method to tell the compatibility
 framework that component architecture is initialized::
 
-  >>> from Products.Five.eventconfigure import setDeprecatedManageAddDelete
+  >>> from OFS.metaconfigure import setDeprecatedManageAddDelete
   >>> class C(object): pass
   >>> setDeprecatedManageAddDelete(C)
 
@@ -308,7 +308,7 @@ New class
 If we use classes that don't have any manage_afterAdd & co method,
 everything happens correctly::
 
-  >>> from Products.Five.tests.test_event import MyNewFolder, MyNewContent
+  >>> from OFS.tests.test_event import MyNewFolder, MyNewContent
   >>> app = MyApp('')
   >>> root['app'] = app
   >>> folder = MyNewFolder('folder')

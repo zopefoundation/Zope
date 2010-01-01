@@ -3,6 +3,7 @@
     xmlns:meta="http://namespaces.zope.org/meta">
 
   <include package="AccessControl" file="meta.zcml" />
+  <include package="OFS" file="meta.zcml" />
   <include package="zope.component" file="meta.zcml" />
   <include package="zope.i18n" file="meta.zcml" />
 
@@ -24,24 +25,6 @@
     <!-- specific to Five -->
 
     <meta:directive
-       name="loadProducts"
-       schema="zope.configuration.xmlconfig.IInclude"
-       handler=".fiveconfigure.loadProducts"
-       />
-
-    <meta:directive
-       name="loadProductsOverrides"
-       schema="zope.configuration.xmlconfig.IInclude"
-       handler=".fiveconfigure.loadProductsOverrides"
-       />
-
-    <meta:directive
-       name="deprecatedManageAddDelete"
-       schema=".fivedirectives.IDeprecatedManageAddDeleteDirective"
-       handler=".eventconfigure.deprecatedManageAddDelete"
-       />
-
-    <meta:directive
        name="sizable"
        schema=".fivedirectives.ISizableDirective"
        handler=".sizeconfigure.sizable"
@@ -52,18 +35,6 @@
         schema=".fivedirectives.IPagesFromDirectoryDirective"
         handler=".fiveconfigure.pagesFromDirectory"
         />
-
-    <meta:directive
-       name="registerClass"
-       schema=".fivedirectives.IRegisterClassDirective"
-       handler=".fiveconfigure.registerClass"
-       />
-
-    <meta:directive
-       name="registerPackage"
-       schema=".fivedirectives.IRegisterPackageDirective"
-       handler=".fiveconfigure.registerPackage"
-       />
 
     <!-- Deprecated, use the class directive instead. -->
     <meta:directive

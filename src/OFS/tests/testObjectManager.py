@@ -11,11 +11,11 @@ from Acquisition import aq_base
 from Acquisition import Implicit
 from App.config import getConfiguration
 from logging import getLogger
+from OFS.metaconfigure import setDeprecatedManageAddDelete
 from OFS.ObjectManager import ObjectManager
 from OFS.SimpleItem import SimpleItem
 import Products.Five
 from Products.Five import zcml
-from Products.Five.eventconfigure import setDeprecatedManageAddDelete
 from zExceptions import BadRequest
 
 logger = getLogger('OFS.subscribers')            
@@ -75,8 +75,7 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         self.saved_cfg_debug_mode = getConfiguration().debug_mode
         zcml.load_config('meta.zcml', Products.Five)
         import OFS
-        zcml.load_config('event.zcml', OFS)
-        zcml.load_config('deprecated.zcml', Products.Five)
+        zcml.load_config('configure.zcml', OFS)
         setDeprecatedManageAddDelete(ItemForDeletion)
 
     def tearDown( self ):

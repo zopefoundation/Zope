@@ -1,5 +1,6 @@
 <configure xmlns="http://namespaces.zope.org/zope">
 
+  <include file="deprecated.zcml"/>
   <include file="event.zcml"/>
 
 </configure>

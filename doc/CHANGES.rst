@@ -11,6 +11,9 @@ Trunk (unreleased)
 Restructuring
 +++++++++++++
 
+- Moved general OFS related ZCML directives from Products.Five into the OFS
+  package itself.
+
 - Ported the lazy expression into zope.tales and require a new version of it.
 
 - Updated Five documentation to clarify its role in regard to Zope packages.

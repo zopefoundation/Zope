@@ -57,7 +57,7 @@ class TestFolder(Folder):
         Folder.manage_beforeDelete(self, item, container)
 
 
-from Products.Five.eventconfigure import setDeprecatedManageAddDelete
+from OFS.metaconfigure import setDeprecatedManageAddDelete
 
 class HookLayer:
 

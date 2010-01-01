@@ -17,10 +17,8 @@ $Id$
 """
 from zope.interface import Interface
 from zope.browserresource.metadirectives import IBasicResourceInformation
-from zope.security.zcml import Permission
 from zope.configuration.fields import GlobalObject, Tokens
-from zope.configuration.fields import Bool
-from zope.schema import ASCII, TextLine
+from zope.schema import TextLine
 
 
 # Deprecated, the class directive from zope.security allows the same
@@ -38,22 +36,14 @@ class IImplementsDirective(Interface):
         value_type=GlobalObject()
         )
 
+
 class ISizableDirective(Interface):
-    """Make instances of class send events.
+    """Attach sizable adapters to classes.
     """
 
     class_ = GlobalObject(
         title=u"Class",
         required=True
-        )
-
-
-class IDeprecatedManageAddDeleteDirective(Interface):
-    """Call manage_afterAdd & co for these contained content classes.
-    """
-    class_ = GlobalObject(
-        title=u"Class",
-        required=True,
         )
 
 
@@ -77,74 +67,15 @@ class IPagesFromDirectoryDirective(IBasicResourceInformation):
         required=True
         )
 
-class IRegisterClassDirective(Interface):
-
-    """registerClass directive schema.
-
-    Register Five content with Zope 2.
-    """
-
-    class_ = GlobalObject(
-        title=u'Instance Class',
-        description=u'Dotted name of the class that is registered.',
-        required=True
-        )
-
-    meta_type = ASCII(
-        title=u'Meta Type',
-        description=u'A human readable unique identifier for the class.',
-        required=True
-        )
-
-    permission = Permission(
-        title=u'Add Permission',
-        description=u'The permission for adding objects of this class.',
-        required=True
-        )
-
-    addview = ASCII(
-        title=u'Add View ID',
-        description=u'The ID of the add view used in the ZMI. Consider this '
-                    u'required unless you know exactly what you do.',
-        default=None,
-        required=False
-        )
-
-    icon = ASCII(
-        title=u'Icon ID',
-        description=u'The ID of the icon used in the ZMI.',
-        default=None,
-        required=False
-        )
-
-    global_ = Bool(
-        title=u'Global scope?',
-        description=u'If "global" is False the class is only available in '
-                    u'containers that explicitly allow one of its interfaces.',
-        default=True,
-        required=False
-        )
-
-
-class IRegisterPackageDirective(Interface):
-    """Registers the given python package which at a minimum fools zope2 into
-    thinking of it as a zope2 product.
-    """
-
-    package = GlobalObject(
-        title=u'Target package',
-        required=True
-        )
-
-    initialize = GlobalObject(
-        title=u'Initialization function to invoke',
-        description=u'The dotted name of a function that will get invoked '
-                    u'with a ProductContext instance',
-        required=False
-        )
-
 
 from zope.deferredimport import deprecated
+
+deprecated("Please import from OFS.metadirectives",
+    IRegisterPackageDirective = 'OFS.metadirectives:IRegisterPackageDirective',
+    IRegisterClassDirective = 'OFS.metadirectives:IRegisterClassDirective',
+    IDeprecatedManageAddDeleteDirective = \
+        'OFS.metadirectives:IDeprecatedManageAddDeleteDirective',
+)
 
 deprecated("Please import from zope.configuration.xmlconfig",
     IInclude = 'zope.configuration.xmlconfig:IInclude',

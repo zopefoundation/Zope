@@ -50,8 +50,26 @@ def sizable(_context, class_):
         )
 
 # clean up code
-from Products.Five.fiveconfigure import killMonkey
-from zope.testing.cleanup import addCleanUp
+def killMonkey(class_, name, fallback, attr=None):
+    """Die monkey, die!"""
+    method = getattr(class_, name, None)
+    if isFiveMethod(method):
+        original = getattr(class_, fallback, None)
+        if original is not None:
+            delattr(class_, fallback)
+        if original is None or isFiveMethod(original):
+            try:
+                delattr(class_, name)
+            except AttributeError:
+                pass
+        else:
+            setattr(class_, name, original)
+
+    if attr is not None:
+        try:
+            delattr(class_, attr)
+        except (AttributeError, KeyError):
+            pass
 
 def unsizable(class_):
     """Restore class's initial state with respect to being sizable"""
@@ -61,5 +79,6 @@ def cleanUp():
     for class_ in _monkied:
         unsizable(class_)
 
+from zope.testing.cleanup import addCleanUp
 addCleanUp(cleanUp)
 del addCleanUp

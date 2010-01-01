@@ -12,28 +12,13 @@
 #
 ##############################################################################
 """
-Use 'structured monkey patching' to enable zope.container event sending for
-Zope 2 objects.
-
 $Id$
 """
 
-from OFS.subscribers import deprecatedManageAddDeleteClasses
+from zope.deferredimport import deprecated
 
-def setDeprecatedManageAddDelete(class_):
-    """Instances of the class will still see their old methods called."""
-    deprecatedManageAddDeleteClasses.append(class_)
-
-def cleanUp():
-    deprecatedManageAddDeleteClasses[:] = []
-
-def deprecatedManageAddDelete(_context, class_):
-    _context.action(
-        discriminator=('five:deprecatedManageAddDelete', class_),
-        callable=setDeprecatedManageAddDelete,
-        args=(class_,),
-        )
-
-from zope.testing.cleanup import addCleanUp
-addCleanUp(cleanUp)
-del addCleanUp
+deprecated("Please import from OFS.metaconfigure",
+    deprecatedManageAddDelete = 'OFS.metaconfigure:deprecatedManageAddDelete',
+    setDeprecatedManageAddDelete = \
+        'OFS.metaconfigure:setDeprecatedManageAddDelete',
+)
