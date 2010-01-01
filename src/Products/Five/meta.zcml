@@ -25,13 +25,13 @@
 
     <meta:directive
        name="loadProducts"
-       schema=".fivedirectives.IInclude"
+       schema="zope.configuration.xmlconfig.IInclude"
        handler=".fiveconfigure.loadProducts"
        />
 
     <meta:directive
        name="loadProductsOverrides"
-       schema=".fivedirectives.IInclude"
+       schema="zope.configuration.xmlconfig.IInclude"
        handler=".fiveconfigure.loadProductsOverrides"
        />
 

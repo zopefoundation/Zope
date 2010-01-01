@@ -11,6 +11,10 @@ Trunk (unreleased)
 Restructuring
 +++++++++++++
 
+- Reuse IInclude from zope.configuration.xmlconfig.
+
+- Reuse IMenuItemType from zope.browsermenu.
+
 - Moved TaintedString from ZPublisher to Shared.
   This resolves a circular import issue.
 

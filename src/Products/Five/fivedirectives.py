@@ -20,7 +20,8 @@ from zope.browserresource.metadirectives import IBasicResourceInformation
 from zope.security.zcml import Permission
 from zope.configuration.fields import GlobalObject, Tokens, PythonIdentifier
 from zope.configuration.fields import Bool
-from zope.schema import ASCII, TextLine, BytesLine
+from zope.schema import ASCII, TextLine
+
 
 class IImplementsDirective(Interface):
     """State that a class implements something.
@@ -147,16 +148,6 @@ class IRegisterClassDirective(Interface):
         )
 
 
-
-class IInclude(Interface):
-
-    file = BytesLine(
-        title=u'Configuration file name',
-        description=u'Name of a configuration file to be included for each '
-                    u'installed Product. If the file does not exist, for a '
-                    u'particular product, no error is raised.',
-        required=False)
-
 class IRegisterPackageDirective(Interface):
     """Registers the given python package which at a minimum fools zope2 into
     thinking of it as a zope2 product.
@@ -173,3 +164,10 @@ class IRegisterPackageDirective(Interface):
                     u'with a ProductContext instance',
         required=False
         )
+
+
+from zope.deferredimport import deprecated
+
+deprecated("Please import from zope.configuration.xmlconfig",
+    IInclude = 'zope.configuration.xmlconfig:IInclude',
+)

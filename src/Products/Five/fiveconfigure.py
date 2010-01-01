@@ -59,11 +59,14 @@ def handleBrokenProduct(product):
     # side. //regebro
     LOG.error('Could not import Product %s' % product.__name__, exc_info=True)
 
-def loadProducts(_context, file=None):
+def loadProducts(_context, file=None, files=None, package=None):
     if file is None:
         # set the default
         file = 'configure.zcml'
-    
+
+    if files is not None or package is not None:
+        raise ValueError("Neither the files or package argument is supported.")
+
     # now load the files if they exist
     for product in findProducts():
         zcml = os.path.join(os.path.dirname(product.__file__), file)
@@ -73,11 +76,14 @@ def loadProducts(_context, file=None):
             except: # Yes, really, *any* kind of error.
                 handleBrokenProduct(product)
 
-def loadProductsOverrides(_context, file=None):
+def loadProductsOverrides(_context, file=None, files=None, package=None):
     if file is None:
         # set the default
         file = 'overrides.zcml'
-    
+
+    if files is not None or package is not None:
+        raise ValueError("Neither the files or package argument is supported.")
+
     # now load the files if they exist
     for product in findProducts():
         zcml = os.path.join(os.path.dirname(product.__file__), file)
