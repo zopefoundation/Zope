@@ -23,6 +23,7 @@ from zope.configuration.fields import Bool
 from zope.schema import ASCII, TextLine
 
 
+# Deprecated, the class directive from zope.security allows the same
 class IImplementsDirective(Interface):
     """State that a class implements something.
     """

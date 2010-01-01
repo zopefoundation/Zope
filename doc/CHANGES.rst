@@ -11,6 +11,9 @@ Trunk (unreleased)
 Restructuring
 +++++++++++++
 
+- Marked the ``<five:implements />`` as officially deprecated. The standard
+  ``<class />`` directive allows the same.
+
 - Reuse IInclude from zope.configuration.xmlconfig.
 
 - Reuse IMenuItemType from zope.browsermenu.

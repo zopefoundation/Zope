@@ -36,12 +36,6 @@
        />
 
     <meta:directive
-       name="implements"
-       schema=".fivedirectives.IImplementsDirective"
-       handler=".fiveconfigure.implements"
-       />
-
-    <meta:directive
        name="containerEvents"
        schema=".fivedirectives.IContainerEventsDirective"
        handler=".eventconfigure.containerEvents"
@@ -75,6 +69,13 @@
        name="registerPackage"
        schema=".fivedirectives.IRegisterPackageDirective"
        handler=".fiveconfigure.registerPackage"
+       />
+
+    <!-- Deprecated, use the class directive instead. -->
+    <meta:directive
+       name="implements"
+       schema=".fivedirectives.IImplementsDirective"
+       handler=".fiveconfigure.implements"
        />
 
   </meta:directives>

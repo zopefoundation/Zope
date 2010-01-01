@@ -20,6 +20,7 @@ $Id$
 import os
 import glob
 import logging
+import warnings
 
 import App.config
 import Products
@@ -94,6 +95,11 @@ def loadProductsOverrides(_context, file=None, files=None, package=None):
                 handleBrokenProduct(product)
 
 def implements(_context, class_, interface):
+    warnings.warn('Using <five:implements /> is deprecated. Please use the '
+                  '<class class="foo.Bar">'
+                  '<implements interface="foo.interfaces.IBar" />'
+                  '</class> directive instead.',
+                  DeprecationWarning, stacklevel=2)
     for interface in interface:
         _context.action(
             discriminator = None,
