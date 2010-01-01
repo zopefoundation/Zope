@@ -12,7 +12,7 @@ Zope Changes
         import / export form.
 
       - fixed improper usage of the IF_MODIFIED_SINCE header inside
-        Five/browser/resource.py
+        Five/browser/resource.py (updated to Five 1.5.9)
 
 
   Zope 2.10.10 (2009/12/22)
