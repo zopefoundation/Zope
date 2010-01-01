@@ -19,7 +19,7 @@ from zope.interface import implements, Interface
 from zope.component import adapts
 
 class IAdaptable(Interface):
-    """This is a Zope 3 interface.
+    """This is a Zope interface.
     """
     def method():
         """This method will be adapted

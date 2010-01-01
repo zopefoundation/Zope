@@ -53,5 +53,5 @@ world.
 Dieter Maurer for use of code from TrustedExecutables within Five
 under the ZPL.
 
-The Five developers would like to thank the Zope 3 developers, in
+The Five developers would like to thank the Zope developers, in
 particular Jim Fulton, for the mountain to stand on.

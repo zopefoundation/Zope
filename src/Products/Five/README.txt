@@ -15,32 +15,19 @@ THE LAW OF FIVES IS NEVER WRONG." -- Principia Discordia
 What is Five?
 -------------
 
-The goal of five is to allow Zope 2 developers to use Zope 3
-technology right now, inside of Zope 2. Additionally, this allows a
-gradual evolution of Zope 2 code to Zope 3.
+A couple of years back an attempt was made to rewrite Zope 2 from scratch and
+provide an upgrade path from current Zope 2 to the new version. This project
+used the name Zope 3. The attempt of writing a newer version of a full blown
+application server similar to Zope 2 failed. Instead the project generated a
+whole lot of underlying technologies and new concepts packaged up in reusable
+libraries.
 
-Five already makes the following Zope 3 technologies available in Zope
-2:
+Five is the project that integrates those technologies and packages into
+Zope 2. It's name is a pun on the original naming of Zope 2 + Zope 3 = Zope 5.
+Among others, it allows you to use zope.interface, ZCML-based configuration,
+adapters, browser pages (including layers, and resources), zope.schemas,
+object events, as well as zope.i18n message catalogs.
 
-* Zope 3 interfaces
-
-* ZCML (Zope Configuration Markup Language)
-
-* Adapters
-
-* Zope 3 views, even for standard Zope objects
-
-* layers & skins
-
-* schema/forms machinery, including edit and add forms.
-
-* Zope 2 security declarations in ZCML instead of in Python code.
-
-* Content Providers and Viewlets
-
-For more information, see ``doc/features.txt``.
-
-How to use Five
----------------
-
-Please see ``doc/manual.txt``.
+We've tried to keep the Five experience as close to that of the integrated
+Zope packages as possible, so this means that what you learn while using Five
+should also be applicable to the Zope packages directly.

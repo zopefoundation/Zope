@@ -11,7 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Mimick the Zope 3 skinning system in Five.
+"""Mimick the zope.app.basicskin skinning system.
 
 $Id$
 """

@@ -20,11 +20,10 @@ def test_directives():
     """
     Test ZCML directives
 
-    There isn't much to test here since the actual directive handlers
-    are either tested in other, more specific tests, or they're
-    already tested in Zope 3.  We'll just do a symbolic test of
-    adapters and overrides of adapters here as well as registering
-    meta directives.
+    There isn't much to test here since the actual directive handlers are
+    either tested in other, more specific tests, or they're already tested in
+    the original Zope packages. We'll just do a symbolic test of adapters and
+    overrides of adapters here as well as registering meta directives.
 
     But first, we load the configuration file:
 

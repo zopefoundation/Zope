@@ -2,7 +2,7 @@
 Container events
 ================
 
-Zope 3 container events are used to inform subscribers that an object is
+Zope container events are used to inform subscribers that an object is
 about to be added/removed from a container, and also after it has been
 done. This is used for bookkeeping and cleaning up in subobjects.
 
@@ -155,7 +155,7 @@ Same thing for clone::
 Old class with deprecatedManageAddDelete
 ========================================
 
-We specifiy that our class is deprecated (using zcml in real life)::
+We specify that our class is deprecated (using zcml in real life)::
 
   >>> setDeprecatedManageAddDelete(MyContent)
   >>> setDeprecatedManageAddDelete(MyFolder)

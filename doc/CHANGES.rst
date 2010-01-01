@@ -11,6 +11,8 @@ Trunk (unreleased)
 Restructuring
 +++++++++++++
 
+- Updated Five documentation to clarify its role in regard to Zope packages.
+
 - Removed the deprecated ``five:containerEvents`` directive, which had been
   a no-op for quite a while.
 

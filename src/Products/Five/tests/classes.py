@@ -24,9 +24,9 @@ class Two(object):
     'Another class'
 
 class IOne(Interface):
-    """This is a Zope 3 interface.
+    """This is a Zope interface.
     """
 
 class ITwo(Interface):
-    """This is another Zope 3 interface.
+    """This is another Zope interface.
     """
