@@ -83,7 +83,7 @@ class FileResource(BrowserView, Resource):
         # HTTP If-Modified-Since header handling. This is duplicated
         # from OFS.Image.Image - it really should be consolidated
         # somewhere...
-        header = request.environ.get('HTTP_IF_MODIFIED_SINCE', None)
+        header = request.get_header('If-Modified-Since')
         if header is not None:
             header = header.split(';')[0]
             # Some proxies seem to send invalid date strings for this
