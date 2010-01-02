@@ -11,6 +11,10 @@ Zope 2.12.3 (unreleased)
 Bugs Fixed
 ++++++++++
 
+- Also look for ZEXP imports within the clienthome directory. This
+  provides a place to put imports that won't be clobbered by buildout
+  in a buildout-based Zope instance.
+
 - Fixed a SyntaxError in utilities/load_site.py script.
 
 Features Added
