@@ -617,7 +617,6 @@ class ObjectManager(CopyContainer,
         if dirname:
             raise BadRequest, 'Invalid file name %s' % escape(file)
 
-        cfg = getConfiguration()
         for impath in self._getImportPaths():
             filepath = os.path.join(impath, 'import', file)
             if os.path.exists(filepath):
@@ -663,6 +662,8 @@ class ObjectManager(CopyContainer,
             paths.append(zopehome)
         if not cfg.instancehome in paths:
             paths.append(cfg.instancehome)
+        if not cfg.clienthome in paths:
+            paths.append(cfg.clienthome)
         return paths
 
     def list_imports(self):

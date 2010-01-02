@@ -122,6 +122,10 @@ Features Added
 Bugs Fixed
 ++++++++++
 
+- Also look for ZEXP imports within the clienthome directory. This
+  provides a place to put imports that won't be clobbered by buildout
+  in a buildout-based Zope instance.
+
 - LP #143444: add labels to checkboxes / radio buttons on import / export
   form.
 
