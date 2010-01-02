@@ -604,7 +604,7 @@ class ObjectManager(
             raise BadRequest, 'Invalid file name %s' % escape(file)
 
         cfg = getConfiguration()
-        for impath in (cfg.instancehome, cfg.zopehome):
+        for impath in (cfg.instancehome, cfg.zopehome, cfg.clienthome):
             filepath = os.path.join(impath, 'import', file)
             if os.path.exists(filepath):
                 break
