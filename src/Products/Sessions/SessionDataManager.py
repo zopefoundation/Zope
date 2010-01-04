@@ -10,18 +10,14 @@
 # FOR A PARTICULAR PURPOSE
 #
 ############################################################################
-
 from logging import getLogger
 import re
 import sys
-import time
 
 from AccessControl.Owned import Owned
 from AccessControl.Role import RoleManager
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Implicit
-from Acquisition import Explicit
-from Acquisition import aq_base
 from App.class_init import InitializeClass
 from App.special_dtml import DTMLFile
 from App.Management import Tabs
@@ -32,21 +28,18 @@ from ZPublisher.BeforeTraverse import unregisterBeforeTraverse
 from ZODB.POSException import ConflictError
 from zope.interface import implements
 
-from Products.Sessions.SessionInterfaces import ISessionDataManager
+from Products.Sessions.interfaces import ISessionDataManager
+from Products.Sessions.interfaces import SessionDataManagerErr
 from Products.Sessions.SessionPermissions import ACCESS_CONTENTS_PERM
 from Products.Sessions.SessionPermissions import ACCESS_SESSIONDATA_PERM
 from Products.Sessions.SessionPermissions import ARBITRARY_SESSIONDATA_PERM
 from Products.Sessions.SessionPermissions import CHANGE_DATAMGR_PERM
 from Products.Sessions.SessionPermissions import MGMT_SCREEN_PERM
 from Products.Sessions.common import DEBUG
-from Products.Sessions.BrowserIdManager import isAWellFormedBrowserId
-from Products.Sessions.BrowserIdManager import getNewBrowserId
 from Products.Sessions.BrowserIdManager import BROWSERID_MANAGER_NAME
 
 bad_path_chars_in=re.compile('[^a-zA-Z0-9-_~\,\. \/]').search
 LOG = getLogger('SessionDataManager')
-
-class SessionDataManagerErr(Exception): pass
 
 constructSessionDataManagerForm = DTMLFile('dtml/addDataManager',
     globals())
@@ -124,7 +117,7 @@ class SessionDataManager(Item, Implicit, Persistent, RoleManager, Owned, Tabs):
         """ """
         mgr = getattr(self, BROWSERID_MANAGER_NAME, None)
         if mgr is None:
-            raise SessionDataManagerErr,(
+            raise SessionDataManagerErr(
                 'No browser id manager named %s could be found.' %
                 BROWSERID_MANAGER_NAME
                 )
@@ -167,7 +160,7 @@ class SessionDataManager(Item, Implicit, Persistent, RoleManager, Owned, Tabs):
             self.obpath = None # undefined state
         elif type(path) is type(''):
             if bad_path_chars_in(path):
-                raise SessionDataManagerErr, (
+                raise SessionDataManagerErr(
                     'Container path contains characters invalid in a Zope '
                     'object path'
                     )
@@ -175,7 +168,7 @@ class SessionDataManager(Item, Implicit, Persistent, RoleManager, Owned, Tabs):
         elif type(path) in (type([]), type(())):
             self.obpath = list(path) # sequence
         else:
-            raise SessionDataManagerErr, ('Bad path value %s' % path)
+            raise SessionDataManagerErr('Bad path value %s' % path)
             
     security.declareProtected(MGMT_SCREEN_PERM, 'getContainerPath')
     def getContainerPath(self):
@@ -236,7 +229,7 @@ class SessionDataManager(Item, Implicit, Persistent, RoleManager, Owned, Tabs):
         except ConflictError:
             raise
         except:
-            raise SessionDataManagerErr, (
+            raise SessionDataManagerErr(
                 "External session data container '%s' not found." %
                 '/'.join(self.obpath)
                 )
@@ -269,6 +262,8 @@ class SessionDataManager(Item, Implicit, Persistent, RoleManager, Owned, Tabs):
             registerBeforeTraverse(parent, hook, 'SessionDataManager', 50)
             self._hasTraversalHook = 1
             self._requestSessionName = requestSessionName
+
+InitializeClass(SessionDataManager)
 
 class SessionDataManagerTraverser(Persistent):
     def __init__(self, requestSessionName, sessionDataManagerName):
@@ -303,6 +298,3 @@ class SessionDataManagerTraverser(Persistent):
         # set the getSessionData method in the "lazy" namespace
         if self._requestSessionName is not None:
             request.set_lazy(self._requestSessionName, getSessionData)
-
-
-InitializeClass(SessionDataManager)

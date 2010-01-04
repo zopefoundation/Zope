@@ -11,6 +11,9 @@ Trunk (unreleased)
 Restructuring
 +++++++++++++
 
+- Moved Products.Sessions APIs from ``SessionInterfaces`` to ``interfaces``,
+  leaving behind the old module / names for backwared compatibility.
+
 - Moved ``cmf.*`` permissions into Products.CMFCore.
 
 - Moved general OFS related ZCML directives from Products.Five into the OFS

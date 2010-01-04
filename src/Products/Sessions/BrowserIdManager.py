@@ -10,8 +10,6 @@
 # FOR A PARTICULAR PURPOSE
 #
 ############################################################################
-__version__='$Revision: 1.20 $'[11:-2]
-
 import binascii
 from cgi import escape
 import logging
@@ -28,11 +26,9 @@ from AccessControl.Owned import Owned
 from AccessControl.Role import RoleManager
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Implicit
-from Acquisition import aq_base
 from Acquisition import aq_parent
 from Acquisition import aq_inner
 from App.class_init import InitializeClass
-from App.Dialogs import MessageDialog
 from App.Management import Tabs
 from App.special_dtml import DTMLFile
 from Persistence import Persistent
@@ -43,11 +39,11 @@ from ZPublisher.BeforeTraverse import unregisterBeforeTraverse
 from ZPublisher.BeforeTraverse import queryBeforeTraverse
 from zope.interface import implements
 
-from Products.Sessions.SessionInterfaces import IBrowserIdManager
+from Products.Sessions.interfaces import IBrowserIdManager
+from Products.Sessions.interfaces import BrowserIdManagerErr
 from Products.Sessions.SessionPermissions import ACCESS_CONTENTS_PERM
 from Products.Sessions.SessionPermissions import CHANGE_IDMGR_PERM
 from Products.Sessions.SessionPermissions import MGMT_SCREEN_PERM
-from Products.Sessions.common import DEBUG
 
 b64_trans = string.maketrans('+/', '-.')
 b64_untrans = string.maketrans('-.', '+/')
@@ -81,9 +77,6 @@ def constructBrowserIdManager(
     ob = self._getOb(id)
     if REQUEST is not None:
         return self.manage_main(self, REQUEST, update_menu=1)
-    
-class BrowserIdManagerErr(ValueError): # BBB
-    pass
     
 class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
     """ browser id management class
