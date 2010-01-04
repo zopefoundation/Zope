@@ -12,7 +12,7 @@ Restructuring
 +++++++++++++
 
 - Moved Products.Sessions APIs from ``SessionInterfaces`` to ``interfaces``,
-  leaving behind the old module / names for backwared compatibility.
+  leaving behind the old module / names for backward compatibility.
 
 - Moved ``cmf.*`` permissions into Products.CMFCore.
 
