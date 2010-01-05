@@ -11,6 +11,8 @@ Zope 2.12.3 (unreleased)
 Bugs Fixed
 ++++++++++
 
+- Fixed possible TypeError while sending multipart emails.
+
 - Also look for ZEXP imports within the clienthome directory. This
   provides a place to put imports that won't be clobbered by buildout
   in a buildout-based Zope instance.
