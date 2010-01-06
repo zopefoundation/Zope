@@ -37,13 +37,13 @@ class ViewPageTemplateFileTests(unittest.TestCase):
         from zope.tales.expressions import DeferExpr
         from zope.tales.expressions import NotExpr
         from zope.tales.expressions import PathExpr
-        from zope.tales.expressions import StringExpr
         from zope.tales.expressions import Undefs
         from zope.tales.pythonexpr import PythonExpr
         from zope.contentprovider.tales import TALESProviderExpression
         from Products.PageTemplates.DeferExpr import LazyExpr
         from Products.PageTemplates.Expressions import TrustedZopePathExpr
         from Products.PageTemplates.Expressions import SecureModuleImporter
+        from Products.PageTemplates.Expressions import UnicodeAwareStringExpr
 
         vptf = self._makeOne('seagull.pt')
         engine = vptf.pt_getEngine()
@@ -51,7 +51,7 @@ class ViewPageTemplateFileTests(unittest.TestCase):
         self.assertEqual(engine.types['path'], TrustedZopePathExpr)
         self.assertEqual(engine.types['exists'], TrustedZopePathExpr)
         self.assertEqual(engine.types['nocall'], TrustedZopePathExpr)
-        self.assertEqual(engine.types['string'], StringExpr)
+        self.assertEqual(engine.types['string'], UnicodeAwareStringExpr)
         self.assertEqual(engine.types['python'], PythonExpr)
         self.assertEqual(engine.types['not'], NotExpr)
         self.assertEqual(engine.types['defer'], DeferExpr)

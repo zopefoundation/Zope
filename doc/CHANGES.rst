@@ -125,6 +125,9 @@ Features Added
 Bugs Fixed
 ++++++++++
 
+- LP #246983: Enabled unicode conflict resolution on variables inside "string:"
+  expressions in TALES.
+
 - Also look for ZEXP imports within the clienthome directory. This
   provides a place to put imports that won't be clobbered by buildout
   in a buildout-based Zope instance.
