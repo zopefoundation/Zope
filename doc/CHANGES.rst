@@ -11,6 +11,9 @@ Zope 2.12.3 (unreleased)
 Bugs Fixed
 ++++++++++
 
+- LP #246983: Enabled unicode conflict resolution on variables inside "string:"
+  expressions in TALES.
+
 - Fixed possible TypeError while sending multipart emails.
 
 - Also look for ZEXP imports within the clienthome directory. This

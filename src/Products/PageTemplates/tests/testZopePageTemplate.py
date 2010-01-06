@@ -202,6 +202,26 @@ class ZPTUnicodeEncodingConflictResolution(ZopeTestCase):
         state = cPickle.dumps(empty, protocol=1)
         clone = cPickle.loads(state)
 
+    def testBug246983(self):
+        # See https://bugs.launchpad.net/bugs/246983
+        self.app.REQUEST.set('HTTP_ACCEPT_CHARSET', 'utf-8')
+        self.app.REQUEST.set('data', u'üצה'.encode('utf-8'))
+        # Direct inclusion of encoded strings is hadled normally by the unicode
+        # conflict resolver
+        textDirect = """
+        <tal:block content="request/data" />
+        """.strip()
+        manage_addPageTemplate(self.app, 'test', text=textDirect)
+        zpt = self.app['test']
+        self.assertEquals(zpt.pt_render(), u'üצה')
+        # Indirect inclusion of encoded strings through String Expressions
+        # should be resolved as well.
+        textIndirect = """
+        <tal:block content="string:x ${request/data}" />
+        """.strip()
+        zpt.pt_edit(textIndirect, zpt.content_type)
+        self.assertEquals(zpt.pt_render(), u'x üצה')
+
     def testDebugFlags(self):
         # Test for bug 229549
         manage_addPageTemplate(self.app, 'test', 

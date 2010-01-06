@@ -25,12 +25,20 @@ class EngineTestsBase(PlacelessSetup):
             __allow_access_to_unprotected_subobjects__ = 1
             def __call__(self):
                 return 'dummy'
+            
+            management_page_charset = 'iso-8859-15'
 
         class DummyDocumentTemplate:
             __allow_access_to_unprotected_subobjects__ = 1
             isDocTemp = True
             def __call__(self, client=None, REQUEST={}, RESPONSE=None, **kw):
                 return 'dummy'
+            
+            def absolute_url(self, relative=0):
+                url = 'dummy'
+                if not relative:
+                    url = "http://server/" + url
+                return url
 
         _DEFAULT_BINDINGS = dict(
             one = 1,
@@ -38,6 +46,12 @@ class EngineTestsBase(PlacelessSetup):
             blank = '',
             dummy = Dummy(),
             dummy2 = DummyDocumentTemplate(),
+            eightbit = 'äüö',
+            # ZopeContext needs 'context' and 'template' keys for unicode
+            # conflict resolution, and 'context' needs a 
+            # 'management_page_charset'
+            context = Dummy(),
+            template = DummyDocumentTemplate(),
             )
 
         if bindings is None:
@@ -157,6 +171,34 @@ class EngineTestsBase(PlacelessSetup):
     def test_empty_path_expression_implicit_with_trailing_whitespace(self):
         ec = self._makeContext()
         self.assertEquals(ec.evaluate('  \n'), None)
+
+    def test_unicode(self):
+        # All our string expressions are unicode now
+        eng = self._makeEngine()
+        ec = self._makeContext()
+        # XXX: can't do ec.evaluate(u'string:x') directly because ZopeContext
+        # only bothers compiling true strings, not unicode strings
+        result = ec.evaluate(eng.compile(u'string:x'))
+        self.assertEqual(result, u'x')
+        self.failUnless(isinstance(result, unicode))
+
+    def test_mixed(self):
+        # 8-bit strings in unicode string expressions cause UnicodeDecodeErrors
+        eng = self._makeEngine()
+        ec = self._makeContext()
+        expr = eng.compile(u'string:$eightbit')
+        self.assertRaises(UnicodeDecodeError,
+                          ec.evaluate, expr)
+        # But registering an appropriate IUnicodeEncodingConflictResolver
+        # should fix it
+        from zope.component import provideUtility
+        from Products.PageTemplates.unicodeconflictresolver \
+            import StrictUnicodeEncodingConflictResolver
+        from Products.PageTemplates.interfaces \
+            import IUnicodeEncodingConflictResolver
+        provideUtility(StrictUnicodeEncodingConflictResolver, 
+                                      IUnicodeEncodingConflictResolver)        
+        self.assertEqual(ec.evaluate(expr), u'äüö')
 
 class UntrustedEngineTests(EngineTestsBase, unittest.TestCase):
 

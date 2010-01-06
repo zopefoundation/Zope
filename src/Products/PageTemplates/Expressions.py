@@ -372,12 +372,26 @@ class PathIterator(ZopeIterator):
             return False
         return ob1 == ob2
 
+class UnicodeAwareStringExpr(StringExpr):
+
+    def __call__(self, econtext):
+        vvals = []
+        if isinstance(self._expr, unicode):
+            # coerce values through the Unicode Conflict Resolver
+            evaluate = econtext.evaluateText
+        else:
+            evaluate = econtext.evaluate
+        for var in self._vars:
+            v = evaluate(var)
+            vvals.append(v)
+        return self._expr % tuple(vvals)
+
 def createZopeEngine(zpe=ZopePathExpr):
     e = ZopeEngine()
     e.iteratorFactory = PathIterator
     for pt in zpe._default_type_names:
         e.registerType(pt, zpe)
-    e.registerType('string', StringExpr)
+    e.registerType('string', UnicodeAwareStringExpr)
     e.registerType('python', ZRPythonExpr.PythonExpr)
     e.registerType('not', NotExpr)
     e.registerType('defer', DeferExpr)
