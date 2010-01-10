@@ -96,6 +96,7 @@ Features Added
 
   - zope.annotation = 3.5.0
   - zope.app.form = 3.12.1
+  - zope.broken = 3.6.0
   - zope.browsermenu = 3.9.0
   - zope.browserpage = 3.11.0
   - zope.browserresource = 3.10.2
