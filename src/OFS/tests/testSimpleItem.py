@@ -23,6 +23,9 @@ class TestItem(unittest.TestCase):
         verifyClass(IManageable, self._getTargetClass())
 
     def test_raise_StandardErrorMessage_str_errorValue(self):
+        class REQUEST(object):
+            class RESPONSE(object):
+                handle_errors = True
         item = self._makeOne()
         def _raise_during_standard_error_message(*args, **kw):
             raise ZeroDivisionError('testing')
@@ -31,17 +34,20 @@ class TestItem(unittest.TestCase):
             item.raise_standardErrorMessage(
                             error_type=OverflowError,
                             error_value='simple',
-                            REQUEST={'dummy': ''},
+                            REQUEST=REQUEST(),
                             )
         except:
             import sys
-            self.assertEqual(sys.exc_info()[0], 'OverflowError')
+            self.assertEqual(sys.exc_info()[0], OverflowError)
             value = sys.exc_info()[1]
-            self.failUnless(value.startswith("'simple'"))
-            self.failUnless('full details: testing' in value)
+            self.failUnless(value.message.startswith("'simple'"))
+            self.failUnless('full details: testing' in value.message)
 
     def test_raise_StandardErrorMessage_TaintedString_errorValue(self):
         from ZPublisher.TaintedString import TaintedString
+        class REQUEST(object):
+            class RESPONSE(object):
+                handle_errors = True
         item = self._makeOne()
         def _raise_during_standard_error_message(*args, **kw):
             raise ZeroDivisionError('testing')
@@ -50,13 +56,13 @@ class TestItem(unittest.TestCase):
             item.raise_standardErrorMessage(
                             error_type=OverflowError,
                             error_value=TaintedString('<simple>'),
-                            REQUEST={'dummy': ''},
+                            REQUEST=REQUEST(),
                             )
         except:
             import sys
-            self.assertEqual(sys.exc_info()[0], 'OverflowError')
+            self.assertEqual(sys.exc_info()[0], OverflowError)
             value = sys.exc_info()[1]
-            self.failIf('<' in value)
+            self.failIf('<' in value.message)
 
 
 class TestItem_w__name__(unittest.TestCase):
