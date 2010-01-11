@@ -312,6 +312,7 @@ class Item(Base,
                 # return the rendered exception and let the
                 # ZPublisher Exception Hook deal with it.
                 return error_type, v, tb
+            v = xml_escape(v)
             raise error_type, v, tb
         finally:
             if hasattr(self, '_v_eek'): del self._v_eek
