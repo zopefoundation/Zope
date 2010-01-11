@@ -50,6 +50,7 @@ from DocumentTemplate.ustr import ustr
 from ExtensionClass import Base
 from Persistence import Persistent
 from webdav.Resource import Resource
+from webdav.xmltools import escape as xml_escape
 from zExceptions import Redirect
 from zExceptions import upgradeException
 from zExceptions.ExceptionFormatter import format_exception
@@ -310,6 +311,7 @@ class Item(Base,
                 # return the rendered exception and let the
                 # ZPublisher Exception Hook deal with it.
                 return error_type, v, tb
+            v = xml_escape(v)
             raise error_type, v, tb
         finally:
             if hasattr(self, '_v_eek'): del self._v_eek
