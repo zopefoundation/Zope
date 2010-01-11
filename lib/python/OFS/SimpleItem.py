@@ -33,6 +33,7 @@ from DocumentTemplate.html_quote import html_quote
 from DocumentTemplate.ustr import ustr
 from ExtensionClass import Base
 from webdav.Resource import Resource
+from webdav.xmltools import escape as xml_escape
 from zExceptions import Redirect
 from zExceptions.ExceptionFormatter import format_exception
 from zope.interface import implements
@@ -239,6 +240,7 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
                      "event log for full details: %s)")%(
                     html_quote(sys.exc_info()[1]),
                     ))
+            v = xml_escape(v)
             raise error_type, v, tb
         finally:
             if hasattr(self, '_v_eek'): del self._v_eek
