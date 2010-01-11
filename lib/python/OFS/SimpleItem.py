@@ -25,6 +25,7 @@ import marshal, re, sys, time
 import Globals, App.Management, Acquisition, App.Undo
 import AccessControl.Role, AccessControl.Owned, App.Common
 from webdav.Resource import Resource
+from webdav.xmltools import escape as xml_escape
 from ExtensionClass import Base
 from ComputedAttribute import ComputedAttribute
 from AccessControl import getSecurityManager, Unauthorized
@@ -227,6 +228,7 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
                      "event log for full details: %s)")%(
                     html_quote(sys.exc_info()[1]),
                     ))
+            v = xml_escape(v)
             raise error_type, v, tb
         finally:
             if hasattr(self, '_v_eek'): del self._v_eek
