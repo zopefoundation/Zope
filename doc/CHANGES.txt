@@ -4,7 +4,7 @@ Zope Changes
   Change information for previous versions of Zope can be found in the
   file HISTORY.txt.
 
-  Zope 2.8.12 (unreleased)
+  Zope 2.8.12 (2010/01/12)
 
   - LP #491224: proper escaping of rendered error message
 
