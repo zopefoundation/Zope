@@ -6,6 +6,8 @@ Zope Changes
 
   Zope 2.8.12 (2010/01/12)
 
+  - LP #490514: preserve tainting when calling into DTML from ZPT.
+
   - LP #491224: proper escaping of rendered error message
 
   Zope 2.8.11 (2009/08/06)
