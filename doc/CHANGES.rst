@@ -11,6 +11,8 @@ Zope 2.12.3 (unreleased)
 Bugs Fixed
 ++++++++++
 
+- LP #491224: proper escaping of rendered error message
+
 - LP #246983: Enabled unicode conflict resolution on variables inside "string:"
   expressions in TALES.
 

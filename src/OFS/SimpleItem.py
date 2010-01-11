@@ -51,6 +51,7 @@ from DocumentTemplate.ustr import ustr
 from ExtensionClass import Base
 from Persistence import Persistent
 from webdav.Resource import Resource
+from webdav.xmltools import escape as xml_escape
 from zExceptions import Redirect
 from zExceptions import upgradeException
 from zExceptions.ExceptionFormatter import format_exception
