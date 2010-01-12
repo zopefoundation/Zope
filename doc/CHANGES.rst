@@ -27,6 +27,10 @@ Bugs Fixed
 Features Added
 ++++++++++++++
 
+- Made OFS.Image.File and OFS.Image.Image send IObjectModifiedEvent when
+  created through their factories and modified through the ZMI forms
+  (manage_edit() and manage_upload()).
+
 - Moved zope.formlib / zope.app.form integration into a separate package
   called five.formlib.
 
