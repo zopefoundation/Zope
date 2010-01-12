@@ -46,6 +46,10 @@ from OFS.Cache import Cacheable
 from OFS.PropertyManager import PropertyManager
 from OFS.SimpleItem import Item_w__name__
 
+from zope.event import notify
+from zope.lifecycleevent import ObjectModifiedEvent
+from zope.lifecycleevent import ObjectCreatedEvent
+
 manage_addFileForm = DTMLFile('dtml/imageAdd',
                               globals(),
                               Kind='File',
@@ -63,19 +67,23 @@ def manage_addFile(self, id, file='', title='', precondition='',
     precondition = str(precondition)
 
     id, title = cookId(id, title, file)
-
+    
     self=self.this()
 
     # First, we create the file without data:
     self._setObject(id, File(id,title,'',content_type, precondition))
-
+    
+    newFile = self._getOb(id)
+    
     # Now we "upload" the data.  By doing this in two steps, we
     # can use a database trick to make the upload more efficient.
     if file:
-        self._getOb(id).manage_upload(file)
+        newFile.manage_upload(file)
     if content_type:
-        self._getOb(id).content_type=content_type
-
+        newFile.content_type=content_type
+    
+    notify(ObjectCreatedEvent(newFile))
+    
     if REQUEST is not None:
         REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
 
@@ -469,6 +477,9 @@ class File(Persistent, Implicit, PropertyManager,
             self.update_data(filedata, content_type, len(filedata))
         else:
             self.ZCacheable_invalidate()
+        
+        notify(ObjectModifiedEvent(self))
+        
         if REQUEST:
             message="Saved changes."
             return self.manage_main(self,REQUEST,manage_tabs_message=message)
@@ -487,7 +498,9 @@ class File(Persistent, Implicit, PropertyManager,
         content_type=self._get_content_type(file, data, self.__name__,
                                             'application/octet-stream')
         self.update_data(data, content_type, size)
-
+        
+        notify(ObjectModifiedEvent(self))
+        
         if REQUEST:
             message="Saved changes."
             return self.manage_main(self,REQUEST,manage_tabs_message=message)
@@ -665,14 +678,18 @@ def manage_addImage(self, id, file, title='', precondition='', content_type='',
 
     # First, we create the image without data:
     self._setObject(id, Image(id,title,'',content_type, precondition))
-
+    
+    newFile = self._getOb(id)
+    
     # Now we "upload" the data.  By doing this in two steps, we
     # can use a database trick to make the upload more efficient.
     if file:
-        self._getOb(id).manage_upload(file)
+        newFile.manage_upload(file)
     if content_type:
-        self._getOb(id).content_type=content_type
-
+        newFile.content_type=content_type
+    
+    notify(ObjectCreatedEvent(newFile))
+    
     if REQUEST is not None:
         try:    url=self.DestinationURL()
         except: url=REQUEST['URL1']

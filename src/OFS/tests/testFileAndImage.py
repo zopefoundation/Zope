@@ -8,6 +8,8 @@ import os, sys
 import time
 from cStringIO import StringIO
 
+from Acquisition import aq_base
+
 from OFS.Application import Application
 from OFS.SimpleItem import SimpleItem
 from OFS.Cache import ZCM_MANAGERS
@@ -18,6 +20,12 @@ from App.Common import rfc1123_date
 from Testing.makerequest import makerequest
 from zExceptions import Redirect
 import transaction
+
+import OFS.Image
+
+from zope.component import adapter
+from zope.lifecycleevent.interfaces import IObjectModifiedEvent
+from zope.lifecycleevent.interfaces import IObjectCreatedEvent
 
 try:
     here = os.path.dirname(os.path.abspath(__file__))
@@ -57,7 +65,7 @@ class DummyCache:
                    mtime_func=None):
         self.get = ob
         if self.si:
-            return si
+            return self.si
 
     def ZCache_invalidate(self, ob):
         self.invalidated = ob
@@ -78,6 +86,38 @@ class DummyCacheManager(SimpleItem):
     def ZCacheManager_getCache(self):
         return ADummyCache
 
+class EventCatcher(object):
+    
+    def __init__(self):
+        self.created = []
+        self.modified = []
+        
+        self.setUp()
+    
+    def setUp(self):
+        from zope.component import provideHandler
+        provideHandler(self.handleCreated)
+        provideHandler(self.handleModified)
+    
+    def tearDown(self):
+        from zope.component import getSiteManager
+        getSiteManager().unregisterHandler(self.handleCreated)
+        getSiteManager().unregisterHandler(self.handleModified)
+    
+    def reset(self):
+        self.created = []
+        self.modified = []
+    
+    @adapter(IObjectCreatedEvent)
+    def handleCreated(self, event):
+        if isinstance(event.object, OFS.Image.File):
+            self.created.append(event)
+    
+    @adapter(IObjectModifiedEvent)
+    def handleModified(self, event):
+        if isinstance(event.object, OFS.Image.File):
+            self.modified.append(event)
+
 class FileTests(unittest.TestCase):
     data = open(filedata, 'rb').read()
     content_type = 'application/octet-stream'
@@ -85,6 +125,8 @@ class FileTests(unittest.TestCase):
     def setUp( self ):
 
         self.connection = makeConnection()
+        self.eventCatcher = EventCatcher()
+        
         try:
             r = self.connection.root()
             a = Application()
@@ -107,7 +149,16 @@ class FileTests(unittest.TestCase):
             raise
         transaction.begin()
         self.file = getattr( self.app, 'file' )
-
+        
+        # Since we do the create here, let's test the events here too
+        self.assertEquals(1, len(self.eventCatcher.created))
+        self.failUnless(aq_base(self.eventCatcher.created[0].object) is aq_base(self.file))
+        
+        self.assertEquals(1, len(self.eventCatcher.modified))
+        self.failUnless(aq_base(self.eventCatcher.created[0].object) is aq_base(self.file))
+        
+        self.eventCatcher.reset()
+        
     def tearDown( self ):
         del self.file
         transaction.abort()
@@ -117,6 +168,8 @@ class FileTests(unittest.TestCase):
         del self.root
         del self.connection
         ADummyCache.clear()
+        
+        self.eventCatcher.tearDown()
 
     def testViewImageOrFile(self):
         self.assertRaises(Redirect, self.file.view_image_or_file, 'foo')
@@ -153,18 +206,24 @@ class FileTests(unittest.TestCase):
         self.assertEqual(self.file.content_type, 'text/plain')
         self.failUnless(ADummyCache.invalidated)
         self.failUnless(ADummyCache.set)
+        self.assertEquals(1, len(self.eventCatcher.modified))
+        self.failUnless(self.eventCatcher.modified[0].object is self.file)
 
     def testManageEditWithoutFileData(self):
         self.file.manage_edit('foobar', 'text/plain')
         self.assertEqual(self.file.title, 'foobar')
         self.assertEqual(self.file.content_type, 'text/plain')
         self.failUnless(ADummyCache.invalidated)
+        self.assertEquals(1, len(self.eventCatcher.modified))
+        self.failUnless(self.eventCatcher.modified[0].object is self.file)
 
     def testManageUpload(self):
         f = StringIO('jammyjohnson')
         self.file.manage_upload(f)
         self.assertEqual(self.file.data, 'jammyjohnson')
         self.assertEqual(self.file.content_type, 'application/octet-stream')
+        self.assertEquals(1, len(self.eventCatcher.modified))
+        self.failUnless(self.eventCatcher.modified[0].object is self.file)
 
     def testIfModSince(self):
         now = time.time()
@@ -302,3 +361,4 @@ def test_suite():
 
 if __name__ == '__main__':
     unittest.main(defaultTest='test_suite')
+
