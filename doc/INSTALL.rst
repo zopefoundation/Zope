@@ -164,7 +164,7 @@ instance is created as follows:
 
    [buildout]
    parts = instance 
-   extends = http://svn.zope.org/*checkout*/Zope/tags/<Zope version>/versions.cfg
+   extends = http://download.zope.org/Zope2/index/<Zope version>/versions.cfg
 
    [instance]
    recipe = zc.recipe.egg
