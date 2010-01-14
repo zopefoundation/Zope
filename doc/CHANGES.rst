@@ -11,6 +11,10 @@ Trunk (unreleased)
 Restructuring
 +++++++++++++
 
+- Finished the move of five.formlib to an extra package and removed it from
+  Zope 2 itself. Upgrade notes have been added to the news section of the
+  release notes.
+
 - Moved Products.Sessions APIs from ``SessionInterfaces`` to ``interfaces``,
   leaving behind the old module / names for backward compatibility.
 

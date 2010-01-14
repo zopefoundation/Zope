@@ -121,8 +121,8 @@ Zope2 depends on some packages only via transitive test dependencies.
 - [X] zope.copypastemove
       * zope.container
 
-- [ ] zope.datetime
-      o zope.app.form
+- [X] zope.datetime
+      * zope.app.form
       * zope.dublincore
 
 - [X] zope.dublincore
@@ -135,7 +135,7 @@ Questionable dependencies
 - [X] zope.authentication (seems to be used for some ILogin related stuff)
       * zope.publisher
 
-- [ ] zope.broken (this is really just one interface, merge into ZODB3!)
+- [ ] zope.broken (this is merged into ZODB3 starting with the unreleased 3.10)
       o zope.container
 
 - [X] zope.cachedescriptors
@@ -166,7 +166,6 @@ of how "interactions" work with the zope.publisher are also pretty muddy.
 
 - [ ] zope.proxy
       o zope.annotation
-      o zope.app.form
       o zope.browserresource
       o zope.component
       o zope.deferredimport
@@ -177,14 +176,12 @@ of how "interactions" work with the zope.publisher are also pretty muddy.
       o zope.traversing
 
 - [ ] zope.security
-      o zope.app.form
       o zope.authentication
       o zope.browsermenu
       o zope.browserpage
       o zope.browserresource
       o zope.component
       o zope.container
-      o zope.formlib
       o zope.pagetemplate
       o zope.ptresource
       o zope.publisher

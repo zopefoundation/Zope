@@ -10,8 +10,6 @@
 
   <include package=".component" />
   <include package=".browser" />
-  <include package=".form" />
-  <include package=".formlib" />
   <include package=".skin" />
   <include package=".utilities" />
   <include package=".viewlet" />

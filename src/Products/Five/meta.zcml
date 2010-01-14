@@ -8,7 +8,6 @@
   <include package="zope.i18n" file="meta.zcml" />
 
   <include package=".browser" file="meta.zcml" />
-  <include package=".form" file="meta.zcml" />
 
   <meta:directives namespace="http://namespaces.zope.org/zope">
 

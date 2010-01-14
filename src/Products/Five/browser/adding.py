@@ -90,8 +90,7 @@ class Adding(BrowserView):
     def nextURL(self):
         """See zope.browser.interfaces.IAdding"""
         # XXX this is definitely not right for all or even most uses
-        # of Five, but can be overridden by an AddView subclass, using
-        # the class attribute of a zcml:addform directive
+        # of Five, but can be overridden by an AddView subclass
         return absoluteURL(self.context, self.request) + '/manage_main'
 
     # set in BrowserView.__init__

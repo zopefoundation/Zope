@@ -66,16 +66,6 @@ defaultView
 Declare the name of the view that should be used for the default when viewing
 the object; i.e. when the object is traversed to without a view.
 
-editform
---------
-
-Create an edit form based on a schema.
-
-addform
---------
-
-Create an add form based on a schema.
-
 menu
 ----
 
