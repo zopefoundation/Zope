@@ -49,8 +49,10 @@ class SMTPMailer(object):
         # send EHLO
         code, response = connection.ehlo()
         if code < 200 or code >300:
-            raise RuntimeError('Error sending EHLO to the SMTP server '
-                                '(code=%s, response=%s)' % (code, response))
+            code, response = connection.helo()
+            if code < 200 or code >300:
+                raise RuntimeError('Error sending HELO to the SMTP server '
+                                   '(code=%s, response=%s)' % (code, response))
 
         # encryption support
         have_tls =  connection.has_extn('starttls') 
