@@ -94,6 +94,11 @@ _tokenizer_regex = re.compile(r"""
     )
 """, re.VERBOSE)
 
+# Use unicode regex to treat fullwidth space characters defined in Unicode
+# as valid whitespace.
+_tokenizer_unicode_regex = re.compile(
+    _tokenizer_regex.pattern, _tokenizer_regex.flags|re.UNICODE)
+
 class QueryParser:
 
     implements(IQueryParser)
@@ -109,7 +114,13 @@ class QueryParser:
 
     def parseQuery(self, query):
         # Lexical analysis.
-        tokens = _tokenizer_regex.findall(query)
+        try:
+            # Try to use unicode and treat fullwidth whitespace as valid one.
+            if not isinstance(query, unicode):
+                query = query.decode('utf-8')
+            tokens = _tokenizer_unicode_regex.findall(query)
+        except UnicodeDecodeError:
+            tokens = _tokenizer_regex.findall(query)
         self._tokens = tokens
         # classify tokens
         self._tokentypes = [_keywords.get(token.upper(), _ATOM)

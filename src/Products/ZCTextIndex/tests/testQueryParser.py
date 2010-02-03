@@ -210,6 +210,18 @@ class TestQueryParser(TestQueryParserBase):
         self.expect("foo* bar", AndNode([GlobNode("foo*"),
                                          AtomNode("bar")]))
 
+    def test024(self):
+        # Split by UTF-8 fullwidth space
+        from Products.ZCTextIndex.ParseTree import AndNode
+        from Products.ZCTextIndex.ParseTree import AtomNode
+        self.expect("foo\xe3\x80\x80bar", AndNode([AtomNode("foo"), AtomNode("bar")]))
+
+    def test025(self):
+        # Split by Unicode fullwidth space
+        from Products.ZCTextIndex.ParseTree import AndNode
+        from Products.ZCTextIndex.ParseTree import AtomNode
+        self.expect(u"foo\u3000bar", AndNode([AtomNode(u"foo"), AtomNode(u"bar")]))
+
     def test101(self):
         self.failure("")
 
