@@ -5,6 +5,14 @@ This file contains change information for the current Zope release.
 Change information for previous versions of Zope can be found in the
 file HISTORY.txt.
 
+Zope 2.12.4 (Unreleased)
+------------------------
+
+Bugs Fixed
+++++++++++
+
+- MailHost should fall back to HELO when EHLO fails.
+
 Zope 2.12.3 (2010/01/12)
 ------------------------
 
