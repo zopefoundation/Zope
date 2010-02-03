@@ -127,6 +127,9 @@ Features Added
   - zope.traversing = 3.12.0
   - zope.viewlet = 3.7.0
 
+- ZCTextIndex query parser treats fullwidth space characters defined
+  in Unicode as valid white space.
+
 Bugs Fixed
 ++++++++++
 
