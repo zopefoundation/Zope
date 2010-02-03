@@ -30,8 +30,8 @@ The main Python package can be added inside `poll.main` directory.
 We can make the ``poll``, a namespace package using the functionality
 provided by `pkg_resources` module included in setuptools.
 
-Bootstraping the Build
-======================
+Bootstrapping the Build
+=======================
 
 You should have Python 2.5 or 2.6 installed in your system.  To start
 the build process, download and run `bootstrap.py`.  The
