@@ -117,20 +117,20 @@ In short, the default Zope security policy ensures the following:
 - access to an object which does not have any associated security
   information is always denied.
 
+- access to an object whose name begins with the underscore
+  character '_' is always denied.
+
+- if the object has a security assertion declaring it *private*, then
+  access will be denied.
+
+- if the object has a security assertion declaring it *public* , then
+  access will be granted.
+
 - if an object is associated with a permission, access is granted or
   denied based on the user's roles.  If a user has a role which has
   been granted the permission in question, access is granted.  If the
   user does not possess a role that has been granted the permission
   in question, access is denied.
-
-- if the object has a security assertion declaring it *public* , then
-  access will be granted.
-
-- if the object has a security assertion declaring it *private*, then
-  access will be denied.
-
-- accesses to objects that have names beginning with the underscore
-  character '_' are always denied.
 
 As we delve further into Zope security within this chapter, we'll see
 exactly what it means to associate security information with an
