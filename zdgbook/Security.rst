@@ -39,7 +39,7 @@ consulted by 'ZPublisher' to determine whether the user has
 permission to view the 'index_html' object itself.  For more
 information on this topic, see Chapter 3, "Object Publishing".
 
-The Zope security policy is consulted when an object is accessed the
+The Zope security policy is consulted when an object is accessed by the
 publishing machinery, for example when a web request is submitted.
 
 
