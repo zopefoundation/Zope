@@ -16,8 +16,8 @@ options in depth.  This material is covered more concisely in
 In this chapter, the terms 'tag' and 'element' are used in the
 sense laid out by the `XHTML spec
 <http://www.w3.org/TR/2000/REC-xhtml1-20000126/#defs>`_.
-"&lt;p&gt;" is a *tag*, while the entire block
-"&lt;p&gt;stuff&lt;/p&gt;" from opening tag through the closing
+``<p>`` is a *tag*, while the entire block
+``<p>stuff</p>`` from opening tag through the closing
 tag is an *element*.
 
 Advanced Content Insertion
