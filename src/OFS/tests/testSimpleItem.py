@@ -44,7 +44,7 @@ class TestItem(unittest.TestCase):
             self.failUnless('full details: testing' in value.message)
 
     def test_raise_StandardErrorMessage_TaintedString_errorValue(self):
-        from ZPublisher.TaintedString import TaintedString
+        from Shared.TaintedString import TaintedString
         class REQUEST(object):
             class RESPONSE(object):
                 handle_errors = True
