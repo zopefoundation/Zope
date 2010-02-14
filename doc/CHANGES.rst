@@ -8,6 +8,15 @@ file HISTORY.txt.
 Zope 2.12.4 (Unreleased)
 ------------------------
 
+Features Added
+++++++++++++++
+
+- Updated packages:
+
+  - Acquisition = 2.13.0
+  - ExtensionClass = 2.12.0
+  - Persistence = 2.12.0
+
 Bugs Fixed
 ++++++++++
 
