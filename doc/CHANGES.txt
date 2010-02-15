@@ -4,9 +4,11 @@ Zope Changes
   Change information for previous versions of Zope can be found in the
   file HISTORY.txt.
 
-  Zope 2.11.7 (Unreleased)
+  Zope 2.11.7 (unreleased)
 
     Bugs Fixed
+
+      - LP #195761: fixed ZMI XML export / import.
 
       - MailHost should fall back to HELO when EHLO fails.
 
