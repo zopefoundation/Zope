@@ -20,6 +20,8 @@ Features Added
 Bugs Fixed
 ++++++++++
 
+- LP #195761: fixed ZMI XML export / import and restored it to the UI.
+
 - MailHost should fall back to HELO when EHLO fails.
 
 Zope 2.12.3 (2010/01/12)
