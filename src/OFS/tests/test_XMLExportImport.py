@@ -1,3 +1,4 @@
+# -*- coding: iso8859-1 -*-
 ##############################################################################
 #
 # Copyright (c) 2006 Zope Corporation and Contributors. All Rights Reserved.
@@ -16,7 +17,15 @@ import tempfile
 import transaction
 from StringIO import StringIO
 
-_LONG_DTML = '\n'.join([('<dtml-var foo%d' % x) for x in xrange(1000)])
+try:
+    here = os.path.dirname(os.path.abspath(__file__))
+except:
+    here = os.path.dirname(os.path.abspath(sys.argv[0]))
+
+imagedata = os.path.join(here, 'test.gif')
+xmldata = os.path.join(here, 'export.xml')
+
+_LONG_DTML = ''.join([('<dtml-var foo%d' % x) for x in xrange(1000)])
 
 class XMLExportImportTests(unittest.TestCase):
 
@@ -111,6 +120,75 @@ class XMLExportImportTests(unittest.TestCase):
             # then comment it out as it's probably masking a failure in
             # the block above.
             os.remove(path)
+
+    def test_exportXML(self):
+        from OFS.Folder import Folder
+        from OFS.Image import Image
+        from OFS.XMLExportImport import exportXML
+
+        connection, app = self._makeJarAndRoot()
+        data = open(imagedata, 'rb')
+
+        sub = Folder('sub')
+        app._setObject('sub', sub)
+        img = Image('image', '', data, 'image/gif')
+        sub._setObject('image', img)
+        img._setProperty('prop1', 3.14159265359, 'float')
+        img._setProperty('prop2', 1, 'int')
+        img._setProperty('prop3', 2L**31-1, 'long')
+        img._setProperty('prop4', 'xxx', 'string')
+        img._setProperty('prop5', ['xxx', 'zzz'], 'lines')
+        img._setProperty('prop6', u'xxx', 'unicode')
+        img._setProperty('prop7', [u'xxx', u'zzz'], 'ulines')
+        img._setProperty('prop8', '<&>', 'string')
+        img._setProperty('prop9', u'<&>', 'unicode')
+        img._setProperty('prop10', '<]]>', 'string')
+        img._setProperty('prop11', u'<]]>', 'unicode')
+        img._setProperty('prop12', u'£', 'unicode')
+        transaction.savepoint(optimistic=True)
+        oid = sub._p_oid
+
+        handle, path = tempfile.mkstemp(suffix='.xml')
+        try:
+            ostream = os.fdopen(handle,'wb')
+            data = exportXML(connection, oid, ostream)
+            ostream.close()
+        finally:
+            os.remove(path)
+
+    def test_importXML(self):
+        from OFS.XMLExportImport import importXML
+
+        connection, app = self._makeJarAndRoot()
+        newobj = importXML(connection, xmldata)
+        img = newobj._getOb('image')
+        data = open(imagedata, 'rb').read()
+
+        self.assertEqual(img.data, data)
+        self.assertEqual(repr(img.getProperty('prop1')),
+                         repr(3.14159265359))
+        self.assertEqual(repr(img.getProperty('prop2')),
+                         repr(1))
+        self.assertEqual(repr(img.getProperty('prop3')),
+                         repr(2L**31-1))
+        self.assertEqual(repr(img.getProperty('prop4')),
+                         repr('xxx'))
+        self.assertEqual(repr(img.getProperty('prop5')),
+                         repr(('xxx', 'zzz')))
+        self.assertEqual(repr(img.getProperty('prop6')),
+                         repr(u'xxx'))
+        self.assertEqual(repr(img.getProperty('prop7')),
+                         repr((u'xxx', u'zzz')))
+        self.assertEqual(repr(img.getProperty('prop8')),
+                         repr('<&>'))
+        self.assertEqual(repr(img.getProperty('prop9')),
+                         repr(u'<&>'))
+        self.assertEqual(repr(img.getProperty('prop10')),
+                         repr('<]]>'))
+        self.assertEqual(repr(img.getProperty('prop11')),
+                         repr(u'<]]>'))
+        self.assertEqual(repr(img.getProperty('prop12')),
+                         repr(u'£'))
 
 def test_suite():
     return unittest.TestSuite((

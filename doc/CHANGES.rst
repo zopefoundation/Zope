@@ -133,6 +133,8 @@ Features Added
 Bugs Fixed
 ++++++++++
 
+- LP #195761: fixed ZMI XML export / import and restored it to the UI.
+
 - LP #491224: proper escaping of rendered error message
 
 - LP #246983: Enabled unicode conflict resolution on variables inside "string:"
