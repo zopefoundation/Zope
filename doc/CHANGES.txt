@@ -4,6 +4,12 @@ Zope Changes
   Change information for previous versions of Zope can be found in the
   file HISTORY.txt.
 
+  Zope 2.10.12 (unreleased)
+
+    Bugs fixed
+
+      - LP #195761: fixed ZMI XML export / import and restored it to the UI.
+
   Zope 2.10.11 (2010/01/12)
 
     Bugs fixed

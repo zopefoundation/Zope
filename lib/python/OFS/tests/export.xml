@@ -1,0 +1,344 @@
+<?xml version="1.0"?>
+<ZopeData>
+  <record id="482504664188191745" aka="BrIzb4doBAE=">
+    <pickle>
+      <tuple id="482504664188191745.2">
+          <global id="482504664188191745.1" name="Folder" module="OFS.Folder"/>
+          <tuple/>
+      </tuple>
+    </pickle>
+    <pickle>
+      <dictionary id="482504664188191745.3">
+        <item>
+            <key><string id="482504664188191745.4" encoding="">_objects</string></key>
+            <value>
+              <tuple id="482504664188191745.10">
+                  <dictionary id="482504664188191745.5">
+                    <item>
+                        <key><string id="482504664188191745.6" encoding="">meta_type</string></key>
+                        <value><string id="482504664188191745.7" encoding="">Image</string></value>
+                    </item>
+                    <item>
+                        <key><string id="482504664188191745.8" encoding="">id</string></key>
+                        <value><string id="482504664188191745.9" encoding="">image</string></value>
+                    </item>
+                  </dictionary>
+              </tuple>
+            </value>
+        </item>
+        <item>
+            <key><reference id="482504664188191745.9"/></key>
+            <value>
+              <persistent><string id="482504664188191745.11" encoding="base64">BrIzb4doBAI=</string></persistent>
+            </value>
+        </item>
+        <item>
+            <key><reference id="482504664188191745.8"/></key>
+            <value><string id="482504664188191745.12" encoding="">sub</string></value>
+        </item>
+      </dictionary>
+    </pickle>
+  </record>
+  <record id="482504664188191746" aka="BrIzb4doBAI=">
+    <pickle>
+      <tuple id="482504664188191746.2">
+          <global id="482504664188191746.1" name="Image" module="OFS.Image"/>
+          <tuple/>
+      </tuple>
+    </pickle>
+    <pickle>
+      <dictionary id="482504664188191746.3">
+        <item>
+            <key><string id="482504664188191746.4" encoding="">precondition</string></key>
+            <value><string encoding=""></string></value>
+        </item>
+        <item>
+            <key><string id="482504664188191746.5" encoding="">height</string></key>
+            <value><int>16</int></value>
+        </item>
+        <item>
+            <key><string id="482504664188191746.6" encoding="">size</string></key>
+            <value><int>894</int></value>
+        </item>
+        <item>
+            <key><string id="482504664188191746.7" encoding="">title</string></key>
+            <value><string encoding=""></string></value>
+        </item>
+        <item>
+            <key><string id="482504664188191746.8" encoding="">width</string></key>
+            <value><int>16</int></value>
+        </item>
+        <item>
+            <key><string id="482504664188191746.9" encoding="">_EtagSupport__etag</string></key>
+            <value><string id="482504664188191746.10" encoding="">ts65767150.22</string></value>
+        </item>
+        <item>
+            <key><string id="482504664188191746.11" encoding="">prop3</string></key>
+            <value><long>2147483647</long></value>
+        </item>
+        <item>
+            <key><string id="482504664188191746.12" encoding="">content_type</string></key>
+            <value><string id="482504664188191746.13" encoding="">image/gif</string></value>
+        </item>
+        <item>
+            <key><string id="482504664188191746.14" encoding="">__name__</string></key>
+            <value><string id="482504664188191746.15" encoding="">image</string></value>
+        </item>
+        <item>
+            <key><string id="482504664188191746.16" encoding="">data</string></key>
+            <value><string id="482504664188191746.17" encoding="base64">R0lGODlhEAAQAPcAAP8A/wAAAFBQUICAgMDAwP8AAIAAQAAAoABAgIAAgEAAQP//AP//gACAgECA
+gP///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAAAALAAAAAAQABAA
+AAhbAAMIHEhwIICDAQ4qXIhQYUKFCCIufAiAYsSLDjMWiFjgoMSODkECAMmRIcWDBTYiYMjS40qT
+DFWKRHmyY8mRKStmXJhzp04AEllSfBgUZsOWPk+2HFqwaYCAAAA7</string></value>
+        </item>
+        <item>
+            <key><string id="482504664188191746.18" encoding="">prop12</string></key>
+            <value><unicode encoding="">£</unicode></value>
+        </item>
+        <item>
+            <key><string id="482504664188191746.19" encoding="">prop10</string></key>
+            <value><string id="482504664188191746.20" encoding="">&lt;]]&gt;</string></value>
+        </item>
+        <item>
+            <key><string id="482504664188191746.21" encoding="">prop11</string></key>
+            <value><unicode id="482504664188191746.22" encoding="">&lt;]]&gt;</unicode></value>
+        </item>
+        <item>
+            <key><string id="482504664188191746.23" encoding="">prop4</string></key>
+            <value><string id="482504664188191746.24" encoding="">xxx</string></value>
+        </item>
+        <item>
+            <key><string id="482504664188191746.25" encoding="">prop5</string></key>
+            <value>
+              <tuple id="482504664188191746.27">
+                  <reference id="482504664188191746.24"/>
+                  <string id="482504664188191746.26" encoding="">zzz</string>
+              </tuple>
+            </value>
+        </item>
+        <item>
+            <key><string id="482504664188191746.28" encoding="">prop6</string></key>
+            <value><unicode id="482504664188191746.29" encoding="">xxx</unicode></value>
+        </item>
+        <item>
+            <key><string id="482504664188191746.30" encoding="">prop7</string></key>
+            <value>
+              <tuple id="482504664188191746.32">
+                  <reference id="482504664188191746.29"/>
+                  <unicode id="482504664188191746.31" encoding="">zzz</unicode>
+              </tuple>
+            </value>
+        </item>
+        <item>
+            <key><string id="482504664188191746.33" encoding="">prop1</string></key>
+            <value><float>3.14159265359</float></value>
+        </item>
+        <item>
+            <key><string id="482504664188191746.34" encoding="">prop2</string></key>
+            <value><int>1</int></value>
+        </item>
+        <item>
+            <key><string id="482504664188191746.35" encoding="">_properties</string></key>
+            <value>
+              <tuple id="482504664188191746.66">
+                  <dictionary id="482504664188191746.36">
+                    <item>
+                        <key><string id="482504664188191746.37" encoding="">type</string></key>
+                        <value><string id="482504664188191746.38" encoding="">string</string></value>
+                    </item>
+                    <item>
+                        <key><string id="482504664188191746.39" encoding="">id</string></key>
+                        <value><reference id="482504664188191746.7"/></value>
+                    </item>
+                  </dictionary>
+                  <dictionary id="482504664188191746.40">
+                    <item>
+                        <key><reference id="482504664188191746.37"/></key>
+                        <value><reference id="482504664188191746.38"/></value>
+                    </item>
+                    <item>
+                        <key><reference id="482504664188191746.39"/></key>
+                        <value><string id="482504664188191746.41" encoding="">alt</string></value>
+                    </item>
+                  </dictionary>
+                  <dictionary id="482504664188191746.42">
+                    <item>
+                        <key><reference id="482504664188191746.37"/></key>
+                        <value><reference id="482504664188191746.38"/></value>
+                    </item>
+                    <item>
+                        <key><reference id="482504664188191746.39"/></key>
+                        <value><reference id="482504664188191746.12"/></value>
+                    </item>
+                    <item>
+                        <key><string id="482504664188191746.43" encoding="">mode</string></key>
+                        <value><string encoding="">w</string></value>
+                    </item>
+                  </dictionary>
+                  <dictionary id="482504664188191746.44">
+                    <item>
+                        <key><reference id="482504664188191746.37"/></key>
+                        <value><reference id="482504664188191746.38"/></value>
+                    </item>
+                    <item>
+                        <key><reference id="482504664188191746.39"/></key>
+                        <value><reference id="482504664188191746.5"/></value>
+                    </item>
+                  </dictionary>
+                  <dictionary id="482504664188191746.45">
+                    <item>
+                        <key><reference id="482504664188191746.37"/></key>
+                        <value><reference id="482504664188191746.38"/></value>
+                    </item>
+                    <item>
+                        <key><reference id="482504664188191746.39"/></key>
+                        <value><reference id="482504664188191746.8"/></value>
+                    </item>
+                  </dictionary>
+                  <dictionary id="482504664188191746.46">
+                    <item>
+                        <key><reference id="482504664188191746.37"/></key>
+                        <value><string id="482504664188191746.47" encoding="">float</string></value>
+                    </item>
+                    <item>
+                        <key><reference id="482504664188191746.39"/></key>
+                        <value><reference id="482504664188191746.33"/></value>
+                    </item>
+                  </dictionary>
+                  <dictionary id="482504664188191746.48">
+                    <item>
+                        <key><reference id="482504664188191746.37"/></key>
+                        <value><string id="482504664188191746.49" encoding="">int</string></value>
+                    </item>
+                    <item>
+                        <key><reference id="482504664188191746.39"/></key>
+                        <value><reference id="482504664188191746.34"/></value>
+                    </item>
+                  </dictionary>
+                  <dictionary id="482504664188191746.50">
+                    <item>
+                        <key><reference id="482504664188191746.37"/></key>
+                        <value><string id="482504664188191746.51" encoding="">long</string></value>
+                    </item>
+                    <item>
+                        <key><reference id="482504664188191746.39"/></key>
+                        <value><reference id="482504664188191746.11"/></value>
+                    </item>
+                  </dictionary>
+                  <dictionary id="482504664188191746.52">
+                    <item>
+                        <key><reference id="482504664188191746.37"/></key>
+                        <value><reference id="482504664188191746.38"/></value>
+                    </item>
+                    <item>
+                        <key><reference id="482504664188191746.39"/></key>
+                        <value><reference id="482504664188191746.23"/></value>
+                    </item>
+                  </dictionary>
+                  <dictionary id="482504664188191746.53">
+                    <item>
+                        <key><reference id="482504664188191746.37"/></key>
+                        <value><string id="482504664188191746.54" encoding="">lines</string></value>
+                    </item>
+                    <item>
+                        <key><reference id="482504664188191746.39"/></key>
+                        <value><reference id="482504664188191746.25"/></value>
+                    </item>
+                  </dictionary>
+                  <dictionary id="482504664188191746.55">
+                    <item>
+                        <key><reference id="482504664188191746.37"/></key>
+                        <value><string id="482504664188191746.56" encoding="">unicode</string></value>
+                    </item>
+                    <item>
+                        <key><reference id="482504664188191746.39"/></key>
+                        <value><reference id="482504664188191746.28"/></value>
+                    </item>
+                  </dictionary>
+                  <dictionary id="482504664188191746.57">
+                    <item>
+                        <key><reference id="482504664188191746.37"/></key>
+                        <value><string id="482504664188191746.58" encoding="">ulines</string></value>
+                    </item>
+                    <item>
+                        <key><reference id="482504664188191746.39"/></key>
+                        <value><reference id="482504664188191746.30"/></value>
+                    </item>
+                  </dictionary>
+                  <dictionary id="482504664188191746.59">
+                    <item>
+                        <key><reference id="482504664188191746.37"/></key>
+                        <value><reference id="482504664188191746.38"/></value>
+                    </item>
+                    <item>
+                        <key><reference id="482504664188191746.39"/></key>
+                        <value><string id="482504664188191746.60" encoding="">prop8</string></value>
+                    </item>
+                  </dictionary>
+                  <dictionary id="482504664188191746.61">
+                    <item>
+                        <key><reference id="482504664188191746.37"/></key>
+                        <value><reference id="482504664188191746.56"/></value>
+                    </item>
+                    <item>
+                        <key><reference id="482504664188191746.39"/></key>
+                        <value><string id="482504664188191746.62" encoding="">prop9</string></value>
+                    </item>
+                  </dictionary>
+                  <dictionary id="482504664188191746.63">
+                    <item>
+                        <key><reference id="482504664188191746.37"/></key>
+                        <value><reference id="482504664188191746.38"/></value>
+                    </item>
+                    <item>
+                        <key><reference id="482504664188191746.39"/></key>
+                        <value><reference id="482504664188191746.19"/></value>
+                    </item>
+                  </dictionary>
+                  <dictionary id="482504664188191746.64">
+                    <item>
+                        <key><reference id="482504664188191746.37"/></key>
+                        <value><reference id="482504664188191746.56"/></value>
+                    </item>
+                    <item>
+                        <key><reference id="482504664188191746.39"/></key>
+                        <value><reference id="482504664188191746.21"/></value>
+                    </item>
+                  </dictionary>
+                  <dictionary id="482504664188191746.65">
+                    <item>
+                        <key><reference id="482504664188191746.37"/></key>
+                        <value><reference id="482504664188191746.56"/></value>
+                    </item>
+                    <item>
+                        <key><reference id="482504664188191746.39"/></key>
+                        <value><reference id="482504664188191746.18"/></value>
+                    </item>
+                  </dictionary>
+              </tuple>
+            </value>
+        </item>
+        <item>
+            <key><reference id="482504664188191746.60"/></key>
+            <value><string id="482504664188191746.67" encoding="cdata"><![CDATA[<&>]]></string></value>
+        </item>
+        <item>
+            <key><reference id="482504664188191746.62"/></key>
+            <value><unicode id="482504664188191746.68" encoding="cdata"><![CDATA[<&>]]></unicode></value>
+        </item>
+      </dictionary>
+    </pickle>
+  </record>
+</ZopeData>
