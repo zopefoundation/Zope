@@ -14,6 +14,8 @@ from base64 import encodestring
 from cStringIO import StringIO
 from ZODB.serialize import referencesf
 from ZODB.ExportImport import TemporaryFile, export_end_marker
+from ZODB.utils import p64
+from ZODB.utils import u64
 from Shared.DC.xml import ppml
 
 
@@ -23,7 +25,7 @@ def XMLrecord(oid, len, p):
     q=ppml.ToXMLUnpickler
     f=StringIO(p)
     u=q(f)
-    id=ppml.u64(oid)
+    id=u64(oid)
     aka=encodestring(oid)[:-1]
     u.idprefix=str(id)+'.'
     p=u.load().__str__(4)
@@ -87,11 +89,11 @@ def save_record(parser, tag, data):
     file.seek(pos)
     a=data[1]
     if a.has_key('id'): oid=a['id']
-    oid=ppml.p64(int(oid))
+    oid=p64(int(oid))
     v=''
     for x in data[2:]:
         v=v+x
-    l=ppml.p64(len(v))
+    l=p64(len(v))
     v=oid+l+v
     return v
 

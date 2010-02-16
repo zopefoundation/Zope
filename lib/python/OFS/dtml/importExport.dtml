@@ -9,7 +9,13 @@ You can export Zope objects to a file in order to transfer
 them to a different Zope installation. You can either choose
 to download the export file to your local machine, or save it
 in the &quot;var&quot; directory of your Zope installation 
-on the server.
+on the server. 
+<br/>
+<br/>
+<b>Note:</b>
+Zope can export/import objects in two different formats: a binary format (called
+ZEXP) and as XML. The ZEXP format is the officially supported export/import
+format for moving data between <u>identicial</u> Zope installations (it is not a migration tool).
 </p>
 
 <form action="manage_exportObject" method="post">
