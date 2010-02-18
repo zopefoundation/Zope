@@ -20,6 +20,8 @@ Features Added
 Bugs Fixed
 ++++++++++
 
+- Protect ZCTextIndex's clear method against storing Acquisition wrappers.
+
 - LP #195761: fixed ZMI XML export / import and restored it to the UI.
 
 - MailHost should fall back to HELO when EHLO fails.
