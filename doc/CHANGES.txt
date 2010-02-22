@@ -8,6 +8,8 @@ Zope Changes
 
     Bugs Fixed
 
+      - Protect ZCTextIndex's clear method against storing Acquisition wrappers.
+
       - LP #195761: fixed ZMI XML export / import.
 
       - MailHost should fall back to HELO when EHLO fails.

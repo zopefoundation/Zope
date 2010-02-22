@@ -253,7 +253,7 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
             del self._v_lexicon
         except (AttributeError, KeyError):
             pass
-        self.index = self._index_factory(self.getLexicon())
+        self.index = self._index_factory(aq_base(self.getLexicon()))
 
     ## User Interface Methods ##
 
