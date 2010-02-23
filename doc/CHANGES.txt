@@ -8,6 +8,8 @@ Zope Changes
 
     Bugs Fixed
 
+      - Updated 'pytz' external to point to '2010b' version.
+
       - Protect ZCTextIndex's clear method against storing Acquisition wrappers.
 
       - LP #195761: fixed ZMI XML export / import.
