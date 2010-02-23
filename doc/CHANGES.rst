@@ -98,6 +98,9 @@ Features Added
 
 - Updated packages:
 
+  - Acquisition = 2.13.1
+  - ExtensionClass = 2.13.0
+  - Persistence = 2.13.0
   - zope.annotation = 3.5.0
   - zope.app.form = 3.12.1
   - zope.broken = 3.6.0
