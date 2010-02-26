@@ -62,7 +62,7 @@ class AbsoluteURL(BrowserView):
     def _getContextName(self, context):
         if getattr(context, 'getId', None) is not None:
             return context.getId()
-        getattr(context, '__name__', None)
+        return getattr(context, '__name__', None)
 
     def breadcrumbs(self):
         context = self.context
