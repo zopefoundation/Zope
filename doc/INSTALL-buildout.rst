@@ -179,7 +179,7 @@ to find out about additionally commands of zopectl. These commands
 also work at the command line.
 
 Note that there are there are recipes such as `plone.recipe.zope2instance
-http://pypi.python.org/pypi/plone.recipe.zope2instance`_ which can be
+<http://pypi.python.org/pypi/plone.recipe.zope2instance>`_ which can be
 used to automate this whole process.
 
 After installation, refer to :doc:`operation` for documentation on
