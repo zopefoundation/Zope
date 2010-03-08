@@ -104,7 +104,7 @@ both the Zope software and the configuration and data for your server.
 This procedure involves the following steps:
 
 - Create the home directory for the buildout, including 
-  ``etc``, ``logs`` and ``var`` subdirectories.
+  ``etc``, ``log`` and ``var`` subdirectories.
 
 - Fetch the buildout bootstrap script into the environment.
 
@@ -152,6 +152,8 @@ A fully-annotated sample can be found in the Zope2 egg::
 
    $ cat eggs/Zope2--*/Zope2/utilities/skel/etc/zope.conf.in
 
+   <rest of the stuff that goes into a zope.conf, e.g. databases and log files.>
+
 .. highlight:: bash
 
 An example session::
@@ -176,6 +178,9 @@ calling it without any arguments. Try ``help`` there and ``help <command>``
 to find out about additionally commands of zopectl. These commands
 also work at the command line.
 
+Note that there are there are recipes such as `plone.recipe.zope2instance
+<http://pypi.python.org/pypi/plone.recipe.zope2instance>`_ which can be
+used to automate this whole process.
 
 After installation, refer to :doc:`operation` for documentation on
 configuring and running Zope.
