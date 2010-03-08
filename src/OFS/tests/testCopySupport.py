@@ -1,7 +1,5 @@
 import unittest
 import Testing
-import Zope2
-Zope2.startup()
 
 import cStringIO
 
