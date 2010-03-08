@@ -9,6 +9,8 @@ Contents:
 
    WHATSNEW.rst
    INSTALL.rst
+   INSTALL-buildout.rst
+   operation.rst
    USERS.rst
    SECURITY.rst
    SETUID.rst
