@@ -374,11 +374,15 @@ class RAMCacheManager (CacheManager, SimpleItem):
             'request_vars': ('AUTHENTICATED_USER',),
             'max_age': 3600,
             }
-        self.__cacheid = '%s_%f' % (id(self), time.time())
+        self._resetCacheId()
 
     def getId(self):
         ' '
         return self.id
+
+    security.declarePrivate('_resetCacheId')
+    def _resetCacheId(self):
+        self.__cacheid = '%s_%f' % (id(self), time.time())
 
     ZCacheManager_getCache__roles__ = ()
     def ZCacheManager_getCache(self):

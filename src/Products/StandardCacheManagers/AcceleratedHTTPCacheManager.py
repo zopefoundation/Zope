@@ -166,11 +166,15 @@ class AcceleratedHTTPCacheManager (CacheManager, SimpleItem):
         self._settings = {'anonymous_only':1,
                           'interval':3600,
                           'notify_urls':()}
-        self.__cacheid = '%s_%f' % (id(self), time.time())
+        self._resetCacheId()
 
     def getId(self):
         ' '
         return self.id
+
+    security.declarePrivate('_resetCacheId')
+    def _resetCacheId(self):
+        self.__cacheid = '%s_%f' % (id(self), time.time())
 
     security.declarePrivate('ZCacheManager_getCache')
     def ZCacheManager_getCache(self):
