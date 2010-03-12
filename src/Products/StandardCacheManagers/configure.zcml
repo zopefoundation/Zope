@@ -1,0 +1,13 @@
+<configure xmlns="http://namespaces.zope.org/zope">
+
+  <subscriber
+    for="Products.StandardCacheManagers.RAMCacheManager.RAMCacheManager
+         OFS.interfaces.IObjectClonedEvent"
+    handler="Products.StandardCacheManagers.subscribers.cloned" />
+
+  <subscriber
+    for="Products.StandardCacheManagers.AcceleratedHTTPCacheManager.AcceleratedHTTPCacheManager
+         OFS.interfaces.IObjectClonedEvent"
+    handler="Products.StandardCacheManagers.subscribers.cloned" />
+
+</configure>
