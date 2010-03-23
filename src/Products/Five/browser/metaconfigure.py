@@ -230,7 +230,7 @@ class view(zope.app.publisher.browser.viewmeta.view):
                 if view is not None:
                     return view
 
-                raise NotFoundError(self, name, request)
+                raise NotFound(self, name, request)
 
         cdict['publishTraverse'] = publishTraverse
 
