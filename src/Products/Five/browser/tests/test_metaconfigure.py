@@ -69,7 +69,7 @@ class ViewMixinForTemplatesTests(unittest.TestCase):
         self.failUnless(result is index)
         self.assertEqual(index._called_with, ((), {'foo': 'bar'}))
 
-    def test___call___no_args_no_kw(self):
+    def test___call___w_args_w_kw(self):
         view = self._makeOne()
         view.index = index = DummyTemplate()
         result = view('abc', foo='bar')
