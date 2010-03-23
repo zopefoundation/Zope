@@ -421,6 +421,8 @@ class ViewMixinForTemplates(BrowserView):
         raise NotFound(self, name, request)
 
     def __getitem__(self, name):
+        if name == 'macros':
+            return self.index.macros
         return self.index.macros[name]
 
     def __call__(self, *args, **kw):

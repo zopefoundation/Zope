@@ -20,6 +20,8 @@ Features Added
 Bugs Fixed
 ++++++++++
 
+- Restore ability to traverse to 'macros' on template-based browser views.
+
 - Protect ZCTextIndex's clear method against storing Acquisition wrappers.
 
 - LP #195761: fixed ZMI XML export / import and restored it to the UI.
