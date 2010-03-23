@@ -231,7 +231,7 @@ class view(zope.browserpage.metaconfigure.view):
                 if view is not None:
                     return view
 
-                raise NotFoundError(self, name, request)
+                raise NotFound(self, name, request)
 
         cdict['publishTraverse'] = publishTraverse
 
@@ -422,6 +422,8 @@ class ViewMixinForTemplates(BrowserView):
         raise NotFound(self, name, request)
 
     def __getitem__(self, name):
+        if name == 'macros':
+            return self.index.macros
         return self.index.macros[name]
 
     def __call__(self, *args, **kw):

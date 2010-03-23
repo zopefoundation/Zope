@@ -41,6 +41,12 @@ class ViewMixinForTemplatesTests(unittest.TestCase):
         index.macros = {}
         index.macros['aaa'] = aaa = object()
         self.failUnless(view['aaa'] is aaa)
+    
+    def test__getitem__gives_shortcut_to_index_macros(self):
+        view = self._makeOne()
+        view.index = index = DummyTemplate()
+        index.macros = {}
+        self.failUnless(view['macros'] is index.macros)
 
     def test___call___no_args_no_kw(self):
         view = self._makeOne()
@@ -63,7 +69,7 @@ class ViewMixinForTemplatesTests(unittest.TestCase):
         self.failUnless(result is index)
         self.assertEqual(index._called_with, ((), {'foo': 'bar'}))
 
-    def test___call___no_args_no_kw(self):
+    def test___call___w_args_w_kw(self):
         view = self._makeOne()
         view.index = index = DummyTemplate()
         result = view('abc', foo='bar')
