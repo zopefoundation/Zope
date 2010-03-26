@@ -1,3 +1,4 @@
+from StringIO import StringIO
 from sys import modules, exc_info
 from unittest import TestCase, TestSuite, makeSuite, main
 
@@ -7,11 +8,14 @@ from zope.event import subscribers
 
 from ZPublisher.Publish import publish, Retry
 from ZPublisher.BaseRequest import BaseRequest
+from ZPublisher.HTTPResponse import HTTPResponse
 from ZPublisher.pubevents import PubStart, PubSuccess, PubFailure, \
-     PubAfterTraversal, PubBeforeCommit, PubBeforeAbort
+     PubAfterTraversal, PubBeforeCommit, PubBeforeAbort, \
+     PubBeforeStreaming
 from ZPublisher.interfaces import \
      IPubStart, IPubEnd, IPubSuccess, IPubFailure, \
-     IPubAfterTraversal, IPubBeforeCommit
+     IPubAfterTraversal, IPubBeforeCommit, \
+     IPubBeforeStreaming
 
 PUBMODULE = 'TEST_testpubevents'
 
@@ -41,7 +45,10 @@ class TestInterface(TestCase):
     def testBeforeCommit(self):
         e = PubBeforeCommit(_Request())
         verifyObject(IPubBeforeCommit, e)
-
+    
+    def testBeforeStreaming(self):
+        e = PubBeforeStreaming(_Response())
+        verifyObject(IPubBeforeStreaming, e)
         
 class TestPubEvents(TestCase):
     def setUp(self):
@@ -126,6 +133,21 @@ class TestPubEvents(TestCase):
         self.assert_(isinstance(events[4], PubAfterTraversal))
         self.assert_(isinstance(events[5], PubBeforeCommit))
         self.assert_(isinstance(events[6], PubSuccess))
+
+    def testStreaming(self):
+        
+        out = StringIO()
+        response = HTTPResponse(stdout=out)
+        response.write('datachunk1')
+        response.write('datachunk2')
+        
+        events = self.reporter.events
+        self.assertEqual(len(events), 1)
+        self.assert_(isinstance(events[0], PubBeforeStreaming))
+        self.assertEqual(events[0].response, response)
+        
+        self.failUnless('datachunk1datachunk2' in out.getvalue())
+
 
 # Auxiliaries
 def _succeed():

@@ -5,11 +5,91 @@ This file contains change information for the current Zope release.
 Change information for previous versions of Zope can be found in the
 file HISTORY.txt.
 
-Zope 2.12.2 (unreleased)
+Zope 2.12.4 (Unreleased)
 ------------------------
 
 Features Added
 ++++++++++++++
+
+- Updated packages:
+
+  - Acquisition = 2.13.1
+  - ExtensionClass = 2.13.0
+  - Persistence = 2.13.0
+
+- There is now an event ZPublisher.interfaces.IPubBeforeStreaming which will
+  be fired just before the first chunk of data is written to the response
+  stream when using the write() method on the response. This is the last
+  possible point at which response headers may be set in this case.
+
+Bugs Fixed
+++++++++++
+
+- Zope 3-style resource directories would throw an Unauthorized error when
+  trying to use restrictedTraverse() to reach a resource in a sub-directory
+  of the resource directory.
+
+- Restore ability to traverse to 'macros' on template-based browser views.
+
+- Protect ZCTextIndex's clear method against storing Acquisition wrappers.
+
+- LP #195761: fixed ZMI XML export / import and restored it to the UI.
+
+- MailHost should fall back to HELO when EHLO fails.
+
+Zope 2.12.3 (2010/01/12)
+------------------------
+
+Bugs Fixed
+++++++++++
+
+- LP #491224: proper escaping of rendered error message
+
+- LP #246983: Enabled unicode conflict resolution on variables inside "string:"
+  expressions in TALES.
+
+- Fixed possible TypeError while sending multipart emails.
+
+- Also look for ZEXP imports within the clienthome directory. This
+  provides a place to put imports that won't be clobbered by buildout
+  in a buildout-based Zope instance.
+
+- Fixed a SyntaxError in utilities/load_site.py script.
+
+Features Added
+++++++++++++++
+
+- Made OFS.Image.File and OFS.Image.Image send IObjectModifiedEvent when
+  created through their factories and modified through the ZMI forms
+  (manage_edit() and manage_upload()).
+
+- Moved zope.formlib / zope.app.form integration into a separate package
+  called five.formlib.
+
+Zope 2.12.2 (2009-12-22)
+------------------------
+
+Features Added
+++++++++++++++
+
+- Updated packages:
+
+  - ZODB3 = 3.9.4
+  - docutils = 0.6
+  - pytz = 2009r
+  - zope.dottedname = 3.4.6
+  - zope.i18n = 3.7.2
+  - zope.interface = 3.5.3
+  - zope.minmax = 1.1.1
+  - zope.security = 3.7.2
+  - zope.session = 3.9.2
+  - zope.tal = 3.5.2
+
+- Enhanced the internals of the DateRangeIndex based on an idea from
+  experimental.daterangeindexoptimisations, thanks to Matt Hamilton.
+
+- Updated the default value for ``management_page_charset`` from iso-8859-1
+  to the nowadays more standard utf-8.
 
 - Added IPubBeforeAbort event to mirror IPubBeforeCommit in failure scenarios.
   This event is fired just before IPubFailure, but, crucially, while the
@@ -24,8 +104,25 @@ Features Added
 Bugs Fixed
 ++++++++++
 
+- LP #143444: add labels to checkboxes / radio buttons on import /
+  export form.
+
+- LP #496941:  Remove all mention of ``standard_html_header`` and
+  ``standard_html_footer`` from default DTML content.
+
+- Fixed a regression in Products.PageTemplates that meant filesystem templates
+  using Products.Five.browser.pagetemplatefile would treat TALES path
+  expressions (but not python expressions) as protected code and so attempt
+  to apply security. See original issue here:
+  http://codespeak.net/pipermail/z3-five/2007q2/002185.html
+
+- LP #491249:  fix tabindex on ZRDB connection test form.
+
+- LP #490514:  preserve tainting when calling into DTML from ZPT.
+
 - Avoid possible errors on test tear-down in Products.Five.fiveconfigure's
   cleanUp() function if Products.meta_types has not been set
+
 
 Zope 2.12.1 (2009/11/02)
 ------------------------

@@ -20,8 +20,10 @@ and logging duties.
 import time, re,  sys, tempfile
 from cStringIO import StringIO
 import thread
+from zope.event import notify
 from ZPublisher.HTTPResponse import HTTPResponse
 from ZPublisher.Iterators import IStreamIterator
+from ZPublisher.pubevents import PubBeforeStreaming
 from medusa.http_date import build_http_date
 from PubCore.ZEvent import Wakeup
 from medusa.producers import hooked_producer
@@ -165,6 +167,9 @@ class ZServerHTTPResponse(HTTPResponse):
         stdout=self.stdout
 
         if not self._wrote:
+            
+            notify(PubBeforeStreaming(self))
+            
             l=self.headers.get('content-length', None)
             if l is not None:
                 try:
