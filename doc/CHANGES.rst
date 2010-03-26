@@ -43,9 +43,6 @@ Restructuring
 - Moved TaintedString from ZPublisher to Shared.
   This resolves a circular import issue.
 
-- Moved zope.formlib / zope.app.form integration into a separate package
-  called five.formlib.
-
 - We no longer depend on the ``zope-functional-testing`` extra of
   zope.testbrowser.
 
@@ -57,12 +54,6 @@ Restructuring
 - Changed startup server tests in Zope2 to use a randomized port number, to
   allow the nightly buildbot to run the tests at the same time for multiple
   configurations without the port being already in use.
-
-- Cloned ``ZopeVocabularyRegistry`` from ``zope.app.schema``, and added
-  sane registration of it during initialization of Five.
-
-- Removed experimental support for configuring the Twisted HTTP server
-  as an alternative to ``ZServer``.
 
 - Moved ``Products/Five/security.py`` and security related ZCML configuration
   into the AccessControl package.
@@ -91,16 +82,8 @@ Restructuring
 Features Added
 ++++++++++++++
 
-- The send method of MailHost now supports unicode messages and
-  email.Message.Message objects.  It also now accepts charset and
-  msg_type parameters to help with character, header and body
-  encoding.
-
 - Updated packages:
 
-  - Acquisition = 2.13.1
-  - ExtensionClass = 2.13.0
-  - Persistence = 2.13.0
   - zope.annotation = 3.5.0
   - zope.app.form = 3.12.1
   - zope.broken = 3.6.0
@@ -136,46 +119,13 @@ Features Added
 Bugs Fixed
 ++++++++++
 
-- LP #195761: fixed ZMI XML export / import and restored it to the UI.
-
-- LP #491224: proper escaping of rendered error message
-
-- LP #246983: Enabled unicode conflict resolution on variables inside "string:"
-  expressions in TALES.
-
-- Also look for ZEXP imports within the clienthome directory. This
-  provides a place to put imports that won't be clobbered by buildout
-  in a buildout-based Zope instance.
-
-- LP #143444: add labels to checkboxes / radio buttons on import / export
-  form.
-
-- LP #496961:  Remove all mention of ``standard_html_header`` and
-  ``standard_html_footer`` from default DTML content.
-
-- LP #491249:  fix tabindex on ZRDB connection test form.
-
-- LP #490514:  preserve tainting when calling into DTML from ZPT.
-
-- LP #414757: Don't send a request closed event from a cloned request.
-
-- LP #418454: FTP server did not work with Python 2.6.X
-
 - Fixed issue with sending text containing ':' from MailHost.
 
 - MailHost will now ensure the headers it sets are 7bit.
 
 - MailHost no longer generates garbage when given unicode input.
 
-- MailHost manage form no longer interprets the value None as a string
-  in user and password fields.
-
 - Made C extensions work for 64-bit Python 2.5.x / 2.6.x.
 
 - Unfutzed test failures due to use of naive timezones with ``datetime``
   instances.
-
-- LP #397861: exporting $PYTHON in generated 'zopectl' for fixing import issue
-  with "bin/zopectl adduser"
-
-- LP #399633: fixed interpreter paths
