@@ -162,6 +162,11 @@ class DirectoryResource(Resource,
         resource = factory(name, filename)(self.request)
         resource.__name__ = name
         resource.__parent__ = self
+        
+        # We need to propagate security so that restrictedTraverse() will
+        # work
+        resource.__roles__ = self.__roles__
+        
         return resource
 
 class DirectoryResourceFactory(ResourceFactory):
