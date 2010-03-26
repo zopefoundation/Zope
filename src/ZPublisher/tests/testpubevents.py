@@ -8,7 +8,7 @@ from zope.event import subscribers
 from ZPublisher.Publish import publish, Retry
 from ZPublisher.BaseRequest import BaseRequest
 from ZPublisher.pubevents import PubStart, PubSuccess, PubFailure, \
-     PubAfterTraversal, PubBeforeCommit
+     PubAfterTraversal, PubBeforeCommit, PubBeforeAbort
 from ZPublisher.interfaces import \
      IPubStart, IPubEnd, IPubSuccess, IPubFailure, \
      IPubAfterTraversal, IPubBeforeCommit
@@ -74,40 +74,58 @@ class TestPubEvents(TestCase):
         r = self.request; r.action = 'fail_return'
         publish(r, PUBMODULE, [None])
         events = self.reporter.events
-        self.assertEqual(len(events), 2)
+        self.assertEqual(len(events), 3)
         self.assert_(isinstance(events[0], PubStart))
         self.assertEqual(events[0].request, r)
-        self.assert_(isinstance(events[1], PubFailure))
+        self.assert_(isinstance(events[1], PubBeforeAbort))
         self.assertEqual(events[1].request, r)
         self.assertEqual(events[1].retry, False)
-        self.assertEqual(len(events[1].exc_info), 3)
+        self.assert_(isinstance(events[2], PubFailure))
+        self.assertEqual(events[2].request, r)
+        self.assertEqual(events[2].retry, False)
+        self.assertEqual(len(events[2].exc_info), 3)
 
     def testFailureException(self):
         r = self.request; r.action = 'fail_exception'
         self.assertRaises(Exception, publish, r, PUBMODULE, [None])
         events = self.reporter.events
-        self.assertEqual(len(events), 2)
+        self.assertEqual(len(events), 3)
         self.assert_(isinstance(events[0], PubStart))
         self.assertEqual(events[0].request, r)
-        self.assert_(isinstance(events[1], PubFailure))
+        self.assert_(isinstance(events[1], PubBeforeAbort))
         self.assertEqual(events[1].request, r)
         self.assertEqual(events[1].retry, False)
         self.assertEqual(len(events[1].exc_info), 3)
+        self.assert_(isinstance(events[2], PubFailure))
+        self.assertEqual(events[2].request, r)
+        self.assertEqual(events[2].retry, False)
+        self.assertEqual(len(events[2].exc_info), 3)
 
     def testFailureConflict(self):
         r = self.request; r.action = 'conflict'
         publish(r, PUBMODULE, [None])
         events = self.reporter.events
-        self.assertEqual(len(events), 6)
+        self.assertEqual(len(events), 7)
+        
         self.assert_(isinstance(events[0], PubStart))
         self.assertEqual(events[0].request, r)
-        self.assert_(isinstance(events[1], PubFailure))
+        
+        self.assert_(isinstance(events[1], PubBeforeAbort))
         self.assertEqual(events[1].request, r)
         self.assertEqual(events[1].retry, True)
         self.assertEqual(len(events[1].exc_info), 3)
         self.assert_(isinstance(events[1].exc_info[1], ConflictError))
-        self.assert_(isinstance(events[2], PubStart))
-        self.assert_(isinstance(events[5], PubSuccess))
+        
+        self.assert_(isinstance(events[2], PubFailure))
+        self.assertEqual(events[2].request, r)
+        self.assertEqual(events[2].retry, True)
+        self.assertEqual(len(events[2].exc_info), 3)
+        self.assert_(isinstance(events[2].exc_info[1], ConflictError))
+        
+        self.assert_(isinstance(events[3], PubStart))
+        self.assert_(isinstance(events[4], PubAfterTraversal))
+        self.assert_(isinstance(events[5], PubBeforeCommit))
+        self.assert_(isinstance(events[6], PubSuccess))
 
 # Auxiliaries
 def _succeed():
