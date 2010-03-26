@@ -17,6 +17,11 @@ Features Added
   - ExtensionClass = 2.13.0
   - Persistence = 2.13.0
 
+- There is now an event ZPublisher.interfaces.IPubBeforeStreaming which will
+  be fired just before the first chunk of data is written to the response
+  stream when using the write() method on the response. This is the last
+  possible point at which response headers may be set in this case.
+
 Bugs Fixed
 ++++++++++
 

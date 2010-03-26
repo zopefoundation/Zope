@@ -10,7 +10,8 @@ for detailed time related analysis, inline request monitoring.
 from zope.interface import implements
 
 from interfaces import IPubStart, IPubSuccess, IPubFailure, \
-     IPubAfterTraversal, IPubBeforeCommit, IPubBeforeAbort
+     IPubAfterTraversal, IPubBeforeCommit, IPubBeforeAbort, \
+     IPubBeforeStreaming
 
 class _Base(object):
     """PubEvent base class."""
@@ -49,3 +50,11 @@ class PubBeforeAbort(_Base):
     
     def __init__(self, request, exc_info, retry):
         self.request, self.exc_info, self.retry = request, exc_info, retry
+
+class PubBeforeStreaming(object):
+    """Notified immediately before streaming via response.write() commences
+    """
+    implements(IPubBeforeStreaming)
+    
+    def __init__(self, response):
+        self.response = response

@@ -19,9 +19,13 @@ from ZServer.FTPResponse import FTPResponse
 from ZServer.PCGIServer import PCGIResponse
 from ZServer.FCGIServer import FCGIResponse
 from ZPublisher.Iterators import IStreamIterator
+from ZPublisher.pubevents import PubBeforeStreaming
 from zope.interface import implements
 import unittest
 from cStringIO import StringIO
+
+from zope.event import subscribers
+
 
 class ZServerResponseTestCase(unittest.TestCase):
     """Test ZServer response objects."""
@@ -29,7 +33,7 @@ class ZServerResponseTestCase(unittest.TestCase):
     def test_http_response_write_unicode(self):
         response = ZServerHTTPResponse()
         self.assertRaises(TypeError, response.write, u'bad')
-
+    
     def test_ftp_response_write_unicode(self):
         response = FTPResponse()
         self.assertRaises(TypeError, response.write, u'bad')
@@ -57,7 +61,7 @@ class ZServerResponseTestCase(unittest.TestCase):
         one = ZServerHTTPResponse(stdout=DummyChannel())
         self.assertRaises(AssertionError,
                           one.setBody, test_streamiterator())
-        
+    
 class DummyChannel:
     def __init__(self):
         self.out = StringIO()
@@ -267,12 +271,39 @@ class ZServerHTTPResponseTestCase(unittest.TestCase):
                                        '',
                                        ''))
 
+class _Reporter(object):
+    def __init__(self): self.events = []
+    def __call__(self, event): self.events.append(event)
+
+class ZServerHTTPResponseEventsTestCase(unittest.TestCase):
+
+    def setUp(self):
+        self._saved_subscribers = subscribers[:]
+        self.reporter = r = _Reporter()
+        subscribers[:] = [r]
+
+    def tearDown(self):
+        subscribers[:] = self._saved_subscribers
+    
+    def testStreaming(self):
+        out = StringIO()
+        response = ZServerHTTPResponse(stdout=out)
+        response.write('datachunk1')
+        response.write('datachunk2')
+        
+        events = self.reporter.events
+        self.assertEqual(len(events), 1)
+        self.assert_(isinstance(events[0], PubBeforeStreaming))
+        self.assertEqual(events[0].response, response)
+        
+        self.failUnless('datachunk1datachunk2' in out.getvalue())
 
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTests((
         unittest.makeSuite(ZServerResponseTestCase),
-        unittest.makeSuite(ZServerHTTPResponseTestCase)
+        unittest.makeSuite(ZServerHTTPResponseTestCase),
+        unittest.makeSuite(ZServerHTTPResponseEventsTestCase)
     ))
     return suite
 

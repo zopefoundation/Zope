@@ -18,10 +18,12 @@ __version__ = '$Revision: 1.81 $'[11:-2]
 import types, os, sys, re
 import zlib, struct
 from string import translate, maketrans
+from zope.event import notify
 from BaseResponse import BaseResponse
 from zExceptions import Unauthorized, Redirect
 from zExceptions.ExceptionFormatter import format_exception
 from ZPublisher import BadRequest, InternalError, NotFound
+from ZPublisher.pubevents import PubBeforeStreaming
 from cgi import escape
 from urllib import quote
 
@@ -921,6 +923,9 @@ class HTTPResponse(BaseResponse):
 
         """
         if not self._wrote:
+            
+            notify(PubBeforeStreaming(self))
+            
             self.outputBody()
             self._wrote = 1
             self.stdout.flush()

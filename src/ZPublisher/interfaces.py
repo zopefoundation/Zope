@@ -50,3 +50,11 @@ class IPubBeforeAbort(IPubEvent):
     """
     exc_info = Attribute('''The exception info as returned by 'sys.exc_info()'.''')
     retry = Attribute('Whether the request will be retried')
+
+class IPubBeforeStreaming(Interface):
+    """Event fired just before a streaming response is initiated, i.e. when
+    something calls response.write() for the first time. Note that this is
+    carries a reference to the *response*, not the request.
+    """
+    
+    response = Attribute(u"The current HTTP response")
