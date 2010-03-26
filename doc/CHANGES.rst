@@ -20,6 +20,10 @@ Features Added
 Bugs Fixed
 ++++++++++
 
+- Zope 3-style resource directories would throw an Unauthorized error when
+  trying to use restrictedTraverse() to reach a resource in a sub-directory
+  of the resource directory.
+
 - Restore ability to traverse to 'macros' on template-based browser views.
 
 - Protect ZCTextIndex's clear method against storing Acquisition wrappers.
