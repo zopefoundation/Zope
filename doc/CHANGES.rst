@@ -11,6 +11,9 @@ Trunk (unreleased)
 Restructuring
 +++++++++++++
 
+- Use the standard libraries doctest module in favor of the deprecated version
+  in zope.testing.
+
 - Finished the move of five.formlib to an extra package and removed it from
   Zope 2 itself. Upgrade notes have been added to the news section of the
   release notes.

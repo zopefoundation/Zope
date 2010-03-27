@@ -15,7 +15,5 @@
 $Id$
 """
 
-from zope.testing.doctest import *
-from zope.testing.doctest import _normalize_module
+from doctest import *
 from functional import *
-

@@ -83,6 +83,6 @@ class MyNewFolder(DontComplain, Folder):
 
 
 def test_suite():
-    from zope.testing.doctest import DocFileSuite
+    from doctest import DocFileSuite
     return DocFileSuite('event.txt', package="OFS.tests",
                         setUp=setUp, tearDown=testing.tearDown)

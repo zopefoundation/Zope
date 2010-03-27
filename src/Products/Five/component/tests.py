@@ -16,7 +16,7 @@
 $Id$
 """
 import unittest
-from zope.testing.doctestunit import DocFileSuite
+from doctest import DocFileSuite
 from Testing.ZopeTestCase import FunctionalDocFileSuite
 
 __docformat__ = "reStructuredText"
