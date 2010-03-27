@@ -42,7 +42,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Zope 2 documentation'
-copyright = u'2009, The Zope Developers Community'
+copyright = u'2009-2010, The Zope Developers Community'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
