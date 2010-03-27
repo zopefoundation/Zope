@@ -49,8 +49,6 @@ Restructuring
 - Removed the dependency on zope.app.publication in favor of new versions of
   zope.publisher and zope.traversing.
 
-- Requiring Python 2.6 officially
-
 - Changed startup server tests in Zope2 to use a randomized port number, to
   allow the nightly buildbot to run the tests at the same time for multiple
   configurations without the port being already in use.
@@ -124,8 +122,6 @@ Bugs Fixed
 - MailHost will now ensure the headers it sets are 7bit.
 
 - MailHost no longer generates garbage when given unicode input.
-
-- Made C extensions work for 64-bit Python 2.5.x / 2.6.x.
 
 - Unfutzed test failures due to use of naive timezones with ``datetime``
   instances.
