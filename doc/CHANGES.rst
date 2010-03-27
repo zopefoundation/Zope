@@ -90,11 +90,11 @@ Features Added
   - zope.browsermenu = 3.9.0
   - zope.browserpage = 3.11.0
   - zope.browserresource = 3.10.2
-  - zope.component = 3.8.0
-  - zope.configuration = 3.7.0
+  - zope.component = 3.9.3
+  - zope.configuration = 3.7.1
   - zope.container = 3.11.0
   - zope.contentprovider = 3.6.1
-  - zope.contenttype = 3.5.0
+  - zope.contenttype = 3.5.1
   - zope.copypastemove = 3.6.0
   - zope.dublincore = 3.6.0
   - zope.filerepresentation = 3.6.0
@@ -103,13 +103,13 @@ Features Added
   - zope.location = 3.9.0
   - zope.lifecycleevent = 3.6.0
   - zope.ptresource = 3.9.0
-  - zope.publisher = 3.12.0
-  - zope.schema = 3.6.0
+  - zope.publisher = 3.12.1
+  - zope.schema = 3.6.1
   - zope.securitypolicy = 3.6.1
-  - zope.sendmail = 3.6.1
+  - zope.sendmail = 3.7.1
   - zope.site = 3.9.0
   - zope.testbrowser = 3.7.0
-  - zope.testing = 3.8.3
+  - zope.testing = 3.9.3
   - zope.traversing = 3.12.0
   - zope.viewlet = 3.7.0
 
