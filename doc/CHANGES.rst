@@ -85,6 +85,7 @@ Features Added
 
 - Updated packages:
 
+  - pytz = 2010e
   - zope.annotation = 3.5.0
   - zope.app.form = 3.12.1
   - zope.broken = 3.6.0
