@@ -1,6 +1,7 @@
 import unittest
 
 from zope.component.testing import PlacelessSetup
+from zope.interface import implements
 
 from AccessControl.Owned import EmergencyUserCannotOwn
 from AccessControl.SecurityManagement import newSecurityManager
@@ -11,13 +12,14 @@ from Acquisition import aq_base
 from Acquisition import Implicit
 from App.config import getConfiguration
 from logging import getLogger
+from OFS.interfaces import IItem
 from OFS.metaconfigure import setDeprecatedManageAddDelete
 from OFS.ObjectManager import ObjectManager
 from OFS.SimpleItem import SimpleItem
 from Zope2.App import zcml
 from zExceptions import BadRequest
 
-logger = getLogger('OFS.subscribers')            
+logger = getLogger('OFS.subscribers')
 
 class FauxRoot( Implicit ):
 
@@ -61,11 +63,11 @@ class ItemForDeletion(SimpleItem):
     def manage_afterClone(self, item):
         pass
 
-from zope.interface import implements
-from OFS.interfaces import IItem
+
 class ObjectManagerWithIItem(ObjectManager):
     """The event subscribers work on IItem."""
     implements(IItem)
+
 
 class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
 
@@ -92,11 +94,13 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
     def _makeOne( self, *args, **kw ):
         return self._getTargetClass()( *args, **kw ).__of__( FauxRoot() )
 
-    def test_z3interfaces(self):
+    def test_interfaces(self):
         from OFS.interfaces import IObjectManager
         from OFS.ObjectManager import ObjectManager
+        from zope.container.interfaces import IContainer
         from zope.interface.verify import verifyClass
 
+        verifyClass(IContainer, ObjectManager)
         verifyClass(IObjectManager, ObjectManager)
 
     def test_setObject_set_owner_with_no_user( self ):

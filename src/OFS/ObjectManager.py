@@ -152,9 +152,6 @@ class ObjectManager(CopyContainer,
     This class provides core behavior for collections of heterogeneous objects.
     """
 
-    # The claim to implement IContainer has been made during the Zope3
-    # integration project called Five but hasn't been completed in full.
-
     implements(IObjectManager)
 
     security = ClassSecurityInfo()

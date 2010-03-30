@@ -604,19 +604,19 @@ class HTTPRequestTests(unittest.TestCase):
         self.assertEquals(req.cookies['hmm'], '')
         self.assertEquals(req.cookies['baz'], 'gee')
 
-	    # Unquoted multi-space cookies
+        # Unquoted multi-space cookies
         env['HTTP_COOKIE'] = 'single=cookie data; ' \
-	                     'quoted="cookie data with unquoted spaces"; ' \
-			     'multi=cookie data with unquoted spaces; ' \
-			     'multi2=cookie data with unquoted spaces'
+                             'quoted="cookie data with unquoted spaces"; ' \
+                             'multi=cookie data with unquoted spaces; ' \
+                             'multi2=cookie data with unquoted spaces'
         req = self._makeOne(environ=env)
         self.assertEquals(req.cookies['single'], 'cookie data')
         self.assertEquals(req.cookies['quoted'],
-	                              'cookie data with unquoted spaces')
+                          'cookie data with unquoted spaces')
         self.assertEquals(req.cookies['multi'],
-	                              'cookie data with unquoted spaces')
+                          'cookie data with unquoted spaces')
         self.assertEquals(req.cookies['multi2'],
-	                              'cookie data with unquoted spaces')
+                          'cookie data with unquoted spaces')
 
 
 
@@ -719,6 +719,14 @@ class HTTPRequestTests(unittest.TestCase):
         request['debug'] = '2'
         self.assertEqual(request.debug, '2')
 
+    def test_interfaces(self):
+        from zope.publisher.interfaces.browser import IBrowserRequest
+        from zope.interface.verify import verifyClass
+        klass = self._getTargetClass()
+
+        # TODO
+        # verifyClass(IBrowserRequest, klass)
+
     def test_locale_property_accessor(self):
         from zope.component import provideAdapter
         from zope.publisher.browser import BrowserLanguages
@@ -751,7 +759,6 @@ class HTTPRequestTests(unittest.TestCase):
         from zope.publisher.browser import BrowserLanguages
         from zope.publisher.interfaces.http import IHTTPRequest
         from zope.i18n.interfaces import IUserPreferredLanguages
-        from zope.i18n.interfaces.locales import ILocale
 
         provideAdapter(BrowserLanguages, [IHTTPRequest],
                        IUserPreferredLanguages)
@@ -844,7 +851,7 @@ class HTTPRequestTests(unittest.TestCase):
         request = self._makeOne(environ=env)
         self.assertEqual(request.method, 'GET')
 
-    def test_method_GET(self):
+    def test_method_POST(self):
         env = {'REQUEST_METHOD': 'POST'}
         request = self._makeOne(environ=env)
         self.assertEqual(request.method, 'POST')

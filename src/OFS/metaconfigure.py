@@ -117,7 +117,7 @@ def _registerClass(class_, meta_type, permission, addview, icon, global_):
 
     info = {'name': meta_type,
             'action': addview and ('+/%s' % addview) or '',
-            'product': 'Five',
+            'product': 'OFS',
             'permission': str(permission_obj.title),
             'visibility': global_ and 'Global' or None,
             'interfaces': interfaces,

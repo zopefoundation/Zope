@@ -186,8 +186,7 @@ class TestTraverse( unittest.TestCase ):
         class BoboTraversableWithAcquisition(SimpleItem):
             """ A BoboTraversable which may use acquisition to find objects.
 
-            This is similar to how the __bobo_traverse__ added by Five
-            behaves).
+            This is similar to how the __bobo_traverse__ behaves).
             """
 
             def __bobo_traverse__(self, request, name):
@@ -409,9 +408,8 @@ class SimpleClass(object):
 
 def test_traversable():
     """
-    Test the behaviour of unrestrictedTraverse and views. The tests are
-    copies from Five.browser.tests.test_traversable, but instead of
-    publishing they do unrestrictedTraverse.
+    Test the behaviour of unrestrictedTraverse and views. The tests don't
+    use publishing but do unrestrictedTraverse instead.
 
       >>> import Products.Five
       >>> from Zope2.App import zcml
@@ -433,9 +431,9 @@ def test_traversable():
       ...    self.folder.testoid.unrestrictedTraverse('doesntexist')
       ... except NotFound:
       ...    pass
-      
+
     Now let's take class which already has a __bobo_traverse__ method.
-    Five should correctly use that as a fallback.
+    We should correctly use that as a fallback.
 
       >>> configure_zcml = '''
       ... <configure xmlns="http://namespaces.zope.org/zope"
@@ -527,7 +525,7 @@ def test_traversable():
 
     Without a __bobo_traverse__ method this would have returned the attribute
     value 'This is an attribute'.  Let's make sure the same thing happens for
-    an object that has been marked traversable by Five:
+    an object that has been marked traversable:
 
       >>> self.folder.fancy.an_attribute = 'This is an attribute'
       >>> self.folder.fancy.unrestrictedTraverse(

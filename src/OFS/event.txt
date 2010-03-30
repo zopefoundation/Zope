@@ -183,8 +183,7 @@ subscribe to them.
    so it doesn't have a location.
 
 There are only a few basic use cases about what one wants to do with
-respect to events (but you might want to read the full story in
-Five/tests/event.txt).
+respect to events.
 
 The first use case is the one where the object has to be aware of its
 path, like in the CoolDocument example above.

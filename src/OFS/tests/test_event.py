@@ -11,7 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Test events triggered by Five
+"""Test events
 
 $Id$
 """

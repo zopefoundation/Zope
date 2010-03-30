@@ -62,7 +62,7 @@ def test_registerClass():
       ...     if info['name'] == 'Foo Type':
       ...         break
       >>> info['product']
-      'Five'
+      'OFS'
       >>> info['permission']
       'Add Foo'
       >>> ISimpleContent in info['interfaces']
@@ -113,7 +113,7 @@ def test_registerClass():
       ...     if info['name'] == 'Bar Type':
       ...         break
       >>> info['product']
-      'Five'
+      'OFS'
       >>> info['permission']
       'Add Bar'
       >>> ISimpleContent in info['interfaces']
