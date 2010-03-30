@@ -10,17 +10,15 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-""" Unit tests for Products.Five.schema module.
 
-$Id: tests.py 71093 2006-11-07 13:54:29Z yuppie $
-"""
 import unittest
 from zope.testing.cleanup import CleanUp
+
 
 class Zope2VocabularyRegistryTests(unittest.TestCase, CleanUp):
 
     def _getTargetClass(self):
-        from Products.Five.schema import Zope2VocabularyRegistry
+        from ..schema import Zope2VocabularyRegistry
         return Zope2VocabularyRegistry
 
     def _makeOne(self):

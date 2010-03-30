@@ -1,3 +1,7 @@
 # BBB
 
-from Zope2.App.schema import Zope2VocabularyRegistry
+from zope.deferredimport import deprecated
+
+deprecated("Please import from Zope2.App.schema",
+    Zope2VocabularyRegistry = 'Zope2.App.schema:Zope2VocabularyRegistry',
+)
