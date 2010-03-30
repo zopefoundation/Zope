@@ -599,6 +599,8 @@ def import_product(product_dir, product_name, raise_exc=0, log_exc=1):
                     if not have_module(k):
                         if type(v) is _st and have_module(v): v=modules[v]
                         modules[k]=v
+        except KeyboardInterrupt:
+            raise
         except:
             exc = sys.exc_info()
             if log_exc:
@@ -723,6 +725,8 @@ def install_product(app, product_dir, product_name, meta_types,
                 transaction.get().note('Installed product '+product_name)
                 transaction.commit()
 
+        except KeyboardInterrupt:
+            raise
         except:
             if log_exc:
                 LOG.error('Couldn\'t install %s' % product_name,
@@ -750,7 +754,8 @@ def install_package(app, module, init_func, raise_exc=False, log_exc=True):
         else:
             transaction.get().note('Installed package %s' % module.__name__)
             transaction.commit()
-
+    except KeyboardInterrupt:
+        raise
     except:
         if log_exc:
             LOG.error("Couldn't install %s" % module.__name__,
