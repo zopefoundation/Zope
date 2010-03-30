@@ -11,6 +11,10 @@ Trunk (unreleased)
 Restructuring
 +++++++++++++
 
+- Downgrade the ``manage_* is discouraged. You should use event subscribers
+  instead`` warnings to debug level logging. This particular warning hasn't
+  motivated anyone to actually change any code.
+
 - Use the standard libraries doctest module in favor of the deprecated version
   in zope.testing.
 
