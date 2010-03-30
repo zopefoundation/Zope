@@ -30,7 +30,7 @@ def test_registerPackage():
       >>> setUp()
       >>> import Products
       >>> import Products.Five
-      >>> from Products.Five import zcml
+      >>> from Zope2.App import zcml
       >>> zcml.load_config('meta.zcml', Products.Five)
 
     Make sure a python package with a valid initialize gets its

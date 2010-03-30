@@ -22,7 +22,7 @@ def test_boilerplate():
       >>> setUp()
 
       >>> import Products.Five.tests
-      >>> from Products.Five import zcml
+      >>> from Zope2.App import zcml
       >>> zcml.load_config('boilerplate.zcml', Products.Five.tests)
 
       >>> from Products.Five.tests.testing import manage_addFiveTraversableFolder

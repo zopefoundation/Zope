@@ -40,7 +40,7 @@ def test_zpt_i18n():
       ... </configure>'''
 
       >>> import Products.Five
-      >>> from Products.Five import zcml
+      >>> from Zope2.App import zcml
       >>> zcml.load_config("configure.zcml", Products.Five)
       >>> zcml.load_string(configure_zcml)
 

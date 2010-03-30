@@ -23,7 +23,7 @@ def test_view_with_unwrapped_context():
     provide dummy contexts which are not wrapped.
 
     >>> import Products.Five.browser.tests
-    >>> from Products.Five import zcml
+    >>> from Zope2.App import zcml
     >>> zcml.load_config("configure.zcml", Products.Five)
     >>> zcml.load_config('pages.zcml', package=Products.Five.browser.tests)
     >>> from Products.Five.tests.testing import simplecontent as sc

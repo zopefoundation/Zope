@@ -6,7 +6,6 @@ Zope2.startup()
 import transaction
 
 from zope.testing import cleanup
-from Products.Five import zcml
 
 from Testing.makerequest import makerequest
 
@@ -15,6 +14,8 @@ from AccessControl.SecurityManagement import noSecurityManager
 
 from OFS.SimpleItem import SimpleItem
 from OFS.Folder import Folder
+
+from Zope2.App import zcml
 
 
 class EventLogger(object):
@@ -64,15 +65,13 @@ class HookLayer:
     @classmethod
     def setUp(cls):
         cleanup.cleanUp()
-        zcml._initialized = 0
-        zcml.load_site()
+        zcml.load_site(force=True)
         setDeprecatedManageAddDelete(TestItem)
         setDeprecatedManageAddDelete(TestFolder)
 
     @classmethod
     def tearDown(cls):
         cleanup.cleanUp()
-        zcml._initialized = 0
 
 
 class HookTest(unittest.TestCase):

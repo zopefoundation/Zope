@@ -24,7 +24,7 @@ def test_registerClass():
       >>> setUp()
       >>> import Products
       >>> import Products.Five
-      >>> from Products.Five import zcml
+      >>> from Zope2.App import zcml
       >>> from Products.Five.tests.testing.simplecontent import SimpleContent
       >>> from Products.Five.tests.testing.simplecontent import ISimpleContent
       >>> from persistent.interfaces import IPersistent

@@ -11,21 +11,22 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Initialize the Five product
 
-$Id$
-"""
+from zope.component import getUtility
+from zope.interface import implements
+from zope.schema.interfaces import IVocabularyFactory
+from zope.schema.interfaces import IVocabularyRegistry
 
-# public API provided by Five
-# usage: from Products.Five import <something>
-from Products.Five.browser import BrowserView
-from Products.Five.skin.standardmacros import StandardMacros
 
-# some convenience methods/decorators
+class Zope2VocabularyRegistry(object):
+    """IVocabularyRegistry that supports global and local utilities.
+    """
 
-def fivemethod(func):
-    func.__five_method__ = True
-    return func
+    implements(IVocabularyRegistry)
+    __slots__ = ()
 
-def isFiveMethod(m):
-    return hasattr(m, '__five_method__')
+    def get(self, context, name):
+        """See zope.schema.interfaces.IVocabularyRegistry.
+        """
+        factory = getUtility(IVocabularyFactory, name)
+        return factory(context)

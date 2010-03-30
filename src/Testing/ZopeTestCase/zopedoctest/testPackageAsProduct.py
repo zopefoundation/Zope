@@ -15,11 +15,14 @@
 $Id$
 """
 
+import sys
 from unittest import TestSuite
+
+
 from Testing import ZopeTestCase
 from Testing.ZopeTestCase import ZopeLite
 from Testing.ZopeTestCase import ZopeDocTestSuite
-from Products.Five import zcml
+from Zope2.App import zcml
 from zope.testing import cleanup
 import Products
 
@@ -29,7 +32,7 @@ def testInstallPackage():
     Test if installPackage works.
 
       >>> from Testing import ZopeTestCase
-      >>> from Products.Five import zcml
+      >>> from Zope2.App import zcml
 
     Register testpackage
 
@@ -84,8 +87,7 @@ class TestClass(ZopeTestCase.FunctionalTestCase):
 
     def afterSetUp(self):
         cleanup.cleanUp()
-        zcml._initialized = False
-        zcml.load_site()
+        zcml.load_site(force=True)
 
         self.saved = sys.path[:]
         sys.path.append(ZopeTestCase.__path__[0])

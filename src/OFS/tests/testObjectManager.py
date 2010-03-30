@@ -15,7 +15,7 @@ from OFS.metaconfigure import setDeprecatedManageAddDelete
 from OFS.ObjectManager import ObjectManager
 from OFS.SimpleItem import SimpleItem
 import Products.Five
-from Products.Five import zcml
+from Zope2.App import zcml
 from zExceptions import BadRequest
 
 logger = getLogger('OFS.subscribers')            

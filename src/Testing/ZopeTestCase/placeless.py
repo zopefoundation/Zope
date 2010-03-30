@@ -52,7 +52,7 @@ tearDown = tearDown()
 del ps
 
 # For convenience
-from Products.Five import zcml
+from Zope2.App import zcml
 
 
 def callZCML(zcml_callback):

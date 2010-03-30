@@ -14,6 +14,10 @@
 """
 
 from zope.component import queryMultiAdapter
+from zope.event import notify
+from zope.processlifetime import DatabaseOpened
+from zope.schema.vocabulary import setVocabularyRegistry
+
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
 from Acquisition import aq_acquire
@@ -22,10 +26,8 @@ from Acquisition import aq_inner
 from Acquisition import aq_parent
 from App.config import getConfiguration
 from time import asctime
-from types import StringType, ListType
 from zExceptions import upgradeException
 from zExceptions import Redirect
-from zExceptions import Unauthorized
 from ZODB.POSException import ConflictError
 import transaction
 import AccessControl.User
@@ -39,9 +41,6 @@ import ZODB
 import App.ZApplication
 import Zope2
 import ZPublisher
-
-from zope.event import notify
-from zope.processlifetime import DatabaseOpened
 
 app = None
 startup_time = asctime()
@@ -92,7 +91,7 @@ def startup():
         from ZODB.ActivityMonitor import ActivityMonitor
         DB.setActivityMonitor(ActivityMonitor())
 
-    Globals.DB = DB # Ick, this is temporary until we come up with some registry
+    Globals.DB = DB
     Zope2.DB = DB
 
     # Hook for providing multiple transaction object manager undo support:
@@ -104,6 +103,14 @@ def startup():
 
     # "Log on" as system user
     newSecurityManager(None, AccessControl.User.system)
+
+    # Set up the CA
+    from .zcml import load_site
+    load_site()
+
+    # Set up Zope2 specific vocabulary registry
+    from .schema import Zope2VocabularyRegistry
+    setVocabularyRegistry(Zope2VocabularyRegistry())
 
     # Set up the "app" object that automagically opens
     # connections
@@ -138,7 +145,10 @@ def validated_hook(request, user):
 
 
 class RequestContainer(ExtensionClass.Base):
-    def __init__(self,r): self.REQUEST=r
+
+    def __init__(self, r):
+        self.REQUEST=r
+
 
 class ZPublisherExceptionHook:
 
@@ -215,7 +225,7 @@ class ZPublisherExceptionHook:
                 return response
 
             if (published is None or published is app or
-                type(published) is ListType):
+                isinstance(published, list)):
                 # At least get the top-level object
                 published=app.__bobo_traverse__(REQUEST).__of__(
                     RequestContainer(REQUEST))

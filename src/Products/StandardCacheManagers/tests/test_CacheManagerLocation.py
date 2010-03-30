@@ -32,7 +32,7 @@ from OFS.tests.testCopySupport import CopySupportTestBase
 from OFS.tests.testCopySupport import UnitTestSecurityPolicy
 from OFS.tests.testCopySupport import UnitTestUser
 
-from Products.Five import zcml
+from Zope2.App import zcml
 from Products.StandardCacheManagers.RAMCacheManager import RAMCacheManager
 from Products.StandardCacheManagers.AcceleratedHTTPCacheManager \
      import AcceleratedHTTPCacheManager

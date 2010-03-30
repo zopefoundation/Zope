@@ -28,7 +28,7 @@ def test_directives():
     But first, we load the configuration file:
 
       >>> import Products.Five.tests
-      >>> from Products.Five import zcml
+      >>> from Zope2.App import zcml
       >>> zcml.load_config('meta.zcml', Products.Five)
       >>> zcml.load_config('directives.zcml', Products.Five.tests)
 

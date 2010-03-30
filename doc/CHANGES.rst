@@ -11,6 +11,11 @@ Trunk (unreleased)
 Restructuring
 +++++++++++++
 
+- Moved the code handling ZCML loading into the ``Zope2.App`` package. The
+  component architecture is now setup before the application object is created
+  or any database connections are opened. So far the CA was setup somewhat
+  randomly in the startup process, when the ``Five`` product was initialized.
+
 - Downgrade the ``manage_* is discouraged. You should use event subscribers
   instead`` warnings to debug level logging. This particular warning hasn't
   motivated anyone to actually change any code.

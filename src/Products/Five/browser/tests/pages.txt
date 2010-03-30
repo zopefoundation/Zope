@@ -4,7 +4,7 @@ Test browser pages
 Let's register a quite large amount of test pages:
 
   >>> import Products.Five.browser.tests
-  >>> from Products.Five import zcml
+  >>> from Zope2.App import zcml
   >>> zcml.load_config("configure.zcml", Products.Five)
   >>> zcml.load_config('pages.zcml', package=Products.Five.browser.tests)
 

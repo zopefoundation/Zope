@@ -24,7 +24,7 @@ def test_directive():
     directive:
 
       >>> import zope.i18n
-      >>> from Products.Five import zcml
+      >>> from Zope2.App import zcml
       >>> zcml.load_config('meta.zcml', zope.i18n)
 
     Let's register the gettext locales using the ZCML directive:

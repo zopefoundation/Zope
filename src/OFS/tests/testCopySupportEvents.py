@@ -13,12 +13,13 @@ from AccessControl.SecurityManagement import noSecurityManager
 from OFS.SimpleItem import SimpleItem
 from OFS.Folder import Folder
 
+from Zope2.App import zcml
+
 from zope import interface
 from zope import component
 from zope.component.interfaces import IObjectEvent
 
 from zope.testing import cleanup
-from Products.Five import zcml
 
 
 class EventLogger(object):
@@ -59,15 +60,13 @@ class EventLayer:
     @classmethod
     def setUp(cls):
         cleanup.cleanUp()
-        zcml._initialized = 0
-        zcml.load_site()
+        zcml.load_site(force=True)
         component.provideHandler(eventlog.trace, (ITestItem, IObjectEvent))
         component.provideHandler(eventlog.trace, (ITestFolder, IObjectEvent))
 
     @classmethod
     def tearDown(cls):
         cleanup.cleanUp()
-        zcml._initialized = 0
 
 
 class EventTest(unittest.TestCase):

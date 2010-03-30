@@ -12,7 +12,7 @@ register content for those regions.
 Setup traversal stuff
 
   >>> import Products.Five
-  >>> from Products.Five import zcml
+  >>> from Zope2.App import zcml
   >>> zcml.load_config("configure.zcml", Products.Five)
 
 Set a loose security policy because these are unit tests, security will be

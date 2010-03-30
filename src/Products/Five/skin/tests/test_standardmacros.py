@@ -27,7 +27,7 @@ def test_standard_macros():
       >>> manage_addFiveTraversableFolder(self.folder, 'testoid', 'Testoid')
 
       >>> import Products.Five.skin.tests
-      >>> from Products.Five import zcml
+      >>> from Zope2.App import zcml
       >>> zcml.load_config('configure.zcml', package=Products.Five)
       >>> zcml.load_config('configure.zcml', package=Products.Five.skin.tests)    
 

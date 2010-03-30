@@ -5,7 +5,7 @@ The ``viewletManager`` Directive
 Setup traversal stuff
 
   >>> import Products.Five
-  >>> from Products.Five import zcml
+  >>> from Zope2.App import zcml
   >>> zcml.load_config("configure.zcml", Products.Five)
 
 The ``viewletManager`` directive allows you to quickly register a new viewlet
@@ -13,7 +13,6 @@ manager without worrying about the details of the ``adapter``
 directive. Before we can use the directives, we have to register their
 handlers by executing the package's meta configuration:
 
-  >>> from Products.Five import zcml
   >>> context = zcml.load_string('''
   ... <configure i18n_domain="zope">
   ...   <include package="Products.Five.viewlet" file="meta.zcml" />

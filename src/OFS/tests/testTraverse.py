@@ -414,7 +414,7 @@ def test_traversable():
     publishing they do unrestrictedTraverse.
 
       >>> import Products.Five
-      >>> from Products.Five import zcml
+      >>> from Zope2.App import zcml
       >>> zcml.load_config("configure.zcml", Products.Five)
       >>> from Testing.makerequest import makerequest
       >>> self.app = makerequest(self.app)
@@ -594,7 +594,7 @@ def test_view_doesnt_shadow_attribute():
       ...       />
       ... </configure>'''
       >>> import Products.Five
-      >>> from Products.Five import zcml
+      >>> from Zope2.App import zcml
       >>> zcml.load_config("configure.zcml", Products.Five)
       >>> zcml.load_string(configure_zcml)
 
