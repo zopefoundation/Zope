@@ -11,6 +11,8 @@ Trunk (unreleased)
 Restructuring
 +++++++++++++
 
+- Moved the ``absoluteurl`` views into the OFS package.
+
 - Moved ``testbrowser`` module into the Testing package.
 
 - Moved the code handling ZCML loading into the ``Zope2.App`` package. The
