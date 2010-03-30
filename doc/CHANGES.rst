@@ -11,6 +11,8 @@ Trunk (unreleased)
 Restructuring
 +++++++++++++
 
+- Moved ``testbrowser`` module into the Testing package.
+
 - Moved the code handling ZCML loading into the ``Zope2.App`` package. The
   component architecture is now setup before the application object is created
   or any database connections are opened. So far the CA was setup somewhat

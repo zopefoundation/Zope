@@ -30,7 +30,7 @@ Making a site
 
 Create the test browser we'll be using:
 
-    >>> from Products.Five.testbrowser import Browser
+    >>> from Testing.testbrowser import Browser
     >>> browser = Browser()
     >>> browser.addHeader('Authorization', 'Basic manager:r00t')
 

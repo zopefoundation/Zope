@@ -32,7 +32,7 @@ def doctest_cookies():
     We want to make sure that our testbrowser correctly understands
     cookies.  We'll add a stub to ``self.folder`` that sets a cookie.
 
-        >>> from Products.Five.tests.test_testbrowser import CookieStub
+        >>> from Testing.tests.test_testbrowser import CookieStub
         >>> self.folder._setObject('stub', CookieStub())
         'stub'
 
@@ -47,7 +47,7 @@ def doctest_cookies():
 
     Let's try to look at the same folder with testbrowser:
 
-        >>> from Products.Five.testbrowser import Browser
+        >>> from Testing.testbrowser import Browser
         >>> browser = Browser()
         >>> browser.open('http://localhost/test_folder_1_/stub')
         >>> 'Set-Cookie: evil="cookie"' in str(browser.headers)
@@ -59,15 +59,14 @@ def doctest_camel_case_headers():
 
     Some setup:
 
-        >>> from Products.Five.tests.test_testbrowser import CookieStub
+        >>> from Testing.tests.test_testbrowser import CookieStub
         >>> self.folder._setObject('stub', CookieStub())
         'stub'
 
     The Zope2 response mungs headers so they come out in camel case we should
-    do the same. This is also more consistent with the Zope3 testbrowser tests.
-    We will test a few:
+    do the same. We will test a few:
 
-        >>> from Products.Five.testbrowser import Browser
+        >>> from Testing.testbrowser import Browser
         >>> browser = Browser()
         >>> browser.open('http://localhost/test_folder_1_/stub')
         >>> 'Content-Length: ' in str(browser.headers)

@@ -76,7 +76,6 @@ class TestPlacelessSetUp(ZopeTestCase.ZopeTestCase):
         tearDown()
 
     def testSimple(self):
-        # SetUp according to Five's adapter test
         setUp()
         setupZCML()
         # Now we have a fixture that should work for adaptation

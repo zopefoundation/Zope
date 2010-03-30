@@ -37,7 +37,7 @@ def test_check_permission():
     zope.security.management.checkPermission().  We see it works as
     expected:
 
-      >>> from Products.Five.testbrowser import Browser
+      >>> from Testing.testbrowser import Browser
       >>> browser = Browser()
       >>> browser.open('http://localhost/test_folder_1_/testoid/@@zope3security.html?permission=zope2.View')
       >>> print browser.contents

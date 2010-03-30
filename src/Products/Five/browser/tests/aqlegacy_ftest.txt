@@ -9,7 +9,7 @@ some:
   >>> zcml.load_config("configure.zcml", Products.Five)
   >>> zcml.load_config('aqlegacy.zcml', package=Products.Five.browser.tests)
 
-  >>> from Products.Five.testbrowser import Browser
+  >>> from Testing.testbrowser import Browser
   >>> browser = Browser()
   >>> browser.handleErrors = False
 
