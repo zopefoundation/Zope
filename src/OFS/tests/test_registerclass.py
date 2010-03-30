@@ -16,6 +16,41 @@
 $Id$
 """
 
+from AccessControl.SecurityInfo import ClassSecurityInfo
+from App.class_init import InitializeClass
+from OFS.SimpleItem import SimpleItem
+
+from zope.interface import implements
+from zope.interface import Interface
+
+
+class ISimpleContent(Interface):
+    pass
+
+
+class SimpleContent(SimpleItem):
+    implements(ISimpleContent)
+
+    meta_type = 'SimpleContent'
+    security = ClassSecurityInfo()
+
+    def __init__(self, id, title):
+        self.id = id
+        self.title = title
+
+    security.declarePublic('mymethod')
+    def mymethod(self):
+        return "Hello world"
+
+    security.declarePublic('direct')
+    def direct(self):
+        """Should be able to traverse directly to this as there is no view.
+        """
+        return "Direct traversal worked"
+
+InitializeClass(SimpleContent)
+
+
 def test_registerClass():
     """
     Testing registerClass
@@ -25,8 +60,6 @@ def test_registerClass():
       >>> import Products
       >>> import Zope2.App
       >>> from Zope2.App import zcml
-      >>> from Products.Five.tests.testing.simplecontent import SimpleContent
-      >>> from Products.Five.tests.testing.simplecontent import ISimpleContent
       >>> from persistent.interfaces import IPersistent
 
     Use the five:registerClass directive::
@@ -38,7 +71,7 @@ def test_registerClass():
       ...     i18n_domain="foo">
       ...   <permission id="foo.add" title="Add Foo"/>
       ...   <five:registerClass
-      ...       class="Products.Five.tests.testing.simplecontent.SimpleContent"
+      ...       class="OFS.tests.test_registerclass.SimpleContent"
       ...       meta_type="Foo Type"
       ...       permission="foo.add"
       ...       addview="addfoo.html"
@@ -51,6 +84,7 @@ def test_registerClass():
 
     Make sure that the class attributes are set correctly::
 
+      >>> from OFS.tests.test_registerclass import SimpleContent
       >>> SimpleContent.meta_type
       'Foo Type'
       >>> SimpleContent.icon
@@ -65,6 +99,7 @@ def test_registerClass():
       'OFS'
       >>> info['permission']
       'Add Foo'
+      >>> from OFS.tests.test_registerclass import ISimpleContent
       >>> ISimpleContent in info['interfaces']
       True
       >>> IPersistent in info['interfaces']
@@ -92,12 +127,13 @@ def test_registerClass():
       ...     i18n_domain="bar">
       ...   <permission id="bar.add" title="Add Bar"/>
       ...   <five:registerClass
-      ...       class="Products.Five.tests.testing.simplecontent.SimpleContent"
+      ...       class="OFS.tests.test_registerclass.SimpleContent"
       ...       meta_type="Bar Type"
       ...       permission="bar.add"
       ...       />
       ... </configure>'''
-      >>> zcml.load_config('meta.zcml', Products.Five)
+      >>> import Zope2.App
+      >>> zcml.load_config('meta.zcml', Zope2.App)
       >>> zcml.load_string(configure_zcml)
 
     Make sure that the class attributes are set correctly::
