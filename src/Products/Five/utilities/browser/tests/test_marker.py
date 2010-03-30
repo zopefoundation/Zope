@@ -49,7 +49,7 @@ def test_editview():
 
     Try to add a marker interface that doesn't exist:
 
-      >>> view.update(('__builtin__.IFooMarker',), ())
+      >>> view.update(('__main__.IFooMarker',), ())
       Traceback (most recent call last):
       ...
       ComponentLookupError...
@@ -67,7 +67,7 @@ def test_editview():
 
     And try again to add it to the object:
 
-      >>> view.update(('__builtin__.IFooMarker',), ())
+      >>> view.update(('__main__.IFooMarker',), ())
       >>> view.getAvailableInterfaceNames()
       []
       >>> view.getDirectlyProvidedNames()
@@ -75,7 +75,7 @@ def test_editview():
 
     And remove it again:
 
-      >>> view.update((), ('__builtin__.IFooMarker',))
+      >>> view.update((), ('__main__.IFooMarker',))
       >>> view.getAvailableInterfaceNames()
       [...IFooMarker...]
       >>> view.getDirectlyProvidedNames()
