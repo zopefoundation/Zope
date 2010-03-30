@@ -16,6 +16,7 @@ Features Added
   - Acquisition = 2.13.0
   - ExtensionClass = 2.12.0
   - Persistence = 2.12.0
+  - pytz = 2010b
 
 - There is now an event ZPublisher.interfaces.IPubBeforeStreaming which will
   be fired just before the first chunk of data is written to the response
