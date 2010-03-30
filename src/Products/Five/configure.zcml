@@ -1,12 +1,10 @@
 <configure xmlns="http://namespaces.zope.org/zope"
            xmlns:five="http://namespaces.zope.org/five">
 
+  <include package="Zope2.App" file="configure.zcml" />
+
   <include file="meta.zcml" />
   <include file="permissions.zcml" />
-
-  <include package="zope.traversing" />
-  <include package="OFS "/>
-  <include package="ZPublisher" />
 
   <include package=".component" />
   <include package=".browser" />

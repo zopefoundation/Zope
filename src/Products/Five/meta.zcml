@@ -2,22 +2,8 @@
     xmlns="http://namespaces.zope.org/zope"
     xmlns:meta="http://namespaces.zope.org/meta">
 
-  <include package="AccessControl" file="meta.zcml" />
-  <include package="OFS" file="meta.zcml" />
-  <include package="zope.component" file="meta.zcml" />
-  <include package="zope.i18n" file="meta.zcml" />
-
+  <include package="Zope2.App" file="meta.zcml" />
   <include package=".browser" file="meta.zcml" />
-
-  <meta:directives namespace="http://namespaces.zope.org/zope">
-
-    <meta:directive
-        name="view"
-        schema="zope.component.zcml.IViewDirective"
-        handler="zope.component.zcml.view"
-        />
-
-  </meta:directives>
 
   <meta:directives namespace="http://namespaces.zope.org/five">
 

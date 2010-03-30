@@ -1,6 +1,0 @@
-<configure
-    xmlns="http://namespaces.zope.org/zope">
-
-  <include package="ZPublisher" file="i18n.zcml" />
-
-</configure>
