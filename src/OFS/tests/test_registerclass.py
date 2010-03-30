@@ -23,7 +23,7 @@ def test_registerClass():
       >>> from zope.component.testing import setUp, tearDown
       >>> setUp()
       >>> import Products
-      >>> import Products.Five
+      >>> import Zope2.App
       >>> from Zope2.App import zcml
       >>> from Products.Five.tests.testing.simplecontent import SimpleContent
       >>> from Products.Five.tests.testing.simplecontent import ISimpleContent
@@ -46,7 +46,7 @@ def test_registerClass():
       ...       global="false"
       ...       />
       ... </configure>'''
-      >>> zcml.load_config('meta.zcml', Products.Five)
+      >>> zcml.load_config('meta.zcml', Zope2.App)
       >>> zcml.load_string(configure_zcml)
 
     Make sure that the class attributes are set correctly::

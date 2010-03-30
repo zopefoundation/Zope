@@ -1,0 +1,10 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:five="http://namespaces.zope.org/five">
+
+  <adapter
+      for=".testPlaceless.IAdaptable"
+      provides=".testPlaceless.IAdapted"
+      factory=".testPlaceless.Adapter"
+      />
+
+</configure>

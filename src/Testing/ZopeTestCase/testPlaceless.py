@@ -15,22 +15,55 @@
 $Id$
 """
 
+from zope.component import adapts
+from zope.interface import implements, Interface
+
 from Testing import ZopeTestCase
 
 from Testing.ZopeTestCase.placeless import setUp, tearDown
 from Testing.ZopeTestCase.placeless import zcml
 from Testing.ZopeTestCase.placeless import temporaryPlacelessSetUp
 
-import Products.Five.tests
-from Products.Five.tests.adapters import IAdapted
-from Products.Five.tests.adapters import Adaptable
-
 
 def setupZCML():
     import AccessControl
-    zcml.load_config('meta.zcml', Products.Five)
+    import Zope2.App
+    zcml.load_config('meta.zcml', Zope2.App)
     zcml.load_config('permissions.zcml', AccessControl)
-    zcml.load_config('directives.zcml', Products.Five.tests)
+    zcml.load_config('directives.zcml', ZopeTestCase)
+
+
+class IAdaptable(Interface):
+    """This is a Zope interface.
+    """
+    def method():
+        """This method will be adapted
+        """
+
+class IAdapted(Interface):
+    """The interface we adapt to.
+    """
+
+    def adaptedMethod():
+        """A method to adapt.
+        """
+
+class Adaptable:
+    implements(IAdaptable)
+
+    def method(self):
+        return "The method"
+
+
+class Adapter:
+    implements(IAdapted)
+    adapts(IAdaptable)
+
+    def __init__(self, context):
+        self.context = context
+
+    def adaptedMethod(self):
+        return "Adapted: %s" % self.context.method()
 
 
 class TestPlacelessSetUp(ZopeTestCase.ZopeTestCase):

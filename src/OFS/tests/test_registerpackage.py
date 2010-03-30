@@ -29,9 +29,9 @@ def test_registerPackage():
       >>> from zope.component.testing import setUp, tearDown
       >>> setUp()
       >>> import Products
-      >>> import Products.Five
+      >>> import Zope2.App
       >>> from Zope2.App import zcml
-      >>> zcml.load_config('meta.zcml', Products.Five)
+      >>> zcml.load_config('meta.zcml', Zope2.App)
 
     Make sure a python package with a valid initialize gets its
     initialize function called::

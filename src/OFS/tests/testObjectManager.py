@@ -14,7 +14,6 @@ from logging import getLogger
 from OFS.metaconfigure import setDeprecatedManageAddDelete
 from OFS.ObjectManager import ObjectManager
 from OFS.SimpleItem import SimpleItem
-import Products.Five
 from Zope2.App import zcml
 from zExceptions import BadRequest
 
@@ -73,7 +72,8 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
     def setUp(self):
         super(ObjectManagerTests, self).setUp()
         self.saved_cfg_debug_mode = getConfiguration().debug_mode
-        zcml.load_config('meta.zcml', Products.Five)
+        import Zope2.App
+        zcml.load_config('meta.zcml', Zope2.App)
         import OFS
         zcml.load_config('configure.zcml', OFS)
         setDeprecatedManageAddDelete(ItemForDeletion)
