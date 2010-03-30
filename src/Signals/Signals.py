@@ -18,9 +18,13 @@ $Id$
 __version__='$Revision: 1.3 $'[11:-2]
 
 import logging
-import sys, os
+import os
+import sys
 
 import Lifetime
+
+from .threads import dump_threads
+
 
 logger = logging.getLogger("Z2")
 
@@ -54,6 +58,13 @@ def restartHandler():
        should be called after all other SIGHUP handlers."""
     logger.info("Restarting")
     Lifetime.shutdown(1)
+
+
+def showStacks():
+    """Dump a stracktrace of all threads on the console."""
+    print dump_threads()
+    sys.stdout.flush()
+
 
 class LogfileReopenHandler:
     """Reopen log files on SIGUSR2.
@@ -104,6 +115,7 @@ def registerZopeSignals(loggers):
     SignalHandler.registerHandler(SIGINT, shutdownHandler)
     if os.name != 'nt':
         SignalHandler.registerHandler(SIGHUP, restartHandler)
+        SignalHandler.registerHandler(SIGUSR1, showStacks)
         SignalHandler.registerHandler(SIGUSR2, LogfileReopenHandler(loggers))
     else:
         # no restart handler on windows.

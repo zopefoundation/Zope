@@ -83,6 +83,13 @@ Restructuring
 Features Added
 ++++++++++++++
 
+- Integrated the Products.signalstack / z3c.deadlockdebugger packages. You can
+  now send a SIGUSR1 signal to a Zope process and get a stack trace of all
+  threads printed out on the console. This works even if all threads are stuck.
+
+- ZCTextIndex query parser treats fullwidth space characters defined
+  in Unicode as valid white space.
+
 - Updated packages:
 
   - initgroups = 2.13.0
@@ -118,9 +125,6 @@ Features Added
   - zope.testing = 3.9.3
   - zope.traversing = 3.12.0
   - zope.viewlet = 3.7.0
-
-- ZCTextIndex query parser treats fullwidth space characters defined
-  in Unicode as valid white space.
 
 Bugs Fixed
 ++++++++++
