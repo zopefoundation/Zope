@@ -1,6 +1,8 @@
 <configure xmlns="http://namespaces.zope.org/zope"
            i18n_domain="Zope2">
 
+  <include package="Zope2.App" file="meta.zcml"/>
+
   <!-- Create permissions declared in ZCML if they don't exist already -->
   <subscriber
         for="zope.security.interfaces.IPermission
