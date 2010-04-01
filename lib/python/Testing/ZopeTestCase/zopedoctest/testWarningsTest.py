@@ -1,6 +1,6 @@
 ##############################################################################
 #
-# Copyright (c) 2005 Zope Corporation and Contributors. All Rights Reserved.
+# Copyright (c) 2005 Zope Foundation and Contributors.
 #
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
@@ -12,7 +12,7 @@
 ##############################################################################
 """Example doctest
 
-$Id: testWarningsTest.py,v 1.2 2005/03/26 18:07:08 shh42 Exp $
+$Id$
 """
 
 import os, sys

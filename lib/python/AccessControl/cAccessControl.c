@@ -3,7 +3,7 @@
 **
 **	Access control acceleration routines
 
-  Copyright (c) 2001, Digital Creations, Fredericksburg, VA, USA.  
+  Copyright (c) 2001, Zope Foundation and Contributors.  
   All rights reserved.
   
   Redistribution and use in source and binary forms, with or without

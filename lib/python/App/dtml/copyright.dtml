@@ -158,7 +158,7 @@ OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.</strong></p>
 <hr>
 <p>Zope uses the C expat library by James Clark, for parsing XML text.</p>
 
-<P>Copyright (c) 1998, 1999 James Clark.  Expat is subject to the <A
+<P>Copyright (c) 1998, 1999 Zope Foundation and Contributors
 HREF="http://www.mozilla.org/NPL/NPL-1_1Final.html">Mozilla Public
 License Version 1.1</A>.
 </p>

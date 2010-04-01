@@ -2,7 +2,7 @@
 
 ##############################################################################
 #
-# Copyright (c) 2002 Zope Foundation and Contributors. All Rights Reserved.
+# Copyright (c) 2002 Zope Foundation and Contributors.
 #
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
@@ -476,12 +476,12 @@ doclines = __doc__.split("\n")
 
 setup(name='Zope',
       author='Zope Foundation and Contributors',
+      license='ZPL 2.1',
       version="2.11.2",
       maintainer="Zope Foundation",
       maintainer_email="zope-dev@zope.org",
       url = "http://www.zope.org/",
       ext_modules = ext_modules,
-      license = "http://www.zope.org/Resources/ZPL",
       platforms = ["any"],
       description = doclines[0],
       long_description = "\n".join(doclines[2:]),
@@ -516,6 +516,7 @@ os.path.walk("skel", skel_visit, installed_data_files)
 setup(
     name='Zope',
     author='Zope Foundation and Contributors',
+    license='ZPL 2.1',
 
     data_files=installed_data_files,
     scripts=["utilities/mkzeoinstance.py",
