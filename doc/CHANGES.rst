@@ -31,6 +31,9 @@ Features Added
 Bugs Fixed
 ++++++++++
 
+- LP #257675: request.form contained '-C':'' when no QUERY_STRING was in
+  the environment.
+
 - Zope 3-style resource directories would throw an Unauthorized error when
   trying to use restrictedTraverse() to reach a resource in a sub-directory
   of the resource directory.
