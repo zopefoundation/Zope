@@ -2,7 +2,7 @@
 
 ##############################################################################
 #
-# Copyright (c) 2002 Zope Corporation and Contributors. All Rights Reserved.
+# Copyright (c) 2002 Zope Foundation and Contributors. All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
@@ -162,8 +162,6 @@ class ZopeDistribution(distutils.core.Distribution):
 
 # presumes this script lives in the base dir
 BASE_DIR=os.path.dirname(os.path.abspath(sys.argv[0]))
-
-AUTHOR = 'Zope Corporation and Contributors'
 
 # Most modules are in lib/python in the source distribution
 PACKAGES_ROOT = os.path.join(BASE_DIR, 'lib', 'python')
@@ -477,9 +475,9 @@ ext_modules += [BTreeExtension(flavor)
 doclines = __doc__.split("\n")
 
 setup(name='Zope',
-      author=AUTHOR,
+      author='Zope Foundation and Contributors',
       version="2.11.2",
-      maintainer="Zope Corporation",
+      maintainer="Zope Foundation",
       maintainer_email="zope-dev@zope.org",
       url = "http://www.zope.org/",
       ext_modules = ext_modules,
@@ -517,7 +515,7 @@ os.path.walk("skel", skel_visit, installed_data_files)
 
 setup(
     name='Zope',
-    author=AUTHOR,
+    author='Zope Foundation and Contributors',
 
     data_files=installed_data_files,
     scripts=["utilities/mkzeoinstance.py",
