@@ -8,6 +8,11 @@ file HISTORY.txt.
 Zope 2.12.4 (Unreleased)
 ------------------------
 
+Restructuring
++++++++++++++
+
+- Updated copyright and license information to conform with repository policy.
+
 Features Added
 ++++++++++++++
 
