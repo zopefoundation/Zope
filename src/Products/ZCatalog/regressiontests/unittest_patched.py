@@ -12,7 +12,7 @@ specific test cases and suites (TestCase, TestSuite etc.), and also a
 text-based utility class for running the tests and reporting the results
 (TextTestRunner).
 
-Copyright (c) 1999, 2000, 2001 Steve Purcell
+Copyright (c) 1999, 2000, 2001 Zope Foundation and Contributors
 This module is free software, and you may redistribute it and/or modify
 it under the same terms as Python itself, so long as this copyright message
 and disclaimer are retained in their original form.
