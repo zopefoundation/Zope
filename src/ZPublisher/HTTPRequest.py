@@ -478,6 +478,12 @@ class HTTPRequest(BaseRequest):
         other = self.other
         taintedform = self.taintedform
 
+        # If 'QUERY_STRING' is not present in environ
+        # FieldStorage will try to get it from sys.argv[1]
+        # which is not what we need.
+        if not environ.has_key('QUERY_STRING'):
+            environ['QUERY_STRING'] = ''
+
         meth = None
         fs = ZopeFieldStorage(fp=fp,environ=environ,keep_blank_values=1)
         if not hasattr(fs,'list') or fs.list is None:

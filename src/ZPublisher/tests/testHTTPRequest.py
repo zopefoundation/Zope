@@ -128,6 +128,13 @@ class HTTPRequestTests(unittest.TestCase):
                 "Key %s not correctly reproduced in tainted; expected %r, "
                 "got %r" % (key, req.form[key], req.taintedform[key]))
 
+    def test_processInputs_wo_query_string(self):
+        env = {'SERVER_NAME': 'testingharnas', 'SERVER_PORT': '80'}
+        req = self._makeOne(environ=env)
+        req.processInputs()
+        self._noFormValuesInOther(req)
+        self.assertEquals(req.form, {})
+
     def test_processInputs_wo_marshalling(self):
         inputs = (
             ('foo', 'bar'), ('spam', 'eggs'),
