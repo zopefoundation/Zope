@@ -53,8 +53,8 @@ Calling Scripts from Page Templates
 
 Calling scripts from Page Templates is much like calling them
 by URL or from Python. Just use standard TALES path
-expressions as described in the chapter entitled "Using Zope
-Page Templates.":ZPT.html>`_  For example::
+expressions as described in the chapter entitled `Using Zope
+Page Templates <ZPT.html>`_  For example::
 
   <div tal:replace="context/hippo/feed">
     Output of feed()
@@ -622,7 +622,7 @@ Guide":http://www.zope.org/Documentation/Books/ZDG/current
 Advanced Acquisition 
 --------------------
 
-In the chapter entitled "Acquisition":Acquisition.html>`_ , we
+In the chapter entitled `Acquisition <Acquisition.html>`_ , we
 introduced acquisition by containment, which we have been using
 throughout this chapter. In acquisition by containment, Zope
 looks for an object by going back up the containment hierarchy
