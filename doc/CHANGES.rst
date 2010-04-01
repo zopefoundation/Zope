@@ -11,6 +11,8 @@ Trunk (unreleased)
 Restructuring
 +++++++++++++
 
+- Updated copyright and license information to conform with repository policy.
+
 - Moved the ``absoluteurl`` views into the OFS package.
 
 - Moved ``testbrowser`` module into the Testing package.
