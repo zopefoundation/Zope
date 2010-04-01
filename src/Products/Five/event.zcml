@@ -1,0 +1,6 @@
+<configure xmlns="http://namespaces.zope.org/zope">
+
+  <!-- BBB shim -->
+  <include package="OFS" file="event.zcml"/>
+
+</configure>
