@@ -124,7 +124,9 @@ def _registerClass(class_, meta_type, permission, addview, icon, global_):
             'instance': class_,
             'container_filter': None}
 
-    Products.meta_types += (info,)
+    meta_types = getattr(Products, 'meta_types', ())
+    meta_types += (info,)
+    Products.meta_types = meta_types
 
     _register_monkies.append(class_)
     _meta_type_regs.append(meta_type)
