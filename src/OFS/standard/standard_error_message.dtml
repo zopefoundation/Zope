@@ -1,5 +1,5 @@
 <html>
-<head><title>&dtml-title_or_id;</title></head>
+<head><title>Site Error</title></head>
 <body bgcolor="#FFFFFF">
 
 <dtml-if error_message>

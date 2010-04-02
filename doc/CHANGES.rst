@@ -31,6 +31,9 @@ Features Added
 Bugs Fixed
 ++++++++++
 
+- LP #142430: Avoid using the contexts title_or_id method in the
+  standard_error_message.
+
 - LP #257675: request.form contained '-C':'' when no QUERY_STRING was in
   the environment.
 
