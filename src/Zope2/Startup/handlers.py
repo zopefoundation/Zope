@@ -69,17 +69,6 @@ def database_quota_size(value):
     value and _setenv('ZOPE_DATABASE_QUOTA', value)
     return value
 
-def read_only_database(value):
-    # This handler exists only for BBB:  using the 'read-only-database'
-    # directive in a config file is deprecated.
-    if value is not None:
-        import warnings
-        warnings.warn("The 'read-only-database' configuration option is "
-                    "deprecated; please use the correct optoin inside the "
-                    "section defining the appropriate storage.",
-                    DeprecationWarning, stacklevel=2)
-    return value
-
 def structured_text_header_level(value):
     value is not None and _setenv('STX_DEFAULT_LEVEL', value)
     return value

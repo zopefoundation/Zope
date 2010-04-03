@@ -784,16 +784,6 @@
      <metadefault>unset</metadefault>
   </key>
 
-  <key name="read-only-database" datatype="boolean"
-       handler="read_only_database">
-     <description>
-      Deprecated option, no longer has any effect.  To configure opening
-      storages in read-only mode:  please use the appropriate flag in the
-      section which configures each storage.
-     </description>
-     <metadefault>off</metadefault>
-  </key>
-
   <section type="eventlog" name="*" attribute="eventlog">
     <description>
       Describes what level of log output is desired and where it

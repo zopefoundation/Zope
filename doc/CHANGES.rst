@@ -11,6 +11,8 @@ Trunk (unreleased)
 Restructuring
 +++++++++++++
 
+- Removed deprecated ``read-only-database`` option from zope.conf.
+
 - Updated copyright and license information to conform with repository policy.
 
 - Moved the ``absoluteurl`` views into the OFS package.
