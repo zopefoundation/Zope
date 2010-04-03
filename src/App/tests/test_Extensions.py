@@ -51,6 +51,37 @@ class FuncCodeTests(unittest.TestCase):
         self.assertEqual(fc.co_varnames, ('a', 'b'))
         self.assertEqual(fc.co_argcount, 2)
 
+    def test___cmp___None(self):
+        def f(self):
+            pass
+        fc = self._makeOne(f, im=1)
+        self.failUnless(cmp(fc, None) > 0)
+
+    def test___cmp___non_FuncCode(self):
+        def f(self):
+            pass
+        fc = self._makeOne(f, im=1)
+        self.failUnless(cmp(fc, object()) > 0)
+
+    def test___cmp___w_FuncCode_same_args(self):
+        def f(self, a, b):
+            pass
+        def g(self, a, b):
+            pass
+        fc = self._makeOne(f, im=1)
+        fc2 = self._makeOne(g, im=1)
+        self.failUnless(cmp(fc, fc2) == 0)
+
+    def test___cmp___w_FuncCode_different_args(self):
+        def f(self):
+            pass
+        def g(self, a, b):
+            pass
+        fc = self._makeOne(f, im=1)
+        fc2 = self._makeOne(g, im=1)
+        self.failUnless(cmp(fc, fc2) < 0)
+        
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(FuncCodeTests),
