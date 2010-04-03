@@ -304,7 +304,7 @@
       Zope Products), an "Extensions" subdirectory (which holds instance-local
       external methods), and an "import" directory (which holds instance-local
       importable ZODB exports).  It may also contain "etc", "bin", "log",
-      and "var" directories depending on how you'ce configured your Zope
+      and "var" directories depending on how you've configured your Zope
       instance.
     </description>
   </key>
@@ -534,7 +534,7 @@
 
   <key name="cgi-maxlen" default="0" handler="cgi_maxlen" datatype="integer">
     <description>
-     Set the cgi.maxlen parameter to limit the number of data passwed to
+     Set the cgi.maxlen parameter to limit the number of data passed to
      cgi.escape(). This is helpful to prevent DoS attacks. Set the parameter
      to 0 for no restrictions.
     </description>
@@ -779,7 +779,7 @@
      Set this directive to an integer in bytes in order to place a hard
      limit on the size which the default FileStorage-backed Zope database
      can grow. Additions to the database will not be permitted once this
-     filesize is exceeded.
+     file size is exceeded.
      </description>
      <metadefault>unset</metadefault>
   </key>
@@ -832,7 +832,7 @@
        default="info">
      <description>
        Specifies at which level conflict errors are logged. Conflict
-       errors, when occuring in small numbers, are a normal part of the
+       errors, when occurring in small numbers, are a normal part of the
        Zope optimistic transaction conflict resolution algorithms. They
        are retried automatically a few times, and are therefore usually
        not visible by the user. You can specify 'notset' if you don't
@@ -864,7 +864,7 @@
   <key name="catalog-getObject-raises" datatype="boolean"
        handler="catalog_getObject_raises">
      <description>
-     If this directive is set to "on" (the deafult), ZCatalog brains objects
+     If this directive is set to "on" (the default), ZCatalog brains objects
      will raise NotFound exceptions from 'getObject' for unreachable objects,
      and Unauthorized for disallowed objects.  If the option is "off", they
      will return None in such cases (which was the old behavior)
