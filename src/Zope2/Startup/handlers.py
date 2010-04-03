@@ -80,10 +80,6 @@ def read_only_database(value):
                     DeprecationWarning, stacklevel=2)
     return value
 
-def zeo_client_name(value):
-    value and _setenv('ZEO_CLIENT', value)
-    return value
-
 def structured_text_header_level(value):
     value is not None and _setenv('STX_DEFAULT_LEVEL', value)
     return value

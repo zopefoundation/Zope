@@ -144,6 +144,9 @@ Features Added
 Bugs Fixed
 ++++++++++
 
+- LP #143089: Removed the top-level zeo-client-name option from zope.conf, as
+  it had no effect since ZODB 3.2.
+
 - LP #143410: Removed unnecessary color definition in ZMI CSS.
 
 - LP #143391: Protect against missing acl_users.hasUsers on quick start page.

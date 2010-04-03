@@ -794,16 +794,6 @@
      <metadefault>off</metadefault>
   </key>
 
-  <key name="zeo-client-name" handler="zeo_client_name">
-    <description>
-     Provide a string value to uniquely identify the local cache files
-     created if this Zope is a ZEO client. Setting this directive implies
-     setting 'enable-product-installation' to 'off' if
-     'enable-product-installation' is left unset.
-     </description>
-     <metadefault>unset</metadefault>
-  </key>
-
   <section type="eventlog" name="*" attribute="eventlog">
     <description>
       Describes what level of log output is desired and where it

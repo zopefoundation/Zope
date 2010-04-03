@@ -736,24 +736,6 @@ instancehome $INSTANCE
 #    database-quota-size 1000000
 
 
-# Directive: zeo-client-name
-#
-# Description:
-#     If you want a persistent ZEO client cache which retains cache
-#     contents across ClientStorage restarts, you need to define a
-#     zeo-client-name.  If you use ZEO and you don't set a
-#     zeo-client-name, the client cache is stored in temporary files
-#     which are removed when the ClientStorage shuts down.  The value
-#     of zeo-client-name is used to uniquely identify the local cache
-#     files created if this Zope is a ZEO client.
-#
-# Default: unset
-#
-# Example:
-#
-#    zeo-client-name zeo1
-
-
 # Directives: logger
 #
 # Description:
