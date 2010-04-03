@@ -144,6 +144,8 @@ Features Added
 Bugs Fixed
 ++++++++++
 
+- LP #143410: Removed unnecessary color definition in ZMI CSS.
+
 - LP #143391: Protect against missing acl_users.hasUsers on quick start page.
 
 - Fixed issue with sending text containing ':' from MailHost.

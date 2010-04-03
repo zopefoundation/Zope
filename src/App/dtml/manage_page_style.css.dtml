@@ -158,9 +158,8 @@ th {
 }
 
 .form-element {
-  font-family: Verdana, Helvetica, aans-serif;
+  font-family: Verdana, Helvetica, sans-serif;
   font-size: 10pt;
-  color: #000000;
 }
 
 .form-text {
