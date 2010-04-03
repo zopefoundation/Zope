@@ -772,18 +772,6 @@
      <metadefault>off</metadefault>
   </key>
 
-
-  <key name="database-quota-size" datatype="byte-size"
-       handler="database_quota_size">
-     <description>
-     Set this directive to an integer in bytes in order to place a hard
-     limit on the size which the default FileStorage-backed Zope database
-     can grow. Additions to the database will not be permitted once this
-     file size is exceeded.
-     </description>
-     <metadefault>unset</metadefault>
-  </key>
-
   <section type="eventlog" name="*" attribute="eventlog">
     <description>
       Describes what level of log output is desired and where it

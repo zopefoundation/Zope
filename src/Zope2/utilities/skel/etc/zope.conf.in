@@ -721,21 +721,6 @@ instancehome $INSTANCE
 #    suppress-all-site-roots on
 
 
-# Directive: database-quota-size
-#
-# Description:
-#     Set this directive to an integer in bytes in order to place a hard
-#     limit on the size which the default FileStorage-backed Zope database
-#     can grow. Additions to the database will not be permitted once this
-#     filesize is exceeded.
-#
-# Default: unset
-#
-# Example:
-#
-#    database-quota-size 1000000
-
-
 # Directives: logger
 #
 # Description:

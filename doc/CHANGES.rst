@@ -146,6 +146,9 @@ Features Added
 Bugs Fixed
 ++++++++++
 
+- LP #143604: Removed top-level database-quota-size from zope.conf, some
+  storages support a quota option instead.
+
 - LP #143089: Removed the top-level zeo-client-name option from zope.conf, as
   it had no effect since ZODB 3.2.
 

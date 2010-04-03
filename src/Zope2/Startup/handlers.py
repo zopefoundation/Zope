@@ -65,10 +65,6 @@ def suppress_all_site_roots(value):
     value and _setenv('SUPPRESS_SITEROOT', value)
     return value
 
-def database_quota_size(value):
-    value and _setenv('ZOPE_DATABASE_QUOTA', value)
-    return value
-
 def structured_text_header_level(value):
     value is not None and _setenv('STX_DEFAULT_LEVEL', value)
     return value
