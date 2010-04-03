@@ -3,37 +3,37 @@
 <dtml-call "RESPONSE.setHeader('Cache-Control','public,max-age=3600')">
 </dtml-unless>
 h1 {
-  font-family: Verdana, Helvetica, sans-serif; 
-  font-size: 24pt; 
-  font-weight: bold; 
+  font-family: Verdana, Helvetica, sans-serif;
+  font-size: 24pt;
+  font-weight: bold;
 }
 
 h2 {
-  font-family: Verdana, Helvetica, sans-serif; 
-  font-size: 18pt; 
-  font-weight: bold; 
+  font-family: Verdana, Helvetica, sans-serif;
+  font-size: 18pt;
+  font-weight: bold;
 }
 
 h3 {
-  font-family: Verdana, Helvetica, sans-serif; 
-  font-size: 14pt; 
-  font-weight: bold; 
+  font-family: Verdana, Helvetica, sans-serif;
+  font-size: 14pt;
+  font-weight: bold;
 }
 
-a:hover {  
-  font-family: Verdana, Helvetica, sans-serif; 
+a:hover {
+  font-family: Verdana, Helvetica, sans-serif;
   text-decoration: underline;
-  color: #333333; 
+  color: #333333;
 }
 
 a:link {
-  font-family: Verdana, Helvetica, sans-serif; 
+  font-family: Verdana, Helvetica, sans-serif;
   text-decoration: none;
   color: #000099;
 }
 
 a {
-  font-family: Verdana, Helvetica, sans-serif; 
+  font-family: Verdana, Helvetica, sans-serif;
   text-decoration: none;
   color: #000099;
 }
@@ -55,9 +55,9 @@ p {
 }
 
 th {
-  font-family: Verdana, Helvetica, sans-serif; 
+  font-family: Verdana, Helvetica, sans-serif;
   font-weight: bold;
-  font-size: 10pt; 
+  font-size: 10pt;
   color: #333333;
 }
 
@@ -74,8 +74,8 @@ th {
 }
 
 .tab-small {
-  font-family: Verdana, Helvetica, sans-serif; 
-  font-size: 8pt; 
+  font-family: Verdana, Helvetica, sans-serif;
+  font-size: 8pt;
   color: #333333;
 }
 
@@ -98,20 +98,19 @@ th {
 }
 
 .list-item {
-  font-family: Verdana, Helvetica, sans-serif; 
-  font-size: 10pt; 
+  font-family: Verdana, Helvetica, sans-serif;
+  font-size: 10pt;
 }
 
 .list-nav {
-  font-family: Verdana, Helvetica, sans-serif; 
-  font-size: 10pt; 
+  font-family: Verdana, Helvetica, sans-serif;
+  font-size: 10pt;
   font-weight: bold;
 }
 
 .row-normal {
   background-color: #ffffff;
   border: none;
-
 }
 
 .row-hilite {
@@ -125,8 +124,8 @@ th {
 }
 
 .system-msg {
-  font-family: Verdana, Helvetica, sans-serif; 
-  font-size: 10pt; 
+  font-family: Verdana, Helvetica, sans-serif;
+  font-size: 10pt;
   background-color: #ffffff;
   border:  1px solid #000000;
   margin-bottom: 6px;
@@ -136,24 +135,24 @@ th {
 }
 
 .form-title {
-  font-family: Verdana, Helvetica, sans-serif; 
+  font-family: Verdana, Helvetica, sans-serif;
   font-weight: bold;
-  font-size: 12pt; 
+  font-size: 12pt;
   color: #333333;
 }
 
 .form-label {
-  font-family: Verdana, Helvetica, sans-serif; 
+  font-family: Verdana, Helvetica, sans-serif;
   font-weight: bold;
-  font-size: 10pt; 
+  font-size: 10pt;
   color: #333333;
 }
 
 .form-optional {
-  font-family: Verdana, Helvetica, sans-serif; 
+  font-family: Verdana, Helvetica, sans-serif;
   font-weight: bold;
   font-style: italic;
-  font-size: 10pt; 
+  font-size: 10pt;
   color: #333333;
 }
 
