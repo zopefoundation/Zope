@@ -46,7 +46,7 @@
                keytype="identifier">
     <description>
      A section which allows you to define simple key-value pairs which
-     will be used as environment variable settings during startup.  
+     will be used as environment variable settings during startup.
     </description>
     <key name="+" attribute="environ">
       <description>
@@ -74,7 +74,7 @@
     </multikey>
 
     <key name="daemon" datatype="boolean"
-	 required="no" default="true">
+         required="no" default="true">
       <description>
         Command-line option: -d or --daemon.
 
@@ -95,7 +95,7 @@
     </key>
 
     <key name="backoff-limit" datatype="integer"
-	 required="no" default="10">
+         required="no" default="10">
       <description>
         Command-line option: -b or --backoff-limit.
 
@@ -116,7 +116,7 @@
     </key>
 
     <key name="forever" datatype="boolean"
-	 required="no" default="false">
+         required="no" default="false">
       <description>
         Command-line option: -f or --forever.
 
@@ -149,7 +149,7 @@
     </key>
 
     <key name="hang-around" datatype="boolean"
-	 required="no" default="false">
+         required="no" default="false">
       <description>
         If this option is true, the zdrun.py process will remain even
         when the daemon subprocess is stopped.  In this case, zopectl
@@ -171,7 +171,7 @@
     </key>
 
     <key name="default-to-interactive" datatype="boolean"
-	 required="no" default="true">
+         required="no" default="true">
       <description>
         If this option is true, zopectl enters interactive mode
         when it is invoked without a positional command argument.  If
@@ -213,7 +213,7 @@
               datatype=".mount_point">
       <description>
        The mount point is the slash-separated path to which this database
-       will be mounted within the Zope application server. If the path 
+       will be mounted within the Zope application server. If the path
        on the ZEO server is different from the path of the mount point then
        you can use a notation "path_on_client:path_on_zeo_server".
       </description>
@@ -566,7 +566,7 @@
      "Public" header to be present in reply to the OPTIONS WebDAV
      request.
      (http://www.redmountainsw.com/wordpress/archives/webfolders-zope)
- 
+
      To get a recent Microsoft Web Folders implementation, refer to
      Microsoft KB Article 907306.
      (Software Update for Web Folders: May 18, 2007).
@@ -595,7 +595,7 @@
      2005, *do* require this header to be present in reply to the
      OPTIONS WebDAV request.
      (http://www.redmountainsw.com/wordpress/archives/webfolders-zope)
- 
+
      To get a recent Microsoft Web Folders implementation, refer to
      Microsoft KB Article 907306.
      (Software Update for Web Folders: May 18, 2007).
