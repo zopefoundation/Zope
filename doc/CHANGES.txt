@@ -8,6 +8,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Ensure that Acquistion wrapper classes always have a ``__getnewargs__``
+        method, even if it is not provided by the underlying ExtensionClass.
+
       - Fix the ``tp_name`` of the ImplicitAcquisitionWrapper and
         ExplicitAcquisitionWrapper to match their Python visible names and thus
         have a correct ``__name__``.
