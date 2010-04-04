@@ -49,7 +49,7 @@ def _getPath(home, prefix, name, suffixes):
         else: s=d
         if exists(s): return s
 
-def getPath(prefix, name, checkProduct=1, suffixes=('',)):
+def getPath(prefix, name, checkProduct=1, suffixes=('',), cfg=None):
     """Find a file in one of several relative locations
 
     Arguments:
@@ -70,6 +70,8 @@ def getPath(prefix, name, checkProduct=1, suffixes=('',)):
       suffixes -- a sequences of file suffixes to check.
         By default, the name is used without a suffix.
 
+      cfg -- ease testing (not part of the API)
+
     The search takes on multiple homes which are the instance home,
     the directory containing the directory containing the software
     home, and possibly product areas.
@@ -89,8 +91,9 @@ def getPath(prefix, name, checkProduct=1, suffixes=('',)):
                 if r is not None: result = r
 
     if result is None:
-        import App.config
-        cfg = App.config.getConfiguration()
+        if cfg is None:
+            import App.config
+            cfg = App.config.getConfiguration()
         locations = []
         locations.append(cfg.instancehome)
         sw = getattr(cfg, 'softwarehome', None)
