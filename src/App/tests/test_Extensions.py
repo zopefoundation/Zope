@@ -131,6 +131,7 @@ class _TempdirBase:
 
     def _makeTempProduct(self, name='foo', extname='Extensions'):
         import Products
+        self._old_Products___path__ = Products.__path__[:]
         root = self._makeTempdir()
         pdir = self._makeTempExtension(name=name, extname=extname, dir=root)
         Products.__path__ = (root,)
@@ -187,6 +188,7 @@ class Test_getPath(_TempdirBase, unittest.TestCase):
 
     def test_wo_checkProduct_skips_product(self):
         import Products
+        self._old_Products___path__ = Products.__path__
         del Products.__path__ # so any iteration will raise
         instdir = self._makeTempdir()
         instext = self._makeTempExtension(name=None, dir=instdir)
@@ -349,7 +351,7 @@ class Test_getObject(_TempdirBase, unittest.TestCase):
         MODULES = {}
         extdir = self._makeTempProduct()
         ext = self._makeFile(extdir, 'extension.py', EXTENSION_PY)
-        compile_dir(extdir)
+        compile_dir(extdir, quiet=1)
         os.remove(ext)
         found = self._callFUT('foo.extension', 'named', modules=MODULES)
         self.assertEqual(found, 'NAMED')
