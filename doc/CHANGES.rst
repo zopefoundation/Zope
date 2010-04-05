@@ -113,7 +113,6 @@ Features Added
 
 - Updated packages:
 
-  - Acquisition = 2.13.2
   - initgroups = 2.13.0
   - Missing = 2.13.0
   - MultiMapping = 2.13.0
