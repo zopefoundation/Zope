@@ -85,6 +85,8 @@ class Test_getPath(unittest.TestCase):
 
     _old_Products___path__ = None
     _tmpdirs = ()
+    _old_sys_path = None
+    _added_path = None
 
     def tearDown(self):
         import shutil
@@ -93,6 +95,12 @@ class Test_getPath(unittest.TestCase):
             Products.__path__ = self._old_Products___path__
         for tmpdir in self._tmpdirs:
             shutil.rmtree(tmpdir)
+        if self._old_sys_path is not None:
+            import sys
+            sys.path[:] = self._old_sys_path
+            for k, v in sys.modules.items():
+                if getattr(v, '__file__', '').startswith(self._added_path):
+                    del sys.modules[k]
 
     def _callFUT(self, prefix, name, checkProduct=1, suffixes=('',), cfg=None):
         from App.Extensions import getPath
@@ -103,6 +111,14 @@ class Test_getPath(unittest.TestCase):
         tmp = tempfile.mkdtemp()
         self._tmpdirs += (tmp,)
         return tmp
+
+    def _makePathDir(self):
+        import sys
+        dir = self._makeTempdir()
+        self._old_sys_path = sys.path[:]
+        sys.path.insert(0, dir)
+        self._added_path = dir
+        return dir
 
     def _makeTempExtension(self, name='foo', extname='Extensions', dir=None):
         import os
@@ -179,6 +195,63 @@ class Test_getPath(unittest.TestCase):
         path = self._callFUT('Extensions', 'extension', checkProduct=0,
                              suffixes=('py',), cfg=cfg)
         self.assertEqual(path, instfqn)
+
+    def test_not_found_in_instancehome(self):
+        import os
+        instdir = self._makeTempdir()
+        zopedir = self._makeTempdir()
+        swdir = os.path.join(zopedir, 'src')
+        os.mkdir(swdir)
+        zopeext = self._makeTempExtension(name=None, dir=zopedir)
+        zopefqn = self._makeFile(zopeext, 'extension.py')
+        cfg = self._makeConfig(instancehome=instdir,
+                               softwarehome=swdir,
+                              )
+        path = self._callFUT('Extensions', 'extension',
+                             suffixes=('py',), cfg=cfg)
+        self.assertEqual(path, zopefqn)
+
+    def test_no_swhome(self):
+        instdir = self._makeTempdir()
+        cfg = self._makeConfig(instancehome=instdir,
+                              )
+        extdir = self._makeTempProduct()
+        path = self._callFUT('Extensions', 'extension',
+                             suffixes=('py',), cfg=cfg)
+        self.assertEqual(path, None)
+
+    def test_search_via_import_one_dot(self):
+        import os
+        instdir = self._makeTempdir()
+        cfg = self._makeConfig(instancehome=instdir,
+                              )
+        pathdir = self._makePathDir()
+        pkgdir = os.path.join(pathdir, 'somepkg')
+        os.mkdir(pkgdir)
+        self._makeFile(pkgdir, '__init__.py', '#package')
+        pkgext = self._makeTempExtension(name=None, dir=pkgdir)
+        pkgfqn = self._makeFile(pkgext, 'extension.py')
+        path = self._callFUT('Extensions', 'somepkg.extension',
+                                suffixes=('py',), cfg=cfg)
+        self.assertEqual(path, pkgfqn)
+
+    def test_search_via_import_multiple_dots(self):
+        import os
+        instdir = self._makeTempdir()
+        cfg = self._makeConfig(instancehome=instdir,
+                              )
+        pathdir = self._makePathDir()
+        pkgdir = os.path.join(pathdir, 'somepkg')
+        os.mkdir(pkgdir)
+        self._makeFile(pkgdir, '__init__.py', '#package')
+        subpkgdir = os.path.join(pkgdir, 'subpkg')
+        os.mkdir(subpkgdir)
+        self._makeFile(subpkgdir, '__init__.py', '#subpackage')
+        subpkgext = self._makeTempExtension(name=None, dir=subpkgdir)
+        subpkgfqn = self._makeFile(subpkgext, 'extension.py')
+        path = self._callFUT('Extensions', 'somepkg.subpkg.extension',
+                                suffixes=('py',), cfg=cfg)
+        self.assertEqual(path, subpkgfqn)
 
 def test_suite():
     return unittest.TestSuite((
