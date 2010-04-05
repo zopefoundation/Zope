@@ -10,44 +10,53 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-__doc__='''Standard routines for handling extensions.
+"""Standard routines for handling extensions.
 
 Extensions currently include external methods and pluggable brains.
+"""
+import imp
+import os
 
-$Id$'''
-__version__='$Revision: 1.23 $'[11:-2]
-
-import os, imp
 import Products
 from zExceptions import NotFound
-path_split=os.path.split
-path_join=os.path.join
-exists=os.path.exists
+
 
 class FuncCode:
 
     def __init__(self, f, im=0):
-        self.co_varnames=f.func_code.co_varnames[im:]
-        self.co_argcount=f.func_code.co_argcount-im
+        self.co_varnames = f.func_code.co_varnames[im:]
+        self.co_argcount = f.func_code.co_argcount - im
 
-    def __cmp__(self,other):
-        if other is None: return 1
-        try: return cmp((self.co_argcount, self.co_varnames),
-                        (other.co_argcount, other.co_varnames))
-        except: return 1
+    def __cmp__(self, other):
+        if other is None:
+            return 1
+        try:
+            return cmp((self.co_argcount, self.co_varnames),
+                       (other.co_argcount, other.co_varnames))
+        except:
+            return 1
 
 
 def _getPath(home, prefix, name, suffixes):
-    d=path_join(home, prefix)
-    if d==prefix: raise ValueError, (
-        'The prefix, %s, should be a relative path' % prefix)
-    d=path_join(d,name)
-    if d==name: raise ValueError, ( # Paranoia
-        'The file name, %s, should be a simple file name' % name)
-    for s in suffixes:
-        if s: s="%s.%s" % (d, s)
-        else: s=d
-        if exists(s): return s
+
+    dir = os.path.join(home, prefix)
+    if dir == prefix:
+        raise ValueError('The prefix, %s, should be a relative path' % prefix)
+
+    fn = os.path.join(dir, name)
+    if fn == name:
+        # Paranoia
+        raise ValueError('The file name, %s, should be a simple file name'
+                            % name)
+
+    for suffix in suffixes:
+        if suffix:
+            fqn = "%s.%s" % (fn, suffix)
+        else:
+            fqn = fn
+        if os.path.exists(fqn):
+            return fqn
+
 
 def getPath(prefix, name, checkProduct=1, suffixes=('',), cfg=None):
     """Find a file in one of several relative locations
@@ -76,69 +85,69 @@ def getPath(prefix, name, checkProduct=1, suffixes=('',), cfg=None):
     the directory containing the directory containing the software
     home, and possibly product areas.
     """
-    d,n = path_split(name)
-    if d: raise ValueError, (
-        'The file name, %s, should be a simple file name' % name)
+    dir, ignored = os.path.split(name)
+    if dir:
+        raise ValueError('The file name, %s, should be a simple file name'
+                            % name)
 
     result = None
     if checkProduct:
-        l = name.find('.')
-        if l > 0:
-            p = name[:l]
-            n = name[l + 1:]
+        dot = name.find('.')
+        if dot > 0:
+            product = name[:dot]
+            extname = name[dot + 1:]
             for product_dir in Products.__path__:
-                r = _getPath(product_dir, os.path.join(p, prefix), n, suffixes)
-                if r is not None: result = r
+                found = _getPath(product_dir, os.path.join(product, prefix),
+                                 extname, suffixes)
+                if found is not None:
+                    return found
 
-    if result is None:
-        if cfg is None:
-            import App.config
-            cfg = App.config.getConfiguration()
-        locations = []
-        locations.append(cfg.instancehome)
-        sw = getattr(cfg, 'softwarehome', None)
-        if sw is not None:
-            sw = os.path.dirname(sw)
-            locations.append(sw)
-        for home in locations:
-            r=_getPath(home, prefix, name, suffixes)
-            if r is not None:
-                result = r
-        del locations
+    if cfg is None:
+        import App.config
+        cfg = App.config.getConfiguration()
 
-    if result is None:
-        try:
-            l = name.rfind('.')
-            if l > 0:
-                realName = name[l + 1:]
-                toplevel = name[:l]
-                
-                pos = toplevel.rfind('.')
-                if pos > -1:
-                    m = __import__(toplevel, globals(), {}, toplevel[pos+1:])
+    locations = [cfg.instancehome]
+
+    softwarehome = getattr(cfg, 'softwarehome', None)
+    if softwarehome is not None:
+        zopehome = os.path.dirname(softwarehome)
+        locations.append(zopehome)
+
+    for home in locations:
+        found = _getPath(home, prefix, name, suffixes)
+        if found is not None:
+            return found
+
+    try:
+        dot = name.rfind('.')
+        if dot > 0:
+            realName = name[dot+1:]
+            toplevel = name[:dot]
+            
+            rdot = toplevel.rfind('.')
+            if rdot > -1:
+                module = __import__(toplevel, globals(), {}, toplevel[rdot+1:])
+            else:
+                module = __import__(toplevel)
+    
+            prefix = os.path.join(module.__path__[0], prefix, realName)
+            
+            for suffix in suffixes:
+                if suffix:
+                    fn = "%s.%s" % (prefix, suffix)
                 else:
-                    m = __import__(toplevel)
-        
-                d = os.path.join(m.__path__[0], prefix, realName)
-                
-                for s in suffixes:
-                    if s: s="%s.%s" % (d, s)
-                    else: s=d
-                    if os.path.exists(s): 
-                        result = s
-                        break
-        except:
-            pass
-        
-
-    return result
+                    fn = prefix
+                if os.path.exists(fn): 
+                    return fn
+    except:
+        pass
+    
 
 def getObject(module, name, reload=0,
               # The use of a mutable default is intentional here,
               # because modules is a module cache.
               modules={}
               ):
-
     # The use of modules here is not thread safe, however, there is
     # no real harm in a race condition here.  If two threads
     # update the cache, then one will have simply worked a little
@@ -151,56 +160,60 @@ def getObject(module, name, reload=0,
     base, ext = os.path.splitext(module)
     if ext in ('py', 'pyc'):
         # XXX should never happen; splitext() keeps '.' with the extension
-        p = base
+        prefix = base
     else:
-        p = module
-    p=getPath('Extensions', p, suffixes=('','py','pyc'))
-    if p is None:
-        raise NotFound, (
-            "The specified module, <em>%s</em>, couldn't be found." % module)
+        prefix = module
 
-    __traceback_info__=p, module
+    path = getPath('Extensions', prefix, suffixes=('','py','pyc'))
+    if path is None:
+        raise NotFound("The specified module, '%s', couldn't be found."
+                        % module)
 
-    base, ext = os.path.splitext(p)
+    __traceback_info__= path, module
+
+    base, ext = os.path.splitext(path)
     if ext=='.pyc':
-        file = open(p, 'rb')
-        binmod=imp.load_compiled('Extension', p, file)
+        file = open(path, 'rb')
+        binmod = imp.load_compiled('Extension', path, file)
         file.close()
-        m=binmod.__dict__
-
+        module_dict = binmod.__dict__
     else:
-        try: execsrc=open(p)
-        except: raise NotFound, (
-            "The specified module, <em>%s</em>, couldn't be opened."
-            % module)
-        m={}
-        exec execsrc in m
+        try:
+            execsrc = open(path)
+        except:
+            raise NotFound("The specified module, '%s', "
+                           "couldn't be opened." % module)
+        module_dict = {}
+        exec execsrc in module_dict
 
     if old is not None:
-        old.update(m)
+        # XXX Accretive??
+        old.update(module_dict)
     else:
-        modules[module] = m
+        modules[module] = module_dict
 
     try:
-        return m[name]
+        return module_dict[name]
     except KeyError:
-        raise NotFound, (
-            "The specified object, <em>%s</em>, was not found in module, "
-            "<em>%s</em>." % (name, module))
+        raise NotFound("The specified object, '%s', was not found "
+                       "in module, '%s'." % (name, module))
 
-class NoBrains: pass
+class NoBrains:
+    pass
 
-def getBrain(module, class_name, reload=0):
-    'Check/load a class'
 
-    if not module and not class_name: return NoBrains
+def getBrain(module, class_name, reload=0, modules=None):
+    """ Check/load a class from an extension.
+    """
+    if not module and not class_name:
+        return NoBrains
 
-    try: c=getObject(module, class_name, reload)
-    except KeyError, v:
-        if v == class_name: raise ValueError, (
-            'The class, %s, is not defined in file, %s' % (class_name, module))
+    if modules is None:
+        c=getObject(module, class_name, reload)
+    else:
+        c=getObject(module, class_name, reload, modules=modules)
 
-    if not hasattr(c,'__bases__'): raise ValueError, (
-        '%s, is not a class' % class_name)
+    if getattr(c, '__bases__', None) is None:
+        raise ValueError('%s, is not a class' % class_name)
 
     return c
