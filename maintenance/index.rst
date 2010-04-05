@@ -28,6 +28,7 @@ Steps for creating a new Zope 2 release
 - update version information:
 
   - setup.py
+  - versions.cfg
 
 - update docs/CHANGES.rst
 
