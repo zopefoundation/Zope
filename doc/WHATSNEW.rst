@@ -14,10 +14,11 @@ Support for newer Python versions
 Zope 2 has supported and required Python 2.4 since its 2.9 release in summer
 2006. Later versions of Python have so far been unsupported by Zope 2.
 
-This version of Zope 2 adds support for both Python 2.5 and 2.6 at the same
-time. As Python 2.4 is no longer maintained itself, it is no longer officially
-supported by this Zope 2 version. Python 2.4 on 64-bit platforms is known to
-be incompatible with Zope 2.12. On 32-bit it could work at your own risk.
+This version of Zope 2 adds support for Python 2.6 instead. As neither Python
+2.4 nor Python 2.5 are officially maintained any longer. Python 2.4 on 64-bit
+platforms is known to be incompatible with Zope 2.12. On 32-bit it could work
+at your own risk. While there are no known incompatibilities with Python 2.5
+it is not recommended.
 
 Python 3 is a backwards incompatible release of Python and not supported. At
 this point there is no concrete roadmap for adoption of Python 3. It is
@@ -63,8 +64,8 @@ zope.interface, zope.component, zope.i18n, zope.tal and many more.
 Zope 2.12 marks a transitionary release, where a number of zope.app packages
 are still included. An ongoing effort to refactor those packages into more
 reusable and minimal packages is going on and will result in no zope.app
-packages being used or shipped with anymore as part of Zope 2. Based on
-current progress Zope 2.13 will no longer ship with any zope.app packages.
+packages being used or shipped with anymore as part of Zope 2. Zope 2.13 does
+no longer ship with any zope.app packages.
 
 If you are using zope.app packages inside your own codebase, you should make
 sure to declare these as dependencies of your packages or otherwise follow the
