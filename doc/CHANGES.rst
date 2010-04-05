@@ -11,6 +11,9 @@ Zope 2.12.4 (Unreleased)
 Restructuring
 +++++++++++++
 
+- Removed unmaintained build scripts for full Windows installers and
+  ``configure / make`` type builds.
+
 - Updated copyright and license information to conform with repository policy.
 
 - Factored out ZopeUndo package into a separate distribution.
