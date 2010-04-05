@@ -48,7 +48,8 @@ class ExternalMethod:
     The function is defined in an external file.  This file is treated
     like a module, but is not a module.  It is not imported directly,
     but is rather read and evaluated.  The file must reside in the
-    'Extensions' subdirectory of the Zope installation, or in an
+    'Extensions' subdirectory of the Zope installation, or reside in
+    the path specified by 'extensions' directive in zope.conf, or in an
     'Extensions' subdirectory of a product directory.
 
     Due to the way ExternalMethods are loaded, it is not *currently*

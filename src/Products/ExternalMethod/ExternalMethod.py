@@ -47,7 +47,7 @@ manage_addExternalMethodForm=DTMLFile('dtml/methodAdd', globals())
 def manage_addExternalMethod(self, id, title, module, function, REQUEST=None):
     """Add an external method to a folder
 
-    Un addition to the standard object-creation arguments,
+    In addition to the standard object-creation arguments,
     'id' and title, the following arguments are defined:
 
         function -- The name of the python function. This can be a
@@ -56,11 +56,15 @@ def manage_addExternalMethod(self, id, title, module, function, REQUEST=None):
         module -- The name of the file containing the function
           definition.
 
-        The module normally resides in the 'Extensions'
-        directory, however, the file name may have a prefix of
+        The module normally resides in the 'Extensions' directory.
+
+        If the zope.conf directive 'extensions' was overriden, then
+        it will specify where modules should reside.
+
+        However, the file name may have a prefix of
         'product.', indicating that it should be found in a product
         directory.
-
+        
         For example, if the module is: 'ACMEWidgets.foo', then an
         attempt will first be made to use the file
         'lib/python/Products/ACMEWidgets/Extensions/foo.py'. If this
@@ -84,7 +88,8 @@ class ExternalMethod(Item, Persistent, Explicit,
     The function is defined in an external file.  This file is treated
     like a module, but is not a module.  It is not imported directly,
     but is rather read and evaluated.  The file must reside in the
-    'Extensions' subdirectory of the Zope installation, or in an
+    'Extensions' subdirectory of the Zope installation, or in the directory
+     specified by the 'extensions' directive in zope.conf, or in an
     'Extensions' subdirectory of a product directory.
 
     Due to the way ExternalMethods are loaded, it is not *currently*
@@ -131,7 +136,7 @@ class ExternalMethod(Item, Persistent, Explicit,
         """Change the external method
 
         See the description of manage_addExternalMethod for a
-        descriotion of the arguments 'module' and 'function'.
+        description of the arguments 'module' and 'function'.
 
         Note that calling 'manage_edit' causes the "module" to be
         effectively reloaded.  This is useful during debugging to see

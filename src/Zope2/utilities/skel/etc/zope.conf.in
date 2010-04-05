@@ -91,6 +91,21 @@ instancehome $INSTANCE
 #    products /home/chrism/projects/myproducts
 
 
+# Directive: extensions
+#
+# Description:
+#     Name of a directory that contains additional "extensions"
+#     (implementations of ExternalMethods or catalog brains).  This
+#     directive The directory identified will be searched before the
+#     'Extensions' directory of the 'instancehome'.
+#
+# Default: unset
+#
+# Example:
+#
+#    extensions /home/chrism/extensions
+
+
 # Directive: environment
 #
 # Description:

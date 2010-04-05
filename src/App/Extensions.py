@@ -106,6 +106,11 @@ def getPath(prefix, name, checkProduct=1, suffixes=('',), cfg=None):
         import App.config
         cfg = App.config.getConfiguration()
 
+    if prefix == "Extensions" and getattr(cfg, 'extensions', None) is not None:
+        found = _getPath(cfg.extensions, '', name, suffixes)
+        if found is not None:
+            return found
+
     locations = [cfg.instancehome]
 
     softwarehome = getattr(cfg, 'softwarehome', None)

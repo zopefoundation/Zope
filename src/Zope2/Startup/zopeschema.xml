@@ -343,6 +343,14 @@
     <metadefault>$instancehome/Products</metadefault>
   </multikey>
 
+
+  <key name="extensions" datatype="existing-directory">
+    <description>
+      This overrides the path to the Extensions directory.
+    </description>
+    <metadefault>$instancehome/Extensions</metadefault>
+  </key>
+  
   <multikey name="path" datatype="string">
     <description>
       This specifies additional paths directories which are inserted into

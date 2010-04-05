@@ -100,6 +100,10 @@ Restructuring
 Features Added
 ++++++++++++++
 
+- LP #143232: Added option to 'zope.conf' to specify an additional directory
+  to be searched for 'App.Extensions' lookups.  Thanks to Rodrigo Senra for
+  the patch.
+
 - Integrated the Products.signalstack / z3c.deadlockdebugger packages. You can
   now send a SIGUSR1 signal to a Zope process and get a stack trace of all
   threads printed out on the console. This works even if all threads are stuck.

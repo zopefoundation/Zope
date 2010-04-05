@@ -195,11 +195,28 @@ class Test_getPath(_TempdirBase, unittest.TestCase):
         swext = self._makeTempExtension(name=None, dir=swdir)
         swfqn = self._makeFile(swext, 'extension.py')
         cfg = self._makeConfig(instancehome=instdir,
-                                  softwarehome=swdir,
-                                 )
+                               softwarehome=swdir,
+                              )
         path = self._callFUT('Extensions', 'extension', checkProduct=0,
                              suffixes=('py',), cfg=cfg)
         self.assertEqual(path, instfqn)
+
+    def test_w_cfg_extensions(self):
+        cfgdir = self._makeTempdir()
+        cfgfqn = self._makeFile(cfgdir, 'extension.py')
+        instdir = self._makeTempdir()
+        instext = self._makeTempExtension(name=None, dir=instdir)
+        instfqn = self._makeFile(instext, 'extension.py')
+        swdir = self._makeTempdir()
+        swext = self._makeTempExtension(name=None, dir=swdir)
+        swfqn = self._makeFile(swext, 'extension.py')
+        cfg = self._makeConfig(extensions=cfgdir,
+                               instancehome=instdir,
+                               softwarehome=swdir,
+                              )
+        path = self._callFUT('Extensions', 'extension', checkProduct=0,
+                             suffixes=('py',), cfg=cfg)
+        self.assertEqual(path, cfgfqn)
 
     def test_not_found_in_instancehome(self):
         import os
@@ -258,6 +275,27 @@ class Test_getPath(_TempdirBase, unittest.TestCase):
                                 suffixes=('py',), cfg=cfg)
         self.assertEqual(path, subpkgfqn)
 
+"""
+Index: lib/python/App/Extensions.py
+===================================================================
+--- lib/python/App/Extensions.py	(revision 28473)
++++ lib/python/App/Extensions.py	(working copy)
+@@ -87,8 +87,14 @@
+                 r = _getPath(product_dir, os.path.join(p, prefix), n, suffixes)
+                 if r is not None: return r
+ 
++        
+     import App.config
+     cfg = App.config.getConfiguration()
++
++    if (prefix=="Extensions") and (cfg.extensions is not None):
++        r=_getPath(cfg.extensions, '', name, suffixes)
++        if r is not None: return r
++        
+     sw=os.path.dirname(os.path.dirname(cfg.softwarehome))
+     for home in (cfg.instancehome, sw):
+         r=_getPath(home, prefix, name, suffixes)
+"""
 
 class Test_getObject(_TempdirBase, unittest.TestCase):
 
