@@ -23,6 +23,8 @@ Features Added
   - Persistence = 2.12.0
   - pytz = 2010b
 
+- Factored out ZopeUndo package into a separate distribution.
+
 - There is now an event ZPublisher.interfaces.IPubBeforeStreaming which will
   be fired just before the first chunk of data is written to the response
   stream when using the write() method on the response. This is the last
