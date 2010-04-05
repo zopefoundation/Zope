@@ -11,8 +11,9 @@ from xmlrpclib import Server
 from ConfigParser import RawConfigParser as ConfigParser
 
 # packages containing upper-case letters
-upper_names = ('ClientForm', 'RestrictedPython', 'ZConfig', 'ZODB3', 'zLOG', 
-               'Acquisition', 'DateTime', 'ExtensionClass', 'Persistence')
+upper_names = ('ClientForm', 'RestrictedPython', 'ZConfig', 'ZODB3', 'zLOG',
+               'Acquisition', 'DateTime', 'ExtensionClass', 'Persistence',
+               'ZopeUndo', )
 
 def write_index(package, version):
     print >>sys.stderr, 'Package %s==%s' % (package, version)
@@ -49,7 +50,7 @@ server = Server('http://pypi.python.org/pypi')
 links = list()
 dirname = sys.argv[1]
 
-write_index('Zope2', '2.12.0a3')
+write_index('Zope2', '2.12.3')
 
 for package in CP.options('versions'):
 
