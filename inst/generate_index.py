@@ -9,11 +9,11 @@ import sys
 import urlparse
 from xmlrpclib import Server
 from ConfigParser import RawConfigParser as ConfigParser
-
-# packages containing upper-case letters
-upper_names = ('ClientForm', 'RestrictedPython', 'ZConfig', 'ZODB3', 'zLOG',
-               'Acquisition', 'DateTime', 'ExtensionClass', 'Persistence',
-               'ZopeUndo', 'Missing', 'MultiMapping', 'Record', 'ThreadLock', )
+  
+class CasePreservingConfigParser(ConfigParser):
+  
+    def optionxform(self, option):
+        return option  # don't flatten case!
 
 def write_index(package, version):
     print >>sys.stderr, 'Package %s==%s' % (package, version)
@@ -43,7 +43,7 @@ def write_index(package, version):
     print >>fp, '</body></html>'
     fp.close()
 
-CP = ConfigParser()
+CP = CasePreservingConfigParser()
 CP.read(['versions.cfg'])
 
 server = Server('http://pypi.python.org/pypi')
@@ -54,11 +54,5 @@ write_index('Zope2', '2.13.0dev')
 
 for package in CP.options('versions'):
 
-    # options() returns all options in lowercase but
-    # we must preserve the case for package names
-    for name in upper_names:
-        if name.lower() == package:
-            package = name
-            break
     version = CP.get('versions', package)
     write_index(package, version)
