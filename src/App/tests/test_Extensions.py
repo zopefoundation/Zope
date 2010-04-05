@@ -14,6 +14,7 @@
 """
 import unittest
 
+
 class FuncCodeTests(unittest.TestCase):
 
     def _getTargetClass(self):
@@ -80,8 +81,9 @@ class FuncCodeTests(unittest.TestCase):
         fc = self._makeOne(f, im=1)
         fc2 = self._makeOne(g, im=1)
         self.failUnless(cmp(fc, fc2) < 0)
- 
-class Test_getPath(unittest.TestCase):
+
+
+class _TempdirBase:
 
     _old_Products___path__ = None
     _tmpdirs = ()
@@ -101,10 +103,6 @@ class Test_getPath(unittest.TestCase):
             for k, v in sys.modules.items():
                 if getattr(v, '__file__', '').startswith(self._added_path):
                     del sys.modules[k]
-
-    def _callFUT(self, prefix, name, checkProduct=1, suffixes=('',), cfg=None):
-        from App.Extensions import getPath
-        return getPath(prefix, name, checkProduct, suffixes, cfg)
 
     def _makeTempdir(self):
         import tempfile
@@ -146,6 +144,13 @@ class Test_getPath(unittest.TestCase):
         f.flush()
         f.close()
         return fqn
+
+
+class Test_getPath(_TempdirBase, unittest.TestCase):
+
+    def _callFUT(self, prefix, name, checkProduct=1, suffixes=('',), cfg=None):
+        from App.Extensions import getPath
+        return getPath(prefix, name, checkProduct, suffixes, cfg)
 
     def _makeConfig(self, **kw):
         class DummyConfig:
@@ -253,8 +258,93 @@ class Test_getPath(unittest.TestCase):
                                 suffixes=('py',), cfg=cfg)
         self.assertEqual(path, subpkgfqn)
 
+
+class Test_getObject(_TempdirBase, unittest.TestCase):
+
+    def _callFUT(self, module, name, reload=0, modules=None):
+        from App.Extensions import getObject
+        if modules is not None:
+            return getObject(module, name, reload, modules)
+        return getObject(module, name, reload)
+
+    def test_cache_miss(self):
+        from zExceptions import NotFound
+        MODULES = {'somemodule': {}}
+        self.assertRaises(NotFound,
+                          self._callFUT, 'somemodule', 'name', modules=MODULES)
+
+    def test_cache_hit(self):
+        obj = object()
+        MODULES = {'somemodule': {'name': obj}}
+        found = self._callFUT('somemodule', 'name', modules=MODULES)
+        self.failUnless(found is obj)
+
+    def test_no_such_module(self):
+        from zExceptions import NotFound
+        MODULES = {}
+        self.assertRaises(NotFound, self._callFUT,
+                          'nonesuch', 'name', modules=MODULES)
+        self.failIf('nonesuch' in MODULES)
+
+    def test_not_found_in_module(self):
+        from zExceptions import NotFound
+        MODULES = {}
+        extdir = self._makeTempProduct()
+        ext = self._makeFile(extdir, 'extension.py')
+        self.assertRaises(NotFound, self._callFUT,
+                          'foo.extension', 'name', modules=MODULES)
+        self.failUnless('foo.extension' in MODULES)
+        self.failIf('named' in MODULES['foo.extension'])
+
+    def test_found_in_module(self):
+        MODULES = {}
+        extdir = self._makeTempProduct()
+        ext = self._makeFile(extdir, 'extension.py', EXTENSION_PY)
+        found = self._callFUT('foo.extension', 'named', modules=MODULES)
+        self.assertEqual(found, 'NAMED')
+        self.failUnless('foo.extension' in MODULES)
+        self.assertEqual(MODULES['foo.extension']['named'], 'NAMED')
+
+    def test_found_in_module_pyc(self):
+        from compileall import compile_dir
+        import os
+        MODULES = {}
+        extdir = self._makeTempProduct()
+        ext = self._makeFile(extdir, 'extension.py', EXTENSION_PY)
+        compile_dir(extdir)
+        os.remove(ext)
+        found = self._callFUT('foo.extension', 'named', modules=MODULES)
+        self.assertEqual(found, 'NAMED')
+        self.failUnless('foo.extension' in MODULES)
+        self.assertEqual(MODULES['foo.extension']['named'], 'NAMED')
+
+    def test_found_in_module_after_cache_miss(self):
+        cached = {}
+        MODULES = {'foo.extension': cached}
+        extdir = self._makeTempProduct()
+        ext = self._makeFile(extdir, 'extension.py', EXTENSION_PY)
+        found = self._callFUT('foo.extension', 'named', modules=MODULES)
+        self.assertEqual(found, 'NAMED')
+        self.assertEqual(cached['named'], 'NAMED')
+
+    def test_found_in_module_after_cache_hit_but_reload(self):
+        cached = {'named': 'BEFORE'}
+        MODULES = {'foo.extension': cached}
+        extdir = self._makeTempProduct()
+        ext = self._makeFile(extdir, 'extension.py', EXTENSION_PY)
+        found = self._callFUT('foo.extension', 'named', reload=1,
+                              modules=MODULES)
+        self.assertEqual(found, 'NAMED')
+        self.assertEqual(cached['named'], 'NAMED')
+
+
+EXTENSION_PY = """\
+named = 'NAMED'
+"""
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(FuncCodeTests),
         unittest.makeSuite(Test_getPath),
+        unittest.makeSuite(Test_getObject),
     ))
