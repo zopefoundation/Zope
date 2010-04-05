@@ -338,6 +338,40 @@ class Test_getObject(_TempdirBase, unittest.TestCase):
         self.assertEqual(cached['named'], 'NAMED')
 
 
+class Test_getBrain(_TempdirBase, unittest.TestCase):
+
+    def _callFUT(self, module, name, reload=0, modules=None):
+        from App.Extensions import getBrain
+        if modules is not None:
+            return getBrain(module, name, reload, modules)
+        return getBrain(module, name, reload)
+
+    def test_no_module_no_class_yields_NoBrains(self):
+        from App.Extensions import NoBrains
+        self.failUnless(self._callFUT('', '') is NoBrains)
+
+    def test_missing_name(self):
+        from App.Extensions import NoBrains
+        from zExceptions import NotFound
+        self.failUnless(self._callFUT('', '') is NoBrains)
+        MODULES = {'somemodule': {}}
+        self.assertRaises(NotFound,
+                          self._callFUT, 'somemodule', 'name', modules=MODULES)
+
+    def test_not_a_class(self):
+        from App.Extensions import NoBrains
+        self.failUnless(self._callFUT('', '') is NoBrains)
+        MODULES = {'somemodule': {'name': object()}}
+        self.assertRaises(ValueError,
+                          self._callFUT, 'somemodule', 'name', modules=MODULES)
+
+    def test_found_class(self):
+        from App.Extensions import NoBrains
+        self.failUnless(self._callFUT('', '') is NoBrains)
+        MODULES = {'somemodule': {'name': self.__class__}}
+        self.assertEqual(self._callFUT('somemodule', 'name', modules=MODULES),
+                         self.__class__)
+
 EXTENSION_PY = """\
 named = 'NAMED'
 """
@@ -347,4 +381,5 @@ def test_suite():
         unittest.makeSuite(FuncCodeTests),
         unittest.makeSuite(Test_getPath),
         unittest.makeSuite(Test_getObject),
+        unittest.makeSuite(Test_getBrain),
     ))
