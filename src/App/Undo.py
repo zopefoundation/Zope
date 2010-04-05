@@ -74,26 +74,27 @@ class UndoSupport(ExtensionClass.Base):
                               PrincipiaUndoBatchSize=None):
 
         if first_transaction is None:
-            first_transaction=self.get_request_var_or_attr(
+            first_transaction = self.get_request_var_or_attr(
                 'first_transaction', 0)
 
         if PrincipiaUndoBatchSize is None:
-            PrincipiaUndoBatchSize=self.get_request_var_or_attr(
+            PrincipiaUndoBatchSize = self.get_request_var_or_attr(
                 'PrincipiaUndoBatchSize', 20)
 
         if last_transaction is None:
-            last_transaction=self.get_request_var_or_attr(
+            last_transaction = self.get_request_var_or_attr(
                 'last_transaction',
                 first_transaction+PrincipiaUndoBatchSize)
 
-        spec={}
+        spec = {}
 
         # A user is allowed to undo transactions that were initiated
         # by any member of a user folder in the place where the user
         # is defined.
         user = getSecurityManager().getUser()
-        if hasattr(user, 'aq_parent'):
-            path = '/'.join(user.aq_parent.getPhysicalPath()[1:-1])
+        user_parent = aq_parent(user)
+        if user_parent is not None:
+            path = '/'.join(user_parent.getPhysicalPath()[1:-1])
         else:
             path = ''
         if path:
