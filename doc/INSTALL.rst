@@ -46,9 +46,9 @@ If you don't already have ``virtualenv`` installed on your system, download
 the latest release from the `virtualenv PyPI page
 <http://pypi.python.org/pypi/virtualenv>`_, unpack it, and install it, e.g.::
 
-  $ wget http://pypi.python.org/packages/source/v/virtualenv/virtualenv-1.4.5.tar.gz
-  $ tar xzf virtualenv-1.4.5.tar.gz
-  $ cd virtuaenv-1.4.5
+  $ wget http://pypi.python.org/packages/source/v/virtualenv/virtualenv-1.4.6.tar.gz
+  $ tar xzf virtualenv-1.4.6.tar.gz
+  $ cd virtuaenv-1.4.6
   $ /path/to/python2.6 setup.py install
 
 If you wish to manage your Zope instance using
