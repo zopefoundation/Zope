@@ -1,8 +1,8 @@
-./include/Acquisition
-.include/ExtensionClass
-./include/persistent
+./include/*
 ./bin
 ./develop-eggs
 ./.installed.cfg
 ./eggs
 ./parts
+./build
+*.egg-info
