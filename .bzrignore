@@ -1,0 +1,8 @@
+./include/Acquisition
+.include/ExtensionClass
+./include/persistent
+./bin
+./develop-eggs
+./.installed.cfg
+./eggs
+./parts
