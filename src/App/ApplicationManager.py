@@ -318,8 +318,10 @@ class ApplicationManager(Folder,CacheManager):
         """Return to the main management screen"""
         raise Redirect, URL2+'/manage'
 
-    def process_time(self):
-        s=int(time.time())-self.process_start
+    def process_time(self, _when=None):
+        if _when is None:
+            _when = time.time()
+        s=int(_when)-self.process_start
         d=int(s/86400)
         s=s-(d*86400)
         h=int(s/3600)
@@ -378,10 +380,13 @@ class ApplicationManager(Folder,CacheManager):
         """
 
     @requestmethod('POST')
-    def manage_pack(self, days=0, REQUEST=None):
+    def manage_pack(self, days=0, REQUEST=None, _when=None):
         """Pack the database"""
 
-        t=time.time()-days*86400
+        if _when is None:
+            _when = time.time()
+
+        t = _when - (days*86400)
 
         db=self._p_jar.db()
         t=db.pack(t)
