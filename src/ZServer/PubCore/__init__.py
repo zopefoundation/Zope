@@ -24,6 +24,8 @@ def handle(*args, **kw):
     return apply(_handle, args, kw)
 
 def setNumberOfThreads(n):
+    """This function will self-destruct in 4 statements.
+    """
     global _n
     _n=n
     global setNumberOfThreads
