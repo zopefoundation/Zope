@@ -464,24 +464,30 @@ class ApplicationManagerTests(ConfigTestBase,
 
     def test_getServers(self):
         from asyncore import socket_map
+
         class DummySocketServer:
             def __init__(self, port):
                 self.port = port
+
         class AnotherSocketServer(DummySocketServer):
             pass
+
         class NotAServer:
             pass
+
         am = self._makeOne()
         _old_socket_map = socket_map.copy()
         socket_map.clear()
         socket_map['foo'] = DummySocketServer(45)
         socket_map['bar'] = AnotherSocketServer(57)
         socket_map['qux'] = NotAServer()
+
         try:
             pairs = am.getServers()
         finally:
             socket_map.clear()
             socket_map.update(_old_socket_map)
+
         self.assertEqual(len(pairs), 2)
         self.failUnless((str(DummySocketServer), 'Port: 45') in pairs)
         self.failUnless((str(AnotherSocketServer), 'Port: 57') in pairs)
