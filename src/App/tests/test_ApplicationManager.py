@@ -245,7 +245,49 @@ class DebugManagerTests(unittest.TestCase):
         self.assertEqual(dm.manage_getSysPath(), list(sys.path))
 
 
-class ApplicationManagerTests(ConfigTestBase, unittest.TestCase):
+class DBProxyTestsBase:
+
+    def _makeOne(self):
+        return self._getTargetClass()()
+
+    def _makeJar(self, dbname, dbsize):
+        class Jar:
+            def db(self):
+                return self._db
+        jar = Jar()
+        jar._db = DummyDB(dbname, dbsize)
+        return jar
+
+    def test_db_name(self):
+        am = self._makeOne()
+        am._p_jar = self._makeJar('foo', '')
+        self.assertEqual(am.db_name(), 'foo')
+
+    def test_db_size_string(self):
+        am = self._makeOne()
+        am._p_jar = self._makeJar('foo', 'super')
+        self.assertEqual(am.db_size(), 'super')
+
+    def test_db_size_lt_1_meg(self):
+        am = self._makeOne()
+        am._p_jar = self._makeJar('foo', 4497)
+        self.assertEqual(am.db_size(), '4.4K')
+
+    def test_db_size_gt_1_meg(self):
+        am = self._makeOne()
+        am._p_jar = self._makeJar('foo', (2048 * 1024) + 123240)
+        self.assertEqual(am.db_size(), '2.1M')
+
+    def test_manage_pack(self):
+        am = self._makeOne()
+        jar = am._p_jar = self._makeJar('foo', '')
+        am.manage_pack(1, _when=86400*2)
+        self.assertEqual(jar._db._packed, 86400)
+
+class ApplicationManagerTests(ConfigTestBase,
+                              DBProxyTestsBase,
+                              unittest.TestCase,
+                             ):
 
     def setUp(self):
         ConfigTestBase.setUp(self)
@@ -260,17 +302,6 @@ class ApplicationManagerTests(ConfigTestBase, unittest.TestCase):
     def _getTargetClass(self):
         from App.ApplicationManager import ApplicationManager
         return ApplicationManager
-
-    def _makeOne(self):
-        return self._getTargetClass()()
-
-    def _makeJar(self, dbname, dbsize):
-        class Jar:
-            def db(self):
-                return self._db
-        jar = Jar()
-        jar._db = DummyDB(dbname, dbsize)
-        return jar
 
     def _makeTempdir(self):
         import tempfile
@@ -357,34 +388,8 @@ class ApplicationManagerTests(ConfigTestBase, unittest.TestCase):
         am = self._makeOne()
         self.assertEqual(am.thread_get_ident(), thread.get_ident())
 
-    def test_db_name(self):
-        am = self._makeOne()
-        am._p_jar = self._makeJar('foo', '')
-        self.assertEqual(am.db_name(), 'foo')
-
-    def test_db_size_string(self):
-        am = self._makeOne()
-        am._p_jar = self._makeJar('foo', 'super')
-        self.assertEqual(am.db_size(), 'super')
-
-    def test_db_size_lt_1_meg(self):
-        am = self._makeOne()
-        am._p_jar = self._makeJar('foo', 4497)
-        self.assertEqual(am.db_size(), '4.4K')
-
-    def test_db_size_gt_1_meg(self):
-        am = self._makeOne()
-        am._p_jar = self._makeJar('foo', (2048 * 1024) + 123240)
-        self.assertEqual(am.db_size(), '2.1M')
-
     #def test_manage_restart(self):  XXX -- TOO UGLY TO TEST
     #def test_manage_restart(self):  XXX -- TOO UGLY TO TEST
-
-    def test_manage_pack(self):
-        am = self._makeOne()
-        jar = am._p_jar = self._makeJar('foo', '')
-        am.manage_pack(1, _when=86400*2)
-        self.assertEqual(jar._db._packed, 86400)
 
     def test_revert_points(self):
         am = self._makeOne()
@@ -464,6 +469,15 @@ class ApplicationManagerTests(ConfigTestBase, unittest.TestCase):
     #def test_objectIds(self):  XXX -- TOO UGLY TO TEST (BBB for Zope 2.3!!)
 
 
+class AltDatabaseManagerTests(DBProxyTestsBase,
+                              unittest.TestCase,
+                             ):
+
+    def _getTargetClass(self):
+        from App.ApplicationManager import AltDatabaseManager
+        return AltDatabaseManager
+
+
 class DummyDBTab:
     def __init__(self, databases=None):
         self._databases = databases or {}
@@ -500,4 +514,5 @@ def test_suite():
         unittest.makeSuite(DatabaseChooserTests),
         unittest.makeSuite(DebugManagerTests),
         unittest.makeSuite(ApplicationManagerTests),
+        unittest.makeSuite(AltDatabaseManagerTests),
     ))
