@@ -39,6 +39,7 @@ from OFS.SimpleItem import SimpleItem
 from Product import ProductFolder
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from zExceptions import Redirect
+from ZPublisher import Publish
 
 LOG = getLogger('ApplicationManager')
 
@@ -251,6 +252,11 @@ class DebugManager(Item, Implicit):
         sys.stdout.flush()
         sys.stdout = stdout
         return output.getvalue()
+
+    def manage_profile_reset(self):
+        """ Reset profile data
+        """
+        Publish._pstat = sys._ps_ = None
 
     def manage_getSysPath(self):
         return list(sys.path)

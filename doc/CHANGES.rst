@@ -100,6 +100,9 @@ Restructuring
 Features Added
 ++++++++++++++
 
+- LP #142502:  Added a knob to the Debug control panel for resetting
+  profile data.  Thanks to Vladimir Patukhov for the patch.
+
 - LP #143232: Added option to 'zope.conf' to specify an additional directory
   to be searched for 'App.Extensions' lookups.  Thanks to Rodrigo Senra for
   the patch.

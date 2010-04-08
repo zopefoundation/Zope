@@ -239,6 +239,23 @@ class DebugManagerTests(unittest.TestCase):
     #def test_dbconnections(self):  XXX -- TOO UGLY TO TEST
     #def test_manage_profile_stats(self):  XXX -- TOO UGLY TO TEST
 
+    def test_manage_profile_reset(self):
+        import sys
+        from ZPublisher import Publish
+        _old_sys__ps_ = getattr(sys, '_ps_', self)
+        _old_Publish_pstat = getattr(Publish, '_pstat', self)
+        sys._ps_ = Publish._pstat = object()
+        try:
+            dm = self._makeOne('test')
+            dm.manage_profile_reset()
+        finally:
+            if _old_sys__ps_ is not self:
+                sys._ps_ = _old_sys__ps_
+            if _old_Publish_pstat is not self:
+                Publish._pstat = _old_Publish_pstat
+        self.failUnless(sys._ps_ is None)
+        self.failUnless(Publish._pstat is None)
+
     def test_manage_getSysPath(self):
         import sys
         dm = self._makeOne('test')

@@ -1,6 +1,16 @@
 <dtml-var manage_page_header>
 <dtml-var manage_tabs>
 
+<dtml-if "REQUEST.get('reset')">
+
+<dtml-call "manage_profile_reset()">
+<br />
+<div class="form-text">
+Profiling data was reset.
+</div>
+
+<dtml-else>
+
 <dtml-let sort="REQUEST.get('sort', 'time')"
           limit="REQUEST.get('limit', 100)" 
           mode="REQUEST.get('mode', 'stats')" 
@@ -50,6 +60,8 @@ Python profiler documentation</a>.
 </td>
 <td>
 <input type="submit" name="submit" value="Update">
+&nbsp;
+<input type="submit" name="reset" value="Reset data">
 </td>
 </tr>
 </table>
@@ -70,5 +82,7 @@ used to dump a profile report when the process restarts or exits.
 </div>
 </dtml-if>
 </dtml-let>
+
+</dtml-if>
 
 <dtml-var manage_page_footer>
