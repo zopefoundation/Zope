@@ -319,6 +319,21 @@ class ApplicationManagerTests(ConfigTestBase,
         f.close()
         return fqn
 
+    def test_version_txt(self):
+        from App.version_txt import version_txt
+        am = self._makeOne()
+        self.assertEqual(am.version_txt(), version_txt())
+
+    def test_sys_version(self):
+        import sys
+        am = self._makeOne()
+        self.assertEqual(am.sys_version(), sys.version)
+
+    def test_sys_platform(self):
+        import sys
+        am = self._makeOne()
+        self.assertEqual(am.sys_platform(), sys.platform)
+
     def test_ctor_initializes_Products(self):
         from App.Product import ProductFolder
         am = self._makeOne()
