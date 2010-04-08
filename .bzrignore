@@ -1,0 +1,10 @@
+./.installed.cfg
+./bin
+./build
+./develop-eggs
+./eggs
+./parts
+./include/Acquisition
+./include/ExtensionClass
+./include/persistent
+*.egg-info
