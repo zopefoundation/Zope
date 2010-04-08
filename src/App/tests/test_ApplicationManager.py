@@ -439,19 +439,24 @@ class ApplicationManagerTests(ConfigTestBase,
         swdir = config.softwarehome = self._makeTempdir()
         self.assertEqual(am.getSOFTWARE_HOME(), swdir)
 
+    def test_getZOPE_HOME_missing(self):
+        am = self._makeOne()
+        config = self._makeConfig()
+        self.assertEqual(am.getZOPE_HOME(), None)
+
     def test_getZOPE_HOME_present(self):
         am = self._makeOne()
         config = self._makeConfig()
         zopedir = config.zopehome = self._makeTempdir()
         self.assertEqual(am.getZOPE_HOME(), zopedir)
 
-    def test_getINSTANCE_HOME_present(self):
+    def test_getINSTANCE_HOME(self):
         am = self._makeOne()
         config = self._makeConfig()
         instdir = config.instancehome = self._makeTempdir()
         self.assertEqual(am.getINSTANCE_HOME(), instdir)
 
-    def test_getCLIENT_HOME_present(self):
+    def test_getCLIENT_HOME(self):
         am = self._makeOne()
         config = self._makeConfig()
         cldir = config.clienthome = self._makeTempdir()
