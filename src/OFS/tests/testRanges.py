@@ -178,9 +178,8 @@ class TestRequestRange(unittest.TestCase):
 
     def expectMultipleRanges(self, range, sets, draft=0):
         import cStringIO
-        from mimetools import Message
-        from multifile import MultiFile
         import re
+        import email
         rangeParse = re.compile('bytes\s*(\d+)-(\d+)/(\d+)')
         req = self.app.REQUEST
         rsp = req.RESPONSE
@@ -211,20 +210,16 @@ class TestRequestRange(unittest.TestCase):
         # Decode the multipart message
         bodyfile = cStringIO.StringIO('Content-Type: %s\n\n%s' % (
             rsp.getHeader('content-type'), body))
-        bodymessage = Message(bodyfile)
-        partfiles = MultiFile(bodyfile)
-        partfiles.push(bodymessage.getparam('boundary'))
-
-        partmessages = []
-        add = partmessages.append
-        while partfiles.next():
-            add(Message(cStringIO.StringIO(partfiles.read())))
+        partmessages = [part
+                        for part in email.message_from_file(bodyfile).walk()]
 
         # Check the different parts
         returnedRanges = []
         add = returnedRanges.append
         for part in partmessages:
-            range = part['content-range']
+            if part.get_content_maintype() == 'multipart':
+                continue
+            range = part.get('content-range')
             start, end, size = rangeParse.search(range).groups()
             start, end, size = int(start), int(end), int(size)
             end = end + 1
@@ -233,13 +228,7 @@ class TestRequestRange(unittest.TestCase):
                 'Part Content-Range header reported incorrect length. '
                 'Expected %d, got %d.' % (len(self.data), size))
 
-            part.rewindbody()
-            body = part.fp.read()
-            # Whotcha! Bug in MultiFile; the CRLF that is part of the boundary
-            # is returned as part of the body. Note that this bug is resolved
-            # in Python 2.2.
-            if body[-2:] == '\r\n':
-                body = body[:-2]
+            body = part.get_payload()
 
             self.failIf(len(body) != end - start,
                 'Part (%d, %d) is of wrong length, expected %d, got %d.' % (
