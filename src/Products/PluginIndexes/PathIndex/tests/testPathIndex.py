@@ -83,23 +83,135 @@ class PathIndexTests(unittest.TestCase):
         from zope.interface.verify import verifyObject
         verifyObject(IUniqueValueIndex, self._makeOne())
 
-    def test_numObjects_empty(self):
+    def test_ctor(self):
         index = self._makeOne()
-        self.assertEqual(index.numObjects(), 0)
+        self.assertEqual(index.id, 'path')
+        self.assertEqual(index.operators, ('or', 'and'))
+        self.assertEqual(index.useOperator, 'or')
+        self.assertEqual(len(index), 0)
+        self.assertEqual(index._depth, 0)
+        self.assertEqual(len(index._index), 0)
+        self.assertEqual(len(index._unindex), 0)
+        self.assertEqual(index._length(), 0)
 
-    def test_numObjects_filled(self):
+    def test_clear(self):
         index = self._makeOne()
         _populateIndex(index)
-        self.assertEqual(index.numObjects(), len(DUMMIES))
+        index.clear()
+        self.assertEqual(len(index), 0)
+        self.assertEqual(index._depth, 0)
+        self.assertEqual(len(index._index), 0)
+        self.assertEqual(len(index._unindex), 0)
+        self.assertEqual(index._length(), 0)
 
-    def test_getEntryForObject_miss(self):
+    def test_index_object_broken_path_raises_TypeError(self):
         index = self._makeOne()
-        self.assertEqual(index.getEntryForObject(1234), None)
+        doc = Dummy({})
+        self.assertRaises(TypeError, index.index_object, 1, doc)
 
-    def test_getEntryForObject_hit(self):
+    def test_index_object_broken_callable(self):
         index = self._makeOne()
-        _populateIndex(index)
-        self.assertEqual(index.getEntryForObject(1), DUMMIES[1].path)
+        doc = Dummy(lambda: self.nonesuch)
+        rc = index.index_object(1, doc)
+        self.assertEqual(rc, 0)
+        self.assertEqual(len(index), 0)
+        self.assertEqual(index._depth, 0)
+        self.assertEqual(len(index._index), 0)
+        self.assertEqual(len(index._unindex), 0)
+        self.assertEqual(index._length(), 0)
+
+    def test_index_object_at_root(self):
+        index = self._makeOne()
+        doc = Dummy('/xx')
+        rc = index.index_object(1, doc)
+        self.assertEqual(len(index), 1)
+        self.assertEqual(rc, 1)
+        self.assertEqual(index._depth, 0)
+        self.assertEqual(len(index._index), 1)
+        self.assertEqual(list(index._index['xx'][0]), [1])
+        self.assertEqual(len(index._unindex), 1)
+        self.assertEqual(index._unindex[1], '/xx')
+        self.assertEqual(index._length(), 1)
+
+    def test_index_object_at_root_callable_attr(self):
+        index = self._makeOne()
+        doc = Dummy(lambda: '/xx')
+        rc = index.index_object(1, doc)
+        self.assertEqual(len(index), 1)
+        self.assertEqual(rc, 1)
+        self.assertEqual(index._depth, 0)
+        self.assertEqual(len(index._index), 1)
+        self.assertEqual(list(index._index['xx'][0]), [1])
+        self.assertEqual(len(index._unindex), 1)
+        self.assertEqual(index._unindex[1], '/xx')
+        self.assertEqual(index._length(), 1)
+
+    def test_index_object_at_root_no_attr_but_getPhysicalPath(self):
+        class Other:
+            def getPhysicalPath(self):
+                return '/xx'
+        index = self._makeOne()
+        doc = Other()
+        rc = index.index_object(1, doc)
+        self.assertEqual(rc, 1)
+        self.assertEqual(len(index), 1)
+        self.assertEqual(index._depth, 0)
+        self.assertEqual(len(index._index), 1)
+        self.assertEqual(list(index._index['xx'][0]), [1])
+        self.assertEqual(len(index._unindex), 1)
+        self.assertEqual(index._unindex[1], '/xx')
+        self.assertEqual(index._length(), 1)
+
+    def test_index_object_at_root_attr_as_tuple(self):
+        index = self._makeOne()
+        doc = Dummy(('', 'xx'))
+        rc = index.index_object(1, doc)
+        self.assertEqual(rc, 1)
+        self.assertEqual(len(index), 1)
+        self.assertEqual(index._depth, 0)
+        self.assertEqual(len(index._index), 1)
+        self.assertEqual(list(index._index['xx'][0]), [1])
+        self.assertEqual(len(index._unindex), 1)
+        self.assertEqual(index._unindex[1], '/xx')
+        self.assertEqual(index._length(), 1)
+
+    def test_index_object_strips_empty_path_elements(self):
+        index = self._makeOne()
+        doc = Dummy('////xx//')
+        rc = index.index_object(1, doc)
+        self.assertEqual(rc, 1)
+        self.assertEqual(len(index), 1)
+        self.assertEqual(index._depth, 0)
+        self.assertEqual(len(index._index), 1)
+        self.assertEqual(list(index._index['xx'][0]), [1])
+        self.assertEqual(len(index._unindex), 1)
+        self.assertEqual(index._unindex[1], '////xx//')
+        self.assertEqual(index._length(), 1)
+
+    def test_index_object_below_root(self):
+        index = self._makeOne()
+        doc = Dummy('/xx/yy/zz')
+        rc = index.index_object(1, doc)
+        self.assertEqual(rc, 1)
+        self.assertEqual(len(index), 1)
+        self.assertEqual(index._depth, 2)
+        self.assertEqual(len(index._index), 3)
+        self.assertEqual(list(index._index['xx'][0]), [1])
+        self.assertEqual(list(index._index['yy'][1]), [1])
+        self.assertEqual(list(index._index['zz'][2]), [1])
+        self.assertEqual(len(index._unindex), 1)
+        self.assertEqual(index._unindex[1], '/xx/yy/zz')
+        self.assertEqual(index._length(), 1)
+
+    def test_index_object_again(self):
+        index = self._makeOne()
+        o = Dummy('/foo/bar')
+        index.index_object(1234, o)
+        self.assertEqual(len(index), 1)
+        self.assertEqual(index.numObjects(), 1)
+        index.index_object(1234, o)
+        self.assertEqual(len(index), 1)
+        self.assertEqual(index.numObjects(), 1)
 
     def test_unindex_object_nonesuch(self):
         index = self._makeOne()
@@ -122,15 +234,70 @@ class PathIndexTests(unittest.TestCase):
         self.assertEqual(len(index._index), 0)
         self.assertEqual(len(index._unindex), 0)
 
-    def test_index_object_again(self):
+    def test_search_empty_index_string_query(self):
+        index = self._makeOne()
+        self.assertEqual(list(index.search('/xxx')), [])
+
+    def test_search_empty_index_tuple_query(self):
+        index = self._makeOne()
+        self.assertEqual(list(index.search(('/xxx', 0))), [])
+
+    def test_search_empty_path(self):
+        index = self._makeOne()
+        doc = Dummy('/aa')
+        index.index_object(1, doc)
+        self.assertEqual(list(index.search('/')), [1])
+
+    def test_search_matching_path(self):
+        index = self._makeOne()
+        doc = Dummy('/aa')
+        index.index_object(1, doc)
+        self.assertEqual(list(index.search('/aa')), [1])
+
+    def test_search_mismatched_path(self):
+        index = self._makeOne()
+        doc = Dummy('/aa')
+        index.index_object(1, doc)
+        self.assertEqual(list(index.search('/bb')), [])
+
+    def test_search_w_level_0(self):
+        index = self._makeOne()
+        doc = Dummy('/aa/bb')
+        index.index_object(1, doc)
+        self.assertEqual(list(index.search('aa', 0)), [1])
+        self.assertEqual(list(index.search('aa', 1)), [])
+        self.assertEqual(list(index.search('bb', 1)), [1])
+        self.assertEqual(list(index.search('aa/bb', 0)), [1])
+        self.assertEqual(list(index.search('aa/bb', 1)), [])
+
+    def test_numObjects_empty(self):
+        index = self._makeOne()
+        self.assertEqual(index.numObjects(), 0)
+
+    def test_numObjects_filled(self):
         index = self._makeOne()
         _populateIndex(index)
-        before = index.numObjects()
-        o = Dummy('/foo/bar')
-        index.index_object(1234, o)
-        self.assertEqual(index.numObjects(), before + 1)
-        index.index_object(1234, o)
-        self.assertEqual(index.numObjects(), before + 1)
+        self.assertEqual(index.numObjects(), len(DUMMIES))
+
+    def test_indexSize_empty(self):
+        index = self._makeOne()
+        self.assertEqual(index.indexSize(), 0)
+
+    def test_indexSize_filled(self):
+        index = self._makeOne()
+        _populateIndex(index)
+        self.assertEqual(index.indexSize(), len(DUMMIES))
+
+    def test_indexSize_multiple_items_same_path(self):
+        index = self._makeOne()
+        doc1 = Dummy('/shared')
+        doc2 = Dummy('/shared')
+        index.index_object(1, doc1)
+        index.index_object(2, doc2)
+        self.assertEqual(len(index._index), 1)
+        self.assertEqual(len(index), 2)
+        self.assertEqual(index.numObjects(), 2)
+        self.assertEqual(index.indexSize(), 2)
 
     def test__apply_index_no_match_in_query(self):
         index = self._makeOne()
@@ -229,6 +396,44 @@ class PathIndexTests(unittest.TestCase):
         res = index._apply_index({'path': {'query': '/ff/gg'}})
         lst = list(res[0].keys())
         self.assertEqual(lst, [2, 3, 4])
+
+    def test_hasUniqueValuesFor_miss(self):
+        index = self._makeOne()
+        self.failIf(index.hasUniqueValuesFor('miss'))
+
+    def test_hasUniqueValuesFor_hit(self):
+        index = self._makeOne()
+        self.failUnless(index.hasUniqueValuesFor('path'))
+
+    def test_uniqueValues_empty(self):
+        index = self._makeOne()
+        self.assertEqual(len(index.uniqueValues()), 0)
+
+    def test_uniqueValues_filled(self):
+        index = self._makeOne()
+        _populateIndex(index)
+        self.assertEqual(len(index.uniqueValues()), len(DUMMIES) + 3)
+
+    def test_getEntryForObject_miss_no_default(self):
+        index = self._makeOne()
+        self.assertEqual(index.getEntryForObject(1234), None)
+
+    def test_getEntryForObject_miss_w_default(self):
+        index = self._makeOne()
+        default = object()
+        # XXX  this is wrong:  should return the default
+        self.assertEqual(index.getEntryForObject(1234, default), None)
+
+    def test_getEntryForObject_hit(self):
+        index = self._makeOne()
+        _populateIndex(index)
+        self.assertEqual(index.getEntryForObject(1), DUMMIES[1].path)
+
+    def test_getIndexSourceNames(self):
+        index = self._makeOne()
+        # XXX  this is wrong:  should include the index ID as well
+        self.assertEqual(list(index.getIndexSourceNames()),
+                         ['getPhysicalPath'])
 
 
 def test_suite():
