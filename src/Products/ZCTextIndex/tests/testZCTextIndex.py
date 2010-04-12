@@ -663,6 +663,34 @@ class PLexiconTests(unittest.TestCase):
         self.assertEqual(list(info['page_range']), [0, 1])
         self.assertEqual(info['page_columns'], [WORDS[4:6], WORDS[6:]])
 
+    def test_queryLexicon_words_no_globbing(self):
+        WORDS = 'aaa bbb ccc ddd eee fff ggg'.split()
+        lexicon = self._makeOne()
+        lexicon.sourceToWordIds(WORDS)
+        info = lexicon.queryLexicon(REQUEST=None, words=['aaa', 'bbb'])
+        self.assertEqual(info['page'], 0)
+        self.assertEqual(info['rows'], 20)
+        self.assertEqual(info['cols'], 4)
+        self.assertEqual(info['start_word'], 1)
+        self.assertEqual(info['end_word'], 2)
+        self.assertEqual(info['word_count'], 2)
+        self.assertEqual(list(info['page_range']), [0])
+        self.assertEqual(info['page_columns'], [['aaa', 'bbb']])
+
+    def test_queryLexicon_words_w_globbing(self):
+        WORDS = 'aaa bbb ccc ddd eee fff ggg'.split()
+        lexicon = self._makeOne()
+        lexicon.sourceToWordIds(WORDS)
+        info = lexicon.queryLexicon(REQUEST=None, words=['aa*', 'bbb*'])
+        self.assertEqual(info['page'], 0)
+        self.assertEqual(info['rows'], 20)
+        self.assertEqual(info['cols'], 4)
+        self.assertEqual(info['start_word'], 1)
+        self.assertEqual(info['end_word'], 2)
+        self.assertEqual(info['word_count'], 2)
+        self.assertEqual(list(info['page_range']), [0])
+        self.assertEqual(info['page_columns'], [['aaa', 'bbb']])
+
 
 def test_suite():
     s = unittest.TestSuite()
