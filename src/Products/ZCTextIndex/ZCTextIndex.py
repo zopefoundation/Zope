@@ -358,7 +358,7 @@ class PLexicon(Lexicon, Implicit, SimpleItem):
         """
         if words:
             wids = []
-            for word in words:
+            for word in self.parseTerms(words):
                 wids.extend(self.globToWordIds(word))
             words = [self.get_word(wid) for wid in wids]
         else:

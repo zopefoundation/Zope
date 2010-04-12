@@ -691,6 +691,21 @@ class PLexiconTests(unittest.TestCase):
         self.assertEqual(list(info['page_range']), [0])
         self.assertEqual(info['page_columns'], [['aaa', 'bbb']])
 
+    def test_queryLexicon_uses_pipeline_for_normalization(self):
+        from Products.ZCTextIndex.Lexicon import CaseNormalizer
+        WORDS = 'aaa bbb ccc ddd eee fff ggg'.split()
+        lexicon = self._makeOne('test', 'Testing', CaseNormalizer())
+        lexicon.sourceToWordIds(WORDS)
+        info = lexicon.queryLexicon(REQUEST=None, words=['AA*', 'Bbb*'])
+        self.assertEqual(info['page'], 0)
+        self.assertEqual(info['rows'], 20)
+        self.assertEqual(info['cols'], 4)
+        self.assertEqual(info['start_word'], 1)
+        self.assertEqual(info['end_word'], 2)
+        self.assertEqual(info['word_count'], 2)
+        self.assertEqual(list(info['page_range']), [0])
+        self.assertEqual(info['page_columns'], [['aaa', 'bbb']])
+
 
 def test_suite():
     s = unittest.TestSuite()

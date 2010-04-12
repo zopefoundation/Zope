@@ -8,6 +8,12 @@ http://docs.zope.org/zope2/releases/.
 2.12.5 (unreleased)
 -------------------
 
+Bugs Fixed
+++++++++++
+
+- LP #142478:  normalize terms passed to ``PLexicon.queryLexicon`` using
+  the lexicon's pipeline (e.g., case flattening, stop word removal, etc.)
+
 
 2.12.4 (2010-04-05)
 -------------------
