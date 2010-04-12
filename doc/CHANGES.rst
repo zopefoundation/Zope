@@ -153,6 +153,9 @@ Features Added
 Bugs Fixed
 ++++++++++
 
+- LP #142478:  normalize terms passed to ``PLexicon.queryLexicon`` using
+  the lexicon's pipeline (e.g., case flattening, stop word removal, etc.)
+
 - LP #143604: Removed top-level database-quota-size from zope.conf, some
   storages support a quota option instead.
 

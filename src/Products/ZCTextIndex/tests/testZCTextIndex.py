@@ -245,6 +245,7 @@ class ZCIndexTestsBase:
                     nbest, total = self.zc_index.query(w)
                     self.assertEqual(total, 0, "did not expect to find %s" % w)
 
+
 class CosineIndexTests(ZCIndexTestsBase, testIndex.CosineIndexTest):
 
     # A fairly involved test of the ranking calculations based on
@@ -566,13 +567,144 @@ class OkapiQueryTests(QueryTestsBase):
 
 class PLexiconTests(unittest.TestCase):
 
-    def test_z3interfaces(self):
+    def _getTargetClass(self):
+        from Products.ZCTextIndex.ZCTextIndex import PLexicon
+        return PLexicon
+
+    def _makeOne(self, id='testing', title='Testing', *pipeline):
+        return self._getTargetClass()(id, title, *pipeline)
+
+    def test_class_conforms_to_ILexicon(self):
         from Products.ZCTextIndex.interfaces import ILexicon
+        from zope.interface.verify import verifyClass
+        verifyClass(ILexicon, self._getTargetClass())
+
+    def test_instance_conforms_to_ILexicon(self):
+        from Products.ZCTextIndex.interfaces import ILexicon
+        from zope.interface.verify import verifyObject
+        verifyObject(ILexicon, self._makeOne())
+
+    def test_class_conforms_to_IZCLexicon(self):
         from Products.ZCTextIndex.interfaces import IZCLexicon
         from zope.interface.verify import verifyClass
+        verifyClass(IZCLexicon, self._getTargetClass())
 
-        verifyClass(ILexicon, PLexicon)
-        verifyClass(IZCLexicon, PLexicon)
+    def test_instance_conforms_to_IZCLexicon(self):
+        from Products.ZCTextIndex.interfaces import IZCLexicon
+        from zope.interface.verify import verifyObject
+        verifyObject(IZCLexicon, self._makeOne())
+
+    def test_queryLexicon_defaults_empty(self):
+        lexicon = self._makeOne()
+        info = lexicon.queryLexicon(REQUEST=None, words=None)
+        self.assertEqual(info['page'], 0)
+        self.assertEqual(info['rows'], 20)
+        self.assertEqual(info['cols'], 4)
+        self.assertEqual(info['start_word'], 1)
+        self.assertEqual(info['end_word'], 0)
+        self.assertEqual(info['word_count'], 0)
+        self.assertEqual(list(info['page_range']), [])
+        self.assertEqual(info['page_columns'], [])
+
+    def test_queryLexicon_defaults_non_empty(self):
+        WORDS = 'aaa bbb ccc ddd eee fff ggg'.split()
+        lexicon = self._makeOne()
+        lexicon.sourceToWordIds(WORDS)
+        info = lexicon.queryLexicon(REQUEST=None, words=None)
+        self.assertEqual(info['page'], 0)
+        self.assertEqual(info['rows'], 20)
+        self.assertEqual(info['cols'], 4)
+        self.assertEqual(info['start_word'], 1)
+        self.assertEqual(info['end_word'], 7)
+        self.assertEqual(info['word_count'], 7)
+        self.assertEqual(list(info['page_range']), [0])
+        self.assertEqual(info['page_columns'], [WORDS])
+
+    def test_queryLexicon_row_breaks(self):
+        WORDS = 'aaa bbb ccc ddd eee fff ggg'.split()
+        lexicon = self._makeOne()
+        lexicon.sourceToWordIds(WORDS)
+        info = lexicon.queryLexicon(REQUEST=None, words=None, rows=4)
+        self.assertEqual(info['page'], 0)
+        self.assertEqual(info['rows'], 4)
+        self.assertEqual(info['cols'], 4)
+        self.assertEqual(info['start_word'], 1)
+        self.assertEqual(info['end_word'], 7)
+        self.assertEqual(info['word_count'], 7)
+        self.assertEqual(list(info['page_range']), [0])
+        self.assertEqual(info['page_columns'], [WORDS[0:4], WORDS[4:]])
+
+    def test_queryLexicon_page_breaks(self):
+        WORDS = 'aaa bbb ccc ddd eee fff ggg'.split()
+        lexicon = self._makeOne()
+        lexicon.sourceToWordIds(WORDS)
+        info = lexicon.queryLexicon(REQUEST=None, words=None, rows=2, cols=2)
+        self.assertEqual(info['page'], 0)
+        self.assertEqual(info['rows'], 2)
+        self.assertEqual(info['cols'], 2)
+        self.assertEqual(info['start_word'], 1)
+        self.assertEqual(info['end_word'], 4)
+        self.assertEqual(info['word_count'], 7)
+        self.assertEqual(list(info['page_range']), [0, 1])
+        self.assertEqual(info['page_columns'], [WORDS[0:2], WORDS[2:4]])
+
+    def test_queryLexicon_page_break_not_first(self):
+        WORDS = 'aaa bbb ccc ddd eee fff ggg'.split()
+        lexicon = self._makeOne()
+        lexicon.sourceToWordIds(WORDS)
+        info = lexicon.queryLexicon(REQUEST=None, words=None,
+                                    page=1, rows=2, cols=2)
+        self.assertEqual(info['page'], 1)
+        self.assertEqual(info['rows'], 2)
+        self.assertEqual(info['cols'], 2)
+        self.assertEqual(info['start_word'], 5)
+        self.assertEqual(info['end_word'], 7)
+        self.assertEqual(info['word_count'], 7)
+        self.assertEqual(list(info['page_range']), [0, 1])
+        self.assertEqual(info['page_columns'], [WORDS[4:6], WORDS[6:]])
+
+    def test_queryLexicon_words_no_globbing(self):
+        WORDS = 'aaa bbb ccc ddd eee fff ggg'.split()
+        lexicon = self._makeOne()
+        lexicon.sourceToWordIds(WORDS)
+        info = lexicon.queryLexicon(REQUEST=None, words=['aaa', 'bbb'])
+        self.assertEqual(info['page'], 0)
+        self.assertEqual(info['rows'], 20)
+        self.assertEqual(info['cols'], 4)
+        self.assertEqual(info['start_word'], 1)
+        self.assertEqual(info['end_word'], 2)
+        self.assertEqual(info['word_count'], 2)
+        self.assertEqual(list(info['page_range']), [0])
+        self.assertEqual(info['page_columns'], [['aaa', 'bbb']])
+
+    def test_queryLexicon_words_w_globbing(self):
+        WORDS = 'aaa bbb ccc ddd eee fff ggg'.split()
+        lexicon = self._makeOne()
+        lexicon.sourceToWordIds(WORDS)
+        info = lexicon.queryLexicon(REQUEST=None, words=['aa*', 'bbb*'])
+        self.assertEqual(info['page'], 0)
+        self.assertEqual(info['rows'], 20)
+        self.assertEqual(info['cols'], 4)
+        self.assertEqual(info['start_word'], 1)
+        self.assertEqual(info['end_word'], 2)
+        self.assertEqual(info['word_count'], 2)
+        self.assertEqual(list(info['page_range']), [0])
+        self.assertEqual(info['page_columns'], [['aaa', 'bbb']])
+
+    def test_queryLexicon_uses_pipeline_for_normalization(self):
+        from Products.ZCTextIndex.Lexicon import CaseNormalizer
+        WORDS = 'aaa bbb ccc ddd eee fff ggg'.split()
+        lexicon = self._makeOne('test', 'Testing', CaseNormalizer())
+        lexicon.sourceToWordIds(WORDS)
+        info = lexicon.queryLexicon(REQUEST=None, words=['AA*', 'Bbb*'])
+        self.assertEqual(info['page'], 0)
+        self.assertEqual(info['rows'], 20)
+        self.assertEqual(info['cols'], 4)
+        self.assertEqual(info['start_word'], 1)
+        self.assertEqual(info['end_word'], 2)
+        self.assertEqual(info['word_count'], 2)
+        self.assertEqual(list(info['page_range']), [0])
+        self.assertEqual(info['page_columns'], [['aaa', 'bbb']])
 
 
 def test_suite():
