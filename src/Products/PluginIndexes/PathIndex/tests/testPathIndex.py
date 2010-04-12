@@ -63,15 +63,15 @@ class PathIndexTests(unittest.TestCase):
             return self._getTargetClass()(id, caller)
         return self._getTargetClass()(id)
 
-    def test_class_conforms_to_IPathIndex(self):
-        from Products.PluginIndexes.interfaces import IPathIndex
+    def test_class_conforms_to_IPluggableIndex(self):
+        from Products.PluginIndexes.interfaces import IPluggableIndex
         from zope.interface.verify import verifyClass
-        verifyClass(IPathIndex, self._getTargetClass())
+        verifyClass(IPluggableIndex, self._getTargetClass())
 
-    def test_instance_conforms_to_IPathIndex(self):
-        from Products.PluginIndexes.interfaces import IPathIndex
+    def test_instance_conforms_to_IPluggableIndex(self):
+        from Products.PluginIndexes.interfaces import IPluggableIndex
         from zope.interface.verify import verifyObject
-        verifyObject(IPathIndex, self._makeOne())
+        verifyObject(IPluggableIndex, self._makeOne())
 
     def test_class_conforms_to_IUniqueValueIndex(self):
         from Products.PluginIndexes.interfaces import IUniqueValueIndex
@@ -82,6 +82,26 @@ class PathIndexTests(unittest.TestCase):
         from Products.PluginIndexes.interfaces import IUniqueValueIndex
         from zope.interface.verify import verifyObject
         verifyObject(IUniqueValueIndex, self._makeOne())
+
+    def test_class_conforms_to_ISortIndex(self):
+        from Products.PluginIndexes.interfaces import ISortIndex
+        from zope.interface.verify import verifyClass
+        verifyClass(ISortIndex, self._getTargetClass())
+
+    def test_instance_conforms_to_ISortIndex(self):
+        from Products.PluginIndexes.interfaces import ISortIndex
+        from zope.interface.verify import verifyObject
+        verifyObject(ISortIndex, self._makeOne())
+
+    def test_class_conforms_to_IPathIndex(self):
+        from Products.PluginIndexes.interfaces import IPathIndex
+        from zope.interface.verify import verifyClass
+        verifyClass(IPathIndex, self._getTargetClass())
+
+    def test_instance_conforms_to_IPathIndex(self):
+        from Products.PluginIndexes.interfaces import IPathIndex
+        from zope.interface.verify import verifyObject
+        verifyObject(IPathIndex, self._makeOne())
 
     def test_ctor(self):
         index = self._makeOne()
@@ -416,6 +436,25 @@ class PathIndexTests(unittest.TestCase):
                          len([x for x in DUMMIES.values() if 'bb' in x.path]))
         self.assertEqual(results['cc'],
                          len([x for x in DUMMIES.values() if 'cc' in x.path]))
+
+    def test_keyForDocument_miss(self):
+        index = self._makeOne()
+        self.assertEqual(index.keyForDocument(1), None)
+
+    def test_keyForDocument_hit(self):
+        index = self._makeOne()
+        _populateIndex(index)
+        self.assertEqual(index.keyForDocument(1), DUMMIES[1].path)
+
+    def test_documentToKeyMap_empty(self):
+        index = self._makeOne()
+        self.assertEqual(dict(index.documentToKeyMap()), {})
+
+    def test_documentToKeyMap_filled(self):
+        index = self._makeOne()
+        _populateIndex(index)
+        self.assertEqual(dict(index.documentToKeyMap()),
+                         dict([(k, v.path) for k, v in DUMMIES.items()]))
 
     def test__search_empty_index_string_query(self):
         index = self._makeOne()
