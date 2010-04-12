@@ -79,7 +79,7 @@ def initialize(context):
                           visibility=None,
                          )
 
-    from Products.PluginIndexes.PathIndex import PathIndex
+    from Products.PluginIndexes.PathIndex.PathIndex import PathIndex
     from Products.PluginIndexes.PathIndex.PathIndex \
         import manage_addPathIndex
     from Products.PluginIndexes.PathIndex.PathIndex \
