@@ -31,6 +31,7 @@ from zope.interface import implements
 from Products.PluginIndexes.common import safe_callable
 from Products.PluginIndexes.common.util import parseIndexRequest
 from Products.PluginIndexes.interfaces import IPathIndex
+from Products.PluginIndexes.interfaces import ISortIndex
 from Products.PluginIndexes.interfaces import IUniqueValueIndex
 
 LOG = getLogger('Zope.PathIndex')
@@ -51,7 +52,7 @@ class PathIndex(Persistent, SimpleItem):
     - the value is a mapping 'level of the path component' to
       'all docids with this path component on this level'
     """
-    implements(IPathIndex, IUniqueValueIndex)
+    implements(IPathIndex, IUniqueValueIndex, ISortIndex)
 
     meta_type="PathIndex"
     query_options = ('query', 'level', 'operator')
@@ -212,6 +213,18 @@ class PathIndex(Persistent, SimpleItem):
             else:
                 for key in self._index.keys():
                     yield key
+
+    # ISortIndex implementation
+
+    def keyForDocument(self, documentId):
+        """ See ISortIndex.
+        """
+        return self._unindex.get(documentId)
+
+    def documentToKeyMap(self):
+        """ See ISortIndex.
+        """
+        return self._unindex
 
     # Helper methods
 
