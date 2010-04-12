@@ -384,19 +384,7 @@ class PLexicon(Lexicon, Implicit, SimpleItem):
             columns.append(words[i:i + rows])
             i += rows
 
-        if REQUEST is not None:
-            return self._queryLexicon(self,
-                                      REQUEST,
-                                      page=page,
-                                      rows=rows,
-                                      cols=cols,
-                                      start_word=start+1,
-                                      end_word=end,
-                                      word_count=word_count,
-                                      page_count=page_count,
-                                      page_range=xrange(page_count),
-                                      page_columns=columns)
-        return dict(page=page,
+        info = dict(page=page,
                     rows=rows,
                     cols=cols,
                     start_word=start+1,
@@ -405,6 +393,11 @@ class PLexicon(Lexicon, Implicit, SimpleItem):
                     page_count=page_count,
                     page_range=xrange(page_count),
                     page_columns=columns)
+
+        if REQUEST is not None:
+            return self._queryLexicon(self, REQUEST, **info)
+
+        return info
 
     security.declareProtected(LexiconMgmtPerm, 'manage_main')
     manage_main = DTMLFile('dtml/manageLexicon', globals())
