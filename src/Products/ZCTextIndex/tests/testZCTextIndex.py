@@ -245,6 +245,7 @@ class ZCIndexTestsBase:
                     nbest, total = self.zc_index.query(w)
                     self.assertEqual(total, 0, "did not expect to find %s" % w)
 
+
 class CosineIndexTests(ZCIndexTestsBase, testIndex.CosineIndexTest):
 
     # A fairly involved test of the ranking calculations based on
@@ -566,13 +567,44 @@ class OkapiQueryTests(QueryTestsBase):
 
 class PLexiconTests(unittest.TestCase):
 
-    def test_z3interfaces(self):
+    def _getTargetClass(self):
+        from Products.ZCTextIndex.ZCTextIndex import PLexicon
+        return PLexicon
+
+    def _makeOne(self, id='testing', title='Testing', *pipeline):
+        return self._getTargetClass()(id, title, *pipeline)
+
+    def test_class_conforms_to_ILexicon(self):
         from Products.ZCTextIndex.interfaces import ILexicon
+        from zope.interface.verify import verifyClass
+        verifyClass(ILexicon, self._getTargetClass())
+
+    def test_instance_conforms_to_ILexicon(self):
+        from Products.ZCTextIndex.interfaces import ILexicon
+        from zope.interface.verify import verifyObject
+        verifyObject(ILexicon, self._makeOne())
+
+    def test_class_conforms_to_IZCLexicon(self):
         from Products.ZCTextIndex.interfaces import IZCLexicon
         from zope.interface.verify import verifyClass
+        verifyClass(IZCLexicon, self._getTargetClass())
 
-        verifyClass(ILexicon, PLexicon)
-        verifyClass(IZCLexicon, PLexicon)
+    def test_instance_conforms_to_IZCLexicon(self):
+        from Products.ZCTextIndex.interfaces import IZCLexicon
+        from zope.interface.verify import verifyObject
+        verifyObject(IZCLexicon, self._makeOne())
+
+    def test_queryLexicon_defaults(self):
+        index = self._makeOne()
+        info = index.queryLexicon(REQUEST=None, words=None)
+        self.assertEqual(info['page'], 0)
+        self.assertEqual(info['rows'], 20)
+        self.assertEqual(info['cols'], 4)
+        self.assertEqual(info['start_word'], 1)
+        self.assertEqual(info['end_word'], 0)
+        self.assertEqual(info['word_count'], 0)
+        self.assertEqual(list(info['page_range']), [])
+        self.assertEqual(info['page_columns'], [])
 
 
 def test_suite():
