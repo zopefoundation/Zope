@@ -94,15 +94,24 @@ class PathIndexTests(unittest.TestCase):
         self.assertEqual(len(index._unindex), 0)
         self.assertEqual(index._length(), 0)
 
-    def test_clear(self):
+    def test_getEntryForObject_miss_no_default(self):
+        index = self._makeOne()
+        self.assertEqual(index.getEntryForObject(1234), None)
+
+    def test_getEntryForObject_miss_w_default(self):
+        index = self._makeOne()
+        default = object()
+        self.failUnless(index.getEntryForObject(1234, default) is default)
+
+    def test_getEntryForObject_hit(self):
         index = self._makeOne()
         _populateIndex(index)
-        index.clear()
-        self.assertEqual(len(index), 0)
-        self.assertEqual(index._depth, 0)
-        self.assertEqual(len(index._index), 0)
-        self.assertEqual(len(index._unindex), 0)
-        self.assertEqual(index._length(), 0)
+        self.assertEqual(index.getEntryForObject(1), DUMMIES[1].path)
+
+    def test_getIndexSourceNames(self):
+        index = self._makeOne('foo')
+        self.assertEqual(list(index.getIndexSourceNames()),
+                         ['foo', 'getPhysicalPath'])
 
     def test_index_object_broken_path_raises_TypeError(self):
         index = self._makeOne()
@@ -234,71 +243,6 @@ class PathIndexTests(unittest.TestCase):
         self.assertEqual(len(index._index), 0)
         self.assertEqual(len(index._unindex), 0)
 
-    def test_search_empty_index_string_query(self):
-        index = self._makeOne()
-        self.assertEqual(list(index.search('/xxx')), [])
-
-    def test_search_empty_index_tuple_query(self):
-        index = self._makeOne()
-        self.assertEqual(list(index.search(('/xxx', 0))), [])
-
-    def test_search_empty_path(self):
-        index = self._makeOne()
-        doc = Dummy('/aa')
-        index.index_object(1, doc)
-        self.assertEqual(list(index.search('/')), [1])
-
-    def test_search_matching_path(self):
-        index = self._makeOne()
-        doc = Dummy('/aa')
-        index.index_object(1, doc)
-        self.assertEqual(list(index.search('/aa')), [1])
-
-    def test_search_mismatched_path(self):
-        index = self._makeOne()
-        doc = Dummy('/aa')
-        index.index_object(1, doc)
-        self.assertEqual(list(index.search('/bb')), [])
-
-    def test_search_w_level_0(self):
-        index = self._makeOne()
-        doc = Dummy('/aa/bb')
-        index.index_object(1, doc)
-        self.assertEqual(list(index.search('aa', 0)), [1])
-        self.assertEqual(list(index.search('aa', 1)), [])
-        self.assertEqual(list(index.search('bb', 1)), [1])
-        self.assertEqual(list(index.search('aa/bb', 0)), [1])
-        self.assertEqual(list(index.search('aa/bb', 1)), [])
-
-    def test_numObjects_empty(self):
-        index = self._makeOne()
-        self.assertEqual(index.numObjects(), 0)
-
-    def test_numObjects_filled(self):
-        index = self._makeOne()
-        _populateIndex(index)
-        self.assertEqual(index.numObjects(), len(DUMMIES))
-
-    def test_indexSize_empty(self):
-        index = self._makeOne()
-        self.assertEqual(index.indexSize(), 0)
-
-    def test_indexSize_filled(self):
-        index = self._makeOne()
-        _populateIndex(index)
-        self.assertEqual(index.indexSize(), len(DUMMIES))
-
-    def test_indexSize_multiple_items_same_path(self):
-        index = self._makeOne()
-        doc1 = Dummy('/shared')
-        doc2 = Dummy('/shared')
-        index.index_object(1, doc1)
-        index.index_object(2, doc2)
-        self.assertEqual(len(index._index), 1)
-        self.assertEqual(len(index), 2)
-        self.assertEqual(index.numObjects(), 2)
-        self.assertEqual(index.indexSize(), 2)
-
     def test__apply_index_no_match_in_query(self):
         index = self._makeOne()
         self.assertEqual(index._apply_index({'foo': 'xxx'}), None)
@@ -397,6 +341,45 @@ class PathIndexTests(unittest.TestCase):
         lst = list(res[0].keys())
         self.assertEqual(lst, [2, 3, 4])
 
+    def test_numObjects_empty(self):
+        index = self._makeOne()
+        self.assertEqual(index.numObjects(), 0)
+
+    def test_numObjects_filled(self):
+        index = self._makeOne()
+        _populateIndex(index)
+        self.assertEqual(index.numObjects(), len(DUMMIES))
+
+    def test_indexSize_empty(self):
+        index = self._makeOne()
+        self.assertEqual(index.indexSize(), 0)
+
+    def test_indexSize_filled(self):
+        index = self._makeOne()
+        _populateIndex(index)
+        self.assertEqual(index.indexSize(), len(DUMMIES))
+
+    def test_indexSize_multiple_items_same_path(self):
+        index = self._makeOne()
+        doc1 = Dummy('/shared')
+        doc2 = Dummy('/shared')
+        index.index_object(1, doc1)
+        index.index_object(2, doc2)
+        self.assertEqual(len(index._index), 1)
+        self.assertEqual(len(index), 2)
+        self.assertEqual(index.numObjects(), 2)
+        self.assertEqual(index.indexSize(), 2)
+
+    def test_clear(self):
+        index = self._makeOne()
+        _populateIndex(index)
+        index.clear()
+        self.assertEqual(len(index), 0)
+        self.assertEqual(index._depth, 0)
+        self.assertEqual(len(index._index), 0)
+        self.assertEqual(len(index._unindex), 0)
+        self.assertEqual(index._length(), 0)
+
     def test_hasUniqueValuesFor_miss(self):
         index = self._makeOne()
         self.failIf(index.hasUniqueValuesFor('miss'))
@@ -407,33 +390,68 @@ class PathIndexTests(unittest.TestCase):
 
     def test_uniqueValues_empty(self):
         index = self._makeOne()
-        self.assertEqual(len(index.uniqueValues()), 0)
+        self.assertEqual(len(list(index.uniqueValues())), 0)
 
-    def test_uniqueValues_filled(self):
-        index = self._makeOne()
+    def test_uniqueValues_miss(self):
+        index = self._makeOne('foo')
         _populateIndex(index)
-        self.assertEqual(len(index.uniqueValues()), len(DUMMIES) + 3)
+        self.assertEqual(len(list(index.uniqueValues('bar'))), 0)
 
-    def test_getEntryForObject_miss_no_default(self):
-        index = self._makeOne()
-        self.assertEqual(index.getEntryForObject(1234), None)
-
-    def test_getEntryForObject_miss_w_default(self):
-        index = self._makeOne()
-        default = object()
-        # XXX  this is wrong:  should return the default
-        self.assertEqual(index.getEntryForObject(1234, default), None)
-
-    def test_getEntryForObject_hit(self):
-        index = self._makeOne()
+    def test_uniqueValues_hit(self):
+        index = self._makeOne('foo')
         _populateIndex(index)
-        self.assertEqual(index.getEntryForObject(1), DUMMIES[1].path)
+        self.assertEqual(len(list(index.uniqueValues('foo'))),
+                         len(DUMMIES) + 3)
 
-    def test_getIndexSourceNames(self):
+    def test_uniqueValues_hit_w_withLength(self):
+        index = self._makeOne('foo')
+        _populateIndex(index)
+        results = dict(index.uniqueValues('foo', True))
+        self.assertEqual(len(results), len(DUMMIES) + 3)
+        for i in range(1, 19):
+            self.assertEqual(results['%s.html' % i], 1)
+        self.assertEqual(results['aa'],
+                         len([x for x in DUMMIES.values() if 'aa' in x.path]))
+        self.assertEqual(results['bb'],
+                         len([x for x in DUMMIES.values() if 'bb' in x.path]))
+        self.assertEqual(results['cc'],
+                         len([x for x in DUMMIES.values() if 'cc' in x.path]))
+
+    def test__search_empty_index_string_query(self):
         index = self._makeOne()
-        # XXX  this is wrong:  should include the index ID as well
-        self.assertEqual(list(index.getIndexSourceNames()),
-                         ['getPhysicalPath'])
+        self.assertEqual(list(index._search('/xxx')), [])
+
+    def test__search_empty_index_tuple_query(self):
+        index = self._makeOne()
+        self.assertEqual(list(index._search(('/xxx', 0))), [])
+
+    def test__search_empty_path(self):
+        index = self._makeOne()
+        doc = Dummy('/aa')
+        index.index_object(1, doc)
+        self.assertEqual(list(index._search('/')), [1])
+
+    def test__search_matching_path(self):
+        index = self._makeOne()
+        doc = Dummy('/aa')
+        index.index_object(1, doc)
+        self.assertEqual(list(index._search('/aa')), [1])
+
+    def test__search_mismatched_path(self):
+        index = self._makeOne()
+        doc = Dummy('/aa')
+        index.index_object(1, doc)
+        self.assertEqual(list(index._search('/bb')), [])
+
+    def test__search_w_level_0(self):
+        index = self._makeOne()
+        doc = Dummy('/aa/bb')
+        index.index_object(1, doc)
+        self.assertEqual(list(index._search('aa', 0)), [1])
+        self.assertEqual(list(index._search('aa', 1)), [])
+        self.assertEqual(list(index._search('bb', 1)), [1])
+        self.assertEqual(list(index._search('aa/bb', 0)), [1])
+        self.assertEqual(list(index._search('aa/bb', 1)), [])
 
 
 def test_suite():

@@ -11,8 +11,6 @@
 #
 ##############################################################################
 """Path index.
-
-$Id$
 """
 
 from logging import getLogger
@@ -35,7 +33,6 @@ from Products.PluginIndexes.common.util import parseIndexRequest
 from Products.PluginIndexes.interfaces import IPathIndex
 from Products.PluginIndexes.interfaces import IUniqueValueIndex
 
-_marker = []
 LOG = getLogger('Zope.PathIndex')
 
 
@@ -71,34 +68,29 @@ class PathIndex(Persistent, SimpleItem):
         self.useOperator = 'or'
         self.clear()
 
-    def clear(self):
-        self._depth = 0
-        self._index = OOBTree()
-        self._unindex = IOBTree()
-        self._length = Length(0)
+    def __len__(self):
+        return self._length()
 
-    def insertEntry(self, comp, id, level):
-        """Insert an entry.
+    # IPluggableIndex implementation
 
-           comp is a path component
-           id is the docid
-           level is the level of the component inside the path
+    def getEntryForObject(self, docid, default=None):
+        """ See IPluggableIndex.
         """
+        try:
+            return self._unindex[docid]
+        except KeyError:
+            return default
 
-        if not self._index.has_key(comp):
-            self._index[comp] = IOBTree()
-
-        if not self._index[comp].has_key(level):
-            self._index[comp][level] = IITreeSet()
-
-        self._index[comp][level].insert(id)
-        if level > self._depth:
-            self._depth = level
+    def getIndexSourceNames(self):
+        """ See IPluggableIndex.
+        """
+        return (self.id, 'getPhysicalPath', )
 
     def index_object(self, docid, obj ,threshold=100):
-        """ hook for (Z)Catalog """
-
+        """ See IPluggableIndex.
+        """
         f = getattr(obj, self.id, None)
+
         if f is not None:
             if safe_callable(f):
                 try:
@@ -118,20 +110,21 @@ class PathIndex(Persistent, SimpleItem):
 
         if isinstance(path, (list, tuple)):
             path = '/'+ '/'.join(path[1:])
+
         comps = filter(None, path.split('/'))
 
         if not self._unindex.has_key(docid):
             self._length.change(1)
 
         for i in range(len(comps)):
-            self.insertEntry(comps[i], docid, i)
+            self._insertEntry(comps[i], docid, i)
         self._unindex[docid] = path
         return 1
 
     def unindex_object(self, docid):
-        """ hook for (Z)Catalog """
-
-        if not self._unindex.has_key(docid):
+        """ See IPluggableIndex.
+        """
+        if docid not in self._unindex:
             LOG.debug('Attempt to unindex nonexistent document with id %s'
                       % docid)
             return
@@ -156,14 +149,106 @@ class PathIndex(Persistent, SimpleItem):
         self._length.change(-1)
         del self._unindex[docid]
 
-    def search(self, path, default_level=0):
-        """
-        path is either a string representing a
-        relative URL or a part of a relative URL or
-        a tuple (path,level).
+    def _apply_index(self, request):
+        """ See IPluggableIndex.
 
-        level >= 0  starts searching at the given level
-        level <  0  match at *any* level
+        o Unpacks args from catalog and mapps onto '_search'.
+        """
+        record = parseIndexRequest(request, self.id, self.query_options)
+        if record.keys is None:
+            return None
+
+        level = record.get("level", 0)
+        operator = record.get('operator', self.useOperator).lower()
+
+        # depending on the operator we use intersection of union
+        if operator == "or":
+            set_func = union
+        else:
+            set_func = intersection
+
+        res = None
+        for k in record.keys:
+            rows = self._search(k,level)
+            res = set_func(res,rows)
+
+        if res:
+            return res, (self.id,)
+        else:
+            return IISet(), (self.id,)
+
+    def numObjects(self):
+        """ See IPluggableIndex.
+        """
+        return len(self._unindex)
+
+    def indexSize(self):
+        """ See IPluggableIndex.
+        """
+        return len(self)
+
+    def clear(self):
+        """ See IPluggableIndex.
+        """
+        self._depth = 0
+        self._index = OOBTree()
+        self._unindex = IOBTree()
+        self._length = Length(0)
+
+    # IUniqueValueIndex implementation
+
+    def hasUniqueValuesFor(self, name):
+        """ See IUniqueValueIndex.
+        """
+        return name == self.id
+
+    def uniqueValues(self, name=None, withLength=0):
+        """  See IUniqueValueIndex.
+        """
+        if name in (None, self.id, 'getPhysicalPath'):
+            if withLength:
+                for key in self._index:
+                    yield key, len(self._search(key, -1))
+            else:
+                for key in self._index.keys():
+                    yield key
+
+    # Helper methods
+
+    def _insertEntry(self, comp, id, level):
+        """ Insert an entry.
+
+        'comp' is an individual path component
+
+        'id' is the docid
+
+        .level'is the level of the component inside the path
+        """
+
+        if not self._index.has_key(comp):
+            self._index[comp] = IOBTree()
+
+        if not self._index[comp].has_key(level):
+            self._index[comp][level] = IITreeSet()
+
+        self._index[comp][level].insert(id)
+        if level > self._depth:
+            self._depth = level
+
+    def _search(self, path, default_level=0):
+        """ Perform the actual search.
+
+        ``path``
+            a string representing a relative URL, or a part of a relative URL,
+            or a tuple ``(path, level)``.  In the first two cases, use
+            ``default_level`` as the level for the search.
+
+        ``default_level``
+            the level to use for non-tuple queries.
+
+        ``level >= 0`` =>  match ``path`` only at the given level.
+
+        ``level <  0`` =>  match ``path`` at *any* level
         """
         if isinstance(path, str):
             level = default_level
@@ -174,7 +259,7 @@ class PathIndex(Persistent, SimpleItem):
         if level < 0:
             # Search at every level, return the union of all results
             return multiunion(
-                [self.search(path, level) 
+                [self._search(path, level) 
                  for level in xrange(self._depth + 1)])
 
         comps = filter(None, path.split('/'))
@@ -191,66 +276,6 @@ class PathIndex(Persistent, SimpleItem):
             if not self._index.get(comp, {}).has_key(level+i): return IISet()
             results = intersection(results, self._index[comp][level+i])
         return results
-
-    def numObjects(self):
-        """Return the number of indexed objects."""
-        return len(self._unindex)
-
-    def indexSize(self):
-        """Return the size of the index in terms of distinct values."""
-        return len(self)
-
-    def __len__(self):
-        return self._length()
-
-    def _apply_index(self, request):
-        """ hook for (Z)Catalog
-            'request' --  mapping type (usually {"path": "..." }
-             additionaly a parameter "path_level" might be passed
-             to specify the level (see search())
-        """
-        record = parseIndexRequest(request, self.id, self.query_options)
-        if record.keys is None:
-            return None
-
-        level    = record.get("level",0)
-        operator = record.get('operator',self.useOperator).lower()
-
-        # depending on the operator we use intersection of union
-        if operator == "or":  set_func = union
-        else: set_func = intersection
-
-        res = None
-        for k in record.keys:
-            rows = self.search(k,level)
-            res = set_func(res,rows)
-
-        if res:
-            return res, (self.id,)
-        else:
-            return IISet(), (self.id,)
-
-    def hasUniqueValuesFor(self, name):
-        """has unique values for column name"""
-        return name == self.id
-
-    def uniqueValues(self, name=None, withLength=0):
-        """ needed to be consistent with the interface """
-        return self._index.keys()
-
-    def getIndexSourceNames(self):
-        """ return names of indexed attributes """
-        return ('getPhysicalPath', )
-
-    def getEntryForObject(self, docid, default=_marker):
-        """ Takes a document ID and returns all the information
-            we have on that specific object.
-        """
-        try:
-            return self._unindex[docid]
-        except KeyError:
-            # XXX Why is default ignored?
-            return None
 
     manage = manage_main = DTMLFile('dtml/managePathIndex', globals())
     manage_main._setName('manage_main')
