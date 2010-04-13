@@ -219,8 +219,10 @@ class ZPublisherExceptionHook:
             # zope.publisher uses as well.
             view = queryMultiAdapter((v, REQUEST), name=u'index.html')
             if view is not None:
-                if IAcquirer.providedBy(published):
+                if IAcquirer.providedBy(view) and IAcquirer.providedBy(published):
                     view = view.__of__(published)
+                else:
+                    view.__parent__ = published
                 v = view()
                 response = REQUEST.RESPONSE
                 response.setStatus(t)
