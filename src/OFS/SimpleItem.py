@@ -20,7 +20,6 @@ item types.
 $Id$
 """
 
-import inspect
 import marshal
 import re
 import sys
@@ -238,35 +237,10 @@ class Item(Base,
 
             handle_errors = getattr(getattr(REQUEST, 'RESPONSE', None),
                                     'handle_errors', False)
-            # Can we re-raise the exception with a rendered-to-HTML
-            # exception value? To be able to do so, the exception
-            # constructor needs to be able to take more than two
-            # arguments (some Zope exceptions can't).
-            can_raise = False
-            ctor = getattr(error_type, '__init__', None)
-            if inspect.ismethoddescriptor(ctor):
-                # If it's a method descriptor, it means we've got a
-                # base ``__init__`` method that was not overriden,
-                # likely from the base ``Exception`` class.
-                can_raise = True
-            else:
-                if inspect.ismethod(ctor):
-                    ctor = getattr(ctor, 'im_func', None)
-                if inspect.isbuiltin(ctor):
-                    # In Python 2.4, the ``__init__`` method of the
-                    # base ``Exception`` class is a ``builtin
-                    # method``.
-                    can_raise = True
-                elif ctor is not None and inspect.isfunction(ctor):
-                    can_raise = (
-                        len(inspect.getargspec(error_type.__init__)[0]) > 2)
-
-            if not (can_raise and handle_errors):
-                # If we have been asked not to handle errors and we
-                # can't re-raise a transformed exception don't even
-                # bother with transforming the exception into
-                # HTML. Just re-raise the original exception right
-                # away.
+            if not handle_errors:
+                # If we have been asked not to handle errors don't even bother
+                # with transforming the exception into HTML. Just re-raise the
+                # original exception right away.
                 raise error_type, error_value, tb
 
             try:
