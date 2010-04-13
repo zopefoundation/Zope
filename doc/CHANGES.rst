@@ -11,6 +11,8 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
+- Fixed regression introduced in the resource directory fix in 2.12.4.
+
 - LP #143655:  don't prevent sorting using a path index.
 
 - LP #142478:  normalize terms passed to ``PLexicon.queryLexicon`` using
