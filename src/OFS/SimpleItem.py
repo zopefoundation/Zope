@@ -305,12 +305,9 @@ class Item(Base,
                     html_quote(sys.exc_info()[1]),
                     ))
 
-            if handle_errors:
-                # If we've been asked to handle errors, just
-                # return the rendered exception and let the
-                # ZPublisher Exception Hook deal with it.
-                return error_type, v, tb
-            raise error_type, v, tb
+            # If we've been asked to handle errors, just return the rendered
+            # exception and let the ZPublisher Exception Hook deal with it.
+            return error_type, v, tb
         finally:
             if hasattr(self, '_v_eek'): del self._v_eek
             tb = None
