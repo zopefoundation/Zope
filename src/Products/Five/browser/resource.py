@@ -27,6 +27,7 @@ from zope.app.publisher.browser import fileresource, directoryresource
 from zope.app.publisher.fileresource import File, Image
 from zope.app.publisher.pagetemplateresource import PageTemplate
 
+from Acquisition import aq_base
 from Products.Five.browser import BrowserView
 
 
@@ -164,7 +165,8 @@ class DirectoryResource(Resource, directoryresource.DirectoryResource):
         
         # We need to propagate security so that restrictedTraverse() will
         # work
-        resource.__roles__ = self.__roles__
+        if hasattr(aq_base(self), '__roles__'):
+            resource.__roles__ = self.__roles__
         
         return resource
 
