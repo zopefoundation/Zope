@@ -24,6 +24,7 @@ from Acquisition import aq_acquire
 from Acquisition import aq_base
 from Acquisition import aq_inner
 from Acquisition import aq_parent
+from Acquisition.interfaces import IAcquirer
 from App.config import getConfiguration
 from time import asctime
 from zExceptions import upgradeException
@@ -218,6 +219,8 @@ class ZPublisherExceptionHook:
             # zope.publisher uses as well.
             view = queryMultiAdapter((v, REQUEST), name=u'index.html')
             if view is not None:
+                if IAcquirer.providedBy(published):
+                    view = view.__of__(published)
                 v = view()
                 response = REQUEST.RESPONSE
                 response.setStatus(t)
