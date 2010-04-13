@@ -16,6 +16,7 @@ Bugs Fixed
 - LP #142478:  normalize terms passed to ``PLexicon.queryLexicon`` using
   the lexicon's pipeline (e.g., case flattening, stop word removal, etc.)
 
+- Wrap exception views in the context of the published object.
 
 2.12.4 (2010-04-05)
 -------------------
