@@ -211,6 +211,8 @@ class ZPublisherExceptionHook:
             if view is not None:
                 if IAcquirer.providedBy(view) and IAcquirer.providedBy(published):
                     view = view.__of__(published)
+                else:
+                    view.__parent__ = published
                 v = view()
                 response = REQUEST.RESPONSE
                 response.setStatus(t)
