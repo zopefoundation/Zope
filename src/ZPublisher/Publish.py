@@ -236,17 +236,12 @@ def publish_module_standard(module_name,
                 setDefaultSkin(request)
 
             response = publish(request, module_name, after_list, debug=debug)
-        except SystemExit, v:
-            must_die=sys.exc_info()
-            request.response.exception(must_die)
-        except ImportError, v:
-            if isinstance(v, tuple) and len(v)==3: must_die=v
-            elif hasattr(sys, 'exc_info'): must_die=sys.exc_info()
-            else: must_die = SystemExit, v, sys.exc_info()[2]
-            request.response.exception(1, v)
+        except (SystemExit, ImportError):
+            must_die = sys.exc_info()
+            request.response.exception(1)
         except:
             request.response.exception()
-            status=response.getStatus()
+            status = response.getStatus()
 
         if response:
             outputBody=getattr(response, 'outputBody', None)
