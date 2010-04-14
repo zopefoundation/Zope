@@ -226,18 +226,11 @@ class PathIndex(Persistent, SimpleItem):
         """
         return self._unindex
 
-    # Helper methods
+    # IPathIndex implementation.
 
     def insertEntry(self, comp, id, level):
-        """ Insert an entry.
-
-        'comp' is an individual path component
-
-        'id' is the docid
-
-        .level'is the level of the component inside the path
+        """ See IPathIndex
         """
-
         if not self._index.has_key(comp):
             self._index[comp] = IOBTree()
 
@@ -247,6 +240,8 @@ class PathIndex(Persistent, SimpleItem):
         self._index[comp][level].insert(id)
         if level > self._depth:
             self._depth = level
+
+    # Helper methods
 
     def _search(self, path, default_level=0):
         """ Perform the actual search.

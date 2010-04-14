@@ -157,6 +157,18 @@ class IPathIndex(Interface):
     - the value is a mapping 'level of the path component' to
       'all docids with this path component on this level'
     """
+    def insertEntry(comp, id, level):
+        """ Insert an entry.
+
+        This method is intended for use by subclasses:  it is not
+        a normal API for the index.
+
+        'comp' is an individual path component
+
+        'id' is the docid
+
+        .level'is the level of the component inside the path
+        """
 
 
 class IFilteredSet(Interface):
