@@ -118,7 +118,7 @@ class PathIndex(Persistent, SimpleItem):
             self._length.change(1)
 
         for i in range(len(comps)):
-            self._insertEntry(comps[i], docid, i)
+            self.insertEntry(comps[i], docid, i)
         self._unindex[docid] = path
         return 1
 
@@ -228,7 +228,7 @@ class PathIndex(Persistent, SimpleItem):
 
     # Helper methods
 
-    def _insertEntry(self, comp, id, level):
+    def insertEntry(self, comp, id, level):
         """ Insert an entry.
 
         'comp' is an individual path component
