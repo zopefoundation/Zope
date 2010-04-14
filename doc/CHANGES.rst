@@ -153,6 +153,9 @@ Features Added
 Bugs Fixed
 ++++++++++
 
+- Document ``Products.PluginIndexes.PathIndex.PathIndex.insertEntry`` as
+  an API for use by subclasses.
+
 - LP #143655:  don't prevent sorting using a path index.
 
 - LP #142478:  normalize terms passed to ``PLexicon.queryLexicon`` using

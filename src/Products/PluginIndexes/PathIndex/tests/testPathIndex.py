@@ -456,6 +456,42 @@ class PathIndexTests(unittest.TestCase):
         self.assertEqual(dict(index.documentToKeyMap()),
                          dict([(k, v.path) for k, v in DUMMIES.items()]))
 
+    def test_insertEntry_empty_depth_0(self):
+        index = self._makeOne()
+        index.insertEntry('xx', 123, level=0)
+        self.assertEqual(index._depth, 0)
+        self.assertEqual(len(index._index), 1)
+        self.assertEqual(list(index._index['xx'][0]), [123])
+
+        # insertEntry oesn't update the length or the reverse index.
+        self.assertEqual(len(index), 0)
+        self.assertEqual(len(index._unindex), 0)
+        self.assertEqual(index._length(), 0)
+
+    def test_insertEntry_empty_depth_1(self):
+        index = self._makeOne()
+        index.insertEntry('xx', 123, level=0)
+        index.insertEntry('yy', 123, level=1)
+        self.assertEqual(index._depth, 1)
+        self.assertEqual(len(index._index), 2)
+        self.assertEqual(list(index._index['xx'][0]), [123])
+        self.assertEqual(list(index._index['yy'][1]), [123])
+
+    def test_insertEntry_multiple(self):
+        index = self._makeOne()
+        index.insertEntry('xx', 123, level=0)
+        index.insertEntry('yy', 123, level=1)
+        index.insertEntry('aa', 456, level=0)
+        index.insertEntry('bb', 456, level=1)
+        index.insertEntry('cc', 456, level=2)
+        self.assertEqual(index._depth, 2)
+        self.assertEqual(len(index._index), 5)
+        self.assertEqual(list(index._index['xx'][0]), [123])
+        self.assertEqual(list(index._index['yy'][1]), [123])
+        self.assertEqual(list(index._index['aa'][0]), [456])
+        self.assertEqual(list(index._index['bb'][1]), [456])
+        self.assertEqual(list(index._index['cc'][2]), [456])
+
     def test__search_empty_index_string_query(self):
         index = self._makeOne()
         self.assertEqual(list(index._search('/xxx')), [])
