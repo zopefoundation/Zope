@@ -99,7 +99,6 @@ DONE_STRING_DEFAULT = '\n%s\n\n' % ('_'*60)
 import sys, traceback, profile, os, getopt
 from time import clock
 repeat_count=100
-TupleType=type(())
 
 def main():
     import sys, os, getopt
@@ -181,6 +180,8 @@ def publish_module(module_name,
     from Response import Response
     from Request import Request
     from Publish import publish
+    from zope.publisher.interfaces import ISkinnable
+    from zope.publisher.skinnable import setDefaultSkin
     try:
         try:
             if response is None:
@@ -192,31 +193,31 @@ def publish_module(module_name,
 
             if request is None:
                 request=Request(stdin, environ, response)
-                # make sure that the request we hand over has the
-                # default layer/skin set on it; subsequent code that
-                # wants to look up views will likely depend on it
-                from zope.publisher.interfaces import ISkinnable
-                from zope.publisher.skinnable import setDefaultSkin
-                if ISkinnable.providedBy(request):
-                    setDefaultSkin(request)
+
+            # make sure that the request we hand over has the
+            # default layer/skin set on it; subsequent code that
+            # wants to look up views will likely depend on it
+            if ISkinnable.providedBy(request):
+                setDefaultSkin(request)
 
             for k, v in extra.items(): request[k]=v
             response = publish(request, module_name, after_list, debug=debug)
-        except SystemExit, v:
-            must_die=sys.exc_info()
-            response.exception(must_die)
-        except ImportError, v:
-            if isinstance(v, TupleType) and len(v)==3: must_die=v
-            else: must_die=sys.exc_info()
-            response.exception(1, v)
+        except (SystemExit, ImportError):
+            must_die = sys.exc_info()
+            request.response.exception(1)
         except:
             if debug:
                 raise
-            response.exception()
-            status=response.getStatus()
+            request.response.exception()
+            status = response.getStatus()
+
         if response:
-            response=str(response)
-        if response: stdout.write(response)
+            outputBody=getattr(response, 'outputBody', None)
+            if outputBody is not None:
+                outputBody()
+            else:
+                response=str(response)
+                if response: stdout.write(response)
 
         # The module defined a post-access function, call it
         if after_list[0] is not None: after_list[0]()
@@ -225,6 +226,16 @@ def publish_module(module_name,
         if request is not None: request.close()
 
     if must_die:
+        # Try to turn exception value into an exit code.
+        try:
+            if hasattr(must_die[1], 'code'):
+                code = must_die[1].code
+            else: code = int(must_die[1])
+        except:
+            code = must_die[1] and 1 or 0
+        if hasattr(request.response, '_requestShutdown'):
+            request.response._requestShutdown(code)
+
         try: raise must_die[0], must_die[1], must_die[2]
         finally: must_die=None
 
@@ -354,7 +365,7 @@ def publish(script=None,path_info='/',
         if b: exec b in dbdata
 
         for b in dbdata['breakpoints']:
-            if isinstance(b, TupleType):
+            if isinstance(b, tuple):
                 apply(db.set_break,b)
             else:
                 fbreak(db,b)
