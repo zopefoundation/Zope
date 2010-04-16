@@ -8,6 +8,13 @@ http://docs.zope.org/zope2/releases/.
 2.12.5 (unreleased)
 -------------------
 
+Features Added
+++++++++++++++
+
+- Updated packages:
+
+  - zope.i18nmessageid = 3.5.1
+
 Bugs Fixed
 ++++++++++
 
