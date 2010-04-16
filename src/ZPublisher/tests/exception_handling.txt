@@ -1,0 +1,166 @@
+Exception handling
+------------------
+
+These tests capture the current behavior. Maybe some of that behavior should
+be changed. The behavior caused by handleErrors=False shows only up in tests.
+
+
+Create the browser object we'll be using.
+
+    >>> from Testing.testbrowser import Browser
+    >>> browser = Browser()
+    >>> # XXX: browser has no API for disabling redirects
+    >>> browser.mech_browser.set_handle_redirect(False)
+
+Create the objects that are raising exceptions.
+ 
+    >>> dummy = app.test_folder_1_._setObject('foo', ExceptionRaiser1())
+    >>> dummy = app.test_folder_1_._setObject('bar', ExceptionRaiser2())
+
+Handle AttributeError.
+
+    >>> app.test_folder_1_.foo.exception = AttributeError('ERROR VALUE')
+
+    >>> browser.handleErrors = True
+    >>> browser.open('http://localhost/test_folder_1_/foo')
+    Traceback (most recent call last):
+    ...
+    HTTPError: HTTP Error 500: Internal Server Error
+    >>> 'Error Type: AttributeError' in browser.contents
+    True
+    >>> 'Error Value: ERROR VALUE' in browser.contents
+    True
+
+    >>> browser.handleErrors = False
+    >>> browser.open('http://localhost/test_folder_1_/foo')
+    Traceback (most recent call last):
+    ...
+    AttributeError: ERROR VALUE
+    >>> browser.contents
+
+Handle ImportError.
+
+    >>> app.test_folder_1_.foo.exception = ImportError('ERROR VALUE')
+
+    >>> browser.handleErrors = True
+    >>> browser.open('http://localhost/test_folder_1_/foo')
+    Traceback (most recent call last):
+    ...
+    HTTPError: HTTP Error 500: Internal Server Error
+    >>> 'Error Type: ImportError' in browser.contents
+    True
+    >>> 'Error Value: ERROR VALUE' in browser.contents
+    True
+
+    >>> browser.handleErrors = False
+    >>> browser.open('http://localhost/test_folder_1_/foo')
+    Traceback (most recent call last):
+    ...
+    ImportError: ERROR VALUE
+    >>> browser.contents
+
+Handle zope.publisher.interfaces.NotFound.
+
+    >>> from zope.publisher.interfaces import NotFound
+    >>> app.test_folder_1_.foo.exception = NotFound('OBJECT','NAME')
+
+    >>> browser.handleErrors = True
+    >>> browser.open('http://localhost/test_folder_1_/foo')
+    Traceback (most recent call last):
+    ...
+    HTTPError: HTTP Error 404: Not Found
+    >>> 'Error Type: NotFound' in browser.contents
+    True
+    >>> "Error Value: Object: 'OBJECT', name: 'NAME'" in browser.contents
+    True
+
+    >>> browser.handleErrors = False
+    >>> browser.open('http://localhost/test_folder_1_/foo')
+    Traceback (most recent call last):
+    ...
+    NotFound: Object: 'OBJECT', name: 'NAME'
+    >>> browser.contents
+
+Don't handle SystemExit, even if handleErrors is True.
+
+    >>> app.test_folder_1_.foo.exception = SystemExit('ERROR VALUE')
+
+    >>> browser.handleErrors = True
+    >>> browser.open('http://localhost/test_folder_1_/foo')
+    Traceback (most recent call last):
+    ...
+    SystemExit: ERROR VALUE
+    >>> browser.contents
+
+    >>> browser.handleErrors = False
+    >>> browser.open('http://localhost/test_folder_1_/foo')
+    Traceback (most recent call last):
+    ...
+    SystemExit: ERROR VALUE
+    >>> browser.contents
+
+Handle zExceptions.Redirect.
+
+    >>> from zExceptions import Redirect
+    >>> app.test_folder_1_.foo.exception = Redirect('LOCATION')
+
+    >>> browser.handleErrors = True
+    >>> browser.open('http://localhost/test_folder_1_/foo')
+    Traceback (most recent call last):
+    ...
+    HTTPError: HTTP Error 302: Moved Temporarily
+    >>> browser.contents
+    ''
+    >>> browser.headers['Location']
+    'LOCATION'
+
+    >>> browser.handleErrors = False
+    >>> browser.open('http://localhost/test_folder_1_/foo')
+    Traceback (most recent call last):
+    ...
+    Redirect: LOCATION
+    >>> browser.contents
+
+Handle zExceptions.Unauthorized.
+
+    >>> from zExceptions import Unauthorized
+    >>> app.test_folder_1_.foo.exception = Unauthorized('ERROR VALUE')
+
+    >>> browser.handleErrors = True
+    >>> browser.open('http://localhost/test_folder_1_/foo')
+    Traceback (most recent call last):
+    ...
+    HTTPError: HTTP Error 401: Unauthorized
+    >>> 'Error Type: Unauthorized' in browser.contents
+    True
+    >>> 'Error Value: ERROR VALUE' in browser.contents
+    True
+
+    >>> browser.handleErrors = False
+    >>> browser.open('http://localhost/test_folder_1_/foo')
+    Traceback (most recent call last):
+    ...
+    Unauthorized: ERROR VALUE
+    >>> browser.contents
+
+Handle zExceptions.Forbidden in BaseRequest.traverse. 'traverse' converts it
+into zExceptions.NotFound if we are not in debug mode.
+
+    >>> browser.handleErrors = True
+    >>> browser.open('http://localhost/test_folder_1_/bar')
+    Traceback (most recent call last):
+    ...
+    HTTPError: HTTP Error 404: Not Found
+    >>> '<p><strong>Resource not found</strong></p>' in browser.contents
+    True
+    >>> '<p><b>Resource:</b> index_html</p>' in browser.contents
+    True
+
+    >>> browser.handleErrors = False
+    >>> browser.open('http://localhost/test_folder_1_/bar')
+    Traceback (most recent call last):
+    ...
+    NotFound:   <h2>Site Error</h2>
+    ...<p><strong>Resource not found</strong></p>...
+    ...<p><b>Resource:</b> index_html</p>...
+    >>> browser.contents
