@@ -1642,7 +1642,7 @@ parse_cookie_lock = allocate_lock()
 QPARMRE= re.compile(
         '([\x00- ]*([^\x00- ;,="]+)="([^"]*)"([\x00- ]*[;,])?[\x00- ]*)')
 PARMRE = re.compile(
-        '([\x00- ]*([^\x00- ;,="]+)=([^;,"]*)([\x00- ]*[;,])?[\x00- ]*)')
+        '([\x00- ]*([^\x00- ;,="]+)=([^;]*)([\x00- ]*[;,])?[\x00- ]*)')
 PARAMLESSRE = re.compile(
         '([\x00- ]*([^\x00- ;,="]+)[\x00- ]*[;,][\x00- ]*)')
 def parse_cookie(text,

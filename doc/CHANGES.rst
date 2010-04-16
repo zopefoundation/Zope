@@ -153,6 +153,9 @@ Features Added
 Bugs Fixed
 ++++++++++
 
+- LP #563229:  Process "evil" JSON cookies which contain double quotes in
+  violation of RFC 2965 / 2616.
+
 - Document ``Products.PluginIndexes.PathIndex.PathIndex.insertEntry`` as
   an API for use by subclasses.
 
