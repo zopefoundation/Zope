@@ -7,7 +7,7 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
 """Initialize the Zope2 Package and provide a published module
@@ -23,14 +23,12 @@ from Acquisition import aq_parent
 from Acquisition.interfaces import IAcquirer
 from App.config import getConfiguration
 from time import asctime
-from types import StringType, ListType
 from zExceptions import upgradeException
 from zExceptions import Redirect
 from zExceptions import Unauthorized
 from ZODB.POSException import ConflictError
 import transaction
 import AccessControl.User
-import App.FindHomes
 import ExtensionClass
 import imp
 import logging
@@ -206,7 +204,7 @@ class ZPublisherExceptionHook:
             # raise the rendered value as the exception value
             # (basically the same that 'raise_standardErrorMessage'
             # does. The view is named 'index.html' because that's what
-            # Zope 3 uses as well.
+            # zope.publisher uses as well.
             view = queryMultiAdapter((v, REQUEST), name=u'index.html')
             if view is not None:
                 if IAcquirer.providedBy(view) and IAcquirer.providedBy(published):
@@ -214,13 +212,19 @@ class ZPublisherExceptionHook:
                 else:
                     view.__parent__ = published
                 v = view()
+                if issubclass(t, Unauthorized):
+                    # Re-raise Unauthorized to make sure it is handled
+                    # correctly. We can't do that with all exceptions
+                    # because some don't work with the rendered v as
+                    # argument.
+                    raise t, v, traceback
                 response = REQUEST.RESPONSE
                 response.setStatus(t)
                 response.setBody(v)
                 return response
 
             if (published is None or published is app or
-                type(published) is ListType):
+                isinstance(published, list)):
                 # At least get the top-level object
                 published=app.__bobo_traverse__(REQUEST).__of__(
                     RequestContainer(REQUEST))
@@ -254,12 +258,18 @@ class ZPublisherExceptionHook:
                            error_log_url=error_log_url)
                 if result is not None:
                     t, v, traceback = result
+                    if issubclass(t, Unauthorized):
+                        # Re-raise Unauthorized to make sure it is handled
+                        # correctly. We can't do that with all exceptions
+                        # because some don't work with the rendered v as
+                        # argument.
+                        raise t, v, traceback
                     response = REQUEST.RESPONSE
                     response.setStatus(t)
                     response.setBody(v)
                     return response
             except TypeError:
-                # Pre 2.6 call signature
+                # BBB: Pre Zope 2.6 call signature
                 f(client, REQUEST, t, v, traceback)
 
         finally:

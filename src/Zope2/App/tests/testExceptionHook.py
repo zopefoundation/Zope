@@ -347,7 +347,6 @@ def registerExceptionView(for_):
 class ExceptionViewsTest(PlacelessSetup, ExceptionHookTestCase):
 
     def testCustomExceptionViewUnauthorized(self):
-        from ZPublisher.HTTPResponse import HTTPResponse
         from AccessControl import Unauthorized
         registerExceptionView(IUnauthorized)
         def f():
@@ -355,8 +354,7 @@ class ExceptionViewsTest(PlacelessSetup, ExceptionHookTestCase):
         request = self._makeRequest()
         client = StandardClient()
         v = self.call_exc_value(client, request, f)
-        self.failUnless(isinstance(v, HTTPResponse), v)
-        self.failUnless(v.status == 401, (v.status, 401))
+        self.failUnless(isinstance(v, Unauthorized), v)
         self.failUnless("Exception View: Unauthorized" in str(v))
         self.failUnless("Context: StandardClient" in str(v))
 

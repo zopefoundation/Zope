@@ -11,6 +11,8 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
+- LP #372632, comments #15ff.: Fixed regression in Unauthorized handling.
+
 - LP #563229:  Process "evil" JSON cookies which contain double quotes in
   violation of RFC 2965 / 2616.
 
