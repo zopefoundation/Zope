@@ -996,6 +996,20 @@ class HTTPRequestTests(unittest.TestCase):
             "HTTPRequest.resolve_url should not emit events")
 
 
+    def test_parses_json_cookies(self):
+        # https://bugs.launchpad.net/zope2/+bug/563229
+        # reports cookies in the wild with embedded double quotes (e.g,
+        # JSON-encoded data structures.
+        env = {'SERVER_NAME': 'testingharnas',
+               'SERVER_PORT': '80',
+               'HTTP_COOKIE': 'json={"intkey":123,"stringkey":"blah"}; '
+                              'anothercookie=boring; baz'
+              }
+        req = self._makeOne(environ=env)
+        self.assertEquals(req.cookies['json'],
+                          '{"intkey":123,"stringkey":"blah"}')
+        self.assertEquals(req.cookies['anothercookie'], 'boring')
+
 TEST_ENVIRON = {
     'CONTENT_TYPE': 'multipart/form-data; boundary=12345',
     'REQUEST_METHOD': 'POST',
