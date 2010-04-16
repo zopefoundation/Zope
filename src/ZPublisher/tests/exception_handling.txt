@@ -121,7 +121,8 @@ Handle zExceptions.Redirect.
     Redirect: LOCATION
     >>> browser.contents
 
-Handle zExceptions.Unauthorized.
+Handle zExceptions.Unauthorized. We take the 'WWW-Authenticate' header as a
+sign that HTTPResponse._unauthorized was called.
 
     >>> from zExceptions import Unauthorized
     >>> app.test_folder_1_.foo.exception = Unauthorized('ERROR VALUE')
@@ -135,6 +136,8 @@ Handle zExceptions.Unauthorized.
     True
     >>> 'Error Value: ERROR VALUE' in browser.contents
     True
+    >>> browser.headers['WWW-Authenticate']
+    'basic realm="Zope2"'
 
     >>> browser.handleErrors = False
     >>> browser.open('http://localhost/test_folder_1_/foo')
