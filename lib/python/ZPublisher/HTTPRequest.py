@@ -1509,7 +1509,7 @@ def parse_cookie(text,
                  qparmre=re.compile(
                     '([\x00- ]*([^\x00- ;,="]+)="([^"]*)"([\x00- ]*[;,])?[\x00- ]*)'),
                  parmre=re.compile(
-                    '([\x00- ]*([^\x00- ;,="]+)=([^;,"]*)([\x00- ]*[;,])?[\x00- ]*)'),
+                    '([\x00- ]*([^\x00- ;,="]+)=([^;]*)([\x00- ]*[;,])?[\x00- ]*)'),
                  paramlessre=re.compile(
                     '([\x00- ]*([^\x00- ;,="]+)[\x00- ]*[;,][\x00- ]*)'),
 
@@ -1534,6 +1534,7 @@ def parse_cookie(text,
 
         else:
             # Match evil MSIE cookies ;)
+            # as well as json
 
             mo_p = parmre.match(text)
 

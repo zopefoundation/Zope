@@ -8,6 +8,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Process "evil" JSON cookies which contain double quotes in violation
+        of RFC 2965 / 2616.  https://bugs.launchpad.net/zope2/+bug/563229
+
       - Ensure that Acquistion wrapper classes always have a ``__getnewargs__``
         method, even if it is not provided by the underlying ExtensionClass.
 
