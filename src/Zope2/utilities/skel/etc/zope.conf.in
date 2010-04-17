@@ -826,6 +826,18 @@ instancehome $INSTANCE
 #
 #    conflict-error-log-level blather
 
+# Directive: max-conflict-retries
+#
+# Description:
+#     Specifies how many times a transaction will be re-tried when
+#     it generates ConflictErrors.  This can be a problem when using
+#     a ZEO server and you have large numbers of simultaneous writes.
+#
+# Default: 3
+#
+# Example:
+#
+#    max-conflict-retries 10
 
 # Directive: warnfilter
 #

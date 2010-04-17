@@ -653,6 +653,12 @@
      <metadefault>unset</metadefault>
   </multikey>
 
+  <key name="max-conflict-retries" datatype="integer" default="3" attribute="max_conflict_retries">
+    <description>
+      The maximum number of retries on a conflict error
+    </description>
+  </key>
+
   <key name="security-policy-implementation"
        datatype=".security_policy_implementation"
        default="C">

@@ -15,6 +15,9 @@ Features Added
 
   - zope.i18nmessageid = 3.5.1
 
+- LP #143013: make the maximum number of retries on ConflictError a
+  configuration option.
+
 Bugs Fixed
 ++++++++++
 
