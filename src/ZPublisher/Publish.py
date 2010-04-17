@@ -224,6 +224,7 @@ def publish_module_standard(module_name,
             else:
                 stdout=response.stdout
 
+            # debug is just used by tests (has nothing to do with debug_mode!)
             response.handle_errors = not debug
 
             if request is None:
@@ -237,9 +238,16 @@ def publish_module_standard(module_name,
 
             response = publish(request, module_name, after_list, debug=debug)
         except (SystemExit, ImportError):
+            # XXX: Rendered ImportErrors were never caught here because they
+            # were re-raised as string exceptions. Maybe we should handle
+            # ImportErrors like all other exceptions. Currently they are not
+            # re-raised at all, so they don't show up here.
             must_die = sys.exc_info()
             request.response.exception(1)
         except:
+            # debug is just used by tests (has nothing to do with debug_mode!)
+            if debug:
+                raise
             request.response.exception()
             status = response.getStatus()
 
