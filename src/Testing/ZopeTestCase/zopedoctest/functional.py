@@ -122,7 +122,7 @@ def http(request_string, handle_errors=True):
     import rfc822
     from cStringIO import StringIO
     from ZPublisher.Response import Response
-    from ZPublisher.Test import publish_module
+    from ZPublisher.Publish import publish_module
 
     # Commit work done by previous python code.
     transaction.commit()
