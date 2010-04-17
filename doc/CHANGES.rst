@@ -100,6 +100,9 @@ Restructuring
 Features Added
 ++++++++++++++
 
+- LP #143013: make the maximum number of retries on ConflictError a
+  configuration option.
+
 - LP #142502:  Added a knob to the Debug control panel for resetting
   profile data.  Thanks to Vladimir Patukhov for the patch.
 

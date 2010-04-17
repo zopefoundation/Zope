@@ -188,12 +188,17 @@ def root_handler(config):
 
     # set up trusted proxies
     if config.trusted_proxies:
-        import ZPublisher.HTTPRequest
+        from ZPublisher import HTTPRequest
         # DM 2004-11-24: added host name mapping (such that examples in
         # conf file really have a chance to work
         mapped = []
         for name in config.trusted_proxies: mapped.extend(_name2Ips(name))
-        ZPublisher.HTTPRequest.trusted_proxies = tuple(mapped)
+        HTTPRequest.trusted_proxies = tuple(mapped)
+    
+    # set the maximum number of ConflictError retries
+    if config.max_conflict_retries:
+        from ZPublisher import HTTPRequest
+        HTTPRequest.retry_max_count = config.max_conflict_retries
 
 
 def handleConfig(config, multihandler):
