@@ -15,11 +15,13 @@
 $Id$
 """
 
-import sys, re, base64
+import base64
+import doctest
+import re
+import sys
 import warnings
-import transaction
 
-from zope.testing import doctest
+import transaction
 
 from Testing.ZopeTestCase import ZopeTestCase
 from Testing.ZopeTestCase import FunctionalTestCase
@@ -93,7 +95,6 @@ basicre = re.compile('Basic (.+)?:(.+)?$')
 def auth_header(header):
     match = basicre.match(header)
     if match:
-        import base64
         u, p = match.group(1, 2)
         if u is None:
             u = ''

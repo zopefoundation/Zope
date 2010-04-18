@@ -31,7 +31,7 @@ def test_InitializeClass():
     >>> InitializeClass(C)
     """
 
-from zope.testing.doctest import DocTestSuite
+from doctest import DocTestSuite
 import unittest
 
 def test_suite():

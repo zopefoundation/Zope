@@ -55,5 +55,5 @@ def test_directive():
 
 
 def test_suite():
-    from zope.testing.doctest import DocTestSuite
+    from doctest import DocTestSuite
     return DocTestSuite(setUp=setUp, tearDown=tearDown)

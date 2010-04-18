@@ -133,7 +133,8 @@ def testBeforeTraverse(self):
     """
     pass
 
-from zope.testing import doctest
+
+import doctest
 
 def test_suite():
     return doctest.DocTestSuite(optionflags=doctest.ELLIPSIS)

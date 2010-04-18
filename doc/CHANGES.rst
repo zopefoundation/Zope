@@ -11,6 +11,9 @@ http://docs.zope.org/zope2/releases/.
 Features Added
 ++++++++++++++
 
+- Use the standard libraries doctest module in favor of the deprecated version
+  in zope.testing.
+
 - Updated packages:
 
   - distribute = 0.6.10

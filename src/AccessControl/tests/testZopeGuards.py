@@ -17,13 +17,13 @@ Well, at least begin testing some of the functionality
 
 $Id$
 """
+import doctest
 import unittest
 
 import os
 import operator
 import sys
 
-from zope.testing import doctest
 import ZODB
 
 

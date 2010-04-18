@@ -574,7 +574,7 @@ def test_zsp_gets_right_roles_for_methods():
     
     """
 
-from zope.testing.doctest import DocTestSuite
+from doctest import DocTestSuite
 
 def test_suite():
     suite = unittest.TestSuite()

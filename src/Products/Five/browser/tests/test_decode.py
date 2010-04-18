@@ -49,5 +49,5 @@ def test_processInputs():
     """
 
 def test_suite():
-    from zope.testing.doctest import DocTestSuite
+    from doctest import DocTestSuite
     return DocTestSuite()
