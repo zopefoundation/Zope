@@ -11,9 +11,6 @@ http://docs.zope.org/zope2/releases/.
 Features Added
 ++++++++++++++
 
-- Use the standard libraries doctest module in favor of the deprecated version
-  in zope.testing.
-
 - Updated packages:
 
   - distribute = 0.6.10
@@ -43,6 +40,13 @@ Features Added
   - zope.minmax = 1.1.2
   - zope.securitypolicy = 3.6.1
   - zope.viewlet = 3.6.1
+
+- Downgrade the ``manage_* is discouraged. You should use event subscribers
+  instead`` warnings to debug level logging. This particular warning hasn't
+  motivated anyone to actually change any code.
+
+- Use the standard libraries doctest module in favor of the deprecated version
+  in zope.testing.
 
 - LP #143013: make the maximum number of retries on ConflictError a
   configuration option.

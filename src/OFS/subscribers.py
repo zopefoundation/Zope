@@ -12,12 +12,9 @@
 #
 ##############################################################################
 """
-Five subscriber definitions.
-
-$Id$
+Subscriber definitions.
 """
 
-import warnings
 from logging import getLogger
 
 import OFS.interfaces
@@ -67,10 +64,9 @@ def maybeWarnDeprecated(ob, method_name):
         # Method knows it's deprecated
         return
     class_ = ob.__class__
-    warnings.warn(
+    LOG.debug(
         "%s.%s.%s is discouraged. You should use event subscribers instead." %
-        (class_.__module__, class_.__name__, method_name),
-        DeprecationWarning)
+        (class_.__module__, class_.__name__, method_name))
 
 ##################################################
 
