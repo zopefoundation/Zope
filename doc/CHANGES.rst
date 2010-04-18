@@ -13,6 +13,7 @@ Features Added
 
 - Updated packages:
 
+  - Acquisition = 2.13.3
   - distribute = 0.6.10
   - roman = 1.4.0
   - zope.annotation = 3.5.0
