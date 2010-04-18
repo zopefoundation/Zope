@@ -24,13 +24,6 @@ Restructuring
   or any database connections are opened. So far the CA was setup somewhat
   randomly in the startup process, when the ``Five`` product was initialized.
 
-- Downgrade the ``manage_* is discouraged. You should use event subscribers
-  instead`` warnings to debug level logging. This particular warning hasn't
-  motivated anyone to actually change any code.
-
-- Use the standard libraries doctest module in favor of the deprecated version
-  in zope.testing.
-
 - Finished the move of five.formlib to an extra package and removed it from
   Zope 2 itself. Upgrade notes have been added to the news section of the
   release notes.
@@ -100,9 +93,6 @@ Restructuring
 Features Added
 ++++++++++++++
 
-- LP #143013: make the maximum number of retries on ConflictError a
-  configuration option.
-
 - LP #142502:  Added a knob to the Debug control panel for resetting
   profile data.  Thanks to Vladimir Patukhov for the patch.
 
@@ -155,17 +145,6 @@ Features Added
 
 Bugs Fixed
 ++++++++++
-
-- LP #563229:  Process "evil" JSON cookies which contain double quotes in
-  violation of RFC 2965 / 2616.
-
-- Document ``Products.PluginIndexes.PathIndex.PathIndex.insertEntry`` as
-  an API for use by subclasses.
-
-- LP #143655:  don't prevent sorting using a path index.
-
-- LP #142478:  normalize terms passed to ``PLexicon.queryLexicon`` using
-  the lexicon's pipeline (e.g., case flattening, stop word removal, etc.)
 
 - LP #143604: Removed top-level database-quota-size from zope.conf, some
   storages support a quota option instead.
