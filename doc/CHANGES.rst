@@ -14,7 +14,21 @@ Features Added
 - Updated packages:
 
   - distribute = 0.6.10
+  - roman = 1.4.0
   - zope.annotation = 3.5.0
+  - zope.app.cache = 3.6.0
+  - zope.app.dav = 3.5.1
+  - zope.app.i18n = 3.6.1
+  - zope.app.localpermission = 3.7.2
+  - zope.app.principalannotation = 3.7.0
+  - zope.app.publication = 3.8.1
+  - zope.app.publisher = 3.8.4
+  - zope.app.renderer = 3.5.1
+  - zope.app.security = 3.7.3
+  - zope.app.session = 3.6.1
+  - zope.app.testing = 3.7.3
+  - zope.app.wsgi = 3.6.0
+  - zope.app.zapi = 3.4.1
   - zope.broken = 3.6.0
   - zope.catalog = 3.8.1
   - zope.formlib = 3.7.0
