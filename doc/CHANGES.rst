@@ -13,7 +13,19 @@ Features Added
 
 - Updated packages:
 
+  - distribute = 0.6.10
+  - zope.annotation = 3.5.0
+  - zope.broken = 3.6.0
+  - zope.catalog = 3.8.1
+  - zope.formlib = 3.7.0
   - zope.i18nmessageid = 3.5.1
+  - zope.index = 3.6.0
+  - zope.keyreference = 3.6.2
+  - zope.lifecycleevent = 3.6.0
+  - zope.location = 3.6.0
+  - zope.minmax = 1.1.2
+  - zope.securitypolicy = 3.6.1
+  - zope.viewlet = 3.6.1
 
 - LP #143013: make the maximum number of retries on ConflictError a
   configuration option.
