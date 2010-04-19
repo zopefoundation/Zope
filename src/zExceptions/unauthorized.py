@@ -38,7 +38,7 @@ class Unauthorized(Exception):
         Unauthorized(name, value, needed)
         Unauthorized(message, value, needed, name)
 
-        Where needed is a mapping objects with items represnting requirements
+        Where needed is a mapping objects with items representing requirements
         (e.g. {'permission': 'add spam'}). Any extra keyword arguments
         provides are added to needed.
         """
