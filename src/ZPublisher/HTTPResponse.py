@@ -1,19 +1,18 @@
-#############################################################################
+##############################################################################
 #
 # Copyright (c) 2001 Zope Foundation and Contributors.
 #
 # This software is subject to the provisions of the Zope Public License,
-# Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
+# Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
 '''CGI Response Output formatter
 
 $Id$'''
-__version__ = '$Revision: 1.81 $'[11:-2]
 
 import types, os, sys, re
 import zlib, struct
@@ -247,7 +246,7 @@ class HTTPResponse(BaseResponse):
         self.errmsg = reason
         # lock the status if we're told to
         if lock:
-             self._locked_status = 1
+            self._locked_status = 1
 
     def setHeader(self, name, value, literal=0, scrubbed=False):
         '''\
@@ -710,7 +709,6 @@ class HTTPResponse(BaseResponse):
             self.setHeader('WWW-Authenticate', 'basic realm="%s"' % realm, 1)
 
     def unauthorized(self):
-        self._unauthorized()
         m = "<strong>You are not authorized to access this resource.</strong>"
         if self.debug_mode:
             if self._auth:
@@ -724,15 +722,12 @@ class HTTPResponse(BaseResponse):
                   tag_search=re.compile('[a-zA-Z]>').search,
                   abort=1
                   ):
-        if type(info) is type(()) and len(info) == 3:
+        if isinstance(info, tuple) and len(info) == 3:
             t, v, tb = info
         else:
             t, v, tb = sys.exc_info()
 
-        if t == 'Unauthorized' or t == Unauthorized or (
-            isinstance(t, (type, types.ClassType)) and
-                issubclass(t, Unauthorized)):
-            t = 'Unauthorized'
+        if issubclass(t, Unauthorized):
             self._unauthorized()
 
         stb = tb # note alias between tb and stb
