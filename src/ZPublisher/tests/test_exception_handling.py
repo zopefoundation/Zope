@@ -29,7 +29,12 @@ class ExceptionRaiser1(SimpleItem):
         raise self.exception
 
 
-class ExceptionRaiser2(SimpleItem):
+class ExceptionRaiser2(ExceptionRaiser1):
+
+    __roles__ = ()
+
+
+class ExceptionRaiser3(SimpleItem):
 
     def index_html(self):
         return 'NO DOCSTRING'
@@ -39,7 +44,8 @@ def test_suite():
     return unittest.TestSuite([
         FunctionalDocFileSuite('exception_handling.txt',
             globs={'ExceptionRaiser1': ExceptionRaiser1,
-                   'ExceptionRaiser2': ExceptionRaiser2,}),
+                   'ExceptionRaiser2': ExceptionRaiser2,
+                   'ExceptionRaiser3': ExceptionRaiser3,}),
         ])
 
 if __name__ == '__main__':

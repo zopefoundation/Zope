@@ -16,6 +16,7 @@ Create the objects that are raising exceptions.
  
     >>> dummy = app.test_folder_1_._setObject('foo', ExceptionRaiser1())
     >>> dummy = app.test_folder_1_._setObject('bar', ExceptionRaiser2())
+    >>> dummy = app.test_folder_1_._setObject('baz', ExceptionRaiser3())
 
 Handle AttributeError.
 
@@ -115,8 +116,8 @@ Handle zExceptions.Redirect.
     ...
     Redirect: LOCATION
 
-Handle zExceptions.Unauthorized. We take the 'WWW-Authenticate' header as a
-sign that HTTPResponse._unauthorized was called.
+Handle zExceptions.Unauthorized raised by the object. We take the
+'WWW-Authenticate' header as a sign that HTTPResponse._unauthorized was called.
 
     >>> from zExceptions import Unauthorized
     >>> app.test_folder_1_.foo.exception = Unauthorized('ERROR VALUE')
@@ -139,11 +140,32 @@ sign that HTTPResponse._unauthorized was called.
     ...
     Unauthorized: ERROR VALUE
 
-Handle zExceptions.Forbidden in BaseRequest.traverse. 'traverse' converts it
-into zExceptions.NotFound if we are not in debug mode.
+Handle zExceptions.Unauthorized raised by BaseRequest.traverse. We take the
+'WWW-Authenticate' header as a sign that HTTPResponse._unauthorized was called.
 
     >>> browser.handleErrors = True
     >>> browser.open('http://localhost/test_folder_1_/bar')
+    Traceback (most recent call last):
+    ...
+    HTTPError: HTTP Error 401: Unauthorized
+    >>> 'Site Error' in browser.contents
+    True
+    >>> 'You are not authorized to access this resource.' in browser.contents
+    True
+    >>> browser.headers['WWW-Authenticate']
+    'basic realm="Zope2"'
+
+    >>> browser.handleErrors = False
+    >>> browser.open('http://localhost/test_folder_1_/bar')
+    Traceback (most recent call last):
+    ...
+    Unauthorized: <strong>You are not authorized to access this resource...
+
+Handle zExceptions.Forbidden raised by BaseRequest.traverse. 'traverse'
+converts it into zExceptions.NotFound if we are not in debug mode.
+
+    >>> browser.handleErrors = True
+    >>> browser.open('http://localhost/test_folder_1_/baz')
     Traceback (most recent call last):
     ...
     HTTPError: HTTP Error 404: Not Found
@@ -153,7 +175,7 @@ into zExceptions.NotFound if we are not in debug mode.
     True
 
     >>> browser.handleErrors = False
-    >>> browser.open('http://localhost/test_folder_1_/bar')
+    >>> browser.open('http://localhost/test_folder_1_/baz')
     Traceback (most recent call last):
     ...
     NotFound:   <h2>Site Error</h2>
