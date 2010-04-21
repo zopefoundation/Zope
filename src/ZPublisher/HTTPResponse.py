@@ -800,7 +800,10 @@ class HTTPResponse(BaseResponse):
         b = v
         if isinstance(b, Exception):
             try:
-                b = str(b)
+                try:
+                    b = str(b)
+                except UnicodeEncodeError:
+                    b = self._encode_unicode(unicode(b))
             except:
                 b = '<unprintable %s object>' % type(b).__name__
 

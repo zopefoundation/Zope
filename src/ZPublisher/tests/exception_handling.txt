@@ -140,6 +140,28 @@ Handle zExceptions.Unauthorized raised by the object. We take the
     ...
     Unauthorized: ERROR VALUE
 
+And the same with unicode error value.
+
+    >>> app.test_folder_1_.foo.exception = Unauthorized(u'ERROR VALUE \u03A9')
+
+    >>> browser.handleErrors = True
+    >>> browser.open('http://localhost/test_folder_1_/foo')
+    Traceback (most recent call last):
+    ...
+    HTTPError: HTTP Error 401: Unauthorized
+    >>> 'Error Type: Unauthorized' in browser.contents
+    True
+    >>> 'Error Value: ERROR VALUE ?' in browser.contents
+    True
+    >>> browser.headers['WWW-Authenticate']
+    'basic realm="Zope2"'
+
+    >>> browser.handleErrors = False
+    >>> browser.open('http://localhost/test_folder_1_/foo')
+    Traceback (most recent call last):
+    ...
+    Unauthorized: <unprintable ... object>
+
 Handle zExceptions.Unauthorized raised by BaseRequest.traverse. We take the
 'WWW-Authenticate' header as a sign that HTTPResponse._unauthorized was called.
 

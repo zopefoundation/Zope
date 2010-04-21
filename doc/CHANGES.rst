@@ -55,6 +55,8 @@ Features Added
 Bugs Fixed
 ++++++++++
 
+- HTTPResponse: Fixed handling of exceptions with unicode values.
+
 - zExceptions: Fixed some unicode issues in Unauthorized.
 
 - LP #372632, comments #15ff.: Fixed regression in Unauthorized handling.
