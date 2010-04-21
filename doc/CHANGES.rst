@@ -55,6 +55,8 @@ Features Added
 Bugs Fixed
 ++++++++++
 
+- zExceptions: Fixed some unicode issues in Unauthorized.
+
 - LP #372632, comments #15ff.: Fixed regression in Unauthorized handling.
 
 - LP #563229:  Process "evil" JSON cookies which contain double quotes in

@@ -7,16 +7,16 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
 """
 $Id$
 """
 
-from types import StringType
 from zope.interface import implements
 from zope.security.interfaces import IUnauthorized
+
 
 class Unauthorized(Exception):
     """Some user wasn't allowed to access a resource
@@ -43,7 +43,7 @@ class Unauthorized(Exception):
         provides are added to needed.
         """
         if name is None and (
-            not isinstance(message, StringType) or len(message.split()) <= 1):
+            not isinstance(message, basestring) or len(message.split()) <= 1):
             # First arg is a name, not a message
             name=message
             message=None
@@ -59,7 +59,8 @@ class Unauthorized(Exception):
         self.needed=needed
 
     def __str__(self):
-        if self.message is not None: return self.message
+        if self.message is not None:
+            return self.message
         if self.name is not None:
             return ("You are not allowed to access '%s' in this context"
                     % self.name)
@@ -68,6 +69,11 @@ class Unauthorized(Exception):
                     % self.getValueName())
         return repr(self)
 
+    def __unicode__(self):
+        result = self.__str__()
+        if isinstance(result, unicode):
+            return result
+        return unicode(result, 'ascii') # override sys.getdefaultencoding()
 
     def getValueName(self):
         v=self.value
