@@ -235,14 +235,6 @@ class Item(Base,
             if not REQUEST:
                 REQUEST = aq_acquire(self, 'REQUEST')
 
-            handle_errors = getattr(getattr(REQUEST, 'RESPONSE', None),
-                                    'handle_errors', False)
-            if not handle_errors:
-                # If we have been asked not to handle errors don't even bother
-                # with transforming the exception into HTML. Just re-raise the
-                # original exception right away.
-                raise error_type, error_value, tb
-
             try:
                 s = aq_acquire(client, 'standard_error_message')
 
