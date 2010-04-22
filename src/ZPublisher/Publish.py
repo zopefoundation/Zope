@@ -208,7 +208,7 @@ def publish(request, module_name, after_list, debug=0,
                         transactions_manager.abort()
             finally:
                 endInteraction()
-                notify(PubFailure(request, exc_info, retry))
+                notify(PubFailure(request, exc_info, False))
             raise
 
 def publish_module_standard(module_name,
