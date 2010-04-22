@@ -153,7 +153,8 @@ def publish(request, module_name, after_list, debug=0,
                 getattr(cl,'__name__',cl), val,
                 debug_mode and compact_traceback()[-1] or ''))
 
-        if err_hook is not None:
+        # debug is just used by tests (has nothing to do with debug_mode!)
+        if not debug and err_hook is not None:
             retry = False
             if parents:
                 parents=parents[0]
