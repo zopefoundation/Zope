@@ -11,10 +11,9 @@ http://docs.zope.org/zope2/releases/.
 Features Added
 ++++++++++++++
 
+- Updated packages:
 
-Bugs Fixed
-++++++++++
-
+  - ZODB3 = 3.9.5
 
 2.12.5 (2010-04-24)
 -------------------
