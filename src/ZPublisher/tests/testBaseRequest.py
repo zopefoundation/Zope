@@ -1,5 +1,20 @@
 import unittest
 
+from zope.interface import implements
+from zope.publisher.interfaces import IPublishTraverse
+from zope.publisher.interfaces import NotFound as ztkNotFound
+
+
+class DummyTraverser(object):
+
+    implements(IPublishTraverse)
+
+    def publishTraverse(self, request, name):
+        if name == 'dummy':
+            return 'dummy object'
+        raise ztkNotFound(self, name)
+
+
 class BaseRequest_factory:
 
     def _makeOne(self, root):
@@ -137,6 +152,7 @@ class BaseRequest_factory:
                 # Attribute without docstring.
                 return 'unpublishable'
         return DummyObjectWithEmptyDocstring()
+
 
 class TestBaseRequest(unittest.TestCase, BaseRequest_factory):
 
@@ -372,10 +388,16 @@ class TestBaseRequest(unittest.TestCase, BaseRequest_factory):
     def test_traverse_unsubscriptable(self):
         # See https://bugs.launchpad.net/bugs/213311
         from ZPublisher import NotFound
-        class _Object(object):
-            pass
-        root = _Object()
         r = self._makeOne(None)
+        self.assertRaises(NotFound, r.traverse, 'not_found')
+
+    def test_traverse_publishTraverse(self):
+        r = self._makeOne(DummyTraverser())
+        self.assertEqual(r.traverse('dummy'), 'dummy object')
+
+    def test_traverse_publishTraverse_error(self):
+        from ZPublisher import NotFound
+        r = self._makeOne(DummyTraverser())
         self.assertRaises(NotFound, r.traverse, 'not_found')
 
 

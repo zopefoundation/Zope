@@ -15,6 +15,11 @@ Features Added
 
   - ZODB3 = 3.9.5
 
+Bugs Fixed
+++++++++++
+
+- BaseRequest: Fixed handling of errors in 'traverseName'.
+
 2.12.5 (2010-04-24)
 -------------------
 

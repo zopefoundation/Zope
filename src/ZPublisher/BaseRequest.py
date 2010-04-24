@@ -26,6 +26,7 @@ from zope.event import notify
 from zope.app.publication.interfaces import EndRequestEvent
 from zope.publisher.defaultview import queryDefaultViewName
 from zope.publisher.interfaces import IPublishTraverse
+from zope.publisher.interfaces import NotFound as ztkNotFound
 from zope.publisher.interfaces.browser import IBrowserPublisher
 from zope.traversing.interfaces import TraversalError
 from zope.traversing.namespace import nsParse, namespaceLookup
@@ -312,7 +313,7 @@ class BaseRequest:
 
     __repr__=__str__
 
-
+    # Original version: see zope.traversing.publicationtraverse
     def traverseName(self, ob, name):
         if name and name[:1] in '@+':
             # Process URI segment parameters.
@@ -321,7 +322,7 @@ class BaseRequest:
                 try:
                     ob2 = namespaceLookup(ns, nm, ob, self)
                 except TraversalError:
-                    raise KeyError(ob, name)
+                    raise ztkNotFound(ob, name)
 
                 if IAcquirer.providedBy(ob2):
                     ob2 = ob2.__of__(ob)
@@ -342,7 +343,6 @@ class BaseRequest:
             ob2 = adapter.publishTraverse(self, name)
 
         return ob2
-
 
     def traverse(self, path, response=None, validated_hook=None):
         """Traverse the object space
@@ -506,7 +506,8 @@ class BaseRequest:
                         object, check_name, subobject,
                         self.roles)
                     object = subobject
-                except (KeyError, AttributeError):
+                # traverseName() might raise ZTK's NotFound
+                except (KeyError, AttributeError, ztkNotFound):
                     if response.debug_mode:
                         return response.debugError(
                             "Cannot locate object at: %s" % URL)
@@ -517,7 +518,6 @@ class BaseRequest:
                         return response.debugError(e.args)
                     else: 
                         return response.forbiddenError(entry_name)
-                    
 
                 parents.append(object)
 
@@ -711,8 +711,7 @@ def old_validation(groups, request, auth,
 # types during publishing, we ensure the same publishing rules in
 # both versions. The downside is that this needs to be extended as
 # new built-in types are added and future Python versions are
-# supported. That happens rarely enough that hopefully we'll be on
-# Zope 3 by then :)
+# supported.
 
 import types
 
