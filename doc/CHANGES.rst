@@ -109,11 +109,6 @@ Features Added
 
 - Updated packages:
 
-  - initgroups = 2.13.0
-  - Missing = 2.13.0
-  - MultiMapping = 2.13.0
-  - Record = 2.13.0
-  - ThreadLock = 2.13.0
   - zope.annotation = 3.5.0
   - zope.app.form = 3.12.1
   - zope.broken = 3.6.0
