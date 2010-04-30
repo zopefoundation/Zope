@@ -134,10 +134,11 @@ Features Added
   - zope.securitypolicy = 3.6.1
   - zope.sendmail = 3.7.2
   - zope.site = 3.9.1
+  - zope.tales = 3.5.1
   - zope.testbrowser = 3.7.0
   - zope.testing = 3.9.3
-  - zope.traversing = 3.12.0
-  - zope.viewlet = 3.7.0
+  - zope.traversing = 3.12.1
+  - zope.viewlet = 3.7.1
 
 Bugs Fixed
 ++++++++++
