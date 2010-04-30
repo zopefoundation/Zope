@@ -15,6 +15,7 @@ Features Added
 
   - DateTime = 2.12.1
   - ExtensionClass = 2.13.1
+  - Persistence = 2.13.1
   - ZODB3 = 3.9.5
 
 Bugs Fixed
