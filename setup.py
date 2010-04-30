@@ -15,7 +15,6 @@
 import os
 from setuptools import setup, find_packages, Extension
 
-EXTENSIONCLASS_INCLUDEDIRS = ['include', 'src']
 
 setup(name='Zope2',
     version='2.13.0dev',
@@ -36,17 +35,17 @@ setup(name='Zope2',
       # AccessControl
       Extension(
             name='AccessControl.cAccessControl',
-            include_dirs=EXTENSIONCLASS_INCLUDEDIRS,
+            include_dirs=['include', 'src'],
             sources=['src/AccessControl/cAccessControl.c'],
             depends=['include/ExtensionClass/ExtensionClass.h',
-                     'include/ExtensionClass/pickle/pickle.c',
                      'include/Acquisition/Acquisition.h']),
 
       # DocumentTemplate
       Extension(
             name='DocumentTemplate.cDocumentTemplate',
-            include_dirs=EXTENSIONCLASS_INCLUDEDIRS,
-            sources=['src/DocumentTemplate/cDocumentTemplate.c']),
+            include_dirs=['include', 'src'],
+            sources=['src/DocumentTemplate/cDocumentTemplate.c'],
+            depends=['include/ExtensionClass/ExtensionClass.h']),
 
       # indexes
       Extension(
@@ -118,12 +117,12 @@ setup(name='Zope2',
     include_package_data=True,
     zip_safe=False,
     entry_points={
-       'console_scripts' : [
+       'console_scripts': [
           'mkzeoinstance=Zope2.utilities.mkzeoinstance:main',
           'mkzopeinstance=Zope2.utilities.mkzopeinstance:main',
           'runzope=Zope2.Startup.run:run',
           'zopectl=Zope2.Startup.zopectl:run',
           'zpasswd=Zope2.utilities.zpasswd:main',
-      ]
+      ],
     },
 )
