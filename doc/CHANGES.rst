@@ -130,10 +130,10 @@ Features Added
   - zope.lifecycleevent = 3.6.0
   - zope.ptresource = 3.9.0
   - zope.publisher = 3.12.2
-  - zope.schema = 3.6.1
+  - zope.schema = 3.6.3
   - zope.securitypolicy = 3.6.1
-  - zope.sendmail = 3.7.1
-  - zope.site = 3.9.0
+  - zope.sendmail = 3.7.2
+  - zope.site = 3.9.1
   - zope.testbrowser = 3.7.0
   - zope.testing = 3.9.3
   - zope.traversing = 3.12.0
