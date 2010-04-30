@@ -11,8 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Setup for the Acquisition egg package
-"""
+
 import os
 from setuptools import setup, find_packages, Extension
 
@@ -49,32 +48,6 @@ params = dict(name='Zope2',
             include_dirs=EXTENSIONCLASS_INCLUDEDIRS,
             sources=['src/DocumentTemplate/cDocumentTemplate.c']),
 
-      Extension(
-            name='MultiMapping._MultiMapping',
-            include_dirs=EXTENSIONCLASS_INCLUDEDIRS,
-            sources=["src/MultiMapping/_MultiMapping.c"],
-            depends=["include/ExtensionClass/ExtensionClass.h"]),
-      Extension(
-            name='ThreadLock._ThreadLock',
-            include_dirs=EXTENSIONCLASS_INCLUDEDIRS,
-            sources=["src/ThreadLock/_ThreadLock.c"],
-            depends=["include/ExtensionClass/ExtensionClass.h"]),
-      Extension(
-            name='Missing._Missing',
-            include_dirs=EXTENSIONCLASS_INCLUDEDIRS,
-            sources=["src/Missing/_Missing.c"],
-            depends=["include/ExtensionClass/ExtensionClass.h"]),
-      Extension(
-            name='Record._Record',
-            include_dirs=EXTENSIONCLASS_INCLUDEDIRS,
-            sources=["src/Record/_Record.c"],
-            depends=["include/ExtensionClass/ExtensionClass.h"]),
-
-      # initgroups
-      Extension(
-            name='initgroups._initgroups',
-            sources=['src/initgroups/_initgroups.c']),
-
       # indexes
       Extension(
             name='Products.ZCTextIndex.stopper',
@@ -89,13 +62,18 @@ params = dict(name='Zope2',
       'Acquisition',
       'DateTime',
       'ExtensionClass',
+      'Missing',
+      'MultiMapping',
       'Persistence',
+      'Record',
       'RestrictedPython',
+      'ThreadLock',
       'ZConfig',
       'ZODB3',
       'ZopeUndo',
       'docutils',
       'five.formlib',
+      'initgroups',
       'pytz',
       'setuptools',
       'tempstorage',

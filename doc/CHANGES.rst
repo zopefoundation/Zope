@@ -15,7 +15,12 @@ Features Added
 
   - DateTime = 2.12.1
   - ExtensionClass = 2.13.1
+  - initgroups = 2.13.0
+  - Missing = 2.13.0
+  - MultiMapping = 2.13.0
   - Persistence = 2.13.1
+  - Record = 2.13.0
+  - ThreadLock = 2.13.0
   - ZODB3 = 3.9.5
 
 Bugs Fixed
