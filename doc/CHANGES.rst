@@ -23,6 +23,9 @@ Features Added
   - RestrictedPython = 3.5.2
   - ThreadLock = 2.13.0
   - ZODB3 = 3.9.5
+  - zope.authentication = 3.7.1
+  - zope.browser = 1.3
+  - zope.cachedescriptors = 3.5.1
 
 Bugs Fixed
 ++++++++++
