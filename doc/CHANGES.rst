@@ -13,6 +13,7 @@ Features Added
 
 - Updated packages:
 
+  - DateTime = 2.12.1
   - ZODB3 = 3.9.5
 
 Bugs Fixed
