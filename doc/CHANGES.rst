@@ -125,6 +125,7 @@ Features Added
   - zope.filerepresentation = 3.6.0
   - zope.formlib = 3.10.0
   - zope.i18nmessageid = 3.5.0
+  - zope.interface = 3.6.0
   - zope.location = 3.9.0
   - zope.lifecycleevent = 3.6.0
   - zope.ptresource = 3.9.0
