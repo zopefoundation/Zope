@@ -20,6 +20,7 @@ Features Added
   - MultiMapping = 2.13.0
   - Persistence = 2.13.1
   - Record = 2.13.0
+  - RestrictedPython = 3.5.2
   - ThreadLock = 2.13.0
   - ZODB3 = 3.9.5
 
