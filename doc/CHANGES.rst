@@ -26,6 +26,8 @@ Features Added
   - zope.authentication = 3.7.1
   - zope.browser = 1.3
   - zope.cachedescriptors = 3.5.1
+  - zope.i18n = 3.7.3
+  - zope.i18nmessageid = 3.5.2
 
 Bugs Fixed
 ++++++++++
