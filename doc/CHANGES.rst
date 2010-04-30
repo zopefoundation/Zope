@@ -129,7 +129,7 @@ Features Added
   - zope.location = 3.9.0
   - zope.lifecycleevent = 3.6.0
   - zope.ptresource = 3.9.0
-  - zope.publisher = 3.12.1
+  - zope.publisher = 3.12.2
   - zope.schema = 3.6.1
   - zope.securitypolicy = 3.6.1
   - zope.sendmail = 3.7.1
