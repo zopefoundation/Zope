@@ -10,30 +10,28 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-import sys, os, time, random, unittest
+import random
 
-if __name__ == "__main__":
-    sys.path.insert(0, '../../..')
-
-import ZODB
 from Products.Transience.Transience import TransientObjectContainer,\
-     MaxTransientObjectsExceeded, SPARE_BUCKETS, getCurrentTimeslice
+     MaxTransientObjectsExceeded, SPARE_BUCKETS
 from Products.Transience.TransientObject import TransientObject
 import Products.Transience.Transience
 import Products.Transience.TransientObject
-from ExtensionClass import Base
-from unittest import TestCase, TestSuite, TextTestRunner, makeSuite
+from unittest import TestCase, TestSuite, makeSuite
 import time as oldtime
 import fauxtime
+import slowfauxtime
 
-class TestBase(TestCase):
+
+class TestTransientObjectContainer(TestCase):
+
     def setUp(self):
         Products.Transience.Transience.time = fauxtime
         Products.Transience.TransientObject.time = fauxtime
         Products.Transience.Transience.setStrict(1)
-                                          
+
         self.errmargin = .20
-        self.timeout = 120
+        self.timeout = fauxtime.timeout
         self.period = 20
         self.t = TransientObjectContainer('sdc', timeout_mins=self.timeout/60,
                                           period_secs=self.period)
@@ -44,7 +42,6 @@ class TestBase(TestCase):
         Products.Transience.TransientObject.time = oldtime
         Products.Transience.Transience.setStrict(0)
 
-class TestTransientObjectContainer(TestBase):
     def testGetItemFails(self):
         self.assertRaises(KeyError, self._getitemfail)
 
@@ -239,59 +236,6 @@ class TestTransientObjectContainer(TestBase):
             except KeyError:
                 self.failIf(self.t.has_key(x))
 
-    def testItemsGetExpired(self):
-        for x in range(10, 110):
-            self.t[x] = x
-        # these items will time out while we sleep
-        fauxtime.sleep(self.timeout * (self.errmargin+1))
-        for x in range(110, 210):
-            self.t[x] = x
-        self.assertEqual(len(self.t.keys()), 100)
-
-        # call _gc just to make sure __len__ gets changed after a gc
-        #self.t._gc()
-        self.assertEqual(len(self.t), 100)
-
-        # we should still have 100 - 199
-        for x in range(110, 210):
-            self.assertEqual(self.t[x], x)
-        # but we shouldn't have 0 - 100
-        for x in range(10, 110):
-            try: self.t[x]
-            except KeyError: pass
-            else: assert 1 == 2, x
-
-    def testChangingTimeoutWorks(self):
-        # 1 minute
-        for x in range(10, 110):
-            self.t[x] = x
-        fauxtime.sleep(self.timeout * (self.errmargin+1))
-        self.assertEqual(len(self.t.keys()), 0)
-
-        # 2 minutes
-        self.t._setTimeout(self.timeout/60*2, self.period)
-        self.t._reset()
-        for x in range(10, 110):
-            self.t[x] = x
-        fauxtime.sleep(self.timeout)
-
-
-        self.assertEqual(len(self.t.keys()), 100)
-        fauxtime.sleep(self.timeout * (self.errmargin+1))
-        self.assertEqual(len(self.t.keys()), 0)
-
-        # 3 minutes
-        self.t._setTimeout(self.timeout/60*3, self.period)
-        self.t._reset()
-        for x in range(10, 110):
-            self.t[x] = x
-        fauxtime.sleep(self.timeout)
-        self.assertEqual(len(self.t.keys()), 100)
-        fauxtime.sleep(self.timeout)
-        self.assertEqual(len(self.t.keys()), 100)
-        fauxtime.sleep(self.timeout * (self.errmargin+1))
-        self.assertEqual(len(self.t.keys()), 0)
-
     def testGetDelaysTimeout(self):
         for x in range(10, 110):
             self.t[x] = x
@@ -352,10 +296,10 @@ class TestTransientObjectContainer(TestBase):
         self.failUnless(issubclass(t.__class__, TransientObject))
 
     def _dupNewItem(self):
-        t = self.t.new('foobieblech')
+        self.t.new('foobieblech')
 
     def test_newDupFails(self):
-        t = self.t.new('foobieblech')
+        self.t.new('foobieblech')
         self.assertRaises(KeyError, self._dupNewItem)
 
     def test_new_or_existing(self):
@@ -397,6 +341,79 @@ class TestTransientObjectContainer(TestBase):
             self.t.new(str(x))
 
 
+class TestSlowTransientObjectContainer(TestCase):
+
+    def setUp(self):
+        Products.Transience.Transience.time = slowfauxtime
+        Products.Transience.TransientObject.time = slowfauxtime
+        Products.Transience.Transience.setStrict(1)
+
+        self.errmargin = .20
+        self.timeout = 120
+        self.period = 20
+        self.t = TransientObjectContainer('sdc', timeout_mins=self.timeout/60,
+                                          period_secs=self.period)
+
+    def tearDown(self):
+        self.t = None
+        Products.Transience.Transience.time = oldtime
+        Products.Transience.TransientObject.time = oldtime
+        Products.Transience.Transience.setStrict(0)
+
+    def testChangingTimeoutWorks(self):
+        # TODO: This test is slooooow
+        # 1 minute
+        for x in range(10, 110):
+            self.t[x] = x
+        slowfauxtime.sleep(self.timeout * (self.errmargin + 1))
+        self.assertEqual(len(self.t.keys()), 0)
+
+        # 2 minutes
+        self.t._setTimeout(self.timeout/60*2, self.period)
+        self.t._reset()
+        for x in range(10, 110):
+            self.t[x] = x
+        slowfauxtime.sleep(self.timeout)
+
+        self.assertEqual(len(self.t.keys()), 100)
+        slowfauxtime.sleep(self.timeout * (self.errmargin+1))
+        self.assertEqual(len(self.t.keys()), 0)
+
+        # 3 minutes
+        self.t._setTimeout(self.timeout/60*3, self.period)
+        self.t._reset()
+        for x in range(10, 110):
+            self.t[x] = x
+        slowfauxtime.sleep(self.timeout)
+        self.assertEqual(len(self.t.keys()), 100)
+        slowfauxtime.sleep(self.timeout)
+        self.assertEqual(len(self.t.keys()), 100)
+        slowfauxtime.sleep(self.timeout * (self.errmargin+1))
+        self.assertEqual(len(self.t.keys()), 0)
+
+    def testItemsGetExpired(self):
+        for x in range(10, 110):
+            self.t[x] = x
+        # these items will time out while we sleep
+        slowfauxtime.sleep(self.timeout * (self.errmargin+1))
+        for x in range(110, 210):
+            self.t[x] = x
+        self.assertEqual(len(self.t.keys()), 100)
+
+        # call _gc just to make sure __len__ gets changed after a gc
+        #self.t._gc()
+        self.assertEqual(len(self.t), 100)
+
+        # we should still have 100 - 199
+        for x in range(110, 210):
+            self.assertEqual(self.t[x], x)
+        # but we shouldn't have 0 - 100
+        for x in range(10, 110):
+            try: self.t[x]
+            except KeyError: pass
+            else: assert 1 == 2, x
+
+
 def lsubtract(l1, l2):
     l1=list(l1)
     l2=list(l2)
@@ -404,11 +421,9 @@ def lsubtract(l1, l2):
     l = l + filter(lambda x, l2=l2: x not in l2, l1)
     return l
 
-def test_suite():
-    testsuite = makeSuite(TestTransientObjectContainer, 'test')
-    alltests = TestSuite((testsuite,))
-    return alltests
 
-if __name__ == '__main__':
-    runner = TextTestRunner(verbosity=9)
-    runner.run(test_suite())
+def test_suite():
+    suite = TestSuite()
+    suite.addTest(makeSuite(TestTransientObjectContainer))
+    suite.addTest(makeSuite(TestSlowTransientObjectContainer))
+    return suite

@@ -10,16 +10,12 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-import sys, os, time, random, unittest
 
-if __name__ == "__main__":
-    sys.path.insert(0, '../../..')
-
-import ZODB
 import transaction
-from unittest import TestCase, TestSuite, TextTestRunner, makeSuite
+from unittest import TestCase, makeSuite
 from Products.Transience.TransactionHelper import PreventTransactionCommit, \
          makeTransactionUncommittable
+
 
 class TestTransactionHelper(TestCase):
     def setUp(self):
@@ -32,11 +28,8 @@ class TestTransactionHelper(TestCase):
         makeTransactionUncommittable(self.t, "test")
         self.assertRaises(PreventTransactionCommit, transaction.commit)
         transaction.abort()
-        
+
+
 def test_suite():
     suite = makeSuite(TestTransactionHelper, 'test')
     return suite
-
-if __name__ == '__main__':
-    runner = TextTestRunner(verbosity=9)
-    runner.run(test_suite())

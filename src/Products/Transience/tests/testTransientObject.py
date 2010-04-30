@@ -10,14 +10,11 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-import sys, os, unittest
 
-import ZODB
 from Products.Transience.Transience import TransientObjectContainer
-from Products.Transience.TransientObject import TransientObject
 import Products.Transience.TransientObject
 import Products.Transience.Transience
-from unittest import TestCase, TestSuite, TextTestRunner, makeSuite
+from unittest import TestCase, TestSuite, makeSuite
 import time as oldtime
 import fauxtime
 
@@ -27,7 +24,7 @@ class TestTransientObject(TestCase):
         Products.Transience.TransientObject.time = fauxtime
         Products.Transience.Transience.setStrict(1)
         self.errmargin = .20
-        self.timeout = 60
+        self.timeout = fauxtime.timeout
         self.t = TransientObjectContainer('sdc', timeout_mins=self.timeout/60)
 
     def tearDown(self):
@@ -69,7 +66,6 @@ class TestTransientObject(TestCase):
 
     def testSetLastModified(self):
         t = self.t.new('xyzzy')
-        ft = fauxtime.time()
         t.setLastModified()
         self.failIfEqual(t.getLastModified(), None)
 
@@ -137,7 +133,3 @@ data = {
     'epoch': 999999999,
     'fauxtime': fauxtime
     }
-
-if __name__ == '__main__':
-    runner = TextTestRunner(verbosity=9)
-    runner.run(test_suite())
