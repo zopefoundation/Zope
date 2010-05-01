@@ -73,7 +73,7 @@ class TestTransientObject(TestCase):
         t = self.t.new('xyzzy')
         ft = fauxtime.time()
         self.assert_(t.getLastAccessed() <= ft)
-        fauxtime.sleep(self.timeout)   # go to sleep past the granuarity
+        fauxtime.sleep(self.timeout * 2)   # go to sleep past the granularity
         ft2 = fauxtime.time()
         t.setLastAccessed()
         ft3 = fauxtime.time()
