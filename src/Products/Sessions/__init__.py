@@ -16,6 +16,7 @@ from Products.Sessions.interfaces import BrowserIdManagerErr    #BBB
 from Products.Sessions.interfaces import SessionDataManagerErr  #BBB
 
 def initialize(context):
+
     import BrowserIdManager
     import SessionDataManager
 
@@ -48,9 +49,11 @@ def initialize(context):
     security = ModuleSecurityInfo('Products')
     security.declarePublic('Sessions')
     security.declarePublic('Transience')
+
     security = ModuleSecurityInfo('Products.Sessions.interfaces')
     security.declareObjectPublic()
     security.setDefaultAccess('allow')
+
     security = ModuleSecurityInfo('Products.Transience')
     security.declarePublic('MaxTransientObjectsExceeded')
 
