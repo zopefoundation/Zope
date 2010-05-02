@@ -10,19 +10,14 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
+""" Session initialization routines
 """
-Session initialization routines
-
-$Id$
-"""
-
-import ZODB # this is for testrunner to be happy
-import BrowserIdManager
-import SessionDataManager
-from BrowserIdManager import BrowserIdManagerErr
-from SessionDataManager import SessionDataManagerErr
 
 def initialize(context):
+
+    import BrowserIdManager
+    import SessionDataManager
+
     context.registerClass(
         BrowserIdManager.BrowserIdManager,
         icon="www/idmgr.gif",
@@ -51,8 +46,10 @@ def initialize(context):
     security = ModuleSecurityInfo('Products')
     security.declarePublic('Sessions')
     security.declarePublic('Transience')
+
     security = ModuleSecurityInfo('Products.Sessions')
     security.declarePublic('BrowserIdManagerErr')
     security.declarePublic('SessionDataManagerErr')
+
     security = ModuleSecurityInfo('Products.Transience')
     security.declarePublic('MaxTransientObjectsExceeded')
