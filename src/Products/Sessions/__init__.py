@@ -12,6 +12,8 @@
 ##############################################################################
 """ Session initialization routines
 """
+from Products.Sessions.interfaces import BrowserIdManagerErr    #BBB
+from Products.Sessions.interfaces import SessionDataManagerErr  #BBB
 
 def initialize(context):
 
@@ -36,6 +38,7 @@ def initialize(context):
 
     context.registerHelp()
     context.registerHelpTitle("Zope Help")
+
     # do module security declarations so folks can use some of the
     # module-level stuff in PythonScripts
     #
@@ -47,9 +50,14 @@ def initialize(context):
     security.declarePublic('Sessions')
     security.declarePublic('Transience')
 
-    security = ModuleSecurityInfo('Products.Sessions')
-    security.declarePublic('BrowserIdManagerErr')
-    security.declarePublic('SessionDataManagerErr')
+    security = ModuleSecurityInfo('Products.Sessions.interfaces')
+    security.declareObjectPublic()
+    security.setDefaultAccess('allow')
 
     security = ModuleSecurityInfo('Products.Transience')
     security.declarePublic('MaxTransientObjectsExceeded')
+
+    #BBB for names which should be imported from Products.Sessions.interfaces
+    security = ModuleSecurityInfo('Products.Sessions')
+    security.declarePublic('BrowserIdManagerErr')
+    security.declarePublic('SessionDataManagerErr')
