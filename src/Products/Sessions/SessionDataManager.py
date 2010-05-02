@@ -14,14 +14,11 @@
 from logging import getLogger
 import re
 import sys
-import time
 
 from AccessControl.Owned import Owned
 from AccessControl.Role import RoleManager
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Implicit
-from Acquisition import Explicit
-from Acquisition import aq_base
 from App.class_init import InitializeClass
 from App.special_dtml import DTMLFile
 from App.Management import Tabs
@@ -39,8 +36,6 @@ from Products.Sessions.SessionPermissions import ARBITRARY_SESSIONDATA_PERM
 from Products.Sessions.SessionPermissions import CHANGE_DATAMGR_PERM
 from Products.Sessions.SessionPermissions import MGMT_SCREEN_PERM
 from Products.Sessions.common import DEBUG
-from Products.Sessions.BrowserIdManager import isAWellFormedBrowserId
-from Products.Sessions.BrowserIdManager import getNewBrowserId
 from Products.Sessions.BrowserIdManager import BROWSERID_MANAGER_NAME
 
 bad_path_chars_in=re.compile('[^a-zA-Z0-9-_~\,\. \/]').search
