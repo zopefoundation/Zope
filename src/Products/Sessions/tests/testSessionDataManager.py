@@ -10,30 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-import sys, os, time
-
-from Testing import makerequest
-import ZODB
-from ZODB.POSException import InvalidObjectReference, ConflictError
-from Persistence import Persistent
-from ZODB.DemoStorage import DemoStorage
-import transaction
-from OFS.DTMLMethod import DTMLMethod
-import Acquisition
-from Acquisition import aq_base
-from Products.Sessions.BrowserIdManager import BrowserIdManager
-from Products.Sessions.SessionDataManager import \
-     SessionDataManager, SessionDataManagerErr, SessionDataManagerTraverser
-from Products.Transience.Transience import \
-     TransientObjectContainer, TransientObject
-from Products.TemporaryFolder.TemporaryFolder import MountedTemporaryFolder
-from DateTime import DateTime
-from unittest import TestCase, TestSuite, TextTestRunner, makeSuite
-import time, threading
-from cPickle import UnpickleableError
-from OFS.Application import Application
-from ZPublisher.BeforeTraverse import registerBeforeTraverse, \
-     unregisterBeforeTraverse
+import unittest
 
 tf_name = 'temp_folder'
 idmgr_name = 'browser_id_manager'
@@ -42,11 +19,16 @@ sdm_name = 'session_data_manager'
 
 stuff = {}
 
+
 def _getDB():
+    from OFS.Application import Application
+    import transaction
     db = stuff.get('db')
     if not db:
+        from ZODB import DB
+        from ZODB.DemoStorage import DemoStorage
         ds = DemoStorage()
-        db = ZODB.DB(ds, pool_size=60)
+        db = DB(ds, pool_size=60)
         conn = db.open()
         root = conn.root()
         app = Application()
@@ -57,17 +39,20 @@ def _getDB():
         conn.close()
     return db
 
+
 def _delDB():
+    import transaction
     transaction.abort()
     del stuff['db']
 
-class DummyAqImplicit(Acquisition.Implicit):
-    pass
-
-class DummyPersistent(Persistent):
-    pass
 
 def _populate(app):
+    from OFS.DTMLMethod import DTMLMethod
+    from Products.Sessions.BrowserIdManager import BrowserIdManager
+    from Products.Sessions.SessionDataManager import SessionDataManager
+    from Products.TemporaryFolder.TemporaryFolder import MountedTemporaryFolder
+    from Products.Transience.Transience import TransientObjectContainer
+    import transaction
     bidmgr = BrowserIdManager(idmgr_name)
     tf = MountedTemporaryFolder(tf_name, title="Temporary Folder")
     toc = TransientObjectContainer(toc_name, title='Temporary '
@@ -76,17 +61,25 @@ def _populate(app):
         path='/'+tf_name+'/'+toc_name, title='Session Data Manager',
         requestName='TESTOFSESSION')
 
-    try: app._delObject(idmgr_name)
-    except (AttributeError, KeyError): pass
+    try:
+        app._delObject(idmgr_name)
+    except (AttributeError, KeyError):
+        pass
 
-    try: app._delObject(tf_name)
-    except (AttributeError, KeyError): pass
+    try:
+        app._delObject(tf_name)
+    except (AttributeError, KeyError):
+        pass
 
-    try: app._delObject(sdm_name)
-    except (AttributeError, KeyError): pass
+    try:
+        app._delObject(sdm_name)
+    except (AttributeError, KeyError):
+        pass
 
-    try: app._delObject('index_html')
-    except (AttributeError, KeyError): pass
+    try:
+        app._delObject('index_html')
+    except (AttributeError, KeyError):
+        pass
 
     app._setObject(idmgr_name, bidmgr)
 
@@ -102,8 +95,11 @@ def _populate(app):
     app._setObject('index_html', DTMLMethod('', __name__='foo'))
     transaction.commit()
 
-class TestBase(TestCase):
+
+class TestSessionManager(unittest.TestCase):
+
     def setUp(self):
+        from Testing import makerequest
         db = _getDB()
         conn = db.open()
         root = conn.root()
@@ -114,7 +110,6 @@ class TestBase(TestCase):
         _delDB()
         del self.app
 
-class TestSessionManager(TestBase):
     def testHasId(self):
         self.failUnless(self.app.session_data_manager.id == \
                         sdm_name)
@@ -128,6 +123,7 @@ class TestSessionManager(TestBase):
         self.failUnless(sd is None)
 
     def testGetSessionDataCreate(self):
+        from Products.Transience.Transience import TransientObject
         sd = self.app.session_data_manager.getSessionData(1)
         self.failUnless(sd.__class__ is TransientObject)
 
@@ -139,6 +135,7 @@ class TestSessionManager(TestBase):
         self.failUnless(not self.app.session_data_manager.hasSessionData())
 
     def testSessionDataWrappedInSDMandTOC(self):
+        from Acquisition import aq_base
         sd = self.app.session_data_manager.getSessionData(1)
         sdm = aq_base(getattr(self.app, sdm_name))
         toc = aq_base(getattr(self.app.temp_folder, toc_name))
@@ -147,6 +144,8 @@ class TestSessionManager(TestBase):
         self.failUnless(aq_base(sd.aq_parent.aq_parent) is toc)
 
     def testNewSessionDataObjectIsValid(self):
+        from Acquisition import aq_base
+        from Products.Transience.Transience import TransientObject
         sdType = type(TransientObject(1))
         sd = self.app.session_data_manager.getSessionData()
         self.failUnless(type(aq_base(sd)) is sdType)
@@ -165,6 +164,7 @@ class TestSessionManager(TestBase):
         self.failUnless(sd == bykeysd)
 
     def testBadExternalSDCPath(self):
+        from Products.Sessions.SessionDataManager import SessionDataManagerErr
         sdm = self.app.session_data_manager
         # fake out webdav
         sdm.REQUEST['REQUEST_METHOD'] = 'GET'
@@ -182,6 +182,7 @@ class TestSessionManager(TestBase):
         self.failUnless(not sdm.getSessionData().has_key('test'))
 
     def testGhostUnghostSessionManager(self):
+        import transaction
         sdm = self.app.session_data_manager
         transaction.commit()
         sd = sdm.getSessionData()
@@ -191,6 +192,11 @@ class TestSessionManager(TestBase):
         self.failUnless(sdm.getSessionData().get('foo') == 'bar')
 
     def testSubcommitAssignsPJar(self):
+        global DummyPersistent # so pickle can find it
+        from Persistence import Persistent
+        import transaction
+        class DummyPersistent(Persistent):
+            pass
         sd = self.app.session_data_manager.getSessionData()
         dummy = DummyPersistent()
         sd.set('dp', dummy)
@@ -199,9 +205,11 @@ class TestSessionManager(TestBase):
         self.failIf(sd['dp']._p_jar is None)
 
     def testForeignObject(self):
+        from ZODB.POSException import InvalidObjectReference
         self.assertRaises(InvalidObjectReference, self._foreignAdd)
 
     def _foreignAdd(self):
+        import transaction
         ob = self.app.session_data_manager
 
         # we don't want to fail due to an acquisition wrapper
@@ -213,6 +221,11 @@ class TestSessionManager(TestBase):
         transaction.commit()
 
     def testAqWrappedObjectsFail(self):
+        from Acquisition import Implicit
+        import transaction
+
+        class DummyAqImplicit(Implicit):
+            pass
         a = DummyAqImplicit()
         b = DummyAqImplicit()
         aq_wrapped = a.__of__(b)
@@ -227,6 +240,8 @@ class TestSessionManager(TestBase):
         self.failUnless(self.app.REQUEST.has_key('TESTOFSESSION'))
 
     def testUnlazifyAutoPopulated(self):
+        from Acquisition import aq_base
+        from Products.Transience.Transience import TransientObject
         self.app.REQUEST['PARENTS'] = [self.app]
         self.app.REQUEST['URL'] = 'a'
         self.app.REQUEST.traverse('/')
@@ -234,11 +249,8 @@ class TestSessionManager(TestBase):
         sdType = type(TransientObject(1))
         self.failUnless(type(aq_base(sess)) is sdType)
 
-def test_suite():
-    test_datamgr = makeSuite(TestSessionManager, 'test')
-    suite = TestSuite((test_datamgr,))
-    return suite
 
-if __name__ == '__main__':
-    runner = TextTestRunner(verbosity=9, descriptions=9)
-    runner.run(test_suite())
+def test_suite():
+    return unittest.TestSuite((
+        unittest.makeSuite(TestSessionManager),
+    ))
