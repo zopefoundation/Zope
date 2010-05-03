@@ -15,6 +15,7 @@
 $Id$
 """
 import logging
+from os.path import realpath
 import re
 from cStringIO import StringIO
 from copy import deepcopy
@@ -266,32 +267,38 @@ class MailBase(Implicit, Item, RoleManager):
                           force_tls=self.force_tls
                          )
 
+    security.declarePrivate('_getThreadKey')
+    def _getThreadKey(self):
+        """ Return the key used to find our processor thread.
+        """
+        return realpath(self.smtp_queue_directory)
+
     @synchronized(lock)
     def _stopQueueProcessorThread(self):
-        """ Stop thread for processing the mail queue """
-
-        path = self.absolute_url(1)
-        if queue_threads.has_key(path):
-            thread = queue_threads[path]
+        """ Stop thread for processing the mail queue.
+        """
+        key = self._getThreadKey()
+        if queue_threads.has_key(key):
+            thread = queue_threads[key]
             thread.stop()
             while thread.isAlive():
                 # wait until thread is really dead
                 time.sleep(0.3)
             del queue_threads[path]
-            LOG.info('Thread for %s stopped' % path)
+            LOG.info('Thread for %s stopped' % key)
 
     @synchronized(lock)
     def _startQueueProcessorThread(self):
-        """ Start thread for processing the mail queue """
-
-        path = self.absolute_url(1)
-        if not queue_threads.has_key(path):
+        """ Start thread for processing the mail queue.
+        """
+        key = self._getThreadKey()
+        if not queue_threads.has_key(key):
             thread = QueueProcessorThread()
             thread.setMailer(self._makeMailer())
             thread.setQueuePath(self.smtp_queue_directory)
             thread.start()
-            queue_threads[path] = thread     
-            LOG.info('Thread for %s started' % path)
+            queue_threads[key] = thread     
+            LOG.info('Thread for %s started' % key)
 
     security.declareProtected(view, 'queueLength')
     def queueLength(self):
@@ -307,9 +314,9 @@ class MailBase(Implicit, Item, RoleManager):
 
     security.declareProtected(view, 'queueThreadAlive')
     def queueThreadAlive(self):
-        """ return True/False is queue thread is working """
-
-        th = queue_threads.get(self.absolute_url(1))
+        """ return True/False is queue thread is working
+        """
+        th = queue_threads.get(self._getThreadKey())
         if th:
             return th.isAlive()
         return False

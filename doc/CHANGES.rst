@@ -36,6 +36,10 @@ Features Added
 Bugs Fixed
 ++++++++++
 
+- LP #574286:  Ensure that mailhosts which share a queue directory do not
+  double-deliver mails, by sharing the thread which processes emails for
+  that directory.
+
 - BaseRequest: Fixed handling of errors in 'traverseName'.
 
 2.12.5 (2010-04-24)
