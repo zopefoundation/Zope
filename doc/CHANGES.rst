@@ -143,6 +143,10 @@ Features Added
 Bugs Fixed
 ++++++++++
 
+- LP #574286:  Ensure that mailhosts which share a queue directory do not
+  double-deliver mails, by sharing the thread which processes emails for
+  that directory.
+
 - LP #143604: Removed top-level database-quota-size from zope.conf, some
   storages support a quota option instead.
 
