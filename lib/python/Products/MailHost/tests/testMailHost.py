@@ -208,6 +208,14 @@ This is the message body."""
         self.assertEqual(mailhost.sent, outmsg)
         self.assertEqual(mailhost.immediate, True)
 
+    def test__getThreadKey_uses_fspath(self):
+        mh1 = self._makeOne('mh1')
+        mh1.smtp_queue_directory = '/abc'
+        mh1.absolute_url = lambda self: 'http://example.com/mh1'
+        mh2 = self._makeOne('mh2')
+        mh2.smtp_queue_directory = '/abc'
+        mh2.absolute_url = lambda self: 'http://example.com/mh2'
+        self.assertEqual(mh1._getThreadKey(), mh2._getThreadKey())
 
 def test_suite():
     suite = unittest.TestSuite()

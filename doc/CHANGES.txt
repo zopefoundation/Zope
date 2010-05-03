@@ -8,6 +8,10 @@ Zope Changes
 
     Bugs Fixed
 
+      - Ensure that mailhosts which share a queue directory do not double-
+        deliver mails, by sharing the thread which processes emails for
+        that directory.  https://bugs.launchpad.net/zope2/+bug/574286
+
       - Process "evil" JSON cookies which contain double quotes in violation
         of RFC 2965 / 2616.  https://bugs.launchpad.net/zope2/+bug/563229
 
