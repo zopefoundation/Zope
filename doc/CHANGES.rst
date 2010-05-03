@@ -109,6 +109,7 @@ Features Added
 
 - Updated packages:
 
+  - ZConfig = 2.8.0
   - zope.annotation = 3.5.0
   - zope.app.form = 3.12.1
   - zope.broken = 3.6.0
@@ -122,20 +123,22 @@ Features Added
   - zope.contenttype = 3.5.1
   - zope.copypastemove = 3.6.0
   - zope.dublincore = 3.6.0
+  - zope.exceptions = 3.6.0
   - zope.filerepresentation = 3.6.0
   - zope.formlib = 3.10.0
   - zope.i18nmessageid = 3.5.0
-  - zope.interface = 3.6.0
+  - zope.interface = 3.6.1
   - zope.location = 3.9.0
   - zope.lifecycleevent = 3.6.0
   - zope.ptresource = 3.9.0
-  - zope.publisher = 3.12.2
+  - zope.publisher = 3.12.3
   - zope.schema = 3.6.3
   - zope.securitypolicy = 3.6.1
   - zope.sendmail = 3.7.2
   - zope.site = 3.9.1
+  - zope.structuredtext = 3.5.0
   - zope.tales = 3.5.1
-  - zope.testbrowser = 3.7.0
+  - zope.testbrowser = 3.8.1
   - zope.testing = 3.9.3
   - zope.traversing = 3.12.1
   - zope.viewlet = 3.7.1
