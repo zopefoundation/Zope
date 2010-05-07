@@ -93,6 +93,9 @@ Restructuring
 Features Added
 ++++++++++++++
 
+- LP #142464:  Make undo log easier to read.  Thanks to Toby Dickinson
+  for the patch.
+
 - LP #142401:  Added a link in the ZMI tree pane to make the tree state
   persistent.  Thanks to Lalo Martins for the patch.
 

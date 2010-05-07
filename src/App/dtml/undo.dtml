@@ -66,7 +66,7 @@ modified objects that were modified by a selected transaction.
     </td>
     <td align="left" valign="top">
     <div class="list-item">
-    &dtml-description; by <strong><dtml-if 
+    <dtml-var description html_quote newline_to_br> by <strong><dtml-if 
      user_name>&dtml-user_name;<dtml-else
      ><em>Zope</em></dtml-if></strong>
     </div>

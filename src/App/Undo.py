@@ -121,7 +121,7 @@ class UndoSupport(ExtensionClass.Base):
             if desc:
                 desc = desc.split()
                 d1 = desc[0]
-                desc = ''.join(desc[1:])
+                desc = ' '.join(desc[1:])
                 if len(desc) > 60:
                     desc = desc[:56] + ' ...'
                 tid = "%s %s %s %s" % (encode64(tid), t, d1, desc)
@@ -140,7 +140,7 @@ class UndoSupport(ExtensionClass.Base):
         for tid in transaction_info:
             tid=tid.split()
             if tid:
-                transaction.get().note("Undo %s" % ''.join(tid[1:]))
+                transaction.get().note("Undo %s" % ' '.join(tid[1:]))
                 tid=decode64(tid[0])
                 undo(tid)
 
