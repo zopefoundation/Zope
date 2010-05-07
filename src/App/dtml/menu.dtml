@@ -43,7 +43,7 @@ td {
 <a href="&dtml.url_quote-tree-item-url;/manage_workspace" 
  target="manage_main">&dtml-id;</a>
 </dtml-tree>
-<table cellspacing="0">
+<table cellspacing="0" bgcolor="#6699cc" width="100%">
 <tr>
   <td width="16"></td>
   <td valign="top" nowrap>
@@ -62,7 +62,19 @@ td {
   </strong>
   </td>
 </tr>
+<tr>
+  <td width="16"></td>
+  <td valign="top" nowrap>
+  <strong>
+  <a href="manage_menu?save_layout=1">Save layout</a>
+  </strong>
+  </td>
+</tr>
 </table>
+
+<dtml-if save_layout>
+  <dtml-call "RESPONSE.setCookie('tree-s', REQUEST.get('tree-s'), expires=ZopeTime('2975-05-26').rfc822())">
+</dtml-if>
 
 <dtml-unless expr="REQUEST.get('zmi_top_frame', '1')">
 <table width="100%" bgcolor="#6699cc">

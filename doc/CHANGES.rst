@@ -93,6 +93,9 @@ Restructuring
 Features Added
 ++++++++++++++
 
+- LP #142401:  Added a link in the ZMI tree pane to make the tree state
+  persistent.  Thanks to Lalo Martins for the patch.
+
 - LP #142502:  Added a knob to the Debug control panel for resetting
   profile data.  Thanks to Vladimir Patukhov for the patch.
 
