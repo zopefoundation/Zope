@@ -132,6 +132,7 @@ class DirectoryResource(Resource, directoryresource.DirectoryResource):
         'pt':   PageTemplateResourceFactory,
         'zpt':  PageTemplateResourceFactory,
         'html': PageTemplateResourceFactory,
+        'htm':  PageTemplateResourceFactory,
         }
 
     default_factory = FileResourceFactory
