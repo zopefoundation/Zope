@@ -12,15 +12,7 @@
 ##############################################################################
 """Document Template Tests
 """
-
-__rcs_id__='$Id$'
-__version__='$Revision: 1.4 $'[11:-2]
-
-import sys, os
 import unittest
-
-from DocumentTemplate.DT_HTML import HTML, String
-from ExtensionClass import Base
 
 class force_str:
     # A class whose string representation is not always a plain string:
@@ -31,7 +23,10 @@ class force_str:
 
 class DTMLUnicodeTests (unittest.TestCase):
 
-    doc_class = HTML
+    def _get_doc_class(self):
+        from DocumentTemplate.DT_HTML import HTML
+        return HTML
+    doc_class = property(_get_doc_class,)
 
     def testAA(self):
         html=self.doc_class('<dtml-var a><dtml-var b>')
@@ -91,9 +86,3 @@ def test_suite():
     suite = unittest.TestSuite()
     suite.addTest( unittest.makeSuite( DTMLUnicodeTests ) )
     return suite
-
-def main():
-    unittest.TextTestRunner().run(test_suite())
-
-if __name__ == '__main__':
-    main()

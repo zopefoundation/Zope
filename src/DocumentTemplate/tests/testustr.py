@@ -17,7 +17,6 @@ $Id$
 
 import unittest
 
-from DocumentTemplate.ustr import ustr
 
 
 class force_str:
@@ -40,45 +39,70 @@ class Bar(unicode):
 
 class UnicodeTests(unittest.TestCase):
 
-    def testPlain(self):
+    def test_bare_string_literall(self):
+        from DocumentTemplate.ustr import ustr
         a = ustr('hello')
-        assert a=='hello', `a`
+        self.assertEqual(a, 'hello')
+
+    def test_with_force_str(self):
+        from DocumentTemplate.ustr import ustr
         a = ustr(force_str('hello'))
-        assert a=='hello', `a`
+        self.assertEqual(a, 'hello')
+
+    def test_with_non_ascii_char(self):
+        from DocumentTemplate.ustr import ustr
         a = ustr(chr(200))
-        assert a==chr(200), `a`
+        self.assertEqual(a, chr(200))
+
+    def test_with_force_str_non_ascii_char(self):
+        from DocumentTemplate.ustr import ustr
         a = ustr(force_str(chr(200)))
-        assert a==chr(200), `a`
+        self.assertEqual(a, chr(200))
+
+    def test_with_int(self):
+        from DocumentTemplate.ustr import ustr
         a = ustr(22)
-        assert a=='22', `a`
+        self.assertEqual(a, '22')
+
+    def test_with_list(self):
+        from DocumentTemplate.ustr import ustr
         a = ustr([1,2,3])
-        assert a=='[1, 2, 3]', `a`
+        self.assertEqual(a, '[1, 2, 3]')
 
-    def testUnicode(self):
+    def test_w_unicode_literal(self):
+        from DocumentTemplate.ustr import ustr
         a = ustr(u'hello')
-        assert a=='hello', `a`
-        a = ustr(force_str(u'hello'))
-        assert a=='hello', `a`
-        a = ustr(unichr(200))
-        assert a==unichr(200), `a`
-        a = ustr(force_str(unichr(200)))
-        assert a==unichr(200), `a`
+        self.assertEqual(a, 'hello')
 
-    def testExceptions(self):
+    def test_w_force_str_unicode_literal(self):
+        from DocumentTemplate.ustr import ustr
+        a = ustr(force_str(u'hello'))
+        self.assertEqual(a, 'hello')
+
+    def test_w_unichr(self):
+        from DocumentTemplate.ustr import ustr
+        a = ustr(unichr(200))
+        self.assertEqual(a, unichr(200))
+
+    def test_w_force_str_unichr(self):
+        from DocumentTemplate.ustr import ustr
+        a = ustr(force_str(unichr(200)))
+        self.assertEqual(a, unichr(200))
+
+    def test_w_unichr_in_exception(self):
+        from DocumentTemplate.ustr import ustr
         a = ustr(ValueError(unichr(200)))
-        assert a==unichr(200), `a`
+        self.assertEqual(a, unichr(200))
 
     def testCustomStrings(self):
+        from DocumentTemplate.ustr import ustr
         a = ustr(Foo('foo'))
-        self.failUnlessEqual(type(a), Foo)
+        self.assertEqual(type(a), Foo)
         a = ustr(Bar('bar'))
-        self.failUnlessEqual(type(a), Bar)
+        self.assertEqual(type(a), Bar)
 
 
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest( unittest.makeSuite( UnicodeTests ) )
     return suite
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='test_suite')

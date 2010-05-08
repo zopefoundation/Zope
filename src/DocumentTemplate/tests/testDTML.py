@@ -13,59 +13,19 @@
 """Document Template Tests
 """
 
-__rcs_id__='$Id$'
-__version__='$Revision: 1.15 $'[11:-2]
-
-import sys, os, cgi
 import unittest
 
-if __name__=='__main__':
-    here = os.curdir
-else:
-    from DocumentTemplate import tests
-    here = tests.__path__[0]
+class DTMLTests(unittest.TestCase):
 
-def read_file(name):
-    f = open(os.path.join(here, name), 'r')
-    res = f.read()
-    f.close()
-    return res
-
-from DocumentTemplate.DT_HTML import HTML, String
-from ExtensionClass import Base
-class D:
-    __allow_access_to_unprotected_subobjects__ = 1
-
-    def __init__(self, **kw):
-        for k, v in kw.items(): self.__dict__[k]=v
-
-    def __repr__(self): return "D(%s)" % `self.__dict__`
-
-def d(**kw): return kw
-
-docutils_include_warning = '''\
-<p class="system-message-title">System Message: WARNING/2 (<tt class="docutils">&lt;string&gt;</tt>, line 1)</p>
-<p>&quot;include&quot; directive disabled.</p>'''
-
-docutils_raw_warning = '''\
-<p class="system-message-title">System Message: WARNING/2 (<tt class="docutils">&lt;string&gt;</tt>, line 1)</p>
-<p>&quot;raw&quot; directive disabled.</p>'''
-
-class PukeError(Exception):
-    """Exception raised in test code."""
-
-class DTMLTests (unittest.TestCase):
-
-    doc_class = HTML
+    def _get_doc_class(self):
+        from DocumentTemplate.DT_HTML import HTML
+        return HTML
+    doc_class = property(_get_doc_class,)
 
     def testBatchingEtc(self):
 
-        def item(key,**kw): return (key,kw)
-        def item2(key,**kw): return kw
-
-        class item_class:
-            def __init__(self,key,**kw):
-                for k in kw.keys(): self.__dict__[k]=kw[k]
+        def item(key, **kw):
+            return (key, kw)
 
         items=(
             item( 1,dealer='Bay Chevy', make='Chevrolet',
@@ -176,12 +136,11 @@ class DTMLTests (unittest.TestCase):
         self.assertEqual(res,expected)
 
     def testSequenceSummaries(self):
-        def d(**kw): return kw
-        data=(d(name='jim', age=38),
-              # d(name='kak', age=40),
-              d(name='will', age=7),
-              d(name='drew', age=4),
-              d(name='ches', age=1),
+        data=(dict(name='jim', age=38),
+              # dict(name='kak', age=40),
+              dict(name='will', age=7),
+              dict(name='drew', age=4),
+              dict(name='ches', age=1),
               )
         html = self.doc_class('<dtml-in data mapping>'
                     '<dtml-if sequence-end>'
@@ -222,6 +181,7 @@ class DTMLTests (unittest.TestCase):
         assert res == expected, res
 
     def testSimpleString(self):
+        from DocumentTemplate.DT_HTML import String
         dt = String('%(name)s')
         res = dt(name='Chris')
         expected = 'Chris'
@@ -229,6 +189,7 @@ class DTMLTests (unittest.TestCase):
 
     def testStringDateFormatting(self):
         import DateTime
+        from DocumentTemplate.DT_HTML import String
         html = String("%(name capitalize spacify)s is "
                       "%(date fmt=year)s/%(date fmt=month)s/%(date fmt=day)s")
         res = html(date=DateTime.DateTime("2001-04-27"),
@@ -357,6 +318,7 @@ foo bar
         self.assert_(docutils_include_warning in result)
 
     def test_fmt_reST_raw_directive_disabled(self):
+        from cgi import escape
         EXPECTED = '<h1>HELLO WORLD</h1>'
         source = '.. raw:: html\n\n  %s\n' % EXPECTED
         html = self.doc_class('<dtml-var name="foo" fmt="restructured-text">')
@@ -367,7 +329,7 @@ foo bar
         # verbatimly in the rendered output.  Instead a warning
         # message is presented:
         self.assert_(EXPECTED not in result)
-        self.assert_(cgi.escape(EXPECTED) in result)
+        self.assert_(escape(EXPECTED) in result)
         self.assert_(docutils_raw_warning in result)
 
     def test_fmt_reST_raw_directive_file_option_raises(self):
@@ -395,6 +357,7 @@ foo bar
         self.assert_(docutils_raw_warning in result)
 
     def testPropogatedError(self):
+        from ExtensionClass import Base
 
         class foo:
             def __len__(self): return 9
@@ -434,7 +397,8 @@ foo bar
             assert 0, 'Puke error not propogated'
 
     def testRenderCallable(self):
-        "Test automatic rendering of callable objects"
+        #Test automatic rendering of callable objects
+        from ExtensionClass import Base
         class C (Base):
             __allow_access_to_unprotected_subobjects__ = 1
             x=1
@@ -483,7 +447,9 @@ foo bar
 
 
     def testNoItemPush(self):
-        data=d(sec='B', name='XXX', sub=(d(name='b1'),d(name='b2',sec='XXX')))
+        data = dict(sec='B',
+                    name='XXX',
+                    sub=(dict(name='b1'), dict(name='b2',sec='XXX')))
         html = """
 <dtml-with data mapping><dtml-in sub no_push_item>
     <dtml-var sec>.<dtml-with sequence-item mapping><dtml-var name></dtml-with>
@@ -496,11 +462,11 @@ foo bar
 
     def testBasicHTMLIn(self):
         data=(
-            d(name='jim', age=39),
-            d(name='kak', age=29),
-            d(name='will', age=8),
-            d(name='andrew', age=5),
-            d(name='chessie',age=2),
+            dict(name='jim', age=39),
+            dict(name='kak', age=29),
+            dict(name='will', age=8),
+            dict(name='andrew', age=5),
+            dict(name='chessie',age=2),
             )
 
         html="""
@@ -519,7 +485,7 @@ foo bar
         assert result == expected, result
 
     def testBasicHTMLIn2(self):
-        xxx=(D(name=1), D(name=2), D(name=3))
+        xxx=(Dummy(name=1), Dummy(name=2), Dummy(name=3))
         html = """
 <!--#in xxx-->
    <!--#var name  -->
@@ -543,7 +509,7 @@ foo bar
         assert result == expected, result
 
     def testHTMLInElse(self):
-        xxx=(D(name=1), D(name=2), D(name=3))
+        xxx=(Dummy(name=1), Dummy(name=2), Dummy(name=3))
         html="""
 <!--#in data mapping-->
 <!--#var name-->, <!--#var age-->
@@ -562,12 +528,13 @@ foo bar
         assert result == expected, result
 
     def testBasicStringIn(self):
+        from DocumentTemplate.DT_HTML import String
         data=(
-            d(name='jim', age=39),
-            d(name='kak', age=29),
-            d(name='will', age=8),
-            d(name='andrew', age=5),
-            d(name='chessie',age=2),
+            dict(name='jim', age=39),
+            dict(name='kak', age=29),
+            dict(name='will', age=8),
+            dict(name='andrew', age=5),
+            dict(name='chessie',age=2),
             )
         s="""
 %(in data mapping)[
@@ -584,13 +551,37 @@ foo bar
         result = String(s)(data=data)
         assert expected == result, result
 
+
+def read_file(name):
+    import os
+    from DocumentTemplate import tests
+    here = tests.__path__[0]
+    f = open(os.path.join(here, name), 'r')
+    res = f.read()
+    f.close()
+    return res
+
+class Dummy:
+    __allow_access_to_unprotected_subobjects__ = 1
+
+    def __init__(self, **kw):
+        self.__dict__.update(kw)
+
+    def __repr__(self):
+        return "Dummy(%s)" % `self.__dict__`
+
+docutils_include_warning = '''\
+<p class="system-message-title">System Message: WARNING/2 (<tt class="docutils">&lt;string&gt;</tt>, line 1)</p>
+<p>&quot;include&quot; directive disabled.</p>'''
+
+docutils_raw_warning = '''\
+<p class="system-message-title">System Message: WARNING/2 (<tt class="docutils">&lt;string&gt;</tt>, line 1)</p>
+<p>&quot;raw&quot; directive disabled.</p>'''
+
+class PukeError(Exception):
+    """Exception raised in test code."""
+
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest( unittest.makeSuite( DTMLTests ) )
     return suite
-
-def main():
-    unittest.TextTestRunner().run(test_suite())
-
-if __name__ == '__main__':
-    main()
