@@ -152,6 +152,9 @@ Features Added
 Bugs Fixed
 ++++++++++
 
+- LP #411837:  Handle resource files with ``.htm`` extention properly,
+  as page template resources.
+
 - LP #435729:  Fix indentation of OFSP/help/sequence.py docstring.
 
 - LP #574286:  Ensure that mailhosts which share a queue directory do not

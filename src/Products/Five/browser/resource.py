@@ -133,6 +133,7 @@ class DirectoryResource(Resource,
         'pt':   PageTemplateResourceFactory,
         'zpt':  PageTemplateResourceFactory,
         'html': PageTemplateResourceFactory,
+        'htm':  PageTemplateResourceFactory,
         }
 
     default_factory = FileResourceFactory
