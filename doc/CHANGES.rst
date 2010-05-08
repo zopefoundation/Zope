@@ -152,6 +152,9 @@ Features Added
 Bugs Fixed
 ++++++++++
 
+- LP #267820:  Fix bad except clause in the ``sequence_sort`` method of
+  the ``<dtml-in>`` tag.
+
 - LP #351006:  Don't nest block tags inside HTML ``<p>`` tags in
   ``zExceptions.ExceptionFormatter``.
 
