@@ -27,8 +27,8 @@ def sort(seq, sort):
       other -- A specified, user-defined comparison function, should
       return 1, 0, -1.
 
-      direction -- defines the sort direction for the key (optional).
-      (allowed values: "asc", "desc")
+    direction -- defines the sort direction for the key (optional).
+    (allowed values: "asc", "desc")
 
     DTML Examples
 

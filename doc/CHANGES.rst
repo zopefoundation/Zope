@@ -36,6 +36,8 @@ Features Added
 Bugs Fixed
 ++++++++++
 
+- LP #435728:  Fix indentation of OFSP/help/sequence.py docstring.
+
 - LP #574286:  Ensure that mailhosts which share a queue directory do not
   double-deliver mails, by sharing the thread which processes emails for
   that directory.
