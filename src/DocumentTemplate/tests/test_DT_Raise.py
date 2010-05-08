@@ -21,7 +21,6 @@ class Test_Raise(unittest.TestCase):
         self.assertEqual(raiser.expr, None)
 
     def test_ctor_w_expr(self):
-        from DocumentTemplate.DT_Util import Eval
         raiser = self._makeOne(expr='SyntaxError')
         self.assertEqual(raiser.__name__, 'SyntaxError')
         self.assertEqual(raiser.expr.expr, 'SyntaxError')

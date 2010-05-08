@@ -16,7 +16,6 @@ $Id$
 """
 
 import unittest, doctest
-from DocumentTemplate import DT_Var
 
 class TestNewlineToBr(doctest.DocTestCase):
 
@@ -25,6 +24,7 @@ class TestNewlineToBr(doctest.DocTestCase):
         newline_to_br should work identically with either DOS-style or
         Unix-style newlines.
 
+        >>> from DocumentTemplate import DT_Var
         >>> text = '''
         ... line one
         ... line two
@@ -46,6 +46,7 @@ class TestNewlineToBr(doctest.DocTestCase):
 
     def test_newline_to_br_tainted(self):
         """
+        >>> from DocumentTemplate import DT_Var
         >>> text = '''
         ... <li>line one</li>
         ... <li>line two</li>
