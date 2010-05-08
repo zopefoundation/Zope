@@ -44,14 +44,10 @@ Sometimes a query string is added to the URL, e.g.::
   http://localhost:8080/manage_main?skey=meta_type
 
 The query string is used for passing arguments to the method. In this case, the
-argument::
-
-  skey
-
-specifies the sort key with the value *meta_type*. Based on this argument, the
-*manage_main* method returns a modified version of the basic page: the
-sub-objects are sorted by *Type*, not by *Name* as they are without that query
-string.
+argument ``skey`` specifies the sort key with the value *meta_type*. Based on
+this argument, the *manage_main* method returns a modified version of the basic
+page: the sub-objects are sorted by *Type*, not by *Name* as they are without 
+that query string.
 
 While the *manage_main* method is defined in the class of the object,
 *index_html* is (by default) a DTML Method object in the root folder that can
@@ -152,13 +148,8 @@ objects. You can't call another method *in the context* of one of them. Given
   Zoo/LargeAnimals/hippo/wash/feed
 
 would also call the *wash* method on the *hippo* object. Instead of traversing
-to *feed*, everything after the method ::
-
-  wash
-
-is cut off of the URL and stored in the variable::
-
-  traverse_subpath
+to *feed*, everything after the method ``wash`` is cut off of the URL and 
+stored in the variable ``traverse_subpath``.
 
 
 The Special Folder Object *index_html*
@@ -283,16 +274,9 @@ by Zope when you view the script outside the *Edit* tab of the ZMI, e.g., by
 clicking the *view or download* link at the bottom of the *Edit* tab. We'll use
 this format for our examples.
 
-The script calls::
-
-  context.objectIds()
-
-a method in the Zope API, to get a list of the contained objects. *objectIds*
-is a method of *Folders*, so the context object should be a Folder-like object.
-The script then calls::
-
-  len()
-
+The script calls ``context.objectIds()``, a method in the Zope API, to get a 
+list of the contained objects. *objectIds* is a method of *Folders*, so the 
+context object should be a Folder-like object. The script then calls ``len()``
 to find the number of items in that list. When you call this script on a given
 Zope object, the *context* variable is bound to the context object. So, if you
 called this script by visiting the URL::
@@ -306,11 +290,8 @@ call other scripts, and return reports. Suppose you want to implement a simple
 workflow system, in which various Zope objects are tagged with properties that
 indicate their status. You might want to produce reports that summarize which
 objects are in which state. You can use Python to query objects and test their
-properties. For example, here is a script named::
-
-  objectsForStatus
-
-with one parameter, 'status'::
+properties. For example, here is a script named ``objectsForStatus`` with one
+parameter, 'status'::
 
   ## Script (Python) "objectsForStatus"
   ##parameters=status
@@ -339,11 +320,7 @@ example, if we visited our *feed* script via the URL::
 
   Zoo/LargeAnimals/hippo/feed?food_type=spam
 
-we could access the:: 
-
-  food_type
-
-variable as::
+we could access the ``food_type`` variable as::
 
   context.REQUEST.food_type
 
@@ -351,11 +328,8 @@ This same technique works with variables passed from forms.
 
 Another way to get the REQUEST is to pass it as a parameter to the script. If
 REQUEST is one of the script's parameters, Zope will automatically pass the
-HTTP request and assign it to this parameter. We could then access the::
-
-  food_type
-
-variable as::
+HTTP request and assign it to this parameter. We could then access the
+``food_type`` variable as::
 
   REQUEST.food_type
 
@@ -443,19 +417,12 @@ This script will return::
 The reason that there is a line break in between each word is that Python adds
 a new line after every string that is printed.
 
-You might want to use the::
-
-  print
-
-statement to perform simple debugging in your scripts. For more complex output
-control, you probably should manage things yourself by accumulating data,
-modifying it, and returning it manually, rather than relying on the::
-
-  print
-
-statement. And for controlling presentation, you should return the script
-output to a Page Template or DTML page, which then displays the return value
-appropriately.
+You might want to use the ``print`` statement to perform simple debugging in
+your scripts. For more complex output control, you probably should manage
+things yourself by accumulating data, modifying it, and returning it manually,
+rather than relying on the ``print`` statement. And for controlling
+presentation, you should return the script output to a Page Template or DTML
+page, which then displays the return value appropriately.
 
 Built-in Functions
 ++++++++++++++++++
@@ -490,11 +457,8 @@ they are of the same type. So, instead of saying::
   if type(foo) == type([]):
       return "foo is a list"
 
-... to check if::
-
-  foo
-
-is a list, you would instead use the *same_type* function::
+... to check if ``foo`` is a list, you would instead use the *same_type*
+function::
 
   if same_type(foo, []):
       return "foo is a list"
@@ -534,21 +498,9 @@ Note that::
   context.hello_world_pt
 
 works because there is no dot in the id of the template. In Python, dots are
-used to separate ids. This is the reason why Zope often uses ids like::
-
-  index_html
-
-instead of the more common::
-
-  index.html
-
-and why this example uses::
-
-  hello_world_pt
-
-instead of::
-
-  hello_world.pt
+used to separate ids. This is the reason why Zope often uses ids like
+*index_html* instead of the more common ``index.html`` and why this example 
+uses *hello_world_pt* instead of ``hello_world.pt``.
 
 However, if desired, you can use dots within object ids. Using *getattr* to
 access the dotted id, the modified line would look like this::
@@ -626,12 +578,8 @@ Python scripts that demonstrate how you can use the Zope API:
 Get all objects in a Folder
 +++++++++++++++++++++++++++
 
-The::
-
-  objectValues()
-
-method returns a list of objects contained in a Folder. If the context happens
-not to be a Folder, nothing is returned::
+The ``objectValues()`` method returns a list of objects contained in a Folder.
+If the context happens not to be a Folder, nothing is returned::
 
   objs = context.objectValues()
 
@@ -643,19 +591,9 @@ The id is the "handle" to access an object, and is set at object creation::
   id = context.getId()
 
 Note that there is no *setId()* method: you have to either use the ZMI to
-rename them, set their::
-
-  id
-
-attribute via security-unrestricted code, or use the::
-
-  manage_renameObject
-
-or::
-
-  manage_renameObjects
-
-API methods exposed upon the container of the object you want to rename.
+rename them, set their ``id`` attribute via security-unrestricted code, or use
+the `` manage_renameObject`` or ``manage_renameObjects`` API methods exposed
+upon the container of the object you want to rename.
 
 Get the Zope root Folder
 ++++++++++++++++++++++++
@@ -667,12 +605,8 @@ The root Folder is the top level element in the Zope object database::
 Get the physical path to an object
 ++++++++++++++++++++++++++++++++++
 
-The::
-
-  getPhysicalPath()
-
-method returns a list containing the ids of the object's containment
-hierarchy::
+The ``getPhysicalPath()`` method returns a list containing the ids of the
+object's containment hierarchy::
 
   path_list = context.getPhysicalPath()
   path_string = "/".join(path_list)
@@ -680,9 +614,7 @@ hierarchy::
 Get an object by path
 +++++++++++++++++++++
 
-restrictedTraverse() is the complement to::
-
-  getPhysicalPath()
+``restrictedTraverse()`` is the complement to ``getPhysicalPath()``.
 
 The path can be absolute -- starting at the Zope root -- or relative to the
 context::
@@ -713,12 +645,9 @@ The object has to support properties, and the property must exist::
 Traverse to an object and add a new property
 ++++++++++++++++++++++++++++++++++++++++++++
 
-We get an object by its absolute path, add a property::
-
-  weight
-
-and set it to some value. Again, the object must support properties in order
-for this to work::
+We get an object by its absolute path, add a property ``weight`` and set it to
+some value. Again, the object must support properties in order for this to
+work::
 
   path = "/Zoo/LargeAnimals/hippo"
   hippo_obj = context.restrictedTraverse(path)
