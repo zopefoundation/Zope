@@ -761,19 +761,15 @@ class InClass:
                 if multsort: # More than one sort key.
                     k = []
                     for sk in sortfields:
-                        try:
-                            if mapping: akey = v[sk]
-                            else: akey = getattr(v, sk)
-                        except AttributeError, KeyError: akey = None
+                        if mapping: akey = v.get(sk)
+                        else: akey = getattr(v, sk, None)
                         if not basic_type(akey):
                             try: akey = akey()
                             except: pass
                         k.append(akey)
                 else: # One sort key.
-                    try:
-                        if mapping: k = v[sort]
-                        else: k = getattr(v, sort)
-                    except AttributeError, KeyError: k = None
+                    if mapping: k = v.get(sort)
+                    else: k = getattr(v, sort, None)
                     if not basic_type(type(k)):
                         try: k = k()
                         except: pass
