@@ -36,6 +36,9 @@ Features Added
 Bugs Fixed
 ++++++++++
 
+- LP #351006:  Don't nest block tags inside HTML ``<p>`` tags in
+  ``zExceptions.ExceptionFormatter``.
+
 - LP #411837:  Handle resource files with ``.htm`` extention properly,
   as page template resources.
 
