@@ -18,7 +18,7 @@ from setuptools import setup, find_packages, Extension
 
 setup(name='Zope2',
     version='2.13.0dev',
-    url='http://www.zope.org',
+    url='http://zope2.zope.org',
     license='ZPL 2.1',
     description='Zope2 application server / web framework',
     author='Zope Foundation and Contributors',
