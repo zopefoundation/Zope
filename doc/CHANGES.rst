@@ -8,6 +8,12 @@ http://docs.zope.org/zope2/releases/.
 2.12.6 (unreleased)
 -------------------
 
+Restructuring
++++++++++++++
+
+- Removed Zope2's own mkzeoinstance script in favor of the version from the
+  new zope.mkzeoinstance package.
+
 Features Added
 ++++++++++++++
 
