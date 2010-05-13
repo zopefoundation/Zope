@@ -32,6 +32,7 @@ Features Added
   - zope.lifecycleevent = 3.6.1
   - zope.pagetemplate = 3.5.1
   - zope.proxy = 3.6.0
+  - zope.security = 3.7.3
 
 Bugs Fixed
 ++++++++++
