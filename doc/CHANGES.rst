@@ -11,6 +11,9 @@ Trunk (unreleased)
 Restructuring
 +++++++++++++
 
+- Removed Zope2's own mkzeoinstance script. If you want to set up ZEO instances
+  please install the zope.mkzeoinstance and use its script.
+
 - Removed deprecated ``read-only-database`` option from zope.conf.
 
 - Updated copyright and license information to conform with repository policy.
