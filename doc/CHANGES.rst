@@ -19,12 +19,13 @@ Features Added
 
 - Updated packages:
 
-  - DateTime = 2.12.1
+  - DateTime = 2.12.2
   - ExtensionClass = 2.13.1
   - initgroups = 2.13.0
   - Missing = 2.13.0
   - MultiMapping = 2.13.0
   - Persistence = 2.13.1
+  - pytz = 2010h
   - Record = 2.13.0
   - RestrictedPython = 3.5.2
   - ThreadLock = 2.13.0
@@ -49,7 +50,7 @@ Bugs Fixed
 - LP #351006:  Don't nest block tags inside HTML ``<p>`` tags in
   ``zExceptions.ExceptionFormatter``.
 
-- LP #411837:  Handle resource files with ``.htm`` extention properly,
+- LP #411837:  Handle resource files with ``.htm`` extension properly,
   as page template resources.
 
 - LP #435728:  Fix indentation of OFSP/help/sequence.py docstring.
