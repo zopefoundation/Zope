@@ -85,7 +85,7 @@ No exceptions logged.
     >
     <span tal:content="entry/type">AttributeError</span>:
     <span tal:define="value entry/value"
-      tal:content="python: len(value) < 70 and value or value[:70] + '...'">
+      tal:content="python: len(value) &lt; 70 and value or value[:70] + '...'">
       Application object has no attribute "zzope"</span>
    </a>
   </td>
@@ -93,7 +93,7 @@ No exceptions logged.
      tal:attributes="href string:${context/absolute_url}/forgetEntry?id=${entry/id}"
   ><img title="Forget this entry" src="/misc_/SiteErrorLog/ok.gif" border="0"
      tal:attributes="src string:${request/BASEPATH1}/misc_/SiteErrorLog/ok.gif"
-  ></a></td>
+  /></a></td>
  </tr>
 </table>
 

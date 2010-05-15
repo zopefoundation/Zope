@@ -44,6 +44,8 @@ Features Added
 Bugs Fixed
 ++++++++++
 
+- Fix several template errors in SiteErrorLog (chameleon compatibility).
+
 - LP #267820:  Fix bad except clause in the ``sequence_sort`` method of
   the ``<dtml-in>`` tag.
 
