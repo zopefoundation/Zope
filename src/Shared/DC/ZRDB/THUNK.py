@@ -11,11 +11,13 @@
 #
 ##############################################################################
 
-import TM, ThreadLock
+import thread
+
+import TM
 from TM import Surrogate
 import transaction
 
-thunk_lock=ThreadLock.allocate_lock()
+thunk_lock = thread.allocate_lock()
 
 class THUNKED_TM(TM.TM):
     """A big heavy hammer for handling non-thread safe DAs
@@ -35,14 +37,16 @@ class THUNKED_TM(TM.TM):
 
     def tpc_finish(self, *ignored):
         if self._registered:
-            try: self._finish()
+            try:
+                self._finish()
             finally:
                 thunk_lock.release()
                 self._registered=0
 
     def abort(self, *ignored):
         if self._registered:
-            try: self._abort()
+            try:
+                self._abort()
             finally:
                 thunk_lock.release()
                 self._registered=0

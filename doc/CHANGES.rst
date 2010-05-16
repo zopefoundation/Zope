@@ -11,6 +11,9 @@ Trunk (unreleased)
 Restructuring
 +++++++++++++
 
+- Drop the dependency on the ThreadLock distribution, by using Python's thread
+  module instead.
+
 - Removed Zope2's own mkzeoinstance script. If you want to set up ZEO instances
   please install the zope.mkzeoinstance and use its script.
 
