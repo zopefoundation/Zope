@@ -37,7 +37,8 @@ AccessControl
     zope.exceptions instead and import from there?
 
   * App (MessageDialog, DTMLFile, ...) - all need to go - redoing the UI is
-    hard.
+    hard, we probably need to move it into some other core part of Zope2, like
+    the App package.
 
 - Test only dependencies:
 
@@ -51,14 +52,26 @@ AccessControl
 DocumentTemplate
 ----------------
 
+- TreeDisplay should be moved into the DocumentTemplate distribution, the two
+  depend on each other.
+
 - Acceptable dependencies (we can improve on that later):
 
-  * 
+  * zope.sequencesort
+  * zope.structuredtext
+  * AccessControl (once it is its own distribution)
+  * Acquisition
+  * ExtensionClass
+  * Missing
+  * RestrictedPython
 
 - Remaining outside imports:
 
-  *
+  * App (getConfiguration)
+  * reStructuredText (HTML)
+  * Shared (TaintedString)
+  * zExceptions (maybe this should move to its own distribution?)
 
 - Test only dependencies:
 
-  *
+  * Products.PythonScripts
