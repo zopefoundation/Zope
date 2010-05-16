@@ -13,6 +13,9 @@
 """Add security system support to Document Templates
 """
 
-# BBB
-from DocumentTemplate.security import DTMLSecurityAPI
-from DocumentTemplate.security import RestrictedDTML
+from zope.deferredimport import deprecated
+
+deprecated("Please import from DocumentTemplate.security",
+    DTMLSecurityAPI = 'DocumentTemplate.security:DTMLSecurityAPI',
+    RestrictedDTML = 'DocumentTemplate.security:RestrictedDTML',
+)
