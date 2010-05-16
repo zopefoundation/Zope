@@ -28,8 +28,6 @@ add_vocabularies='Add Vocabularies'
 add_z_gadfly_database_connections='Add Z Gadfly Database Connections'
 add_zcatalogs='Add ZCatalogs'
 add_zope_tutorials='Add Zope Tutorials'
-change_dtml_documents='Change DTML Documents'
-change_dtml_methods='Change DTML Methods'
 change_database_connections='Change Database Connections'
 change_database_methods='Change Database Methods'
 change_external_methods='Change External Methods'
@@ -67,3 +65,9 @@ view_management_screens='View management screens'
 webdav_access='WebDAV access'
 webdav_lock_items='WebDAV Lock items'
 webdav_unlock_items='WebDAV Unlock items'
+
+# BBB
+from DocumentTemplate import permissions
+
+change_dtml_documents = permissions.change_dtml_documents
+change_dtml_methods = permissions.change_dtml_methods
