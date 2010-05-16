@@ -400,6 +400,9 @@ class NullUnrestrictedUser(SpecialUser):
     def has_permission(self, permission, object):
         return 0
 
+    def __str__(self):
+        # See https://bugs.launchpad.net/zope2/+bug/142563
+        return repr(self)
 
 
 def readUserAccessFile(filename):

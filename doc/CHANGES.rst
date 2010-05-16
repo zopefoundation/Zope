@@ -155,6 +155,8 @@ Features Added
 Bugs Fixed
 ++++++++++
 
+- LP #142563:  Fix ``AccessControl.User.NullUnrestrictedUserTests.__str__``.
+
 - LP #267820:  Fix bad except clause in the ``sequence_sort`` method of
   the ``<dtml-in>`` tag.
 
