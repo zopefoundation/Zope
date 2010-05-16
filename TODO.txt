@@ -14,6 +14,11 @@ Open general points:
 - zExceptions needs to be its own distribution, possibly merge with
   zope.exceptions, which contains similar and sometimes identical code.
 
+- There's one test failure in RestrictedPython in
+  ``test_sequence_in_utility_builtins_if_importable``. It does a conditional
+  import of DocumentTemplate and executes some code. This should move into
+  DocumentTemplate itself and avoid the import order problems we have now.
+
 AccessControl
 -------------
 
