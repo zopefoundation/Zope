@@ -95,6 +95,10 @@ class SimpleUserTests(unittest.TestCase):
         simple = self._makeOne('phred', roles=())
         self.assertEqual(simple.getRoles(), ('Authenticated',))
 
+    def test___repr__(self):
+        special = self._makeOne()
+        self.assertEqual(repr(special), "<SimpleUser 'admin'>")
+
 
 class SpecialUserTests(unittest.TestCase):
 
@@ -110,11 +114,15 @@ class SpecialUserTests(unittest.TestCase):
         return self._getTargetClass()(name, password, roles, domains)
 
     def test_overrides(self):
-        simple = self._makeOne()
-        self.assertEqual(simple.getUserName(), 'admin')
-        self.assertEqual(simple.getId(), None)
-        self.assertEqual(simple._getPassword(), '123')
-        self.assertEqual(simple.getDomains(), ())
+        special = self._makeOne()
+        self.assertEqual(special.getUserName(), 'admin')
+        self.assertEqual(special.getId(), None)
+        self.assertEqual(special._getPassword(), '123')
+        self.assertEqual(special.getDomains(), ())
+
+    def test___repr__(self):
+        special = self._makeOne()
+        self.assertEqual(repr(special), "<SpecialUser 'admin'>")
 
 
 class UnrestrictedUserTests(unittest.TestCase):
@@ -158,6 +166,11 @@ class UnrestrictedUserTests(unittest.TestCase):
     def test_has_role_other_w_object(self):
         unrestricted = self._makeOne()
         self.failUnless(unrestricted.has_role(('Manager',), self))
+
+    def test___repr__(self):
+        unrestricted = self._makeOne()
+        self.assertEqual(repr(unrestricted),
+                         "<UnrestrictedUser 'admin'>")
 
 
 class NullUnrestrictedUserTests(unittest.TestCase):
