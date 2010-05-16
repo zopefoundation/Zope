@@ -23,3 +23,6 @@ from DocumentTemplate.DT_HTML import HTML, HTMLDefault, HTMLFile
 
 # Register the dtml-tree tag
 import TreeDisplay
+
+from DocumentTemplate import security  # Side effects!
+del security
