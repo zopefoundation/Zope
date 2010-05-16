@@ -8,6 +8,9 @@ Open general points:
   based on the availability of the C module alone. This behavior change needs
   discussion.
 
+- TaintedString should move into its own distribution. It's currently in
+  Shared.TaintedString and used both by DTML and ZPublisher.
+
 - zExceptions needs to be its own distribution, possibly merge with
   zope.exceptions, which contains similar and sometimes identical code.
 
@@ -39,8 +42,9 @@ AccessControl
   * zExceptions (Forbidden, Unauthorized, ...)
 
   * App (MessageDialog, DTMLFile, ...) - all need to go - redoing the UI is
-    hard, we probably need to move it into some other core part of Zope2, like
-    the App package.
+    hard. We probably need to move it into some other core part of Zope2, like
+    the App package, which could serve as a general dumping ground for ZMI
+    related stuff from "reusable" packages.
 
 - Test only dependencies:
 
@@ -69,10 +73,14 @@ DocumentTemplate
 
 - Remaining outside imports:
 
-  * App (getConfiguration)
-  * reStructuredText (HTML)
-  * Shared (TaintedString)
-  * zExceptions
+  * App (getConfiguration().structured_text_header_level)
+  * reStructuredText (HTML) - Both of these deal with format support and
+    configuration via zope.conf. The calls are localized to one function each.
+    Add an optional dependency on Zope2? Configure if it is available,
+    otherwise use some default?
+
+  * Shared (TaintedString) - move it to its own distribution
+  * zExceptions - move it to its own distribution
 
 - Test only dependencies:
 
