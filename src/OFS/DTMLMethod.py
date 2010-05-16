@@ -27,8 +27,8 @@ from AccessControl.Permissions import view_management_screens
 from AccessControl.Permissions import change_proxy_roles
 from AccessControl.Permissions import view as View
 from AccessControl.Permissions import ftp_access
-from AccessControl.DTML import RestrictedDTML
 from AccessControl.requestmethod import requestmethod
+from DocumentTemplate.security import RestrictedDTML
 from OFS.Cache import Cacheable
 from OFS.History import Historical
 from OFS.History import html_diff
