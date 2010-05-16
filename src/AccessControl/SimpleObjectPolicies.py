@@ -77,21 +77,6 @@ ContainerAssertions={
     type(u''): 1,
     }
 
-class _dummy_class: pass
-
-from DocumentTemplate.DT_Util import TemplateDict
-# Temporarily create a DictInstance so that we can mark its type as
-# being a key in the ContainerAssertions.
-templateDict = TemplateDict()
-try:
-    dictInstance = templateDict(dummy=1)[0]
-    if type(dictInstance) is not type(_dummy_class()):
-        ContainerAssertions[type(dictInstance)]=1
-except:
-    # Hmm, this may cause _() and _.namespace() to fail.
-    # What to do?
-    pass
-
 Containers = ContainerAssertions.get
 
 def allow_type(Type, allowed=1):

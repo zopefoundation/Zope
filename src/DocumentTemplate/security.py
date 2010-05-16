@@ -16,6 +16,7 @@
 import string, math, random, sets
 
 from AccessControl import SecurityManagement
+from AccessControl.SimpleObjectPolicies import ContainerAssertions
 from AccessControl.ZopeGuards import safe_builtins
 
 import DocumentTemplate.sequence
@@ -106,3 +107,19 @@ for name, v in safe_builtins.items():
     if name.startswith('__'):
         continue
     setattr(DT_Util.TemplateDict, name, v)
+
+
+class _dummy_class:
+    pass
+
+# Temporarily create a DictInstance so that we can mark its type as
+# being a key in the ContainerAssertions.
+templateDict = DT_Util.TemplateDict()
+try:
+    dictInstance = templateDict(dummy=1)[0]
+    if type(dictInstance) is not type(_dummy_class()):
+        ContainerAssertions[type(dictInstance)]=1
+except:
+    # Hmm, this may cause _() and _.namespace() to fail.
+    # What to do?
+    pass
