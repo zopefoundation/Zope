@@ -1,0 +1,42 @@
+Standalone AccessControl and DTML
+=================================
+
+Open points:
+
+- DocumentTemplate.security doesn't respect the security policy definition as
+  set by AccessControl anymore. It determines the use of the C implementation
+  based on the availability of the C module alone. This behavior change needs
+  discussion.
+
+- Acceptable dependencies of AccessControl (we can improve on that later):
+
+  * zope.component
+  * zope.configuration
+  * zope.deferredimport
+  * zope.interface
+  * zope.publisher
+  * zope.schema
+  * zope.security
+  * Acquisition
+  * ExtensionClass
+  * Persistence
+  * Record
+  * RestrictedPython
+  * ZODB3
+
+- Remaining outside imports in AccessControl:
+
+  * Products (in registerPermissions using it as a data container for
+    ``__ac_permissions__``) - this should use a global inside the module
+    inside AccessControl.
+
+  * zExceptions (Forbidden, Unauthorized, ...) - move those into
+    zope.exceptions instead and import from there?
+
+  * App (MessageDialog, DTMLFile, ...) - all need to go - redoing the UI is
+    hard.
+
+- Test only dependencies:
+
+  * Testing, Zope2, OFS, Products.SiteErrorLog, transaction,
+    Products.PythonScripts
