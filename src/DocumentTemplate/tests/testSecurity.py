@@ -13,16 +13,12 @@
 """Document Template Tests
 """
 
-__rcs_id__='$Id$'
-__version__='$Revision: 1.13 $'[11:-2]
+import unittest
 
-import os, sys, unittest
-
-import ZODB
 from DocumentTemplate import HTML
 from DocumentTemplate.tests.testDTML import DTMLTests
 from Products.PythonScripts.standard import DTML
-from AccessControl import User, Unauthorized
+from AccessControl import Unauthorized
 from ExtensionClass import Base
 
 class UnownedDTML(DTML):
@@ -112,11 +108,5 @@ class SecurityTests (DTMLTests):
 
 def test_suite():
     suite = unittest.TestSuite()
-    suite.addTest( unittest.makeSuite( SecurityTests ) )
+    suite.addTest(unittest.makeSuite(SecurityTests))
     return suite
-
-def main():
-    unittest.TextTestRunner().run(test_suite())
-
-if __name__ == '__main__':
-    main()
