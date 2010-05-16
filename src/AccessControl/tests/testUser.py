@@ -67,6 +67,35 @@ class BasicUserTests(unittest.TestCase):
         self.assertEqual(repr(derived), "<Derived 'phred'>")
 
 
+class SimpleUserTests(unittest.TestCase):
+
+    def _getTargetClass(self):
+        from AccessControl.User import SimpleUser
+        return SimpleUser
+
+    def _makeOne(self, name='admin', password='123', roles=None, domains=None):
+        if roles is None:
+            roles = ['Manager']
+        if domains is None:
+            domains = []
+        return self._getTargetClass()(name, password, roles, domains)
+
+    def test_overrides(self):
+        simple = self._makeOne()
+        self.assertEqual(simple.getUserName(), 'admin')
+        self.assertEqual(simple.getId(), 'admin')
+        self.assertEqual(simple._getPassword(), '123')
+        self.assertEqual(simple.getDomains(), ())
+
+    def test_getRoles_anonymous(self):
+        simple = self._makeOne('Anonymous User', roles=())
+        self.assertEqual(simple.getRoles(), ())
+
+    def test_getRoles_non_anonymous(self):
+        simple = self._makeOne('phred', roles=())
+        self.assertEqual(simple.getRoles(), ('Authenticated',))
+
+
 class UserTests(unittest.TestCase):
 
     def _getTargetClass(self):
@@ -385,6 +414,7 @@ class UserFolderTests(unittest.TestCase):
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(BasicUserTests))
+    suite.addTest(unittest.makeSuite(SimpleUserTests))
     suite.addTest(unittest.makeSuite(UserTests))
     suite.addTest(unittest.makeSuite(UserFolderTests))
     return suite
