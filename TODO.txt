@@ -8,6 +8,9 @@ Open general points:
   based on the availability of the C module alone. This behavior change needs
   discussion.
 
+- zExceptions needs to be its own distribution, possibly merge with
+  zope.exceptions, which contains similar and sometimes identical code.
+
 AccessControl
 -------------
 
@@ -33,8 +36,7 @@ AccessControl
     ``__ac_permissions__``) - this should use a global inside the module
     inside AccessControl.
 
-  * zExceptions (Forbidden, Unauthorized, ...) - move those into
-    zope.exceptions instead and import from there?
+  * zExceptions (Forbidden, Unauthorized, ...)
 
   * App (MessageDialog, DTMLFile, ...) - all need to go - redoing the UI is
     hard, we probably need to move it into some other core part of Zope2, like
@@ -70,7 +72,7 @@ DocumentTemplate
   * App (getConfiguration)
   * reStructuredText (HTML)
   * Shared (TaintedString)
-  * zExceptions (maybe this should move to its own distribution?)
+  * zExceptions
 
 - Test only dependencies:
 
