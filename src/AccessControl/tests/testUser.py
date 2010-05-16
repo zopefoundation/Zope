@@ -96,6 +96,116 @@ class SimpleUserTests(unittest.TestCase):
         self.assertEqual(simple.getRoles(), ('Authenticated',))
 
 
+class SpecialUserTests(unittest.TestCase):
+
+    def _getTargetClass(self):
+        from AccessControl.User import SpecialUser
+        return SpecialUser
+
+    def _makeOne(self, name='admin', password='123', roles=None, domains=None):
+        if roles is None:
+            roles = ['Manager']
+        if domains is None:
+            domains = []
+        return self._getTargetClass()(name, password, roles, domains)
+
+    def test_overrides(self):
+        simple = self._makeOne()
+        self.assertEqual(simple.getUserName(), 'admin')
+        self.assertEqual(simple.getId(), None)
+        self.assertEqual(simple._getPassword(), '123')
+        self.assertEqual(simple.getDomains(), ())
+
+
+class UnrestrictedUserTests(unittest.TestCase):
+
+    def _getTargetClass(self):
+        from AccessControl.User import UnrestrictedUser
+        return UnrestrictedUser
+
+    def _makeOne(self, name='admin', password='123', roles=None, domains=None):
+        if roles is None:
+            roles = ['Manager']
+        if domains is None:
+            domains = []
+        return self._getTargetClass()(name, password, roles, domains)
+
+    def test_allowed__what_not_even_god_should_do(self):
+        from AccessControl.PermissionRole import _what_not_even_god_should_do
+        unrestricted = self._makeOne()
+        self.failIf(unrestricted.allowed(self, _what_not_even_god_should_do))
+
+    def test_allowed_empty(self):
+        unrestricted = self._makeOne()
+        self.failUnless(unrestricted.allowed(self, ()))
+
+    def test_allowed_other(self):
+        unrestricted = self._makeOne()
+        self.failUnless(unrestricted.allowed(self, ('Manager',)))
+
+    def test_has_role_empty_no_object(self):
+        unrestricted = self._makeOne()
+        self.failUnless(unrestricted.has_role(()))
+
+    def test_has_role_empty_w_object(self):
+        unrestricted = self._makeOne()
+        self.failUnless(unrestricted.has_role((), self))
+
+    def test_has_role_other_no_object(self):
+        unrestricted = self._makeOne()
+        self.failUnless(unrestricted.has_role(('Manager',)))
+
+    def test_has_role_other_w_object(self):
+        unrestricted = self._makeOne()
+        self.failUnless(unrestricted.has_role(('Manager',), self))
+
+
+class NullUnrestrictedUserTests(unittest.TestCase):
+
+    def _getTargetClass(self):
+        from AccessControl.User import NullUnrestrictedUser
+        return NullUnrestrictedUser
+
+    def _makeOne(self):
+        return self._getTargetClass()()
+
+    def test_overrides(self):
+        simple = self._makeOne()
+        self.assertEqual(simple.getUserName(), (None, None))
+        self.assertEqual(simple.getId(), None)
+        self.assertEqual(simple._getPassword(), (None, None))
+        self.assertEqual(simple.getRoles(), ())
+        self.assertEqual(simple.getDomains(), ())
+
+    def test_getRolesInContext(self):
+        null = self._makeOne()
+        self.assertEqual(null.getRolesInContext(self), ())
+
+    def test_authenticate(self):
+        null = self._makeOne()
+        self.failIf(null.authenticate('password', {}))
+
+    def test_allowed(self):
+        null = self._makeOne()
+        self.failIf(null.allowed(self, ()))
+
+    def test_has_role(self):
+        null = self._makeOne()
+        self.failIf(null.has_role('Authenticated'))
+
+    def test_has_role_w_object(self):
+        null = self._makeOne()
+        self.failIf(null.has_role('Authenticated', self))
+
+    def test_has_permission(self):
+        null = self._makeOne()
+        self.failIf(null.has_permission('View', self))
+
+    def test___repr__(self):
+        null = self._makeOne()
+        self.assertEqual(repr(null), "<NullUnrestrictedUser (None, None)>")
+
+
 class UserTests(unittest.TestCase):
 
     def _getTargetClass(self):
@@ -415,6 +525,9 @@ def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(BasicUserTests))
     suite.addTest(unittest.makeSuite(SimpleUserTests))
+    suite.addTest(unittest.makeSuite(SpecialUserTests))
+    suite.addTest(unittest.makeSuite(UnrestrictedUserTests))
+    suite.addTest(unittest.makeSuite(NullUnrestrictedUserTests))
     suite.addTest(unittest.makeSuite(UserTests))
     suite.addTest(unittest.makeSuite(UserFolderTests))
     return suite
