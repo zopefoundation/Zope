@@ -95,6 +95,10 @@ class SimpleUserTests(unittest.TestCase):
         simple = self._makeOne('phred', roles=())
         self.assertEqual(simple.getRoles(), ('Authenticated',))
 
+    def test___repr__(self):
+        special = self._makeOne()
+        self.assertEqual(repr(special), "<SimpleUser 'admin'>")
+
 
 class SpecialUserTests(unittest.TestCase):
 
@@ -110,11 +114,15 @@ class SpecialUserTests(unittest.TestCase):
         return self._getTargetClass()(name, password, roles, domains)
 
     def test_overrides(self):
-        simple = self._makeOne()
-        self.assertEqual(simple.getUserName(), 'admin')
-        self.assertEqual(simple.getId(), None)
-        self.assertEqual(simple._getPassword(), '123')
-        self.assertEqual(simple.getDomains(), ())
+        special = self._makeOne()
+        self.assertEqual(special.getUserName(), 'admin')
+        self.assertEqual(special.getId(), None)
+        self.assertEqual(special._getPassword(), '123')
+        self.assertEqual(special.getDomains(), ())
+
+    def test___repr__(self):
+        special = self._makeOne()
+        self.assertEqual(repr(special), "<SpecialUser 'admin'>")
 
 
 class UnrestrictedUserTests(unittest.TestCase):
@@ -158,6 +166,11 @@ class UnrestrictedUserTests(unittest.TestCase):
     def test_has_role_other_w_object(self):
         unrestricted = self._makeOne()
         self.failUnless(unrestricted.has_role(('Manager',), self))
+
+    def test___repr__(self):
+        unrestricted = self._makeOne()
+        self.assertEqual(repr(unrestricted),
+                         "<UnrestrictedUser 'admin'>")
 
 
 class NullUnrestrictedUserTests(unittest.TestCase):
@@ -209,58 +222,6 @@ class NullUnrestrictedUserTests(unittest.TestCase):
         # See https://bugs.launchpad.net/zope2/+bug/142563
         null = self._makeOne()
         self.assertEqual(str(null), "<NullUnrestrictedUser (None, None)>")
-
-
-class UserTests(unittest.TestCase):
-
-    def _getTargetClass(self):
-        from AccessControl.User import User
-        return User
-
-    def _makeOne(self, name, password, roles, domains):
-        return self._getTargetClass()(name, password, roles, domains)
-
-    def testGetUserName(self):
-        f = self._makeOne('chris', '123', ['Manager'], [])
-        self.assertEqual(f.getUserName(), 'chris')
-        
-    def testGetUserId(self):
-        f = self._makeOne('chris', '123', ['Manager'], [])
-        self.assertEqual(f.getId(), 'chris')
-
-    def testBaseUserGetIdEqualGetName(self):
-        # this is true for the default user type, but will not
-        # always be true for extended user types going forward (post-2.6)
-        f = self._makeOne('chris', '123', ['Manager'], [])
-        self.assertEqual(f.getId(), f.getUserName())
-
-    def testGetPassword(self):
-        f = self._makeOne('chris', '123', ['Manager'], [])
-        self.assertEqual(f._getPassword(), '123')
-
-    def testGetRoles(self):
-        f = self._makeOne('chris', '123', ['Manager'], [])
-        self.assertEqual(f.getRoles(), ('Manager', 'Authenticated'))
-
-    def testGetDomains(self):
-        f = self._makeOne('chris', '123', ['Manager'], [])
-        self.assertEqual(f.getDomains(), ())
-
-    def testRepr(self):
-        f = self._makeOne('flo', '123', ['Manager'], [])
-        self.assertEqual(repr(f), "<User 'flo'>")
-
-    def testReprSpecial(self):
-        from AccessControl.User import NullUnrestrictedUser
-        from AccessControl.User import nobody
-        from AccessControl.User import system
-        # NullUnrestrictedUser is used when there is no emergency user
-        self.assertEqual(repr(NullUnrestrictedUser()),
-                         "<NullUnrestrictedUser (None, None)>")
-        self.assertEqual(repr(nobody),
-                         "<SpecialUser 'Anonymous User'>")
-        self.assertEqual(repr(system),
-                         "<UnrestrictedUser 'System Processes'>")
 
 
 class UserFolderTests(unittest.TestCase):
@@ -533,6 +494,5 @@ def test_suite():
     suite.addTest(unittest.makeSuite(SpecialUserTests))
     suite.addTest(unittest.makeSuite(UnrestrictedUserTests))
     suite.addTest(unittest.makeSuite(NullUnrestrictedUserTests))
-    suite.addTest(unittest.makeSuite(UserTests))
     suite.addTest(unittest.makeSuite(UserFolderTests))
     return suite
