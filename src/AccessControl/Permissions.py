@@ -66,8 +66,11 @@ webdav_access='WebDAV access'
 webdav_lock_items='WebDAV Lock items'
 webdav_unlock_items='WebDAV Unlock items'
 
-# BBB
-from DocumentTemplate import permissions
-
-change_dtml_documents = permissions.change_dtml_documents
-change_dtml_methods = permissions.change_dtml_methods
+# BBB - conditional dependency
+try:
+    from DocumentTemplate import permissions
+except ImportError:
+    pass
+else:
+    change_dtml_documents = permissions.change_dtml_documents
+    change_dtml_methods = permissions.change_dtml_methods
