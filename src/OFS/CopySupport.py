@@ -39,7 +39,6 @@ from Acquisition import aq_parent
 from App.class_init import InitializeClass
 from App.Dialogs import MessageDialog
 from App.special_dtml import HTML
-from App.special_dtml import HTMLFile
 from App.special_dtml import DTMLFile
 from ExtensionClass import Base
 from webdav.Lockable import ResourceLockedError
@@ -88,7 +87,7 @@ class CopyContainer(Base):
         if hasattr(aq_base(self), id):
             return getattr(self, id)
         if default is _marker:
-            raise AttributeError, id
+            raise AttributeError(id)
         return default
 
     def manage_CopyContainerFirstItem(self, REQUEST):
@@ -103,7 +102,7 @@ class CopyContainer(Base):
         if ids is None and REQUEST is not None:
             return eNoItemsSpecified
         elif ids is None:
-            raise ValueError, 'ids must be specified'
+            raise ValueError('ids must be specified')
 
         if type(ids) is type(''):
             ids=[ids]
@@ -112,10 +111,11 @@ class CopyContainer(Base):
             ob=self._getOb(id)
 
             if ob.wl_isLocked():
-                raise ResourceLockedError, 'Object "%s" is locked via WebDAV' % ob.getId()
+                raise ResourceLockedError('Object "%s" is locked via WebDAV'
+                                            % ob.getId())
 
             if not ob.cb_isMoveable():
-                raise CopyError, eNotSupported % escape(id)
+                raise CopyError(eNotSupported % escape(id))
             m = Moniker(ob)
             oblist.append(m.dump())
         cp=(1, oblist)
@@ -133,7 +133,7 @@ class CopyContainer(Base):
         if ids is None and REQUEST is not None:
             return eNoItemsSpecified
         elif ids is None:
-            raise ValueError, 'ids must be specified'
+            raise ValueError('ids must be specified')
 
         if type(ids) is type(''):
             ids=[ids]
@@ -141,7 +141,7 @@ class CopyContainer(Base):
         for id in ids:
             ob=self._getOb(id)
             if not ob.cb_isCopyable():
-                raise CopyError, eNotSupported % escape(id)
+                raise CopyError(eNotSupported % escape(id))
             m = Moniker(ob)
             oblist.append(m.dump())
         cp=(0, oblist)
@@ -188,12 +188,12 @@ class CopyContainer(Base):
         else:
             cp = None
         if cp is None:
-            raise CopyError, eNoData
+            raise CopyError(eNoData)
 
         try:
             op, mdatas = _cb_decode(cp)
         except:
-            raise CopyError, eInvalid
+            raise CopyError(eInvalid)
 
         oblist = []
         app = self.getPhysicalRoot()
@@ -204,7 +204,7 @@ class CopyContainer(Base):
             except ConflictError:
                 raise
             except:
-                raise CopyError, eNotFound
+                raise CopyError(eNotFound)
             self._verifyObjectPaste(ob, validate_src=op+1)
             oblist.append(ob)
 
@@ -214,17 +214,17 @@ class CopyContainer(Base):
             for ob in oblist:
                 orig_id = ob.getId()
                 if not ob.cb_isCopyable():
-                    raise CopyError, eNotSupported % escape(orig_id)
+                    raise CopyError(eNotSupported % escape(orig_id))
 
                 try:
                     ob._notifyOfCopyTo(self, op=0)
                 except ConflictError:
                     raise
                 except:
-                    raise CopyError, MessageDialog(
+                    raise CopyError(MessageDialog(
                         title="Copy Error",
                         message=sys.exc_info()[1],
-                        action='manage_main')
+                        action='manage_main'))
 
                 id = self._get_id(orig_id)
                 result.append({'id': orig_id, 'new_id': id})
@@ -253,20 +253,21 @@ class CopyContainer(Base):
             for ob in oblist:
                 orig_id = ob.getId()
                 if not ob.cb_isMoveable():
-                    raise CopyError, eNotSupported % escape(orig_id)
+                    raise CopyError(eNotSupported % escape(orig_id))
 
                 try:
                     ob._notifyOfCopyTo(self, op=1)
                 except ConflictError:
                     raise
                 except:
-                    raise CopyError, MessageDialog(
+                    raise CopyError(MessageDialog(
                         title="Move Error",
                         message=sys.exc_info()[1],
-                        action='manage_main')
+                        action='manage_main'))
 
                 if not sanity_check(self, ob):
-                    raise CopyError, "This object cannot be pasted into itself"
+                    raise CopyError(
+                            "This object cannot be pasted into itself")
 
                 orig_container = aq_parent(aq_inner(ob))
                 if aq_base(orig_container) is aq_base(self):
@@ -328,7 +329,7 @@ class CopyContainer(Base):
     def manage_renameObjects(self, ids=[], new_ids=[], REQUEST=None):
         """Rename several sub-objects"""
         if len(ids) != len(new_ids):
-            raise BadRequest,'Please rename each listed object.'
+            raise BadRequest('Please rename each listed object.')
         for i in range(len(ids)):
             if ids[i] != new_ids[i]:
                 self.manage_renameObject(ids[i], new_ids[i], REQUEST)
@@ -343,18 +344,18 @@ class CopyContainer(Base):
         try:
             self._checkId(new_id)
         except:
-            raise CopyError, MessageDialog(
+            raise CopyError(MessageDialog(
                 title='Invalid Id',
                 message=sys.exc_info()[1],
-                action ='manage_main')
+                action ='manage_main'))
 
         ob = self._getOb(id)
 
         if ob.wl_isLocked():
-            raise ResourceLockedError, ('Object "%s" is locked via WebDAV'
+            raise ResourceLockedError('Object "%s" is locked via WebDAV'
                                         % ob.getId())
         if not ob.cb_isMoveable():
-            raise CopyError, eNotSupported % escape(id)
+            raise CopyError(eNotSupported % escape(id))
         self._verifyObjectPaste(ob)
 
         try:
@@ -362,10 +363,10 @@ class CopyContainer(Base):
         except ConflictError:
             raise
         except:
-            raise CopyError, MessageDialog(
+            raise CopyError(MessageDialog(
                 title="Rename Error",
                 message=sys.exc_info()[1],
-                action ='manage_main')
+                action ='manage_main'))
 
         notify(ObjectWillBeMovedEvent(ob, self, id, self, new_id))
 
@@ -409,14 +410,14 @@ class CopyContainer(Base):
         """Clone an object, creating a new object with the given id.
         """
         if not ob.cb_isCopyable():
-            raise CopyError, eNotSupported % escape(ob.getId())
+            raise CopyError(eNotSupported % escape(ob.getId()))
         try:
             self._checkId(id)
         except:
-            raise CopyError, MessageDialog(
+            raise CopyError(MessageDialog(
                 title='Invalid Id',
                 message=sys.exc_info()[1],
-                action ='manage_main')
+                action ='manage_main'))
 
         self._verifyObjectPaste(ob)
 
@@ -425,10 +426,10 @@ class CopyContainer(Base):
         except ConflictError:
             raise
         except:
-            raise CopyError, MessageDialog(
+            raise CopyError(MessageDialog(
                 title="Clone Error",
                 message=sys.exc_info()[1],
-                action='manage_main')
+                action='manage_main'))
 
         orig_ob = ob
         ob = ob._getCopy(self)
@@ -482,17 +483,17 @@ class CopyContainer(Base):
         # heirarchy).
 
         if not hasattr(object, 'meta_type'):
-            raise CopyError, MessageDialog(
+            raise CopyError(MessageDialog(
                   title   = 'Not Supported',
                   message = ('The object <em>%s</em> does not support this' \
                              ' operation' % escape(absattr(object.id))),
-                  action  = 'manage_main')
+                  action  = 'manage_main'))
 
         if not hasattr(self, 'all_meta_types'):
-            raise CopyError, MessageDialog(
+            raise CopyError(MessageDialog(
                   title   = 'Not Supported',
                   message = 'Cannot paste into this object.',
-                  action  = 'manage_main')
+                  action  = 'manage_main'))
 
         method_name = None
         mt_permission = None
@@ -523,19 +524,19 @@ class CopyContainer(Base):
                         if not sm.checkPermission(delete_objects, parent):
                             raise Unauthorized('Delete not allowed.')
             else:
-                raise CopyError, MessageDialog(
+                raise CopyError(MessageDialog(
                     title = 'Insufficient Privileges',
                     message = ('You do not possess the %s permission in the '
                                'context of the container into which you are '
                                'pasting, thus you are not able to perform '
                                'this operation.' % mt_permission),
-                    action = 'manage_main')
+                    action = 'manage_main'))
         else:
-            raise CopyError, MessageDialog(
+            raise CopyError(MessageDialog(
                 title = 'Not Supported',
                 message = ('The object <em>%s</em> does not support this '
                            'operation.' % escape(absattr(object.id))),
-                action = 'manage_main')
+                action = 'manage_main'))
 
 InitializeClass(CopyContainer)
 
@@ -574,11 +575,11 @@ class CopySource(Base):
         transaction.savepoint(optimistic=True)
 
         if self._p_jar is None:
-            raise CopyError, (
+            raise CopyError(
                 'Object "%s" needs to be in the database to be copied' %
                 `self`)
         if container._p_jar is None:
-            raise CopyError, (
+            raise CopyError(
                 'Container "%s" needs to be in the database' %
                 `container`)
 
