@@ -66,11 +66,12 @@ webdav_access='WebDAV access'
 webdav_lock_items='WebDAV Lock items'
 webdav_unlock_items='WebDAV Unlock items'
 
-# BBB - conditional dependency
-try:
-    from DocumentTemplate import permissions
-except ImportError:
-    pass
-else:
-    change_dtml_documents = permissions.change_dtml_documents
-    change_dtml_methods = permissions.change_dtml_methods
+
+from zope.deferredimport import deprecated
+
+new_loc = 'DocumentTemplate.permissions'
+
+deprecated("Please import from %s" % new_loc,
+    change_dtml_documents = '%s:change_dtml_documents' % new_loc,
+    change_dtml_methods = '%s:change_dtml_methods' % new_loc,
+)

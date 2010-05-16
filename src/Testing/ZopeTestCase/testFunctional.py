@@ -29,7 +29,7 @@ from AccessControl import getSecurityManager
 from AccessControl.Permissions import view
 from AccessControl.Permissions import manage_properties
 from AccessControl.Permissions import add_documents_images_and_files
-from AccessControl.Permissions import change_dtml_documents
+from DocumentTemplate.permissions import change_dtml_documents
 
 from StringIO import StringIO
 from urllib import urlencode
