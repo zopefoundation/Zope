@@ -224,58 +224,6 @@ class NullUnrestrictedUserTests(unittest.TestCase):
         self.assertEqual(str(null), "<NullUnrestrictedUser (None, None)>")
 
 
-class UserTests(unittest.TestCase):
-
-    def _getTargetClass(self):
-        from AccessControl.User import User
-        return User
-
-    def _makeOne(self, name, password, roles, domains):
-        return self._getTargetClass()(name, password, roles, domains)
-
-    def testGetUserName(self):
-        f = self._makeOne('chris', '123', ['Manager'], [])
-        self.assertEqual(f.getUserName(), 'chris')
-        
-    def testGetUserId(self):
-        f = self._makeOne('chris', '123', ['Manager'], [])
-        self.assertEqual(f.getId(), 'chris')
-
-    def testBaseUserGetIdEqualGetName(self):
-        # this is true for the default user type, but will not
-        # always be true for extended user types going forward (post-2.6)
-        f = self._makeOne('chris', '123', ['Manager'], [])
-        self.assertEqual(f.getId(), f.getUserName())
-
-    def testGetPassword(self):
-        f = self._makeOne('chris', '123', ['Manager'], [])
-        self.assertEqual(f._getPassword(), '123')
-
-    def testGetRoles(self):
-        f = self._makeOne('chris', '123', ['Manager'], [])
-        self.assertEqual(f.getRoles(), ('Manager', 'Authenticated'))
-
-    def testGetDomains(self):
-        f = self._makeOne('chris', '123', ['Manager'], [])
-        self.assertEqual(f.getDomains(), ())
-
-    def testRepr(self):
-        f = self._makeOne('flo', '123', ['Manager'], [])
-        self.assertEqual(repr(f), "<User 'flo'>")
-
-    def testReprSpecial(self):
-        from AccessControl.User import NullUnrestrictedUser
-        from AccessControl.User import nobody
-        from AccessControl.User import system
-        # NullUnrestrictedUser is used when there is no emergency user
-        self.assertEqual(repr(NullUnrestrictedUser()),
-                         "<NullUnrestrictedUser (None, None)>")
-        self.assertEqual(repr(nobody),
-                         "<SpecialUser 'Anonymous User'>")
-        self.assertEqual(repr(system),
-                         "<UnrestrictedUser 'System Processes'>")
-
-
 class UserFolderTests(unittest.TestCase):
 
     def setUp(self):
@@ -546,6 +494,5 @@ def test_suite():
     suite.addTest(unittest.makeSuite(SpecialUserTests))
     suite.addTest(unittest.makeSuite(UnrestrictedUserTests))
     suite.addTest(unittest.makeSuite(NullUnrestrictedUserTests))
-    suite.addTest(unittest.makeSuite(UserTests))
     suite.addTest(unittest.makeSuite(UserFolderTests))
     return suite
