@@ -180,19 +180,6 @@ class imPermissionRole(Base):
         return len(v)
 
 
-# AccessControl.DTML
-# ------------------
-
-class RestrictedDTML:
-    """A mix-in for derivatives of DT_String.String that adds Zope security."""
-
-    def guarded_getattr(self, *args): # ob, name [, default]
-        return guarded_getattr(*args)
-
-    def guarded_getitem(self, ob, index):
-        return guarded_getitem(ob, index)
-
-
 # AccessControl.ZopeSecurityPolicy
 # --------------------------------
 #

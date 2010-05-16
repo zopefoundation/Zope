@@ -15,27 +15,42 @@
 
 import string, math, random, sets
 
-from AccessControl import SecurityManagement
-from AccessControl.SimpleObjectPolicies import ContainerAssertions
-from AccessControl.ZopeGuards import safe_builtins
-
-import DocumentTemplate.sequence
-from DocumentTemplate import DT_Util
-
-# RestrictedDTML is inserted by AccessControl.Implementation.
-
-
 # Allow access to unprotected attributes
-DT_Util.TemplateDict.__allow_access_to_unprotected_subobjects__=1
 string.__allow_access_to_unprotected_subobjects__=1
 math.__allow_access_to_unprotected_subobjects__=1
 random.__allow_access_to_unprotected_subobjects__=1
 sets.__allow_access_to_unprotected_subobjects__=1
 
+# Setup RestrictedDTML
 
-DocumentTemplate.sequence.__allow_access_to_unprotected_subobjects__=1
+from AccessControl.ImplPython import guarded_getattr
+from AccessControl.ZopeGuards import guarded_getitem
+
+RestrictedDTML = None
+
+class BaseRestrictedDTML:
+    """A mix-in for derivatives of DT_String.String that adds Zope security."""
+
+    def guarded_getattr(self, *args): # ob, name [, default]
+        return guarded_getattr(*args)
+
+    def guarded_getitem(self, ob, index):
+        return guarded_getitem(ob, index)
+
+
+# This does not respect the security policy as set by AccessControl. Instead
+# it only deals with the C module being compiled or not.
+try:
+    from AccessControl.cAccessControl import RestrictedDTMLMixin
+except ImportError:
+    RestrictedDTML = BaseRestrictedDTML
+else:
+    class RestrictedDTML(RestrictedDTMLMixin, BaseRestrictedDTML):
+        """C version of RestrictedDTML."""
 
 # Add security testing capabilities
+
+from AccessControl import SecurityManagement
 
 class DTMLSecurityAPI:
     """API for performing security checks in DTML using '_' methods.
@@ -96,11 +111,16 @@ class DTMLSecurityAPI:
         if r > 0: return r-1
         return r
 
+
+from DocumentTemplate import DT_Util
+
 for name, v in DTMLSecurityAPI.__dict__.items():
     if name[0] != '_':
         setattr(DT_Util.TemplateDict, name, v)
 
 from types import FunctionType
+from AccessControl.ZopeGuards import safe_builtins
+
 for name, v in safe_builtins.items():
     if type(v) is FunctionType:
         v = DT_Util.NotBindable(v)
@@ -109,11 +129,14 @@ for name, v in safe_builtins.items():
     setattr(DT_Util.TemplateDict, name, v)
 
 
+# Temporarily create a DictInstance so that we can mark its type as
+# being a key in the ContainerAssertions.
+
+from AccessControl.SimpleObjectPolicies import ContainerAssertions
+
 class _dummy_class:
     pass
 
-# Temporarily create a DictInstance so that we can mark its type as
-# being a key in the ContainerAssertions.
 templateDict = DT_Util.TemplateDict()
 try:
     dictInstance = templateDict(dummy=1)[0]

@@ -15,3 +15,4 @@
 
 # BBB
 from DocumentTemplate.security import DTMLSecurityAPI
+from DocumentTemplate.security import RestrictedDTML

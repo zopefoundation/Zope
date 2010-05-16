@@ -10,13 +10,10 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-__doc__='''Package wrapper for Document Template
+"""Package wrapper for Document Template
 
 This wrapper allows the (now many) document template modules to be
-segregated in a separate package.
-
-$Id$'''
-__version__='$Revision: 1.18 $'[11:-2]
+segregated in a separate package."""
 
 from DocumentTemplate.DT_String import String, File
 from DocumentTemplate.DT_HTML import HTML, HTMLDefault, HTMLFile
