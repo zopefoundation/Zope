@@ -99,7 +99,9 @@ without having to embed any actual code within the object.
 For example, suppose you have a collection of objects and methods, as shown in
 the figure below.
 
-`A collection of objects and methods <img:9-1:Figures/zoo.png>`_
+.. figure:: Figures/zoo.png
+
+  A collection of objects and methods
 
 To call the *feed* method on the *hippo* object, you would visit the URL:: 
 
@@ -249,12 +251,16 @@ Python syntax::
 
 The script should return a result similar to the following image:
 
-`Script editing view <img:9-2:Figures/8-5.png>`_
+.. figure:: Figures/8-5.png
+
+  Script editing view
 
 You can now test the script by going to the *Test* tab, as shown in the
 following figure.
 
-`Testing a Script <img:9-3:Figures/8-6.png>`_
+.. figure:: Figures/8-6.png
+
+  Testing a script
 
 Leave the *name* field blank, and click the *Run Script* button. Zope should
 return "Hello World." Now go back and try entering your name in the *Value*
@@ -552,7 +558,9 @@ Zope Application Programmer Interface (API). The Zope API describes built-in
 actions that can be called on Zope objects. You can examine the Zope API in the
 help system, as shown in the figure below.
 
-`Zope API Documentation <img:9-4:Figures/8-4.png>`_
+.. figure:: Figures/8-4.png
+
+  Zope API Documentation
 
 Suppose you would like a script that takes a file you upload from a form, and
 creates a Zope File object in a Folder. To do this, you'd need to know a number

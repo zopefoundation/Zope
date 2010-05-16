@@ -59,7 +59,9 @@ ZEO uses a client/server architecture. The Zope processes (shown on multiple
 computers in the diagram below) are the *ZEO Clients*. All of the clients
 connect to one, central *ZEO Storage Server*, as shown in the image below.
 
-`Simple ZEO illustration <img:20-1:Figures/11-1.png>`_
+.. figure:: Figures/11-1.png
+
+  Simple ZEO illustration
 
 The terminology may be a bit confusing. Typically, you may think of Zope as a
 server, not a client. But when using ZEO, your Zope processes act as both
@@ -262,7 +264,9 @@ To use this method, create a property in your root folder of type *lines* named
 "mirror". On each line of this property, put the URL to your various ZEO
 clients, as shown in the figure below.
 
-`Figure of property with URLs to mirrors <img:20-2:Figures/11-2.png>`_
+.. figure:: Figures/11-2.png
+
+  Figure of property with URLs to mirrors
 
 Now, add some simple TAL code to your site to display a list of your mirrors::
 
@@ -320,7 +324,9 @@ map one name to many addresses.
 The simplest method for load-balancing is to use round-robin DNS, as
 illustrated in the figure below.
 
-`Load balancing with round-robin DNS. <img:20-3:Figures/11-3.png>`_
+.. figure:: Figures/11-3.png
+
+  Load balancing with round-robin DNS
 
 When *www.zopezoo.org* gets resolved, DNS answers with the address of either
 *zeoclient1*, *zeoclient2*, or *zeoclient3* - but in a rotated order every
@@ -366,7 +372,9 @@ Layer 4 switching involves a *switch* that, according to your preferences,
 chooses from a group of ZEO clients whenever a request comes in, as shown in
 the figure below.
 
-`Illustration of Layer 4 switching <img:20-4:Figures/11-4.png>`_
+.. figure:: Figures/11-4.png
+
+  Illustration of Layer 4 switching
 
 There are hardware and software Layer 4 switches. There are a number of
 software solutions, but one in general that stands out is the *Linux Virtual
@@ -457,7 +465,9 @@ that task on Zope's behalf.
 For example, a plain, stand-alone Zope system can be illustrated in the figure
 below.
 
-`Zope connected to a filestorage <img:20-5:Figures/11-5.png>`_
+.. figure:: Figures/11-5.png
+
+  Zope connected to a filestorage
 
 You can see there is one Zope application which plugs into a *FileStorage*.
 This storage, as its name implies, saves all of its information to a file on
@@ -466,7 +476,9 @@ the computer's filesystem.
 When using ZEO, you simple replace the FileStorage with a *ClientStorage*, as
 illustrated in the figure below.
 
-`Zope with a Client Storage and Storage server <img:20-6:Figures/11-6.png>`_
+.. figure:: Figures/11-6.png
+
+  Zope with a Client Storage and Storage server
 
 Instead of saving objects to a file, a ClientStorage sends objects over a
 network connection to a *Storage Server*. As you can see in the illustration,

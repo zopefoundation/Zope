@@ -163,7 +163,9 @@ Zope site looks like through FTP. There are folders and documents that
 correspond exactly to what your root Zope folder looks like through the web, as
 shown in the figure below.
 
-`Viewing the Zope object hierarchy through FTP <img:5-1:Figures/3-3.png>`_
+.. figure:: Figures/3-3.png
+
+  Viewing the Zope object hierarchy through FTP
 
 Transferring files to and from Zope is straightforward when using WS_FTP. On
 the left-hand side of the WS_FTP window is a file selection box that represents
@@ -197,7 +199,9 @@ With Konqueror, you can split the Konqueror view, and make it to mimic WS_FTP,
 or Midnight Commander (a popular menu based file manager), as shown in the
 figure below.
 
-`Viewing the Zope object hierarchy with Konqueror <img:5-2:Figures/konq.png>`_
+.. figure:: Figures/konq.png
+
+  Viewing the Zope object hierarchy with Konqueror
 
 We can also edit, create or delete some known Zope objects like folder or ZPT.
 For instance, to edit a file-like object, right click > Open With > Choose
@@ -219,7 +223,9 @@ Explorer to move files between your desktop and Zope:
 You can then create new Folders and transfer files between Zope and your
 desktop, as shown in the figure below.
 
-`Viewing the Zope object hierarchy with IE <img:5-3:Figures/ie.png>`_
+.. figure:: Figures/ie.png
+
+  Viewing the Zope object hierarchy with IE
 
 Remote Editing with FTP/DAV-Aware Editors
 +++++++++++++++++++++++++++++++++++++++++
@@ -258,7 +264,9 @@ Emacs will ask you for a password before displaying the directory contents. The
 directory contents of the root folder will look a little like the picture
 below:
 
-`Viewing the Zope Root Folder via ange-ftp <img:5-2:Figures/emacsftp.png>`_
+.. figure:: Figures/emacsftp.png
+
+  Viewing the Zope Root Folder via ange-ftp
 
 You can visit any of these "files" (which are really Zope objects) by selecting
 them in the usual Emacs way: enter to select, modify the file, Ctrl-X S to
@@ -305,7 +313,9 @@ To start editing objects with Kate:
 Once selected, you can edit to your heart's content, and click "File" > "Save"
 when done. Kate will save your edit to your zope server.
 
-`Viewing the Zope Root Folder via Kate/KDE desktop <img:5-2:Figures/kateftp.png>`_
+.. figure:: Figures/kateftp.png
+
+  Viewing the Zope Root Folder via Kate/KDE desktop
 
 With KDE, you can also mount zope onto your dialog box. To do that:
 
@@ -323,7 +333,9 @@ With KDE, you can also mount zope onto your dialog box. To do that:
 
 Now, you can edit zope objects in a single click.
 
-`Zope root exposed to KDE desktop <img:5-2:Figures/kdeopen.png>`_
+.. figure:: Figures/kdeopen.png
+
+  Zope root exposed to KDE desktop
 
 
 Editing Zope Objects with WebDAV
@@ -448,7 +460,9 @@ Using konqueror:
 
 - start editing when konqueror presents the Zope workspace.
 
-`Viewing the Zope object hierarchy with konquerorWebDAV <img:Figures/webdavkonq.png>`_
+.. figure:: Figures/webdavkonq.png
+
+  Viewing the Zope object hierarchy with konquerorWebDAV
 
 
 Using Kate:
@@ -465,7 +479,9 @@ Using Kate:
 
 - Browse for your file or start editing.
 
-`Kate Open File dialog box WebDAV <img:Figures/webdavkate.png>`_
+.. figure:: Figures/webdavkate.png
+
+  Kate Open File dialog box WebDAV
 
 
 Other Integration Facilities

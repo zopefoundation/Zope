@@ -336,8 +336,7 @@ Database Cache
 ++++++++++++++
 
 The most important is the database cache setting. To adjust these settings,
-visit the Control Panel and click on the *Database* link.`Database Cache
-settings <img:23-1:Figures/dbcache.png>`_
+visit the Control Panel and click on the *Database* link.
 
 There are usually seven database connections to the internal Zope database (see
 *Database Connections* below for information about how to change the number of
