@@ -44,6 +44,8 @@ Features Added
 Bugs Fixed
 ++++++++++
 
+- LP #142563:  Fix ``AccessControl.User.NullUnrestrictedUserTests.__str__``.
+
 - Fix several template errors in SiteErrorLog (chameleon compatibility).
 
 - LP #267820:  Fix bad except clause in the ``sequence_sort`` method of

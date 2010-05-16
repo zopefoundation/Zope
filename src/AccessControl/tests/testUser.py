@@ -205,6 +205,11 @@ class NullUnrestrictedUserTests(unittest.TestCase):
         null = self._makeOne()
         self.assertEqual(repr(null), "<NullUnrestrictedUser (None, None)>")
 
+    def test___str__(self):
+        # See https://bugs.launchpad.net/zope2/+bug/142563
+        null = self._makeOne()
+        self.assertEqual(str(null), "<NullUnrestrictedUser (None, None)>")
+
 
 class UserTests(unittest.TestCase):
 
