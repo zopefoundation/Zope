@@ -109,7 +109,7 @@ def test_security_equivalence():
       >>> from zope.configuration.xmlconfig import xmlconfig
       >>> xmlconfig(configure_zcml)
 
-      >>> from App.class_init import InitializeClass
+      >>> from AccessControl.class_init import InitializeClass
       >>> InitializeClass(Dummy2)
 
     Now we compare their access controls:

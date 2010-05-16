@@ -22,10 +22,10 @@ $Id$
 from cgi import escape
 
 from Acquisition import ImplicitAcquisitionWrapper
-from App.class_init import InitializeClass
 from ExtensionClass import Base
 from zope.interface import implements
 
+from AccessControl.class_init import InitializeClass
 from AccessControl.interfaces import IPermissionMappingSupport
 from AccessControl.Owned import UnownableOwner
 from AccessControl.Permission import pname

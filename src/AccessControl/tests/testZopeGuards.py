@@ -583,9 +583,9 @@ class TestActualPython(GuardTestCase):
 
     def _getProtectedBaseClass(self):
 
+        from AccessControl.class_init import InitializeClass
         from AccessControl.SecurityInfo import ClassSecurityInfo
         from ExtensionClass import Base
-        from App.class_init import InitializeClass
 
         global _ProtectedBase
         if _ProtectedBase is None:

@@ -15,14 +15,13 @@
 
 import unittest
 
+from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.SecurityManagement import getSecurityManager
 from AccessControl.User import nobody
 from AccessControl.securitySuite import SecurityBase
 from OFS.Folder import Folder
 from OFS.SimpleItem  import SimpleItem
-from App.class_init import InitializeClass
-
 
 # let's define some permissions first
 
