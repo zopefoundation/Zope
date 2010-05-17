@@ -13,7 +13,7 @@ Maintainers
 +++++++++++
 
 The following persons have access to the ``Zope2`` package on PyPI
-(in order release new versions):
+(in order to release new versions):
 
 - Hanno Schlichting
 - Tres Seaver
