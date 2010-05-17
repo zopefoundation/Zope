@@ -20,6 +20,7 @@ Features Added
 - Updated packages:
 
   - DateTime = 2.12.2
+  - distribute = 0.6.12
   - ExtensionClass = 2.13.1
   - initgroups = 2.13.0
   - Missing = 2.13.0
