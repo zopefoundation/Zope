@@ -52,37 +52,6 @@ class DTMLDocument(PropertyManager, DTMLMethod):
             or perms
         for perms in DTMLMethod.__ac_permissions__])
 
-    def manage_edit(self, data, title,
-                    SUBMIT='Change',
-                    dtpref_cols='100%',
-                    dtpref_rows='20',
-                    REQUEST=None
-                   ):
-        """ Replace contents with 'data', title with 'title'.
-
-        The SUBMIT parameter is also used to change the size of the editing
-        area on the default Document edit screen.  If the value is "Smaller",
-        the rows and columns decrease by 5.  If the value is "Bigger", the
-        rows and columns increase by 5.  If any other or no value is supplied,
-        the data gets checked for DTML errors and is saved.
-        """
-        self._validateProxy(REQUEST)
-        if self._size_changes.has_key(SUBMIT):
-            return self._er(data, title,
-                            SUBMIT, dtpref_cols, dtpref_rows, REQUEST)
-        if self.wl_isLocked():
-            raise ResourceLockedError(
-                'This document has been locked via WebDAV.')
-
-        self.title = str(title)
-        if type(data) is not type(''):
-            data = data.read()
-        self.munge(data)
-        self.ZCacheable_invalidate()
-        if REQUEST:
-            message = "Content changed."
-            return self.manage_main(self, REQUEST, manage_tabs_message=message)
-
     def manage_upload(self, file='', REQUEST=None):
         """ Replace the contents of the document with the text in 'file'.
         """

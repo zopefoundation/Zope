@@ -11,6 +11,10 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
+- LP #142590: The ``DTMLMethod`` and ``DTMLDocument`` ``manage_edit``
+  methods could not deal with ``TaintedString`` instances. Removed the
+  entirely redundant ``DTMLDocument.manage_edit`` method at the same time.
+
 - LP #142451: If non-recursive ownership changes are made using 
   ``changeOwnership``, do not touch any children.
 
