@@ -162,6 +162,9 @@ Features Added
 Bugs Fixed
 ++++++++++
 
+- LP #143144: Fix documentation for the zope.conf ``mount-point``
+  directive.
+
 - LP #142410: Do not index documents in a KeywordIndex if the document 
   is missing the indexed attribute, if determining the value raises 
   AttributeError, or of the indexed attribute is empty.

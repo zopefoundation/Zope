@@ -212,10 +212,23 @@
     <multikey name="mount-point" required="yes" attribute="mount_points"
               datatype=".mount_point">
       <description>
-       The mount point is the slash-separated path to which this database
-       will be mounted within the Zope application server. If the path
-       on the ZEO server is different from the path of the mount point then
-       you can use a notation "path_on_client:path_on_zeo_server".
+       The mount point is a slash-separated path to a 
+       'Products.ZODBMountPoint.Mount.MountPoint' instance in Zope. If 
+       such an instance exists, it can mount an object (the mounted 
+       object) into Zope.
+       By default, the object will be mounted at the same path in Zope (i.e.
+       '/foo/bar' in the database will be mounted at '/foo/bar' in Zope).
+
+       The object can be mounted at a different point using the
+       'virtual_path:real_path' syntax (e.g.  'mount-point /foo/bar:/bar' 
+       will mount the object at '/bar' in the database to '/foo/bar' in 
+       Zope). The name of the mount point ('bar') must be the same as 
+       the mounted object.
+
+       It is also possible to specify the root that should be used in the
+       mounted database by using the syntax
+       'virtual_path:~real_root:real_path'. The root defaults to 'Application'
+       and should not normally be changed.
       </description>
     </multikey>
 
