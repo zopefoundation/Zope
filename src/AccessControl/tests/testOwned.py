@@ -177,8 +177,93 @@ class OwnedTests(unittest.TestCase):
         self.assertEqual(wrapped_owner.getId(), 'user')
 
 
+class OwnershipChangeTests(unittest.TestCase):
+
+    def setUp(self):
+        from AccessControl.Owned import UnownableOwner
+        from AccessControl.User import UserFolder
+        from OFS.Folder import Folder
+        super(OwnershipChangeTests, self).setUp()
+
+        self.root = FauxRoot()
+        self.root.acl_users = UserFolder()
+
+        self.uf = self.root.acl_users
+        self.uf._doAddUser('user1', 'xxx', ['role1'], [])
+        self.uf._doAddUser('user2', 'xxx', ['role1'], [])
+
+        self.root.unownable = Folder('unownable')
+        self.root.unownable._owner = UnownableOwner
+
+        self.root.parent = Folder('parent')
+        parent = self.root.parent
+        parent._owner = (['acl_users'], 'user1')
+        parent._setObject('child', Folder('child'))
+        parent.child._owner = (['acl_users'], 'user1')
+        parent.child._setObject('grandchild', Folder('grandchild'))
+        parent.child.grandchild._owner = (['acl_users'], 'user1')
+
+    def test_changeOwnership_bad_owner(self):
+        from AccessControl.User import nobody
+        previous = self.root.parent._owner
+
+        self.root.parent.changeOwnership(nobody)
+        self.assertEquals(self.root.parent._owner, previous)
+
+    def test_changeOwnership_same_owner(self):
+        previous = self.root.parent._owner
+        sameuser = self.uf.getUser('user1').__of__(self.uf)
+
+        self.root.parent.changeOwnership(sameuser)
+        self.assertEquals(self.root.parent._owner, previous)
+
+    def test_changeOwnership_unownable_owner(self):
+        previous = self.root.unownable._owner
+        newuser = self.uf.getUser('user1').__of__(self.uf)
+
+        self.root.unownable.changeOwnership(newuser)
+        self.assertEquals(self.root.unownable._owner, previous)
+
+    def test_changeOwnership_nonrecursive(self):
+        previous_parent_owner = self.root.parent._owner
+        previous_child_owner = self.root.parent.child._owner
+        previous_grandchild_owner = self.root.parent.child.grandchild._owner
+        newuser = self.uf.getUser('user2').__of__(self.uf)
+
+        self.root.parent.changeOwnership(newuser)
+        self.assertNotEquals(self.root.parent._owner, previous_parent_owner)
+        self.assertEquals(self.root.parent._owner, (['acl_users'], 'user2'))
+        self.assertEquals(self.root.parent.child._owner, previous_child_owner)
+        self.assertEquals( self.root.parent.child.grandchild._owner
+                         , previous_grandchild_owner
+                         )
+
+    def test_changeOwnership_recursive(self):
+        previous_parent_owner = self.root.parent._owner
+        previous_child_owner = self.root.parent.child._owner
+        previous_grandchild_owner = self.root.parent.child.grandchild._owner
+        newuser = self.uf.getUser('user2').__of__(self.uf)
+
+        self.root.parent.changeOwnership(newuser, recursive=True)
+        self.assertNotEquals(self.root.parent._owner, previous_parent_owner)
+        self.assertEquals(self.root.parent._owner, (['acl_users'], 'user2'))
+        self.assertNotEquals(self.root.parent.child._owner, previous_child_owner)
+        self.assertEquals( self.root.parent.child._owner
+                         , (['acl_users'], 'user2')
+                         )
+        self.assertNotEquals( self.root.parent.child.grandchild._owner
+                            , previous_grandchild_owner
+                            )
+        self.assertEquals( self.root.parent.child.grandchild._owner
+                         , (['acl_users'], 'user2')
+                         )
+
+
 def test_suite():
-    return unittest.makeSuite(OwnedTests)
+    return unittest.TestSuite((
+        unittest.makeSuite(OwnedTests),
+        unittest.makeSuite(OwnershipChangeTests),
+        ))
 
 if __name__ == '__main__':
     unittest.main(defaultTest='test_suite')
