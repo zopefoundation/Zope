@@ -11,6 +11,9 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
+- LP #142451: If non-recursive ownership changes are made using 
+  ``changeOwnership``, do not touch any children.
+
 Features Added
 ++++++++++++++
 
