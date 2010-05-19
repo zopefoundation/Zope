@@ -162,6 +162,11 @@ Features Added
 Bugs Fixed
 ++++++++++
 
+- LP #142750 and LP #142481: To prevent confusion when choosing an Id and 
+  to avoid issues when creating two VirtualHostMonsters in the same 
+  container the VirtualHostMoster now has a default Id. It can no longer 
+  be selected, and the intermediary Add view is gone.
+
 - LP #142451: If non-recursive ownership changes are made using 
   ``changeOwnership``, do not touch any children.
 

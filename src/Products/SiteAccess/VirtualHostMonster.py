@@ -30,6 +30,7 @@ class VirtualHostMonster(Persistent, Item, Implicit):
     meta_type='Virtual Host Monster'
     priority = 25
 
+    id = 'VHM'
     title = ''
     lines = ()
     have_map = 0
@@ -255,17 +256,17 @@ class VirtualHostMonster(Persistent, Item, Implicit):
 InitializeClass(VirtualHostMonster)
 
 
-def manage_addVirtualHostMonster(self, id, REQUEST=None, **ignored):
+def manage_addVirtualHostMonster(self, REQUEST=None, **ignored):
     """ """
+    container = self.this()
     vhm = VirtualHostMonster()
-    vhm.id = str(id)
-    if REQUEST:
-        return vhm.manage_addToContainer(self.this(),
-                                        '%s/manage_main' % REQUEST['URL1'])
-    else:
-        vhm.addToContainer(self.this())
+    container._setObject(vhm.getId(), vhm)
+
+    if REQUEST is not None:
+        goto = '%s/manage_main' % self.absolute_url()
+        qs = 'manage_tabs_message=Virtual+Host+Monster+added.'
+        REQUEST['RESPONSE'].redirect('%s?%s' % (goto, qs))
 
 constructors = (
-  ('manage_addVirtualHostMonsterForm', DTMLFile('www/VirtualHostMonsterAdd', globals())),
   ('manage_addVirtualHostMonster', manage_addVirtualHostMonster),
 )
