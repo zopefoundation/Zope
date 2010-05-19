@@ -99,6 +99,10 @@ Restructuring
 Features Added
 ++++++++++++++
 
+- LP #142226: Added an extra keyword argument to the HTTPResponse 
+  setCookie method to suppress enclosing the cookie value field 
+  in double quotes.
+
 - LP #142464:  Make undo log easier to read.  Thanks to Toby Dickinson
   for the patch.
 
