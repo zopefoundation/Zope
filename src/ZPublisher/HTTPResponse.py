@@ -564,7 +564,7 @@ class HTTPResponse(BaseResponse):
         d['expires'] = 'Wed, 31-Dec-97 23:59:59 GMT'
         apply(HTTPResponse.setCookie, (self, name, 'deleted'), d)
 
-    def setCookie(self,name,value,**kw):
+    def setCookie(self, name, value, quoted=True, **kw):
         '''\
         Set an HTTP cookie on the browser
 
@@ -584,6 +584,7 @@ class HTTPResponse(BaseResponse):
         for k, v in kw.items():
             cookie[k] = v
         cookie['value'] = value
+        cookie['quoted'] = quoted
 
     def appendHeader(self, name, value, delimiter=","):
         '''\
@@ -848,7 +849,10 @@ class HTTPResponse(BaseResponse):
             # quoted cookie attr values, so only the value part
             # of name=value pairs may be quoted.
 
-            cookie = 'Set-Cookie: %s="%s"' % (name, quote(attrs['value']))
+            if attrs.get('quoted', True):
+                cookie = 'Set-Cookie: %s="%s"' % (name, quote(attrs['value']))
+            else:
+                cookie = 'Set-Cookie: %s=%s' % (name, quote(attrs['value']))
             for name, v in attrs.items():
                 name = name.lower()
                 if name == 'expires':

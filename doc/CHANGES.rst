@@ -11,7 +11,12 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
+Features Added
+++++++++++++++
 
+- LP #142226: Added an extra keyword argument to the HTTPResponse
+  setCookie method to suppress enclosing the cookie value field
+  in double quotes.
 
 2.12.6 (2010-05-17)
 -------------------
