@@ -111,9 +111,68 @@ for i, (vaddr, vr, _vh, p, ubase) in enumerate(gen_cases()):
     setattr(VHMRegressions, 'testTraverse%s' % i, test)
 
 
+class VHMAddingTests(unittest.TestCase):
+
+    def setUp(self):
+        from OFS.Folder import Folder
+        super(VHMAddingTests, self).setUp()
+        self.root = Folder('root')
+
+    def _makeOne(self):
+        from Products.SiteAccess.VirtualHostMonster import VirtualHostMonster
+        return VirtualHostMonster()
+
+    def test_add_with_existing_vhm(self):
+        from Products.SiteAccess.VirtualHostMonster import \
+            manage_addVirtualHostMonster
+        from zExceptions import BadRequest
+        vhm1 = self._makeOne()
+        vhm1.manage_addToContainer(self.root)
+
+        vhm2 = self._makeOne()
+        self.assertRaises(BadRequest, vhm2.manage_addToContainer, self.root)
+        self.assertRaises( BadRequest
+                         , manage_addVirtualHostMonster
+                         , self.root
+                         )
+
+    def test_add_id_collision(self):
+        from OFS.Folder import Folder
+        from Products.SiteAccess.VirtualHostMonster import \
+            manage_addVirtualHostMonster
+        from zExceptions import BadRequest
+        self.root._setObject('VHM', Folder('VHM'))
+        vhm1 = self._makeOne()
+
+        self.assertRaises(BadRequest, vhm1.manage_addToContainer, self.root)
+        self.assertRaises( BadRequest
+                         , manage_addVirtualHostMonster
+                         , self.root
+                         )
+
+    def test_add_addToContainer(self):
+        from ZPublisher.BeforeTraverse import queryBeforeTraverse
+        vhm1 = self._makeOne()
+        vhm1.manage_addToContainer(self.root)
+
+        self.failUnless(vhm1.getId() in self.root.objectIds())
+        self.failUnless(queryBeforeTraverse(self.root, vhm1.meta_type))
+
+    def test_add_manage_addVirtualHostMonster(self):
+        from Products.SiteAccess.VirtualHostMonster import \
+            manage_addVirtualHostMonster
+        from Products.SiteAccess.VirtualHostMonster import VirtualHostMonster
+        from ZPublisher.BeforeTraverse import queryBeforeTraverse
+        manage_addVirtualHostMonster(self.root)
+
+        self.failUnless(VirtualHostMonster.id in self.root.objectIds())
+        hook = queryBeforeTraverse(self.root, VirtualHostMonster.meta_type)
+        self.failUnless(hook)
+
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(VHMRegressions))
+    suite.addTest(unittest.makeSuite(VHMAddingTests))
     return suite
 
 if __name__ == '__main__':
