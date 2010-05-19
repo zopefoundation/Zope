@@ -162,6 +162,10 @@ Features Added
 Bugs Fixed
 ++++++++++
 
+- LP #142590: The ``DTMLMethod`` and ``DTMLDocument`` ``manage_edit`` 
+  methods could not deal with ``TaintedString`` instances. Removed the 
+  entirely redundant ``DTMLDocument.manage_edit`` method at the same time.
+
 - LP #142750 and LP #142481: To prevent confusion when choosing an Id and 
   to avoid issues when creating two VirtualHostMonsters in the same 
   container the VirtualHostMoster now has a default Id. It can no longer 

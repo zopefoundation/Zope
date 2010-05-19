@@ -14,6 +14,15 @@ class DTMLMethodTests(unittest.TestCase):
         from webdav.interfaces import IWriteLock
         verifyClass(IWriteLock, self._getTargetClass())
 
+    def test_edit_taintedstring(self):
+        from Shared.TaintedString import TaintedString
+        doc = self._makeOne()
+        self.assertEquals(doc.read(), '')
+        data = TaintedString('hello<br/>')
+
+        doc.manage_edit(data, 'title')
+        self.assertEquals(doc.read(), 'hello&lt;br/&gt;')
+
 
 class FactoryTests(unittest.TestCase):
 

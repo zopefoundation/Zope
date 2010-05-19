@@ -34,6 +34,7 @@ from OFS.History import Historical
 from OFS.History import html_diff
 from OFS.SimpleItem import Item_w__name__
 from OFS.ZDOM import ElementWithTitle
+from Shared.TaintedString import TaintedString
 from webdav.Lockable import ResourceLockedError
 from zExceptions import Forbidden
 from zExceptions.TracebackSupplement import PathTracebackSupplement
@@ -287,10 +288,12 @@ class DTMLMethod(RestrictedDTML,
             return self._er(data, title,
                             SUBMIT, dtpref_cols, dtpref_rows, REQUEST)
         if self.wl_isLocked():
-            raise ResourceLockedError('This DTML Method is locked via WebDAV')
+            raise ResourceLockedError('This item is locked via WebDAV')
 
         self.title = str(title)
-        if type(data) is not type(''):
+        if isinstance(data, TaintedString):
+            data = data.quoted()
+        if not isinstance(data, basestring):
             data = data.read()
         self.munge(data)
         self.ZCacheable_invalidate()
