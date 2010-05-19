@@ -34,10 +34,22 @@ class IPluggableIndex(Interface):
     def index_object(documentId, obj, threshold=None):
         """Index an object.
 
-        'documentId' is the integer ID of the document.
-        'obj' is the object to be indexed.
-        'threshold' is the number of words to process between committing
-        subtransactions.  If None, subtransactions are disabled.
+        - ``documentId`` is the integer ID of the document.
+
+        - ``obj`` is the object to be indexed.
+
+        - ``threshold`` is the number of words to process between committing
+          subtransactions.  If None, subtransactions are disabled.
+
+        For each name in ``getIndexSourceNames``, try to get the named
+        attribute from ``obj``.
+
+        - If the object does not have the attribute, do not add it to the
+          index for that name.
+
+        - If the attribute is a callable, call it to get the value.  If
+          calling it raises an AttributeError, do not add it to the index.
+          for that name.
         """
 
     def unindex_object(documentId):

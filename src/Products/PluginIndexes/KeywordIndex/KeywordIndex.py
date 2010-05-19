@@ -70,7 +70,8 @@ class KeywordIndex(UnIndex):
             try:
                 for kw in newKeywords:
                     self.insertForwardIndexEntry(kw, documentId)
-                self._unindex[documentId] = list(newKeywords)
+                if newKeywords:
+                    self._unindex[documentId] = list(newKeywords)
             except TypeError:
                 return 0
         else:
@@ -83,7 +84,10 @@ class KeywordIndex(UnIndex):
             rdiff = difference(newKeywords, oldKeywords)
             if fdiff or rdiff:
                 # if we've got forward or reverse changes
-                self._unindex[documentId] = list(newKeywords)
+                if newKeywords:
+                    self._unindex[documentId] = list(newKeywords)
+                else:
+                    del self._unindex[documentId]
                 if fdiff:
                     self.unindex_objectKeywords(documentId, fdiff)
                 if rdiff:
@@ -94,8 +98,13 @@ class KeywordIndex(UnIndex):
     def _get_object_keywords(self, obj, attr):
         newKeywords = getattr(obj, attr, ())
         if safe_callable(newKeywords):
-            newKeywords = newKeywords()
-        if isinstance(newKeywords, basestring): #Python 2.1 compat isinstance
+            try:
+                newKeywords = newKeywords()
+            except AttributeError:
+                return ()
+        if not newKeywords:
+            return ()
+        elif isinstance(newKeywords, basestring): #Python 2.1 compat isinstance
             return (newKeywords,)
         else:
             unique = {}
