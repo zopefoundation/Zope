@@ -51,24 +51,49 @@ class VHMRegressions(unittest.TestCase):
         m = self.app.folder.doc.getPhysicalPath
         self.assertEqual(m(), ('', 'folder', 'doc'))
 
-    def test_actual_url(self):
-        self.app.folder.manage_addDTMLMethod('index_html', '')
+    def test_actual_url_no_VHR_no_doc_w_trailing_slash(self):
+        ob = self.traverse('/VirtualHostBase/http/www.mysite.com:80'
+                           '/folder/')
+        self.assertEqual(self.app.REQUEST['ACTUAL_URL'],
+                        'http://www.mysite.com/folder/')
 
+    def test_actual_url_no_VHR_no_doc_no_trailing_slash(self):
+        ob = self.traverse('/VirtualHostBase/http/www.mysite.com:80'
+                           '/folder')
+        self.assertEqual(self.app.REQUEST['ACTUAL_URL'],
+                         'http://www.mysite.com/folder')
+
+    def test_actual_url_no_VHR_w_doc_w_trailing_slash(self):
+        ob = self.traverse('/VirtualHostBase/http/www.mysite.com:80'
+                           '/folder/doc/')
+        self.assertEqual(self.app.REQUEST['ACTUAL_URL'],
+                        'http://www.mysite.com/folder/doc/')
+
+    def test_actual_url_no_VHR_w_doc_no_trailing_slash(self):
+        ob = self.traverse('/VirtualHostBase/http/www.mysite.com:80'
+                           '/folder/doc')
+        self.assertEqual(self.app.REQUEST['ACTUAL_URL'],
+                         'http://www.mysite.com/folder/doc')
+
+    def test_actual_url_w_VHR_w_doc_w_trailing_slash(self):
         ob = self.traverse('/VirtualHostBase/http/www.mysite.com:80'
                            '/folder/VirtualHostRoot/doc/')
         self.assertEqual(self.app.REQUEST['ACTUAL_URL'],
                         'http://www.mysite.com/doc/')
 
+    def test_actual_url_w_VHR_w_doc_no_trailing_slash(self):
         ob = self.traverse('/VirtualHostBase/http/www.mysite.com:80'
                            '/folder/VirtualHostRoot/doc')
         self.assertEqual(self.app.REQUEST['ACTUAL_URL'],
                          'http://www.mysite.com/doc')
 
+    def test_actual_url_w_VHR_no_doc_w_trailing_slash(self):
         ob = self.traverse('/VirtualHostBase/http/www.mysite.com:80'
                            '/folder/VirtualHostRoot/')
         self.assertEqual(self.app.REQUEST['ACTUAL_URL'],
                          'http://www.mysite.com/')
 
+    def test_actual_url_w_VHR_w_doc_no_trailing_slash(self):
         ob = self.traverse('/VirtualHostBase/http/www.mysite.com:80'
                            '/folder/VirtualHostRoot')
         self.assertEqual(self.app.REQUEST['ACTUAL_URL'],
