@@ -6,10 +6,8 @@ from cgi import escape
 import os
 
 from Acquisition import Implicit
-from Acquisition import ImplicitAcquisitionWrapper
 from App.Dialogs import MessageDialog
 from App.special_dtml import DTMLFile
-from ExtensionClass import Base
 from OFS.SimpleItem import Item
 from Persistence import Persistent
 from ZPublisher.BeforeTraverse import NameCaller

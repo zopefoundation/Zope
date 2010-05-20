@@ -2,12 +2,8 @@
 
 Defines the VirtualHostMonster class
 """
-import os
-
 from AccessControl.Permissions import view as View
 from AccessControl.SecurityInfo import ClassSecurityInfo
-from Acquisition import aq_inner
-from Acquisition import aq_parent
 from Acquisition import Implicit
 from App.class_init import InitializeClass
 from App.Dialogs import MessageDialog
@@ -20,8 +16,6 @@ from ZPublisher.BeforeTraverse import registerBeforeTraverse
 from ZPublisher.BeforeTraverse import unregisterBeforeTraverse
 from ZPublisher.BaseRequest import quote
 from zExceptions import BadRequest
-
-from AccessRule import _swallow
 
 class VirtualHostMonster(Persistent, Item, Implicit):
     """Provide a simple drop-in solution for virtual hosting.
