@@ -58,8 +58,9 @@ class VirtualHostMonster(Persistent, Item, Implicit):
                 try:
                     host, path = [x.strip() for x in  line.split('/', 1)]
                 except:
-                    raise ValueError, (
-                        'Line needs a slash between host and path: %s' % line )
+                    raise ValueError(
+                        'Line needs a slash between host and path: %s'
+                            % line )
                 pp = filter(None, path.split( '/'))
                 if pp:
                     obpath = pp[:]
@@ -105,7 +106,8 @@ class VirtualHostMonster(Persistent, Item, Implicit):
         self.lines = tuple(new_lines)
         self.have_map = not not (fixed_map or sub_map) # booleanize
         if RESPONSE is not None:
-            RESPONSE.redirect('manage_edit?manage_tabs_message=Changes%20Saved.')
+            RESPONSE.redirect(
+                'manage_edit?manage_tabs_message=Changes%20Saved.')
 
     def addToContainer(self, container):
         container._setObject(self.id, self)
@@ -195,15 +197,17 @@ class VirtualHostMonster(Persistent, Item, Implicit):
                         vh_part = path.pop(0)[1:]
                     if vh_part:
                         request['VIRTUAL_URL_PARTS'] = vup = (
-                            request['SERVER_URL'], vh_part, quote('/'.join(path)))
+                            request['SERVER_URL'],
+                            vh_part, quote('/'.join(path)))
                     else:
                         request['VIRTUAL_URL_PARTS'] = vup = (
                             request['SERVER_URL'], quote('/'.join(path)))
                     request['VIRTUAL_URL'] = '/'.join(vup)
 
                     # new ACTUAL_URL
-                    add = (path and request['ACTUAL_URL'].endswith('/')) and '/' or ''
-                    request['ACTUAL_URL'] = request['VIRTUAL_URL']+add
+                    add = (path and
+                           request['ACTUAL_URL'].endswith('/')) and '/' or ''
+                    request['ACTUAL_URL'] = request['VIRTUAL_URL'] + add
 
                 return
             vh_used = 1 # Only retry once.
