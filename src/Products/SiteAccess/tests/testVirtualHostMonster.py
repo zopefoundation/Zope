@@ -93,7 +93,7 @@ class VHMRegressions(unittest.TestCase):
         self.assertEqual(self.app.REQUEST['ACTUAL_URL'],
                          'http://www.mysite.com/')
 
-    def test_actual_url_w_VHR_w_doc_no_trailing_slash(self):
+    def test_actual_url_w_VHR_no_doc_no_trailing_slash(self):
         ob = self.traverse('/VirtualHostBase/http/www.mysite.com:80'
                            '/folder/VirtualHostRoot')
         self.assertEqual(self.app.REQUEST['ACTUAL_URL'],
