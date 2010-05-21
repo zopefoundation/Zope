@@ -19,12 +19,12 @@ from Products.SiteAccess.AccessRule import _swallow
 SUPPRESS_SITEROOT = os.environ.has_key('SUPPRESS_SITEROOT')
 
 class Traverser(Persistent, Item):
-    """Class for overriding container's __before_traverse__
+    """ Class for overriding container's __before_traverse__
 
     Containers are expected to have at most one instance of any particular
-    subclass, with Id equal to the meta_type of the subclass."""
-
-    meta_type='Traverser'
+    subclass, with Id equal to the meta_type of the subclass.
+    """
+    meta_type = 'Traverser'
     priority = 100
 
     __ac_permissions__=()
@@ -66,22 +66,24 @@ class Traverser(Persistent, Item):
                                 % escape(self.meta_type))
 
 class SiteRoot(Traverser, Implicit):
-    """SiteAccess.SiteRoot object
+    """ SiteAccess.SiteRoot object
 
     A SiteRoot causes traversal of its container to replace the part
-    of the Request path traversed so far with the request's SiteRootURL."""
-
+    of the Request path traversed so far with the request's SiteRootURL.
+    """
     id = meta_type = 'SiteRoot'
     title = ''
     priority = 50
 
-    manage_options=({'label':'Edit', 'action':'manage_main', 'help': ('SiteAccess', 'SiteRoot_Edit.stx')},)
+    manage_options=({'label':'Edit',
+                     'action':'manage_main',
+                     'help': ('SiteAccess', 'SiteRoot_Edit.stx'),
+                    },)
 
     manage = manage_main = DTMLFile('www/SiteRootEdit', globals())
     manage_main._setName('manage_main')
 
     def __init__(self, title, base, path):
-        '''Title'''
         self.title = title.strip()
         self.base = base = base.strip()
         self.path = path = path.strip()
@@ -95,7 +97,8 @@ class SiteRoot(Traverser, Implicit):
             except: pass
 
     def manage_edit(self, title, base, path, REQUEST=None):
-        '''Set the title, base, and path'''
+        """ Set the title, base, and path.
+        """
         self.__init__(title, base, path)
         if REQUEST:
             return MessageDialog(title='SiteRoot changed.',
@@ -103,8 +106,10 @@ class SiteRoot(Traverser, Implicit):
               action='%s/manage_main' % REQUEST['URL1'])
 
     def __call__(self, client, request, response=None):
-        '''Traversing'''
-        if SUPPRESS_SITEROOT: return
+        """ Traversing.
+        """
+        if SUPPRESS_SITEROOT:
+            return
         if '_SUPPRESS_SITEROOT' in _swallow(request, '_SUPPRESS'):
             request.setVirtualRoot(request.steps)
             return
@@ -118,22 +123,26 @@ class SiteRoot(Traverser, Implicit):
                 if srd[i] is None:
                     srd[i] = request.environ.get(srp, None)
         if srd[0] is not None:
-            request['ACTUAL_URL'] = request['ACTUAL_URL'].replace(request['SERVER_URL'], srd[0])
+            request['ACTUAL_URL'] = request['ACTUAL_URL'].replace(
+                                                request['SERVER_URL'], srd[0])
             request['SERVER_URL'] = srd[0]
             request._resetURLS()
         if srd[1] is not None:
             old = request['URL']
             request.setVirtualRoot(srd[1])
-            request['ACTUAL_URL'] = request['ACTUAL_URL'].replace(old, request['URL'])
+            request['ACTUAL_URL'] = request['ACTUAL_URL'].replace(
+                                                old, request['URL'])
 
     def get_size(self):
-        '''Make FTP happy'''
+        """ Make FTP happy
+        """
         return 0
 
 def manage_addSiteRoot(self, title='', base='', path='', REQUEST=None,
                        **ignored):
-    """ """
-    sr=SiteRoot(title, base, path)
+    """ Add a SiteRoot to a container.
+    """
+    sr = SiteRoot(title, base, path)
     if REQUEST:
         return sr.manage_addToContainer(self.this(),
                                         '%s/manage_main' % REQUEST['URL1'])
