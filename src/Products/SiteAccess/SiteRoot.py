@@ -87,20 +87,6 @@ class SiteRoot(Traverser, Implicit):
         self.title = title.strip()
         self.base = base = base.strip()
         self.path = path = path.strip()
-        if base:
-            self.SiteRootBASE = base
-        else:
-            try:
-                del self.SiteRootBASE
-            except:
-                pass
-        if path:
-            self.SiteRootPATH = path
-        else:
-            try:
-                del self.SiteRootPATH
-            except:
-                pass
 
     def manage_edit(self, title, base, path, REQUEST=None):
         """ Set the title, base, and path.
@@ -114,30 +100,26 @@ class SiteRoot(Traverser, Implicit):
     def __call__(self, client, request, response=None):
         """ Traversing.
         """
+        rq = request
         if SUPPRESS_SITEROOT:
             return
-        if '_SUPPRESS_SITEROOT' in _swallow(request, '_SUPPRESS'):
-            request.setVirtualRoot(request.steps)
+        if '_SUPPRESS_SITEROOT' in _swallow(rq, '_SUPPRESS'):
+            rq.setVirtualRoot(rq.steps)
             return
-        srd = [None, None]
-        for i in (0, 1):
-            srp = ('SiteRootBASE', 'SiteRootPATH')[i]
-            try:
-                srd[i] = getattr(self, srp)
-            except AttributeError:
-                srd[i] = request.get(srp, None)
-                if srd[i] is None:
-                    srd[i] = request.environ.get(srp, None)
-        if srd[0] is not None:
-            request['ACTUAL_URL'] = request['ACTUAL_URL'].replace(
-                                                request['SERVER_URL'], srd[0])
-            request['SERVER_URL'] = srd[0]
-            request._resetURLS()
-        if srd[1] is not None:
-            old = request['URL']
-            request.setVirtualRoot(srd[1])
-            request['ACTUAL_URL'] = request['ACTUAL_URL'].replace(
-                                                old, request['URL'])
+        base = (self.base or
+                rq.get('SiteRootBASE') or
+                rq.environ.get('SiteRootBASE'))
+        path = (self.path or
+                rq.get('SiteRootPATH') or
+                rq.environ.get('SiteRootPATH'))
+        if base is not None:
+            rq['ACTUAL_URL'] = rq['ACTUAL_URL'].replace(rq['SERVER_URL'], base)
+            rq['SERVER_URL'] = base
+            rq._resetURLS()
+        if path is not None:
+            old = rq['URL']
+            rq.setVirtualRoot(path)
+            rq['ACTUAL_URL'] = rq['ACTUAL_URL'].replace(old, rq['URL'])
 
     def get_size(self):
         """ Make FTP happy
