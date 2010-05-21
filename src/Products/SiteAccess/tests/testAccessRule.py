@@ -37,7 +37,7 @@ class AccessRuleTests(unittest.TestCase):
         self.failIf(_called)
 
     def test___call___w_SUPPRESS_ACCESSRULE_in_URL(self):
-        # This behavior will change once we land lp:142878.
+        # This behavior changed in landing lp:142878.
         _called = []
         def _func(*args):
             _called.append(args)
@@ -47,8 +47,8 @@ class AccessRuleTests(unittest.TestCase):
         request.steps = []
         container = DummyContainer(testing=_func)
         rule(container, request)
-        self.failIf(_called)
-        self.assertEqual(request._virtual_root, ['_SUPPRESS_ACCESSRULE'])
+        self.failUnless(_called)
+        self.assertEqual(request._virtual_root, None)
 
     def test___call___wo_SUPPRESS_ACCESSRULE(self):
         _called = []

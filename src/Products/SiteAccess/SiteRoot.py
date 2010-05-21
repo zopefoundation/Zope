@@ -14,8 +14,6 @@ from ZPublisher.BeforeTraverse import NameCaller
 from ZPublisher.BeforeTraverse import registerBeforeTraverse
 from ZPublisher.BeforeTraverse import unregisterBeforeTraverse
 
-from Products.SiteAccess.AccessRule import _swallow
-
 SUPPRESS_SITEROOT = os.environ.has_key('SUPPRESS_SITEROOT')
 
 class Traverser(Persistent, Item):
@@ -102,9 +100,6 @@ class SiteRoot(Traverser, Implicit):
         """
         rq = request
         if SUPPRESS_SITEROOT:
-            return
-        if '_SUPPRESS_SITEROOT' in _swallow(rq, '_SUPPRESS'):
-            rq.setVirtualRoot(rq.steps)
             return
         base = (self.base or
                 rq.get('SiteRootBASE') or

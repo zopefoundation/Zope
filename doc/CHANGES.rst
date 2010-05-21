@@ -162,6 +162,9 @@ Features Added
 Bugs Fixed
 ++++++++++
 
+- LP #142878: Remove URL-based suppression of access rules and site root
+  objects.   Suppression using ``os.environ`` still works.
+
 - LP #143144: Fix documentation for the zope.conf ``mount-point``
   directive.
 

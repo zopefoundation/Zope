@@ -166,16 +166,24 @@ class SiteRootTests(unittest.TestCase):
         self.assertEqual(request, {})
 
     def test___call___w_SUPPRESS_SITEROOT_in_URL(self):
-        # This behavior will change once we land lp:142878.
-        siteroot = self._makeOne(base='http://example.com', path='/path')
+        # This behavior changed in landing lp:142878.
+        URL='http://localhost:8080/example/folder/'
+        siteroot = self._makeOne(base='http://example.com', path='/example')
         request = DummyRequest(TraversalRequestNameStack=
-                                    ['_SUPPRESS_SITEROOT'])
-        def _dont_go_here(key, value):
-            raise NotImplementedError
-        request.__setitem__ = _dont_go_here
+                                    ['_SUPPRESS_SITEROOT'],
+                               URL=URL,
+                               ACTUAL_URL=URL,
+                               SERVER_URL='http://localhost:8080',
+                              )
         request.steps = []
+        request.environ = {}
         siteroot(None, request)
-        self.assertEqual(request._virtual_root, ['_SUPPRESS_SITEROOT'])
+        self.assertEqual(request['URL'], URL)
+        self.assertEqual(request['SERVER_URL'], 'http://example.com')
+        self.assertEqual(request['ACTUAL_URL'], 
+                         'http://example.com/example/folder/')
+        self.assertEqual(request._virtual_root, '/example')
+        self.failUnless(request._urls_reset)
 
     def test___call___wo_SUPPRESS_SITEROOT_w_base_wo_path(self):
         URL='http://localhost:8080/example/folder/'
