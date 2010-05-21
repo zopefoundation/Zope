@@ -62,10 +62,8 @@ class Traverser(Persistent, Item):
                                                   self.priority)
     def _setId(self, id):
         if id != self.id:
-            raise MessageDialog(
-                title='Invalid Id',
-                message='Cannot change the id of a %s' % escape(self.meta_type),
-                action ='./manage_main',)
+            raise ValueError('Cannot change the id of a %s'
+                                % escape(self.meta_type))
 
 class SiteRoot(Traverser, Implicit):
     """SiteAccess.SiteRoot object
