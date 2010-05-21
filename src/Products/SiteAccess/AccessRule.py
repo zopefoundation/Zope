@@ -18,7 +18,8 @@ class AccessRule(NameCaller):
     meta_type = 'Set Access Rule'
 
     def __call__(self, container, request):
-        if SUPPRESS_ACCESSRULE: return
+        if SUPPRESS_ACCESSRULE:
+            return
         if '_SUPPRESS_ACCESSRULE' in _swallow(request, '_SUPPRESS'):
             request.setVirtualRoot(request.steps)
             return
@@ -44,8 +45,10 @@ def manage_addAccessRule(self, method_id=None, REQUEST=None, **ignored):
     if method_id is None or (REQUEST and REQUEST.form.has_key('none')):
         rules = unregisterBeforeTraverse(self, 'AccessRule')
         if rules:
-            try: del getattr(self, rules[0].name).icon
-            except: pass
+            try:
+                del getattr(self, rules[0].name).icon
+            except:
+                pass
         if REQUEST:
             return MessageDialog(title='No Access Rule',
               message='This object now has no Access Rule',
@@ -53,13 +56,16 @@ def manage_addAccessRule(self, method_id=None, REQUEST=None, **ignored):
     elif method_id and hasattr(self, method_id):
         rules = unregisterBeforeTraverse(self, 'AccessRule')
         if rules:
-            try: del getattr(self, rules[0].name).icon
-            except: pass
+            try:
+                del getattr(self, rules[0].name).icon
+            except:
+                pass
         hook = AccessRule(method_id)
         registerBeforeTraverse(self, hook, 'AccessRule', 1)
         try:
             getattr(self, method_id).icon = 'misc_/SiteAccess/AccessRule.gif'
-        except: pass
+        except:
+            pass
         if REQUEST:
             return MessageDialog(title='Access Rule Set',
               message='"%s" is now the Access Rule for this object'
