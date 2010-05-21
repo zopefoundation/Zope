@@ -127,18 +127,12 @@ class SiteRootTests(unittest.TestCase):
         self.assertEqual(siteroot.title, 'TITLE')
         self.assertEqual(siteroot.base, '')
         self.assertEqual(siteroot.path, '')
-        # XXX Why aren't these defaulted to None at class scope?
-        # Even better:  why do they exist at all?
-        self.failUnless(getattr(siteroot, 'SiteRootBase', self) is self)
-        self.failUnless(getattr(siteroot, 'SiteRootPath', self) is self)
 
     def test___init___w_base_and_path(self):
         siteroot = self._makeOne(base='http://example.com', path='/path')
         self.assertEqual(siteroot.title, 'TITLE')
         self.assertEqual(siteroot.base, 'http://example.com')
         self.assertEqual(siteroot.path, '/path')
-        self.assertEqual(siteroot.SiteRootBASE, 'http://example.com')
-        self.assertEqual(siteroot.SiteRootPATH, '/path')
 
     def test_manage_edit_no_REQUEST(self):
         siteroot = self._makeOne(title='Before',
@@ -150,8 +144,6 @@ class SiteRootTests(unittest.TestCase):
         self.assertEqual(siteroot.title, 'After')
         self.assertEqual(siteroot.base, 'http://after.example.com')
         self.assertEqual(siteroot.path, '/after')
-        self.assertEqual(siteroot.SiteRootBASE, 'http://after.example.com')
-        self.assertEqual(siteroot.SiteRootPATH, '/after')
 
     def test_manage_edit_w_REQUEST(self):
         siteroot = self._makeOne(title='Before',
@@ -165,8 +157,6 @@ class SiteRootTests(unittest.TestCase):
         self.assertEqual(siteroot.title, 'After')
         self.assertEqual(siteroot.base, 'http://after.example.com')
         self.assertEqual(siteroot.path, '/after')
-        self.assertEqual(siteroot.SiteRootBASE, 'http://after.example.com')
-        self.assertEqual(siteroot.SiteRootPATH, '/after')
 
     def test___call___w_SUPPRESS_SITEROOT_set(self):
         self._set_SUPPRESS_SITEROOT(1)
