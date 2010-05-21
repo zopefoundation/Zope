@@ -172,6 +172,30 @@ class Test_manage_addAccessRule(unittest.TestCase):
         self.assertEqual(new_rule.icon, 'misc_/SiteAccess/AccessRule.gif')
 
 
+class Test_getAccessRule(unittest.TestCase):
+
+    def _callFUT(self, container, REQUEST=None):
+        from Products.SiteAccess.AccessRule import getAccessRule
+        return getAccessRule(container, REQUEST)
+
+    def test_no_rules(self):
+        container = DummyContainer()
+        self.assertEqual(self._callFUT(container), '')
+
+    def test_w_rule_invalid(self):
+        from ZPublisher.BeforeTraverse import registerBeforeTraverse
+        container = DummyContainer()
+        registerBeforeTraverse(container, DummyObject(), 'AccessRule')
+        self.failUnless(self._callFUT(container).startswith(
+                                        'Invalid BeforeTraverse data: '))
+
+    def test_w_rule_valid(self):
+        from ZPublisher.BeforeTraverse import registerBeforeTraverse
+        container = DummyContainer()
+        registerBeforeTraverse(container, DummyObject(name='foo'), 'AccessRule')
+        self.assertEqual(self._callFUT(container), 'foo')
+
+
 class DummyRequest(dict):
     _virtual_root = None
     def setVirtualRoot(self, root):
@@ -196,5 +220,6 @@ def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(AccessRuleTests),
         unittest.makeSuite(Test_manage_addAccessRule),
+        unittest.makeSuite(Test_getAccessRule),
     ))
 
