@@ -87,14 +87,20 @@ class SiteRoot(Traverser, Implicit):
         self.title = title.strip()
         self.base = base = base.strip()
         self.path = path = path.strip()
-        if base: self.SiteRootBASE = base
+        if base:
+            self.SiteRootBASE = base
         else:
-            try: del self.SiteRootBASE
-            except: pass
-        if path: self.SiteRootPATH = path
+            try:
+                del self.SiteRootBASE
+            except:
+                pass
+        if path:
+            self.SiteRootPATH = path
         else:
-            try: del self.SiteRootPATH
-            except: pass
+            try:
+                del self.SiteRootPATH
+            except:
+                pass
 
     def manage_edit(self, title, base, path, REQUEST=None):
         """ Set the title, base, and path.
