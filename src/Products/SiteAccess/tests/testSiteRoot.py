@@ -42,7 +42,6 @@ class TraverserTests(unittest.TestCase):
         container = DummyContainer()
         container.testing = object()
         result = traverser.manage_addToContainer(container, nextURL=NEXTURL)
-        self.failUnless(isinstance(result, str))
         self.failUnless('<TITLE>Item Exists</TITLE>' in result)
         self.failIf(container.testing is traverser)
 
@@ -51,7 +50,6 @@ class TraverserTests(unittest.TestCase):
         traverser = self._makeOne()
         container = DummyContainer()
         result = traverser.manage_addToContainer(container, nextURL=NEXTURL)
-        self.failUnless(isinstance(result, str))
         self.failUnless('<TITLE>Item Added</TITLE>' in result)
         self.failUnless(container.testing is traverser)
         hook = container.__before_traverse__[(100, 'Traverser')]
@@ -100,10 +98,158 @@ class TraverserTests(unittest.TestCase):
         self.assertRaises(ValueError, traverser._setId, 'other')
 
 
+class SiteRootTests(unittest.TestCase):
+
+    _old_SSR = None
+
+    def setUp(self):
+        from Testing.ZopeTestCase import ZopeLite
+        ZopeLite.startup()
+
+    def tearDown(self):
+        if self._old_SSR is not None:
+            self._set_SUPPRESS_SITEROOT(self._old_SSR)
+
+    def _set_SUPPRESS_SITEROOT(self, value):
+        from Products.SiteAccess import SiteRoot as SR
+        (self._old_SSR,
+         SR.SUPPRESS_SITEROOT) = (SR.SUPPRESS_SITEROOT, value)
+
+    def _getTargetClass(self):
+        from Products.SiteAccess.SiteRoot import SiteRoot
+        return SiteRoot
+
+    def _makeOne(self, title='TITLE', base='', path=''):
+        return self._getTargetClass()(title, base, path)
+
+    def test___init___strips_base_and_path(self):
+        siteroot = self._makeOne(base=' ', path=' ')
+        self.assertEqual(siteroot.title, 'TITLE')
+        self.assertEqual(siteroot.base, '')
+        self.assertEqual(siteroot.path, '')
+        # XXX Why aren't these defaulted to None at class scope?
+        # Even better:  why do they exist at all?
+        self.failUnless(getattr(siteroot, 'SiteRootBase', self) is self)
+        self.failUnless(getattr(siteroot, 'SiteRootPath', self) is self)
+
+    def test___init___w_base_and_path(self):
+        siteroot = self._makeOne(base='http://example.com', path='/path')
+        self.assertEqual(siteroot.title, 'TITLE')
+        self.assertEqual(siteroot.base, 'http://example.com')
+        self.assertEqual(siteroot.path, '/path')
+        self.assertEqual(siteroot.SiteRootBASE, 'http://example.com')
+        self.assertEqual(siteroot.SiteRootPATH, '/path')
+
+    def test_manage_edit_no_REQUEST(self):
+        siteroot = self._makeOne(title='Before',
+                                 base='http://before.example.com',
+                                 path='/before')
+        result = siteroot.manage_edit('After', 'http://after.example.com ',
+                                      '/after ')
+        self.failUnless(result is None)
+        self.assertEqual(siteroot.title, 'After')
+        self.assertEqual(siteroot.base, 'http://after.example.com')
+        self.assertEqual(siteroot.path, '/after')
+        self.assertEqual(siteroot.SiteRootBASE, 'http://after.example.com')
+        self.assertEqual(siteroot.SiteRootPATH, '/after')
+
+    def test_manage_edit_w_REQUEST(self):
+        siteroot = self._makeOne(title='Before',
+                                 base='http://before.example.com',
+                                 path='/before')
+        result = siteroot.manage_edit('After', 'http://after.example.com ',
+                                      '/after ',
+                                      REQUEST = {'URL1':
+                                        'http://localhost:8080/manage_main'})
+        self.failUnless('<TITLE>SiteRoot changed.</TITLE>' in result)
+        self.assertEqual(siteroot.title, 'After')
+        self.assertEqual(siteroot.base, 'http://after.example.com')
+        self.assertEqual(siteroot.path, '/after')
+        self.assertEqual(siteroot.SiteRootBASE, 'http://after.example.com')
+        self.assertEqual(siteroot.SiteRootPATH, '/after')
+
+    def test___call___w_SUPPRESS_SITEROOT_set(self):
+        self._set_SUPPRESS_SITEROOT(1)
+        siteroot = self._makeOne(base='http://example.com', path='/path')
+        request = {}
+        siteroot(None, request)
+        self.assertEqual(request, {})
+
+    def test___call___w_SUPPRESS_SITEROOT_in_URL(self):
+        # This behavior will change once we land lp:142878.
+        siteroot = self._makeOne(base='http://example.com', path='/path')
+        request = DummyRequest(TraversalRequestNameStack=
+                                    ['_SUPPRESS_SITEROOT'])
+        def _dont_go_here(key, value):
+            raise NotImplementedError
+        request.__setitem__ = _dont_go_here
+        request.steps = []
+        siteroot(None, request)
+        self.assertEqual(request._virtual_root, ['_SUPPRESS_SITEROOT'])
+
+    def test___call___wo_SUPPRESS_SITEROOT_w_base_wo_path(self):
+        URL='http://localhost:8080/example/folder/'
+        siteroot = self._makeOne(base='http://example.com', path='')
+        request = DummyRequest(TraversalRequestNameStack=[],
+                               URL=URL,
+                               ACTUAL_URL=URL,
+                               SERVER_URL='http://localhost:8080',
+                              )
+        request.steps = []
+        request.environ = {}
+        siteroot(None, request)
+        self.assertEqual(request['URL'], URL)
+        self.assertEqual(request['SERVER_URL'], 'http://example.com')
+        self.assertEqual(request['ACTUAL_URL'],
+                         'http://example.com/example/folder/')
+        self.assertEqual(request._virtual_root, None)
+        self.failUnless(request._urls_reset)
+
+    def test___call___wo_SUPPRESS_SITEROOT_wo_base_w_path(self):
+        URL='http://localhost:8080/example/folder/'
+        siteroot = self._makeOne(base='', path='/example')
+        request = DummyRequest(TraversalRequestNameStack=[],
+                               URL=URL,
+                               ACTUAL_URL=URL,
+                               SERVER_URL='http://localhost:8080',
+                              )
+        request.steps = []
+        request.environ = {}
+        siteroot(None, request)
+        self.assertEqual(request['URL'], URL)
+        self.assertEqual(request['SERVER_URL'], 'http://localhost:8080')
+        self.assertEqual(request['ACTUAL_URL'], URL)
+        self.assertEqual(request._virtual_root, '/example')
+        self.failIf(request._urls_reset)
+
+    def test___call___wo_SUPPRESS_SITEROOT_w_base_w_path(self):
+        URL='http://localhost:8080/example/folder/'
+        siteroot = self._makeOne(base='http://example.com', path='/example')
+        request = DummyRequest(TraversalRequestNameStack=[],
+                               URL=URL,
+                               ACTUAL_URL=URL,
+                               SERVER_URL='http://localhost:8080',
+                              )
+        request.steps = []
+        request.environ = {}
+        siteroot(None, request)
+        self.assertEqual(request['URL'], URL)
+        self.assertEqual(request['SERVER_URL'], 'http://example.com')
+        self.assertEqual(request['ACTUAL_URL'], 
+                         'http://example.com/example/folder/')
+        self.assertEqual(request._virtual_root, '/example')
+        self.failUnless(request._urls_reset)
+
+    def test_get_size(self):
+        siteroot = self._makeOne()
+        self.assertEqual(siteroot.get_size(), 0)
+
+
 class DummyObject(object):
 
     def __init__(self, **kw):
         self.__dict__.update(kw)
+
 
 class DummyContainer(object):
 
@@ -115,6 +261,18 @@ class DummyContainer(object):
 
     def this(self):
         return self
+
+
+class DummyRequest(dict):
+
+    _virtual_root = None
+    _urls_reset = False
+
+    def setVirtualRoot(self, root):
+        self._virtual_root = root
+
+    def _resetURLS(self):
+        self._urls_reset = True
 
 
 class SiteRootRegressions(unittest.TestCase):
@@ -151,5 +309,6 @@ class SiteRootRegressions(unittest.TestCase):
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(TraverserTests),
+        unittest.makeSuite(SiteRootTests),
         unittest.makeSuite(SiteRootRegressions),
     ))
