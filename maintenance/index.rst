@@ -63,6 +63,19 @@ Steps for creating a new Zope 2 release
 
   - login on https://zope2.zope.org into the Plone site
 
+- close the released milestone (for example 2.12.7)::
+
+    https://launchpad.net/zope2/+milestone/2.12.7/+addrelease
+
+- update the status of all bugs associated with the released milestone::
+
+    https://launchpad.net/zope2/+milestone/2.12.7
+
+- update launchpad. Create a new next milestone at::
+
+    https://launchpad.net/zope2/2.12/+addmilestone
+
+
 Pre-Zope 2.12 release process
 -----------------------------
 
