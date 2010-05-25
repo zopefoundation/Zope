@@ -162,6 +162,9 @@ Features Added
 Bugs Fixed
 ++++++++++
 
+- LP #142874: Naming objects ``URL`` or ``URL1`` broke several ZMI
+  views.
+
 - LP #142878: Remove URL-based suppression of access rules and site root
   objects.   Suppression using ``os.environ`` still works.
 

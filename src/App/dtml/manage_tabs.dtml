@@ -59,7 +59,7 @@
    align="center"><font face="Verdana, Arial, Helvetica" 
    size="1" color="#000000">&nbsp;<a <dtml-if "s_item.get('action')"
    >href="&dtml-action;"<dtml-else
-   >href="&dtml-URL1;"</dtml-if
+   >href="<dtml-var "REQUEST.URL1" html_quote>"</dtml-if
    ><dtml-if "s_item.get('target')"> target="&dtml-target;"</dtml-if
    >><span style="color: #000000;"><strong><dtml-var "s_item['label']"
    ></strong></span></a>&nbsp;</font></td>
@@ -68,7 +68,7 @@
    align="center"><font face="Verdana, Arial, Helvetica" 
    size="1" color="#000000">&nbsp;<a <dtml-if "s_item.get('action')"
    >href="&dtml-action;"<dtml-else
-   >href="&dtml-URL1;"</dtml-if
+   >href="<dtml-var "REQUEST.URL1" html_quote>"</dtml-if
    ><dtml-if "s_item.get('target')"> target="&dtml-target;"</dtml-if
    >><span style="color: #000000;"><strong><dtml-var "s_item['label']"
    ></strong></span></a>&nbsp;</font></td>

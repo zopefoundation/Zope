@@ -25,7 +25,7 @@
 <dtml-var manage_tabs>
 </dtml-with>
 
-<form action="&dtml-URL1;" method="post">
+<form action="<dtml-var "REQUEST.URL1" html_quote>" method="post">
 <dtml-if propertyMap>
 <p class="form-help">
 Properties allow you to assign simple values to Zope objects. To change 
@@ -222,7 +222,7 @@ and value and click the &quot;Add&quot; button.
 
 <dtml-if property_extensible_schema__>
 
-<form action="&dtml-URL1;/manage_addProperty" method="post">
+<form action="<dtml-var "REQUEST.URL1" html_quote>/manage_addProperty" method="post">
 
 <p class="form-help">
 To add a new property, enter a name, type and value for the new 

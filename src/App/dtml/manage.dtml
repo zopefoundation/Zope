@@ -19,14 +19,14 @@ function update_menu() {
   <dtml-else>
   <frameset rows="34, *">
   </dtml-if>
-  <frame src="&dtml-URL1;/manage_top_frame" name="manage_top_frame"
+  <frame src="<dtml-var "REQUEST.URL1" html_quote>/manage_top_frame" name="manage_top_frame"
    marginheight="0" scrolling="no"/>
 </dtml-if>
 
   <frameset cols="175,*">
-    <frame src="&dtml-URL1;/manage_menu" name="manage_menu"
+    <frame src="<dtml-var "REQUEST.URL1" html_quote>/manage_menu" name="manage_menu"
      marginwidth="2" marginheight="2" scrolling="auto"/>
-    <frame src="&dtml-URL1;/manage_workspace" name="manage_main"
+    <frame src="<dtml-var "REQUEST.URL1" html_quote>/manage_workspace" name="manage_main"
      marginwidth="2" marginheight="2" scrolling="auto"/>
   </frameset>
 
