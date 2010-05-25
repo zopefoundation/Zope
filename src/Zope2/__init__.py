@@ -55,7 +55,7 @@ def debug(*args, **kw):
     """Utility to try a Zope request using the interactive interpreter"""
     startup()
     import ZPublisher
-    return ZPublisher.test('Zope', *args, **kw)
+    return ZPublisher.test('Zope2', *args, **kw)
 
 from Zope2.Startup.run import configure
 

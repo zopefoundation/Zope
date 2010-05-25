@@ -162,6 +162,10 @@ Features Added
 Bugs Fixed
 ++++++++++
 
+- LP #143261: The (very old-fashioned) Zope2.debug interactive request
+  debugger still referred to the toplevel module ``Zope``, which was
+  renamed to ``Zope2`` a long time ago.
+
 - LP #142874: Naming objects ``URL`` or ``URL1`` broke several ZMI
   views.
 
