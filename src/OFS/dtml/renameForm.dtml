@@ -7,7 +7,7 @@
 	   )">
 
 <dtml-if expr="REQUEST.has_key('ids')">
-<form action="&dtml-URL1;" method="post">
+<form action="<dtml-var "REQUEST.URL1" html_quote>" method="post">
 <table border="0">
 <dtml-in expr="manage_CopyContainerAllItems(REQUEST)">
 <tr>

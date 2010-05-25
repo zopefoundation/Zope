@@ -34,10 +34,10 @@ function toggleSelect() {
   <td align="left" valign="top">&nbsp;</td>
   <td align="right" valign="top">
   <div class="form-element">
-  <form action="&dtml-URL1;/" method="get">
+  <form action="<dtml-var "REQUEST.URL1" html_quote>/" method="get">
   <dtml-if "_.len(filtered_meta_types) > 1">
     <select class="form-element" name=":action" 
-     onChange="location.href='&dtml-URL1;/'+this.options[this.selectedIndex].value">
+     onChange="location.href='<dtml-var "REQUEST.URL1" html_quote>/'+this.options[this.selectedIndex].value">
     <option value="manage_workspace" disabled>Select type to add...</option>
     <dtml-in filtered_meta_types mapping sort=name>
     <dtml-if action>
@@ -59,7 +59,7 @@ function toggleSelect() {
   </table>
 </dtml-if>
 
-<form action="&dtml-URL1;/" name="objectItems" method="post">
+<form action="<dtml-var "REQUEST.URL1" html_quote>/" name="objectItems" method="post">
 <dtml-if objectItems>
   <dtml-let hasOrderSupport="_.getattr(this().aq_explicit, 'has_order_support', 0)">
   <dtml-unless skey>

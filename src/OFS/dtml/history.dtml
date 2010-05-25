@@ -2,7 +2,7 @@
 <dtml-var manage_tabs>
 
 <dtml-if manage_change_history>
-  <form action="&dtml-URL1;" method="POST">
+  <form action="<dtml-var "REQUEST.URL1" html_quote>" method="POST">
   <table width="100%" cellspacing="0" cellpadding="2" border="0">
 
     <tr class="list-header">
@@ -10,7 +10,7 @@
        <div class="list-nav">
     <dtml-if first_transaction>       
           <dtml-with expr="_(next=first_transaction*2-last_transaction)">
-            <a href="&dtml-URL;?first_transaction:int=&dtml.-next;&last_transaction:int=&dtml.-first_transaction;&HistoryBatchSize:int=&dtml.-HistoryBatchSize;">&lt; Later Revisions</a>
+            <a href="<dtml-var "REQUEST.URL" html_quote>?first_transaction:int=&dtml.-next;&last_transaction:int=&dtml.-first_transaction;&HistoryBatchSize:int=&dtml.-HistoryBatchSize;">&lt; Later Revisions</a>
           </dtml-with>
     <dtml-else>
     &nbsp;
@@ -21,7 +21,7 @@
        <div class="list-nav">
     <dtml-if expr="_.len(manage_change_history) == HistoryBatchSize"> 
           <dtml-with expr="_(last=last_transaction+HistoryBatchSize)">
-            <a href="&dtml-URL;?first_transaction:int=&dtml.-last_transaction;&last_transaction:int=&dtml.-last;&HistoryBatchSize:int=&dtml.-HistoryBatchSize;">Earlier Revisions &gt;</a>
+            <a href="<dtml-var "REQUEST.URL" html_quote>?first_transaction:int=&dtml.-last_transaction;&last_transaction:int=&dtml.-last;&HistoryBatchSize:int=&dtml.-HistoryBatchSize;">Earlier Revisions &gt;</a>
           </dtml-with>
     <dtml-else>
     &nbsp;
