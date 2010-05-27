@@ -32,23 +32,40 @@ def _decode(text, charsets):
             pass
     return text
 
-def processInputs(request, charsets=None):
-    if charsets is None:
-        envadapter = IUserPreferredCharsets(request)
-        charsets = envadapter.getPreferredCharsets() or ['utf-8']
+def processInputValue(value, charsets):
+    """Recursively look for values (e.g. elements of lists, tuples or dicts)
+    and attempt to decode.
+    """
+    
+    if isinstance(value, list):
+        return [processInputValue(v, charsets) for v in value]
+    elif isinstance(value, tuple):
+        return tuple([processInputValue(v, charsets) for v in value])
+    elif isinstance(value, dict):
+        for k, v in value.items():
+            value[k] = processInputValue(v, charsets)
+        return value
+    elif isinstance(value, str):
+        return _decode(value, charsets)
+    else:
+        return value
 
+def processInputs(request, charsets=None):
+    """Process the values in request.form to decode strings to unicode, using
+    the passed-in list of charsets. If none are passed in, look up the user's
+    preferred charsets. The default is to use utf-8.
+    """
+    
+    if charsets is None:
+        envadapter = IUserPreferredCharsets(request, None)
+        if envadapter is None:
+            charsets = ['utf-8']
+        else:
+            charsets = envadapter.getPreferredCharsets() or ['utf-8']
+    
     for name, value in request.form.items():
         if not (isCGI_NAME(name) or name.startswith('HTTP_')):
-            if isinstance(value, str):
-                request.form[name] = _decode(value, charsets)
-            elif isinstance(value, list):
-                request.form[name] = [ _decode(val, charsets)
-                                       for val in value
-                                       if isinstance(val, str) ]
-            elif isinstance(value, tuple):
-                request.form[name] = tuple([ _decode(val, charsets)
-                                             for val in value
-                                             if isinstance(val, str) ])
+            request.form[name] = processInputValue(value, charsets)
 
 def setPageEncoding(request):
     """Set the encoding of the form page via the Content-Type header.
