@@ -46,6 +46,42 @@ def test_processInputs():
       >>> processInputs(request, charsets)
       >>> request.form['foo'] == (u'f\xf6\xf6',)
       True
+     
+    Ints in lists are not lost::
+
+      >>> request.form['foo'] = [1, 2, 3]
+      >>> processInputs(request, charsets)
+      >>> request.form['foo'] == [1, 2, 3]
+      True
+    
+    Ints in tuples are not lost::
+
+      >>> request.form['foo'] = (1, 2, 3,)
+      >>> processInputs(request, charsets)
+      >>> request.form['foo'] == (1, 2, 3)
+      True
+    
+    Mixed lists work:
+
+      >>> request.form['foo'] = [u'f\xf6\xf6'.encode('iso-8859-1'), 2, 3]
+      >>> processInputs(request, charsets)
+      >>> request.form['foo'] == [u'f\xf6\xf6', 2, 3]
+      True
+    
+    Mixed dicts work:
+    
+      >>> request.form['foo'] = {'foo': u'f\xf6\xf6'.encode('iso-8859-1'), 'bar': 2}
+      >>> processInputs(request, charsets)
+      >>> request.form['foo'] == {'foo': u'f\xf6\xf6', 'bar': 2}
+      True
+    
+    Deep recursion works:
+    
+      >>> request.form['foo'] = [{'foo': u'f\xf6\xf6'.encode('iso-8859-1'), 'bar': 2}, {'foo': u"one", 'bar': 3}]
+      >>> processInputs(request, charsets)
+      >>> request.form['foo'] == [{'foo': u'f\xf6\xf6', 'bar': 2}, {'foo': u"one", 'bar': 3}]
+      True
+    
     """
 
 def test_suite():

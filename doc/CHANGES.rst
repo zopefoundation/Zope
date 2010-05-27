@@ -11,6 +11,10 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
+- Five's processInputs() would stomp on :list or :tuple values that contained
+  ints or other non-strings, would clear out :records entirely, and would not
+  do anything for :record fields.
+
 - LP #143261: The (very old-fashioned) Zope2.debug interactive request
   debugger still referred to the toplevel module ``Zope``, which was 
   renamed to ``Zope2`` a long time ago.
