@@ -901,13 +901,7 @@ class HTTPResponse(BaseResponse):
         for key, val in headers.items():
             if key.lower() == key:
                 # only change non-literal header names
-                key = "%s%s" % (key[:1].upper(), key[1:])
-                start = 0
-                l = key.find('-',start)
-                while l >= start:
-                    key = "%s-%s%s" % (key[:l],key[l+1:l+2].upper(),key[l+2:])
-                    start = l + 1
-                    l = key.find('-', start)
+                key = '-'.join([x.capitalize() for x in key.split('-')])
             append("%s: %s" % (key, val))
         if self.cookies:
             headersl = headersl+self._cookie_list()
