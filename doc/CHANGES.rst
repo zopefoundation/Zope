@@ -11,6 +11,8 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
+- Update Five's testbrowser to support both mechanize 0.1.x and 0.2.x.
+
 - Five's processInputs() would stomp on :list or :tuple values that contained
   ints or other non-strings, would clear out :records entirely, and would not
   do anything for :record fields.

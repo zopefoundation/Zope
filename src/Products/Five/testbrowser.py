@@ -95,15 +95,10 @@ class PublisherMechanizeBrowser(mechanize.Browser):
                         '_equiv', '_basicauth', '_digestauth' ]
 
     def __init__(self, *args, **kws):
-        inherited_handlers = ['_unknown', '_http_error',
-            '_http_request_upgrade', '_http_default_error', '_basicauth',
-            '_digestauth', '_redirect', '_cookies', '_referer',
-            '_refresh', '_equiv', '_gzip']
-
-        self.handler_classes = {"http": PublisherHTTPHandler}
-        for name in inherited_handlers:
-            self.handler_classes[name] = mechanize.Browser.handler_classes[name]
-
+        self.handler_classes = mechanize.Browser.handler_classes.copy()
+        self.handler_classes["http"] = PublisherHTTPHandler
+        self.default_others = [cls for cls in self.default_others 
+                               if cls in mechanize.Browser.handler_classes]
         mechanize.Browser.__init__(self, *args, **kws)
 
 
