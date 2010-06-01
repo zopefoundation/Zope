@@ -13,7 +13,6 @@
 """ Python Object Publisher -- Publish Python objects on web servers
 """
 from cStringIO import StringIO
-import re
 import sys
 import time
 
@@ -25,6 +24,12 @@ from ZPublisher.HTTPRequest import HTTPRequest
 from ZPublisher.maybe_lock import allocate_lock
 from ZPublisher.mapply import mapply
 
+_NOW = None     # overwrite for testing
+def _now():
+    if _NOW is not None:
+        return _NOW
+    return time.time()
+
 class WSGIResponse(HTTPResponse):
     """A response object for WSGI
 
@@ -34,57 +39,53 @@ class WSGIResponse(HTTPResponse):
     Most significantly, streaming is not (yet) supported.
     """
     _streaming = 0
+    _http_version = None
+    _server_version = None
+    _http_connection = None
     
-    def __str__(self,
-                html_search=re.compile('<html>',re.I).search,
-                ):
+    def __str__(self):
+
         if self._wrote:
             if self._chunking:
                 return '0\r\n\r\n'
             else:
                 return ''
 
-        headers=self.headers
-        body=self.body
+        headers = self.headers
+        body = self.body
 
         # set 204 (no content) status if 200 and response is empty
         # and not streaming
-        if not headers.has_key('content-type') and \
-                not headers.has_key('content-length') and \
-                not self._streaming and \
-                self.status == 200:
+        if ('content-type' not in headers and 
+            'content-length' not in headers and 
+            not self._streaming and self.status == 200):
             self.setStatus('nocontent')
 
         # add content length if not streaming
-        if not headers.has_key('content-length') and \
-                not self._streaming:
-            self.setHeader('content-length',len(body))
+        content_length = headers.get('content-length')
 
+        if content_length is None and not self._streaming:
+            self.setHeader('content-length', len(body))
 
-        content_length= headers.get('content-length', None)
-        if content_length>0 :
-            self.setHeader('content-length', content_length)
-
-        headersl=[]
-        append=headersl.append
-
-        status=headers.get('status', '200 OK')
+        chunks = []
+        append = chunks.append
 
         # status header must come first.
-        append("HTTP/%s %s" % (self._http_version or '1.0' , status))
-        if headers.has_key('status'):
-            del headers['status']
+        version = self._http_version or '1.0'
+        append("HTTP/%s %d %s" % (version, self.status, self.errmsg))
 
         # add zserver headers
-        append('Server: %s' % self._server_version)
-        append('Date: %s' % build_http_date(time.time()))
+        if self._server_version is not None:
+            append('Server: %s' % self._server_version)
 
-        if self._http_version=='1.0':
-            if self._http_connection=='keep-alive' and \
-                    self.headers.has_key('content-length'):
-                self.setHeader('Connection','Keep-Alive')
+        append('Date: %s' % build_http_date(_now()))
+
+        if self._http_version == '1.0':
+            if (self._http_connection == 'keep-alive' and 
+                'content-length' in self.headers):
+                self.setHeader('Connection', 'Keep-Alive')
             else:
-                self.setHeader('Connection','close')
+                self.setHeader('Connection', 'close')
 
         # Close the connection if we have been asked to.
         # Use chunking if streaming output.
@@ -109,10 +110,17 @@ class WSGIResponse(HTTPResponse):
                     start=l+1
                     l=key.find('-',start)
             append("%s: %s" % (key, val))
+
         if self.cookies:
-            headersl=headersl+self._cookie_list()
-        headersl[len(headersl):]=[self.accumulated_headers, body]
-        return "\r\n".join(headersl)
+            chunks.extend(self._cookie_list())
+
+        for key, value in self.accumulated_headers:
+            append("%s: %s" % (key, value))
+
+        append('') # RFC 2616 mandates empty line between headers and payload
+        append(body)
+
+        return "\r\n".join(chunks)
 
     
 class Retry(Exception):
