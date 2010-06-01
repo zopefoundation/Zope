@@ -1,6 +1,6 @@
 ##############################################################################
 #
-# Copyright (c) 2001 Zope Foundation and Contributors.
+# Copyright (c) 2001-2009 Zope Foundation and Contributors. All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
@@ -10,23 +10,30 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-'''CGI Response Output formatter
-
-$Id$'''
-
-import types, os, sys, re
-import zlib, struct
-from string import translate, maketrans
-from zope.event import notify
-from BaseResponse import BaseResponse
-from zExceptions import Unauthorized, Redirect
-from zExceptions.ExceptionFormatter import format_exception
-from ZPublisher import BadRequest, InternalError, NotFound
-from ZPublisher.pubevents import PubBeforeStreaming
+""" CGI Response Output formatter
+"""
 from cgi import escape
+import os
+import re
+from string import maketrans
+from string import translate
+import struct
+import sys
+import types
 from urllib import quote
+import zlib
 
-nl2sp = maketrans('\n',' ')
+from zope.event import notify
+from zExceptions import Redirect
+from zExceptions import Unauthorized
+from zExceptions.ExceptionFormatter import format_exception
+from ZPublisher import BadRequest
+from ZPublisher import InternalError
+from ZPublisher import NotFound
+from ZPublisher.BaseResponse import BaseResponse
+from ZPublisher.pubevents import PubBeforeStreaming
+
+nl2sp = maketrans('\n', ' ')
 
 # This may get overwritten during configuration
 default_encoding = 'iso-8859-15'
@@ -104,9 +111,6 @@ status_codes['resourcelockederror'] = 423
 
 start_of_header_search = re.compile('(<head[^>]*>)', re.IGNORECASE).search
 
-accumulate_header = {'set-cookie': 1}.has_key
-
-
 _gzip_header = ("\037\213" # magic
                 "\010" # compression method
                 "\000" # flags
@@ -130,8 +134,7 @@ def _scrubHeader(name, value):
     return ''.join(_CRLF.split(str(name))), ''.join(_CRLF.split(str(value)))
 
 class HTTPResponse(BaseResponse):
-    """\
-    An object representation of an HTTP response.
+    """ An object representation of an HTTP response.
 
     The Response type encapsulates all possible responses to HTTP
     requests.  Responses are normally created by the object publisher.
@@ -150,8 +153,8 @@ class HTTPResponse(BaseResponse):
     passed into the object must be used.
     """ #'
 
-    accumulated_headers = ''
     body = ''
+    base = ''
     realm = 'Zope'
     _error_format = 'text/html'
     _locked_status = 0
@@ -163,61 +166,48 @@ class HTTPResponse(BaseResponse):
     # 2 - ignore accept-encoding (i.e. force)
     use_HTTP_content_compression = 0
 
-    def __init__(self,body='',status=200,headers=None,
-                 stdout=sys.stdout, stderr=sys.stderr,):
-        '''\
-        Creates a new response. In effect, the constructor calls
-        "self.setBody(body); self.setStatus(status); for name in
-        headers.keys(): self.setHeader(name, headers[name])"
-        '''
+    def __init__(self,
+                 body='',
+                 status=200,
+                 headers=None,
+                 stdout=sys.stdout,
+                 stderr=sys.stderr,
+                ):
+        """ Create a new response using the given values.
+        """
         if headers is None:
             headers = {}
         self.headers = headers
+        self.accumulated_headers = []
 
         if status == 200:
             self.status = 200
             self.errmsg = 'OK'
-            headers['status'] = "200 OK"
         else:
             self.setStatus(status)
-        self.base = ''
+
         if body:
             self.setBody(body)
+
         self.cookies = {}
         self.stdout = stdout
         self.stderr = stderr
 
     def retry(self):
-        """Return a response object to be used in a retry attempt
+        """ Return a cloned response object to be used in a retry attempt.
         """
-
         # This implementation is a bit lame, because it assumes that
         # only stdout stderr were passed to the constructor. OTOH, I
         # think that that's all that is ever passed.
-
         return self.__class__(stdout=self.stdout, stderr=self.stderr)
 
-    _shutdown_flag = None
-    def _requestShutdown(self, exitCode=0):
-        """Request that the server shut down with exitCode after fulfilling
-           the current request."""
-        import ZServer
-        ZServer.exit_code = exitCode
-        self._shutdown_flag = 1
-
-    def _shutdownRequested(self):
-        """Returns true if this request requested a server shutdown."""
-        return self._shutdown_flag is not None
-
     def setStatus(self, status, reason=None, lock=None):
-        '''\
-        Sets the HTTP status code of the response; the argument may
-        either be an integer or a string from { OK, Created, Accepted,
-        NoContent, MovedPermanently, MovedTemporarily,
-        NotModified, BadRequest, Unauthorized, Forbidden,
-        NotFound, InternalError, NotImplemented, BadGateway,
-        ServiceUnavailable } that will be converted to the correct
-        integer value. '''
+        """ Set the HTTP status code of the response
+        
+        o The argument may either be an integer or a string from the
+          'status_reasons' dict values:  status messages will be converted
+          to the correct integer value.
+        """
         if self._locked_status:
             # Don't change the response status.
             # It has already been determined.
@@ -242,49 +232,190 @@ class HTTPResponse(BaseResponse):
                 reason = status_reasons[status]
             else:
                 reason = 'Unknown'
-        self.setHeader('Status', "%d %s" % (status,str(reason)))
+
         self.errmsg = reason
         # lock the status if we're told to
         if lock:
             self._locked_status = 1
 
+    def setCookie(self, name, value, quoted=True, **kw):
+        """ Set an HTTP cookie.
+
+        The response will include an HTTP header that sets a cookie on
+        cookie-enabled browsers with a key "name" and value
+        "value".
+        
+        This value overwrites any previously set value for the
+        cookie in the Response object.
+        """
+        name = str(name)
+        value = str(value)
+
+        cookies = self.cookies
+        if cookies.has_key(name):
+            cookie = cookies[name]
+        else:
+            cookie = cookies[name] = {}
+        for k, v in kw.items():
+            cookie[k] = v
+        cookie['value'] = value
+        cookie['quoted'] = quoted
+
+    def appendCookie(self, name, value):
+        """ Set an HTTP cookie.
+        
+        Returns an HTTP header that sets a cookie on cookie-enabled
+        browsers with a key "name" and value "value". If a value for the
+        cookie has previously been set in the response object, the new
+        value is appended to the old one separated by a colon.
+        """
+        name = str(name)
+        value = str(value)
+
+        cookies = self.cookies
+        if cookies.has_key(name):
+            cookie = cookies[name]
+        else:
+            cookie = cookies[name] = {}
+        if cookie.has_key('value'):
+            cookie['value'] = '%s:%s' % (cookie['value'], value)
+        else:
+            cookie['value'] = value
+
+    def expireCookie(self, name, **kw):
+        """ Clear an HTTP cookie.
+
+        The response will include an HTTP header that will remove the cookie
+        corresponding to "name" on the client, if one exists. This is
+        accomplished by sending a new cookie with an expiration date
+        that has already passed. Note that some clients require a path
+        to be specified - this path must exactly match the path given
+        when creating the cookie. The path can be specified as a keyword
+        argument.
+        """
+        name = str(name)
+
+        d = kw.copy()
+        if 'value' in d:
+            d.pop('value')
+        d['max_age'] = 0
+        d['expires'] = 'Wed, 31-Dec-97 23:59:59 GMT'
+
+        self.setCookie(name, value='deleted', **d)
+
+    def getHeader(self, name, literal=0):
+        """ Get a previously set header value.
+
+        Return the value associated with a HTTP return header, or
+        None if no such header has been set in the response
+        yet.
+        
+        If the 'literal' flag is true, preserve the case of the header name;
+        otherwise lower-case the header name before looking up the value.
+        """
+        key = literal and name or name.lower()
+        return self.headers.get(key, None)
+
     def setHeader(self, name, value, literal=0, scrubbed=False):
-        '''\
-        Sets an HTTP return header "name" with value "value", clearing
-        the previous value set for the header, if one exists. If the
-        literal flag is true, the case of the header name is preserved,
-        otherwise the header name will be lowercased.'''
+        """ Set an HTTP return header on the response.
+        
+        Replay any existing value set for the header.
+        
+        If the 'literal' flag is true, preserve the case of the header name;
+        otherwise the header name will be lowercased.
+
+        'scrubbed' is for internal use, to indicate that another API has
+        already removed any CRLF from the name and value.
+        """
         if not scrubbed:
             name, value = _scrubHeader(name, value)
         key = name.lower()
-        if accumulate_header(key):
-            self.accumulated_headers = (
-                "%s%s: %s\r\n" % (self.accumulated_headers, name, value))
-            return
-        name = literal and name or key
-        self.headers[name] = value
+        # The following is crazy, given that we have APIs for cookies.
+        # Special behavior will go away in Zope 2.13
+        if key == 'set-cookie':  
+            self.accumulated_headers.append((name, value))
+        else:
+            name = literal and name or key
+            self.headers[name] = value
 
-    def getHeader(self, name, literal=0):
-        '''\
-        Get a header value
+    def appendHeader(self, name, value, delimiter=","):
+        """ Append a value to an HTTP return header.
 
-        Returns the value associated with a HTTP return header, or
-        "None" if no such header has been set in the response
-        yet. If the literal flag is true, the case of the header name is
-        preserved, otherwise the header name will be lowercased.'''
-        key = name.lower()
-        name = literal and name or key
-        return self.headers.get(name, None)
+        Set an HTTP return header "name" with value "value",
+        appending it following a comma if there was a previous value
+        set for the header.
+
+        'name' is always lowercased before use.
+        """
+        name, value = _scrubHeader(name, value)
+        name = name.lower()
+
+        headers = self.headers
+        if headers.has_key(name):
+            h = headers[name]
+            h = "%s%s\r\n\t%s" % (h, delimiter, value)
+        else:
+            h = value
+        self.setHeader(name,h, scrubbed=True)
 
     def addHeader(self, name, value):
-        '''\
-        Set a new HTTP return header with the given value, while retaining
-        any previously set headers with the same name.'''
+        """ Set a new HTTP return header with the given value,
+        
+        Retain any previously set headers with the same name.
+
+        Note that this API appneds to the 'accumulated_headers' attribute;
+        it does not update the 'headers' mapping.
+        """
         name, value = _scrubHeader(name, value)
-        self.accumulated_headers = (
-            "%s%s: %s\r\n" % (self.accumulated_headers, name, value))
+        self.accumulated_headers.append((name, value))
 
     __setitem__ = setHeader
+
+    def setBase(self, base):
+        """Set the base URL for the returned document.
+
+        If base is None, set to the empty string.
+
+        If base is not None, ensure that it has a trailing slach.
+        """
+        if base is None:
+            base = ''
+        elif not base.endswith('/'):
+            base = base + '/'
+
+        self.base = str(base)
+
+    def insertBase(self,
+                   base_re_search=re.compile('(<base.*?>)',re.I).search
+                   ):
+
+        # Only insert a base tag if content appears to be html.
+        content_type = self.headers.get('content-type', '').split(';')[0]
+        if content_type and (content_type != 'text/html'):
+            return
+
+        if self.base:
+            body = self.body
+            if body:
+                match = start_of_header_search(body)
+                if match is not None:
+                    index = match.start(0) + len(match.group(0))
+                    ibase = base_re_search(body)
+                    if ibase is None:
+                        self.body = ('%s\n<base href="%s" />\n%s' %
+                                   (body[:index], escape(self.base, 1),
+                                    body[index:]))
+                        self.setHeader('content-length', len(self.body))
+
+    def isHTML(self, s):
+        s = s.lstrip()
+        # Note that the string can be big, so s.lower().startswith() is more
+        # expensive than s[:n].lower().
+        if (s[:6].lower() == '<html>' or s[:14].lower() == '<!doctype html'):
+            return 1
+        if s.find('</') > 0:
+            return 1
+        return 0
 
     def setBody(self, body, title='', is_error=0,
                 bogus_str_search=re.compile(" [a-fA-F0-9]+>$").search,
@@ -294,11 +425,13 @@ class HTTPResponse(BaseResponse):
                 r'(iso[-_]8859[-_]1(:1987)?)))?$',re.I).match,
                 lock=None
                 ):
-        '''\
-        Set the body of the response
+        """ Set the body of the response
 
         Sets the return body equal to the (string) argument "body". Also
         updates the "content-length" return header.
+
+        If the body is already locked via a previous call, do nothing and
+        return None.
 
         You can also specify a title, in which case the title and body
         will be wrapped up in html, head, title, and body tags.
@@ -306,9 +439,17 @@ class HTTPResponse(BaseResponse):
         If the body is a 2-element tuple, then it will be treated
         as (title,body)
 
-        If is_error is true then the HTML will be formatted as a Zope error
-        message instead of a generic HTML page.
-        '''
+        If body is unicode, encode it.
+
+        If body is not a string or unicode, but has an 'asHTML' method, use
+        the result of that method as the body;  otherwise, use the 'str'
+        of body.
+
+        If is_error is true, format the HTML as a Zope error message instead
+        of a generic HTML page.
+
+        Return 'self' (XXX as a true value?).
+        """
         # allow locking of the body in the same way as the status
         if self._locked_body:
             return
@@ -340,7 +481,7 @@ class HTTPResponse(BaseResponse):
             bogus_str_search(body) is not None):
             self.notFoundError(body[1:-1])
         else:
-            if(title):
+            if title:
                 title = str(title)
                 if not is_error:
                     self.body = self._html(title, body)
@@ -350,30 +491,34 @@ class HTTPResponse(BaseResponse):
                 self.body = body
 
 
-        isHTML = self.isHTML(self.body)
-        if not self.headers.has_key('content-type'):
-            if isHTML:
-                c = 'text/html; charset=%s' % default_encoding
-            else:
-                c = 'text/plain; charset=%s' % default_encoding
-            self.setHeader('content-type', c)
-        else:
-            c = self.headers['content-type']
-            if c.startswith('text/') and not 'charset=' in  c:
-                c = '%s; charset=%s' % (c, default_encoding)                
-                self.setHeader('content-type', c)
+        content_type = self.headers.get('content-type')
 
         # Some browsers interpret certain characters in Latin 1 as html
         # special characters. These cannot be removed by html_quote,
         # because this is not the case for all encodings.
-        content_type = self.headers['content-type']
-        if content_type == 'text/html' or latin1_alias_match(
-            content_type) is not None:
+        if (content_type == 'text/html' or
+            content_type and latin1_alias_match(content_type) is not None):
             body = '&lt;'.join(body.split('\213'))
             body = '&gt;'.join(body.split('\233'))
+            self.body = body
+
+        if content_type is None:
+            if self.isHTML(self.body):
+                content_type = 'text/html; charset=%s' % default_encoding
+            else:
+                content_type = 'text/plain; charset=%s' % default_encoding
+            self.setHeader('content-type', content_type)
+        else:
+            if (content_type.startswith('text/') and
+                'charset=' not in content_type):
+                content_type = '%s; charset=%s' % (content_type,
+                                                   default_encoding)
+                self.setHeader('content-type', content_type)
 
         self.setHeader('content-length', len(self.body))
+
         self.insertBase()
+
         if self.use_HTTP_content_compression and \
             self.headers.get('content-encoding', 'gzip') == 'gzip':
             # use HTTP content encoding to compress body contents unless
@@ -402,10 +547,10 @@ class HTTPResponse(BaseResponse):
                         # respect Accept-Encoding client header
                         vary = self.getHeader('Vary')
                         if vary is None or 'Accept-Encoding' not in vary: 
-                            self.appendHeader('Vary','Accept-Encoding')
+                            self.appendHeader('Vary', 'Accept-Encoding')
         return self
 
-    def enableHTTPCompression(self,REQUEST={},force=0,disable=0,query=0):
+    def enableHTTPCompression(self, REQUEST={}, force=0, disable=0, query=0):
         """Enable HTTP Content Encoding with gzip compression if possible
 
            REQUEST -- used to check if client can accept compression
@@ -458,11 +603,35 @@ class HTTPResponse(BaseResponse):
 
         return self.use_HTTP_content_compression
 
+    def redirect(self, location, status=302, lock=0):
+        """Cause a redirection without raising an error"""
+        self.setStatus(status, lock=lock)
+        self.setHeader('Location', location)
+
+        return str(location)
+
+    # The following two methods are part of a private protocol with the
+    # publisher for handling fatal import errors and TTW shutdown requests.
+    _shutdown_flag = None
+    def _requestShutdown(self, exitCode=0):
+        """ Request that the server shut down with exitCode after fulfilling
+           the current request.
+        """
+        import ZServer
+        ZServer.exit_code = exitCode
+        self._shutdown_flag = 1
+
+    def _shutdownRequested(self):
+        """ Returns true if this request requested a server shutdown.
+        """
+        return self._shutdown_flag is not None
+
+
     def _encode_unicode(self,body,
-                        charset_re=re.compile(r'(?:application|text)/[-+0-9a-z]+\s*;\s*' +
-                                              r'charset=([-_0-9a-z]+' +
-                                              r')(?:(?:\s*;)|\Z)',
-                                              re.IGNORECASE)):
+                        charset_re=re.compile(
+                           r'(?:application|text)/[-+0-9a-z]+\s*;\s*' +
+                           r'charset=([-_0-9a-z]+' +
+                           r')(?:(?:\s*;)|\Z)', re.IGNORECASE)):
 
         def fix_xml_preamble(body, encoding):
             """ fixes the encoding in the XML preamble according
@@ -471,7 +640,8 @@ class HTTPResponse(BaseResponse):
 
             if body.startswith('<?xml'):
                 pos_right = body.find('?>')  # right end of the XML preamble
-                body = ('<?xml version="1.0" encoding="%s" ?>' % encoding) + body[pos_right+2:]
+                body = ('<?xml version="1.0" encoding="%s" ?>'
+                            % encoding) + body[pos_right+2:]
             return body
 
         # Encode the Unicode data as requested
@@ -486,132 +656,13 @@ class HTTPResponse(BaseResponse):
                 return body
             else:
                 if ct.startswith('text/') or ct.startswith('application/'):
-                    self.headers['content-type'] = '%s; charset=%s' % (ct, default_encoding)
+                    self.headers['content-type'] = '%s; charset=%s' % (ct,
+                                                            default_encoding)
 
         # Use the default character encoding
         body = body.encode(default_encoding, 'replace')
         body = fix_xml_preamble(body, default_encoding)
         return body
-
-    def setBase(self,base):
-        """Set the base URL for the returned document.
-        If base is None, or the document already has a base, do nothing."""
-        if base is None:
-            base = ''
-        elif not base.endswith('/'):
-            base = base+'/'
-        self.base = str(base)
-
-    def insertBase(self,
-                   base_re_search=re.compile('(<base.*?>)',re.I).search
-                   ):
-
-        # Only insert a base tag if content appears to be html.
-        content_type = self.headers.get('content-type', '').split(';')[0]
-        if content_type and (content_type != 'text/html'):
-            return
-
-        if self.base:
-            body = self.body
-            if body:
-                match = start_of_header_search(body)
-                if match is not None:
-                    index = match.start(0) + len(match.group(0))
-                    ibase = base_re_search(body)
-                    if ibase is None:
-                        self.body = ('%s\n<base href="%s" />\n%s' %
-                                   (body[:index], escape(self.base, 1),
-                                    body[index:]))
-                        self.setHeader('content-length', len(self.body))
-
-    def appendCookie(self, name, value):
-        '''\
-        Returns an HTTP header that sets a cookie on cookie-enabled
-        browsers with a key "name" and value "value". If a value for the
-        cookie has previously been set in the response object, the new
-        value is appended to the old one separated by a colon. '''
-
-        name = str(name)
-        value = str(value)
-
-        cookies = self.cookies
-        if cookies.has_key(name):
-            cookie = cookies[name]
-        else:
-            cookie = cookies[name] = {}
-        if cookie.has_key('value'):
-            cookie['value'] = '%s:%s' % (cookie['value'], value)
-        else:
-            cookie['value'] = value
-
-    def expireCookie(self, name, **kw):
-        '''\
-        Cause an HTTP cookie to be removed from the browser
-
-        The response will include an HTTP header that will remove the cookie
-        corresponding to "name" on the client, if one exists. This is
-        accomplished by sending a new cookie with an expiration date
-        that has already passed. Note that some clients require a path
-        to be specified - this path must exactly match the path given
-        when creating the cookie. The path can be specified as a keyword
-        argument.
-        '''
-        name = str(name)
-
-        d = kw.copy()
-        d['max_age'] = 0
-        d['expires'] = 'Wed, 31-Dec-97 23:59:59 GMT'
-        apply(HTTPResponse.setCookie, (self, name, 'deleted'), d)
-
-    def setCookie(self, name, value, quoted=True, **kw):
-        '''\
-        Set an HTTP cookie on the browser
-
-        The response will include an HTTP header that sets a cookie on
-        cookie-enabled browsers with a key "name" and value
-        "value". This overwrites any previously set value for the
-        cookie in the Response object.
-        '''
-        name = str(name)
-        value = str(value)
-
-        cookies = self.cookies
-        if cookies.has_key(name):
-            cookie = cookies[name]
-        else:
-            cookie = cookies[name] = {}
-        for k, v in kw.items():
-            cookie[k] = v
-        cookie['value'] = value
-        cookie['quoted'] = quoted
-
-    def appendHeader(self, name, value, delimiter=","):
-        '''\
-        Append a value to a header.
-
-        Sets an HTTP return header "name" with value "value",
-        appending it following a comma if there was a previous value
-        set for the header. '''
-        name, value = _scrubHeader(name, value)
-        name = name.lower()
-
-        headers = self.headers
-        if headers.has_key(name):
-            h = headers[name]
-            h = "%s%s\r\n\t%s" % (h,delimiter,value)
-        else:
-            h = value
-        self.setHeader(name,h, scrubbed=True)
-
-    def isHTML(self, s):
-        s = s.lstrip()
-        # Note that the string can be big, so s.lower().startswith() is more
-        # expensive than s[:n].lower().
-        if (s[:6].lower() == '<html>' or s[:14].lower() == '<!doctype html'):
-            return 1
-        if s.find('</') > 0:
-            return 1
-        return 0
 
     # deprecated
     def quoteHTML(self, text):
@@ -620,20 +671,6 @@ class HTTPResponse(BaseResponse):
     def _traceback(self, t, v, tb, as_html=1):
         tb = format_exception(t, v, tb, as_html=as_html)
         return '\n'.join(tb)
-
-    def redirect(self, location, status=302, lock=0):
-        """Cause a redirection without raising an error"""
-        self.setStatus(status)
-        self.setHeader('Location', location)
-
-        location = str(location)
-
-        if lock:
-            # Don't let anything change the status code.
-            # The "lock" argument needs to be set when redirecting
-            # from a standard_error_message page.
-            self._locked_status = 1
-        return location
 
 
     def _html(self,title,body):
@@ -806,7 +843,8 @@ class HTTPResponse(BaseResponse):
         if fatal and t is SystemExit and v.code == 0:
             body = self.setBody(
                 (str(t),
-                 'Zope has exited normally.<p>' + self._traceback(t, v, tb) + '</p>'),
+                 'Zope has exited normally.<p>'
+                    + self._traceback(t, v, tb) + '</p>'),
                 is_error=1)
         else:
             try:
@@ -885,23 +923,23 @@ class HTTPResponse(BaseResponse):
                 not headers.has_key('transfer-encoding'):
             self.setHeader('content-length',len(body))
 
-        headersl = []
-        append = headersl.append
+        chunks = []
+        append = chunks.append
 
         # status header must come first.
-        append("Status: %s" % headers.get('status', '200 OK'))
+        append("Status: %d %s" % (self.status, self.errmsg))
         append("X-Powered-By: Zope (www.zope.org), Python (www.python.org)")
-        if headers.has_key('status'):
-            del headers['status']
-        for key, val in headers.items():
+        for key, value in headers.items():
             if key.lower() == key:
                 # only change non-literal header names
                 key = '-'.join([x.capitalize() for x in key.split('-')])
-            append("%s: %s" % (key, val))
-        if self.cookies:
-            headersl = headersl+self._cookie_list()
-        headersl[len(headersl):] = [self.accumulated_headers, body]
-        return '\r\n'.join(headersl)
+            append("%s: %s" % (key, value))
+        chunks.extend(self._cookie_list())
+        for key, value in self.accumulated_headers:
+            append("%s: %s" % (key, value))
+        append('') # RFC 2616 mandates empty line between headers and payload
+        append(body) 
+        return '\r\n'.join(chunks)
 
     def write(self,data):
         """\

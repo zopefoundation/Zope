@@ -10,28 +10,29 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-__doc__="""Python Object Publisher -- Publish Python objects on web servers
-
-$Id: Publish.py 67721 2006-04-28 14:57:35Z regebro $"""
-
-import sys, os, re, time
-import transaction
-from Response import Response
-from Request import Request
-from maybe_lock import allocate_lock
-from mapply import mapply
-from zExceptions import Redirect
+""" Python Object Publisher -- Publish Python objects on web servers
+"""
 from cStringIO import StringIO
-from ZServer.medusa.http_date import build_http_date
+import re
+import sys
+import time
 
-class WSGIResponse(Response):
+import transaction
+from zExceptions import Redirect
+from ZServer.medusa.http_date import build_http_date
+from ZPublisher.HTTPResponse import HTTPResponse
+from ZPublisher.HTTPRequest import HTTPRequest
+from ZPublisher.maybe_lock import allocate_lock
+from ZPublisher.mapply import mapply
+
+class WSGIResponse(HTTPResponse):
     """A response object for WSGI
 
     This Response object knows nothing about ZServer, but tries to be
     compatible with the ZServerHTTPResponse. 
     
-    Most significantly, streaming is not (yet) supported."""
-
+    Most significantly, streaming is not (yet) supported.
+    """
     _streaming = 0
     
     def __str__(self,
@@ -271,7 +272,7 @@ def publish_module_standard(environ, start_response):
     response._http_connection = environ.get('CONNECTION_TYPE', 'close')
     response._server_version = environ['SERVER_SOFTWARE']
 
-    request = Request(environ['wsgi.input'], environ, response)
+    request = HTTPRequest(environ['wsgi.input'], environ, response)
 
     # Let's support post-mortem debugging
     handle_errors = environ.get('wsgi.handleErrors', True)

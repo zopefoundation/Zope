@@ -111,7 +111,9 @@ class ZServerHTTPResponseTestCase(unittest.TestCase):
             'Title-Cased': 'bar',
             'mixed-CasED': 'spam',
             'multilined': 'eggs\n\tham'}
-        response.accumulated_headers = 'foo-bar: bar\n\tbaz\nFoo-bar: monty\n'
+        response.accumulated_headers = ['foo-bar: bar',
+                                        '\tbaz',
+                                        'Foo-bar: monty']
         response.cookies = dict(foo=dict(value='bar'))
         response.body = 'A body\nwith multiple lines\n'
         
