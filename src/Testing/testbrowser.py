@@ -59,7 +59,7 @@ class PublisherConnection(testing.PublisherConnection):
                     l = key.find('-', start)
             headers.append((key, val))
         # get the cookies, breaking them into tuples for sorting
-        cookies = [(c[:10], c[12:]) for c in real_response._cookie_list()]
+        cookies = real_response._cookie_list()
         headers.extend(cookies)
         headers.sort()
         headers.insert(0, ('Status', "%s %s" % (status, reason)))

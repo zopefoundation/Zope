@@ -140,7 +140,7 @@ class ZServerHTTPResponse(HTTPResponse):
                 val = val.replace('\n\t', '\r\n\t')
             append("%s: %s" % (key, val))
         if self.cookies:
-            chunks.extend(self._cookie_list())
+            chunks.extend(['%s: %s' % x for x in self._cookie_list()])
             
         append('')
         append(body)

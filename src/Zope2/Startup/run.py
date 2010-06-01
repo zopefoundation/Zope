@@ -52,6 +52,22 @@ def _setconfig(configfile=None):
     App.config.setConfiguration(opts.configroot)
     return opts
 
+def make_wsgi_app(global_config, zope_conf):
+    from App.config import setConfiguration
+    from Zope2.Startup import get_starter
+    from Zope2.Startup.handlers import handleConfig
+    from Zope2.Startup.options import ZopeOptions
+    from ZPublisher.WSGIPublisher import publish_module
+    starter = get_starter()
+    opts = ZopeOptions()
+    opts.configfile = zope_conf
+    opts.realize(args=(), progname='Zope2WSGI', raise_getopt_errs=False)
+    handleConfig(opts.configroot, opts.confighandlers)
+    setConfiguration(opts.configroot)
+    starter.setConfiguration(opts.configroot)
+    starter.prepare()
+    return publish_module
+
 if __name__ == '__main__':
     run()
 

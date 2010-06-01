@@ -208,7 +208,7 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(cookie.get('quoted'), True)
         cookies = response._cookie_list()
         self.assertEqual(len(cookies), 1)
-        self.assertEqual(cookies[0], 'Set-Cookie: foo="bar"')
+        self.assertEqual(cookies[0], ('Set-Cookie', 'foo="bar"'))
 
     def test_setCookie_w_expires(self):
         EXPIRES = 'Wed, 31-Dec-97 23:59:59 GMT'
@@ -223,7 +223,7 @@ class HTTPResponseTests(unittest.TestCase):
         cookies = response._cookie_list()
         self.assertEqual(len(cookies), 1)
         self.assertEqual(cookies[0],
-                         'Set-Cookie: foo="bar"; Expires=%s' % EXPIRES)
+                         ('Set-Cookie', 'foo="bar"; Expires=%s' % EXPIRES))
 
     def test_setCookie_w_domain(self):
         response = self._makeOne()
@@ -237,7 +237,7 @@ class HTTPResponseTests(unittest.TestCase):
         cookies = response._cookie_list()
         self.assertEqual(len(cookies), 1)
         self.assertEqual(cookies[0],
-                         'Set-Cookie: foo="bar"; Domain=example.com')
+                         ('Set-Cookie', 'foo="bar"; Domain=example.com'))
 
     def test_setCookie_w_path(self):
         response = self._makeOne()
@@ -250,7 +250,7 @@ class HTTPResponseTests(unittest.TestCase):
 
         cookies = response._cookie_list()
         self.assertEqual(len(cookies), 1)
-        self.assertEqual(cookies[0], 'Set-Cookie: foo="bar"; Path=/')
+        self.assertEqual(cookies[0], ('Set-Cookie', 'foo="bar"; Path=/'))
 
     def test_setCookie_w_comment(self):
         response = self._makeOne()
@@ -263,7 +263,8 @@ class HTTPResponseTests(unittest.TestCase):
 
         cookies = response._cookie_list()
         self.assertEqual(len(cookies), 1)
-        self.assertEqual(cookies[0], 'Set-Cookie: foo="bar"; Comment=COMMENT')
+        self.assertEqual(cookies[0],
+                         ('Set-Cookie', 'foo="bar"; Comment=COMMENT'))
 
     def test_setCookie_w_secure_true_value(self):
         response = self._makeOne()
@@ -276,7 +277,7 @@ class HTTPResponseTests(unittest.TestCase):
 
         cookies = response._cookie_list()
         self.assertEqual(len(cookies), 1)
-        self.assertEqual(cookies[0], 'Set-Cookie: foo="bar"; Secure')
+        self.assertEqual(cookies[0], ('Set-Cookie','foo="bar"; Secure'))
 
     def test_setCookie_w_secure_false_value(self):
         response = self._makeOne()
@@ -289,7 +290,7 @@ class HTTPResponseTests(unittest.TestCase):
 
         cookies = response._cookie_list()
         self.assertEqual(len(cookies), 1)
-        self.assertEqual(cookies[0], 'Set-Cookie: foo="bar"')
+        self.assertEqual(cookies[0], ('Set-Cookie', 'foo="bar"'))
 
     def test_setCookie_w_httponly_true_value(self):
         response = self._makeOne()
@@ -302,7 +303,7 @@ class HTTPResponseTests(unittest.TestCase):
 
         cookie_list = response._cookie_list()
         self.assertEqual(len(cookie_list), 1)
-        self.assertEqual(cookie_list[0], 'Set-Cookie: foo="bar"; HTTPOnly')
+        self.assertEqual(cookie_list[0], ('Set-Cookie', 'foo="bar"; HTTPOnly'))
 
     def test_setCookie_w_httponly_false_value(self):
         response = self._makeOne()
@@ -315,7 +316,7 @@ class HTTPResponseTests(unittest.TestCase):
 
         cookie_list = response._cookie_list()
         self.assertEqual(len(cookie_list), 1)
-        self.assertEqual(cookie_list[0], 'Set-Cookie: foo="bar"')
+        self.assertEqual(cookie_list[0], ('Set-Cookie', 'foo="bar"'))
 
     def test_setCookie_unquoted(self):
         response = self._makeOne()
@@ -327,7 +328,7 @@ class HTTPResponseTests(unittest.TestCase):
 
         cookie_list = response._cookie_list()
         self.assertEqual(len(cookie_list), 1)
-        self.assertEqual(cookie_list[0], 'Set-Cookie: foo=bar')
+        self.assertEqual(cookie_list[0], ('Set-Cookie', 'foo=bar'))
 
     def test_appendCookie_w_existing(self):
         response = self._makeOne()
@@ -929,6 +930,177 @@ class HTTPResponseTests(unittest.TestCase):
                                 in str(raised))
         else:
             self.fail("Didn't raise Unauthorized")
+
+    def test_finalize_empty(self):
+        response = self._makeOne()
+        status, headers = response.finalize()
+        self.assertEqual(status, '200 OK')
+        self.assertEqual(headers,
+                         [('X-Powered-By', 'Zope (www.zope.org), '
+                                           'Python (www.python.org)'),
+                          ('Content-Length', '0'),
+                         ])
+
+    def test_finalize_w_body(self):
+        response = self._makeOne()
+        response.body = 'TEST'
+        status, headers = response.finalize()
+        self.assertEqual(status, '200 OK')
+        self.assertEqual(headers,
+                         [('X-Powered-By', 'Zope (www.zope.org), '
+                                           'Python (www.python.org)'),
+                          ('Content-Length', '4'),
+                         ])
+
+    def test_finalize_w_existing_content_length(self):
+        response = self._makeOne()
+        response.setHeader('Content-Length', '42')
+        status, headers = response.finalize()
+        self.assertEqual(status, '200 OK')
+        self.assertEqual(headers,
+                         [('X-Powered-By', 'Zope (www.zope.org), '
+                                           'Python (www.python.org)'),
+                          ('Content-Length', '42'),
+                         ])
+
+    def test_finalize_w_transfer_encoding(self):
+        response = self._makeOne()
+        response.setHeader('Transfer-Encoding', 'slurry')
+        status, headers = response.finalize()
+        self.assertEqual(status, '200 OK')
+        self.assertEqual(headers,
+                         [('X-Powered-By', 'Zope (www.zope.org), '
+                                           'Python (www.python.org)'),
+                          ('Transfer-Encoding', 'slurry'),
+                         ])
+
+    def test_finalize_after_redirect(self):
+        response = self._makeOne()
+        response.redirect('http://example.com/')
+        status, headers = response.finalize()
+        self.assertEqual(status, '302 Moved Temporarily')
+        self.assertEqual(headers,
+                         [('X-Powered-By', 'Zope (www.zope.org), '
+                                           'Python (www.python.org)'),
+                          ('Content-Length', '0'),
+                          ('Location', 'http://example.com/'),
+                         ])
+
+    def test_listHeaders_empty(self):
+        response = self._makeOne()
+        headers = response.listHeaders()
+        self.assertEqual(headers,
+                         [('X-Powered-By', 'Zope (www.zope.org), '
+                                           'Python (www.python.org)'),
+                         ])
+
+    def test_listHeaders_already_wrote(self):
+        # listHeaders doesn't do the short-circuit on _wrote.
+        response = self._makeOne()
+        response._wrote = True
+        headers = response.listHeaders()
+        self.assertEqual(headers,
+                         [('X-Powered-By', 'Zope (www.zope.org), '
+                                           'Python (www.python.org)'),
+                         ])
+
+    def test_listHeaders_existing_content_length(self):
+        response = self._makeOne()
+        response.setHeader('Content-Length', 42)
+        headers = response.listHeaders()
+        self.assertEqual(headers,
+                         [('X-Powered-By', 'Zope (www.zope.org), '
+                                           'Python (www.python.org)'),
+                          ('Content-Length', '42'),
+                         ])
+
+    def test_listHeaders_existing_transfer_encoding(self):
+        # If 'Transfer-Encoding' is set, don't force 'Content-Length'.
+        response = self._makeOne()
+        response.setHeader('Transfer-Encoding', 'slurry')
+        headers = response.listHeaders()
+        self.assertEqual(headers,
+                         [('X-Powered-By', 'Zope (www.zope.org), '
+                                           'Python (www.python.org)'),
+                          ('Transfer-Encoding', 'slurry'),
+                         ])
+
+    def test_listHeaders_after_setHeader(self):
+        response = self._makeOne()
+        response.setHeader('x-consistency', 'Foolish')
+        headers = response.listHeaders()
+        self.assertEqual(headers,
+                         [('X-Powered-By', 'Zope (www.zope.org), '
+                                           'Python (www.python.org)'),
+                          ('X-Consistency', 'Foolish'),
+                         ])
+
+    def test_listHeaders_after_setHeader_literal(self):
+        response = self._makeOne()
+        response.setHeader('X-consistency', 'Foolish', literal=True)
+        headers = response.listHeaders()
+        self.assertEqual(headers,
+                         [('X-Powered-By', 'Zope (www.zope.org), '
+                                           'Python (www.python.org)'),
+                          ('X-consistency', 'Foolish'),
+                         ])
+
+    def test_listHeaders_after_redirect(self):
+        response = self._makeOne()
+        response.redirect('http://example.com/')
+        headers = response.listHeaders()
+        self.assertEqual(headers,
+                         [('X-Powered-By', 'Zope (www.zope.org), '
+                                           'Python (www.python.org)'),
+                          ('Location', 'http://example.com/'),
+                         ])
+
+    def test_listHeaders_after_setCookie_appendCookie(self):
+        response = self._makeOne()
+        response.setCookie('foo', 'bar', path='/')
+        response.appendCookie('foo', 'baz')
+        headers = response.listHeaders()
+        self.assertEqual(headers,
+                         [('X-Powered-By', 'Zope (www.zope.org), '
+                                           'Python (www.python.org)'),
+                          ('Set-Cookie', 'foo="bar%3Abaz"; Path=/'),
+                         ])
+
+    def test_listHeaders_after_expireCookie(self):
+        response = self._makeOne()
+        response.expireCookie('qux', path='/')
+        headers = response.listHeaders()
+        self.assertEqual(headers,
+                         [('X-Powered-By', 'Zope (www.zope.org), '
+                                           'Python (www.python.org)'),
+                          ('Set-Cookie', 'qux="deleted"; '
+                                         'Path=/; '
+                                         'Expires=Wed, 31-Dec-97 23:59:59 GMT; '
+                                         'Max-Age=0'),
+                         ])
+
+    def test_listHeaders_after_addHeader(self):
+        response = self._makeOne()
+        response.addHeader('X-Consistency', 'Foolish')
+        response.addHeader('X-Consistency', 'Oatmeal')
+        headers = response.listHeaders()
+        self.assertEqual(headers,
+                         [('X-Powered-By', 'Zope (www.zope.org), '
+                                           'Python (www.python.org)'),
+                          ('X-Consistency', 'Foolish'),
+                          ('X-Consistency', 'Oatmeal'),
+                         ])
+
+    def test_listHeaders_w_body(self):
+        response = self._makeOne()
+        response.setBody('BLAH')
+        headers = response.listHeaders()
+        self.assertEqual(headers,
+                         [('X-Powered-By', 'Zope (www.zope.org), '
+                                           'Python (www.python.org)'),
+                          ('Content-Length', '4'),
+                          ('Content-Type', 'text/plain; charset=iso-8859-15'),
+                         ])
 
     def test___str__already_wrote(self):
         response = self._makeOne()
