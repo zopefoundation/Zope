@@ -11,6 +11,12 @@ Trunk (unreleased)
 Restructuring
 +++++++++++++
 
+- Completely refactored ``ZPublisher.WSGIResponse`` in order to provide
+  non-broken support for running Zope under arbitrary WSGI servers. In this
+  (alternate) scenario, transaction handling, request retry, error handling,
+  etc. are removed from the publisher, and become the responsibility of
+  middleware.
+
 - Drop the dependency on the ThreadLock distribution, by using Python's thread
   module instead.
 
