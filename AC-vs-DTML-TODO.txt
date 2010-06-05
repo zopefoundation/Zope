@@ -23,6 +23,8 @@ AccessControl
 
 - Remaining outside imports:
 
+  * OFS - as a base class for User.BaseUserFolder
+
   * Products (in registerPermissions using it as a data container for
     ``__ac_permissions__``) - this should use a global inside the module
     inside AccessControl.
@@ -34,9 +36,7 @@ AccessControl
 
 - Test only dependencies:
 
-  * OFS
   * Testing
-  * transaction
 
 DocumentTemplate
 ----------------
