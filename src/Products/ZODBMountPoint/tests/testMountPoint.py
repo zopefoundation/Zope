@@ -17,8 +17,6 @@
 import os
 import sys
 import unittest
-import Testing
-import ZODB
 import transaction
 from OFS.Application import Application
 from OFS.Folder import Folder
@@ -65,6 +63,7 @@ class TestDBConfig:
         self.version_cache_size = 100
         self.version_pool_size = 3
         self.allow_implicit_cross_references = False
+        self.large_record_size = 1<<24
         return ZopeDatabase(self)
 
     def getSectionName(self):

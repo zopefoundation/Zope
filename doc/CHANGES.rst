@@ -133,7 +133,9 @@ Features Added
 
   - Jinja2 = 2.5.0
   - Sphinx = 1.0b2
+  - transaction = 1.1.0
   - ZConfig = 2.8.0
+  - ZODB3 = 3.10.0b1
   - zope.annotation = 3.5.0
   - zope.broken = 3.6.0
   - zope.browsermenu = 3.9.0

@@ -8,6 +8,24 @@ You can have a look at the `detailed change log <CHANGES.html>`_ to learn
 about all minor new features and bugs being solved in this release.
 
 
+ZODB 3.10
+---------
+
+...
+
+
+WSGI
+----
+
+...
+
+
+Zope Toolkit
+------------
+
+...
+
+
 Optional Formlib support
 ------------------------
 
