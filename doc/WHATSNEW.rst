@@ -11,7 +11,47 @@ about all minor new features and bugs being solved in this release.
 ZODB 3.10
 ---------
 
-...
+This version of Zope includes ZODB 3.10 - a new major version of the ZODB.
+Among the notable changes are a variety of performance improvements. The ZEO
+server process is now multi-threaded. If the underlying file system and disk
+storage can handle concurrent disk I/O efficiently a throughput increase by a
+factor of up to four has been seen. On a related note using solid state disks
+for the ZEO server has a similar effect and can increase throughput by the
+same factor. Both of these effects combined can lead to an increase of up to
+sixteen times the throughput in high load scenarios.
+
+File storage indexes use a new format, which is both smaller in size and can
+be read much faster. The repozo backup script now also backs up the index files
+in addition to the actual data, so in a restore scenario the index doesn't have
+to be recreated. For large databases this can bring down the total downtime in
+a restore scenario by a significant amount of time.
+
+The ZODB has added support for wrapper storages that transform pickle data.
+Applications for this include compression and encryption. A storage using
+standard zlib compression is available as a new package called
+`zc.zlibstorage <http://pypi.python.org/pypi/zc.zlibstorage>`_. In content
+management scenarios where strings constitute the most of the non-blob data,
+this can reduce the Data.fs size by a factor of two or more. The overhead of
+compressing and uncompressing is negligible. This saves both network I/O and
+disk space. More importantly the database has better chances of fitting into
+the operating systems disk cache and thus into memory. The second advantage is
+less important when using solid state disks.
+
+Databases now warn when committing very large records (> 16MB). This is to try
+to warn people of likely design mistakes. There is a new option
+(large_record_size/large-record-size) to control the record size at which the
+warning is issued. This should help developers to better understand the storage
+implications of their code, which has been rather transparent so far.
+
+The mkzeoinst script has been moved to a separate project
+`zope.mkzeoinstance <http://pypi.python.org/pypi/zope.mkzeoinstance>`_ and is
+no-longer included with ZODB. You will need to use this new package to set up
+ZEO servers or use the
+`plone.recipe.zeoserver <http://pypi.python.org/pypi/plone.recipe.zeoserver>`_
+recipe if you use `buildout <http://www.buildout.org/>`_.
+
+More information can be found in the detailed
+`change log <http://pypi.python.org/pypi/ZODB3/3.10.0b1.>`_.
 
 
 WSGI
