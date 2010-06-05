@@ -14,8 +14,8 @@
 
 __version__='$Revision: 1.55 $'[11:-2]
 
+from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
-from App.class_init import InitializeClass
 from OFS.SimpleItem import Item
 from Persistence import Persistent
 from OFS.ObjectManager import BeforeDeleteException

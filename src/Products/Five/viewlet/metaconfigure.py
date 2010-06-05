@@ -25,9 +25,9 @@ from zope.browser.interfaces import IBrowserView
 from zope.publisher.interfaces.browser import IDefaultBrowserLayer
 from zope.viewlet import interfaces
 
+from AccessControl.class_init import InitializeClass
 from AccessControl.security import protectClass
 from AccessControl.security import protectName
-from App.class_init import InitializeClass
 
 from Products.Five.viewlet import manager
 from Products.Five.viewlet import viewlet

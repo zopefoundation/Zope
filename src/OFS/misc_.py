@@ -11,8 +11,8 @@
 #
 ##############################################################################
 
+from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
-from App.class_init import InitializeClass
 from App.ImageFile import ImageFile
 
 class misc_:

@@ -19,6 +19,7 @@ from cStringIO import StringIO
 from mimetools import choose_boundary
 import struct
 
+from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import change_images_and_files
 from AccessControl.Permissions import view_management_screens
 from AccessControl.Permissions import view as View
@@ -27,7 +28,6 @@ from AccessControl.Permissions import delete_objects
 from AccessControl.Role import RoleManager
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Implicit
-from App.class_init import InitializeClass
 from App.special_dtml import DTMLFile
 from DateTime.DateTime import DateTime
 from Persistence import Persistent

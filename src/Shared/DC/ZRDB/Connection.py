@@ -21,6 +21,7 @@ from logging import getLogger
 import string
 import sys
 
+from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import view_management_screens
 from AccessControl.Permissions import change_database_connections
 from AccessControl.Permissions import test_database_connections
@@ -28,7 +29,6 @@ from AccessControl.Permissions import open_close_database_connection
 from AccessControl.Role import RoleManager
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Implicit
-from App.class_init import InitializeClass
 from App.Dialogs import MessageDialog
 from App.special_dtml import DTMLFile
 from DateTime.DateTime import DateTime

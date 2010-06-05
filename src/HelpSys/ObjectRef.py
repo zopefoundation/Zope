@@ -17,8 +17,8 @@ __version__='$Revision: 1.10 $'[11:-2]
 import sys
 from urllib import quote
 
+from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
-from App.class_init import InitializeClass
 from App.special_dtml import DTMLFile
 from HelpSys.HelpUtil import classobject
 from HelpSys.HelpUtil import HelpBase

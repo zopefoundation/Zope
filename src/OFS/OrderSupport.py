@@ -17,11 +17,11 @@ $Id$
 
 import warnings
 
+from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import access_contents_information
 from AccessControl.Permissions import manage_properties
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import aq_base
-from App.class_init import InitializeClass
 from DocumentTemplate.sequence import sort
 from zope.interface import implements
 from zope.container.contained import notifyContainerModified

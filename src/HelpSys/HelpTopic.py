@@ -12,11 +12,11 @@
 ##############################################################################
 import os
 
+from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import access_contents_information
 from AccessControl.Permissions import view as View
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Implicit
-from App.class_init import InitializeClass
 from App.ImageFile import ImageFile
 from App.special_dtml import DTMLFile
 from App.special_dtml import HTML

@@ -23,11 +23,11 @@ import logging
 from random import random
 from thread import allocate_lock
 
+from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.SecurityManagement import getSecurityManager
 from AccessControl.unauthorized import Unauthorized
 from Acquisition import aq_base
-from App.class_init import InitializeClass
 from App.Dialogs import MessageDialog
 from OFS.SimpleItem import SimpleItem
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile

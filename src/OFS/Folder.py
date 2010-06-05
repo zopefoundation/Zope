@@ -17,12 +17,12 @@ Folders are the basic container objects and are analogous to directories.
 $Id$
 """
 
+from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import add_page_templates
 from AccessControl.Permissions import add_user_folders
 from AccessControl.Role import RoleManager
 from AccessControl.SecurityManagement import getSecurityManager
 from AccessControl.unauthorized import Unauthorized
-from App.class_init import InitializeClass
 from App.special_dtml import DTMLFile
 from webdav.Collection import Collection
 from zope.interface import implements

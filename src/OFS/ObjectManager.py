@@ -26,6 +26,7 @@ import re
 import sys
 
 from AccessControl import ClassSecurityInfo
+from AccessControl.class_init import InitializeClass
 from AccessControl.Permission import getPermissions
 from AccessControl.Permissions import view_management_screens
 from AccessControl.Permissions import access_contents_information
@@ -36,7 +37,6 @@ from AccessControl import getSecurityManager
 from AccessControl.ZopeSecurityPolicy import getRoles
 from Acquisition import aq_base
 from Acquisition import Implicit
-from App.class_init import InitializeClass
 from App.Common import is_acquired
 from App.config import getConfiguration
 from App.Dialogs import MessageDialog

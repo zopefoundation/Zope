@@ -24,9 +24,9 @@ import sys
 import thread
 import time
 
+from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Implicit
-from App.class_init import InitializeClass
 from Persistence import Persistent
 from ZODB.POSException import ConflictError
 from zope.interface import implements

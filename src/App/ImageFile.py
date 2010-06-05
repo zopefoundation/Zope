@@ -19,9 +19,9 @@ import os.path
 import stat
 import time
 
+from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Explicit
-from App.class_init import InitializeClass
 from App.Common import package_home
 from App.Common import rfc1123_date
 from App.config import getConfiguration

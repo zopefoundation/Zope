@@ -13,11 +13,11 @@
 
 __version__ = "$Revision: 1.8 $"[11:-2]
 
+from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.SecurityManagement import getSecurityManager
 from Acquisition import aq_base
 from Acquisition import Implicit
-from App.class_init import InitializeClass
 from App.special_dtml import DTMLFile
 from OFS.SimpleItem import Item
 from webdav.Lockable import wl_isLocked

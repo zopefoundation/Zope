@@ -14,10 +14,10 @@
 """
 from urllib import quote
 
+from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.Role import RoleManager
 from Acquisition import Implicit
-from App.class_init import InitializeClass
 from App.special_dtml import DTMLFile
 from App.special_dtml import HTML
 from DateTime.DateTime import DateTime

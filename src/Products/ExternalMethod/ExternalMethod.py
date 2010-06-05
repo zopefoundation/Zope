@@ -22,6 +22,7 @@ import stat
 import sys
 import traceback
 
+from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import change_external_methods
 from AccessControl.Permissions import view_management_screens
 from AccessControl.Permissions import view as View
@@ -29,7 +30,6 @@ from AccessControl.Role import RoleManager
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Acquired
 from Acquisition import Explicit
-from App.class_init import InitializeClass
 from App.Dialogs import MessageDialog
 from App.Extensions import getObject
 from App.Extensions import getPath

@@ -16,8 +16,8 @@
 $Id$
 """
 
+from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
-from App.class_init import InitializeClass
 from OFS.SimpleItem import SimpleItem
 
 from zope.interface import implements

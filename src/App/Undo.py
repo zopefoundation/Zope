@@ -19,8 +19,8 @@ from Acquisition import aq_inner
 from Acquisition import aq_parent
 from AccessControl import getSecurityManager
 from AccessControl import ClassSecurityInfo
+from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import undo_changes
-from App.class_init import InitializeClass
 from App.interfaces import IUndoSupport
 from App.special_dtml import DTMLFile
 from DateTime.DateTime import DateTime

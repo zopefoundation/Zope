@@ -22,8 +22,8 @@ import urllib
 from zope.interface import implements
 from AccessControl import getSecurityManager, Unauthorized
 from AccessControl import ClassSecurityInfo
+from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import view_management_screens
-from App.class_init import InitializeClass
 from App.interfaces import INavigation
 from App.special_dtml import HTMLFile
 from App.special_dtml import DTMLFile

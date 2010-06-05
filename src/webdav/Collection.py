@@ -17,8 +17,8 @@ $Id$
 
 from urllib import unquote
 
+from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityManagement import getSecurityManager
-from App.class_init import InitializeClass
 from zExceptions import MethodNotAllowed
 from zExceptions import NotFound
 from zope.interface import implements

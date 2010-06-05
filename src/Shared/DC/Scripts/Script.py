@@ -20,9 +20,9 @@ __version__='$Revision$'[11:-2]
 from string import join
 from urllib import quote
 
+from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import view_management_screens
 from AccessControl.SecurityInfo import ClassSecurityInfo
-from App.class_init import InitializeClass
 from App.special_dtml import DTMLFile
 from DocumentTemplate.DT_Util import TemplateDict
 from OFS.SimpleItem import SimpleItem

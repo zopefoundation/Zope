@@ -25,10 +25,10 @@ import time
 from urllib import quote
 import urlparse
 
+from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import view_management_screens
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from App.Common import rfc1123_date
-from App.class_init import InitializeClass
 from App.special_dtml import DTMLFile
 from OFS.Cache import Cache
 from OFS.Cache import CacheManager

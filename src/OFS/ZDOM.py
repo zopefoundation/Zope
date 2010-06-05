@@ -15,13 +15,13 @@ DOM implementation in ZOPE : Read-Only methods
 
 All standard Zope objects support DOM to a limited extent.
 """
+from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.Permissions import access_contents_information
 from Acquisition import Explicit
 from Acquisition import Implicit
 from Acquisition import aq_base
 from Acquisition import aq_parent
-from App.class_init import InitializeClass
 
 
 # Node type codes

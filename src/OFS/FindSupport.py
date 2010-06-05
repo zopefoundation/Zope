@@ -18,11 +18,11 @@ $Id$
 from string import translate
 
 from AccessControl import ClassSecurityInfo
+from AccessControl.class_init import InitializeClass
 from AccessControl.Permission import name_trans
 from AccessControl.Permissions import view_management_screens
 from Acquisition import aq_base
 from App.special_dtml import DTMLFile
-from App.class_init import InitializeClass
 from DateTime.DateTime import DateTime
 from DocumentTemplate.DT_Util import Eval
 from DocumentTemplate.DT_Util import InstanceDict

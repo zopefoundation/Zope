@@ -17,6 +17,7 @@ $Id$
 import os
 import re
 
+from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import change_page_templates
 from AccessControl.Permissions import ftp_access
 from AccessControl.Permissions import view
@@ -27,7 +28,6 @@ from AccessControl.ZopeGuards import safe_builtins
 from Acquisition import Acquired
 from Acquisition import Explicit
 from Acquisition import aq_get
-from App.class_init import InitializeClass
 from App.Common import package_home
 from App.ImageFile import ImageFile
 from DateTime.DateTime import DateTime

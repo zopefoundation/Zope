@@ -25,6 +25,7 @@ import re
 import sys
 import time
 
+from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.SecurityManagement import getSecurityManager
 from AccessControl.Owned import Owned
@@ -39,7 +40,6 @@ from Acquisition import aq_inner
 from Acquisition import aq_parent
 from Acquisition import Implicit
 from App.Management import Tabs
-from App.class_init import InitializeClass
 from App.special_dtml import HTML
 from App.special_dtml import DTMLFile
 from App.Undo import UndoSupport

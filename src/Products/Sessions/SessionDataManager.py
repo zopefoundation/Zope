@@ -14,11 +14,11 @@ from logging import getLogger
 import re
 import sys
 
+from AccessControl.class_init import InitializeClass
 from AccessControl.Owned import Owned
 from AccessControl.Role import RoleManager
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Implicit
-from App.class_init import InitializeClass
 from App.special_dtml import DTMLFile
 from App.Management import Tabs
 from OFS.SimpleItem import Item

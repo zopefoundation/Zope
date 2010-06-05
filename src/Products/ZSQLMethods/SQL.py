@@ -16,9 +16,9 @@ __doc__='''SQL Methods
 $Id$'''
 __version__='$Revision: 1.21 $'[11:-2]
 
+from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import change_database_methods
 from AccessControl.SecurityInfo import ClassSecurityInfo
-from App.class_init import InitializeClass
 from App.special_dtml import DTMLFile
 from Shared.DC.ZRDB.DA import DA
 

@@ -15,7 +15,7 @@
 from urllib import quote
 
 from AccessControl import getSecurityManager
-from App.class_init import InitializeClass
+from AccessControl.class_init import InitializeClass
 from App.special_dtml import DTMLFile
 from App.special_dtml import HTML
 from DocumentTemplate.permissions import change_dtml_methods

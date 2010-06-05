@@ -14,10 +14,10 @@
 '''
 
 
+from AccessControl.class_init import InitializeClass
 from AccessControl.Role import RoleManager
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Implicit
-from App.class_init import InitializeClass
 from OFS.SimpleItem import Item
 from Persistence import Persistent
 

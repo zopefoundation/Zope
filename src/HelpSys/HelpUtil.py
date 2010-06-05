@@ -18,8 +18,8 @@ __version__='$Revision: 1.12 $'[11:-2]
 import re
 import sys
 
+from AccessControl.class_init import InitializeClass
 from Acquisition import Implicit
-from App.class_init import default__class_init__
 from App.Dialogs import MessageDialog
 from App.special_dtml import HTML
 from Persistence import Persistent

@@ -11,8 +11,8 @@
 #
 ##############################################################################
 
+from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
-from App.class_init import InitializeClass
 from OFS.SimpleItem import Item
 from Persistence import Persistent
 

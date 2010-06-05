@@ -24,12 +24,12 @@ from logging import getLogger
 
 import transaction
 
-from App.class_init import InitializeClass
+from AccessControl.class_init import InitializeClass
+from AccessControl.ZopeGuards import guarded_getattr
 from Acquisition import ImplicitAcquisitionWrapper
 from Acquisition import aq_base
 from Acquisition import aq_inner
 from Acquisition import aq_parent
-from AccessControl.ZopeGuards import guarded_getattr
 from OFS.SimpleItem import SimpleItem
 from OFS.Folder import Folder
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile

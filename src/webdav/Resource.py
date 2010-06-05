@@ -23,6 +23,7 @@ from urllib import unquote
 
 from AccessControl import getSecurityManager
 from AccessControl import ClassSecurityInfo
+from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import delete_objects
 from AccessControl.Permissions import manage_properties
 from AccessControl.Permissions import view as View
@@ -32,7 +33,6 @@ from AccessControl.Permissions import webdav_access
 from Acquisition import aq_base
 from Acquisition import aq_inner
 from Acquisition import aq_parent
-from App.class_init import InitializeClass
 from ExtensionClass import Base
 from OFS.event import ObjectClonedEvent
 from OFS.event import ObjectWillBeMovedEvent

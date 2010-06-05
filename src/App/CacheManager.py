@@ -17,7 +17,7 @@ This class is mixed into the database manager in App.ApplicationManager.
 $Id$'''
 __version__='$Revision: 1.31 $'[11:-2]
 
-from App.class_init import InitializeClass
+from AccessControl.class_init import InitializeClass
 from App.special_dtml import DTMLFile
 from App.ImageFile import ImageFile
 from DateTime.DateTime import DateTime

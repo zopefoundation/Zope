@@ -17,6 +17,7 @@ $Id$
 
 import sys
 
+from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.SecurityManagement import getSecurityManager
 from AccessControl.Permissions import view as View
@@ -26,7 +27,6 @@ from AccessControl.Permissions import webdav_unlock_items
 from Acquisition import aq_base
 from Acquisition import aq_parent
 from Acquisition import Implicit
-from App.class_init import InitializeClass
 from App.special_dtml import DTMLFile
 from Persistence import Persistent
 from OFS.CopySupport import CopyError

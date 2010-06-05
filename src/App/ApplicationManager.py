@@ -21,11 +21,11 @@ import os
 import sys
 import time
 
+from AccessControl.class_init import InitializeClass
 from AccessControl.requestmethod import requestmethod
 from AccessControl.SecurityManagement import getSecurityManager
 from Acquisition import Implicit
 from App.CacheManager import CacheManager
-from App.class_init import InitializeClass
 from App.config import getConfiguration
 from App.DavLockManager import DavLockManager
 from App.special_dtml import DTMLFile

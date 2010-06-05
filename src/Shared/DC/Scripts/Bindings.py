@@ -16,6 +16,7 @@ __version__='$Revision$'[11:-2]
 import re
 import string
 
+from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.SecurityManagement import getSecurityManager
 from AccessControl.Permissions import view_management_screens
@@ -23,7 +24,6 @@ from AccessControl.PermissionRole import _what_not_even_god_should_do
 from AccessControl.ZopeGuards import guarded_getattr
 from Acquisition import aq_parent
 from Acquisition import aq_inner
-from App.class_init import InitializeClass
 from Persistence import Persistent
 
 defaultBindings = {'name_context': 'context',

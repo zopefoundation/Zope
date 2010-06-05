@@ -2,10 +2,10 @@
 
 Defines the VirtualHostMonster class
 """
+from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import view as View
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Implicit
-from App.class_init import InitializeClass
 from App.Dialogs import MessageDialog
 from App.special_dtml import DTMLFile
 from OFS.SimpleItem import Item

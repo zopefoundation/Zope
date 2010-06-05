@@ -15,9 +15,9 @@
 $Id$
 """
 
+from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import aq_base
-from App.class_init import InitializeClass
 from Persistence import PersistentMapping
 from zope.interface import implements
 

@@ -18,6 +18,7 @@ $Id$
 
 from cgi import escape
 
+from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import manage_vocabulary
 from AccessControl.Permissions import manage_zcatalog_indexes
 from AccessControl.Permissions import query_vocabulary
@@ -27,7 +28,6 @@ from Acquisition import aq_base
 from Acquisition import aq_inner
 from Acquisition import aq_parent
 from Acquisition import Implicit
-from App.class_init import InitializeClass
 from App.special_dtml import DTMLFile
 from OFS.SimpleItem import SimpleItem
 from Persistence import Persistent

@@ -16,13 +16,13 @@
 import sys
 import types
 
+from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.PermissionMapping import aqwrap
 from AccessControl.Owned import UnownableOwner
 from Acquisition import Acquired
 from Acquisition import aq_base
 from Acquisition import Implicit
-from App.class_init import InitializeClass
 
 def _product_packages():
     """Returns all product packages including the regularly defined

@@ -20,9 +20,9 @@ from cgi import escape
 from thread import allocate_lock
 import time
 
+from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import view_management_screens
 from AccessControl.SecurityInfo import ClassSecurityInfo
-from App.class_init import InitializeClass
 from App.special_dtml import DTMLFile
 from OFS.Cache import Cache
 from OFS.Cache import CacheManager

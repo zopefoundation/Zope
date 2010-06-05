@@ -22,12 +22,12 @@ from random import randint
 import sys
 from urllib import quote
 
+from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.SecurityManagement import getSecurityManager
 from AccessControl.Permissions import access_contents_information
 from AccessControl.Permissions import view_management_screens
 from Acquisition import aq_base
-from App.class_init import InitializeClass
 from App.special_dtml import DTMLFile
 from BTrees.Length import Length
 from BTrees.OIBTree import OIBTree

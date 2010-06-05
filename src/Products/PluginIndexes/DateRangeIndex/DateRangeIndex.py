@@ -18,10 +18,10 @@ $Id$
 import os
 from datetime import datetime
 
+from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import manage_zcatalog_indexes
 from AccessControl.Permissions import view
 from AccessControl.SecurityInfo import ClassSecurityInfo
-from App.class_init import InitializeClass
 from App.Common import package_home
 from App.special_dtml import DTMLFile
 from BTrees.IIBTree import IISet

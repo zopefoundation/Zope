@@ -18,6 +18,7 @@ from cgi import escape
 import time
 import sys
 
+from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import access_contents_information
 from AccessControl.Permissions import manage_properties
 from AccessControl.Permissions import view_management_screens
@@ -26,7 +27,6 @@ from AccessControl.SecurityManagement import getSecurityManager
 from Acquisition import aq_base
 from Acquisition import aq_parent
 from Acquisition import Implicit, Explicit
-from App.class_init import InitializeClass
 from App.Common import iso8601_date
 from App.Common import rfc1123_date
 from App.Dialogs import MessageDialog

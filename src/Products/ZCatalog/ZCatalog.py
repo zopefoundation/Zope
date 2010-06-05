@@ -22,13 +22,13 @@ import time
 import urllib
 from warnings import warn
 
+from AccessControl.class_init import InitializeClass
 from AccessControl.Permission import name_trans
 from AccessControl.Permissions import manage_zcatalog_entries
 from AccessControl.Permissions import manage_zcatalog_indexes
 from AccessControl.Permissions import search_zcatalog
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Implicit
-from App.class_init import InitializeClass
 from App.Dialogs import MessageDialog
 from App.special_dtml import DTMLFile
 from DateTime.DateTime import DateTime

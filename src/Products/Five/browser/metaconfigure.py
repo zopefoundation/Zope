@@ -37,11 +37,11 @@ from zope.browserpage.metaconfigure import providesCallable
 from zope.browserpage.metaconfigure import _handle_menu
 from zope.browserpage.metaconfigure import _handle_for
 
+from AccessControl.class_init import InitializeClass
 from AccessControl.security import getSecurityInfo
 from AccessControl.security import protectClass
 from AccessControl.security import protectName
 from AccessControl.security import CheckerPrivateId
-from App.class_init import InitializeClass
 
 from Products.Five.browser import BrowserView
 from Products.Five.browser.resource import FileResourceFactory

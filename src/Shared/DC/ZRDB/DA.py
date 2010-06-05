@@ -19,6 +19,7 @@ import string
 import sys
 from time import time
 
+from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import change_database_methods
 from AccessControl.Permissions import use_database_methods
 from AccessControl.Permissions import view_management_screens
@@ -26,7 +27,6 @@ from AccessControl.Role import RoleManager
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.SecurityManagement import getSecurityManager
 from Acquisition import Implicit
-from App.class_init import InitializeClass
 from App.Extensions import getBrain
 from App.special_dtml import DTMLFile
 from DocumentTemplate import HTML

@@ -27,13 +27,13 @@ import sys
 import traceback
 from urllib import quote
 
+from AccessControl.class_init import InitializeClass
 from AccessControl.requestmethod import requestmethod
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.SecurityManagement import getSecurityManager
 from AccessControl.ZopeGuards import get_safe_globals, guarded_getattr
 from AccessControl.ZopeGuards import get_safe_globals, guarded_getattr
 from Acquisition import aq_parent
-from App.class_init import InitializeClass
 from App.Common import package_home
 from App.Dialogs import MessageDialog
 from App.special_dtml import DTMLFile

@@ -22,13 +22,13 @@ from urllib import quote
 from urlparse import urlparse
 from urlparse import urlunparse
 
+from AccessControl.class_init import InitializeClass
 from AccessControl.Owned import Owned
 from AccessControl.Role import RoleManager
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Implicit
 from Acquisition import aq_parent
 from Acquisition import aq_inner
-from App.class_init import InitializeClass
 from App.Management import Tabs
 from App.special_dtml import DTMLFile
 from Persistence import Persistent
