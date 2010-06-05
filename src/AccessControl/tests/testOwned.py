@@ -4,10 +4,12 @@ $Id$
 """
 
 import unittest
-import Testing
-import ZODB
 
+from persistent import Persistent
 from Acquisition import Implicit, aq_inner
+
+from AccessControl.Owned import Owned
+
 
 class FauxUser(Implicit):
 
@@ -17,10 +19,12 @@ class FauxUser(Implicit):
     def getId(self):
         return self._id
 
+
 class FauxUserFolder(Implicit):
 
     def getUserById(self, id, default):
         return FauxUser(id)
+
 
 class FauxRoot(Implicit):
 
@@ -46,26 +50,40 @@ class FauxRoot(Implicit):
 
         return obj
 
+
+class Folder(Implicit, Persistent, Owned):
+
+    def __init__(self, id):
+        self.id = id
+        self.names = set()
+
+    def _setObject(self, name, value):
+        setattr(self, name, value)
+        self.names.add(name)
+
+    def objectValues(self):
+        result = []
+        for name in self.names:
+            result.append(getattr(self, name))
+        return result
+
+
 class OwnedTests(unittest.TestCase):
 
     def _getTargetClass(self):
-        from AccessControl.Owned import Owned
         return Owned
 
     def _makeOne(self, *args, **kw):
         return self._getTargetClass()(*args, **kw)
 
     def _makeDummy(self, *args, **kw):
-
-        from AccessControl.Owned import Owned
         class Dummy(Implicit, Owned):
             pass
 
         return Dummy(*args, **kw)
 
-    def test_z3interfaces(self):
+    def test_interfaces(self):
         from AccessControl.interfaces import IOwned
-        from AccessControl.Owned import Owned
         from zope.interface.verify import verifyClass
 
         verifyClass(IOwned, Owned)
@@ -182,7 +200,6 @@ class OwnershipChangeTests(unittest.TestCase):
     def setUp(self):
         from AccessControl.Owned import UnownableOwner
         from AccessControl.User import UserFolder
-        from OFS.Folder import Folder
         super(OwnershipChangeTests, self).setUp()
 
         self.root = FauxRoot()

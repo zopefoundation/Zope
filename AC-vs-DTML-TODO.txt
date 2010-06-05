@@ -35,11 +35,8 @@ AccessControl
 - Test only dependencies:
 
   * OFS
-  * Products.PythonScripts
-  * Products.SiteErrorLog
   * Testing
   * transaction
-  * Zope2
 
 DocumentTemplate
 ----------------
