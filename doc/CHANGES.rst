@@ -11,6 +11,8 @@ Trunk (unreleased)
 Restructuring
 +++++++++++++
 
+- Removed the deprecated ``hasRole`` method from user objects.
+
 - Removed deprecated support for specifying ``__ac_permissions__``,
   ``meta_types`` and ``methods`` in a product's ``__init__``.
 

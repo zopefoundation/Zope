@@ -19,7 +19,7 @@ static char cDocumentTemplate_module_documentation[] =
 
 static PyObject *py_isDocTemp=0, *py_blocks=0, *py_=0, *join=0, *py_acquire;
 static PyObject *py___call__, *py___roles__, *py_AUTHENTICATED_USER;
-static PyObject *py_hasRole, *py__proxy_roles, *py_Unauthorized;
+static PyObject *py__proxy_roles, *py_Unauthorized;
 static PyObject *py_Unauthorized_fmt, *py_guarded_getattr;
 static PyObject *py__push, *py__pop, *py_aq_base, *py_renderNS;
 static PyObject *py___class__, *html_quote, *ustr, *untaint_name;
@@ -986,7 +986,6 @@ initcDocumentTemplate(void)
   UNLESS(py___call__=PyString_FromString("__call__")) return;
   UNLESS(py___roles__=PyString_FromString("__roles__")) return;
   UNLESS(py__proxy_roles=PyString_FromString("_proxy_roles")) return;
-  UNLESS(py_hasRole=PyString_FromString("hasRole")) return;
   UNLESS(py_guarded_getattr=PyString_FromString("guarded_getattr")) return;
   UNLESS(py__push=PyString_FromString("_push")) return;
   UNLESS(py__pop=PyString_FromString("_pop")) return;
