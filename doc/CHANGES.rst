@@ -47,6 +47,10 @@ Bugs Fixed
 Features Added
 ++++++++++++++
 
+- Updated packages:
+
+  - distribute = 0.6.13
+
 - Update Five's testbrowser to support both mechanize 0.1.x and 0.2.x.
 
 - LP #142226: Added an extra keyword argument to the HTTPResponse
