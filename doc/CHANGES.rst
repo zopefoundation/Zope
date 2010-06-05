@@ -11,6 +11,8 @@ Trunk (unreleased)
 Restructuring
 +++++++++++++
 
+- Moved the ``zExceptions`` package into its own distribution.
+
 - Completely refactored ``ZPublisher.WSGIResponse`` in order to provide
   non-broken support for running Zope under arbitrary WSGI servers. In this
   (alternate) scenario, transaction handling, request retry, error handling,
