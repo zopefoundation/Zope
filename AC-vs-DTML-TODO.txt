@@ -25,10 +25,6 @@ AccessControl
 
   * OFS - as a base class for User.BaseUserFolder
 
-  * Products (in registerPermissions using it as a data container for
-    ``__ac_permissions__``) - this should use a global inside the module
-    inside AccessControl.
-
   * App (MessageDialog, DTMLFile, ...) - all need to go - redoing the UI is
     hard. We probably need to move it into some other core part of Zope2, like
     the App package, which could serve as a general dumping ground for ZMI

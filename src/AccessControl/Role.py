@@ -600,7 +600,6 @@ class RoleManager(Base, RoleManager):
 
     smallRolesWidget=selectedRoles=aclAChecked=aclPChecked=aclEChecked=''
     validRoles=valid_roles
-    #manage_rolesForm=manage_access
 
     def manage_editRoles(self, REQUEST, acl_type='A', acl_roles=[]):
         pass
@@ -609,16 +608,15 @@ class RoleManager(Base, RoleManager):
         pass
 
     def possible_permissions(self):
-        d={}
-        Products_permissions = getPermissions()
-        for p in Products_permissions:
-            d[p[0]]=1
+        d = {}
+        permissions = getPermissions()
+        for p in permissions:
+            d[p[0]] = 1
         for p in self.ac_inherited_permissions(1):
-            d[p[0]]=1
+            d[p[0]] = 1
 
-        d=d.keys()
+        d = d.keys()
         d.sort()
-
         return d
 
 InitializeClass(RoleManager)

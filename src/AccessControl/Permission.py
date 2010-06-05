@@ -139,11 +139,11 @@ class Permission:
 
 
 _registeredPermissions = {}
+_ac_permissions = ()
 
 
 def getPermissions():
-    import Products
-    return getattr(Products, '__ac_permissions__', ())
+    return _ac_permissions
 
 
 def addPermission(perm, default_roles=('Manager', )):
@@ -151,9 +151,8 @@ def addPermission(perm, default_roles=('Manager', )):
         return
 
     entry = ((perm, (), default_roles), )
-    import Products
-    Products_permissions = getPermissions()
-    Products.__ac_permissions__ = Products_permissions + entry
+    global _ac_permissions
+    _ac_permissions = _ac_permissions + entry
     _registeredPermissions[perm] = 1
     mangled = pname(perm) # get mangled permission name
     if not hasattr(ApplicationDefaultPermissions, mangled):
