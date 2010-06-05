@@ -3,17 +3,6 @@ Standalone AccessControl and DTML
 
 Open general points:
 
-- DocumentTemplate.security doesn't respect the security policy definition as
-  set by AccessControl anymore. It determines the use of the C implementation
-  based on the availability of the C module alone. This behavior change needs
-  discussion.
-
-- TaintedString should move into its own distribution. It's currently in
-  Shared.TaintedString and used both by DTML and ZPublisher.
-
-- zExceptions needs to be its own distribution, possibly merge with
-  zope.exceptions, which contains similar and sometimes identical code.
-
 - There's one test failure in RestrictedPython in
   ``test_sequence_in_utility_builtins_if_importable``. It does a conditional
   import of DocumentTemplate and executes some code. This should move into
@@ -31,6 +20,7 @@ AccessControl
   * zope.publisher
   * zope.schema
   * zope.security
+  * zExceptions
   * Acquisition
   * ExtensionClass
   * Persistence
@@ -43,8 +33,6 @@ AccessControl
   * Products (in registerPermissions using it as a data container for
     ``__ac_permissions__``) - this should use a global inside the module
     inside AccessControl.
-
-  * zExceptions (Forbidden, Unauthorized, ...)
 
   * App (MessageDialog, DTMLFile, ...) - all need to go - redoing the UI is
     hard. We probably need to move it into some other core part of Zope2, like
@@ -75,6 +63,7 @@ DocumentTemplate
   * ExtensionClass
   * Missing
   * RestrictedPython
+  * zExceptions
 
 - Remaining outside imports:
 
@@ -84,7 +73,6 @@ DocumentTemplate
     Add an optional dependency on Zope2? Configure if it is available,
     otherwise use some default?
 
-  * Shared (TaintedString) - move it to its own distribution
   * zExceptions - move it to its own distribution
 
 - Test only dependencies:
