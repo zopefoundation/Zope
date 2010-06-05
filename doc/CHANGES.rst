@@ -131,17 +131,19 @@ Features Added
 
 - Updated packages:
 
+  - Jinja2 = 2.5.0
   - ZConfig = 2.8.0
   - zope.annotation = 3.5.0
   - zope.broken = 3.6.0
   - zope.browsermenu = 3.9.0
-  - zope.browserpage = 3.12.1
+  - zope.browserpage = 3.12.2
   - zope.browserresource = 3.10.3
   - zope.component = 3.9.4
   - zope.configuration = 3.7.2
   - zope.container = 3.11.1
-  - zope.contentprovider = 3.7.1
+  - zope.contentprovider = 3.7.2
   - zope.contenttype = 3.5.1
+  - zope.event = 3.5.0-1
   - zope.exceptions = 3.6.0
   - zope.filerepresentation = 3.6.0
   - zope.i18nmessageid = 3.5.0
@@ -155,10 +157,10 @@ Features Added
   - zope.site = 3.9.1
   - zope.structuredtext = 3.5.0
   - zope.tales = 3.5.1
-  - zope.testbrowser = 3.8.1
+  - zope.testbrowser = 3.9.0
   - zope.testing = 3.9.3
   - zope.traversing = 3.12.1
-  - zope.viewlet = 3.7.1
+  - zope.viewlet = 3.7.2
 
 Bugs Fixed
 ++++++++++
