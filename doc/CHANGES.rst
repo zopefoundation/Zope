@@ -132,6 +132,7 @@ Features Added
 - Updated packages:
 
   - Jinja2 = 2.5.0
+  - Sphinx = 1.0b2
   - ZConfig = 2.8.0
   - zope.annotation = 3.5.0
   - zope.broken = 3.6.0
