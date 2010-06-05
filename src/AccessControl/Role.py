@@ -54,9 +54,7 @@ class RoleManager(Base, RoleManager):
     security = ClassSecurityInfo()
 
     manage_options=(
-        {'label': 'Security', 'action': 'manage_access',
-         'help': ('OFSP', 'Security.stx'),
-         },
+        {'label': 'Security', 'action': 'manage_access'},
         )
 
     __ac_roles__=('Manager', 'Owner', 'Anonymous', 'Authenticated')
@@ -126,9 +124,7 @@ class RoleManager(Base, RoleManager):
 
     security.declareProtected(change_permissions, 'manage_roleForm')
     manage_roleForm=DTMLFile('dtml/roleEdit', globals(),
-                             management_view='Security',
-                             help_topic='Security_Manage-Role.stx',
-                             help_product='OFSP')
+                             management_view='Security')
 
     security.declareProtected(change_permissions, 'manage_role')
     @requestmethod('POST')
@@ -145,9 +141,7 @@ class RoleManager(Base, RoleManager):
 
     security.declareProtected(change_permissions, 'manage_acquiredForm')
     manage_acquiredForm=DTMLFile('dtml/acquiredEdit', globals(),
-                                 management_view='Security',
-                                 help_topic='Security_Manage-Acquisition.stx',
-                                 help_product='OFSP')
+                                 management_view='Security')
 
     security.declareProtected(change_permissions, 'manage_acquiredPermissions')
     @requestmethod('POST')
@@ -230,9 +224,7 @@ class RoleManager(Base, RoleManager):
 
     security.declareProtected(change_permissions, 'manage_permissionForm')
     manage_permissionForm=DTMLFile('dtml/permissionEdit', globals(),
-                                   management_view='Security',
-                                   help_topic='Security_Manage-Permission.stx',
-                                   help_product='OFSP')
+                                   management_view='Security')
 
     security.declareProtected(change_permissions, 'manage_permission')
     @requestmethod('POST')
@@ -365,15 +357,11 @@ class RoleManager(Base, RoleManager):
 
     security.declareProtected(change_permissions, 'manage_listLocalRoles')
     manage_listLocalRoles=DTMLFile('dtml/listLocalRoles', globals(),
-                                   management_view='Security',
-                                   help_topic='Security_Local-Roles.stx',
-                                   help_product='OFSP')
+                                   management_view='Security')
 
     security.declareProtected(change_permissions, 'manage_editLocalRoles')
     manage_editLocalRoles=DTMLFile('dtml/editLocalRoles', globals(),
-                                   management_view='Security',
-                                   help_topic='Security_User-Local-Roles.stx',
-                                   help_product='OFSP')
+                                   management_view='Security')
 
     def has_local_roles(self):
         dict=self.__ac_local_roles__ or {}

@@ -434,10 +434,8 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
 
     manage_options=(
         (
-        {'label':'Contents', 'action':'manage_main',
-         'help':('OFSP','User-Folder_Contents.stx')},
-        {'label':'Properties', 'action':'manage_userFolderProperties',
-         'help':('OFSP','User-Folder_Properties.stx')},
+        {'label': 'Contents', 'action': 'manage_main'},
+        {'label': 'Properties', 'action':'manage_userFolderProperties'},
         )
         +RoleManager.manage_options
         +Item.manage_options

@@ -1,10 +1,6 @@
 <dtml-var manage_page_header>
 
-<dtml-var "manage_form_title(this(), _,
-           form_title='Change User',
-           help_product='OFSP',
-           help_topic='User-Folder_Edit-User.stx'
-	   )">
+<dtml-var "manage_form_title(this(), _, form_title='Change User')">
 
 <FORM ACTION="manage_users" METHOD="POST">
 <TABLE>

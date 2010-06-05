@@ -52,7 +52,6 @@ class Owned(Base):
 
     manage_options=({'label':  'Ownership',
                      'action': 'manage_owner',
-                     'help':   ('OFSP','Ownership.stx'),
                      'filter': ownableFilter
                      },
                    )
