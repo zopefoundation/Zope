@@ -19,24 +19,26 @@ from cgi import escape
 from Acquisition import Acquired
 from Acquisition import aq_base
 from Acquisition import aq_get
-from AccessControl import ClassSecurityInfo
-from AccessControl.SecurityManagement import newSecurityManager
-from AccessControl.Permissions import change_permissions
 from App.Dialogs import MessageDialog
 from App.special_dtml import DTMLFile
 from ExtensionClass import Base
 from PermissionMapping import RoleManager
 from zope.interface import implements
 
+from AccessControl import ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
 from AccessControl.interfaces import IRoleManager
 from AccessControl.Permission import Permission
+from AccessControl.Permissions import change_permissions
 from AccessControl.requestmethod import requestmethod
+from AccessControl.SecurityManagement import newSecurityManager
 
-DEFAULTMAXLISTUSERS=250
+DEFAULTMAXLISTUSERS = 250
+
 
 def _isBeingUsedAsAMethod(self):
     return aq_get(self, '_isBeingUsedAsAMethod_', 0)
+
 
 def _isNotBeingUsedAsAMethod(self):
     return not aq_get(self, '_isBeingUsedAsAMethod_', 0)
@@ -51,8 +53,8 @@ class RoleManager(Base, RoleManager):
     security = ClassSecurityInfo()
 
     manage_options=(
-        {'label':'Security', 'action':'manage_access',
-         'help':('OFSP','Security.stx'),
+        {'label': 'Security', 'action': 'manage_access',
+         'help': ('OFSP', 'Security.stx'),
          },
         )
 
@@ -67,20 +69,21 @@ class RoleManager(Base, RoleManager):
         # Get all permissions not defined in ourself that are inherited
         # This will be a sequence of tuples with a name as the first item and
         # an empty tuple as the second.
-        d={}
-        perms=self.__ac_permissions__
-        for p in perms: d[p[0]]=None
+        d = {}
+        perms = self.__ac_permissions__
+        for p in perms:
+            d[p[0]] = None
 
-        r=gather_permissions(self.__class__, [], d)
+        r = gather_permissions(self.__class__, [], d)
         if all:
             if hasattr(self, '_subobject_permissions'):
                 for p in self._subobject_permissions():
                     pname=p[0]
-                    if not d.has_key(pname):
-                        d[pname]=1
+                    if not pname in d:
+                        d[pname] = 1
                         r.append(p)
 
-            r=list(perms)+r
+            r = list(perms) + r
             r.sort()
 
         return tuple(r)
@@ -104,19 +107,19 @@ class RoleManager(Base, RoleManager):
 
         for p in permissions:
             name, value = p[:2]
-            p=Permission(name,value,self)
-            roles=p.getRoles(default=[])
+            p=Permission(name, value, self)
+            roles = p.getRoles(default=[])
             d={'name': name,
                'acquire': isinstance(roles, list) and 'CHECKED' or '',
                'roles': map(
                    lambda ir, roles=roles, valid=valid, ip=ip:
                    {
-                       'name': "p%dr%d" % (ip,ir),
+                       'name': "p%dr%d" % (ip, ir),
                        'checked': (valid[ir] in roles) and 'CHECKED' or '',
                        },
                    indexes)
                }
-            ip=ip+1
+            ip = ip + 1
             result.append(d)
         return result
 
@@ -133,10 +136,11 @@ class RoleManager(Base, RoleManager):
         """
         for p in self.ac_inherited_permissions(1):
             name, value = p[:2]
-            p=Permission(name,value,self)
+            p=Permission(name, value, self)
             p.setRole(role_to_manage, name in permissions)
 
-        if REQUEST is not None: return self.manage_access(REQUEST)
+        if REQUEST is not None:
+            return self.manage_access(REQUEST)
 
     security.declareProtected(change_permissions, 'manage_acquiredForm')
     manage_acquiredForm=DTMLFile('dtml/acquiredEdit', globals(),
@@ -151,13 +155,17 @@ class RoleManager(Base, RoleManager):
         """
         for p in self.ac_inherited_permissions(1):
             name, value = p[:2]
-            p=Permission(name,value,self)
-            roles=p.getRoles()
-            if roles is None: continue
-            if name in permissions: p.setRoles(list(roles))
-            else:                   p.setRoles(tuple(roles))
+            p = Permission(name, value, self)
+            roles = p.getRoles()
+            if roles is None:
+                continue
+            if name in permissions:
+                p.setRoles(list(roles))
+            else:
+                p.setRoles(tuple(roles))
 
-        if REQUEST is not None: return self.manage_access(REQUEST)
+        if REQUEST is not None:
+            return self.manage_access(REQUEST)
 
     def manage_getUserRolesAndPermissions(self, user_id):
         """ Used for permission/role reporting for a given user_id.
@@ -167,9 +175,9 @@ class RoleManager(Base, RoleManager):
             'roles' -> global roles,
             'roles_in_context' -> roles in context of the current object,
             'allowed_permissions' -> permissions allowed for the user,
-            'disallowed_permissions' -> all other permissions 
+            'disallowed_permissions' -> all other permissions
         """
-        
+
         d = {}
 
         current = self
@@ -189,7 +197,7 @@ class RoleManager(Base, RoleManager):
         newSecurityManager(None, userObj) # necessary?
         userObj = userObj.__of__(uf)
 
-        d = {'user_defined_in' : '/' + uf.absolute_url(1)}
+        d = {'user_defined_in': '/' + uf.absolute_url(1)}
 
         # roles
         roles = list(userObj.getRoles())
@@ -237,26 +245,30 @@ class RoleManager(Base, RoleManager):
         """
         for p in self.ac_inherited_permissions(1):
             name, value = p[:2]
-            if name==permission_to_manage:
-                p=Permission(name,value,self)
-                if acquire: roles=list(roles)
-                else: roles=tuple(roles)
+            if name == permission_to_manage:
+                p = Permission(name, value, self)
+                if acquire:
+                    roles=list(roles)
+                else:
+                    roles=tuple(roles)
                 p.setRoles(roles)
-                if REQUEST is not None: return self.manage_access(REQUEST)
+                if REQUEST is not None:
+                    return self.manage_access(REQUEST)
                 return
 
-        raise ValueError, (
+        raise ValueError(
             "The permission <em>%s</em> is invalid." %
                 escape(permission_to_manage))
 
     _normal_manage_access=DTMLFile('dtml/access', globals())
-    manage_reportUserPermissions=DTMLFile('dtml/reportUserPermissions', globals())
+    manage_reportUserPermissions=DTMLFile(
+        'dtml/reportUserPermissions', globals())
 
     security.declareProtected(change_permissions, 'manage_access')
     def manage_access(self, REQUEST, **kw):
         """Return an interface for making permissions settings.
         """
-        return apply(self._normal_manage_access,(), kw)
+        return apply(self._normal_manage_access, (), kw)
 
     security.declareProtected(change_permissions, 'manage_changePermissions')
     @requestmethod('POST')
@@ -269,13 +281,15 @@ class RoleManager(Base, RoleManager):
         permissions=self.ac_inherited_permissions(1)
         fails = []
         for ip in range(len(permissions)):
-            roles=[]
+            roles = []
             for ir in indexes:
-                if have("p%dr%d" % (ip,ir)): roles.append(valid_roles[ir])
+                if have("p%dr%d" % (ip, ir)):
+                    roles.append(valid_roles[ir])
             name, value = permissions[ip][:2]
             try:
-                p=Permission(name,value,self)
-                if not have('a%d' % ip): roles=tuple(roles)
+                p = Permission(name, value, self)
+                if not have('a%d' % ip):
+                    roles=tuple(roles)
                 p.setRoles(roles)
             except:
                 fails.append(name)
@@ -286,19 +300,19 @@ class RoleManager(Base, RoleManager):
                                    + escape(', '.join(fails)),
                                  action='manage_access')
         return MessageDialog(
-            title  ='Success!',
-            message='Your changes have been saved',
-            action ='manage_access')
+            title = 'Success!',
+            message = 'Your changes have been saved',
+            action = 'manage_access')
 
     security.declareProtected(change_permissions, 'permissionsOfRole')
     def permissionsOfRole(self, role):
         """Used by management screen.
         """
-        r=[]
+        r = []
         for p in self.ac_inherited_permissions(1):
             name, value = p[:2]
-            p=Permission(name,value,self)
-            roles=p.getRoles()
+            p = Permission(name, value, self)
+            roles = p.getRoles()
             r.append({'name': name,
                       'selected': role in roles and 'SELECTED' or '',
                       })
@@ -308,12 +322,12 @@ class RoleManager(Base, RoleManager):
     def rolesOfPermission(self, permission):
         """Used by management screen.
         """
-        valid_roles=self.valid_roles()
+        valid_roles = self.valid_roles()
         for p in self.ac_inherited_permissions(1):
             name, value = p[:2]
             if name==permission:
-                p=Permission(name,value,self)
-                roles=p.getRoles()
+                p = Permission(name, value, self)
+                roles = p.getRoles()
                 return map(
                     lambda role, roles=roles:
                     {'name': role,
@@ -321,7 +335,7 @@ class RoleManager(Base, RoleManager):
                      },
                     valid_roles)
 
-        raise ValueError, (
+        raise ValueError(
             "The permission <em>%s</em> is invalid." % escape(permission))
 
     security.declareProtected(change_permissions, 'acquiredRolesAreUsedBy')
@@ -331,13 +345,12 @@ class RoleManager(Base, RoleManager):
         for p in self.ac_inherited_permissions(1):
             name, value = p[:2]
             if name==permission:
-                p=Permission(name,value,self)
-                roles=p.getRoles()
+                p=Permission(name, value, self)
+                roles = p.getRoles()
                 return isinstance(roles, list) and 'CHECKED' or ''
 
-        raise ValueError, (
+        raise ValueError(
             "The permission <em>%s</em> is invalid." % escape(permission))
-
 
     # Local roles support
     # -------------------
@@ -390,8 +403,10 @@ class RoleManager(Base, RoleManager):
             aclu = getattr(aq_base(item), '__allow_groups__', _notfound)
             if aclu is not _notfound:
                 mlu = getattr(aclu, 'maxlistusers', _notfound)
-                if not isinstance(mlu, int): mlu = DEFAULTMAXLISTUSERS
-                if mlu < 0: raise OverflowError
+                if not isinstance(mlu, int):
+                    mlu = DEFAULTMAXLISTUSERS
+                if mlu < 0:
+                    raise OverflowError
                 un = getattr(aclu, 'user_names', _notfound)
                 if un is not _notfound:
                     un = aclu.__of__(item).user_names # rewrap
@@ -417,8 +432,8 @@ class RoleManager(Base, RoleManager):
     def manage_addLocalRoles(self, userid, roles, REQUEST=None):
         """Set local roles for a user."""
         if not roles:
-            raise ValueError, 'One or more roles must be given!'
-        dict=self.__ac_local_roles__
+            raise ValueError('One or more roles must be given!')
+        dict = self.__ac_local_roles__
         if dict is None:
             self.__ac_local_roles__ = dict = {}
         local_roles = list(dict.get(userid, []))
@@ -436,12 +451,12 @@ class RoleManager(Base, RoleManager):
     def manage_setLocalRoles(self, userid, roles, REQUEST=None):
         """Set local roles for a user."""
         if not roles:
-            raise ValueError, 'One or more roles must be given!'
-        dict=self.__ac_local_roles__
+            raise ValueError('One or more roles must be given!')
+        dict = self.__ac_local_roles__
         if dict is None:
             self.__ac_local_roles__ = dict = {}
         dict[userid]=roles
-        self._p_changed=True
+        self._p_changed = True
         if REQUEST is not None:
             stat='Your changes have been saved.'
             return self.manage_listLocalRoles(self, REQUEST, stat=stat)
@@ -450,11 +465,11 @@ class RoleManager(Base, RoleManager):
     @requestmethod('POST')
     def manage_delLocalRoles(self, userids, REQUEST=None):
         """Remove all local roles for a user."""
-        dict=self.__ac_local_roles__
+        dict = self.__ac_local_roles__
         if dict is None:
             self.__ac_local_roles__ = dict = {}
         for userid in userids:
-            if dict.has_key(userid):
+            if userid in dict:
                 del dict[userid]
         self._p_changed=True
         if REQUEST is not None:
@@ -479,7 +494,7 @@ class RoleManager(Base, RoleManager):
                       'class': 0})
         for key, value in clas.items():
             if key.find('__roles__') >= 0:
-                _add({'name': key, 'value': value, 'class' : 1})
+                _add({'name': key, 'value': value, 'class': 1})
             if hasattr(value, '__roles__'):
                 _add({'name': '%s.__roles__' % key, 'value': value.__roles__,
                       'class': 1})
@@ -519,10 +534,12 @@ class RoleManager(Base, RoleManager):
     def userdefined_roles(self):
         """Return list of user-defined roles.
         """
-        roles=list(self.__ac_roles__)
-        for role in classattr(self.__class__,'__ac_roles__'):
-            try:    roles.remove(role)
-            except: pass
+        roles = list(self.__ac_roles__)
+        for role in classattr(self.__class__, '__ac_roles__'):
+            try:
+                roles.remove(role)
+            except:
+                pass
         return tuple(roles)
 
     security.declareProtected(change_permissions, 'manage_defined_roles')
@@ -544,15 +561,15 @@ class RoleManager(Base, RoleManager):
     def _addRole(self, role, REQUEST=None):
         if not role:
             return MessageDialog(
-                   title  ='Incomplete',
+                   title='Incomplete',
                    message='You must specify a role name',
-                   action ='manage_access')
+                   action='manage_access')
         if role in self.__ac_roles__:
             return MessageDialog(
-                   title  ='Role Exists',
+                   title='Role Exists',
                    message='The given role is already defined',
-                   action ='manage_access')
-        data=list(self.__ac_roles__)
+                   action='manage_access')
+        data = list(self.__ac_roles__)
         data.append(role)
         self.__ac_roles__=tuple(data)
         if REQUEST is not None:
@@ -562,14 +579,16 @@ class RoleManager(Base, RoleManager):
     def _delRoles(self, roles, REQUEST=None):
         if not roles:
             return MessageDialog(
-                   title  ='Incomplete',
+                   title='Incomplete',
                    message='You must specify a role name',
-                   action ='manage_access')
-        data=list(self.__ac_roles__)
+                   action='manage_access')
+        data = list(self.__ac_roles__)
         for role in roles:
-            try:    data.remove(role)
-            except: pass
-        self.__ac_roles__=tuple(data)
+            try:
+                data.remove(role)
+            except:
+                pass
+        self.__ac_roles__ = tuple(data)
         if REQUEST is not None:
             return self.manage_access(REQUEST)
 
@@ -606,29 +625,42 @@ InitializeClass(RoleManager)
 
 
 def reqattr(request, attr):
-    try:    return request[attr]
-    except: return None
+    try:
+        return request[attr]
+    except:
+        return None
+
 
 def classattr(cls, attr):
     if hasattr(cls, attr):
         return getattr(cls, attr)
-    try:    bases=cls.__bases__
-    except: bases=()
+    try:
+        bases = cls.__bases__
+    except:
+        bases = ()
     for base in bases:
         if classattr(base, attr):
             return attr
     return None
 
+
 def instance_dict(inst):
-    try:    return inst.__dict__
-    except: return {}
+    try:
+        return inst.__dict__
+    except:
+        return {}
+
 
 def class_dict(_class):
-    try:    return _class.__dict__
-    except: return {}
+    try:
+        return _class.__dict__
+    except:
+        return {}
+
 
 def instance_attrs(inst):
     return instance_dict(inst)
+
 
 def class_attrs(inst, _class=None, data=None):
     if _class is None:
@@ -645,13 +677,15 @@ def class_attrs(inst, _class=None, data=None):
         data=class_attrs(inst, base, data)
     return data
 
+
 def gather_permissions(klass, result, seen):
     for base in klass.__bases__:
-        if base.__dict__.has_key('__ac_permissions__'):
+        if '__ac_permissions__' in base.__dict__:
             for p in base.__ac_permissions__:
                 name=p[0]
-                if seen.has_key(name): continue
+                if name in seen:
+                    continue
                 result.append((name, ()))
-                seen[name]=None
+                seen[name] = None
         gather_permissions(base, result, seen)
     return result
