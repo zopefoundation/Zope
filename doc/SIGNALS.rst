@@ -19,6 +19,9 @@ specified in the file '$INSTANCE_HOME/var/Z2.pid'::
 
     SIGINT  - same as SIGTERM
 
+    SIGUSR1 - dump a stack trace of all threads to stdout. This can help
+              diagnosing `stuck` Zope processes if all threads are stuck.
+
     SIGUSR2 - close and re-open all Zope log files (z2.log, event log,
               detailed log.) A common idiom after rotating Zope log files
               is:
