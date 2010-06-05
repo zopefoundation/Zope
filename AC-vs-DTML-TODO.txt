@@ -34,10 +34,6 @@ AccessControl
     the App package, which could serve as a general dumping ground for ZMI
     related stuff from "reusable" packages.
 
-- Test only dependencies:
-
-  * Testing
-
 DocumentTemplate
 ----------------
 

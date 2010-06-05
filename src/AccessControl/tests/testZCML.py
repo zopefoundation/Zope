@@ -62,6 +62,9 @@ class Dummy3:
 class Dummy4:
     foo = None
 
+class Dummy5:
+    pass
+
 def test_security_equivalence():
     """This test demonstrates that the traditional declarative security of
     Zope 2 can be replaced by ZCML statements without any loss of
@@ -220,6 +223,9 @@ def test_checkPermission():
       >>> from zope.component.testing import setUp, tearDown
       >>> setUp()
 
+      >>> from zope.component import eventtesting
+      >>> eventtesting.setUp()
+
     zope.security has a function zope.security.checkPermission which provides
     an easy way of checking whether the currently authenticated user
     has the permission to access an object.  The function delegates to
@@ -235,33 +241,34 @@ def test_checkPermission():
       >>> XMLConfig('meta.zcml', AccessControl)()
       >>> XMLConfig('permissions.zcml', AccessControl)()
 
+      >>> from AccessControl.tests.testZCML import Dummy5
+      >>> dummy = Dummy5()
+
     In the following we want to test AccessControl's checkPermission function.
-    We do that by taking the test's folder and asserting several
-    standard permissions.  What we want to assure is that
-    checkPermission translates the Zope 2 permissions correctly,
-    especially the edge cases:
+    What we want to assure is that checkPermission translates the Zope 2
+    permissions correctly, especially the edge cases:
 
     a) zope2.Public (which should always be available to everyone)
 
       >>> from AccessControl.security import checkPermission
-      >>> checkPermission('zope2.Public', self.folder)
+      >>> checkPermission('zope2.Public', dummy)
       True
 
     b) zope2.Private (which should never available to anyone)
 
-      >>> checkPermission('zope.Private', self.folder)
+      >>> checkPermission('zope.Private', dummy)
       False
-      >>> checkPermission('zope2.Private', self.folder)
+      >>> checkPermission('zope2.Private', dummy)
       False
 
     Any other standard Zope 2 permission will also resolve correctly:
 
-      >>> checkPermission('zope2.AccessContentsInformation', self.folder)
-      True
+      >>> checkPermission('zope2.ViewManagementScreens', dummy)
+      False
 
     Invalid permissions will obviously result in a negative response:
 
-      >>> checkPermission('notapermission', self.folder)
+      >>> checkPermission('notapermission', dummy)
       False
 
 
@@ -281,24 +288,24 @@ def test_checkPermission():
     a) zope2.Public (which should always be available to everyone)
 
       >>> from zope.security import checkPermission
-      >>> checkPermission('zope2.Public', self.folder)
+      >>> checkPermission('zope2.Public', dummy)
       True
 
     b) zope2.Private (which should never available to anyone)
 
-      >>> checkPermission('zope.Private', self.folder)
+      >>> checkPermission('zope.Private', dummy)
       False
-      >>> checkPermission('zope2.Private', self.folder)
+      >>> checkPermission('zope2.Private', dummy)
       False
 
     Any other standard Zope 2 permission will also resolve correctly:
 
-      >>> checkPermission('zope2.AccessContentsInformation', self.folder)
-      True
+      >>> checkPermission('zope2.ViewManagementScreens', dummy)
+      False
 
     Invalid permissions will obviously result in a negative response:
 
-      >>> checkPermission('notapermission', self.folder)
+      >>> checkPermission('notapermission', dummy)
       False
 
     Clean up:
@@ -311,8 +318,11 @@ def test_register_permission():
     to create a permission that does not already exist, it is created on 
     startup, with roles defaulting to Manager.
 
-      >>> from Testing.ZopeTestCase.placeless import setUp, tearDown
+      >>> from zope.component.testing import setUp, tearDown
       >>> setUp()
+
+      >>> from zope.component import eventtesting
+      >>> eventtesting.setUp()
 
     First, we need to configure the relevant parts of AccessControl:
 
@@ -340,19 +350,20 @@ def test_register_permission():
       
     The permission will be made available globally, with default role set
     of ('Manager',).
-      
-      >>> roles = self.app.rolesOfPermission('AccessControl: Dummy permission')
-      >>> sorted(r['name'] for r in roles if r['selected'])
-      ['Manager']
+
+      >>> import Products
+      >>> permissions = getattr(Products, '__ac_permissions__', ())
+      >>> [p[2] for p in permissions
+      ...          if p[0] == 'AccessControl: Dummy permission']
+      [('Manager',)]
 
     Let's also ensure that permissions are not overwritten if they exist
     already:
-      
+
       >>> from AccessControl.Permission import _registeredPermissions
-      >>> import Products
       >>> _registeredPermissions['Dummy: Other dummy'] = 1
-      >>> Products.__ac_permissions__ += (('Dummy: Other dummy', (), (),),)
-      >>> self.app.manage_permission('Dummy: Other dummy', roles=['Anonymous'])
+      >>> Products.__ac_permissions__ += (
+      ...     ('Dummy: Other dummy', (), ('Anonymous', ),),)
 
       >>> from StringIO import StringIO
       >>> configure_zcml = StringIO('''
@@ -369,13 +380,14 @@ def test_register_permission():
       >>> from zope.configuration.xmlconfig import xmlconfig
       >>> xmlconfig(configure_zcml)
 
-      >>> roles = self.app.rolesOfPermission('Dummy: Other dummy')
-      >>> sorted(r['name'] for r in roles if r['selected'])
-      ['Anonymous']
+      >>> permissions = getattr(Products, '__ac_permissions__', ())
+      >>> [p[2] for p in permissions
+      ...          if p[0] == 'Dummy: Other dummy']
+      [('Anonymous',)]
 
       >>> tearDown()
     """
 
 def test_suite():
-    from Testing.ZopeTestCase import ZopeDocTestSuite
-    return ZopeDocTestSuite()
+    import doctest
+    return doctest.DocTestSuite()
