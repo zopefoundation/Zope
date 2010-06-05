@@ -21,10 +21,10 @@ from Acquisition import aq_get
 from Acquisition import aq_inner
 from Acquisition import aq_parent
 from App.special_dtml import DTMLFile
-from App.class_init import InitializeClass
 from ExtensionClass import Base
 from zope.interface import implements
 
+from AccessControl.class_init import InitializeClass
 from AccessControl.interfaces import IOwned
 from AccessControl.Permissions import view_management_screens
 from AccessControl.Permissions import take_ownership

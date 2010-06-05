@@ -1,0 +1,71 @@
+Standalone AccessControl and DTML
+=================================
+
+AccessControl
+-------------
+
+- Acceptable dependencies (we can improve on that later):
+
+  * zope.component
+  * zope.configuration
+  * zope.deferredimport
+  * zope.interface
+  * zope.publisher
+  * zope.schema
+  * zope.security
+  * zExceptions
+  * Acquisition
+  * ExtensionClass
+  * Persistence
+  * Record
+  * RestrictedPython
+  * ZODB3
+
+- Remaining outside imports:
+
+  * Products (in registerPermissions using it as a data container for
+    ``__ac_permissions__``) - this should use a global inside the module
+    inside AccessControl.
+
+  * App (MessageDialog, DTMLFile, ...) - all need to go - redoing the UI is
+    hard. We probably need to move it into some other core part of Zope2, like
+    the App package, which could serve as a general dumping ground for ZMI
+    related stuff from "reusable" packages.
+
+- Test only dependencies:
+
+  * OFS
+  * Products.PythonScripts
+  * Products.SiteErrorLog
+  * Testing
+  * transaction
+  * Zope2
+
+DocumentTemplate
+----------------
+
+- TreeDisplay should be moved into the DocumentTemplate distribution, the two
+  depend on each other.
+
+- Acceptable dependencies (we can improve on that later):
+
+  * zope.sequencesort
+  * zope.structuredtext
+  * AccessControl (once it is its own distribution)
+  * Acquisition
+  * ExtensionClass
+  * Missing
+  * RestrictedPython
+  * zExceptions
+
+- Remaining outside imports:
+
+  * App (getConfiguration().structured_text_header_level)
+  * reStructuredText (HTML) - Both of these deal with format support and
+    configuration via zope.conf. The calls are localized to one function each.
+    Add an optional dependency on Zope2? Configure if it is available,
+    otherwise use some default?
+
+- Test only dependencies:
+
+  * Products.PythonScripts

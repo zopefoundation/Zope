@@ -75,8 +75,6 @@ _implementation_set = 0
 _policy_names = {
     "AccessControl": ("setDefaultBehaviors",
                       ),
-    "AccessControl.DTML": ("RestrictedDTML",
-                           ),
     "AccessControl.PermissionRole": ("_what_not_even_god_should_do",
                                      "rolesForPermissionOn",
                                      "PermissionRole",

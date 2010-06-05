@@ -18,7 +18,6 @@ $Id$
 from string import translate
 
 from AccessControl import ClassSecurityInfo
-from AccessControl.DTML import RestrictedDTML
 from AccessControl.Permission import name_trans
 from AccessControl.Permissions import view_management_screens
 from Acquisition import aq_base
@@ -28,6 +27,7 @@ from DateTime.DateTime import DateTime
 from DocumentTemplate.DT_Util import Eval
 from DocumentTemplate.DT_Util import InstanceDict
 from DocumentTemplate.DT_Util import TemplateDict
+from DocumentTemplate.security import RestrictedDTML
 from ExtensionClass import Base
 from zope.interface import implements
 

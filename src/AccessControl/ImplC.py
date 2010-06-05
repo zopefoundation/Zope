@@ -18,7 +18,6 @@ try:
     from AccessControl.cAccessControl import PermissionRole
     from AccessControl.cAccessControl import imPermissionRole
     from AccessControl.cAccessControl import _what_not_even_god_should_do
-    from AccessControl.cAccessControl import RestrictedDTMLMixin
     from AccessControl.cAccessControl import aq_validate
     from AccessControl.cAccessControl import guarded_getattr
     from AccessControl.cAccessControl import setDefaultBehaviors
@@ -31,14 +30,10 @@ except ImportError:
     # make sure a partial import doesn't pollute sys.modules
     del sys.modules[__name__]
     raise
-    
-from AccessControl.ImplPython import RestrictedDTML
+
 from AccessControl.ImplPython import SecurityManager
 from AccessControl.ImplPython import ZopeSecurityPolicy
 
-
-class RestrictedDTML(RestrictedDTMLMixin, RestrictedDTML):
-    """A mix-in for derivatives of DT_String.String that adds Zope security."""
 
 class ZopeSecurityPolicy(cZopeSecurityPolicy, ZopeSecurityPolicy):
     """A security manager provides methods for checking access and managing

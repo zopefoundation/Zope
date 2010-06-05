@@ -22,13 +22,13 @@ from Acquisition import aq_get
 from AccessControl import ClassSecurityInfo
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.Permissions import change_permissions
-from App.class_init import InitializeClass
 from App.Dialogs import MessageDialog
 from App.special_dtml import DTMLFile
 from ExtensionClass import Base
 from PermissionMapping import RoleManager
 from zope.interface import implements
 
+from AccessControl.class_init import InitializeClass
 from AccessControl.interfaces import IRoleManager
 from AccessControl.Permission import Permission
 from AccessControl.requestmethod import requestmethod

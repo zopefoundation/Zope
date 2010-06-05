@@ -31,6 +31,3 @@ from AccessControl.ZopeGuards import full_write_guard
 from AccessControl.ZopeGuards import safe_builtins
 
 ModuleSecurityInfo('AccessControl').declarePublic('getSecurityManager')
-
-from AccessControl import DTML  # XXX side effects?
-del DTML

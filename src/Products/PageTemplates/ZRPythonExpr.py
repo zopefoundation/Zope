@@ -59,7 +59,7 @@ class _SecureModuleImporter:
         return mod
 
 from DocumentTemplate.DT_Util import TemplateDict, InstanceDict
-from AccessControl.DTML import RestrictedDTML
+from DocumentTemplate.security import RestrictedDTML
 class Rtd(RestrictedDTML, TemplateDict):
     this = None
 

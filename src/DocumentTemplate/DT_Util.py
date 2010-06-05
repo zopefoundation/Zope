@@ -34,6 +34,10 @@ from RestrictedPython.Eval import RestrictionCapableEval
 
 from AccessControl.tainted import TaintedString
 
+if 'test' not in utility_builtins:
+    from RestrictedPython.Utilities import test
+    utility_builtins['test'] = test
+
 test = utility_builtins['test'] # for backwards compatibility, dont remove!
 utility_builtins['sequence']= sequence
 
@@ -111,6 +115,7 @@ class StringFunctionWrapper:
         return retval
 
 TemplateDict.string = StringModuleWrapper()
+TemplateDict.__allow_access_to_unprotected_subobjects__ = 1
 
 # The functions below are meant to bind to the TemplateDict.
 

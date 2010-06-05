@@ -22,14 +22,14 @@ from App.special_dtml import DTMLFile
 from App.special_dtml import HTML
 from DateTime.DateTime import DateTime
 from AccessControl import getSecurityManager
-from AccessControl.Permissions import change_dtml_methods
 from AccessControl.Permissions import view_management_screens
 from AccessControl.Permissions import change_proxy_roles
 from AccessControl.Permissions import view as View
 from AccessControl.Permissions import ftp_access
-from AccessControl.DTML import RestrictedDTML
 from AccessControl.requestmethod import requestmethod
 from AccessControl.tainted import TaintedString
+from DocumentTemplate.permissions import change_dtml_methods
+from DocumentTemplate.security import RestrictedDTML
 from OFS.Cache import Cacheable
 from OFS.History import Historical
 from OFS.History import html_diff

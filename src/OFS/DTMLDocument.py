@@ -15,11 +15,11 @@
 from urllib import quote
 
 from AccessControl import getSecurityManager
-from AccessControl.Permissions import change_dtml_methods
-from AccessControl.Permissions import change_dtml_documents
 from App.class_init import InitializeClass
 from App.special_dtml import DTMLFile
 from App.special_dtml import HTML
+from DocumentTemplate.permissions import change_dtml_methods
+from DocumentTemplate.permissions import change_dtml_documents
 from OFS.DTMLMethod import decapitate
 from OFS.DTMLMethod import DTMLMethod
 from OFS.PropertyManager import PropertyManager

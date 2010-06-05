@@ -22,7 +22,6 @@ import time
 import urllib
 from warnings import warn
 
-from AccessControl.DTML import RestrictedDTML
 from AccessControl.Permission import name_trans
 from AccessControl.Permissions import manage_zcatalog_entries
 from AccessControl.Permissions import manage_zcatalog_indexes
@@ -36,6 +35,7 @@ from DateTime.DateTime import DateTime
 from DocumentTemplate.DT_Util import InstanceDict
 from DocumentTemplate.DT_Util import TemplateDict
 from DocumentTemplate.DT_Util import Eval
+from DocumentTemplate.security import RestrictedDTML
 from OFS.Folder import Folder
 from OFS.ObjectManager import ObjectManager
 from Persistence import Persistent

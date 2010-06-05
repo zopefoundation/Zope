@@ -28,8 +28,6 @@ add_vocabularies='Add Vocabularies'
 add_z_gadfly_database_connections='Add Z Gadfly Database Connections'
 add_zcatalogs='Add ZCatalogs'
 add_zope_tutorials='Add Zope Tutorials'
-change_dtml_documents='Change DTML Documents'
-change_dtml_methods='Change DTML Methods'
 change_database_connections='Change Database Connections'
 change_database_methods='Change Database Methods'
 change_external_methods='Change External Methods'
@@ -67,3 +65,13 @@ view_management_screens='View management screens'
 webdav_access='WebDAV access'
 webdav_lock_items='WebDAV Lock items'
 webdav_unlock_items='WebDAV Unlock items'
+
+
+from zope.deferredimport import deprecated
+
+new_loc = 'DocumentTemplate.permissions'
+
+deprecated("Please import from %s" % new_loc,
+    change_dtml_documents = '%s:change_dtml_documents' % new_loc,
+    change_dtml_methods = '%s:change_dtml_methods' % new_loc,
+)

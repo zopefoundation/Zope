@@ -34,8 +34,8 @@ deprecated("import from Persistence instead",
            PersistentMapping = 'Persistence:PersistentMapping',
           )
 
-deprecated("import from App.class_init instead",
-           InitializeClass = 'App.class_init:InitializeClass',
+deprecated("import from AccessControl.class_init instead",
+           InitializeClass = 'AccessControl.class_init:InitializeClass',
           )
 
 deprecated("import from AccessControl.Permission instead",

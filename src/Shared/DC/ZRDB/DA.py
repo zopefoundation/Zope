@@ -19,7 +19,6 @@ import string
 import sys
 from time import time
 
-from AccessControl.DTML import RestrictedDTML
 from AccessControl.Permissions import change_database_methods
 from AccessControl.Permissions import use_database_methods
 from AccessControl.Permissions import view_management_screens
@@ -32,6 +31,7 @@ from App.Extensions import getBrain
 from App.special_dtml import DTMLFile
 from DocumentTemplate import HTML
 from DocumentTemplate.html_quote import html_quote
+from DocumentTemplate.security import RestrictedDTML
 from DateTime.DateTime import DateTime
 from ExtensionClass import Base
 from BTrees.OOBTree import OOBucket as Bucket

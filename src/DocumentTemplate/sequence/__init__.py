@@ -11,5 +11,6 @@
 #
 ##############################################################################
 
+__allow_access_to_unprotected_subobjects__ = 1
 
 from zope.sequencesort.ssort import *

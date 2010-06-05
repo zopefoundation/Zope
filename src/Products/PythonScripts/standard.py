@@ -21,7 +21,6 @@ __version__='$Revision: 1.14 $'[11:-2]
 
 from urllib import urlencode
 
-from AccessControl.DTML import RestrictedDTML
 from AccessControl.SecurityInfo import ModuleSecurityInfo
 from AccessControl.SecurityManagement import getSecurityManager
 from App.special_dtml import HTML
@@ -38,6 +37,7 @@ from DocumentTemplate.DT_Var import thousands_commas
 from DocumentTemplate.DT_Var import url_unquote
 from DocumentTemplate.DT_Var import url_unquote_plus
 from DocumentTemplate.DT_Var import restructured_text
+from DocumentTemplate.security import RestrictedDTML
 from ZPublisher.HTTPRequest import record
 
 security = ModuleSecurityInfo()

@@ -28,7 +28,7 @@ class ClassSecurityInfoTests(unittest.TestCase):
 
         # Test setting default roles for permissions.
 
-        from App.class_init import InitializeClass
+        from AccessControl.class_init import InitializeClass
         from ExtensionClass import Base
 
         ClassSecurityInfo = self._getTargetClass()
