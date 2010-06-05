@@ -15,9 +15,8 @@
 This is needed to avoid a circular import problem.  The 'real' values
 are stored here by the AccessControl.User module as part of it's
 initialization.
-
-$Id$
 """
+
 nobody = None
 system = None
 emergency_user = None

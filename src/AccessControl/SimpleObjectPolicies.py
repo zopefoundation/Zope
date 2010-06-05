@@ -41,8 +41,7 @@ disallowed otherwise.
 
 XXX This descrition doesn't actually match what's done in ZopeGuards
 or in ZopeSecurityPolicy. :(
-
-$Id$'''
+'''
 
 _noroles = [] # this is imported in various places
 

@@ -1,6 +1,4 @@
 """Unit tests for AccessControl.Owned
-
-$Id$
 """
 
 import unittest

@@ -11,8 +11,6 @@
 #
 ##############################################################################
 """Security management
-
-$Id$
 """
 def getSecurityManager():
     """Get a security manager, for the current thread.

@@ -11,8 +11,6 @@
 #
 ##############################################################################
 """AccessControl interfaces.
-
-$Id$
 """
 
 from AccessControl.SimpleObjectPolicies import _noroles

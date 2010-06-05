@@ -13,21 +13,17 @@
 """Tests of ZopeSecurityPolicy
 """
 
-__rcs_id__='$Id$'
-__version__='$Revision: 1.10 $'[11:-2]
+import sys
+import unittest
 
-import os, sys, unittest
-
-import ZODB
 try:
     from zExceptions import Unauthorized
 except ImportError:
     Unauthorized = 'Unauthorized'
 from AccessControl.User import UserFolder
 from AccessControl.SecurityManagement import SecurityContext
-from Acquisition import Implicit, Explicit, aq_base
+from Acquisition import Implicit, Explicit
 from MethodObject import Method
-from ComputedAttribute import ComputedAttribute
 
 
 user_roles = ('RoleOfUser',)
@@ -582,9 +578,3 @@ def test_suite():
     suite.addTest(unittest.makeSuite(C_ZSPTests, 'test'))
     suite.addTest(DocTestSuite())
     return suite
-
-def main():
-    unittest.TextTestRunner().run(test_suite())
-
-if __name__ == '__main__':
-    main()

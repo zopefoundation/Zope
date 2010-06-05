@@ -12,19 +12,14 @@
 #
 ##############################################################################
 """Test Zope Guards
-
-Well, at least begin testing some of the functionality
-
-$Id$
 """
+
 import doctest
 import unittest
 
 import os
 import operator
 import sys
-
-import ZODB
 
 
 if sys.version_info >= (2, 5):

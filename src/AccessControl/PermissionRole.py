@@ -11,9 +11,8 @@
 #
 ##############################################################################
 '''Objects that implement Permission-based roles.
+'''
 
-$Id$'''
-  
 # The following names are inserted by AccessControl.Implementation:
 #
 # rolesForPermissionOn, PermissionRole, imPermissionRole,

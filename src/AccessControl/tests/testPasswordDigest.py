@@ -13,13 +13,9 @@
 """Test of AuthEncoding
 """
 
-__rcs_id__='$Id$'
-__version__='$Revision: 1.5 $'[11:-2]
-
-import os, sys, unittest
+import unittest
 
 from AccessControl import AuthEncoding
-import unittest
 
 
 class PasswordDigestTests (unittest.TestCase):

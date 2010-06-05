@@ -11,8 +11,7 @@
 #
 ##############################################################################
 """Define Zope's default security policy
-
-$Id$"""
+"""
 
 from types import MethodType
 

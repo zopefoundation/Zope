@@ -15,8 +15,6 @@
 Sometimes, we need an object's permissions to be remapped to other permissions
 when the object is used in specual ways.  This is rather hard, since we
 need the object's ordinary permissions intact so we can manage it.
-
-$Id$
 """
 
 from cgi import escape

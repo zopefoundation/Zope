@@ -12,8 +12,6 @@
 #
 ##############################################################################
 """Tests for the SecurityManager implementations
-
-$Id$
 """
 
 import unittest

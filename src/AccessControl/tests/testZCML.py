@@ -12,8 +12,6 @@
 #
 ##############################################################################
 """Test security induced by ZCML
-
-$Id$
 """
 
 from zope.interface import implements

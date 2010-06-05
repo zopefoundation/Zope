@@ -11,8 +11,7 @@
 #
 ##############################################################################
 """Constant definitions for built-in Zope permissions
-
-$Id$"""
+"""
 
 
 access_contents_information='Access contents information'
