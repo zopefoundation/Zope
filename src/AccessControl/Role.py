@@ -28,6 +28,7 @@ from zope.interface import implements
 from AccessControl import ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
 from AccessControl.interfaces import IRoleManager
+from AccessControl.Permission import getPermissions
 from AccessControl.Permission import Permission
 from AccessControl.Permissions import change_permissions
 from AccessControl.requestmethod import requestmethod
@@ -608,9 +609,8 @@ class RoleManager(Base, RoleManager):
         pass
 
     def possible_permissions(self):
-        import Products
         d={}
-        Products_permissions = getattr(Products, '__ac_permissions__', ())
+        Products_permissions = getPermissions()
         for p in Products_permissions:
             d[p[0]]=1
         for p in self.ac_inherited_permissions(1):

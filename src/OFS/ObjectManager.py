@@ -26,6 +26,7 @@ import re
 import sys
 
 from AccessControl import ClassSecurityInfo
+from AccessControl.Permission import getPermissions
 from AccessControl.Permissions import view_management_screens
 from AccessControl.Permissions import access_contents_information
 from AccessControl.Permissions import delete_objects
@@ -263,9 +264,7 @@ class ObjectManager(CopyContainer,
         return meta_types
 
     def _subobject_permissions(self):
-        import Products
-        Products_permissions = getattr(Products, '__ac_permissions__', ())
-        return Products_permissions
+        return getPermissions()
 
     def filtered_meta_types(self, user=None):
         # Return a list of the types for which the user has

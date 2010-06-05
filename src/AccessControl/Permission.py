@@ -141,10 +141,28 @@ class Permission:
 _registeredPermissions = {}
 
 
+def getPermissions():
+    import Products
+    return getattr(Products, '__ac_permissions__', ())
+
+
+def addPermission(perm, default_roles=('Manager', )):
+    if perm in _registeredPermissions:
+        return
+
+    entry = ((perm, (), default_roles), )
+    import Products
+    Products_permissions = getPermissions()
+    Products.__ac_permissions__ = Products_permissions + entry
+    _registeredPermissions[perm] = 1
+    mangled = pname(perm) # get mangled permission name
+    if not hasattr(ApplicationDefaultPermissions, mangled):
+        setattr(ApplicationDefaultPermissions, mangled, default_roles)
+
+
 def registerPermissions(permissions, defaultDefault=('Manager', )):
     """Register an __ac_permissions__ sequence.
     """
-    import Products
     for setting in permissions:
         if setting[0] in _registeredPermissions:
             continue
@@ -153,14 +171,7 @@ def registerPermissions(permissions, defaultDefault=('Manager', )):
             default = defaultDefault
         else:
             perm, methods, default = setting
-        _registeredPermissions[perm]=1
-        Products_permissions = getattr(Products, '__ac_permissions__', ())
-        Products.__ac_permissions__=(
-            Products_permissions + ((perm, (), default), ))
-        mangled=pname(perm) # get mangled permission name
-        if not hasattr(ApplicationDefaultPermissions, mangled):
-            setattr(ApplicationDefaultPermissions,
-                    mangled, default)
+        addPermission(perm, default)
 
 
 class ApplicationDefaultPermissions:

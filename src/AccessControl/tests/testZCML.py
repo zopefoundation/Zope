@@ -351,8 +351,8 @@ def test_register_permission():
     The permission will be made available globally, with default role set
     of ('Manager',).
 
-      >>> import Products
-      >>> permissions = getattr(Products, '__ac_permissions__', ())
+      >>> from AccessControl.Permission import getPermissions
+      >>> permissions = getPermissions()
       >>> [p[2] for p in permissions
       ...          if p[0] == 'AccessControl: Dummy permission']
       [('Manager',)]
@@ -360,10 +360,8 @@ def test_register_permission():
     Let's also ensure that permissions are not overwritten if they exist
     already:
 
-      >>> from AccessControl.Permission import _registeredPermissions
-      >>> _registeredPermissions['Dummy: Other dummy'] = 1
-      >>> Products.__ac_permissions__ += (
-      ...     ('Dummy: Other dummy', (), ('Anonymous', ),),)
+      >>> from AccessControl.Permission import addPermission
+      >>> addPermission('Dummy: Other dummy', ('Anonymous', ))
 
       >>> from StringIO import StringIO
       >>> configure_zcml = StringIO('''
@@ -380,9 +378,8 @@ def test_register_permission():
       >>> from zope.configuration.xmlconfig import xmlconfig
       >>> xmlconfig(configure_zcml)
 
-      >>> permissions = getattr(Products, '__ac_permissions__', ())
-      >>> [p[2] for p in permissions
-      ...          if p[0] == 'Dummy: Other dummy']
+      >>> permissions = getPermissions()
+      >>> [p[2] for p in permissions if p[0] == 'Dummy: Other dummy']
       [('Anonymous',)]
 
       >>> tearDown()

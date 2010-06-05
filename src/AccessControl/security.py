@@ -27,15 +27,11 @@ from zope.security.simplepolicies import ParanoidSecurityPolicy
 
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.SecurityManagement import getSecurityManager
-from AccessControl.Permission import _registeredPermissions
-from AccessControl.Permission import pname
-
-import Products
-
-from AccessControl.Permission import ApplicationDefaultPermissions
+from AccessControl.Permission import addPermission
 
 CheckerPublicId = 'zope.Public'
 CheckerPrivateId = 'zope2.Private'
+
 
 def getSecurityInfo(klass):
     sec = {}
@@ -47,14 +43,15 @@ def getSecurityInfo(klass):
             sec[k] = v
     return sec
 
+
 def clearSecurityInfo(klass):
-    sec = {}
     info = vars(klass)
     if info.has_key('__ac_permissions__'):
         delattr(klass, '__ac_permissions__')
     for k, v in info.items():
         if k.endswith('__roles__'):
             delattr(klass, k)
+
 
 def checkPermission(permission, object, interaction=None):
     """Return whether security policy allows permission on object.
@@ -82,6 +79,7 @@ def checkPermission(permission, object, interaction=None):
 
     return False
 
+
 class SecurityPolicy(ParanoidSecurityPolicy):
     """Security policy that bridges between zope.security security mechanisms
     and Zope 2's security policy.
@@ -94,6 +92,7 @@ class SecurityPolicy(ParanoidSecurityPolicy):
     def checkPermission(self, permission, object):
         return checkPermission(permission, object)
 
+
 def newInteraction():
     """Con zope.security to use Zope 2's checkPermission.
 
@@ -104,6 +103,7 @@ def newInteraction():
     """
     if getattr(thread_local, 'interaction', None) is None:
         thread_local.interaction = SecurityPolicy()
+
 
 def _getSecurity(klass):
     # a Zope 2 class can contain some attribute that is an instance
@@ -119,6 +119,7 @@ def _getSecurity(klass):
     security = ClassSecurityInfo()
     setattr(klass, '__security__', security)
     return security
+
 
 def protectName(klass, name, permission_id):
     """Protect the attribute 'name' on 'klass' using the given
@@ -139,6 +140,7 @@ def protectName(klass, name, permission_id):
         perm = str(permission.title)
         security.declareProtected(perm, name)
 
+
 def protectClass(klass, permission_id):
     """Protect the whole class with the given permission"""
     security = _getSecurity(klass)
@@ -155,21 +157,11 @@ def protectClass(klass, permission_id):
         perm = str(permission.title)
         security.declareObjectProtected(perm)
 
+
 def create_permission_from_permission_directive(permission, event):
     """When a new IPermission utility is registered (via the <permission />
     directive), create the equivalent Zope2 style permission.
     """
-
-    global _registeredPermissions
-
     # Zope 2 uses string, not unicode yet
     zope2_permission = str(permission.title)
-    roles = ('Manager',)
-
-    if not _registeredPermissions.has_key(zope2_permission):
-        _registeredPermissions[zope2_permission] = 1
-
-        Products.__ac_permissions__ += ((zope2_permission, (), roles,),)
-
-        mangled = pname(zope2_permission)
-        setattr(ApplicationDefaultPermissions, mangled, roles)
+    addPermission(zope2_permission)

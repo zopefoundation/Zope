@@ -56,7 +56,6 @@ class HelpSys(Implicit, ObjectManager, Item, Persistent):
     security.declareProtected(access_contents_information, 'helpValues')
     def helpValues(self, spec=None):
         "ProductHelp objects of all Products that have help"
-        import Products
         hv=[]
         for product in self.Control_Panel.Products.objectValues():
             productHelp=product.getProductHelp()
