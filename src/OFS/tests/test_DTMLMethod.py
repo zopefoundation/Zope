@@ -15,7 +15,7 @@ class DTMLMethodTests(unittest.TestCase):
         verifyClass(IWriteLock, self._getTargetClass())
 
     def test_edit_taintedstring(self):
-        from Shared.TaintedString import TaintedString
+        from AccessControl.tainted import TaintedString
         doc = self._makeOne()
         self.assertEquals(doc.read(), '')
         data = TaintedString('hello<br/>')

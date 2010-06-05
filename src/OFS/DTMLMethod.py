@@ -29,12 +29,12 @@ from AccessControl.Permissions import view as View
 from AccessControl.Permissions import ftp_access
 from AccessControl.DTML import RestrictedDTML
 from AccessControl.requestmethod import requestmethod
+from AccessControl.tainted import TaintedString
 from OFS.Cache import Cacheable
 from OFS.History import Historical
 from OFS.History import html_diff
 from OFS.SimpleItem import Item_w__name__
 from OFS.ZDOM import ElementWithTitle
-from Shared.TaintedString import TaintedString
 from webdav.Lockable import ResourceLockedError
 from zExceptions import Forbidden
 from zExceptions.TracebackSupplement import PathTracebackSupplement

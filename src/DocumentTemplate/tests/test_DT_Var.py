@@ -51,7 +51,7 @@ class TestNewlineToBr(doctest.DocTestCase):
         ... <li>line one</li>
         ... <li>line two</li>
         ... '''
-        >>> from Shared.TaintedString import TaintedString
+        >>> from AccessControl.tainted import TaintedString
         >>> tainted = TaintedString(text)
         >>> print DT_Var.newline_to_br(tainted)
         <br />

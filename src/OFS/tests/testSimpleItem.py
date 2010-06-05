@@ -44,7 +44,7 @@ class TestItem(unittest.TestCase):
             self.failUnless('full details: testing' in value.message)
 
     def test_raise_StandardErrorMessage_TaintedString_errorValue(self):
-        from Shared.TaintedString import TaintedString
+        from AccessControl.tainted import TaintedString
         class REQUEST(object):
             class RESPONSE(object):
                 handle_errors = True

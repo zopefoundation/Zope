@@ -11,6 +11,8 @@ Trunk (unreleased)
 Restructuring
 +++++++++++++
 
+- Moved ``TaintedString`` into the new AccessControl.tainted module.
+
 - Moved the ``zExceptions`` package into its own distribution.
 
 - Completely refactored ``ZPublisher.WSGIResponse`` in order to provide

@@ -11,12 +11,10 @@
 #
 ##############################################################################
 """TaintedString legacy module.
-
-$Id$
 """
 
 from zope.deferredimport import deprecated
 deprecated('ZPublisher.TaintedString will be removed in Zope 2.14. Please '
-           'import from Shared.TaintedString instead.',
-           TaintedString = 'Shared.TaintedString:TaintedString',
+           'import from AccessControl.tainted instead.',
+           TaintedString = 'AccessControl.tainted:TaintedString',
           )

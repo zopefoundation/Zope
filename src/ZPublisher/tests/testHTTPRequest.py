@@ -71,7 +71,7 @@ class HTTPRequestTests(unittest.TestCase):
         # Also raises an Assertion if a string which *should* have been
         # tainted is found, or when a tainted string is not deemed dangerous.
         from ZPublisher.HTTPRequest import record
-        from Shared.TaintedString import TaintedString
+        from AccessControl.tainted import TaintedString
 
         retval = 0
 

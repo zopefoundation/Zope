@@ -11,8 +11,6 @@
 #
 ##############################################################################
 """ TaintedString tests.
-
-$Id$
 """
 
 import unittest
@@ -25,7 +23,7 @@ class TestTaintedString(unittest.TestCase):
         self.tainted = self._getClass()(self.unquoted)
 
     def _getClass(self):
-        from Shared.TaintedString import TaintedString
+        from AccessControl.tainted import TaintedString
         return TaintedString
 
     def testStr(self):
@@ -159,6 +157,3 @@ def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TestTaintedString))
     return suite
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='test_suite')

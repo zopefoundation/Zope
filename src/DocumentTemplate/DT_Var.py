@@ -160,7 +160,7 @@ from DocumentTemplate.html_quote import html_quote
 from DocumentTemplate.DT_Util import parse_params, name_param, str, ustr
 
 from Acquisition import aq_base
-from Shared.TaintedString import TaintedString
+from AccessControl.tainted import TaintedString
 from zope.structuredtext.html import HTML
 from zope.structuredtext.document import DocumentWithImages
 from App.config import getConfiguration

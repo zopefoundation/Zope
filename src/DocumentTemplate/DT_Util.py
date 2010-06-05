@@ -31,7 +31,7 @@ from RestrictedPython.Guards import safe_builtins
 from RestrictedPython.Utilities import utility_builtins
 from RestrictedPython.Eval import RestrictionCapableEval
 
-from Shared.TaintedString import TaintedString
+from AccessControl.tainted import TaintedString
 
 test = utility_builtins['test'] # for backwards compatibility, dont remove!
 
