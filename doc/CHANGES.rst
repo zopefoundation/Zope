@@ -52,6 +52,7 @@ Features Added
   - distribute = 0.6.13
   - lxml = 2.2.6
   - Sphinx = 0.6.6
+  - tempstorage = 2.11.3
   - zope.app.apidoc = 3.6.6
   - zope.app.applicationcontrol = 3.5.1
   - zope.app.authentication = 3.6.1
