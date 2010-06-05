@@ -21,8 +21,6 @@
 # will return:
 # ....what?
 
-from OFS.Folder import Folder
-
 class ProductRegistryMixin:
     # This class implements a protocol for registering products that
     # are defined through the web.
@@ -73,44 +71,6 @@ class ProductRegistryMixin:
 
         self._setProductRegistryMetaTypes(meta_types+(mt,))
 
-    def _manage_remove_product_permission(self, product, permission=None):
-        r=[]
-        r2=[]
-        pid=product.id
-        for d in self._getProductRegistryData('permissions'):
-            if d.has_key('product'):
-                if d['product']==pid and (
-                    permission is None or permission==d['name']):
-                    continue
-                elif permission==d['name']: continue
-                r.append(d)
-                r2.append((d['name'], d['methods'], d['default']))
-
-        self._setProductRegistryData('permissions', tuple(r))
-        self._setProductRegistryData('ac_permissions', tuple(r2))
-
-    def _manage_add_product_permission(
-        self, product, permission, methods=(), default=('Manager',)
-        ):
-
-        permissions=self._getProductRegistryData('permissions')
-
-        for d in permissions:
-            if d['name']==permission:
-                raise ValueError, (
-                    'The permission <em>%s</em> is already defined.'
-                    % permission)
-
-        d={'name': permission, 'methods': methods, 'permission': permission,
-                'default': default, 'product': product.id}
-
-        self._setProductRegistryData('permissions', permissions + (d,))
-        self._setProductRegistryData(
-            'ac_permissions',
-            self._getProductRegistryData('ac_permissions')
-            +((d['name'], d['methods'], d['default']),)
-            )
-
     # HACK - sometimes an unwrapped App object seems to be passed as
     # self to these methods, which means that they dont have an aq_aquire
     # method. Until Jim has time to look into this, this aq_maybe method
@@ -143,7 +103,6 @@ class ProductRegistryMixin:
         self.aq_maybe('_setProductRegistryData')(type, tuple(values))
 
 
-
 class ProductRegistry(ProductRegistryMixin):
     # This class implements a protocol for registering products that
     # are defined through the web.  It also provides methods for
@@ -154,11 +113,12 @@ class ProductRegistry(ProductRegistryMixin):
     def _getProducts(self): return self.Control_Panel.Products
 
     _product_meta_types=()
-    _product_permissions=()
-    _product_ac_permissions=()
 
-    def _getProductRegistryMetaTypes(self): return self._product_meta_types
-    def _setProductRegistryMetaTypes(self, v): self._product_meta_types=v
+    def _getProductRegistryMetaTypes(self):
+        return self._product_meta_types
+
+    def _setProductRegistryMetaTypes(self, v):
+        self._product_meta_types=v
 
     def _getProductRegistryData(self, name):
         return getattr(self, '_product_%s' % name)

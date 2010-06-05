@@ -594,9 +594,6 @@ class RoleManager(Base, RoleManager):
         Products_permissions = getattr(Products, '__ac_permissions__', ())
         for p in Products_permissions:
             d[p[0]]=1
-        for p in self.aq_acquire('_getProductRegistryData')('ac_permissions'):
-            d[p[0]]=1
-
         for p in self.ac_inherited_permissions(1):
             d[p[0]]=1
 

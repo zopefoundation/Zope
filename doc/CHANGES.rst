@@ -11,6 +11,8 @@ Trunk (unreleased)
 Restructuring
 +++++++++++++
 
+- Remove remaining support classes for defining permissions TTW.
+
 - Moved ``TaintedString`` into the new AccessControl.tainted module.
 
 - Moved the ``zExceptions`` package into its own distribution.

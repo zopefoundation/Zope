@@ -45,8 +45,6 @@ from App.class_init import InitializeClass
 from App.special_dtml import DTMLFile
 from OFS.Folder import Folder
 
-from App.Permission import PermissionManager
-
 
 class ProductFolder(Folder):
     "Manage a collection of Products"
@@ -71,7 +69,7 @@ class ProductFolder(Folder):
 InitializeClass(ProductFolder)
 
 
-class Product(Folder, PermissionManager):
+class Product(Folder):
     """Model a product that can be created through the web.
     """
 
@@ -82,10 +80,6 @@ class Product(Folder, PermissionManager):
     version=''
     configurable_objects_=()
     import_error_=None
-
-    meta_types=(
-        PermissionManager.meta_types
-        )
 
     manage_options = (
         (Folder.manage_options[0],) +

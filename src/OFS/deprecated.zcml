@@ -7,9 +7,6 @@
       class="AccessControl.User.BasicUserFolder"/>
 
   <five:deprecatedManageAddDelete
-      class="App.Permission.Permission"/>
-
-  <five:deprecatedManageAddDelete
       class="HelpSys.HelpTopic.HelpTopicBase"/>
 
   <five:deprecatedManageAddDelete
