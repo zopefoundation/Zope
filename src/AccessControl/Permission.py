@@ -139,7 +139,6 @@ class Permission:
 
 
 _registeredPermissions = {}
-_registerdPermission = _registeredPermissions.__contains__
 
 
 def registerPermissions(permissions, defaultDefault=('Manager', )):
@@ -147,7 +146,7 @@ def registerPermissions(permissions, defaultDefault=('Manager', )):
     """
     import Products
     for setting in permissions:
-        if _registerdPermission(setting[0]):
+        if setting[0] in _registeredPermissions:
             continue
         if len(setting)==2:
             perm, methods = setting
