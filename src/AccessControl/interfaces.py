@@ -10,7 +10,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""AccessControl z3 interfaces.
+"""AccessControl interfaces.
 
 $Id$
 """
