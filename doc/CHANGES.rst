@@ -136,6 +136,7 @@ Features Added
 - Updated packages:
 
   - Jinja2 = 2.5.0
+  - RestrictedPython = 3.6.0a1
   - Sphinx = 1.0b2
   - transaction = 1.1.0
   - ZConfig = 2.8.0

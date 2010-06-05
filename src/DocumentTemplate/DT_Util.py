@@ -26,6 +26,7 @@ from DocumentTemplate.html_quote import html_quote, ustr
 from DocumentTemplate.cDocumentTemplate import InstanceDict, TemplateDict
 from DocumentTemplate.cDocumentTemplate import render_blocks, safe_callable
 from DocumentTemplate.cDocumentTemplate import join_unicode
+from DocumentTemplate import sequence
 
 from RestrictedPython.Guards import safe_builtins
 from RestrictedPython.Utilities import utility_builtins
@@ -34,6 +35,7 @@ from RestrictedPython.Eval import RestrictionCapableEval
 from AccessControl.tainted import TaintedString
 
 test = utility_builtins['test'] # for backwards compatibility, dont remove!
+utility_builtins['sequence']= sequence
 
 LIMITED_BUILTINS = 1
 
