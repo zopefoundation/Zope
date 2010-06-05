@@ -50,6 +50,19 @@ Features Added
 - Updated packages:
 
   - distribute = 0.6.13
+  - lxml = 2.2.6
+  - Sphinx = 0.6.6
+  - zope.app.apidoc = 3.6.6
+  - zope.app.applicationcontrol = 3.5.1
+  - zope.app.authentication = 3.6.1
+  - zope.app.i18n = 3.6.2
+  - zope.app.intid = 3.7.1
+  - zope.app.wsgi = 3.6.1
+  - zope.contenttype = 3.4.3
+  - zope.container = 3.8.3
+  - zope.deferredimport = 3.5.2
+  - zope.intid = 3.7.2
+  - zope.principalannotation = 3.6.1
 
 - Update Five's testbrowser to support both mechanize 0.1.x and 0.2.x.
 
@@ -83,6 +96,7 @@ Features Added
   - RestrictedPython = 3.5.2
   - ThreadLock = 2.13.0
   - ZODB3 = 3.9.5
+  - zope.app.locales = 3.6.1
   - zope.authentication = 3.7.1
   - zope.browser = 1.3
   - zope.cachedescriptors = 3.5.1
