@@ -138,8 +138,8 @@ class Permission:
         return self.name
 
 
-_registeredPermissions={}
-_registerdPermission=_registeredPermissions.has_key
+_registeredPermissions = {}
+_registerdPermission = _registeredPermissions.__contains__
 
 
 def registerPermissions(permissions, defaultDefault=('Manager', )):
