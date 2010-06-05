@@ -11,6 +11,9 @@ Trunk (unreleased)
 Restructuring
 +++++++++++++
 
+- Removed deprecated support for specifying ``__ac_permissions__``,
+  ``meta_types`` and ``methods`` in a product's ``__init__``.
+
 - Remove remaining support classes for defining permissions TTW.
 
 - Moved ``TaintedString`` into the new AccessControl.tainted module.

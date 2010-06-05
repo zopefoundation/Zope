@@ -19,7 +19,6 @@ import os, sys, traceback
 from logging import getLogger
 from cgi import escape
 from StringIO import StringIO
-from warnings import warn
 
 import Products
 import App.Product
@@ -663,66 +662,19 @@ def install_product(app, product_dir, product_name, meta_types,
             # expected to implement a method named 'initialize' in
             # their __init__.py that takes the ProductContext as an
             # argument.
-            productObject=App.Product.initializeProduct(
+            productObject = App.Product.initializeProduct(
                 product, product_name, package_dir, app)
-            context=ProductContext(productObject, app, product)
+            context = ProductContext(productObject, app, product)
 
             # Look for an 'initialize' method in the product.
-            initmethod=pgetattr(product, 'initialize', None)
+            initmethod = pgetattr(product, 'initialize', None)
             if initmethod is not None:
                 initmethod(context)
-
-            permissions={}
-            new_permissions={}
-            if pgetattr(product, '__ac_permissions__', None) is not None:
-                warn("__init__.py of %s has a long deprecated "
-                     "'__ac_permissions__' attribute. '__ac_permissions__' "
-                     "is now ignored by install_product. Please use "
-                     "registerClass instead."
-                     % product.__name__,
-                     DeprecationWarning)
-
-            if pgetattr(product, 'meta_types', None) is not None:
-                warn("__init__.py of %s has a long deprecated 'meta_types' "
-                     "attribute. 'meta_types' is now ignored by "
-                     "install_product. Please use registerClass instead."
-                     % product.__name__,
-                     DeprecationWarning)
-
-            if pgetattr(product, 'methods', None) is not None:
-                warn("__init__.py of %s has a long deprecated 'methods' "
-                     "attribute. 'methods' support might be removed in Zope "
-                     "2.11 or a later feature release. Please use the "
-                     "'legacy' argument of registerClass instead if the "
-                     "methods are constructors. Or refactor the product "
-                     "using adapters." % product.__name__,
-                     DeprecationWarning)
-            for name,method in pgetattr(
-                product, 'methods', {}).items():
-                if not hasattr(Folder.Folder, name):
-                    setattr(Folder.Folder, name, method)
-                    if name[-9:]!='__roles__': # not Just setting roles
-                        if (permissions.has_key(name) and
-                            not folder_permissions.has_key(
-                                permissions[name])):
-                            permission=permissions[name]
-                            if new_permissions.has_key(permission):
-                                new_permissions[permission].append(name)
-                            else:
-                                new_permissions[permission]=[name]
-
-            if new_permissions:
-                new_permissions=new_permissions.items()
-                for permission, names in new_permissions:
-                    folder_permissions[permission]=names
-                new_permissions.sort()
-                Folder.Folder.__ac_permissions__=tuple(
-                    list(Folder.Folder.__ac_permissions__)+new_permissions)
 
             if not doInstall():
                 transaction.abort()
             else:
-                transaction.get().note('Installed product '+product_name)
+                transaction.get().note('Installed product ' + product_name)
                 transaction.commit()
 
         except KeyboardInterrupt:
