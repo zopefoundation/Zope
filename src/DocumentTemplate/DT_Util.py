@@ -20,6 +20,12 @@ import string
 from types import BuiltinFunctionType
 from types import FunctionType
 
+from AccessControl.tainted import TaintedString
+from AccessControl.ZopeGuards import _safe_globals
+from RestrictedPython.Guards import safe_builtins
+from RestrictedPython.Utilities import utility_builtins
+from RestrictedPython.Eval import RestrictionCapableEval
+
 # for import by other modules, dont remove!
 from DocumentTemplate.html_quote import html_quote, ustr
 
@@ -28,18 +34,14 @@ from DocumentTemplate.cDocumentTemplate import render_blocks, safe_callable
 from DocumentTemplate.cDocumentTemplate import join_unicode
 from DocumentTemplate import sequence
 
-from RestrictedPython.Guards import safe_builtins
-from RestrictedPython.Utilities import utility_builtins
-from RestrictedPython.Eval import RestrictionCapableEval
-
-from AccessControl.tainted import TaintedString
-
 if 'test' not in utility_builtins:
     from RestrictedPython.Utilities import test
     utility_builtins['test'] = test
 
 test = utility_builtins['test'] # for backwards compatibility, dont remove!
-utility_builtins['sequence']= sequence
+utility_builtins['sequence'] = sequence
+safe_builtins['sequence'] = sequence
+_safe_globals['sequence'] = sequence
 
 LIMITED_BUILTINS = 1
 
