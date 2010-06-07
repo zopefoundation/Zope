@@ -55,21 +55,19 @@ class Functional(sandbox.Sandboxed):
     implements(interfaces.IFunctional)
 
     @savestate
-    def publish(self, path, basic=None, env=None, extra=None,
-                request_method='GET', stdin=None, handle_errors=True):
+    def publish(self, path, basic=None, env=None, request_method='GET',
+                stdin=None, handle_errors=True):
         '''Publishes the object at 'path' returning a response object.'''
 
         from StringIO import StringIO
         from ZPublisher.Response import Response
-        from ZPublisher.Test import publish_module
+        from ZPublisher.Publish import publish_module
 
         # Commit the sandbox for good measure
         transaction.commit()
 
         if env is None:
             env = {}
-        if extra is None:
-            extra = {}
 
         request = self.app.REQUEST
 
@@ -98,7 +96,6 @@ class Functional(sandbox.Sandboxed):
                        response=response,
                        stdin=stdin,
                        environ=env,
-                       extra=extra,
                        debug=not handle_errors,
                       )
 
