@@ -11,6 +11,10 @@ Trunk (unreleased)
 Restructuring
 +++++++++++++
 
+- Testing: Functional.publish now uses the real publish_module function
+  instead of that from ZPublisher.Test. The 'extra' argument of the publish
+  method is no longer supported.
+
 - Removed the deprecated ``hasRole`` method from user objects.
 
 - Removed deprecated support for specifying ``__ac_permissions__``,
