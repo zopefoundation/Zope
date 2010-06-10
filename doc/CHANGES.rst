@@ -80,9 +80,6 @@ Restructuring
 
 - Reuse IMenuItemType from zope.browsermenu.
 
-- Moved TaintedString from ZPublisher to Shared.
-  This resolves a circular import issue.
-
 - We no longer depend on the ``zope-functional-testing`` extra of
   zope.testbrowser.
 
