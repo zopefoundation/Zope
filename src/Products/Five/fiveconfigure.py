@@ -30,10 +30,10 @@ from Products.Five.browser.metaconfigure import page
 
 
 def implements(_context, class_, interface):
-    warnings.warn('Using <five:implements /> is deprecated. Please use the '
-                  '<class class="foo.Bar">'
-                  '<implements interface="foo.interfaces.IBar" />'
-                  '</class> directive instead.',
+    warnings.warn('Using <five:implements /> in %s is deprecated. Please use '
+                  'the <class class="foo.Bar">'
+                  '<implements interface="foo.interfaces.IBar" /></class> '
+                  'directive instead.' % _context.info,
                   DeprecationWarning, stacklevel=2)
     for interface in interface:
         _context.action(
