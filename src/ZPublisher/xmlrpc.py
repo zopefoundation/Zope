@@ -148,16 +148,15 @@ class Response:
                   absuri_match=None, tag_search=None):
         # Fetch our exception info. t is type, v is value and tb is the
         # traceback object.
-        if type(info) is type(()) and len(info)==3: t,v,tb = info
-        else: t,v,tb = sys.exc_info()
+        if isinstance(info, tuple) and len(info) == 3:
+            t, v, tb = info
+        else:
+            t, v, tb = sys.exc_info()
 
         # Don't mask 404 respnses, as some XML-RPC libraries rely on the HTTP
         # mechanisms for detecting when authentication is required. Fixes Zope
         # Collector issue 525.
-        if t == 'Unauthorized' or (
-            isinstance(t, types.ClassType) and issubclass(t, Unauthorized)
-            ):
-
+        if issubclass(t, Unauthorized):
             return self._real.exception(fatal=fatal, info=info)
 
         # Create an appropriate Fault object. Containing error information
@@ -175,7 +174,6 @@ class Response:
                 value = '\n' + ''.join(format_exception(t, vstr, tb))
             else:
                 value = '%s - %s' % (t, vstr)
-                
             if isinstance(v, Fault):
                 f=v
             elif isinstance(v, Exception):
