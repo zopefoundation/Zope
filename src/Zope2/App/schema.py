@@ -16,6 +16,7 @@ from zope.component import getUtility
 from zope.interface import implements
 from zope.schema.interfaces import IVocabularyFactory
 from zope.schema.interfaces import IVocabularyRegistry
+from zope.schema.vocabulary import setVocabularyRegistry
 
 
 class Zope2VocabularyRegistry(object):
@@ -30,3 +31,7 @@ class Zope2VocabularyRegistry(object):
         """
         factory = getUtility(IVocabularyFactory, name)
         return factory(context)
+
+
+def configure_vocabulary_registry():
+    setVocabularyRegistry(Zope2VocabularyRegistry())

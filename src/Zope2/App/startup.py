@@ -16,7 +16,6 @@
 from zope.component import queryMultiAdapter
 from zope.event import notify
 from zope.processlifetime import DatabaseOpened
-from zope.schema.vocabulary import setVocabularyRegistry
 
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
@@ -110,8 +109,8 @@ def startup():
     load_site()
 
     # Set up Zope2 specific vocabulary registry
-    from .schema import Zope2VocabularyRegistry
-    setVocabularyRegistry(Zope2VocabularyRegistry())
+    from .schema import configure_vocabulary_registry
+    configure_vocabulary_registry()
 
     # Set up the "app" object that automagically opens
     # connections
