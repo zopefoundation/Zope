@@ -254,7 +254,7 @@ class VirtualHostMonster(Persistent, Item, Implicit):
 InitializeClass(VirtualHostMonster)
 
 
-def manage_addVirtualHostMonster(self, REQUEST=None, **ignored):
+def manage_addVirtualHostMonster(self, id=None, REQUEST=None, **ignored):
     """ """
     container = self.this()
     vhm = VirtualHostMonster()
