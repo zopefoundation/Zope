@@ -39,6 +39,8 @@ from Testing.ZopeTestCase.functional import savestate
 class HTTPHeaderOutput:
 
     # zope.interface.implements(zope.server.interfaces.IHeaderOutput)
+    status = '200'
+    reason = 'OK'
 
     def __init__(self, protocol, omit):
         self.headers = {}
@@ -57,7 +59,10 @@ class HTTPHeaderOutput:
         ))
 
     def appendResponseHeaders(self, lst):
-        headers = [split_header(header) for header in lst]
+        if lst and isinstance(lst[0], basestring):
+            headers = [split_header(header) for header in lst]
+        else:
+            headers = lst
         self.headersl.extend(
             [('-'.join([s.capitalize() for s in name.split('-')]), v)
              for name, v in headers
