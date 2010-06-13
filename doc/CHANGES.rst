@@ -5,13 +5,13 @@ This file contains change information for the current Zope release.
 Change information for previous versions of Zope can be found at
 http://docs.zope.org/zope2/releases/.
 
-2.12.7 (unreleased)
+2.12.7 (2010-06-13)
 -------------------
 
 Bugs Fixed
 ++++++++++
 
-- LP #583702: Fixed regressions in mailhost queue processor code introduced
+- LP #583702: Fixed regression in mailhost queue processor code introduced
   in 2.12.6 in the LP #574286 changes.
 
 - Handle Unauthorized exceptions in xmlrpc correctly.
