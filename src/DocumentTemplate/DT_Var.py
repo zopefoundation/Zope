@@ -148,22 +148,23 @@ Evaluating expressions without rendering results
 
    A 'call' tag is provided for evaluating named objects or expressions
    without rendering the result.
-
-$Id$
 """
 
-import string, re, sys
+import logging
+import re
+import string
+import sys
 from urllib import quote, quote_plus, unquote, unquote_plus
+
+from Acquisition import aq_base
+from AccessControl.tainted import TaintedString
+from zope.structuredtext.document import DocumentWithImages
 
 # for import by other modules, dont remove!
 from DocumentTemplate.html_quote import html_quote
 from DocumentTemplate.DT_Util import parse_params, name_param, str, ustr
 
-from Acquisition import aq_base
-from AccessControl.tainted import TaintedString
-from zope.structuredtext.html import HTML
-from zope.structuredtext.document import DocumentWithImages
-from App.config import getConfiguration
+logger = logging.getLogger('DocumentTemplate')
 
 
 class Var:
@@ -399,30 +400,43 @@ def len_format(v, name='(Unknown name)', md={}):
 def len_comma(v, name='(Unknown name)', md={}):
     return thousands_commas(str(len(v)))
 
+
 def restructured_text(v, name='(Unknown name)', md={}):
+    try:
+        from reStructuredText import HTML
+    except ImportError:
+        logger.info('The reStructuredText package is not available, therefor '
+                    'the DT_Var.restructured_text function returns None.')
+        return None
 
-    from reStructuredText import HTML
-
-    if isinstance(v, str): 
+    if isinstance(v, str):
         txt = v
     elif aq_base(v).meta_type in ['DTML Document','DTML Method']:
         txt = aq_base(v).read_raw()
-    else: 
+    else:
         txt = str(v)
 
     return HTML(txt)
 
 
 def structured_text(v, name='(Unknown name)', md={}):
+    from zope.structuredtext.html import HTML
 
-    if isinstance(v, str): 
+    if isinstance(v, str):
         txt = v
     elif aq_base(v).meta_type in ['DTML Document','DTML Method']:
         txt = aq_base(v).read_raw()
-    else: 
+    else:
         txt = str(v)
 
-    level = getConfiguration().structured_text_header_level
+    level = 3
+    try:
+        from App.config import getConfiguration
+    except ImportError:
+        pass
+    else:
+        level = getConfiguration().structured_text_header_level
+
     doc = DocumentWithImages()(txt)
     return HTML()(doc, level, header=False)
 

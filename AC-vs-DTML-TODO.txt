@@ -46,11 +46,3 @@ DocumentTemplate
   * Missing
   * RestrictedPython
   * zExceptions
-
-- Remaining outside imports:
-
-  * App (getConfiguration().structured_text_header_level)
-  * reStructuredText (HTML) - Both of these deal with format support and
-    configuration via zope.conf. The calls are localized to one function each.
-    Add an optional dependency on Zope2? Configure if it is available,
-    otherwise use some default?
