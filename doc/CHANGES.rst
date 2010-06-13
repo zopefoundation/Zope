@@ -11,6 +11,9 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
+- LP #583702: Fixed regressions in mailhost queue processor code introduced
+  in 2.12.6 in the LP #574286 changes.
+
 - Handle Unauthorized exceptions in xmlrpc correctly.
 
 - Five's processInputs() would stomp on :list or :tuple values that contained
