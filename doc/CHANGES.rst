@@ -52,6 +52,7 @@ Features Added
 - Updated packages:
 
   - distribute = 0.6.13
+  - five.formlib = 1.0.3
   - lxml = 2.2.6
   - Sphinx = 0.6.6
   - tempstorage = 2.11.3
