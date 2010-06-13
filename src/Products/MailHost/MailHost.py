@@ -284,7 +284,7 @@ class MailBase(Implicit, Item, RoleManager):
             while thread.isAlive():
                 # wait until thread is really dead
                 time.sleep(0.3)
-            del queue_threads[path]
+            del queue_threads[key]
             LOG.info('Thread for %s stopped' % key)
 
     @synchronized(lock)
