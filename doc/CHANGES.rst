@@ -43,7 +43,7 @@ Bugs Fixed
 
 - LP #142410: Do not index documents in a KeywordIndex if the document
   is missing the indexed attribute, if determining the value raises
-  AttributeError, or of the indexed attribute is empty.
+  AttributeError, or if the indexed attribute is empty.
 
 - LP #142590: The ``DTMLMethod`` and ``DTMLDocument`` ``manage_edit``
   methods could not deal with ``TaintedString`` instances. Removed the
