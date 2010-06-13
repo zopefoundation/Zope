@@ -17,11 +17,13 @@ from cgi import escape
 from Acquisition import Acquired
 from Acquisition import aq_base
 from Acquisition import aq_get
-from App.Dialogs import MessageDialog
-from App.special_dtml import DTMLFile
 from ExtensionClass import Base
 from PermissionMapping import RoleManager
 from zope.interface import implements
+
+# TODO dependencies
+from App.Dialogs import MessageDialog
+from App.special_dtml import DTMLFile
 
 from AccessControl import ClassSecurityInfo
 from AccessControl.class_init import InitializeClass

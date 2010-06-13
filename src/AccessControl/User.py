@@ -22,18 +22,20 @@ from Acquisition import aq_base
 from Acquisition import aq_parent
 from Acquisition import aq_inContextOf
 from Acquisition import Implicit
-from App.Management import Navigation
-from App.Management import Tabs
-from App.special_dtml import DTMLFile
-from App.Dialogs import MessageDialog
 from AccessControl import ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import manage_users as ManageUsers
-from OFS.SimpleItem import Item
 from Persistence import Persistent
 from Persistence import PersistentMapping
 from zExceptions import Unauthorized, BadRequest
 from zope.interface import implements
+
+# TODO dependencies
+from App.Management import Navigation
+from App.Management import Tabs
+from App.special_dtml import DTMLFile
+from App.Dialogs import MessageDialog
+from OFS.SimpleItem import Item
 
 import AuthEncoding
 import SpecialUsers
