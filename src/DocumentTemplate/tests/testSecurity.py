@@ -17,15 +17,29 @@ import unittest
 
 from DocumentTemplate import HTML
 from DocumentTemplate.tests.testDTML import DTMLTests
-from Products.PythonScripts.standard import DTML
+from DocumentTemplate.security import RestrictedDTML
 from AccessControl import Unauthorized
+from AccessControl.SecurityManagement import getSecurityManager
 from ExtensionClass import Base
 
-class UnownedDTML(DTML):
+
+class UnownedDTML(RestrictedDTML, HTML):
+
     def getOwner(self):
         return None
 
-class SecurityTests (DTMLTests):
+    def __call__(self, client=None, REQUEST={}, RESPONSE=None, **kw):
+        """Render the DTML"""
+        security = getSecurityManager()
+        security.addContext(self)
+        try:
+            return HTML.__call__(self, client, REQUEST, **kw)
+        finally:
+            security.removeContext(self)
+
+
+class SecurityTests(DTMLTests):
+
     doc_class = UnownedDTML
     unrestricted_doc_class = HTML
 

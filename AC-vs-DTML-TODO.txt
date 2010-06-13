@@ -54,7 +54,3 @@ DocumentTemplate
     configuration via zope.conf. The calls are localized to one function each.
     Add an optional dependency on Zope2? Configure if it is available,
     otherwise use some default?
-
-- Test only dependencies:
-
-  * Products.PythonScripts
