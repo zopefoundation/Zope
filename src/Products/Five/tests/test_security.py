@@ -276,7 +276,17 @@ def test_set_warnings():
       Running this should not throw an exception (but will print a warning to
       stderr)
       
-      >>> zcml.load_string(configure_zcml)
+      >>> from warnings import catch_warnings
+      >>> warned = []
+      >>> with catch_warnings(record=True) as trapped:
+      ...      zcml.load_string(configure_zcml)
+      ...      warned.extend(list(trapped))
+      >>> len(warned)
+      2
+      >>> str(warned[0].message)
+      'The set_schema option...'
+      >>> str(warned[1].message)
+      'The set_attribute option...'
       >>> tearDown()
     """
 
