@@ -209,8 +209,18 @@ def test_set_warnings():
       Running this should not throw an exception (but will print a warning to
       stderr)
 
+      >>> from warnings import catch_warnings
       >>> from zope.configuration.xmlconfig import xmlconfig
-      >>> xmlconfig(configure_zcml)
+      >>> warned = []
+      >>> with catch_warnings(record=True) as trapped:
+      ...      xmlconfig(configure_zcml)
+      ...      warned.extend(list(trapped))
+      >>> len(warned)
+      2
+      >>> str(warned[0].message)
+      'The set_schema option...'
+      >>> str(warned[1].message)
+      'The set_attribute option...'
       >>> tearDown()
     """
 
@@ -385,4 +395,4 @@ def test_register_permission():
 
 def test_suite():
     import doctest
-    return doctest.DocTestSuite()
+    return doctest.DocTestSuite(optionflags=doctest.ELLIPSIS)
