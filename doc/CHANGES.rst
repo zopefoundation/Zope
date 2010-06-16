@@ -11,6 +11,9 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
+- LP #143619: Make sure to remove a RAMCache's contents when the 
+  ZODB object is removed.
+
 - LP #143403: Prevent accidental acquisition of objectValues during
   recursive ownership changes when the changed object has no 
   objectValues method.

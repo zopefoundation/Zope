@@ -112,7 +112,11 @@ class CacheManagerLocationTests(CopySupportTestBase):
         cache_moved = cachemanager_moved.ZCacheManager_getCache()
         self.assertEqual(cache, cache_moved)
 
-    # XXX test cache is removed if cachemanager is deleted to prevent leaks?
+    def test_cache_deleted_on_remove(self):
+        old_cache = self.cachemanager.ZCacheManager_getCache()
+        self.folder1.manage_delObjects(['cache'])
+        new_cache = self.cachemanager.ZCacheManager_getCache()
+        self.assertNotEqual(old_cache, new_cache)
 
 class AcceleratedHTTPCacheManagerLocationTests(CacheManagerLocationTests):
 

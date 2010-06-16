@@ -22,3 +22,5 @@ def cloned(obj, event):
     """ 
     obj._resetCacheId()
 
+def removed(obj, event):
+    obj._remove_data()
