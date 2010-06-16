@@ -441,9 +441,11 @@ class PropertySheet(Traversable, Persistent, Implicit):
 
     security.declareProtected(manage_properties, 'manage_changeProperties')
     def manage_changeProperties(self, REQUEST=None, **kw):
-        """Change existing object properties by passing either a mapping
-           object of name:value pairs {'foo':6} or passing name=value
-           parameters."""
+        """Change existing object properties.
+
+        Change object properties by passing either a REQUEST object or
+        name=value parameters
+        """
         if REQUEST is None:
             props={}
         else: props=REQUEST

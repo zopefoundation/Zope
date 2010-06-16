@@ -797,8 +797,8 @@ class IPropertyManager(Interface):
     def manage_changeProperties(REQUEST=None, **kw):
         """Change existing object properties.
 
-        Change object properties by passing either a mapping object
-        of name:value pairs {'foo':6} or passing name=value parameters
+        Change object properties by passing either a REQUEST object or
+        name=value parameters
         """
 
     def manage_changePropertyTypes(old_ids, props, REQUEST=None):

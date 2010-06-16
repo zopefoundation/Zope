@@ -181,6 +181,10 @@ Features Added
 Bugs Fixed
 ++++++++++
 
+- LP #142535: Fix faulty docstring for manage_changeProperties which
+  incorrectly suggested that passing a simple dictionary as REQUEST
+  argument was supported.
+
 - LP #374818: Use module-provided functions as opposed to the old
   "folder methods" when creating folders and user folders in
   ZopeTestCase.
