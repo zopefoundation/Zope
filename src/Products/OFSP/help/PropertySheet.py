@@ -165,9 +165,8 @@ class PropertySheet:
     def manage_changeProperties(REQUEST=None, **kw):
         """
 
-        Change existing object properties by passing either a mapping
-        object as 'REQUEST' containing name:value pairs or by passing
-        name=value keyword arguments.
+        Change object properties by passing either a REQUEST object or
+        name=value parameters
 
         Some objects have "special" properties defined by product
         authors that cannot be changed. If you try to change one of
@@ -178,7 +177,7 @@ class PropertySheet:
         ensure that the updated values are of the correct type.
         *This should probably change*.
 
-        If a value is provided for 'REQUEST' (as it will be when
+        If a REQUEST object is passed (as it will be when
         called via the web), the method will return an HTML message
         dialog. If no REQUEST is passed, the method returns 'None' on
         success.

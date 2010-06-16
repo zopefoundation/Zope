@@ -25,6 +25,10 @@ Bugs Fixed
 Bugs Fixed
 ++++++++++
 
+- LP #142535: Fix faulty docstring for manage_changeProperties which 
+  incorrectly suggested that passing a simple dictionary as REQUEST 
+  argument was supported.
+
 - LP #583702: Fixed regression in mailhost queue processor code introduced
   in 2.12.6 in the LP #574286 changes.
 

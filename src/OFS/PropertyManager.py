@@ -316,8 +316,8 @@ class PropertyManager(Base, ElementWithAttributes):
     def manage_changeProperties(self, REQUEST=None, **kw):
         """Change existing object properties.
 
-        Change object properties by passing either a mapping object
-        of name:value pairs {'foo':6} or passing name=value parameters
+        Change object properties by passing either a REQUEST object or
+        name=value parameters
         """
         if REQUEST is None:
             props={}
