@@ -11,6 +11,8 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
+- LP #143946: Provide a more informative error message when a 
+  WebDAV PUT fails.
 
 
 2.12.7 (2010-06-13)

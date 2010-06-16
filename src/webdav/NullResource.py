@@ -166,7 +166,9 @@ class NullResource(Persistent, Implicit, Resource):
         try:
             parent._verifyObjectPaste(ob.__of__(parent), 0)
         except CopyError:
-            raise Unauthorized, sys.exc_info()[1]
+             sMsg = 'Unable to create object of class %s in %s: %s' % \
+                    (ob.__class__, repr(parent), sys.exc_info()[1],)
+             raise Unauthorized, sMsg
 
         # Delegate actual PUT handling to the new object,
         # SDS: But just *after* it has been stored.
