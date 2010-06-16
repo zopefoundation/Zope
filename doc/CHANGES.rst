@@ -23,7 +23,9 @@ Features Added
 
 - Updated packages:
 
+  - ExtensionClass = 2.13.2
   - Missing = 2.13.1
+  - Persistence = 2.13.2
 
 2.12.7 (2010-06-13)
 -------------------
