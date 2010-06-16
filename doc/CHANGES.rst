@@ -181,6 +181,10 @@ Features Added
 Bugs Fixed
 ++++++++++
 
+- LP #143403: Prevent accidental acquisition of objectValues during
+  recursive ownership changes when the changed object has no
+  objectValues method.
+
 - LP #142535: Fix faulty docstring for manage_changeProperties which
   incorrectly suggested that passing a simple dictionary as REQUEST
   argument was supported.
