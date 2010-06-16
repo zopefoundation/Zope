@@ -442,8 +442,11 @@ class CacheManager:
             ids = getVerifiedManagerIds(container)
             id = self.getId()
             if id in ids:
-                setattr(container, ZCM_MANAGERS, filter(
-                    lambda s, id=id: s != id, ids))
+                manager_ids = filter(lambda s, id=id: s != id, ids)
+                if manager_ids:
+                    setattr(container, ZCM_MANAGERS, manager_ids)
+                elif getattr(aq_base(self), ZCM_MANAGERS, None) is not None:
+                    delattr(self, ZCM_MANAGERS)
                 global manager_timestamp
                 manager_timestamp = time.time()
 
