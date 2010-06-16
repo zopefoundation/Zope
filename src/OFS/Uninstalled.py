@@ -22,12 +22,14 @@ from Acquisition import Explicit
 from App.special_dtml import DTMLFile
 from OFS.SimpleItem import Item
 from Persistence import Overridable
+from ZODB.broken import Broken as ZODB_Broken
+from ZODB.broken import persistentBroken
 
 broken_klasses={}
 broken_klasses_lock = allocate_lock()
 LOG = getLogger('OFS.Uninstalled')
 
-class BrokenClass(Explicit, Item, Overridable):
+class BrokenClass(ZODB_Broken, Explicit, Item, Overridable):
     _p_changed=0
     meta_type='Broken Because Product is Gone'
     icon='p_/broken'
@@ -36,12 +38,6 @@ class BrokenClass(Explicit, Item, Overridable):
 
     manage_page_header = Acquired
     manage_page_footer = Acquired
-
-    def __getstate__(self):
-        raise SystemError, (
-            """This object was originally created by a product that
-            is no longer installed.  It cannot be updated.
-            (%s)""" % repr(self))
 
     def __getattr__(self, name):
         if name[:3]=='_p_':
@@ -74,6 +70,7 @@ def Broken(self, oid, pair):
             klass.info=(
                 'This object\'s class was %s in module %s.' %
                 (klass.__name__, klass.__module__))
+            klass = persistentBroken(klass)
             LOG.warning('Could not import class %s '
                     'from module %s' % (`klass.__name__`, `klass.__module__`))
     finally:

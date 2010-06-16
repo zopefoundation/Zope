@@ -77,24 +77,8 @@ class TestsOfBroken(unittest.TestCase):
         self.assertEqual(klass.__module__, 'Products.MyProduct.MyClass')
         self.assertEqual(klass.product_name, 'MyProduct')
 
-    def test_Broken_instance___getstate___raises_useful_exception(self):
-        # see http://www.zope.org/Collectors/Zope/2157
-        from OFS.Uninstalled import Broken
-        from OFS.Uninstalled import BrokenClass
-        OID = '\x01' * 8
-
-        inst = Broken(self, OID, ('Products.MyProduct.MyClass', 'MyClass'))
-
-        try:
-            dict = inst.__getstate__()
-        except SystemError, e:
-            self.failUnless('MyClass' in str(e), str(e))
-        else:
-            self.fail("'__getstate__' didn't raise SystemError!")
-
     def test_Broken_instance___getattr___allows_persistence_attrs(self):
         from OFS.Uninstalled import Broken
-        from OFS.Uninstalled import BrokenClass
         OID = '\x01' * 8
         PERSISTENCE_ATTRS = ["_p_changed",
                              "_p_jar",
@@ -119,6 +103,13 @@ class TestsOfBroken(unittest.TestCase):
         for meth_name in PERSISTENCE_METHODS:
             meth = getattr(inst, meth_name) # doesn't raise
 
+    def test_Broken_instance___getstate___gives_access_to_its_state(self):
+        from OFS.Uninstalled import Broken
+        OID = '\x01' * 8
+        inst = Broken(self, OID, ('Products.MyProduct.MyClass', 'MyClass'))
+        inst.__setstate__({'x': 1})
+        self.assertEqual(inst.__getstate__(), {'x': 1})
+
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest( unittest.makeSuite(TestsOfBroken))
@@ -129,4 +120,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
