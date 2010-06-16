@@ -167,7 +167,8 @@ class Owned(Base):
                 return
 
         if recursive:
-            for child in self.objectValues():
+            children = getattr( aq_base(self), 'objectValues', lambda :() )()
+            for child in children:
                 child.changeOwnership(user, 1)
 
         if old is not UnownableOwner:

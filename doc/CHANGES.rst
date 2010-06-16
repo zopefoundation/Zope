@@ -11,6 +11,10 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
+- LP #143403: Prevent accidental acquisition of objectValues during
+  recursive ownership changes when the changed object has no 
+  objectValues method.
+
 - LP #374818: Use module-provided functions as opposed to the old 
   "folder methods" when creating folders and user folders in 
   ZopeTestCase.

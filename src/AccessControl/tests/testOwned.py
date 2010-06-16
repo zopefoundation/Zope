@@ -258,6 +258,24 @@ class OwnershipChangeTests(unittest.TestCase):
                          , (['acl_users'], 'user2')
                          )
 
+    def test_changeOwnership_recursive_objectValues_acquisition(self):
+        # See https://bugs.launchpad.net/bugs/143403
+        from AccessControl.Owned import Owned
+        class FauxContent(Implicit, Owned):
+            pass
+        previous_parent_owner = self.root.parent._owner
+        previous_child_owner = self.root.parent.child._owner
+        previous_grandchild_owner = self.root.parent.child.grandchild._owner
+        newuser = self.uf.getUser('user2').__of__(self.uf)
+        self.root.parent.bad = FauxContent()
+
+        self.root.parent.bad.changeOwnership(newuser, recursive=True)
+        self.assertEquals(self.root.parent._owner, previous_parent_owner)
+        self.assertEquals(self.root.parent.child._owner, previous_child_owner)
+        self.assertEquals( self.root.parent.child.grandchild._owner
+                         , previous_grandchild_owner
+                         )
+
 
 def test_suite():
     return unittest.TestSuite((
