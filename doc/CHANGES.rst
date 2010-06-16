@@ -181,6 +181,10 @@ Features Added
 Bugs Fixed
 ++++++++++
 
+- LP #143639: When the last cache manager in a container is
+  deleted, we need to remove all traces of it from the
+  container.
+
 - LP #143619: Make sure to remove a RAMCache's contents when the
   ZODB object is removed.
 
