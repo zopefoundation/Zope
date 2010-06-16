@@ -172,6 +172,10 @@ class AcceleratedHTTPCacheManager (CacheManager, SimpleItem):
         ' '
         return self.id
 
+    security.declarePrivate('_remove_data')
+    def _remove_data(self):
+        caches.pop(self.__cacheid)
+
     security.declarePrivate('_resetCacheId')
     def _resetCacheId(self):
         self.__cacheid = '%s_%f' % (id(self), time.time())
