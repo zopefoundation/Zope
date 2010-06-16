@@ -18,6 +18,12 @@ Bugs Fixed
 - LP #143946: Provide a more informative error message when a 
   WebDAV PUT fails.
 
+Features Added
+++++++++++++++
+
+- Updated packages:
+
+  - Missing = 2.13.1
 
 2.12.7 (2010-06-13)
 -------------------
