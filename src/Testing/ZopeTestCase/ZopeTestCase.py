@@ -63,14 +63,16 @@ class ZopeTestCase(base.TestCase):
 
     def _setupFolder(self):
         '''Creates and configures the folder.'''
-        self.app.manage_addFolder(folder_name)
+        from OFS.Folder import manage_addFolder
+        manage_addFolder(self.app, folder_name)
         self.folder = getattr(self.app, folder_name)
         self.folder._addRole(user_role)
         self.folder.manage_role(user_role, standard_permissions)
 
     def _setupUserFolder(self):
         '''Creates the user folder.'''
-        self.folder.manage_addUserFolder()
+        from AccessControl.User import manage_addUserFolder
+        manage_addUserFolder(self.folder)
 
     def _setupUser(self):
         '''Creates the default user.'''

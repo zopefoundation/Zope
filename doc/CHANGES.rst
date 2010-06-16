@@ -181,6 +181,10 @@ Features Added
 Bugs Fixed
 ++++++++++
 
+- LP #374818: Use module-provided functions as opposed to the old
+  "folder methods" when creating folders and user folders in
+  ZopeTestCase.
+
 - LP #143946: Provide a more informative error message when a
   WebDAV PUT fails.
 
