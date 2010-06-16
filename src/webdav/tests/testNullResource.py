@@ -48,6 +48,33 @@ class TestNullResource(unittest.TestCase):
         self.assertEqual(response.body, '')
         self.failUnless(response.locked)
 
+    def test_PUT_unauthorized_message(self):
+        # See https://bugs.launchpad.net/bugs/143946
+        import ExtensionClass
+        from OFS.CopySupport import CopyError
+        from zExceptions import Unauthorized
+        class DummyRequest:
+            def get_header(self, header, default=''):
+                return default
+            def get(self, name, default=None):
+                return default
+        class DummyResponse:
+            _server_version = 'Dummy' # emulate ZServer response
+            def setHeader(self, *args):
+                pass
+        class DummyParent(ExtensionClass.Base):
+            def _verifyObjectPaste(self, *args, **kw):
+                raise CopyError('Bad Boy!')
+        nonesuch = self._makeOne()
+        nonesuch.__parent__ = DummyParent()
+        request = DummyRequest()
+        response = DummyResponse()
+
+        try:
+            nonesuch.PUT(request, response)
+        except Unauthorized, e:
+            self.failUnless(str(e).startswith('Unable to create object'))
+
 
 def test_suite():
     return unittest.TestSuite((

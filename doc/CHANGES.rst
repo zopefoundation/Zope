@@ -181,6 +181,9 @@ Features Added
 Bugs Fixed
 ++++++++++
 
+- LP #143946: Provide a more informative error message when a
+  WebDAV PUT fails.
+
 - LP #143261: The (very old-fashioned) Zope2.debug interactive request
   debugger still referred to the toplevel module ``Zope``, which was
   renamed to ``Zope2`` a long time ago.
