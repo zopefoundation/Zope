@@ -36,7 +36,7 @@ from OFS.History import Historical, html_diff
 from OFS.Cache import Cacheable
 from OFS.Traversable import Traversable
 from OFS.PropertyManager import PropertyManager
-from Shared.DC.Scripts.Script import Script 
+from Shared.DC.Scripts.Script import Script
 from Shared.DC.Scripts.Signature import FuncCode
 from webdav.Lockable import ResourceLockedError
 
@@ -52,7 +52,7 @@ from Products.PageTemplates.utils import convertToUnicode
 preferred_encodings = ['utf-8', 'iso-8859-15']
 if os.environ.has_key('ZPT_PREFERRED_ENCODING'):
     preferred_encodings.insert(0, os.environ['ZPT_PREFERRED_ENCODING'])
-  
+
 
 
 class Src(Explicit):
@@ -107,10 +107,10 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
     security.declareProtected(view_management_screens,
                               'read', 'ZScriptHTML_tryForm')
 
-    def __init__(self, id, text=None, content_type='text/html', strict=True, 
+    def __init__(self, id, text=None, content_type='text/html', strict=True,
                  output_encoding='utf-8'):
         self.id = id
-        self.expand = 0                                                               
+        self.expand = 0
         self.ZBindings_edit(self._default_bindings)
         self.output_encoding = output_encoding
         # default content
@@ -124,7 +124,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
     def pt_edit(self, text, content_type, keep_output_encoding=False):
 
         text = text.strip()
-        
+
         is_unicode = isinstance(text, unicode)
         encoding = None
         output_encoding = None
@@ -163,7 +163,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
                                                preferred_encodings)
             output_encoding = encoding
 
-        # for content updated through WebDAV, FTP 
+        # for content updated through WebDAV, FTP
         if not keep_output_encoding:
             self.output_encoding = output_encoding
 
@@ -192,7 +192,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         # The ZMI edit view uses utf-8! So we can safely assume
         # that 'title' and 'text' are utf-8 encoded strings - hopefully
 
-        self.pt_setTitle(title, 'utf-8') 
+        self.pt_setTitle(title, 'utf-8')
         text = unicode(text, 'utf-8')
 
         self.pt_edit(text, content_type, True)
@@ -227,12 +227,12 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
             filename = None
             text = file
         else:
-            if not file: 
+            if not file:
                 raise ValueError('File not specified')
             filename = file.filename
             text = file.read()
 
-        content_type = guess_type(filename, text)   
+        content_type = guess_type(filename, text)
 #        if not content_type in ('text/html', 'text/xml'):
 #            raise ValueError('Unsupported mimetype: %s' % content_type)
 
@@ -252,9 +252,9 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         rows = str(max(1, int(dtpref_rows) + dr))
         cols = str(dtpref_cols)
         if cols.endswith('%'):
-           cols = str(min(100, max(25, int(cols[:-1]) + dc))) + '%'
+            cols = str(min(100, max(25, int(cols[:-1]) + dc))) + '%'
         else:
-           cols = str(max(35, int(cols) + dc))
+            cols = str(max(35, int(cols) + dc))
         e = (DateTime("GMT") + 365).rfc822()
         setCookie = REQUEST["RESPONSE"].setCookie
         setCookie("dtpref_rows", rows, path='/', expires=e)
@@ -294,7 +294,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
     def write(self, text):
 
         if not isinstance(text, unicode):
-            text, encoding = convertToUnicode(text, 
+            text, encoding = convertToUnicode(text,
                                               self.content_type,
                                               preferred_encodings)
             self.output_encoding = encoding
@@ -351,7 +351,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         self.dav__init(REQUEST, RESPONSE)
         self.dav__simpleifhandler(REQUEST, RESPONSE, refresh=1)
         text = REQUEST.get('BODY', '')
-        content_type = guess_type('', text) 
+        content_type = guess_type('', text)
         self.pt_edit(text, content_type)
         RESPONSE.setStatus(204)
         return RESPONSE
@@ -369,7 +369,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
     security.declareProtected(view_management_screens, 'html')
     def html(self):
         return self.content_type == 'text/html'
-        
+
     security.declareProtected(view_management_screens, 'get_size')
     def get_size(self):
         return len(self.read())
@@ -416,16 +416,16 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
 
     def __setstate__(self, state):
         # Perform on-the-fly migration to unicode.
-        # Perhaps it might be better to work with the 'generation' module 
+        # Perhaps it might be better to work with the 'generation' module
         # here?
         _text = state.get('_text')
         if _text is not None and not isinstance(state['_text'], unicode):
-            text, encoding = convertToUnicode(state['_text'], 
-                                    state.get('content_type', 'text/html'), 
+            text, encoding = convertToUnicode(state['_text'],
+                                    state.get('content_type', 'text/html'),
                                     preferred_encodings)
             state['_text'] = text
             state['output_encoding'] = encoding
-        self.__dict__.update(state) 
+        self.__dict__.update(state)
 
 
     def pt_render(self, source=False, extra_context={}):
@@ -462,7 +462,7 @@ def manage_addPageTemplate(self, id, title='', text='', encoding='utf-8',
         if headers and headers.has_key('content_type'):
             content_type = headers['content_type']
         else:
-            content_type = guess_type(filename, text) 
+            content_type = guess_type(filename, text)
 
 
     else:
@@ -473,7 +473,7 @@ def manage_addPageTemplate(self, id, title='', text='', encoding='utf-8',
             if headers and headers.has_key('content_type'):
                 content_type = headers['content_type']
             else:
-                content_type = guess_type(filename, text) 
+                content_type = guess_type(filename, text)
 
     # ensure that we pass unicode to the constructor to
     # avoid further hassles with pt_edit()
@@ -486,12 +486,12 @@ def manage_addPageTemplate(self, id, title='', text='', encoding='utf-8',
     self._setObject(id, zpt)
     zpt = getattr(self, id)
 
-    if RESPONSE:    
+    if RESPONSE:
         if submit == " Add and Edit ":
             RESPONSE.redirect(zpt.absolute_url() + '/pt_editForm')
         else:
             RESPONSE.redirect(self.absolute_url() + '/manage_main')
-    else:        
+    else:
         return zpt
 
 from Products.PageTemplates import misc_
@@ -507,4 +507,3 @@ def initialize(context):
         )
     context.registerHelp()
     context.registerHelpTitle('Zope Help')
-
