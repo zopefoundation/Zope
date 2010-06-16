@@ -16,6 +16,7 @@
 from zope.component import queryMultiAdapter
 from zope.event import notify
 from zope.processlifetime import DatabaseOpened
+from zope.processlifetime import DatabaseOpenedWithRoot
 
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
@@ -134,6 +135,8 @@ def startup():
     global startup_time
     startup_time = asctime()
 
+    notify(DatabaseOpenedWithRoot(DB))
+
     Zope2.zpublisher_transactions_manager = TransactionsManager()
     Zope2.zpublisher_exception_hook = zpublisher_exception_hook
     Zope2.zpublisher_validated_hook = validated_hook
@@ -206,7 +209,7 @@ class ZPublisherExceptionHook:
             else:
                 error_log_url = log.raising((t, v, traceback))
 
-            if (REQUEST is None or 
+            if (REQUEST is None or
                 (getattr(REQUEST.get('RESPONSE', None), '_error_format', '')
                  != 'text/html')):
                 raise t, v, traceback
@@ -264,8 +267,8 @@ class ZPublisherExceptionHook:
                 REQUEST['AUTHENTICATED_USER'] = AccessControl.User.nobody
 
             try:
-                result = f(client, REQUEST, t, v, 
-                           traceback, 
+                result = f(client, REQUEST, t, v,
+                           traceback,
                            error_log_url=error_log_url)
                 if result is not None:
                     t, v, traceback = result
