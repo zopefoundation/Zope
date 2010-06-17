@@ -7,7 +7,7 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
 """ Basic ZPublisher request management.
@@ -372,7 +372,7 @@ class BaseRequest:
         path=clean
 
         # How did this request come in? (HTTP GET, PUT, POST, etc.)
-        method=req_method=request_get('REQUEST_METHOD', 'GET').upper()
+        method = request_get('REQUEST_METHOD', 'GET').upper()
 
         if method=='GET' or method=='POST' and not isinstance(response,
                                                               xmlrpc.Response):
