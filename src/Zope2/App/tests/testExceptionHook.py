@@ -225,12 +225,6 @@ class Client(Acquisition.Explicit):
     def dummyMethod(self):
         return 'Aye'
 
-class OldClient(Client):
-
-    def raise_standardErrorMessage(self, c, r, t, v, tb):
-        from zExceptions.ExceptionFormatter import format_exception
-        self.messages.append(''.join(format_exception(t, v, tb, as_html=0)))
-
 class StandardClient(Client):
 
     def raise_standardErrorMessage(self, c, r, t, v, tb, error_log_url):
@@ -244,17 +238,6 @@ class BrokenClient(Client):
         raise AttributeError, 'ouch'
 
 class ExceptionMessageRenderTest(ExceptionHookTestCase):
-
-    def testRenderUnauthorizedOldClient(self):
-        from AccessControl import Unauthorized
-        def f():
-            raise Unauthorized, 1
-        request = self._makeRequest()
-        client = OldClient()
-        self.call(client, request, f)
-        self.failUnless(client.messages, client.messages)
-        tb = client.messages[0]
-        self.failUnless("Unauthorized: You are not allowed" in tb, tb)
 
     def testRenderUnauthorizedStandardClient(self):
         from AccessControl import Unauthorized

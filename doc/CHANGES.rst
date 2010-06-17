@@ -11,6 +11,10 @@ Trunk (unreleased)
 Restructuring
 +++++++++++++
 
+- ZPublisherExceptionHook: Removed ancient backwards compatibility code.
+  Customized raise_standardErrorMessage methods have to implement the
+  signature introduced in Zope 2.6.
+
 - Testing: Functional.publish now uses the real publish_module function
   instead of that from ZPublisher.Test. The 'extra' argument of the publish
   method is no longer supported.

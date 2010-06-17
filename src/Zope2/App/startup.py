@@ -263,25 +263,20 @@ class ZPublisherExceptionHook:
             if REQUEST.get('AUTHENTICATED_USER', None) is None:
                 REQUEST['AUTHENTICATED_USER'] = AccessControl.User.nobody
 
-            try:
-                result = f(client, REQUEST, t, v, 
-                           traceback, 
-                           error_log_url=error_log_url)
-                if result is not None:
-                    t, v, traceback = result
-                    if issubclass(t, Unauthorized):
-                        # Re-raise Unauthorized to make sure it is handled
-                        # correctly. We can't do that with all exceptions
-                        # because some don't work with the rendered v as
-                        # argument.
-                        raise t, v, traceback
-                    response = REQUEST.RESPONSE
-                    response.setStatus(t)
-                    response.setBody(v)
-                    return response
-            except TypeError:
-                # BBB: Pre Zope 2.6 call signature
-                f(client, REQUEST, t, v, traceback)
+            result = f(client, REQUEST, t, v, traceback,
+                       error_log_url=error_log_url)
+            if result is not None:
+                t, v, traceback = result
+                if issubclass(t, Unauthorized):
+                    # Re-raise Unauthorized to make sure it is handled
+                    # correctly. We can't do that with all exceptions
+                    # because some don't work with the rendered v as
+                    # argument.
+                    raise t, v, traceback
+                response = REQUEST.RESPONSE
+                response.setStatus(t)
+                response.setBody(v)
+                return response
 
         finally:
             traceback = None
