@@ -35,7 +35,7 @@ from ZODB.POSException import ConflictError
 from zope.interface import implements
 from zope.interface import Interface
 from zope.component import queryMultiAdapter
-from zope.traversing.interfaces import TraversalError
+from zope.location.interfaces import LocationError
 from zope.traversing.namespace import namespaceLookup
 from zope.traversing.namespace import nsParse
 
@@ -68,7 +68,7 @@ class Traversable:
             return self.virtual_url_path()
 
         spp = self.getPhysicalPath()
-            
+
         try:
             toUrl = aq_acquire(self, 'REQUEST').physicalPathToURL
         except AttributeError:
@@ -204,7 +204,7 @@ class Traversable:
                             if restricted and not validate(
                                 obj, obj, name, next):
                                 raise Unauthorized(name)
-                        except TraversalError:
+                        except LocationError:
                             raise AttributeError(name)
 
                     elif bobo_traverse is not None:

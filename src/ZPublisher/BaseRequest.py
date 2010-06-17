@@ -14,22 +14,26 @@
 
 $Id$
 """
+
 from urllib import quote as urllib_quote
 import xmlrpc
-from zExceptions import Forbidden, NotFound
+
 from Acquisition import aq_base
 from Acquisition.interfaces import IAcquirer
-
-from zope.interface import implements, Interface
+from zExceptions import Forbidden
+from zExceptions import NotFound
 from zope.component import queryMultiAdapter
 from zope.event import notify
+from zope.interface import implements
+from zope.interface import Interface
+from zope.location.interfaces import LocationError
 from zope.publisher.defaultview import queryDefaultViewName
 from zope.publisher.interfaces import EndRequestEvent
 from zope.publisher.interfaces import IPublishTraverse
 from zope.publisher.interfaces import NotFound as ztkNotFound
 from zope.publisher.interfaces.browser import IBrowserPublisher
-from zope.traversing.interfaces import TraversalError
-from zope.traversing.namespace import nsParse, namespaceLookup
+from zope.traversing.namespace import namespaceLookup
+from zope.traversing.namespace import nsParse
 
 UNSPECIFIED_ROLES=''
 
@@ -319,7 +323,7 @@ class BaseRequest:
             if ns:
                 try:
                     ob2 = namespaceLookup(ns, nm, ob, self)
-                except TraversalError:
+                except LocationError:
                     raise ztkNotFound(ob, name)
 
                 if IAcquirer.providedBy(ob2):
