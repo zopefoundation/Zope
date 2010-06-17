@@ -63,11 +63,11 @@ except ImportError:
 class DefaultPublishTraverse(object):
 
     implements(IBrowserPublisher)
-    
+
     def __init__(self, context, request):
         self.context = context
         self.request = request
-        
+
     def publishTraverse(self, request, name):
         object = self.context
         URL=request['URL']
@@ -75,7 +75,6 @@ class DefaultPublishTraverse(object):
         if name[:1]=='_':
             raise Forbidden("Object name begins with an underscore at: %s" % URL)
 
-        
         if hasattr(object,'__bobo_traverse__'):
             try:
                 subobject=object.__bobo_traverse__(request, name)
@@ -83,10 +82,10 @@ class DefaultPublishTraverse(object):
                     # Add additional parents into the path
                     # XXX There are no tests for this:
                     request['PARENTS'][-1:] = list(subobject[:-1])
-                    object, subobject = subobject[-2:]            
+                    object, subobject = subobject[-2:]
             except (AttributeError, KeyError, NotFound), e:
                 # Try to find a view
-                subobject = queryMultiAdapter((object, request), Interface, name)                
+                subobject = queryMultiAdapter((object, request), Interface, name)
                 if subobject is not None:
                     # OFS.Application.__bobo_traverse__ calls
                     # REQUEST.RESPONSE.notFoundError which sets the HTTP
@@ -112,7 +111,7 @@ class DefaultPublishTraverse(object):
                     if IAcquirer.providedBy(subobject):
                         subobject = subobject.__of__(object)
                     return subobject
-            
+
                 # And lastly, of there is no view, try acquired attributes, but
                 # only if there is no __bobo_traverse__:
                 try:
@@ -129,7 +128,6 @@ class DefaultPublishTraverse(object):
                     subobject = object[name]
                 except TypeError: # unsubscriptable
                     raise KeyError(name)
-                
 
         # Ensure that the object has a docstring, or that the parent
         # object has a pseudo-docstring for the object. Objects that
@@ -156,7 +154,7 @@ class DefaultPublishTraverse(object):
                 )
 
         return subobject
-    
+
     def browserDefault(self, request):
         if hasattr(self.context, '__browser_default__'):
             return self.context.__browser_default__(request)
@@ -169,7 +167,7 @@ class DefaultPublishTraverse(object):
             # A neater solution might be desireable.
             return self.context, ('@@' + default_name,)
         return self.context, ()
-        
+
 
 _marker=[]
 class BaseRequest:
@@ -285,7 +283,7 @@ class BaseRequest:
 
     def __contains__(self, key):
         return self.has_key(key)
-    
+
     def keys(self):
         keys = {}
         keys.update(self.common)
@@ -436,7 +434,7 @@ class BaseRequest:
                 path = request.path = request['TraversalRequestNameStack']
                 # Check for method:
                 if path:
-                    entry_name = path.pop() 
+                    entry_name = path.pop()
                 else:
                     # If we have reached the end of the path, we look to see
                     # if we can find IBrowserPublisher.browserDefault. If so,
@@ -444,22 +442,22 @@ class BaseRequest:
                     # BrowserDefault returns the object to be published
                     # (usually self) and a sequence of names to traverse to
                     # find the method to be published.
-                    
+
                     # This is webdav support. The last object in the path
                     # should not be acquired. Instead, a NullResource should
                     # be given if it doesn't exist:
                     if (no_acquire_flag and
-                        hasattr(object, 'aq_base') and 
+                        hasattr(object, 'aq_base') and
                         not hasattr(object,'__bobo_traverse__')):
                         if object.aq_parent is not object.aq_inner.aq_parent:
                             from webdav.NullResource import NullResource
                             object = NullResource(parents[-2], object.getId(),
                                                   self).__of__(parents[-2])
-                    
+
                     if IBrowserPublisher.providedBy(object):
                         adapter = object
                     else:
-                        adapter = queryMultiAdapter((object, self), 
+                        adapter = queryMultiAdapter((object, self),
                                                     IBrowserPublisher)
                         if adapter is None:
                             # Zope2 doesn't set up its own adapters in a lot
@@ -493,15 +491,15 @@ class BaseRequest:
                 step = quote(entry_name)
                 _steps.append(step)
                 request['URL'] = URL = '%s/%s' % (request['URL'], step)
-                
+
                 try:
                     subobject = self.traverseName(object, entry_name)
-                    if (hasattr(object,'__bobo_traverse__') or 
+                    if (hasattr(object,'__bobo_traverse__') or
                         hasattr(object, entry_name)):
                         check_name = entry_name
                     else:
                         check_name = None
-                    
+
                     self.roles = getRoles(
                         object, check_name, subobject,
                         self.roles)
@@ -516,7 +514,7 @@ class BaseRequest:
                 except Forbidden, e:
                     if self.response.debug_mode:
                         return response.debugError(e.args)
-                    else: 
+                    else:
                         return response.forbiddenError(entry_name)
 
                 parents.append(object)
@@ -524,7 +522,7 @@ class BaseRequest:
                 steps.append(entry_name)
         finally:
             parents.reverse()
-        
+
         # Note - no_acquire_flag is necessary to support
         # things like DAV.  We have to make sure
         # that the target object is not acquired
@@ -535,12 +533,12 @@ class BaseRequest:
         # heirarchy -- you'd always get the
         # existing object :(
         if (no_acquire_flag and
-            hasattr(parents[1], 'aq_base') and 
+            hasattr(parents[1], 'aq_base') and
             not hasattr(parents[1],'__bobo_traverse__')):
             if not (hasattr(parents[1].aq_base, entry_name) or
                     parents[1].aq_base.has_key(entry_name)):
                 raise AttributeError, entry_name
-            
+
         # After traversal post traversal hooks aren't available anymore
         del self._post_traverse
 
@@ -626,7 +624,7 @@ class BaseRequest:
 
     def post_traverse(self, f, args=()):
         """Add a callable object and argument tuple to be post-traversed.
-        
+
         If traversal and authentication succeed, each post-traversal
         pair is processed in the order in which they were added.
         Each argument tuple is passed to its callable.  If a callable
@@ -703,7 +701,6 @@ def old_validation(groups, request, auth,
             """<strong>You are not authorized to access this resource""")
 
     return None
-
 
 
 # This mapping contains the built-in types that gained docstrings
