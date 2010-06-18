@@ -26,7 +26,7 @@ class TM:
     needed at the start of a transaction.
 
     A subclass that uses locking during transaction commit must
-    defined a sortKey() method.
+    define a sortKey() method.
     """
 
     _registered=None
@@ -66,13 +66,18 @@ class TM:
 
     tpc_abort = abort
 
+    # Most DA's talking to RDBMS systems do not care about commit order, so
+    # return the constant 1
+    _sort_key = 1
+
     def sortKey(self, *ignored):
-        """ The sortKey method is used for recent ZODB compatibility which
-            needs to have a known commit order for lock acquisition.  Most
-            DA's talking to RDBMS systems do not care about commit order, so
-            return the constant 1
+        """ The sortKey method is used by ZODB to have a known commit order for
+            lock acquisition.
         """
-        return 1
+        return self._sort_key
+
+    def setSortKey(self, sort_key):
+        self._sort_key = sort_key
 
 class Surrogate:
 
