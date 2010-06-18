@@ -38,9 +38,9 @@ Features Added
   - Missing = 2.13.1
   - Persistence = 2.13.2
 
-- Added "setSortKey()" method to the "Shared.DC.ZRDB.TM.TM" class
+- Added ``setSortKey()`` method to the ``Shared.DC.ZRDB.TM.TM`` class
   to allow database connections to specify the commit order without
-  needing to override the sortKey() method.
+  needing to override the ``sortKey()`` method.
 
 2.12.7 (2010-06-13)
 -------------------
