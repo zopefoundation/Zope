@@ -145,6 +145,10 @@ Features Added
 - ZCTextIndex query parser treats fullwidth space characters defined
   in Unicode as valid white space.
 
+- Added ``setSortKey()`` method to the ``Shared.DC.ZRDB.TM.TM`` class
+  to allow database connections to specify the commit order without
+  needing to override the ``sortKey()`` method.
+
 - Updated packages:
 
   - Jinja2 = 2.5.0
