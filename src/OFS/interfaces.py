@@ -10,13 +10,15 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""OFS z3 interfaces.
+"""OFS interfaces.
 
 $Id$
 """
 from zope.container.interfaces import IContainer
 from zope.interface import Attribute
 from zope.interface import Interface
+from zope.location.interfaces import IPossibleSite
+from zope.location.interfaces import IRoot
 from zope.schema import Bool, BytesLine, Tuple
 
 from AccessControl.interfaces import IOwned
@@ -28,8 +30,6 @@ from persistent.interfaces import IPersistent
 from webdav.interfaces import IDAVCollection
 from webdav.interfaces import IDAVResource
 
-from zope.traversing.interfaces import IContainmentRoot
-from zope.location.interfaces import IPossibleSite
 
 class IOrderedContainer(Interface):
 
@@ -834,7 +834,7 @@ class IOrderedFolder(IOrderedContainer, IFolder):
 # XXX: might contain non-API methods and outdated comments;
 #      not synced with ZopeBook API Reference;
 #      based on OFS.Application.Application
-class IApplication(IFolder, IContainmentRoot):
+class IApplication(IFolder, IRoot):
 
     """Top-level system object"""
 
