@@ -63,7 +63,28 @@ WSGI
 Zope Toolkit
 ------------
 
-...
+Zope 2.13 has neither direct nor indirect ``zope.app.*`` dependencies anymore.
+This finishes the transition from the hybrid Zope 2 + 3 codebase. Zope 3 itself
+has been split up into two projects, the underlying Zope Toolkit consisting of
+foundation libraries and the application server part. The application server
+part has been renamed BlueBream. Zope 2 only depends and ships with the Zope
+Toolkit now.
+
+Large parts of code inside Zope 2 and specifically Products.Five have been
+refactored to match this new reality. The goal is to finally remove the Five
+integration layer and make the Zope Toolkit a normal integral part of Zope 2.
+
+
+Refactoring
+-----------
+
+There's an ongoing effort to refactor Zope 2 into more independent modularized
+distributions. Zope 2.12 has already seen a lot of this, with the use of zope.*
+packages as individual distributions and the extraction of packages like
+Acquisition, DateTime or tempstorage to name a few. Zope 2.13 continues this
+trend and has moved all packages containing C extensions to external
+distributions. Among those are AccessControl, DocumentTemplate and
+Products.ZCTextIndex.
 
 
 Optional Formlib support
