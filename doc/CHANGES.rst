@@ -11,6 +11,10 @@ Trunk (unreleased)
 Restructuring
 +++++++++++++
 
+- Moved AccessControl, DocumentTemplate (incl. TreeDisplay) and
+  Products.ZCTextIndex to their own distributions. This removes the last
+  direct C extensions from the Zope2 distribution.
+
 - Removed ancient App.HotFixes module.
 
 - ZPublisherExceptionHook: Removed ancient backwards compatibility code.
