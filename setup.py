@@ -13,7 +13,7 @@
 ##############################################################################
 
 import os
-from setuptools import setup, find_packages, Extension
+from setuptools import setup, find_packages
 
 
 setup(name='Zope2',
@@ -29,18 +29,6 @@ setup(name='Zope2',
     packages=find_packages('src'),
     namespace_packages=['Products'],
     package_dir={'': 'src'},
-
-    ext_modules=[
-      # indexes
-      Extension(
-            name='Products.ZCTextIndex.stopper',
-            sources=['src/Products/ZCTextIndex/stopper.c']),
-      Extension(
-            name='Products.ZCTextIndex.okascore',
-            sources=['src/Products/ZCTextIndex/okascore.c']),
-
-    ],
-
     install_requires=[
       'AccessControl',
       'Acquisition',
@@ -50,6 +38,7 @@ setup(name='Zope2',
       'Missing',
       'MultiMapping',
       'Persistence',
+      'Products.ZCTextIndex',
       'Record',
       'RestrictedPython',
       'ZConfig',
