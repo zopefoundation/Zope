@@ -31,15 +31,6 @@ setup(name='Zope2',
     package_dir={'': 'src'},
 
     ext_modules=[
-
-      # AccessControl
-      Extension(
-            name='AccessControl.cAccessControl',
-            include_dirs=['include', 'src'],
-            sources=['src/AccessControl/cAccessControl.c'],
-            depends=['include/ExtensionClass/ExtensionClass.h',
-                     'include/Acquisition/Acquisition.h']),
-
       # DocumentTemplate
       Extension(
             name='DocumentTemplate.cDocumentTemplate',
@@ -58,6 +49,7 @@ setup(name='Zope2',
     ],
 
     install_requires=[
+      'AccessControl',
       'Acquisition',
       'DateTime',
       'ExtensionClass',
