@@ -6,7 +6,7 @@ import unittest
 from persistent import Persistent
 from Acquisition import Implicit, aq_inner
 
-from AccessControl.Owned import Owned
+from AccessControl.owner import Owned
 
 
 class FauxUser(Implicit):
@@ -142,7 +142,7 @@ class OwnedTests(unittest.TestCase):
         self.assertEqual(wrapped_owner, None)
 
     def test_getWrappedOwner_unownable(self):
-        from AccessControl.Owned import UnownableOwner
+        from AccessControl.owner import UnownableOwner
         owned = self._makeOne()
         owned._owner = UnownableOwner
 
@@ -196,7 +196,7 @@ class OwnedTests(unittest.TestCase):
 class OwnershipChangeTests(unittest.TestCase):
 
     def setUp(self):
-        from AccessControl.Owned import UnownableOwner
+        from AccessControl.owner import UnownableOwner
         from AccessControl.User import UserFolder
         super(OwnershipChangeTests, self).setUp()
 
@@ -275,7 +275,7 @@ class OwnershipChangeTests(unittest.TestCase):
 
     def test_changeOwnership_recursive_objectValues_acquisition(self):
         # See https://bugs.launchpad.net/bugs/143403
-        from AccessControl.Owned import Owned
+        from AccessControl.owner import Owned
         class FauxContent(Implicit, Owned):
             pass
         previous_parent_owner = self.root.parent._owner
@@ -297,6 +297,3 @@ def test_suite():
         unittest.makeSuite(OwnedTests),
         unittest.makeSuite(OwnershipChangeTests),
         ))
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='test_suite')

@@ -17,7 +17,7 @@ $Id$
 
 import time
 
-from AccessControl.Owned import ownerInfo
+from AccessControl.owner import ownerInfo
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Persistence import Persistent
 from zope.interface import implements
@@ -79,7 +79,7 @@ class LockItem(Persistent):
         if errors:
             raise ValueError, errors
 
-        # AccessControl.Owned.ownerInfo returns the id of the creator
+        # AccessControl.owner.ownerInfo returns the id of the creator
         # and the path to the UserFolder they're defined in
         self._creator = ownerInfo(creator)
 

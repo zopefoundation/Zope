@@ -27,7 +27,7 @@ from .rolemanager import gather_permissions
 
 from zope.deferredimport import deprecated
 deprecated("RoleManager is no longer part of AccessControl, please "
-           "depend on Zope2 and import from OFS.role or use the "
+           "depend on Zope2 and import from OFS.role or use the new minimal "
            "RoleManager class from AccessControl.rolemanager.",
     RoleManager = 'OFS.role:RoleManager',
 )

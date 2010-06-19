@@ -3,7 +3,7 @@ import unittest
 from zope.component.testing import PlacelessSetup
 from zope.interface import implements
 
-from AccessControl.Owned import EmergencyUserCannotOwn
+from AccessControl.owner import EmergencyUserCannotOwn
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
 from AccessControl.User import User # before SpecialUsers

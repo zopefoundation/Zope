@@ -26,7 +26,7 @@ class TestRecursiveChangeOwnership(ZopeTestCase.ZopeTestCase):
 
         # remember user objects
         # is the __of__() call correct? is it needed? without it ownerInfo in
-        # Owned.py throws an AttributeError ...
+        # owner.py throws an AttributeError ...
         self.user1 = self.folder['acl_users'].getUser(ZopeTestCase.user_name
                                                      ).__of__(self.folder)
         self.user2 = self.folder['acl_users'].getUser(self.user_name2

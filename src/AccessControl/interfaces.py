@@ -18,12 +18,7 @@ from zope.interface import Attribute
 from zope.interface import Interface
 
 
-# XXX: might contain non-API methods and outdated comments;
-#      not synced with ZopeBook API Reference;
-#      based on AccessControl.Owned.Owned
 class IOwned(Interface):
-
-    manage_owner = Attribute("""Manage owner view""")
 
     def owner_info():
         """Get ownership info for display
@@ -63,17 +58,6 @@ class IOwned(Interface):
 
     def userCanTakeOwnership():
         """
-        """
-
-    def manage_takeOwnership(REQUEST, RESPONSE, recursive=0):
-        """Take ownership (responsibility) for an object.
-
-        If 'recursive' is true, then also take ownership of all sub-objects.
-        """
-
-    def manage_changeOwnershipType(explicit=1,
-                                   RESPONSE=None, REQUEST=None):
-        """Change the type (implicit or explicit) of ownership.
         """
 
     def _deleteOwnershipAfterAdd():

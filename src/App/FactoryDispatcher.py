@@ -17,9 +17,9 @@ import sys
 import types
 
 from AccessControl.class_init import InitializeClass
+from AccessControl.owner import UnownableOwner
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.PermissionMapping import aqwrap
-from AccessControl.Owned import UnownableOwner
 from Acquisition import Acquired
 from Acquisition import aq_base
 from Acquisition import Implicit

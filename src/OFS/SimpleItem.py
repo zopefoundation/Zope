@@ -28,7 +28,6 @@ import time
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.SecurityManagement import getSecurityManager
-from AccessControl.Owned import Owned
 from AccessControl.Permissions import view as View
 from AccessControl.unauthorized import Unauthorized
 from AccessControl.ZopeSecurityPolicy import getRoles
@@ -56,6 +55,7 @@ from zope.interface import implements
 from OFS.interfaces import IItem
 from OFS.interfaces import IItemWithName
 from OFS.interfaces import ISimpleItem
+from OFS.owner import Owned
 from OFS.CopySupport import CopySource
 from OFS.role import RoleManager
 from OFS.Traversable import Traversable

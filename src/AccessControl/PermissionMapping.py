@@ -25,7 +25,7 @@ from zope.interface import implements
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.interfaces import IPermissionMappingSupport
-from AccessControl.Owned import UnownableOwner
+from AccessControl.owner import UnownableOwner
 from AccessControl.Permission import pname
 from AccessControl.requestmethod import requestmethod
 

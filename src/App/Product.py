@@ -39,7 +39,7 @@ import os
 import transaction
 
 from AccessControl.class_init import InitializeClass
-from AccessControl.Owned import UnownableOwner
+from AccessControl.owner import UnownableOwner
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.unauthorized import Unauthorized
 from App.special_dtml import DTMLFile
