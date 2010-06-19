@@ -23,12 +23,8 @@ AccessControl
 
 - Remaining outside imports:
 
-  * OFS - as a base class for User.BaseUserFolder
+  * Various of them in User.py
 
-  * App (MessageDialog, DTMLFile, ...) - all need to go - redoing the UI is
-    hard. We probably need to move it into some other core part of Zope2, like
-    the App package, which could serve as a general dumping ground for ZMI
-    related stuff from "reusable" packages.
 
 DocumentTemplate
 ----------------
