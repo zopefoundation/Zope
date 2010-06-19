@@ -354,11 +354,13 @@ def readUserAccessFile(filename):
     '''Reads an access file from the instance home.
     Returns name, password, domains, remote_user_mode.
     '''
-    # TODO dependencies
-    import App.config
-    cfg = App.config.getConfiguration()
+    environ = os.environ
+    instancehome = environ.get('INSTANCE_HOME', None)
+    if not instancehome:
+        return None
+
     try:
-        f = open(os.path.join(cfg.instancehome, filename), 'r')
+        f = open(os.path.join(instancehome, filename), 'r')
         line = f.readline()
         f.close()
     except IOError:
@@ -367,8 +369,10 @@ def readUserAccessFile(filename):
     if line:
         data = line.strip().split(':')
         remote_user_mode = not data[1]
-        try:    ds = data[2].split(' ')
-        except: ds = []
+        try:
+            ds = data[2].split(' ')
+        except:
+            ds = []
         return data[0], data[1], ds, remote_user_mode
     else:
         return None
