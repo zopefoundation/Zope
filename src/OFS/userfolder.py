@@ -303,6 +303,11 @@ class UserFolder(accesscontrol_userfolder.UserFolder, BasicUserFolder):
     users and binding them to a collection of roles."""
 
     icon = 'p_/UserFolder'
+    _ofs_migrated = False
+
+    def __init__(self):
+        super(UserFolder, self).__init__()
+        self._ofs_migrated = True
 
     def _createInitialUser(self):
         """

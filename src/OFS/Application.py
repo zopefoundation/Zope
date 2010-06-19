@@ -445,13 +445,27 @@ class AppInitializer:
 
     def install_inituser(self):
         app = self.getApp()
-
         # Install the initial user.
         if hasattr(app, 'acl_users'):
             users = app.acl_users
             if hasattr(users, '_createInitialUser'):
                 app.acl_users._createInitialUser()
                 self.commit('Created initial user')
+            users = aq_base(users)
+            migrated = getattr(users, '_ofs_migrated', False)
+            if not migrated:
+                klass = users.__class__
+                from OFS.userfolder import UserFolder
+                if klass is UserFolder:
+                    # zope.deferredimport does a thourough job, so the class
+                    # looks like it's from the new location already. And we
+                    # don't want to migrate any custom user folders here.
+                    users.__class__ = UserFolder
+                    users._ofs_migrated = True
+                    users._p_changed = True
+                    app._p_changed = True
+                    transaction.get().note('Migrated user folder')
+                    transaction.commit()
 
     def install_errorlog(self):
         app = self.getApp()
