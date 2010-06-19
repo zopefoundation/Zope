@@ -27,13 +27,13 @@ import transaction
 from AccessControl import ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permission import ApplicationDefaultPermissions
-from AccessControl.User import UserFolder
 from Acquisition import aq_base
 from App.ApplicationManager import ApplicationManager
 from App.config import getConfiguration
 from App.Product import doInstall
 from DateTime import DateTime
 from HelpSys.HelpSys import HelpSys
+from OFS.userfolder import UserFolder
 from Persistence import Persistent
 from webdav.NullResource import NullResource
 from zExceptions import Redirect as RedirectException, Forbidden

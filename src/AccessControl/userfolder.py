@@ -10,10 +10,9 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Access control package.
+"""User folders.
 """
 
-import os
 from base64 import decodestring
 
 from Acquisition import aq_base
@@ -25,37 +24,26 @@ from zExceptions import BadRequest
 from zExceptions import Unauthorized
 from zope.interface import implements
 
-# TODO dependencies
-from App.Management import Navigation
-from App.Management import Tabs
-from App.special_dtml import DTMLFile
-from App.Dialogs import MessageDialog
-from OFS.role import RoleManager
-from OFS.SimpleItem import Item
-
 from AccessControl import AuthEncoding
 from AccessControl import ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
 from AccessControl.interfaces import IStandardUserFolder
 from AccessControl.Permissions import manage_users as ManageUsers
-from AccessControl.requestmethod import requestmethod
 from AccessControl.rolemanager import DEFAULTMAXLISTUSERS
+from AccessControl.rolemanager import RoleManager
 from AccessControl.SecurityManagement import getSecurityManager
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
 from AccessControl.users import User
-from AccessControl.users import readUserAccessFile
 from AccessControl.users import _remote_user_mode
 from AccessControl.users import emergency_user
 from AccessControl.users import nobody
 from AccessControl.users import addr_match
 from AccessControl.users import host_match
-from AccessControl.users import reqattr
 from AccessControl.ZopeSecurityPolicy import _noroles
 
 
-class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
-                      Item):
+class BasicUserFolder(Implicit, Persistent, RoleManager):
     """Base class for UserFolder-like objects"""
 
     meta_type = 'User Folder'
@@ -67,20 +55,12 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
     maxlistusers = DEFAULTMAXLISTUSERS
     encrypt_passwords = 1
 
+    _remote_user_mode = _remote_user_mode
+    _domain_auth_mode = 0
+    _emergency_user = emergency_user
+    _nobody = nobody
+
     security = ClassSecurityInfo()
-
-    manage_options=(
-        (
-        {'label': 'Contents', 'action': 'manage_main'},
-        {'label': 'Properties', 'action': 'manage_userFolderProperties'},
-        )
-        +RoleManager.manage_options
-        +Item.manage_options
-        )
-
-    # ----------------------------------
-    # Public UserFolder object interface
-    # ----------------------------------
 
     security.declareProtected(ManageUsers, 'getUserNames')
     def getUserNames(self):
@@ -126,60 +106,6 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
         """Delete one or more users. This should be implemented by subclasses
            to do the actual deleting of users."""
         raise NotImplementedError
-
-    # As of Zope 2.5, userFolderAddUser, userFolderEditUser and
-    # userFolderDelUsers offer aliases for the the _doAddUser, _doChangeUser
-    # and _doDelUsers methods (with the difference that they can be called
-    # from XML-RPC or untrusted scripting code, given the necessary
-    # permissions).
-    #
-    # Authors of custom user folders don't need to do anything special to
-    # support these - they will just call the appropriate '_' methods that
-    # user folder subclasses already implement.
-
-    security.declareProtected(ManageUsers, 'userFolderAddUser')
-    @requestmethod('POST')
-    def userFolderAddUser(self, name, password, roles, domains,
-                          REQUEST=None, **kw):
-        """API method for creating a new user object. Note that not all
-           user folder implementations support dynamic creation of user
-           objects."""
-        if hasattr(self, '_doAddUser'):
-            return self._doAddUser(name, password, roles, domains, **kw)
-        raise NotImplementedError
-
-    security.declareProtected(ManageUsers, 'userFolderEditUser')
-    @requestmethod('POST')
-    def userFolderEditUser(self, name, password, roles, domains,
-                           REQUEST=None, **kw):
-        """API method for changing user object attributes. Note that not
-           all user folder implementations support changing of user object
-           attributes."""
-        if hasattr(self, '_doChangeUser'):
-            return self._doChangeUser(name, password, roles, domains, **kw)
-        raise NotImplementedError
-
-    security.declareProtected(ManageUsers, 'userFolderDelUsers')
-    @requestmethod('POST')
-    def userFolderDelUsers(self, names, REQUEST=None):
-        """API method for deleting one or more user objects. Note that not
-           all user folder implementations support deletion of user objects."""
-        if hasattr(self, '_doDelUsers'):
-            return self._doDelUsers(names)
-        raise NotImplementedError
-
-
-    # -----------------------------------
-    # Private UserFolder object interface
-    # -----------------------------------
-
-    _remote_user_mode=_remote_user_mode
-    _domain_auth_mode=0
-    _emergency_user=emergency_user
-    # Note: use of the '_super' name is deprecated.
-    _super=emergency_user
-    _nobody=nobody
-
 
     def identify(self, auth):
         if auth and auth.lower().startswith('basic '):
@@ -389,66 +315,11 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
     def __len__(self):
         return 1
 
-    _mainUser=DTMLFile('dtml/mainUser', globals())
-    _add_User=DTMLFile('dtml/addUser', globals(),
-                       remote_user_mode__=_remote_user_mode)
-    _editUser=DTMLFile('dtml/editUser', globals(),
-                       remote_user_mode__=_remote_user_mode)
-    manage=manage_main=_mainUser
-    manage_main._setName('manage_main')
-
-    _userFolderProperties = DTMLFile('dtml/userFolderProps', globals())
-
-    def manage_userFolderProperties(self, REQUEST=None,
-                                    manage_tabs_message=None):
-        """
-        """
-        return self._userFolderProperties(
-            self, REQUEST, manage_tabs_message=manage_tabs_message,
-            management_view='Properties')
-
-    @requestmethod('POST')
-    def manage_setUserFolderProperties(self, encrypt_passwords=0,
-                                       update_passwords=0,
-                                       maxlistusers=DEFAULTMAXLISTUSERS,
-                                       REQUEST=None):
-        """
-        Sets the properties of the user folder.
-        """
-        self.encrypt_passwords = not not encrypt_passwords
-        try:
-            self.maxlistusers = int(maxlistusers)
-        except ValueError:
-            self.maxlistusers = DEFAULTMAXLISTUSERS
-        if encrypt_passwords and update_passwords:
-            changed = 0
-            for u in self.getUsers():
-                pw = u._getPassword()
-                if not self._isPasswordEncrypted(pw):
-                    pw = self._encryptPassword(pw)
-                    self._doChangeUser(u.getUserName(), pw, u.getRoles(),
-                                       u.getDomains())
-                    changed = changed + 1
-            if REQUEST is not None:
-                if not changed:
-                    msg = 'All passwords already encrypted.'
-                else:
-                    msg = 'Encrypted %d password(s).' % changed
-                return self.manage_userFolderProperties(
-                    REQUEST, manage_tabs_message=msg)
-            else:
-                return changed
-        else:
-            if REQUEST is not None:
-                return self.manage_userFolderProperties(
-                    REQUEST, manage_tabs_message='Saved changes.')
-
     def _isPasswordEncrypted(self, pw):
         return AuthEncoding.is_encrypted(pw)
 
     def _encryptPassword(self, pw):
         return AuthEncoding.pw_encrypt(pw, 'SSHA')
-
 
     def domainSpecValidate(self, spec):
         for ob in spec:
@@ -458,167 +329,12 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
                 return 0
         return 1
 
-    @requestmethod('POST')
-    def _addUser(self, name, password, confirm, roles, domains, REQUEST=None):
-        if not name:
-            return MessageDialog(
-                   title='Illegal value',
-                   message='A username must be specified',
-                   action='manage_main')
-        if not password or not confirm:
-            if not domains:
-                return MessageDialog(
-                   title='Illegal value',
-                   message='Password and confirmation must be specified',
-                   action='manage_main')
-        if self.getUser(name) or (self._emergency_user and
-                                  name == self._emergency_user.getUserName()):
-            return MessageDialog(
-                   title='Illegal value',
-                   message='A user with the specified name already exists',
-                   action='manage_main')
-        if (password or confirm) and (password != confirm):
-            return MessageDialog(
-                   title='Illegal value',
-                   message='Password and confirmation do not match',
-                   action='manage_main')
-
-        if not roles:
-            roles = []
-        if not domains:
-            domains = []
-
-        if domains and not self.domainSpecValidate(domains):
-            return MessageDialog(
-                   title='Illegal value',
-                   message='Illegal domain specification',
-                   action='manage_main')
-        self._doAddUser(name, password, roles, domains)
-        if REQUEST:
-            return self._mainUser(self, REQUEST)
-
-    @requestmethod('POST')
-    def _changeUser(self, name, password, confirm, roles, domains,
-                    REQUEST=None):
-        if password == 'password' and confirm == 'pconfirm':
-            # Protocol for editUser.dtml to indicate unchanged password
-            password = confirm = None
-        if not name:
-            return MessageDialog(
-                   title='Illegal value',
-                   message='A username must be specified',
-                   action='manage_main')
-        if password == confirm == '':
-            if not domains:
-                return MessageDialog(
-                   title='Illegal value',
-                   message='Password and confirmation must be specified',
-                   action='manage_main')
-        if not self.getUser(name):
-            return MessageDialog(
-                   title='Illegal value',
-                   message='Unknown user',
-                   action='manage_main')
-        if (password or confirm) and (password != confirm):
-            return MessageDialog(
-                   title='Illegal value',
-                   message='Password and confirmation do not match',
-                   action='manage_main')
-
-        if not roles:
-            roles = []
-        if not domains:
-            domains = []
-
-        if domains and not self.domainSpecValidate(domains):
-            return MessageDialog(
-                   title='Illegal value',
-                   message='Illegal domain specification',
-                   action='manage_main')
-        self._doChangeUser(name, password, roles, domains)
-        if REQUEST:
-            return self._mainUser(self, REQUEST)
-
-    @requestmethod('POST')
-    def _delUsers(self, names, REQUEST=None):
-        if not names:
-            return MessageDialog(
-                   title='Illegal value',
-                   message='No users specified',
-                   action='manage_main')
-        self._doDelUsers(names)
-        if REQUEST:
-            return self._mainUser(self, REQUEST)
-
-    security.declareProtected(ManageUsers, 'manage_users')
-    def manage_users(self, submit=None, REQUEST=None, RESPONSE=None):
-        """This method handles operations on users for the web based forms
-           of the ZMI. Application code (code that is outside of the forms
-           that implement the UI of a user folder) are encouraged to use
-           manage_std_addUser"""
-        if submit=='Add...':
-            return self._add_User(self, REQUEST)
-
-        if submit=='Edit':
-            try:
-                user=self.getUser(reqattr(REQUEST, 'name'))
-            except:
-                return MessageDialog(
-                    title='Illegal value',
-                    message='The specified user does not exist',
-                    action='manage_main')
-            return self._editUser(self, REQUEST, user=user, password=user.__)
-
-        if submit=='Add':
-            name = reqattr(REQUEST, 'name')
-            password = reqattr(REQUEST, 'password')
-            confirm = reqattr(REQUEST, 'confirm')
-            roles = reqattr(REQUEST, 'roles')
-            domains = reqattr(REQUEST, 'domains')
-            return self._addUser(name, password, confirm, roles,
-                                 domains, REQUEST)
-
-        if submit=='Change':
-            name = reqattr(REQUEST, 'name')
-            password = reqattr(REQUEST, 'password')
-            confirm = reqattr(REQUEST, 'confirm')
-            roles = reqattr(REQUEST, 'roles')
-            domains = reqattr(REQUEST, 'domains')
-            return self._changeUser(name, password, confirm, roles,
-                                    domains, REQUEST)
-
-        if submit=='Delete':
-            names = reqattr(REQUEST, 'names')
-            return self._delUsers(names, REQUEST)
-
-        return self._mainUser(self, REQUEST)
-
     security.declareProtected(ManageUsers, 'user_names')
     def user_names(self):
         return self.getUserNames()
 
-    def manage_beforeDelete(self, item, container):
-        if item is self:
-            try:
-                del container.__allow_groups__
-            except:
-                pass
-
-    def manage_afterAdd(self, item, container):
-        if item is self:
-            self = aq_base(self)
-            container.__allow_groups__ = self
-
     def __creatable_by_emergency_user__(self):
         return 1
-
-    def _setId(self, id):
-        if id != self.id:
-            raise MessageDialog(
-                title='Invalid Id',
-                message='Cannot change the id of a UserFolder',
-                action='./manage_main')
-
 
     # Domain authentication support. This is a good candidate to
     # become deprecated in future Zope versions.
@@ -640,7 +356,6 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
 
 
 class UserFolder(BasicUserFolder):
-
     """Standard UserFolder object
 
     A UserFolder holds User objects which contain information
@@ -653,7 +368,6 @@ class UserFolder(BasicUserFolder):
     meta_type = 'User Folder'
     id = 'acl_users'
     title = 'User Folder'
-    icon = 'p_/UserFolder'
 
     def __init__(self):
         self.data=PersistentMapping()
@@ -704,43 +418,4 @@ class UserFolder(BasicUserFolder):
         for name in names:
             del self.data[name]
 
-    def _createInitialUser(self):
-        """
-        If there are no users or only one user in this user folder,
-        populates from the 'inituser' file in the instance home.
-        We have to do this even when there is already a user
-        just in case the initial user ignored the setup messages.
-        We don't do it for more than one user to avoid
-        abuse of this mechanism.
-        Called only by OFS.Application.initialize().
-        """
-        if len(self.data) <= 1:
-            info = readUserAccessFile('inituser')
-            if info:
-                import App.config
-                name, password, domains, remote_user_mode = info
-                self._doDelUsers(self.getUserNames())
-                self._doAddUser(name, password, ('Manager', ), domains)
-                cfg = App.config.getConfiguration()
-                try:
-                    os.remove(os.path.join(cfg.instancehome, 'inituser'))
-                except:
-                    pass
-
 InitializeClass(UserFolder)
-
-
-def manage_addUserFolder(self, dtself=None, REQUEST=None, **ignored):
-    """ """
-    f = UserFolder()
-    self = self.this()
-    try:
-        self._setObject('acl_users', f)
-    except:
-        return MessageDialog(
-            title='Item Exists',
-            message='This object already contains a User Folder',
-            action='%s/manage_main' % REQUEST['URL1'])
-    self.__allow_groups__ = f
-    if REQUEST is not None:
-        REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')

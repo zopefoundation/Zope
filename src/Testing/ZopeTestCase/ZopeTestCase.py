@@ -71,7 +71,7 @@ class ZopeTestCase(base.TestCase):
 
     def _setupUserFolder(self):
         '''Creates the user folder.'''
-        from AccessControl.User import manage_addUserFolder
+        from OFS.userfolder import manage_addUserFolder
         manage_addUserFolder(self.folder)
 
     def _setupUser(self):

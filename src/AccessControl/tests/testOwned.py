@@ -197,7 +197,7 @@ class OwnershipChangeTests(unittest.TestCase):
 
     def setUp(self):
         from AccessControl.owner import UnownableOwner
-        from AccessControl.User import UserFolder
+        from AccessControl.userfolder import UserFolder
         super(OwnershipChangeTests, self).setUp()
 
         self.root = FauxRoot()

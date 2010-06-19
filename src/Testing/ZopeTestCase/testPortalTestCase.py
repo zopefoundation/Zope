@@ -406,7 +406,7 @@ class TestPortalTestCase(ZopeTestCase.PortalTestCase):
         self.assertEqual(lhs, rhs)
 
 
-from AccessControl.User import UserFolder
+from OFS.userfolder import UserFolder
 
 class WrappingUserFolder(UserFolder):
     '''User folder returning wrapped user objects'''

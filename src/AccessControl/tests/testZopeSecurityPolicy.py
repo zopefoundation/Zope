@@ -167,8 +167,8 @@ class ZopeSecurityPolicyTestBase(unittest.TestCase):
         uf = UserFolder()
         a.acl_users = uf
         self.uf = a.acl_users
-        uf._addUser('joe', 'password', 'password', user_roles, ())
-        uf._addUser('theowner', 'password', 'password', eo_roles, ())
+        uf._doAddUser('joe', 'password', user_roles, ())
+        uf._doAddUser('theowner', 'password', eo_roles, ())
         user = uf.getUserById('joe')
         self.user = user
         context = SecurityContext(user)
@@ -307,8 +307,8 @@ class ZopeSecurityPolicyTestBase(unittest.TestCase):
         self.a.subobject = ImplictAcqObject()
         subobject = self.a.subobject
         subobject.acl_users = UserFolder()
-        subobject.acl_users._addUser('theowner', 'password', 'password', 
-                                      eo_roles + sysadmin_roles, ())
+        subobject.acl_users._doAddUser('theowner', 'password', 
+                                       eo_roles + sysadmin_roles, ())
         subobject.r_item = RestrictedSimpleItem()
         r_subitem = subobject.r_item
         r_subitem.owned_setuid_m = OwnedSetuidMethod()
@@ -353,8 +353,8 @@ class ZopeSecurityPolicyTestBase(unittest.TestCase):
         self.a.subobject = ImplictAcqObject()
         subobject = self.a.subobject
         subobject.acl_users = UserFolder()
-        subobject.acl_users._addUser('theowner', 'password', 'password', 
-                                      eo_roles + sysadmin_roles, ())
+        subobject.acl_users._doAddUser('theowner', 'password',
+                                       eo_roles + sysadmin_roles, ())
         subobject.item = UnprotectedSimpleItem()
         subitem = subobject.item
         subitem.owned_setuid_m = OwnedSetuidMethod()

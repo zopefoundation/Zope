@@ -34,6 +34,12 @@ from .users import absattr
 from .users import reqattr
 from .users import UnrestrictedUser as Super
 
-from .userfolder import BasicUserFolder
-from .userfolder import UserFolder
-from .userfolder import manage_addUserFolder
+
+from zope.deferredimport import deprecated
+deprecated("User folders are no longer part of AccessControl, please depend "
+           "on Zope2 and import from OFS.userfolder or use the new minimal "
+           "user folder classes from AccessControl.userfolder.",
+    BasicUserFolder = 'OFS.userfolder:BasicUserFolder',
+    manage_addUserFolder = 'OFS.userfolder:manage_addUserFolder',
+    UserFolder = 'OFS.userfolder:UserFolder',
+)

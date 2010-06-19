@@ -349,7 +349,7 @@ class TestZopeTestCase(ZopeTestCase.ZopeTestCase):
         self.assertEqual(lhs, rhs)
 
 
-from AccessControl.User import UserFolder
+from OFS.userfolder import UserFolder
 from Acquisition import aq_inner, aq_parent, aq_chain
 
 class WrappingUserFolder(UserFolder):

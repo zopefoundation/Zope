@@ -14,7 +14,7 @@ __doc__='''Object system core
 $Id$'''
 __version__='$Revision: 1.38 $'[11:-2]
 
-import OFS.Image, OFS.Folder, AccessControl.User
+import OFS.Image, OFS.Folder, OFS.userfolder
 import OFS.DTMLMethod, OFS.DTMLDocument, OFS.PropertySheets
 import OFS.OrderedFolder
 
@@ -79,10 +79,10 @@ def initialize(context):
         )
 
     context.registerClass(
-        AccessControl.User.UserFolder,
-        constructors=(AccessControl.User.manage_addUserFolder,),
+        OFS.userfolder.UserFolder,
+        constructors=(OFS.userfolder.manage_addUserFolder,),
         icon='images/UserFolder_icon.gif',
-        legacy=(AccessControl.User.manage_addUserFolder,),
+        legacy=(OFS.userfolder.manage_addUserFolder,),
         )
 
     context.registerHelp()

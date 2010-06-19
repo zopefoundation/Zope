@@ -33,31 +33,13 @@ class UserFolderTests(unittest.TestCase):
         transaction.abort()
 
     def _getTargetClass(self):
-        from AccessControl.User import UserFolder
+        from AccessControl.userfolder import UserFolder
         return UserFolder
 
-    def _makeOne(self, app=None):
-        if app is None:
-            app = self._makeApp()
-        uf = self._getTargetClass()().__of__(app)
+    def _makeOne(self):
+        uf = self._getTargetClass()()
         uf._doAddUser('user1', 'secret', ['role1'], [])
         return uf
-
-    def _makeApp(self):
-        from Testing.makerequest import makerequest
-        from Testing.ZopeTestCase import ZopeLite
-        app = makerequest(ZopeLite.app())
-        # Set up a user and role
-        app._addRole('role1')
-        app.manage_role('role1', ['View'])
-        # Set up a published object accessible to user
-        app.addDTMLMethod('doc', file='')
-        app.doc.manage_permission('View', ['role1'], acquire=0)
-        # Rig the REQUEST so it looks like we traversed to doc
-        app.REQUEST.set('PUBLISHED', app.doc)
-        app.REQUEST.set('PARENTS', [app])
-        app.REQUEST.steps = ['doc']
-        return app
 
     def _makeBasicAuthToken(self, creds='user1:secret'):
         import base64
@@ -113,105 +95,10 @@ class UserFolderTests(unittest.TestCase):
         user = uf.getUser('user1')
         self.failUnless('role1' in user.getRoles())
 
-    def testGetRolesInContext(self):
-        app = self._makeApp()
-        uf = self._makeOne(app)
-        user = uf.getUser('user1')
-        app.manage_addLocalRoles('user1', ['Owner'])
-        roles = user.getRolesInContext(app)
-        self.failUnless('role1' in roles)
-        self.failUnless('Owner' in roles)
-
-    def testHasRole(self):
-        app = self._makeApp()
-        uf = self._makeOne(app)
-        user = uf.getUser('user1')
-        self.failUnless(user.has_role('role1', app))
-
-    def testHasLocalRole(self):
-        app = self._makeApp()
-        uf = self._makeOne(app)
-        user = uf.getUser('user1')
-        app.manage_addLocalRoles('user1', ['Owner'])
-        self.failUnless(user.has_role('Owner', app))
-
-    def testHasPermission(self):
-        app = self._makeApp()
-        uf = self._makeOne(app)
-        user = uf.getUser('user1')
-        self.failUnless(user.has_permission('View', app))
-        app.manage_role('role1', ['Add Folders'])
-        self.failUnless(user.has_permission('Add Folders', app))
-
-    def testHasLocalRolePermission(self):
-        app = self._makeApp()
-        uf = self._makeOne(app)
-        user = uf.getUser('user1')
-        app.manage_role('Owner', ['Add Folders'])
-        app.manage_addLocalRoles('user1', ['Owner'])
-        self.failUnless(user.has_permission('Add Folders', app))
-        
-    def testAuthenticate(self):
-        app = self._makeApp()
-        uf = self._makeOne(app)
-        user = uf.getUser('user1')
-        self.failUnless(user.authenticate('secret', app.REQUEST))
-
-    def testValidate(self):
-        app = self._makeApp()
-        uf = self._makeOne(app)
-        user = uf.validate(app.REQUEST, self._makeBasicAuthToken(),
-                           ['role1'])
-        self.failIfEqual(user, None)
-        self.assertEqual(user.getUserName(), 'user1')
-
-    def testNotValidateWithoutAuth(self):
-        app = self._makeApp()
-        uf = self._makeOne(app)
-        user = uf.validate(app.REQUEST, '', ['role1'])
-        self.assertEqual(user, None)
-
-    def testValidateWithoutRoles(self):
-        # Note - calling uf.validate without specifying roles will cause
-        # the security machinery to determine the needed roles by looking
-        # at the object itself (or its container). I'm putting this note
-        # in to clarify because the original test expected failure but it
-        # really should have expected success, since the user and the
-        # object being checked both have the role 'role1', even though no
-        # roles are passed explicitly to the userfolder validate method.
-        app = self._makeApp()
-        uf = self._makeOne(app)
-        user = uf.validate(app.REQUEST, self._makeBasicAuthToken())
-        self.assertEqual(user.getUserName(), 'user1')
-
-    def testNotValidateWithEmptyRoles(self):
-        app = self._makeApp()
-        uf = self._makeOne(app)
-        user = uf.validate(app.REQUEST, self._makeBasicAuthToken(), [])
-        self.assertEqual(user, None)
-
-    def testNotValidateWithWrongRoles(self):
-        app = self._makeApp()
-        uf = self._makeOne(app)
-        user = uf.validate(app.REQUEST, self._makeBasicAuthToken(),
-                           ['Manager'])
-        self.assertEqual(user, None)
-
-    def testAllowAccessToUser(self):
-        app = self._makeApp()
-        uf = self._makeOne(app)
-        self._login(uf, 'user1')
-        app.restrictedTraverse('doc')
-
-    def testDenyAccessToAnonymous(self):
-        from AccessControl import Unauthorized
-        app = self._makeApp()
-        self.assertRaises(Unauthorized, app.restrictedTraverse, 'doc')
-
     def testMaxListUsers(self):
         # create a folder-ish thing which contains a roleManager,
         # then put an acl_users object into the folde-ish thing
-        from AccessControl.User import BasicUserFolder
+        from AccessControl.userfolder import BasicUserFolder
 
         class Folderish(BasicUserFolder):
             def __init__(self, size, count):

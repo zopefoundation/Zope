@@ -10,8 +10,9 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-"""Access control support
+"""Role manager
 """
+
 from cgi import escape
 
 from App.Dialogs import MessageDialog

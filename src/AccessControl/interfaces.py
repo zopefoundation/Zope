@@ -197,6 +197,7 @@ class IRoleManager(IPermissionMappingSupport):
             'disallowed_permissions' -> all other permissions 
         """
 
+
 class IStandardUserFolder(Interface):
 
     def getUser(name):
@@ -212,6 +213,7 @@ class IStandardUserFolder(Interface):
     def getUserNames():
         """Get a sequence of names of the users which reside in the user folder.
         """
+
 
 class ISecurityPolicy(Interface):
     """Plug-in policy for checking access to objects within untrusted code.
