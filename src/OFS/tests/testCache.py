@@ -3,12 +3,14 @@ import unittest
 from OFS.Cache import CacheManager
 from OFS.Folder import Folder
 from OFS.SimpleItem import SimpleItem
-from Products.Five.eventconfigure import setDeprecatedManageAddDelete
+from OFS.metaconfigure import setDeprecatedManageAddDelete
+
 
 class DummyCacheManager(CacheManager, SimpleItem):
     def __init__(self, id, *args, **kw):
         self.id = id
 setDeprecatedManageAddDelete(DummyCacheManager)
+
 
 class CacheTests(unittest.TestCase):
 
@@ -16,7 +18,7 @@ class CacheTests(unittest.TestCase):
         from OFS.Cache import managersExist
         from OFS.DTMLMethod import DTMLMethod
         root = Folder('root')
-        root._setObject('root_cache' , DummyCacheManager('root_cache'))
+        root._setObject('root_cache', DummyCacheManager('root_cache'))
         root._setObject('child', Folder('child'))
         root.child._setObject('child_cache', DummyCacheManager('child_cache'))
         root.child._setObject('child_content', DTMLMethod('child_content'))
