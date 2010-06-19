@@ -36,8 +36,8 @@ class p_:
 
     davlocked=ImageFile('webdav/www/davlock.gif')
 
-    pl=ImageFile('TreeDisplay/www/Plus_icon.gif')
-    mi=ImageFile('TreeDisplay/www/Minus_icon.gif')
+    pl=ImageFile('OFS/www/Plus_icon.gif')
+    mi=ImageFile('OFS/www/Minus_icon.gif')
     rtab=ImageFile('App/www/rtab.gif')
     ltab=ImageFile('App/www/ltab.gif')
     sp  =ImageFile('App/www/sp.gif')

@@ -31,13 +31,6 @@ setup(name='Zope2',
     package_dir={'': 'src'},
 
     ext_modules=[
-      # DocumentTemplate
-      Extension(
-            name='DocumentTemplate.cDocumentTemplate',
-            include_dirs=['include', 'src'],
-            sources=['src/DocumentTemplate/cDocumentTemplate.c'],
-            depends=['include/ExtensionClass/ExtensionClass.h']),
-
       # indexes
       Extension(
             name='Products.ZCTextIndex.stopper',
@@ -52,6 +45,7 @@ setup(name='Zope2',
       'AccessControl',
       'Acquisition',
       'DateTime',
+      'DocumentTemplate',
       'ExtensionClass',
       'Missing',
       'MultiMapping',
