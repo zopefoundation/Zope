@@ -18,7 +18,7 @@ import unittest
 class BasicUserTests(unittest.TestCase):
 
     def _getTargetClass(self):
-        from AccessControl.User import BasicUser
+        from AccessControl.users import BasicUser
         return BasicUser
 
     def _makeOne(self, name, password, roles, domains):
@@ -70,7 +70,7 @@ class BasicUserTests(unittest.TestCase):
 class SimpleUserTests(unittest.TestCase):
 
     def _getTargetClass(self):
-        from AccessControl.User import SimpleUser
+        from AccessControl.users import SimpleUser
         return SimpleUser
 
     def _makeOne(self, name='admin', password='123', roles=None, domains=None):
@@ -103,7 +103,7 @@ class SimpleUserTests(unittest.TestCase):
 class SpecialUserTests(unittest.TestCase):
 
     def _getTargetClass(self):
-        from AccessControl.User import SpecialUser
+        from AccessControl.users import SpecialUser
         return SpecialUser
 
     def _makeOne(self, name='admin', password='123', roles=None, domains=None):
@@ -128,7 +128,7 @@ class SpecialUserTests(unittest.TestCase):
 class UnrestrictedUserTests(unittest.TestCase):
 
     def _getTargetClass(self):
-        from AccessControl.User import UnrestrictedUser
+        from AccessControl.users import UnrestrictedUser
         return UnrestrictedUser
 
     def _makeOne(self, name='admin', password='123', roles=None, domains=None):
@@ -176,7 +176,7 @@ class UnrestrictedUserTests(unittest.TestCase):
 class NullUnrestrictedUserTests(unittest.TestCase):
 
     def _getTargetClass(self):
-        from AccessControl.User import NullUnrestrictedUser
+        from AccessControl.users import NullUnrestrictedUser
         return NullUnrestrictedUser
 
     def _makeOne(self):

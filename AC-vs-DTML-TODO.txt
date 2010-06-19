@@ -23,7 +23,7 @@ AccessControl
 
 - Remaining outside imports:
 
-  * Various of them in User.py
+  * Various of them in userfolder.py / users.py
 
 
 DocumentTemplate

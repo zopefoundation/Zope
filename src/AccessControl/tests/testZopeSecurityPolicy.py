@@ -16,14 +16,12 @@
 import sys
 import unittest
 
-try:
-    from zExceptions import Unauthorized
-except ImportError:
-    Unauthorized = 'Unauthorized'
-from AccessControl.User import UserFolder
-from AccessControl.SecurityManagement import SecurityContext
 from Acquisition import Implicit, Explicit
 from MethodObject import Method
+from zExceptions import Unauthorized
+
+from AccessControl.userfolder import UserFolder
+from AccessControl.SecurityManagement import SecurityContext
 
 
 user_roles = ('RoleOfUser',)
