@@ -13,7 +13,7 @@
 """Permission Mapping
 
 Sometimes, we need an object's permissions to be remapped to other permissions
-when the object is used in specual ways.  This is rather hard, since we
+when the object is used in special ways.  This is rather hard, since we
 need the object's ordinary permissions intact so we can manage it.
 """
 
@@ -32,7 +32,7 @@ from AccessControl.requestmethod import requestmethod
 class RoleManager:
 
     implements(IPermissionMappingSupport)
-    
+
     # XXX: No security declarations?
 
     def manage_getPermissionMapping(self):

@@ -18,20 +18,15 @@ from Acquisition import Acquired
 from Acquisition import aq_base
 from Acquisition import aq_get
 from ExtensionClass import Base
-from PermissionMapping import RoleManager
 from zope.interface import implements
-
-# TODO dependencies
-from App.Dialogs import MessageDialog
-from App.special_dtml import DTMLFile
 
 from AccessControl import ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
 from AccessControl.interfaces import IRoleManager
 from AccessControl.Permission import getPermissions
 from AccessControl.Permission import Permission
+from AccessControl.PermissionMapping import RoleManager
 from AccessControl.Permissions import change_permissions
-from AccessControl.requestmethod import requestmethod
 from AccessControl.SecurityManagement import newSecurityManager
 
 DEFAULTMAXLISTUSERS = 250
@@ -45,23 +40,15 @@ def _isNotBeingUsedAsAMethod(self):
     return not aq_get(self, '_isBeingUsedAsAMethod_', 0)
 
 
-class RoleManager(Base, RoleManager):
-
+class BaseRoleManager(Base, RoleManager):
     """An object that has configurable permissions"""
 
     implements(IRoleManager)
-
+    permissionMappingPossibleValues=Acquired
     security = ClassSecurityInfo()
 
-    manage_options=(
-        {'label': 'Security', 'action': 'manage_access'},
-        )
-
-    __ac_roles__=('Manager', 'Owner', 'Anonymous', 'Authenticated')
-
-    permissionMappingPossibleValues=Acquired
-
-    #------------------------------------------------------------
+    __ac_roles__ = ('Manager', 'Owner', 'Anonymous', 'Authenticated')
+    __ac_local_roles__ = None
 
     security.declareProtected(change_permissions, 'ac_inherited_permissions')
     def ac_inherited_permissions(self, all=0):
@@ -122,13 +109,8 @@ class RoleManager(Base, RoleManager):
             result.append(d)
         return result
 
-    security.declareProtected(change_permissions, 'manage_roleForm')
-    manage_roleForm=DTMLFile('dtml/roleEdit', globals(),
-                             management_view='Security')
-
     security.declareProtected(change_permissions, 'manage_role')
-    @requestmethod('POST')
-    def manage_role(self, role_to_manage, permissions=[], REQUEST=None):
+    def manage_role(self, role_to_manage, permissions=[]):
         """Change the permissions given to the given role.
         """
         for p in self.ac_inherited_permissions(1):
@@ -136,16 +118,8 @@ class RoleManager(Base, RoleManager):
             p=Permission(name, value, self)
             p.setRole(role_to_manage, name in permissions)
 
-        if REQUEST is not None:
-            return self.manage_access(REQUEST)
-
-    security.declareProtected(change_permissions, 'manage_acquiredForm')
-    manage_acquiredForm=DTMLFile('dtml/acquiredEdit', globals(),
-                                 management_view='Security')
-
     security.declareProtected(change_permissions, 'manage_acquiredPermissions')
-    @requestmethod('POST')
-    def manage_acquiredPermissions(self, permissions=[], REQUEST=None):
+    def manage_acquiredPermissions(self, permissions=[]):
         """Change the permissions that acquire.
         """
         for p in self.ac_inherited_permissions(1):
@@ -159,9 +133,6 @@ class RoleManager(Base, RoleManager):
             else:
                 p.setRoles(tuple(roles))
 
-        if REQUEST is not None:
-            return self.manage_access(REQUEST)
-
     def manage_getUserRolesAndPermissions(self, user_id):
         """ Used for permission/role reporting for a given user_id.
             Returns a dict mapping
@@ -172,10 +143,9 @@ class RoleManager(Base, RoleManager):
             'allowed_permissions' -> permissions allowed for the user,
             'disallowed_permissions' -> all other permissions
         """
-
         d = {}
-
         current = self
+
         while 1:
             try:
                 uf = current.acl_users
@@ -188,7 +158,6 @@ class RoleManager(Base, RoleManager):
             else:
                 current = current.__parent__
 
-
         newSecurityManager(None, userObj) # necessary?
         userObj = userObj.__of__(uf)
 
@@ -198,7 +167,6 @@ class RoleManager(Base, RoleManager):
         roles = list(userObj.getRoles())
         roles.sort()
         d['roles'] = roles
-
 
         # roles in context
         roles = list(userObj.getRolesInContext(self))
@@ -221,15 +189,8 @@ class RoleManager(Base, RoleManager):
 
         return d
 
-
-    security.declareProtected(change_permissions, 'manage_permissionForm')
-    manage_permissionForm=DTMLFile('dtml/permissionEdit', globals(),
-                                   management_view='Security')
-
     security.declareProtected(change_permissions, 'manage_permission')
-    @requestmethod('POST')
-    def manage_permission(self, permission_to_manage,
-                          roles=[], acquire=0, REQUEST=None):
+    def manage_permission(self, permission_to_manage, roles=[], acquire=0):
         """Change the settings for the given permission.
 
         If optional arg acquire is true, then the roles for the permission
@@ -245,61 +206,15 @@ class RoleManager(Base, RoleManager):
                 else:
                     roles=tuple(roles)
                 p.setRoles(roles)
-                if REQUEST is not None:
-                    return self.manage_access(REQUEST)
                 return
 
         raise ValueError(
             "The permission <em>%s</em> is invalid." %
                 escape(permission_to_manage))
 
-    _normal_manage_access=DTMLFile('dtml/access', globals())
-    manage_reportUserPermissions=DTMLFile(
-        'dtml/reportUserPermissions', globals())
-
-    security.declareProtected(change_permissions, 'manage_access')
-    def manage_access(self, REQUEST, **kw):
-        """Return an interface for making permissions settings.
-        """
-        return apply(self._normal_manage_access, (), kw)
-
-    security.declareProtected(change_permissions, 'manage_changePermissions')
-    @requestmethod('POST')
-    def manage_changePermissions(self, REQUEST):
-        """Change all permissions settings, called by management screen.
-        """
-        valid_roles=self.valid_roles()
-        indexes=range(len(valid_roles))
-        have=REQUEST.has_key
-        permissions=self.ac_inherited_permissions(1)
-        fails = []
-        for ip in range(len(permissions)):
-            roles = []
-            for ir in indexes:
-                if have("p%dr%d" % (ip, ir)):
-                    roles.append(valid_roles[ir])
-            name, value = permissions[ip][:2]
-            try:
-                p = Permission(name, value, self)
-                if not have('a%d' % ip):
-                    roles=tuple(roles)
-                p.setRoles(roles)
-            except:
-                fails.append(name)
-
-        if fails:
-            return MessageDialog(title="Warning!",
-                                 message="Some permissions had errors: "
-                                   + escape(', '.join(fails)),
-                                 action='manage_access')
-        return MessageDialog(
-            title = 'Success!',
-            message = 'Your changes have been saved',
-            action = 'manage_access')
-
     security.declareProtected(change_permissions, 'permissionsOfRole')
     def permissionsOfRole(self, role):
-        """Used by management screen.
+        """Returns a role to permission mapping.
         """
         r = []
         for p in self.ac_inherited_permissions(1):
@@ -313,7 +228,7 @@ class RoleManager(Base, RoleManager):
 
     security.declareProtected(change_permissions, 'rolesOfPermission')
     def rolesOfPermission(self, permission):
-        """Used by management screen.
+        """Returns a permission to role mapping.
         """
         valid_roles = self.valid_roles()
         for p in self.ac_inherited_permissions(1):
@@ -333,7 +248,7 @@ class RoleManager(Base, RoleManager):
 
     security.declareProtected(change_permissions, 'acquiredRolesAreUsedBy')
     def acquiredRolesAreUsedBy(self, permission):
-        """Used by management screen.
+        """
         """
         for p in self.ac_inherited_permissions(1):
             name, value = p[:2]
@@ -352,16 +267,6 @@ class RoleManager(Base, RoleManager):
     # of a particular object (and its children). When a user is given
     # extra roles in a particular object, an entry for that user is made
     # in the __ac_local_roles__ dict containing the extra roles.
-
-    __ac_local_roles__=None
-
-    security.declareProtected(change_permissions, 'manage_listLocalRoles')
-    manage_listLocalRoles=DTMLFile('dtml/listLocalRoles', globals(),
-                                   management_view='Security')
-
-    security.declareProtected(change_permissions, 'manage_editLocalRoles')
-    manage_editLocalRoles=DTMLFile('dtml/editLocalRoles', globals(),
-                                   management_view='Security')
 
     def has_local_roles(self):
         dict=self.__ac_local_roles__ or {}
@@ -417,8 +322,7 @@ class RoleManager(Base, RoleManager):
         return tuple(dict.get(userid, []))
 
     security.declareProtected(change_permissions, 'manage_addLocalRoles')
-    @requestmethod('POST')
-    def manage_addLocalRoles(self, userid, roles, REQUEST=None):
+    def manage_addLocalRoles(self, userid, roles):
         """Set local roles for a user."""
         if not roles:
             raise ValueError('One or more roles must be given!')
@@ -431,13 +335,9 @@ class RoleManager(Base, RoleManager):
                 local_roles.append(r)
         dict[userid] = local_roles
         self._p_changed=True
-        if REQUEST is not None:
-            stat='Your changes have been saved.'
-            return self.manage_listLocalRoles(self, REQUEST, stat=stat)
 
     security.declareProtected(change_permissions, 'manage_setLocalRoles')
-    @requestmethod('POST')
-    def manage_setLocalRoles(self, userid, roles, REQUEST=None):
+    def manage_setLocalRoles(self, userid, roles):
         """Set local roles for a user."""
         if not roles:
             raise ValueError('One or more roles must be given!')
@@ -446,13 +346,9 @@ class RoleManager(Base, RoleManager):
             self.__ac_local_roles__ = dict = {}
         dict[userid]=roles
         self._p_changed = True
-        if REQUEST is not None:
-            stat='Your changes have been saved.'
-            return self.manage_listLocalRoles(self, REQUEST, stat=stat)
 
     security.declareProtected(change_permissions, 'manage_delLocalRoles')
-    @requestmethod('POST')
-    def manage_delLocalRoles(self, userids, REQUEST=None):
+    def manage_delLocalRoles(self, userids):
         """Remove all local roles for a user."""
         dict = self.__ac_local_roles__
         if dict is None:
@@ -461,9 +357,6 @@ class RoleManager(Base, RoleManager):
             if userid in dict:
                 del dict[userid]
         self._p_changed=True
-        if REQUEST is not None:
-            stat='Your changes have been saved.'
-            return self.manage_listLocalRoles(self, REQUEST, stat=stat)
 
     #------------------------------------------------------------
 
@@ -531,70 +424,6 @@ class RoleManager(Base, RoleManager):
                 pass
         return tuple(roles)
 
-    security.declareProtected(change_permissions, 'manage_defined_roles')
-    def manage_defined_roles(self, submit=None, REQUEST=None):
-        """Called by management screen.
-        """
-
-        if submit=='Add Role':
-            role=reqattr(REQUEST, 'role').strip()
-            return self._addRole(role, REQUEST)
-
-        if submit=='Delete Role':
-            roles=reqattr(REQUEST, 'roles')
-            return self._delRoles(roles, REQUEST)
-
-        return self.manage_access(REQUEST)
-
-    @requestmethod('POST')
-    def _addRole(self, role, REQUEST=None):
-        if not role:
-            return MessageDialog(
-                   title='Incomplete',
-                   message='You must specify a role name',
-                   action='manage_access')
-        if role in self.__ac_roles__:
-            return MessageDialog(
-                   title='Role Exists',
-                   message='The given role is already defined',
-                   action='manage_access')
-        data = list(self.__ac_roles__)
-        data.append(role)
-        self.__ac_roles__=tuple(data)
-        if REQUEST is not None:
-            return self.manage_access(REQUEST)
-
-    @requestmethod('POST')
-    def _delRoles(self, roles, REQUEST=None):
-        if not roles:
-            return MessageDialog(
-                   title='Incomplete',
-                   message='You must specify a role name',
-                   action='manage_access')
-        data = list(self.__ac_roles__)
-        for role in roles:
-            try:
-                data.remove(role)
-            except:
-                pass
-        self.__ac_roles__ = tuple(data)
-        if REQUEST is not None:
-            return self.manage_access(REQUEST)
-
-    def _has_user_defined_role(self, role):
-        return role in self.__ac_roles__
-
-    # Compatibility names only!!
-
-    smallRolesWidget=selectedRoles=aclAChecked=aclPChecked=aclEChecked=''
-    validRoles=valid_roles
-
-    def manage_editRoles(self, REQUEST, acl_type='A', acl_roles=[]):
-        pass
-
-    def _setRoles(self, acl_type, acl_roles):
-        pass
-
     def possible_permissions(self):
         d = {}
         permissions = getPermissions()
@@ -607,7 +436,7 @@ class RoleManager(Base, RoleManager):
         d.sort()
         return d
 
-InitializeClass(RoleManager)
+InitializeClass(BaseRoleManager)
 
 
 def reqattr(request, attr):
@@ -675,3 +504,17 @@ def gather_permissions(klass, result, seen):
                 seen[name] = None
         gather_permissions(base, result, seen)
     return result
+
+
+# BBB - this is a bit odd, but the class variable RoleManager.manage_options
+# is used by a lot of code and this isn't available on the deferredimport
+# wrapper
+try:
+    from OFS.role import RoleManager
+    RoleManager # pyflakes
+except ImportError:
+    from zope.deferredimport import deprecated
+    deprecated("RoleManager is no longer part of AccessControl, please "
+               "depend on Zope2 and import from OFS.role",
+        RoleManager = 'OFS.role:RoleManager',
+    )

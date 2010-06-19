@@ -85,9 +85,6 @@ class IOwned(Interface):
         """
 
 
-# XXX: might contain non-API methods and outdated comments;
-#      not synced with ZopeBook API Reference;
-#      based on AccessControl.PermissionMapping.RoleManager
 class IPermissionMappingSupport(Interface):
 
     def manage_getPermissionMapping():
@@ -107,11 +104,7 @@ class IPermissionMappingSupport(Interface):
         """
 
 
-# XXX: might contain non-API methods and outdated comments;
-#      not synced with ZopeBook API Reference;
-#      based on AccessControl.Role.RoleManager
 class IRoleManager(IPermissionMappingSupport):
-
     """An object that has configurable permissions"""
 
     permissionMappingPossibleValues = Attribute("""Acquired attribute""")
@@ -130,22 +123,15 @@ class IRoleManager(IPermissionMappingSupport):
         'permission' is returned.
         """
 
-    manage_roleForm = Attribute(""" """)
-
-    def manage_role(role_to_manage, permissions=[], REQUEST=None):
+    def manage_role(role_to_manage, permissions=[]):
         """Change the permissions given to the given role.
         """
 
-    manage_acquiredForm = Attribute(""" """)
-
-    def manage_acquiredPermissions(permissions=[], REQUEST=None):
+    def manage_acquiredPermissions(permissions=[]):
         """Change the permissions that acquire.
         """
 
-    manage_permissionForm = Attribute(""" """)
-
-    def manage_permission(permission_to_manage,
-                          roles=[], acquire=0, REQUEST=None):
+    def manage_permission(permission_to_manage, roles=[], acquire=0):
         """Change the settings for the given permission.
 
         If optional arg acquire is true, then the roles for the permission
@@ -153,40 +139,17 @@ class IRoleManager(IPermissionMappingSupport):
         permissions are restricted to only the designated roles.
         """
 
-    def manage_access(REQUEST, **kw):
-        """Return an interface for making permissions settings.
-        """
-
-    def manage_changePermissions(REQUEST):
-        """Change all permissions settings, called by management screen.
-        """
-
     def permissionsOfRole(role):
-        """Used by management screen.
+        """Returns a role to permission mapping.
         """
 
     def rolesOfPermission(permission):
-        """Used by management screen.
+        """Returns a permission to role mapping.
         """
 
     def acquiredRolesAreUsedBy(permission):
-        """Used by management screen.
         """
-
-
-    # Local roles support
-    # -------------------
-    #
-    # Local roles allow a user to be given extra roles in the context
-    # of a particular object (and its children). When a user is given
-    # extra roles in a particular object, an entry for that user is made
-    # in the __ac_local_roles__ dict containing the extra roles.
-
-    __ac_local_roles__  = Attribute(""" """)
-
-    manage_listLocalRoles = Attribute(""" """)
-
-    manage_editLocalRoles = Attribute(""" """)
+        """
 
     def has_local_roles():
         """
@@ -208,13 +171,13 @@ class IRoleManager(IPermissionMappingSupport):
         """
         """
 
-    def manage_addLocalRoles(userid, roles, REQUEST=None):
+    def manage_addLocalRoles(userid, roles):
         """Set local roles for a user."""
 
-    def manage_setLocalRoles(userid, roles, REQUEST=None):
+    def manage_setLocalRoles(userid, roles):
         """Set local roles for a user."""
 
-    def manage_delLocalRoles(userids, REQUEST=None):
+    def manage_delLocalRoles(userids):
         """Remove all local roles for a user."""
 
     #------------------------------------------------------------
@@ -233,30 +196,6 @@ class IRoleManager(IPermissionMappingSupport):
 
     def userdefined_roles():
         """Return list of user-defined roles.
-        """
-
-    def manage_defined_roles(submit=None, REQUEST=None):
-        """Called by management screen.
-        """
-
-    def _addRole(role, REQUEST=None):
-        """
-        """
-
-    def _delRoles(roles, REQUEST=None):
-        """
-        """
-
-    def _has_user_defined_role(role):
-        """
-        """
-
-    def manage_editRoles(REQUEST, acl_type='A', acl_roles=[]):
-        """
-        """
-
-    def _setRoles(acl_type, acl_roles):
-        """
         """
 
     def possible_permissions():
