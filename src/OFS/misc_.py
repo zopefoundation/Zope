@@ -29,7 +29,7 @@ class p_:
 
     broken=ImageFile('www/broken.gif', globals())
 
-    User_icon =ImageFile('AccessControl/www/User_icon.gif')
+    User_icon =ImageFile('OFS/www/User_icon.gif')
 
     locked=ImageFile('www/modified.gif', globals())
     lockedo=ImageFile('www/locked.gif', globals())
