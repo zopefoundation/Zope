@@ -13,14 +13,6 @@
 """Add security system support to Document Templates
 """
 
-import string, math, random, sets
-
-# Allow access to unprotected attributes
-string.__allow_access_to_unprotected_subobjects__=1
-math.__allow_access_to_unprotected_subobjects__=1
-random.__allow_access_to_unprotected_subobjects__=1
-sets.__allow_access_to_unprotected_subobjects__=1
-
 # Setup RestrictedDTML
 
 from AccessControl.ImplPython import guarded_getattr
