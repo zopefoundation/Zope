@@ -19,12 +19,10 @@ from base64 import decodestring
 from Acquisition import aq_base
 from Acquisition import aq_parent
 from Acquisition import Implicit
-from AccessControl import ClassSecurityInfo
-from AccessControl.class_init import InitializeClass
-from AccessControl.Permissions import manage_users as ManageUsers
 from Persistence import Persistent
 from Persistence import PersistentMapping
-from zExceptions import Unauthorized, BadRequest
+from zExceptions import BadRequest
+from zExceptions import Unauthorized
 from zope.interface import implements
 
 # TODO dependencies
@@ -36,23 +34,24 @@ from OFS.role import RoleManager
 from OFS.SimpleItem import Item
 
 from AccessControl import AuthEncoding
-from .interfaces import IStandardUserFolder
-from .requestmethod import requestmethod
-from .rolemanager import DEFAULTMAXLISTUSERS
-from .SecurityManagement import getSecurityManager
-from .SecurityManagement import newSecurityManager
-from .SecurityManagement import noSecurityManager
-from .ZopeSecurityPolicy import _noroles
-
-
-from .users import User
-from .users import readUserAccessFile
-from .users import _remote_user_mode
-from .users import emergency_user
-from .users import nobody
-from .users import addr_match
-from .users import host_match
-from .users import reqattr
+from AccessControl import ClassSecurityInfo
+from AccessControl.class_init import InitializeClass
+from AccessControl.interfaces import IStandardUserFolder
+from AccessControl.Permissions import manage_users as ManageUsers
+from AccessControl.requestmethod import requestmethod
+from AccessControl.rolemanager import DEFAULTMAXLISTUSERS
+from AccessControl.SecurityManagement import getSecurityManager
+from AccessControl.SecurityManagement import newSecurityManager
+from AccessControl.SecurityManagement import noSecurityManager
+from AccessControl.users import User
+from AccessControl.users import readUserAccessFile
+from AccessControl.users import _remote_user_mode
+from AccessControl.users import emergency_user
+from AccessControl.users import nobody
+from AccessControl.users import addr_match
+from AccessControl.users import host_match
+from AccessControl.users import reqattr
+from AccessControl.ZopeSecurityPolicy import _noroles
 
 
 class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
