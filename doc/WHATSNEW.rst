@@ -57,7 +57,14 @@ More information can be found in the detailed
 WSGI
 ----
 
-...
+This Zope release comes with native WSGI support. First pioneered in the
+repoze.zope2 project, this capability finally found its way back into the core
+and obsoletes the externally managed project. With WSGI Zope 2 can natively talk
+to a variety of web servers and isn't restricted to its own ZServer anymore. It
+also opens up new possibilities for writing or reusing middleware in Zope 2 or
+factoring out capabilities into WSGI endware. It's expected that this new
+deployment model will over time become the default and the old ZServer
+implementation will be deprecated. There's no concrete timeline for this yet.
 
 
 Zope Toolkit
