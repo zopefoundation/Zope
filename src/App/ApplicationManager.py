@@ -211,10 +211,10 @@ class DebugManager(Item, Implicit):
         rd = []
         for n, c in nc.items():
             try:
-                prev = rc[n]
+                prev = rc.get(n, 0)
                 if c > prev:
                     rd.append((c - prev, (c, prev, n)))
-            except:
+            except Exception:
                 pass
         rd.sort()
         rd.reverse()
