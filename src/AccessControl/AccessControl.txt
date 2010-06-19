@@ -166,7 +166,7 @@ Mail Host
 
 
 To support the architecture, developers must derive an
-object from the AccessControl.rolemanager.BaseRoleManager mixin class,
+object from the AccessControl.rolemanager.RoleManager mixin class,
 and define in their class an __ac_permissions__ attribute.
 
 This should be a tuple of tuples, where each tuple represents

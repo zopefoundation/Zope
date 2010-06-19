@@ -40,7 +40,7 @@ def _isNotBeingUsedAsAMethod(self):
     return not aq_get(self, '_isBeingUsedAsAMethod_', 0)
 
 
-class BaseRoleManager(Base, RoleManager):
+class RoleManager(Base, RoleManager):
     """An object that has configurable permissions"""
 
     implements(IRoleManager)
@@ -436,7 +436,7 @@ class BaseRoleManager(Base, RoleManager):
         d.sort()
         return d
 
-InitializeClass(BaseRoleManager)
+InitializeClass(RoleManager)
 
 
 def reqattr(request, attr):

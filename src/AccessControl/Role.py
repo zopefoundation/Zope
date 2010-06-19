@@ -17,7 +17,6 @@
 from .rolemanager import DEFAULTMAXLISTUSERS
 from .rolemanager import _isBeingUsedAsAMethod
 from .rolemanager import _isNotBeingUsedAsAMethod
-from .rolemanager import BaseRoleManager
 from .rolemanager import reqattr
 from .rolemanager import classattr
 from .rolemanager import instance_dict
@@ -29,6 +28,6 @@ from .rolemanager import gather_permissions
 from zope.deferredimport import deprecated
 deprecated("RoleManager is no longer part of AccessControl, please "
            "depend on Zope2 and import from OFS.role or use the "
-           "BaseRoleManager class from AccessControl.rolemanager.",
+           "RoleManager class from AccessControl.rolemanager.",
     RoleManager = 'OFS.role:RoleManager',
 )
