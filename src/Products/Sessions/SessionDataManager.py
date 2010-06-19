@@ -16,11 +16,11 @@ import sys
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.Owned import Owned
-from AccessControl.Role import RoleManager
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Implicit
 from App.special_dtml import DTMLFile
 from App.Management import Tabs
+from OFS.role import RoleManager
 from OFS.SimpleItem import Item
 from Persistence import Persistent
 from ZPublisher.BeforeTraverse import registerBeforeTraverse

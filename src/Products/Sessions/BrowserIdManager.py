@@ -24,7 +24,6 @@ from urlparse import urlunparse
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.Owned import Owned
-from AccessControl.Role import RoleManager
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Implicit
 from Acquisition import aq_parent
@@ -33,6 +32,7 @@ from App.Management import Tabs
 from App.special_dtml import DTMLFile
 from Persistence import Persistent
 from persistent import TimeStamp
+from OFS.role import RoleManager
 from OFS.SimpleItem import Item
 from ZPublisher.BeforeTraverse import registerBeforeTraverse
 from ZPublisher.BeforeTraverse import unregisterBeforeTraverse

@@ -23,7 +23,6 @@ from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import change_database_methods
 from AccessControl.Permissions import use_database_methods
 from AccessControl.Permissions import view_management_screens
-from AccessControl.Role import RoleManager
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.SecurityManagement import getSecurityManager
 from Acquisition import Implicit
@@ -35,6 +34,7 @@ from DocumentTemplate.security import RestrictedDTML
 from DateTime.DateTime import DateTime
 from ExtensionClass import Base
 from BTrees.OOBTree import OOBucket as Bucket
+from OFS.role import RoleManager
 from OFS.SimpleItem import Item
 from Persistence import Persistent
 from webdav.Resource import Resource

@@ -30,7 +30,6 @@ from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.SecurityManagement import getSecurityManager
 from AccessControl.Owned import Owned
 from AccessControl.Permissions import view as View
-from AccessControl.Role import RoleManager
 from AccessControl.unauthorized import Unauthorized
 from AccessControl.ZopeSecurityPolicy import getRoles
 from Acquisition import Acquired
@@ -58,6 +57,7 @@ from OFS.interfaces import IItem
 from OFS.interfaces import IItemWithName
 from OFS.interfaces import ISimpleItem
 from OFS.CopySupport import CopySource
+from OFS.role import RoleManager
 from OFS.Traversable import Traversable
 from OFS.ZDOM import Element
 

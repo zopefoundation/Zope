@@ -26,7 +26,6 @@ from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import change_external_methods
 from AccessControl.Permissions import view_management_screens
 from AccessControl.Permissions import view as View
-from AccessControl.Role import RoleManager
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Acquired
 from Acquisition import Explicit
@@ -36,6 +35,7 @@ from App.Extensions import getPath
 from App.Extensions import FuncCode
 from App.special_dtml import DTMLFile
 from App.special_dtml import HTML
+from OFS.role import RoleManager
 from OFS.SimpleItem import Item
 from OFS.SimpleItem import pretty_tb
 from Persistence import Persistent

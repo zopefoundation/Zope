@@ -165,10 +165,8 @@ Mail Host
   o Change configuration
 
 
-
-
 To support the architecture, developers must derive an
-object from the AccessControl.RoleManager mixin class,
+object from the AccessControl.rolemanager.BaseRoleManager mixin class,
 and define in their class an __ac_permissions__ attribute.
 
 This should be a tuple of tuples, where each tuple represents
@@ -191,8 +189,6 @@ Example:
     ('Delete properties',  ['manage_delProperties']),
     ('Default permission', ['']),
     )
-   
-
 
 The developer may also predefine useful types of access, by
 specifying an __ac_types__ attribute. This should be a tuple of 
@@ -214,8 +210,6 @@ Example:
 
     )
 
-
-
 Developers may also provide pre-defined role names that are
 not deletable via the interface by specifying an __ac_roles__
 attribute. This is probably not something we'll ever use under
@@ -224,29 +218,3 @@ the new architecture, but it's there if you need it.
 Example:
 
     __ac_roles__=('Manager', 'Anonymous')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

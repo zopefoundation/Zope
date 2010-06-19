@@ -20,7 +20,6 @@ $Id$
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import add_page_templates
 from AccessControl.Permissions import add_user_folders
-from AccessControl.Role import RoleManager
 from AccessControl.SecurityManagement import getSecurityManager
 from AccessControl.unauthorized import Unauthorized
 from App.special_dtml import DTMLFile
@@ -31,6 +30,7 @@ from OFS.FindSupport import FindSupport
 from OFS.interfaces import IFolder
 from OFS.ObjectManager import ObjectManager
 from OFS.PropertyManager import PropertyManager
+from OFS.role import RoleManager
 from OFS.SimpleItem import Item
 
 

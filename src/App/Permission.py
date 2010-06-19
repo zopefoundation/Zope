@@ -15,9 +15,9 @@
 
 
 from AccessControl.class_init import InitializeClass
-from AccessControl.Role import RoleManager
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Implicit
+from OFS.role import RoleManager
 from OFS.SimpleItem import Item
 from Persistence import Persistent
 

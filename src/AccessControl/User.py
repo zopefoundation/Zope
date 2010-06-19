@@ -35,18 +35,20 @@ from App.Management import Navigation
 from App.Management import Tabs
 from App.special_dtml import DTMLFile
 from App.Dialogs import MessageDialog
+from OFS.role import RoleManager
 from OFS.SimpleItem import Item
 
-import AuthEncoding
-import SpecialUsers
-from interfaces import IStandardUserFolder
-from requestmethod import requestmethod
-from PermissionRole import _what_not_even_god_should_do, rolesForPermissionOn
-from Role import RoleManager, DEFAULTMAXLISTUSERS
-from SecurityManagement import getSecurityManager
-from SecurityManagement import newSecurityManager
-from SecurityManagement import noSecurityManager
-from ZopeSecurityPolicy import _noroles
+from AccessControl import AuthEncoding
+from AccessControl import SpecialUsers
+from .interfaces import IStandardUserFolder
+from .requestmethod import requestmethod
+from .PermissionRole import _what_not_even_god_should_do
+from .PermissionRole import rolesForPermissionOn
+from .rolemanager import DEFAULTMAXLISTUSERS
+from .SecurityManagement import getSecurityManager
+from .SecurityManagement import newSecurityManager
+from .SecurityManagement import noSecurityManager
+from .ZopeSecurityPolicy import _noroles
 
 
 _marker=[]

@@ -16,7 +16,6 @@ from urllib import quote
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
-from AccessControl.Role import RoleManager
 from Acquisition import Implicit
 from App.special_dtml import DTMLFile
 from App.special_dtml import HTML
@@ -33,6 +32,7 @@ from DocumentTemplate.security import RestrictedDTML
 from OFS.Cache import Cacheable
 from OFS.History import Historical
 from OFS.History import html_diff
+from OFS.role import RoleManager
 from OFS.SimpleItem import Item_w__name__
 from OFS.ZDOM import ElementWithTitle
 from webdav.Lockable import ResourceLockedError

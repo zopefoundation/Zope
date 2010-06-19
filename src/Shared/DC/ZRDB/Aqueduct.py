@@ -21,12 +21,12 @@ import os
 import re
 import string
 
-from AccessControl.Role import RoleManager
 from Acquisition import Implicit
 from App.Common import package_home
 from DateTime.DateTime import DateTime
 from DocumentTemplate import File
 from DocumentTemplate import HTML
+from OFS.role import RoleManager
 from OFS.SimpleItem import Item
 from Persistence import Persistent
 from zExceptions import Redirect

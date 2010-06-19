@@ -25,7 +25,6 @@ from AccessControl.Permissions import view_management_screens
 from AccessControl.Permissions import view as View
 from AccessControl.Permissions import ftp_access
 from AccessControl.Permissions import delete_objects
-from AccessControl.Role import RoleManager
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Implicit
 from App.special_dtml import DTMLFile
@@ -44,6 +43,7 @@ from zope.interface import implements
 
 from OFS.Cache import Cacheable
 from OFS.PropertyManager import PropertyManager
+from OFS.role import RoleManager
 from OFS.SimpleItem import Item_w__name__
 
 from zope.event import notify

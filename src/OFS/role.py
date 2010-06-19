@@ -19,8 +19,8 @@ from App.special_dtml import DTMLFile
 
 from AccessControl import ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
-from AccessControl.Role import BaseRoleManager
-from AccessControl.Role import reqattr
+from AccessControl.rolemanager import BaseRoleManager
+from AccessControl.rolemanager import reqattr
 from AccessControl.Permission import Permission
 from AccessControl.Permissions import change_permissions
 from AccessControl.requestmethod import requestmethod
