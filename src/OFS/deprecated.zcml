@@ -2,7 +2,7 @@
            xmlns:five="http://namespaces.zope.org/five">
 
   <five:deprecatedManageAddDelete
-      class="AccessControl.userfolder.BasicUserFolder"/>
+      class="OFS.userfolder.BasicUserFolder"/>
 
   <five:deprecatedManageAddDelete
       class="HelpSys.HelpTopic.HelpTopicBase"/>
