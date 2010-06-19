@@ -58,14 +58,13 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
                       Item):
     """Base class for UserFolder-like objects"""
 
-    meta_type='User Folder'
-    id       ='acl_users'
-    title    ='User Folder'
+    meta_type = 'User Folder'
+    id = 'acl_users'
+    title ='User Folder'
 
-    isPrincipiaFolderish=1
-    isAUserFolder=1
+    isPrincipiaFolderish = 1
+    isAUserFolder = 1
     maxlistusers = DEFAULTMAXLISTUSERS
-
     encrypt_passwords = 1
 
     security = ClassSecurityInfo()
@@ -73,7 +72,7 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
     manage_options=(
         (
         {'label': 'Contents', 'action': 'manage_main'},
-        {'label': 'Properties', 'action':'manage_userFolderProperties'},
+        {'label': 'Properties', 'action': 'manage_userFolderProperties'},
         )
         +RoleManager.manage_options
         +Item.manage_options
@@ -184,10 +183,11 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
 
     def identify(self, auth):
         if auth and auth.lower().startswith('basic '):
-            try: name, password=tuple(decodestring(
-                                      auth.split(' ')[-1]).split(':', 1))
+            try:
+                name, password = tuple(decodestring(
+                                       auth.split(' ')[-1]).split(':', 1))
             except:
-                raise BadRequest, 'Invalid authentication token'
+                raise BadRequest('Invalid authentication token')
             return name, password
         else:
             return None, None
@@ -225,7 +225,8 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
             except:
                 noSecurityManager()
                 raise
-        except Unauthorized: pass
+        except Unauthorized:
+            pass
         return 0
 
     def validate(self, request, auth='', roles=_noroles):
@@ -272,7 +273,8 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
         elif user is None:
             # either we didn't find the username, or the user's password
             # was incorrect.  try to authorize and return the anonymous user.
-            if self._isTop() and self.authorize(self._nobody, a,c,n,v,roles):
+            if (self._isTop() and
+                self.authorize(self._nobody, a, c, n, v, roles)):
                 return self._nobody.__of__(self)
             else:
                 # anonymous can't authorize or we're not top-level user folder
@@ -284,7 +286,8 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
             if self.authorize(user, a, c, n, v, roles):
                 return user.__of__(self)
             # That didn't work.  Try to authorize the anonymous user.
-            elif self._isTop() and self.authorize(self._nobody,a,c,n,v,roles):
+            elif (self._isTop() and
+                  self.authorize(self._nobody, a, c, n, v, roles)):
                 return self._nobody.__of__(self)
             else:
                 # we can't authorize the user, and we either can't authorize
@@ -301,9 +304,8 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
                 if self._domain_auth_mode:
                     for user in self.getUsers():
                         if user.getDomains():
-                            if self.authenticate(
-                                user.getUserName(), '', request
-                                ):
+                            if self.authenticate(user.getUserName(),
+                                                 '', request):
                                 if self.authorize(user, a, c, n, v, roles):
                                     return user.__of__(self)
 
@@ -379,7 +381,8 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
 
     def _isTop(self):
         try:
-            return aq_base(aq_parent(self)).isTopLevelPrincipiaApplicationObject
+            parent = aq_base(aq_parent(self))
+            return parent.isTopLevelPrincipiaApplicationObject
         except:
             return 0
 
@@ -447,104 +450,108 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
         return AuthEncoding.pw_encrypt(pw, 'SSHA')
 
 
-    def domainSpecValidate(self,spec):
-
+    def domainSpecValidate(self, spec):
         for ob in spec:
-
             am = addr_match(ob)
             hm = host_match(ob)
-
             if am is None and hm is None:
                 return 0
-
         return 1
 
     @requestmethod('POST')
-    def _addUser(self,name,password,confirm,roles,domains,REQUEST=None):
+    def _addUser(self, name, password, confirm, roles, domains, REQUEST=None):
         if not name:
             return MessageDialog(
-                   title  ='Illegal value',
+                   title='Illegal value',
                    message='A username must be specified',
-                   action ='manage_main')
+                   action='manage_main')
         if not password or not confirm:
             if not domains:
                 return MessageDialog(
-                   title  ='Illegal value',
+                   title='Illegal value',
                    message='Password and confirmation must be specified',
-                   action ='manage_main')
+                   action='manage_main')
         if self.getUser(name) or (self._emergency_user and
                                   name == self._emergency_user.getUserName()):
             return MessageDialog(
-                   title  ='Illegal value',
+                   title='Illegal value',
                    message='A user with the specified name already exists',
-                   action ='manage_main')
+                   action='manage_main')
         if (password or confirm) and (password != confirm):
             return MessageDialog(
-                   title  ='Illegal value',
+                   title='Illegal value',
                    message='Password and confirmation do not match',
-                   action ='manage_main')
+                   action='manage_main')
 
-        if not roles: roles=[]
-        if not domains: domains=[]
+        if not roles:
+            roles = []
+        if not domains:
+            domains = []
 
         if domains and not self.domainSpecValidate(domains):
             return MessageDialog(
-                   title  ='Illegal value',
+                   title='Illegal value',
                    message='Illegal domain specification',
-                   action ='manage_main')
+                   action='manage_main')
         self._doAddUser(name, password, roles, domains)
-        if REQUEST: return self._mainUser(self, REQUEST)
+        if REQUEST:
+            return self._mainUser(self, REQUEST)
 
     @requestmethod('POST')
-    def _changeUser(self,name,password,confirm,roles,domains,REQUEST=None):
+    def _changeUser(self, name, password, confirm, roles, domains,
+                    REQUEST=None):
         if password == 'password' and confirm == 'pconfirm':
             # Protocol for editUser.dtml to indicate unchanged password
             password = confirm = None
         if not name:
             return MessageDialog(
-                   title  ='Illegal value',
+                   title='Illegal value',
                    message='A username must be specified',
-                   action ='manage_main')
+                   action='manage_main')
         if password == confirm == '':
             if not domains:
                 return MessageDialog(
-                   title  ='Illegal value',
+                   title='Illegal value',
                    message='Password and confirmation must be specified',
-                   action ='manage_main')
+                   action='manage_main')
         if not self.getUser(name):
             return MessageDialog(
-                   title  ='Illegal value',
+                   title='Illegal value',
                    message='Unknown user',
-                   action ='manage_main')
+                   action='manage_main')
         if (password or confirm) and (password != confirm):
             return MessageDialog(
-                   title  ='Illegal value',
+                   title='Illegal value',
                    message='Password and confirmation do not match',
-                   action ='manage_main')
+                   action='manage_main')
 
-        if not roles: roles=[]
-        if not domains: domains=[]
+        if not roles:
+            roles = []
+        if not domains:
+            domains = []
 
         if domains and not self.domainSpecValidate(domains):
             return MessageDialog(
-                   title  ='Illegal value',
+                   title='Illegal value',
                    message='Illegal domain specification',
-                   action ='manage_main')
+                   action='manage_main')
         self._doChangeUser(name, password, roles, domains)
-        if REQUEST: return self._mainUser(self, REQUEST)
+        if REQUEST:
+            return self._mainUser(self, REQUEST)
 
     @requestmethod('POST')
-    def _delUsers(self,names,REQUEST=None):
+    def _delUsers(self, names, REQUEST=None):
         if not names:
             return MessageDialog(
-                   title  ='Illegal value',
+                   title='Illegal value',
                    message='No users specified',
-                   action ='manage_main')
+                   action='manage_main')
         self._doDelUsers(names)
-        if REQUEST: return self._mainUser(self, REQUEST)
+        if REQUEST:
+            return self._mainUser(self, REQUEST)
 
     security.declareProtected(ManageUsers, 'manage_users')
-    def manage_users(self,submit=None,REQUEST=None,RESPONSE=None):
+    def manage_users(self, submit=None, REQUEST=None, RESPONSE=None):
         """This method handles operations on users for the web based forms
            of the ZMI. Application code (code that is outside of the forms
            that implement the UI of a user folder) are encouraged to use
@@ -553,33 +560,36 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
             return self._add_User(self, REQUEST)
 
         if submit=='Edit':
-            try:    user=self.getUser(reqattr(REQUEST, 'name'))
-            except: return MessageDialog(
-                    title  ='Illegal value',
+            try:
+                user=self.getUser(reqattr(REQUEST, 'name'))
+            except:
+                return MessageDialog(
+                    title='Illegal value',
                     message='The specified user does not exist',
-                    action ='manage_main')
-            return self._editUser(self,REQUEST,user=user,password=user.__)
+                    action='manage_main')
+            return self._editUser(self, REQUEST, user=user, password=user.__)
 
         if submit=='Add':
-            name    =reqattr(REQUEST, 'name')
-            password=reqattr(REQUEST, 'password')
-            confirm =reqattr(REQUEST, 'confirm')
-            roles   =reqattr(REQUEST, 'roles')
-            domains =reqattr(REQUEST, 'domains')
-            return self._addUser(name,password,confirm,roles,domains,REQUEST)
+            name = reqattr(REQUEST, 'name')
+            password = reqattr(REQUEST, 'password')
+            confirm = reqattr(REQUEST, 'confirm')
+            roles = reqattr(REQUEST, 'roles')
+            domains = reqattr(REQUEST, 'domains')
+            return self._addUser(name, password, confirm, roles,
+                                 domains, REQUEST)
 
         if submit=='Change':
-            name    =reqattr(REQUEST, 'name')
-            password=reqattr(REQUEST, 'password')
-            confirm =reqattr(REQUEST, 'confirm')
-            roles   =reqattr(REQUEST, 'roles')
-            domains =reqattr(REQUEST, 'domains')
-            return self._changeUser(name,password,confirm,roles,
-                                    domains,REQUEST)
+            name = reqattr(REQUEST, 'name')
+            password = reqattr(REQUEST, 'password')
+            confirm = reqattr(REQUEST, 'confirm')
+            roles = reqattr(REQUEST, 'roles')
+            domains = reqattr(REQUEST, 'domains')
+            return self._changeUser(name, password, confirm, roles,
+                                    domains, REQUEST)
 
         if submit=='Delete':
-            names=reqattr(REQUEST, 'names')
-            return self._delUsers(names,REQUEST)
+            names = reqattr(REQUEST, 'names')
+            return self._delUsers(names, REQUEST)
 
         return self._mainUser(self, REQUEST)
 
@@ -589,22 +599,25 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
 
     def manage_beforeDelete(self, item, container):
         if item is self:
-            try: del container.__allow_groups__
-            except: pass
+            try:
+                del container.__allow_groups__
+            except:
+                pass
 
     def manage_afterAdd(self, item, container):
         if item is self:
             self = aq_base(self)
             container.__allow_groups__ = self
 
-    def __creatable_by_emergency_user__(self): return 1
+    def __creatable_by_emergency_user__(self):
+        return 1
 
     def _setId(self, id):
         if id != self.id:
             raise MessageDialog(
                 title='Invalid Id',
                 message='Cannot change the id of a UserFolder',
-                action ='./manage_main',)
+                action='./manage_main')
 
 
     # Domain authentication support. This is a good candidate to
@@ -637,10 +650,10 @@ class UserFolder(BasicUserFolder):
 
     implements(IStandardUserFolder)
 
-    meta_type='User Folder'
-    id       ='acl_users'
-    title    ='User Folder'
-    icon     ='p_/UserFolder'
+    meta_type = 'User Folder'
+    id = 'acl_users'
+    title = 'User Folder'
+    icon = 'p_/UserFolder'
 
     def __init__(self):
         self.data=PersistentMapping()
@@ -675,17 +688,17 @@ class UserFolder(BasicUserFolder):
         if password is not None and self.encrypt_passwords \
                                 and not self._isPasswordEncrypted(password):
             password = self._encryptPassword(password)
-        self.data[name]=User(name,password,roles,domains)
+        self.data[name] = User(name, password, roles, domains)
 
     def _doChangeUser(self, name, password, roles, domains, **kw):
         user=self.data[name]
         if password is not None:
-            if (  self.encrypt_passwords
-                  and not self._isPasswordEncrypted(password)):
+            if (self.encrypt_passwords
+                and not self._isPasswordEncrypted(password)):
                 password = self._encryptPassword(password)
-            user.__=password
-        user.roles=roles
-        user.domains=domains
+            user.__ = password
+        user.roles = roles
+        user.domains = domains
 
     def _doDelUsers(self, names):
         for name in names:
@@ -707,26 +720,27 @@ class UserFolder(BasicUserFolder):
                 import App.config
                 name, password, domains, remote_user_mode = info
                 self._doDelUsers(self.getUserNames())
-                self._doAddUser(name, password, ('Manager',), domains)
+                self._doAddUser(name, password, ('Manager', ), domains)
                 cfg = App.config.getConfiguration()
                 try:
                     os.remove(os.path.join(cfg.instancehome, 'inituser'))
                 except:
                     pass
 
-
 InitializeClass(UserFolder)
 
 
-def manage_addUserFolder(self,dtself=None,REQUEST=None,**ignored):
+def manage_addUserFolder(self, dtself=None, REQUEST=None, **ignored):
     """ """
-    f=UserFolder()
-    self=self.this()
-    try:    self._setObject('acl_users', f)
-    except: return MessageDialog(
-                   title  ='Item Exists',
-                   message='This object already contains a User Folder',
-                   action ='%s/manage_main' % REQUEST['URL1'])
-    self.__allow_groups__=f
+    f = UserFolder()
+    self = self.this()
+    try:
+        self._setObject('acl_users', f)
+    except:
+        return MessageDialog(
+            title='Item Exists',
+            message='This object already contains a User Folder',
+            action='%s/manage_main' % REQUEST['URL1'])
+    self.__allow_groups__ = f
     if REQUEST is not None:
         REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
