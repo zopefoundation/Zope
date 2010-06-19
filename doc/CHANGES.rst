@@ -11,6 +11,8 @@ Trunk (unreleased)
 Restructuring
 +++++++++++++
 
+- Removed ancient App.HotFixes module.
+
 - ZPublisherExceptionHook: Removed ancient backwards compatibility code.
   Customized raise_standardErrorMessage methods have to implement the
   signature introduced in Zope 2.6.
