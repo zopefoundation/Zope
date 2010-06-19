@@ -55,7 +55,7 @@ class BasicUser(Implicit):
             return 0
         return 1
 
-    def __init__(self,name,password,roles,domains):
+    def __init__(self, name, password, roles, domains):
         raise NotImplementedError
 
     def getUserName(self):
@@ -125,21 +125,25 @@ class BasicUser(Implicit):
     def _shared_roles(self, parent):
         r=[]
         while 1:
-            if hasattr(parent,'__roles__'):
-                roles=parent.__roles__
-                if roles is None: return 'Anonymous',
+            if hasattr(parent, '__roles__'):
+                roles = parent.__roles__
+                if roles is None:
+                    return 'Anonymous',
                 if 'Shared' in roles:
                     roles=list(roles)
                     roles.remove('Shared')
-                    r=r+roles
+                    r = r + roles
                 else:
-                    try: return r+list(roles)
-                    except: return r
+                    try:
+                        return r + list(roles)
+                    except:
+                        return r
             if getattr(parent, '__parent__', None) is not None:
-                while hasattr(parent.aq_self,'aq_self'):
+                while hasattr(parent.aq_self, 'aq_self'):
                     parent = parent.aq_self
                 parent = aq_parent(parent)
-            else: return r
+            else:
+                return r
 
     def _check_context(self, object):
         # Check that 'object' exists in the acquisition context of
@@ -147,14 +151,14 @@ class BasicUser(Implicit):
         # to prevent "stealing" access through acquisition tricks.
         # Return true if in context, false if not or if context
         # cannot be determined (object is not wrapped).
-        parent  = getattr(self, '__parent__', None)
+        parent = getattr(self, '__parent__', None)
         context = getattr(parent, '__parent__', None)
         if context is not None:
             if object is None:
                 return 1
             if hasattr(object, 'im_self'):
                 # This is a method.  Grab its self.
-                object=object.im_self
+                object = object.im_self
             return aq_inContextOf(object, context, 1)
 
         # This is lame, but required to keep existing behavior.
@@ -164,7 +168,8 @@ class BasicUser(Implicit):
         """Check whether the user has access to object. The user must
            have one of the roles in object_roles to allow access."""
 
-        if object_roles is _what_not_even_god_should_do: return 0
+        if object_roles is _what_not_even_god_should_do:
+            return 0
 
         # Short-circuit the common case of anonymous access.
         if object_roles is None or 'Anonymous' in object_roles:
@@ -247,8 +252,12 @@ class BasicUser(Implicit):
             roles=[roles]
         return self.allowed(object, roles)
 
-    def __len__(self): return 1
-    def __str__(self): return self.getUserName()
+    def __len__(self):
+        return 1
+
+    def __str__(self):
+        return self.getUserName()
+
     def __repr__(self):
         return '<%s %r>' % (self.__class__.__name__, self.getUserName())
 
@@ -258,11 +267,11 @@ class SimpleUser(BasicUser):
 
     that doesn't make a database commitment"""
 
-    def __init__(self,name,password,roles,domains):
-        self.name   =name
-        self.__     =password
-        self.roles  =roles
-        self.domains=domains
+    def __init__(self, name, password, roles, domains):
+        self.name = name
+        self.__ = password
+        self.roles = roles
+        self.domains = domains
 
     def getUserName(self):
         """Return the username of a user"""
@@ -274,8 +283,10 @@ class SimpleUser(BasicUser):
 
     def getRoles(self):
         """Return the list of roles assigned to a user."""
-        if self.name == 'Anonymous User': return tuple(self.roles)
-        else: return tuple(self.roles) + ('Authenticated',)
+        if self.name == 'Anonymous User':
+            return tuple(self.roles)
+        else:
+            return tuple(self.roles) + ('Authenticated', )
 
     def getDomains(self):
         """Return the list of domain restrictions for a user"""
@@ -284,7 +295,9 @@ class SimpleUser(BasicUser):
 
 class SpecialUser(SimpleUser):
     """Class for special users, like emergency user and nobody"""
-    def getId(self): pass
+
+    def getId(self):
+        pass
 
 
 class User(SimpleUser, Persistent):
@@ -296,7 +309,7 @@ class UnrestrictedUser(SpecialUser):
     like Owner.py can still impose restrictions.
     """
 
-    def allowed(self,parent,roles=None):
+    def allowed(self, parent, roles=None):
         return roles is not _what_not_even_god_should_do
 
     def has_role(self, roles, object=None):
@@ -384,32 +397,31 @@ _remote_user_mode = 0
 info = readUserAccessFile('access')
 if info:
     _remote_user_mode = info[3]
-    emergency_user = UnrestrictedUser(
-        info[0], info[1], ('manage',), info[2])
+    emergency_user = UnrestrictedUser(info[0], info[1], ('manage', ), info[2])
 else:
     emergency_user = NullUnrestrictedUser()
 
 del info
 
 
-nobody=SpecialUser('Anonymous User','',('Anonymous',), [])
-system=UnrestrictedUser('System Processes','',('manage',), [])
+nobody = SpecialUser('Anonymous User', '', ('Anonymous', ), [])
+system = UnrestrictedUser('System Processes', '', ('manage', ), [])
 
 # stuff these in a handier place for importing
-SpecialUsers.nobody=nobody
-SpecialUsers.system=system
-SpecialUsers.emergency_user=emergency_user
+SpecialUsers.nobody = nobody
+SpecialUsers.system = system
+SpecialUsers.emergency_user = emergency_user
 # Note: use of the 'super' name is deprecated.
-SpecialUsers.super=emergency_user
+SpecialUsers.super = emergency_user
 
 
 def rolejoin(roles, other):
-    dict={}
+    dict = {}
     for role in roles:
-        dict[role]=1
+        dict[role] = 1
     for role in other:
-        dict[role]=1
-    roles=dict.keys()
+        dict[role] = 1
+    roles = dict.keys()
     roles.sort()
     return roles
 
@@ -418,47 +430,45 @@ host_match=re.compile(r'(([\_0-9a-zA-Z\-]*\.)*[0-9a-zA-Z\-]*)').match
 
 
 def domainSpecMatch(spec, request):
-    host=''
-    addr=''
-
     # Fast exit for the match-all case
     if len(spec) == 1 and spec[0] == '*':
         return 1
 
-    if request.has_key('REMOTE_HOST'):
-        host=request['REMOTE_HOST']
-
-    addr=request.getClientAddr()
+    host = request.get('REMOTE_HOST', '')
+    addr = request.getClientAddr()
 
     if not host and not addr:
         return 0
 
     if not host:
-        try:    host=socket.gethostbyaddr(addr)[0]
-        except: pass
+        try:
+            host=socket.gethostbyaddr(addr)[0]
+        except:
+            pass
     if not addr:
-        try:    addr=socket.gethostbyname(host)
-        except: pass
+        try:
+            addr=socket.gethostbyname(host)
+        except:
+            pass
 
-
-    _host=host.split('.')
-    _addr=addr.split('.')
-    _hlen=len(_host)
+    _host = host.split('.')
+    _addr = addr.split('.')
+    _hlen = len(_host)
 
     for ob in spec:
-        sz=len(ob)
-        _ob=ob.split('.')
-        _sz=len(_ob)
+        sz = len(ob)
+        _ob = ob.split('.')
+        _sz = len(_ob)
 
         mo = addr_match(ob)
         if mo is not None:
             if mo.end(0)==sz:
                 fail=0
                 for i in range(_sz):
-                    a=_addr[i]
-                    o=_ob[i]
+                    a = _addr[i]
+                    o = _ob[i]
                     if (o != a) and (o != '*'):
-                        fail=1
+                        fail = 1
                         break
                 if fail:
                     continue
@@ -470,15 +480,15 @@ def domainSpecMatch(spec, request):
                 if _hlen < _sz:
                     continue
                 elif _hlen > _sz:
-                    _item=_host[-_sz:]
+                    _item = _host[-_sz:]
                 else:
-                    _item=_host
-                fail=0
+                    _item = _host
+                fail = 0
                 for i in range(_sz):
-                    h=_item[i]
-                    o=_ob[i]
+                    h = _item[i]
+                    o = _ob[i]
                     if (o != h) and (o != '*'):
-                        fail=1
+                        fail = 1
                         break
                 if fail:
                     continue
@@ -487,10 +497,13 @@ def domainSpecMatch(spec, request):
 
 
 def absattr(attr):
-    if callable(attr): return attr()
+    if callable(attr):
+        return attr()
     return attr
 
 
 def reqattr(request, attr):
-    try:    return request[attr]
-    except: return None
+    try:
+        return request[attr]
+    except:
+        return None
