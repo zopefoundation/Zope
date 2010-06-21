@@ -354,6 +354,33 @@ class TestTraverse( unittest.TestCase ):
         self.failUnlessRaises(Unauthorized,
                               self.root.folder1.restrictedTraverse, 'stuff')
 
+    def testBoboTraverseTraversalDefault(self):
+        from OFS.SimpleItem import SimpleItem
+        from ZPublisher.interfaces import UseTraversalDefault
+        class BoboTraversableUseTraversalDefault(SimpleItem):
+            """
+              A BoboTraversable class which may use "UseTraversalDefault"
+              (dependent on "name") to indicate that standard traversal should
+              be used.
+            """
+            default = 'Default'
+
+            def __bobo_traverse__(self, request, name):
+                if name == 'normal': return 'Normal'
+                raise UseTraversalDefault
+
+
+        bb = BoboTraversableUseTraversalDefault()
+        # normal access -- no traversal default used
+        self.assertEqual(bb.unrestrictedTraverse('normal'), 'Normal')
+        # use traversal default
+        self.assertEqual(bb.unrestrictedTraverse('default'), 'Default')
+        # test traversal default with acqires attribute
+        si = SimpleItem()
+        si.default_acquire = 'Default_Acquire'
+        si.bb = bb
+        self.assertEqual(si.unrestrictedTraverse('bb/default_acquire'), 'Default_Acquire')
+
     def testAcquiredAttributeDenial(self):
         # Verify that restrictedTraverse raises the right kind of exception
         # on denial of access to an acquired attribute.  If it raises

@@ -30,6 +30,7 @@ from Acquisition import aq_parent
 from Acquisition.interfaces import IAcquirer
 from OFS.interfaces import ITraversable
 from zExceptions import NotFound
+from ZPublisher.interfaces import UseTraversalDefault
 from ZODB.POSException import ConflictError
 
 from zope.interface import implements
@@ -207,60 +208,66 @@ class Traversable:
                         except LocationError:
                             raise AttributeError(name)
 
-                    elif bobo_traverse is not None:
-                        next = bobo_traverse(REQUEST, name)
-                        if restricted:
-                            if aq_base(next) is not next:
-                                # The object is wrapped, so the acquisition
-                                # context is the container.
-                                container = aq_parent(aq_inner(next))
-                            elif getattr(next, 'im_self', None) is not None:
-                                # Bound method, the bound instance
-                                # is the container
-                                container = next.im_self
-                            elif getattr(aq_base(obj), name, _marker) is next:
-                                # Unwrapped direct attribute of the object so
-                                # object is the container
-                                container = obj
-                            else:
-                                # Can't determine container
-                                container = None
-                            # If next is a simple unwrapped property, its
-                            # parentage is indeterminate, but it may have
-                            # been acquired safely. In this case validate
-                            # will raise an error, and we can explicitly
-                            # check that our value was acquired safely.
-                            try:
-                                ok = validate(obj, container, name, next)
-                            except Unauthorized:
-                                ok = False
-                            if not ok:
-                                if (container is not None or
-                                    guarded_getattr(obj, name, _marker)
-                                        is not next):
-                                    raise Unauthorized(name)
                     else:
-                        if getattr(aq_base(obj), name, _marker) is not _marker:
-                            if restricted:
-                                next = guarded_getattr(obj, name)
+                        next = UseTraversalDefault # indicator
+                        try:
+                            if bobo_traverse is not None:
+                                next = bobo_traverse(REQUEST, name)
+                                if restricted:
+                                    if aq_base(next) is not next:
+                                        # The object is wrapped, so the acquisition
+                                        # context is the container.
+                                        container = aq_parent(aq_inner(next))
+                                    elif getattr(next, 'im_self', None) is not None:
+                                        # Bound method, the bound instance
+                                        # is the container
+                                        container = next.im_self
+                                    elif getattr(aq_base(obj), name, _marker) is next:
+                                        # Unwrapped direct attribute of the object so
+                                        # object is the container
+                                        container = obj
+                                    else:
+                                        # Can't determine container
+                                        container = None
+                                    # If next is a simple unwrapped property, its
+                                    # parentage is indeterminate, but it may have
+                                    # been acquired safely. In this case validate
+                                    # will raise an error, and we can explicitly
+                                    # check that our value was acquired safely.
+                                    try:
+                                        ok = validate(obj, container, name, next)
+                                    except Unauthorized:
+                                        ok = False
+                                    if not ok:
+                                        if (container is not None or
+                                            guarded_getattr(obj, name, _marker)
+                                                is not next):
+                                            raise Unauthorized(name)
+                        except UseTraversalDefault:
+                            # behave as if there had been no '__bobo_traverse__'
+                            bobo_traverse = None
+                        if next is UseTraversalDefault:
+                            if getattr(aq_base(obj), name, _marker) is not _marker:
+                                if restricted:
+                                    next = guarded_getattr(obj, name)
+                                else:
+                                    next = getattr(obj, name)
                             else:
-                                next = getattr(obj, name)
-                        else:
-                            try:
-                                next = obj[name]
-                                # The item lookup may return a NullResource,
-                                # if this is the case we save it and return it
-                                # if all other lookups fail.
-                                if isinstance(next, NullResource):
-                                    resource = next
-                                    raise KeyError(name)
-                            except AttributeError:
-                                # Raise NotFound for easier debugging
-                                # instead of AttributeError: __getitem__
-                                raise NotFound(name)
-                            if restricted and not validate(
-                                obj, obj, None, next):
-                                raise Unauthorized(name)
+                                try:
+                                    next = obj[name]
+                                    # The item lookup may return a NullResource,
+                                    # if this is the case we save it and return it
+                                    # if all other lookups fail.
+                                    if isinstance(next, NullResource):
+                                        resource = next
+                                        raise KeyError(name)
+                                except AttributeError:
+                                    # Raise NotFound for easier debugging
+                                    # instead of AttributeError: __getitem__
+                                    raise NotFound(name)
+                                if restricted and not validate(
+                                    obj, obj, None, next):
+                                    raise Unauthorized(name)
 
                 except (AttributeError, NotFound, KeyError), e:
                     # Try to look for a view

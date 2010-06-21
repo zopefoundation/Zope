@@ -20,6 +20,7 @@ import xmlrpc
 
 from Acquisition import aq_base
 from Acquisition.interfaces import IAcquirer
+from ZPublisher.interfaces import UseTraversalDefault
 from zExceptions import Forbidden
 from zExceptions import NotFound
 from zope.component import queryMultiAdapter
@@ -79,31 +80,35 @@ class DefaultPublishTraverse(object):
         if name[:1]=='_':
             raise Forbidden("Object name begins with an underscore at: %s" % URL)
 
-        if hasattr(object,'__bobo_traverse__'):
-            try:
-                subobject=object.__bobo_traverse__(request, name)
-                if type(subobject) is type(()) and len(subobject) > 1:
-                    # Add additional parents into the path
-                    # XXX There are no tests for this:
-                    request['PARENTS'][-1:] = list(subobject[:-1])
-                    object, subobject = subobject[-2:]
-            except (AttributeError, KeyError, NotFound), e:
-                # Try to find a view
-                subobject = queryMultiAdapter((object, request), Interface, name)
-                if subobject is not None:
-                    # OFS.Application.__bobo_traverse__ calls
-                    # REQUEST.RESPONSE.notFoundError which sets the HTTP
-                    # status code to 404
-                    request.response.setStatus(200)
-                    # We don't need to do the docstring security check
-                    # for views, so lets skip it and return the object here.
-                    if IAcquirer.providedBy(subobject):
-                        subobject = subobject.__of__(object)
-                    return subobject
-                # No view found. Reraise the error raised by __bobo_traverse__
-                raise e
-        else:
-            # No __bobo_traverse__
+        subobject = UseTraversalDefault  # indicator
+        try:
+            if hasattr(object,'__bobo_traverse__'):
+                try:
+                    subobject=object.__bobo_traverse__(request, name)
+                    if type(subobject) is type(()) and len(subobject) > 1:
+                        # Add additional parents into the path
+                        # XXX There are no tests for this:
+                        request['PARENTS'][-1:] = list(subobject[:-1])
+                        object, subobject = subobject[-2:]
+                except (AttributeError, KeyError, NotFound), e:
+                    # Try to find a view
+                    subobject = queryMultiAdapter((object, request), Interface, name)
+                    if subobject is not None:
+                        # OFS.Application.__bobo_traverse__ calls
+                        # REQUEST.RESPONSE.notFoundError which sets the HTTP
+                        # status code to 404
+                        request.response.setStatus(200)
+                        # We don't need to do the docstring security check
+                        # for views, so lets skip it and return the object here.
+                        if IAcquirer.providedBy(subobject):
+                            subobject = subobject.__of__(object)
+                        return subobject
+                    # No view found. Reraise the error raised by __bobo_traverse__
+                    raise e
+        except UseTraversalDefault:
+            pass
+        if subobject is UseTraversalDefault:
+            # No __bobo_traverse__ or default traversal requested
             # Try with an unacquired attribute:
             if hasattr(aq_base(object), name):
                 subobject = getattr(object, name)

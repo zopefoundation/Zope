@@ -124,6 +124,27 @@ class BaseRequest_factory:
                 return self, self._default_path
         return DummyObjectWithBD()
 
+    def _makeObjectWithBBT(self):
+        from ZPublisher.interfaces import UseTraversalDefault
+
+        class _DummyResult(object):
+            ''' '''
+            def __init__(self, tag):
+                self.tag = tag
+
+        class DummyObjectWithBBT(self._makeBasicObjectClass()):
+            """ Dummy class with __bobo_traverse__
+            """
+            default = _DummyResult('Default')
+
+            def __bobo_traverse__(self, REQUEST, name):
+                if name == 'normal':
+                    return _DummyResult('Normal')
+                elif name == 'default':
+                    raise UseTraversalDefault
+                raise AttributeError(name)
+        return DummyObjectWithBBT()
+
     def _makeObjectWithBDBBT(self):
         class DummyObjectWithBDBBT(self._makeBasicObjectClass()):
             """Dummy class with __browser_default__."""
@@ -254,6 +275,16 @@ class TestBaseRequest(unittest.TestCase, BaseRequest_factory):
         r = self._makeOne(root)
         self.failUnlessRaises(NotFound, r.traverse,
                               'folder/objWithBBT/bbt_foo')
+
+    def test_traverse_UseTraversalDefault(self):
+        root, folder = self._makeRootAndFolder()
+        folder._setObject('objWithBBT', self._makeObjectWithBBT())
+        # test non default usage
+        r = self._makeOne(root)
+        self.assertEqual(r.traverse('folder/objWithBBT/normal').tag, 'Normal')
+        # test default usage
+        r = self._makeOne(root)
+        self.assertEqual(r.traverse('folder/objWithBBT/default').tag, 'Default')
 
     def test_traverse_withBDBBT(self):
         # Test for an object which has a __browser_default__

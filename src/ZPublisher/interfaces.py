@@ -56,5 +56,17 @@ class IPubBeforeStreaming(Interface):
     something calls response.write() for the first time. Note that this is
     carries a reference to the *response*, not the request.
     """
-    
+
     response = Attribute(u"The current HTTP response")
+
+
+# Exceptions
+
+class UseTraversalDefault(Exception):
+    """Indicate default traversal in ``__bobo_traverse__``
+
+    This exception can be raised by '__bobo_traverse__' implementations to
+    indicate that it has no special casing for the given name and that standard
+    traversal logic should be applied.
+
+    """

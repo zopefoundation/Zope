@@ -127,6 +127,11 @@ Restructuring
 Features Added
 ++++++++++++++
 
+- LP #374810: ``__bobo_traverse__`` implementation can raise
+  ``ZPublisher.interfaces.UseTraversalDefault`` to indicate that there is no
+  special casing for the given name and that standard traversal logic should
+  be applied.
+
 - LP #142226: Added an extra keyword argument to the HTTPResponse 
   setCookie method to suppress enclosing the cookie value field 
   in double quotes.
