@@ -11,6 +11,10 @@ Trunk (unreleased)
 Restructuring
 +++++++++++++
 
+- ZPublisher: Removed 'Main' and 'Zope' wrappers for Test.publish.
+  If anybody really used them, he can easily use ZPublisher.test instead. In
+  the long run ZPublisher.test and ZPublisher.Test might also be removed.
+
 - Moved AccessControl, DocumentTemplate (incl. TreeDisplay) and
   Products.ZCTextIndex to their own distributions. This removes the last
   direct C extensions from the Zope2 distribution.

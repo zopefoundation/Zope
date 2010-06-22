@@ -28,16 +28,3 @@ def test(*args, **kw):
     import Test
     test=Test.publish
     return apply(test, args, kw)
-
-def Main(*args, **kw):
-    global test
-    import Test
-    test=Test.publish
-    return apply(test, ('Main',)+args, kw)
-
-# What can we say. ;/
-def Zope(*args, **kw):
-    global test
-    import Test
-    test=Test.publish
-    return apply(test, ('Zope',)+args, kw)
