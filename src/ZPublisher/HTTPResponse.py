@@ -755,21 +755,7 @@ class HTTPResponse(BaseResponse):
                 m = m + '<p>\nNo Authorization header found.</p>'
         raise Unauthorized, m
 
-    def exception(self, fatal=0, info=None,
-                  absuri_match=re.compile(r'\w+://[\w\.]+').match,
-                  tag_search=re.compile('[a-zA-Z]>').search,
-                  abort=1
-                  ):
-        if isinstance(info, tuple) and len(info) == 3:
-            t, v, tb = info
-        else:
-            t, v, tb = sys.exc_info()
-
-        if issubclass(t, Unauthorized):
-            self._unauthorized()
-
-        stb = tb # note alias between tb and stb
-
+    def _setBCIHeaders(self, t, tb):
         try:
             # Try to capture exception info for bci calls
             et = translate(str(t), nl2sp)
@@ -794,13 +780,26 @@ class HTTPResponse(BaseResponse):
 
             self.setHeader('bobo-exception-file', ef)
             self.setHeader('bobo-exception-line', el)
-
         except:
-            # Dont try so hard that we cause other problems ;)
+            # Don't try so hard that we cause other problems ;)
             pass
 
-        tb = stb # original traceback
-        del stb
+        del tb
+
+    def exception(self, fatal=0, info=None,
+                  absuri_match=re.compile(r'\w+://[\w\.]+').match,
+                  tag_search=re.compile('[a-zA-Z]>').search,
+                  abort=1
+                  ):
+        if isinstance(info, tuple) and len(info) == 3:
+            t, v, tb = info
+        else:
+            t, v, tb = sys.exc_info()
+
+        if issubclass(t, Unauthorized):
+            self._unauthorized()
+
+        self._setBCIHeaders(t, tb)
         self.setStatus(t)
         if self.status >= 300 and self.status < 400:
             if isinstance(v, str) and absuri_match(v) is not None:

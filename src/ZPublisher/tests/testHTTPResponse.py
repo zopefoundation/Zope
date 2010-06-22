@@ -1280,6 +1280,23 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(len(lines), 1)
         self.assertEqual(lines[0], 'Kilroy was here!')
 
+    def test__setBCIHeaders(self):
+        response = self._makeOne()
+        try:
+            raise AttributeError('ERROR VALUE')
+        except AttributeError:
+            t, v, tb = sys.exc_info()
+            response._setBCIHeaders(t, tb)
+            # required by Bobo Call Interface (BCI)
+            self.assertEqual(response.headers['bobo-exception-type'],
+                             "<type 'exceptions.AttributeError'>")
+            self.assertEqual(response.headers['bobo-exception-value'],
+                             'See the server error log for details')
+            self.failUnless('bobo-exception-file' in response.headers)
+            self.failUnless('bobo-exception-line' in response.headers)
+        finally:
+            del tb
+
     def test_exception_Internal_Server_Error(self):
         response = self._makeOne()
         try:
