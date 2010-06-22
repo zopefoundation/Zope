@@ -1,6 +1,8 @@
 # -*- coding: iso-8859-15 -*-
 
 import unittest
+import sys
+
 
 class HTTPResponseTests(unittest.TestCase):
 
@@ -25,7 +27,6 @@ class HTTPResponseTests(unittest.TestCase):
         return self._getTargetClass()(*args, **kw)
 
     def test_ctor_defaults(self):
-        import sys
         response = self._makeOne()
         self.assertEqual(response.accumulated_headers, [])
         self.assertEqual(response.status, 200)
@@ -1278,6 +1279,23 @@ class HTTPResponseTests(unittest.TestCase):
         lines = stdout.getvalue().split('\r\n')
         self.assertEqual(len(lines), 1)
         self.assertEqual(lines[0], 'Kilroy was here!')
+
+    def test_exception_Internal_Server_Error(self):
+        response = self._makeOne()
+        try:
+            raise AttributeError('ERROR VALUE')
+        except AttributeError:
+            body = response.exception()
+            self.failUnless('ERROR VALUE' in str(body))
+            self.assertEqual(response.status, 500)
+            self.assertEqual(response.errmsg, 'Internal Server Error')
+            # required by Bobo Call Interface (BCI)
+            self.assertEqual(response.headers['bobo-exception-type'],
+                             "<type 'exceptions.AttributeError'>")
+            self.assertEqual(response.headers['bobo-exception-value'],
+                             'See the server error log for details')
+            self.failUnless('bobo-exception-file' in response.headers)
+            self.failUnless('bobo-exception-line' in response.headers)
 
     #TODO
     # def test_exception_* WAAAAAA!
