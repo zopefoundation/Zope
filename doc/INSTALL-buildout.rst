@@ -3,7 +3,7 @@ Installing and Zope with ``zc.buildout``
 
 .. highlight:: bash
 
-This document descibes how to get going with Zope using ``zc.buildout``.
+This document describes how to get going with Zope using ``zc.buildout``.
 
 
 About ``zc.buildout``
@@ -18,7 +18,7 @@ Prerequisites
 -------------
 
 In order to use Zope, you must have the following pre-requisites
-available: 
+available:
 
 - A supported version of Python, including the development support if
   installed from system-level packages.  Supported versions include:
@@ -80,7 +80,7 @@ Zope server process.  The instance home is created using the
   $ bin/mkzopeinstance
 
 You can specify the Python interpreter to use for the instance
-explicitly:: 
+explicitly::
 
   $ bin/mkzopeinstance --python=$PWD/bin/zopepy
 
@@ -103,7 +103,7 @@ to use ``zc.buildout`` to create a self-contained environment, containing
 both the Zope software and the configuration and data for your server.
 This procedure involves the following steps:
 
-- Create the home directory for the buildout, including 
+- Create the home directory for the buildout, including
   ``etc``, ``log`` and ``var`` subdirectories.
 
 - Fetch the buildout bootstrap script into the environment.
@@ -116,7 +116,7 @@ This procedure involves the following steps:
  ::
 
    [buildout]
-   parts = instance 
+   parts = instance
    extends = http://download.zope.org/Zope2/index/<Zope version>/versions.cfg
 
    [instance]
@@ -145,7 +145,7 @@ used.
    %define INSTANCE <path to your instance directory>
 
    python $INSTANCE/bin/py[.exe on Windows]
- 
+
    instancehome $INSTANCE
 
 A fully-annotated sample can be found in the Zope2 egg::

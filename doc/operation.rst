@@ -16,14 +16,14 @@ Your instance's configuration is defined in its ``etc/zope.conf`` file.
 Unless you created the file manually, that file should contain fully-
 annotated examples of each directive.
 
-You can also pass an explicit configuration file on the commandline::
+You can also pass an explicit configuration file on the command line::
 
   $ /path/to/zope/instance/bin/zopectl -c /tmp/other.conf show
   ...
   Config file:  /tmp/other.conf
 
 When starting Zope, if you see errors indicating that an address is in
-use, then you may have to change the ports Zope uses for HTTP or FTP. 
+use, then you may have to change the ports Zope uses for HTTP or FTP.
 The default HTTP and FTP ports used by Zope are
 8080 and 8021 respectively. You can change the ports used by
 editing ./etc/zope.conf appropriately.
@@ -36,7 +36,7 @@ The section in the configuration file looks like this::
     # force-connection-close on
   </http-server>
 
-The address can just be a port number as shown, or a  host:port
+The address can just be a port number as shown, or a host:port
 pair to bind only to a specific interface.
 
 After making any changes to the configuration file, you need to restart any
@@ -52,7 +52,8 @@ command (short for ``foreground``)::
   $ /path/to/zope/instance/bin/zopectl fg
 
 In this mode, Zope emits its log messages to the console, and does not
-detach from the terminal.
+detach from the terminal. This also automatically enables debug-mode. Do
+not use this for production servers.
 
 
 Running Zope as a Daemon
