@@ -5,8 +5,8 @@ This file contains change information for the current Zope release.
 Change information for previous versions of Zope can be found at
 http://docs.zope.org/zope2/releases/.
 
-Trunk (unreleased)
-------------------
+2.13.0a1 (unreleased)
+---------------------
 
 Distribution changes
 ++++++++++++++++++++
