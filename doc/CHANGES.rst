@@ -8,11 +8,8 @@ http://docs.zope.org/zope2/releases/.
 Trunk (unreleased)
 ------------------
 
-Features Added
-++++++++++++++
-
 Distribution changes
-####################
+++++++++++++++++++++
 
 - Moved AccessControl, DocumentTemplate (incl. TreeDisplay) and
   Products.ZCTextIndex to their own distributions. This removes the last direct
@@ -30,7 +27,7 @@ Distribution changes
   threads printed out on the console. This works even if all threads are stuck.
 
 Instance skeleton
-#################
++++++++++++++++++
 
 - Changed the default for ``enable-product-installation`` to off. This matches
   the default behavior of buildout installs via plone.recipe.zope2instance.
@@ -57,7 +54,7 @@ Instance skeleton
   the instance skeleton.
 
 Deprecated and Removed
-######################
+++++++++++++++++++++++
 
 - Finished the move of five.formlib to an extra package and removed it from Zope
   2 itself. Upgrade notes have been added to the news section of the release
@@ -90,7 +87,7 @@ Deprecated and Removed
   ``<class />`` directive allows the same.
 
 Refactoring
-###########
++++++++++++
 
 - Completely refactored ``ZPublisher.WSGIResponse`` in order to provide
   non-broken support for running Zope under arbitrary WSGI servers. In this
@@ -138,7 +135,7 @@ Refactoring
 - Ported the lazy expression into zope.tales and require a new version of it.
 
 General
-#######
++++++++
 
 - Updated copyright and license information to conform with repository policy.
 
@@ -162,7 +159,7 @@ General
   as valid white space.
 
 Updated packages
-################
+++++++++++++++++
 
 - Jinja2 = 2.5.0
 - RestrictedPython = 3.6.0a1
