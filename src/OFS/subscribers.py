@@ -1,6 +1,6 @@
 ##############################################################################
 #
-# Copyright (c) 2005 Zope Foundation and Contributors.
+# Copyright (c) 2005,2010 Zope Foundation and Contributors.
 # All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
@@ -56,12 +56,15 @@ def maybeWarnDeprecated(ob, method_name):
     if not deprecatedManageAddDeleteClasses:
         # Directives not fully loaded
         return
-    for cls in deprecatedManageAddDeleteClasses:
-        if isinstance(ob, cls):
-            # Already deprecated through zcml
-            return
     if getattr(getattr(ob, method_name), '__five_method__', False):
         # Method knows it's deprecated
+        return
+    ob_type = type(ob)
+    # Quick check for directly deprecated classes
+    if ob_type in deprecatedManageAddDeleteClasses:
+        return
+    if any(issubclass(ob_type, cls)
+           for cls in deprecatedManageAddDeleteClasses):
         return
     class_ = ob.__class__
     LOG.debug(

@@ -11,6 +11,8 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
+- LP #597594: Performance optimization in OFS.subscriber.maybeWarnDeprecated.
+  
 - LP #143639: When the last cache manager in a container is 
   deleted, we need to remove all traces of it from the 
   container.
