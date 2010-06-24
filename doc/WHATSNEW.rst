@@ -66,6 +66,9 @@ factoring out capabilities into WSGI endware. It's expected that this new
 deployment model will over time become the default and the old ZServer
 implementation will be deprecated. There's no concrete timeline for this yet.
 
+NOTE: There's no setup documentation nor streamlined instance creation logic
+for a WSGI setup yet. This will be provided in a later alpha release.
+
 
 Zope Toolkit
 ------------

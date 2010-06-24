@@ -100,7 +100,7 @@ setup(name='Zope2',
           'runzope=Zope2.Startup.run:run',
           'zopectl=Zope2.Startup.zopectl:run',
           'zpasswd=Zope2.utilities.zpasswd:main',
-          'addzope2user=Zope2.utilities.adduser:main'
+          # 'addzope2user=Zope2.utilities.adduser:main'
       ],
     },
 )
