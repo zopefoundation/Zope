@@ -87,8 +87,6 @@ Restructuring
 
 - Ported the lazy expression into zope.tales and require a new version of it.
 
-- Updated Five documentation to clarify its role in regard to Zope packages.
-
 - Removed the deprecated ``five:containerEvents`` directive, which had been
   a no-op for quite a while.
 
@@ -97,20 +95,6 @@ Restructuring
 
 - Marked the ``<five:implements />`` as officially deprecated. The standard
   ``<class />`` directive allows the same.
-
-- Reuse IInclude from zope.configuration.xmlconfig.
-
-- Reuse IMenuItemType from zope.browsermenu.
-
-- We no longer depend on the ``zope-functional-testing`` extra of
-  zope.testbrowser.
-
-- Removed the dependency on zope.app.publication in favor of new versions of
-  zope.publisher and zope.traversing.
-
-- Changed startup server tests in Zope2 to use a randomized port number, to
-  allow the nightly buildbot to run the tests at the same time for multiple
-  configurations without the port being already in use.
 
 - Moved ``Products/Five/security.py`` and security related ZCML configuration
   into the AccessControl package.
@@ -134,8 +118,6 @@ Restructuring
 
 - Integrated zLOG package back into this distribution.
 
-- Updated documentation to new version number.
-
 Features Added
 ++++++++++++++
 
@@ -144,25 +126,25 @@ Features Added
   special casing for the given name and that standard traversal logic should
   be applied.
 
-- LP #142464:  Make undo log easier to read.  Thanks to Toby Dickinson
-  for the patch.
+- LP #142464: Make undo log easier to read. Thanks to Toby Dickinson for the
+  patch.
 
-- LP #142401:  Added a link in the ZMI tree pane to make the tree state
-  persistent.  Thanks to Lalo Martins for the patch.
+- LP #142401: Added a link in the ZMI tree pane to make the tree state
+  persistent. Thanks to Lalo Martins for the patch.
 
-- LP #142502:  Added a knob to the Debug control panel for resetting
-  profile data.  Thanks to Vladimir Patukhov for the patch.
+- LP #142502: Added a knob to the Debug control panel for resetting profile
+  data. Thanks to Vladimir Patukhov for the patch.
 
-- LP #143232: Added option to 'zope.conf' to specify an additional directory
-  to be searched for 'App.Extensions' lookups.  Thanks to Rodrigo Senra for
-  the patch.
+- LP #143232: Added option to 'zope.conf' to specify an additional directory to
+  be searched for 'App.Extensions' lookups. Thanks to Rodrigo Senra for the
+  patch.
 
 - Integrated the Products.signalstack / z3c.deadlockdebugger packages. You can
   now send a SIGUSR1 signal to a Zope process and get a stack trace of all
   threads printed out on the console. This works even if all threads are stuck.
 
-- ZCTextIndex query parser treats fullwidth space characters defined
-  in Unicode as valid white space.
+- ZCTextIndex query parser treats fullwidth space characters defined in Unicode
+  as valid white space.
 
 - Updated packages:
 
