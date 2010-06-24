@@ -168,21 +168,14 @@ instancehome $INSTANCE
 # Description:
 #     If this directive is turned on, Zope performs 'product installation'
 #     (the registration of Python modules in various Products directories)
-#     at startup. Turning this off can speed Zope/ZEO startup time,
-#     but it can also cause your Control_Panel Product list to become
-#     desynchronized with the contents of your Products
-#     directories.  NOTE: Zope *must* be started at least once with
-#     this directive set to "on" or you will receive an error.  If using ZEO,
-#     at least one ZEO client must be run with this directive set to "on"
-#     once, the others can have it turned off.
-#     NOTE: If your main storage is mounted read-only,
-#     you must set this directive to "off".
+#     at startup. Only turn this on if your code relies on the Products
+#     section in the Control_Panel to be populated.
 #
-# Default: on
+# Default: off
 #
 # Example:
 #
-#    enable-product-installation off
+#    enable-product-installation on
 
 # Directive: locale
 #

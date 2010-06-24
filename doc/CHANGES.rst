@@ -11,6 +11,9 @@ Trunk (unreleased)
 Restructuring
 +++++++++++++
 
+- Changed the default for ``enable-product-installation`` to off. This matches
+  the default behavior of buildout installs via plone.recipe.zope2instance.
+
 - Removed outdated check_python_version function from startup process.
 
 - ZPublisher: Removed 'Main' and 'Zope' wrappers for Test.publish.

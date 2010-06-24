@@ -423,15 +423,14 @@
     <metadefault>unset</metadefault>
   </key>
 
-  <key name="enable-product-installation" datatype="boolean" default="on">
+  <key name="enable-product-installation" datatype="boolean" default="off">
     <description>
      If this directive is turned on, Zope performs 'product installation'
      (the registration of Python modules in various Products directories)
-     at startup. Turning this off can speed Zope startup time, but it can
-     also cause your Control_Panel Product list to become desynchronized
-     with the contents of your Products directories.
+     at startup. Only turn this on if your code relies on the Products section
+     in the Control_Panel to be populated.
     </description>
-    <metadefault>on</metadefault>
+    <metadefault>off</metadefault>
   </key>
 
   <key name="locale" datatype="locale" handler="locale">
