@@ -11,6 +11,9 @@ Trunk (unreleased)
 Restructuring
 +++++++++++++
 
+- Removed the unmaintained and no longer functioning ZopeTutorialExamples
+  from the instance skeleton.
+
 - Changed the default for ``enable-product-installation`` to off. This matches
   the default behavior of buildout installs via plone.recipe.zope2instance.
 
