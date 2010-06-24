@@ -144,10 +144,6 @@ Features Added
   special casing for the given name and that standard traversal logic should
   be applied.
 
-- LP #142226: Added an extra keyword argument to the HTTPResponse 
-  setCookie method to suppress enclosing the cookie value field 
-  in double quotes.
-
 - LP #142464:  Make undo log easier to read.  Thanks to Toby Dickinson
   for the patch.
 
@@ -167,10 +163,6 @@ Features Added
 
 - ZCTextIndex query parser treats fullwidth space characters defined
   in Unicode as valid white space.
-
-- Added ``setSortKey()`` method to the ``Shared.DC.ZRDB.TM.TM`` class
-  to allow database connections to specify the commit order without
-  needing to override the ``sortKey()`` method.
 
 - Updated packages:
 
@@ -211,76 +203,6 @@ Features Added
 
 Bugs Fixed
 ++++++++++
-
-- LP #597594: Performance optimization in OFS.subscriber.maybeWarnDeprecated.
-
-- LP #143639: When the last cache manager in a container is
-  deleted, we need to remove all traces of it from the
-  container.
-
-- LP #143619: Make sure to remove a RAMCache's contents when the
-  ZODB object is removed.
-
-- LP #143403: Prevent accidental acquisition of objectValues during
-  recursive ownership changes when the changed object has no
-  objectValues method.
-
-- LP #142535: Fix faulty docstring for manage_changeProperties which
-  incorrectly suggested that passing a simple dictionary as REQUEST
-  argument was supported.
-
-- LP #374818: Use module-provided functions as opposed to the old
-  "folder methods" when creating folders and user folders in
-  ZopeTestCase.
-
-- LP #143946: Provide a more informative error message when a
-  WebDAV PUT fails.
-
-- LP #143261: The (very old-fashioned) Zope2.debug interactive request
-  debugger still referred to the toplevel module ``Zope``, which was
-  renamed to ``Zope2`` a long time ago.
-
-- LP #142874: Naming objects ``URL`` or ``URL1`` broke several ZMI
-  views.
-
-- LP #142878: Remove URL-based suppression of access rules and site root
-  objects.   Suppression using ``os.environ`` still works.
-
-- LP #143144: Fix documentation for the zope.conf ``mount-point``
-  directive.
-
-- LP #142410: Do not index documents in a KeywordIndex if the document 
-  is missing the indexed attribute, if determining the value raises 
-  AttributeError, or of the indexed attribute is empty.
-
-- LP #142590: The ``DTMLMethod`` and ``DTMLDocument`` ``manage_edit`` 
-  methods could not deal with ``TaintedString`` instances. Removed the 
-  entirely redundant ``DTMLDocument.manage_edit`` method at the same time.
-
-- LP #142750 and LP #142481: To prevent confusion when choosing an Id and 
-  to avoid issues when creating two VirtualHostMonsters in the same 
-  container the VirtualHostMoster now has a default Id. It can no longer 
-  be selected, and the intermediary Add view is gone.
-
-- LP #142451: If non-recursive ownership changes are made using 
-  ``changeOwnership``, do not touch any children.
-
-- LP #142563:  Fix ``AccessControl.User.NullUnrestrictedUserTests.__str__``.
-
-- LP #267820:  Fix bad except clause in the ``sequence_sort`` method of
-  the ``<dtml-in>`` tag.
-
-- LP #351006:  Don't nest block tags inside HTML ``<p>`` tags in
-  ``zExceptions.ExceptionFormatter``.
-
-- LP #411837:  Handle resource files with ``.htm`` extention properly,
-  as page template resources.
-
-- LP #435729:  Fix indentation of OFSP/help/sequence.py docstring.
-
-- LP #574286:  Ensure that mailhosts which share a queue directory do not
-  double-deliver mails, by sharing the thread which processes emails for
-  that directory.
 
 - LP #143604: Removed top-level database-quota-size from zope.conf, some
   storages support a quota option instead.
