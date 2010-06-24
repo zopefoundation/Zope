@@ -1,12 +1,21 @@
 ##############################################################################
 #
-# yanked from repoze.zope2
+# Copyright (c) 2010 Zope Foundation and Contributors.
+#
+# This software is subject to the provisions of the Zope Public License,
+# Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
+# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
+# WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
+# FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
 
 import os
 
+
 class ZopeFinder:
+
     def __init__(self, argv):
         self.cmd = argv[0]
 
@@ -38,4 +47,3 @@ class ZopeFinder:
         default_config_file = os.path.join(ihome, 'etc', 'zope.conf')
         zope_conf = os.environ.get('ZOPE_CONF', default_config_file)
         return zope_conf
-
