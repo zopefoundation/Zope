@@ -31,7 +31,6 @@ logger = logging.getLogger("Zope")
 started = False
 
 def get_starter():
-    check_python_version()
     if sys.platform[:3].lower() == "win":
         return WindowsZopeStarter()
     else:
@@ -352,16 +351,6 @@ class UnixZopeStarter(ZopeStarter):
 
     def setupFinalLogging(self):
         self.setupConfiguredLoggers()
-
-
-def check_python_version():
-    # check for Python version
-    python_version = sys.version.split()[0]
-    optimum_version = '2.3.4'
-    if python_version < '2.3.4':
-        raise ZConfig.ConfigurationError(
-            'Invalid python version: %s, the optimal version is %s or higher' %
-            (python_version, optimum_version))
 
 
 def dropPrivileges(cfg):

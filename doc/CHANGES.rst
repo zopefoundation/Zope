@@ -11,6 +11,8 @@ Trunk (unreleased)
 Restructuring
 +++++++++++++
 
+- Removed outdated check_python_version function from startup process.
+
 - ZPublisher: Removed 'Main' and 'Zope' wrappers for Test.publish.
   If anybody really used them, he can easily use ZPublisher.test instead. In
   the long run ZPublisher.test and ZPublisher.Test might also be removed.
