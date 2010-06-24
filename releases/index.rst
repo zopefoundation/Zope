@@ -1,6 +1,15 @@
 Zope Release Information
 ========================
 
+Zope 2.13 Releases
+------------------
+
+.. toctree::
+   :maxdepth: 2
+
+   2.13/index
+
+
 Zope 2.12 Releases
 ------------------
 
