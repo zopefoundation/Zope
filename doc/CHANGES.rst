@@ -5,7 +5,7 @@ This file contains change information for the current Zope release.
 Change information for previous versions of Zope can be found at
 http://docs.zope.org/zope2/releases/.
 
-2.13.0a1 (unreleased)
+2.13.0a1 (2010-06-25)
 ---------------------
 
 This release includes all bug fixes and features of the
