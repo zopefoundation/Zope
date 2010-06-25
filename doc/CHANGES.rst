@@ -8,6 +8,9 @@ http://docs.zope.org/zope2/releases/.
 2.13.0a1 (unreleased)
 ---------------------
 
+This release includes all bug fixes and features of the
+`Zope 2.12.8 <http://pypi.python.org/pypi/Zope2/2.12.8>`_ release.
+
 Distribution changes
 ++++++++++++++++++++
 
