@@ -12,24 +12,20 @@ Bugs Fixed
 ++++++++++
 
 - LP #597594: Performance optimization in OFS.subscriber.maybeWarnDeprecated.
-  
-- LP #143639: When the last cache manager in a container is 
-  deleted, we need to remove all traces of it from the 
-  container.
 
-- LP #143619: Make sure to remove a RAMCache's contents when the 
-  ZODB object is removed.
+- LP #143639: When the last cache manager in a container is deleted, we need to
+  remove all traces of it from the container.
 
-- LP #143403: Prevent accidental acquisition of objectValues during
-  recursive ownership changes when the changed object has no 
-  objectValues method.
+- LP #143619: Make sure to remove a RAMCache's contents when the ZODB object is
+  removed.
 
-- LP #374818: Use module-provided functions as opposed to the old 
-  "folder methods" when creating folders and user folders in 
-  ZopeTestCase.
+- LP #143403: Prevent accidental acquisition of objectValues during recursive
+  ownership changes when the changed object has no objectValues method.
 
-- LP #143946: Provide a more informative error message when a 
-  WebDAV PUT fails.
+- LP #374818: Use module-provided functions as opposed to the old
+  "folder methods" when creating folders and user folders in ZopeTestCase.
+
+- LP #143946: Provide a more informative error message when a WebDAV PUT fails.
 
 Features Added
 ++++++++++++++
@@ -39,10 +35,11 @@ Features Added
   - ExtensionClass = 2.13.2
   - Missing = 2.13.1
   - Persistence = 2.13.2
+  - Sphinx = 0.6.7
 
-- Added ``setSortKey()`` method to the ``Shared.DC.ZRDB.TM.TM`` class
-  to allow database connections to specify the commit order without
-  needing to override the ``sortKey()`` method.
+- Added ``setSortKey()`` method to the ``Shared.DC.ZRDB.TM.TM`` class to allow
+  database connections to specify the commit order without needing to override
+  the ``sortKey()`` method.
 
 2.12.7 (2010-06-13)
 -------------------
@@ -50,8 +47,8 @@ Features Added
 Bugs Fixed
 ++++++++++
 
-- LP #142535: Fix faulty docstring for manage_changeProperties which 
-  incorrectly suggested that passing a simple dictionary as REQUEST 
+- LP #142535: Fix faulty docstring for manage_changeProperties which
+  incorrectly suggested that passing a simple dictionary as REQUEST
   argument was supported.
 
 - LP #583702: Fixed regression in mailhost queue processor code introduced
@@ -64,7 +61,7 @@ Bugs Fixed
   do anything for :record fields.
 
 - LP #143261: The (very old-fashioned) Zope2.debug interactive request
-  debugger still referred to the toplevel module ``Zope``, which was 
+  debugger still referred to the toplevel module ``Zope``, which was
   renamed to ``Zope2`` a long time ago.
 
 - LP #142874: Naming objects ``URL`` or ``URL1`` broke several ZMI
@@ -84,11 +81,11 @@ Bugs Fixed
   methods could not deal with ``TaintedString`` instances. Removed the
   entirely redundant ``DTMLDocument.manage_edit`` method at the same time.
 
-- LP #142451: If non-recursive ownership changes are made using 
+- LP #142451: If non-recursive ownership changes are made using
   ``changeOwnership``, do not touch any children.
 
 - LP #142750 and LP #142481: To prevent confusion when choosing an Id and
-  to avoid issues when creating two VirtualHostMonsters in the same 
+  to avoid issues when creating two VirtualHostMonsters in the same
   container the VirtualHostMoster now has a default Id. It can no longer
   be selected, and the intermediary Add view is gone.
 
@@ -819,7 +816,7 @@ Restructuring
 - Avoid deprecation warnings for the md5 and sha modules in Python 2.6
   by adding conditional imports for the hashlib module.
 
-- Replaced imports from the 'Globals' module throughout the 
+- Replaced imports from the 'Globals' module throughout the
   tree with imports from the actual modules;  the 'Globals' module
   was always intended to be an area for shared data, rather than
   a "facade" for imports.  Added zope.deferred.deprecation entries
@@ -916,7 +913,7 @@ Bugs Fixed
 - Launchpad #280334: Fixed problem with 'timeout'
   argument/attribute missing in testbrowser tests.
 
-- Launchpad #267834: proper separation of HTTP header fields   
+- Launchpad #267834: proper separation of HTTP header fields
   using CRLF as requested by RFC 2616.
 
 - Launchpad #257276: fix for possible denial-of-service attack
