@@ -189,7 +189,7 @@ Updated packages
 - zope.lifecycleevent = 3.6.0
 - zope.ptresource = 3.9.0
 - zope.publisher = 3.12.3
-- zope.schema = 3.6.3
+- zope.schema = 3.6.4
 - zope.sendmail = 3.7.2
 - zope.site = 3.9.1
 - zope.structuredtext = 3.5.0
