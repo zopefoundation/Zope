@@ -42,7 +42,7 @@
 
     <meta:complexDirective
         name="view"
-        schema="zope.app.publisher.browser.metadirectives.IViewDirective"
+        schema=".metaconfigure.IFiveViewDirective"
         handler=".metaconfigure.view"
         >
 

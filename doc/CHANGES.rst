@@ -11,6 +11,9 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
+- LP #578326: Issue a warning if someone specifies a non-public permission
+  attribute in the browser:view directive. This attribute has never been
+  supported in Zope 2.
 
 
 2.12.8 (2010-06-25)
