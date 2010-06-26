@@ -211,7 +211,7 @@ class view(zope.app.publisher.browser.viewmeta.view):
                           (str(class_), _context.info), stacklevel=3)
 
         super(view, self).__init__(
-            _context, for_, permission=permission, name=name, layer=layer,
+            _context, for_, permission, name=name, layer=layer,
             class_=class_, allowed_interface=allowed_interface,
             allowed_attributes=allowed_attributes, menu=menu, title=title,
             provides=provides)
