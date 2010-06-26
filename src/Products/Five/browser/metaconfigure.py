@@ -20,6 +20,7 @@ $Id$
 """
 import os
 from inspect import ismethod
+import warnings
 
 from zope import component
 from zope.interface import implements
@@ -31,11 +32,13 @@ from zope.publisher.interfaces import NotFound
 from zope.publisher.interfaces.browser import IDefaultBrowserLayer
 from zope.publisher.interfaces.browser import IBrowserPublisher
 from zope.publisher.interfaces.browser import IBrowserRequest
+from zope.security.zcml import Permission
 
 import zope.browserpage.metaconfigure
 from zope.browserpage.metaconfigure import providesCallable
 from zope.browserpage.metaconfigure import _handle_menu
 from zope.browserpage.metaconfigure import _handle_for
+from zope.browserpage.metadirectives import IViewDirective
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.security import getSecurityInfo
@@ -178,7 +181,41 @@ class pages(zope.browserpage.metaconfigure.pages):
 
 # view (named view with pages)
 
+class IFiveViewDirective(IViewDirective):
+
+    permission = Permission(
+        title=u"Permission",
+        description=u"The permission needed to use the view.",
+        required=False,
+        )
+
+
 class view(zope.browserpage.metaconfigure.view):
+
+    # Let the permission default to zope.Public and not be required
+    # We should support this, as more users are expecting it to work.
+    def __init__(self, _context, permission=None, for_=Interface,
+                 name='', layer=IDefaultBrowserLayer, class_=None,
+                 allowed_interface=None, allowed_attributes=None,
+                 menu=None, title=None, provides=Interface,
+                 ):
+        if permission is None:
+            permission = 'zope.Public'
+        elif permission in ('zope.Public', 'zope2.Public'):
+            # No need to warn about the default case
+            pass
+        else:
+            warnings.warn("The permission option of the <browser:view /> "
+                          "directive is not supported in Zope 2. " + \
+                          "Ignored for %s in %s" %
+                          (str(class_), _context.info), stacklevel=3)
+
+        super(view, self).__init__(
+            _context, permission, for_=for_, name=name, layer=layer,
+            class_=class_, allowed_interface=allowed_interface,
+            allowed_attributes=allowed_attributes, menu=menu, title=title,
+            provides=provides)
+
 
     def __call__(self):
         (_context, name, for_, permission, layer, class_,
