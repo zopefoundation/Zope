@@ -18,6 +18,8 @@ $Id$
 import sys
 from unittest import TestSuite
 
+from OFS.metaconfigure import get_registered_packages
+from OFS.metaconfigure import set_registered_packages
 
 from Testing import ZopeTestCase
 from Testing.ZopeTestCase import ZopeLite
@@ -96,10 +98,9 @@ class TestClass(ZopeTestCase.FunctionalTestCase):
         cleanup.cleanUp()
         sys.path[:] = self.saved
 
-        registered = getattr(Products, '_registered_packages', None)
-        if registered is not None:
-            Products._registered_packages = [m for m in registered
-                                             if m.__name__ != 'testpackage']
+        registered = get_registered_packages()
+        packages = [m for m in registered if m.__name__ != 'testpackage']
+        set_registered_packages(packages)
 
         to_initialize = getattr(Products, '_packages_to_initialize', None)
         if to_initialize is not None:
