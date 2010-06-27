@@ -36,8 +36,6 @@
 
 import os
 
-import transaction
-
 from AccessControl.class_init import InitializeClass
 from AccessControl.owner import UnownableOwner
 from AccessControl.SecurityInfo import ClassSecurityInfo
@@ -204,13 +202,16 @@ InitializeClass(Product)
 
 
 def initializeProduct(productp, name, home, app):
-    # Initialize a levered product
+    # Initialize a persistent product
+    assert doInstall()
+
     import Globals  # to set data
-    products = app.Control_Panel.Products
     fver = ''
 
-    if hasattr(productp, '__import_error__'): ie=productp.__import_error__
-    else: ie=None
+    if hasattr(productp, '__import_error__'):
+        ie = productp.__import_error__
+    else:
+        ie = None
 
     # Retrieve version number from any suitable version.txt
     for fname in ('version.txt', 'VERSION.txt', 'VERSION.TXT'):
@@ -223,32 +224,33 @@ def initializeProduct(productp, name, home, app):
         except IOError:
             continue
 
-    old=None
+    old = None
+    products = app.Control_Panel.Products
     try:
-        if ihasattr(products,name):
+        if ihasattr(products, name):
             old=getattr(products, name)
             if ihasattr(old,'version') and old.version==fver:
                 if hasattr(old, 'import_error_') and \
                    old.import_error_==ie:
                     # Version hasn't changed. Don't reinitialize.
                     return old
-    except: pass
+    except:
+        pass
 
     f = fver and (" (%s)" % fver)
-    product=Product(name, 'Installed product %s%s' % (name,f))
+    product=Product(name, 'Installed product %s%s' % (name, f))
 
     if old is not None:
         app._manage_remove_product_meta_type(product)
         products._delObject(name)
         for id, v in old.objectItems():
-            try: product._setObject(id, v)
-            except: pass
+            try:
+                product._setObject(id, v)
+            except:
+                pass
 
     products._setObject(name, product)
-    product.icon='p_/InstalledProduct_icon'
-    product.version=fver
-    product.home=home
-    product.thisIsAnInstalledProduct=1
+    product.home = home
 
     if ie:
         product.import_error_=ie
@@ -277,11 +279,8 @@ def initializeProduct(productp, name, home, app):
             {'label':'Refresh', 'action':'manage_refresh',
              'help': ('OFSP','Product_Refresh.stx')},)
 
-    if not doInstall():
-        transaction.abort()
-        return product
-
     return product
+
 
 def ihasattr(o, name):
     return hasattr(o, name) and o.__dict__.has_key(name)

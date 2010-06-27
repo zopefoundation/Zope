@@ -23,6 +23,8 @@ from AccessControl.PermissionMapping import aqwrap
 from Acquisition import Acquired
 from Acquisition import aq_base
 from Acquisition import Implicit
+from ExtensionClass import Base
+
 
 def _product_packages():
     """Returns all product packages including the regularly defined
@@ -41,7 +43,7 @@ def _product_packages():
     return packages
 
 
-class Product(object):
+class Product(Base):
     """Model a non-persistent product wrapper.
     """
 

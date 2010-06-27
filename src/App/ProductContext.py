@@ -24,7 +24,6 @@ from AccessControl.Permission import registerPermissions
 from AccessControl.PermissionRole import PermissionRole
 from App.Common import package_home
 from App.ImageFile import ImageFile
-from App.Product import doInstall
 from DateTime.DateTime import DateTime
 from HelpSys import APIHelpTopic
 from HelpSys import HelpTopic
@@ -50,14 +49,15 @@ LOG = getLogger('ProductContext')
 class ProductContext:
 
     def __init__(self, product, app, package):
-        self.__prod=product
-        self.__app=app
-        self.__pack=package
+        self.__prod = product
+        # app is None by default which signals disabled product installation
+        self.__app = app
+        self.__pack = package
 
     def registerClass(self, instance_class=None, meta_type='',
                       permission=None, constructors=(),
                       icon=None, permissions=None, legacy=(),
-                      visibility="Global",interfaces=_marker,
+                      visibility="Global", interfaces=_marker,
                       container_filter=None
         ):
         """Register a constructor
@@ -140,7 +140,7 @@ class ProductContext:
         else:
             default = ('Manager',)
 
-        pr=PermissionRole(permission,default)
+        pr = PermissionRole(permission,default)
         registerPermissions(((permission, (), default),))
         ############################################################
 
@@ -168,7 +168,7 @@ class ProductContext:
         else:
             name = initial.__name__
 
-        fd=getattr(pack, '__FactoryDispatcher__', None)
+        fd = getattr(pack, '__FactoryDispatcher__', None)
         if fd is None:
             class __FactoryDispatcher__(FactoryDispatcher):
                 "Factory Dispatcher for a Specific Product"
@@ -231,6 +231,8 @@ class ProductContext:
         """
         Returns the ProductHelp associated with the current Product.
         """
+        if self.__app is None:
+            return self.__prod.getProductHelp()
         return self.__prod.__of__(self.__app.Control_Panel.Products).getProductHelp()
 
     def registerHelpTopic(self, id, topic):
@@ -267,7 +269,7 @@ class ProductContext:
         .py              -- APIHelpTopic
         """
 
-        if not doInstall():
+        if not self.__app:
             return
 
         help=self.getProductHelp()

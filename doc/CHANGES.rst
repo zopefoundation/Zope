@@ -18,6 +18,11 @@ Bugs Fixed
 Features Added
 ++++++++++++++
 
+- Changed product install so it won't write persistent changes only to abort
+  them. Instead we don't make any database changes in the first place.
+
+- Disabled persistent product installation in the default test configuration.
+
 - Directly extend and use the Zope Toolkit KGS release 1.0dev-r113891 from
   http://download.zope.org/zopetoolkit/index/.
 

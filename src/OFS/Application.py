@@ -30,6 +30,7 @@ from AccessControl.Permission import ApplicationDefaultPermissions
 from Acquisition import aq_base
 from App.ApplicationManager import ApplicationManager
 from App.config import getConfiguration
+from App import FactoryDispatcher
 from App.Product import doInstall
 from DateTime import DateTime
 from HelpSys.HelpSys import HelpSys
@@ -676,24 +677,26 @@ def install_product(app, product_dir, product_name, meta_types,
             # expected to implement a method named 'initialize' in
             # their __init__.py that takes the ProductContext as an
             # argument.
-            productObject = App.Product.initializeProduct(
-                product, product_name, package_dir, app)
-            context = ProductContext(productObject, app, product)
+            do_install = doInstall()
+            if do_install:
+                productObject = App.Product.initializeProduct(
+                    product, product_name, package_dir, app)
+                context = ProductContext(productObject, app, product)
+            else:
+                # avoid any persistent connection
+                productObject = FactoryDispatcher.Product(product_name)
+                context = ProductContext(productObject, None, product)
 
             # Look for an 'initialize' method in the product.
             initmethod = pgetattr(product, 'initialize', None)
             if initmethod is not None:
                 initmethod(context)
 
-            if not doInstall():
-                transaction.abort()
-            else:
+            if do_install:
                 transaction.get().note('Installed product ' + product_name)
                 transaction.commit()
 
-        except KeyboardInterrupt:
-            raise
-        except:
+        except Exception:
             if log_exc:
                 LOG.error('Couldn\'t install %s' % product_name,
                            exc_info=sys.exc_info())
@@ -706,23 +709,27 @@ def install_package(app, module, init_func, raise_exc=False, log_exc=True):
     """Installs a Python package like a product."""
     from App.ProductContext import ProductContext
     try:
-        product = App.Product.initializeProduct(module,
-                                                module.__name__,
-                                                module.__path__[0],
-                                                app)
-        product.package_name = module.__name__
+        do_install = doInstall()
+        name = module.__name__
+        if do_install:
+            product = App.Product.initializeProduct(module,
+                                                    name,
+                                                    module.__path__[0],
+                                                    app)
+        else:
+            product = FactoryDispatcher.Product(name)
+            app = None
+
+        product.package_name = name
+
         if init_func is not None:
             newContext = ProductContext(product, app, module)
             init_func(newContext)
 
-        if not doInstall():
-            transaction.abort()
-        else:
+        if do_install:
             transaction.get().note('Installed package %s' % module.__name__)
             transaction.commit()
-    except KeyboardInterrupt:
-        raise
-    except:
+    except Exception:
         if log_exc:
             LOG.error("Couldn't install %s" % module.__name__,
                       exc_info=True)
