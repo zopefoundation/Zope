@@ -58,9 +58,9 @@ def test_registerPackage():
 
     Make sure it is registered:
 
-      >>> from OFS.metaconfigure import get_registered_packages
-      >>> [x.__name__ for x in get_registered_packages()]
-      ['pythonproduct2']
+      >>> from OFS.metaconfigure import has_package
+      >>> has_package('pythonproduct2')
+      True
 
     Clean up:
 

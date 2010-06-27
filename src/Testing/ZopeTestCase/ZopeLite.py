@@ -191,8 +191,8 @@ def _installProduct(name, quiet=0):
 
 def hasPackage(name):
     '''Checks if a package has been registered with five:registerPackage.'''
-    from OFS.metaconfigure import get_registered_packages
-    return name in [m.__name__ for m in get_registered_packages()]
+    from OFS.metaconfigure import has_package
+    return has_package(name)
 
 def installPackage(name, quiet=0):
     '''Installs a registered Python package.'''

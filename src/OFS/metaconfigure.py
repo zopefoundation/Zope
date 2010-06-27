@@ -82,6 +82,10 @@ def set_registered_packages(packages):
     _registered_packages = packages
 
 
+def has_package(package):
+    return package in [m.__name__ for m in get_registered_packages()]
+
+
 def _registerPackage(module_, init_func=None):
     """Registers the given python package as a Zope 2 style product
     """
