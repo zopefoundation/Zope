@@ -14,6 +14,7 @@ debug_mode = App.config.getConfiguration().debug_mode
 logger = logging.getLogger('OFS')
 
 _register_monkies = []
+_registered_packages = []
 _meta_type_regs = []
 
 
@@ -72,10 +73,8 @@ def loadProductsOverrides(_context, file=None, files=None, package=None):
 
 
 def get_registered_packages():
-    packages = getattr(Products, '_registered_packages', None)
-    if packages is None:
-        packages = Products._registered_packages = []
-    return packages
+    global _registered_packages
+    return _registered_packages
 
 
 def _registerPackage(module_, init_func=None):
