@@ -117,6 +117,8 @@ Restructuring
 Features Added
 ++++++++++++++
 
+- Added notification of IDatabaseOpenedWithRoot.
+
 - LP #142226: Added an extra keyword argument to the HTTPResponse 
   setCookie method to suppress enclosing the cookie value field 
   in double quotes.
