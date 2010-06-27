@@ -86,7 +86,7 @@ class DefaultConfiguration:
             self.zopehome = FindHomes.ZOPE_HOME
         self.dbtab = None
         self.debug_mode = True
-        self.enable_product_installation = True
+        self.enable_product_installation = False
         self.locale = None
 
         # restructured text

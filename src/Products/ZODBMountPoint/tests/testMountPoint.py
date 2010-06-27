@@ -15,10 +15,12 @@
 """
 
 import os
+import os.path
 import sys
 import unittest
 import transaction
 from OFS.Application import Application
+from OFS.Application import get_folder_permissions
 from OFS.Folder import Folder
 import App.config
 from Products.ZODBMountPoint.MountedObject import manage_addMounts
@@ -78,7 +80,7 @@ class MountingTests(unittest.TestCase):
         if original_config is None:
             # stow away original config so we can reset it
             original_config = App.config.getConfiguration()
-            
+
         databases = [TestDBConfig('test_main.fs', ['/']).getDB(),
                      TestDBConfig('test_mount1.fs', ['/mount1']).getDB(),
                      TestDBConfig('test_mount2.fs', ['/mount2']).getDB(),
@@ -95,6 +97,7 @@ class MountingTests(unittest.TestCase):
         conf = DBTab(mount_factories, mount_points)
         d = App.config.DefaultConfiguration()
         d.dbtab = conf
+        d.enable_product_installation = True
         App.config.setConfiguration(d)
         self.conf = conf
         db = conf.getDatabase('/')
@@ -102,7 +105,9 @@ class MountingTests(unittest.TestCase):
         root = conn.root()
         root['Application'] = app = Application()
         self.app = app
-        install_products(app, 'ZCatalog', 'PluginIndexes', 'OFSP')
+        install_product(app, 'ZCatalog')
+        install_product(app, 'PluginIndexes')
+        install_product(app, 'OFSP')
         # login
         from AccessControl.User import system
         from AccessControl.SecurityManagement import newSecurityManager
@@ -110,8 +115,6 @@ class MountingTests(unittest.TestCase):
         transaction.commit()  # Get app._p_jar set
         manage_addMounts(app, ('/mount1', '/mount2', '/i/mount3'))
         transaction.commit()  # Get the mount points ready
-
-
 
     def tearDown(self):
         # logout
@@ -228,25 +231,13 @@ class MountingTests(unittest.TestCase):
         self.assertEqual(conn2.opened, None)
         self.assertEqual(conn3.opened, None)
 
-def install_products(app, *prod):
-    """auxiliary function to install products *prod* (by names)."""
-    from OFS.Application import get_folder_permissions, get_products, install_product
 
-    folder_permissions = get_folder_permissions()
-    meta_types=[]
-    done={}
-    products = get_products()
-    for priority, product_name, index, product_dir in products:
-        if product_name not in prod or product_name in done: continue
-        done[product_name]=1
-        install_product(app, product_dir, product_name, meta_types,
-                        folder_permissions, raise_exc=True)
-        
+def install_product(app, product_name):
+    from OFS.Application import install_product
+    product_dir = os.path.join(os.path.dirname(__file__), os.pardir, os.pardir)
+    install_product(app, product_dir, product_name, [],
+                    get_folder_permissions(), raise_exc=True)
 
 
 def test_suite():
     return unittest.makeSuite(MountingTests, 'test')
-
-if __name__ == '__main__':
-    unittest.main()
-

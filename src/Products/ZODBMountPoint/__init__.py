@@ -25,6 +25,3 @@ def initialize(context):
                       MountedObject.manage_getMountStatus,
                       MountedObject.manage_addMounts,),
         )
-
-
-

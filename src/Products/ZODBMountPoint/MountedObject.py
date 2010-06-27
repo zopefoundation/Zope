@@ -25,13 +25,13 @@ from logging import getLogger
 import transaction
 
 from AccessControl.class_init import InitializeClass
-from AccessControl.ZopeGuards import guarded_getattr
 from Acquisition import ImplicitAcquisitionWrapper
 from Acquisition import aq_base
 from Acquisition import aq_inner
 from Acquisition import aq_parent
 from OFS.SimpleItem import SimpleItem
 from OFS.Folder import Folder
+from OFS.Folder import manage_addFolder
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 
 LOG = getLogger('Zope.ZODBMountPoint')
@@ -55,9 +55,7 @@ class SimpleTrailblazer:
 
     def _construct(self, context, id):
         """Creates and returns the named folder."""
-        dispatcher = guarded_getattr(context, 'manage_addProduct')['OFSP']
-        factory = guarded_getattr(dispatcher, 'manage_addFolder')
-        factory(id)
+        manage_addFolder(context, id)
         o = context.restrictedTraverse(id)
         context._p_jar.add(aq_base(o))
         return o
@@ -391,5 +389,3 @@ def manage_addMounts(dispatcher, paths=(), create_mount_points=True,
         REQUEST['RESPONSE'].redirect(
             REQUEST['URL1'] + ('/manage_main?manage_tabs_message='
             'Added %d mount points.' % count))
-
-

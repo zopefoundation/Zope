@@ -12,8 +12,6 @@
 #
 ##############################################################################
 """Unit tests for the registerPackage directive.
-
-$Id$
 """
 import sys
 
@@ -50,26 +48,15 @@ def test_registerPackage():
       
     We need to load the product as well. This would normally happen during 
     Zope startup, but in the test, we're already too late.
-    
+
       >>> import Zope2
       >>> from OFS.Application import install_products
       
       >>> app = Zope2.app()
       >>> install_products(app)
       pythonproduct2 initialized
-      
-    Test to see if the pythonproduct2 python package actually gets setup
-    as a zope2 product in the Control Panel.
 
-      >>> product_listing = []
-      >>> try:
-      ...    product_listing = app.Control_Panel.Products.objectIds()
-      ... finally:
-      ...     app._p_jar.close()
-      >>> 'pythonproduct2' in product_listing
-      True
-
-    Make sure it also shows up in ``Products._registered_packages``.
+    Make sure it shows up in ``Products._registered_packages``.
 
       >>> [x.__name__ for x in getattr(Products, '_registered_packages', [])]
       ['pythonproduct2']
