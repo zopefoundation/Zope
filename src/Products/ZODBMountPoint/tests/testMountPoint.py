@@ -20,7 +20,6 @@ import sys
 import unittest
 import transaction
 from OFS.Application import Application
-from OFS.Application import get_folder_permissions
 from OFS.Folder import Folder
 import App.config
 from Products.ZODBMountPoint.MountedObject import manage_addMounts
@@ -97,7 +96,7 @@ class MountingTests(unittest.TestCase):
         conf = DBTab(mount_factories, mount_points)
         d = App.config.DefaultConfiguration()
         d.dbtab = conf
-        d.enable_product_installation = True
+        d.enable_product_installation = True # TODO
         App.config.setConfiguration(d)
         self.conf = conf
         db = conf.getDatabase('/')
@@ -105,9 +104,6 @@ class MountingTests(unittest.TestCase):
         root = conn.root()
         root['Application'] = app = Application()
         self.app = app
-        install_product(app, 'ZCatalog')
-        install_product(app, 'PluginIndexes')
-        install_product(app, 'OFSP')
         # login
         from AccessControl.User import system
         from AccessControl.SecurityManagement import newSecurityManager
@@ -230,13 +226,6 @@ class MountingTests(unittest.TestCase):
         self.assertEqual(conn1.opened, None)
         self.assertEqual(conn2.opened, None)
         self.assertEqual(conn3.opened, None)
-
-
-def install_product(app, product_name):
-    from OFS.Application import install_product
-    product_dir = os.path.join(os.path.dirname(__file__), os.pardir, os.pardir)
-    install_product(app, product_dir, product_name, [],
-                    get_folder_permissions(), raise_exc=True)
 
 
 def test_suite():
