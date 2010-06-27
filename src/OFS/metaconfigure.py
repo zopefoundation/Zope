@@ -181,6 +181,9 @@ def cleanUp():
         unregisterClass(class_)
     _register_monkies = []
 
+    global _registered_packages
+    _registered_packages = []
+
     global _meta_type_regs
     Products.meta_types = tuple([ info for info in Products.meta_types
                                   if info['name'] not in _meta_type_regs ])
