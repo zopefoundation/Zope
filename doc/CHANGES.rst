@@ -18,6 +18,8 @@ Bugs Fixed
 Features Added
 ++++++++++++++
 
+- Directly extend and use the Zope Toolkit KGS release 1.0dev-r113891 from
+  http://download.zope.org/zopetoolkit/index/.
 
 
 2.13.0a1 (2010-06-25)
