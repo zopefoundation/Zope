@@ -96,7 +96,6 @@ class MountingTests(unittest.TestCase):
         conf = DBTab(mount_factories, mount_points)
         d = App.config.DefaultConfiguration()
         d.dbtab = conf
-        d.enable_product_installation = True # TODO
         App.config.setConfiguration(d)
         self.conf = conf
         db = conf.getDatabase('/')
