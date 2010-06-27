@@ -15,10 +15,6 @@
 """
 import unittest
 
-import Testing
-#import Zope2
-#Zope2.startup()
-
 from Testing.ZopeTestCase.layer import ZopeLite
 
 
@@ -109,6 +105,3 @@ def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(SetConfigTests))
     return suite
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='test_suite')

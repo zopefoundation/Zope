@@ -12,6 +12,7 @@
 ##############################################################################
 
 import logging
+import unittest
 
 from Testing.ZopeTestCase import ZopeTestCase
 
@@ -61,3 +62,9 @@ class StartupTests(ZopeTestCase):
         provideHandler(logevent, [IDatabaseOpened])
         startup()
         self.assertEqual(str(handler), logged)
+
+
+def test_suite():
+    suite = unittest.TestSuite()
+    suite.addTest(unittest.makeSuite(StartupTests))
+    return suite
