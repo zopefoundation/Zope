@@ -50,7 +50,7 @@ def logevent(event):
 
 class StartupTests(ZopeTestCase):
 
-    def test_dummy(self):
+    def test_database_events(self):
         from Zope2.App.startup import startup
         from zope.component import provideHandler
         from zope.processlifetime import IDatabaseOpened
