@@ -13,6 +13,13 @@
 ##############################################################################
 
 import unittest
+from OFS.SimpleItem import SimpleItem
+from Testing.ZopeTestCase import base
+
+
+class ToBreak(SimpleItem):
+    pass
+
 
 class TestsOfBroken(unittest.TestCase):
     """Tests for the factory for "broken" classes.
@@ -77,24 +84,8 @@ class TestsOfBroken(unittest.TestCase):
         self.assertEqual(klass.__module__, 'Products.MyProduct.MyClass')
         self.assertEqual(klass.product_name, 'MyProduct')
 
-    def test_Broken_instance___getstate___raises_useful_exception(self):
-        # see http://www.zope.org/Collectors/Zope/2157
-        from OFS.Uninstalled import Broken
-        from OFS.Uninstalled import BrokenClass
-        OID = '\x01' * 8
-
-        inst = Broken(self, OID, ('Products.MyProduct.MyClass', 'MyClass'))
-
-        try:
-            dict = inst.__getstate__()
-        except SystemError, e:
-            self.failUnless('MyClass' in str(e), str(e))
-        else:
-            self.fail("'__getstate__' didn't raise SystemError!")
-
     def test_Broken_instance___getattr___allows_persistence_attrs(self):
         from OFS.Uninstalled import Broken
-        from OFS.Uninstalled import BrokenClass
         OID = '\x01' * 8
         PERSISTENCE_ATTRS = ["_p_changed",
                              "_p_jar",
@@ -119,14 +110,47 @@ class TestsOfBroken(unittest.TestCase):
         for meth_name in PERSISTENCE_METHODS:
             meth = getattr(inst, meth_name) # doesn't raise
 
+
+class TestsIntegratedBroken(base.TestCase):
+
+    def test_Broken_instance___getstate___gives_access_to_its_state(self):
+        from Acquisition import aq_base
+        from OFS.Uninstalled import BrokenClass
+        from OFS.tests import test_Uninstalled
+        import transaction
+
+        # store an instance
+        tr = ToBreak()
+        tr.id = 'tr'
+        self.app._setObject('tr', tr)
+        # commit to allow access in another connection
+        transaction.commit()
+        # remove class from namespace to ensure broken object
+        del test_Uninstalled.ToBreak
+        # get new connection that will give access to broken object
+        app = base.app()
+        inst = aq_base(app.tr)
+        self.failUnless(isinstance(inst, BrokenClass))
+        state = inst.__getstate__()
+        self.assertEqual(state, {'id': 'tr'})
+
+        # cleanup
+        app.manage_delObjects('tr')
+        transaction.commit()
+        # check that object is not left over
+        app = base.app()
+        self.failIf('tr' in app.objectIds())
+
+
 def test_suite():
     suite = unittest.TestSuite()
-    suite.addTest( unittest.makeSuite(TestsOfBroken))
+    suite.addTest(unittest.makeSuite(TestsOfBroken))
+    suite.addTest(unittest.makeSuite(TestsIntegratedBroken))
     return suite
+
 
 def main():
     unittest.main(defaultTest='test_suite')
 
 if __name__ == '__main__':
     main()
-

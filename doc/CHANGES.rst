@@ -6,10 +6,11 @@ Change information for previous versions of Zope can be found at
 http://docs.zope.org/zope2/releases/.
 
 2.13.0a2 (unreleased)
----------------------
 
 Bugs Fixed
 ++++++++++
+
+- LP #143531: Fix broken object so they give access to their state.
 
 - LP #578326: Issue a warning if someone specifies a non-public permission
   attribute in the browser:view directive. This attribute has never been
