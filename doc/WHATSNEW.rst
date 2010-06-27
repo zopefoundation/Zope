@@ -116,4 +116,4 @@ Products.Five.formlib to point to the new package instead.
 In order to ease the transition, five.formlib has been backported to the 2.12
 release series. Starting in 2.12.3 you can already use the new five.formlib
 package, but backwards compatibility imports are left in place in Products.Five.
-This allows you to easily adopt your packages to work with both 2.12 and 2.13.
+This allows you to easily adapt your packages to work with both 2.12 and 2.13.
