@@ -11,6 +11,8 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
+- LP #143531: Fix broken object so they give access to their state.
+
 - LP #374818: Use module-provided functions as opposed to the old 
   "folder methods" when creating folders and user folders in 
   ZopeTestCase.
