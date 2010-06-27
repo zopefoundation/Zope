@@ -252,7 +252,6 @@ def initialize(app):
 
 
 class AppInitializer:
-
     """ Initialze an Application object (called at startup) """
 
     def __init__(self, app):
@@ -267,7 +266,6 @@ class AppInitializer:
         transaction.commit()
 
     def initialize(self):
-        app = self.getApp()
         # make sure to preserve relative ordering of calls below.
         self.install_cp_and_products()
         self.install_tempfolder_and_sdc()
