@@ -24,6 +24,7 @@ from Acquisition import Acquired
 from Acquisition import aq_base
 from Acquisition import Implicit
 from ExtensionClass import Base
+from OFS.metaconfigure import get_registered_packages
 
 
 def _product_packages():
@@ -37,9 +38,9 @@ def _product_packages():
         if isinstance(m, types.ModuleType):
             packages[x] = m
 
-    for m in getattr(Products, '_registered_packages', []):
+    for m in get_registered_packages():
         packages[m.__name__] = m
-    
+
     return packages
 
 

@@ -18,6 +18,9 @@ Bugs Fixed
 Features Added
 ++++++++++++++
 
+- Added a new API to ``OFS.metaconfigure.get_registered_packages`` which
+  replaces any direct access to ``Products._registered_packages``.
+
 - Changed product install so it won't write persistent changes only to abort
   them. Instead we don't make any database changes in the first place.
 

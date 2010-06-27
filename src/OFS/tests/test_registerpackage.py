@@ -56,9 +56,10 @@ def test_registerPackage():
       >>> install_products(app)
       pythonproduct2 initialized
 
-    Make sure it shows up in ``Products._registered_packages``.
+    Make sure it is registered:
 
-      >>> [x.__name__ for x in getattr(Products, '_registered_packages', [])]
+      >>> from OFS.metaconfigure import get_registered_packages
+      >>> [x.__name__ for x in get_registered_packages()]
       ['pythonproduct2']
 
     Clean up:

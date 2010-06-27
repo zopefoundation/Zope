@@ -71,17 +71,21 @@ def loadProductsOverrides(_context, file=None, files=None, package=None):
                 handleBrokenProduct(product)
 
 
+def get_registered_packages():
+    packages = getattr(Products, '_registered_packages', None)
+    if packages is None:
+        packages = Products._registered_packages = []
+    return packages
+
+
 def _registerPackage(module_, init_func=None):
     """Registers the given python package as a Zope 2 style product
     """
-
     if not hasattr(module_, '__path__'):
         raise ValueError("Must be a package and the " \
                          "package must be filesystem based")
 
-    registered_packages = getattr(Products, '_registered_packages', None)
-    if registered_packages is None:
-        registered_packages = Products._registered_packages = []
+    registered_packages = get_registered_packages()
     registered_packages.append(module_)
 
     # Delay the actual setup until the usual product loading time in
