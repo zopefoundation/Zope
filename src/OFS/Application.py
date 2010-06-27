@@ -34,6 +34,8 @@ from App import FactoryDispatcher
 from App.Product import doInstall
 from DateTime import DateTime
 from HelpSys.HelpSys import HelpSys
+from OFS.metaconfigure import get_packages_to_initialize
+from OFS.metaconfigure import package_initialized
 from OFS.userfolder import UserFolder
 from Persistence import Persistent
 from webdav.NullResource import NullResource
@@ -535,10 +537,8 @@ def install_products(app):
                         folder_permissions, raise_exc=debug_mode)
 
     # Delayed install of packages-as-products
-    for module, init_func in getattr(Products, '_packages_to_initialize', []):
+    for module, init_func in get_packages_to_initialize():
         install_package(app, module, init_func, raise_exc=debug_mode)
-    if hasattr(Products, '_packages_to_initialize'):
-        del Products._packages_to_initialize
 
     Products.meta_types=Products.meta_types+tuple(meta_types)
     InitializeClass(Folder.Folder)
@@ -723,6 +723,8 @@ def install_package(app, module, init_func, raise_exc=False, log_exc=True):
         if init_func is not None:
             newContext = ProductContext(product, app, module)
             init_func(newContext)
+
+        package_initialized(module, init_func)
 
         if do_install:
             transaction.get().note('Installed package %s' % module.__name__)

@@ -18,15 +18,11 @@ $Id$
 import sys
 from unittest import TestSuite
 
-from OFS.metaconfigure import get_registered_packages
-from OFS.metaconfigure import set_registered_packages
-
 from Testing import ZopeTestCase
 from Testing.ZopeTestCase import ZopeLite
 from Testing.ZopeTestCase import ZopeDocTestSuite
 from Zope2.App import zcml
 from zope.testing import cleanup
-import Products
 
 
 def testInstallPackage():
@@ -56,22 +52,10 @@ def testInstallPackage():
       >>> ZopeTestCase.hasPackage('testpackage')
       True
 
-    But not yet installed
-
-      >>> app = self._app()
-      >>> 'testpackage' in app.Control_Panel.Products.objectIds()
-      False
-
     Install it
 
       >>> ZopeTestCase.installPackage('testpackage', quiet=True)
       testpackage.initialize called
-
-    Now it shows up in Control_Panel
-
-      >>> app = self._app()
-      >>> 'testpackage' in app.Control_Panel.Products.objectIds()
-      True
 
     hasPackage still returns True
 
@@ -98,15 +82,6 @@ class TestClass(ZopeTestCase.FunctionalTestCase):
         cleanup.cleanUp()
         sys.path[:] = self.saved
 
-        registered = get_registered_packages()
-        packages = [m for m in registered if m.__name__ != 'testpackage']
-        set_registered_packages(packages)
-
-        to_initialize = getattr(Products, '_packages_to_initialize', None)
-        if to_initialize is not None:
-            Products._packages_to_initialize = [(m, f) for (m, f) in to_initialize
-                                                if m.__name__ != 'testpackage']
-
 
 def test_suite():
     if ZopeLite.active:
@@ -115,4 +90,3 @@ def test_suite():
         ))
     else:
         return TestSuite()
-

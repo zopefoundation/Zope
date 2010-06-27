@@ -18,6 +18,11 @@ Bugs Fixed
 Features Added
 ++++++++++++++
 
+- Added a new API ``get_packages_to_initialize`` to ``OFS.metaconfigure``.
+  This replaces any direct access to ``Products._packages_to_initialize``.
+  The OFS.Application.install_package function takes care of removing entries
+  from this list now.
+
 - Added notification of ``IDatabaseOpenedWithRoot``.
 
 - Added a new API's ``get_registered_packages, set_registered_packages`` to

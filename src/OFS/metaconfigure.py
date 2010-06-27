@@ -13,6 +13,7 @@ import Products
 debug_mode = App.config.getConfiguration().debug_mode
 logger = logging.getLogger('OFS')
 
+_packages_to_initialize = []
 _register_monkies = []
 _registered_packages = []
 _meta_type_regs = []
@@ -86,6 +87,16 @@ def has_package(package):
     return package in [m.__name__ for m in get_registered_packages()]
 
 
+def get_packages_to_initialize():
+    global _packages_to_initialize
+    return _packages_to_initialize
+
+
+def package_initialized(module, init_func):
+    global _packages_to_initialize
+    _packages_to_initialize.remove((module, init_func))
+
+
 def _registerPackage(module_, init_func=None):
     """Registers the given python package as a Zope 2 style product
     """
@@ -100,9 +111,7 @@ def _registerPackage(module_, init_func=None):
     # OFS.Application. Otherwise, we may get database write errors in
     # ZEO, when there's no connection with which to write an entry to
     # Control_Panel. We would also get multiple calls to initialize().
-    to_initialize = getattr(Products, '_packages_to_initialize', None)
-    if to_initialize is None:
-        to_initialize = Products._packages_to_initialize = []
+    to_initialize = get_packages_to_initialize()
     to_initialize.append((module_, init_func,))
 
 
@@ -180,6 +189,9 @@ def cleanUp():
     for class_ in _register_monkies:
         unregisterClass(class_)
     _register_monkies = []
+
+    global _packages_to_initialize
+    _packages_to_initialize = []
 
     global _registered_packages
     _registered_packages = []

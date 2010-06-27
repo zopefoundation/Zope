@@ -201,17 +201,18 @@ def installPackage(name, quiet=0):
 
 def _installPackage(name, quiet=0):
     '''Installs a registered Python package.'''
+    from OFS.metaconfigure import get_packages_to_initialize
     start = time.time()
     if _patched and not _installedPackages.has_key(name):
-        for module, init_func in getattr(Products, '_packages_to_initialize', []):
+        for module, init_func in get_packages_to_initialize():
             if module.__name__ == name:
                 if not quiet: _print('Installing %s ... ' % module.__name__)
                 # We want to fail immediately if a package throws an exception
                 # during install, so we set the raise_exc flag.
                 install_package(_theApp, module, init_func, raise_exc=1)
                 _installedPackages[module.__name__] = 1
-                Products._packages_to_initialize.remove((module, init_func))
-                if not quiet: _print('done (%.3fs)\n' % (time.time() - start))
+                if not quiet:
+                    _print('done (%.3fs)\n' % (time.time() - start))
                 break
         else:
             if not quiet: _print('Installing %s ... NOT FOUND\n' % name)
