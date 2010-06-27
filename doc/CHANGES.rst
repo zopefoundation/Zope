@@ -18,6 +18,8 @@ Bugs Fixed
 Features Added
 ++++++++++++++
 
+- Added notification of IDatabaseOpenedWithRoot.
+
 - Added a new API's ``get_registered_packages, set_registered_packages`` to
   ``OFS.metaconfigure`` which replace any direct access to
   ``Products._registered_packages``.
