@@ -20,12 +20,32 @@ from zope.testing.loggingsupport import InstalledHandler
 logged = """Zope2.App.test_startup INFO
   <class 'zope.processlifetime.DatabaseOpened'>
 Zope2.App.test_startup INFO
-  <class 'zope.processlifetime.DatabaseOpenedWithRoot'>"""
+  <class 'ZODB.DB.DB'>
+Zope2.App.test_startup INFO
+  Root not ready.
+Zope2.App.test_startup INFO
+  <class 'zope.processlifetime.DatabaseOpenedWithRoot'>
+Zope2.App.test_startup INFO
+  <class 'ZODB.DB.DB'>
+Zope2.App.test_startup INFO
+  <class 'OFS.Application.Application'>"""
 
 
 def logevent(event):
     logger = logging.getLogger('Zope2.App.test_startup')
     logger.info(event.__class__)
+    db = event.database
+    logger.info(db.__class__)
+    conn = db.open()
+    try:
+        try:
+            root = conn.root()
+            app = root['Application']
+            logger.info(app.__class__)
+        except KeyError:
+            logger.info('Root not ready.')
+    finally:
+        conn.close()
 
 
 class StartupTests(ZopeTestCase):
