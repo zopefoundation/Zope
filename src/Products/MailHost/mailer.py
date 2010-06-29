@@ -1,2 +1,7 @@
-import zope.deprecation
-zope.deprecation.moved('zope.sendmail.mailer', 'Zope 2.14')
+import zope.deferredimport
+
+zope.deferredimport.deprecatedFrom(
+    "Import from zope.sendmail instead",
+    'zope.sendmail.mailer',
+    'SMTPMailer',
+    )
