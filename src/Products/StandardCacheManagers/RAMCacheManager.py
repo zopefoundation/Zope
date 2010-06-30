@@ -382,7 +382,7 @@ class RAMCacheManager (CacheManager, SimpleItem):
 
     security.declarePrivate('_remove_data')
     def _remove_data(self):
-        caches.pop(self.__cacheid)
+        caches.pop(self.__cacheid, None)
 
     security.declarePrivate('_resetCacheId')
     def _resetCacheId(self):

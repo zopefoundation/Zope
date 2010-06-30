@@ -11,6 +11,8 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
+- Avoid problems in removing cache managers introduced in Zope 2.12.8.
+
 - LP #143531: Fix broken object so they give access to their state.
 
 - LP #578326: Issue a warning if someone specifies a non-public permission
