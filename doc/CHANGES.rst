@@ -69,6 +69,8 @@ Instance skeleton
 
 - Changed the default for ``enable-product-installation`` to off. This matches
   the default behavior of buildout installs via plone.recipe.zope2instance.
+  Disabling the persistent product installation also disabled the ZMI help
+  system.
 
 - Removed Zope2's own mkzeoinstance script. If you want to set up ZEO instances
   please install the zope.mkzeoinstance and use its script.
