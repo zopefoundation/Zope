@@ -36,7 +36,7 @@ Features Added
 
 - Disabled persistent product installation in the default test configuration.
 
-- Directly extend and use the Zope Toolkit KGS release 1.0dev-r113891 from
+- Directly extend and use the Zope Toolkit KGS release 1.0a1 from
   http://download.zope.org/zopetoolkit/index/.
 
 
