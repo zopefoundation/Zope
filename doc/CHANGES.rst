@@ -39,6 +39,9 @@ Features Added
 - Directly extend and use the Zope Toolkit KGS release 1.0a1 from
   http://download.zope.org/zopetoolkit/index/.
 
+- Updated packages:
+
+  - nt_svcutils = 2.13.0
 
 2.13.0a1 (2010-06-25)
 ---------------------
