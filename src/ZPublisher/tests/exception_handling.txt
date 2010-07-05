@@ -164,10 +164,13 @@ And the same with unicode error value.
     'basic realm="Zope2"'
 
     >>> browser.handleErrors = False
-    >>> browser.open('http://localhost/test_folder_1_/foo')
-    Traceback (most recent call last):
-    ...
-    Unauthorized: <unprintable ... object>
+    >>> try:
+    ...     browser.open('http://localhost/test_folder_1_/foo')
+    ... except Unauthorized, e:
+    ...     e._message == u'ERROR VALUE \u03A9'
+    ... else:
+    ...     print "Unauthorized not raised"
+    True
     >>> browser.contents
 
 Handle zExceptions.Unauthorized raised by BaseRequest.traverse. We take the

@@ -11,6 +11,8 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
+- Made ZPublisher tests compatible with Python 2.7.
+
 - LP #143531: Fix broken object so they give access to their state.
 
 - LP #578326: Issue a warning if someone specifies a non-public permission
