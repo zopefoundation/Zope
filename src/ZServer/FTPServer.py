@@ -64,7 +64,6 @@ FTP Authorization
 
 """
 
-import sys
 from PubCore import handle
 from medusa.ftp_server import ftp_channel, ftp_server, recv_channel
 import asyncore, asynchat
@@ -81,8 +80,6 @@ from mimetypes import guess_type
 import marshal
 import stat
 import time
-
-py26_or_later = sys.version_info >= (2,6)
 
 
 class zope_ftp_channel(ftp_channel):
@@ -113,18 +110,13 @@ class zope_ftp_channel(ftp_channel):
         # note, that strings are not wrapped in
         # producers by default
 
-        # LP #418454
-        if py26_or_later:
-            # Python 2.6 or later
-            sabs = self.ac_out_buffer_size
-            if len(data) > sabs:
-                for i in xrange(0, len(data), sabs):
-                    self.producer_fifo.append(data[i:i+sabs])
-            else:
-                self.producer_fifo.append(data)
+        # LP #418454, Python 2.6 or later
+        sabs = self.ac_out_buffer_size
+        if len(data) > sabs:
+            for i in xrange(0, len(data), sabs):
+                self.producer_fifo.append(data[i:i+sabs])
         else:
-            # pre-Python 2.6
-            self.producer_fifo.push(data)
+            self.producer_fifo.append(data)
         if send: 
             self.initiate_send()
 

@@ -22,6 +22,9 @@ Bugs Fixed
 Restructuring
 +++++++++++++
 
+- Removed fallback code for old Python versions from
+  `ZServer.FTPServer.zope_ftp_channel.push`.
+
 - Removed fallback code for old `ZCatalog.catalog_object` function signatures
   from `Products.ZCatalog.ZCatalog.reindexIndex`.
 
