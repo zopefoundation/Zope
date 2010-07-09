@@ -330,24 +330,22 @@ class ZCatalog(Folder, Persistent, Implicit):
         elapse = time.time()
         c_elapse = time.clock()
 
-        words = 0
         obj = REQUEST.PARENTS[1]
         path = '/'.join(obj.getPhysicalPath())
 
-
-        results = self.ZopeFindAndApply(obj,
-                                        obj_metatypes=obj_metatypes,
-                                        obj_ids=obj_ids,
-                                        obj_searchterm=obj_searchterm,
-                                        obj_expr=obj_expr,
-                                        obj_mtime=obj_mtime,
-                                        obj_mspec=obj_mspec,
-                                        obj_permission=obj_permission,
-                                        obj_roles=obj_roles,
-                                        search_sub=1,
-                                        REQUEST=REQUEST,
-                                        apply_func=self.catalog_object,
-                                        apply_path=path)
+        self.ZopeFindAndApply(obj,
+                              obj_metatypes=obj_metatypes,
+                              obj_ids=obj_ids,
+                              obj_searchterm=obj_searchterm,
+                              obj_expr=obj_expr,
+                              obj_mtime=obj_mtime,
+                              obj_mspec=obj_mspec,
+                              obj_permission=obj_permission,
+                              obj_roles=obj_roles,
+                              search_sub=1,
+                              REQUEST=REQUEST,
+                              apply_func=self.catalog_object,
+                              apply_path=path)
 
         elapse = time.time() - elapse
         c_elapse = time.clock() - c_elapse
