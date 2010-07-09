@@ -45,6 +45,8 @@ Features Added
 
   - nt_svcutils = 2.13.0
   - RestrictedPython = 3.6.0
+  - zope.exceptions = 3.6.1
+  - zope.proxy = 3.6.1
 
 2.13.0a1 (2010-06-25)
 ---------------------
