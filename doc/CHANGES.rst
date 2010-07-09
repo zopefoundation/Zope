@@ -22,6 +22,9 @@ Bugs Fixed
 Restructuring
 +++++++++++++
 
+- Factored out the `Products.ZSQLMethod` into its own distribution. The
+  distribution also includes the `Shared.DC.ZRDB` code.
+
 - Made both `Shared` and `Shared.DC` namespace packages.
 
 - Removed fallback code for old Python versions from
