@@ -8,6 +8,19 @@ You can have a look at the `detailed change log <CHANGES.html>`_ to learn
 about all minor new features and bugs being solved in this release.
 
 
+Python 2.7
+----------
+
+This release of Zope 2 adds support for
+`Python 2.7 <http://www.python.org/download/releases/2.7/>`_. Please refer to
+the `What's new in Python 2.7 <http://docs.python.org/dev/whatsnew/2.7.html>`_
+document, if you want to know more about the changes.
+
+Zope 2.13 is continuing to support Python 2.6.4 or any later maintenance release
+of it. There's currently no support for any Python 3.x version. Work has begun
+in the Zope Toolkit to port some of the lower level packages to Python 3.
+
+
 ZODB 3.10
 ---------
 

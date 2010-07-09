@@ -16,6 +16,7 @@ available:
   installed from system-level packages.  Supported versions include:
 
   * 2.6.x
+  * 2.7.x
 
 - Zope needs the Python ``zlib`` module to be importable.  If you are
   building your own Python from source, please be sure that you have the
@@ -49,7 +50,7 @@ the latest release from the `virtualenv PyPI page
   $ wget http://pypi.python.org/packages/source/v/virtualenv/virtualenv-1.4.6.tar.gz
   $ tar xzf virtualenv-1.4.6.tar.gz
   $ cd virtuaenv-1.4.6
-  $ /path/to/python2.6 setup.py install
+  $ /path/to/python2.7 setup.py install
 
 If you wish to manage your Zope instance using
 buildout, please see the :doc:`INSTALL-buildout`.

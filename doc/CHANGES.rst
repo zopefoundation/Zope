@@ -22,6 +22,8 @@ Bugs Fixed
 Features Added
 ++++++++++++++
 
+- Added official support for Python 2.7.
+
 - Added a new API ``get_packages_to_initialize`` to ``OFS.metaconfigure``.
   This replaces any direct access to ``Products._packages_to_initialize``.
   The OFS.Application.install_package function takes care of removing entries
