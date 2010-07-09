@@ -25,7 +25,16 @@ setup(name='Zope2',
     author_email='zope-dev@zope.org',
     long_description=file("README.txt").read() + "\n" +
                      file(os.path.join("doc", "CHANGES.rst")).read(),
-
+    classifiers=[
+        'Development Status :: 6 - Mature',
+        "Environment :: Web Environment",
+        "Framework :: Zope2",
+        "License :: OSI Approved :: Zope Public License",
+        "Operating System :: OS Independent",
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 2.6",
+        "Programming Language :: Python :: 2.7",
+    ],
     packages=find_packages('src'),
     namespace_packages=['Products'],
     package_dir={'': 'src'},
