@@ -10,5 +10,4 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-__doc__='''$Id$'''
-__version__='$Revision: 1.7 $'[11:-2]
+__import__('pkg_resources').declare_namespace(__name__)

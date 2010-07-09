@@ -22,6 +22,8 @@ Bugs Fixed
 Restructuring
 +++++++++++++
 
+- Made both `Shared` and `Shared.DC` namespace packages.
+
 - Removed fallback code for old Python versions from
   `ZServer.FTPServer.zope_ftp_channel.push`.
 

@@ -36,7 +36,7 @@ setup(name='Zope2',
         "Programming Language :: Python :: 2.7",
     ],
     packages=find_packages('src'),
-    namespace_packages=['Products'],
+    namespace_packages=['Products', 'Shared', 'Shared.DC'],
     package_dir={'': 'src'},
     install_requires=[
       'AccessControl',
