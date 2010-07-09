@@ -74,10 +74,7 @@ from FTPRequest import FTPRequest
 
 from ZServer import requestCloseOnExec
 
-from cStringIO import StringIO
 import os
-from mimetypes import guess_type
-import marshal
 import stat
 import time
 
@@ -351,7 +348,6 @@ class zope_ftp_channel(ftp_channel):
             self.command_not_understood (' '.join(line))
             return
         elif self.restart_position:
-            restart_position = 0
             self.respond ('553 restart on STOR not yet supported')
             return
 
