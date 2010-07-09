@@ -23,7 +23,10 @@ Features Added
 ++++++++++++++
 
 - Factored out the `Products.ZSQLMethod` into its own distribution. The
-  distribution also includes the `Shared.DC.ZRDB` code.
+  distribution also includes the `Shared.DC.ZRDB` code. The code is no longer
+  included in Zope 2.13. If you really on it, please specify a dependency on
+  the new `Products.ZSQLMethod` distribution. This will only work for code that
+  requires at least Zope 2.12.9.
 
 - Made both `Shared` and `Shared.DC` namespace packages.
 
