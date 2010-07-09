@@ -22,7 +22,7 @@ Bugs Fixed
 Restructuring
 +++++++++++++
 
-- Factored out the `Products.ZSQLMethod` into its own distribution. The
+- Factored out the `Products.ZSQLMethods` into its own distribution. The
   distribution also includes the `Shared.DC.ZRDB` code. The Zope2 distribution
   no longer includes the code automatically. Please depend on the new
   distribution yourself, if you use the functionality. To make the transition
