@@ -30,6 +30,10 @@ Features Added
 
 - Made both `Shared` and `Shared.DC` namespace packages.
 
+- Updated packages:
+
+  - DateTime = 2.12.3
+
 2.12.8 (2010-06-25)
 -------------------
 
