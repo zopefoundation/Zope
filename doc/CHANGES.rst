@@ -22,6 +22,9 @@ Bugs Fixed
 Features Added
 ++++++++++++++
 
+- Factored out the `Products.ZSQLMethod` into its own distribution. The
+  distribution also includes the `Shared.DC.ZRDB` code.
+
 - Made both `Shared` and `Shared.DC` namespace packages.
 
 2.12.8 (2010-06-25)
