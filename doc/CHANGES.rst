@@ -19,6 +19,12 @@ Bugs Fixed
   attribute in the browser:view directive. This attribute has never been
   supported in Zope 2.
 
+Restructuring
++++++++++++++
+
+- Removed fallback code for old `ZCatalog.catalog_object` function signatures
+  from `Products.ZCatalog.ZCatalog.reindexIndex`.
+
 Features Added
 ++++++++++++++
 

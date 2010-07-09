@@ -20,7 +20,6 @@ import sys
 import string
 import time
 import urllib
-from warnings import warn
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permission import name_trans
@@ -466,26 +465,8 @@ class ZCatalog(Folder, Persistent, Implicit):
             else:
                 # don't update metadata when only reindexing a single
                 # index via the UI
-                try:
-                    self.catalog_object(obj, p, idxs=name,
-                                        update_metadata=0, pghandler=pghandler)
-                except TypeError:
-                    # Fall back to Zope 2.6.2 interface. This is necessary for
-                    # products like CMF 1.4.2 and earlier that subclass from
-                    # ZCatalog and don't support the update_metadata argument.
-                    # May be removed some day.
-                    warn('catalog_object interface of %s not up to date'
-                         % self.__class__.__name__,
-                         DeprecationWarning)
-                    try:
-                        self.catalog_object(obj, p, idxs=name, pghandler=pghandler)
-                    except TypeError:
-                        # Fall back to pre-Zope 2.8 interface where there is no
-                        # 'pghandler' argument.
-                        warn('catalog_object interface of %s not up to date'
-                             % self.__class__.__name__,
-                             DeprecationWarning)
-                        self.catalog_object(obj, p, idxs=name)
+                self.catalog_object(obj, p, idxs=name,
+                                    update_metadata=0, pghandler=pghandler)
 
         if pghandler:
             pghandler.finish()
