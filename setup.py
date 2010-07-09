@@ -26,7 +26,7 @@ setup(name='Zope2',
                      file(os.path.join("doc", "CHANGES.rst")).read(),
 
     packages=find_packages('src'),
-    namespace_packages=['Products'],
+    namespace_packages=['Products', 'Shared', 'Shared.DC'],
     package_dir={'': 'src'},
 
     ext_modules=[

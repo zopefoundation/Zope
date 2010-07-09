@@ -19,6 +19,10 @@ Bugs Fixed
   attribute in the browser:view directive. This attribute has never been
   supported in Zope 2.
 
+Features Added
+++++++++++++++
+
+- Made both `Shared` and `Shared.DC` namespace packages.
 
 2.12.8 (2010-06-25)
 -------------------
