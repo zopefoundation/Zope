@@ -23,7 +23,12 @@ Restructuring
 +++++++++++++
 
 - Factored out the `Products.ZSQLMethod` into its own distribution. The
-  distribution also includes the `Shared.DC.ZRDB` code.
+  distribution also includes the `Shared.DC.ZRDB` code. The Zope2 distribution
+  no longer includes the code automatically. Please depend on the new
+  distribution yourself, if you use the functionality. To make the transition
+  easier this change has been backported to Zope 2.12.9, so you can depend on
+  the new distribution already in packages requiring at least that version of
+  Zope 2.
 
 - Made both `Shared` and `Shared.DC` namespace packages.
 
