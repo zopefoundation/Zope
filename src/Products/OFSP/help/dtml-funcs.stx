@@ -153,8 +153,7 @@ functions: DTML Functions
 
     SecurityCalledByExecutable() -- Return a true if the current
     object (e.g. DTML document or method) is being called by an
-    executable (e.g. another DTML document or method, a script or a
-    SQL method).
+    executable (e.g. another DTML document or method or script).
 
     SecurityCheckPermission(permission, object) -- Check whether the
     security context allows the given permission on the given

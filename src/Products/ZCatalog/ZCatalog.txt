@@ -108,11 +108,10 @@ ZCatalog Tutorial
     with the Portal toolkit.
 
     ZCatalogs are "searchable objects", meaning they cooperate with Z
-    Search Interfaces documented in Z SQL Methods.  Creating a search
-    form for a 'ZCatalog' is a simple matter of adding a Z Search
-    Interface from the management screen and filling in a form.
-    ZCatalogs can also be queried directly from DTML, as shown in the
-    example below.
+    Search Interfaces.  Creating a search form for a 'ZCatalog' is a
+    simple matter of adding a Z Search Interface from the management
+    screen and filling in a form. ZCatalogs can also be queried directly
+    from DTML, as shown in the example below.
 
   Using 'ZCatalog' In A Zope Site
 

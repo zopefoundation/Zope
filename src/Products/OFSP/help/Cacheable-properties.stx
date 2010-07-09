@@ -18,4 +18,4 @@ Cacheable objects
   expensive, so use this feature with care.  Also note that it is not
   possible for accelerated HTTP cache managers to make use of this feature.
 
-  (TODO) Python scripts and SQL methods may also provide further options.
+  (TODO) Python scripts may also provide further options.
