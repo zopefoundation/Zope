@@ -49,15 +49,12 @@ Features Added
 
 - Disabled persistent product installation in the default test configuration.
 
-- Directly extend and use the Zope Toolkit KGS release 1.0a1 from
+- Directly extend and use the Zope Toolkit KGS release 1.0a2 from
   http://download.zope.org/zopetoolkit/index/.
 
 - Updated packages:
 
   - nt_svcutils = 2.13.0
-  - RestrictedPython = 3.6.0
-  - zope.exceptions = 3.6.1
-  - zope.proxy = 3.6.1
 
 2.13.0a1 (2010-06-25)
 ---------------------
