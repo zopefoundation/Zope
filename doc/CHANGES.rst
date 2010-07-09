@@ -44,6 +44,7 @@ Features Added
 - Updated packages:
 
   - nt_svcutils = 2.13.0
+  - RestrictedPython = 3.6.0
 
 2.13.0a1 (2010-06-25)
 ---------------------
