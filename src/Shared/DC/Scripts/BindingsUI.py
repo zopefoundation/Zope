@@ -25,8 +25,7 @@ class BindingsUI(Bindings):
 
     manage_options = (
         {'label':'Bindings',
-         'action':'ZBindingsHTML_editForm',
-         'help':('PythonScripts', 'Bindings.stx')},
+         'action':'ZBindingsHTML_editForm'},
         )
 
     security.declareProtected(view_management_screens,
