@@ -1,11 +1,11 @@
 import unittest
 
 from AccessControl import Unauthorized
-from Products.PythonScripts.PythonScript import manage_addPythonScript
 
 
 def addPythonScript(folder, id, params='', body=''):
     """Add a PythonScript to folder."""
+    from Products.PythonScripts.PythonScript import manage_addPythonScript
     # clean up any 'ps' that's already here..
     if id in folder:
         del folder[id]
@@ -179,9 +179,14 @@ def test_view_restricted_code():
 
 
 def test_suite():
-    from Testing.ZopeTestCase import ZopeDocTestSuite
-    from Testing.ZopeTestCase import installProduct
-    installProduct('PythonScripts')
-    return unittest.TestSuite((
-        ZopeDocTestSuite(),
-        ))
+    suite = unittest.TestSuite()
+    try:
+        import Products.PythonScripts
+    except ImportError:
+        pass
+    else:
+        from Testing.ZopeTestCase import ZopeDocTestSuite
+        from Testing.ZopeTestCase import installProduct
+        installProduct('PythonScripts')
+        suite.addTest(unittest.makeSuite(ZopeDocTestSuite()))
+    return suite
