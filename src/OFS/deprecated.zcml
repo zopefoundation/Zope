@@ -11,9 +11,6 @@
       class="OFS.Cache.CacheManager"/>
 
   <five:deprecatedManageAddDelete
-      class="Products.PythonScripts.PythonScript.PythonScript"/>
-
-  <five:deprecatedManageAddDelete
       class="Products.Sessions.BrowserIdManager.BrowserIdManager"/>
   <five:deprecatedManageAddDelete
       class="Products.Sessions.SessionDataManager.SessionDataManager"/>
