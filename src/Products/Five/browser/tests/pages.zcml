@@ -232,7 +232,15 @@
       class=".pages.SimpleView"
       permission="zope2.Public"
       />
-
+  
+  <!-- A named view with permissions -->
+  <browser:view
+      name="permission_view"
+      for="Products.Five.tests.testing.simplecontent.ISimpleContent"
+      class=".pages.CallView"
+      permission="zope2.ViewManagementScreens"
+      />
+  
   <!-- stuff that we'll override in overrides.zcml -->
   <browser:page
       for="Products.Five.tests.testing.simplecontent.ISimpleContent"
