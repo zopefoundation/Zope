@@ -15,11 +15,8 @@
 
 Based on Plone's RestrictedPythonTestCase, with kind permission by the
 Plone developers.
-
-$Id$
 """
 from AccessControl import Unauthorized
-from Testing.ZopeTestCase import ZopeTestCase
 
 def addPythonScript(folder, id, params='', body=''):
     """Add a PythonScript to folder."""
@@ -51,15 +48,3 @@ def checkUnauthorized(folder, psbody):
         pass
     else:
         raise AssertionError, "Authorized but shouldn't be"
-
-class RestrictedPythonTestCase(ZopeTestCase):
-    """Javiotic test case for restricted code."""
-
-    def addPS(self, id, params='', body=''):
-        addPythonScript(self.folder, id, params, body)
-
-    def check(self, psbody):
-        checkRestricted(self.folder, psbody)
-
-    def checkUnauthorized(self, psbody):
-        checkUnauthorized(self.folder, psbody)
