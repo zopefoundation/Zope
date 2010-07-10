@@ -33,10 +33,10 @@ Restructuring
 - Avoid using the ``Products.PythonScripts.standard`` module inside the
   database manager ZMI.
 
-- Factored out the `Products.MIMETools`, `Products.ExternalMethod` and
-  `Products.PythonScripts` packages into their own distributions. They will
-  no longer be included by default in Zope 2.14 but live on as independent
-  add-ons.
+- Factored out the `Products.ExternalMethod`, `Products.MIMETools`,
+  `Products.OFSP` and `Products.PythonScripts` packages into their own
+  distributions. They will no longer be included by default in Zope 2.14 but
+  live on as independent add-ons.
 
 - Factored out the `Products.ZSQLMethods` into its own distribution. The
   distribution also includes the `Shared.DC.ZRDB` code. The Zope2 distribution

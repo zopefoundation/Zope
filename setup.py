@@ -100,6 +100,7 @@ setup(name='Zope2',
       # BBB optional dependencies to be removed in Zope 2.14
       'Products.ExternalMethod',
       'Products.MIMETools',
+      'Products.OFSP',
       'Products.PythonScripts',
     ],
 
