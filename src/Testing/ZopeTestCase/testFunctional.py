@@ -20,8 +20,6 @@ $Id$
 
 from Testing import ZopeTestCase
 
-ZopeTestCase.installProduct('PythonScripts')
-
 from Testing.ZopeTestCase import user_name
 from Testing.ZopeTestCase import user_password
 
@@ -48,10 +46,6 @@ class TestFunctional(ZopeTestCase.FunctionalTestCase):
         self.folder.addDTMLDocument('secret_html', file='secret')
         self.folder.secret_html.manage_permission(view, ['Owner'])
 
-        # A Python Script performing integer computation
-        self.folder.manage_addProduct['PythonScripts'].manage_addPythonScript('script')
-        self.folder.script.ZPythonScript_edit(params='a=0', body='return a+1')
-
         # A method redirecting to the Zope root
         redirect = '''<dtml-call "RESPONSE.redirect('%s')">''' % self.app.absolute_url()
         self.folder.addDTMLMethod('redirect', file=redirect)
@@ -73,20 +67,6 @@ class TestFunctional(ZopeTestCase.FunctionalTestCase):
         response = self.publish(self.folder_path+'/index_html')
         self.assertEqual(response.getStatus(), 200)
         self.assertEqual(response.getBody(), 'index')
-
-    def testPublishScript(self):
-        response = self.publish(self.folder_path+'/script')
-        self.assertEqual(response.getStatus(), 200)
-        self.assertEqual(response.getBody(), '1')
-
-    def testPublishScriptWithArgument(self):
-        response = self.publish(self.folder_path+'/script?a:int=2')
-        self.assertEqual(response.getStatus(), 200)
-        self.assertEqual(response.getBody(), '3')
-
-    def testServerError(self):
-        response = self.publish(self.folder_path+'/script?a=2')
-        self.assertEqual(response.getStatus(), 500)
 
     def testUnauthorized(self):
         response = self.publish(self.folder_path+'/secret_html')
@@ -191,7 +171,7 @@ class TestFunctional(ZopeTestCase.FunctionalTestCase):
         self.assertEqual(getSecurityManager().getUser().getId(), user_name)
 
         self.folder.acl_users.userFolderAddUser('barney', 'secret', [], [])
-        response = self.publish(self.folder_path, basic='barney:secret')
+        self.publish(self.folder_path, basic='barney:secret')
 
         self.assertEqual(getSecurityManager().getUser().getId(), user_name)
 

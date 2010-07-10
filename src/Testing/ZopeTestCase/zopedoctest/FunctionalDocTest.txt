@@ -86,36 +86,6 @@ Test Publish Document
   <BLANKLINE>
   index
 
-Test Publish Script
-
-  >>> print http(r"""
-  ... GET /test_folder_1_/script HTTP/1.1
-  ... """, handle_errors=False)
-  HTTP/1.1 200 OK
-  Content-Length: 1
-  Content-Type: text/plain; charset=...
-  <BLANKLINE>
-  1
-
-Test Publish Script with Argument
-
-  >>> print http(r"""
-  ... GET /test_folder_1_/script?a:int=2 HTTP/1.1
-  ... """, handle_errors=False)
-  HTTP/1.1 200 OK
-  Content-Length: 1
-  Content-Type: text/plain; charset=...
-  <BLANKLINE>
-  3
-
-Test Server Error
-
-  >>> print http(r"""
-  ... GET /test_folder_1_/script?a=2 HTTP/1.1
-  ... """, handle_errors=True)
-  HTTP/1.1 500 Internal Server Error
-  ...Content-Type: text/html...TypeError...
-
 Test parameter containing an additional '?'
 
   >>> print http(r"""

@@ -14,11 +14,9 @@
 """
 import unittest
 
-from Testing.ZopeTestCase import installProduct
 from Testing.ZopeTestCase import FunctionalDocTestSuite
 from Testing.ZopeTestCase import FunctionalDocFileSuite
 
-installProduct('PythonScripts')
 
 class HTTPHeaderOutputTests(unittest.TestCase):
 
@@ -107,9 +105,6 @@ def setUp(self):
     1
     '''
     self.folder.addDTMLDocument('index_html', file='index')
-
-    self.folder.manage_addProduct['PythonScripts'].manage_addPythonScript('script')
-    self.folder.script.ZPythonScript_edit(params='a=0', body='return a+1')
 
     change_title = '''<dtml-call "manage_changeProperties(title=REQUEST.get('title'))">'''
     self.folder.addDTMLMethod('change_title', file=change_title)
