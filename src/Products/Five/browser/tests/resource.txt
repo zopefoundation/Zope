@@ -69,53 +69,6 @@ PageTemplateResource's __call__ renders the template
   ...     if not isinstance(resource, PageTemplateResource):
   ...         self.assertEquals(resource(), base_url % r)
 
-Security
---------
-
-  >>> from Products.Five.tests.testing.restricted import checkRestricted
-  >>> from Products.Five.tests.testing.restricted import checkUnauthorized
-
-  >>> resource_names = ['cockatiel.html', 'style.css', 'pattern.png']
-
-We should get Unauthorized as long as we're unauthenticated:
-
-  >>> for resource in resource_names:
-  ...     checkUnauthorized(
-  ...         self.folder,
-  ...         'context.restrictedTraverse("testoid/++resource++%s")()' % resource)
-
-  >>> base = 'testoid/++resource++fivetest_resources/%s'
-  >>> for resource in dir_resource_names:
-  ...     path = base % resource
-  ...     checkUnauthorized(self.folder, 'context.restrictedTraverse("%s")' % path)
-
-Now let's create a manager user account and log in:
-
-  >>> uf = self.folder.acl_users
-  >>> uf._doAddUser('manager', 'r00t', ['Manager'], [])
-  >>> self.login('manager')
-
-We can now view them all:
-
-  >>> for resource in resource_names:
-  ...     checkRestricted(
-  ...         self.folder,
-  ...         'context.restrictedTraverse("testoid/++resource++%s")()' % resource)
-
-  >>> base = 'testoid/++resource++fivetest_resources/%s'
-  >>> for resource in dir_resource_names:
-  ...     path = base % resource
-  ...     checkRestricted(self.folder, 'context.restrictedTraverse("%s")' % path)
-
-Let's make sure restrictedTraverse() works directly, too. It used to get
-tripped up on subdirectories due to missing security declarations.
-
-  >>> self.folder.restrictedTraverse('++resource++fivetest_resources/resource.txt') is not None
-  True
-  
-  >>> self.folder.restrictedTraverse('++resource++fivetest_resources/resource_subdir/resource.txt') is not None
-  True
-
 Clean up
 --------
 

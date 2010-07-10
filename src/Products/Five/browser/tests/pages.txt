@@ -275,56 +275,6 @@ The same applies to a view registered with <browser:view /> instead of
   >>> aq_parent(aq_inner(context))
   <Folder at /test_folder_1_> 
 
-High-level security
--------------------
-
-  >>> protected_view_names = [
-  ...     'eagle.txt', 'falcon.html', 'owl.html', 'flamingo.html',
-  ...     'condor.html', 'permission_view']
-  >>> 
-  >>> public_view_names = [
-  ...     'public_attribute_page',
-  ...     'public_template_page',
-  ...     'public_template_class_page',
-  ...     'nodoc-method', 'nodoc-function', 'nodoc-object',
-  ...     'dirpage1', 'dirpage2']
-
-  >>> from Products.Five.tests.testing.restricted import checkRestricted
-  >>> from Products.Five.tests.testing.restricted import checkUnauthorized
-
-As long as we're not authenticated, we should get Unauthorized for
-protected views, but we should be able to view the public ones:
-
-  >>> self.logout()
-  >>> for view_name in protected_view_names:
-  ...     checkUnauthorized(
-  ...         self.folder,
-  ...         'context.restrictedTraverse("testoid/%s")()' % view_name)
-
-  >>> for view_name in public_view_names:
-  ...     checkRestricted(
-  ...         self.folder,
-  ...         'context.restrictedTraverse("testoid/%s")()' % view_name)
-  >>> self.login('manager')
-
-Being logged in as a manager again, we find that the protected pages
-are accessible to us:
-
-  >>> for view_name in protected_view_names:
-  ...     checkRestricted(
-  ...         self.folder,
-  ...         'context.restrictedTraverse("testoid/%s")()' % view_name)
-
-  >>> checkRestricted(
-  ...     self.folder,
-  ...     'context.restrictedTraverse("testoid/eagle.method").eagle()')
-
-Even when logged in though the private methods should not be accessible:
-
-  >>> checkUnauthorized( self.folder,
-  ...             'context.restrictedTraverse("testoid/eagle.method").mouse()')
-
-
 
 Other
 -----

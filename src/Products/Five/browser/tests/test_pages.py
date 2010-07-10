@@ -12,8 +12,6 @@
 #
 ##############################################################################
 """Test browser pages
-
-$Id$
 """
 import unittest
 
@@ -69,8 +67,6 @@ def test_suite():
     from Testing.ZopeTestCase import FunctionalDocFileSuite
     from Testing.ZopeTestCase import ZopeDocFileSuite
     from Testing.ZopeTestCase import ZopeDocTestSuite
-    from Testing.ZopeTestCase import installProduct
-    installProduct('PythonScripts')
     return unittest.TestSuite((
         ZopeDocTestSuite(),
         ZopeDocFileSuite('pages.txt', package='Products.Five.browser.tests'),
