@@ -188,5 +188,5 @@ def test_suite():
         from Testing.ZopeTestCase import ZopeDocTestSuite
         from Testing.ZopeTestCase import installProduct
         installProduct('PythonScripts')
-        suite.addTest(unittest.makeSuite(ZopeDocTestSuite()))
+        suite.addTest(ZopeDocTestSuite())
     return suite
