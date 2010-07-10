@@ -22,6 +22,9 @@ Bugs Fixed
 Restructuring
 +++++++++++++
 
+- Avoid using the ``Products.PythonScripts.standard`` module inside the
+  database manager ZMI.
+
 - Factored out the `Products.MIMETools` and `Products.ExternalMethod` packages
   into their own distributions.
 

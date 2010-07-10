@@ -20,6 +20,7 @@ from logging import getLogger
 import os
 import sys
 import time
+import urllib
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.requestmethod import requestmethod
@@ -109,10 +110,12 @@ class DatabaseChooser(SimpleItem):
     def __init__(self, id):
         self.id = id
 
-    def getDatabaseNames(self):
+    def getDatabaseNames(self, quote=False):
         configuration = getConfiguration()
         names = configuration.dbtab.listDatabaseNames()
         names.sort()
+        if quote:
+            return [(name, urllib.quote(name)) for name in names]
         return names
 
     def __getitem__(self, name):
