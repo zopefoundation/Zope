@@ -16,19 +16,19 @@
 Based on Plone's RestrictedPythonTestCase, with kind permission by the
 Plone developers.
 """
+
 from AccessControl import Unauthorized
+from Products.PythonScripts.PythonScript import manage_addPythonScript
+
 
 def addPythonScript(folder, id, params='', body=''):
     """Add a PythonScript to folder."""
     # clean up any 'ps' that's already here..
-    try:
-        folder._getOb(id)
-        folder.manage_delObjects([id])
-    except AttributeError:
-        pass # it's okay, no 'ps' exists yet
-    factory = folder.manage_addProduct['PythonScripts']
-    factory.manage_addPythonScript(id)
+    if id in folder:
+        del folder[id]
+    manage_addPythonScript(folder, id)
     folder[id].ZPythonScript_edit(params, body)
+
 
 def checkRestricted(folder, psbody):
     """Perform a check by running restricted Python code."""
@@ -36,7 +36,8 @@ def checkRestricted(folder, psbody):
     try:
         folder.ps()
     except Unauthorized, e:
-        raise AssertionError, e
+        raise AssertionError(e)
+
 
 def checkUnauthorized(folder, psbody):
     """Perform a check by running restricted Python code.  Expect to
@@ -47,4 +48,4 @@ def checkUnauthorized(folder, psbody):
     except Unauthorized:
         pass
     else:
-        raise AssertionError, "Authorized but shouldn't be"
+        raise AssertionError("Authorized but shouldn't be")
