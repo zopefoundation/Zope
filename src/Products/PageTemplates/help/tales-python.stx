@@ -83,22 +83,6 @@ TALES Python expressions
       'math' -- The standard "Python math
       module":http://www.python.org/doc/current/lib/module-math.html.
 
-      'sequence' -- A module with a powerful sorting function. See
-      "sequence":../../OFSP/Help/sequence.py for more information.
-
-      'Products.PythonScripts.standard' -- Various HTML formatting
-      functions available in DTML. See
-      "Products.PythonScripts.standard":../../PythonScripts/Help/standard.py
-      for more information.
-
-      'ZTUtils' -- Batch processing facilities similar to those
-      offered by 'dtml-in'. See "ZTUtils":ZTUtils.py
-      for more information.
-
-      'AccessControl' -- Security and access checking facilities. See
-      "AccessControl":../../OFSP/Help/AccessControl.py for more
-      information.
-
   Examples
 
     Using a module usage (pick a random choice from a list)::
@@ -125,4 +109,3 @@ TALES Python expressions
       <p tal:content="python:'%0.2f' % size">
         13.56
       </p>
-
