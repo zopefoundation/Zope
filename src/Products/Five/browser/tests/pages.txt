@@ -253,12 +253,34 @@ C methods work the same
   >>> aq_parent(aq_inner(context))
   <Folder at /test_folder_1_> 
 
+The same applies to a view registered with <browser:view /> instead of
+<browser:page />
+
+  >>> request = TestRequest()
+  >>> view = getMultiAdapter((self.folder.testoid, request), name=u'permission_view')
+  >>> view.__ac_permissions__
+  (('View management screens', ('',)),)
+  >>> aq_acquire(view, '__roles__')
+  ('Manager',)
+  >>> context = view.context
+  >>> from Acquisition import ImplicitAcquisitionWrapper
+  >>> type(context) == ImplicitAcquisitionWrapper
+  True
+  >>> view.__parent__ == view.context
+  True
+  >>> aq_parent(view) == view.context
+  True
+  >>> context.aq_inner.aq_parent
+  <Folder at /test_folder_1_> 
+  >>> aq_parent(aq_inner(context))
+  <Folder at /test_folder_1_> 
+
 High-level security
 -------------------
 
   >>> protected_view_names = [
   ...     'eagle.txt', 'falcon.html', 'owl.html', 'flamingo.html',
-  ...     'condor.html']
+  ...     'condor.html', 'permission_view']
   >>> 
   >>> public_view_names = [
   ...     'public_attribute_page',

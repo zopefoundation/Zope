@@ -201,15 +201,7 @@ class view(zope.browserpage.metaconfigure.view):
                  ):
         if permission is None:
             permission = 'zope.Public'
-        elif permission in ('zope.Public', 'zope2.Public'):
-            # No need to warn about the default case
-            pass
-        else:
-            warnings.warn("The permission option of the <browser:view /> "
-                          "directive is not supported in Zope 2. " + \
-                          "Ignored for %s in %s" %
-                          (str(class_), _context.info), stacklevel=3)
-
+        
         super(view, self).__init__(
             _context, permission, for_=for_, name=name, layer=layer,
             class_=class_, allowed_interface=allowed_interface,
@@ -313,6 +305,42 @@ class view(zope.browserpage.metaconfigure.view):
             args = ('registerAdapter',
                     newclass, (for_, layer), self.provides, name,
                     _context.info),
+            )
+        
+        # Security
+        
+        _context.action(
+            discriminator = ('five:protectClass', newclass),
+            callable = protectClass,
+            args = (newclass, permission)
+            )
+        
+        if allowed_attributes:
+            for attr in allowed_attributes:
+                _context.action(
+                    discriminator = ('five:protectName', newclass, attr),
+                    callable = protectName,
+                    args = (newclass, attr, permission)
+                    )
+        
+        # Make everything else private
+        allowed = allowed_attributes or []
+        private_attrs = [name for name in dir(newclass)
+                         if (not name.startswith('_')) and
+                            (name not in allowed) and
+                            ismethod(getattr(newclass, name))]
+        for attr in private_attrs:
+            _context.action(
+                discriminator = ('five:protectName', newclass, attr),
+                callable = protectName,
+                args = (newclass, attr, CheckerPrivateId)
+                )
+        
+        # Protect the class
+        _context.action(
+            discriminator = ('five:initialize:class', newclass),
+            callable = InitializeClass,
+            args = (newclass,)
             )
 
 _factory_map = {'image':{'prefix':'ImageResource',
