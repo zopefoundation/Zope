@@ -3,7 +3,6 @@ server.  It contains the following directories:
 
   bin/         Scripts used to control the Zope instance
   etc/         Configuration files
-  Extensions/  Python sources for External Methods
   log/         Log files
   lib/python/  Installed Python packages specific to the instance
   Products/    Installed Zope Products specific to the instance

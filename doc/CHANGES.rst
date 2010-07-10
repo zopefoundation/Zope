@@ -22,6 +22,9 @@ Bugs Fixed
 Restructuring
 +++++++++++++
 
+- No longer create an `Extensions` folder in the standard instance skeleton.
+  External methods will become entirely optional in Zope 2.14.
+
 - Avoid using the ``Products.PythonScripts.standard`` module inside the
   database manager ZMI.
 

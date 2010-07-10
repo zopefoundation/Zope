@@ -27,8 +27,7 @@
 # Directive: instancehome
 #
 # Description:
-#     The path to the data files, local product files, import directory,
-#     and Extensions directory used by Zope.
+#     The path to the data and process identifier files used by Zope.
 #
 # Required (no default)
 #
@@ -95,9 +94,9 @@ instancehome $INSTANCE
 #
 # Description:
 #     Name of a directory that contains additional "extensions"
-#     (implementations of ExternalMethods or catalog brains).  This
-#     directive The directory identified will be searched before the
-#     'Extensions' directory of the 'instancehome'.
+#     (implementations of ExternalMethods or catalog brains). This
+#     directive will be searched before the 'Extensions' directory
+#     of the 'instancehome'.
 #
 # Default: unset
 #
