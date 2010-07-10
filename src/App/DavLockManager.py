@@ -39,8 +39,7 @@ class DavLockManager(Item, Implicit):
     manage_davlocks._setName('manage_davlocks')
 
     manage_options = (
-        {'label': 'Write Locks', 'action': 'manage_main',
-         'help': ('OFSP', 'DavLocks-ManageLocks.stx'), },
+        {'label': 'Write Locks', 'action': 'manage_main'}
         )
 
     def findLockedObjects(self, frompath=''):

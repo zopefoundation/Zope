@@ -47,11 +47,9 @@ class OrderSupport(object):
     _default_sort_key = 'position'
     _default_sort_reverse = 0
 
-    manage_options = ( { 'label':'Contents',
-                         'action':'manage_main',
-                         'help':('OFSP','OrderSupport_Contents.stx') }
-                     ,
-                     )
+    manage_options = (
+        {'label':'Contents', 'action':'manage_main'},
+        )
 
     #
     #   ZMI Methods

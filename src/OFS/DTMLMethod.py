@@ -70,15 +70,11 @@ class DTMLMethod(RestrictedDTML,
     func_code.co_varnames = 'self', 'REQUEST', 'RESPONSE'
     func_code.co_argcount = 3
 
-    manage_options = (
-        (
-            {'label': 'Edit', 'action': 'manage_main',
-             'help': ('OFSP', 'DTML-DocumentOrMethod_Edit.stx')},
-            {'label': 'View', 'action': '',
-             'help': ('OFSP', 'DTML-DocumentOrMethod_View.stx')},
-            {'label': 'Proxy', 'action': 'manage_proxyForm',
-             'help': ('OFSP', 'DTML-DocumentOrMethod_Proxy.stx')},
-            )
+    manage_options = ((
+        {'label': 'Edit', 'action': 'manage_main'},
+        {'label': 'View', 'action': ''},
+        {'label': 'Proxy', 'action': 'manage_proxyForm'},
+        )
         + Historical.manage_options
         + RoleManager.manage_options
         + Item_w__name__.manage_options

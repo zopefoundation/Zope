@@ -460,9 +460,7 @@ class SimpleItem(Item,
     security.setPermissionDefault(View, ('Manager',))
 
     manage_options=Item.manage_options+(
-        {'label':'Security',
-         'action':'manage_access',
-         'help':('OFSP', 'Security.stx')},
+        {'label': 'Security', 'action': 'manage_access'},
         )
 
 InitializeClass(SimpleItem)

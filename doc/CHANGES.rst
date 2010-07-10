@@ -22,6 +22,8 @@ Bugs Fixed
 Restructuring
 +++++++++++++
 
+- No longer use HelpSys pages from ``Products.OFSP`` in core Zope 2.
+
 - Register OFS as a package and give it an initialize function. Moved
   registration of OFS classes there from Products.OFSP.
 

@@ -172,8 +172,7 @@ class ObjectManager(CopyContainer,
     manage_index_main=DTMLFile('dtml/index_main', globals())
 
     manage_options=(
-        {'label':'Contents', 'action':'manage_main',
-         'help':('OFSP','ObjectManager_Contents.stx')},
+        {'label':'Contents', 'action':'manage_main'},
         )
 
     isAnObjectManager=1

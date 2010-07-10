@@ -2,9 +2,7 @@
 
 <dtml-var "manage_form_title(this(), _,
            form_title='Add Folder',
-           help_product='OFSP',
-           help_topic='Folder_Add.stx'
-	   )">
+           )">
 <p class="form-help">
 A Folder contains other objects. Use Folders to organize your
 web objects in to logical groups. The <em>create public interface</em> 

@@ -107,8 +107,7 @@ class PropertyManager(Base, ElementWithAttributes):
                                   ('Anonymous', 'Manager'))
 
     manage_options=(
-        {'label':'Properties', 'action':'manage_propertiesForm',
-         'help':('OFSP','Properties.stx')},
+        {'label':'Properties', 'action':'manage_propertiesForm'},
         )
 
     security.declareProtected(manage_properties, 'manage_propertiesForm')

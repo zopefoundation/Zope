@@ -37,8 +37,7 @@ class UndoSupport(ExtensionClass.Base):
     security = ClassSecurityInfo()
 
     manage_options=(
-        {'label': 'Undo', 'action': 'manage_UndoForm',
-         'help': ('OFSP', 'Undo.stx')},
+        {'label': 'Undo', 'action': 'manage_UndoForm'},
         )
 
     security.declareProtected(undo_changes, 'manage_UndoForm')

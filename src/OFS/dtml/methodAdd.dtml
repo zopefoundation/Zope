@@ -2,9 +2,7 @@
 
 <dtml-var "manage_form_title(this(), _,
            form_title='Add DTML Method',
-           help_product='OFSP',
-           help_topic='DTML-DocumentOrMethod_Add.stx'
-	   )">
+           )">
 
 <p class="form-help">
 A DTML Method is used to hold scripting tags and text content.

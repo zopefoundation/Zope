@@ -2,9 +2,7 @@
 
 <dtml-var "manage_form_title(this(), _,
            form_title='Rename Items',
-           help_product='OFSP',
-           help_topic='ObjectManager_Rename.stx'
-	   )">
+           )">
 
 <dtml-if expr="REQUEST.has_key('ids')">
 <form action="<dtml-var "REQUEST.URL1" html_quote>" method="post">

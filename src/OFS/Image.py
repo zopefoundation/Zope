@@ -120,10 +120,8 @@ class File(Persistent, Implicit, PropertyManager,
 
     manage_options=(
         (
-        {'label':'Edit', 'action':'manage_main',
-         'help':('OFSP','File_Edit.stx')},
-        {'label':'View', 'action':'',
-         'help':('OFSP','File_View.stx')},
+        {'label': 'Edit', 'action': 'manage_main'},
+        {'label': 'View', 'action': ''},
         )
         + PropertyManager.manage_options
         + RoleManager.manage_options
@@ -788,10 +786,8 @@ class Image(File):
                  )
 
     manage_options=(
-        ({'label':'Edit', 'action':'manage_main',
-         'help':('OFSP','Image_Edit.stx')},
-         {'label':'View', 'action':'view_image_or_file',
-         'help':('OFSP','Image_View.stx')},)
+        ({'label':'Edit', 'action':'manage_main'},
+         {'label':'View', 'action':'view_image_or_file'}, )
         + PropertyManager.manage_options
         + RoleManager.manage_options
         + Item_w__name__.manage_options

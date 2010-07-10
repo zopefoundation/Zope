@@ -52,17 +52,14 @@ class FindSupport(Base):
 
     security.declareProtected(view_management_screens, 'manage_findAdv')
     manage_findAdv=DTMLFile('dtml/findAdv', globals(),
-                            management_view='Find',
-                            help_topic='Find_Advanced.stx',
-                            help_product='OFSP')
+                            management_view='Find')
 
     security.declareProtected(view_management_screens, 'manage_findResult')
     manage_findResult=DTMLFile('dtml/findResult', globals(),
                                management_view='Find')
 
     manage_options=(
-        {'label':'Find', 'action':'manage_findForm',
-         'help':('OFSP','Find.stx')},
+        {'label':'Find', 'action':'manage_findForm'},
         )
 
     security.declareProtected(view_management_screens, 'ZopeFind')

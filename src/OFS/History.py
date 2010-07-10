@@ -97,10 +97,9 @@ class Historical(Base):
 
     HistoricalRevisions=Historian()
 
-    manage_options=({'label':'History', 'action':'manage_change_history_page',
-                     'help':('OFSP','History.stx')
-                     },
-                   )
+    manage_options=(
+        {'label':'History', 'action':'manage_change_history_page'},
+        )
 
     security.declareProtected(view_history, 'manage_change_history_page')
     manage_change_history_page = DTMLFile(

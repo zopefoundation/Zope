@@ -276,8 +276,8 @@ def initializeProduct(productp, name, home, app):
             break
     if not found:
         product.manage_options = product.manage_options + (
-            {'label':'Refresh', 'action':'manage_refresh',
-             'help': ('OFSP','Product_Refresh.stx')},)
+            {'label':'Refresh', 'action':'manage_refresh'},
+            )
 
     return product
 

@@ -96,35 +96,25 @@ class ZCatalog(Folder, Persistent, Implicit):
 
     manage_options = (
         {'label': 'Contents',           # TAB: Contents
-         'action': 'manage_main',
-         'help': ('OFSP','ObjectManager_Contents.stx')},
+         'action': 'manage_main'},
         {'label': 'Catalog',            # TAB: Cataloged Objects
-         'action': 'manage_catalogView',
-         'help':('ZCatalog','ZCatalog_Cataloged-Objects.stx')},
+         'action': 'manage_catalogView'},
         {'label': 'Properties',         # TAB: Properties
-         'action': 'manage_propertiesForm',
-         'help': ('OFSP','Properties.stx')},
+         'action': 'manage_propertiesForm'},
         {'label': 'Indexes',            # TAB: Indexes
-         'action': 'manage_catalogIndexes',
-         'help': ('ZCatalog','ZCatalog_Indexes.stx')},
+         'action': 'manage_catalogIndexes'},
         {'label': 'Metadata',           # TAB: Metadata
-         'action': 'manage_catalogSchema',
-         'help':('ZCatalog','ZCatalog_MetaData-Table.stx')},
+         'action': 'manage_catalogSchema'},
         {'label': 'Find Objects',       # TAB: Find Objects
-         'action': 'manage_catalogFind',
-         'help':('ZCatalog','ZCatalog_Find-Items-to-ZCatalog.stx')},
+         'action': 'manage_catalogFind'},
         {'label': 'Advanced',           # TAB: Advanced
-         'action': 'manage_catalogAdvanced',
-         'help':('ZCatalog','ZCatalog_Advanced.stx')},
+         'action': 'manage_catalogAdvanced'},
         {'label': 'Undo',               # TAB: Undo
-         'action': 'manage_UndoForm',
-         'help': ('OFSP','Undo.stx')},
+         'action': 'manage_UndoForm'},
         {'label': 'Security',           # TAB: Security
-         'action': 'manage_access',
-         'help': ('OFSP','Security.stx')},
+         'action': 'manage_access'},
         {'label': 'Ownership',          # TAB: Ownership
-         'action': 'manage_owner',
-         'help': ('OFSP','Ownership.stx'),}
+         'action': 'manage_owner'}
         )
 
     security.declareProtected(manage_zcatalog_entries, 'manage_main')

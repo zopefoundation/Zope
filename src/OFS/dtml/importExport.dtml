@@ -1,8 +1,5 @@
 <dtml-var manage_page_header>
-<dtml-var "manage_tabs(this(), _,
-           help_product='OFSP',
-           help_topic='ObjectManager_Import-Export.stx'
-	   )">
+<dtml-var "manage_tabs(this(), _, )">
 
 <p class="form-help">
 You can export Zope objects to a file in order to transfer

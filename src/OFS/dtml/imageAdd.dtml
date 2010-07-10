@@ -2,9 +2,7 @@
 
 <dtml-var "manage_form_title(this(), _,
            form_title='Add %s' % Kind,
-           help_product='OFSP',
-           help_topic='File_Add.stx'
-	   )">
+           )">
 
 <p class="form-help">
 Select a file to upload from your local computer by clicking the

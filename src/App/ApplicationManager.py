@@ -61,18 +61,12 @@ class DatabaseManager(Item, Implicit):
     meta_type = 'Database Management'
     icon = 'p_/DatabaseManagement_icon'
 
-    manage_options=(
-        (
-        {'label':'Database', 'action':'manage_main',
-         'help':('OFSP','Database-Management_Database.stx')},
-        {'label':'Activity', 'action':'manage_activity',
-         'help':('OFSP','Database-Management_Activity.stx')},
-        {'label':'Cache Parameters', 'action':'manage_cacheParameters',
-         'help':('OFSP','Database-Management_Cache-Parameters.stx')},
-        {'label':'Flush Cache', 'action':'manage_cacheGC',
-         'help':('OFSP','Database-Management_Flush-Cache.stx')},
-        )
-        )
+    manage_options=((
+        {'label':'Database', 'action':'manage_main'},
+        {'label':'Activity', 'action':'manage_activity'},
+        {'label':'Cache Parameters', 'action':'manage_cacheParameters'},
+        {'label':'Flush Cache', 'action':'manage_cacheGC'},
+        ))
 
     # These need to be here rather to make tabs work correctly. This
     # needs to be revisited.
@@ -160,13 +154,10 @@ class DebugManager(Item, Implicit):
     meta_type = name
     icon = 'p_/DebugManager_icon'
 
-    manage_options=(
-        (  {'label':'Debugging Info', 'action':'manage_main',
-            'help':('OFSP','Debug-Information_Debug.stx')},
-           {'label':'Profiling', 'action':'manage_profile',
-            'help':('OFSP','Debug-Information_Profile.stx')},
-           )
-        )
+    manage_options=((
+        {'label':'Debugging Info', 'action':'manage_main'},
+        {'label':'Profiling', 'action':'manage_profile'},
+        ))
 
     manage_debug = DTMLFile('dtml/debug', globals())
 
@@ -293,9 +284,8 @@ class ApplicationManager(Folder,CacheManager):
         )
 
     manage_options=(
-        ({'label':'Contents', 'action':'manage_main',
-          'help':('OFSP','Control-Panel_Contents.stx')},
-         ) + UndoSupport.manage_options
+        ({'label':'Contents', 'action':'manage_main'}, ) +
+        UndoSupport.manage_options
         )
 
     id = 'Control_Panel'

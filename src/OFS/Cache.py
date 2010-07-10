@@ -86,7 +86,6 @@ class Cacheable:
         'label':'Cache',
         'action':'ZCacheable_manage',
         'filter':filterCacheTab,
-        'help':('OFSP','Cacheable-properties.stx'),
         },)
 
     security = ClassSecurityInfo()
@@ -422,7 +421,6 @@ class CacheManager:
     manage_options = (
         {'label':'Associate',
          'action':'ZCacheManager_associate',
-         'help':('OFSP','CacheManager-associate.stx'),
          },
         )
 

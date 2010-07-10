@@ -92,14 +92,11 @@ class Folder(
     _properties=({'id':'title', 'type': 'string','mode':'wd'},)
 
     manage_options=(
-        ObjectManager.manage_options+
-        (
-        {'label':'View', 'action':'',
-         'help':('OFSP','Folder_View.stx')},
-        )+
-        PropertyManager.manage_options+
-        RoleManager.manage_options+
-        Item.manage_options+
+        ObjectManager.manage_options +
+        ({'label': 'View', 'action': ''}, ) +
+        PropertyManager.manage_options +
+        RoleManager.manage_options +
+        Item.manage_options +
         FindSupport.manage_options
         )
 
