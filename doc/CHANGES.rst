@@ -22,6 +22,9 @@ Bugs Fixed
 Restructuring
 +++++++++++++
 
+- Register OFS as a package and give it an initialize function. Moved
+  registration of OFS classes there from Products.OFSP.
+
 - No longer create an `Extensions` folder in the standard instance skeleton.
   External methods will become entirely optional in Zope 2.14.
 

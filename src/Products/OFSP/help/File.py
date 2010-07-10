@@ -55,13 +55,6 @@ class File:
     method.
     """
 
-    __constructor__=manage_addFile
-
-    __extends__=(
-        'OFSP.ObjectManagerItem.ObjectManagerItem',
-        'OFSP.PropertyManager.PropertyManager',
-        )
-
     def update_data(data, content_type=None, size=None):
         """
         Updates the contents of the File with 'data'.

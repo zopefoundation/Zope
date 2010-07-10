@@ -202,7 +202,7 @@ class TestInitialization( unittest.TestCase ):
         self.configure(good_cfg)
         i = self.getOne()
         i.install_products()
-        self.failUnless(Application.misc_.__dict__.has_key('OFSP'))
+        self.failUnless(Application.misc_.__dict__.has_key('OFS'))
 
     def test_install_standards(self):
         self.configure(good_cfg)

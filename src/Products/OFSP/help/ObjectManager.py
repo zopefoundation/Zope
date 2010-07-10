@@ -18,11 +18,11 @@ class ObjectManager:
 
     To create an object inside an object manager use 'manage_addProduct'::
 
-      self.manage_addProduct['OFSP'].manage_addFolder(id, title)
+      self.manage_addProduct['OFS'].manage_addFolder(id, title)
 
     In DTML this would be::
 
-        <dtml-call "manage_addProduct['OFSP'].manage_addFolder(id, title)">
+        <dtml-call "manage_addProduct['OFS'].manage_addFolder(id, title)">
 
     These examples create a new Folder inside the current
     ObjectManager.

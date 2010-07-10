@@ -1,6 +1,12 @@
-<configure xmlns="http://namespaces.zope.org/zope">
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:five="http://namespaces.zope.org/five">
 
   <include file="deprecated.zcml"/>
   <include file="event.zcml"/>
+
+  <five:registerPackage
+    package="OFS"
+    initialize="OFS.initialize" />
 
 </configure>

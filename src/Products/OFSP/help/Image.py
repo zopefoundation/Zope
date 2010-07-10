@@ -54,12 +54,7 @@ class Image:
     method. For example::
 
       <dtml-var "ImageObject.tag(border='5', align='left')">
-
     """
-
-    __constructor__=manage_addImage
-
-    __extends__=('OFSP.File.File',)
 
     def tag(height=None, width=None, alt=None,
             scale=0, xscale=0, yscale=0, **args):

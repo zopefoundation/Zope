@@ -23,14 +23,10 @@ def manage_addMailHost(id, title='', smtp_host=None,
 
 class MailHost:
     """
-
     MailHost objects work as adapters to Simple Mail Transfer Protocol
     (SMTP) servers.  MailHosts are used by DTML 'sendmail' tags
     to find the proper host to deliver mail to.
-
     """
-
-    __constructor__=manage_addMailHost
 
     def send(messageText, mto=None, mfrom=None, subject=None,
              encode=None):

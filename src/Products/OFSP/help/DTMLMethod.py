@@ -26,10 +26,7 @@ class DTMLMethod:
     The DTML Method's id is available via the 'document_id'
     variable and the title is available via the 'document_title'
     variable.
-
     """
-
-    __extends__=('OFSP.ObjectManagerItem.ObjectManagerItem',)
 
     def __call__(client=None, REQUEST={}, **kw):
         """
@@ -129,5 +126,3 @@ class DTMLMethod:
 
         Permission -- 'View'
         """
-
-    __constructor__ = manage_addDTMLMethod

@@ -22,17 +22,7 @@ def manage_addFolder(id, title):
 
 class Folder:
     """
-
     A Folder is a generic container object in Zope.
 
     Folders are the most common ObjectManager subclass in Zope.
-
     """
-
-    __extends__=(
-        'OFSP.ObjectManagerItem.ObjectManagerItem',
-        'OFSP.ObjectManager.ObjectManager',
-        'OFSP.PropertyManager.PropertyManager',
-        )
-
-    __constructor__ = manage_addFolder

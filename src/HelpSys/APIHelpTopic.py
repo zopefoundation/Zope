@@ -107,14 +107,6 @@ class APIDoc(Persistent):
 
         # inheritence information
         self.extends=[]
-##        for base in klass.getBases():
-##            names = string.split(base.__name__, '.')
-##            url="%s/Help/%s.py#%s" % (names[0], names[1], names[2])
-##            self.extends.append((names[2], url))
-
-        # constructor information
-##        if hasattr(klass, '__constructor__'):
-##            self.constructor=MethodDoc(klass.__constructor__)
 
         # Get info on methods and attributes, ignore special items
         self.attributes=[]
@@ -132,24 +124,9 @@ class APIDoc(Persistent):
         #
         # The name of the API is deduced from the name
         # of the class.
-        #
-        # The base APIs are deduced from the __extends__
-        # attribute.
 
         self.name=klass.__name__
         self.doc=trim_doc_string(klass.__doc__)
-
-        # inheritence information
-        if hasattr(klass,'__extends__'):
-            self.extends=[]
-            for base in klass.__extends__:
-                names=base.split( '.')
-                url="%s/Help/%s.py#%s" % (names[0], names[1], names[2])
-                self.extends.append((names[2], url))
-
-        # constructor information
-        if hasattr(klass, '__constructor__'):
-            self.constructor=MethodDoc(klass.__constructor__)
 
         # Get info on methods and attributes, ignore special items
         self.attributes=[]

@@ -24,11 +24,6 @@ class DTMLDocument:
     code. It is useful to represent web pages.
     """
 
-    __extends__=(
-        'OFSP.ObjectManagerItem.ObjectManagerItem',
-        'OFSP.PropertyManager.PropertyManager',
-        )
-
     def __call__(client=None, REQUEST={}, RESPONSE=None, **kw):
         """
 
@@ -131,5 +126,3 @@ class DTMLDocument:
 
         Permission -- 'View'
         """
-
-    __constructor__=manage_addDocument

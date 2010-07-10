@@ -25,7 +25,3 @@ def manage_addOrderedFolder(id, title='', createPublic=0, createUserF=0,
 class OrderedFolder:
     """ Extends the default Folder by order support.
     """
-
-    __extends__ = ('OFSP.OrderSupport.OrderSupport', 'OFSP.Folder.Folder')
-
-    __constructor__ = manage_addOrderedFolder
