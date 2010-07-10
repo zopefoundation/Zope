@@ -22,6 +22,8 @@ Bugs Fixed
 Restructuring
 +++++++++++++
 
+- Factored out the `Products.MIMETools` package into its own distribution.
+
 - Factored out the `Products.ZSQLMethods` into its own distribution. The
   distribution also includes the `Shared.DC.ZRDB` code. The Zope2 distribution
   no longer includes the code automatically. Please depend on the new
