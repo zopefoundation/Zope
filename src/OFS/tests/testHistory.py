@@ -1,5 +1,4 @@
 import unittest
-import Testing
 import Zope2
 Zope2.startup()
 
@@ -9,9 +8,16 @@ import transaction
 import tempfile
 import ZODB
 
+
 from OFS.Application import Application
-from Products.PythonScripts.PythonScript import manage_addPythonScript
+from OFS.History import Historical
+from OFS.SimpleItem import SimpleItem
 from ZODB.FileStorage import FileStorage
+
+
+class HistoryItem(SimpleItem, Historical):
+    pass
+
 
 class HistoryTests(unittest.TestCase):
 
@@ -19,27 +25,28 @@ class HistoryTests(unittest.TestCase):
         # set up a zodb
         # we can't use DemoStorage here 'cos it doesn't support History
         self.dir = tempfile.mkdtemp()
-        self.s = FileStorage(os.path.join(self.dir,'testHistory.fs'),create=True)
+        fs_path = os.path.join(self.dir, 'testHistory.fs')
+        self.s = FileStorage(fs_path, create=True)
         self.connection = ZODB.DB(self.s).open()
         r = self.connection.root()
         a = Application()
         r['Application'] = a
         self.root = a
         # create a python script
-        manage_addPythonScript(a,'test')
-        self.ps = ps = a.test
+        a['test'] = HistoryItem()
+        self.hi = hi = a.test
         # commit some changes
-        ps.write('return 1')
+        hi.title = 'First title'
         t = transaction.get()
         # undo note made by Application instantiation above.
-        t.description = None 
+        t.description = None
         t.note('Change 1')
         t.commit()
-        ps.write('return 2')
+        hi.title = 'Second title'
         t = transaction.get()
         t.note('Change 2')
         t.commit()
-        ps.write('return 3')
+        hi.title = 'Third title'
         t = transaction.get()
         t.note('Change 3')
         t.commit()
@@ -53,9 +60,9 @@ class HistoryTests(unittest.TestCase):
         del self.connection
         del self.s
         shutil.rmtree(self.dir)
-        
+
     def test_manage_change_history(self):
-        r = self.ps.manage_change_history()
+        r = self.hi.manage_change_history()
         self.assertEqual(len(r),3) # three transactions
         for i in range(3):
             entry = r[i]
@@ -63,11 +70,11 @@ class HistoryTests(unittest.TestCase):
             self.assertEqual(len(entry.keys()),6)
             # the transactions are in newest-first order
             self.assertEqual(entry['description'],'Change %i' % (3-i))
-            self.failUnless('key' in entry) 
+            self.failUnless('key' in entry)
             # lets not assume the size will stay the same forever
-            self.failUnless('size' in entry) 
-            self.failUnless('tid' in entry) 
-            self.failUnless('time' in entry) 
+            self.failUnless('size' in entry)
+            self.failUnless('tid' in entry)
+            self.failUnless('time' in entry)
             if i:
                 # check times are increasing
                 self.failUnless(entry['time']<r[i-1]['time'])
@@ -75,22 +82,19 @@ class HistoryTests(unittest.TestCase):
 
     def test_manage_historyCopy(self):
         # we assume this works 'cos it's tested above
-        r = self.ps.manage_change_history()
+        r = self.hi.manage_change_history()
         # now we do the copy
-        self.ps.manage_historyCopy(
+        self.hi.manage_historyCopy(
             keys=[r[2]['key']]
                   )
         # do a commit, just like ZPublisher would
         transaction.commit()
         # check the body is as it should be, we assume (hopefully not foolishly)
         # that all other attributes will behave the same
-        self.assertEqual(self.ps._body,
-                         'return 1\n')
-                                
+        self.assertEqual(self.hi.title,
+                         'First title')
+
 def test_suite():
     suite = unittest.TestSuite()
-    suite.addTest( unittest.makeSuite( HistoryTests ) )
+    suite.addTest(unittest.makeSuite(HistoryTests))
     return suite
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='test_suite')
