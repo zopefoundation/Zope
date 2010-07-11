@@ -22,8 +22,6 @@ Bugs Fixed
 Restructuring
 +++++++++++++
 
-- Use the external ``zLOG`` distribution again.
-
 - No longer use HelpSys pages from ``Products.OFSP`` in core Zope 2.
 
 - Register OFS as a package and give it an initialize function. Moved
@@ -105,8 +103,6 @@ Distribution changes
 
 - Drop the dependency on the ThreadLock distribution, by using Python's thread
   module instead.
-
-- Integrated zLOG package back into this distribution.
 
 - Integrated the Products.signalstack / z3c.deadlockdebugger packages. You can
   now send a SIGUSR1 signal to a Zope process and get a stack trace of all
