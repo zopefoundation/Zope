@@ -34,7 +34,7 @@ We'll use a few simple classes (defined in python code for picklability)
 for our tests.
 
   >>> from OFS.tests.test_event import MyApp, MyContent
-  >>> from OFS.tests.test_event import MyFolder, MyBTreeFolder
+  >>> from OFS.tests.test_event import MyFolder
   >>> from OFS.tests.test_event import MyOrderedFolder
 
   >>> app = MyApp('')
@@ -44,10 +44,6 @@ for our tests.
   old manage_afterAdd folder folder
   'folder'
   >>> folder = app.folder
-  >>> btfolder = MyBTreeFolder('btfolder')
-  >>> app._setObject('btfolder', btfolder) # doctest: +NORMALIZE_WHITESPACE
-  old manage_afterAdd btfolder btfolder
-  'btfolder'
 
 To observe what object events are dispatched, we'll have some
 subscribers print them. We'll actually do that for a specific interface,
@@ -235,22 +231,6 @@ Old behavior with events for a clone::
   >>> res.getId()
   'strawberry'
 
-Events are also sent when we work with a BTreeFolder::
-
-  >>> ob = MyContent('luckyluke')
-  >>> btfolder._setObject('luckyluke', ob)
-  ObjectWillBeAddedEvent luckyluke
-  ObjectAddedEvent luckyluke
-  old manage_afterAdd luckyluke luckyluke btfolder
-  ContainerModifiedEvent btfolder
-  'luckyluke'
-
-  >>> btfolder.manage_delObjects('luckyluke')
-  ObjectWillBeRemovedEvent luckyluke
-  old manage_beforeDelete luckyluke luckyluke btfolder
-  ObjectRemovedEvent luckyluke
-  ContainerModifiedEvent btfolder
-
 Here is what happens for a tree of objects. Let's create a simple one::
 
   >>> subfolder = MyFolder('subfolder')
@@ -373,23 +353,6 @@ Or copy using manage_clone::
   ObjectClonedEvent phb
   >>> res.getId()
   'phb'
-
-Also on a BTreeFolder::
-
-  >>> ob = MyNewContent('alice')
-  >>> btfolder._setObject('alice', ob)
-  ObjectWillBeAddedEvent alice
-  ObjectAddedEvent alice
-  ContainerModifiedEvent btfolder
-  'alice'
-  >>> btfolder.manage_renameObject('alice', 'rabbit')
-  ObjectWillBeMovedEvent alice
-  ObjectMovedEvent rabbit
-  ContainerModifiedEvent btfolder
-  >>> btfolder.manage_delObjects('rabbit')
-  ObjectWillBeRemovedEvent rabbit
-  ObjectRemovedEvent rabbit
-  ContainerModifiedEvent btfolder
 
 Now for a tree of objects. Let's create a simple one::
 

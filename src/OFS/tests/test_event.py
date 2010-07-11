@@ -22,7 +22,6 @@ $Id$
 from OFS.SimpleItem import SimpleItem
 from OFS.Folder import Folder
 from OFS.OrderedFolder import OrderedFolder
-from Products.BTreeFolder2.BTreeFolder2 import BTreeFolder2
 
 from zope.component import testing, eventtesting
 
@@ -63,10 +62,6 @@ class MyFolder(NotifyBase, Folder):
 
 class MyOrderedFolder(NotifyBase, OrderedFolder):
     pass
-
-class MyBTreeFolder(NotifyBase, BTreeFolder2):
-    def _verifyObjectPaste(self, object, validate_src=1):
-        pass
 
 class MyContent(NotifyBase, SimpleItem):
     def __init__(self, id):
