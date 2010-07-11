@@ -104,6 +104,7 @@ setup(name='Zope2',
       'Products.MIMETools',
       'Products.OFSP',
       'Products.PythonScripts',
+      'Products.StandardCacheManagers',
     ],
 
     include_package_data=True,
