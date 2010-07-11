@@ -98,6 +98,7 @@ setup(name='Zope2',
       'zope.traversing',
       'zope.viewlet',
       # BBB optional dependencies to be removed in Zope 2.14
+      'Products.BTreeFolder2',
       'Products.ExternalMethod',
       'Products.MIMETools',
       'Products.OFSP',
