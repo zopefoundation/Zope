@@ -84,7 +84,7 @@ Features Added
 
 - Updated packages:
 
-  - DateTime = 2.12.3
+  - DateTime = 2.12.4
   - nt_svcutils = 2.13.0
 
 2.13.0a1 (2010-06-25)
