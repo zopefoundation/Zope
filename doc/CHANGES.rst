@@ -31,7 +31,7 @@ Features Added
 
 - Updated packages:
 
-  - DateTime = 2.12.3
+  - DateTime = 2.12.4
 
 2.12.8 (2010-06-25)
 -------------------
