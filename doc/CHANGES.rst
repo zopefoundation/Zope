@@ -30,9 +30,8 @@ Bugs Fixed
 
 - LP #143531: Fix broken object so they give access to their state.
 
-- LP #578326: Issue a warning if someone specifies a non-public permission
-  attribute in the browser:view directive. This attribute has never been
-  supported in Zope 2.
+- LP #578326: Add support for non-public permission attributes in the
+  browser:view directive.
 
 Restructuring
 +++++++++++++
