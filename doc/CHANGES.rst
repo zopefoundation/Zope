@@ -22,6 +22,9 @@ Restructuring
 Features Added
 ++++++++++++++
 
+- Updated packages:
+
+  - ZODB3 = 3.10.0b2
 
 2.13.0a2 (2010-07-13)
 ---------------------
