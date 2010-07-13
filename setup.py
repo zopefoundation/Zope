@@ -101,6 +101,7 @@ setup(name='Zope2',
       # BBB optional dependencies to be removed in Zope 2.14
       'Products.BTreeFolder2',
       'Products.ExternalMethod',
+      'Products.MailHost',
       'Products.MIMETools',
       'Products.OFSP',
       'Products.PythonScripts',

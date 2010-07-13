@@ -15,6 +15,9 @@ Bugs Fixed
 Restructuring
 +++++++++++++
 
+- Factored out the `Products.MailHost` package into its own distributions. It
+  will no longer be included by default in Zope 2.14 but live on as an
+  independent add-on.
 
 Features Added
 ++++++++++++++
