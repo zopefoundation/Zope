@@ -46,6 +46,34 @@ class UnIndexTests(unittest.TestCase):
         self.assertRaises(ConflictError, unindex.removeForwardIndexEntry,
                           'conflicts', 42)
 
+    def test_get_object_datum(self):
+        from Products.PluginIndexes.common.UnIndex import _marker
+        idx = self._makeOne('interesting')
+
+        dummy = object()
+        self.assertEquals(idx._get_object_datum(dummy, 'interesting'), _marker)
+
+        class DummyContent2(object):
+            interesting = 'GOT IT'
+        dummy = DummyContent2()
+        self.assertEquals(idx._get_object_datum(dummy, 'interesting'), 'GOT IT')
+
+        class DummyContent3(object):
+            exc = None
+            def interesting(self):
+                if self.exc:
+                    raise self.exc
+                return 'GOT IT'
+        dummy = DummyContent3()
+        self.assertEquals(idx._get_object_datum(dummy, 'interesting'), 'GOT IT')
+
+        dummy.exc = AttributeError
+        self.assertEquals(idx._get_object_datum(dummy, 'interesting'), _marker)
+
+        dummy.exc = TypeError
+        self.assertEquals(idx._get_object_datum(dummy, 'interesting'), _marker)
+
+
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(UnIndexTests))
