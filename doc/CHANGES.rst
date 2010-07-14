@@ -14,9 +14,10 @@ Bugs Fixed
 - LP #143755: Also catch TypeError when trying to determine an 
   indexable value for an object in PluginIndexes.common.UnIndex
 
-- LP #143533: Instead of showing "0.0.0.0" as server name when no
-  specific listening IP is configured for the HTTP server, do a
-  socket lookup to show the current server's fully qualified name.
+- LP #143533: Instead of showing "0.0.0.0" as the SERVER_NAME 
+  request variable when no specific listening IP is configured for 
+  the HTTP server, do a socket lookup to show the current server's 
+  fully qualified name.
 
 - LP #143722: Added missing permission to ObjectManager.manage_hasId,
   which prevented renaming files and folders via FTP.
