@@ -11,6 +11,9 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
+- LP #143273: Enable the dtml-var modifiers url_quote, url_unquote, 
+  url_quote_plus and url_unquote_plus to handle unicode strings.
+
 
 2.12.9 (2010-07-13)
 -------------------

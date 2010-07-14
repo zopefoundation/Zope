@@ -342,15 +342,31 @@ class Call:
 
 
 def url_quote(v, name='(Unknown name)', md={}):
+    if isinstance(v, unicode):
+        # quote does not handle unicode. Encoding to a "safe"
+        # intermediate encoding before quoting, then unencoding the result.
+        return quote(v.encode('utf-8')).decode('UTF-8')
     return quote(str(v))
 
 def url_quote_plus(v, name='(Unknown name)', md={}):
+    if isinstance(v, unicode):
+        # quote_plus does not handle unicode. Encoding to a "safe"
+        # intermediate encoding before quoting, then unencoding the result.
+        return quote_plus(v.encode('utf-8')).decode('UTF-8')
     return quote_plus(str(v))
 
 def url_unquote(v, name='(Unknown name)', md={}):
+    if isinstance(v, unicode):
+        # unquote does not handle unicode. Encoding to a "safe"
+        # intermediate encoding before quoting, then unencoding the result.
+        return unquote(v.encode('utf-8')).decode('UTF-8')
     return unquote(str(v))
 
 def url_unquote_plus(v, name='(Unknown name)', md={}):
+    if isinstance(v, unicode):
+        # unquote_plus does not handle unicode. Encoding to a "safe"
+        # intermediate encoding before quoting, then unencoding the result.
+        return unquote_plus(v.encode('utf-8')).decode('UTF-8')
     return unquote_plus(str(v))
 
 def newline_to_br(v, name='(Unknown name)', md={}):

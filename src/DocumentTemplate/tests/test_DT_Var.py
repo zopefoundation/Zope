@@ -62,9 +62,43 @@ class TestNewlineToBr(doctest.DocTestCase):
 
         """
 
+
+class TestUrlQuoting(unittest.TestCase):
+
+    def test_url_quoting(self):
+        from DocumentTemplate.DT_Var import url_quote
+        from DocumentTemplate.DT_Var import url_unquote
+        unicode_value = u'G\xfcnther M\xfcller'
+        quoted_unicode_value = u'G%C3%BCnther%20M%C3%BCller'
+        utf8_value = unicode_value.encode('UTF-8')
+        quoted_utf8_value = 'G%C3%BCnther%20M%C3%BCller'
+
+        self.assertEquals(url_quote(unicode_value), quoted_unicode_value)
+        self.assertEquals(url_quote(utf8_value), quoted_utf8_value)
+        
+        self.assertEquals(url_unquote(quoted_unicode_value), unicode_value)
+        self.assertEquals(url_unquote(quoted_utf8_value), utf8_value)
+
+
+    def test_url_quoting_plus(self):
+        from DocumentTemplate.DT_Var import url_quote_plus
+        from DocumentTemplate.DT_Var import url_unquote_plus
+        unicode_value = u'G\xfcnther M\xfcller'
+        quoted_unicode_value = u'G%C3%BCnther+M%C3%BCller'
+        utf8_value = unicode_value.encode('UTF-8')
+        quoted_utf8_value = 'G%C3%BCnther+M%C3%BCller'
+
+        self.assertEquals(url_quote_plus(unicode_value), quoted_unicode_value)
+        self.assertEquals(url_quote_plus(utf8_value), quoted_utf8_value)
+        
+        self.assertEquals(url_unquote_plus(quoted_unicode_value), unicode_value)
+        self.assertEquals(url_unquote_plus(quoted_utf8_value), utf8_value)
+
+
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(doctest.DocTestSuite())
+    suite.addTest(unittest.makeSuite(TestUrlQuoting))
     return suite
 
 if __name__ == '__main__':
