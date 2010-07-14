@@ -185,7 +185,7 @@ class zhttp_handler:
         env = {}
         env['REQUEST_METHOD']=request.command.upper()
         env['SERVER_PORT']=str(server.port)
-        env['SERVER_NAME']=server.server_name
+        env['SERVER_NAME']=server.request_server_name
         env['SERVER_SOFTWARE']=server.SERVER_IDENT
         env['SERVER_PROTOCOL']="HTTP/"+request.version
         env['channel.creation_time']=request.channel.creation_time
@@ -447,10 +447,12 @@ class zhttp_server(http_server):
         self.shutup=1
         self.fast_listen = fast_listen
         http_server.__init__(self, ip, port, resolver, logger_object)
-        if self.server_name == '0.0.0.0':
-            # Workaround to set a more descriptive server_name
+        self.request_server_name = self.server_name
+        if self.request_server_name == '0.0.0.0':
+            # Workaround to set a more descriptive server name
+            # for use in the Request SERVER_NAME variable
             try:
-                self.server_name = socket.getfqdn()
+                self.request_server_name = socket.getfqdn()
             except socket.error:
                 pass
         self.shutup=0
