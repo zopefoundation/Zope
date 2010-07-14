@@ -36,7 +36,7 @@ def getConfiguration():
 def setConfiguration(cfg):
     """Set the global configuration object.
 
-    Legacy sources of common configuraiton values are updated to
+    Legacy sources of common configuration values are updated to
     reflect the new configuration; this may be removed in some future
     version.
     """

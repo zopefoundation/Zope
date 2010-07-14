@@ -18,6 +18,7 @@ import os
 import os.path
 import stat
 import time
+import warnings
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
@@ -34,6 +35,13 @@ PREFIX = os.path.realpath(
     os.path.join(os.path.dirname(Zope2.__file__), os.path.pardir)
     )
 
+NON_PREFIX_WARNING = ('Assuming image location to be present in the Zope2 '
+                      'distribution. This is deprecated and might lead to ' 
+                      'broken code if the directory in question is moved ' 
+                      'to another distribution. Please provide either an '
+                      'absolute file system path or a prefix. Support for ' 
+                      'relative filenames without a prefix might be '
+                      'dropped in a future Zope2 release.')
 
 class ImageFile(Explicit):
     """Image objects stored in external files."""
@@ -43,9 +51,12 @@ class ImageFile(Explicit):
     def __init__(self, path, _prefix=None):
         import Globals  # for data
         if _prefix is None:
-            _prefix=getattr(getConfiguration(), 'softwarehome', PREFIX)
+            _prefix=getattr(getConfiguration(), 'softwarehome', None) or PREFIX
+            if not os.path.isabs(path):
+                warnings.warn(NON_PREFIX_WARNING, UserWarning, 2 )
         elif type(_prefix) is not type(''):
             _prefix=package_home(_prefix)
+        # _prefix is ignored if path is absolute
         path = os.path.join(_prefix, path)
         self.path=path
         if Globals.DevelopmentMode:
