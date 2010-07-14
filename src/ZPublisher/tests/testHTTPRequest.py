@@ -19,6 +19,7 @@ class HTTPRequestTests(unittest.TestCase):
 
     def _makeOne(self, stdin=None, environ=None, response=None, clean=1):
         from StringIO import StringIO
+        from ZPublisher import NotFound
         if stdin is None:
             stdin = StringIO()
 
@@ -37,6 +38,14 @@ class HTTPRequestTests(unittest.TestCase):
         if response is None:
             class _FauxResponse(object):
                 _auth = None
+                debug_mode = False
+                errmsg = 'OK'
+
+                def notFoundError(self, message):
+                    raise NotFound, message
+
+                def exception(self, *args, **kw):
+                    pass
 
             response = _FauxResponse()
 
@@ -1002,6 +1011,16 @@ class HTTPRequestTests(unittest.TestCase):
         self.failIf(len(events),
             "HTTPRequest.resolve_url should not emit events")
 
+    def test_resolve_url_errorhandling(self):
+        # Check that resolve_url really raises the same error
+        # it received from ZPublisher.BaseRequest.traverse
+        from zExceptions import NotFound
+        request = self._makeOne()
+        request['PARENTS'] = [object()]
+        self.assertRaises( NotFound
+                         , request.resolve_url
+                         , request.script + '/does_not_exist'
+                         )
 
     def test_parses_json_cookies(self):
         # https://bugs.launchpad.net/zope2/+bug/563229

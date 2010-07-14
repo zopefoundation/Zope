@@ -11,6 +11,9 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
+- LP #143564: Request.resolve_url did not correctly re-raise
+  exceptions encountered during path traversal.
+
 
 Restructuring
 +++++++++++++

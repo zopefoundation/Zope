@@ -1178,7 +1178,7 @@ class HTTPRequest(BaseRequest):
             rsp.exception()
         if object is None:
             req.clear()
-            raise rsp.errmsg, sys.exc_info()[1]
+            raise sys.exc_info()[0], rsp.errmsg
 
         # The traversal machinery may return a "default object"
         # like an index_html document. This is not appropriate
