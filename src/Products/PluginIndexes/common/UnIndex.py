@@ -272,7 +272,7 @@ class UnIndex(SimpleItem):
             datum = getattr(obj, attr)
             if safe_callable(datum):
                 datum = datum()
-        except AttributeError:
+        except (AttributeError, TypeError):
             datum = _marker
         return datum
 
