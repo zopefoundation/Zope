@@ -11,6 +11,9 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
+- LP #143564: Request.resolve_url did not correctly re-raise 
+  exceptions encountered during path traversal.
+
 - LP #143273: Enable the dtml-var modifiers url_quote, url_unquote, 
   url_quote_plus and url_unquote_plus to handle unicode strings.
 
