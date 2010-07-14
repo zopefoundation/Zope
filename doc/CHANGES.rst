@@ -11,6 +11,9 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
+- LP #143722: Added missing permission to ObjectManager.manage_hasId,
+  which prevented renaming files and folders via FTP.
+
 - LP #143564: Request.resolve_url did not correctly re-raise
   exceptions encountered during path traversal.
 

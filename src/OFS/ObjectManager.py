@@ -726,6 +726,7 @@ class ObjectManager(CopyContainer,
                 out=out+((k,stat),)
         return marshal.dumps(out)
 
+    security.declareProtected(ftp_access, 'manage_hasId')
     def manage_hasId(self, REQUEST):
         """ check if the folder has an object with REQUEST['id'] """
 
