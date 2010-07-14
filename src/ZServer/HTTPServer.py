@@ -447,6 +447,12 @@ class zhttp_server(http_server):
         self.shutup=1
         self.fast_listen = fast_listen
         http_server.__init__(self, ip, port, resolver, logger_object)
+        if self.server_name == '0.0.0.0':
+            # Workaround to set a more descriptive server_name
+            try:
+                self.server_name = socket.getfqdn()
+            except socket.error:
+                pass
         self.shutup=0
         self.log_info('%s server started at %s\n'
                       '\tHostname: %s\n\tPort: %d' % (
