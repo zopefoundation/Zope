@@ -28,6 +28,13 @@ Bugs Fixed
 - LP #143273: Enable the dtml-var modifiers url_quote, url_unquote, 
   url_quote_plus and url_unquote_plus to handle unicode strings.
 
+Features Added
+++++++++++++++
+
+- Warn when App.ImageFile.ImageFile receives a relative path with no prefix,
+  and then has to assume the path to be relative to "software home". This
+  behaviour is deprecated as packages can be factored out to their own
+  distribution, making the "software home" relative path meaningless. 
 
 2.12.9 (2010-07-13)
 -------------------
