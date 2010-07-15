@@ -44,6 +44,7 @@ Features Added
 - Updated packages:
 
   - ZODB3 = 3.10.0b2
+  - DocumentTemplate = 2.13.1
 
 2.13.0a2 (2010-07-13)
 ---------------------
