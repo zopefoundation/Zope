@@ -44,10 +44,8 @@ class p_:
     import webdav
     davlocked = ImageFile('www/davlock.gif', dirname(webdav.__file__))
 
-    import TreeDisplay
-    treedisplay_dir = dirname(TreeDisplay.__file__)
-    pl = ImageFile('www/Plus_icon.gif', treedisplay_dir)
-    mi = ImageFile('www/Minus_icon.gif', treedisplay_dir)
+    pl = ImageFile('www/Plus_icon.gif', ofs_dir)
+    mi = ImageFile('www/Minus_icon.gif', ofs_dir)
 
     import App
     app_dir = dirname(App.__file__)
