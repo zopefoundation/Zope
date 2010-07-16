@@ -39,7 +39,7 @@ setup(name='Zope2',
     namespace_packages=['Products', 'Shared', 'Shared.DC'],
     package_dir={'': 'src'},
     install_requires=[
-      'AccessControl',
+      'AccessControl>=2.13.2dev',
       'Acquisition',
       'DateTime',
       'DocumentTemplate',
