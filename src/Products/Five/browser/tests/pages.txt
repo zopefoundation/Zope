@@ -275,6 +275,13 @@ The same applies to a view registered with <browser:view /> instead of
   >>> aq_parent(aq_inner(context))
   <Folder at /test_folder_1_> 
 
+Make sure that methods which are not included in the allowed interface or
+attributes, but which already had security declarations from a base class,
+don't get those declarations overridden to be private. (The roles for
+restrictedTraverse should be None, indicating it is public.)
+
+  >>> view.restrictedTraverse__roles__
+
 High-level security
 -------------------
 

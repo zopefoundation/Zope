@@ -127,12 +127,15 @@ def _getSecurity(klass):
     setattr(klass, '__security__', security)
     return security
 
-def protectName(klass, name, permission_id):
+def protectName(klass, name, permission_id, override_existing_protection=True):
     """Protect the attribute 'name' on 'klass' using the given
        permission"""
     security = _getSecurity(klass)
     # Zope 2 uses string, not unicode yet
     name = str(name)
+    if not override_existing_protection and ('%s__roles__' % name) in dir(klass):
+        # There is already a declaration for this name from a base class.
+        return
     if permission_id == CheckerPublicId or permission_id is CheckerPublic:
         # Sometimes, we already get a processed permission id, which
         # can mean that 'zope.Public' has been interchanged for the

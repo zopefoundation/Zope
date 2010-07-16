@@ -17,6 +17,7 @@ $Id$
 """
 from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from OFS.SimpleItem import SimpleItem
 
 class SimpleView(BrowserView):
     """More docstring. Please Zope"""
@@ -37,6 +38,11 @@ class FancyView(BrowserView):
 
 class CallView(BrowserView):
 
+    def __call__(self):
+        return u"I was __call__()'ed"
+
+class PermissionView(BrowserView, SimpleItem):
+    
     def __call__(self):
         return u"I was __call__()'ed"
 
