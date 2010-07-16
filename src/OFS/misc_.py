@@ -11,9 +11,12 @@
 #
 ##############################################################################
 
+from os.path import dirname
+
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from App.ImageFile import ImageFile
+
 
 class misc_:
     "Miscellaneous product information"
@@ -22,50 +25,64 @@ class misc_:
 
 InitializeClass(misc_)
 
+
 class p_:
     "Shared system information"
     security = ClassSecurityInfo()
     security.declareObjectPublic()
 
-    broken=ImageFile('www/broken.gif', globals())
+    here = dirname(__file__)
+    broken = ImageFile('www/broken.gif', here)
 
-    User_icon =ImageFile('OFS/www/User_icon.gif')
+    import AccessControl
+    User_icon = ImageFile('www/User_icon.gif', dirname(AccessControl.__file__))
 
-    locked=ImageFile('www/modified.gif', globals())
-    lockedo=ImageFile('www/locked.gif', globals())
+    locked = ImageFile('www/modified.gif', here)
+    lockedo = ImageFile('www/locked.gif', here)
 
-    davlocked=ImageFile('webdav/www/davlock.gif')
+    import webdav
+    davlocked = ImageFile('www/davlock.gif', dirname(webdav.__file__))
 
-    pl=ImageFile('OFS/www/Plus_icon.gif')
-    mi=ImageFile('OFS/www/Minus_icon.gif')
-    rtab=ImageFile('App/www/rtab.gif')
-    ltab=ImageFile('App/www/ltab.gif')
-    sp  =ImageFile('App/www/sp.gif')
-    r_arrow_gif=ImageFile('www/r_arrow.gif', globals())
-    l_arrow_gif=ImageFile('www/l_arrow.gif', globals())
+    import TreeDisplay
+    treedisplay_dir = dirname(TreeDisplay.__file__)
+    pl = ImageFile('www/Plus_icon.gif', treedisplay_dir)
+    mi = ImageFile('www/Minus_icon.gif', treedisplay_dir)
 
-    ControlPanel_icon=ImageFile('OFS/www/ControlPanel_icon.gif')
-    ApplicationManagement_icon=ImageFile('App/www/cpSystem.gif')
-    DatabaseManagement_icon=ImageFile('App/www/dbManage.gif')
-    DebugManager_icon=ImageFile('App/www/DebugManager_icon.gif')
-    InstalledProduct_icon=ImageFile('App/www/installedProduct.gif')
-    BrokenProduct_icon=ImageFile('App/www/brokenProduct.gif')
-    Product_icon=ImageFile('App/www/product.gif')
-    Permission_icon=ImageFile('App/www/permission.gif')
-    ProductFolder_icon=ImageFile('App/www/productFolder.gif')
-    PyPoweredSmall_Gif=ImageFile('App/www/PythonPoweredSmall.gif')
+    import App
+    app_dir = dirname(App.__file__)
+    rtab = ImageFile('www/rtab.gif', app_dir)
+    ltab = ImageFile('www/ltab.gif', app_dir)
+    sp = ImageFile('www/sp.gif', app_dir)
+    r_arrow_gif = ImageFile('www/r_arrow.gif', here)
+    l_arrow_gif = ImageFile('www/l_arrow.gif', here)
 
-    ZopeButton=ImageFile('App/www/zope_button.jpg')
-    ZButton=ImageFile('App/www/z_button.jpg')
-    zopelogo_jpg=ImageFile('App/www/zopelogo.jpg')
+    import OFS
+    ofs_dir = dirname(OFS.__file__)
+    ControlPanel_icon = ImageFile('www/ControlPanel_icon.gif', ofs_dir)
+    ApplicationManagement_icon = ImageFile('www/cpSystem.gif', app_dir)
+    DatabaseManagement_icon = ImageFile('www/dbManage.gif', app_dir)
+    DebugManager_icon = ImageFile('www/DebugManager_icon.gif', app_dir)
+    InstalledProduct_icon = ImageFile('www/installedProduct.gif', app_dir)
+    BrokenProduct_icon = ImageFile('www/brokenProduct.gif', app_dir)
+    Product_icon = ImageFile('www/product.gif', app_dir)
+    Permission_icon = ImageFile('www/permission.gif', app_dir)
+    ProductFolder_icon = ImageFile('www/productFolder.gif', app_dir)
+    PyPoweredSmall_Gif = ImageFile('www/PythonPoweredSmall.gif', app_dir)
 
-    Properties_icon=ImageFile('OFS/www/Properties_icon.gif')
-    Propertysheets_icon=ImageFile('OFS/www/Properties_icon.gif')
+    ZopeButton = ImageFile('www/zope_button.jpg', app_dir)
+    ZButton = ImageFile('www/z_button.jpg', app_dir)
+    zopelogo_jpg = ImageFile('www/zopelogo.jpg', app_dir)
 
-    ProductHelp_icon=ImageFile('HelpSys/images/productHelp.gif')
-    HelpTopic_icon=ImageFile('HelpSys/images/helpTopic.gif')
+    Properties_icon = ImageFile('www/Properties_icon.gif', ofs_dir)
+    Propertysheets_icon = ImageFile('www/Properties_icon.gif', ofs_dir)
+
+    import HelpSys
+    helpsys_dir = dirname(HelpSys.__file__)
+    ProductHelp_icon=ImageFile('images/productHelp.gif', helpsys_dir)
+    HelpTopic_icon=ImageFile('images/helpTopic.gif', helpsys_dir)
 
 InitializeClass(p_)
+
 
 class Misc_:
     "Miscellaneous product information"

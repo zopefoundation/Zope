@@ -32,16 +32,16 @@ from ZPublisher.Iterators import filestream_iterator
 
 import Zope2
 PREFIX = os.path.realpath(
-    os.path.join(os.path.dirname(Zope2.__file__), os.path.pardir)
-    )
+    os.path.join(os.path.dirname(Zope2.__file__), os.path.pardir))
 
 NON_PREFIX_WARNING = ('Assuming image location to be present in the Zope2 '
-                      'distribution. This is deprecated and might lead to ' 
-                      'broken code if the directory in question is moved ' 
+                      'distribution. This is deprecated and might lead to '
+                      'broken code if the directory in question is moved '
                       'to another distribution. Please provide either an '
-                      'absolute file system path or a prefix. Support for ' 
+                      'absolute file system path or a prefix. Support for '
                       'relative filenames without a prefix might be '
                       'dropped in a future Zope2 release.')
+
 
 class ImageFile(Explicit):
     """Image objects stored in external files."""
@@ -53,7 +53,7 @@ class ImageFile(Explicit):
         if _prefix is None:
             _prefix=getattr(getConfiguration(), 'softwarehome', None) or PREFIX
             if not os.path.isabs(path):
-                warnings.warn(NON_PREFIX_WARNING, UserWarning, 2 )
+                warnings.warn(NON_PREFIX_WARNING, UserWarning, 2)
         elif type(_prefix) is not type(''):
             _prefix=package_home(_prefix)
         # _prefix is ignored if path is absolute
@@ -82,7 +82,7 @@ class ImageFile(Explicit):
             self.content_type=content_type
         else:
             ext = os.path.splitext(path)[-1].replace('.', '')
-            self.content_type='image/%s' %  ext
+            self.content_type = 'image/%s' % ext
 
         self.__name__ = os.path.split(path)[-1]
         stat_info = os.stat(path)
@@ -108,8 +108,10 @@ class ImageFile(Explicit):
             # with common servers such as Apache (which can usually
             # understand the screwy date string as a lucky side effect
             # of the way they parse it).
-            try:    mod_since=long(DateTime(header).timeTime())
-            except: mod_since=None
+            try:
+                mod_since = long(DateTime(header).timeTime())
+            except:
+                mod_since = None
             if mod_since is not None:
                 if getattr(self, 'lmt', None):
                     last_mod = long(self.lmt)
