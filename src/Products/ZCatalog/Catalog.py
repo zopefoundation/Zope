@@ -411,7 +411,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
     def recordify(self, object):
         """ turns an object into a record tuple """
         record = []
-        # the unique id is allways the first element
+        # the unique id is always the first element
         for x in self.names:
             attr=getattr(object, x, MV)
             if(attr is not MV and safe_callable(attr)): attr=attr()
