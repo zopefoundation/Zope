@@ -34,8 +34,9 @@ class p_:
     here = dirname(__file__)
     broken = ImageFile('www/broken.gif', here)
 
-    import AccessControl
-    User_icon = ImageFile('www/User_icon.gif', dirname(AccessControl.__file__))
+    import OFS
+    ofs_dir = dirname(OFS.__file__)
+    User_icon = ImageFile('www/User_icon.gif', ofs_dir)
 
     locked = ImageFile('www/modified.gif', here)
     lockedo = ImageFile('www/locked.gif', here)
@@ -56,8 +57,6 @@ class p_:
     r_arrow_gif = ImageFile('www/r_arrow.gif', here)
     l_arrow_gif = ImageFile('www/l_arrow.gif', here)
 
-    import OFS
-    ofs_dir = dirname(OFS.__file__)
     ControlPanel_icon = ImageFile('www/ControlPanel_icon.gif', ofs_dir)
     ApplicationManagement_icon = ImageFile('www/cpSystem.gif', app_dir)
     DatabaseManagement_icon = ImageFile('www/dbManage.gif', app_dir)
