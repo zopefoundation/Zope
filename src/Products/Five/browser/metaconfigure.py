@@ -314,7 +314,7 @@ class view(zope.browserpage.metaconfigure.view):
             _context.action(
                 discriminator = ('five:protectName', newclass, attr),
                 callable = protectName,
-                args = (newclass, attr, CheckerPrivateId)
+                args = (newclass, attr, CheckerPrivateId, False)
                 )
         
         # Protect the class

@@ -237,7 +237,7 @@
   <browser:view
       name="permission_view"
       for="Products.Five.tests.testing.simplecontent.ISimpleContent"
-      class=".pages.CallView"
+      class=".pages.PermissionView"
       permission="zope2.ViewManagementScreens"
       />
   

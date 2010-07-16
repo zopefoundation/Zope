@@ -11,6 +11,12 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
+- Fix support for non-public permission attributes in the
+  browser:view directive so that attributes which are not included in
+  allowed_interface or allowed_attributes but which have declarations from a
+  base class's security info don't get their security overwritten to be
+  private.
+
 - LP #143755: Also catch TypeError when trying to determine an 
   indexable value for an object in PluginIndexes.common.UnIndex
 
