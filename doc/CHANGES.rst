@@ -17,21 +17,21 @@ Bugs Fixed
   base class's security info don't get their security overwritten to be
   private.
 
-- LP #143755: Also catch TypeError when trying to determine an 
+- LP #143755: Also catch TypeError when trying to determine an
   indexable value for an object in PluginIndexes.common.UnIndex
 
-- LP #143533: Instead of showing "0.0.0.0" as the SERVER_NAME 
-  request variable when no specific listening IP is configured for 
-  the HTTP server, do a socket lookup to show the current server's 
+- LP #143533: Instead of showing "0.0.0.0" as the SERVER_NAME
+  request variable when no specific listening IP is configured for
+  the HTTP server, do a socket lookup to show the current server's
   fully qualified name.
 
 - LP #143722: Added missing permission to ObjectManager.manage_hasId,
   which prevented renaming files and folders via FTP.
 
-- LP #143564: Request.resolve_url did not correctly re-raise 
+- LP #143564: Request.resolve_url did not correctly re-raise
   exceptions encountered during path traversal.
 
-- LP #143273: Enable the dtml-var modifiers url_quote, url_unquote, 
+- LP #143273: Enable the dtml-var modifiers url_quote, url_unquote,
   url_quote_plus and url_unquote_plus to handle unicode strings.
 
 Features Added
@@ -40,7 +40,7 @@ Features Added
 - Warn when App.ImageFile.ImageFile receives a relative path with no prefix,
   and then has to assume the path to be relative to "software home". This
   behaviour is deprecated as packages can be factored out to their own
-  distribution, making the "software home" relative path meaningless. 
+  distribution, making the "software home" relative path meaningless.
 
 2.12.9 (2010-07-13)
 -------------------
