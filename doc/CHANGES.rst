@@ -51,7 +51,7 @@ Features Added
 
   - AccessControl = 2.13.2
   - DocumentTemplate = 2.13.1
-  - ZODB3 = 3.10.0b3
+  - ZODB3 = 3.10.0b4
 
 2.13.0a2 (2010-07-13)
 ---------------------
