@@ -14,6 +14,8 @@
 import time
 from thread import allocate_lock
 
+from Acquisition import aq_base
+from Acquisition import aq_parent
 from Products.PluginIndexes.interfaces import IUniqueValueIndex
 
 reportlock = allocate_lock()
@@ -120,11 +122,12 @@ class CatalogReport(StopWatch):
         self.request = request
         self.threshold = threshold
 
-        # TODO: how to get an unique id?
-        getPhysicalPath = getattr(catalog.aq_parent,
-                                  'getPhysicalPath',
-                                  lambda: ['', 'DummyCatalog'])
-        self.cid = tuple(getPhysicalPath())
+        path = getattr(aq_parent(catalog), 'getPhysicalPath', None)
+        if path is None:
+            path = ('', 'NonPersistentCatalog')
+        else:
+            path = tuple(path())
+        self.cid = path
 
     def stop(self):
         super(CatalogReport, self).stop()
