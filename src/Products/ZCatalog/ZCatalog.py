@@ -16,6 +16,7 @@ $Id$
 """
 
 import logging
+import operator
 import sys
 import string
 import time
@@ -1008,7 +1009,7 @@ class ZCatalog(Folder, Persistent, Implicit):
 
     def delColumn(self, name):
         return self._catalog.delColumn(name)
-    
+
     #
     # Catalog report methods
     #
@@ -1017,11 +1018,7 @@ class ZCatalog(Folder, Persistent, Implicit):
     def getCatalogReport(self):
         """ Reports about the duration of queries """
         rval = self._catalog.getCatalogReport().report()
-
-        sort_by = 'duration'
-        rval.sort(lambda e1, e2, sort_by=sort_by:
-                  cmp(e1[sort_by], e2[sort_by]))
-        rval.reverse()
+        rval.sort(key=operator.itemgetter('duration'), reverse=True)
         return rval
 
     security.declareProtected(manage_zcatalog_entries,
