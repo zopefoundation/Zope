@@ -42,6 +42,10 @@ Restructuring
 Features Added
 ++++++++++++++
 
+- Added a new reporting tab to `Products.ZCatalog` instances. You can use this
+  to get an overview of slow catalog queries, as specified by a configurable
+  threshold value. The reports are per running Zope process.
+
 - Warn when App.ImageFile.ImageFile receives a relative path with no prefix,
   and then has to assume the path to be relative to "software home". This
   behaviour is deprecated as packages can be factored out to their own
