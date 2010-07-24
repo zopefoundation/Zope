@@ -24,10 +24,6 @@ MAX_DISTINCT_VALUES = 20
 
 LOG = logging.getLogger('CatalogReport')
 
-#######################################################################
-# adapted from experimental.catalogqueryplan
-# http://svn.zope.de/plone.org/collective/experimental.catalogqueryplan
-#
 
 def determine_value_indexes(catalog):
     # This function determines all indexes whose values should be respected
