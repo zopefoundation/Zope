@@ -163,7 +163,6 @@ class ZCatalog(Folder, Persistent, Implicit):
     manage_objectInformation = DTMLFile('dtml/catalogObjectInformation',
                                         globals())
 
-
     Indexes = ZCatalogIndexes()
 
     threshold=10000
@@ -192,7 +191,7 @@ class ZCatalog(Folder, Persistent, Implicit):
         self._catalog = Catalog()
         self._migrated_280 = True
 
-        self.long_query_time = 0.1
+        self.long_query_time = 0.1 # in seconds
 
     def __len__(self):
         # Perform a migration of _catalog.__len__ to _catalog._length
@@ -1013,26 +1012,21 @@ class ZCatalog(Folder, Persistent, Implicit):
     #
     # Catalog report methods
     #
-    
+
     security.declareProtected(manage_zcatalog_entries, 'getCatalogReport')
     def getCatalogReport(self):
         """ Reports about the duration of queries """
-
-        
-        #sort_by, sort_reverse = self._getSortInfo()
-        sort_by, sort_reverse = ('duration',True)
         rval = self._catalog.getCatalogReport().report()
-        
-        if sort_by:
-            rval.sort(lambda e1, e2, sort_by=sort_by:
-                      cmp(e1[sort_by], e2[sort_by]))
-            if sort_reverse:
-                rval.reverse()
 
+        sort_by = 'duration'
+        rval.sort(lambda e1, e2, sort_by=sort_by:
+                  cmp(e1[sort_by], e2[sort_by]))
+        rval.reverse()
         return rval
 
-    security.declareProtected(manage_zcatalog_entries, 'manage_resetCatalogReport')
-    def manage_resetCatalogReport(self,REQUEST=None, RESPONSE=None, URL1=None):
+    security.declareProtected(manage_zcatalog_entries,
+                              'manage_resetCatalogReport')
+    def manage_resetCatalogReport(self, REQUEST=None, RESPONSE=None, URL1=None):
         """ resets the catalog reports """
 
         self._catalog.getCatalogReport().reset()
