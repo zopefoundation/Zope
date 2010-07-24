@@ -33,6 +33,7 @@ from .CatalogReport import CatalogReport
 LOG = logging.getLogger('Zope.ZCatalog')
 
 
+
 try:
     from DocumentTemplate.cDocumentTemplate import safe_callable
 except ImportError:
@@ -85,6 +86,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
             self._v_brains = brains
 
         self.updateBrains()
+
     
     def __len__(self):
         return self._length()
