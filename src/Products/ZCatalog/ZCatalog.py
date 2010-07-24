@@ -1024,7 +1024,7 @@ class ZCatalog(Folder, Persistent, Implicit):
     security.declareProtected(manage_zcatalog_entries,
                               'manage_resetCatalogReport')
     def manage_resetCatalogReport(self, REQUEST=None):
-        """ resets the catalog reports """
+        """ resets the catalog report """
         self._catalog.getCatalogReport().reset()
 
         if REQUEST is not None:
