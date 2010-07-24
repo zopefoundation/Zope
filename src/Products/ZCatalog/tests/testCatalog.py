@@ -899,7 +899,7 @@ class TestCatalogReport(unittest.TestCase):
 
          self.assertEqual(4, len(self.zcat.getCatalogReport()))
 
-     def test_ReportCounter(self):
+    def test_ReportCounter(self):
          """ tests the counter of equal queries """
 
          self.zcat.manage_resetCatalogReport()
@@ -913,7 +913,7 @@ class TestCatalogReport(unittest.TestCase):
          self.assertEqual(r['counter'],3)
 
 
-     def test_ReportKey(self):
+    def test_ReportKey(self):
          """ tests the query keys for uniqueness """
 
          # query key 1

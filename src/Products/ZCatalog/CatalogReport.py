@@ -27,7 +27,7 @@ value_indexes = frozenset()
 MAX_DISTINCT_VALUES = 10
 
 
-def determine_value_indexes(catalog):
+def determine_value_indexes(indexes):
     # This function determines all indexes whose values should be respected
     # in the report key. The number of unique values for the index needs to be
     # lower than the MAX_DISTINCT_VALUES watermark.
@@ -45,7 +45,7 @@ def determine_value_indexes(catalog):
         return value_indexes
 
     new_value_indexes = set()
-    for name, index in catalog.indexes.items():
+    for name, index in indexes.items():
         if IUniqueValueIndex.providedBy(index):
             values = index.uniqueValues()
             if values and len(values) < MAX_DISTINCT_VALUES:
@@ -75,17 +75,38 @@ addCleanUp(clear_value_indexes)
 del addCleanUp
 
 
-def make_key(catalog, request):
-    valueindexes = determine_value_indexes(catalog)
-
+def make_query(indexes, request):
+    # This is a bit of a mess, but the ZCatalog API supports passing
+    # in query restrictions in almost arbitary ways
     if isinstance(request, dict):
-        keydict = request.copy()
+        query = request.copy()
     else:
-        keydict = {}
-        keydict.update(request.keywords)
-        if isinstance(request.request, dict):
-            keydict.update(request.request)
-    key = keys = keydict.keys()
+        query = {}
+        query.update(request.keywords)
+        real_req = request.request
+        if isinstance(real_req, dict):
+            query.update(real_req)
+
+        known_keys = query.keys()
+        # The request has too many places where an index restriction might be
+        # specified. Putting all of request.form, request.other, ... into the
+        # key isn't what we want either, so we iterate over all known indexes
+        # instead and see if they are in the request.
+        for iid in indexes.keys():
+            if iid in known_keys:
+                continue
+            value = real_req.get(iid)
+            if value:
+                query[iid] = value
+    return query
+
+
+def make_key(catalog, request):
+    indexes = catalog.indexes
+    valueindexes = determine_value_indexes(indexes)
+
+    query = make_query(indexes, request)
+    key = keys = query.keys()
 
     values = [name for name in keys if name in valueindexes]
     if values:
@@ -95,7 +116,7 @@ def make_key(catalog, request):
         key = [name for name in keys if name not in values]
         for name in values:
 
-            v = keydict.get(name, [])
+            v = query.get(name, [])
             if isinstance(v, (tuple, list)):
                 v = list(v)
                 v.sort()
