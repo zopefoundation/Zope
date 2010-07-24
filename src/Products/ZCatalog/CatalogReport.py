@@ -17,7 +17,7 @@ from thread import allocate_lock
 
 from Products.PluginIndexes.interfaces import IUniqueValueIndex
 
-writelock = allocate_lock()
+reportlock = allocate_lock()
 reports = {}
 
 MAX_DISTINCT_VALUES = 10
@@ -149,7 +149,7 @@ class CatalogReport(StopWatch):
         if res[0] < self.threshold:
             return
         
-        writelock.acquire()
+        reportlock.acquire()
         try:
             if not reports.has_key(self.cid):
                 reports[self.cid] = {}
@@ -163,15 +163,15 @@ class CatalogReport(StopWatch):
                 reports[self.cid][key] = (1,res[0],res)
 
         finally:
-            writelock.release()
+            reportlock.release()
 
 
     def reset(self):
-        writelock.acquire()
+        reportlock.acquire()
         try:
             reports[self.cid] = {}
         finally:
-            writelock.release()        
+            reportlock.release()        
 
 
     def report(self):
