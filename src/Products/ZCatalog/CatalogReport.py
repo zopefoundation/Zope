@@ -122,11 +122,12 @@ class CatalogReport(StopWatch):
         self.request = request
         self.threshold = threshold
 
-        path = getattr(aq_parent(catalog), 'getPhysicalPath', None)
+        parent = aq_parent(catalog)
+        path = getattr(aq_base(parent), 'getPhysicalPath', None)
         if path is None:
             path = ('', 'NonPersistentCatalog')
         else:
-            path = tuple(path())
+            path = tuple(parent.getPhysicalPath())
         self.cid = path
 
     def stop(self):
