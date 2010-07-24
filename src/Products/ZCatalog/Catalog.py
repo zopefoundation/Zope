@@ -30,8 +30,8 @@ from Lazy import LazyMap, LazyCat, LazyValues
 from CatalogBrains import AbstractCatalogBrain, NoBrainer
 from .CatalogReport import CatalogReport
 
-LOG = logging.getLogger('Zope.ZCatalog')
 
+LOG = logging.getLogger('Zope.ZCatalog')
 
 
 try:
