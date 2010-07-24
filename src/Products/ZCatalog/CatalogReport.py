@@ -29,6 +29,11 @@ def determine_value_indexes(catalog):
     # This function determines all indexes whose values should be respected
     # in the report key. The number of unique values for the index needs to be
     # lower than the MAX_DISTINCT_VALUES watermark.
+
+    # TODO: Ideally who would only consider those indexes with a small number
+    # of unique values, where the number of items for each value differs a
+    # lot. If the number of items per value is similar, the duration of a
+    # query is likely similar as well.
     valueindexes = []
     for name, index in catalog.indexes.items():
         if IUniqueValueIndex.providedBy(index):
