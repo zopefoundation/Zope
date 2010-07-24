@@ -28,8 +28,7 @@ from BTrees.OIBTree import OIBTree
 from BTrees.IOBTree import IOBTree
 from Lazy import LazyMap, LazyCat, LazyValues
 from CatalogBrains import AbstractCatalogBrain, NoBrainer
-
-from CatalogReport import CatalogReport
+from .CatalogReport import CatalogReport
 
 LOG = logging.getLogger('Zope.ZCatalog')
 
@@ -86,7 +85,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
             self._v_brains = brains
 
         self.updateBrains()
-        
+    
     def __len__(self):
         return self._length()
 
@@ -468,7 +467,6 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         # Note that if the indexes find query arguments, but the end result
         # is an empty sequence, we do nothing
 
-
         cr = self.getCatalogReport(request)
         cr.start()
 
@@ -479,9 +477,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                 continue
 
             cr.split(i)
-
             r = _apply_index(request)
-
             cr.split(i)
 
             if r is not None:
@@ -491,8 +487,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                    break       
 
         cr.stop()
-        
-        
+
         if rs is None:
             # None of the indexes found anything to do with the request
             # We take this to mean that the query was empty (an empty filter)
@@ -750,16 +745,12 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                 
     __call__ = searchResults
 
-
-    def getCatalogReport(self,request=None):
+    def getCatalogReport(self, request=None):
+        """Reports about the duration of queries.
         """
-            Reports about the duration of queries
-        """
-
-        threshold = getattr(self.aq_parent,'long_query_time',0.1)
-        cr = CatalogReport(self,request,threshold)
-
-        return cr
+        parent = Acquisition.aq_base(Acquisition.aq_parent(self))
+        threshold = getattr(parent, 'long_query_time', 0.1)
+        return CatalogReport(self, request, threshold)
 
 
 class CatalogSearchArgumentsMap:

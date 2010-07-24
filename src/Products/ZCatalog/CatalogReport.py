@@ -167,7 +167,7 @@ class CatalogReport(StopWatch):
     """Catalog report class to meassure and identify catalog queries.
     """
 
-    def __init__(self, catalog, request=None, threshold=0):
+    def __init__(self, catalog, request=None, threshold=0.1):
         super(CatalogReport, self).__init__()
 
         self.catalog = catalog
