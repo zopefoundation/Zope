@@ -63,7 +63,7 @@ def make_key(catalog, request):
         for name in values:
 
             v = keydict.get(name, [])
-            if type(v) in [type(tuple()), type(list())]:
+            if isinstance(v, (tuple, list)):
                 v = list(v)
                 v.sort()
 
