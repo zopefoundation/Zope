@@ -557,8 +557,6 @@ class TestCatalogObject(unittest.TestCase):
         self.assertEqual(brain.att1, 'foobar')
 
 
-
-
 class objRS(ExtensionClass.Base):
 
     def __init__(self,num):
@@ -590,7 +588,6 @@ class TestRS(unittest.TestCase):
                 size = r.number
                 self.assert_(m<=size and size<=n,
                              "%d vs [%d,%d]" % (r.number,m,n))
-
 
 class TestMerge(unittest.TestCase):
     # Test merging results from multiple catalogs
@@ -950,7 +947,7 @@ def test_suite():
     suite.addTest( unittest.makeSuite( TestRS ) )
     suite.addTest( unittest.makeSuite( TestMerge ) )
     suite.addTest( unittest.makeSuite( TestZCatalogGetObject ) )
-    suite.addTest( unittest.makeSuite( TestCatalogReport ) )
+    suite.addTest( unittest.makeSuite(TestCatalogReport))
     return suite
 
 if __name__ == '__main__':
