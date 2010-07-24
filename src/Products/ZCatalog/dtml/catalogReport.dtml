@@ -97,7 +97,7 @@
         <tr>
             <td align="right" valign="middle">
                 <div class="list-item">
-                    Threshold
+                    Threshold (in seconds)
                 </div>
             </td>
             <td align="left" valign="middle">
@@ -108,7 +108,7 @@
             <td align="left" valign="middle">
                 <p class="form-help">Only queries whose execution
                 takes longer than the configured threshold are considered
-                being slow. (Default:&nbsp;0.1&nbsp;s).</p>
+                being slow. (Default:&nbsp;0.1&nbsp;seconds).</p>
         </tr>
     </table>
     <input class="form-element" type="submit" value="Apply settings">

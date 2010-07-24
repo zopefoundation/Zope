@@ -1028,25 +1028,24 @@ class ZCatalog(Folder, Persistent, Implicit):
                               'manage_resetCatalogReport')
     def manage_resetCatalogReport(self, REQUEST=None, RESPONSE=None, URL1=None):
         """ resets the catalog reports """
-
         self._catalog.getCatalogReport().reset()
 
         if REQUEST and RESPONSE:
             RESPONSE.redirect(
               URL1 +
-              '/manage_catalogReport?manage_tabs_message=Report%20Cleared')    
+              '/manage_catalogReport?manage_tabs_message=Report%20cleared')
 
-    security.declareProtected(manage_zcatalog_entries, 'manage_editCatalogReport')
+    security.declareProtected(manage_zcatalog_entries,
+                              'manage_editCatalogReport')
     def manage_editCatalogReport(self, RESPONSE, URL1, long_query_time=0.1, REQUEST=None):
         """ edit the long query time """
-        if type(long_query_time) is not type(1.0):
-            long_query_time=float(long_query_time)
+        if not isinstance(long_query_time, float):
+            long_query_time = float(long_query_time)
 
-        # transform to seconds
         self.long_query_time = long_query_time
 
         RESPONSE.redirect(
-            URL1 + '/manage_catalogReport?manage_tabs_message=Long Query Time%20Changed')
+            URL1 + '/manage_catalogReport?manage_tabs_message=Long%20query%20time%20changed')
 
 
 InitializeClass(ZCatalog)
