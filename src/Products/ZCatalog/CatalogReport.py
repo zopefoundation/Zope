@@ -18,8 +18,11 @@ from Acquisition import aq_base
 from Acquisition import aq_parent
 from Products.PluginIndexes.interfaces import IUniqueValueIndex
 
-reportlock = allocate_lock()
+reports_lock = allocate_lock()
 reports = {}
+
+value_indexes_lock = allocate_lock()
+value_indexes = frozenset()
 
 MAX_DISTINCT_VALUES = 10
 
@@ -33,15 +36,43 @@ def determine_value_indexes(catalog):
     # of unique values, where the number of items for each value differs a
     # lot. If the number of items per value is similar, the duration of a
     # query is likely similar as well.
-    valueindexes = []
+    global value_indexes
+    if value_indexes:
+        # Calculating all the value indexes is quite slow, so we do this once
+        # for the first query. Since this is an optimization only, slightly
+        # outdated results based on index changes in the running process
+        # can be ignored.
+        return value_indexes
+
+    new_value_indexes = set()
     for name, index in catalog.indexes.items():
         if IUniqueValueIndex.providedBy(index):
             values = index.uniqueValues()
             if values and len(values) < MAX_DISTINCT_VALUES:
                 # Only consider indexes which actually return a number
                 # greater than zero
-                valueindexes.append(name)
-    return frozenset(valueindexes)
+                new_value_indexes.add(name)
+    try:
+        value_indexes_lock.acquire()
+        value_indexes = frozenset(new_value_indexes)
+    finally:
+        value_indexes_lock.release()
+
+    return value_indexes
+
+
+def clear_value_indexes():
+    global value_indexes
+    try:
+        value_indexes_lock.acquire()
+        value_indexes = frozenset()
+    finally:
+        value_indexes_lock.release()
+
+
+from zope.testing.cleanup import addCleanUp
+addCleanUp(clear_value_indexes)
+del addCleanUp
 
 
 def make_key(catalog, request):
@@ -142,7 +173,7 @@ class CatalogReport(StopWatch):
         if res[0] < self.threshold:
             return
 
-        reportlock.acquire()
+        reports_lock.acquire()
         try:
             if self.cid not in reports:
                 reports[self.cid] = {}
@@ -156,14 +187,14 @@ class CatalogReport(StopWatch):
                 reports[self.cid][key] = (1, res[0], res)
 
         finally:
-            reportlock.release()
+            reports_lock.release()
 
     def reset(self):
-        reportlock.acquire()
+        reports_lock.acquire()
         try:
             reports[self.cid] = {}
         finally:
-            reportlock.release()
+            reports_lock.release()
 
     def report(self):
         """Returns a statistic report of catalog queries as list of dicts as

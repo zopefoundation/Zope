@@ -855,9 +855,9 @@ class TestZCatalogGetObject(unittest.TestCase):
         self.assertEqual(brain._unrestrictedGetObject(), None)
 
 
-
 class TestCatalogReport(unittest.TestCase):
-     def setUp(self):
+
+    def setUp(self):
         from Products.ZCatalog.ZCatalog import ZCatalog
         vocabulary = Vocabulary.Vocabulary(
             'Vocabulary','Vocabulary', globbing=1)
@@ -875,7 +875,11 @@ class TestCatalogReport(unittest.TestCase):
             obj.big = i > 5
             self.zcat.catalog_object(obj, str(i))
 
-     def test_ReportLength(self):
+    def tearDown(self):
+        from Products.ZCatalog.CatalogReport import clear_value_indexes
+        clear_value_indexes()
+
+    def test_ReportLength(self):
          """ tests the report aggregation """
          
          self.zcat.manage_resetCatalogReport()
@@ -894,7 +898,7 @@ class TestCatalogReport(unittest.TestCase):
 
 
          self.assertEqual(4, len(self.zcat.getCatalogReport()))
-         
+
      def test_ReportCounter(self):
          """ tests the counter of equal queries """
 
