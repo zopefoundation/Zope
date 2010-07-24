@@ -2,8 +2,8 @@
 <dtml-var manage_tabs>
 
 <p class="form-help"> 
-   The <strong>slow query report</strong> discovers catalog queries that
-   perform exceptionally slowly.
+   The <strong>query report</strong> shows catalog queries that
+   perform slowly.
 </p>
 
 <table width="100%" cellspacing="0" cellpadding="2" border="0">
@@ -108,7 +108,7 @@
             <td align="left" valign="middle">
                 <p class="form-help">Only queries whose execution
                 takes longer than the configured threshold are considered
-                being slow. (Default:&nbsp;0.1&nbsp;seconds).</p>
+                being slow. (Default 0.1 seconds).</p>
         </tr>
     </table>
     <input class="form-element" type="submit" value="Apply settings">

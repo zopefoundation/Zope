@@ -118,7 +118,7 @@ class ZCatalog(Folder, Persistent, Implicit):
         {'label': 'Advanced',           # TAB: Advanced
          'action': 'manage_catalogAdvanced',
          'help':('ZCatalog','ZCatalog_Advanced.stx')},
-        {'label': 'Slow Query Report',  # TAB: Slow Query Report
+        {'label': 'Query Report',
          'action': 'manage_catalogReport',
         },
         {'label': 'Undo',               # TAB: Undo
