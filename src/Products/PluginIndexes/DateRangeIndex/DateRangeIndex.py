@@ -250,10 +250,6 @@ class DateRangeIndex(UnIndex):
             If the request does not contain the needed parameters, then
             return None.
 
-            If the request contains a parameter with the name of the
-            column + "_usage", snif for information on how to handle
-            applying the index.
-
             Otherwise return two objects.  The first object is a ResultSet
             containing the record numbers of the matching records.  The
             second object is a tuple containing the names of all data fields

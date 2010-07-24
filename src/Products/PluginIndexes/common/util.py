@@ -11,17 +11,18 @@
 #
 ##############################################################################
 """PluginIndexes utils.
-
-$Id$
 """
+
 from types import InstanceType
-from warnings import warn
 
 from DateTime.DateTime import DateTime
 
 
-class parseIndexRequest:
+class IndexRequestParseError(Exception):
+    pass
 
+
+class parseIndexRequest:
     """
     This class provides functionality to hide the internals of a request
     send from the Catalog/ZCatalog to an index._apply_index() method.
@@ -30,7 +31,6 @@ class parseIndexRequest:
 
     - old-style parameters where the query for an index as value inside
       the request directory where the index name is the name of the key.
-      Additional parameters for an index could be passed as index+"_usage" ...
 
     - dictionary-style parameters specify a query for an index as
       an entry in the request dictionary where the key corresponds to the
@@ -50,7 +50,7 @@ class parseIndexRequest:
      parameters
     """
 
-    ParserException = 'IndexRequestParseError'
+    ParserException = IndexRequestParseError
 
     def __init__(self, request, iid, options=[]):
         """ parse a request  from the ZPublisher and return a uniform
@@ -66,16 +66,6 @@ class parseIndexRequest:
             self.keys = None
             return
 
-        # We keep this for backward compatility
-        usage_param = iid + '_usage'
-        if request.has_key(usage_param):
-            self.usage = request[usage_param]
-            warn("ZCatalog query using '%s' detected.\n"
-                 "Using query parameters ending with '_usage' is deprecated.\n"
-                 "Consider using record-style parameters instead "
-                 "(see lib/python/Products/PluginIndexes/README.txt for "
-                 "details)" % usage_param, DeprecationWarning)
-
         param = request[iid]
         keys = None
 
@@ -85,7 +75,7 @@ class parseIndexRequest:
             record = param
 
             if not hasattr(record, 'query'):
-                raise self.ParserException, (
+                raise self.ParserException(
                     "record for '%s' *must* contain a "
                     "'query' attribute" % self.id)
             keys = record.query

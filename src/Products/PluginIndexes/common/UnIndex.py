@@ -322,14 +322,10 @@ class UnIndex(SimpleItem):
 
           - if the value is a sequence, return a union search.
 
-        If the request contains a parameter with the name of the
-        column + '_usage', it is sniffed for information on how to
-        handle applying the index.
-
-        If the request contains a parameter with the name of the
-        column = '_operator' this overrides the default method
-        ('or') to combine search results. Valid values are "or"
-        and "and".
+          - If the value is a dict and contains a key of the form
+            '<index>_operator' this overrides the default method
+            ('or') to combine search results. Valid values are "or"
+            and "and".
 
         If None is not returned as a result of the abovementioned
         constraints, two objects are returned.  The first object is a

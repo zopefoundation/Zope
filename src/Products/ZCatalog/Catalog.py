@@ -440,7 +440,40 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
 
 ## This is the Catalog search engine. Most of the heavy lifting happens below
 
-    def search(self, request, sort_index=None, reverse=0, limit=None, merge=1):
+    def make_query(self, request):
+        # This is a bit of a mess, but the ZCatalog API has traditionally
+        # supported passing in query restrictions in almost arbitary ways
+        real_req = None
+        if isinstance(request, dict):
+            query = request.copy()
+        elif isinstance(request, CatalogSearchArgumentsMap):
+            query = {}
+            query.update(request.keywords)
+            real_req = request.request
+            if isinstance(request.request, dict):
+                query.update(real_req)
+            else:
+                real_req = request.request
+        else:
+            real_req = request
+
+        if real_req is not None:
+            # TODO: This deserves depreaction
+            known_keys = query.keys()
+            # The request has too many places where an index restriction
+            # might be specified. Putting all of request.form,
+            # request.other, ... into the query isn't what we want.
+            # So we iterate over all known indexes instead and see if they
+            # are in the request.
+            for iid in self.indexes.keys():
+                if iid in known_keys:
+                    continue
+                value = real_req.get(iid)
+                if value:
+                    query[iid] = value
+        return query
+
+    def search(self, query, sort_index=None, reverse=0, limit=None, merge=1):
         """Iterate through the indexes, applying the query to each one. If
         merge is true then return a lazy result set (sorted if appropriate)
         otherwise return the raw (possibly scored) results for later merging.
@@ -453,12 +486,15 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         rs = None # resultset
 
         # Indexes fulfill a fairly large contract here. We hand each
-        # index the request mapping we are given (which may be composed
+        # index the query mapping we are given (which may be composed
         # of some combination of web request, kw mappings or plain old dicts)
         # and the index decides what to do with it. If the index finds work
-        # for itself in the request, it returns the results and a tuple of
+        # for itself in the query, it returns the results and a tuple of
         # the attributes that were used. If the index finds nothing for it
         # to do then it returns None.
+
+        # Canonicalize the request into a sensible query before passing it on
+        query = self.make_query(query)
 
         # For hysterical reasons, if all indexes return None for a given
         # request (and no attributes were used) then we append all results
@@ -469,7 +505,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         # Note that if the indexes find query arguments, but the end result
         # is an empty sequence, we do nothing
 
-        cr = self.getCatalogReport(request)
+        cr = self.getCatalogReport(query)
         cr.start()
 
         for i in self.indexes.keys():
@@ -479,7 +515,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                 continue
 
             cr.split(i)
-            r = _apply_index(request)
+            r = _apply_index(query)
             cr.split(i)
 
             if r is not None:
@@ -491,7 +527,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         cr.stop()
 
         if rs is None:
-            # None of the indexes found anything to do with the request
+            # None of the indexes found anything to do with the query
             # We take this to mean that the query was empty (an empty filter)
             # and so we return everything in the catalog
             if sort_index is None:
@@ -729,9 +765,12 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
             return None
 
     def searchResults(self, REQUEST=None, used=None, _merge=1, **kw):
+        # You should pass in a simple dictionary as the request argument,
+        # which only contains the relevant query.
         # The used argument is deprecated and is ignored
         if REQUEST is None and not kw:
             # Try to acquire request if we get no args for bw compat
+            # TODO: Should be deprecated
             REQUEST = getattr(self, 'REQUEST', None)
         args = CatalogSearchArgumentsMap(REQUEST, kw)
         sort_index = self._getSortIndex(args)
@@ -747,12 +786,12 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                 
     __call__ = searchResults
 
-    def getCatalogReport(self, request=None):
+    def getCatalogReport(self, query=None):
         """Reports about the duration of queries.
         """
         parent = Acquisition.aq_base(Acquisition.aq_parent(self))
         threshold = getattr(parent, 'long_query_time', 0.1)
-        return CatalogReport(self, request, threshold)
+        return CatalogReport(self, query, threshold)
 
 
 class CatalogSearchArgumentsMap:

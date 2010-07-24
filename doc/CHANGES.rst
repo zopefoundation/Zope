@@ -35,6 +35,13 @@ Bugs Fixed
 Restructuring
 +++++++++++++
 
+- Cleaned up the Products.ZCatalog search API's. The deprecated support for
+  using `<index id>_usage` arguments in the request has been removed. Support
+  for overriding operators via the `<index id>_operator` syntax has been
+  limited to the query value for each index and no longer works directly on
+  the request. The query is now brought into a canonical form before being
+  passed into the `_apply_index` method of each index.
+
 - Factored out the `Products.MailHost` package into its own distributions. It
   will no longer be included by default in Zope 2.14 but live on as an
   independent add-on.

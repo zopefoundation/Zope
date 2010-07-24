@@ -75,37 +75,9 @@ addCleanUp(clear_value_indexes)
 del addCleanUp
 
 
-def make_query(indexes, request):
-    # This is a bit of a mess, but the ZCatalog API supports passing
-    # in query restrictions in almost arbitary ways
-    if isinstance(request, dict):
-        query = request.copy()
-    else:
-        query = {}
-        query.update(request.keywords)
-        real_req = request.request
-        if isinstance(real_req, dict):
-            query.update(real_req)
-
-        known_keys = query.keys()
-        # The request has too many places where an index restriction might be
-        # specified. Putting all of request.form, request.other, ... into the
-        # key isn't what we want either, so we iterate over all known indexes
-        # instead and see if they are in the request.
-        for iid in indexes.keys():
-            if iid in known_keys:
-                continue
-            value = real_req.get(iid)
-            if value:
-                query[iid] = value
-    return query
-
-
-def make_key(catalog, request):
+def make_key(catalog, query):
     indexes = catalog.indexes
     valueindexes = determine_value_indexes(indexes)
-
-    query = make_query(indexes, request)
     key = keys = query.keys()
 
     values = [name for name in keys if name in valueindexes]
@@ -167,11 +139,11 @@ class CatalogReport(StopWatch):
     """Catalog report class to meassure and identify catalog queries.
     """
 
-    def __init__(self, catalog, request=None, threshold=0.1):
+    def __init__(self, catalog, query=None, threshold=0.1):
         super(CatalogReport, self).__init__()
 
         self.catalog = catalog
-        self.request = request
+        self.query = query
         self.threshold = threshold
 
         parent = aq_parent(catalog)
@@ -195,7 +167,7 @@ class CatalogReport(StopWatch):
         # The key calculation takes a bit itself, we want to avoid that for
         # any fast queries. This does mean that slow queries get the key
         # calculation overhead added to their runtime.
-        key = make_key(self.catalog, self.request)
+        key = make_key(self.catalog, self.query)
 
         reports_lock.acquire()
         try:

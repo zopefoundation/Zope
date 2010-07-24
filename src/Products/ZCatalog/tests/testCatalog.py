@@ -389,9 +389,11 @@ class TestCatalogObject(unittest.TestCase):
         a = self._catalog({})
         self.assertEqual(len(a), upper,
                          'length should be %s, its %s' % (upper, len(a)))
-        # Queries consisting of empty strings should do the same
+        # Queries used to do the same, because of a bug in the
+        # parseIndexRequest function, mistaking a CatalogSearchArgumentsMap
+        # for a Record class
         a = self._catalog({'col1':'', 'col2':'', 'col3':''})
-        self.assertEqual(len(a), upper,
+        self.assertEqual(len(a), 0,
                          'length should be %s, its %s' % (upper, len(a)))
 
     def testFieldIndexLength(self):

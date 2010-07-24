@@ -66,7 +66,7 @@ Changes to ZCatalog
     - Method 2: The query and all parameters to be passed to an index XXX are
       passed as dictionary inside the request dictionary. Example:
       
-        old: <dtml-in myCatalog(myindex='xx yy',myindex_usage':'blabla')
+        old: <dtml-in myCatalog(myindex='xx yy')
         new: <dtml-in myCatalog(myindex={'query':'xx yy','XXXXX':'blabla')
 
         Please check the indexes documentation for informations about additional 

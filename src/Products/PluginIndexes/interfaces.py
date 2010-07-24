@@ -63,10 +63,6 @@ class IPluggableIndex(Interface):
         If the request does not contain the needed parameters, then
         None is returned.
 
-        If the request contains a parameter with the name of the column
-        + "_usage", it is sniffed for information on how to handle applying
-        the index. (Note: this style or parameters is deprecated)
-
         If the request contains a parameter with the name of the
         column and this parameter is either a Record or a class
         instance then it is assumed that the parameters of this index
