@@ -187,12 +187,15 @@ class CatalogReport(StopWatch):
         self.log()
 
     def log(self):
-        key = make_key(self.catalog, self.request)
-
         # result of stopwatch
         res = self.result()
         if res[0] < self.threshold:
             return
+
+        # The key calculation takes a bit itself, we want to avoid that for
+        # any fast queries. This does mean that slow queries get the key
+        # calculation overhead added to their runtime.
+        key = make_key(self.catalog, self.request)
 
         reports_lock.acquire()
         try:
