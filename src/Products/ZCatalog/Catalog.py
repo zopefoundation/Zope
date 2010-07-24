@@ -28,7 +28,7 @@ from BTrees.OIBTree import OIBTree
 from BTrees.IOBTree import IOBTree
 from Lazy import LazyMap, LazyCat, LazyValues
 from CatalogBrains import AbstractCatalogBrain, NoBrainer
-from .CatalogReport import CatalogReport
+from .report import CatalogReport
 
 
 LOG = logging.getLogger('Zope.ZCatalog')

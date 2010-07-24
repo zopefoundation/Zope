@@ -873,7 +873,7 @@ class TestCatalogReport(unittest.TestCase):
             self.zcat.catalog_object(obj, str(i))
 
     def tearDown(self):
-        from Products.ZCatalog.CatalogReport import clear_value_indexes
+        from Products.ZCatalog.report import clear_value_indexes
         clear_value_indexes()
 
     def test_ReportLength(self):
