@@ -20,24 +20,25 @@ from Products.PluginIndexes.interfaces import IUniqueValueIndex
 writelock = allocate_lock()
 reports = {}
 
-MAX_DISTINCT_VALUES = 20
+MAX_DISTINCT_VALUES = 10
 
 LOG = logging.getLogger('CatalogReport')
 
 
 def determine_value_indexes(catalog):
     # This function determines all indexes whose values should be respected
-    # in the prioritymap key. A index type needs to be registered in the
-    # VALUETYPES module global and the number of unique values needs to be
+    # in the report key. The number of unique values for the index needs to be
     # lower than the MAX_DISTINCT_VALUES watermark.
     valueindexes = []
     for name, index in catalog.indexes.items():
         if IUniqueValueIndex.providedBy(index):
-            if len(index) < MAX_DISTINCT_VALUES:
-                # Checking for len of an index should be fast. It's a stored
-                # BTrees.Length value and requires no calculation.
+            values = index.uniqueValues()
+            if values and len(values) < MAX_DISTINCT_VALUES:
+                # Only consider indexes which actually return a number
+                # greater than zero
                 valueindexes.append(name)
     return frozenset(valueindexes)
+
 
 def make_key(catalog,request):
     valueindexes = determine_value_indexes(catalog)

@@ -870,11 +870,10 @@ class TestCatalogReport(unittest.TestCase):
         self.zcat.addIndex('title', 'TextIndex')
         self.zcat._catalog.vocabulary = vocabulary
 
-        for i in range(10):
+        for i in range(9):
             obj = zdummy(i)
             obj.big = i > 5
             self.zcat.catalog_object(obj, str(i))
-            
 
      def test_ReportLength(self):
          """ tests the report aggregation """
@@ -912,7 +911,7 @@ class TestCatalogReport(unittest.TestCase):
 
      def test_ReportKey(self):
          """ tests the query keys for uniqueness """
-     
+
          # query key 1
          key = ('sort_on', ('big', 'True'))
          self.zcat.manage_resetCatalogReport()
@@ -933,21 +932,18 @@ class TestCatalogReport(unittest.TestCase):
          
          self.assertEqual(r['query'],key)
          self.assertEqual(r['counter'],1)     
-     
+
          # query key 3
          key = ('sort_on', ('num', '[3, 4, 5]'))
          self.zcat.manage_resetCatalogReport()
-         
-         self.zcat.searchResults(num=[5,4,3],sort_on='num')
-         self.zcat.searchResults(num=(3,4,5),sort_on='num')
+
+         self.zcat.searchResults(num=[5,4,3], sort_on='num')
+         self.zcat.searchResults(num=(3,4,5), sort_on='num')
          r = self.zcat.getCatalogReport()[0]
 
-         #print 'hits: %(counter)s, mean duration: %(duration)3.2fms, key: %(query)s' % r
-         
-         self.assertEqual(r['query'],key)
-         self.assertEqual(r['counter'],2)  
-         
-        
+         self.assertEqual(r['query'], key)
+         self.assertEqual(r['counter'], 2)
+
 
 def test_suite():
     suite = unittest.TestSuite()
