@@ -56,6 +56,17 @@ Restructuring
 Features Added
 ++++++++++++++
 
+- Various optimizations to indexes _apply_index and the catalog's search
+  method inspired by experimental.catalogqueryplan.
+
+- Added a new ILimitedResultIndex to Products.PluginIndexes and made most
+  built-in indexes compatible with it. This allows indexes to consider the
+  already calculated result set inside their own calculations.
+
+- Changed the internals of the DateRangeIndex to always use IITreeSet and do
+  an inline migration from IISet. Some datum tend to have large number of
+  documents, for example when using default floor or ceiling dates.
+
 - Added a new reporting tab to `Products.ZCatalog` instances. You can use this
   to get an overview of slow catalog queries, as specified by a configurable
   threshold value. The reports are per running Zope process.

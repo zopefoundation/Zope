@@ -22,6 +22,7 @@ import Acquisition
 import ExtensionClass
 from Missing import MV
 from Persistence import Persistent
+from Products.PluginIndexes.interfaces import ILimitedResultIndex
 
 import BTrees.Length
 from BTrees.IIBTree import intersection, weightedIntersection, IISet
@@ -475,6 +476,10 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                     query[iid] = value
         return query
 
+    def _sorted_search_indexes(self, query):
+        # Simple implementation doing no ordering.
+        return self.indexes.keys()
+
     def search(self, query, sort_index=None, reverse=0, limit=None, merge=1):
         """Iterate through the indexes, applying the query to each one. If
         merge is true then return a lazy result set (sorted if appropriate)
@@ -497,25 +502,44 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
 
         # Canonicalize the request into a sensible query before passing it on
         query = self.make_query(query)
+        query_keys = query.keys()
 
         cr = self.getCatalogReport(query)
         cr.start()
 
-        for i in self.indexes.keys():
+        for i in self._sorted_search_indexes(query):
+            if i not in query_keys:
+                # Do not ask indexes to restrict the result, which aren't
+                # part of the query
+                continue
+
             index = self.getIndex(i)
             _apply_index = getattr(index, "_apply_index", None)
             if _apply_index is None:
                 continue
 
+            limit_result = False
+            if ILimitedResultIndex.providedBy(index):
+                limit_result = True
+
             cr.split(i)
-            r = _apply_index(query)
+            if limit_result:
+                r = _apply_index(query, rs)
+            else:
+                r = _apply_index(query)
             cr.split(i)
 
             if r is not None:
                 r, u = r
+                # Short circuit if empty result
+                # BBB: We can remove the "r is not None" check in Zope 2.14
+                # once we don't need to support the "return everything" case
+                # anymore
+                if r is not None and not r:
+                    return LazyCat([])
                 w, rs = weightedIntersection(rs, r)
                 if not rs:
-                   break
+                    break
 
         cr.stop()
 

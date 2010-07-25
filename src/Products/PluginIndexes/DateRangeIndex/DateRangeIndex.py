@@ -28,7 +28,6 @@ from BTrees.IIBTree import IISet
 from BTrees.IIBTree import IITreeSet
 from BTrees.IIBTree import intersection
 from BTrees.IIBTree import multiunion
-from BTrees.IIBTree import union
 from BTrees.IOBTree import IOBTree
 from BTrees.Length import Length
 from DateTime.DateTime import DateTime
@@ -242,7 +241,7 @@ class DateRangeIndex(UnIndex):
 
         return tuple( result )
 
-    def _apply_index(self, request):
+    def _apply_index(self, request, resultset=None):
         """
             Apply the index to query parameters given in 'request', which
             should be a mapping object.
@@ -265,34 +264,17 @@ class DateRangeIndex(UnIndex):
         #   Aggregate sets for each bucket separately, to avoid
         #   large-small union penalties.
         #
-        #until_only  = IISet()
-        #map( until_only.update, self._until_only.values( term ) )
-        # XXX use multi-union
         until_only = multiunion( self._until_only.values( term ) )
-
-        #since_only  = IISet()
-        #map( since_only.update, self._since_only.values( None, term ) )
-        # XXX use multi-union
         since_only = multiunion( self._since_only.values( None, term ) )
-
-        #until       = IISet()
-        #map( until.update, self._until.values( term ) )
-        # XXX use multi-union
         until = multiunion( self._until.values( term ) )
 
-        #since       = IISet()
-        #map( since.update, self._since.values( None, term ) )
-        # XXX use multi-union
-        since = multiunion( self._since.values( None, term ) )
-
-        bounded     = intersection( until, since )
+        # Total result is bound by resultset
+        until = intersection(resultset, until)
+        since = multiunion(self._since.values(None, term))
+        bounded = intersection(until, since)
 
         #   Merge from smallest to largest.
-        #result      = union( self._always, until_only )
-        result      = union( bounded, until_only )
-        result      = union( result, since_only )
-        #result      = union( result, bounded )
-        result      = union( result, self._always )
+        result = multiunion([bounded, until_only, since_only, self._always])
 
         return result, ( self._since_field, self._until_field )
 
@@ -314,8 +296,8 @@ class DateRangeIndex(UnIndex):
             if set is None:
                 self._until_only[ until ] = documentId
             else:
-                if isinstance(set, int):
-                    set = self._until_only[ until ] = IISet((set, documentId))
+                if isinstance(set, (int, IISet)):
+                    set = self._until_only[until] = IITreeSet((set, documentId))
                 else:
                     set.insert( documentId )
         elif until is None:
@@ -324,8 +306,8 @@ class DateRangeIndex(UnIndex):
             if set is None:
                 self._since_only[ since ] = documentId
             else:
-                if isinstance(set, int):
-                    set = self._since_only[ since ] = IISet((set, documentId))
+                if isinstance(set, (int, IISet)):
+                    set = self._since_only[since] = IITreeSet((set, documentId))
                 else:
                     set.insert( documentId )
 
@@ -335,8 +317,8 @@ class DateRangeIndex(UnIndex):
             if set is None:
                 self._since[ since ] = documentId
             else:
-                if isinstance(set, int):
-                    set = self._since[ since ] = IISet((set, documentId))
+                if isinstance(set, (int, IISet)):
+                    set = self._since[since] = IITreeSet((set, documentId))
                 else:
                     set.insert( documentId )
 
@@ -344,8 +326,8 @@ class DateRangeIndex(UnIndex):
             if set is None:
                 self._until[ until ] = documentId
             else:
-                if isinstance(set, int):
-                    set = self._until[ until ] = IISet((set, documentId))
+                if isinstance(set, (int, IISet)):
+                    set = self._until[until] = IITreeSet((set, documentId))
                 else:
                     set.insert( documentId )
 

@@ -21,7 +21,7 @@ import sys
 from BTrees.IIBTree import intersection
 from BTrees.IIBTree import IITreeSet
 from BTrees.IIBTree import IISet
-from BTrees.IIBTree import union
+from BTrees.IIBTree import multiunion
 from BTrees.IOBTree import IOBTree
 from BTrees.Length import Length
 from BTrees.OOBTree import OOBTree
@@ -31,7 +31,7 @@ from zope.interface import implements
 
 from Products.PluginIndexes.common import safe_callable
 from Products.PluginIndexes.common.util import parseIndexRequest
-from Products.PluginIndexes.interfaces import IPluggableIndex
+from Products.PluginIndexes.interfaces import ILimitedResultIndex
 from Products.PluginIndexes.interfaces import ISortIndex
 from Products.PluginIndexes.interfaces import IUniqueValueIndex
 
@@ -43,7 +43,7 @@ class UnIndex(SimpleItem):
 
     """Simple forward and reverse index.
     """
-    implements(IPluggableIndex, IUniqueValueIndex, ISortIndex)
+    implements(ILimitedResultIndex, IUniqueValueIndex, ISortIndex)
 
     def __init__(
         self, id, ignore_ex=None, call_methods=None, extra=None, caller=None):
@@ -302,7 +302,7 @@ class UnIndex(SimpleItem):
             LOG.debug('Attempt to unindex nonexistent document'
                       ' with id %s' % documentId,exc_info=True)
 
-    def _apply_index(self, request):
+    def _apply_index(self, request, resultset=None):
         """Apply the index to query parameters given in the request arg.
 
         The request argument should be a mapping object.
@@ -348,11 +348,7 @@ class UnIndex(SimpleItem):
         # experimental code for specifing the operator
         operator = record.get('operator',self.useOperator)
         if not operator in self.operators :
-            raise RuntimeError,"operator not valid: %s" % escape(operator)
-
-        # depending on the operator we use intersection or union
-        if operator=="or":  set_func = union
-        else:               set_func = intersection
+            raise RuntimeError("operator not valid: %s" % escape(operator))
 
         # Range parameter
         range_parm = record.get('range',None)
@@ -375,24 +371,84 @@ class UnIndex(SimpleItem):
             if 'max' in opr_args: hi = max(record.keys)
             else: hi = None
             if hi:
-                setlist = index.items(lo,hi)
+                setlist = index.values(lo,hi)
             else:
-                setlist = index.items(lo)
+                setlist = index.values(lo)
 
-            for k, set in setlist:
-                if isinstance(set, int):
-                    set = IISet((set,))
-                r = set_func(r, set)
+            # If we only use one key, intersect and return immediately
+            if len(setlist) == 1:
+                result = setlist[0]
+                if isinstance(result, int):
+                    result = IISet((result,))
+                return result, (self.id,)
+
+            if operator == 'or':
+                tmp = []
+                for s in setlist:
+                    if isinstance(s, int):
+                        s = IISet((s,))
+                    tmp.append(s)
+                r = multiunion(tmp)
+            else:
+                # For intersection, sort with smallest data set first
+                tmp = []
+                for s in setlist:
+                    if isinstance(s, int):
+                        s = IISet((s,))
+                    tmp.append(s)
+                if len(tmp) > 2:
+                    setlist = sorted(tmp, key=len)
+                else:
+                    setlist = tmp
+                r = resultset
+                for s in setlist:
+                    # the result is bound by the resultset
+                    r = intersection(r, s)
+
         else: # not a range search
-            for key in record.keys:
-                set=index.get(key, None)
-                if set is None:
-                    set = IISet(())
-                elif isinstance(set, int):
-                    set = IISet((set,))
-                r = set_func(r, set)
+            # Filter duplicates
+            setlist = []
+            for k in record.keys:
+                s = index.get(k, None)
+                # If None, try to bail early
+                if s is None:
+                    if operator == 'or':
+                        # If union, we can't possibly get a bigger result
+                        continue
+                    # If intersection, we can't possibly get a smaller result
+                    return IISet(), (self.id,)
+                elif isinstance(s, int):
+                    s = IISet((s,))
+                setlist.append(s)
 
-        if isinstance(r, int):  r=IISet((r,))
+            # If we only use one key return immediately
+            if len(setlist) == 1:
+                result = setlist[0]
+                if isinstance(result, int):
+                    result = IISet((result,))
+                return result, (self.id,)
+
+            if operator == 'or':
+                # If we already get a small result set passed in, intersecting
+                # the various indexes with it and doing the union later is
+                # faster than creating a multiunion first.
+                if resultset is not None and len(resultset) < 200:
+                    smalllist = []
+                    for s in setlist:
+                        smalllist.append(intersection(resultset, s))
+                    r = multiunion(smalllist)
+                else:
+                    r = multiunion(setlist)
+            else:
+                # For intersection, sort with smallest data set first
+                if len(setlist) > 2:
+                    setlist = sorted(setlist, key=len)
+                r = resultset
+                for s in setlist:
+                    r = intersection(r, s)
+
+        if isinstance(r, int):
+            r = IISet((r, ))
         if r is None:
             return IISet(), (self.id,)
         else:

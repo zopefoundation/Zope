@@ -85,6 +85,15 @@ class IPluggableIndex(Interface):
         """Empty the index"""
 
 
+class ILimitedResultIndex(IPluggableIndex):
+
+    def _apply_index(request, resultset=None):
+        """Same as IPluggableIndex' _apply_index method. The additional
+        resultset argument contains the resultset, as already calculated by
+        ZCatalog's search method.
+        """
+
+
 class IUniqueValueIndex(IPluggableIndex):
     """An index which can return lists of unique values contained in it"""
 

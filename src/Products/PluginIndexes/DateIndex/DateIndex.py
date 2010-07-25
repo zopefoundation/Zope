@@ -157,7 +157,7 @@ class DateIndex(UnIndex, PropertyManager):
 
         return returnStatus
 
-    def _apply_index(self, request):
+    def _apply_index(self, request, resultset=None):
         """Apply the index to query parameters given in the argument
 
         Normalize the 'query' arguments into integer values at minute
@@ -176,7 +176,7 @@ class DateIndex(UnIndex, PropertyManager):
         #experimental code for specifing the operator
         operator = record.get( 'operator', self.useOperator )
         if not operator in self.operators :
-            raise RuntimeError, "operator not valid: %s" % operator
+            raise RuntimeError("operator not valid: %s" % operator)
 
         # depending on the operator we use intersection or union
         if operator=="or":
@@ -223,6 +223,9 @@ class DateIndex(UnIndex, PropertyManager):
                 if set is not None:
                     if isinstance(set, int):
                         set = IISet((set,))
+                    else:
+                        # set can't be bigger than resultset
+                        set = intersection(set, resultset)
                     r = set_func(r, set)
 
         if isinstance(r, int):
