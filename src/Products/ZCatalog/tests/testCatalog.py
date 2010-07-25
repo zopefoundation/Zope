@@ -74,14 +74,13 @@ class Folder(OFS_Folder):
 
 
 class CatalogBase:
+
     def setUp(self):
         self._catalog = Catalog()
-        self.warningshook = WarningsHook()
-        self.warningshook.install()
 
     def tearDown(self):
         self._catalog = None
-        self.warningshook.uninstall()
+
 
 class TestAddDelColumn(CatalogBase,unittest.TestCase):
     def testAdd(self):
@@ -199,9 +198,6 @@ class TestZCatalog(unittest.TestCase):
 
     def setUp(self):
         from Products.ZCatalog.ZCatalog import ZCatalog
-        self.warningshook = WarningsHook()
-        self.warningshook.install()
-
         self._catalog = ZCatalog('Catalog')
         self._catalog.resolve_path = self._resolve_num
         self._catalog.addIndex('title', 'KeywordIndex')
@@ -215,9 +211,6 @@ class TestZCatalog(unittest.TestCase):
             ob = zdummy(x)
             self.d[str(x)] = ob
             self._catalog.catalog_object(ob, str(x))
-
-    def tearDown(self):
-        self.warningshook.uninstall()
 
     def _resolve_num(self, num):
         return self.d[num]
@@ -605,14 +598,13 @@ class TestMerge(unittest.TestCase):
     # Test merging results from multiple catalogs
 
     def setUp(self):
-        self.warningshook = WarningsHook()
-        self.warningshook.install()
         self.catalogs = []
         for i in range(3):
             cat = Catalog()
             cat.lexicon = PLexicon('lexicon')
             cat.addIndex('num', FieldIndex('num'))
             cat.addIndex('big', FieldIndex('big'))
+            cat.addIndex('number', FieldIndex('number'))
             i = ZCTextIndex('title', caller=cat, index_factory=OkapiIndex,
                             lexicon_id='lexicon')
             cat.addIndex('title', i)
@@ -620,15 +612,14 @@ class TestMerge(unittest.TestCase):
             for i in range(10):
                 obj = zdummy(i)
                 obj.big = i > 5
+                obj.number = True
                 cat.catalogObject(obj, str(i))
             self.catalogs.append(cat)
 
-    def tearDown(self):
-        self.warningshook.uninstall()
-
     def testNoFilterOrSort(self):
         from Products.ZCatalog.Catalog import mergeResults
-        results = [cat.searchResults(_merge=0) for cat in self.catalogs]
+        results = [cat.searchResults(
+                   dict(number=True), _merge=0) for cat in self.catalogs]
         merged_rids = [r.getRID() for r in mergeResults(
             results, has_sort_keys=False, reverse=False)]
         expected = [r.getRID() for r in chain(*results)]
@@ -636,7 +627,8 @@ class TestMerge(unittest.TestCase):
 
     def testSortedOnly(self):
         from Products.ZCatalog.Catalog import mergeResults
-        results = [cat.searchResults(sort_on='num', _merge=0)
+        results = [cat.searchResults(
+                   dict(number=True, sort_on='num'), _merge=0)
                    for cat in self.catalogs]
         merged_rids = [r.getRID() for r in mergeResults(
             results, has_sort_keys=True, reverse=False)]
@@ -646,7 +638,8 @@ class TestMerge(unittest.TestCase):
 
     def testSortReverse(self):
         from Products.ZCatalog.Catalog import mergeResults
-        results = [cat.searchResults(sort_on='num', _merge=0)
+        results = [cat.searchResults(
+                   dict(number=True, sort_on='num'), _merge=0)
                    for cat in self.catalogs]
         merged_rids = [r.getRID() for r in mergeResults(
             results, has_sort_keys=True, reverse=True)]
@@ -657,7 +650,8 @@ class TestMerge(unittest.TestCase):
 
     def testLimitSort(self):
         from Products.ZCatalog.Catalog import mergeResults
-        results = [cat.searchResults(sort_on='num', sort_limit=2, _merge=0)
+        results = [cat.searchResults(
+                   dict(number=True, sort_on='num'), sort_limit=2, _merge=0)
                    for cat in self.catalogs]
         merged_rids = [r.getRID() for r in mergeResults(
             results, has_sort_keys=True, reverse=False)]
@@ -678,7 +672,8 @@ class TestMerge(unittest.TestCase):
     def testSmallIndexSort(self):
         # Test that small index sort optimization is not used for merging
         from Products.ZCatalog.Catalog import mergeResults
-        results = [cat.searchResults(sort_on='big', _merge=0)
+        results = [cat.searchResults(
+                   dict(number=True, sort_on='big'), _merge=0)
                    for cat in self.catalogs]
         merged_rids = [r.getRID() for r in mergeResults(
             results, has_sort_keys=True, reverse=False)]
@@ -705,8 +700,6 @@ class TestZCatalogGetObject(unittest.TestCase):
 
     def setUp(self):
         from Products.ZCatalog.ZCatalog import ZCatalog
-        self.warningshook = WarningsHook()
-        self.warningshook.install()
         catalog = ZCatalog('catalog')
         catalog.addIndex('id', 'FieldIndex')
         root = Folder('')
@@ -715,7 +708,6 @@ class TestZCatalogGetObject(unittest.TestCase):
         self.root.catalog = catalog
 
     def tearDown(self):
-        self.warningshook.uninstall()
         noSecurityManager()
         if self._old_flag is not None:
             self._restore_getObject_flag()
@@ -735,7 +727,7 @@ class TestZCatalogGetObject(unittest.TestCase):
         catalog = root.catalog
         root.ob = Folder('ob')
         catalog.catalog_object(root.ob)
-        brain = catalog.searchResults()[0]
+        brain = catalog.searchResults({'id': 'ob'})[0]
         self.assertEqual(brain.getPath(), '/ob')
         self.assertEqual(brain.getObject().getId(), 'ob')
 
@@ -747,7 +739,7 @@ class TestZCatalogGetObject(unittest.TestCase):
         catalog = root.catalog
         root.ob = Folder('ob')
         catalog.catalog_object(root.ob)
-        brain = catalog.searchResults()[0]
+        brain = catalog.searchResults({'id': 'ob'})[0]
         del root.ob
         self.assertRaises((NotFound, AttributeError, KeyError), brain.getObject)
 
@@ -760,7 +752,7 @@ class TestZCatalogGetObject(unittest.TestCase):
         root.fold = Folder('fold')
         root.fold.ob = Folder('ob')
         catalog.catalog_object(root.fold.ob)
-        brain = catalog.searchResults()[0]
+        brain = catalog.searchResults({'id': 'ob'})[0]
         # allow all accesses
         pickySecurityManager = PickySecurityManager()
         setSecurityManager(pickySecurityManager)
@@ -783,7 +775,7 @@ class TestZCatalogGetObject(unittest.TestCase):
         catalog = root.catalog
         root.ob = Folder('ob')
         catalog.catalog_object(root.ob)
-        brain = catalog.searchResults()[0]
+        brain = catalog.searchResults({'id': 'ob'})[0]
         del root.ob
         self.assertEqual(brain.getObject(), None)
 
@@ -796,7 +788,7 @@ class TestZCatalogGetObject(unittest.TestCase):
         root.fold = Folder('fold')
         root.fold.ob = Folder('ob')
         catalog.catalog_object(root.fold.ob)
-        brain = catalog.searchResults()[0]
+        brain = catalog.searchResults({'id': 'ob'})[0]
         # allow all accesses
         pickySecurityManager = PickySecurityManager()
         setSecurityManager(pickySecurityManager)
@@ -820,7 +812,7 @@ class TestZCatalogGetObject(unittest.TestCase):
         catalog = root.catalog
         root.ob = Folder('ob')
         catalog.catalog_object(root.ob)
-        brain = catalog.searchResults()[0]
+        brain = catalog.searchResults({'id': 'ob'})[0]
         self.assertEqual(brain.getPath(), '/ob')
         self.assertEqual(brain._unrestrictedGetObject().getId(), 'ob')
 
@@ -832,7 +824,7 @@ class TestZCatalogGetObject(unittest.TestCase):
         root.fold = Folder('fold')
         root.fold.ob = Folder('ob')
         catalog.catalog_object(root.fold.ob)
-        brain = catalog.searchResults()[0]
+        brain = catalog.searchResults({'id': 'ob'})[0]
         # allow all accesses
         pickySecurityManager = PickySecurityManager()
         setSecurityManager(pickySecurityManager)
@@ -854,7 +846,7 @@ class TestZCatalogGetObject(unittest.TestCase):
         catalog = root.catalog
         root.ob = Folder('ob')
         catalog.catalog_object(root.ob)
-        brain = catalog.searchResults()[0]
+        brain = catalog.searchResults({'id': 'ob'})[0]
         del root.ob
         self.assertRaises((NotFound, AttributeError, KeyError),
                           brain._unrestrictedGetObject)
@@ -866,7 +858,7 @@ class TestZCatalogGetObject(unittest.TestCase):
         catalog = root.catalog
         root.ob = Folder('ob')
         catalog.catalog_object(root.ob)
-        brain = catalog.searchResults()[0]
+        brain = catalog.searchResults({'id': 'ob'})[0]
         del root.ob
         self.assertEqual(brain._unrestrictedGetObject(), None)
 
