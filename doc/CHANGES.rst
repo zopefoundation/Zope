@@ -35,6 +35,9 @@ Bugs Fixed
 Restructuring
 +++++++++++++
 
+- Deprecate acquiring the request inside Products.ZCatalog's searchResults
+  method if no explicit query argument is given.
+
 - Cleaned up the Products.ZCatalog search API's. The deprecated support for
   using `<index id>_usage` arguments in the request has been removed. Support
   for overriding operators via the `<index id>_operator` syntax has been

@@ -14,6 +14,7 @@
 
 import types
 import logging
+import warnings
 from bisect import bisect
 from random import randint
 
@@ -770,7 +771,11 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         # The used argument is deprecated and is ignored
         if REQUEST is None and not kw:
             # Try to acquire request if we get no args for bw compat
-            # TODO: Should be deprecated
+            warnings.warn('Calling searchResults without a query argument nor '
+                          'keyword arguments is deprecated. In Zope 2.14 the '
+                          'query will no longer be automatically taken from '
+                          'the acquired request.',
+                          DeprecationWarning, stacklevel=2)
             REQUEST = getattr(self, 'REQUEST', None)
         args = CatalogSearchArgumentsMap(REQUEST, kw)
         sort_index = self._getSortIndex(args)
