@@ -218,6 +218,7 @@ def _installPackage(name, quiet=0):
             if not quiet: _print('Installing %s ... NOT FOUND\n' % name)
 
 installProduct('PluginIndexes', 1)  # Must install first
+installProduct('OFSP', 1)
 
 # So people can use ZopeLite.app()
 app = Zope2.app

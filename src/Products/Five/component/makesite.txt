@@ -36,7 +36,7 @@ Create the test browser we'll be using:
 
 Let's add a folder:
 
-    >>> browser.open('http://localhost/manage_addProduct/OFS/folderAdd')
+    >>> browser.open('http://localhost/manage_addProduct/OFSP/folderAdd')
     >>> browser.getControl(name='id').value = 'folder'
     >>> browser.getControl('Add').click()
     >>> browser.getLink('folder').click()

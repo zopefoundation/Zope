@@ -82,12 +82,6 @@ Restructuring
 
 - No longer use HelpSys pages from ``Products.OFSP`` in core Zope 2.
 
-- Register OFS as a package and give it an initialize function. Moved
-  registration of OFS classes there from Products.OFSP. ZopeTestCase will no
-  longer install the OFSP product automatically, so you might need to change
-  your test layer setup to load the OFS configure.zcml and call
-  installPackage('OFS').
-
 - No longer create an `Extensions` folder in the standard instance skeleton.
   External methods will become entirely optional in Zope 2.14.
 

@@ -27,7 +27,7 @@ When the skeleton test is run by typing 'python testSkeleton.py', it
             2.1.5 imports module Zope
             2.1.6 starts Zope
             2.1.7 installs product PluginIndexes
-            2.1.8 installs package OFS
+            2.1.8 installs product OFSP
 
         2.2 imports module Testing.ZopeTestCase.ZopeTestCase
 

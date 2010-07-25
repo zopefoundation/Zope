@@ -756,7 +756,7 @@ def install_standards(app):
             if hasattr(app, base):
                 continue
             ob = DTMLFile(base, std_dir)
-            app.manage_addProduct['OFS'].manage_addDTMLMethod(
+            app.manage_addProduct['OFSP'].manage_addDTMLMethod(
                 id=base, file=open(ob.raw))
         elif ext in ('.pt', '.zpt'):
             if hasattr(app, base):
@@ -767,7 +767,7 @@ def install_standards(app):
         elif ext in ('.ico', '.gif', '.png'):
             if hasattr(app, fn):
                 continue
-            app.manage_addProduct['OFS'].manage_addImage(
+            app.manage_addProduct['OFSP'].manage_addImage(
                 id=fn, title='', file=open(os.path.join(std_dir, fn)))
         else:
             continue
