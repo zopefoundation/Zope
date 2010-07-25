@@ -498,15 +498,6 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         # Canonicalize the request into a sensible query before passing it on
         query = self.make_query(query)
 
-        # For hysterical reasons, if all indexes return None for a given
-        # request (and no attributes were used) then we append all results
-        # in the Catalog. This generally happens when the search values
-        # in request are all empty strings or do not coorespond to any of
-        # the indexes.
-
-        # Note that if the indexes find query arguments, but the end result
-        # is an empty sequence, we do nothing
-
         cr = self.getCatalogReport(query)
         cr.start()
 
@@ -814,9 +805,10 @@ class CatalogSearchArgumentsMap:
     """Multimap catalog arguments coming simultaneously from keywords
     and request.
 
-    Values that are empty strings are treated as non-existent. This is
+    BBB: Values that are empty strings are treated as non-existent. This is
     to ignore empty values, thereby ignoring empty form fields to be
-    consistent with hysterical behavior.
+    consistent with hysterical behavior. This is deprecated and can be changed
+    in Zope 2.14.
     """
 
     def __init__(self, request, keywords):
