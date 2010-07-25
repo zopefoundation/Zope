@@ -51,7 +51,7 @@ class CatalogError(Exception):
     pass
 
 class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
-    """ An Object Catalog 
+    """ An Object Catalog
 
     An Object Catalog maintains a table of object metadata, and a
     series of manageable indexes to quickly search for objects
@@ -88,7 +88,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
 
         self.updateBrains()
 
-    
+
     def __len__(self):
         return self._length()
 
@@ -96,7 +96,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         """ migration of old __len__ magic for Zope 2.8 """
         if not hasattr(self, '_length'):
             n = self.__dict__['__len__']()
-            del self.__dict__['__len__'] 
+            del self.__dict__['__len__']
             self._length = BTrees.Length.Length(n)
 
     def clear(self):
@@ -284,7 +284,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                 # New style, get random id
 
                 index=getattr(self, '_v_nextid', 0)
-                if index % 4000 == 0: 
+                if index % 4000 == 0:
                     index = randint(-2000000000, 2000000000)
                 while not data.insert(index, newDataRecord):
                     index = randint(-2000000000, 2000000000)
@@ -310,7 +310,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
             if data.get(index, 0) != newDataRecord:
                 data[index] = newDataRecord
         return index
-        
+
     # the cataloging API
 
     def catalogObject(self, object, uid, threshold=None, idxs=None,
@@ -395,7 +395,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
             if not hasattr(self, '_length'):
                 self.migrate__len__()
             self._length.change(-1)
-            
+
         else:
             LOG.error('uncatalogObject unsuccessfully '
                       'attempted to uncatalog an object '
@@ -523,7 +523,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                 r, u = r
                 w, rs = weightedIntersection(rs, r)
                 if not rs:
-                   break       
+                   break
 
         cr.stop()
 
@@ -545,16 +545,16 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                 # having a 'values' means we have a data structure with
                 # scores.  Build a new result set, sort it by score, reverse
                 # it, compute the normalized score, and Lazify it.
-                                
+
                 if not merge:
-                    # Don't bother to sort here, return a list of 
+                    # Don't bother to sort here, return a list of
                     # three tuples to be passed later to mergeResults
                     # note that data_record_normalized_score_ cannot be
                     # calculated and will always be 1 in this case
                     getitem = self.__getitem__
-                    return [(score, (1, score, rid), getitem) 
+                    return [(score, (1, score, rid), getitem)
                             for rid, score in rs.items()]
-                
+
                 rs = rs.byValue(0) # sort it by score
                 max = float(rs[0][0])
 
@@ -573,7 +573,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                     r.data_record_score_ = score
                     r.data_record_normalized_score_ = int(100. * score / max)
                     return r
-                
+
                 return LazyMap(getScoredResult, rs, len(rs))
 
             elif sort_index is None and not hasattr(rs, 'values'):
@@ -612,13 +612,13 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         if hasattr(rs, 'keys'):
             rs = rs.keys()
         rlen = len(rs)
-        
+
         if merge and limit is None and (
             rlen > (len(sort_index) * (rlen / 100 + 1))):
             # The result set is much larger than the sorted index,
             # so iterate over the sorted index for speed.
             # This is rarely exercised in practice...
-            
+
             length = 0
 
             try:
@@ -641,7 +641,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                     length += len(intset)
                     append((k, intset, _self__getitem__))
                     # Note that sort keys are unique.
-            
+
             result.sort()
             if reverse:
                 result.reverse()
@@ -665,11 +665,11 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                 if reverse:
                     result.reverse()
                 if limit is not None:
-                    result = result[:limit]                    
+                    result = result[:limit]
                 result = LazyValues(result)
             else:
                 return result
-        elif reverse: 
+        elif reverse:
             # Limit/sort results using N-Best algorithm
             # This is faster for large sets then a full sort
             # And uses far less memory
@@ -695,7 +695,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                     worst = keys[0]
             result.reverse()
             if merge:
-                result = LazyValues(result) 
+                result = LazyValues(result)
             else:
                 return result
         elif not reverse:
@@ -721,10 +721,10 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                         n += 1
                     best = keys[-1]
             if merge:
-                result = LazyValues(result) 
+                result = LazyValues(result)
             else:
                 return result
-        
+
         result = LazyMap(self.__getitem__, result, len(result))
         result.actual_result_count = rlen
         return result
@@ -788,7 +788,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                 reverse = 1
         # Perform searches with indexes and sort_index
         return self.search(args, sort_index, reverse, sort_limit, _merge)
-                
+
     __call__ = searchResults
 
     def getCatalogReport(self, query=None):
@@ -836,11 +836,11 @@ class CatalogSearchArgumentsMap:
             return 0
         else:
             return 1
-        
+
 
 def mergeResults(results, has_sort_keys, reverse):
     """Sort/merge sub-results, generating a flat sequence.
-    
+
     results is a list of result set sequences, all with or without sort keys
     """
     if not has_sort_keys:
