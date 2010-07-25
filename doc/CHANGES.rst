@@ -35,6 +35,10 @@ Bugs Fixed
 Restructuring
 +++++++++++++
 
+- Deprecate Products.ZCatalog's current behavior of returning the entire
+  catalog content if no query restriction applied. In Zope 2.14 this will
+  result in an empty LazyCat to be returned instead.
+
 - Deprecate acquiring the request inside Products.ZCatalog's searchResults
   method if no explicit query argument is given.
 

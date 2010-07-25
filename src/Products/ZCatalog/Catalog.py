@@ -30,6 +30,7 @@ from BTrees.IOBTree import IOBTree
 from Lazy import LazyMap, LazyCat, LazyValues
 from CatalogBrains import AbstractCatalogBrain, NoBrainer
 from .report import CatalogReport
+from .report import make_key
 
 
 LOG = logging.getLogger('Zope.ZCatalog')
@@ -531,6 +532,12 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
             # None of the indexes found anything to do with the query
             # We take this to mean that the query was empty (an empty filter)
             # and so we return everything in the catalog
+            warnings.warn('Your query %s produced no query restriction. '
+                          'Currently the entire catalog content is returned. '
+                          'In Zope 2.14 this will result in an empty LazyCat '
+                          'to be returned.' % repr(make_key(self, query)),
+                          DeprecationWarning, stacklevel=3)
+
             if sort_index is None:
                 return LazyMap(self.instantiate, self.data.items(), len(self))
             else:
@@ -775,7 +782,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                           'keyword arguments is deprecated. In Zope 2.14 the '
                           'query will no longer be automatically taken from '
                           'the acquired request.',
-                          DeprecationWarning, stacklevel=2)
+                          DeprecationWarning, stacklevel=3)
             REQUEST = getattr(self, 'REQUEST', None)
         if isinstance(REQUEST, dict) and not kw:
             # short cut for the best practice

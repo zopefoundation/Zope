@@ -11,12 +11,10 @@
 #
 ##############################################################################
 """ Unittests for Catalog.
-
-$Id$
 """
 
 import unittest
-import Testing
+from Testing.ZopeTestCase.warnhook import WarningsHook
 import Zope2
 Zope2.startup()
 
@@ -78,9 +76,12 @@ class Folder(OFS_Folder):
 class CatalogBase:
     def setUp(self):
         self._catalog = Catalog()
+        self.warningshook = WarningsHook()
+        self.warningshook.install()
 
     def tearDown(self):
         self._catalog = None
+        self.warningshook.uninstall()
 
 class TestAddDelColumn(CatalogBase,unittest.TestCase):
     def testAdd(self):
@@ -89,7 +90,6 @@ class TestAddDelColumn(CatalogBase,unittest.TestCase):
                          'add column failed')
 
     def testAddBad(self):
-        from Products.ZCatalog.Catalog import CatalogError
         self.assertRaises(CatalogError, self._catalog.addColumn, '_id')
 
     def testDel(self):
@@ -199,6 +199,9 @@ class TestZCatalog(unittest.TestCase):
 
     def setUp(self):
         from Products.ZCatalog.ZCatalog import ZCatalog
+        self.warningshook = WarningsHook()
+        self.warningshook.install()
+
         self._catalog = ZCatalog('Catalog')
         self._catalog.resolve_path = self._resolve_num
         self._catalog.addIndex('title', 'KeywordIndex')
@@ -212,7 +215,10 @@ class TestZCatalog(unittest.TestCase):
             ob = zdummy(x)
             self.d[str(x)] = ob
             self._catalog.catalog_object(ob, str(x))
-        
+
+    def tearDown(self):
+        self.warningshook.uninstall()
+
     def _resolve_num(self, num):
         return self.d[num]
 
@@ -343,6 +349,9 @@ class TestCatalogObject(unittest.TestCase):
         nums[j] = tmp
 
     def setUp(self):
+        self.warningshook = WarningsHook()
+        self.warningshook.install()
+
         self._catalog = Catalog()
         self._catalog.lexicon = PLexicon('lexicon')
         col1 = FieldIndex('col1')
@@ -378,6 +387,7 @@ class TestCatalogObject(unittest.TestCase):
 
     def tearDown(self):
         self._catalog = None
+        self.warningshook.uninstall()
 
     def testResultLength(self):
         a = self._catalog()
@@ -595,6 +605,8 @@ class TestMerge(unittest.TestCase):
     # Test merging results from multiple catalogs
 
     def setUp(self):
+        self.warningshook = WarningsHook()
+        self.warningshook.install()
         self.catalogs = []
         for i in range(3):
             cat = Catalog()
@@ -610,6 +622,9 @@ class TestMerge(unittest.TestCase):
                 obj.big = i > 5
                 cat.catalogObject(obj, str(i))
             self.catalogs.append(cat)
+
+    def tearDown(self):
+        self.warningshook.uninstall()
 
     def testNoFilterOrSort(self):
         from Products.ZCatalog.Catalog import mergeResults
@@ -690,6 +705,8 @@ class TestZCatalogGetObject(unittest.TestCase):
 
     def setUp(self):
         from Products.ZCatalog.ZCatalog import ZCatalog
+        self.warningshook = WarningsHook()
+        self.warningshook.install()
         catalog = ZCatalog('catalog')
         catalog.addIndex('id', 'FieldIndex')
         root = Folder('')
@@ -698,10 +715,11 @@ class TestZCatalogGetObject(unittest.TestCase):
         self.root.catalog = catalog
 
     def tearDown(self):
+        self.warningshook.uninstall()
         noSecurityManager()
         if self._old_flag is not None:
             self._restore_getObject_flag()
-    
+
     def _init_getObject_flag(self, flag):
         from Products.ZCatalog import CatalogBrains
         self._old_flag = CatalogBrains.GETOBJECT_RAISES
@@ -736,7 +754,6 @@ class TestZCatalogGetObject(unittest.TestCase):
     def test_getObject_restricted_raises_Unauthorized(self):
         # Check that if the object's security does not allow traversal,
         # None is returned
-        from zExceptions import NotFound
         self._init_getObject_flag(True)
         root = self.root
         catalog = root.catalog
