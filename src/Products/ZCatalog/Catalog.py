@@ -777,7 +777,11 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                           'the acquired request.',
                           DeprecationWarning, stacklevel=2)
             REQUEST = getattr(self, 'REQUEST', None)
-        args = CatalogSearchArgumentsMap(REQUEST, kw)
+        if isinstance(REQUEST, dict) and not kw:
+            # short cut for the best practice
+            args = REQUEST
+        else:
+            args = CatalogSearchArgumentsMap(REQUEST, kw)
         sort_index = self._getSortIndex(args)
         sort_limit = self._get_sort_attr('limit', args)
         reverse = 0
