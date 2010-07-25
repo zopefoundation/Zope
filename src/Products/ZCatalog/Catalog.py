@@ -756,10 +756,10 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
             if sort_index is None:
                 raise CatalogError, 'Unknown sort_on index (%s)' % sort_index_name
             else:
-                if not hasattr(sort_index, 'keyForDocument'):
+                if not hasattr(sort_index, 'documentToKeyMap'):
                     raise CatalogError(
-                        'The index chosen for sort_on (%s) is not capable of being'
-                        ' used as a sort index.' % sort_index_name
+                        'The index chosen for sort_on (%s) is not capable of '
+                        'being used as a sort index.' % sort_index_name
                         )
             return sort_index
         else:
