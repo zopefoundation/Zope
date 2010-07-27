@@ -48,7 +48,6 @@ from ExtensionClass import Base
 from Persistence import Persistent
 from webdav.Resource import Resource
 from zExceptions import Redirect
-from zExceptions import upgradeException
 from zExceptions.ExceptionFormatter import format_exception
 from zope.interface import implements
 
@@ -197,25 +196,15 @@ class Item(Base,
             elif type(tb) is type('') and not error_tb:
                 error_tb = tb
 
-            # warn if error_type is a string
-            error_name = 'Unknown'
-            if isinstance(error_type, basestring):
-                # String Exceptions are deprecated on Python 2.5 and
-                # plain won't work at all on Python 2.6. So try to upgrade it
-                # to a real exception.
-                error_name = error_type
-                error_type, error_value = upgradeException(error_type, error_value)
-            else:
-                if hasattr(error_type, '__name__'):
-                    error_name = error_type.__name__
-
             if hasattr(self, '_v_eek'):
                 # Stop if there is recursion.
                 raise error_type, error_value, tb
             self._v_eek = 1
 
-            if error_name.lower() in ('redirect',):
-                raise error_type, error_value, tb
+            if hasattr(error_type, '__name__'):
+                error_name = error_type.__name__
+            else:
+                error_name = 'Unknown'
 
             if not error_message:
                 try:

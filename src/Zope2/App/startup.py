@@ -27,7 +27,6 @@ from Acquisition import aq_parent
 from Acquisition.interfaces import IAcquirer
 from App.config import getConfiguration
 from time import asctime
-from zExceptions import upgradeException
 from zExceptions import Redirect
 from zExceptions import Unauthorized
 from ZODB.POSException import ConflictError
@@ -181,8 +180,6 @@ class ZPublisherExceptionHook:
 
     def __call__(self, published, REQUEST, t, v, traceback):
         try:
-            t, v = upgradeException(t, v)
-
             if t is SystemExit or issubclass(t, Redirect):
                 raise t, v, traceback
 
