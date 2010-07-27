@@ -1003,10 +1003,10 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
 
     def _setId(self, id):
         if id != self.id:
-            raise MessageDialog(
+            raise ValueError(MessageDialog(
                 title='Invalid Id',
                 message='Cannot change the id of a UserFolder',
-                action ='./manage_main',)
+                action='./manage_main'))
 
 
     # Domain authentication support. This is a good candidate to

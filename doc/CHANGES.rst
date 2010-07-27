@@ -11,6 +11,7 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
+- BasicUserFolder and SiteErrorLog: Don't raise string exceptions.
 
 2.12.10 (2010-07-20)
 --------------------
