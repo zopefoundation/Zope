@@ -288,10 +288,10 @@ class BasicUserFolder(Navigation, Tabs, Item, RoleManager,
 
     def _setId(self, id):
         if id != self.id:
-            raise MessageDialog(
+            raise ValueError(MessageDialog(
                 title='Invalid Id',
                 message='Cannot change the id of a UserFolder',
-                action='./manage_main')
+                action='./manage_main'))
 
 
 class UserFolder(accesscontrol_userfolder.UserFolder, BasicUserFolder):

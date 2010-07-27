@@ -103,10 +103,10 @@ class SiteErrorLog (SimpleItem):
 
     def _setId(self, id):
         if id != self.id:
-            raise MessageDialog(
+            raise ValueError(MessageDialog(
                 title='Invalid Id',
                 message='Cannot change the id of a SiteErrorLog',
-                action ='./manage_main',)
+                action='./manage_main'))
 
     def _getLog(self):
         """Returns the log for this object.
