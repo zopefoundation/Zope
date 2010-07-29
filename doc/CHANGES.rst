@@ -13,6 +13,13 @@ Bugs Fixed
 
 - BasicUserFolder and SiteErrorLog: Don't raise string exceptions.
 
+Features Added
+++++++++++++++
+
+- Updated packages:
+
+  - DateTime = 2.12.5
+
 2.12.10 (2010-07-20)
 --------------------
 
