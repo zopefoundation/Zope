@@ -13,7 +13,8 @@
 
 from zope.interface import implements
 
-import Acquisition, Record
+import Acquisition
+import Record
 from ZODB.POSException import ConflictError
 
 from interfaces import ICatalogBrain
@@ -22,15 +23,19 @@ from interfaces import ICatalogBrain
 # Use 'catalog-getObject-raises off' in zope.conf to restore old behavior.
 GETOBJECT_RAISES = True
 
+
 class AbstractCatalogBrain(Record.Record, Acquisition.Implicit):
     """Abstract base brain that handles looking up attributes as
     required, and provides just enough smarts to let us get the URL, path,
     and cataloged object without having to ask the catalog directly.
     """
     implements(ICatalogBrain)
-    
+
     def has_key(self, key):
-        return self.__record_schema__.has_key(key)
+        return key in self.__record_schema__
+
+    def __contains__(self, name):
+        return name in self.__record_schema__
 
     def getPath(self):
         """Get the physical path for this record"""
@@ -39,11 +44,11 @@ class AbstractCatalogBrain(Record.Record, Acquisition.Implicit):
     def getURL(self, relative=0):
         """Generate a URL for this record"""
         # XXX The previous implementation attempted to eat errors coming from
-        #     REQUEST.physicalPathToURL. Unfortunately it also ate 
-        #     ConflictErrors (from getPath), which is bad. Staring at the 
-        #     relevent code in HTTPRequest.py it's unclear to me what could be 
-        #     raised by it so I'm removing the exception handling here all 
-        #     together. If undesired exceptions get raised somehow we should 
+        #     REQUEST.physicalPathToURL. Unfortunately it also ate
+        #     ConflictErrors (from getPath), which is bad. Staring at the
+        #     relevent code in HTTPRequest.py it's unclear to me what could be
+        #     raised by it so I'm removing the exception handling here all
+        #     together. If undesired exceptions get raised somehow we should
         #     avoid bare except band-aids and find a real solution.
         return self.REQUEST.physicalPathToURL(self.getPath(), relative)
 
@@ -100,6 +105,7 @@ class AbstractCatalogBrain(Record.Record, Acquisition.Implicit):
     def getRID(self):
         """Return the record ID for this object."""
         return self.data_record_id_
+
 
 class NoBrainer:
     """ This is an empty class to use when no brain is specified. """

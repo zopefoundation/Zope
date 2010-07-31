@@ -14,26 +14,37 @@
 """
 
 import unittest
+
 import Acquisition
 from zExceptions import Unauthorized
 from ZODB.POSException import ConflictError
 
+_marker = object()
+
+
 class Happy(Acquisition.Implicit):
     """Happy content"""
+
     def __init__(self, id):
         self.id = id
+
     def check(self):
         pass
 
+
 class Secret(Happy):
     """Object that raises Unauthorized when accessed"""
+
     def check(self):
         raise Unauthorized
 
+
 class Conflicter(Happy):
     """Object that raises ConflictError when accessed"""
+
     def check(self):
         raise ConflictError
+
 
 class DummyRequest(Acquisition.Implicit):
 
@@ -42,13 +53,12 @@ class DummyRequest(Acquisition.Implicit):
             path = 'http://superbad.com' + path
         return path
 
-_marker = object()
 
 class DummyCatalog(Acquisition.Implicit):
 
-    _objs = {'/happy':Happy('happy'),
-             '/secret':Secret('secret'),
-             '/conflicter':Conflicter('conflicter')}
+    _objs = {'/happy': Happy('happy'),
+             '/secret': Secret('secret'),
+             '/conflicter': Conflicter('conflicter')}
     _paths = _objs.keys() + ['/zonked']
     _paths.sort()
 
@@ -78,13 +88,16 @@ class DummyCatalog(Acquisition.Implicit):
         return self.restrictedTraverse(self._paths[rid])
 
     def resolve_url(self, path, REQUEST):
-        path =  path[path.find('/', path.find('//')+1):] # strip server part
+        # strip server part
+        path = path[path.find('/', path.find('//') + 1):]
         return self.restrictedTraverse(path)
+
 
 class ConflictingCatalog(DummyCatalog):
 
     def getpath(self, rid):
         raise ConflictError
+
 
 class BrainsTestBase:
 
@@ -110,15 +123,17 @@ class BrainsTestBase:
 
     def _makeBrain(self, rid):
         from Products.ZCatalog.CatalogBrains import AbstractCatalogBrain
+
         class Brain(AbstractCatalogBrain):
-            __record_schema__ = {'test_field': 0, 'data_record_id_':1}
+            __record_schema__ = {'test_field': 0, 'data_record_id_': 1}
+
         return Brain(('test', rid)).__of__(self.cat)
 
     def testHasKey(self):
         b = self._makeBrain(1)
-        self.failUnless(b.has_key('test_field'))
-        self.failUnless(b.has_key('data_record_id_'))
-        self.failIf(b.has_key('godel'))
+        self.failUnless('test_field' in b)
+        self.failUnless('data_record_id_' in b)
+        self.failIf('godel' in b)
 
     def testGetPath(self):
         b = [self._makeBrain(rid) for rid in range(3)]
@@ -149,6 +164,7 @@ class BrainsTestBase:
         self.assertEqual(b.getPath(), '/conflicter')
         self.assertRaises(ConflictError, b.getObject)
 
+
 class TestBrains(BrainsTestBase, unittest.TestCase):
 
     def _flag_value(self):
@@ -167,6 +183,7 @@ class TestBrains(BrainsTestBase, unittest.TestCase):
         self.assertRaises(KeyError, self.cat.getobject, 3)
         self.assertRaises((NotFound, AttributeError, KeyError), b.getObject)
 
+
 class TestBrainsOldBehavior(BrainsTestBase, unittest.TestCase):
 
     def _flag_value(self):
@@ -182,6 +199,7 @@ class TestBrainsOldBehavior(BrainsTestBase, unittest.TestCase):
         self.assertEqual(b.getPath(), '/zonked')
         self.assertRaises(KeyError, self.cat.getobject, 3)
         self.assertEqual(b.getObject(), None)
+
 
 def test_suite():
     suite = unittest.TestSuite()
