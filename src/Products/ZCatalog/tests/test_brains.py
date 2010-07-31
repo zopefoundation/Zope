@@ -65,8 +65,7 @@ class DummyCatalog(Acquisition.Implicit):
     # This is sooooo ugly
 
     def unrestrictedTraverse(self, path, default=None):
-        # for these tests...
-        assert path == '' or path == ('') or path == [''], path
+        assert path in ['', ('', ), ['']], path
         return self
 
     def restrictedTraverse(self, path, default=_marker):
