@@ -12,9 +12,8 @@
 #
 ##############################################################################
 """Test skins
-
-$Id$
 """
+
 from zope.publisher.interfaces.browser import IDefaultBrowserLayer
 
 class ITestSkin(IDefaultBrowserLayer):

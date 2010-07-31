@@ -15,9 +15,6 @@
 # Andreas Jung, andreas@digicool.com 03/24/2001
 
 
-__version__ = '$Id$'
-
-
 import os,sys,re,string
 import threading,time,commands,profile
 

@@ -12,9 +12,8 @@
 #
 ##############################################################################
 """Viewlet.
-
-$Id$
 """
+
 import os
 import zope.viewlet.viewlet
 from Products.Five.bbb import AcquisitionBBB

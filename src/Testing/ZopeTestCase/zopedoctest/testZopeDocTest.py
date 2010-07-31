@@ -11,8 +11,6 @@
 #
 ##############################################################################
 """Example Zope doctest
-
-$Id$
 """
 
 from unittest import TestSuite

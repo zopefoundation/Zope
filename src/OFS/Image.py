@@ -11,9 +11,8 @@
 #
 ##############################################################################
 """Image object
-
-$Id$
 """
+
 from cgi import escape
 from cStringIO import StringIO
 from mimetools import choose_boundary

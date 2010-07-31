@@ -12,10 +12,6 @@
 #
 ##############################################################################
 """Yet another lag analysis tool
-
-
-
-$Id$
 """
 
 import datetime, optparse, sys

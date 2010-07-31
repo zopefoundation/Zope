@@ -11,8 +11,6 @@
 #
 ##############################################################################
 """ Functional tests for exception handling.
-
-$Id$
 """
 
 import unittest

@@ -12,7 +12,6 @@
 ##############################################################################
 '''
 Functions for refreshing products.
-$Id$
 '''
 
 from logging import getLogger

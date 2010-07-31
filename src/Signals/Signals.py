@@ -12,10 +12,7 @@
 ##############################################################################
 """
 Zope signal handlers for clean shutdown, restart and log rotation.
-
-$Id$
 """
-__version__='$Revision: 1.3 $'[11:-2]
 
 import logging
 import os

@@ -12,8 +12,6 @@
 ##############################################################################
 """Image object that is stored in a file"""
 
-__version__='$Revision: 1.20 $'[11:-2]
-
 import os
 import os.path
 import stat

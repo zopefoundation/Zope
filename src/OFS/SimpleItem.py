@@ -16,8 +16,6 @@ Aqueduct database adapters, etc.
 
 This module can also be used as a simple template for implementing new
 item types.
-
-$Id$
 """
 
 import marshal

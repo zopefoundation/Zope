@@ -1,9 +1,8 @@
 # -*- coding: iso-8859-15 -*-
 
 """ Unit tests for ZReST objects
-
-$Id$
 """
+
 import unittest
 import cgi
 import tempfile

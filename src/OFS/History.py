@@ -11,9 +11,8 @@
 #
 ##############################################################################
 """Object Histories
-
-$Id$
 """
+
 from cgi import escape
 import difflib
 from struct import pack, unpack

@@ -12,9 +12,8 @@
 #
 ##############################################################################
 """Test content objects.
-
-$Id$
 """
+
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Explicit

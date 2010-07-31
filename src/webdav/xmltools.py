@@ -14,7 +14,6 @@
 WebDAV XML request parsing tool using xml.minidom as xml parser.
 Code contributed by Simon Eisenmann, struktur AG, Stuttgart, Germany
 """
-__version__='$Revision: 1.15.2.1 $'[11:-2]
 
 """
 TODO:

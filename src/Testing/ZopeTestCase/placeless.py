@@ -11,8 +11,6 @@
 #
 ##############################################################################
 """Placeless setup
-
-$Id$
 """
 
 from zope.component.testing import PlacelessSetup as CAPlacelessSetup

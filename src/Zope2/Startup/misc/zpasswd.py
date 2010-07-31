@@ -13,8 +13,6 @@
 ##############################################################################
 """Zope user bootstrap system"""
 
-__version__='$Revision: 1.5 $ '[11:-2]
-
 import sys,  sha, binascii, random, getopt, getpass, os
 
 try:

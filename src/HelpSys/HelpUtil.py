@@ -12,9 +12,6 @@
 ##############################################################################
 """Help system support module"""
 
-__version__='$Revision: 1.12 $'[11:-2]
-
-
 import re
 import sys
 
@@ -86,8 +83,7 @@ class object(Implicit):
 
 
     def version(self):
-        if hasattr(self._obj_, '__version__'):
-            return self._obj_.__version__
+        return None
 
     tpId   =get_name
     tpURL  =get_name

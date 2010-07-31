@@ -11,9 +11,8 @@
 #
 ##############################################################################
 """Batch class, for iterating over a sequence in batches
-
-$Id$
 """
+
 from ExtensionClass import Base
 
 class LazyPrevBatch(Base):

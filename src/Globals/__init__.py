@@ -14,7 +14,6 @@
 
 o N.B.:  DO NOT IMPORT ANYTHING HERE!  This module is just for shared data!
 """
-__version__='$Revision: 1.56 $'[11:-2]
 
 # BBB imports
 from zope.deferredimport import deprecated

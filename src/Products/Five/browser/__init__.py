@@ -12,9 +12,8 @@
 #
 ##############################################################################
 """Provide basic browser functionality
-
-$Id$
 """
+
 import Acquisition
 import zope.publisher.browser
 

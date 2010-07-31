@@ -22,8 +22,6 @@ import posixpath
 
 from ZServer.HTTPServer import zhttp_handler
 
-__version__ = "1.0"
-
 
 class WebDAVSrcHandler(zhttp_handler):
 

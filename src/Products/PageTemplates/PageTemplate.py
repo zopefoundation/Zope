@@ -11,9 +11,8 @@
 #
 ##############################################################################
 """Page Template module
-
-$Id$
 """
+
 import sys
 import ExtensionClass
 import zope.pagetemplate.pagetemplate

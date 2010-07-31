@@ -13,9 +13,6 @@
 """
 Facilitates unit tests which requires an acquirable REQUEST from
 ZODB objects
-
-$Id$
-
 """
 
 import os

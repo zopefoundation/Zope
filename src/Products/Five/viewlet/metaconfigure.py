@@ -12,9 +12,8 @@
 #
 ##############################################################################
 """Viewlet ZCML directives.
-
-$Id$
 """
+
 import os
 
 from zope.browserpage.metaconfigure import _handle_for

@@ -21,8 +21,6 @@ Usage:
    Use --help to get a list of all options.
 
 Author: Andreas Jung (andreas@andreas-jung.com)
-
-$Id$
 """
 
 import sys

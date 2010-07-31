@@ -12,10 +12,7 @@
 #
 ##############################################################################
 """Viewlet tests
-
-$Id$
 """
-__docformat__ = 'restructuredtext'
 
 import unittest
 from Testing.ZopeTestCase import FunctionalDocFileSuite

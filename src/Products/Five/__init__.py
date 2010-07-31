@@ -12,8 +12,6 @@
 #
 ##############################################################################
 """Initialize the Five product
-
-$Id$
 """
 
 # public API provided by Five

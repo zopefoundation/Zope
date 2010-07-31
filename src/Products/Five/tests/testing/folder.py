@@ -12,9 +12,8 @@
 #
 ##############################################################################
 """Test folders
-
-$Id$
 """
+
 from OFS.Folder import Folder
 from OFS.interfaces import IFolder
 from zope.interface import implements

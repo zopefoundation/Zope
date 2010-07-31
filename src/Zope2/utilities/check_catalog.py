@@ -11,9 +11,8 @@
 #
 ##############################################################################
 """Script to check consistency of a ZCatalog
-
-$Id$
 """
+
 import Zope2
 import os,sys,re,getopt
 from types import IntType

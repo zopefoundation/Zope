@@ -12,8 +12,6 @@
 ##############################################################################
 """Object Reference implementation"""
 
-__version__='$Revision: 1.10 $'[11:-2]
-
 import sys
 from urllib import quote
 

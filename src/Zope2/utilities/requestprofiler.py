@@ -11,9 +11,8 @@
 #
 ##############################################################################
 """Request log profiler script
-
-$Id$
 """
+
 import sys, time, getopt, math, cPickle
 from types import StringType
 try: import gzip

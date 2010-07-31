@@ -12,9 +12,8 @@
 #
 ##############################################################################
 """Parrot directive and support classes
-
-$Id$
 """
+
 from zope.interface import Interface
 from zope.configuration.fields import GlobalObject
 from zope.schema import TextLine

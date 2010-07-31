@@ -12,9 +12,8 @@
 #
 ##############################################################################
 """Viewlet manager.
-
-$Id$
 """
+
 from Acquisition import aq_base
 from AccessControl.ZopeGuards import guarded_hasattr
 import zope.interface

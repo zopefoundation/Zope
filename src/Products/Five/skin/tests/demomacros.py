@@ -12,9 +12,8 @@
 #
 ##############################################################################
 """Demo StandardMacros
-
-$Id$
 """
+
 from Products.Five import StandardMacros as BaseMacros
 
 class StandardMacros(BaseMacros):

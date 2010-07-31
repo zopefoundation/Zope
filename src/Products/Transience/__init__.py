@@ -12,8 +12,6 @@
 ##############################################################################
 """
 Transience initialization routines
-
-$Id$
 """
 
 import ZODB # this is to help out testrunner, don't remove.

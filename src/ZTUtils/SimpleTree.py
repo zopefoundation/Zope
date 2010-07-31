@@ -11,9 +11,8 @@
 #
 ##############################################################################
 """Simple Tree classes
-
-$Id$
 """
+
 from Tree import TreeMaker, TreeNode, b2a
 from cgi import escape
 

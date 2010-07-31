@@ -11,8 +11,6 @@
 #
 ##############################################################################
 """Test layer extraction feature
-
-$Id$
 """
 
 from unittest import TestSuite

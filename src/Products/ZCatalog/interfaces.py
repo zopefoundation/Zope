@@ -10,9 +10,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""ZCatalog z3 interfaces.
-
-$Id$
+"""ZCatalog interfaces.
 """
 
 from zope.interface import Interface

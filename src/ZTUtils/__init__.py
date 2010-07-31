@@ -11,8 +11,6 @@
 #
 ##############################################################################
 """Package of template utility classes and functions.
-
-$Id$
 """
 
 from Tree import encodeExpansion, decodeExpansion, a2b, b2a

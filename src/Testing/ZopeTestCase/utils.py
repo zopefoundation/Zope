@@ -14,8 +14,6 @@
 
 These functions are designed to be imported and run at
 module level to add functionality to the test environment.
-
-$Id$
 """
 
 import os

@@ -14,8 +14,6 @@
 
 This wrapper allows the Page Template modules to be segregated in a
 separate package.
-
-$Id$
 """
 
 # Placeholder for Zope Product data

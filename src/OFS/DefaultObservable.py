@@ -14,9 +14,8 @@
 http://www.zope.org/Members/michel/Projects/Interfaces/ObserverAndNotification)
 This class is intended to be used as a mixin (note that it doesn't
 derive from any Zope persistence classes, for instance).
-
-$Id$
 """
+
 from types import StringType
 
 class DefaultObservable:

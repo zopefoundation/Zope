@@ -43,8 +43,6 @@ recovered by piping the output through
 See module comments for details and programmatic interface.
 """
 
-__version__ = 1, 4, 0
-
 # SequenceMatcher tries to compute a "human-friendly diff" between
 # two sequences (chiefly picturing a file as a sequence of lines,
 # and a line as a sequence of characters, here).  Unlike e.g. UNIX(tm)

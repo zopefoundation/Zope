@@ -12,8 +12,6 @@
 #
 ##############################################################################
 """Five interfaces
-
-$Id$
 """
 
 from zope.deferredimport import deprecated

@@ -20,8 +20,6 @@ The fixture consists of:
 
 The default user is logged in and has the 'Access contents information'
 and 'View' permissions given to his role.
-
-$Id$
 """
 
 import base

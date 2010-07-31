@@ -11,9 +11,7 @@
 #
 ##############################################################################
 '''CGI Response Output formatter
-
-$Id$'''
-__version__ = '$Revision: 1.19 $'[11:-2]
+'''
 
 from zExceptions import Unauthorized, Forbidden, NotFound, BadRequest
 

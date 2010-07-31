@@ -12,9 +12,8 @@
 #
 ##############################################################################
 """Provide basic resource functionality
-
-$Id$
 """
+
 import os
 import urllib
 

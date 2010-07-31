@@ -11,8 +11,6 @@
 #
 ##############################################################################
 """Skeleton ZopeTestCase
-
-$Id$
 """
 
 from Testing import ZopeTestCase

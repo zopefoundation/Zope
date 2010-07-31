@@ -12,8 +12,6 @@
 #
 ##############################################################################
 """Things needed for backward compatibility
-
-$Id$
 """
 
 import Acquisition

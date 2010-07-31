@@ -12,9 +12,8 @@
 #
 ##############################################################################
 """Component browser views
-
-$Id$
 """
+
 from Products.Five.browser import BrowserView
 from Products.Five.component import enableSite, disableSite
 from Products.Five.component.interfaces import IObjectManagerSite

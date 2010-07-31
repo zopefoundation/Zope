@@ -11,9 +11,8 @@
 #
 ##############################################################################
 """Cacheable object and cache management base classes.
-
-$Id$
 """
+
 from logging import getLogger
 import sys
 import time

@@ -12,8 +12,6 @@
 #
 ##############################################################################
 """Unit tests for the registerClass directive.
-
-$Id$
 """
 
 from AccessControl.class_init import InitializeClass

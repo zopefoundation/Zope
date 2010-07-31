@@ -12,8 +12,6 @@
 ##############################################################################
 """Parts of ZServer support are in this module so they can
 be imported more selectively.
-
-$Id$
 """
 
 from threading import Thread

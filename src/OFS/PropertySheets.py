@@ -11,9 +11,8 @@
 #
 ##############################################################################
 """Property sheets
-
-$Id$
 """
+
 from cgi import escape
 import time
 import sys

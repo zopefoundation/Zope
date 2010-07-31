@@ -12,9 +12,8 @@
 #
 ##############################################################################
 """Test browser pages
-
-$Id$
 """
+
 from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from OFS.SimpleItem import SimpleItem

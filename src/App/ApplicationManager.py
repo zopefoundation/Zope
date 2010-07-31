@@ -10,9 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-__doc__="""System management components"""
-
-__version__='$Revision: 1.94 $'[11:-2]
+"""System management components"""
 
 from cgi import escape
 from cStringIO import StringIO

@@ -12,8 +12,6 @@
 #
 ##############################################################################
 """Unit tests for the i18n framework
-
-$Id$
 """
 
 from zope.component.testing import setUp, tearDown

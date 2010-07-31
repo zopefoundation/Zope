@@ -10,7 +10,6 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-__version__='$Revision: 1.24 $'[11:-2]
 
 import re
 from types import ListType, TupleType, UnicodeType

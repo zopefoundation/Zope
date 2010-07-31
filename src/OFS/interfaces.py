@@ -11,9 +11,8 @@
 #
 ##############################################################################
 """OFS interfaces.
-
-$Id$
 """
+
 from zope.container.interfaces import IContainer
 from zope.interface import Attribute
 from zope.interface import Interface

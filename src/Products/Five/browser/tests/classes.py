@@ -12,9 +12,8 @@
 #
 ##############################################################################
 """Test fixtures
-
-$Id$
 """
+
 from zope.interface import Interface, implements
 from Products.Five import BrowserView
 

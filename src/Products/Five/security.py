@@ -12,9 +12,8 @@
 #
 ##############################################################################
 """Five security handling
-
-$Id$
 """
+
 from zope.deferredimport import deprecated
 
 deprecated("Please import InitializeClass from App.class_init",

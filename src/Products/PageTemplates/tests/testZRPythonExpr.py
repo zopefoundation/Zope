@@ -1,8 +1,8 @@
 """ Unit tests for Products.PageTemplates.ZRPythonExpr
-
-$Id
 """
+
 import unittest
+
 
 class MiscTests(unittest.TestCase):
 

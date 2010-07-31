@@ -12,9 +12,8 @@
 #
 ##############################################################################
 """Simple content class(es) for browser tests
-
-$Id$
 """
+
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from OFS.SimpleItem import SimpleItem

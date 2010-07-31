@@ -25,8 +25,6 @@ need to URL-call back into the Zope server.
 
 If you want to write functional unit tests, see the testFunctional.py 
 example instead.
-
-$Id$
 """
 
 from Testing import ZopeTestCase

@@ -10,12 +10,8 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
+"""Simple ZODB-based transient object implementation.
 """
-Simple ZODB-based transient object implementation.
-
-$Id$
-"""
-__version__='$Revision: 1.9.68.5 $'[11:-2]
 
 import logging
 import os

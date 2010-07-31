@@ -35,7 +35,5 @@
    Jensen, "HTTP Extensions for Distributed Authoring - WebDAV." RFC 2518.
    Microsoft, U.C. Irvine, Netscape, Novell.  February, 1999."""
 
-__version__='$Revision: 1.7 $'[11:-2]
-
 enable_ms_author_via = False
 enable_ms_public_header = False

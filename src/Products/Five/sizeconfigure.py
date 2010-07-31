@@ -13,9 +13,8 @@
 ##############################################################################
 """Use structured monkey-patching to enable ``ISized`` adapters for
 Zope 2 objects.
-
-$Id$
 """
+
 from zope.size.interfaces import ISized
 from Products.Five import fivemethod, isFiveMethod
 

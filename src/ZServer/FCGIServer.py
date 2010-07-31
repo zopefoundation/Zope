@@ -23,8 +23,6 @@ See http://www.fastcgi.com/fcgi-devkit-2.1/doc/fcgi-spec.html for the
 protocol specificaition.
 """
 
-__version__ = "1.0"
-
 #----------------------------------------------------------------------
 
 import asynchat, asyncore
@@ -637,7 +635,7 @@ class FCGIServer(asyncore.dispatcher):
                       '\tIP          : %s\n'
                       '\tPort        : %s\n'
                       '\tSocket path : %s\n'
-                      % (__version__, time.ctime(time.time()), self.ip,
+                      % ('1.0', time.ctime(time.time()), self.ip,
                          self.port, self.socket_file))
 
 

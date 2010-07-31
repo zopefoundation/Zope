@@ -10,13 +10,10 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-
 """Signature module
 
 This provides support for simulating function signatures
 """
-
-__version__='$Revision: 1.6 $'[11:-2]
 
 class FuncCode:
 

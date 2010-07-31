@@ -12,10 +12,10 @@
 #
 ##############################################################################
 """Tests for the CacheManager.
-
-$Id$
 """
+
 import unittest
+
 
 class DummyConnection:
 

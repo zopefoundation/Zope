@@ -12,9 +12,8 @@
 #
 ##############################################################################
 """A 'PageTemplateFile' without security restrictions.
-
-$Id$
 """
+
 from os.path import basename
 from zope.component import getMultiAdapter
 from zope.pagetemplate.pagetemplatefile import PageTemplateFile

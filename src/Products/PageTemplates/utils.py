@@ -10,10 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-
-""" Some helper methods 
-
-$Id$
+"""Some helper methods
 """
 
 import re 

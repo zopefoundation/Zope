@@ -14,8 +14,6 @@
 
 Demonstrates how to use the publish() API to execute GET, POST, PUT, etc.
 requests against the ZPublisher and how to examine the response.
-
-$Id$
 """
 
 from Testing import ZopeTestCase

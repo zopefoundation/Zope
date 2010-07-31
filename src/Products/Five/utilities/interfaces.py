@@ -12,9 +12,8 @@
 #
 ##############################################################################
 """Utility Interface Definitions.
-
-$Id$
 """
+
 from zope.interface import Interface
 
 

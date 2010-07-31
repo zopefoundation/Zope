@@ -23,8 +23,6 @@ This class maintains a fixture consisting of:
 The twist is that the portal object itself is *not* created
 by the PortalTestCase class! Subclasses must make sure
 getPortal() returns a usable portal object to the setup code.
-
-$Id$
 """
 
 import base

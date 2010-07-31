@@ -11,8 +11,6 @@
 #
 ##############################################################################
 """Virtual container for ZCatalog indexes.
-
-$Id$
 """
 
 from AccessControl.class_init import InitializeClass

@@ -13,8 +13,6 @@
 ##############################################################################
 """
 OFS event definitions.
-
-$Id$
 """
 
 from zope.interface import implements

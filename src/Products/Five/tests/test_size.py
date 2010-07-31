@@ -12,8 +12,6 @@
 #
 ##############################################################################
 """Size adapters for testing
-
-$Id$
 """
 
 from zope.interface import implements

@@ -12,8 +12,6 @@
 #
 ##############################################################################
 """Unit tests for the testbrowser module.
-
-$Id$
 """
 
 import unittest

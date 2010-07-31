@@ -10,12 +10,10 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-
 """Script module
 
 This provides generic script support
 """
-__version__='$Revision$'[11:-2]
 
 from string import join
 from urllib import quote

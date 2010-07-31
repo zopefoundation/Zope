@@ -12,9 +12,8 @@
 #
 ##############################################################################
 """Interfaces test fixtures
-
-$Id$
 """
+
 from zope.interface import Interface
 
 class One(object):

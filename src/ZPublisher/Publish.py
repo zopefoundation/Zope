@@ -10,9 +10,8 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-__doc__="""Python Object Publisher -- Publish Python objects on web servers
-
-$Id$"""
+"""Python Object Publisher -- Publish Python objects on web servers
+"""
 
 import sys, os
 import transaction

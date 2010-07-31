@@ -13,9 +13,7 @@
 '''Cache management support.
 
 This class is mixed into the database manager in App.ApplicationManager.
-
-$Id$'''
-__version__='$Revision: 1.31 $'[11:-2]
+'''
 
 from AccessControl.class_init import InitializeClass
 from App.special_dtml import DTMLFile

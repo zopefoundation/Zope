@@ -1,6 +1,3 @@
-# 
-# $Id$
-#
 ''' ReStructuredText Product for Zope
 
 This Product stores two texts - a "source" text in ReStructureText format,

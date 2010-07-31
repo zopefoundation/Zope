@@ -11,8 +11,6 @@
 #
 ##############################################################################
 """Test runner that works with zope.testing.testrunner
-
-$Id$
 """
 
 import unittest

@@ -12,9 +12,8 @@
 ##############################################################################
 """
 Set up testing environment
-
-$Id$
 """
+
 import os
 
 import App.config

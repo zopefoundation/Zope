@@ -11,8 +11,6 @@
 #
 ##############################################################################
 """Names exported by the ZopeTestCase package
-
-$Id$
 """
 
 import ZopeLite as Zope2

@@ -11,8 +11,6 @@
 #
 ##############################################################################
 """ Basic ZPublisher request management.
-
-$Id$
 """
 
 from urllib import quote as urllib_quote

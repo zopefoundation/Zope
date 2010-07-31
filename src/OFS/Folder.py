@@ -13,8 +13,6 @@
 """Folder object
 
 Folders are the basic container objects and are analogous to directories.
-
-$Id$
 """
 
 from AccessControl.class_init import InitializeClass

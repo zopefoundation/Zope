@@ -11,8 +11,6 @@
 #
 ##############################################################################
 """Objects providing context for product initialization
-
-$Id$
 """
 
 from logging import getLogger

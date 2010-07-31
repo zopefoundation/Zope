@@ -11,8 +11,6 @@
 #
 ##############################################################################
 """WebDAV support - collection objects.
-
-$Id$
 """
 
 from urllib import unquote

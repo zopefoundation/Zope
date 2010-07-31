@@ -15,8 +15,6 @@
 Demonstrates that cut/copy/paste/clone/rename and import/export
 work if a subtransaction is committed before performing the respective
 operation.
-
-$Id$
 """
 
 import os

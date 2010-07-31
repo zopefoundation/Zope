@@ -13,8 +13,6 @@
 ##############################################################################
 """ Utility functions for decoding browser input and setting the output
     encoding.
-
-$Id$
 """
 
 from zope.publisher.browser import isCGI_NAME

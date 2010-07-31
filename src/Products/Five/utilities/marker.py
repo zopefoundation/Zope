@@ -14,9 +14,8 @@
 """Marker interfaces adapter.
 
 Allows for arbitrary application of marker interfaces to objects.
-
-$Id$
 """
+
 from sets import Set
 
 from zope.interface import implements, implementedBy, providedBy

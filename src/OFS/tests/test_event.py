@@ -12,8 +12,6 @@
 #
 ##############################################################################
 """Test events
-
-$Id$
 """
 
 # These classes aren't defined in the doctest because otherwise

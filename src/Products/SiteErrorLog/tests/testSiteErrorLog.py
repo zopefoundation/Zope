@@ -1,8 +1,4 @@
 """SiteErrorLog tests
-
-Note: Tests require Zope >= 2.7
-
-$Id: testSiteErrorLog.py 27325 2004-08-29 09:59:28Z jens $
 """
 
 from Testing.makerequest import makerequest

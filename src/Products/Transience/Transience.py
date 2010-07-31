@@ -12,9 +12,8 @@
 ##############################################################################
 """
 Transient Object Container Class ('timeslice'-based design, no index).
-
-$Id$
 """
+
 from cgi import escape
 from logging import getLogger
 import math

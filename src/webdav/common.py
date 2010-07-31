@@ -10,10 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-
 """Commonly used functions for WebDAV support modules."""
-
-__version__='$Revision: 1.18 $'[11:-2]
 
 import random
 import re

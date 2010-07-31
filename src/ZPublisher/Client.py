@@ -31,7 +31,6 @@ that allows one to simply make a single web request.
 The module also provides a command-line interface for calling objects.
 
 """
-__version__='$Revision: 1.46 $'[11:-2]
 
 import sys, re, socket, mimetools
 from httplib import HTTP

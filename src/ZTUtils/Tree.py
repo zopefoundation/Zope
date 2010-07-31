@@ -11,9 +11,8 @@
 #
 ##############################################################################
 """Tree manipulation classes
-
-$Id$
 """
+
 from Acquisition import Explicit
 from ComputedAttribute import ComputedAttribute
 from types import ListType, TupleType

@@ -19,8 +19,6 @@ flag-interface and some support functions for implementing this functionality.
 For an implementation example, see the File class in OFS/Image.py.
 """
 
-__version__='$Revision: 1.8 $'[11:-2]
-
 import re, sys
 from zope.interface import Interface
 

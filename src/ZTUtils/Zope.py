@@ -11,9 +11,8 @@
 #
 ##############################################################################
 """Zope-specific versions of ZTUTils classes
-
-$Id$
 """
+
 import cgi
 import sys
 import urllib
@@ -36,7 +35,7 @@ except ImportError:
         v = object[index]
         if getSecurityManager().validate(object, object, index, v):
             return v
-        raise Unauthorized, 'unauthorized access to element %s' % `i`
+        raise Unauthorized, 'unauthorized access to element %s' % index
 else:
     from AccessControl.unauthorized import Unauthorized
 

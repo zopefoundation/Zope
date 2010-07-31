@@ -11,8 +11,6 @@
 #
 ##############################################################################
 """Support for ZODB sandboxes in ZTC
-
-$Id$
 """
 
 import ZopeLite as Zope2

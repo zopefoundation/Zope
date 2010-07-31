@@ -11,9 +11,8 @@
 #
 ##############################################################################
 """Zope Page Template module (wrapper for the zope.pagetemplate implementation)
-
-$Id$
 """
+
 import os
 import re
 

@@ -12,8 +12,6 @@
 ##############################################################################
 """
 Temporary Folder initialization routines
-
-$Id$
 """
 
 import ZODB # for testrunner to be happy

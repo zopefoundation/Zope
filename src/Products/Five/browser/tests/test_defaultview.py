@@ -12,8 +12,6 @@
 #
 ##############################################################################
 """Test Default View functionality
-
-$Id$
 """
 
 def test_default_view():

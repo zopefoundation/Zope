@@ -10,10 +10,8 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-__doc__='''Simple module for writing tar files
-
-$Id$'''
-__version__='$Revision: 1.8 $'[11:-2]
+"""Simple module for writing tar files
+"""
 
 import sys, time, zlib
 try:

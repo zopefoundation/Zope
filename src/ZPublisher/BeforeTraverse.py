@@ -10,8 +10,6 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-__version__='$Revision: 1.12 $'[11:-2]
-
 """BeforeTraverse interface and helper classes"""
 
 from Acquisition import aq_base

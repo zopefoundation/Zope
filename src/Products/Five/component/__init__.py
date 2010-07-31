@@ -12,9 +12,8 @@
 #
 ##############################################################################
 """Five local component look-up support
-
-$Id$
 """
+
 import zope.interface
 import zope.component
 import zope.event

@@ -12,8 +12,6 @@
 #
 ##############################################################################
 """Test Five-traversable classes
-
-$Id$
 """
 
 class SimpleClass(object):

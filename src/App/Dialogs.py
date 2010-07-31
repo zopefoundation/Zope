@@ -31,8 +31,6 @@
                          target='_top')
     </PRE>"""
 
-__version__='$Revision: 1.9 $'[11:-2]
-
 from App.special_dtml import HTML
 
 MessageDialog = HTML("""

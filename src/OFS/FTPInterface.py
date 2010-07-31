@@ -17,8 +17,6 @@ provided by existing methods such as PUT and manage_delObjects.
 
 All FTP methods should be governed by a single permission:
 'FTP access'.
-
-$Id$
 """
 
 from zope.interface import implements

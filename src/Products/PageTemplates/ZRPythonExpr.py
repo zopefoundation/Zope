@@ -13,9 +13,8 @@
 """Zope-specific Python Expression Handler
 
 Handler for Python expressions that uses the RestrictedPython package.
-
-$Id$
 """
+
 from AccessControl import safe_builtins
 from AccessControl.ZopeGuards import guarded_getattr, get_safe_globals
 from RestrictedPython import compile_restricted_eval

@@ -1,8 +1,3 @@
-# 
-# $Id$
-#
-__version__='1.0'
-
 # product initialisation
 import ZReST
 def initialize(context):

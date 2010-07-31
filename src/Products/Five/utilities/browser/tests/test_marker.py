@@ -12,8 +12,6 @@
 #
 ##############################################################################
 """Unit tests for marker interface views.
-
-$Id$
 """
 
 def test_editview():

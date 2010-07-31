@@ -11,8 +11,6 @@
 #
 ##############################################################################
 """WebDAV support - lockable item.
-
-$Id$
 """
 
 from AccessControl.class_init import InitializeClass

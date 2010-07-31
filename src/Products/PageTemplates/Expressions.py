@@ -14,8 +14,6 @@
 
 Page Template-specific implementation of TALES, with handlers
 for Python expressions, string literals, and paths.
-
-$Id$
 """
 
 import logging

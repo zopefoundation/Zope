@@ -10,9 +10,6 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""
-$Id$
-"""
 
 import time, sys
 from logging import getLogger

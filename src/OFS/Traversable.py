@@ -11,8 +11,6 @@
 #
 ##############################################################################
 """This module implements a mix-in for traversable objects.
-
-$Id$
 """
 
 from urllib import quote

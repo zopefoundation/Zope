@@ -12,9 +12,8 @@
 #
 ##############################################################################
 """Some menu code
-
-$Id$
 """
+
 import zope.deferredimport
 
 zope.deferredimport.deprecated(

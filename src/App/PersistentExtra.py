@@ -11,9 +11,8 @@
 #
 ##############################################################################
 """Patch for Persistent to support IPersistentExtra.
-
-$Id$
 """
+
 from DateTime.DateTime import DateTime
 
 class PersistentUtil:

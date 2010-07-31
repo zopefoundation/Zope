@@ -18,8 +18,6 @@ use this file as a blueprint for your own tests!
 See testPythonScript.py and testShoppingCart.py for
 example test cases. See testSkeleton.py for a quick
 way of getting started.
-
-$Id$
 """
 
 import transaction

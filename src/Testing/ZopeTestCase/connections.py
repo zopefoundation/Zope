@@ -11,8 +11,6 @@
 #
 ##############################################################################
 """ZODB connection registry
-
-$Id$
 """
 
 class ConnectionRegistry:

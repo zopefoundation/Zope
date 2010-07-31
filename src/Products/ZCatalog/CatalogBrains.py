@@ -11,8 +11,6 @@
 #
 ##############################################################################
 
-__version__ = "$Revision$"[11:-2]
-
 from zope.interface import implements
 
 import Acquisition, Record

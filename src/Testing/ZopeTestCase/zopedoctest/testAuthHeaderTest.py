@@ -11,8 +11,6 @@
 #
 ##############################################################################
 """Test for auth_header
-
-$Id$
 """
 
 from unittest import TestSuite, makeSuite

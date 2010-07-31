@@ -14,9 +14,8 @@
 """Five-specific directive handlers
 
 These directives are specific to Five and have no equivalents outside of it.
-
-$Id$
 """
+
 import os
 import glob
 import warnings

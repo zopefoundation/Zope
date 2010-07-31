@@ -20,10 +20,7 @@ lives in another ZODB.
 
 To understand this fully, you'll need to read the source of
 Products.TemporaryFolder.mount.MountPoint.
-
-$Id$
 """
-__version__='$Revision: 1.12 $'[11:-2]
 
 from App.special_dtml import DTMLFile
 from App.special_dtml import HTMLFile

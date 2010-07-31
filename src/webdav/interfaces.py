@@ -11,8 +11,6 @@
 #
 ##############################################################################
 """webdav z3 interfaces.
-
-$Id$
 """
 
 from zope.interface import Interface

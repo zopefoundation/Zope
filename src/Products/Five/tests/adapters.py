@@ -12,9 +12,8 @@
 #
 ##############################################################################
 """Adapter test fixtures
-
-$Id$
 """
+
 from zope.interface import implements, Interface
 from zope.component import adapts
 

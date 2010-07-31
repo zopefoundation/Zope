@@ -12,9 +12,8 @@
 #
 ##############################################################################
 """Five ZCML directive schemas
-
-$Id$
 """
+
 from zope.interface import Interface
 from zope.browserresource.metadirectives import IBasicResourceInformation
 from zope.configuration.fields import GlobalObject, Tokens

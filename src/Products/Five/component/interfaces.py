@@ -12,9 +12,8 @@
 #
 ##############################################################################
 """Component interfaces
-
-$Id$
 """
+
 from zope.location.interfaces import ISite
 from OFS.interfaces import IObjectManager
 

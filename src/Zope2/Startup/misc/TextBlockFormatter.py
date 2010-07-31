@@ -11,10 +11,7 @@
 # FOR A PARTICULAR PURPOSE
 # 
 ##############################################################################
-"""
-Revision information:
-$Id$
-"""
+
 import string, math
 
 def format(text, max_width=80, indent=0, trailing_lines_indent_more=0):

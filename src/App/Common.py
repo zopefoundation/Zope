@@ -10,10 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-
 """Commonly used utility functions."""
-
-__version__='$Revision: 1.20 $'[11:-2]
 
 import os
 import sys

@@ -10,9 +10,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""App z3 interfaces.
-
-$Id$
+"""App interfaces.
 """
 
 from zope.interface import Attribute

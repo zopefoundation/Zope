@@ -89,10 +89,7 @@ Examples
             c
             s
 
-
-$Id$
 '''
-__version__='$Revision: 1.41 $'[11:-2]
 
 DONE_STRING_DEFAULT = '\n%s\n\n' % ('_'*60)
 
@@ -290,9 +287,9 @@ def publish(script=None,path_info='/',
     env['REQUEST_METHOD']=request_method
     env['REMOTE_ADDR']='204.183.226.81 '
     env['REMOTE_HOST']='bobo.remote.host'
-    env['HTTP_USER_AGENT']='Bobo/%s' % __version__
+    env['HTTP_USER_AGENT']='Bobo/SVN'
     env['HTTP_HOST']='127.0.0.1'
-    env['SERVER_SOFTWARE']='Bobo/%s' % __version__
+    env['SERVER_SOFTWARE']='Bobo/SVN'
     env['SERVER_PROTOCOL']='HTTP/1.0 '
     env['HTTP_ACCEPT']='image/gif, image/x-xbitmap, image/jpeg, */* '
     env['SERVER_HOSTNAME']='bobo.server.host'

@@ -11,10 +11,7 @@
 #
 ##############################################################################
 """Provide conversion between Python pickles and XML
-
 """
-
-__version__ = "1.9"                     # Code version
 
 from pickle import *
 import struct

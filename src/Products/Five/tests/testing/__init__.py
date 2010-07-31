@@ -12,9 +12,8 @@
 #
 ##############################################################################
 """Test helpers
-
-$Id$
 """
+
 from Products.Five.tests.testing.folder import FiveTraversableFolder
 from Products.Five.tests.testing.folder import manage_addFiveTraversableFolder
 from Products.Five.tests.testing.folder import manage_addNoVerifyPasteFolder

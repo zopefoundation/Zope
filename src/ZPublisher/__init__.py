@@ -10,8 +10,6 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-__version__='$Revision: 1.13 $'[11:-2]
-
 
 # This allows ZPublisher to work with embedded interpreters
 # that for some reason have no sys.argv (required by cgi.py).

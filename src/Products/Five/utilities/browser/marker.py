@@ -12,9 +12,8 @@
 #
 ##############################################################################
 """Marker interfaces adapter views.
-
-$Id$
 """
+
 from Products.Five.utilities.interfaces import IMarkerInterfaces
 
 

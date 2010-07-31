@@ -11,8 +11,6 @@
 #
 ##############################################################################
 
-__version__ = "$Revision: 1.8 $"[11:-2]
-
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.SecurityManagement import getSecurityManager

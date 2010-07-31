@@ -11,8 +11,6 @@
 #
 ##############################################################################
 """Standard management interface support
-
-$Id$
 """
 
 from cgi import escape

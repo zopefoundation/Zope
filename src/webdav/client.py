@@ -1,7 +1,5 @@
 """HTTP 1.1 / WebDAV client library."""
 
-__version__='$Revision: 1.22 $'[11:-2]
-
 import sys, os,  time, types,re
 import httplib, mimetools
 from types import FileType
@@ -75,7 +73,7 @@ class Resource:
     def __get_headers(self, kw={}):
         headers={}
         headers=self.__set_authtoken(headers)
-        headers['User-Agent']='WebDAV.client %s' % __version__
+        headers['User-Agent']='WebDAV.client'
         headers['Host']=self.host
         headers['Connection']='close'
         headers['Accept']='*/*'

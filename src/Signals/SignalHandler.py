@@ -10,10 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-
 """Signal handling dispatcher."""
-
-__version__='$Revision: 1.2 $'[11:-2]
 
 import sys, os
 import signal

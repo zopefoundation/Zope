@@ -11,9 +11,8 @@
 #
 ##############################################################################
 """Deprecated - use DTMLMethod
-
-$Id$
 """
+
 import DTMLMethod
 
 Document=DTMLMethod.DTMLMethod

@@ -10,10 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-
 """Stick directory information in the built-in namespace."""
-
-__version__='$Revision: 1.13 $'[11:-2]
 
 import __builtin__
 import os

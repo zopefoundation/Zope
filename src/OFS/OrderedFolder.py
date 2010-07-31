@@ -11,8 +11,6 @@
 #
 ##############################################################################
 """ 'Folder' with order support.
-
-$Id$
 """
 
 from AccessControl.SecurityManagement import getSecurityManager
