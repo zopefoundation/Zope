@@ -21,23 +21,24 @@ Zope2.startup()
 from itertools import chain
 import random
 
-import ExtensionClass
-import OFS.Application
 from AccessControl.SecurityManagement import setSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
 from AccessControl import Unauthorized
 from Acquisition import Implicit
-from Products.ZCatalog.Catalog import Catalog
-from Products.ZCatalog.Catalog import CatalogError
-from ZODB.DB import DB
-from ZODB.DemoStorage import DemoStorage
-import transaction
-
+import ExtensionClass
+import OFS.Application
+from OFS.Folder import Folder as OFS_Folder
 from Products.PluginIndexes.FieldIndex.FieldIndex import FieldIndex
 from Products.PluginIndexes.KeywordIndex.KeywordIndex import KeywordIndex
 from Products.ZCTextIndex.OkapiIndex import OkapiIndex
 from Products.ZCTextIndex.ZCTextIndex import PLexicon
 from Products.ZCTextIndex.ZCTextIndex import ZCTextIndex
+from ZODB.DB import DB
+from ZODB.DemoStorage import DemoStorage
+import transaction
+
+from Products.ZCatalog.Catalog import Catalog
+from Products.ZCatalog.Catalog import CatalogError
 
 
 def createDatabase():
@@ -57,8 +58,6 @@ def sort(iterable):
     L = list(iterable)
     L.sort()
     return L
-
-from OFS.Folder import Folder as OFS_Folder
 
 
 class Folder(OFS_Folder):
