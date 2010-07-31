@@ -81,6 +81,3 @@ def test_suite():
         unittest.makeSuite(TestLockNullResource),
         unittest.makeSuite(TestNullResource),
         ))
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='test_suite')

@@ -22,8 +22,6 @@ Oh well.
 import string
 import xml.parsers.expat
 
-from pickle import *
-
 
 class xyap:
     start_handlers = {}
@@ -117,57 +115,3 @@ class xmlrpc(NoBlanks, XYap):
         'array': lambda self, tag, data: data[2],
         'data': lambda self, tag, data: data[2:],
         }
-
-def test():
-
-    data = """<?xml version="1.0"?>
-    <methodCall>
-             <methodName>examples.getStateName
-             </methodName>
-             <params>
-                <param>
-                   <value><i4>41</i4></value>
-                   </param>
-
-                <param><value>
-                <struct>
-             <member>
-                <name>lowerBound</name>
-                <value><i4>18</i4></value>
-                </member>
-             <member>
-                <name>upperBound</name>
-                <value><i4>139</i4></value>
-                </member>
-             </struct></value>
-                   </param>
-
-                <param><value>
-             <array>
-             <data>
-                <value><i4>12</i4></value>
-                <value><string>Egypt</string></value>
-                <value><boolean>0</boolean></value>
-                <value><i4>-31</i4></value>
-                </data>
-             </array></value>
-                   </param>
-
-                </params>
-             </methodCall>
-             """
-
-    data = data.split('\n')
-    r = []
-    for C in XYap, xmlrpc:
-        p = C()
-        for l in data:
-            p.feed(l)
-        p.close()
-        r.append(p._stack)
-
-    return r
-
-
-if __name__=='__main__':
-    print test()

@@ -1,8 +1,5 @@
-import os, sys
+from unittest import TestCase, makeSuite
 
-from unittest import TestCase, makeSuite, main
-
-import string
 from ZTUtils import Batch
 
 class BatchTests(TestCase):
@@ -50,6 +47,3 @@ class BatchTests(TestCase):
     
 def test_suite():
     return makeSuite(BatchTests)
-
-if __name__=='__main__':
-    main()

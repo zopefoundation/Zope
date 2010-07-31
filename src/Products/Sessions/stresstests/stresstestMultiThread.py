@@ -10,39 +10,26 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-import sys, os, time
-if __name__ == "__main__":
-    sys.path.insert(0, '../../..')
-    #os.chdir('../../..')
+import time
+
 from Testing import makerequest
 import ZODB # in order to get Persistence.Persistent working
 import transaction
 import Acquisition
-from Acquisition import aq_base
 from Products.Sessions.BrowserIdManager import BrowserIdManager, \
      getNewBrowserId
 from Products.Sessions.SessionDataManager import \
-    SessionDataManager, SessionDataManagerErr
+    SessionDataManager
 from Products.Transience.Transience import \
-    TransientObjectContainer, TransientObject
+    TransientObjectContainer
 from Products.TemporaryFolder.TemporaryFolder import MountedTemporaryFolder
-from Products.TemporaryFolder.LowConflictConnection import \
-     LowConflictConnection
-from ZODB.Connection import Connection
-from ZODB.POSException import InvalidObjectReference, ConflictError, \
+from ZODB.POSException import ConflictError, \
      ReadConflictError, BTreesConflictError
-from DateTime import DateTime
-from unittest import TestCase, TestSuite, TextTestRunner, makeSuite
-import time, threading, random
-from cPickle import UnpickleableError
+from unittest import TestCase, TestSuite, makeSuite
+import threading, random
 from ZODB.DemoStorage import DemoStorage
-from tempstorage.TemporaryStorage import TemporaryStorage
 from OFS.Application import Application
-from OFS.Folder import Folder
-import sys
-import time
 import traceback
-sys.setcheckinterval(200)
 
 from Products.Transience.tests import fauxtime
 import Products.Transience.Transience
@@ -261,7 +248,3 @@ def test_suite():
     test_multithread = makeSuite(TestMultiThread, 'test')
     suite = TestSuite((test_multithread,))
     return suite
-
-if __name__ == '__main__':
-    runner = TextTestRunner(verbosity=9, descriptions=9)
-    runner.run(test_suite())

@@ -26,10 +26,6 @@ infrastructure to set up the necessary environment.
    passing the name of the text file containing the tests.
    For example:
 
-   import os, sys
-   if __name__ == '__main__':
-       execfile(os.path.join(sys.path[0], 'framework.py'))
-
    from unittest import TestSuite
    from Testing.ZopeTestCase import ZopeDocFileSuite
 
@@ -37,9 +33,6 @@ infrastructure to set up the necessary environment.
        return TestSuite((
            ZopeDocFileSuite('ZopeDocTest.txt'),
        ))
-
-   if __name__ == '__main__':
-       framework()
 
 
 Examples

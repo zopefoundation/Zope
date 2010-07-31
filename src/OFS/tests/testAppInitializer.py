@@ -219,9 +219,3 @@ def test_suite():
     suite = unittest.TestSuite()
     suite.addTest( unittest.makeSuite( TestInitialization ) )
     return suite
-
-def main():
-    unittest.main(defaultTest='test_suite')
-
-if __name__ == '__main__':
-    main()

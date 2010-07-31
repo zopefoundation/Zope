@@ -136,9 +136,3 @@ def debug():
 def pdebug():
     import pdb
     pdb.run('debug()')
-
-if __name__=='__main__':
-    if len(sys.argv) > 1:
-        globals()[sys.argv[1]]()
-    else:
-        main()

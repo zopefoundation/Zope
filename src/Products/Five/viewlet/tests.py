@@ -79,6 +79,3 @@ def test_suite():
         FunctionalDocFileSuite('README.txt'),
         FunctionalDocFileSuite('directives.txt'),
         ])
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='test_suite')

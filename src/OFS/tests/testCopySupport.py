@@ -1,5 +1,4 @@
 import unittest
-import Testing
 
 import cStringIO
 
@@ -526,6 +525,3 @@ def test_suite():
     suite.addTest( unittest.makeSuite( TestCopySupport ) )
     suite.addTest( unittest.makeSuite( TestCopySupportSecurity ) )
     return suite
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='test_suite')

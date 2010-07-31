@@ -120,6 +120,3 @@ def test_suite():
         unittest.makeSuite(TestItem_w__name__),
         unittest.makeSuite(TestSimpleItem),
         ))
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='test_suite')

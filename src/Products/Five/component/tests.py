@@ -18,7 +18,6 @@ import unittest
 from doctest import DocFileSuite
 from Testing.ZopeTestCase import FunctionalDocFileSuite
 
-__docformat__ = "reStructuredText"
 
 def test_suite():
     return unittest.TestSuite([
@@ -26,6 +25,3 @@ def test_suite():
         FunctionalDocFileSuite('makesite.txt',
                                package="Products.Five.component"),
         ])
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='test_suite')

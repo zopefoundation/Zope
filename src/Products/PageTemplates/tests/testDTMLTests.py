@@ -188,6 +188,3 @@ class DTMLTests(zope.component.testing.PlacelessSetup, unittest.TestCase):
 
 def test_suite():
     return unittest.makeSuite(DTMLTests, 'check')
-
-if __name__=='__main__':
-    main()

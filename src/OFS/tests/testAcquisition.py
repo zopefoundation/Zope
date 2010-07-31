@@ -246,7 +246,3 @@ def test_suite():
     suite.addTest(unittest.makeSuite(TestGetAttr_c))
     suite.addTest(unittest.makeSuite(TestGetAttrAnonymous_c))
     return suite
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='test_suite')
-

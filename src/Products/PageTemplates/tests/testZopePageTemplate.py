@@ -502,7 +502,3 @@ def test_suite():
     suite.addTests(unittest.makeSuite(ZPTUnicodeEncodingConflictResolution))
     suite.addTests(unittest.makeSuite(PreferredCharsetUnicodeResolverTests))
     return suite
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='test_suite')
-

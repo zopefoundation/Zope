@@ -31,6 +31,3 @@ def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(TestNode),
         ))
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='test_suite')

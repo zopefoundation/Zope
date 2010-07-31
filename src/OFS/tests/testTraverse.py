@@ -422,11 +422,6 @@ class TestTraverse( unittest.TestCase ):
             self.folder1.unrestrictedTraverse('+something') is 'plus')
 
 
-import os, sys
-if __name__ == '__main__':
-    execfile(os.path.join(sys.path[0], 'framework.py'))
-
-
 class SimpleClass(object):
     """Class with no __bobo_traverse__."""
 
@@ -685,6 +680,3 @@ def test_suite():
     from Testing.ZopeTestCase import FunctionalDocTestSuite
     suite.addTest( FunctionalDocTestSuite() )
     return suite
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='test_suite')

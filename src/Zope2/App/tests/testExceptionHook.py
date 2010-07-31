@@ -411,6 +411,3 @@ def test_suite():
     suite.addTest(unittest.makeSuite(ExceptionMessageRenderTest))
     suite.addTest(unittest.makeSuite(ExceptionViewsTest))
     return suite
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='test_suite')

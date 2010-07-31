@@ -397,6 +397,3 @@ class ZopeStarterTestCase(test_logger.LoggingTestBase):
 
 def test_suite():
     return unittest.makeSuite(ZopeStarterTestCase)
-
-if __name__ == "__main__":
-    unittest.main(defaultTest="test_suite")

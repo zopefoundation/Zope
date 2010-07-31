@@ -110,9 +110,5 @@ class ConvertersTests(unittest.TestCase):
         self.assertEqual(field2ulines(to_convert), to_convert.splitlines())
 
 
-
 def test_suite():
     return unittest.TestSuite((unittest.makeSuite(ConvertersTests),))
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='test_suite')

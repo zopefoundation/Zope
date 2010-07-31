@@ -160,6 +160,3 @@ def test_suite():
         unittest.makeSuite(TestPropertyManager),
         unittest.makeSuite(TestPropertySheet),
         ))
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='test_suite')

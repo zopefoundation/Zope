@@ -170,6 +170,3 @@ def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(TestOrderSupport),
         ))
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='test_suite')

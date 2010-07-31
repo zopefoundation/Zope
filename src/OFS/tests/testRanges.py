@@ -358,9 +358,3 @@ def test_suite():
     suite = unittest.TestSuite()
     suite.addTest( unittest.makeSuite( TestRequestRange ) )
     return suite
-
-def main():
-    unittest.TextTestRunner().run(test_suite())
-
-if __name__ == '__main__':
-    main()

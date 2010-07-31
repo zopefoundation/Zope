@@ -84,7 +84,3 @@ def test_suite():
         unittest.makeSuite(TestUnlock),
         unittest.makeSuite(TestPropPatch),
         ))
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='test_suite')
-

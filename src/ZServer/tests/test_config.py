@@ -293,6 +293,3 @@ def test_suite():
     suite = unittest.makeSuite(ZServerConfigurationTestCase)
     suite.addTest(unittest.makeSuite(MonitorServerConfigurationTestCase))
     return suite
-
-if __name__ == "__main__":
-    unittest.main(defaultTest="test_suite")

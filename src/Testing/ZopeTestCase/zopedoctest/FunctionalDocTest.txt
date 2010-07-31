@@ -56,10 +56,6 @@ and turn them into tests:
    ``FunctionalDocFileSuite`` and instantiate it, passing the name of the
    text file containing the test.  For example:
 
-   import os, sys
-   if __name__ == '__main__':
-       execfile(os.path.join(sys.path[0], 'framework.py'))
-
    from unittest import TestSuite
    from Testing.ZopeTestCase import FunctionalDocFileSuite
 
@@ -67,9 +63,6 @@ and turn them into tests:
        return TestSuite((
            FunctionalDocFileSuite('FunctionalDocTest.txt'),
        ))
-
-   if __name__ == '__main__':
-       framework()
 
 
 Examples

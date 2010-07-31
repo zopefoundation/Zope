@@ -2,14 +2,6 @@
 import unittest
 TestRunner = unittest.TextTestRunner
 
-def framework():
-    if __name__ != '__main__':
-        return
-    if len(sys.argv) > 1:
-        errs = globals()[sys.argv[1]]()
-    else:
-        errs = TestRunner().run(test_suite())
-    sys.exit(errs and 1 or 0)
 
 def debug():
     test_suite().debug()
@@ -41,8 +33,3 @@ class Dummy:
         return 'Dummy(%s)' % `self.__dict__`
 
     __repr__ = __str__
-
-
-def Testing_file(*args):
-    dir = os.path.split(Testing.__file__)[0]
-    return apply(os.path.join, (dir,) + args)

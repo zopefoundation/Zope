@@ -151,6 +151,3 @@ def test_suite():
 
 def main():
     unittest.main(defaultTest='test_suite')
-
-if __name__ == '__main__':
-    main()

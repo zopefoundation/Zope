@@ -1,8 +1,8 @@
 import unittest
 import time
-from StringIO import StringIO
 
 from ZServer import ClockServer
+
 
 class DummyLogger:
     def __init__(self):
@@ -14,6 +14,7 @@ class DummyLogger:
     def read(self):
         return ' '.join(self.L)
 
+
 class LogHelperTests(unittest.TestCase):
     def _getTargetClass(self):
         return ClockServer.LogHelper
@@ -22,12 +23,12 @@ class LogHelperTests(unittest.TestCase):
         return self._getTargetClass()(*arg, **kw)
 
     def test_helper(self):
-        from StringIO import StringIO
         logger = DummyLogger()
         helper = self._makeOne(logger)
         self.assertEqual(helper.logger, logger)
         logger.log('ip', 'msg', foo=1, bar=2)
         self.assertEqual(logger.read(), 'ip msg')
+
 
 class ClockServerTests(unittest.TestCase):
     def _getTargetClass(self):
@@ -151,6 +152,3 @@ def test_suite():
     suite = unittest.makeSuite(ClockServerTests)
     suite.addTest(unittest.makeSuite(LogHelperTests))
     return suite
-
-if __name__ == "__main__":
-    unittest.main(defaultTest="test_suite")

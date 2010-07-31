@@ -45,6 +45,3 @@ def test_suite():
                    'ExceptionRaiser2': ExceptionRaiser2,
                    'ExceptionRaiser3': ExceptionRaiser3,}),
         ])
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='test_suite')

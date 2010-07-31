@@ -705,6 +705,3 @@ def test_suite():
         unittest.makeSuite(TestBaseRequest),
         unittest.makeSuite(TestBaseRequestZope3Views),
         ))
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='test_suite')

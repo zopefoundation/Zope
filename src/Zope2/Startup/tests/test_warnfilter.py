@@ -125,6 +125,3 @@ class TestWarnFilter(unittest.TestCase):
 
 def test_suite():
     return unittest.makeSuite(TestWarnFilter)
-
-if __name__ == "__main__":
-    unittest.main(defaultTest="test_suite")

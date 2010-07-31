@@ -145,6 +145,3 @@ def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TestZReST))
     return suite
-
-if __name__ == '__main__':
-    unittest.main(defaultSuite='test_suite')

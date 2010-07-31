@@ -1,8 +1,5 @@
-import os, sys
+from unittest import TestCase, makeSuite
 
-from unittest import TestCase, makeSuite, main
-
-import string
 import urllib
 from ZTUtils.Zope import make_query, complex_marshal
 from ZTUtils.Zope import make_hidden_input
@@ -66,6 +63,3 @@ class QueryTests(TestCase):
 
 def test_suite():
     return makeSuite(QueryTests)
-
-if __name__=='__main__':
-    main()

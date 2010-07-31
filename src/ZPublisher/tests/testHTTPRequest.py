@@ -1068,6 +1068,3 @@ def test_suite():
     suite.addTest(unittest.makeSuite(RecordTests))
     suite.addTest(unittest.makeSuite(HTTPRequestTests))
     return suite
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='test_suite')

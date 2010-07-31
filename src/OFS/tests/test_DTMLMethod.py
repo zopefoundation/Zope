@@ -52,6 +52,3 @@ def test_suite():
         unittest.makeSuite(DTMLMethodTests),
         unittest.makeSuite(FactoryTests),
         ))
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='test_suite')

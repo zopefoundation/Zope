@@ -137,6 +137,3 @@ class TestBaseRequestPT(TestCase):
 
 def test_suite():
     return TestSuite( ( makeSuite(TestBaseRequestPT), ) )
-
-if __name__ == '__main__':
-    main(defaultTest='test_suite')

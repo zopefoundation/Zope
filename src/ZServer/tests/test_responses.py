@@ -308,6 +308,3 @@ def test_suite():
         unittest.makeSuite(ZServerHTTPResponseEventsTestCase)
     ))
     return suite
-
-if __name__ == "__main__":
-    unittest.main(defaultTest="test_suite")

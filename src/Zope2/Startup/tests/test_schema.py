@@ -223,6 +223,3 @@ class StartupTestCase(unittest.TestCase):
 
 def test_suite():
     return unittest.makeSuite(StartupTestCase)
-
-if __name__ == "__main__":
-    unittest.main(defaultTest="test_suite")

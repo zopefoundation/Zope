@@ -215,6 +215,3 @@ def test_suite():
         unittest.makeSuite(LineEndingsTestCase),
         unittest.makeSuite(LazyLoadingTestCase),
     ))
-
-if __name__ == "__main__":
-    unittest.main(defaultTest="test_suite")
