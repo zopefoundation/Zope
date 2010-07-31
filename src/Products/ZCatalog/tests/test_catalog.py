@@ -41,10 +41,6 @@ from Products.ZCTextIndex.ZCTextIndex import ZCTextIndex
 
 
 def createDatabase():
-    # XXX We have to import and init products in order for PluginIndexes to
-    # be registered.
-    OFS.Application.import_products()
-
     # Create a DemoStorage and put an Application in it
     db = DB(DemoStorage())
     conn = db.open()
@@ -52,11 +48,6 @@ def createDatabase():
     app = OFS.Application.Application()
     root['Application'] = app
     transaction.commit()
-
-    # Init products
-    #OFS.Application.initialize(app)
-    OFS.Application.install_products(app) # XXX: this is still icky
-
     return app
 
 app = createDatabase()
