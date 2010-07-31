@@ -46,7 +46,7 @@ class Conflicter(Happy):
         raise ConflictError
 
 
-class DummyRequest(Acquisition.Implicit):
+class DummyRequest(object):
 
     def physicalPathToURL(self, path, relative=False):
         if not relative:
