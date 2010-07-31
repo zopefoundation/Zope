@@ -43,13 +43,6 @@ class AbstractCatalogBrain(Record.Record, Acquisition.Implicit):
 
     def getURL(self, relative=0):
         """Generate a URL for this record"""
-        # XXX The previous implementation attempted to eat errors coming from
-        #     REQUEST.physicalPathToURL. Unfortunately it also ate
-        #     ConflictErrors (from getPath), which is bad. Staring at the
-        #     relevent code in HTTPRequest.py it's unclear to me what could be
-        #     raised by it so I'm removing the exception handling here all
-        #     together. If undesired exceptions get raised somehow we should
-        #     avoid bare except band-aids and find a real solution.
         return self.REQUEST.physicalPathToURL(self.getPath(), relative)
 
     def _unrestrictedGetObject(self):
@@ -61,7 +54,7 @@ class AbstractCatalogBrain(Record.Record, Acquisition.Implicit):
             return self.aq_parent.unrestrictedTraverse(self.getPath())
         except ConflictError:
             raise
-        except:
+        except Exception:
             if GETOBJECT_RAISES:
                 raise
             return None
@@ -86,7 +79,7 @@ class AbstractCatalogBrain(Record.Record, Acquisition.Implicit):
                 parent = parent.unrestrictedTraverse(path[:-1])
             except ConflictError:
                 raise
-            except:
+            except Exception:
                 if GETOBJECT_RAISES:
                     raise
                 return None
@@ -95,7 +88,7 @@ class AbstractCatalogBrain(Record.Record, Acquisition.Implicit):
             target = parent.restrictedTraverse(path[-1])
         except ConflictError:
             raise
-        except:
+        except Exception:
             if GETOBJECT_RAISES:
                 raise
             return None

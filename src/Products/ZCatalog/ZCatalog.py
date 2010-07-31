@@ -299,7 +299,7 @@ class ZCatalog(Folder, Persistent, Implicit):
                     self.catalog_object(obj, p, pghandler=pghandler)
                 except ConflictError:
                     raise
-                except:
+                except Exception:
                     LOG.error('Recataloging object at %s failed' % p,
                               exc_info=sys.exc_info())
 
@@ -732,12 +732,15 @@ class ZCatalog(Folder, Persistent, Implicit):
 
         if not hasattr(base, 'objectItems'):
             return result
-        try:    items=obj.objectItems()
-        except: return result
+        try:
+            items = obj.objectItems()
+        except Exception:
+            return result
 
-        try: add_result=result.append
-        except:
-            raise AttributeError, `result`
+        try:
+            add_result = result.append
+        except Exception:
+            raise AttributeError(repr(result))
 
         for id, ob in items:
             if pre: p="%s/%s" % (pre, id)
@@ -800,8 +803,10 @@ class ZCatalog(Folder, Persistent, Implicit):
             script=REQUEST.script
             if path.find(script) != 0:
                 path='%s/%s' % (script, path)
-            try: return REQUEST.resolve_url(path)
-            except: pass
+            try:
+                return REQUEST.resolve_url(path)
+            except Exception:
+                pass
 
     def resolve_path(self, path):
         """
@@ -810,8 +815,10 @@ class ZCatalog(Folder, Persistent, Implicit):
         style url. If no object is found, None is returned.
         No exceptions are raised.
         """
-        try: return self.unrestrictedTraverse(path)
-        except: pass
+        try:
+            return self.unrestrictedTraverse(path)
+        except Exception:
+            pass
 
     def manage_normalize_paths(self, REQUEST):
         """Ensure that all catalog paths are full physical paths

@@ -45,24 +45,30 @@ class CatalogAware:
     def manage_afterAdd(self, item, container):
         self.index_object()
         for object in self.objectValues():
-            try: s=object._p_changed
-            except: s=0
+            try:
+                s = object._p_changed
+            except Exception:
+                s = 0
             object.manage_afterAdd(item, container)
             if s is None: object._p_deactivate()
 
     def manage_afterClone(self, item):
         self.index_object()
         for object in self.objectValues():
-            try: s=object._p_changed
-            except: s=0
+            try:
+                s = object._p_changed
+            except Exception:
+                s = 0
             object.manage_afterClone(item)
             if s is None: object._p_deactivate()
 
     def manage_beforeDelete(self, item, container):
         self.unindex_object()
         for object in self.objectValues():
-            try: s=object._p_changed
-            except: s=0
+            try:
+                s = object._p_changed
+            except Exception:
+                s = 0
             object.manage_beforeDelete(item, container)
             if s is None: object._p_deactivate()
 

@@ -442,7 +442,7 @@ class TestCatalogObject(unittest.TestCase):
     def testBadUncatalog(self):
         try:
             self._catalog.uncatalogObject('asdasdasd')
-        except:
+        except Exception:
             self.fail('uncatalogObject raised exception on bad uid')
 
     def testUniqueValuesForLength(self):

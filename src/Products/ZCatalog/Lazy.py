@@ -31,7 +31,7 @@ class Lazy(object):
             try:
                 self[l]
                 l = l + 1
-            except:
+            except Exception:
                 self._len = l
                 return l
 
@@ -99,7 +99,7 @@ class LazyCat(Lazy):
         sindex = self._sindex
         try:
             s = seq[sindex]
-        except:
+        except Exception:
             raise IndexError(index)
         eindex = self._eindex
         while i > ind:
