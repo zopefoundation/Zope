@@ -139,10 +139,6 @@ class TestAddDelIndexes(CatalogBase, unittest.TestCase):
         self.assert_('id' not in self._catalog.indexes,
                      'del index failed')
 
-# Removed unittests dealing with catalog instantiation and vocabularies
-# since catalog no longer creates/manages vocabularies automatically (Casey)
-
-# Test of the ZCatalog object, as opposed to Catalog
 
 class zdummy(ExtensionClass.Base):
     def __init__(self, num):
@@ -506,9 +502,6 @@ class TestCatalogObject(unittest.TestCase):
         a = self._catalog(att2='att2')
         self.assertEqual(len(a), upper,
                          'length should be %s, its %s' % (upper, len(a)))
-# XXX: don't know how to adjust this test for ZCTextIndex
-#        for x in range(self.upper):
-#            self.assertEqual(a[x].data_record_score_, 1)
 
     def testKeywordIndexWithMinRange(self):
         a = self._catalog(att3={'query': 'att', 'range': 'min'})
@@ -700,10 +693,13 @@ class TestMerge(unittest.TestCase):
 
 
 class PickySecurityManager:
+
     def __init__(self, badnames=[]):
         self.badnames = badnames
+
     def validateValue(self, value):
         return 1
+
     def validate(self, accessed, container, name, value):
         if name not in self.badnames:
             return 1
