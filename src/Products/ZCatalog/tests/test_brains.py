@@ -98,7 +98,7 @@ class ConflictingCatalog(DummyCatalog):
         raise ConflictError
 
 
-class BrainsTestBase:
+class BrainsTestBase(object):
 
     _old_flag = None
 
