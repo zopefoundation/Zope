@@ -10,9 +10,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""PluginIndexes z3 interfaces.
-
-$Id$
+"""PluginIndexes interfaces.
 """
 
 from zope.interface import Interface
@@ -117,8 +115,8 @@ class ISortIndex(IPluggableIndex):
         compatibility."""
 
     def documentToKeyMap():
-        """Return an object that supports __getitem__ and may be used to quickly
-        lookup the sort key given a document id"""
+        """Return an object that supports __getitem__ and may be used to
+        quickly lookup the sort key given a document id"""
 
 
 class IDateIndex(Interface):
@@ -235,7 +233,6 @@ class IIndexConfiguration(Interface):
 
     def getSettings(self):
         """ Returns an mapping with index specific settings.
-            E.g. {'indexed_attrs' : ('SearchableText', )}.  
+            E.g. {'indexed_attrs' : ('SearchableText', )}.
             The interface does not define any specifc mapping keys.
         """
-    
