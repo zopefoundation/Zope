@@ -11,9 +11,8 @@
 #
 #############################################################################
 """ Tests for common UnIndex features.
-
-$Id$
 """
+
 import unittest
 
 class UnIndexTests(unittest.TestCase):
@@ -78,6 +77,3 @@ def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(UnIndexTests))
     return suite
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='test_suite')

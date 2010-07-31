@@ -11,8 +11,6 @@
 #
 ##############################################################################
 """DateIndex unit tests.
-
-$Id$
 """
 
 import unittest
@@ -282,6 +280,3 @@ def test_suite():
     suite = unittest.TestSuite()
     suite.addTest( unittest.makeSuite( DI_Tests ) )
     return suite
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='test_suite')

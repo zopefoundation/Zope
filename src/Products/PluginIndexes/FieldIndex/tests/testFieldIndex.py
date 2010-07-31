@@ -11,12 +11,9 @@
 #
 ##############################################################################
 """FieldIndex unit tests.
-
-$Id$
 """
 
 import unittest
-import Testing
 import Zope2
 Zope2.startup()
 
@@ -227,6 +224,3 @@ def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(FieldIndexTests),
         ))
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='test_suite')

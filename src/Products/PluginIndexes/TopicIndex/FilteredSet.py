@@ -11,9 +11,8 @@
 #
 ##############################################################################
 """Filtered set.
-
-$Id$
 """
+
 from logging import getLogger
 import sys
 

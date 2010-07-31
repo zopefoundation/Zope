@@ -11,9 +11,8 @@
 #
 ##############################################################################
 """Base for bi-directional indexes.
-
-$Id$
 """
+
 from cgi import escape
 from logging import getLogger
 import sys

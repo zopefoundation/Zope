@@ -11,8 +11,6 @@
 #
 ##############################################################################
 """Unit tests for util module.
-
-$Id$
 """
 
 import unittest
@@ -60,6 +58,3 @@ def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(parseIndexRequestTests))
     return suite
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='test_suite')

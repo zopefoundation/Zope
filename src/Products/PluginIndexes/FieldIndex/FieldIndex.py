@@ -11,8 +11,6 @@
 #
 ##############################################################################
 """Simple column indices.
-
-$Id$
 """
 
 from App.special_dtml import DTMLFile
