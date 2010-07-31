@@ -61,12 +61,15 @@ def createDatabase():
 
 app = createDatabase()
 
+
 def sort(iterable):
     L = list(iterable)
     L.sort()
     return L
 
 from OFS.Folder import Folder as OFS_Folder
+
+
 class Folder(OFS_Folder):
     def __init__(self, id):
         self._setId(id)
@@ -82,10 +85,11 @@ class CatalogBase:
         self._catalog = None
 
 
-class TestAddDelColumn(CatalogBase,unittest.TestCase):
+class TestAddDelColumn(CatalogBase, unittest.TestCase):
+
     def testAdd(self):
         self._catalog.addColumn('id')
-        self.assertEqual(self._catalog.schema.has_key('id'), 1,
+        self.assertEqual('id' in self._catalog.schema, True,
                          'add column failed')
 
     def testAddBad(self):
@@ -94,10 +98,12 @@ class TestAddDelColumn(CatalogBase,unittest.TestCase):
     def testDel(self):
         self._catalog.addColumn('id')
         self._catalog.delColumn('id')
-        self.assert_(self._catalog.schema.has_key('id') != 1,
+        self.assert_('id' not in self._catalog.schema,
                      'del column failed')
 
+
 class TestAddDelIndexes(CatalogBase, unittest.TestCase):
+
     def testAddFieldIndex(self):
         idx = FieldIndex('id')
         self._catalog.addIndex('id', idx)
@@ -124,7 +130,7 @@ class TestAddDelIndexes(CatalogBase, unittest.TestCase):
         idx = FieldIndex('id')
         self._catalog.addIndex('id', idx)
         self._catalog.delIndex('id')
-        self.assert_(self._catalog.indexes.has_key('id') != 1,
+        self.assert_('id' not in self._catalog.indexes,
                      'del index failed')
 
     def testDelTextIndex(self):
@@ -133,14 +139,14 @@ class TestAddDelIndexes(CatalogBase, unittest.TestCase):
                           index_factory=OkapiIndex, lexicon_id='lexicon')
         self._catalog.addIndex('id', idx)
         self._catalog.delIndex('id')
-        self.assert_(self._catalog.indexes.has_key('id') != 1,
+        self.assert_('id' not in self._catalog.indexes,
                      'del index failed')
 
     def testDelKeywordIndex(self):
         idx = KeywordIndex('id')
         self._catalog.addIndex('id', idx)
         self._catalog.delIndex('id')
-        self.assert_(self._catalog.indexes.has_key('id') != 1,
+        self.assert_('id' not in self._catalog.indexes,
                      'del index failed')
 
 # Removed unittests dealing with catalog instantiation and vocabularies
@@ -155,19 +161,23 @@ class zdummy(ExtensionClass.Base):
     def title(self):
         return '%d' % self.num
 
+
 class zdummyFalse(zdummy):
 
     def __nonzero__(self):
         return False
 
 # make objects with failing __len__ and __nonzero__
+
 class dummyLenFail(zdummy):
+
     def __init__(self, num, fail):
         zdummy.__init__(self, num)
         self.fail = fail
 
     def __len__(self):
         self.fail("__len__() was called")
+
 
 class dummyNonzeroFail(zdummy):
     def __init__(self, num, fail):
@@ -177,22 +187,27 @@ class dummyNonzeroFail(zdummy):
     def __nonzero__(self):
         self.fail("__nonzero__() was called")
 
+
 class FakeTraversalError(KeyError):
     """fake traversal exception for testing"""
 
+
 class fakeparent(Implicit):
+
     # fake parent mapping unrestrictedTraverse to
     # catalog.resolve_path as simulated by TestZCatalog
-    def __init__(self, d):
-        self.d = d
 
     marker = object()
+
+    def __init__(self, d):
+        self.d = d
 
     def unrestrictedTraverse(self, path, default=marker):
         result = self.d.get(path, default)
         if result is self.marker:
             raise FakeTraversalError(path)
         return result
+
 
 class TestZCatalog(unittest.TestCase):
 
@@ -233,7 +248,7 @@ class TestZCatalog(unittest.TestCase):
         self.assertEqual(data['title'][0], testNum)
 
     def testSearch(self):
-        query = {'title': ['5','6','7']}
+        query = {'title': ['5', '6', '7']}
         sr = self._catalog.searchResults(query)
         self.assertEqual(len(sr), 3)
         sr = self._catalog.search(query)
@@ -281,7 +296,8 @@ class TestZCatalog(unittest.TestCase):
             def redirect(self, url):
                 pass
         # this next call should not fail
-        self._catalog.manage_catalogObject(None, myresponse(), 'URL1', urls=('11', '12'))
+        self._catalog.manage_catalogObject(None, myresponse(),
+                                           'URL1', urls=('11', '12'))
 
     def testBooleanEvalOn_refreshCatalog_getobject(self):
         # wrap catalog under the fake parent providing unrestrictedTraverse()
@@ -297,7 +313,9 @@ class TestZCatalog(unittest.TestCase):
             # neither should these
             catalog.getobject(rid)
 
-    def test_getobject_doesntMaskTraversalErrorsAndDoesntDelegateTo_resolve_url(self):
+    def test_getobject_traversal(self):
+        # getobject doesn't mask TraversalErrors and doesn't delegate to
+        # resolve_url
         # wrap catalog under the fake parent providing unrestrictedTraverse()
         catalog = self._catalog.__of__(fakeparent(self.d))
         # make resolve_url fail if ZCatalog falls back on it
@@ -309,15 +327,20 @@ class TestZCatalog(unittest.TestCase):
         rid0 = catalog.getrid('0')
         # lets set it up so the traversal fails
         del self.d['0']
-        self.assertRaises(FakeTraversalError, catalog.getobject, rid0, REQUEST=object())
-        # and if there is a None at the traversal point, that's where it should return
+        self.assertRaises(FakeTraversalError,
+                          catalog.getobject, rid0, REQUEST=object())
+        # and if there is a None at the traversal point, that's where it
+        # should return
         self.d['0'] = None
         self.assertEquals(catalog.getobject(rid0), None)
 
+
 class dummy(ExtensionClass.Base):
+
     att1 = 'att1'
     att2 = 'att2'
     att3 = ['att3']
+
     def __init__(self, num):
         self.num = num
 
@@ -329,6 +352,7 @@ class dummy(ExtensionClass.Base):
 
     def col3(self):
         return ['col3']
+
 
 class TestCatalogObject(unittest.TestCase):
 
@@ -363,7 +387,7 @@ class TestCatalogObject(unittest.TestCase):
         att2 = ZCTextIndex('att2', caller=self._catalog,
                           index_factory=OkapiIndex, lexicon_id='lexicon')
         att3 = KeywordIndex('att3')
-        num  = FieldIndex('num')
+        num = FieldIndex('num')
 
         self._catalog.addIndex('att1', att1)
         self._catalog.addIndex('att2', att2)
@@ -395,7 +419,7 @@ class TestCatalogObject(unittest.TestCase):
         # Queries used to do the same, because of a bug in the
         # parseIndexRequest function, mistaking a CatalogSearchArgumentsMap
         # for a Record class
-        a = self._catalog({'col1':'', 'col2':'', 'col3':''})
+        a = self._catalog({'col1': '', 'col2': '', 'col3': ''})
         self.assertEqual(len(a), 0,
                          'length should be %s, its %s' % (upper, len(a)))
 
@@ -471,13 +495,13 @@ class TestCatalogObject(unittest.TestCase):
         self.assertRaises(CatalogError, self.badsortindex)
 
     def badsortindex(self):
-        a = self._catalog(sort_on='foofaraw')
+        self._catalog(sort_on='foofaraw')
 
     def testWrongKindOfIndexForSort(self):
         self.assertRaises(CatalogError, self.wrongsortindex)
 
     def wrongsortindex(self):
-        a = self._catalog(sort_on='att2')
+        self._catalog(sort_on='att2')
 
     def testTextIndexQWithSortOn(self):
         upper = self.upper
@@ -566,33 +590,36 @@ class TestCatalogObject(unittest.TestCase):
 
 class objRS(ExtensionClass.Base):
 
-    def __init__(self,num):
+    def __init__(self, num):
         self.number = num
+
 
 class TestRS(unittest.TestCase):
 
     def setUp(self):
-        self._catalog    = Catalog()
+        self._catalog = Catalog()
         index = FieldIndex('number')
-        self._catalog.addIndex('number',  index)
+        self._catalog.addIndex('number', index)
         self._catalog.addColumn('number')
 
         for i in range(5000):
-            obj = objRS(random.randrange(0,20000))
-            self._catalog.catalogObject(obj,i)
+            obj = objRS(random.randrange(0, 20000))
+            self._catalog.catalogObject(obj, i)
 
         self._catalog.aq_parent = objRS(200)
 
     def testRangeSearch(self):
         for i in range(1000):
-            m = random.randrange(0,20000)
+            m = random.randrange(0, 20000)
             n = m + 1000
 
-            for r  in self._catalog.searchResults(
-                 number= {'query': (m,n) , 'range' : 'min:max' } ):
+            for r in self._catalog.searchResults(
+                number={'query': (m, n), 'range': 'min:max'}):
+
                 size = r.number
                 self.assert_(m<=size and size<=n,
-                             "%d vs [%d,%d]" % (r.number,m,n))
+                             "%d vs [%d,%d]" % (r.number, m, n))
+
 
 class TestMerge(unittest.TestCase):
     # Test merging results from multiple catalogs
@@ -741,7 +768,8 @@ class TestZCatalogGetObject(unittest.TestCase):
         catalog.catalog_object(root.ob)
         brain = catalog.searchResults({'id': 'ob'})[0]
         del root.ob
-        self.assertRaises((NotFound, AttributeError, KeyError), brain.getObject)
+        self.assertRaises((NotFound, AttributeError, KeyError),
+                          brain.getObject)
 
     def test_getObject_restricted_raises_Unauthorized(self):
         # Check that if the object's security does not allow traversal,
@@ -865,11 +893,11 @@ class TestZCatalogGetObject(unittest.TestCase):
 
 def test_suite():
     suite = unittest.TestSuite()
-    suite.addTest( unittest.makeSuite( TestAddDelColumn ) )
-    suite.addTest( unittest.makeSuite( TestAddDelIndexes ) )
-    suite.addTest( unittest.makeSuite( TestZCatalog ) )
-    suite.addTest( unittest.makeSuite( TestCatalogObject ) )
-    suite.addTest( unittest.makeSuite( TestRS ) )
-    suite.addTest( unittest.makeSuite( TestMerge ) )
-    suite.addTest( unittest.makeSuite( TestZCatalogGetObject ) )
+    suite.addTest(unittest.makeSuite(TestAddDelColumn))
+    suite.addTest(unittest.makeSuite(TestAddDelIndexes))
+    suite.addTest(unittest.makeSuite(TestZCatalog))
+    suite.addTest(unittest.makeSuite(TestCatalogObject))
+    suite.addTest(unittest.makeSuite(TestRS))
+    suite.addTest(unittest.makeSuite(TestMerge))
+    suite.addTest(unittest.makeSuite(TestZCatalogGetObject))
     return suite

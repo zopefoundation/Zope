@@ -15,13 +15,16 @@
 
 import unittest
 
+
 class BaseSequenceTest(unittest.TestCase):
+
     def _compare(self, lseq, seq):
         self.assertEqual(len(lseq), len(seq))
         self.assertEqual(list(lseq), seq)
 
 
 class TestLazyCat(BaseSequenceTest):
+
     def _createLSeq(self, *sequences):
         from Products.ZCatalog.Lazy import LazyCat
         return LazyCat(sequences)
@@ -153,9 +156,9 @@ class TestLazyMop(TestLazyCat):
         seq2 = list(hexdigits)
         seq3 = list(letters)
         def filter(x):
-           if isinstance(x, int):
-              raise ValueError
-           return x.lower()
+            if isinstance(x, int):
+                raise ValueError
+            return x.lower()
         lmop = self._createLMop(filter, seq1, seq2, seq3)
         self._compare(lmop, [str(x).lower() for x in (seq2 + seq3)])
 
@@ -164,9 +167,9 @@ class TestLazyMop(TestLazyCat):
 
         seq = range(10) + list(letters)
         def filter(x):
-           if isinstance(x, int):
-              raise ValueError
-           return x.lower()
+            if isinstance(x, int):
+                raise ValueError
+            return x.lower()
 
         # Unaccessed length
         lmop = self._createLMop(filter, seq)
