@@ -259,7 +259,7 @@ class TestZCatalog(unittest.TestCase):
         self._catalog.reindexIndex('title', {})
         data = self._catalog.getMetadataForUID('0')
         self.assertEqual(data['title'], '0')
-    
+
     def testReindexIndexesFalse(self):
         # setup
         false_id = self.upper + 1
@@ -873,6 +873,3 @@ def test_suite():
     suite.addTest( unittest.makeSuite( TestMerge ) )
     suite.addTest( unittest.makeSuite( TestZCatalogGetObject ) )
     return suite
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='test_suite')

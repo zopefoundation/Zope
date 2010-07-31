@@ -11,8 +11,7 @@
 #
 ##############################################################################
 """Unittests for Catalog brains
-
-$Id$"""
+"""
 
 import unittest
 import Acquisition
@@ -35,20 +34,20 @@ class Conflicter(Happy):
     """Object that raises ConflictError when accessed"""
     def check(self):
         raise ConflictError
-        
+
 class DummyRequest(Acquisition.Implicit):
-    
+
     def physicalPathToURL(self, path, relative=False):
         if not relative:
             path = 'http://superbad.com' + path
         return path
 
 _marker = object()
-        
+
 class DummyCatalog(Acquisition.Implicit):
-    
-    _objs = {'/happy':Happy('happy'), 
-             '/secret':Secret('secret'), 
+
+    _objs = {'/happy':Happy('happy'),
+             '/secret':Secret('secret'),
              '/conflicter':Conflicter('conflicter')}
     _paths = _objs.keys() + ['/zonked']
     _paths.sort()
@@ -71,26 +70,26 @@ class DummyCatalog(Acquisition.Implicit):
             if default is not _marker:
                 return default
             raise
-    
+
     def getpath(self, rid):
         return self._paths[rid]
-    
+
     def getobject(self, rid):
         return self.restrictedTraverse(self._paths[rid])
 
     def resolve_url(self, path, REQUEST):
         path =  path[path.find('/', path.find('//')+1):] # strip server part
         return self.restrictedTraverse(path)
-        
+
 class ConflictingCatalog(DummyCatalog):
-    
+
     def getpath(self, rid):
         raise ConflictError
 
 class BrainsTestBase:
 
     _old_flag = None
-    
+
     def setUp(self):
         self.cat = DummyCatalog()
         self.cat.REQUEST = DummyRequest()
@@ -108,7 +107,7 @@ class BrainsTestBase:
     def _restore_getOb_flag(self):
         from Products.ZCatalog import CatalogBrains
         CatalogBrains.GETOBJECT_RAISES = self._old_flag
-    
+
     def _makeBrain(self, rid):
         from Products.ZCatalog.CatalogBrains import AbstractCatalogBrain
         class Brain(AbstractCatalogBrain):
@@ -120,38 +119,38 @@ class BrainsTestBase:
         self.failUnless(b.has_key('test_field'))
         self.failUnless(b.has_key('data_record_id_'))
         self.failIf(b.has_key('godel'))
-    
+
     def testGetPath(self):
         b = [self._makeBrain(rid) for rid in range(3)]
         self.assertEqual(b[0].getPath(), '/conflicter')
         self.assertEqual(b[1].getPath(), '/happy')
         self.assertEqual(b[2].getPath(), '/secret')
-    
+
     def testGetPathPropagatesConflictErrors(self):
         self.cat = ConflictingCatalog()
         b = self._makeBrain(0)
         self.assertRaises(ConflictError, b.getPath)
-        
+
     def testGetURL(self):
         b = self._makeBrain(0)
         self.assertEqual(b.getURL(), 'http://superbad.com/conflicter')
-    
+
     def testGetRID(self):
         b = self._makeBrain(42)
         self.assertEqual(b.getRID(), 42)
-    
+
     def testGetObjectHappy(self):
         b = self._makeBrain(1)
         self.assertEqual(b.getPath(), '/happy')
         self.failUnless(b.getObject().aq_base is self.cat.getobject(1).aq_base)
-    
+
     def testGetObjectPropagatesConflictErrors(self):
         b = self._makeBrain(0)
         self.assertEqual(b.getPath(), '/conflicter')
         self.assertRaises(ConflictError, b.getObject)
 
 class TestBrains(BrainsTestBase, unittest.TestCase):
-    
+
     def _flag_value(self):
         return True
 
@@ -160,16 +159,16 @@ class TestBrains(BrainsTestBase, unittest.TestCase):
         b = self._makeBrain(2)
         self.assertEqual(b.getPath(), '/secret')
         self.assertRaises(Unauthorized, b.getObject)
-    
+
     def testGetObjectRaisesNotFoundForMissing(self):
         from zExceptions import NotFound
         b = self._makeBrain(3)
         self.assertEqual(b.getPath(), '/zonked')
         self.assertRaises(KeyError, self.cat.getobject, 3)
         self.assertRaises((NotFound, AttributeError, KeyError), b.getObject)
-    
+
 class TestBrainsOldBehavior(BrainsTestBase, unittest.TestCase):
-    
+
     def _flag_value(self):
         return False
 
@@ -177,18 +176,15 @@ class TestBrainsOldBehavior(BrainsTestBase, unittest.TestCase):
         b = self._makeBrain(2)
         self.assertEqual(b.getPath(), '/secret')
         self.assertEqual(b.getObject(), None)
-    
+
     def testGetObjectReturnsNoneForMissing(self):
         b = self._makeBrain(3)
         self.assertEqual(b.getPath(), '/zonked')
         self.assertRaises(KeyError, self.cat.getobject, 3)
-        self.assertEqual(b.getObject(), None)        
+        self.assertEqual(b.getObject(), None)
 
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TestBrains))
     suite.addTest(unittest.makeSuite(TestBrainsOldBehavior))
     return suite
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='test_suite')

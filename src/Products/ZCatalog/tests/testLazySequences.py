@@ -11,8 +11,7 @@
 #
 ##############################################################################
 """Unittests for Lazy sequence classes
-
-$Id$"""
+"""
 
 import unittest
 
@@ -60,7 +59,7 @@ class TestLazyCat(BaseSequenceTest):
         seq3 = list(letters)
         lcat = apply(self._createLSeq,
             [self._createLSeq(seq) for seq in (seq1, seq2, seq3)])
-        self._compare(lcat[5:-5], seq1[5:] + seq2 + seq3[:-5])    
+        self._compare(lcat[5:-5], seq1[5:] + seq2 + seq3[:-5])
 
     def testConsistentLength(self):
         # Unaccessed length
@@ -102,7 +101,7 @@ class TestLazyMap(TestLazyCat):
 class TestLazyFilter(TestLazyCat):
     def _createLSeq(self, *seq):
         return self._createLFilter(lambda x: True, *seq)
-    
+
     def _createLFilter(self, filter, *seq):
         from Products.ZCatalog.Lazy import LazyFilter
         totalseq = []
@@ -162,7 +161,7 @@ class TestLazyMop(TestLazyCat):
 
     def testConsistentLengthWithMop(self):
         from string import letters
-        
+
         seq = range(10) + list(letters)
         def filter(x):
            if isinstance(x, int):
@@ -214,6 +213,3 @@ def test_suite():
     suite.addTest(unittest.makeSuite(TestLazyMop))
     suite.addTest(unittest.makeSuite(TestLazyValues))
     return suite
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='test_suite')
