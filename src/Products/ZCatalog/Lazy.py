@@ -11,7 +11,7 @@
 #
 ##############################################################################
 
-class Lazy:
+class Lazy(object):
 
     # Allow (reluctantly) access to unprotected attributes
     __allow_access_to_unprotected_subobjects__=1
