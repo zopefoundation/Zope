@@ -3,7 +3,7 @@ import unittest
 
 class TestUndoSupport(unittest.TestCase):
 
-    def test_z3interfaces(self):
+    def test_interfaces(self):
         from App.interfaces import IUndoSupport
         from App.Undo import UndoSupport
         from zope.interface.verify import verifyClass

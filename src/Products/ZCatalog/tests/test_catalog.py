@@ -216,7 +216,7 @@ class TestZCatalog(unittest.TestCase):
     def _resolve_num(self, num):
         return self.d[num]
 
-    def test_z3interfaces(self):
+    def test_interfaces(self):
         from Products.ZCatalog.interfaces import IZCatalog
         from Products.ZCatalog.ZCatalog import ZCatalog
         from zope.interface.verify import verifyClass

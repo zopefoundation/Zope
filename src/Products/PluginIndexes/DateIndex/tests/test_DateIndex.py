@@ -159,7 +159,7 @@ class DI_Tests(unittest.TestCase):
             yr, mo, dy, hr, mn = dt.toZone('UTC').parts()[:5]
         return (((yr * 12 + mo) * 31 + dy) * 24 + hr) * 60 + mn
 
-    def test_z3interfaces(self):
+    def test_interfaces(self):
         from Products.PluginIndexes.interfaces import IDateIndex
         from Products.PluginIndexes.interfaces import IPluggableIndex
         from Products.PluginIndexes.interfaces import ISortIndex

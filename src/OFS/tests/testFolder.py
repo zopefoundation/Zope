@@ -3,7 +3,7 @@ import unittest
 
 class TestFolder(unittest.TestCase):
 
-    def test_z3interfaces(self):
+    def test_interfaces(self):
         from OFS.Folder import Folder
         from OFS.interfaces import IFolder
         from webdav.interfaces import IWriteLock

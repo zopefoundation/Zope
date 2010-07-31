@@ -3,7 +3,7 @@ import unittest
 
 class TestLockNullResource(unittest.TestCase):
 
-    def test_z3interfaces(self):
+    def test_interfaces(self):
         from webdav.interfaces import IWriteLock
         from webdav.NullResource import LockNullResource
         from zope.interface.verify import verifyClass
@@ -20,7 +20,7 @@ class TestNullResource(unittest.TestCase):
     def _makeOne(self, parent=None, name='nonesuch', **kw):
         return self._getTargetClass()(parent, name, **kw)
 
-    def test_z3interfaces(self):
+    def test_interfaces(self):
         from webdav.interfaces import IWriteLock
         from zope.interface.verify import verifyClass
 

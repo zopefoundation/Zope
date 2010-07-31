@@ -302,7 +302,7 @@ class FileTests(unittest.TestCase):
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0][1], self.file)
 
-    def test_z3interfaces(self):
+    def test_interfaces(self):
         from zope.interface.verify import verifyClass
         from OFS.Image import File
         from webdav.interfaces import IWriteLock
@@ -346,7 +346,7 @@ class ImageTests(FileTests):
     def testViewImageOrFile(self):
         pass # dtml method,screw it
 
-    def test_z3interfaces(self):
+    def test_interfaces(self):
         from zope.interface.verify import verifyClass
         from OFS.Image import Image
         from webdav.interfaces import IWriteLock

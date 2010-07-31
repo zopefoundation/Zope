@@ -3,7 +3,7 @@ import unittest
 
 class TestPersistent(unittest.TestCase):
 
-    def test_z3interfaces(self):
+    def test_interfaces(self):
         from App.interfaces import IPersistentExtra
         from Persistence import Persistent
         from zope.interface.verify import verifyClass

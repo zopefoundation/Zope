@@ -45,7 +45,7 @@ class TestResource(unittest.TestCase):
         inst = klass()
         return inst
 
-    def test_z3interfaces(self):
+    def test_interfaces(self):
         from webdav.interfaces import IDAVResource
         from webdav.interfaces import IWriteLock
         Resource = self._getTargetClass()

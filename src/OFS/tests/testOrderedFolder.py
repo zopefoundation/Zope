@@ -3,7 +3,7 @@ import unittest
 
 class TestOrderedFolder(unittest.TestCase):
 
-    def test_z3interfaces(self):
+    def test_interfaces(self):
         from OFS.interfaces import IOrderedContainer
         from OFS.interfaces import IOrderedFolder
         from OFS.OrderedFolder import OrderedFolder

@@ -10,7 +10,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""webdav z3 interfaces.
+"""webdav interfaces.
 """
 
 from zope.interface import Interface

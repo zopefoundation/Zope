@@ -42,7 +42,7 @@ class TestOrderSupport(unittest.TestCase):
         f.o4 = DummyObject('o4', 'mt2')
         return f
 
-    def test_z3interfaces(self):
+    def test_interfaces(self):
         from OFS.interfaces import IOrderedContainer
         from OFS.OrderSupport import OrderSupport
         from zope.interface.verify import verifyClass

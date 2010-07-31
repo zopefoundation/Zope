@@ -62,7 +62,7 @@ class TestTopicIndex(TestBase):
         self.TI.index_object(5 , Obj('5','doc3'))
         self.TI.index_object(6 , Obj('6','doc3'))
 
-    def test_z3interfaces(self):
+    def test_interfaces(self):
         from Products.PluginIndexes.interfaces import ITopicIndex
         from Products.PluginIndexes.interfaces import IPluggableIndex
         from zope.interface.verify import verifyClass

@@ -3,7 +3,7 @@ import unittest
 
 class TestNavigation(unittest.TestCase):
 
-    def test_z3interfaces(self):
+    def test_interfaces(self):
         from App.interfaces import INavigation
         from App.Management import Navigation
         from zope.interface.verify import verifyClass

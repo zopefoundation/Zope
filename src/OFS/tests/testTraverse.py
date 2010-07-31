@@ -221,7 +221,7 @@ class TestTraverse( unittest.TestCase ):
         noSecurityManager()
         SecurityManager.setSecurityPolicy(policy)
 
-    def test_z3interfaces(self):
+    def test_interfaces(self):
         from OFS.interfaces import ITraversable
         from OFS.Traversable import Traversable
         from zope.interface.verify import verifyClass

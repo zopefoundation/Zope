@@ -3,7 +3,7 @@ import unittest
 
 class TestFindSupport(unittest.TestCase):
 
-    def test_z3interfaces(self):
+    def test_interfaces(self):
         from OFS.interfaces import IFindSupport
         from OFS.FindSupport import FindSupport
         from zope.interface.verify import verifyClass

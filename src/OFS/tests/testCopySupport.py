@@ -129,7 +129,7 @@ class TestCopySupport( CopySupportTestBase ):
 
         self._cleanApp()
 
-    def test_z3interfaces(self):
+    def test_interfaces(self):
         from OFS.CopySupport import CopyContainer
         from OFS.CopySupport import CopySource
         from OFS.interfaces import ICopyContainer

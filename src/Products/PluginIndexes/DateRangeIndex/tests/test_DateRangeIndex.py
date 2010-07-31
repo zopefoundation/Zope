@@ -81,7 +81,7 @@ class DRI_Tests( unittest.TestCase ):
         return klass(id, since_field, until_field, caller, extra)
 
 
-    def test_z3interfaces(self):
+    def test_interfaces(self):
         from Products.PluginIndexes.interfaces import IDateRangeIndex
         from Products.PluginIndexes.interfaces import IPluggableIndex
         from Products.PluginIndexes.interfaces import ISortIndex

@@ -67,7 +67,7 @@ class TestItem(unittest.TestCase):
 
 class TestItem_w__name__(unittest.TestCase):
 
-    def test_z3interfaces(self):
+    def test_interfaces(self):
         from OFS.interfaces import IItemWithName
         from OFS.SimpleItem import Item_w__name__
         from zope.interface.verify import verifyClass
@@ -77,7 +77,7 @@ class TestItem_w__name__(unittest.TestCase):
 
 class TestSimpleItem(unittest.TestCase):
 
-    def test_z3interfaces(self):
+    def test_interfaces(self):
         from OFS.interfaces import ISimpleItem
         from OFS.SimpleItem import SimpleItem
         from zope.interface.verify import verifyClass

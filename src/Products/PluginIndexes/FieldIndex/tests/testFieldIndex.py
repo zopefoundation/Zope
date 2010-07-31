@@ -91,7 +91,7 @@ class FieldIndexTests(unittest.TestCase):
         for k, v in expectedValues:
             assert k in result
 
-    def test_z3interfaces(self):
+    def test_interfaces(self):
         from Products.PluginIndexes.interfaces import IPluggableIndex
         from Products.PluginIndexes.interfaces import ISortIndex
         from Products.PluginIndexes.interfaces import IUniqueValueIndex
