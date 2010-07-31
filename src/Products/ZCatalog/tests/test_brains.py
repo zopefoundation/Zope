@@ -16,6 +16,7 @@
 import unittest
 
 import Acquisition
+from Acquisition import aq_base
 from zExceptions import Unauthorized
 from ZODB.POSException import ConflictError
 
@@ -156,7 +157,8 @@ class BrainsTestBase(object):
     def testGetObjectHappy(self):
         b = self._makeBrain(1)
         self.assertEqual(b.getPath(), '/happy')
-        self.failUnless(b.getObject().aq_base is self.cat.getobject(1).aq_base)
+        self.failUnless(aq_base(b.getObject()) is
+                        aq_base(self.cat.getobject(1)))
 
     def testGetObjectPropagatesConflictErrors(self):
         b = self._makeBrain(0)

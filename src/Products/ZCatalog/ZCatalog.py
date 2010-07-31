@@ -26,6 +26,8 @@ from AccessControl.Permissions import manage_zcatalog_entries
 from AccessControl.Permissions import manage_zcatalog_indexes
 from AccessControl.Permissions import search_zcatalog
 from AccessControl.SecurityInfo import ClassSecurityInfo
+from Acquisition import aq_base
+from Acquisition import aq_parent
 from Acquisition import Implicit
 from App.Dialogs import MessageDialog
 from App.special_dtml import DTMLFile
@@ -561,7 +563,7 @@ class ZCatalog(Folder, Persistent, Implicit):
     def getobject(self, rid, REQUEST=None):
         """Return a cataloged object given a 'data_record_id_'
         """
-        return self.aq_parent.unrestrictedTraverse(self.getpath(rid))
+        return aq_parent(self).unrestrictedTraverse(self.getpath(rid))
 
     def getMetadataForUID(self, uid):
         """return the correct metadata given the uid, usually the path"""
@@ -656,18 +658,9 @@ class ZCatalog(Folder, Persistent, Implicit):
         return self._catalog.search(
             query_request, sort_index, reverse, limit, merge)
 
-## this stuff is so the find machinery works
+    ## this stuff is so the find machinery works
 
     meta_types=() # Sub-object types that are specific to this object
-
-    # Dont need this anymore -- we inherit from object manager
-    #def all_meta_types(self):
-    #    pmt=()
-    #    if hasattr(self, '_product_meta_types'): pmt=self._product_meta_types
-    #    elif hasattr(self, 'aq_acquire'):
-    #        try: pmt=self.aq_acquire('_product_meta_types')
-    #        except AttributeError:  pass
-    #    return self.meta_types+Products.meta_types+pmt
 
     security.declareProtected(search_zcatalog, 'valid_roles')
     def valid_roles(self):
@@ -682,10 +675,10 @@ class ZCatalog(Folder, Persistent, Implicit):
                 for role in roles:
                     if not dup(role):
                         dict[role]=1
-            if not hasattr(obj, 'aq_parent'):
+            obj = aq_parent(obj)
+            if obj is None:
                 break
-            obj=obj.aq_parent
-            x=x+1
+            x = x + 1
         roles=dict.keys()
         roles.sort()
         return roles
@@ -726,9 +719,7 @@ class ZCatalog(Folder, Persistent, Implicit):
                 md=td()
                 obj_expr=(Eval(obj_expr), md, md._push, md._pop)
 
-        base=obj
-        if hasattr(obj, 'aq_base'):
-            base=obj.aq_base
+        base = aq_base(obj)
 
         if not hasattr(base, 'objectItems'):
             return result
@@ -750,9 +741,7 @@ class ZCatalog(Folder, Persistent, Implicit):
             if hasattr(ob, '_p_changed') and (ob._p_changed == None):
                 dflag=1
 
-            if hasattr(ob, 'aq_base'):
-                bs=ob.aq_base
-            else: bs=ob
+            bs = aq_base(ob)
 
             if (
                 (not obj_ids or absattr(bs.id) in obj_ids)
@@ -1055,8 +1044,8 @@ def role_match(ob, permission, roles, lt=type([]), tt=type(())):
             p=getattr(ob, permission)
             if type(p) is lt:
                 map(fn, p)
-                if hasattr(ob, 'aq_parent'):
-                    ob=ob.aq_parent
+                ob = aq_parent(ob)
+                if ob is not None:
                     continue
                 break
             if type(p) is tt:
@@ -1066,8 +1055,8 @@ def role_match(ob, permission, roles, lt=type([]), tt=type(())):
                 map(fn, ('Manager', 'Anonymous'))
                 break
 
-        if hasattr(ob, 'aq_parent'):
-            ob=ob.aq_parent
+        ob = aq_parent(ob)
+        if ob is not None:
             continue
         break
 

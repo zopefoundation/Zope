@@ -19,6 +19,8 @@ from bisect import bisect
 from random import randint
 
 import Acquisition
+from Acquisition import aq_base
+from Acquisition import aq_parent
 import ExtensionClass
 from Missing import MV
 from Persistence import Persistent
@@ -123,13 +125,13 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         if type(index) is ttype:
             # then it contains a score...
             normalized_score, score, key = index
-            r=self._v_result_class(self.data[key]).__of__(self.aq_parent)
+            r=self._v_result_class(self.data[key]).__of__(aq_parent(self))
             r.data_record_id_ = key
             r.data_record_score_ = score
             r.data_record_normalized_score_ = normalized_score
         else:
             # otherwise no score, set all scores to 1
-            r=self._v_result_class(self.data[index]).__of__(self.aq_parent)
+            r=self._v_result_class(self.data[index]).__of__(aq_parent(self))
             r.data_record_id_ = index
             r.data_record_score_ = 1
             r.data_record_normalized_score_ = 1
@@ -590,7 +592,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                     """
                     score, key = item
                     r=self._v_result_class(self.data[key])\
-                          .__of__(self.aq_parent)
+                          .__of__(aq_parent(self))
                     r.data_record_id_ = key
                     r.data_record_score_ = score
                     r.data_record_normalized_score_ = int(100. * score / max)
@@ -623,7 +625,6 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         # Try to avoid all non-local attribute lookup inside
         # those loops.
         assert limit is None or limit > 0, 'Limit value must be 1 or greater'
-        _lazymap = LazyMap
         _intersection = intersection
         _self__getitem__ = self.__getitem__
         index_key_map = sort_index.documentToKeyMap()
@@ -820,7 +821,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
     def getCatalogReport(self, query=None):
         """Reports about the duration of queries.
         """
-        parent = Acquisition.aq_base(Acquisition.aq_parent(self))
+        parent = aq_base(aq_parent(self))
         threshold = getattr(parent, 'long_query_time', 0.1)
         return CatalogReport(self, query, threshold)
 

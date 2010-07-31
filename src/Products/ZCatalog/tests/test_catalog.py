@@ -386,7 +386,7 @@ class TestCatalogObject(unittest.TestCase):
 
         for x in range(0, self.upper):
             self._catalog.catalogObject(dummy(self.nums[x]), `x`)
-        self._catalog.aq_parent = dummy('foo') # fake out acquisition
+        self._catalog = self._catalog.__of__(dummy('foo'))
 
     def tearDown(self):
         self._catalog = None
@@ -589,7 +589,7 @@ class TestRS(unittest.TestCase):
             obj = objRS(random.randrange(0, 20000))
             self._catalog.catalogObject(obj, i)
 
-        self._catalog.aq_parent = objRS(200)
+        self._catalog = self._catalog.__of__(objRS(200))
 
     def testRangeSearch(self):
         for i in range(1000):
@@ -618,7 +618,7 @@ class TestMerge(unittest.TestCase):
             i = ZCTextIndex('title', caller=cat, index_factory=OkapiIndex,
                             lexicon_id='lexicon')
             cat.addIndex('title', i)
-            cat.aq_parent = zdummy(16336)
+            cat = cat.__of__(zdummy(16336))
             for i in range(10):
                 obj = zdummy(i)
                 obj.big = i > 5

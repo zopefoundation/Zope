@@ -16,6 +16,8 @@
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.Permissions import manage_zcatalog_indexes
+from Acquisition import aq_base
+from Acquisition import aq_parent
 from Acquisition import Implicit
 from App.special_dtml import DTMLFile
 from OFS.Folder import Folder
@@ -58,26 +60,25 @@ class ZCatalogIndexes(IFAwareObjectManager, Folder, Persistent, Implicit):
 
     # base accessors loop back through our dictionary interface
     def _setOb(self, id, object):
-        indexes = self.aq_parent._catalog.indexes
+        indexes = aq_parent(self)._catalog.indexes
         indexes[id] = object
-        self.aq_parent._indexes = indexes
-        #self.aq_parent._p_changed = 1
+        aq_base(aq_parent(self))._indexes = indexes
 
     def _delOb(self, id):
-        indexes = self.aq_parent._catalog.indexes
+        indexes = aq_parent(self)._catalog.indexes
         del indexes[id]
-        self.aq_parent._indexes = indexes
-        #self.aq_parent._p_changed = 1
+        aq_base(aq_parent(self))._indexes = indexes
 
     def _getOb(self, id, default=_marker):
-        indexes = self.aq_parent._catalog.indexes
-        if default is _marker:  return indexes.get(id)
+        indexes = aq_parent(self)._catalog.indexes
+        if default is _marker:
+            return indexes.get(id)
         return indexes.get(id, default)
 
     security.declareProtected(manage_zcatalog_indexes, 'objectIds')
     def objectIds(self, spec=None):
 
-        indexes = self.aq_parent._catalog.indexes
+        indexes = aq_parent(self)._catalog.indexes
         if spec is not None:
             if type(spec) == type('s'):
                 spec = [spec]
@@ -101,7 +102,7 @@ class ZCatalogIndexes(IFAwareObjectManager, Folder, Persistent, Implicit):
     #
 
     def __bobo_traverse__(self, REQUEST, name):
-        indexes = self.aq_parent._catalog.indexes;
+        indexes = aq_parent(self)._catalog.indexes;
 
         o = indexes.get(name, None)
         if o is not None:

@@ -14,6 +14,7 @@
 from zope.interface import implements
 
 import Acquisition
+from Acquisition import aq_parent
 import Record
 from ZODB.POSException import ConflictError
 
@@ -39,7 +40,7 @@ class AbstractCatalogBrain(Record.Record, Acquisition.Implicit):
 
     def getPath(self):
         """Get the physical path for this record"""
-        return self.aq_parent.getpath(self.data_record_id_)
+        return aq_parent(self).getpath(self.data_record_id_)
 
     def getURL(self, relative=0):
         """Generate a URL for this record"""
@@ -51,7 +52,7 @@ class AbstractCatalogBrain(Record.Record, Acquisition.Implicit):
         Same as getObject, but does not do security checks.
         """
         try:
-            return self.aq_parent.unrestrictedTraverse(self.getPath())
+            return aq_parent(self).unrestrictedTraverse(self.getPath())
         except ConflictError:
             raise
         except Exception:
@@ -73,7 +74,7 @@ class AbstractCatalogBrain(Record.Record, Acquisition.Implicit):
         path = self.getPath().split('/')
         if not path:
             return None
-        parent = self.aq_parent
+        parent = aq_parent(self)
         if len(path) > 1:
             try:
                 parent = parent.unrestrictedTraverse(path[:-1])
