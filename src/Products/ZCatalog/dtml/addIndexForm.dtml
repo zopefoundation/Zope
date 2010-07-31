@@ -1,14 +1,6 @@
 <dtml-var manage_page_header>
 
-<dtml-var "manage_form_title(this(), _,
-           form_title='Add Index',
-           help_product='PluginIndexes',
-           help_topic='PluginIndexes.stx'
-	   )">
-
-<p class="form-help">
-help for adding indexes....
-</p>
+<dtml-var "manage_form_title(this(), _, form_title='Add Index')">
 
 <form action="manage_addIndex" method="post">
 <input type=hidden name="type" value="&dtml-index_type;">

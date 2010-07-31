@@ -27,12 +27,8 @@ class FieldIndex(UnIndex):
     meta_type="FieldIndex"
 
     manage_options= (
-        {'label': 'Settings',
-         'action': 'manage_main',
-         'help': ('FieldIndex','FieldIndex_Settings.stx')},
-        {'label': 'Browse',
-         'action': 'manage_browse',
-         'help': ('FieldIndex','FieldIndex_Settings.stx')},
+        {'label': 'Settings', 'action': 'manage_main'},
+        {'label': 'Browse', 'action': 'manage_browse'},
     )
 
     query_options = ["query","range"]

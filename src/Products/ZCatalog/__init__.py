@@ -23,7 +23,3 @@ def initialize(context):
                       ZCatalog.manage_addZCatalog),
         icon='www/ZCatalog.gif',
         )
-
-
-    context.registerHelp()
-    context.registerHelpTitle('Zope Help')

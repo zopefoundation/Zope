@@ -49,9 +49,7 @@ class TopicIndex(Persistent, SimpleItem):
     query_options = ('query', 'operator')
 
     manage_options= (
-        {'label': 'FilteredSets',
-         'action': 'manage_main',
-         'help': ('TopicIndex','TopicIndex_searchResults.stx')},
+        {'label': 'FilteredSets', 'action': 'manage_main'},
     )
 
     def __init__(self,id,caller=None):

@@ -38,12 +38,8 @@ class KeywordIndex(UnIndex):
     meta_type="KeywordIndex"
 
     manage_options= (
-        {'label': 'Settings',
-         'action': 'manage_main',
-         'help': ('KeywordIndex','KeywordIndex_Settings.stx')},
-        {'label': 'Browse',
-         'action': 'manage_browse',
-         'help': ('FieldIndex','FieldIndex_Settings.stx')},
+        {'label': 'Settings', 'action': 'manage_main'},
+        {'label': 'Browse', 'action': 'manage_browse'},
     )
 
     query_options = ("query","operator", "range")

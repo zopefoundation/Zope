@@ -35,6 +35,9 @@ Bugs Fixed
 Restructuring
 +++++++++++++
 
+- Removed unmaintained HelpSys documents from ZCatalog and PluginIndexes.
+  Useful explanations are given inside the form templates.
+
 - Deprecate Products.ZCatalog's current behavior of returning the entire
   catalog content if no query restriction applied. In Zope 2.14 this will
   result in an empty LazyCat to be returned instead.

@@ -1,10 +1,6 @@
 <dtml-var manage_page_header>
 
-<dtml-var "manage_form_title(this(), _,
-           form_title='Add ZCatalog',
-           help_product='ZCatalog',
-           help_topic='ZCatalog_Add.stx'
-	   )">
+<dtml-var "manage_form_title(this(), _, form_title='Add ZCatalog')">
 
 <FORM ACTION="manage_addZCatalog" METHOD="POST">
 <table cellspacing="0" cellpadding="2" border="0">

@@ -58,9 +58,7 @@ class PathIndex(Persistent, SimpleItem):
     query_options = ('query', 'level', 'operator')
 
     manage_options= (
-        {'label': 'Settings',
-         'action': 'manage_main',
-         'help': ('PathIndex','PathIndex_Settings.stx')},
+        {'label': 'Settings', 'action': 'manage_main'},
     )
 
     def __init__(self,id,caller=None):
