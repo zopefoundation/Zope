@@ -81,6 +81,7 @@ class TestLazyCat(BaseSequenceTest):
 
 
 class TestLazyMap(TestLazyCat):
+
     def _createLSeq(self, *seq):
         return self._createLMap(lambda x: x, *seq)
 
@@ -102,6 +103,7 @@ class TestLazyMap(TestLazyCat):
 
 
 class TestLazyFilter(TestLazyCat):
+
     def _createLSeq(self, *seq):
         return self._createLFilter(lambda x: True, *seq)
 
@@ -140,6 +142,7 @@ class TestLazyFilter(TestLazyCat):
 
 
 class TestLazyMop(TestLazyCat):
+
     def _createLSeq(self, *seq):
         return self._createLMop(lambda x: x, *seq)
 
@@ -187,6 +190,7 @@ class TestLazyMop(TestLazyCat):
 
 
 class TestLazyValues(BaseSequenceTest):
+
     def _createLValues(self, seq):
         from Products.ZCatalog.Lazy import LazyValues
         return LazyValues(seq)
