@@ -29,16 +29,28 @@ class TestLazyCat(BaseSequenceTest):
         from Products.ZCatalog.Lazy import LazyCat
         return LazyCat(sequences)
 
-    def testEmpty(self):
+    def test_empty(self):
         lcat = self._createLSeq([])
         self._compare(lcat, [])
 
-    def testSingleSequence(self):
+    def test_repr(self):
+        lcat = self._createLSeq([0, 1])
+        self.assertEquals(repr(lcat), repr([0, 1]))
+
+    def test_init_single(self):
         seq = range(10)
         lcat = self._createLSeq(seq)
         self._compare(lcat, seq)
 
-    def testMultipleSequences(self):
+    def test_add(self):
+        seq1 = range(10)
+        seq2 = range(10, 20)
+        lcat1 = self._createLSeq(seq1)
+        lcat2 = self._createLSeq(seq2)
+        lcat = lcat1 + lcat2
+        self._compare(lcat, range(20))
+
+    def test_init_multiple(self):
         from string import hexdigits, letters
         seq1 = range(10)
         seq2 = list(hexdigits)
@@ -46,7 +58,7 @@ class TestLazyCat(BaseSequenceTest):
         lcat = self._createLSeq(seq1, seq2, seq3)
         self._compare(lcat, seq1 + seq2 + seq3)
 
-    def testNestedLazySequences(self):
+    def test_init_nested(self):
         from string import hexdigits, letters
         seq1 = range(10)
         seq2 = list(hexdigits)
@@ -55,7 +67,7 @@ class TestLazyCat(BaseSequenceTest):
             [self._createLSeq(seq) for seq in (seq1, seq2, seq3)])
         self._compare(lcat, seq1 + seq2 + seq3)
 
-    def testSlicedSequences(self):
+    def test_slicing(self):
         from string import hexdigits, letters
         seq1 = range(10)
         seq2 = list(hexdigits)
@@ -64,7 +76,7 @@ class TestLazyCat(BaseSequenceTest):
             [self._createLSeq(seq) for seq in (seq1, seq2, seq3)])
         self._compare(lcat[5:-5], seq1[5:] + seq2 + seq3[:-5])
 
-    def testConsistentLength(self):
+    def test_length(self):
         # Unaccessed length
         lcat = self._createLSeq(range(10))
         self.assertEqual(len(lcat), 10)
@@ -92,7 +104,7 @@ class TestLazyMap(TestLazyCat):
             totalseq.extend(s)
         return LazyMap(mapfunc, totalseq)
 
-    def testMap(self):
+    def test_map(self):
         from string import hexdigits, letters
         seq1 = range(10)
         seq2 = list(hexdigits)
@@ -114,7 +126,7 @@ class TestLazyFilter(TestLazyCat):
             totalseq.extend(s)
         return LazyFilter(filter, totalseq)
 
-    def testFilter(self):
+    def test_filter(self):
         from string import hexdigits, letters
         seq1 = range(10)
         seq2 = list(hexdigits)
@@ -123,7 +135,7 @@ class TestLazyFilter(TestLazyCat):
         lmap = self._createLFilter(filter, seq1, seq2, seq3)
         self._compare(lmap, seq2[10:] + seq3)
 
-    def testConsistentLengthWithFilter(self):
+    def test_length_with_filter(self):
         from string import letters
 
         # Unaccessed length
@@ -153,7 +165,7 @@ class TestLazyMop(TestLazyCat):
             totalseq.extend(s)
         return LazyMop(mapfunc, totalseq)
 
-    def testMop(self):
+    def test_mop(self):
         from string import hexdigits, letters
         seq1 = range(10)
         seq2 = list(hexdigits)
@@ -165,7 +177,7 @@ class TestLazyMop(TestLazyCat):
         lmop = self._createLMop(filter, seq1, seq2, seq3)
         self._compare(lmop, [str(x).lower() for x in (seq2 + seq3)])
 
-    def testConsistentLengthWithMop(self):
+    def test_length_with_filter(self):
         from string import letters
 
         seq = range(10) + list(letters)
@@ -195,17 +207,17 @@ class TestLazyValues(BaseSequenceTest):
         from Products.ZCatalog.Lazy import LazyValues
         return LazyValues(seq)
 
-    def testEmpty(self):
+    def test_empty(self):
         lvals = self._createLValues([])
         self._compare(lvals, [])
 
-    def testValues(self):
+    def test_values(self):
         from string import letters
         seq = zip(letters, range(10))
         lvals = self._createLValues(seq)
         self._compare(lvals, range(10))
 
-    def testSlice(self):
+    def test_slicing(self):
         from string import letters
         seq = zip(letters, range(10))
         lvals = self._createLValues(seq)
