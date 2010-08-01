@@ -111,12 +111,12 @@ class CatalogPlan(object):
     """
 
     def __init__(self, catalog, query=None, threshold=0.1):
-        self.init_timer()
         self.catalog = catalog
         self.query = query
         self.key = make_key(catalog, query)
         self.threshold = threshold
         self.cid = self.get_id()
+        self.init_timer()
 
     def get_id(self):
         parent = aq_parent(self.catalog)
@@ -143,7 +143,10 @@ class CatalogPlan(object):
 
     def benchmark(self):
         # holds the benchmark of each index
-        return self.prioritymap().get(self.key, None)
+        bm = self.prioritymap().get(self.key, None)
+        if bm is None:
+            self.prioritymap()[self.key] = {}
+        return bm
 
     def plan(self):
         benchmark = self.benchmark()
@@ -158,9 +161,6 @@ class CatalogPlan(object):
     def start(self):
         self.init_timer()
         self.start_time = time.time()
-        benchmark = self.benchmark()
-        if benchmark is None:
-            self.prioritymap()[self.key] = {}
 
     def start_split(self, label, result=None):
         self.interim[label] = (time.time(), None)
