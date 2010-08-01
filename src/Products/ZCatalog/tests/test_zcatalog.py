@@ -10,7 +10,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-""" Unittests for Catalog.
+""" Unittests for ZCatalog
 """
 
 import unittest
@@ -61,7 +61,6 @@ class zdummyFalse(zdummy):
     def __nonzero__(self):
         return False
 
-# make objects with failing __len__ and __nonzero__
 
 class dummyLenFail(zdummy):
 
@@ -101,6 +100,20 @@ class fakeparent(Implicit):
         if result is self.marker:
             raise FakeTraversalError(path)
         return result
+
+
+class PickySecurityManager:
+
+    def __init__(self, badnames=[]):
+        self.badnames = badnames
+
+    def validateValue(self, value):
+        return 1
+
+    def validate(self, accessed, container, name, value):
+        if name not in self.badnames:
+            return 1
+        raise Unauthorized(name)
 
 
 class TestZCatalog(unittest.TestCase):
@@ -226,20 +239,6 @@ class TestZCatalog(unittest.TestCase):
         # should return
         self.d['0'] = None
         self.assertEquals(catalog.getobject(rid0), None)
-
-
-class PickySecurityManager:
-
-    def __init__(self, badnames=[]):
-        self.badnames = badnames
-
-    def validateValue(self, value):
-        return 1
-
-    def validate(self, accessed, container, name, value):
-        if name not in self.badnames:
-            return 1
-        raise Unauthorized(name)
 
 
 class TestZCatalogGetObject(unittest.TestCase):
