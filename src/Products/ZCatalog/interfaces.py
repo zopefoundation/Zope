@@ -281,3 +281,31 @@ class ICatalogBrain(Interface):
     def getRID():
         """Return the record ID for this object."""
 
+
+class IProgressHandler(Interface):
+    """ A handler to log progress informations for long running
+        operations.
+    """
+
+    def init(ident, max):
+        """ Called at the start of the long running process.
+
+            'ident' -- a string identifying the operation
+            'max' -- maximum number of objects to be processed (int)
+        """
+
+    def info(text):
+        """ Log some 'text'"""
+
+    def finish():
+        """ Called up termination """
+
+    def report(current, *args, **kw):
+        """ Called for every iteration.
+
+            'current' -- an integer representing the number of objects
+                         processed so far.
+        """
+
+    def output(text):
+        """ Log 'text' to some output channel """

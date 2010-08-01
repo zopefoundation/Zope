@@ -16,39 +16,11 @@ import time
 from logging import getLogger
 
 from DateTime.DateTime import DateTime
-from zope.interface import Interface
 from zope.interface import implements
 
+from .interfaces import IProgressHandler
+
 LOG = getLogger('ProgressHandler')
-
-
-class IProgressHandler(Interface):
-    """ A handler to log progress informations for long running
-        operations.
-    """
-
-    def init(ident, max):
-        """ Called at the start of the long running process.
-
-            'ident' -- a string identifying the operation
-            'max' -- maximum number of objects to be processed (int)
-        """
-
-    def info(text):
-        """ Log some 'text'"""
-
-    def finish():
-        """ Called up termination """
-
-    def report(current, *args, **kw):
-        """ Called for every iteration.
-
-            'current' -- an integer representing the number of objects
-                         processed so far.
-        """
-
-    def output(text):
-        """ Log 'text' to some output channel """
 
 
 class StdoutHandler:
