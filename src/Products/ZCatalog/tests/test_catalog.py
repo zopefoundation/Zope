@@ -46,9 +46,12 @@ def createDatabase():
 app = createDatabase()
 
 
-def sort(iterable):
+def sort(iterable, reverse=False):
     L = list(iterable)
-    L.sort()
+    if reverse:
+        L.sort(reverse=True)
+    else:
+        L.sort()
     return L
 
 
@@ -532,8 +535,7 @@ class TestMerge(CatalogBase, unittest.TestCase):
                    for cat in self.catalogs]
         merged_rids = [r.getRID() for r in mergeResults(
             results, has_sort_keys=True, reverse=True)]
-        expected = sort(chain(*results))
-        expected.reverse()
+        expected = sort(chain(*results), reverse=True)
         expected = [rid for sortkey, rid, getitem in expected]
         self.assertEqual(merged_rids, expected)
 

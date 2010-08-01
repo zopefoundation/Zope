@@ -655,9 +655,10 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                     append((k, intset, _self__getitem__))
                     # Note that sort keys are unique.
 
-            result.sort()
             if reverse:
-                result.reverse()
+                result.sort(reverse=True)
+            else:
+                result.sort()
             result = LazyCat(LazyValues(result), length)
         elif limit is None or (limit * 4 > rlen):
             # Iterate over the result set getting sort keys from the index
@@ -674,9 +675,10 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                     # results with those of other catalogs while avoiding
                     # the cost of instantiating a LazyMap per result
             if merge:
-                result.sort()
                 if reverse:
-                    result.reverse()
+                    result.sort(reverse=True)
+                else:
+                    result.sort()
                 if limit is not None:
                     result = result[:limit]
                 result = LazyValues(result)
