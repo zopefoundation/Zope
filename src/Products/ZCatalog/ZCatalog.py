@@ -90,6 +90,7 @@ class ZCatalog(Folder, Persistent, Implicit):
     security.setPermissionDefault(manage_zcatalog_entries, ('Manager', ))
     security.setPermissionDefault(manage_zcatalog_indexes, ('Manager', ))
     security.setPermissionDefault(search_zcatalog, ('Anonymous', 'Manager'))
+    security.declareProtected(search_zcatalog, 'all_meta_types')
 
     meta_type = "ZCatalog"
     icon = 'misc_/ZCatalog/ZCatalog.gif'
@@ -109,19 +110,18 @@ class ZCatalog(Folder, Persistent, Implicit):
         )
 
     security.declareProtected(manage_zcatalog_entries, 'manage_main')
-    security.declareProtected(search_zcatalog, 'all_meta_types')
 
     security.declareProtected(manage_zcatalog_entries, 'manage_catalogView')
     manage_catalogView = DTMLFile('dtml/catalogView', globals())
 
-    security.declareProtected(manage_zcatalog_entries, 'manage_catalogFind')
-    manage_catalogFind = DTMLFile('dtml/catalogFind', globals())
+    security.declareProtected(manage_zcatalog_entries, 'manage_catalogIndexes')
+    manage_catalogIndexes = DTMLFile('dtml/catalogIndexes', globals())
 
     security.declareProtected(manage_zcatalog_entries, 'manage_catalogSchema')
     manage_catalogSchema = DTMLFile('dtml/catalogSchema', globals())
 
-    security.declareProtected(manage_zcatalog_entries, 'manage_catalogIndexes')
-    manage_catalogIndexes = DTMLFile('dtml/catalogIndexes', globals())
+    security.declareProtected(manage_zcatalog_entries, 'manage_catalogFind')
+    manage_catalogFind = DTMLFile('dtml/catalogFind', globals())
 
     security.declareProtected(manage_zcatalog_entries,
                               'manage_catalogAdvanced')
