@@ -19,6 +19,9 @@ from Acquisition import aq_base
 from Acquisition import aq_parent
 from Products.PluginIndexes.interfaces import IUniqueValueIndex
 
+MAX_DISTINCT_VALUES = 10
+REFRESH_RATE = 100
+
 REPORTS_LOCK = allocate_lock()
 REPORTS = {}
 
@@ -28,8 +31,23 @@ PRIORITYMAP = {}
 VALUE_INDEXES_LOCK = allocate_lock()
 VALUE_INDEXES = frozenset()
 
-MAX_DISTINCT_VALUES = 10
-REFRESH_RATE = 100
+
+def get_value_indexes():
+    return VALUE_INDEXES
+
+
+def set_value_indexes(value):
+    with VALUE_INDEXES_LOCK:
+        global VALUE_INDEXES
+        VALUE_INDEXES = value
+
+
+def clear_value_indexes():
+    set_value_indexes(frozenset())
+
+from zope.testing.cleanup import addCleanUp
+addCleanUp(clear_value_indexes)
+del addCleanUp
 
 
 def determine_value_indexes(indexes):
@@ -41,38 +59,25 @@ def determine_value_indexes(indexes):
     # of unique values, where the number of items for each value differs a
     # lot. If the number of items per value is similar, the duration of a
     # query is likely similar as well.
-    global VALUE_INDEXES
-    if VALUE_INDEXES:
+    value_indexes = get_value_indexes()
+    if value_indexes:
         # Calculating all the value indexes is quite slow, so we do this once
         # for the first query. Since this is an optimization only, slightly
         # outdated results based on index changes in the running process
         # can be ignored.
-        return VALUE_INDEXES
+        return value_indexes
 
-    new_value_indexes = set()
+    value_indexes = set()
     for name, index in indexes.items():
         if IUniqueValueIndex.providedBy(index):
             values = index.uniqueValues()
             if values and len(list(values)) < MAX_DISTINCT_VALUES:
                 # Only consider indexes which actually return a number
                 # greater than zero
-                new_value_indexes.add(name)
+                value_indexes.add(name)
 
-    with VALUE_INDEXES_LOCK:
-        VALUE_INDEXES = frozenset(new_value_indexes)
-
-    return VALUE_INDEXES
-
-
-def clear_value_indexes():
-    global VALUE_INDEXES
-    with VALUE_INDEXES_LOCK:
-        VALUE_INDEXES = frozenset()
-
-
-from zope.testing.cleanup import addCleanUp
-addCleanUp(clear_value_indexes)
-del addCleanUp
+    set_value_indexes(frozenset(value_indexes))
+    return value_indexes
 
 
 def make_key(catalog, query):
