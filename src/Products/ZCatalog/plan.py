@@ -28,11 +28,11 @@ REPORTS = {}
 class ThreadDict(object):
 
     @classmethod
-    def get_entry(cls, key):
+    def get(cls, key):
         return cls.value.get(key, None)
 
     @classmethod
-    def set_entry(cls, key, value):
+    def set(cls, key, value):
         with cls.lock:
             cls.value[key] = value
 
@@ -164,7 +164,7 @@ class CatalogPlan(object):
         self.duration = None
 
     def plan(self):
-        benchmark = PriorityMap.get_entry(self.key)
+        benchmark = PriorityMap.get(self.key)
         if not benchmark:
             return None
 
@@ -210,7 +210,7 @@ class CatalogPlan(object):
     def stop(self):
         self.end_time = time.time()
         self.duration = self.end_time - self.start_time
-        PriorityMap.set_entry(self.key, self.benchmark)
+        PriorityMap.set(self.key, self.benchmark)
         self.log()
 
     def log(self):
