@@ -1,7 +1,5 @@
 import os
 import sys
-import time
-import logging
 from re import compile
 from socket import gethostbyaddr
 
@@ -23,7 +21,7 @@ def _setenv(name, value):
 def debug_mode(value):
     value and _setenv('Z_DEBUG_MODE', '1')
     import Globals # to set value
-    Globals.DevelopmentMode = boolean(value)
+    Globals.DevelopmentMode = bool(value)
     return value
 
 def locale(value):
@@ -117,20 +115,6 @@ def enable_ms_author_via(value):
 def enable_ms_public_header(value):
     import webdav
     webdav.enable_ms_public_header = value
-
-def catalog_getObject_raises(value):
-
-    if value is not None:
-
-        import warnings
-        warnings.warn(
-        "'catalog-getObject-raises' option will be removed in Zope 2.10:\n",
-        DeprecationWarning)
-
-        from Products.ZCatalog import CatalogBrains
-        CatalogBrains.GETOBJECT_RAISES = bool(value)
-
-    return value
 
 # server handlers
 

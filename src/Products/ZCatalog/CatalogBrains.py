@@ -16,13 +16,8 @@ from zope.interface import implements
 import Acquisition
 from Acquisition import aq_parent
 import Record
-from ZODB.POSException import ConflictError
 
 from interfaces import ICatalogBrain
-
-# Switch for new behavior, raise exception instead of returning None.
-# Use 'catalog-getObject-raises off' in zope.conf to restore old behavior.
-GETOBJECT_RAISES = True
 
 
 class AbstractCatalogBrain(Record.Record, Acquisition.Implicit):
@@ -51,14 +46,7 @@ class AbstractCatalogBrain(Record.Record, Acquisition.Implicit):
 
         Same as getObject, but does not do security checks.
         """
-        try:
-            return aq_parent(self).unrestrictedTraverse(self.getPath())
-        except ConflictError:
-            raise
-        except Exception:
-            if GETOBJECT_RAISES:
-                raise
-            return None
+        return aq_parent(self).unrestrictedTraverse(self.getPath())
 
     def getObject(self, REQUEST=None):
         """Return the object for this record
@@ -76,25 +64,9 @@ class AbstractCatalogBrain(Record.Record, Acquisition.Implicit):
             return None
         parent = aq_parent(self)
         if len(path) > 1:
-            try:
-                parent = parent.unrestrictedTraverse(path[:-1])
-            except ConflictError:
-                raise
-            except Exception:
-                if GETOBJECT_RAISES:
-                    raise
-                return None
+            parent = parent.unrestrictedTraverse(path[:-1])
 
-        try:
-            target = parent.restrictedTraverse(path[-1])
-        except ConflictError:
-            raise
-        except Exception:
-            if GETOBJECT_RAISES:
-                raise
-            return None
-
-        return target
+        return parent.restrictedTraverse(path[-1])
 
     def getRID(self):
         """Return the record ID for this object."""

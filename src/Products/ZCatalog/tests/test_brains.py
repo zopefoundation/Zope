@@ -99,27 +99,11 @@ class ConflictingCatalog(DummyCatalog):
         raise ConflictError
 
 
-class BrainsTestBase(object):
-
-    _old_flag = None
+class TestBrains(unittest.TestCase):
 
     def setUp(self):
         self.cat = DummyCatalog()
         self.cat.REQUEST = DummyRequest()
-        self._init_getOb_flag()
-
-    def tearDown(self):
-        if self._old_flag is not None:
-            self._restore_getOb_flag()
-
-    def _init_getOb_flag(self):
-        from Products.ZCatalog import CatalogBrains
-        self._old_flag = CatalogBrains.GETOBJECT_RAISES
-        CatalogBrains.GETOBJECT_RAISES = self._flag_value()
-
-    def _restore_getOb_flag(self):
-        from Products.ZCatalog import CatalogBrains
-        CatalogBrains.GETOBJECT_RAISES = self._old_flag
 
     def _makeBrain(self, rid):
         from Products.ZCatalog.CatalogBrains import AbstractCatalogBrain
@@ -165,12 +149,6 @@ class BrainsTestBase(object):
         self.assertEqual(b.getPath(), '/conflicter')
         self.assertRaises(ConflictError, b.getObject)
 
-
-class TestBrains(BrainsTestBase, unittest.TestCase):
-
-    def _flag_value(self):
-        return True
-
     def testGetObjectRaisesUnauthorized(self):
         from zExceptions import Unauthorized
         b = self._makeBrain(2)
@@ -185,25 +163,7 @@ class TestBrains(BrainsTestBase, unittest.TestCase):
         self.assertRaises((NotFound, AttributeError, KeyError), b.getObject)
 
 
-class TestBrainsOldBehavior(BrainsTestBase, unittest.TestCase):
-
-    def _flag_value(self):
-        return False
-
-    def testGetObjectReturnsNoneForUnauthorized(self):
-        b = self._makeBrain(2)
-        self.assertEqual(b.getPath(), '/secret')
-        self.assertEqual(b.getObject(), None)
-
-    def testGetObjectReturnsNoneForMissing(self):
-        b = self._makeBrain(3)
-        self.assertEqual(b.getPath(), '/zonked')
-        self.assertRaises(KeyError, self.cat.getobject, 3)
-        self.assertEqual(b.getObject(), None)
-
-
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TestBrains))
-    suite.addTest(unittest.makeSuite(TestBrainsOldBehavior))
     return suite

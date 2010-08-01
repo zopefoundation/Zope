@@ -35,6 +35,8 @@ Bugs Fixed
 Restructuring
 +++++++++++++
 
+- Removed deprecated ``catalog-getObject-raises`` zope.conf option.
+
 - Removed unmaintained HelpSys documents from ZCatalog and PluginIndexes.
   Useful explanations are given inside the form templates.
 
