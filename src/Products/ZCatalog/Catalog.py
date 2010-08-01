@@ -445,10 +445,9 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
             query = {}
             query.update(request.keywords)
             real_req = request.request
-            if isinstance(request.request, dict):
+            if isinstance(real_req, dict):
                 query.update(real_req)
-            else:
-                real_req = request.request
+                real_req = None
         else:
             real_req = request
 
