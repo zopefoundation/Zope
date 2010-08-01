@@ -111,10 +111,6 @@ class ZCatalog(Folder, Persistent, Implicit):
     security.declareProtected(manage_zcatalog_entries, 'manage_main')
     security.declareProtected(search_zcatalog, 'all_meta_types')
 
-    security.declareProtected(manage_zcatalog_entries,
-                              'manage_catalogAddRowForm')
-    manage_catalogAddRowForm = DTMLFile('dtml/catalogAddRowForm', globals())
-
     security.declareProtected(manage_zcatalog_entries, 'manage_catalogView')
     manage_catalogView = DTMLFile('dtml/catalogView', globals())
 
