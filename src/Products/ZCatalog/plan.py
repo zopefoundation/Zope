@@ -77,6 +77,9 @@ del addCleanUp
 
 
 def make_key(catalog, query):
+    if not query:
+        return None
+
     indexes = catalog.indexes
     valueindexes = determine_value_indexes(indexes)
     key = keys = query.keys()
@@ -108,10 +111,10 @@ class CatalogPlan(object):
     """
 
     def __init__(self, catalog, query=None, threshold=0.1):
-        self.init()
+        self.init_timer()
         self.catalog = catalog
         self.query = query
-        self._key = None
+        self.key = make_key(catalog, query)
         self.threshold = threshold
 
         parent = aq_parent(catalog)
@@ -122,7 +125,7 @@ class CatalogPlan(object):
             path = tuple(parent.getPhysicalPath())
         self.cid = path
 
-    def init(self):
+    def init_timer(self):
         self.res = []
         self.start_time = None
         self.interim = {}
@@ -138,7 +141,7 @@ class CatalogPlan(object):
 
     def benchmark(self):
         # holds the benchmark of each index
-        return self.prioritymap().get(self.key(), None)
+        return self.prioritymap().get(self.key, None)
 
     def plan(self):
         benchmark = self.benchmark()
@@ -151,11 +154,11 @@ class CatalogPlan(object):
         return [i[1] for i in ranking]
 
     def start(self):
-        self.init()
+        self.init_timer()
         self.start_time = time.time()
         benchmark = self.benchmark()
         if benchmark is None:
-            self.prioritymap()[self.key()] = {}
+            self.prioritymap()[self.key] = {}
 
     def start_split(self, label, result=None):
         self.interim[label] = (time.time(), None)
@@ -189,7 +192,7 @@ class CatalogPlan(object):
         self.end_time = time.time()
         self.duration = self.end_time - self.start_time
 
-        key = self.key()
+        key = self.key
         benchmark = self.benchmark()
         prioritymap = self.prioritymap()
         prioritymap[key] = benchmark
@@ -213,22 +216,13 @@ class CatalogPlan(object):
     def result(self):
         return (self.duration, tuple(self.res))
 
-    def key(self):
-        if not self._key:
-            self._key = make_key(self.catalog, self.query)
-        return self._key
-
     def log(self):
         # result of stopwatch
         res = self.result()
         if res[0] < self.threshold:
             return
 
-        # The key calculation takes a bit itself, we want to avoid that for
-        # any fast queries. This does mean that slow queries get the key
-        # calculation overhead added to their runtime.
-        key = self.key()
-
+        key = self.key
         reports_lock.acquire()
         try:
             if self.cid not in reports:
