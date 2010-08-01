@@ -815,7 +815,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         return CatalogReport(self, query, threshold)
 
 
-class CatalogSearchArgumentsMap:
+class CatalogSearchArgumentsMap(object):
     """Multimap catalog arguments coming simultaneously from keywords
     and request.
 
@@ -850,9 +850,12 @@ class CatalogSearchArgumentsMap:
         try:
             self[key]
         except KeyError:
-            return 0
+            return False
         else:
-            return 1
+            return True
+
+    def __contains__(self, name):
+        return self.has_key(name)
 
 
 def mergeResults(results, has_sort_keys, reverse):

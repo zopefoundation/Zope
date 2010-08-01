@@ -428,6 +428,61 @@ class TestRangeSearch(CatalogBase, unittest.TestCase):
                              "%d vs [%d,%d]" % (r.number, m, n))
 
 
+class TestCatalogSearchArgumentsMap(unittest.TestCase):
+
+    def _makeOne(self, request=None, keywords=None):
+        from Products.ZCatalog.Catalog import CatalogSearchArgumentsMap
+        return CatalogSearchArgumentsMap(request, keywords)
+
+    def test_init_empty(self):
+        argmap = self._makeOne()
+        self.assert_(argmap)
+
+    def test_init_request(self):
+        argmap = self._makeOne(dict(foo='bar'), None)
+        self.assertEquals(argmap.get('foo'), 'bar')
+
+    def test_init_keywords(self):
+        argmap = self._makeOne(None, dict(foo='bar'))
+        self.assertEquals(argmap.get('foo'), 'bar')
+
+    def test_getitem(self):
+        argmap = self._makeOne(dict(a='a'), dict(b='b'))
+        self.assertEquals(argmap['a'], 'a')
+        self.assertEquals(argmap['b'], 'b')
+        self.assertRaises(KeyError, argmap.__getitem__, 'c')
+
+    def test_getitem_emptystring(self):
+        argmap = self._makeOne(dict(a='', c='c'), dict(b='', c=''))
+        self.assertRaises(KeyError, argmap.__getitem__, 'a')
+        self.assertRaises(KeyError, argmap.__getitem__, 'b')
+        self.assertEquals(argmap['c'], 'c')
+
+    def test_get(self):
+        argmap = self._makeOne(dict(a='a'), dict(b='b'))
+        self.assertEquals(argmap.get('a'), 'a')
+        self.assertEquals(argmap.get('b'), 'b')
+        self.assertEquals(argmap.get('c'), None)
+        self.assertEquals(argmap.get('c', 'default'), 'default')
+
+    def test_keywords_precedence(self):
+        argmap = self._makeOne(dict(a='a', c='r'), dict(b='b', c='k'))
+        self.assertEquals(argmap.get('c'), 'k')
+        self.assertEquals(argmap['c'], 'k')
+
+    def test_haskey(self):
+        argmap = self._makeOne(dict(a='a'), dict(b='b'))
+        self.assert_(argmap.has_key('a'))
+        self.assert_(argmap.has_key('b'))
+        self.assert_(not argmap.has_key('c'))
+
+    def test_contains(self):
+        argmap = self._makeOne(dict(a='a'), dict(b='b'))
+        self.assert_('a' in argmap)
+        self.assert_('b' in argmap)
+        self.assert_('c' not in argmap)
+
+
 class TestMerge(CatalogBase, unittest.TestCase):
     # Test merging results from multiple catalogs
 
@@ -523,5 +578,6 @@ def test_suite():
     suite.addTest(unittest.makeSuite(TestAddDelIndexes))
     suite.addTest(unittest.makeSuite(TestCatalogObject))
     suite.addTest(unittest.makeSuite(TestRangeSearch))
+    suite.addTest(unittest.makeSuite(TestCatalogSearchArgumentsMap))
     suite.addTest(unittest.makeSuite(TestMerge))
     return suite
