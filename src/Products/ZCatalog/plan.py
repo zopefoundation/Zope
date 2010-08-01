@@ -19,11 +19,14 @@ from Acquisition import aq_base
 from Acquisition import aq_parent
 from Products.PluginIndexes.interfaces import IUniqueValueIndex
 
-reports_lock = allocate_lock()
-reports = {}
+REPORTS_LOCK = allocate_lock()
+REPORTS = {}
 
-value_indexes_lock = allocate_lock()
-value_indexes = frozenset()
+PRIORITYMAP_LOCK = allocate_lock()
+PRIORITYMAP = {}
+
+VALUE_INDEXES_LOCK = allocate_lock()
+VALUE_INDEXES = frozenset()
 
 MAX_DISTINCT_VALUES = 10
 REFRESH_RATE = 100
@@ -38,13 +41,13 @@ def determine_value_indexes(indexes):
     # of unique values, where the number of items for each value differs a
     # lot. If the number of items per value is similar, the duration of a
     # query is likely similar as well.
-    global value_indexes
-    if value_indexes:
+    global VALUE_INDEXES
+    if VALUE_INDEXES:
         # Calculating all the value indexes is quite slow, so we do this once
         # for the first query. Since this is an optimization only, slightly
         # outdated results based on index changes in the running process
         # can be ignored.
-        return value_indexes
+        return VALUE_INDEXES
 
     new_value_indexes = set()
     for name, index in indexes.items():
@@ -54,22 +57,17 @@ def determine_value_indexes(indexes):
                 # Only consider indexes which actually return a number
                 # greater than zero
                 new_value_indexes.add(name)
-    try:
-        value_indexes_lock.acquire()
-        value_indexes = frozenset(new_value_indexes)
-    finally:
-        value_indexes_lock.release()
 
-    return value_indexes
+    with VALUE_INDEXES_LOCK:
+        VALUE_INDEXES = frozenset(new_value_indexes)
+
+    return VALUE_INDEXES
 
 
 def clear_value_indexes():
-    global value_indexes
-    try:
-        value_indexes_lock.acquire()
-        value_indexes = frozenset()
-    finally:
-        value_indexes_lock.release()
+    global VALUE_INDEXES
+    with VALUE_INDEXES_LOCK:
+        VALUE_INDEXES = frozenset()
 
 
 from zope.testing.cleanup import addCleanUp
@@ -143,18 +141,12 @@ class CatalogPlan(object):
         self.stop_time = None
         self.duration = None
 
-    def prioritymap(self):
-        # holds the benchmark of each index
-        prioritymap = getattr(self.catalog, '_v_prioritymap', None)
-        if prioritymap is None:
-            prioritymap = self.catalog._v_prioritymap = {}
-        return prioritymap
-
     def benchmark(self):
         # holds the benchmark of each index
-        bm = self.prioritymap().get(self.key, None)
+        bm = PRIORITYMAP.get(self.key, None)
         if bm is None:
-            self.prioritymap()[self.key] = {}
+            with PRIORITYMAP_LOCK:
+                PRIORITYMAP[self.key] = {}
         return bm
 
     def plan(self):
@@ -207,8 +199,9 @@ class CatalogPlan(object):
 
         key = self.key
         benchmark = self.benchmark()
-        prioritymap = self.prioritymap()
-        prioritymap[key] = benchmark
+
+        with PRIORITYMAP_LOCK:
+            PRIORITYMAP[key] = benchmark
 
         # calculate mean time of search
         stats = getattr(self.catalog, '_v_stats', None)
@@ -235,34 +228,28 @@ class CatalogPlan(object):
         key = self.key
         recent = RecentQuery(duration=total, details=self.res)
 
-        reports_lock.acquire()
-        try:
-            if self.cid not in reports:
-                reports[self.cid] = {}
+        with REPORTS_LOCK:
+            if self.cid not in REPORTS:
+                REPORTS[self.cid] = {}
 
-            previous = reports[self.cid].get(key)
+            previous = REPORTS[self.cid].get(key)
             if previous:
                 counter, mean, last = previous
                 mean = (mean * counter + total) / float(counter + 1)
-                reports[self.cid][key] = Report(counter + 1, mean, recent)
+                REPORTS[self.cid][key] = Report(counter + 1, mean, recent)
             else:
-                reports[self.cid][key] = Report(1, total, recent)
-        finally:
-            reports_lock.release()
+                REPORTS[self.cid][key] = Report(1, total, recent)
 
     def reset(self):
-        reports_lock.acquire()
-        try:
-            reports[self.cid] = {}
-        finally:
-            reports_lock.release()
+        with REPORTS_LOCK:
+            REPORTS[self.cid] = {}
 
     def report(self):
         """Returns a statistic report of catalog queries as list of dicts.
         The duration is provided in millisecond.
         """
         rval = []
-        for key, report in reports.get(self.cid, {}).items():
+        for key, report in REPORTS.get(self.cid, {}).items():
             last = report.last
             info = {
                 'query': key,
