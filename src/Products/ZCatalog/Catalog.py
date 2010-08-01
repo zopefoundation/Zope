@@ -869,15 +869,16 @@ def mergeResults(results, has_sort_keys, reverse):
         # Concatenate the catalog results into one list and sort it
         # Each result record consists of a list of tuples with three values:
         # (sortkey, docid, catalog__getitem__)
+        combined = []
         if len(results) > 1:
-            all = []
             for r in results:
-                all.extend(r)
+                combined.extend(r)
         elif len(results) == 1:
-            all = results[0]
+            combined = results[0]
         else:
             return []
-        all.sort()
         if reverse:
-            all.reverse()
-        return LazyMap(lambda rec: rec[2](rec[1]), all, len(all))
+            combined.sort(reverse=True)
+        else:
+            combined.sort()
+        return LazyMap(lambda rec: rec[2](rec[1]), combined, len(combined))
