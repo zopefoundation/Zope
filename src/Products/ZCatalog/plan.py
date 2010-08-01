@@ -110,6 +110,8 @@ Duration = namedtuple('Duration', ['start', 'end'])
 IndexMeasurement = namedtuple('IndexMeasurement',
                               ['name', 'duration', 'num'])
 Benchmark = namedtuple('Benchmark', ['num', 'duration', 'hits'])
+RecentQuery = namedtuple('RecentQuery', ['duration', 'details'])
+Report = namedtuple('Report', ['hits', 'duration', 'last'])
 
 
 class CatalogPlan(object):
@@ -231,7 +233,7 @@ class CatalogPlan(object):
             return
 
         key = self.key
-        res = (total, self.res)
+        recent = RecentQuery(duration=total, details=self.res)
 
         reports_lock.acquire()
         try:
@@ -242,9 +244,9 @@ class CatalogPlan(object):
             if previous:
                 counter, mean, last = previous
                 mean = (mean * counter + total) / float(counter + 1)
-                reports[self.cid][key] = (counter + 1, mean, res)
+                reports[self.cid][key] = Report(counter + 1, mean, recent)
             else:
-                reports[self.cid][key] = (1, total, res)
+                reports[self.cid][key] = Report(1, total, recent)
         finally:
             reports_lock.release()
 
@@ -256,34 +258,21 @@ class CatalogPlan(object):
             reports_lock.release()
 
     def report(self):
-        """Returns a statistic report of catalog queries as list of dicts as
-        follows:
-
-        [{'query': <query_key>,
-          'counter': <hits>
-          'duration': <mean duration>,
-          'last': <details of recent query>,
-         },
-         ...
-        ]
-
-        <details of recent query> := {'duration': <duration of last query>,
-                                      'details': <duration of single indexes>,
-                                     }
-
+        """Returns a statistic report of catalog queries as list of dicts.
         The duration is provided in millisecond.
         """
         rval = []
-        for k, v in reports.get(self.cid, {}).items():
+        for key, report in reports.get(self.cid, {}).items():
+            last = report.last
             info = {
-                'query': k,
-                'counter': v[0],
-                'duration': v[1] * 1000,
-                'last': {'duration': v[2][0] * 1000,
-                         'details': [dict(id=i.name,
-                                          duration=i.duration * 1000,
-                                          length=i.num)
-                                     for i in v[2][1]],
+                'query': key,
+                'counter': report.hits,
+                'duration': report.duration * 1000,
+                'last': {'duration': last.duration * 1000,
+                         'details': [dict(id=d.name,
+                                          duration=d.duration * 1000,
+                                          length=d.num)
+                                     for d in last.details],
                         },
                 }
             rval.append(info)
