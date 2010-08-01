@@ -169,8 +169,6 @@ class TestCatalogObject(unittest.TestCase):
 
     def setUp(self):
         self.warningshook = WarningsHook()
-        self.warningshook.install()
-
         self._catalog = Catalog()
         self._catalog.lexicon = PLexicon('lexicon')
         col1 = FieldIndex('col1')
@@ -191,6 +189,7 @@ class TestCatalogObject(unittest.TestCase):
         att3 = KeywordIndex('att3')
         num = FieldIndex('num')
 
+
         self._catalog.addIndex('att1', att1)
         self._catalog.addIndex('att2', att2)
         self._catalog.addIndex('att3', att3)
@@ -201,29 +200,33 @@ class TestCatalogObject(unittest.TestCase):
         self._catalog.addColumn('num')
 
         for x in range(0, self.upper):
-            self._catalog.catalogObject(dummy(self.nums[x]), `x`)
+            self._catalog.catalogObject(dummy(self.nums[x]), repr(x))
         self._catalog = self._catalog.__of__(dummy('foo'))
 
     def tearDown(self):
         self._catalog = None
-        self.warningshook.uninstall()
 
     def testResultLength(self):
-        a = self._catalog()
+        a = self._catalog(att1='att1')
         self.assertEqual(len(a), self.upper,
                          'length should be %s, its %s' % (self.upper, len(a)))
 
     def testEmptyMappingReturnsAll(self):
-        upper = self.upper
-        a = self._catalog({})
-        self.assertEqual(len(a), upper,
-                         'length should be %s, its %s' % (upper, len(a)))
-        # Queries used to do the same, because of a bug in the
+        self.warningshook.install()
+        try:
+            upper = self.upper
+            length = len(self._catalog({}))
+            self.assertEqual(length, upper,
+                             'length should be %s, its %s' % (upper, length))
+        finally:
+            self.warningshook.uninstall()
+
+    def testMappingWithEmptyKeysDoesntReturnAll(self):
+        # Queries with empty keys used to return all, because of a bug in the
         # parseIndexRequest function, mistaking a CatalogSearchArgumentsMap
         # for a Record class
         a = self._catalog({'col1': '', 'col2': '', 'col3': ''})
-        self.assertEqual(len(a), 0,
-                         'length should be %s, its %s' % (upper, len(a)))
+        self.assertEqual(len(a), 0, 'length should be 0, its %s' % len(a))
 
     def testFieldIndexLength(self):
         a = self._catalog(att1='att1')
@@ -287,7 +290,7 @@ class TestCatalogObject(unittest.TestCase):
 
     def testGoodSortIndex(self):
         upper = self.upper
-        a = self._catalog(sort_on='num')
+        a = self._catalog(att1='att1', sort_on='num')
         self.assertEqual(len(a), upper,
                          'length should be %s, its %s' % (upper, len(a)))
         for x in range(self.upper):
@@ -344,31 +347,32 @@ class TestCatalogObject(unittest.TestCase):
         # This exercises the optimization in the catalog that iterates
         # over the sort index rather than the result set when the result
         # set is much larger than the sort index.
-        a = self._catalog(sort_on='att1')
+        a = self._catalog(att1='att1', sort_on='att1')
         self.assertEqual(len(a), self.upper)
 
     def testBadSortLimits(self):
-        self.assertRaises(
-            AssertionError, self._catalog, sort_on='num', sort_limit=0)
-        self.assertRaises(
-            AssertionError, self._catalog, sort_on='num', sort_limit=-10)
+        self.assertRaises(AssertionError,
+            self._catalog, att1='att1', sort_on='num', sort_limit=0)
+        self.assertRaises(AssertionError,
+            self._catalog, att1='att1', sort_on='num', sort_limit=-10)
 
     def testSortLimit(self):
-        full = self._catalog(sort_on='num')
-        a = self._catalog(sort_on='num', sort_limit=10)
+        full = self._catalog(att1='att1', sort_on='num')
+        a = self._catalog(att1='att1', sort_on='num', sort_limit=10)
         self.assertEqual([r.num for r in a], [r.num for r in full[:10]])
         self.assertEqual(a.actual_result_count, self.upper)
-        a = self._catalog(sort_on='num', sort_limit=10, sort_order='reverse')
+        a = self._catalog(att1='att1', sort_on='num',
+                          sort_limit=10, sort_order='reverse')
         rev = [r.num for r in full[-10:]]
         rev.reverse()
         self.assertEqual([r.num for r in a], rev)
         self.assertEqual(a.actual_result_count, self.upper)
 
     def testBigSortLimit(self):
-        a = self._catalog(sort_on='num', sort_limit=self.upper*3)
+        a = self._catalog(att1='att1', sort_on='num', sort_limit=self.upper*3)
         self.assertEqual(a.actual_result_count, self.upper)
         self.assertEqual(a[0].num, 0)
-        a = self._catalog(
+        a = self._catalog(att1='att1',
             sort_on='num', sort_limit=self.upper*3, sort_order='reverse')
         self.assertEqual(a.actual_result_count, self.upper)
         self.assertEqual(a[0].num, self.upper - 1)
@@ -477,7 +481,8 @@ class TestMerge(unittest.TestCase):
     def testLimitSort(self):
         from Products.ZCatalog.Catalog import mergeResults
         results = [cat.searchResults(
-                   dict(number=True, sort_on='num'), sort_limit=2, _merge=0)
+                   dict(att1='att1', number=True, sort_on='num'),
+                   sort_limit=2, _merge=0)
                    for cat in self.catalogs]
         merged_rids = [r.getRID() for r in mergeResults(
             results, has_sort_keys=True, reverse=False)]
