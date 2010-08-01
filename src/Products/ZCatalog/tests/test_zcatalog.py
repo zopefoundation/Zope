@@ -116,11 +116,23 @@ class PickySecurityManager:
         raise Unauthorized(name)
 
 
-class TestZCatalog(unittest.TestCase):
+class ZCatalogBase(object):
+
+    def _makeOne(self):
+        from Products.ZCatalog.ZCatalog import ZCatalog
+        return ZCatalog('Catalog')
 
     def setUp(self):
-        from Products.ZCatalog.ZCatalog import ZCatalog
-        self._catalog = ZCatalog('Catalog')
+        self._catalog = self._makeOne()
+
+    def tearDown(self):
+        self._catalog = None
+
+
+class TestZCatalog(ZCatalogBase, unittest.TestCase):
+
+    def setUp(self):
+        ZCatalogBase.setUp(self)
         self._catalog.resolve_path = self._resolve_num
         self._catalog.addIndex('title', 'KeywordIndex')
         self._catalog.addColumn('title')
@@ -142,29 +154,6 @@ class TestZCatalog(unittest.TestCase):
         from zope.interface.verify import verifyClass
 
         verifyClass(IZCatalog, ZCatalog)
-
-    def testAddIndex(self):
-        self._catalog.addIndex('id', 'FieldIndex')
-        self.assert_('id' in self._catalog.indexes())
-
-    def testDelIndex(self):
-        self.assert_('title' in self._catalog.indexes())
-        self._catalog.delIndex('title')
-        self.assert_('title' not in self._catalog.indexes())
-
-    def testClearIndex(self):
-        idx = self._catalog._catalog.getIndex('title')
-        self.assertEquals(len(idx), self.upper)
-        self._catalog.clearIndex('title')
-        self.assertEquals(len(idx), 0)
-
-    def testAddColumn(self):
-        self._catalog.addColumn('num', default_value=0)
-        self.assert_('num' in self._catalog.schema())
-
-    def testDelColumn(self):
-        self._catalog.delColumn('title')
-        self.assert_('title' not in self._catalog.schema())
 
     def testGetMetadataForUID(self):
         testNum = str(self.upper - 3) # as good as any..
@@ -264,19 +253,51 @@ class TestZCatalog(unittest.TestCase):
         self.assertEquals(catalog.getobject(rid0), None)
 
 
-class TestZCatalogGetObject(unittest.TestCase):
+class TestAddDelColumnIndex(ZCatalogBase, unittest.TestCase):
+
+    def testAddIndex(self):
+        self._catalog.addIndex('id', 'FieldIndex')
+        self.assert_('id' in self._catalog.indexes())
+
+    def testDelIndex(self):
+        self._catalog.addIndex('title', 'FieldIndex')
+        self.assert_('title' in self._catalog.indexes())
+        self._catalog.delIndex('title')
+        self.assert_('title' not in self._catalog.indexes())
+
+    def testClearIndex(self):
+        self._catalog.addIndex('title', 'FieldIndex')
+        idx = self._catalog._catalog.getIndex('title')
+        for x in range(10):
+            ob = zdummy(x)
+            self._catalog.catalog_object(ob, str(x))
+        self.assertEquals(len(idx), 10)
+        self._catalog.clearIndex('title')
+        self.assertEquals(len(idx), 0)
+
+    def testAddColumn(self):
+        self._catalog.addColumn('num', default_value=0)
+        self.assert_('num' in self._catalog.schema())
+
+    def testDelColumn(self):
+        self._catalog.addColumn('title')
+        self._catalog.delColumn('title')
+        self.assert_('title' not in self._catalog.schema())
+
+
+class TestZCatalogGetObject(ZCatalogBase, unittest.TestCase):
     # Test what objects are returned by brain.getObject()
 
     def setUp(self):
-        from Products.ZCatalog.ZCatalog import ZCatalog
-        catalog = ZCatalog('catalog')
-        catalog.addIndex('id', 'FieldIndex')
+        ZCatalogBase.setUp(self)
+        self._catalog.addIndex('id', 'FieldIndex')
         root = Folder('')
         root.getPhysicalRoot = lambda: root
         self.root = root
-        self.root.catalog = catalog
+        self.root.catalog = self._catalog
 
     def tearDown(self):
+        ZCatalogBase.tearDown(self)
         noSecurityManager()
 
     def test_getObject_found(self):
@@ -375,5 +396,6 @@ class TestZCatalogGetObject(unittest.TestCase):
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TestZCatalog))
+    suite.addTest(unittest.makeSuite(TestAddDelColumnIndex))
     suite.addTest(unittest.makeSuite(TestZCatalogGetObject))
     return suite
