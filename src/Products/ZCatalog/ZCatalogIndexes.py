@@ -35,7 +35,7 @@ class ZCatalogIndexes(IFAwareObjectManager, Folder, Persistent, Implicit):
     the requested indexes in an object manager."""
 
     # The interfaces we want to show up in our object manager
-    _product_interfaces = (IPluggableIndex,)
+    _product_interfaces = (IPluggableIndex, )
 
     meta_type = "ZCatalogIndex"
     manage_options = ()
@@ -43,9 +43,9 @@ class ZCatalogIndexes(IFAwareObjectManager, Folder, Persistent, Implicit):
     security = ClassSecurityInfo()
 
     security.declareObjectProtected(manage_zcatalog_indexes)
-    security.setPermissionDefault(manage_zcatalog_indexes, ('Manager',))
+    security.setPermissionDefault(manage_zcatalog_indexes, ('Manager', ))
     security.declareProtected(manage_zcatalog_indexes, 'addIndexForm')
-    addIndexForm= DTMLFile('dtml/addIndexForm',globals())
+    addIndexForm= DTMLFile('dtml/addIndexForm', globals())
 
     # You no longer manage the Indexes here, they are managed from ZCatalog
     def manage_main(self, REQUEST, RESPONSE):
@@ -77,19 +77,18 @@ class ZCatalogIndexes(IFAwareObjectManager, Folder, Persistent, Implicit):
 
     security.declareProtected(manage_zcatalog_indexes, 'objectIds')
     def objectIds(self, spec=None):
-
         indexes = aq_parent(self)._catalog.indexes
         if spec is not None:
-            if type(spec) == type('s'):
+            if isinstance(spec, str):
                 spec = [spec]
-            set = []
+            result = []
 
             for ob in indexes.keys():
                 o = indexes.get(ob)
-                if hasattr(o, 'meta_type') and getattr(o,'meta_type') in spec:
-                    set.append(ob)
-
-            return set
+                meta = getattr(o, 'meta_type', None)
+                if meta is not None and meta in spec:
+                    result.append(ob)
+            return result
 
         return indexes.keys()
 
@@ -102,11 +101,11 @@ class ZCatalogIndexes(IFAwareObjectManager, Folder, Persistent, Implicit):
     #
 
     def __bobo_traverse__(self, REQUEST, name):
-        indexes = aq_parent(self)._catalog.indexes;
+        indexes = aq_parent(self)._catalog.indexes
 
         o = indexes.get(name, None)
         if o is not None:
-            if getattr(o,'manage_workspace', None) is None:
+            if getattr(o, 'manage_workspace', None) is None:
                 o = OldCatalogWrapperObject(o)
             return o.__of__(self)
 
@@ -122,7 +121,7 @@ class OldCatalogWrapperObject(SimpleItem, Implicit):
          'action': 'manage_main'},
     )
 
-    manage_main = DTMLFile('dtml/manageOldindex',globals())
+    manage_main = DTMLFile('dtml/manageOldindex', globals())
     manage_main._setName('manage_main')
     manage_workspace = manage_main
 
