@@ -55,6 +55,39 @@ def sort(iterable):
     return L
 
 
+class zdummy(ExtensionClass.Base):
+    def __init__(self, num):
+        self.num = num
+
+    def title(self):
+        return '%d' % self.num
+
+
+class dummy(ExtensionClass.Base):
+
+    att1 = 'att1'
+    att2 = 'att2'
+    att3 = ['att3']
+
+    def __init__(self, num):
+        self.num = num
+
+    def col1(self):
+        return 'col1'
+
+    def col2(self):
+        return 'col2'
+
+    def col3(self):
+        return ['col3']
+
+
+class objRS(ExtensionClass.Base):
+
+    def __init__(self, num):
+        self.number = num
+
+
 class CatalogBase:
 
     def setUp(self):
@@ -127,33 +160,6 @@ class TestAddDelIndexes(CatalogBase, unittest.TestCase):
         self._catalog.delIndex('id')
         self.assert_('id' not in self._catalog.indexes,
                      'del index failed')
-
-
-class zdummy(ExtensionClass.Base):
-    def __init__(self, num):
-        self.num = num
-
-    def title(self):
-        return '%d' % self.num
-
-
-class dummy(ExtensionClass.Base):
-
-    att1 = 'att1'
-    att2 = 'att2'
-    att3 = ['att3']
-
-    def __init__(self, num):
-        self.num = num
-
-    def col1(self):
-        return 'col1'
-
-    def col2(self):
-        return 'col2'
-
-    def col3(self):
-        return ['col3']
 
 
 class TestCatalogObject(unittest.TestCase):
@@ -391,13 +397,7 @@ class TestCatalogObject(unittest.TestCase):
         self.assertEqual(brain.att1, 'foobar')
 
 
-class objRS(ExtensionClass.Base):
-
-    def __init__(self, num):
-        self.number = num
-
-
-class TestRS(unittest.TestCase):
+class TestRangeSearch(unittest.TestCase):
 
     def setUp(self):
         self._catalog = Catalog()
@@ -518,6 +518,6 @@ def test_suite():
     suite.addTest(unittest.makeSuite(TestAddDelColumn))
     suite.addTest(unittest.makeSuite(TestAddDelIndexes))
     suite.addTest(unittest.makeSuite(TestCatalogObject))
-    suite.addTest(unittest.makeSuite(TestRS))
+    suite.addTest(unittest.makeSuite(TestRangeSearch))
     suite.addTest(unittest.makeSuite(TestMerge))
     return suite
