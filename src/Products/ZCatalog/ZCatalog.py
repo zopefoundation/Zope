@@ -53,17 +53,18 @@ LOG = logging.getLogger('Zope.ZCatalog')
 
 manage_addZCatalogForm = DTMLFile('dtml/addZCatalog', globals())
 
+
 def manage_addZCatalog(self, id, title,
-                       vocab_id=None, # Deprecated
+                       vocab_id=None,
                        REQUEST=None):
-    """Add a ZCatalog object
+    """Add a ZCatalog object. The vocab_id argument is deprecated.
     """
-    id=str(id)
-    title=str(title)
-    c=ZCatalog(id, title, vocab_id, self)
+    id = str(id)
+    title = str(title)
+    c = ZCatalog(id, title, vocab_id, self)
     self._setObject(id, c)
     if REQUEST is not None:
-        return self.manage_main(self, REQUEST,update_menu=1)
+        return self.manage_main(self, REQUEST, update_menu=1)
 
 
 class ZCatalog(Folder, Persistent, Implicit):
@@ -88,12 +89,12 @@ class ZCatalog(Folder, Persistent, Implicit):
     implements(IZCatalog)
 
     security = ClassSecurityInfo()
-    security.setPermissionDefault(manage_zcatalog_entries, ('Manager',))
-    security.setPermissionDefault(manage_zcatalog_indexes, ('Manager',))
+    security.setPermissionDefault(manage_zcatalog_entries, ('Manager', ))
+    security.setPermissionDefault(manage_zcatalog_indexes, ('Manager', ))
     security.setPermissionDefault(search_zcatalog, ('Anonymous', 'Manager'))
 
     meta_type = "ZCatalog"
-    icon='misc_/ZCatalog/ZCatalog.gif'
+    icon = 'misc_/ZCatalog/ZCatalog.gif'
 
     manage_options = (
         {'label': 'Contents',           # TAB: Contents
@@ -118,7 +119,7 @@ class ZCatalog(Folder, Persistent, Implicit):
         {'label': 'Security',           # TAB: Security
          'action': 'manage_access'},
         {'label': 'Ownership',          # TAB: Ownership
-         'action': 'manage_owner'}
+         'action': 'manage_owner'},
         )
 
     security.declareProtected(manage_zcatalog_entries, 'manage_main')
@@ -128,10 +129,10 @@ class ZCatalog(Folder, Persistent, Implicit):
     manage_catalogAddRowForm = DTMLFile('dtml/catalogAddRowForm', globals())
 
     security.declareProtected(manage_zcatalog_entries, 'manage_catalogView')
-    manage_catalogView = DTMLFile('dtml/catalogView',globals())
+    manage_catalogView = DTMLFile('dtml/catalogView', globals())
 
     security.declareProtected(manage_zcatalog_entries, 'manage_catalogFind')
-    manage_catalogFind = DTMLFile('dtml/catalogFind',globals())
+    manage_catalogFind = DTMLFile('dtml/catalogFind', globals())
 
     security.declareProtected(manage_zcatalog_entries, 'manage_catalogSchema')
     manage_catalogSchema = DTMLFile('dtml/catalogSchema', globals())
@@ -145,8 +146,7 @@ class ZCatalog(Folder, Persistent, Implicit):
 
     security.declareProtected(manage_zcatalog_entries,
                               'manage_catalogReport')
-    manage_catalogReport = DTMLFile('dtml/catalogReport',
-                                     globals())
+    manage_catalogReport = DTMLFile('dtml/catalogReport', globals())
 
     security.declareProtected(manage_zcatalog_entries,
                               'manage_objectInformation')
@@ -157,7 +157,7 @@ class ZCatalog(Folder, Persistent, Implicit):
 
     threshold=10000
     long_query_time = 0.1
-    
+
     _v_total=0
     _v_transaction = None
 
@@ -222,7 +222,7 @@ class ZCatalog(Folder, Persistent, Implicit):
         """ index Zope object(s) that 'urls' point to """
         if urls:
             if isinstance(urls, str):
-                urls=(urls,)
+                urls = (urls, )
 
             for url in urls:
                 obj = self.resolve_path(url)
@@ -243,7 +243,7 @@ class ZCatalog(Folder, Persistent, Implicit):
 
         if urls:
             if isinstance(urls, str):
-                urls=(urls,)
+                urls = (urls, )
 
             for url in urls:
                 self.uncatalog_object(url)
@@ -287,10 +287,12 @@ class ZCatalog(Folder, Persistent, Implicit):
 
         num_objects = len(paths)
         if pghandler:
-            pghandler.init('Refreshing catalog: %s' % self.absolute_url(1), num_objects)
+            pghandler.init('Refreshing catalog: %s' % self.absolute_url(1),
+                           num_objects)
 
         for i in xrange(num_objects):
-            if pghandler: pghandler.report(i)
+            if pghandler:
+                pghandler.report(i)
 
             p = paths[i]
             obj = self.resolve_path(p)
@@ -305,7 +307,8 @@ class ZCatalog(Folder, Persistent, Implicit):
                     LOG.error('Recataloging object at %s failed' % p,
                               exc_info=sys.exc_info())
 
-        if pghandler: pghandler.finish()
+        if pghandler:
+            pghandler.finish()
 
     security.declareProtected(manage_zcatalog_entries, 'manage_catalogClear')
     def manage_catalogClear(self, REQUEST=None, RESPONSE=None, URL1=None):
@@ -359,8 +362,7 @@ class ZCatalog(Folder, Persistent, Implicit):
             urllib.quote('Catalog Updated\n'
                          'Total time: %s\n'
                          'Total CPU time: %s'
-                         % (`elapse`, `c_elapse`))
-            )
+                         % (`elapse`, `c_elapse`)))
 
 
     security.declareProtected(manage_zcatalog_entries, 'manage_addColumn')
@@ -378,7 +380,7 @@ class ZCatalog(Folder, Persistent, Implicit):
     def manage_delColumn(self, names, REQUEST=None, RESPONSE=None, URL1=None):
         """ delete a column or some columns """
         if isinstance(names, str):
-            names = (names,)
+            names = (names, )
 
         for name in names:
             self.delColumn(name)
@@ -393,7 +395,7 @@ class ZCatalog(Folder, Persistent, Implicit):
     def manage_addIndex(self, name, type, extra=None,
                         REQUEST=None, RESPONSE=None, URL1=None):
         """add an index """
-        self.addIndex(name, type,extra)
+        self.addIndex(name, type, extra)
 
         if REQUEST and RESPONSE:
             RESPONSE.redirect(
@@ -408,10 +410,10 @@ class ZCatalog(Folder, Persistent, Implicit):
         if not ids:
             return MessageDialog(title='No items specified',
                 message='No items were specified!',
-                action = "./manage_catalogIndexes",)
+                action="./manage_catalogIndexes")
 
         if isinstance(ids, str):
-            ids = (ids,)
+            ids = (ids, )
 
         for name in ids:
             self.delIndex(name)
@@ -429,10 +431,10 @@ class ZCatalog(Folder, Persistent, Implicit):
         if not ids:
             return MessageDialog(title='No items specified',
                 message='No items were specified!',
-                action = "./manage_catalogIndexes",)
+                action="./manage_catalogIndexes")
 
         if isinstance(ids, str):
-            ids = (ids,)
+            ids = (ids, )
 
         for name in ids:
             self.clearIndex(name)
@@ -445,7 +447,7 @@ class ZCatalog(Folder, Persistent, Implicit):
 
     def reindexIndex(self, name, REQUEST, pghandler=None):
         if isinstance(name, str):
-            name = (name,)
+            name = (name, )
 
         paths = self._catalog.uids.keys()
 
@@ -454,8 +456,9 @@ class ZCatalog(Folder, Persistent, Implicit):
             pghandler.init('reindexing %s' % name, len(paths))
 
         for p in paths:
-            i+=1
-            if pghandler: pghandler.report(i)
+            i += 1
+            if pghandler:
+                pghandler.report(i)
 
             obj = self.resolve_path(p)
             if obj is None:
@@ -479,7 +482,7 @@ class ZCatalog(Folder, Persistent, Implicit):
         if not ids:
             return MessageDialog(title='No items specified',
                 message='No items were specified!',
-                action = "./manage_catalogIndexes",)
+                action="./manage_catalogIndexes")
 
         pgthreshold = self._getProgressThreshold()
         handler = (pgthreshold > 0) and ZLogHandler(pgthreshold) or None
@@ -493,18 +496,20 @@ class ZCatalog(Folder, Persistent, Implicit):
 
 
     security.declareProtected(manage_zcatalog_entries, 'catalog_object')
-    def catalog_object(self, obj, uid=None, idxs=None, update_metadata=1, pghandler=None):
+    def catalog_object(self, obj, uid=None, idxs=None, update_metadata=1,
+                       pghandler=None):
         """ wrapper around catalog """
 
         if uid is None:
-            try: uid = obj.getPhysicalPath
+            try:
+                uid = obj.getPhysicalPath
             except AttributeError:
                 raise CatalogError(
                     "A cataloged object must support the 'getPhysicalPath' "
-                    "method if no unique id is provided when cataloging"
-                    )
-            else: uid='/'.join(uid())
-        elif not isinstance(uid,str):
+                    "method if no unique id is provided when cataloging")
+            else:
+                uid = '/'.join(uid())
+        elif not isinstance(uid, str):
             raise CatalogError('The object unique id must be a string.')
 
         self._catalog.catalogObject(obj, uid, None, idxs,
@@ -605,9 +610,9 @@ class ZCatalog(Folder, Persistent, Implicit):
 
     def _searchable_arguments(self):
         r = {}
-        n={'optional':1}
+        n = {'optional': 1}
         for name in self._catalog.indexes.keys():
-            r[name]=n
+            r[name] = n
         return r
 
     def _searchable_result_columns(self):
@@ -734,12 +739,14 @@ class ZCatalog(Folder, Persistent, Implicit):
             raise AttributeError(repr(result))
 
         for id, ob in items:
-            if pre: p="%s/%s" % (pre, id)
-            else:   p=id
+            if pre:
+                p = "%s/%s" % (pre, id)
+            else:
+                p = id
 
-            dflag=0
+            dflag = 0
             if hasattr(ob, '_p_changed') and (ob._p_changed == None):
-                dflag=1
+                dflag = 1
 
             bs = aq_base(ob)
 
@@ -751,22 +758,20 @@ class ZCatalog(Folder, Persistent, Implicit):
                 and
                 (not obj_searchterm or
                  (hasattr(ob, 'PrincipiaSearchSource') and
-                  ob.PrincipiaSearchSource().find(obj_searchterm) >= 0
-                  ))
+                  ob.PrincipiaSearchSource().find(obj_searchterm) >= 0))
                 and
                 (not obj_expr or expr_match(ob, obj_expr))
                 and
                 (not obj_mtime or mtime_match(ob, obj_mtime, obj_mspec))
                 and
-                ( (not obj_permission or not obj_roles) or \
-                   role_match(ob, obj_permission, obj_roles)
-                )
+                ((not obj_permission or not obj_roles) or
+                  role_match(ob, obj_permission, obj_roles))
                 ):
                 if apply_func:
-                    apply_func(ob, (apply_path+'/'+p))
+                    apply_func(ob, (apply_path + '/' + p))
                 else:
                     add_result((p, ob))
-                    dflag=0
+                    dflag = 0
 
             if search_sub and hasattr(bs, 'objectItems'):
                 self.ZopeFindAndApply(ob, obj_ids, obj_metatypes,
@@ -776,7 +781,8 @@ class ZCatalog(Folder, Persistent, Implicit):
                                       search_sub,
                                       REQUEST, result, p,
                                       apply_func, apply_path)
-            if dflag: ob._p_deactivate()
+            if dflag:
+                ob._p_deactivate()
 
         return result
 
@@ -824,7 +830,7 @@ class ZCatalog(Folder, Persistent, Implicit):
         for path, rid in uids.items():
             ob = None
             if path[:1] == '/':
-                ob = self.resolve_url(path[1:],REQUEST)
+                ob = self.resolve_url(path[1:], REQUEST)
             if ob is None:
                 ob = self.resolve_url(path, REQUEST)
                 if ob is None:
@@ -851,14 +857,13 @@ class ZCatalog(Folder, Persistent, Implicit):
 
     security.declareProtected(manage_zcatalog_entries, 'manage_setProgress')
     def manage_setProgress(self, pgthreshold=0, RESPONSE=None, URL1=None):
-        """Set parameter to perform logging of reindexing operations very 
+        """Set parameter to perform logging of reindexing operations very
            'pgthreshold' objects
         """
-
         self.pgthreshold = pgthreshold
         if RESPONSE:
-            RESPONSE.redirect(
-                URL1 + '/manage_catalogAdvanced?manage_tabs_message=Catalog%20Changed')
+            RESPONSE.redirect(URL1 + '/manage_catalogAdvanced?'
+                              'manage_tabs_message=Catalog%20Changed')
 
     def _getProgressThreshold(self):
         if not hasattr(self, 'pgthreshold'):
@@ -867,10 +872,10 @@ class ZCatalog(Folder, Persistent, Implicit):
 
     def manage_convertIndexes(self, REQUEST=None, RESPONSE=None, URL1=None):
         """Recreate indexes derived from UnIndex because the implementation of
-           __len__ changed in Zope 2.8. Pre-Zope 2.7 installation used to implement
-           __len__ as persistent attribute of the index instance which is totally
-           incompatible with the new extension class implementation based on new-style
-           classes. 
+           __len__ changed in Zope 2.8. Pre-Zope 2.7 installation used to
+           implement __len__ as persistent attribute of the index instance
+           which is totally incompatible with the new extension class
+           implementation based on new-style classes.
         """
 
         LOG.info('Start migration of indexes for %s' % self.absolute_url(1))
@@ -906,7 +911,7 @@ class ZCatalog(Folder, Persistent, Implicit):
                     setattr(new_idx, 'indexed_attrs', indexed_attrs)
 
                 if idx.meta_type == 'DateRangeIndex':
-                    setattr(new_idx, '_since_field',  since_field)
+                    setattr(new_idx, '_since_field', since_field)
                     setattr(new_idx, '_until_field', until_field)
 
                 self.manage_reindexIndex(idx_id, REQUEST)
@@ -915,20 +920,19 @@ class ZCatalog(Folder, Persistent, Implicit):
         LOG.info('Finished migration of indexes for %s' % self.absolute_url(1))
 
         if RESPONSE:
-            RESPONSE.redirect( URL1 +
-            '/manage_main?manage_tabs_message=Indexes%20converted%20and%20reindexed')
-
+            RESPONSE.redirect(URL1 + '/manage_main?manage_tabs_message='
+                              'Indexes%20converted%20and%20reindexed')
 
     #
     # Indexing methods
     #
 
-    def addIndex(self, name, type,extra=None):
+    def addIndex(self, name, type, extra=None):
         # Convert the type by finding an appropriate product which supports
         # this interface by that name.  Bleah
 
         products = ObjectManager.all_meta_types(self,
-                                                interfaces=(IPluggableIndex,))
+                                                interfaces=(IPluggableIndex, ))
 
         p = None
 
@@ -938,12 +942,12 @@ class ZCatalog(Folder, Persistent, Implicit):
                 break
 
         if p is None:
-            raise ValueError, "Index of type %s not found" % type
+            raise ValueError("Index of type %s not found" % type)
 
         base = p['instance']
 
         if base is None:
-            raise ValueError, "Index type %s does not support addIndex" % type
+            raise ValueError("Index type %s does not support addIndex" % type)
 
         # This code is *really* lame but every index type has its own
         # function signature *sigh* and there is no common way to pass
@@ -957,15 +961,13 @@ class ZCatalog(Folder, Persistent, Implicit):
         else:
             index = base(name)
 
-        self._catalog.addIndex(name,index)
+        self._catalog.addIndex(name, index)
 
-
-    def delIndex(self, name ):
+    def delIndex(self, name):
         self._catalog.delIndex(name)
 
     def clearIndex(self, name):
         self._catalog.getIndex(name).clear()
-
 
     def addColumn(self, name, default_value=None):
         return self._catalog.addColumn(name, default_value)
@@ -1014,30 +1016,36 @@ InitializeClass(ZCatalog)
 def p_name(name):
     return '_' + string.translate(name, name_trans) + '_Permission'
 
+
 def absattr(attr):
-    if callable(attr): return attr()
+    if callable(attr):
+        return attr()
     return attr
 
 
 class td(RestrictedDTML, TemplateDict):
     pass
 
+
 def expr_match(ob, ed, c=InstanceDict, r=0):
-    e, md, push, pop=ed
+    e, md, push, pop = ed
     push(c(ob, md))
-    try: r=e.eval(md)
+    try:
+        r = e.eval(md)
     finally:
         pop()
         return r
+
 
 def mtime_match(ob, t, q, fn=hasattr):
     if not fn(ob, '_p_mtime'):
         return 0
     return q=='<' and (ob._p_mtime < t) or (ob._p_mtime > t)
 
+
 def role_match(ob, permission, roles, lt=type([]), tt=type(())):
-    pr=[]
-    fn=pr.append
+    pr = []
+    fn = pr.append
 
     while 1:
         if hasattr(ob, permission):
