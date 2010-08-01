@@ -102,8 +102,9 @@ def make_key(catalog, query):
     return key
 
 
-class CatalogReport(object):
-    """Catalog report class to meassure and identify catalog queries.
+class CatalogPlan(object):
+    """Catalog plan class to measure and identify catalog queries and plan
+    their execution.
     """
 
     def __init__(self, catalog, query=None, threshold=0.1):

@@ -31,8 +31,8 @@ from BTrees.OIBTree import OIBTree
 from BTrees.IOBTree import IOBTree
 from Lazy import LazyMap, LazyCat, LazyValues
 from CatalogBrains import AbstractCatalogBrain, NoBrainer
-from .report import CatalogReport
-from .report import make_key
+from .plan import CatalogPlan
+from .plan import make_key
 
 
 LOG = logging.getLogger('Zope.ZCatalog')
@@ -507,7 +507,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         # Canonicalize the request into a sensible query before passing it on
         query = self.make_query(query)
 
-        cr = self.getCatalogReport(query)
+        cr = self.getCatalogPlan(query)
         cr.start()
 
         plan = cr.plan()
@@ -819,12 +819,12 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
 
     __call__ = searchResults
 
-    def getCatalogReport(self, query=None):
-        """Reports about the duration of queries.
+    def getCatalogPlan(self, query=None):
+        """Query time reporting and planning.
         """
         parent = aq_base(aq_parent(self))
         threshold = getattr(parent, 'long_query_time', 0.1)
-        return CatalogReport(self, query, threshold)
+        return CatalogPlan(self, query, threshold)
 
 
 class CatalogSearchArgumentsMap(object):

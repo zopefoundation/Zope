@@ -29,8 +29,8 @@
             </div>
         </td>
     </tr>
-    <dtml-if getCatalogReport>
-        <dtml-in getCatalogReport mapping>
+    <dtml-if getCatalogPlan>
+        <dtml-in getCatalogPlan mapping>
             <dtml-if sequence-odd>
                 <tr class="row-normal">
             <dtml-else>
@@ -68,7 +68,7 @@
                 <p class="form-help">Resetting the catalog report will reinitialize the report log.</p>
             </td>
             <td colspan="2" align="right" valign="top">
-                <form action="manage_resetCatalogReport" method=POST>
+                <form action="manage_resetCatalogPlan" method=POST>
                     <div class="form-element">
                         <input class="form-element" type="submit" value="Reset Report">
                     </div>
@@ -86,7 +86,7 @@
     </dtml-if>
 </table>
 
-<form action="manage_editCatalogReport" method="post">
+<form action="manage_editCatalogPlan" method="post">
     <table width="100%" style="padding-top:1em;" cellspacing="0" cellpadding="2" border="0">
         <tr class="section-bar">
             <td colspan="3" align="left">

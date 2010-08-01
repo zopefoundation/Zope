@@ -26,7 +26,7 @@ class dummy(object):
         return (self.num, self.num + 1)
 
 
-class TestCatalogReport(unittest.TestCase):
+class TestCatalogPlan(unittest.TestCase):
 
     def setUp(self):
         from Products.ZCatalog.ZCatalog import ZCatalog
@@ -41,12 +41,12 @@ class TestCatalogReport(unittest.TestCase):
             self.zcat.catalog_object(obj, str(i))
 
     def tearDown(self):
-        from Products.ZCatalog.report import clear_value_indexes
+        from Products.ZCatalog.plan import clear_value_indexes
         clear_value_indexes()
 
     def test_ReportLength(self):
         """ tests the report aggregation """
-        self.zcat.manage_resetCatalogReport()
+        self.zcat.manage_resetCatalogPlan()
 
         self.zcat.searchResults(numbers=4, sort_on='num')
         self.zcat.searchResults(numbers=1, sort_on='num')
@@ -58,49 +58,49 @@ class TestCatalogReport(unittest.TestCase):
 
         self.zcat.searchResults(num=[5, 4, 3], sort_on='num')
         self.zcat.searchResults(num=(3, 4, 5), sort_on='num')
-        self.assertEqual(4, len(self.zcat.getCatalogReport()))
+        self.assertEqual(4, len(self.zcat.getCatalogPlan()))
 
     def test_ReportCounter(self):
         """ tests the counter of equal queries """
-        self.zcat.manage_resetCatalogReport()
+        self.zcat.manage_resetCatalogPlan()
 
         self.zcat.searchResults(numbers=5, sort_on='num')
         self.zcat.searchResults(numbers=6, sort_on='num')
         self.zcat.searchResults(numbers=8, sort_on='num')
 
-        r = self.zcat.getCatalogReport()[0]
+        r = self.zcat.getCatalogPlan()[0]
         self.assertEqual(r['counter'], 3)
 
     def test_ReportKey(self):
         """ tests the query keys for uniqueness """
         # query key 1
         key = ('sort_on', ('big', 'True'))
-        self.zcat.manage_resetCatalogReport()
+        self.zcat.manage_resetCatalogPlan()
 
         self.zcat.searchResults(big=True, sort_on='num')
         self.zcat.searchResults(big=True, sort_on='num')
-        r = self.zcat.getCatalogReport()[0]
+        r = self.zcat.getCatalogPlan()[0]
 
         self.assertEqual(r['query'], key)
         self.assertEqual(r['counter'], 2)
 
         # query key 2
         key = ('sort_on', ('big', 'False'))
-        self.zcat.manage_resetCatalogReport()
+        self.zcat.manage_resetCatalogPlan()
 
         self.zcat.searchResults(big=False, sort_on='num')
-        r = self.zcat.getCatalogReport()[0]
+        r = self.zcat.getCatalogPlan()[0]
 
         self.assertEqual(r['query'], key)
         self.assertEqual(r['counter'], 1)
 
         # query key 3
         key = ('sort_on', ('num', '[3, 4, 5]'))
-        self.zcat.manage_resetCatalogReport()
+        self.zcat.manage_resetCatalogPlan()
 
         self.zcat.searchResults(num=[5, 4, 3], sort_on='num')
         self.zcat.searchResults(num=(3, 4, 5), sort_on='num')
-        r = self.zcat.getCatalogReport()[0]
+        r = self.zcat.getCatalogPlan()[0]
 
         self.assertEqual(r['query'], key)
         self.assertEqual(r['counter'], 2)
@@ -108,5 +108,5 @@ class TestCatalogReport(unittest.TestCase):
 
 def test_suite():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestCatalogReport))
+    suite.addTest(unittest.makeSuite(TestCatalogPlan))
     return suite
