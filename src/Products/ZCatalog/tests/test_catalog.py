@@ -167,7 +167,7 @@ class TestAddDelIndexes(CatalogBase, unittest.TestCase):
                      'del index failed')
 
 
-class TestCatalogObject(CatalogBase, unittest.TestCase):
+class TestCatalog(CatalogBase, unittest.TestCase):
 
     upper = 1000
 
@@ -217,6 +217,84 @@ class TestCatalogObject(CatalogBase, unittest.TestCase):
     def tearDown(self):
         self._catalog = None
 
+    # clear
+    # updateBrains
+    # __getitem__
+    # __setstate__
+    # useBrains
+    # getIndex
+    # updateMetadata
+
+    def testCatalogObjectUpdateMetadataFalse(self):
+        ob = dummy(9999)
+        self._catalog.catalogObject(ob, `9999`)
+        brain = self._catalog(num=9999)[0]
+        self.assertEqual(brain.att1, 'att1')
+        ob.att1 = 'foobar'
+        self._catalog.catalogObject(ob, `9999`, update_metadata=0)
+        brain = self._catalog(num=9999)[0]
+        self.assertEqual(brain.att1, 'att1')
+        self._catalog.catalogObject(ob, `9999`)
+        brain = self._catalog(num=9999)[0]
+        self.assertEqual(brain.att1, 'foobar')
+
+    def uncatalog(self):
+        for x in range(0, self.upper):
+            self._catalog.uncatalogObject(`x`)
+
+    def testUncatalogFieldIndex(self):
+        self.uncatalog()
+        a = self._catalog(att1='att1')
+        self.assertEqual(len(a), 0, 'len: %s' % len(a))
+
+    def testUncatalogTextIndex(self):
+        self.uncatalog()
+        a = self._catalog(att2='att2')
+        self.assertEqual(len(a), 0, 'len: %s' % len(a))
+
+    def testUncatalogKeywordIndex(self):
+        self.uncatalog()
+        a = self._catalog(att3='att3')
+        self.assertEqual(len(a), 0, 'len: %s' % len(a))
+
+    def testBadUncatalog(self):
+        try:
+            self._catalog.uncatalogObject('asdasdasd')
+        except Exception:
+            self.fail('uncatalogObject raised exception on bad uid')
+
+    def testUncatalogTwice(self):
+        self._catalog.uncatalogObject(`0`)
+        def _second(self):
+            self._catalog.uncatalogObject(`0`)
+        self.assertRaises(Exception, _second)
+
+    def testCatalogLength(self):
+        for x in range(0, self.upper):
+            self._catalog.uncatalogObject(`x`)
+        self.assertEqual(len(self._catalog), 0)
+
+    def testUniqueValuesForLength(self):
+        a = self._catalog.uniqueValuesFor('att1')
+        self.assertEqual(len(a), 1, 'bad number of unique values %s' % a)
+
+    def testUniqueValuesForContent(self):
+        a = self._catalog.uniqueValuesFor('att1')
+        self.assertEqual(a[0], 'att1', 'bad content %s' % a[0])
+
+    # hasuid
+    # recordify
+    # instantiate
+    # getMetadataForRID
+    # getIndexDataForRID
+    # make_query
+    # _sorted_search_indexes
+    # search
+    # sortResults
+    # _get_sort_attr
+    # _getSortIndex
+    # searchResults
+
     def testResultLength(self):
         a = self._catalog(att1='att1')
         self.assertEqual(len(a), self.upper,
@@ -254,51 +332,6 @@ class TestCatalogObject(CatalogBase, unittest.TestCase):
         self.assertEqual(len(a), self.upper,
                          'should be %s, but is %s' % (self.upper, len(a)))
 
-    def testUncatalogFieldIndex(self):
-        self.uncatalog()
-        a = self._catalog(att1='att1')
-        self.assertEqual(len(a), 0, 'len: %s' % len(a))
-
-    def testUncatalogTextIndex(self):
-        self.uncatalog()
-        a = self._catalog(att2='att2')
-        self.assertEqual(len(a), 0, 'len: %s' % len(a))
-
-    def testUncatalogKeywordIndex(self):
-        self.uncatalog()
-        a = self._catalog(att3='att3')
-        self.assertEqual(len(a), 0, 'len: %s' % len(a))
-
-    def testBadUncatalog(self):
-        try:
-            self._catalog.uncatalogObject('asdasdasd')
-        except Exception:
-            self.fail('uncatalogObject raised exception on bad uid')
-
-    def testUniqueValuesForLength(self):
-        a = self._catalog.uniqueValuesFor('att1')
-        self.assertEqual(len(a), 1, 'bad number of unique values %s' % a)
-
-    def testUniqueValuesForContent(self):
-        a = self._catalog.uniqueValuesFor('att1')
-        self.assertEqual(a[0], 'att1', 'bad content %s' % a[0])
-
-    def testUncatalogTwice(self):
-        self._catalog.uncatalogObject(`0`)
-        self.assertRaises(Exception, '_second')
-
-    def testCatalogLength(self):
-        for x in range(0, self.upper):
-            self._catalog.uncatalogObject(`x`)
-        self.assertEqual(len(self._catalog), 0)
-
-    def _second(self):
-        self._catalog.uncatalogObject(`0`)
-
-    def uncatalog(self):
-        for x in range(0, self.upper):
-            self._catalog.uncatalogObject(`x`)
-
     def testGoodSortIndex(self):
         upper = self.upper
         a = self._catalog(att1='att1', sort_on='num')
@@ -309,17 +342,15 @@ class TestCatalogObject(CatalogBase, unittest.TestCase):
 
     def testBadSortIndex(self):
         from Products.ZCatalog.Catalog import CatalogError
-        self.assertRaises(CatalogError, self.badsortindex)
-
-    def badsortindex(self):
-        self._catalog(sort_on='foofaraw')
+        def badsortindex():
+            self._catalog(sort_on='foofaraw')
+        self.assertRaises(CatalogError, badsortindex)
 
     def testWrongKindOfIndexForSort(self):
         from Products.ZCatalog.Catalog import CatalogError
-        self.assertRaises(CatalogError, self.wrongsortindex)
-
-    def wrongsortindex(self):
-        self._catalog(sort_on='att2')
+        def wrongsortindex():
+            self._catalog(sort_on='att2')
+        self.assertRaises(CatalogError, wrongsortindex)
 
     def testTextIndexQWithSortOn(self):
         upper = self.upper
@@ -389,19 +420,6 @@ class TestCatalogObject(CatalogBase, unittest.TestCase):
             sort_on='num', sort_limit=self.upper*3, sort_order='reverse')
         self.assertEqual(a.actual_result_count, self.upper)
         self.assertEqual(a[0].num, self.upper - 1)
-
-    def testUpdateMetadataFalse(self):
-        ob = dummy(9999)
-        self._catalog.catalogObject(ob, `9999`)
-        brain = self._catalog(num=9999)[0]
-        self.assertEqual(brain.att1, 'att1')
-        ob.att1 = 'foobar'
-        self._catalog.catalogObject(ob, `9999`, update_metadata=0)
-        brain = self._catalog(num=9999)[0]
-        self.assertEqual(brain.att1, 'att1')
-        self._catalog.catalogObject(ob, `9999`)
-        brain = self._catalog(num=9999)[0]
-        self.assertEqual(brain.att1, 'foobar')
 
 
 class TestRangeSearch(CatalogBase, unittest.TestCase):
@@ -577,7 +595,7 @@ def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TestAddDelColumn))
     suite.addTest(unittest.makeSuite(TestAddDelIndexes))
-    suite.addTest(unittest.makeSuite(TestCatalogObject))
+    suite.addTest(unittest.makeSuite(TestCatalog))
     suite.addTest(unittest.makeSuite(TestRangeSearch))
     suite.addTest(unittest.makeSuite(TestCatalogSearchArgumentsMap))
     suite.addTest(unittest.makeSuite(TestMergeResults))
