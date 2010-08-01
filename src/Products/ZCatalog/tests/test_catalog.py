@@ -291,12 +291,19 @@ class TestCatalog(CatalogBase, unittest.TestCase):
 
     def test_sorted_search_indexes_one(self):
         result = self._catalog._sorted_search_indexes({'att1': 'a'})
-        self.assertEquals(result, ['att1'])
+        self.assertEquals(result, [(True, 'att1')])
 
     def test_sorted_search_indexes_many(self):
         query = {'att1': 'a', 'att2': 'b', 'num': 1}
         result = self._catalog._sorted_search_indexes(query)
-        self.assertEquals(set(result), set(['att1', 'att2', 'num']))
+        indexes = [r[1] for r in result]
+        self.assertEquals(set(indexes), set(['att1', 'att2', 'num']))
+
+    def test_sorted_search_indexes_priority(self):
+        # att2 and col2 don't support ILimitedResultIndex, att1 does
+        query = {'att1': 'a', 'att2': 'b', 'col2': 'c'}
+        result = self._catalog._sorted_search_indexes(query)
+        self.assertEquals(result.index((True, 'att1')), 2)
 
     # search
     # sortResults

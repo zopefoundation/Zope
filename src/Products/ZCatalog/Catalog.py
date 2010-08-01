@@ -471,7 +471,13 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
     def _sorted_search_indexes(self, query):
         # Simple implementation doing no ordering.
         query_keys = query.keys()
-        return [i for i in self.indexes.keys() if i in query_keys]
+        order = []
+        for name, index in self.indexes.items():
+            if name not in query_keys:
+                continue
+            order.append((ILimitedResultIndex.providedBy(index), name))
+        order.sort()
+        return order
 
     def search(self, query, sort_index=None, reverse=0, limit=None, merge=1):
         """Iterate through the indexes, applying the query to each one. If
@@ -495,20 +501,14 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
 
         # Canonicalize the request into a sensible query before passing it on
         query = self.make_query(query)
-        query_keys = query.keys()
-
         cr = self.getCatalogReport(query)
         cr.start()
 
-        for i in self._sorted_search_indexes(query):
+        for limit_result, i in self._sorted_search_indexes(query):
             index = self.getIndex(i)
             _apply_index = getattr(index, "_apply_index", None)
             if _apply_index is None:
                 continue
-
-            limit_result = False
-            if ILimitedResultIndex.providedBy(index):
-                limit_result = True
 
             cr.split(i)
             if limit_result:
