@@ -179,7 +179,6 @@ class TestCatalog(CatalogBase, unittest.TestCase):
         nums[j] = tmp
 
     def setUp(self):
-        self.warningshook = WarningsHook()
         self._catalog = self._makeOne()
         self._catalog.lexicon = PLexicon('lexicon')
         col1 = FieldIndex('col1')
@@ -213,9 +212,6 @@ class TestCatalog(CatalogBase, unittest.TestCase):
         for x in range(0, self.upper):
             self._catalog.catalogObject(dummy(self.nums[x]), repr(x))
         self._catalog = self._catalog.__of__(dummy('foo'))
-
-    def tearDown(self):
-        self._catalog = None
 
     # clear
     # updateBrains
@@ -299,16 +295,6 @@ class TestCatalog(CatalogBase, unittest.TestCase):
         a = self._catalog(att1='att1')
         self.assertEqual(len(a), self.upper,
                          'length should be %s, its %s' % (self.upper, len(a)))
-
-    def testEmptyMappingReturnsAll(self):
-        self.warningshook.install()
-        try:
-            upper = self.upper
-            length = len(self._catalog({}))
-            self.assertEqual(length, upper,
-                             'length should be %s, its %s' % (upper, length))
-        finally:
-            self.warningshook.uninstall()
 
     def testMappingWithEmptyKeysDoesntReturnAll(self):
         # Queries with empty keys used to return all, because of a bug in the
@@ -447,6 +433,27 @@ class TestRangeSearch(CatalogBase, unittest.TestCase):
                 size = r.number
                 self.assert_(m<=size and size<=n,
                              "%d vs [%d,%d]" % (r.number, m, n))
+
+
+class TestCatalogReturnAll(CatalogBase, unittest.TestCase):
+
+    def setUp(self):
+        self.warningshook = WarningsHook()
+        self.warningshook.install()
+        self._catalog = self._makeOne()
+
+    def testEmptyMappingReturnsAll(self):
+        col1 = FieldIndex('col1')
+        self._catalog.addIndex('col1', col1)
+        for x in range(0, 10):
+            self._catalog.catalogObject(dummy(x), repr(x))
+        self.assertEqual(len(self._catalog), 10)
+        length = len(self._catalog({}))
+        self.assertEqual(length, 10)
+
+    def tearDown(self):
+        CatalogBase.tearDown(self)
+        self.warningshook.uninstall()
 
 
 class TestCatalogSearchArgumentsMap(unittest.TestCase):
@@ -597,6 +604,7 @@ def test_suite():
     suite.addTest(unittest.makeSuite(TestAddDelIndexes))
     suite.addTest(unittest.makeSuite(TestCatalog))
     suite.addTest(unittest.makeSuite(TestRangeSearch))
+    suite.addTest(unittest.makeSuite(TestCatalogReturnAll))
     suite.addTest(unittest.makeSuite(TestCatalogSearchArgumentsMap))
     suite.addTest(unittest.makeSuite(TestMergeResults))
     return suite
