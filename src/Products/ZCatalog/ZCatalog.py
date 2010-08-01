@@ -167,8 +167,8 @@ class ZCatalog(Folder, Persistent, Implicit):
 
     def manage_edit(self, RESPONSE, URL1, threshold=1000, REQUEST=None):
         """ edit the catalog """
-        if type(threshold) is not type(1):
-            threshold=int(threshold)
+        if not isinstance(threshold, int):
+            threshold = int(threshold)
         self.threshold = threshold
 
         RESPONSE.redirect(
@@ -923,40 +923,42 @@ class td(RestrictedDTML, TemplateDict):
     pass
 
 
-def expr_match(ob, ed, c=InstanceDict, r=0):
+def expr_match(ob, ed):
     e, md, push, pop = ed
-    push(c(ob, md))
+    push(InstanceDict(ob, md))
+    r = 0
     try:
         r = e.eval(md)
     finally:
         pop()
         return r
 
-
-def mtime_match(ob, t, q, fn=hasattr):
-    if not fn(ob, '_p_mtime'):
-        return 0
-    return q=='<' and (ob._p_mtime < t) or (ob._p_mtime > t)
+_marker = object()
 
 
-def role_match(ob, permission, roles, lt=type([]), tt=type(())):
+def mtime_match(ob, t, q):
+    mtime = getattr(ob, '_p_mtime', _marker)
+    if mtime is _marker():
+        return False
+    return q=='<' and (mtime < t) or (mtime > t)
+
+
+def role_match(ob, permission, roles):
     pr = []
-    fn = pr.append
-
-    while 1:
-        if hasattr(ob, permission):
-            p=getattr(ob, permission)
-            if type(p) is lt:
-                map(fn, p)
+    while True:
+        p = getattr(ob, permission, _marker)
+        if p is not _marker:
+            if isinstance(p, list):
+                pr.append(p)
                 ob = aq_parent(ob)
                 if ob is not None:
                     continue
                 break
-            if type(p) is tt:
-                map(fn, p)
+            if isinstance(p, tuple):
+                pr.append(p)
                 break
             if p is None:
-                map(fn, ('Manager', 'Anonymous'))
+                pr.append(('Manager', 'Anonymous'))
                 break
 
         ob = aq_parent(ob)
@@ -965,6 +967,6 @@ def role_match(ob, permission, roles, lt=type([]), tt=type(())):
         break
 
     for role in roles:
-        if not (role in pr):
-            return 0
-    return 1
+        if role not in pr:
+            return False
+    return True
