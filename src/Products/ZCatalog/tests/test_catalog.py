@@ -32,9 +32,6 @@ from ZODB.DB import DB
 from ZODB.DemoStorage import DemoStorage
 import transaction
 
-from Products.ZCatalog.Catalog import Catalog
-from Products.ZCatalog.Catalog import CatalogError
-
 
 def createDatabase():
     # Create a DemoStorage and put an Application in it
@@ -88,10 +85,14 @@ class objRS(ExtensionClass.Base):
         self.number = num
 
 
-class CatalogBase:
+class CatalogBase(object):
+
+    def _makeOne(self):
+        from Products.ZCatalog.Catalog import Catalog
+        return Catalog()
 
     def setUp(self):
-        self._catalog = Catalog()
+        self._catalog = self._makeOne()
 
     def tearDown(self):
         self._catalog = None
@@ -105,6 +106,7 @@ class TestAddDelColumn(CatalogBase, unittest.TestCase):
                          'add column failed')
 
     def testAddBad(self):
+        from Products.ZCatalog.Catalog import CatalogError
         self.assertRaises(CatalogError, self._catalog.addColumn, '_id')
 
     def testDel(self):
@@ -162,7 +164,7 @@ class TestAddDelIndexes(CatalogBase, unittest.TestCase):
                      'del index failed')
 
 
-class TestCatalogObject(unittest.TestCase):
+class TestCatalogObject(CatalogBase, unittest.TestCase):
 
     upper = 1000
 
@@ -175,7 +177,7 @@ class TestCatalogObject(unittest.TestCase):
 
     def setUp(self):
         self.warningshook = WarningsHook()
-        self._catalog = Catalog()
+        self._catalog = self._makeOne()
         self._catalog.lexicon = PLexicon('lexicon')
         col1 = FieldIndex('col1')
         col2 = ZCTextIndex('col2', caller=self._catalog,
@@ -303,12 +305,14 @@ class TestCatalogObject(unittest.TestCase):
             self.assertEqual(a[x].num, x)
 
     def testBadSortIndex(self):
+        from Products.ZCatalog.Catalog import CatalogError
         self.assertRaises(CatalogError, self.badsortindex)
 
     def badsortindex(self):
         self._catalog(sort_on='foofaraw')
 
     def testWrongKindOfIndexForSort(self):
+        from Products.ZCatalog.Catalog import CatalogError
         self.assertRaises(CatalogError, self.wrongsortindex)
 
     def wrongsortindex(self):
@@ -397,10 +401,10 @@ class TestCatalogObject(unittest.TestCase):
         self.assertEqual(brain.att1, 'foobar')
 
 
-class TestRangeSearch(unittest.TestCase):
+class TestRangeSearch(CatalogBase, unittest.TestCase):
 
     def setUp(self):
-        self._catalog = Catalog()
+        self._catalog = self._makeOne()
         index = FieldIndex('number')
         self._catalog.addIndex('number', index)
         self._catalog.addColumn('number')
@@ -424,13 +428,13 @@ class TestRangeSearch(unittest.TestCase):
                              "%d vs [%d,%d]" % (r.number, m, n))
 
 
-class TestMerge(unittest.TestCase):
+class TestMerge(CatalogBase, unittest.TestCase):
     # Test merging results from multiple catalogs
 
     def setUp(self):
         self.catalogs = []
         for i in range(3):
-            cat = Catalog()
+            cat = self._makeOne()
             cat.lexicon = PLexicon('lexicon')
             cat.addIndex('num', FieldIndex('num'))
             cat.addIndex('big', FieldIndex('big'))
