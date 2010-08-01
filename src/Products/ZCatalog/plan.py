@@ -50,19 +50,19 @@ class ValueIndexes(object):
     @classmethod
     def determine(cls, indexes):
         # This function determines all indexes whose values should be respected
-        # in the report key. The number of unique values for the index needs to be
-        # lower than the MAX_DISTINCT_VALUES watermark.
+        # in the report key. The number of unique values for the index needs to
+        # be lower than the MAX_DISTINCT_VALUES watermark.
 
-        # TODO: Ideally who would only consider those indexes with a small number
-        # of unique values, where the number of items for each value differs a
-        # lot. If the number of items per value is similar, the duration of a
-        # query is likely similar as well.
+        # TODO: Ideally who would only consider those indexes with a small
+        # number of unique values, where the number of items for each value
+        # differs a lot. If the number of items per value is similar, the
+        # duration of a query is likely similar as well.
         value_indexes = cls.get()
         if value_indexes:
-            # Calculating all the value indexes is quite slow, so we do this once
-            # for the first query. Since this is an optimization only, slightly
-            # outdated results based on index changes in the running process
-            # can be ignored.
+            # Calculating all the value indexes is quite slow, so we do this
+            # once for the first query. Since this is an optimization only,
+            # slightly outdated results based on index changes in the running
+            # process can be ignored.
             return value_indexes
 
         value_indexes = set()
