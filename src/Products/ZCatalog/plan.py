@@ -12,6 +12,7 @@
 ##############################################################################
 
 import time
+from collections import namedtuple
 from thread import allocate_lock
 
 from Acquisition import aq_base
@@ -105,6 +106,12 @@ def make_key(catalog, query):
     return key
 
 
+Duration = namedtuple('Duration', ['start', 'end'])
+IndexMeasurement = namedtuple('IndexMeasurement',
+                              ['name', 'duration', 'num'])
+Benchmark = namedtuple('Benchmark', ['num', 'duration', 'hits'])
+
+
 class CatalogPlan(object):
     """Catalog plan class to measure and identify catalog queries and plan
     their execution.
@@ -153,42 +160,44 @@ class CatalogPlan(object):
         if not benchmark:
             return None
 
-        # sort indexes on (mean hits, mean search time)
-        ranking = [((v[0], v[1]), k) for k, v in benchmark.items()]
+        # sort indexes on (mean result length, mean search time)
+        ranking = [((value.num, value.duration), name)
+                   for name, value in benchmark.items()]
         ranking.sort()
-        return [i[1] for i in ranking]
+        return [r[1] for r in ranking]
 
     def start(self):
         self.init_timer()
         self.start_time = time.time()
 
-    def start_split(self, label, result=None):
-        self.interim[label] = (time.time(), None)
+    def start_split(self, name, result=None):
+        self.interim[name] = Duration(time.time(), None)
 
     def stop_split(self, name, result=None):
         current = time.time()
-        start_time, stop_time = self.interim.get(name, (None, None))
+        start_time, stop_time = self.interim.get(name, Duration(None, None))
         length = 0
         if result is not None:
             # TODO: calculating the length can be expensive
             length = len(result)
-        self.interim[name] = (start_time, current)
+        self.interim[name] = Duration(start_time, current)
         dt = current - start_time
-        self.res.append((name, current - start_time, length))
+        self.res.append(IndexMeasurement(
+            name=name, duration=current - start_time, num=length))
 
         # remember index's hits, search time and calls
         benchmark = self.benchmark()
         if name not in benchmark:
-            benchmark[name] = (length, dt, 1)
+            benchmark[name] = Benchmark(num=length, duration=dt, hits=1)
         else:
-            n, t, c = benchmark[name]
-            n = int(((n*c) + length) / float(c + 1))
-            t = ((t*c) + dt) / float(c + 1)
+            num, duration, hits = benchmark[name]
+            num = int(((num * hits) + length) / float(hits + 1))
+            duration = ((duration * hits) + dt) / float(hits + 1)
             # reset adaption
-            if c % REFRESH_RATE == 0:
-                c = 0
-            c += 1
-            benchmark[name] = (n, t, c)
+            if hits % REFRESH_RATE == 0:
+                hits = 0
+            hits += 1
+            benchmark[name] = Benchmark(num, duration, hits)
 
     def stop(self):
         self.end_time = time.time()
@@ -206,25 +215,24 @@ class CatalogPlan(object):
 
         if key not in stats:
             mt = self.duration
-            c = 1
+            hits = 1
         else:
-            mt, c = stats[key]
-            mt = ((mt * c) + self.duration) / float(c + 1)
-            c += 1
+            mt, hits = stats[key]
+            mt = ((mt * hits) + self.duration) / float(hits + 1)
+            hits += 1
 
-        stats[key] = (mt, c)
+        stats[key] = (mt, hits)
         self.log()
-
-    def result(self):
-        return (self.duration, tuple(self.res))
 
     def log(self):
         # result of stopwatch
-        res = self.result()
-        if res[0] < self.threshold:
+        total = self.duration
+        if total < self.threshold:
             return
 
         key = self.key
+        res = (total, self.res)
+
         reports_lock.acquire()
         try:
             if self.cid not in reports:
@@ -233,11 +241,10 @@ class CatalogPlan(object):
             previous = reports[self.cid].get(key)
             if previous:
                 counter, mean, last = previous
-                mean = (mean * counter + res[0]) / float(counter + 1)
+                mean = (mean * counter + total) / float(counter + 1)
                 reports[self.cid][key] = (counter + 1, mean, res)
             else:
-                reports[self.cid][key] = (1, res[0], res)
-
+                reports[self.cid][key] = (1, total, res)
         finally:
             reports_lock.release()
 
@@ -264,13 +271,6 @@ class CatalogPlan(object):
                                       'details': <duration of single indexes>,
                                      }
 
-        <duration of single indexes> := [{'id': <index_name1>,
-                                          'duration': <duration>,
-                                          'length': <resultset length>,
-                                         },
-                                         ...
-                                        ]
-
         The duration is provided in millisecond.
         """
         rval = []
@@ -280,9 +280,9 @@ class CatalogPlan(object):
                 'counter': v[0],
                 'duration': v[1] * 1000,
                 'last': {'duration': v[2][0] * 1000,
-                         'details': [dict(id=i[0],
-                                          duration=i[1]*1000,
-                                          length=i[2])
+                         'details': [dict(id=i.name,
+                                          duration=i.duration * 1000,
+                                          length=i.num)
                                      for i in v[2][1]],
                         },
                 }
