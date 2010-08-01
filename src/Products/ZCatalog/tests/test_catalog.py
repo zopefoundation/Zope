@@ -169,7 +169,7 @@ class TestAddDelIndexes(CatalogBase, unittest.TestCase):
 
 class TestCatalog(CatalogBase, unittest.TestCase):
 
-    upper = 1000
+    upper = 100
 
     nums = range(upper)
     for i in range(upper):
