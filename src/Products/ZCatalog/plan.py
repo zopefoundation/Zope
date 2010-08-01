@@ -182,7 +182,8 @@ class CatalogPlan(object):
         # remember index's hits, search time and calls
         benchmark = self.benchmark()
         if name not in benchmark:
-            benchmark[name] = Benchmark(num=length, duration=dt, hits=1)
+            with PRIORITYMAP_LOCK:
+                benchmark[name] = Benchmark(num=length, duration=dt, hits=1)
         else:
             num, duration, hits = benchmark[name]
             num = int(((num * hits) + length) / float(hits + 1))
@@ -191,7 +192,8 @@ class CatalogPlan(object):
             if hits % REFRESH_RATE == 0:
                 hits = 0
             hits += 1
-            benchmark[name] = Benchmark(num, duration, hits)
+            with PRIORITYMAP_LOCK:
+                benchmark[name] = Benchmark(num, duration, hits)
 
     def stop(self):
         self.end_time = time.time()
@@ -203,20 +205,6 @@ class CatalogPlan(object):
         with PRIORITYMAP_LOCK:
             PRIORITYMAP[key] = benchmark
 
-        # calculate mean time of search
-        stats = getattr(self.catalog, '_v_stats', None)
-        if stats is None:
-            stats = self.catalog._v_stats = {}
-
-        if key not in stats:
-            mt = self.duration
-            hits = 1
-        else:
-            mt, hits = stats[key]
-            mt = ((mt * hits) + self.duration) / float(hits + 1)
-            hits += 1
-
-        stats[key] = (mt, hits)
         self.log()
 
     def log(self):
