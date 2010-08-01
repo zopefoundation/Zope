@@ -95,35 +95,24 @@ class ZCatalog(Folder, Persistent, Implicit):
     icon = 'misc_/ZCatalog/ZCatalog.gif'
 
     manage_options = (
-        {'label': 'Contents',           # TAB: Contents
-         'action': 'manage_main'},
-        {'label': 'Catalog',            # TAB: Cataloged Objects
-         'action': 'manage_catalogView'},
-        {'label': 'Properties',         # TAB: Properties
-         'action': 'manage_propertiesForm'},
-        {'label': 'Indexes',            # TAB: Indexes
-         'action': 'manage_catalogIndexes'},
-        {'label': 'Metadata',           # TAB: Metadata
-         'action': 'manage_catalogSchema'},
-        {'label': 'Find Objects',       # TAB: Find Objects
-         'action': 'manage_catalogFind'},
-        {'label': 'Advanced',           # TAB: Advanced
-         'action': 'manage_catalogAdvanced'},
-        {'label': 'Query Report',
-         'action': 'manage_catalogReport',
-        },
-        {'label': 'Undo',               # TAB: Undo
-         'action': 'manage_UndoForm'},
-        {'label': 'Security',           # TAB: Security
-         'action': 'manage_access'},
-        {'label': 'Ownership',          # TAB: Ownership
-         'action': 'manage_owner'},
+        {'label': 'Contents', 'action': 'manage_main'},
+        {'label': 'Catalog', 'action': 'manage_catalogView'},
+        {'label': 'Properties', 'action': 'manage_propertiesForm'},
+        {'label': 'Indexes', 'action': 'manage_catalogIndexes'},
+        {'label': 'Metadata', 'action': 'manage_catalogSchema'},
+        {'label': 'Find Objects', 'action': 'manage_catalogFind'},
+        {'label': 'Advanced', 'action': 'manage_catalogAdvanced'},
+        {'label': 'Query Report', 'action': 'manage_catalogReport'},
+        {'label': 'Undo', 'action': 'manage_UndoForm'},
+        {'label': 'Security', 'action': 'manage_access'},
+        {'label': 'Ownership', 'action': 'manage_owner'},
         )
 
     security.declareProtected(manage_zcatalog_entries, 'manage_main')
-
     security.declareProtected(search_zcatalog, 'all_meta_types')
 
+    security.declareProtected(manage_zcatalog_entries,
+                              'manage_catalogAddRowForm')
     manage_catalogAddRowForm = DTMLFile('dtml/catalogAddRowForm', globals())
 
     security.declareProtected(manage_zcatalog_entries, 'manage_catalogView')
@@ -189,7 +178,6 @@ class ZCatalog(Folder, Persistent, Implicit):
         RESPONSE.redirect(
             URL1 + '/manage_main?manage_tabs_message=Catalog%20Changed')
 
-
     def manage_subbingToggle(self, REQUEST, RESPONSE, URL1):
         """ toggle subtransactions """
         if self.threshold:
@@ -219,7 +207,6 @@ class ZCatalog(Folder, Persistent, Implicit):
             URL1 +
             '/manage_catalogView?manage_tabs_message=Object%20Cataloged')
 
-
     security.declareProtected(manage_zcatalog_entries,
                               'manage_uncatalogObject')
     def manage_uncatalogObject(self, REQUEST, RESPONSE, URL1, urls=None):
@@ -235,7 +222,6 @@ class ZCatalog(Folder, Persistent, Implicit):
         RESPONSE.redirect(
             URL1 +
             '/manage_catalogView?manage_tabs_message=Object%20Uncataloged')
-
 
     security.declareProtected(manage_zcatalog_entries, 'manage_catalogReindex')
     def manage_catalogReindex(self, REQUEST, RESPONSE, URL1):
@@ -257,7 +243,6 @@ class ZCatalog(Folder, Persistent, Implicit):
             urllib.quote('Catalog Updated \n'
                          'Total time: %s\n'
                          'Total CPU time: %s' % (`elapse`, `c_elapse`)))
-
 
     security.declareProtected(manage_zcatalog_entries, 'refreshCatalog')
     def refreshCatalog(self, clear=0, pghandler=None):
@@ -304,7 +289,6 @@ class ZCatalog(Folder, Persistent, Implicit):
               URL1 +
               '/manage_catalogAdvanced?manage_tabs_message=Catalog%20Cleared')
 
-
     security.declareProtected(manage_zcatalog_entries,
                               'manage_catalogFoundItems')
     def manage_catalogFoundItems(self, REQUEST, RESPONSE, URL2, URL1,
@@ -313,10 +297,8 @@ class ZCatalog(Folder, Persistent, Implicit):
                                  obj_expr=None, obj_mtime=None,
                                  obj_mspec=None, obj_roles=None,
                                  obj_permission=None):
-
         """ Find object according to search criteria and Catalog them
         """
-
         elapse = time.time()
         c_elapse = time.clock()
 
@@ -348,7 +330,6 @@ class ZCatalog(Folder, Persistent, Implicit):
                          'Total CPU time: %s'
                          % (`elapse`, `c_elapse`)))
 
-
     security.declareProtected(manage_zcatalog_entries, 'manage_addColumn')
     def manage_addColumn(self, name, REQUEST=None, RESPONSE=None, URL1=None):
         """ add a column """
@@ -358,7 +339,6 @@ class ZCatalog(Folder, Persistent, Implicit):
             RESPONSE.redirect(
                 URL1 +
                 '/manage_catalogSchema?manage_tabs_message=Column%20Added')
-
 
     security.declareProtected(manage_zcatalog_entries, 'manage_delColumn')
     def manage_delColumn(self, names, REQUEST=None, RESPONSE=None, URL1=None):
@@ -374,7 +354,6 @@ class ZCatalog(Folder, Persistent, Implicit):
                 URL1 +
                 '/manage_catalogSchema?manage_tabs_message=Column%20Deleted')
 
-
     security.declareProtected(manage_zcatalog_entries, 'manage_addIndex')
     def manage_addIndex(self, name, type, extra=None,
                         REQUEST=None, RESPONSE=None, URL1=None):
@@ -385,7 +364,6 @@ class ZCatalog(Folder, Persistent, Implicit):
             RESPONSE.redirect(
                 URL1 +
                 '/manage_catalogIndexes?manage_tabs_message=Index%20Added')
-
 
     security.declareProtected(manage_zcatalog_entries, 'manage_delIndex')
     def manage_delIndex(self, ids=None, REQUEST=None, RESPONSE=None,
@@ -407,7 +385,6 @@ class ZCatalog(Folder, Persistent, Implicit):
                 URL1 +
                 '/manage_catalogIndexes?manage_tabs_message=Index%20Deleted')
 
-
     security.declareProtected(manage_zcatalog_entries, 'manage_clearIndex')
     def manage_clearIndex(self, ids=None, REQUEST=None, RESPONSE=None,
         URL1=None):
@@ -427,7 +404,6 @@ class ZCatalog(Folder, Persistent, Implicit):
             RESPONSE.redirect(
                 URL1 +
                 '/manage_catalogIndexes?manage_tabs_message=Index%20Cleared')
-
 
     def reindexIndex(self, name, REQUEST, pghandler=None):
         if isinstance(name, str):
@@ -477,7 +453,6 @@ class ZCatalog(Folder, Persistent, Implicit):
                 URL1 +
                 '/manage_catalogIndexes'
                 '?manage_tabs_message=Reindexing%20Performed')
-
 
     security.declareProtected(manage_zcatalog_entries, 'catalog_object')
     def catalog_object(self, obj, uid=None, idxs=None, update_metadata=1,
@@ -627,7 +602,7 @@ class ZCatalog(Folder, Persistent, Implicit):
         return self._catalog.searchResults(REQUEST, used, **kw)
 
     security.declareProtected(search_zcatalog, '__call__')
-    __call__=searchResults
+    __call__ = searchResults
 
     security.declareProtected(search_zcatalog, 'search')
     def search(
@@ -853,9 +828,7 @@ class ZCatalog(Folder, Persistent, Implicit):
             self.pgthreshold = 0
         return self.pgthreshold
 
-    #
     # Indexing methods
-    #
 
     def addIndex(self, name, type, extra=None):
         # Convert the type by finding an appropriate product which supports
@@ -905,9 +878,7 @@ class ZCatalog(Folder, Persistent, Implicit):
     def delColumn(self, name):
         return self._catalog.delColumn(name)
 
-    #
     # Catalog report methods
-    #
 
     security.declareProtected(manage_zcatalog_entries, 'getCatalogReport')
     def getCatalogReport(self):
@@ -938,7 +909,6 @@ class ZCatalog(Folder, Persistent, Implicit):
             REQUEST.response.redirect(REQUEST.URL1 +
                 '/manage_catalogReport?manage_tabs_message=' +
                 'Long%20query%20time%20changed')
-
 
 InitializeClass(ZCatalog)
 
