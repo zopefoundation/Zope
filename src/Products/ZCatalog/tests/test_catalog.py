@@ -486,8 +486,7 @@ class TestCatalogSearchArgumentsMap(unittest.TestCase):
         self.assert_('c' not in argmap)
 
 
-class TestMerge(CatalogBase, unittest.TestCase):
-    # Test merging results from multiple catalogs
+class TestMergeResults(CatalogBase, unittest.TestCase):
 
     def setUp(self):
         self.catalogs = []
@@ -581,5 +580,5 @@ def test_suite():
     suite.addTest(unittest.makeSuite(TestCatalogObject))
     suite.addTest(unittest.makeSuite(TestRangeSearch))
     suite.addTest(unittest.makeSuite(TestCatalogSearchArgumentsMap))
-    suite.addTest(unittest.makeSuite(TestMerge))
+    suite.addTest(unittest.makeSuite(TestMergeResults))
     return suite
