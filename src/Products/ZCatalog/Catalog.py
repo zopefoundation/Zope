@@ -452,8 +452,14 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         else:
             real_req = request
 
-        if real_req is not None:
-            # TODO: This deserves depreaction
+        if real_req:
+            warnings.warn('You have specified a query using either a request '
+                          'object or a mixture of a query dict and keyword '
+                          'arguments. Please use only a simple query dict. '
+                          'Your query contained "%s". This support is '
+                          'deprecated and will be removed in Zope 2.14.' %
+                          repr(real_req), DeprecationWarning, stacklevel=4)
+
             known_keys = query.keys()
             # The request has too many places where an index restriction
             # might be specified. Putting all of request.form,

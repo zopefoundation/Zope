@@ -283,7 +283,6 @@ class TestCatalog(CatalogBase, unittest.TestCase):
     # getMetadataForRID
     # getIndexDataForRID
     # make_query
-    # _sorted_search_indexes
 
     def test_sorted_search_indexes_empty(self):
         result = self._catalog._sorted_search_indexes({})
@@ -586,8 +585,8 @@ class TestMergeResults(CatalogBase, unittest.TestCase):
     def testLimitSort(self):
         from Products.ZCatalog.Catalog import mergeResults
         results = [cat.searchResults(
-                   dict(att1='att1', number=True, sort_on='num'),
-                   sort_limit=2, _merge=0)
+                   dict(att1='att1', number=True, sort_on='num',
+                   sort_limit=2), _merge=0)
                    for cat in self.catalogs]
         merged_rids = [r.getRID() for r in mergeResults(
             results, has_sort_keys=True, reverse=False)]
