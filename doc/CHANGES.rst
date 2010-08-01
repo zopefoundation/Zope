@@ -16,6 +16,8 @@ Bugs Fixed
 Features Added
 ++++++++++++++
 
+- OFS: Added forward-compatibility shim for UserFolder.
+
 - Updated packages:
 
   - DateTime = 2.12.5
