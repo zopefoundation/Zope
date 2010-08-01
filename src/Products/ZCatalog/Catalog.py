@@ -528,14 +528,14 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                 # once we don't need to support the "return everything" case
                 # anymore
                 if r is not None and not r:
-                    cr.split(i, 0)
+                    cr.split(i, None)
                     return LazyCat([])
-                cr.split(i, len(r))
+                cr.split(i, r)
                 w, rs = weightedIntersection(rs, r)
                 if not rs:
                     break
             else:
-                cr.split(i, 0)
+                cr.split(i, None)
 
         cr.stop()
 

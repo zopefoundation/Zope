@@ -117,7 +117,7 @@ class StopWatch(object):
         self.init()
         self.start_time = time.time()
 
-    def split(self, label, result_length=None):
+    def split(self, label, result=None):
         current = time.time()
         start_time, stop_time = self.interim.get(label, (None, None))
 
@@ -125,8 +125,12 @@ class StopWatch(object):
             self.interim[label] = (current, None)
             return
 
+        length = 0
+        if result is not None:
+            # TODO: calculating the length can be expensive
+            length = len(result)
         self.interim[label] = (start_time, current)
-        self.res.append((label, current - start_time, result_length))
+        self.res.append((label, current - start_time, length))
 
     def stop(self):
         self.end_time = time.time()
