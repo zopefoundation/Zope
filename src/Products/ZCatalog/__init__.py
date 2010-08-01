@@ -15,6 +15,7 @@
 
 import ZCatalog
 
+
 def initialize(context):
     context.registerClass(
         ZCatalog.ZCatalog,

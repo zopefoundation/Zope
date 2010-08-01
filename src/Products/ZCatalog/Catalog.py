@@ -54,6 +54,7 @@ except ImportError:
 class CatalogError(Exception):
     pass
 
+
 class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
     """ An Object Catalog
 
@@ -80,7 +81,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         # convenient display on result pages.  meta_data attributes
         # are turned into brain objects and returned by
         # searchResults.  The indexing machinery indexes all records
-        # by an integer id (rid).  self.data is a mapping from the
+        # by an integer id (rid). self.data is a mapping from the
         # integer id to the meta_data, self.uids is a mapping of the
         # object unique identifier to the rid, and self.paths is a
         # mapping of the rid to the unique identifier.
@@ -106,8 +107,8 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
     def clear(self):
         """ clear catalog """
 
-        self.data  = IOBTree()  # mapping of rid to meta_data
-        self.uids  = OIBTree()  # mapping of uid to rid
+        self.data = IOBTree()  # mapping of rid to meta_data
+        self.uids = OIBTree()  # mapping of uid to rid
         self.paths = IOBTree()  # mapping of rid to uid
         self._length = BTrees.Length.Length()
 
@@ -171,25 +172,24 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         schema = self.schema
         names = list(self.names)
 
-        if schema.has_key(name):
-            raise CatalogError, 'The column %s already exists' % name
+        if name in schema:
+            raise CatalogError('The column %s already exists' % name)
 
         if name[0] == '_':
-            raise CatalogError, \
-                  'Cannot cache fields beginning with "_"'
+            raise CatalogError('Cannot cache fields beginning with "_"')
 
-        if not schema.has_key(name):
-            if schema.values():
-                schema[name] = max(schema.values())+1
-            else:
-                schema[name] = 0
-            names.append(name)
+        values = schema.values()
+        if values:
+            schema[name] = max(values) + 1
+        else:
+            schema[name] = 0
+        names.append(name)
 
-        if default_value is None or default_value == '':
+        if default_value in (None, ''):
             default_value = MV
 
-        for key in self.data.keys():
-            rec = list(self.data[key])
+        for key, value in self.data.items():
+            rec = list(value)
             rec.append(default_value)
             self.data[key] = tuple(rec)
 
@@ -208,14 +208,16 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         names = list(self.names)
         _index = names.index(name)
 
-        if not self.schema.has_key(name):
-            LOG.error('delColumn attempted to delete nonexistent column %s.' % str(name))
+        if not name in self.schema:
+            LOG.error('delColumn attempted to delete nonexistent '
+                      'column %s.' % str(name))
             return
 
         del names[_index]
 
         # rebuild the schema
-        i=0; schema = {}
+        i = 0
+        schema = {}
         for name in names:
             schema[name] = i
             i = i + 1
@@ -227,8 +229,8 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         self.updateBrains()
 
         # remove the column value from each record
-        for key in self.data.keys():
-            rec = list(self.data[key])
+        for key, value in self.data.items():
+            rec = list(value)
             del rec[_index]
             self.data[key] = tuple(rec)
 
@@ -236,37 +238,36 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         """Create a new index, given a name and a index_type.
 
         Old format: index_type was a string, 'FieldIndex' 'TextIndex' or
-        'KeywordIndex' is no longer valid; the actual index must be instantiated
-        and passed in to addIndex.
+        'KeywordIndex' is no longer valid; the actual index must be
+        instantiated and passed in to addIndex.
 
         New format: index_type is the actual index object to be stored.
-
         """
 
-        if self.indexes.has_key(name):
-            raise CatalogError, 'The index %s already exists' % name
+        if name in self.indexes:
+            raise CatalogError('The index %s already exists' % name)
 
         if name.startswith('_'):
-            raise CatalogError, 'Cannot index fields beginning with "_"'
+            raise CatalogError('Cannot index fields beginning with "_"')
 
         if not name:
-            raise CatalogError, 'Name of index is empty'
+            raise CatalogError('Name of index is empty')
 
         indexes = self.indexes
 
         if isinstance(index_type, str):
-            raise TypeError,"""Catalog addIndex now requires the index type to
-            be resolved prior to adding; create the proper index in the caller."""
+            raise TypeError("Catalog addIndex now requires the index type to"
+                            "be resolved prior to adding; create the proper "
+                            "index in the caller.")
 
-        indexes[name] = index_type;
-
+        indexes[name] = index_type
         self.indexes = indexes
 
     def delIndex(self, name):
         """ deletes an index """
 
-        if not self.indexes.has_key(name):
-            raise CatalogError, 'The index %s does not exist' % name
+        if not name in self.indexes:
+            raise CatalogError('The index %s does not exist' % name)
 
         indexes = self.indexes
         del indexes[name]
@@ -354,11 +355,12 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
             self.updateMetadata(object, uid)
 
         # do indexing
-
         total = 0
 
-        if idxs==[]: use_indexes = self.indexes.keys()
-        else:        use_indexes = idxs
+        if idxs == []:
+            use_indexes = self.indexes.keys()
+        else:
+            use_indexes = idxs
 
         for name in use_indexes:
             x = self.getIndex(name)
@@ -366,7 +368,8 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                 blah = x.index_object(index, object, threshold)
                 total = total + blah
             else:
-                LOG.error('catalogObject was passed bad index object %s.' % str(x))
+                LOG.error('catalogObject was passed bad index '
+                          'object %s.' % str(x))
 
         return total
 
@@ -417,18 +420,18 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
     def recordify(self, object):
         """ turns an object into a record tuple """
         record = []
-        # the unique id is allways the first element
+        # the unique id is always the first element
         for x in self.names:
-            attr=getattr(object, x, MV)
-            if(attr is not MV and safe_callable(attr)): attr=attr()
+            attr = getattr(object, x, MV)
+            if (attr is not MV and safe_callable(attr)):
+                attr = attr()
             record.append(attr)
         return tuple(record)
 
     def instantiate(self, record):
-        r=self._v_result_class(record[1])
+        r = self._v_result_class(record[1])
         r.data_record_id_ = record[0]
         return r.__of__(self)
-
 
     def getMetadataForRID(self, rid):
         record = self.data[rid]
@@ -559,7 +562,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                 return LazyMap(self.instantiate, self.data.items(), len(self))
             else:
                 return self.sortResults(
-                    self.data, sort_index, reverse,  limit, merge)
+                    self.data, sort_index, reverse, limit, merge)
         elif rs:
             # We got some results from the indexes.
             # Sort and convert to sequences.
@@ -777,13 +780,13 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
             # self.indexes is always a dict, so get() w/ 1 arg works
             sort_index = self.indexes.get(sort_index_name)
             if sort_index is None:
-                raise CatalogError, 'Unknown sort_on index (%s)' % sort_index_name
+                raise CatalogError('Unknown sort_on index (%s)' %
+                                   sort_index_name)
             else:
                 if not hasattr(sort_index, 'documentToKeyMap'):
                     raise CatalogError(
                         'The index chosen for sort_on (%s) is not capable of '
-                        'being used as a sort index.' % sort_index_name
-                        )
+                        'being used as a sort index.' % sort_index_name)
             return sort_index
         else:
             return None

@@ -22,6 +22,7 @@ import warnings
 from Acquisition import aq_base
 from App.special_dtml import DTMLFile
 
+
 class CatalogAware:
     """ This is a Mix-In class to make objects automaticly catalog and
     uncatalog themselves in Zope, and to provide some other basic
@@ -58,7 +59,8 @@ class CatalogAware:
             except Exception:
                 s = 0
             object.manage_afterAdd(item, container)
-            if s is None: object._p_deactivate()
+            if s is None:
+                object._p_deactivate()
 
     def manage_afterClone(self, item):
         self.index_object()
@@ -68,7 +70,8 @@ class CatalogAware:
             except Exception:
                 s = 0
             object.manage_afterClone(item)
-            if s is None: object._p_deactivate()
+            if s is None:
+                object._p_deactivate()
 
     def manage_beforeDelete(self, item, container):
         self.unindex_object()
@@ -78,7 +81,8 @@ class CatalogAware:
             except Exception:
                 s = 0
             object.manage_beforeDelete(item, container)
-            if s is None: object._p_deactivate()
+            if s is None:
+                object._p_deactivate()
 
     def creator(self):
         """Return a sequence of user names who have the local
@@ -100,13 +104,13 @@ class CatalogAware:
         if hasattr(self, 'DestinationURL') and \
            callable(self.DestinationURL):
             url='%s/%s' % (self.DestinationURL(), self.id)
-        else: url=self.absolute_url()
-        type, uri=ftype(url)
-        host, uri=fhost(uri)
-        script_name=self.REQUEST['SCRIPT_NAME']
-        __traceback_info__=(`uri`, `script_name`)
+        else:
+            url = self.absolute_url()
+        type, uri = ftype(url)
+        host, uri = fhost(uri)
+        script_name = self.REQUEST['SCRIPT_NAME']
         if script_name:
-            uri=filter(None, uri.split(script_name))[0]
+            uri = filter(None, uri.split(script_name))[0]
         if not uri:
             uri = '/'
         if uri[0] != '/':
@@ -117,24 +121,27 @@ class CatalogAware:
         """Return a summary of the text content of the object."""
         if not hasattr(self, 'text_content'):
             return ''
-        attr=getattr(self, 'text_content')
+        attr = getattr(self, 'text_content')
         if callable(attr):
-            text=attr()
-        else: text=attr
-        n=min(num, len(text))
+            text = attr()
+        else:
+            text = attr
+        n = min(num, len(text))
         return text[:n]
 
     def index_object(self):
         """A common method to allow Findables to index themselves."""
         self._warn_deprecated()
-        if hasattr(self, self.default_catalog):
-            getattr(self, self.default_catalog).catalog_object(self, self.url())
+        catalog = getattr(self, self.default_catalog, None)
+        if catalog is not None:
+            catalog.catalog_object(self, self.url())
 
     def unindex_object(self):
         """A common method to allow Findables to unindex themselves."""
         self._warn_deprecated()
-        if hasattr(self, self.default_catalog):
-            getattr(self, self.default_catalog).uncatalog_object(self.url())
+        catalog = getattr(self, self.default_catalog, None)
+        if catalog is not None:
+            catalog.uncatalog_object(self.url())
 
     def reindex_object(self):
         """ Suprisingly useful """
@@ -143,7 +150,8 @@ class CatalogAware:
 
     def reindex_all(self, obj=None):
         """ """
-        if obj is None: obj=self
+        if obj is None:
+            obj = self
         if hasattr(aq_base(obj), 'index_object'):
             obj.index_object()
         if hasattr(aq_base(obj), 'objectValues'):
