@@ -701,28 +701,27 @@ class ZCatalog(Folder, Persistent, Implicit):
         need here; the ability to apply a method to all the objects
         *as they're found* and the need to pass the object's path into
         that method.
-
         """
 
         if result is None:
-            result=[]
+            result = []
 
             if obj_metatypes and 'all' in obj_metatypes:
-                obj_metatypes=None
+                obj_metatypes = None
 
-            if obj_mtime and type(obj_mtime)==type('s'):
-                obj_mtime=DateTime(obj_mtime).timeTime()
+            if obj_mtime and isinstance(obj_mtime, str):
+                obj_mtime = DateTime(obj_mtime).timeTime()
 
             if obj_permission:
-                obj_permission=p_name(obj_permission)
+                obj_permission = p_name(obj_permission)
 
-            if obj_roles and type(obj_roles) is type('s'):
-                obj_roles=[obj_roles]
+            if obj_roles and isinstance(obj_roles, str):
+                obj_roles = [obj_roles]
 
             if obj_expr:
                 # Setup expr machinations
-                md=td()
-                obj_expr=(Eval(obj_expr), md, md._push, md._pop)
+                md = td()
+                obj_expr = (Eval(obj_expr), md, md._push, md._pop)
 
         base = aq_base(obj)
 
