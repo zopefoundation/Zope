@@ -543,8 +543,6 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
             else:
                 cr.stop_split(i, None)
 
-        cr.stop()
-
         if rs is None:
             # None of the indexes found anything to do with the query
             # We take this to mean that the query was empty (an empty filter)
@@ -556,10 +554,12 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                           DeprecationWarning, stacklevel=3)
 
             if sort_index is None:
-                return LazyMap(self.instantiate, self.data.items(), len(self))
+                result = LazyMap(self.instantiate, self.data.items(), len(self))
             else:
-                return self.sortResults(
+                cr.start_split('sort_on')
+                result = self.sortResults(
                     self.data, sort_index, reverse, limit, merge)
+                cr.stop_split('sort_on', None)
         elif rs:
             # We got some results from the indexes.
             # Sort and convert to sequences.
@@ -576,44 +576,51 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                     # note that data_record_normalized_score_ cannot be
                     # calculated and will always be 1 in this case
                     getitem = self.__getitem__
-                    return [(score, (1, score, rid), getitem)
+                    result = [(score, (1, score, rid), getitem)
                             for rid, score in rs.items()]
+                else:
+                    cr.start_split('sort_on')
 
-                rs = rs.byValue(0) # sort it by score
-                max = float(rs[0][0])
+                    rs = rs.byValue(0) # sort it by score
+                    max = float(rs[0][0])
 
-                # Here we define our getter function inline so that
-                # we can conveniently store the max value as a default arg
-                # and make the normalized score computation lazy
-                def getScoredResult(item, max=max, self=self):
-                    """
-                    Returns instances of self._v_brains, or whatever is passed
-                    into self.useBrains.
-                    """
-                    score, key = item
-                    r=self._v_result_class(self.data[key])\
-                          .__of__(aq_parent(self))
-                    r.data_record_id_ = key
-                    r.data_record_score_ = score
-                    r.data_record_normalized_score_ = int(100. * score / max)
-                    return r
+                    # Here we define our getter function inline so that
+                    # we can conveniently store the max value as a default arg
+                    # and make the normalized score computation lazy
+                    def getScoredResult(item, max=max, self=self):
+                        """
+                        Returns instances of self._v_brains, or whatever is
+                        passed into self.useBrains.
+                        """
+                        score, key = item
+                        r=self._v_result_class(self.data[key])\
+                              .__of__(aq_parent(self))
+                        r.data_record_id_ = key
+                        r.data_record_score_ = score
+                        r.data_record_normalized_score_ = int(100. * score / max)
+                        return r
 
-                return LazyMap(getScoredResult, rs, len(rs))
+                    result = LazyMap(getScoredResult, rs, len(rs))
+                    cr.stop_split('sort_on', None)
 
             elif sort_index is None and not hasattr(rs, 'values'):
                 # no scores
                 if hasattr(rs, 'keys'):
                     rs = rs.keys()
-                return LazyMap(self.__getitem__, rs, len(rs))
+                result = LazyMap(self.__getitem__, rs, len(rs))
             else:
                 # sort.  If there are scores, then this block is not
                 # reached, therefore 'sort-on' does not happen in the
                 # context of a text index query.  This should probably
                 # sort by relevance first, then the 'sort-on' attribute.
-                return self.sortResults(rs, sort_index, reverse, limit, merge)
+                cr.start_split('sort_on')
+                result = self.sortResults(rs, sort_index, reverse, limit, merge)
+                cr.stop_split('sort_on', None)
         else:
             # Empty result set
-            return LazyCat([])
+            result = LazyCat([])
+        cr.stop()
+        return result
 
     def sortResults(self, rs, sort_index, reverse=0, limit=None, merge=1):
         # Sort a result set using a sort index. Return a lazy

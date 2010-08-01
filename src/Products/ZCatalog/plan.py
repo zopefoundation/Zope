@@ -234,6 +234,10 @@ class CatalogPlan(object):
         self.res.append(IndexMeasurement(
             name=name, duration=current - start_time, num=length))
 
+        if name == 'sort_on':
+            # sort_on isn't an index. We only do time reporting on it
+            return
+
         # remember index's hits, search time and calls
         benchmark = self.benchmark
         if name not in benchmark:
