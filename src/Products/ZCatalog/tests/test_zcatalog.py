@@ -143,11 +143,28 @@ class TestZCatalog(unittest.TestCase):
 
         verifyClass(IZCatalog, ZCatalog)
 
+    def testAddIndex(self):
+        self._catalog.addIndex('id', 'FieldIndex')
+        self.assert_('id' in self._catalog.indexes())
+
+    def testDelIndex(self):
+        self.assert_('title' in self._catalog.indexes())
+        self._catalog.delIndex('title')
+        self.assert_('title' not in self._catalog.indexes())
+
     def testClearIndex(self):
         idx = self._catalog._catalog.getIndex('title')
         self.assertEquals(len(idx), self.upper)
         self._catalog.clearIndex('title')
         self.assertEquals(len(idx), 0)
+
+    def testAddColumn(self):
+        self._catalog.addColumn('num', default_value=0)
+        self.assert_('num' in self._catalog.schema())
+
+    def testDelColumn(self):
+        self._catalog.delColumn('title')
+        self.assert_('title' not in self._catalog.schema())
 
     def testGetMetadataForUID(self):
         testNum = str(self.upper - 3) # as good as any..
