@@ -155,37 +155,47 @@ class TestZCatalog(ZCatalogBase, unittest.TestCase):
 
         verifyClass(IZCatalog, ZCatalog)
 
-    def testGetMetadataForUID(self):
-        testNum = str(self.upper - 3) # as good as any..
-        data = self._catalog.getMetadataForUID(testNum)
-        self.assertEqual(data['title'], testNum)
+    def test_len(self):
+        self.assertEquals(len(self._catalog), self.upper)
 
-    def testGetIndexDataForUID(self):
-        testNum = str(self.upper - 3)
-        data = self._catalog.getIndexDataForUID(testNum)
-        self.assertEqual(data['title'][0], testNum)
+    # manage_edit
+    # manage_subbingToggle
 
-    def testSearch(self):
-        query = {'title': ['5', '6', '7']}
-        sr = self._catalog.searchResults(query)
-        self.assertEqual(len(sr), 3)
-        sr = self._catalog.search(query)
-        self.assertEqual(len(sr), 3)
+    def testBooleanEvalOn_manage_catalogObject(self):
+        self.d['11'] = dummyLenFail(11, self.fail)
+        self.d['12'] = dummyNonzeroFail(12, self.fail)
+        # create a fake response that doesn't bomb on manage_catalogObject()
+        class myresponse:
+            def redirect(self, url):
+                pass
+        # this next call should not fail
+        self._catalog.manage_catalogObject(None, myresponse(),
+                                           'URL1', urls=('11', '12'))
 
-    def testUpdateMetadata(self):
-        self._catalog.catalog_object(zdummy(1), '1')
-        data = self._catalog.getMetadataForUID('1')
-        self.assertEqual(data['title'], '1')
-        self._catalog.catalog_object(zdummy(2), '1', update_metadata=0)
-        data = self._catalog.getMetadataForUID('1')
-        self.assertEqual(data['title'], '1')
-        self._catalog.catalog_object(zdummy(2), '1', update_metadata=1)
-        data = self._catalog.getMetadataForUID('1')
-        self.assertEqual(data['title'], '2')
-        # update_metadata defaults to true, test that here
-        self._catalog.catalog_object(zdummy(1), '1')
-        data = self._catalog.getMetadataForUID('1')
-        self.assertEqual(data['title'], '1')
+    # manage_uncatalogObject
+    # manage_catalogReindex
+
+    def testBooleanEvalOn_refreshCatalog_getobject(self):
+        # wrap catalog under the fake parent providing unrestrictedTraverse()
+        catalog = self._catalog.__of__(fakeparent(self.d))
+        # replace entries to test refreshCatalog
+        self.d['0'] = dummyLenFail(0, self.fail)
+        self.d['1'] = dummyNonzeroFail(1, self.fail)
+        # this next call should not fail
+        catalog.refreshCatalog()
+
+        for uid in ('0', '1'):
+            rid = catalog.getrid(uid)
+            # neither should these
+            catalog.getobject(rid)
+
+    # manage_catalogClear
+    # manage_catalogFoundItems
+    # manage_addColumn
+    # manage_delColumn
+    # manage_addIndex
+    # manage_delIndex
+    # manage_clearIndex
 
     def testReindexIndexDoesntDoMetadata(self):
         self.d['0'].num = 9999
@@ -206,30 +216,12 @@ class TestZCatalog(ZCatalogBase, unittest.TestCase):
         result = self._catalog(title='9999')
         self.assertEquals(1, len(result))
 
-    def testBooleanEvalOn_manage_catalogObject(self):
-        self.d['11'] = dummyLenFail(11, self.fail)
-        self.d['12'] = dummyNonzeroFail(12, self.fail)
-        # create a fake response that doesn't bomb on manage_catalogObject()
-        class myresponse:
-            def redirect(self, url):
-                pass
-        # this next call should not fail
-        self._catalog.manage_catalogObject(None, myresponse(),
-                                           'URL1', urls=('11', '12'))
-
-    def testBooleanEvalOn_refreshCatalog_getobject(self):
-        # wrap catalog under the fake parent providing unrestrictedTraverse()
-        catalog = self._catalog.__of__(fakeparent(self.d))
-        # replace entries to test refreshCatalog
-        self.d['0'] = dummyLenFail(0, self.fail)
-        self.d['1'] = dummyNonzeroFail(1, self.fail)
-        # this next call should not fail
-        catalog.refreshCatalog()
-
-        for uid in ('0', '1'):
-            rid = catalog.getrid(uid)
-            # neither should these
-            catalog.getobject(rid)
+    # manage_reindexIndex
+    # catalog_object
+    # uncatalog_object
+    # uniqueValuesFor
+    # getpath
+    # getrid
 
     def test_getobject_traversal(self):
         # getobject doesn't mask TraversalErrors and doesn't delegate to
@@ -251,6 +243,61 @@ class TestZCatalog(ZCatalogBase, unittest.TestCase):
         # should return
         self.d['0'] = None
         self.assertEquals(catalog.getobject(rid0), None)
+
+    def testGetMetadataForUID(self):
+        testNum = str(self.upper - 3) # as good as any..
+        data = self._catalog.getMetadataForUID(testNum)
+        self.assertEqual(data['title'], testNum)
+
+    def testGetIndexDataForUID(self):
+        testNum = str(self.upper - 3)
+        data = self._catalog.getIndexDataForUID(testNum)
+        self.assertEqual(data['title'][0], testNum)
+
+    def testUpdateMetadata(self):
+        self._catalog.catalog_object(zdummy(1), '1')
+        data = self._catalog.getMetadataForUID('1')
+        self.assertEqual(data['title'], '1')
+        self._catalog.catalog_object(zdummy(2), '1', update_metadata=0)
+        data = self._catalog.getMetadataForUID('1')
+        self.assertEqual(data['title'], '1')
+        self._catalog.catalog_object(zdummy(2), '1', update_metadata=1)
+        data = self._catalog.getMetadataForUID('1')
+        self.assertEqual(data['title'], '2')
+        # update_metadata defaults to true, test that here
+        self._catalog.catalog_object(zdummy(1), '1')
+        data = self._catalog.getMetadataForUID('1')
+        self.assertEqual(data['title'], '1')
+
+    # getMetadataForRID
+    # getIndexDataForRID
+    # schema
+    # indexes
+    # index_objects
+    # getIndexObjects
+    # _searchable_arguments
+    # _searchable_result_columns
+
+    def testSearchResults(self):
+        query = {'title': ['5', '6', '7']}
+        sr = self._catalog.searchResults(query)
+        self.assertEqual(len(sr), 3)
+
+    def testCall(self):
+        query = {'title': ['5', '6', '7']}
+        sr = self._catalog(query)
+        self.assertEqual(len(sr), 3)
+
+    def testSearch(self):
+        query = {'title': ['5', '6', '7']}
+        sr = self._catalog.search(query)
+        self.assertEqual(len(sr), 3)
+
+    # resolve_url
+    # resolve_path
+    # manage_normalize_paths
+    # manage_setProgress
+    # _getProgressThreshold
 
 
 class TestAddDelColumnIndex(ZCatalogBase, unittest.TestCase):
