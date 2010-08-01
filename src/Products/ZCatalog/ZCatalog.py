@@ -179,22 +179,10 @@ class ZCatalog(Folder, Persistent, Implicit):
         self._v_total = 0
 
         self._catalog = Catalog()
-        self._migrated_280 = True
-
         self.long_query_time = 0.1 # in seconds
 
     def __len__(self):
-        # Perform a migration of _catalog.__len__ to _catalog._length
-        # to avoid with new-style class caching issues (see #1332)
-        self._catalog.migrate__len__()
         return len(self._catalog)
-
-
-    # getVocabulary method is no longer supported
-    # def getVocabulary(self):
-    #   """ more ack! """
-    #   return getattr(self, self.vocab_id)
-
 
     def manage_edit(self, RESPONSE, URL1, threshold=1000, REQUEST=None):
         """ edit the catalog """
@@ -868,59 +856,6 @@ class ZCatalog(Folder, Persistent, Implicit):
         if not hasattr(self, 'pgthreshold'):
             self.pgthreshold = 0
         return self.pgthreshold
-
-    def manage_convertIndexes(self, REQUEST=None, RESPONSE=None, URL1=None):
-        """Recreate indexes derived from UnIndex because the implementation of
-           __len__ changed in Zope 2.8. Pre-Zope 2.7 installation used to
-           implement __len__ as persistent attribute of the index instance
-           which is totally incompatible with the new extension class
-           implementation based on new-style classes.
-        """
-
-        LOG.info('Start migration of indexes for %s' % self.absolute_url(1))
-
-        for idx in self.Indexes.objectValues():
-            bases = [str(name) for name in idx.__class__.__bases__]
-            found = False
-
-            if idx.meta_type == 'PathIndex':
-                found = True
-            else:
-                for base in bases:
-                    if 'UnIndex' in base:
-                        found = True
-                        break
-
-            if found:
-                idx_type = idx.meta_type
-                idx_id = idx.getId()
-                LOG.info('processing index %s' % idx_id)
-
-                indexed_attrs = getattr(idx, 'indexed_attrs', None)
-
-                if idx.meta_type == 'DateRangeIndex':
-                    since_field = getattr(idx, '_since_field', None)
-                    until_field = getattr(idx, '_until_field', None)
-
-                self.delIndex(idx.getId())
-                self.addIndex(idx_id, idx_type)
-                new_idx = self.Indexes[idx_id]
-
-                if indexed_attrs:
-                    setattr(new_idx, 'indexed_attrs', indexed_attrs)
-
-                if idx.meta_type == 'DateRangeIndex':
-                    setattr(new_idx, '_since_field', since_field)
-                    setattr(new_idx, '_until_field', until_field)
-
-                self.manage_reindexIndex(idx_id, REQUEST)
-
-        self._migrated_280 = True
-        LOG.info('Finished migration of indexes for %s' % self.absolute_url(1))
-
-        if RESPONSE:
-            RESPONSE.redirect(URL1 + '/manage_main?manage_tabs_message='
-                              'Indexes%20converted%20and%20reindexed')
 
     #
     # Indexing methods

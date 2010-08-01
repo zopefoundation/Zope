@@ -35,6 +35,10 @@ Bugs Fixed
 Restructuring
 +++++++++++++
 
+- Removed catalog length migration code. You can no longer directly upgrade a
+  Zope 2.7 or earlier database to Zope 2.13. Please upgrade to an earlier
+  release first.
+
 - Deprecated the ``Products.ZCatalog.CatalogAwareness`` and
   ``CatalogPathAwareness`` modules.
 

@@ -105,11 +105,7 @@ class HelpTopicBase:
         self.index_object()
 
     def get_catalog(self):
-        c = self.catalog
-        # Migrate HelpSys catalog (Zope 2.8+)
-        if not hasattr(c, '_migrated_280'):
-            c.manage_convertIndexes()
-        return c
+        return self.catalog
 
 
 class HelpTopic(Implicit, HelpTopicBase, Item, PropertyManager, Persistent):

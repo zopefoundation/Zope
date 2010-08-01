@@ -92,16 +92,8 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
 
         self.updateBrains()
 
-
     def __len__(self):
         return self._length()
-
-    def migrate__len__(self):
-        """ migration of old __len__ magic for Zope 2.8 """
-        if not hasattr(self, '_length'):
-            n = self.__dict__['__len__']()
-            del self.__dict__['__len__']
-            self._length = BTrees.Length.Length(n)
 
     def clear(self):
         """ clear catalog """
@@ -343,9 +335,6 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
 
         if index is None:  # we are inserting new data
             index = self.updateMetadata(object, uid)
-
-            if not hasattr(self, '_length'):
-                self.migrate__len__()
             self._length.change(1)
             self.uids[uid] = index
             self.paths[index] = uid
@@ -398,8 +387,6 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
             del data[rid]
             del paths[rid]
             del uids[uid]
-            if not hasattr(self, '_length'):
-                self.migrate__len__()
             self._length.change(-1)
 
         else:
@@ -445,7 +432,8 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
             result[name] = self.getIndex(name).getEntryForObject(rid, "")
         return result
 
-## This is the Catalog search engine. Most of the heavy lifting happens below
+    ## This is the Catalog search engine. Most of the heavy lifting happens
+    # below
 
     def make_query(self, request):
         # This is a bit of a mess, but the ZCatalog API has traditionally
@@ -770,7 +758,6 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         if val is not None:
             return val
         return kw.get("sort_%s" % attr, None)
-
 
     def _getSortIndex(self, args):
         """Returns a search index object or None."""
