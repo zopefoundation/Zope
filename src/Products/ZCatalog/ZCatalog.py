@@ -54,14 +54,12 @@ LOG = logging.getLogger('Zope.ZCatalog')
 manage_addZCatalogForm = DTMLFile('dtml/addZCatalog', globals())
 
 
-def manage_addZCatalog(self, id, title,
-                       vocab_id=None,
-                       REQUEST=None):
-    """Add a ZCatalog object. The vocab_id argument is deprecated.
+def manage_addZCatalog(self, id, title, vocab_id=None, REQUEST=None):
+    """Add a ZCatalog object. The vocab_id argument is ignored.
     """
     id = str(id)
     title = str(title)
-    c = ZCatalog(id, title, vocab_id, self)
+    c = ZCatalog(id, title, container=self)
     self._setObject(id, c)
     if REQUEST is not None:
         return self.manage_main(self, REQUEST, update_menu=1)
@@ -155,10 +153,15 @@ class ZCatalog(Folder, Persistent, Implicit):
 
     Indexes = ZCatalogIndexes()
 
-    threshold=10000
+    threshold = 10000
     long_query_time = 0.1
 
-    _v_total=0
+    # vocabulary and vocab_id are left for backwards
+    # compatibility only, they are not used anymore
+    vocabulary = None
+    vocab_id = ''
+
+    _v_total = 0
     _v_transaction = None
 
     def __init__(self, id, title='', vocab_id=None, container=None):
@@ -166,20 +169,13 @@ class ZCatalog(Folder, Persistent, Implicit):
         # so the vocab_id argument is ignored (Casey)
 
         if container is not None:
-            self=self.__of__(container)
+            self = self.__of__(container)
         self.id=id
         self.title=title
-
-        # vocabulary and vocab_id are left for backwards
-        # compatibility only, they are not used anymore
-        self.vocabulary = None
-        self.vocab_id = ''
-
         self.threshold = 10000
-        self._v_total = 0
-
-        self._catalog = Catalog()
         self.long_query_time = 0.1 # in seconds
+        self._v_total = 0
+        self._catalog = Catalog()
 
     def __len__(self):
         return len(self._catalog)
