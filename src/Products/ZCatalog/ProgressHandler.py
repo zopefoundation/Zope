@@ -11,7 +11,8 @@
 #
 ##############################################################################
 
-import time, sys
+import sys
+import time
 from logging import getLogger
 
 from DateTime.DateTime import DateTime
@@ -20,8 +21,9 @@ from zope.interface import implements
 
 LOG = getLogger('ProgressHandler')
 
+
 class IProgressHandler(Interface):
-    """ A handler to log progress informations for long running 
+    """ A handler to log progress informations for long running
         operations.
     """
 
@@ -30,7 +32,7 @@ class IProgressHandler(Interface):
 
             'ident' -- a string identifying the operation
             'max' -- maximum number of objects to be processed (int)
-        """ 
+        """
 
     def info(text):
         """ Log some 'text'"""
@@ -41,12 +43,12 @@ class IProgressHandler(Interface):
     def report(current, *args, **kw):
         """ Called for every iteration.
 
-            'current' -- an integer representing the number of objects 
+            'current' -- an integer representing the number of objects
                          processed so far.
         """
 
     def output(text):
-        """ Log 'text' to some output channel """        
+        """ Log 'text' to some output channel """
 
 
 class StdoutHandler:
@@ -73,12 +75,14 @@ class StdoutHandler:
 
     def report(self, current, *args, **kw):
         if current > 0:
-            if current % self._steps == 0: 
+            if current % self._steps == 0:
                 seconds_so_far = time.time() - self._start
-                seconds_to_go  = seconds_so_far / current * (self._max - current)
+                seconds_to_go = (seconds_so_far / current *
+                                 (self._max - current))
+                end = DateTime(time.time() + seconds_to_go)
                 self.output('%d/%d (%.2f%%) Estimated termination: %s' % \
-                (current, self._max, (100.0 * current / self._max), 
-                 DateTime(time.time() + seconds_to_go).strftime('%Y/%m/%d %H:%M:%Sh')))
+                            (current, self._max, (100.0 * current / self._max),
+                            end.strftime('%Y/%m/%d %H:%M:%Sh')))
 
     def output(self, text):
         print >>self.fp, '%s: %s' % (self._ident, text)
