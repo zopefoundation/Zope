@@ -482,7 +482,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                 continue
             order.append((ILimitedResultIndex.providedBy(index), name))
         order.sort()
-        return order
+        return [i[1] for i in order]
 
     def search(self, query, sort_index=None, reverse=0, limit=None, merge=1):
         """Iterate through the indexes, applying the query to each one. If
@@ -506,17 +506,22 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
 
         # Canonicalize the request into a sensible query before passing it on
         query = self.make_query(query)
+
         cr = self.getCatalogReport(query)
         cr.start()
 
-        for limit_result, i in self._sorted_search_indexes(query):
+        plan = cr.plan()
+        if not plan:
+            plan = self._sorted_search_indexes(query)
+
+        for i in plan:
             index = self.getIndex(i)
             _apply_index = getattr(index, "_apply_index", None)
             if _apply_index is None:
                 continue
 
-            cr.split(i)
-            if limit_result:
+            cr.start_split(i)
+            if ILimitedResultIndex.providedBy(index):
                 r = _apply_index(query, rs)
             else:
                 r = _apply_index(query)
@@ -528,14 +533,15 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                 # once we don't need to support the "return everything" case
                 # anymore
                 if r is not None and not r:
-                    cr.split(i, None)
+                    cr.stop_split(i, None)
                     return LazyCat([])
-                cr.split(i, r)
+
+                cr.stop_split(i, r)
                 w, rs = weightedIntersection(rs, r)
                 if not rs:
                     break
             else:
-                cr.split(i, None)
+                cr.stop_split(i, None)
 
         cr.stop()
 

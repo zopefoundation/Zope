@@ -25,6 +25,7 @@ value_indexes_lock = allocate_lock()
 value_indexes = frozenset()
 
 MAX_DISTINCT_VALUES = 10
+REFRESH_RATE = 100
 
 
 def determine_value_indexes(indexes):
@@ -101,53 +102,15 @@ def make_key(catalog, query):
     return key
 
 
-class StopWatch(object):
-    """ Simple stopwatch class """
-
-    def __init__(self):
-        self.init()
-
-    def init(self):
-        self.res = []
-        self.start_time = None
-        self.interim = {}
-        self.stop_time = None
-
-    def start(self):
-        self.init()
-        self.start_time = time.time()
-
-    def split(self, label, result=None):
-        current = time.time()
-        start_time, stop_time = self.interim.get(label, (None, None))
-
-        if start_time is None:
-            self.interim[label] = (current, None)
-            return
-
-        length = 0
-        if result is not None:
-            # TODO: calculating the length can be expensive
-            length = len(result)
-        self.interim[label] = (start_time, current)
-        self.res.append((label, current - start_time, length))
-
-    def stop(self):
-        self.end_time = time.time()
-
-    def result(self):
-        return (self.end_time - self.start_time, tuple(self.res))
-
-
-class CatalogReport(StopWatch):
+class CatalogReport(object):
     """Catalog report class to meassure and identify catalog queries.
     """
 
     def __init__(self, catalog, query=None, threshold=0.1):
-        super(CatalogReport, self).__init__()
-
+        self.init()
         self.catalog = catalog
         self.query = query
+        self._key = None
         self.threshold = threshold
 
         parent = aq_parent(catalog)
@@ -158,9 +121,101 @@ class CatalogReport(StopWatch):
             path = tuple(parent.getPhysicalPath())
         self.cid = path
 
+    def init(self):
+        self.res = []
+        self.start_time = None
+        self.interim = {}
+        self.stop_time = None
+        self.duration = None
+
+    def prioritymap(self):
+        # holds the benchmark of each index
+        prioritymap = getattr(self.catalog, '_v_prioritymap', None)
+        if prioritymap is None:
+            prioritymap = self.catalog._v_prioritymap = {}
+        return prioritymap
+
+    def benchmark(self):
+        # holds the benchmark of each index
+        return self.prioritymap().get(self.key(), None)
+
+    def plan(self):
+        benchmark = self.benchmark()
+        if not benchmark:
+            return None
+
+        # sort indexes on (mean hits, mean search time)
+        ranking = [((v[0], v[1]), k) for k, v in benchmark.items()]
+        ranking.sort()
+        return [i[1] for i in ranking]
+
+    def start(self):
+        self.init()
+        self.start_time = time.time()
+        benchmark = self.benchmark()
+        if benchmark is None:
+            self.prioritymap()[self.key()] = {}
+
+    def start_split(self, label, result=None):
+        self.interim[label] = (time.time(), None)
+
+    def stop_split(self, name, result=None):
+        current = time.time()
+        start_time, stop_time = self.interim.get(name, (None, None))
+        length = 0
+        if result is not None:
+            # TODO: calculating the length can be expensive
+            length = len(result)
+        self.interim[name] = (start_time, current)
+        dt = current - start_time
+        self.res.append((name, current - start_time, length))
+
+        # remember index's hits, search time and calls
+        benchmark = self.benchmark()
+        if name not in benchmark:
+            benchmark[name] = (length, dt, 1)
+        else:
+            n, t, c = benchmark[name]
+            n = int(((n*c) + length) / float(c + 1))
+            t = ((t*c) + dt) / float(c + 1)
+            # reset adaption
+            if c % REFRESH_RATE == 0:
+                c = 0
+            c += 1
+            benchmark[name] = (n, t, c)
+
     def stop(self):
-        super(CatalogReport, self).stop()
+        self.end_time = time.time()
+        self.duration = self.end_time - self.start_time
+
+        key = self.key()
+        benchmark = self.benchmark()
+        prioritymap = self.prioritymap()
+        prioritymap[key] = benchmark
+
+        # calculate mean time of search
+        stats = getattr(self.catalog, '_v_stats', None)
+        if stats is None:
+            stats = self.catalog._v_stats = {}
+
+        if key not in stats:
+            mt = self.duration
+            c = 1
+        else:
+            mt, c = stats[key]
+            mt = ((mt * c) + self.duration) / float(c + 1)
+            c += 1
+
+        stats[key] = (mt, c)
         self.log()
+
+    def result(self):
+        return (self.duration, tuple(self.res))
+
+    def key(self):
+        if not self._key:
+            self._key = make_key(self.catalog, self.query)
+        return self._key
 
     def log(self):
         # result of stopwatch
@@ -171,7 +226,7 @@ class CatalogReport(StopWatch):
         # The key calculation takes a bit itself, we want to avoid that for
         # any fast queries. This does mean that slow queries get the key
         # calculation overhead added to their runtime.
-        key = make_key(self.catalog, self.query)
+        key = self.key()
 
         reports_lock.acquire()
         try:
