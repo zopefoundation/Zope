@@ -22,10 +22,19 @@ from Products.PluginIndexes.interfaces import IUniqueValueIndex
 MAX_DISTINCT_VALUES = 10
 REFRESH_RATE = 100
 
-REPORTS_LOCK = allocate_lock()
-REPORTS = {}
+Duration = namedtuple('Duration', ['start', 'end'])
+IndexMeasurement = namedtuple('IndexMeasurement',
+                              ['name', 'duration', 'num'])
+Benchmark = namedtuple('Benchmark', ['num', 'duration', 'hits'])
+RecentQuery = namedtuple('RecentQuery', ['duration', 'details'])
+Report = namedtuple('Report', ['hits', 'duration', 'last'])
 
-class ThreadDict(object):
+
+class PriorityMap(object):
+    """This holds a query key to Benchmark mapping."""
+
+    lock = allocate_lock()
+    value = {}
 
     @classmethod
     def get(cls, key):
@@ -37,13 +46,53 @@ class ThreadDict(object):
             cls.value[key] = value
 
 
-class PriorityMap(ThreadDict):
+class Reports(object):
+    """This holds a structure of nested dicts.
+
+    The outer dict is a mapping of catalog id to reports. The inner dict holds
+    a query key to Report mapping.
+    """
 
     lock = allocate_lock()
     value = {}
 
+    @classmethod
+    def get(cls, key):
+        outer = cls.value.get(key, None)
+        if outer is None:
+            cls.set(key, {})
+            outer = cls.value[key]
+        return outer
+
+    @classmethod
+    def set(cls, key, value):
+        with cls.lock:
+            cls.value[key] = value
+
+    @classmethod
+    def clear(cls, key):
+        cls.set(key, {})
+
+    @classmethod
+    def get_entry(cls, key, key2):
+        outer = cls.get(key)
+        inner = outer.get(key2, None)
+        if inner is None:
+            cls.set_entry(key, key2, {})
+            inner = outer.get(key2)
+        return inner
+
+    @classmethod
+    def set_entry(cls, key, key2, value):
+        outer = cls.get(key)
+        with cls.lock:
+            outer[key2] = value
+
 
 class ValueIndexes(object):
+    """Holds a set of index names considered to have an uneven value
+    distribution.
+    """
 
     lock = allocate_lock()
     value = frozenset()
@@ -123,14 +172,6 @@ def make_key(catalog, query):
 
     key = tuple(sorted(key))
     return key
-
-
-Duration = namedtuple('Duration', ['start', 'end'])
-IndexMeasurement = namedtuple('IndexMeasurement',
-                              ['name', 'duration', 'num'])
-Benchmark = namedtuple('Benchmark', ['num', 'duration', 'hits'])
-RecentQuery = namedtuple('RecentQuery', ['duration', 'details'])
-Report = namedtuple('Report', ['hits', 'duration', 'last'])
 
 
 class CatalogPlan(object):
@@ -222,28 +263,23 @@ class CatalogPlan(object):
         key = self.key
         recent = RecentQuery(duration=total, details=self.res)
 
-        with REPORTS_LOCK:
-            if self.cid not in REPORTS:
-                REPORTS[self.cid] = {}
-
-            previous = REPORTS[self.cid].get(key)
-            if previous:
-                counter, mean, last = previous
-                mean = (mean * counter + total) / float(counter + 1)
-                REPORTS[self.cid][key] = Report(counter + 1, mean, recent)
-            else:
-                REPORTS[self.cid][key] = Report(1, total, recent)
+        previous = Reports.get_entry(self.cid, key)
+        if previous:
+            counter, mean, last = previous
+            mean = (mean * counter + total) / float(counter + 1)
+            Reports.set_entry(self.cid, key, Report(counter + 1, mean, recent))
+        else:
+            Reports.set_entry(self.cid, key, Report(1, total, recent))
 
     def reset(self):
-        with REPORTS_LOCK:
-            REPORTS[self.cid] = {}
+        Reports.clear(self.cid)
 
     def report(self):
         """Returns a statistic report of catalog queries as list of dicts.
         The duration is provided in millisecond.
         """
         rval = []
-        for key, report in REPORTS.get(self.cid, {}).items():
+        for key, report in Reports.get(self.cid).items():
             last = report.last
             info = {
                 'query': key,
