@@ -23,7 +23,7 @@ from .interfaces import IProgressHandler
 LOG = getLogger('ProgressHandler')
 
 
-class StdoutHandler:
+class StdoutHandler(object):
     """ A simple progress handler """
 
     implements(IProgressHandler)
@@ -63,16 +63,12 @@ class StdoutHandler:
 class ZLogHandler(StdoutHandler):
     """ Use Zope logger"""
 
-    implements(IProgressHandler)
-
     def output(self, text):
         LOG.info(text)
 
 
 class FilelogHandler(StdoutHandler):
     """ Use a custom file for logging """
-
-    implements(IProgressHandler)
 
     def __init__(self, filename, steps=100):
         StdoutHandler.__init__(self, steps)
