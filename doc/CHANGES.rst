@@ -35,6 +35,9 @@ Bugs Fixed
 Restructuring
 +++++++++++++
 
+- Emit a deprecation warning for ``Products.ZCatalog.CatalogAwareness``. The
+  module was already deprecated according to its docstring.
+
 - Removed deprecated ``catalog-getObject-raises`` zope.conf option.
 
 - Removed unmaintained HelpSys documents from ZCatalog and PluginIndexes.
