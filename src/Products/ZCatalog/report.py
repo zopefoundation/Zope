@@ -48,7 +48,7 @@ def determine_value_indexes(indexes):
     for name, index in indexes.items():
         if IUniqueValueIndex.providedBy(index):
             values = index.uniqueValues()
-            if values and len(values) < MAX_DISTINCT_VALUES:
+            if values and len(list(values)) < MAX_DISTINCT_VALUES:
                 # Only consider indexes which actually return a number
                 # greater than zero
                 new_value_indexes.add(name)
@@ -117,7 +117,7 @@ class StopWatch(object):
         self.init()
         self.start_time = time.time()
 
-    def split(self, label):
+    def split(self, label, result_length=None):
         current = time.time()
         start_time, stop_time = self.interim.get(label, (None, None))
 
@@ -126,7 +126,7 @@ class StopWatch(object):
             return
 
         self.interim[label] = (start_time, current)
-        self.res.append((label, current - start_time))
+        self.res.append((label, current - start_time, result_length))
 
     def stop(self):
         self.end_time = time.time()
@@ -210,6 +210,7 @@ class CatalogReport(StopWatch):
 
         <duration of single indexes> := [{'id': <index_name1>,
                                           'duration': <duration>,
+                                          'length': <resultset length>,
                                          },
                                          ...
                                         ]
@@ -224,7 +225,8 @@ class CatalogReport(StopWatch):
                 'duration': v[1] * 1000,
                 'last': {'duration': v[2][0] * 1000,
                          'details': [dict(id=i[0],
-                                          duration=i[1]*1000)
+                                          duration=i[1]*1000,
+                                          length=i[2])
                                      for i in v[2][1]],
                         },
                 }

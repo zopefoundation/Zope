@@ -25,7 +25,7 @@
         </td>
         <td align="left" valign="top">
             <div class="list-nav">
-                Recent duration&nbsp;[ms]
+                Recent
             </div>
         </td>
     </tr>
@@ -53,11 +53,12 @@
                     </td>
                     <td align="left" valign="top">
                         <div class="list-item">
-                            <dtml-var expr="'%3.2f' % last['duration']">
-                            [<dtml-in  expr="last['details']" sort mapping>
-                            &dtml-id;:&nbsp;<dtml-var expr="'%3.2f' % duration">
+                            <dtml-var expr="'%3.2f' % last['duration']">ms
+                            [<dtml-in expr="last['details']" sort mapping>
+                            &dtml-id;:
+                            <dtml-var expr="'%3.2f' % duration">ms /
+                            &dtml-length; objects,
                             </dtml-in>]
-
                         </div>
                     </td>
                 </tr>
