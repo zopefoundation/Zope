@@ -35,8 +35,8 @@ Bugs Fixed
 Restructuring
 +++++++++++++
 
-- Emit a deprecation warning for ``Products.ZCatalog.CatalogAwareness``. The
-  module was already deprecated according to its docstring.
+- Deprecated the ``Products.ZCatalog.CatalogAwareness`` and
+  ``CatalogPathAwareness`` modules.
 
 - Removed deprecated ``catalog-getObject-raises`` zope.conf option.
 

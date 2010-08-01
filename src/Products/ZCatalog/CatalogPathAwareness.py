@@ -13,6 +13,8 @@
 """ZCatalog Findable class
 """
 
+import warnings
+
 from Acquisition import aq_base
 from App.special_dtml import DTMLFile
 
@@ -30,13 +32,19 @@ class CatalogAware:
 
     manage_editCatalogerForm=DTMLFile('dtml/editCatalogerForm', globals())
 
+    def _warn_deprecated(self):
+        warnings.warn('The Products.ZCatalog.CatalogPathAwareness module is '
+                      'deprecated and will be removed in Zope 2.14. Please '
+                      'use event subscribers for zope.lifecycle events to '
+                      'automatically index and unindex your objects.',
+                      DeprecationWarning, stacklevel=3)
+
     def manage_editCataloger(self, default, REQUEST=None):
         """ """
         self.default_catalog=default
         message = "Your changes have been saved"
         if REQUEST is not None:
             return self.manage_main(self, REQUEST, manage_tabs_message=message)
-
 
     def manage_afterAdd(self, item, container):
         self.index_object()
@@ -100,12 +108,14 @@ class CatalogAware:
 
     def index_object(self):
         """A common method to allow Findables to index themselves."""
+        self._warn_deprecated()
         if hasattr(self, self.default_catalog):
             getattr(self,
                     self.default_catalog).catalog_object(self, self.getPath())
 
     def unindex_object(self):
         """A common method to allow Findables to unindex themselves."""
+        self._warn_deprecated()
         if hasattr(self, self.default_catalog):
             getattr(self,
                     self.default_catalog).uncatalog_object(self.getPath())
