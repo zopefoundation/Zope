@@ -199,7 +199,6 @@ class TestCatalog(CatalogBase, unittest.TestCase):
         att3 = KeywordIndex('att3')
         num = FieldIndex('num')
 
-
         self._catalog.addIndex('att1', att1)
         self._catalog.addIndex('att2', att2)
         self._catalog.addIndex('att3', att3)
@@ -285,6 +284,20 @@ class TestCatalog(CatalogBase, unittest.TestCase):
     # getIndexDataForRID
     # make_query
     # _sorted_search_indexes
+
+    def test_sorted_search_indexes_empty(self):
+        result = self._catalog._sorted_search_indexes({})
+        self.assertEquals(len(result), 0)
+
+    def test_sorted_search_indexes_one(self):
+        result = self._catalog._sorted_search_indexes({'att1': 'a'})
+        self.assertEquals(result, ['att1'])
+
+    def test_sorted_search_indexes_many(self):
+        query = {'att1': 'a', 'att2': 'b', 'num': 1}
+        result = self._catalog._sorted_search_indexes(query)
+        self.assertEquals(set(result), set(['att1', 'att2', 'num']))
+
     # search
     # sortResults
     # _get_sort_attr
