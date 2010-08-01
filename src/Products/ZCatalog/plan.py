@@ -25,8 +25,22 @@ REFRESH_RATE = 100
 REPORTS_LOCK = allocate_lock()
 REPORTS = {}
 
-PRIORITYMAP_LOCK = allocate_lock()
-PRIORITYMAP = {}
+class ThreadDict(object):
+
+    @classmethod
+    def get_entry(cls, key):
+        return cls.value.get(key, None)
+
+    @classmethod
+    def set_entry(cls, key, value):
+        with cls.lock:
+            cls.value[key] = value
+
+
+class PriorityMap(ThreadDict):
+
+    lock = allocate_lock()
+    value = {}
 
 
 class ValueIndexes(object):
@@ -128,6 +142,7 @@ class CatalogPlan(object):
         self.catalog = catalog
         self.query = query
         self.key = make_key(catalog, query)
+        self.benchmark = {}
         self.threshold = threshold
         self.cid = self.get_id()
         self.init_timer()
@@ -148,16 +163,8 @@ class CatalogPlan(object):
         self.stop_time = None
         self.duration = None
 
-    def benchmark(self):
-        # holds the benchmark of each index
-        bm = PRIORITYMAP.get(self.key, None)
-        if bm is None:
-            with PRIORITYMAP_LOCK:
-                PRIORITYMAP[self.key] = {}
-        return bm
-
     def plan(self):
-        benchmark = self.benchmark()
+        benchmark = PriorityMap.get_entry(self.key)
         if not benchmark:
             return None
 
@@ -187,10 +194,9 @@ class CatalogPlan(object):
             name=name, duration=current - start_time, num=length))
 
         # remember index's hits, search time and calls
-        benchmark = self.benchmark()
+        benchmark = self.benchmark
         if name not in benchmark:
-            with PRIORITYMAP_LOCK:
-                benchmark[name] = Benchmark(num=length, duration=dt, hits=1)
+            benchmark[name] = Benchmark(num=length, duration=dt, hits=1)
         else:
             num, duration, hits = benchmark[name]
             num = int(((num * hits) + length) / float(hits + 1))
@@ -199,19 +205,12 @@ class CatalogPlan(object):
             if hits % REFRESH_RATE == 0:
                 hits = 0
             hits += 1
-            with PRIORITYMAP_LOCK:
-                benchmark[name] = Benchmark(num, duration, hits)
+            benchmark[name] = Benchmark(num, duration, hits)
 
     def stop(self):
         self.end_time = time.time()
         self.duration = self.end_time - self.start_time
-
-        key = self.key
-        benchmark = self.benchmark()
-
-        with PRIORITYMAP_LOCK:
-            PRIORITYMAP[key] = benchmark
-
+        PriorityMap.set_entry(self.key, self.benchmark)
         self.log()
 
     def log(self):
