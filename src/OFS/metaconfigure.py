@@ -20,6 +20,8 @@ _meta_type_regs = []
 
 
 def findProducts():
+    # Warning: This function only works reliable if called *after* running
+    # OFS.Application.import_products. ZopeLite tests disable import_products.
     from types import ModuleType
     products = []
     for name in dir(Products):
