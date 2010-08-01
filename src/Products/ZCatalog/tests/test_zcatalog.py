@@ -143,6 +143,12 @@ class TestZCatalog(unittest.TestCase):
 
         verifyClass(IZCatalog, ZCatalog)
 
+    def testClearIndex(self):
+        idx = self._catalog._catalog.getIndex('title')
+        self.assertEquals(len(idx), self.upper)
+        self._catalog.clearIndex('title')
+        self.assertEquals(len(idx), 0)
+
     def testGetMetadataForUID(self):
         testNum = str(self.upper - 3) # as good as any..
         data = self._catalog.getMetadataForUID(testNum)
