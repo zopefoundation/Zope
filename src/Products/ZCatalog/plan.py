@@ -116,14 +116,16 @@ class CatalogPlan(object):
         self.query = query
         self.key = make_key(catalog, query)
         self.threshold = threshold
+        self.cid = self.get_id()
 
-        parent = aq_parent(catalog)
+    def get_id(self):
+        parent = aq_parent(self.catalog)
         path = getattr(aq_base(parent), 'getPhysicalPath', None)
         if path is None:
             path = ('', 'NonPersistentCatalog')
         else:
             path = tuple(parent.getPhysicalPath())
-        self.cid = path
+        return path
 
     def init_timer(self):
         self.res = []
