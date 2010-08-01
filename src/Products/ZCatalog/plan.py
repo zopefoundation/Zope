@@ -28,56 +28,58 @@ REPORTS = {}
 PRIORITYMAP_LOCK = allocate_lock()
 PRIORITYMAP = {}
 
-VALUE_INDEXES_LOCK = allocate_lock()
-VALUE_INDEXES = frozenset()
 
+class ValueIndexes(object):
 
-def get_value_indexes():
-    return VALUE_INDEXES
+    lock = allocate_lock()
+    value = frozenset()
 
+    @classmethod
+    def get(cls):
+        return cls.value
 
-def set_value_indexes(value):
-    with VALUE_INDEXES_LOCK:
-        global VALUE_INDEXES
-        VALUE_INDEXES = value
+    @classmethod
+    def set(cls, value):
+        with cls.lock:
+            cls.value = value
 
+    @classmethod
+    def clear(cls):
+        cls.set(frozenset())
 
-def clear_value_indexes():
-    set_value_indexes(frozenset())
+    @classmethod
+    def determine(cls, indexes):
+        # This function determines all indexes whose values should be respected
+        # in the report key. The number of unique values for the index needs to be
+        # lower than the MAX_DISTINCT_VALUES watermark.
 
-from zope.testing.cleanup import addCleanUp
-addCleanUp(clear_value_indexes)
-del addCleanUp
+        # TODO: Ideally who would only consider those indexes with a small number
+        # of unique values, where the number of items for each value differs a
+        # lot. If the number of items per value is similar, the duration of a
+        # query is likely similar as well.
+        value_indexes = cls.get()
+        if value_indexes:
+            # Calculating all the value indexes is quite slow, so we do this once
+            # for the first query. Since this is an optimization only, slightly
+            # outdated results based on index changes in the running process
+            # can be ignored.
+            return value_indexes
 
+        value_indexes = set()
+        for name, index in indexes.items():
+            if IUniqueValueIndex.providedBy(index):
+                values = index.uniqueValues()
+                if values and len(list(values)) < MAX_DISTINCT_VALUES:
+                    # Only consider indexes which actually return a number
+                    # greater than zero
+                    value_indexes.add(name)
 
-def determine_value_indexes(indexes):
-    # This function determines all indexes whose values should be respected
-    # in the report key. The number of unique values for the index needs to be
-    # lower than the MAX_DISTINCT_VALUES watermark.
-
-    # TODO: Ideally who would only consider those indexes with a small number
-    # of unique values, where the number of items for each value differs a
-    # lot. If the number of items per value is similar, the duration of a
-    # query is likely similar as well.
-    value_indexes = get_value_indexes()
-    if value_indexes:
-        # Calculating all the value indexes is quite slow, so we do this once
-        # for the first query. Since this is an optimization only, slightly
-        # outdated results based on index changes in the running process
-        # can be ignored.
+        cls.set(frozenset(value_indexes))
         return value_indexes
 
-    value_indexes = set()
-    for name, index in indexes.items():
-        if IUniqueValueIndex.providedBy(index):
-            values = index.uniqueValues()
-            if values and len(list(values)) < MAX_DISTINCT_VALUES:
-                # Only consider indexes which actually return a number
-                # greater than zero
-                value_indexes.add(name)
-
-    set_value_indexes(frozenset(value_indexes))
-    return value_indexes
+from zope.testing.cleanup import addCleanUp
+addCleanUp(ValueIndexes.clear)
+del addCleanUp
 
 
 def make_key(catalog, query):
@@ -85,7 +87,7 @@ def make_key(catalog, query):
         return None
 
     indexes = catalog.indexes
-    valueindexes = determine_value_indexes(indexes)
+    valueindexes = ValueIndexes.determine(indexes)
     key = keys = query.keys()
 
     values = [name for name in keys if name in valueindexes]

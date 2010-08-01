@@ -41,8 +41,8 @@ class TestCatalogPlan(unittest.TestCase):
             self.zcat.catalog_object(obj, str(i))
 
     def tearDown(self):
-        from Products.ZCatalog.plan import clear_value_indexes
-        clear_value_indexes()
+        from Products.ZCatalog.plan import ValueIndexes
+        ValueIndexes.clear()
 
     def test_ReportLength(self):
         """ tests the report aggregation """
