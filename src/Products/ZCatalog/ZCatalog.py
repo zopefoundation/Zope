@@ -883,15 +883,18 @@ class ZCatalog(Folder, Persistent, Implicit):
     security.declareProtected(manage_zcatalog_entries, 'getCatalogPlan')
     def getCatalogPlan(self):
         """Get a string representation of a query plan"""
-        plan = PriorityMap.get_plan()
+        pmap = PriorityMap.get_value()
         output = []
         output.append('# query plan dumped at %r\n' % time.asctime())
         output.append('queryplan = {')
-        for querykey, details in sorted(plan.items()):
-            output.append('  %s: {' % repr(querykey))
-            for indexname, benchmark in sorted(details.items()):
-                tuplebench = repr(tuple(benchmark))
-                output.append('    %r:\n      %s,' % (indexname, tuplebench))
+        for cid, plan in sorted(pmap.items()):
+            output.append('  %s: {' % repr(cid))
+            for querykey, details in sorted(plan.items()):
+                output.append('    %s: {' % repr(querykey))
+                for indexname, benchmark in sorted(details.items()):
+                    tuplebench = repr(tuple(benchmark))
+                    output.append('      %r:\n      %s,' % (indexname, tuplebench))
+                output.append('    },')
             output.append('  },')
         output.append('}')
         return '\n'.join(output)

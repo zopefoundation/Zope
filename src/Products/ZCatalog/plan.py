@@ -35,59 +35,8 @@ Report = namedtuple('Report', ['hits', 'duration', 'last'])
 logger = getLogger('Products.ZCatalog')
 
 
-class PriorityMap(object):
-    """This holds a query key to Benchmark mapping."""
-
-    lock = allocate_lock()
-    value = {}
-
-    @classmethod
-    def get_plan(cls):
-        return cls.value.copy()
-
-    @classmethod
-    def get(cls, key):
-        return cls.value.get(key, None)
-
-    @classmethod
-    def set(cls, key, value):
-        with cls.lock:
-            cls.value[key] = value
-
-    @classmethod
-    def clear(cls):
-        with cls.lock:
-            cls.value = {}
-
-    @classmethod
-    def load_default(cls):
-        location = environ.get('ZCATALOGQUERYPLAN')
-        if location:
-            try:
-                pmap = resolve(location)
-                logger.info('loaded priority %d map(s) from %s',
-                    len(pmap), location)
-                # Convert simple benchmark tuples to namedtuples
-                new_plan = {}
-                for querykey, details in pmap.items():
-                    new_plan[querykey] = {}
-                    for indexname, benchmark in details.items():
-                        new_plan[querykey][indexname] = Benchmark(*benchmark)
-                with cls.lock:
-                    cls.value = new_plan
-            except ImportError:
-                logger.warning('could not load priority map from %s', location)
-
-
-class Reports(object):
-    """This holds a structure of nested dicts.
-
-    The outer dict is a mapping of catalog id to reports. The inner dict holds
-    a query key to Report mapping.
-    """
-
-    lock = allocate_lock()
-    value = {}
+class NestedDict(object):
+    """Holds a structure of two nested dicts."""
 
     @classmethod
     def get(cls, key):
@@ -125,6 +74,54 @@ class Reports(object):
     @classmethod
     def clear_entry(cls, key):
         cls.set(key, {})
+
+
+class PriorityMap(NestedDict):
+    """This holds a structure of nested dicts.
+
+    The outer dict is a mapping of catalog id to plans. The inner dict holds
+    a query key to Benchmark mapping.
+    """
+
+    lock = allocate_lock()
+    value = {}
+
+    @classmethod
+    def get_value(cls):
+        return cls.value.copy()
+
+    @classmethod
+    def load_default(cls):
+        location = environ.get('ZCATALOGQUERYPLAN')
+        if location:
+            try:
+                pmap = resolve(location)
+                logger.info('loaded priority %d map(s) from %s',
+                    len(pmap), location)
+                # Convert the simple benchmark tuples to namedtuples
+                new_plan = {}
+                for cid, plan in pmap.items():
+                    new_plan[cid] = {}
+                    for querykey, details in plan.items():
+                        new_plan[cid][querykey] = {}
+                        for indexname, benchmark in details.items():
+                            new_plan[cid][querykey][indexname] = \
+                                Benchmark(*benchmark)
+                with cls.lock:
+                    cls.value = new_plan
+            except ImportError:
+                logger.warning('could not load priority map from %s', location)
+
+
+class Reports(NestedDict):
+    """This holds a structure of nested dicts.
+
+    The outer dict is a mapping of catalog id to reports. The inner dict holds
+    a query key to Report mapping.
+    """
+
+    lock = allocate_lock()
+    value = {}
 
 
 class ValueIndexes(object):
@@ -239,7 +236,7 @@ class CatalogPlan(object):
         self.duration = None
 
     def plan(self):
-        benchmark = PriorityMap.get(self.key)
+        benchmark = PriorityMap.get_entry(self.cid, self.key)
         if not benchmark:
             return None
 
@@ -290,7 +287,7 @@ class CatalogPlan(object):
     def stop(self):
         self.end_time = time.time()
         self.duration = self.end_time - self.start_time
-        PriorityMap.set(self.key, self.benchmark)
+        PriorityMap.set_entry(self.cid, self.key, self.benchmark)
         self.log()
 
     def log(self):
