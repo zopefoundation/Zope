@@ -114,11 +114,14 @@ class ZopeCtlOptions(ZDOptions):
     
 
     positional_args_allowed = 1
-    program = "zopectl"
     schemadir = os.path.dirname(Zope2.Startup.__file__)
     schemafile = "zopeschema.xml"
     uid = gid = None
 
+    # this indicates that no explict program has been provided.
+    # the command line option can set this.
+    program = None
+    
     # XXX Suppress using Zope's <eventlog> section to avoid using the
     # same logging for zdctl as for the Zope appserver.  There still
     # needs to be a way to set a logfile for zdctl.
@@ -169,7 +172,9 @@ class ZopeCtlOptions(ZDOptions):
         config = self.configroot
         self.directory = config.instancehome
         self.clienthome = config.clienthome
-        if config.runner and config.runner.program:
+        if self.program:
+            self.program = [self.program]
+        elif config.runner and config.runner.program:
             self.program = config.runner.program
         else:
             self.program = [os.path.join(self.directory, "bin", "runzope")]
