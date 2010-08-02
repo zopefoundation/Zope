@@ -46,6 +46,16 @@ app = None
 startup_time = asctime()
 
 
+def load_zcml():
+    # This hook is overriden by ZopeTestCase
+    from .zcml import load_site
+    load_site()
+
+    # Set up Zope2 specific vocabulary registry
+    from .schema import configure_vocabulary_registry
+    configure_vocabulary_registry()
+
+
 def startup():
     from App.PersistentExtra import patchPersistent
     import Globals  # to set / fetch data
@@ -105,12 +115,7 @@ def startup():
     newSecurityManager(None, AccessControl.User.system)
 
     # Set up the CA
-    from .zcml import load_site
-    load_site()
-
-    # Set up Zope2 specific vocabulary registry
-    from .schema import configure_vocabulary_registry
-    configure_vocabulary_registry()
+    load_zcml()
 
     # Set up the "app" object that automagically opens
     # connections

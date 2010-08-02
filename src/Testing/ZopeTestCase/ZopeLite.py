@@ -129,6 +129,11 @@ def _apply_patches():
     def null_register_help(self,directory='',clear=1,title_re=None): pass
     App.ProductContext.ProductContext.registerHelp = null_register_help
 
+    # Avoid loading any ZCML
+    from Zope2.App import startup as zopeapp_startup
+    def null_load_zcml(): pass
+    zopeapp_startup.load_zcml = null_load_zcml
+
     # Note that we applied the monkey patches
     global _patched
     _patched = True
