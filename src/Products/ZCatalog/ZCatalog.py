@@ -885,6 +885,7 @@ class ZCatalog(Folder, Persistent, Implicit):
         """Get a string representation of a query plan"""
         plan = PriorityMap.get_plan()
         output = []
+        output.append('# query plan dumped at %r\n' % time.asctime())
         output.append('queryplan = {')
         for querykey, details in sorted(plan.items()):
             output.append('  %s: {' % repr(querykey))
