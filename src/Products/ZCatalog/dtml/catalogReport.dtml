@@ -1,0 +1,118 @@
+<dtml-var manage_page_header>
+<dtml-var manage_tabs>
+
+<p class="form-help"> 
+   The <strong>query report</strong> shows catalog queries that
+   perform slowly.
+</p>
+
+<table width="100%" cellspacing="0" cellpadding="2" border="0">
+    <tr class="list-header" >
+        <td align="left" valign="top">
+            <div class="list-nav">
+                Mean duration&nbsp;[ms]
+            </div>
+        </td>
+        <td align="left" valign="top">
+            <div class="list-nav">
+                Hits
+            </div>
+        </td>
+        <td align="left" valign="top">
+            <div class="list-nav">
+                Query key
+            </div>
+        </td>
+        <td align="left" valign="top">
+            <div class="list-nav">
+                Recent
+            </div>
+        </td>
+    </tr>
+    <dtml-if getCatalogReport>
+        <dtml-in getCatalogReport mapping>
+            <dtml-if sequence-odd>
+                <tr class="row-normal">
+            <dtml-else>
+                <tr class="row-hilite">
+            </dtml-if>
+                    <td align="left" valign="top">
+                        <div class="list-item">
+                            <dtml-var expr="'%3.2f' % duration">
+                        </div>
+                    </td>
+                    <td align="left" valign="top">
+                        <div class="list-item">
+                            &dtml-counter;
+                        </div>
+                    </td>
+                    <td align="left" valign="top">
+                        <div class="list-item">
+                            &dtml-query;
+                        </div>
+                    </td>
+                    <td align="left" valign="top">
+                        <div class="list-item">
+                            <dtml-var expr="'%3.2f' % last['duration']">ms
+                            [<dtml-in expr="last['details']" sort mapping>
+                            &dtml-id;:
+                            <dtml-var expr="'%3.2f' % duration">ms /
+                            &dtml-length; objects,
+                            </dtml-in>]
+                        </div>
+                    </td>
+                </tr>
+        </dtml-in>
+        <tr>
+            <td colspan="2" align="left" valign="top">
+                <p class="form-help">Resetting the catalog report will reinitialize the report log.</p>
+            </td>
+            <td colspan="2" align="right" valign="top">
+                <form action="manage_resetCatalogReport" method=POST>
+                    <div class="form-element">
+                        <input class="form-element" type="submit" value="Reset Report">
+                    </div>
+                </form>
+            </td>
+        </tr>
+    <dtml-else>
+        <tr>
+            <td colspan="4" >
+                <div class="list-item">
+                    Report is empty.
+                </div>
+            </td>
+        </tr>
+    </dtml-if>
+</table>
+
+<form action="manage_editCatalogReport" method="post">
+    <table width="100%" style="padding-top:1em;" cellspacing="0" cellpadding="2" border="0">
+        <tr class="section-bar">
+            <td colspan="3" align="left">
+                <div class="form-label">
+                    Settings
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td align="right" valign="middle">
+                <div class="list-item">
+                    Threshold (in seconds)
+                </div>
+            </td>
+            <td align="left" valign="middle">
+                <div class="form-element">
+                    <input name="long_query_time:float" value="&dtml-long_query_time;" />
+                </div>
+            </td>
+            <td align="left" valign="middle">
+                <p class="form-help">Only queries whose execution
+                takes longer than the configured threshold are considered
+                being slow. (Default 0.1 seconds).</p>
+        </tr>
+    </table>
+    <input class="form-element" type="submit" value="Apply settings">
+</form>
+
+<dtml-var manage_page_footer>

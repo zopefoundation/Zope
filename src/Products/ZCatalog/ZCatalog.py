@@ -48,6 +48,7 @@ from Products.ZCatalog.Catalog import Catalog, CatalogError
 from Products.ZCatalog.interfaces import IZCatalog
 from Products.ZCatalog.ProgressHandler import ZLogHandler
 from Products.ZCatalog.ZCatalogIndexes import ZCatalogIndexes
+from .plan import PriorityMap
 
 LOG = logging.getLogger('Zope.ZCatalog')
 
@@ -103,7 +104,8 @@ class ZCatalog(Folder, Persistent, Implicit):
         {'label': 'Metadata', 'action': 'manage_catalogSchema'},
         {'label': 'Find Objects', 'action': 'manage_catalogFind'},
         {'label': 'Advanced', 'action': 'manage_catalogAdvanced'},
-        {'label': 'Query Report', 'action': 'manage_catalogPlan'},
+        {'label': 'Query Report', 'action': 'manage_catalogReport'},
+        {'label': 'Query Plan', 'action': 'manage_catalogPlan'},
         {'label': 'Undo', 'action': 'manage_UndoForm'},
         {'label': 'Security', 'action': 'manage_access'},
         {'label': 'Ownership', 'action': 'manage_owner'},
@@ -126,6 +128,9 @@ class ZCatalog(Folder, Persistent, Implicit):
     security.declareProtected(manage_zcatalog_entries,
                               'manage_catalogAdvanced')
     manage_catalogAdvanced = DTMLFile('dtml/catalogAdvanced', globals())
+
+    security.declareProtected(manage_zcatalog_entries, 'manage_catalogReport')
+    manage_catalogReport = DTMLFile('dtml/catalogReport', globals())
 
     security.declareProtected(manage_zcatalog_entries, 'manage_catalogPlan')
     manage_catalogPlan = DTMLFile('dtml/catalogPlan', globals())
@@ -877,24 +882,39 @@ class ZCatalog(Folder, Persistent, Implicit):
 
     security.declareProtected(manage_zcatalog_entries, 'getCatalogPlan')
     def getCatalogPlan(self):
-        """Query time reporting and planning."""
+        """Get a string representation of a query plan"""
+        plan = PriorityMap.get_plan()
+        output = []
+        output.append('queryplan = {')
+        for querykey, details in sorted(plan.items()):
+            output.append('  %s: {' % repr(querykey))
+            for indexname, benchmark in sorted(details.items()):
+                tuplebench = repr(tuple(benchmark))
+                output.append('    %r:\n      %s,' % (indexname, tuplebench))
+            output.append('  },')
+        output.append('}')
+        return '\n'.join(output)
+
+    security.declareProtected(manage_zcatalog_entries, 'getCatalogReport')
+    def getCatalogReport(self):
+        """Query time reporting."""
         rval = self._catalog.getCatalogPlan().report()
         rval.sort(key=operator.itemgetter('duration'), reverse=True)
         return rval
 
     security.declareProtected(manage_zcatalog_entries,
-                              'manage_resetCatalogPlan')
-    def manage_resetCatalogPlan(self, REQUEST=None):
-        """Resets the catalog plan."""
+                              'manage_resetCatalogReport')
+    def manage_resetCatalogReport(self, REQUEST=None):
+        """Resets the catalog report."""
         self._catalog.getCatalogPlan().reset()
 
         if REQUEST is not None:
             REQUEST.response.redirect(REQUEST.URL1 +
-                '/manage_catalogPlan?manage_tabs_message=Plan%20cleared')
+                '/manage_catalogReport?manage_tabs_message=Report%20cleared')
 
     security.declareProtected(manage_zcatalog_entries,
-                              'manage_editCatalogPlan')
-    def manage_editCatalogPlan(self, long_query_time=0.1, REQUEST=None):
+                              'manage_editCatalogReport')
+    def manage_editCatalogReport(self, long_query_time=0.1, REQUEST=None):
         """Edit the long query time."""
         if not isinstance(long_query_time, float):
             long_query_time = float(long_query_time)
@@ -902,7 +922,7 @@ class ZCatalog(Folder, Persistent, Implicit):
 
         if REQUEST is not None:
             REQUEST.response.redirect(REQUEST.URL1 +
-                '/manage_catalogPlan?manage_tabs_message=' +
+                '/manage_catalogReport?manage_tabs_message=' +
                 'Long%20query%20time%20changed')
 
 InitializeClass(ZCatalog)

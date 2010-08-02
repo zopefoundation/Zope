@@ -17,6 +17,10 @@ import ZCatalog
 
 
 def initialize(context):
+    # Load a default map
+    from Products.ZCatalog.plan import PriorityMap
+    PriorityMap.load_default()
+
     context.registerClass(
         ZCatalog.ZCatalog,
         permission='Add ZCatalogs',

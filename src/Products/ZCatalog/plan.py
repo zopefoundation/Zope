@@ -42,6 +42,10 @@ class PriorityMap(object):
     value = {}
 
     @classmethod
+    def get_plan(cls):
+        return cls.value.copy()
+
+    @classmethod
     def get(cls, key):
         return cls.value.get(key, None)
 
@@ -63,13 +67,16 @@ class PriorityMap(object):
                 pmap = resolve(location)
                 logger.info('loaded priority %d map(s) from %s',
                     len(pmap), location)
+                # Convert simple benchmark tuples to namedtuples
+                new_plan = {}
+                for querykey, details in pmap.items():
+                    new_plan[querykey] = {}
+                    for indexname, benchmark in details.items():
+                        new_plan[querykey][indexname] = Benchmark(*benchmark)
                 with cls.lock:
-                    cls.value = pmap.copy()
+                    cls.value = new_plan
             except ImportError:
                 logger.warning('could not load priority map from %s', location)
-
-# Load a default map
-PriorityMap.load_default()
 
 
 class Reports(object):
