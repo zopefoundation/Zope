@@ -68,6 +68,21 @@ Restructuring
 Features Added
 ++++++++++++++
 
+- Merged the query plan support from both ``unimr.catalogqueryplan`` and
+  ``experimental.catalogqueryplan`` into ZCatalog. On sites with large number of
+  objects in a catalog (in the 100000+ range) this can significantly speed up
+  catalog queries. A query plan monitors catalog queries and keeps detailed
+  statistics about their execution. Currently the plan keeps track of execution
+  time, result set length and support for the ILimitedResultIndex per index for
+  each query. It uses this information to devise a better query execution plan
+  the next time the same query is run. Statistics and the resulting plan are
+  continuously updated. The plan is per running Zope process and not persisted.
+  You can inspect the plan using the ``Query Plan`` ZMI tab on each catalog
+  instance. The representation can be put into a Python module and the Zope
+  process be instructed to load this query plan on startup. The location of the
+  query plan is specified by providing the dotted name to the query plan
+  dictionary in an environment variable called ``ZCATALOGQUERYPLAN``.
+
 - Various optimizations to indexes _apply_index and the catalog's search
   method inspired by experimental.catalogqueryplan.
 
@@ -81,7 +96,7 @@ Features Added
 
 - Added a new reporting tab to `Products.ZCatalog` instances. You can use this
   to get an overview of slow catalog queries, as specified by a configurable
-  threshold value. The reports are per running Zope process.
+  threshold value.
 
 - Warn when App.ImageFile.ImageFile receives a relative path with no prefix,
   and then has to assume the path to be relative to "software home". This
