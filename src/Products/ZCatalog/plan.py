@@ -13,11 +13,14 @@
 
 import time
 from collections import namedtuple
+from logging import getLogger
+from os import environ
 from thread import allocate_lock
 
 from Acquisition import aq_base
 from Acquisition import aq_parent
 from Products.PluginIndexes.interfaces import IUniqueValueIndex
+from zope.dottedname.resolve import resolve
 
 MAX_DISTINCT_VALUES = 10
 REFRESH_RATE = 100
@@ -28,6 +31,8 @@ IndexMeasurement = namedtuple('IndexMeasurement',
 Benchmark = namedtuple('Benchmark', ['num', 'duration', 'hits'])
 RecentQuery = namedtuple('RecentQuery', ['duration', 'details'])
 Report = namedtuple('Report', ['hits', 'duration', 'last'])
+
+logger = getLogger('Products.ZCatalog')
 
 
 class PriorityMap(object):
@@ -44,6 +49,27 @@ class PriorityMap(object):
     def set(cls, key, value):
         with cls.lock:
             cls.value[key] = value
+
+    @classmethod
+    def clear(cls):
+        with cls.lock:
+            cls.value = {}
+
+    @classmethod
+    def load_default(cls):
+        location = environ.get('ZCATALOGQUERYPLAN')
+        if location:
+            try:
+                pmap = resolve(location)
+                logger.info('loaded priority %d map(s) from %s',
+                    len(pmap), location)
+                with cls.lock:
+                    cls.value = pmap.copy()
+            except ImportError:
+                logger.warning('could not load priority map from %s', location)
+
+# Load a default map
+PriorityMap.load_default()
 
 
 class Reports(object):
@@ -70,8 +96,9 @@ class Reports(object):
             cls.value[key] = value
 
     @classmethod
-    def clear(cls, key):
-        cls.set(key, {})
+    def clear(cls):
+        with cls.lock:
+            cls.value = {}
 
     @classmethod
     def get_entry(cls, key, key2):
@@ -87,6 +114,10 @@ class Reports(object):
         outer = cls.get(key)
         with cls.lock:
             outer[key2] = value
+
+    @classmethod
+    def clear_entry(cls, key):
+        cls.set(key, {})
 
 
 class ValueIndexes(object):
@@ -139,10 +170,6 @@ class ValueIndexes(object):
 
         cls.set(frozenset(value_indexes))
         return value_indexes
-
-from zope.testing.cleanup import addCleanUp
-addCleanUp(ValueIndexes.clear)
-del addCleanUp
 
 
 def make_key(catalog, query):
@@ -276,7 +303,7 @@ class CatalogPlan(object):
             Reports.set_entry(self.cid, key, Report(1, total, recent))
 
     def reset(self):
-        Reports.clear(self.cid)
+        Reports.clear_entry(self.cid)
 
     def report(self):
         """Returns a statistic report of catalog queries as list of dicts.
@@ -299,3 +326,11 @@ class CatalogPlan(object):
             rval.append(info)
 
         return rval
+
+
+# Make sure we provide test isolation
+from zope.testing.cleanup import addCleanUp
+addCleanUp(PriorityMap.clear)
+addCleanUp(Reports.clear)
+addCleanUp(ValueIndexes.clear)
+del addCleanUp
