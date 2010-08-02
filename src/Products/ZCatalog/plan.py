@@ -287,6 +287,10 @@ class CatalogPlan(object):
     def stop(self):
         self.end_time = time.time()
         self.duration = self.end_time - self.start_time
+        # Make absolutely sure we never omit query keys from the plan
+        for key in self.query.keys():
+            if key not in self.benchmark.keys():
+                self.benchmark[key] = Benchmark(0, 0, 0, False)
         PriorityMap.set_entry(self.cid, self.key, self.benchmark)
         self.log()
 

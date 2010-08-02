@@ -514,7 +514,13 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         if not plan:
             plan = self._sorted_search_indexes(query)
 
+        indexes = self.indexes.keys()
         for i in plan:
+            if i not in indexes:
+                # We can have bogus keys or the plan can contain index names
+                # that have been removed in the meantime
+                continue
+
             index = self.getIndex(i)
             _apply_index = getattr(index, "_apply_index", None)
             if _apply_index is None:
