@@ -521,7 +521,8 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                 continue
 
             cr.start_split(i)
-            if ILimitedResultIndex.providedBy(index):
+            limit_result = ILimitedResultIndex.providedBy(index)
+            if limit_result:
                 r = _apply_index(query, rs)
             else:
                 r = _apply_index(query)
@@ -533,15 +534,15 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                 # once we don't need to support the "return everything" case
                 # anymore
                 if r is not None and not r:
-                    cr.stop_split(i, None)
+                    cr.stop_split(i, result=None, limit=limit_result)
                     return LazyCat([])
 
-                cr.stop_split(i, r)
+                cr.stop_split(i, result=r, limit=limit_result)
                 w, rs = weightedIntersection(rs, r)
                 if not rs:
                     break
             else:
-                cr.stop_split(i, None)
+                cr.stop_split(i, result=None, limit=limit_result)
 
         if rs is None:
             # None of the indexes found anything to do with the query

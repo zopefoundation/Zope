@@ -27,8 +27,8 @@ REFRESH_RATE = 100
 
 Duration = namedtuple('Duration', ['start', 'end'])
 IndexMeasurement = namedtuple('IndexMeasurement',
-                              ['name', 'duration', 'num'])
-Benchmark = namedtuple('Benchmark', ['num', 'duration', 'hits'])
+                              ['name', 'duration', 'num', 'limit'])
+Benchmark = namedtuple('Benchmark', ['num', 'duration', 'hits', 'limit'])
 RecentQuery = namedtuple('RecentQuery', ['duration', 'details'])
 Report = namedtuple('Report', ['hits', 'duration', 'last'])
 
@@ -237,7 +237,7 @@ class CatalogPlan(object):
             return None
 
         # sort indexes on (mean result length, mean search time)
-        ranking = [((value.num, value.duration), name)
+        ranking = [((value.limit, value.num, value.duration), name)
                    for name, value in benchmark.items()]
         ranking.sort()
         return [r[1] for r in ranking]
@@ -249,7 +249,7 @@ class CatalogPlan(object):
     def start_split(self, name, result=None):
         self.interim[name] = Duration(time.time(), None)
 
-    def stop_split(self, name, result=None):
+    def stop_split(self, name, result=None, limit=False):
         current = time.time()
         start_time, stop_time = self.interim.get(name, Duration(None, None))
         length = 0
@@ -259,7 +259,7 @@ class CatalogPlan(object):
         self.interim[name] = Duration(start_time, current)
         dt = current - start_time
         self.res.append(IndexMeasurement(
-            name=name, duration=current - start_time, num=length))
+            name=name, duration=dt, num=length, limit=limit))
 
         if name == 'sort_on':
             # sort_on isn't an index. We only do time reporting on it
@@ -268,16 +268,17 @@ class CatalogPlan(object):
         # remember index's hits, search time and calls
         benchmark = self.benchmark
         if name not in benchmark:
-            benchmark[name] = Benchmark(num=length, duration=dt, hits=1)
+            benchmark[name] = Benchmark(num=length, duration=dt,
+                                        hits=1, limit=limit)
         else:
-            num, duration, hits = benchmark[name]
+            num, duration, hits, limit = benchmark[name]
             num = int(((num * hits) + length) / float(hits + 1))
             duration = ((duration * hits) + dt) / float(hits + 1)
             # reset adaption
             if hits % REFRESH_RATE == 0:
                 hits = 0
             hits += 1
-            benchmark[name] = Benchmark(num, duration, hits)
+            benchmark[name] = Benchmark(num, duration, hits, limit)
 
     def stop(self):
         self.end_time = time.time()
