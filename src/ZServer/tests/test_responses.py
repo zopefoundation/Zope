@@ -111,9 +111,8 @@ class ZServerHTTPResponseTestCase(unittest.TestCase):
             'Title-Cased': 'bar',
             'mixed-CasED': 'spam',
             'multilined': 'eggs\n\tham'}
-        response.accumulated_headers = ['foo-bar: bar',
-                                        '\tbaz',
-                                        'Foo-bar: monty']
+        response.accumulated_headers = [('foo-bar', 'bar'),
+                                        ('Foo-bar', 'monty')]
         response.cookies = dict(foo=dict(value='bar'))
         response.body = 'A body\nwith multiple lines\n'
         
@@ -124,13 +123,14 @@ class ZServerHTTPResponseTestCase(unittest.TestCase):
         
         self.assertTrue(headers.startswith('HTTP/1.0 200 OK\r\n'))
         
-        # 15 header lines all delimited by \r\n
+        # 14 header lines all delimited by \r\n
         self.assertEqual(
             ['\n' in line for line in headers.split('\r\n')],
-            15 * [False])
-
+            14 * [False])
+        
         self.assertTrue('Multilined: eggs\r\n\tham\r\n' in headers)
-        self.assertTrue('Foo-Bar: bar\r\n\tbaz\r\n' in headers)
+        self.assertTrue('Foo-bar: monty\r\n' in headers)
+        self.assertTrue('Foo-Bar: bar\r\n' in headers)
 
     def _assertResponsesAreEqual(self, got, expected):
         got = got.split('\r\n')
@@ -272,6 +272,12 @@ class ZServerHTTPResponseTestCase(unittest.TestCase):
                                        'Server: ...',
                                        '',
                                        ''))
+
+    def test_uses_accumulated_headers_correctly(self):
+        response = self._makeOne()
+        response.setStatus(304)
+        response.addHeader('foo', 'bar')
+        self.assertTrue('Foo: bar' in str(response))
 
 class _Reporter(object):
     def __init__(self): self.events = []

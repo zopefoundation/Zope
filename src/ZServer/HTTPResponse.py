@@ -119,11 +119,7 @@ class ZServerHTTPResponse(HTTPResponse):
                 self._chunking = 1
                     
         headers = headers.items()
-        for line in self.accumulated_headers:
-            if line[0] == '\t':
-                headers[-1][1] += '\n' + line
-                continue
-            headers.append(line.split(': ', 1))
+        headers.extend(self.accumulated_headers)
 
         for key, val in headers:
             if key.lower() == key:
