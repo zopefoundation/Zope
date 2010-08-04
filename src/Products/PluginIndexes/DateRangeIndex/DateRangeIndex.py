@@ -37,6 +37,7 @@ from Products.PluginIndexes.common.util import parseIndexRequest
 from Products.PluginIndexes.interfaces import IDateRangeIndex
 
 _dtmldir = os.path.join( package_home( globals() ), 'dtml' )
+MAX32 = 2**31
 
 
 class DateRangeIndex(UnIndex):
@@ -397,7 +398,8 @@ class DateRangeIndex(UnIndex):
         elif isinstance(value, DateTime):
             value = value.millis() / 1000 / 60 # flatten to minutes
         result = int( value )
-        if isinstance(result, long): # this won't work (Python 2.3)
+        if result >= MAX32:
+            # t_val must be integer fitting in the 32bit range
             raise OverflowError( '%s is not within the range of dates allowed'
                               'by a DateRangeIndex' % value)
         return result

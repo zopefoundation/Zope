@@ -11,6 +11,9 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
+- Adjusted overflow logic in DateIndex and DateRangeIndex to work with latest
+  ZODB 3.10.0b4.
+
 - Made sure to exclude a number of meta ZCML handlers from ``zope.*`` packages
   where Zope2 provides its own implementations.
 
