@@ -115,6 +115,7 @@ Features Added
   - AccessControl = 2.13.2
   - DateTime = 2.12.5
   - DocumentTemplate = 2.13.1
+  - Products.BTreeFolder2 = 2.13.1
   - Products.OFSP = 2.13.2
   - ZODB3 = 3.10.0b4
 
