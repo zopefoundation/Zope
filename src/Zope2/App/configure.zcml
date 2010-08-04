@@ -1,6 +1,7 @@
 <configure xmlns="http://namespaces.zope.org/zope"
            xmlns:five="http://namespaces.zope.org/five">
 
+  <include file="exclude.zcml" />
   <include file="meta.zcml" />
   <include package="AccessControl" file="permissions.zcml" />
 

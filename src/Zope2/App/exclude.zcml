@@ -1,0 +1,9 @@
+<configure xmlns="http://namespaces.zope.org/zope">
+
+  <exclude package="zope.browserpage" file="meta.zcml" />
+  <exclude package="zope.browsermenu" file="meta.zcml" />
+  <exclude package="zope.browserresource" file="meta.zcml" />
+  <exclude package="zope.publisher" file="meta.zcml" />
+  <exclude package="zope.viewlet" file="meta.zcml" />
+
+</configure>
