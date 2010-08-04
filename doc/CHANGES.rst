@@ -14,6 +14,8 @@ Bugs Fixed
 - Made sure to exclude a number of meta ZCML handlers from ``zope.*`` packages
   where Zope2 provides its own implementations.
 
+- LP #599378: Fixed accumulated_headers not appending to headers correctly.
+
 - Fix support for non-public permission attributes in the
   browser:view directive so that attributes which are not included in
   allowed_interface or allowed_attributes but which have declarations from a
