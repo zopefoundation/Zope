@@ -221,7 +221,7 @@ class ObjectManager(CopyContainer,
         external_candidates.extend(list(_pmt))
 
         # Look at all globally visible meta types.
-        for entry in Products.meta_types:
+        for entry in getattr(Products, 'meta_types', ()):
             if ( (interfaces is not None) or (entry.get("visibility", None)=="Global") ):
                 external_candidates.append(entry)
 
