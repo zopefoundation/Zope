@@ -11,6 +11,7 @@
 #
 ##############################################################################
 
+import os
 import unittest
 
 from zope.testing import cleanup
@@ -28,16 +29,135 @@ class dummy(object):
         return (self.num, self.num + 1)
 
 
-# class TestNestedDict(unittest.TestCase):
+TESTMAP = {
+    '/folder/catalog': {
+        'index1 index2': {
+            'index1': (10, 2.0, 3, True),
+            'index2': (15, 1.5, 2, False),
+        }
+    }
+}
 
-# class TestPriorityMap(unittest.TestCase):
 
-# class TestReports(unittest.TestCase):
+class TestNestedDict(unittest.TestCase):
+
+    def setUp(self):
+        self.nest = self._makeOne()
+
+    def _makeOne(self):
+        from ..plan import NestedDict
+        return NestedDict
+
+    def test_novalue(self):
+        self.assertEquals(getattr(self.nest, 'value', None), None)
+
+    def test_nolock(self):
+        self.assertEquals(getattr(self.nest, 'lock', None), None)
+
+
+class TestPriorityMap(unittest.TestCase):
+
+    def setUp(self):
+        self.pmap = self._makeOne()
+
+    def tearDown(self):
+        self.pmap.clear()
+
+    def _makeOne(self):
+        from ..plan import PriorityMap
+        return PriorityMap
+
+    def test_get_value(self):
+        self.assertEquals(self.pmap.get_value(), {})
+
+    def test_get(self):
+        self.assertEquals(self.pmap.get('foo'), {})
+
+    def test_set(self):
+        self.pmap.set('foo', {'bar': 1})
+        self.assertEquals(self.pmap.get('foo'), {'bar': 1})
+
+    def test_clear(self):
+        self.pmap.set('foo', {'bar': 1})
+        self.pmap.clear()
+        self.assertEquals(self.pmap.value, {})
+
+    def test_get_entry(self):
+        self.assertEquals(self.pmap.get_entry('foo', 'bar'), {})
+
+    def test_set_entry(self):
+        self.pmap.set_entry('foo', 'bar', {'baz': 1})
+        self.assertEquals(self.pmap.get_entry('foo', 'bar'), {'baz': 1})
+
+    def test_clear_entry(self):
+        self.pmap.set('foo', {'bar': 1})
+        self.pmap.clear_entry('foo')
+        self.assertEquals(self.pmap.get('foo'), {})
+
+
+class TestPriorityMapDefault(unittest.TestCase):
+
+    def setUp(self):
+        self.pmap = self._makeOne()
+
+    def tearDown(self):
+        self.pmap.clear()
+
+    def _makeOne(self):
+        from ..plan import PriorityMap
+        return PriorityMap
+
+    def test_empty(self):
+        self.pmap.load_default()
+        self.assertEquals(self.pmap.get_value(), {})
+
+    def test_load_failure(self):
+        try:
+            os.environ['ZCATALOGQUERYPLAN'] = 'Products.ZCatalog.invalid'
+            # 'Products.ZCatalog.tests.test_plan.TESTMAP'
+            self.pmap.load_default()
+            self.assertEquals(self.pmap.get_value(), {})
+        finally:
+            del os.environ['ZCATALOGQUERYPLAN']
+
+    def test_load(self):
+        from ..plan import Benchmark
+        try:
+            os.environ['ZCATALOGQUERYPLAN'] = \
+                'Products.ZCatalog.tests.test_plan.TESTMAP'
+            self.pmap.load_default()
+            expected = {'/folder/catalog': {'index1 index2': {
+                'index1': Benchmark(num=10, duration=2.0, hits=3, limit=True),
+                'index2': Benchmark(num=15, duration=1.5, hits=2, limit=False),
+            }}}
+            self.assertEquals(self.pmap.get_value(), expected)
+        finally:
+            del os.environ['ZCATALOGQUERYPLAN']
+
+
+class TestReports(unittest.TestCase):
+
+    def setUp(self):
+        self.reports = self._makeOne()
+
+    def tearDown(self):
+        self.reports.clear()
+
+    def _makeOne(self):
+        from ..plan import Reports
+        return Reports
+
+    def test_value(self):
+        self.assertEquals(self.reports.value, {})
+
+    def test_lock(self):
+        from thread import LockType
+        self.assertEquals(type(self.reports.lock), LockType)
+
 
 # class TestValueIndexes(unittest.TestCase):
 
 # class TestMakeKey(unittest.TestCase):
-
 
 class TestCatalogPlan(cleanup.CleanUp, unittest.TestCase):
 
@@ -63,7 +183,6 @@ class TestCatalogPlan(cleanup.CleanUp, unittest.TestCase):
     # stop
     # log
 
-
 class TestCatalogReport(cleanup.CleanUp, unittest.TestCase):
 
     def setUp(self):
@@ -71,13 +190,21 @@ class TestCatalogReport(cleanup.CleanUp, unittest.TestCase):
         from Products.ZCatalog.ZCatalog import ZCatalog
         self.zcat = ZCatalog('catalog')
         self.zcat.long_query_time = 0.0
-        self.zcat.addIndex('num', 'FieldIndex')
-        self.zcat.addIndex('big', 'FieldIndex')
-        self.zcat.addIndex('numbers', 'KeywordIndex')
-
+        self._add_indexes()
         for i in range(9):
             obj = dummy(i)
             self.zcat.catalog_object(obj, str(i))
+
+    def _add_indexes(self):
+        from Products.PluginIndexes.FieldIndex.FieldIndex import FieldIndex
+        from Products.PluginIndexes.KeywordIndex.KeywordIndex import \
+            KeywordIndex
+        num = FieldIndex('num')
+        self.zcat._catalog.addIndex('num', num)
+        big = FieldIndex('big')
+        self.zcat._catalog.addIndex('big', big)
+        numbers = KeywordIndex('numbers')
+        self.zcat._catalog.addIndex('numbers', numbers)
 
     def test_ReportLength(self):
         """ tests the report aggregation """
@@ -139,9 +266,3 @@ class TestCatalogReport(cleanup.CleanUp, unittest.TestCase):
 
         self.assertEqual(r['query'], key)
         self.assertEqual(r['counter'], 2)
-
-
-def test_suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestCatalogReport))
-    return suite
