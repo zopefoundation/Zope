@@ -37,7 +37,7 @@ from Products.PluginIndexes.common.util import parseIndexRequest
 from Products.PluginIndexes.interfaces import IDateRangeIndex
 
 _dtmldir = os.path.join( package_home( globals() ), 'dtml' )
-MAX32 = 2**31 - 1
+MAX32 = int(2**31 - 1)
 
 
 class DateRangeIndex(UnIndex):
