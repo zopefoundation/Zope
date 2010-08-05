@@ -251,7 +251,7 @@ class CatalogPlan(object):
         self.init_timer()
         self.start_time = time.time()
 
-    def start_split(self, name, result=None):
+    def start_split(self, name):
         self.interim[name] = Duration(time.time(), None)
 
     def stop_split(self, name, result=None, limit=False):
