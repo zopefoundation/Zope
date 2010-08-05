@@ -199,8 +199,9 @@ def cleanUp():
     _registered_packages = []
 
     global _meta_type_regs
-    Products.meta_types = tuple([ info for info in Products.meta_types
-                                  if info['name'] not in _meta_type_regs ])
+    old = getattr(Products, 'meta_types', ())
+    new = tuple([info for info in old if info['name'] not in _meta_type_regs])
+    setattr(Products, 'meta_types', new)
     _meta_type_regs = []
 
 
