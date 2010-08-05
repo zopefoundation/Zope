@@ -13,6 +13,8 @@
 
 import unittest
 
+from zope.testing import cleanup
+
 
 class dummy(object):
 
@@ -26,9 +28,21 @@ class dummy(object):
         return (self.num, self.num + 1)
 
 
-class TestCatalogPlan(unittest.TestCase):
+# class TestNestedDict(unittest.TestCase):
+
+# class TestPriorityMap(unittest.TestCase):
+
+# class TestReports(unittest.TestCase):
+
+# class TestValueIndexes(unittest.TestCase):
+
+# class TestMakeKey(unittest.TestCase):
+
+
+class TestCatalogPlan(cleanup.CleanUp, unittest.TestCase):
 
     def setUp(self):
+        cleanup.CleanUp.setUp(self)
         from Products.ZCatalog.ZCatalog import ZCatalog
         self.zcat = ZCatalog('catalog')
         self.zcat.long_query_time = 0.0
@@ -40,9 +54,30 @@ class TestCatalogPlan(unittest.TestCase):
             obj = dummy(i)
             self.zcat.catalog_object(obj, str(i))
 
-    def tearDown(self):
-        from Products.ZCatalog.plan import ValueIndexes
-        ValueIndexes.clear()
+    # get_id
+    # init_timer
+    # plan
+    # start
+    # start_split
+    # stop_split
+    # stop
+    # log
+
+
+class TestCatalogReport(cleanup.CleanUp, unittest.TestCase):
+
+    def setUp(self):
+        cleanup.CleanUp.setUp(self)
+        from Products.ZCatalog.ZCatalog import ZCatalog
+        self.zcat = ZCatalog('catalog')
+        self.zcat.long_query_time = 0.0
+        self.zcat.addIndex('num', 'FieldIndex')
+        self.zcat.addIndex('big', 'FieldIndex')
+        self.zcat.addIndex('numbers', 'KeywordIndex')
+
+        for i in range(9):
+            obj = dummy(i)
+            self.zcat.catalog_object(obj, str(i))
 
     def test_ReportLength(self):
         """ tests the report aggregation """
@@ -108,5 +143,5 @@ class TestCatalogPlan(unittest.TestCase):
 
 def test_suite():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestCatalogPlan))
+    suite.addTest(unittest.makeSuite(TestCatalogReport))
     return suite
