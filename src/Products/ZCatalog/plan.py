@@ -138,6 +138,7 @@ class ValueIndexes(object):
 
     @classmethod
     def set(cls, value):
+        value = frozenset(value)
         with cls.lock:
             cls.value = value
 
@@ -172,7 +173,7 @@ class ValueIndexes(object):
                     # greater than zero
                     value_indexes.add(name)
 
-        cls.set(frozenset(value_indexes))
+        cls.set(value_indexes)
         return value_indexes
 
 

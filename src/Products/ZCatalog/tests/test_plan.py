@@ -155,7 +155,38 @@ class TestReports(unittest.TestCase):
         self.assertEquals(type(self.reports.lock), LockType)
 
 
-# class TestValueIndexes(unittest.TestCase):
+class TestValueIndexes(unittest.TestCase):
+
+    def setUp(self):
+        self.value = self._makeOne()
+
+    def tearDown(self):
+        self.value.clear()
+
+    def _makeOne(self):
+        from ..plan import ValueIndexes
+        return ValueIndexes
+
+    def test_get(self):
+        self.assertEquals(self.value.get(), frozenset())
+
+    def test_set(self):
+        indexes = ('index1', 'index2')
+        self.value.set(indexes)
+        self.assertEquals(self.value.get(), frozenset(indexes))
+
+    def test_clear(self):
+        self.value.set(('index1', ))
+        self.value.clear()
+        self.assertEquals(self.value.get(), frozenset())
+
+    def test_determine_already_set(self):
+        self.value.set(('index1', ))
+        self.assertEquals(self.value.determine(()), frozenset(('index1', )))
+
+
+# class TestValueIndexesDetermination(unittest.TestCase):
+# Test the actual logic for determining value indexes
 
 # class TestMakeKey(unittest.TestCase):
 
