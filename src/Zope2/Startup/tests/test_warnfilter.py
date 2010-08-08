@@ -15,6 +15,7 @@
 
 import os
 import cStringIO
+import sys
 import tempfile
 import unittest
 import warnings
@@ -70,23 +71,24 @@ class TestWarnFilter(unittest.TestCase):
         self.assertEqual(conf.instancehome, TEMPNAME)
         return conf, handler
 
-    def test_behavior(self):
-        conf, handler = self.load_config_text("""\
-            instancehome <<INSTANCE_HOME>>
-            <warnfilter>
-               action error
-               message .*test.*
-               category Zope2.Startup.tests.test_warnfilter.TestSchemaWarning
-               module .*test_warnfilter.*
-               lineno 0
-            </warnfilter>
-            <warnfilter>
-               action error
-               message .*test.*
-            </warnfilter>
-            """)
-        self.assertRaises(TestSchemaWarning, self._dowarning1)
-        self.assertRaises(UserWarning, self._dowarning2)
+    if sys.version_info < (2, 7):
+        def test_behavior(self):
+            conf, handler = self.load_config_text("""\
+                instancehome <<INSTANCE_HOME>>
+                <warnfilter>
+                   action error
+                   message .*test.*
+                   category Zope2.Startup.tests.test_warnfilter.TestSchemaWarning
+                   module .*test_warnfilter.*
+                   lineno 0
+                </warnfilter>
+                <warnfilter>
+                   action error
+                   message .*test.*
+                </warnfilter>
+                """)
+            self.assertRaises(TestSchemaWarning, self._dowarning1)
+            self.assertRaises(UserWarning, self._dowarning2)
 
     def _dowarning1(self):
         warnings.warn('This is only a test.', TestSchemaWarning)
