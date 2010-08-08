@@ -11,11 +11,9 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-
 """Test that the warning filter works."""
 
 import os
-import sys
 import cStringIO
 import tempfile
 import unittest
@@ -25,20 +23,19 @@ import ZConfig
 import Zope2.Startup
 import Products
 
-from Zope2.Startup import datatypes
-
-from App.config import getConfiguration
-
 TEMPNAME = tempfile.mktemp()
 TEMPPRODUCTS = os.path.join(TEMPNAME, "Products")
+
 
 def getSchema():
     startup = os.path.dirname(os.path.realpath(Zope2.Startup.__file__))
     schemafile = os.path.join(startup, 'zopeschema.xml')
     return ZConfig.loadSchema(schemafile)
 
+
 class TestSchemaWarning(Warning):
     pass
+
 
 class TestWarnFilter(unittest.TestCase):
 
