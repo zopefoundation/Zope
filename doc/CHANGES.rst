@@ -16,7 +16,8 @@ Bugs Fixed
 Features Added
 ++++++++++++++
 
-- OFS: Added forward-compatibility shim for UserFolder.
+- Added forward-compatibility shims for some frequently used modules moved in
+  Zope 2.13.
 
 - Updated packages:
 
