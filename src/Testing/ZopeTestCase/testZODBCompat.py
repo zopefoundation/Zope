@@ -75,24 +75,24 @@ class TestCopyPaste(ZopeTestCase.ZopeTestCase):
     def testCutPaste(self):
         cb = self.folder.manage_cutObjects(['doc'])
         self.folder.manage_pasteObjects(cb)
-        self.failUnless(hasattr(self.folder, 'doc'))
-        self.failIf(hasattr(self.folder, 'copy_of_doc'))
+        self.assertTrue(hasattr(self.folder, 'doc'))
+        self.assertFalse(hasattr(self.folder, 'copy_of_doc'))
 
     def testCopyPaste(self):
         cb = self.folder.manage_copyObjects(['doc'])
         self.folder.manage_pasteObjects(cb)
-        self.failUnless(hasattr(self.folder, 'doc'))
-        self.failUnless(hasattr(self.folder, 'copy_of_doc'))
+        self.assertTrue(hasattr(self.folder, 'doc'))
+        self.assertTrue(hasattr(self.folder, 'copy_of_doc'))
 
     def testClone(self):
         self.folder.manage_clone(self.folder.doc, 'new_doc')
-        self.failUnless(hasattr(self.folder, 'doc'))
-        self.failUnless(hasattr(self.folder, 'new_doc'))
+        self.assertTrue(hasattr(self.folder, 'doc'))
+        self.assertTrue(hasattr(self.folder, 'new_doc'))
 
     def testRename(self):
         self.folder.manage_renameObjects(['doc'], ['new_doc'])
-        self.failIf(hasattr(self.folder, 'doc'))
-        self.failUnless(hasattr(self.folder, 'new_doc'))
+        self.assertFalse(hasattr(self.folder, 'doc'))
+        self.assertTrue(hasattr(self.folder, 'new_doc'))
 
     def testCOPY(self):
         # WebDAV COPY
@@ -100,8 +100,8 @@ class TestCopyPaste(ZopeTestCase.ZopeTestCase):
         request.environ['HTTP_DEPTH'] = 'infinity'
         request.environ['HTTP_DESTINATION'] = 'http://foo.com/%s/new_doc' % folder_name
         self.folder.doc.COPY(request, request.RESPONSE)
-        self.failUnless(hasattr(self.folder, 'doc'))
-        self.failUnless(hasattr(self.folder, 'new_doc'))
+        self.assertTrue(hasattr(self.folder, 'doc'))
+        self.assertTrue(hasattr(self.folder, 'new_doc'))
 
     def testMOVE(self):
         # WebDAV MOVE
@@ -109,8 +109,8 @@ class TestCopyPaste(ZopeTestCase.ZopeTestCase):
         request.environ['HTTP_DEPTH'] = 'infinity'
         request.environ['HTTP_DESTINATION'] = 'http://foo.com/%s/new_doc' % folder_name
         self.folder.doc.MOVE(request, request.RESPONSE)
-        self.failIf(hasattr(self.folder, 'doc'))
-        self.failUnless(hasattr(self.folder, 'new_doc'))
+        self.assertFalse(hasattr(self.folder, 'doc'))
+        self.assertTrue(hasattr(self.folder, 'new_doc'))
 
 
 class TestImportExport(ZopeTestCase.ZopeTestCase):
@@ -125,13 +125,13 @@ class TestImportExport(ZopeTestCase.ZopeTestCase):
 
     def testExport(self):
         self.folder.manage_exportObject('doc')
-        self.failUnless(os.path.exists(self.zexp_file))
+        self.assertTrue(os.path.exists(self.zexp_file))
 
     def testImport(self):
         self.folder.manage_exportObject('doc')
         self.folder._delObject('doc')
         self.folder.manage_importObject('doc.zexp')
-        self.failUnless(hasattr(self.folder, 'doc'))
+        self.assertTrue(hasattr(self.folder, 'doc'))
 
     # To make export and import happy, we have to provide a file-
     # system 'import' directory and adapt the configuration a bit:
@@ -322,48 +322,48 @@ class TestTransactionAbort(ZopeTestCase.ZopeTestCase):
 
     def testTransactionAbort(self):
         self.folder.foo = 1
-        self.failUnless(hasattr(self.folder, 'foo'))
+        self.assertTrue(hasattr(self.folder, 'foo'))
         transaction.abort()
         # The foo attribute is still present
-        self.failUnless(hasattr(self.folder, 'foo'))
+        self.assertTrue(hasattr(self.folder, 'foo'))
 
     def testSubTransactionAbort(self):
         self.folder.foo = 1
-        self.failUnless(hasattr(self.folder, 'foo'))
+        self.assertTrue(hasattr(self.folder, 'foo'))
         transaction.savepoint(optimistic=True)
         transaction.abort()
         # This time the abort nukes the foo attribute...
-        self.failIf(hasattr(self.folder, 'foo'))
+        self.assertFalse(hasattr(self.folder, 'foo'))
 
     def testTransactionAbortPersistent(self):
         self.folder._p_foo = 1
-        self.failUnless(hasattr(self.folder, '_p_foo'))
+        self.assertTrue(hasattr(self.folder, '_p_foo'))
         transaction.abort()
         # The _p_foo attribute is still present
-        self.failUnless(hasattr(self.folder, '_p_foo'))
+        self.assertTrue(hasattr(self.folder, '_p_foo'))
 
     def testSubTransactionAbortPersistent(self):
         self.folder._p_foo = 1
-        self.failUnless(hasattr(self.folder, '_p_foo'))
+        self.assertTrue(hasattr(self.folder, '_p_foo'))
         transaction.savepoint(optimistic=True)
         transaction.abort()
         # This time the abort nukes the _p_foo attribute...
-        self.failIf(hasattr(self.folder, '_p_foo'))
+        self.assertFalse(hasattr(self.folder, '_p_foo'))
 
     def testTransactionAbortVolatile(self):
         self.folder._v_foo = 1
-        self.failUnless(hasattr(self.folder, '_v_foo'))
+        self.assertTrue(hasattr(self.folder, '_v_foo'))
         transaction.abort()
         # The _v_foo attribute is still present
-        self.failUnless(hasattr(self.folder, '_v_foo'))
+        self.assertTrue(hasattr(self.folder, '_v_foo'))
 
     def testSubTransactionAbortVolatile(self):
         self.folder._v_foo = 1
-        self.failUnless(hasattr(self.folder, '_v_foo'))
+        self.assertTrue(hasattr(self.folder, '_v_foo'))
         transaction.savepoint(optimistic=True)
         transaction.abort()
         # This time the abort nukes the _v_foo attribute...
-        self.failIf(hasattr(self.folder, '_v_foo'))
+        self.assertFalse(hasattr(self.folder, '_v_foo'))
 
 
 def test_suite():

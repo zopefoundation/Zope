@@ -184,8 +184,8 @@ class VHMAddingTests(unittest.TestCase):
         vhm1 = self._makeOne()
         vhm1.manage_addToContainer(self.root)
 
-        self.failUnless(vhm1.getId() in self.root.objectIds())
-        self.failUnless(queryBeforeTraverse(self.root, vhm1.meta_type))
+        self.assertTrue(vhm1.getId() in self.root.objectIds())
+        self.assertTrue(queryBeforeTraverse(self.root, vhm1.meta_type))
 
     def test_add_manage_addVirtualHostMonster(self):
         from Products.SiteAccess.VirtualHostMonster import \
@@ -194,9 +194,9 @@ class VHMAddingTests(unittest.TestCase):
         from ZPublisher.BeforeTraverse import queryBeforeTraverse
         manage_addVirtualHostMonster(self.root)
 
-        self.failUnless(VirtualHostMonster.id in self.root.objectIds())
+        self.assertTrue(VirtualHostMonster.id in self.root.objectIds())
         hook = queryBeforeTraverse(self.root, VirtualHostMonster.meta_type)
-        self.failUnless(hook)
+        self.assertTrue(hook)
 
 def test_suite():
     suite = unittest.TestSuite()

@@ -21,11 +21,11 @@ class TestRangeHeaderParse(unittest.TestCase):
     # Utility methods
     def expectNone(self, header):
         result = parseRange(header)
-        self.failUnless(result is None, 'Expected None, got %s' % `result`)
+        self.assertTrue(result is None, 'Expected None, got %s' % `result`)
 
     def expectSets(self, header, sets):
         result = parseRange(header)
-        self.failUnless(result == sets,
+        self.assertTrue(result == sets,
             'Expected %s, got %s' % (`sets`, `result`))
 
     # Syntactically incorrect headers
@@ -81,7 +81,7 @@ class TestExpandRanges(unittest.TestCase):
 
     def expectSets(self, sets, size, expect):
         result = expandRanges(sets, size)
-        self.failUnless(result == expect,
+        self.assertTrue(result == expect,
             'Expected %s, got %s' % (`expect`, `result`))
 
     def testExpandOpenEnd(self):

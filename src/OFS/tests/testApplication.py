@@ -24,7 +24,7 @@ class ApplicationTests(unittest.TestCase):
 
     def test_instance_attributes(self):
         app = self._makeOne()
-        self.failUnless(app.isTopLevelPrincipiaApplicationObject)
+        self.assertTrue(app.isTopLevelPrincipiaApplicationObject)
         self.assertEqual(app.title, 'Zope')
 
     def test_id_no_request(self):
@@ -99,8 +99,8 @@ class ApplicationTests(unittest.TestCase):
 
         result = app.__bobo_traverse__(request, 'OTHER')
 
-        self.failUnless(isinstance(result, NullResource))
-        self.failUnless(aq_parent(aq_inner(result)) is app)
+        self.assertTrue(isinstance(result, NullResource))
+        self.assertTrue(aq_parent(aq_inner(result)) is app)
 
 def _noWay(self, key, default=None):
     raise KeyError(key)

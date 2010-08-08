@@ -95,7 +95,7 @@ class EngineTestsBase(PlacelessSetup):
 
     def test_evaluate_alternative_first_missing(self):
         ec = self._makeContext()
-        self.failUnless(ec.evaluate('x | nothing') is None)
+        self.assertTrue(ec.evaluate('x | nothing') is None)
 
     def test_evaluate_dict_key_as_underscore(self):
         ec = self._makeContext()
@@ -123,26 +123,26 @@ class EngineTestsBase(PlacelessSetup):
 
     def test_hybrid_with_compound_expression_int_value(self):
         ec = self._makeContext()
-        self.failUnless(ec.evaluate('x | not:exists:x'))
+        self.assertTrue(ec.evaluate('x | not:exists:x'))
 
     def test_access_iterator_from_python_expression(self):
         ec = self._makeContext()
         ec.beginScope()
         ec.setRepeat('loop', "python:[1,2,3]")
-        self.failUnless(ec.evaluate("python:repeat['loop'].odd()"))
+        self.assertTrue(ec.evaluate("python:repeat['loop'].odd()"))
         ec.endScope()
 
     def test_defer_expression_returns_wrapper(self):
         from zope.tales.expressions import DeferWrapper
         ec = self._makeContext()
         defer = ec.evaluate('defer: b')
-        self.failUnless(isinstance(defer, DeferWrapper))
+        self.assertTrue(isinstance(defer, DeferWrapper))
 
     def test_lazy_expression_returns_wrapper(self):
         from zope.tales.expressions import LazyWrapper
         ec = self._makeContext()
         lazy = ec.evaluate('lazy: b')
-        self.failUnless(isinstance(lazy, LazyWrapper))
+        self.assertTrue(isinstance(lazy, LazyWrapper))
 
     def test_empty_path_expression_explicit(self):
         ec = self._makeContext()
@@ -168,7 +168,7 @@ class EngineTestsBase(PlacelessSetup):
         # only bothers compiling true strings, not unicode strings
         result = ec.evaluate(eng.compile(u'string:x'))
         self.assertEqual(result, u'x')
-        self.failUnless(isinstance(result, unicode))
+        self.assertTrue(isinstance(result, unicode))
 
     def test_mixed(self):
         # 8-bit strings in unicode string expressions cause UnicodeDecodeErrors
@@ -289,7 +289,7 @@ class ZopeContextTests(unittest.TestCase):
         # See: https://bugs.launchpad.net/zope2/+bug/174705
         context = self._makeOne()
         info = context.createErrorInfo(AttributeError('nonesuch'), (12, 3))
-        self.failUnless(info.type is AttributeError)
+        self.assertTrue(info.type is AttributeError)
         self.assertEqual(info.__allow_access_to_unprotected_subobjects__, 1)
 
 def test_suite():

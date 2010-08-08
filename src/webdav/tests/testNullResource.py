@@ -46,7 +46,7 @@ class TestNullResource(unittest.TestCase):
         self.assertRaises(NotFound, nonesuch.HEAD, request, response)
 
         self.assertEqual(response.body, '')
-        self.failUnless(response.locked)
+        self.assertTrue(response.locked)
 
     def test_PUT_unauthorized_message(self):
         # See https://bugs.launchpad.net/bugs/143946
@@ -73,7 +73,7 @@ class TestNullResource(unittest.TestCase):
         try:
             nonesuch.PUT(request, response)
         except Unauthorized, e:
-            self.failUnless(str(e).startswith('Unable to create object'))
+            self.assertTrue(str(e).startswith('Unable to create object'))
 
 
 def test_suite():

@@ -12,6 +12,11 @@ Bugs Fixed
 ++++++++++
 
 
+Features Added
+++++++++++++++
+
+- Replaced failUnless with assertTrue and failIf with assertFalse in tests.
+
 
 2.13.0a3 (2010-08-04)
 ---------------------

@@ -284,20 +284,20 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
 
     def test_hasObject(self):
         om = self._makeOne()
-        self.failIf(om.hasObject('_properties'))
-        self.failIf(om.hasObject('_getOb'))
-        self.failIf(om.hasObject('__of__'))
-        self.failIf(om.hasObject('.'))
-        self.failIf(om.hasObject('..'))
-        self.failIf(om.hasObject('aq_base'))
+        self.assertFalse(om.hasObject('_properties'))
+        self.assertFalse(om.hasObject('_getOb'))
+        self.assertFalse(om.hasObject('__of__'))
+        self.assertFalse(om.hasObject('.'))
+        self.assertFalse(om.hasObject('..'))
+        self.assertFalse(om.hasObject('aq_base'))
         om.zap__ = True
-        self.failIf(om.hasObject('zap__'))
-        self.failIf(om.hasObject('foo'))
+        self.assertFalse(om.hasObject('zap__'))
+        self.assertFalse(om.hasObject('foo'))
         si = SimpleItem('foo')
         om._setObject('foo', si)
         self.assert_(om.hasObject('foo'))
         om._delObject('foo')
-        self.failIf(om.hasObject('foo'))
+        self.assertFalse(om.hasObject('foo'))
 
     def test_setObject_checkId_ok(self):
         om = self._makeOne()
@@ -338,13 +338,13 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         si1 = SimpleItem('1')
         si2 = SimpleItem('2')
         om['1'] = si1
-        self.failUnless('1' in om)
-        self.failUnless(si1 in om.objectValues())
-        self.failUnless('1' in om.objectIds())
+        self.assertTrue('1' in om)
+        self.assertTrue(si1 in om.objectValues())
+        self.assertTrue('1' in om.objectIds())
         om['2'] = si2
-        self.failUnless('2' in om)
-        self.failUnless(si2 in om.objectValues())
-        self.failUnless('2' in om.objectIds())
+        self.assertTrue('2' in om)
+        self.assertTrue(si2 in om.objectValues())
+        self.assertTrue('2' in om.objectIds())
         self.assertRaises(BadRequest, om._setObject, '1', si2)
         self.assertRaises(BadRequest, om.__setitem__, '1', si2)
 
@@ -354,13 +354,13 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         si2 = SimpleItem('2')
         om['1'] = si1
         om['2'] = si2
-        self.failUnless('1' in om)
-        self.failUnless('2' in om)
+        self.assertTrue('1' in om)
+        self.assertTrue('2' in om)
         del om['1']
-        self.failIf('1' in om)
-        self.failUnless('2' in om)
+        self.assertFalse('1' in om)
+        self.assertTrue('2' in om)
         om._delObject('2')
-        self.failIf('2' in om)
+        self.assertFalse('2' in om)
 
     def test_iterator(self):
         om = self._makeOne()
@@ -369,11 +369,11 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         om['1'] = si1
         om['2'] = si2
         iterator = iter(om)
-        self.failUnless(hasattr(iterator, '__iter__'))
-        self.failUnless(hasattr(iterator, 'next'))
+        self.assertTrue(hasattr(iterator, '__iter__'))
+        self.assertTrue(hasattr(iterator, 'next'))
         result = [i for i in iterator]
-        self.failUnless('1' in result)
-        self.failUnless('2' in result)
+        self.assertTrue('1' in result)
+        self.assertTrue('2' in result)
 
     def test_len(self):
         om = self._makeOne()
@@ -381,80 +381,80 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         si2 = SimpleItem('2')
         om['1'] = si1
         om['2'] = si2
-        self.failUnless(len(om) == 2)
+        self.assertTrue(len(om) == 2)
 
     def test_nonzero(self):
         om = self._makeOne()
-        self.failUnless(om)
+        self.assertTrue(om)
 
     def test_get(self):
         om = self._makeOne()
         si1 = SimpleItem('1')
         self.assertRaises(BadRequest, om.__setitem__, 'get', si1)
         om['1'] = si1
-        self.failUnless(om.get('1') == si1)
+        self.assertTrue(om.get('1') == si1)
         # A contained item overwrites the method
-        self.failUnless(hasattr(om.get, 'im_func'))
+        self.assertTrue(hasattr(om.get, 'im_func'))
         om.__dict__['get'] = si1
-        self.failUnless(aq_base(om.get) is si1)
-        self.failUnless(aq_base(om['get']) is si1)
+        self.assertTrue(aq_base(om.get) is si1)
+        self.assertTrue(aq_base(om['get']) is si1)
         # Once the object is gone, the method is back
         del om['get']
-        self.failUnless(hasattr(om.get, 'im_func'))
+        self.assertTrue(hasattr(om.get, 'im_func'))
 
     def test_items(self):
         om = self._makeOne()
         si1 = SimpleItem('1')
         self.assertRaises(BadRequest, om.__setitem__, 'items', si1)
         om['1'] = si1
-        self.failUnless(('1', si1) in om.items())
+        self.assertTrue(('1', si1) in om.items())
         # A contained item overwrites the method
-        self.failUnless(hasattr(om.items, 'im_func'))
+        self.assertTrue(hasattr(om.items, 'im_func'))
         om.__dict__['items'] = si1
-        self.failUnless(aq_base(om.items) is si1)
-        self.failUnless(aq_base(om['items']) is si1)
+        self.assertTrue(aq_base(om.items) is si1)
+        self.assertTrue(aq_base(om['items']) is si1)
         # Once the object is gone, the method is back
         del om['items']
-        self.failUnless(hasattr(om.items, 'im_func'))
+        self.assertTrue(hasattr(om.items, 'im_func'))
 
     def test_keys(self):
         om = self._makeOne()
         si1 = SimpleItem('1')
         self.assertRaises(BadRequest, om.__setitem__, 'keys', si1)
         om['1'] = si1
-        self.failUnless('1' in om.keys())
+        self.assertTrue('1' in om.keys())
         # A contained item overwrites the method
-        self.failUnless(hasattr(om.keys, 'im_func'))
+        self.assertTrue(hasattr(om.keys, 'im_func'))
         om.__dict__['keys'] = si1
-        self.failUnless(aq_base(om.keys) is si1)
-        self.failUnless(aq_base(om['keys']) is si1)
+        self.assertTrue(aq_base(om.keys) is si1)
+        self.assertTrue(aq_base(om['keys']) is si1)
         # Once the object is gone, the method is back
         del om['keys']
-        self.failUnless(hasattr(om.keys, 'im_func'))
+        self.assertTrue(hasattr(om.keys, 'im_func'))
 
     def test_values(self):
         om = self._makeOne()
         si1 = SimpleItem('1')
         self.assertRaises(BadRequest, om.__setitem__, 'values', si1)
         om['1'] = si1
-        self.failUnless(si1 in om.values())
+        self.assertTrue(si1 in om.values())
         # A contained item overwrites the method
-        self.failUnless(hasattr(om.values, 'im_func'))
+        self.assertTrue(hasattr(om.values, 'im_func'))
         om.__dict__['values'] = si1
-        self.failUnless(aq_base(om.values) is si1)
-        self.failUnless(aq_base(om['values']) is si1)
+        self.assertTrue(aq_base(om.values) is si1)
+        self.assertTrue(aq_base(om['values']) is si1)
         # Once the object is gone, the method is back
         del om['values']
-        self.failUnless(hasattr(om.values, 'im_func'))
+        self.assertTrue(hasattr(om.values, 'im_func'))
 
     def test_list_imports(self):
         om = self._makeOne()
         # This must work whether we've done "make instance" or not.
         # So list_imports() may return an empty list, or whatever's
         # in skel/import. Tolerate both cases.
-        self.failUnless(isinstance(om.list_imports(), list))
+        self.assertTrue(isinstance(om.list_imports(), list))
         for filename in om.list_imports():
-            self.failUnless(filename.endswith('.zexp') or
+            self.assertTrue(filename.endswith('.zexp') or
                             filename.endswith('.xml'))
 
 def test_suite():

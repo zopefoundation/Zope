@@ -34,8 +34,8 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(response.base, '')
         self.assertEqual(response.body, '')
         self.assertEqual(response.cookies, {})
-        self.failUnless(response.stdout is sys.stdout)
-        self.failUnless(response.stderr is sys.stderr)
+        self.assertTrue(response.stdout is sys.stdout)
+        self.assertTrue(response.stderr is sys.stderr)
 
     def test_ctor_w_body(self):
         response = self._makeOne(body='ABC')
@@ -125,9 +125,9 @@ class HTTPResponseTests(unittest.TestCase):
         STDOUT, STDERR = object(), object()
         response = self._makeOne(stdout=STDOUT, stderr=STDERR)
         cloned = response.retry()
-        self.failUnless(isinstance(cloned, self._getTargetClass()))
-        self.failUnless(cloned.stdout is STDOUT)
-        self.failUnless(cloned.stderr is STDERR)
+        self.assertTrue(isinstance(cloned, self._getTargetClass()))
+        self.assertTrue(cloned.stdout is STDOUT)
+        self.assertTrue(cloned.stderr is STDERR)
 
     def test_setStatus_code(self):
         response = self._makeOne()
@@ -216,7 +216,7 @@ class HTTPResponseTests(unittest.TestCase):
         response = self._makeOne()
         response.setCookie('foo', 'bar', expires=EXPIRES)
         cookie = response.cookies.get('foo', None)
-        self.failUnless(cookie)
+        self.assertTrue(cookie)
         self.assertEqual(cookie.get('value'), 'bar')
         self.assertEqual(cookie.get('expires'), EXPIRES)
         self.assertEqual(cookie.get('quoted'), True)
@@ -336,7 +336,7 @@ class HTTPResponseTests(unittest.TestCase):
         response.setCookie('foo', 'bar', path='/')
         response.appendCookie('foo', 'baz')
         cookie = response.cookies.get('foo', None)
-        self.failUnless(cookie)
+        self.assertTrue(cookie)
         self.assertEqual(cookie.get('value'), 'bar:baz')
         self.assertEqual(cookie.get('path'), '/')
 
@@ -344,14 +344,14 @@ class HTTPResponseTests(unittest.TestCase):
         response = self._makeOne()
         response.appendCookie('foo', 'baz')
         cookie = response.cookies.get('foo', None)
-        self.failUnless(cookie)
+        self.assertTrue(cookie)
         self.assertEqual(cookie.get('value'), 'baz')
 
     def test_expireCookie(self):
         response = self._makeOne()
         response.expireCookie('foo', path='/')
         cookie = response.cookies.get('foo', None)
-        self.failUnless(cookie)
+        self.assertTrue(cookie)
         self.assertEqual(cookie.get('expires'), 'Wed, 31-Dec-97 23:59:59 GMT')
         self.assertEqual(cookie.get('max_age'), 0)
         self.assertEqual(cookie.get('path'), '/')
@@ -363,7 +363,7 @@ class HTTPResponseTests(unittest.TestCase):
         response.expireCookie('foo', path='/',
                               expires='Mon, 22-Mar-2004 17:59 GMT', max_age=99)
         cookie = response.cookies.get('foo', None)
-        self.failUnless(cookie)
+        self.assertTrue(cookie)
         self.assertEqual(cookie.get('expires'), 'Wed, 31-Dec-97 23:59:59 GMT')
         self.assertEqual(cookie.get('max_age'), 0)
         self.assertEqual(cookie.get('path'), '/')
@@ -539,14 +539,14 @@ class HTTPResponseTests(unittest.TestCase):
         response = self._makeOne()
         response.setBody('BEFORE', lock=True)
         result = response.setBody('AFTER')
-        self.failIf(result)
+        self.assertFalse(result)
         self.assertEqual(response.body, 'BEFORE')
 
     def test_setBody_empty_unchanged(self):
         response = self._makeOne()
         response.body = 'BEFORE'
         result = response.setBody('')
-        self.failUnless(result)
+        self.assertTrue(result)
         self.assertEqual(response.body, 'BEFORE')
         self.assertEqual(response.getHeader('Content-Type'), None)
         self.assertEqual(response.getHeader('Content-Length'), None)
@@ -559,7 +559,7 @@ class HTTPResponseTests(unittest.TestCase):
         response = self._makeOne()
         response.body = 'BEFORE'
         result = response.setBody(('TITLE', 'BODY'))
-        self.failUnless(result)
+        self.assertTrue(result)
         self.assertEqual(response.body, EXPECTED)
         self.assertEqual(response.getHeader('Content-Type'),
                          'text/html; charset=iso-8859-15')
@@ -570,18 +570,18 @@ class HTTPResponseTests(unittest.TestCase):
         response = self._makeOne()
         response.body = 'BEFORE'
         result = response.setBody(('TITLE', 'BODY'), is_error=True)
-        self.failUnless(result)
-        self.failIf('BEFORE' in response.body)
-        self.failUnless('<h2>Site Error</h2>' in response.body)
-        self.failUnless('TITLE' in response.body)
-        self.failUnless('BODY' in response.body)
+        self.assertTrue(result)
+        self.assertFalse('BEFORE' in response.body)
+        self.assertTrue('<h2>Site Error</h2>' in response.body)
+        self.assertTrue('TITLE' in response.body)
+        self.assertTrue('BODY' in response.body)
         self.assertEqual(response.getHeader('Content-Type'),
                          'text/html; charset=iso-8859-15')
 
     def test_setBody_string_not_HTML(self):
         response = self._makeOne()
         result = response.setBody('BODY')
-        self.failUnless(result)
+        self.assertTrue(result)
         self.assertEqual(response.body, 'BODY')
         self.assertEqual(response.getHeader('Content-Type'),
                          'text/plain; charset=iso-8859-15')
@@ -591,7 +591,7 @@ class HTTPResponseTests(unittest.TestCase):
         HTML = '<html><head></head><body></body></html>'
         response = self._makeOne()
         result = response.setBody(HTML)
-        self.failUnless(result)
+        self.assertTrue(result)
         self.assertEqual(response.body, HTML)
         self.assertEqual(response.getHeader('Content-Type'),
                          'text/html; charset=iso-8859-15')
@@ -604,7 +604,7 @@ class HTTPResponseTests(unittest.TestCase):
                 return HTML
         response = self._makeOne()
         result = response.setBody(Dummy())
-        self.failUnless(result)
+        self.assertTrue(result)
         self.assertEqual(response.body, HTML)
         self.assertEqual(response.getHeader('Content-Type'),
                          'text/html; charset=iso-8859-15')
@@ -615,7 +615,7 @@ class HTTPResponseTests(unittest.TestCase):
         ENCODED = HTML.encode('iso-8859-15')
         response = self._makeOne()
         result = response.setBody(HTML)
-        self.failUnless(result)
+        self.assertTrue(result)
         self.assertEqual(response.body, ENCODED)
         self.assertEqual(response.getHeader('Content-Type'),
                          'text/html; charset=iso-8859-15')
@@ -640,7 +640,7 @@ class HTTPResponseTests(unittest.TestCase):
                   '<p>GT: &gt;</p></body></html>')
         response.setHeader('Content-Type', 'text/html')
         result = response.setBody(BEFORE)
-        self.failUnless(result)
+        self.assertTrue(result)
         self.assertEqual(response.body, AFTER)
         self.assertEqual(response.getHeader('Content-Length'), str(len(AFTER)))
 
@@ -652,7 +652,7 @@ class HTTPResponseTests(unittest.TestCase):
                   '<p>GT: &gt;</p></body></html>')
         response.setHeader('Content-Type', 'text/html; charset=latin1')
         result = response.setBody(BEFORE)
-        self.failUnless(result)
+        self.assertTrue(result)
         self.assertEqual(response.body, AFTER)
         self.assertEqual(response.getHeader('Content-Length'), str(len(AFTER)))
 
@@ -673,7 +673,7 @@ class HTTPResponseTests(unittest.TestCase):
         response.setHeader('Content-Type', 'image/jpeg')
         response.enableHTTPCompression({'HTTP_ACCEPT_ENCODING': 'gzip'})
         response.setBody(BEFORE)
-        self.failIf(response.getHeader('Content-Encoding'))
+        self.assertFalse(response.getHeader('Content-Encoding'))
         self.assertEqual(response.body, BEFORE)
 
     def test_setBody_compression_existing_encoding(self):
@@ -690,7 +690,7 @@ class HTTPResponseTests(unittest.TestCase):
         response = self._makeOne()
         response.enableHTTPCompression({'HTTP_ACCEPT_ENCODING': 'gzip'})
         response.setBody(BEFORE)
-        self.failIf(response.getHeader('Content-Encoding'))
+        self.assertFalse(response.getHeader('Content-Encoding'))
         self.assertEqual(response.body, BEFORE)
 
     def test_setBody_compression_no_prior_vary_header(self):
@@ -698,7 +698,7 @@ class HTTPResponseTests(unittest.TestCase):
         response = self._makeOne()
         response.enableHTTPCompression({'HTTP_ACCEPT_ENCODING': 'gzip'})
         response.setBody('foo' * 100) # body must get smaller on compression
-        self.failUnless('Accept-Encoding' in response.getHeader('Vary'))
+        self.assertTrue('Accept-Encoding' in response.getHeader('Vary'))
 
     def test_setBody_compression_w_prior_vary_header_wo_encoding(self):
         # Vary header should be added here
@@ -706,7 +706,7 @@ class HTTPResponseTests(unittest.TestCase):
         response.setHeader('Vary', 'Cookie')
         response.enableHTTPCompression({'HTTP_ACCEPT_ENCODING': 'gzip'})
         response.setBody('foo' * 100) # body must get smaller on compression
-        self.failUnless('Accept-Encoding' in response.getHeader('Vary'))
+        self.assertTrue('Accept-Encoding' in response.getHeader('Vary'))
 
     def test_setBody_compression_w_prior_vary_header_incl_encoding(self):
         # Vary header already had Accept-Ecoding', do'nt munge
@@ -732,7 +732,7 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(result, URL)
         self.assertEqual(response.status, 302)
         self.assertEqual(response.getHeader('Location'), URL)
-        self.failIf(response._locked_status)
+        self.assertFalse(response._locked_status)
 
     def test_redirect_explicit_status(self):
         URL = 'http://example.com'
@@ -740,7 +740,7 @@ class HTTPResponseTests(unittest.TestCase):
         result = response.redirect(URL, status=307)
         self.assertEqual(response.status, 307)
         self.assertEqual(response.getHeader('Location'), URL)
-        self.failIf(response._locked_status)
+        self.assertFalse(response._locked_status)
 
     def test_redirect_w_lock(self):
         URL = 'http://example.com'
@@ -748,7 +748,7 @@ class HTTPResponseTests(unittest.TestCase):
         result = response.redirect(URL, lock=True)
         self.assertEqual(response.status, 302)
         self.assertEqual(response.getHeader('Location'), URL)
-        self.failUnless(response._locked_status)
+        self.assertTrue(response._locked_status)
 
     def test__encode_unicode_no_content_type_uses_default_encoding(self):
         self._setDefaultEncoding('UTF8')
@@ -801,7 +801,7 @@ class HTTPResponseTests(unittest.TestCase):
             response.notFoundError()
         except NotFound, raised:
             self.assertEqual(response.status, 404)
-            self.failUnless("<p><b>Resource:</b> Unknown</p>" in str(raised))
+            self.assertTrue("<p><b>Resource:</b> Unknown</p>" in str(raised))
         else:
             self.fail("Didn't raise NotFound")
 
@@ -812,7 +812,7 @@ class HTTPResponseTests(unittest.TestCase):
             response.notFoundError('ENTRY')
         except NotFound, raised:
             self.assertEqual(response.status, 404)
-            self.failUnless("<p><b>Resource:</b> ENTRY</p>" in str(raised))
+            self.assertTrue("<p><b>Resource:</b> ENTRY</p>" in str(raised))
         else:
             self.fail("Didn't raise NotFound")
 
@@ -823,7 +823,7 @@ class HTTPResponseTests(unittest.TestCase):
             response.forbiddenError()
         except NotFound, raised:
             self.assertEqual(response.status, 404)
-            self.failUnless("<p><b>Resource:</b> Unknown</p>" in str(raised))
+            self.assertTrue("<p><b>Resource:</b> Unknown</p>" in str(raised))
         else:
             self.fail("Didn't raise NotFound")
 
@@ -834,7 +834,7 @@ class HTTPResponseTests(unittest.TestCase):
             response.forbiddenError('ENTRY')
         except NotFound, raised:
             self.assertEqual(response.status, 404)
-            self.failUnless("<p><b>Resource:</b> ENTRY</p>" in str(raised))
+            self.assertTrue("<p><b>Resource:</b> ENTRY</p>" in str(raised))
         else:
             self.fail("Didn't raise NotFound")
 
@@ -845,7 +845,7 @@ class HTTPResponseTests(unittest.TestCase):
             response.debugError('testing')
         except NotFound, raised:
             self.assertEqual(response.status, 200)
-            self.failUnless("Zope has encountered a problem publishing "
+            self.assertTrue("Zope has encountered a problem publishing "
                             "your object.<p>\ntesting</p>" in str(raised))
         else:
             self.fail("Didn't raise NotFound")
@@ -857,7 +857,7 @@ class HTTPResponseTests(unittest.TestCase):
             response.badRequestError('some_parameter')
         except BadRequest, raised:
             self.assertEqual(response.status, 400)
-            self.failUnless("The parameter, <em>some_parameter</em>, "
+            self.assertTrue("The parameter, <em>some_parameter</em>, "
                             "was omitted from the request." in str(raised))
         else:
             self.fail("Didn't raise BadRequest")
@@ -869,7 +869,7 @@ class HTTPResponseTests(unittest.TestCase):
             response.badRequestError('URL1')
         except InternalError, raised:
             self.assertEqual(response.status, 400)
-            self.failUnless("Sorry, an internal error occurred in this "
+            self.assertTrue("Sorry, an internal error occurred in this "
                             "resource." in str(raised))
         else:
             self.fail("Didn't raise InternalError")
@@ -878,12 +878,12 @@ class HTTPResponseTests(unittest.TestCase):
         response = self._makeOne()
         response.realm = ''
         response._unauthorized()
-        self.failIf('WWW-Authenticate' in response.headers)
+        self.assertFalse('WWW-Authenticate' in response.headers)
 
     def test__unauthorized_w_default_realm(self):
         response = self._makeOne()
         response._unauthorized()
-        self.failUnless('WWW-Authenticate' in response.headers) #literal
+        self.assertTrue('WWW-Authenticate' in response.headers) #literal
         self.assertEqual(response.headers['WWW-Authenticate'],
                          'basic realm="Zope"')
 
@@ -891,7 +891,7 @@ class HTTPResponseTests(unittest.TestCase):
         response = self._makeOne()
         response.realm = 'Folly'
         response._unauthorized()
-        self.failUnless('WWW-Authenticate' in response.headers) #literal
+        self.assertTrue('WWW-Authenticate' in response.headers) #literal
         self.assertEqual(response.headers['WWW-Authenticate'],
                          'basic realm="Folly"')
 
@@ -902,7 +902,7 @@ class HTTPResponseTests(unittest.TestCase):
             response.unauthorized()
         except Unauthorized, raised:
             self.assertEqual(response.status, 200) # publisher sets 401 later
-            self.failUnless("<strong>You are not authorized "
+            self.assertTrue("<strong>You are not authorized "
                             "to access this resource.</strong>" in str(raised))
         else:
             self.fail("Didn't raise Unauthorized")
@@ -914,7 +914,7 @@ class HTTPResponseTests(unittest.TestCase):
         try:
             response.unauthorized()
         except Unauthorized, raised:
-            self.failUnless("<p>\nNo Authorization header found.</p>"
+            self.assertTrue("<p>\nNo Authorization header found.</p>"
                                 in str(raised))
         else:
             self.fail("Didn't raise Unauthorized")
@@ -927,7 +927,7 @@ class HTTPResponseTests(unittest.TestCase):
         try:
             response.unauthorized()
         except Unauthorized, raised:
-            self.failUnless("<p>\nUsername and password are not correct.</p>"
+            self.assertTrue("<p>\nUsername and password are not correct.</p>"
                                 in str(raised))
         else:
             self.fail("Didn't raise Unauthorized")
@@ -1260,7 +1260,7 @@ class HTTPResponseTests(unittest.TestCase):
         stdout = StringIO()
         response = self._makeOne(stdout=stdout)
         response.write('Kilroy was here!')
-        self.failUnless(response._wrote)
+        self.assertTrue(response._wrote)
         lines = stdout.getvalue().split('\r\n')
         self.assertEqual(len(lines), 5)
         self.assertEqual(lines[0], 'Status: 200 OK')
@@ -1292,8 +1292,8 @@ class HTTPResponseTests(unittest.TestCase):
                              "<type 'exceptions.AttributeError'>")
             self.assertEqual(response.headers['bobo-exception-value'],
                              'See the server error log for details')
-            self.failUnless('bobo-exception-file' in response.headers)
-            self.failUnless('bobo-exception-line' in response.headers)
+            self.assertTrue('bobo-exception-file' in response.headers)
+            self.assertTrue('bobo-exception-line' in response.headers)
         finally:
             del tb
 
@@ -1303,7 +1303,7 @@ class HTTPResponseTests(unittest.TestCase):
             raise AttributeError('ERROR VALUE')
         except AttributeError:
             body = response.exception()
-            self.failUnless('ERROR VALUE' in str(body))
+            self.assertTrue('ERROR VALUE' in str(body))
             self.assertEqual(response.status, 500)
             self.assertEqual(response.errmsg, 'Internal Server Error')
             # required by Bobo Call Interface (BCI)
@@ -1311,8 +1311,8 @@ class HTTPResponseTests(unittest.TestCase):
                              "<type 'exceptions.AttributeError'>")
             self.assertEqual(response.headers['bobo-exception-value'],
                              'See the server error log for details')
-            self.failUnless('bobo-exception-file' in response.headers)
-            self.failUnless('bobo-exception-line' in response.headers)
+            self.assertTrue('bobo-exception-file' in response.headers)
+            self.assertTrue('bobo-exception-line' in response.headers)
 
     #TODO
     # def test_exception_* WAAAAAA!

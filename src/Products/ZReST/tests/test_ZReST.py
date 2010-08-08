@@ -57,7 +57,7 @@ class TestZReST(unittest.TestCase):
         resty = self._makeOne()
         resty.formatted = 'IGNORE ME'
 
-        self.failIf('IGNORE ME' in resty.index_html())
+        self.assertFalse('IGNORE ME' in resty.index_html())
 
     def testConversion(self):
         resty = self._makeOne()
@@ -129,7 +129,7 @@ class TestZReST(unittest.TestCase):
         csv_file = self._csvfile()
         resty.source = '.. csv-table:: \n  :file: %s' % csv_file
         result = resty.render()
-        self.failUnless('daemon' not in result, 
+        self.assertTrue('daemon' not in result, 
                         'csv-table/file directive is not disabled!')
 
     def test_csv_table_url_option_raise(self):
@@ -137,7 +137,7 @@ class TestZReST(unittest.TestCase):
         csv_file = self._csvfile()
         resty.source = '.. csv-table:: \n  :url: file://%s' % csv_file
         result = resty.render()
-        self.failUnless('daemon' not in result, 
+        self.assertTrue('daemon' not in result, 
                         'csv-table/url directive is not disabled!')
 
 

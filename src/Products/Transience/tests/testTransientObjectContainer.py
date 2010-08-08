@@ -65,7 +65,7 @@ class TestTransientObjectContainer(TestCase):
 
     def testHasKeyWorks(self):
         self.t[10] = 1
-        self.failUnless(self.t.has_key(10))
+        self.assertTrue(self.t.has_key(10))
 
     def testValuesWorks(self):
         for x in range(10, 110):
@@ -234,7 +234,7 @@ class TestTransientObjectContainer(TestCase):
         for x in delete_order:
             try: del self.t[x]
             except KeyError:
-                self.failIf(self.t.has_key(x))
+                self.assertFalse(self.t.has_key(x))
 
     def testGetDelaysTimeout(self):
         for x in range(10, 110):
@@ -283,7 +283,7 @@ class TestTransientObjectContainer(TestCase):
     def testResetWorks(self):
         self.t[10] = 1
         self.t._reset()
-        self.failIf(self.t.get(10))
+        self.assertFalse(self.t.get(10))
 
     def testGetTimeoutMinutesWorks(self):
         self.assertEqual(self.t.getTimeoutMinutes(), self.timeout / 60)
@@ -293,7 +293,7 @@ class TestTransientObjectContainer(TestCase):
 
     def test_new(self):
         t = self.t.new('foobieblech')
-        self.failUnless(issubclass(t.__class__, TransientObject))
+        self.assertTrue(issubclass(t.__class__, TransientObject))
 
     def _dupNewItem(self):
         self.t.new('foobieblech')

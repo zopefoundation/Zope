@@ -98,9 +98,9 @@ class TestInitialization( unittest.TestCase ):
         i = self.getOne()
         app = i.getApp()
         i.install_cp_and_products()
-        self.failUnless(hasattr(app, 'Control_Panel'))
+        self.assertTrue(hasattr(app, 'Control_Panel'))
         self.assertEqual(app.Control_Panel.meta_type, 'Control Panel')
-        self.failUnless(hasattr(app.Control_Panel, 'Products'))
+        self.assertTrue(hasattr(app.Control_Panel, 'Products'))
         self.assertEqual(app.Control_Panel.Products.meta_type,
                          'Product Management')
 
@@ -112,13 +112,13 @@ class TestInitialization( unittest.TestCase ):
         self.assertEqual(app.temp_folder.meta_type, 'Temporary Folder')
         self.assertEqual(app.temp_folder.session_data.meta_type,
                          'Transient Object Container')
-        self.failUnless(app._getInitializerFlag('temp_folder'))
+        self.assertTrue(app._getInitializerFlag('temp_folder'))
 
     def test_install_tempfolder_and_sdc_status(self):
         self.configure(good_cfg)
         i = self.getOne()
         status = i.install_tempfolder_and_sdc()
-        self.failUnless(status)
+        self.assertTrue(status)
 
         i = self.getOne()
         self.configure(bad_cfg)
@@ -128,7 +128,7 @@ class TestInitialization( unittest.TestCase ):
             status = i.install_tempfolder_and_sdc()
         finally:
             logger.disabled = 0
-        self.failIf(status)
+        self.assertFalse(status)
 
     def test_install_tempfolder_and_sdc_unlimited_sessions(self):
         unlimited_cfg = good_cfg + """
@@ -137,7 +137,7 @@ class TestInitialization( unittest.TestCase ):
         self.configure(unlimited_cfg)
         i = self.getOne()
         status = i.install_tempfolder_and_sdc()
-        self.failUnless(status)
+        self.assertTrue(status)
 
         sdc = i.getApp().temp_folder.session_data
         self.assertEqual(sdc.getSubobjectLimit(), 0)
@@ -148,7 +148,7 @@ class TestInitialization( unittest.TestCase ):
         app = i.getApp()
         i.install_browser_id_manager()
         self.assertEqual(app.browser_id_manager.meta_type,'Browser Id Manager')
-        self.failUnless(app._getInitializerFlag('browser_id_manager'))
+        self.assertTrue(app._getInitializerFlag('browser_id_manager'))
 
     def test_install_virtual_hosting(self):
         self.configure(good_cfg)
@@ -156,7 +156,7 @@ class TestInitialization( unittest.TestCase ):
         app = i.getApp()
         i.install_virtual_hosting()
         self.assertEqual(app.virtual_hosting.meta_type,'Virtual Host Monster')
-        self.failUnless(app._getInitializerFlag('virtual_hosting'))
+        self.assertTrue(app._getInitializerFlag('virtual_hosting'))
 
     def test_install_session_data_manager(self):
         self.configure(good_cfg)
@@ -165,15 +165,15 @@ class TestInitialization( unittest.TestCase ):
         app = i.getApp()
         self.assertEqual(app.session_data_manager.meta_type,
                          'Session Data Manager')
-        self.failUnless(app._getInitializerFlag('session_data_manager'))
+        self.assertTrue(app._getInitializerFlag('session_data_manager'))
 
     def test_install_required_roles(self):
         self.configure(good_cfg)
         i = self.getOne()
         i.install_required_roles()
         app = i.getApp()
-        self.failUnless('Owner' in app.__ac_roles__)
-        self.failUnless('Authenticated' in app.__ac_roles__)
+        self.assertTrue('Owner' in app.__ac_roles__)
+        self.assertTrue('Authenticated' in app.__ac_roles__)
 
     def test_install_inituser(self):
         fname = os.path.join(TEMPNAME, 'inituser')
@@ -185,7 +185,7 @@ class TestInitialization( unittest.TestCase ):
             i = self.getOne()
             i.install_inituser()
             app = i.getApp()
-            self.failUnless(app.acl_users.getUser('theuser'))
+            self.assertTrue(app.acl_users.getUser('theuser'))
         finally:
             if os.path.exists(fname):
                 os.unlink(fname)
@@ -196,13 +196,13 @@ class TestInitialization( unittest.TestCase ):
         i.install_errorlog()
         app = i.getApp()
         self.assertEqual(app.error_log.meta_type, 'Site Error Log')
-        self.failUnless(app._getInitializerFlag('error_log'))
+        self.assertTrue(app._getInitializerFlag('error_log'))
 
     def test_install_products(self):
         self.configure(good_cfg)
         i = self.getOne()
         i.install_products()
-        self.failUnless(Application.misc_.__dict__.has_key('OFSP'))
+        self.assertTrue(Application.misc_.__dict__.has_key('OFSP'))
 
     def test_install_standards(self):
         self.configure(good_cfg)
@@ -212,7 +212,7 @@ class TestInitialization( unittest.TestCase ):
         app = i.getApp()
         self.assertEqual(app.index_html.meta_type, 'Page Template')
         self.assertEqual(app.standard_error_message.meta_type, 'DTML Method')
-        self.failUnless(hasattr(app, '_standard_objects_have_been_added'))
+        self.assertTrue(hasattr(app, '_standard_objects_have_been_added'))
 
 
 def test_suite():

@@ -43,7 +43,7 @@ class TestTransientObject(TestCase):
         t = self.t.new('xyzzy')
         self.assert_(t.isValid())
         t.invalidate()
-        self.failIf(t.isValid())
+        self.assertFalse(t.isValid())
 
     def test_getLastAccessed(self):
         t = self.t.new('xyzzy')
@@ -98,7 +98,7 @@ class TestTransientObject(TestCase):
         self.assertRaises(AttributeError, self._genLenError, t)
         self.assertEqual(t.get('foobie',None), None)
         self.assert_(t.has_key('a'))
-        self.failIf(t.has_key('foobie'))
+        self.assertFalse(t.has_key('foobie'))
         t.clear()
         self.assertEqual(len(t.keys()), 0)
 
@@ -116,7 +116,7 @@ class TestTransientObject(TestCase):
         # information being visible in e.g. the ErrorLog object.
         t = self.t.new('password-storing-session')
         t.set('__ac_password__', 'secret')
-        self.failIf( repr(t).find('secret') != -1
+        self.assertFalse( repr(t).find('secret') != -1
                    , '__repr__ leaks: %s' % repr(t)
                    )
 

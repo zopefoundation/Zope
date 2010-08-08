@@ -134,7 +134,7 @@ class TestFunctional(ZopeTestCase.FunctionalTestCase):
                                 basic=self.basic_auth)
 
         self.assertEqual(response.getStatus(), 201)
-        self.failUnless('new_document' in self.folder.objectIds())
+        self.assertTrue('new_document' in self.folder.objectIds())
         self.assertEqual(self.folder.new_document.meta_type, 'DTML Document')
         self.assertEqual(self.folder.new_document(), 'foo')
 

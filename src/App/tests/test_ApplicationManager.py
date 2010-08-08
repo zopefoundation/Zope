@@ -31,7 +31,7 @@ class FakeConnectionTests(unittest.TestCase):
         db = object()
         parent_jar = object()
         fc = self._makeOne(db, parent_jar)
-        self.failUnless(fc.db() is db)
+        self.assertTrue(fc.db() is db)
 
 class DatabaseChooserTests(ConfigTestBase, unittest.TestCase):
 
@@ -70,12 +70,12 @@ class DatabaseChooserTests(ConfigTestBase, unittest.TestCase):
         root = self._makeRoot()
         dc = self._makeOne('test').__of__(root)
         found = dc['foo']
-        self.failUnless(isinstance(found, AltDatabaseManager))
+        self.assertTrue(isinstance(found, AltDatabaseManager))
         self.assertEqual(found.id, 'foo')
-        self.failUnless(found.aq_parent is dc)
+        self.assertTrue(found.aq_parent is dc)
         conn = found._p_jar
-        self.failUnless(isinstance(conn, FakeConnection))
-        self.failUnless(conn.db() is foo)
+        self.assertTrue(isinstance(conn, FakeConnection))
+        self.assertTrue(conn.db() is foo)
 
     def test___bobo_traverse___miss(self):
         self._makeConfig(foo=object(), bar=object(), qux=object())
@@ -93,12 +93,12 @@ class DatabaseChooserTests(ConfigTestBase, unittest.TestCase):
         root = self._makeRoot()
         dc = self._makeOne('test').__of__(root)
         found = dc.__bobo_traverse__(None, 'foo')
-        self.failUnless(isinstance(found, AltDatabaseManager))
+        self.assertTrue(isinstance(found, AltDatabaseManager))
         self.assertEqual(found.id, 'foo')
-        self.failUnless(found.aq_parent is dc)
+        self.assertTrue(found.aq_parent is dc)
         conn = found._p_jar
-        self.failUnless(isinstance(conn, FakeConnection))
-        self.failUnless(conn.db() is foo)
+        self.assertTrue(isinstance(conn, FakeConnection))
+        self.assertTrue(conn.db() is foo)
 
     def test___bobo_traverse___miss_db_hit_attr(self):
         foo=object()
@@ -109,7 +109,7 @@ class DatabaseChooserTests(ConfigTestBase, unittest.TestCase):
         dc = self._makeOne('test').__of__(root)
         dc.spam = spam = object()
         found = dc.__bobo_traverse__(None, 'spam')
-        self.failUnless(found is spam)
+        self.assertTrue(found is spam)
 
     def test_tpValues(self):
         from App.ApplicationManager import AltDatabaseManager
@@ -121,13 +121,13 @@ class DatabaseChooserTests(ConfigTestBase, unittest.TestCase):
         dc = self._makeOne('test').__of__(root)
         values = dc.tpValues()
         self.assertEqual(len(values), 3)
-        self.failUnless(isinstance(values[0], AltDatabaseManager))
+        self.assertTrue(isinstance(values[0], AltDatabaseManager))
         self.assertEqual(values[0].id, 'bar')
         self.assertEqual(values[0]._p_jar, None)
-        self.failUnless(isinstance(values[1], AltDatabaseManager))
+        self.assertTrue(isinstance(values[1], AltDatabaseManager))
         self.assertEqual(values[1].id, 'foo')
         self.assertEqual(values[1]._p_jar, None)
-        self.failUnless(isinstance(values[2], AltDatabaseManager))
+        self.assertTrue(isinstance(values[2], AltDatabaseManager))
         self.assertEqual(values[2].id, 'qux')
         self.assertEqual(values[2]._p_jar, None)
 
@@ -177,11 +177,11 @@ class DebugManagerTests(unittest.TestCase):
         pairs = dm.refcount()
         # XXX : Ugly empiricism here:  I don't know why the count is up 1.
         foo_count = sys.getrefcount(Foo)
-        self.failUnless((foo_count+1, 'foo.Foo') in pairs)
+        self.assertTrue((foo_count+1, 'foo.Foo') in pairs)
         bar_count = sys.getrefcount(Bar)
-        self.failUnless((bar_count+1, 'foo.Bar') in pairs)
+        self.assertTrue((bar_count+1, 'foo.Bar') in pairs)
         baz_count = sys.getrefcount(Baz)
-        self.failUnless((baz_count+1, 'qux.Baz') in pairs)
+        self.assertTrue((baz_count+1, 'qux.Baz') in pairs)
 
     def test_refdict(self):
         import sys
@@ -206,7 +206,7 @@ class DebugManagerTests(unittest.TestCase):
         dm.rcsnapshot()
         after = DateTime()
         # XXX : Ugly empiricism here:  I don't know why the count is up 1.
-        self.failUnless(before <= App.ApplicationManager._v_rst <= after)
+        self.assertTrue(before <= App.ApplicationManager._v_rst <= after)
         mapping = App.ApplicationManager._v_rcs
         foo_count = sys.getrefcount(Foo)
         self.assertEqual(mapping['foo.Foo'], foo_count+1)
@@ -222,17 +222,17 @@ class DebugManagerTests(unittest.TestCase):
         dm = self._makeOne('test')
         found = dm.rcdate()
         App.ApplicationManager._v_rst = None
-        self.failUnless(found is dummy)
+        self.assertTrue(found is dummy)
 
     def test_rcdeltas(self):
         dm = self._makeOne('test')
         dm.rcsnapshot()
         Foo, Bar, Baz = self._makeModuleClasses()
         mappings = dm.rcdeltas()
-        self.failUnless(len(mappings))
+        self.assertTrue(len(mappings))
         mapping = mappings[0]
-        self.failUnless('rc' in mapping)
-        self.failUnless('pc' in mapping)
+        self.assertTrue('rc' in mapping)
+        self.assertTrue('pc' in mapping)
         self.assertEqual(mapping['delta'], mapping['rc'] - mapping['pc'])
 
     #def test_dbconnections(self):  XXX -- TOO UGLY TO TEST
@@ -252,8 +252,8 @@ class DebugManagerTests(unittest.TestCase):
                 sys._ps_ = _old_sys__ps_
             if _old_Publish_pstat is not self:
                 Publish._pstat = _old_Publish_pstat
-        self.failUnless(sys._ps_ is None)
-        self.failUnless(Publish._pstat is None)
+        self.assertTrue(sys._ps_ is None)
+        self.assertTrue(Publish._pstat is None)
 
     def test_manage_getSysPath(self):
         import sys
@@ -353,11 +353,11 @@ class ApplicationManagerTests(ConfigTestBase,
     def test_ctor_initializes_Products(self):
         from App.Product import ProductFolder
         am = self._makeOne()
-        self.failUnless(isinstance(am.Products, ProductFolder))
+        self.assertTrue(isinstance(am.Products, ProductFolder))
 
     def test__canCopy(self):
         am = self._makeOne()
-        self.failIf(am._canCopy())
+        self.assertFalse(am._canCopy())
 
     def test_manage_app(self):
         from zExceptions import Redirect
@@ -505,8 +505,8 @@ class ApplicationManagerTests(ConfigTestBase,
             socket_map.update(_old_socket_map)
 
         self.assertEqual(len(pairs), 2)
-        self.failUnless((str(DummySocketServer), 'Port: 45') in pairs)
-        self.failUnless((str(AnotherSocketServer), 'Port: 57') in pairs)
+        self.assertTrue((str(DummySocketServer), 'Port: 45') in pairs)
+        self.assertTrue((str(AnotherSocketServer), 'Port: 57') in pairs)
 
     #def test_objectIds(self):  XXX -- TOO UGLY TO TEST (BBB for Zope 2.3!!)
 

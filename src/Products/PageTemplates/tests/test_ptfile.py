@@ -206,7 +206,7 @@ class LazyLoadingTestCase(unittest.TestCase):
         print >> f, 'Lazyness'
         f.close()
         pt = PageTemplateFile(self.TEMPFILENAME)
-        self.failUnless(not pt._text and not pt._v_program)
+        self.assertTrue(not pt._text and not pt._v_program)
 
 
 def test_suite():

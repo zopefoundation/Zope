@@ -72,7 +72,7 @@ class HTTPRequestTests(unittest.TestCase):
         return req
 
     def _noTaintedValues(self, req):
-        self.failIf(req.taintedform.keys())
+        self.assertFalse(req.taintedform.keys())
 
     def _valueIsOrHoldsTainted(self, val):
         # Recursively searches a structure for a TaintedString and returns 1
@@ -85,7 +85,7 @@ class HTTPRequestTests(unittest.TestCase):
         retval = 0
 
         if isinstance(val, TaintedString):
-            self.failIf(not '<' in val,
+            self.assertFalse(not '<' in val,
                         "%r is not dangerous, no taint required." % val)
             retval = 1
 
@@ -102,18 +102,18 @@ class HTTPRequestTests(unittest.TestCase):
                 if rval: retval = 1
 
         elif type(val) in (str, unicode):
-            self.failIf('<' in val,
+            self.assertFalse('<' in val,
                         "'%s' is dangerous and should have been tainted." % val)
 
         return retval
 
     def _noFormValuesInOther(self, req):
         for key in req.taintedform.keys():
-            self.failIf(req.other.has_key(key),
+            self.assertFalse(req.other.has_key(key),
                 'REQUEST.other should not hold tainted values at first!')
 
         for key in req.form.keys():
-            self.failIf(req.other.has_key(key),
+            self.assertFalse(req.other.has_key(key),
                 'REQUEST.other should not hold form values at first!')
 
     def _onlyTaintedformHoldsTaintedStrings(self, req):
@@ -125,7 +125,7 @@ class HTTPRequestTests(unittest.TestCase):
         for key, val in req.form.items():
             if req.taintedform.has_key(key):
                 continue
-            self.failIf(self._valueIsOrHoldsTainted(key) or
+            self.assertFalse(self._valueIsOrHoldsTainted(key) or
                         self._valueIsOrHoldsTainted(val),
                         'Normal form holds item %s that is tainted' % key)
 
@@ -579,10 +579,10 @@ class HTTPRequestTests(unittest.TestCase):
             try:
                 convert('<html garbage>')
             except Exception, e:
-                self.failIf('<' in e.args,
+                self.assertFalse('<' in e.args,
                     '%s converter does not quote unsafe value!' % type)
             except DateTime.SyntaxError, e:
-                self.failIf('<' in e,
+                self.assertFalse('<' in e,
                     '%s converter does not quote unsafe value!' % type)
 
     def test_processInputs_w_dotted_name_as_tuple(self):
@@ -977,7 +977,7 @@ class HTTPRequestTests(unittest.TestCase):
         request = self._makeOne(None, TEST_ENVIRON.copy(), DummyResponse())
         request['PARENTS'] = [object()]
         clone = request.clone()
-        self.failUnless(isinstance(clone.response, DummyResponse))
+        self.assertTrue(isinstance(clone.response, DummyResponse))
 
     def test_clone_preserves_request_subclass(self):
         class SubRequest(self._getTargetClass()):
@@ -985,7 +985,7 @@ class HTTPRequestTests(unittest.TestCase):
         request = SubRequest(None, TEST_ENVIRON.copy(), None)
         request['PARENTS'] = [object()]
         clone = request.clone()
-        self.failUnless(isinstance(clone, SubRequest))
+        self.assertTrue(isinstance(clone, SubRequest))
 
     def test_clone_preserves_direct_interfaces(self):
         from zope.interface import directlyProvides
@@ -996,7 +996,7 @@ class HTTPRequestTests(unittest.TestCase):
         request['PARENTS'] = [object()]
         directlyProvides(request, IFoo)
         clone = request.clone()
-        self.failUnless(IFoo.providedBy(clone))
+        self.assertTrue(IFoo.providedBy(clone))
 
     def test_resolve_url_doesnt_send_endrequestevent(self):
         import zope.event
@@ -1008,7 +1008,7 @@ class HTTPRequestTests(unittest.TestCase):
             request.resolve_url(request.script + '/')
         finally:
             zope.event.subscribers.remove(events.append)
-        self.failIf(len(events),
+        self.assertFalse(len(events),
             "HTTPRequest.resolve_url should not emit events")
 
     def test_resolve_url_errorhandling(self):

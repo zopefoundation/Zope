@@ -42,31 +42,31 @@ class TestPUTFactory(unittest.TestCase):
         request = self.app.REQUEST
         put = request.traverse('/folder/doc')
         put(request, request.RESPONSE)
-        self.failUnless('doc' in self.folder.objectIds())
+        self.assertTrue('doc' in self.folder.objectIds())
 
     def testSimpleVirtualHosting(self):
         request = self.app.REQUEST
         put = request.traverse('/VirtualHostBase/http/foo.com:80/VirtualHostRoot/folder/doc')
         put(request, request.RESPONSE)
-        self.failUnless('doc' in self.folder.objectIds())
+        self.assertTrue('doc' in self.folder.objectIds())
 
     def testSubfolderVirtualHosting(self):
         request = self.app.REQUEST
         put = request.traverse('/VirtualHostBase/http/foo.com:80/folder/VirtualHostRoot/doc')
         put(request, request.RESPONSE)
-        self.failUnless('doc' in self.folder.objectIds())
+        self.assertTrue('doc' in self.folder.objectIds())
 
     def testInsideOutVirtualHosting(self):
         request = self.app.REQUEST
         put = request.traverse('/VirtualHostBase/http/foo.com:80/VirtualHostRoot/_vh_foo/folder/doc')
         put(request, request.RESPONSE)
-        self.failUnless('doc' in self.folder.objectIds())
+        self.assertTrue('doc' in self.folder.objectIds())
 
     def testSubfolderInsideOutVirtualHosting(self):
         request = self.app.REQUEST
         put = request.traverse('/VirtualHostBase/http/foo.com:80/folder/VirtualHostRoot/_vh_foo/doc')
         put(request, request.RESPONSE)
-        self.failUnless('doc' in self.folder.objectIds())
+        self.assertTrue('doc' in self.folder.objectIds())
 
     def testCollector2261(self):
         from OFS.Folder import manage_addFolder

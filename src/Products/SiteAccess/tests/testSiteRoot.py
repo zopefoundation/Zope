@@ -23,7 +23,7 @@ class TraverserTests(unittest.TestCase):
         traverser = self._makeOne()
         container = DummyContainer()
         traverser.addToContainer(container)
-        self.failUnless(container.testing is traverser)
+        self.assertTrue(container.testing is traverser)
         hook = container.__before_traverse__[(100, 'Traverser')]
         self.assertEqual(hook.name, 'testing')
 
@@ -31,8 +31,8 @@ class TraverserTests(unittest.TestCase):
         traverser = self._makeOne()
         container = DummyContainer()
         result = traverser.manage_addToContainer(container)
-        self.failUnless(result is None)
-        self.failUnless(container.testing is traverser)
+        self.assertTrue(result is None)
+        self.assertTrue(container.testing is traverser)
         hook = container.__before_traverse__[(100, 'Traverser')]
         self.assertEqual(hook.name, 'testing')
 
@@ -42,16 +42,16 @@ class TraverserTests(unittest.TestCase):
         container = DummyContainer()
         container.testing = object()
         result = traverser.manage_addToContainer(container, nextURL=NEXTURL)
-        self.failUnless('<TITLE>Item Exists</TITLE>' in result)
-        self.failIf(container.testing is traverser)
+        self.assertTrue('<TITLE>Item Exists</TITLE>' in result)
+        self.assertFalse(container.testing is traverser)
 
     def test_manage_addToContainer_w_nextUrl_wo_name_collision(self):
         NEXTURL='http://example.com/manage_main'
         traverser = self._makeOne()
         container = DummyContainer()
         result = traverser.manage_addToContainer(container, nextURL=NEXTURL)
-        self.failUnless('<TITLE>Item Added</TITLE>' in result)
-        self.failUnless(container.testing is traverser)
+        self.assertTrue('<TITLE>Item Added</TITLE>' in result)
+        self.assertTrue(container.testing is traverser)
         hook = container.__before_traverse__[(100, 'Traverser')]
         self.assertEqual(hook.name, 'testing')
 
@@ -73,14 +73,14 @@ class TraverserTests(unittest.TestCase):
         other = container.other = DummyObject(name='other')
         registerBeforeTraverse(container, other, 'Traverser', 100)
         traverser.manage_beforeDelete(traverser, container)
-        self.failIf(container.__before_traverse__)
+        self.assertFalse(container.__before_traverse__)
 
     def test_manage_afterAdd_item_not_self(self):
         traverser = self._makeOne()
         container = DummyContainer()
         item = object()
         traverser.manage_afterAdd(item, container)
-        self.failIf('__before_traverse__' in container.__dict__)
+        self.assertFalse('__before_traverse__' in container.__dict__)
 
     def test_manage_afterAdd_item_is_self(self):
         traverser = self._makeOne()
@@ -140,7 +140,7 @@ class SiteRootTests(unittest.TestCase):
                                  path='/before')
         result = siteroot.manage_edit('After', 'http://after.example.com ',
                                       '/after ')
-        self.failUnless(result is None)
+        self.assertTrue(result is None)
         self.assertEqual(siteroot.title, 'After')
         self.assertEqual(siteroot.base, 'http://after.example.com')
         self.assertEqual(siteroot.path, '/after')
@@ -153,7 +153,7 @@ class SiteRootTests(unittest.TestCase):
                                       '/after ',
                                       REQUEST = {'URL1':
                                         'http://localhost:8080/manage_main'})
-        self.failUnless('<TITLE>SiteRoot changed.</TITLE>' in result)
+        self.assertTrue('<TITLE>SiteRoot changed.</TITLE>' in result)
         self.assertEqual(siteroot.title, 'After')
         self.assertEqual(siteroot.base, 'http://after.example.com')
         self.assertEqual(siteroot.path, '/after')
@@ -183,7 +183,7 @@ class SiteRootTests(unittest.TestCase):
         self.assertEqual(request['ACTUAL_URL'], 
                          'http://example.com/example/folder/')
         self.assertEqual(request._virtual_root, '/example')
-        self.failUnless(request._urls_reset)
+        self.assertTrue(request._urls_reset)
 
     def test___call___wo_SUPPRESS_SITEROOT_w_base_wo_path(self):
         URL='http://localhost:8080/example/folder/'
@@ -201,7 +201,7 @@ class SiteRootTests(unittest.TestCase):
         self.assertEqual(request['ACTUAL_URL'],
                          'http://example.com/example/folder/')
         self.assertEqual(request._virtual_root, None)
-        self.failUnless(request._urls_reset)
+        self.assertTrue(request._urls_reset)
 
     def test___call___wo_SUPPRESS_SITEROOT_wo_base_w_path(self):
         URL='http://localhost:8080/example/folder/'
@@ -218,7 +218,7 @@ class SiteRootTests(unittest.TestCase):
         self.assertEqual(request['SERVER_URL'], 'http://localhost:8080')
         self.assertEqual(request['ACTUAL_URL'], URL)
         self.assertEqual(request._virtual_root, '/example')
-        self.failIf(request._urls_reset)
+        self.assertFalse(request._urls_reset)
 
     def test___call___wo_SUPPRESS_SITEROOT_w_base_w_path(self):
         URL='http://localhost:8080/example/folder/'
@@ -236,7 +236,7 @@ class SiteRootTests(unittest.TestCase):
         self.assertEqual(request['ACTUAL_URL'], 
                          'http://example.com/example/folder/')
         self.assertEqual(request._virtual_root, '/example')
-        self.failUnless(request._urls_reset)
+        self.assertTrue(request._urls_reset)
 
     def test_get_size(self):
         siteroot = self._makeOne()

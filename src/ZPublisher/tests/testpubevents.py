@@ -146,7 +146,7 @@ class TestPubEvents(TestCase):
         self.assert_(isinstance(events[0], PubBeforeStreaming))
         self.assertEqual(events[0].response, response)
         
-        self.failUnless('datachunk1datachunk2' in out.getvalue())
+        self.assertTrue('datachunk1datachunk2' in out.getvalue())
 
 
 # Auxiliaries

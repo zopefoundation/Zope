@@ -25,13 +25,13 @@ class CacheTests(unittest.TestCase):
 
         # To begin with, cache managers will be found correctly
         # using managersExist
-        self.failUnless(managersExist(root.child.child_content))
+        self.assertTrue(managersExist(root.child.child_content))
 
         # Now we delete the cache in the child folder
         root.child.manage_delObjects(['child_cache'])
 
         # The parent_cache should still trigger managersExist
-        self.failUnless(managersExist(root.child.child_content))
+        self.assertTrue(managersExist(root.child.child_content))
 
 
 def test_suite():

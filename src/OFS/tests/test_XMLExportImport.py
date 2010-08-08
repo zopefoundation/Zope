@@ -63,7 +63,7 @@ class XMLExportImportTests(unittest.TestCase):
         stream.seek(0)
 
         newobj = importXML(connection, stream)
-        self.failUnless(isinstance(newobj, DTMLMethod))
+        self.assertTrue(isinstance(newobj, DTMLMethod))
         self.assertEqual(newobj.read(), dm.read())
 
     def test_export_import_as_file_idempotent(self):
@@ -84,7 +84,7 @@ class XMLExportImportTests(unittest.TestCase):
             data = exportXML(connection, oid, ostream)
             ostream.close()
             newobj = importXML(connection, path)
-            self.failUnless(isinstance(newobj, DTMLMethod))
+            self.assertTrue(isinstance(newobj, DTMLMethod))
             self.assertEqual(newobj.read(), dm.read())
         finally:
             # if this operaiton fails with a 'Permission Denied' error,

@@ -135,7 +135,7 @@ class ZPTUnicodeEncodingConflictResolution(ZopeTestCase):
         self.app.REQUEST.set('HTTP_ACCEPT_CHARSET', 'ISO-8859-15,utf-8')
         self.app.REQUEST.set('data', 'üצה')
         result = zpt.pt_render()
-        self.failUnless(result.startswith(unicode('<div>üצה</div>',
+        self.assertTrue(result.startswith(unicode('<div>üצה</div>',
                                                   'iso-8859-15')))
 
     def testUTF8(self):
@@ -148,7 +148,7 @@ class ZPTUnicodeEncodingConflictResolution(ZopeTestCase):
         self.app.REQUEST.set('data',
                              unicode('üצה', 'iso-8859-15').encode('utf-8'))
         result = zpt.pt_render()
-        self.failUnless(result.startswith(unicode('<div>üצה</div>',
+        self.assertTrue(result.startswith(unicode('<div>üצה</div>',
                                                   'iso-8859-15')))
 
     def testUTF8WrongPreferredCharset(self):
@@ -161,7 +161,7 @@ class ZPTUnicodeEncodingConflictResolution(ZopeTestCase):
         self.app.REQUEST.set('data',
                              unicode('üצה', 'iso-8859-15').encode('utf-8'))
         result = zpt.pt_render()
-        self.failIf(result.startswith(unicode('<div>üצה</div>',
+        self.assertFalse(result.startswith(unicode('<div>üצה</div>',
                                               'iso-8859-15')))
 
     def testStructureWithAccentedChars(self):
@@ -174,7 +174,7 @@ class ZPTUnicodeEncodingConflictResolution(ZopeTestCase):
         self.app.REQUEST.set('data', unicode('üצה',
                                              'iso-8859-15').encode('utf-8'))
         result = zpt.pt_render()
-        self.failUnless(result.startswith(unicode('<div>üצה</div>',
+        self.assertTrue(result.startswith(unicode('<div>üצה</div>',
                                                   'iso-8859-15')))
 
     def testBug151020(self):
@@ -188,7 +188,7 @@ class ZPTUnicodeEncodingConflictResolution(ZopeTestCase):
         self.app.REQUEST.set('data',
                              unicode('üצה', 'iso-8859-15').encode('utf-8'))
         result = zpt.pt_render()
-        self.failUnless(result.startswith(unicode('<div>üצה</div>',
+        self.assertTrue(result.startswith(unicode('<div>üצה</div>',
                         'iso-8859-15')))
 
     def test_bug_198274(self):
@@ -268,7 +268,7 @@ class ZopePageTemplateFileTests(ZopeTestCase):
         zpt = self.app['test']
         result = zpt.pt_render()
         # use startswith() because the renderer appends a trailing \n
-        self.failUnless(result.encode('iso-8859-15'
+        self.assertTrue(result.encode('iso-8859-15'
                                      ).startswith(iso885915_str))
         self.assertEqual(zpt.output_encoding, 'iso-8859-15')
 

@@ -70,14 +70,14 @@ class HistoryTests(unittest.TestCase):
             self.assertEqual(len(entry.keys()),6)
             # the transactions are in newest-first order
             self.assertEqual(entry['description'],'Change %i' % (3-i))
-            self.failUnless('key' in entry)
+            self.assertTrue('key' in entry)
             # lets not assume the size will stay the same forever
-            self.failUnless('size' in entry)
-            self.failUnless('tid' in entry)
-            self.failUnless('time' in entry)
+            self.assertTrue('size' in entry)
+            self.assertTrue('tid' in entry)
+            self.assertTrue('time' in entry)
             if i:
                 # check times are increasing
-                self.failUnless(entry['time']<r[i-1]['time'])
+                self.assertTrue(entry['time']<r[i-1]['time'])
             self.assertEqual(entry['user_name'],'')
 
     def test_manage_historyCopy(self):

@@ -254,7 +254,7 @@ class ZopeStarterTestCase(test_logger.LoggingTestBase):
                 effective-user %s""" % runnerid)
             starter = make_starter(conf)
             finished = starter.dropPrivileges()
-            self.failUnless(finished)
+            self.assertTrue(finished)
         finally:
             os.getuid = _old_getuid
 
@@ -292,9 +292,9 @@ class ZopeStarterTestCase(test_logger.LoggingTestBase):
             logger = logging.getLogger()
             self.assertEqual(logger.level, logging.INFO)
             l = open(os.path.join(TEMPNAME, 'event.log')).read()
-            self.failUnless(l.find('hello') > -1)
-            self.failUnless(os.path.exists(os.path.join(TEMPNAME, 'Z2.log')))
-            self.failUnless(os.path.exists(os.path.join(TEMPNAME,'trace.log')))
+            self.assertTrue(l.find('hello') > -1)
+            self.assertTrue(os.path.exists(os.path.join(TEMPNAME, 'Z2.log')))
+            self.assertTrue(os.path.exists(os.path.join(TEMPNAME,'trace.log')))
         finally:
             for name in ('event.log', 'Z2.log', 'trace.log'):
                 try:
@@ -326,10 +326,10 @@ class ZopeStarterTestCase(test_logger.LoggingTestBase):
             f.seek(1)   # skip over the locked byte
             guts = f.read()
             f.close()
-            self.failIf(guts.find('hello') > -1)
+            self.assertFalse(guts.find('hello') > -1)
         finally:
             starter.unlinkLockFile()
-            self.failIf(os.path.exists(name))
+            self.assertFalse(os.path.exists(name))
 
     def testMakePidFile(self):
         # put something in the way (it should be deleted)
@@ -344,10 +344,10 @@ class ZopeStarterTestCase(test_logger.LoggingTestBase):
         try:
             starter = self.get_starter(conf)
             starter.makePidFile()
-            self.failIf(open(name).read().find('hello') > -1)
+            self.assertFalse(open(name).read().find('hello') > -1)
         finally:
             starter.unlinkPidFile()
-            self.failIf(os.path.exists(name))
+            self.assertFalse(os.path.exists(name))
 
     def testConfigureInterpreter(self):
         import sys

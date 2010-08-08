@@ -109,18 +109,18 @@ class TestPortalTestCase(ZopeTestCase.PortalTestCase):
         # Portal should be set up
         self.app = self._app()
         self.portal = self._portal()
-        self.failUnless(hasattr_(self.app, portal_name))
-        self.failUnless(hasattr_(self.portal, 'Members'))
-        self.failUnless(hasattr_(self.portal, 'portal_membership'))
-        self.failUnless('Member' in self.portal.userdefined_roles())
+        self.assertTrue(hasattr_(self.app, portal_name))
+        self.assertTrue(hasattr_(self.portal, 'Members'))
+        self.assertTrue(hasattr_(self.portal, 'portal_membership'))
+        self.assertTrue('Member' in self.portal.userdefined_roles())
 
     def test_setupUserFolder(self):
         # User folder should be set up.
         self.app = self._app()
         self.portal = self._portal()
-        self.failIf(hasattr_(self.portal, 'acl_users'))
+        self.assertFalse(hasattr_(self.portal, 'acl_users'))
         self._setupUserFolder()
-        self.failUnless(hasattr_(self.portal, 'acl_users'))
+        self.assertTrue(hasattr_(self.portal, 'acl_users'))
         # Must not complain if UF already exists
         self._setupUserFolder()
 
@@ -131,7 +131,7 @@ class TestPortalTestCase(ZopeTestCase.PortalTestCase):
         self._setupUserFolder()
         self._setupUser()
         acl_user = self.portal.acl_users.getUserById(user_name)
-        self.failUnless(acl_user)
+        self.assertTrue(acl_user)
         self.assertEqual(acl_user.getRoles(), ('Member', 'Authenticated'))
         self.assertEqual(type(acl_user.roles), ListType)
 
@@ -143,8 +143,8 @@ class TestPortalTestCase(ZopeTestCase.PortalTestCase):
         self._setupUser()
         self.login()
         self._setupHomeFolder()
-        self.failUnless(hasattr_(self.portal.Members, user_name))
-        self.failIf(self.folder is None)
+        self.assertTrue(hasattr_(self.portal.Members, user_name))
+        self.assertFalse(self.folder is None)
         # Shut up deprecation warnings
         try: owner_info = self.folder.getOwnerTuple()
         except AttributeError:
@@ -298,7 +298,7 @@ class TestPortalTestCase(ZopeTestCase.PortalTestCase):
         self._setupUser()
         self._setupHomeFolder()
         self._clear(1)
-        self.failIf(self.app.__dict__.has_key(portal_name))
+        self.assertFalse(self.app.__dict__.has_key(portal_name))
         auth_name = getSecurityManager().getUser().getUserName()
         self.assertEqual(auth_name, 'Anonymous User')
         self.assertEqual(self._called, ['beforeClose', 'afterClear'])
@@ -308,14 +308,14 @@ class TestPortalTestCase(ZopeTestCase.PortalTestCase):
     def test_setUp(self):
         # Everything should be set up
         self._setUp()
-        self.failUnless(hasattr_(self.app, portal_name))
-        self.failUnless(hasattr_(self.portal, 'acl_users'))
-        self.failUnless(hasattr_(self.portal, 'Members'))
-        self.failUnless(hasattr_(self.portal, 'portal_membership'))
-        self.failUnless('Member' in self.portal.userdefined_roles())
-        self.failUnless(hasattr_(self.portal.Members, user_name))
+        self.assertTrue(hasattr_(self.app, portal_name))
+        self.assertTrue(hasattr_(self.portal, 'acl_users'))
+        self.assertTrue(hasattr_(self.portal, 'Members'))
+        self.assertTrue(hasattr_(self.portal, 'portal_membership'))
+        self.assertTrue('Member' in self.portal.userdefined_roles())
+        self.assertTrue(hasattr_(self.portal.Members, user_name))
         acl_user = self.portal.acl_users.getUserById(user_name)
-        self.failUnless(acl_user)
+        self.assertTrue(acl_user)
         self.assertEqual(acl_user.getRoles(), ('Member', 'Authenticated'))
         self.assertEqual(type(acl_user.roles), ListType)
         auth_name = getSecurityManager().getUser().getId()
@@ -329,7 +329,7 @@ class TestPortalTestCase(ZopeTestCase.PortalTestCase):
         self._setUp()
         self._called = []
         self._tearDown()
-        self.failIf(self.app.__dict__.has_key(portal_name))
+        self.assertFalse(self.app.__dict__.has_key(portal_name))
         auth_name = getSecurityManager().getUser().getUserName()
         self.assertEqual(auth_name, 'Anonymous User')
         self.assertEqual(self._called, ['beforeTearDown', 'beforeClose', 'afterClear'])
@@ -339,7 +339,7 @@ class TestPortalTestCase(ZopeTestCase.PortalTestCase):
         self._configure_portal = 0
         self._setUp()
         self.assertEqual(self.portal.acl_users.getUserById(user_name), None)
-        self.failIf(hasattr_(self.portal.Members, user_name))
+        self.assertFalse(hasattr_(self.portal.Members, user_name))
         auth_name = getSecurityManager().getUser().getUserName()
         self.assertEqual(auth_name, 'Anonymous User')
         # XXX: Changed in 0.9.0
@@ -355,7 +355,7 @@ class TestPortalTestCase(ZopeTestCase.PortalTestCase):
         self.login()
         self.createMemberarea(user_name)
         self.assertEqual(self.portal.portal_membership._called, ['createMemberarea'])
-        self.failUnless(hasattr_(self.portal.Members, user_name))
+        self.assertTrue(hasattr_(self.portal.Members, user_name))
 
     def test_createMemberarea_NewTool(self):
         # Should call the membership tool's createMemberArea
@@ -368,7 +368,7 @@ class TestPortalTestCase(ZopeTestCase.PortalTestCase):
         self.login()
         self.createMemberarea(user_name)
         self.assertEqual(self.portal.portal_membership._called, ['createMemberArea'])
-        self.failUnless(hasattr_(self.portal.Members, user_name))
+        self.assertTrue(hasattr_(self.portal.Members, user_name))
 
     # Helpers
 
@@ -422,16 +422,16 @@ class TestPlainUserFolder(ZopeTestCase.PortalTestCase):
 
     def testGetUserDoesNotWrapUser(self):
         user = self.portal.acl_users.getUserById(user_name)
-        self.failIf(hasattr(user, 'aq_base'))
-        self.failUnless(user is aq_base(user))
+        self.assertFalse(hasattr(user, 'aq_base'))
+        self.assertTrue(user is aq_base(user))
 
     def testLoggedInUserIsWrapped(self):
         user = getSecurityManager().getUser()
         self.assertEqual(user.getId(), user_name)
-        self.failUnless(hasattr(user, 'aq_base'))
-        self.failUnless(user.__class__.__name__, 'User')
-        self.failUnless(user.aq_parent.__class__.__name__, 'UserFolder')
-        self.failUnless(user.aq_parent.aq_parent.__class__.__name__, 'Folder')
+        self.assertTrue(hasattr(user, 'aq_base'))
+        self.assertTrue(user.__class__.__name__, 'User')
+        self.assertTrue(user.aq_parent.__class__.__name__, 'UserFolder')
+        self.assertTrue(user.aq_parent.aq_parent.__class__.__name__, 'Folder')
 
 
 class TestWrappingUserFolder(ZopeTestCase.PortalTestCase):
@@ -446,17 +446,17 @@ class TestWrappingUserFolder(ZopeTestCase.PortalTestCase):
 
     def testGetUserWrapsUser(self):
         user = self.portal.acl_users.getUserById(user_name)
-        self.failUnless(hasattr(user, 'aq_base'))
-        self.failIf(user is aq_base(user))
-        self.failUnless(user.aq_parent.__class__.__name__, 'WrappingUserFolder')
+        self.assertTrue(hasattr(user, 'aq_base'))
+        self.assertFalse(user is aq_base(user))
+        self.assertTrue(user.aq_parent.__class__.__name__, 'WrappingUserFolder')
 
     def testLoggedInUserIsWrapped(self):
         user = getSecurityManager().getUser()
         self.assertEqual(user.getId(), user_name)
-        self.failUnless(hasattr(user, 'aq_base'))
-        self.failUnless(user.__class__.__name__, 'User')
-        self.failUnless(user.aq_parent.__class__.__name__, 'WrappingUserFolder')
-        self.failUnless(user.aq_parent.aq_parent.__class__.__name__, 'Folder')
+        self.assertTrue(hasattr(user, 'aq_base'))
+        self.assertTrue(user.__class__.__name__, 'User')
+        self.assertTrue(user.aq_parent.__class__.__name__, 'WrappingUserFolder')
+        self.assertTrue(user.aq_parent.aq_parent.__class__.__name__, 'Folder')
 
 
 # Because we override setUp we need to test again

@@ -246,9 +246,9 @@ class ExceptionMessageRenderTest(ExceptionHookTestCase):
         request = self._makeRequest()
         client = StandardClient()
         self.call(client, request, f)
-        self.failUnless(client.messages, client.messages)
+        self.assertTrue(client.messages, client.messages)
         tb = client.messages[0]
-        self.failUnless("Unauthorized: You are not allowed" in tb, tb)
+        self.assertTrue("Unauthorized: You are not allowed" in tb, tb)
 
     def testRenderUnauthorizedStandardClientMethod(self):
         from AccessControl import Unauthorized
@@ -257,9 +257,9 @@ class ExceptionMessageRenderTest(ExceptionHookTestCase):
         request = self._makeRequest()
         client = StandardClient()
         self.call(client.dummyMethod, request, f)
-        self.failUnless(client.messages, client.messages)
+        self.assertTrue(client.messages, client.messages)
         tb = client.messages[0]
-        self.failUnless("Unauthorized: You are not allowed" in tb, tb)
+        self.assertTrue("Unauthorized: You are not allowed" in tb, tb)
 
     def testRenderUnauthorizedBrokenClient(self):
         from AccessControl import Unauthorized
@@ -283,9 +283,9 @@ class ExceptionMessageRenderTest(ExceptionHookTestCase):
         request = self._makeRequest()
         client = StandardClient()
         self.call(client, request, f)
-        self.failUnless(client.messages, client.messages)
+        self.assertTrue(client.messages, client.messages)
         tb = client.messages[0]
-        self.failUnless("CustomException: Zope" in tb, tb)
+        self.assertTrue("CustomException: Zope" in tb, tb)
 
     def testRenderRetryRaisesConflictError(self):
         from ZPublisher import Retry
@@ -300,9 +300,9 @@ class ExceptionMessageRenderTest(ExceptionHookTestCase):
         request = self._makeRequest()
         client = StandardClient()
         self.call(client, request, f)
-        self.failUnless(client.messages, client.messages)
+        self.assertTrue(client.messages, client.messages)
         tb = client.messages[0]
-        self.failUnless("ConflictError: database conflict error" in tb, tb)
+        self.assertTrue("ConflictError: database conflict error" in tb, tb)
 
 class CustomExceptionView(Acquisition.Explicit):
 
@@ -337,9 +337,9 @@ class ExceptionViewsTest(PlacelessSetup, ExceptionHookTestCase):
         request = self._makeRequest()
         client = StandardClient()
         v = self.call_exc_value(client, request, f)
-        self.failUnless(isinstance(v, Unauthorized), v)
-        self.failUnless("Exception View: Unauthorized" in str(v))
-        self.failUnless("Context: StandardClient" in str(v))
+        self.assertTrue(isinstance(v, Unauthorized), v)
+        self.assertTrue("Exception View: Unauthorized" in str(v))
+        self.assertTrue("Context: StandardClient" in str(v))
 
     def testCustomExceptionViewForbidden(self):
         from ZPublisher.HTTPResponse import HTTPResponse
@@ -350,9 +350,9 @@ class ExceptionViewsTest(PlacelessSetup, ExceptionHookTestCase):
         request = self._makeRequest()
         client = StandardClient()
         v = self.call_exc_value(client, request, f)
-        self.failUnless(isinstance(v, HTTPResponse), v)
-        self.failUnless(v.status == 403, (v.status, 403))
-        self.failUnless("Exception View: Forbidden" in str(v))
+        self.assertTrue(isinstance(v, HTTPResponse), v)
+        self.assertTrue(v.status == 403, (v.status, 403))
+        self.assertTrue("Exception View: Forbidden" in str(v))
 
     def testCustomExceptionViewNotFound(self):
         from ZPublisher.HTTPResponse import HTTPResponse
@@ -363,9 +363,9 @@ class ExceptionViewsTest(PlacelessSetup, ExceptionHookTestCase):
         request = self._makeRequest()
         client = StandardClient()
         v = self.call_exc_value(client, request, f)
-        self.failUnless(isinstance(v, HTTPResponse), v)
-        self.failUnless(v.status == 404, (v.status, 404))
-        self.failUnless("Exception View: NotFound" in str(v), v)
+        self.assertTrue(isinstance(v, HTTPResponse), v)
+        self.assertTrue(v.status == 404, (v.status, 404))
+        self.assertTrue("Exception View: NotFound" in str(v), v)
 
     def testCustomExceptionViewBadRequest(self):
         from ZPublisher.HTTPResponse import HTTPResponse
@@ -376,9 +376,9 @@ class ExceptionViewsTest(PlacelessSetup, ExceptionHookTestCase):
         request = self._makeRequest()
         client = StandardClient()
         v = self.call_exc_value(client, request, f)
-        self.failUnless(isinstance(v, HTTPResponse), v)
-        self.failUnless(v.status == 400, (v.status, 400))
-        self.failUnless("Exception View: BadRequest" in str(v), v)
+        self.assertTrue(isinstance(v, HTTPResponse), v)
+        self.assertTrue(v.status == 400, (v.status, 400))
+        self.assertTrue("Exception View: BadRequest" in str(v), v)
 
     def testCustomExceptionViewInternalError(self):
         from ZPublisher.HTTPResponse import HTTPResponse
@@ -389,9 +389,9 @@ class ExceptionViewsTest(PlacelessSetup, ExceptionHookTestCase):
         request = self._makeRequest()
         client = StandardClient()
         v = self.call_exc_value(client, request, f)
-        self.failUnless(isinstance(v, HTTPResponse), v)
-        self.failUnless(v.status == 500, (v.status, 500))
-        self.failUnless("Exception View: InternalError" in str(v), v)
+        self.assertTrue(isinstance(v, HTTPResponse), v)
+        self.assertTrue(v.status == 500, (v.status, 500))
+        self.assertTrue("Exception View: InternalError" in str(v), v)
 
     def testRedirectNoExceptionView(self):
         from zExceptions import Redirect
@@ -401,7 +401,7 @@ class ExceptionViewsTest(PlacelessSetup, ExceptionHookTestCase):
         request = self._makeRequest()
         client = StandardClient()
         v = self.call_exc_value(client, request, f)
-        self.failUnless(isinstance(v, Redirect), v)
+        self.assertTrue(isinstance(v, Redirect), v)
         self.assertEquals(v.args[0], "http://zope.org/")
 
 

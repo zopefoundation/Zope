@@ -59,9 +59,9 @@ class ClockServerTests(unittest.TestCase):
         from ZServer.medusa.http_server import http_request
         from ZServer.HTTPResponse import HTTPResponse
         from ZPublisher.HTTPRequest import HTTPRequest
-        self.failUnless(isinstance(req, http_request))
-        self.failUnless(isinstance(resp, HTTPResponse))
-        self.failUnless(isinstance(zreq, HTTPRequest))
+        self.assertTrue(isinstance(req, http_request))
+        self.assertTrue(isinstance(resp, HTTPResponse))
+        self.assertTrue(isinstance(zreq, HTTPRequest))
 
     def test_get_env(self):
         logger = DummyLogger()

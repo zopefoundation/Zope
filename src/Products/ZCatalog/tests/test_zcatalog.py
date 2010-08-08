@@ -390,7 +390,7 @@ class TestZCatalogGetObject(ZCatalogBase, unittest.TestCase):
         pickySecurityManager = PickySecurityManager(['fold'])
         setSecurityManager(pickySecurityManager)
         ob = brain.getObject()
-        self.failIf(ob is None)
+        self.assertFalse(ob is None)
         self.assertEqual(ob.getId(), 'ob')
 
     # Now test _unrestrictedGetObject

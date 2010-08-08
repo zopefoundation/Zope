@@ -79,7 +79,7 @@ Unauthorized:
   ...     response = self.publish('/test_folder_1_/testoid/%s' % view_name,
   ...                             basic='viewer:secret')
   ...     status = response.getStatus()
-  ...     self.failUnless(status == 401, (status, 401, view_name))
+  ...     self.assertTrue(status == 401, (status, 401, view_name))
 
 Methods of views which were not explicitly declared as allowed should not be
 accessible TTW, even if we have the permission to render the view:
@@ -101,7 +101,7 @@ except 'View management screens':
   ...     response = self.publish('/test_folder_1_/testoid/%s' % view_name,
   ...                             basic='viewer:secret')
   ...     status = response.getStatus()
-  ...     self.failUnless(status == 401, (status, 401, view_name))
+  ...     self.assertTrue(status == 401, (status, 401, view_name))
 
 If we grant 'View management screens' now, the protected views should
 become viewable:
@@ -111,7 +111,7 @@ become viewable:
   ...     response = self.publish('/test_folder_1_/testoid/%s' % view_name,
   ...                             basic='viewer:secret')
   ...     status = response.getStatus()
-  ...     self.failUnless(status == 200, (status, 200, view_name))
+  ...     self.assertTrue(status == 200, (status, 200, view_name))
 
 Managers should always be able to view anything, including proctected
 stuff:
@@ -126,7 +126,7 @@ All public views should always be accessible by anyone:
   >>> for view_name in public_view_names:
   ...     response = self.publish('/test_folder_1_/testoid/%s' % view_name)
   ...     status = response.getStatus()
-  ...     self.failUnless(status == 200, (status, 200, view_name))
+  ...     self.assertTrue(status == 200, (status, 200, view_name))
 
 
 

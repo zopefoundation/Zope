@@ -80,29 +80,29 @@ class UserFolderTests(unittest.TestCase):
         user = uf.getUser('user1')
         app.manage_addLocalRoles('user1', ['Owner'])
         roles = user.getRolesInContext(app)
-        self.failUnless('role1' in roles)
-        self.failUnless('Owner' in roles)
+        self.assertTrue('role1' in roles)
+        self.assertTrue('Owner' in roles)
 
     def testHasRole(self):
         app = self._makeApp()
         uf = self._makeOne(app)
         user = uf.getUser('user1')
-        self.failUnless(user.has_role('role1', app))
+        self.assertTrue(user.has_role('role1', app))
 
     def testHasLocalRole(self):
         app = self._makeApp()
         uf = self._makeOne(app)
         user = uf.getUser('user1')
         app.manage_addLocalRoles('user1', ['Owner'])
-        self.failUnless(user.has_role('Owner', app))
+        self.assertTrue(user.has_role('Owner', app))
 
     def testHasPermission(self):
         app = self._makeApp()
         uf = self._makeOne(app)
         user = uf.getUser('user1')
-        self.failUnless(user.has_permission('View', app))
+        self.assertTrue(user.has_permission('View', app))
         app.manage_role('role1', ['Add Folders'])
-        self.failUnless(user.has_permission('Add Folders', app))
+        self.assertTrue(user.has_permission('Add Folders', app))
 
     def testHasLocalRolePermission(self):
         app = self._makeApp()
@@ -110,13 +110,13 @@ class UserFolderTests(unittest.TestCase):
         user = uf.getUser('user1')
         app.manage_role('Owner', ['Add Folders'])
         app.manage_addLocalRoles('user1', ['Owner'])
-        self.failUnless(user.has_permission('Add Folders', app))
+        self.assertTrue(user.has_permission('Add Folders', app))
         
     def testAuthenticate(self):
         app = self._makeApp()
         uf = self._makeOne(app)
         user = uf.getUser('user1')
-        self.failUnless(user.authenticate('secret', app.REQUEST))
+        self.assertTrue(user.authenticate('secret', app.REQUEST))
 
     def testValidate(self):
         app = self._makeApp()

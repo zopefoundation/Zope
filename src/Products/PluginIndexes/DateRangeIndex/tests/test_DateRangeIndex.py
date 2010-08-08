@@ -97,17 +97,17 @@ class DRI_Tests( unittest.TestCase ):
 
         empty = self._makeOne( 'empty' )
 
-        self.failUnless(empty.getEntryForObject( 1234 ) is None)
+        self.assertTrue(empty.getEntryForObject( 1234 ) is None)
         empty.unindex_object( 1234 ) # shouldn't throw
 
-        self.failIf(empty.uniqueValues( 'foo' ))
-        self.failIf(empty.uniqueValues( 'foo', 1 ))
+        self.assertFalse(empty.uniqueValues( 'foo' ))
+        self.assertFalse(empty.uniqueValues( 'foo', 1 ))
 
-        self.failUnless(empty._apply_index( { 'zed' : 12345 } ) is None)
+        self.assertTrue(empty._apply_index( { 'zed' : 12345 } ) is None)
 
         result, used = empty._apply_index( { 'empty' : 12345 } )
 
-        self.failIf(result)
+        self.assertFalse(result)
         self.assertEqual(used, ( None, None ))
 
     def test_retrieval( self ):

@@ -69,17 +69,17 @@ class ViewPageTemplateFileTests(unittest.TestCase):
         view = self._makeView(context, request)
         vptf = self._makeOne('seagull.pt')
         namespace = vptf.pt_getContext(view, request)
-        self.failUnless(namespace['context'] is context)
-        self.failUnless(namespace['request'] is request)
+        self.assertTrue(namespace['context'] is context)
+        self.assertTrue(namespace['request'] is request)
         views = namespace['views']
-        self.failUnless(isinstance(views, ViewMapper))
+        self.assertTrue(isinstance(views, ViewMapper))
         self.assertEqual(views.ob, context)
         self.assertEqual(views.request, request)
-        self.failUnless(namespace['here'] is context)
-        self.failUnless(namespace['container'] is context)
-        self.failUnless(namespace['root'] is None)
+        self.assertTrue(namespace['here'] is context)
+        self.assertTrue(namespace['container'] is context)
+        self.assertTrue(namespace['root'] is None)
         modules = namespace['modules']
-        self.failUnless(modules is SecureModuleImporter)
+        self.assertTrue(modules is SecureModuleImporter)
         self.assertEqual(namespace['traverse_subpath'], [])
         self.assertEqual(namespace['user'].getId(), 'a_user')
 
@@ -95,7 +95,7 @@ class ViewPageTemplateFileTests(unittest.TestCase):
         view = self._makeView(context, request)
         vptf = self._makeOne('seagull.pt')
         namespace = vptf.pt_getContext(view, request)
-        self.failUnless(namespace['root'] is root)
+        self.assertTrue(namespace['root'] is root)
 
     def test_pt_getContext_w_ignored_kw(self):
         from Products.Five.browser.pagetemplatefile import ViewMapper
@@ -107,8 +107,8 @@ class ViewPageTemplateFileTests(unittest.TestCase):
         view = self._makeView(context, request)
         vptf = self._makeOne('seagull.pt')
         namespace = vptf.pt_getContext(view, request, foo='bar')
-        self.failIf('foo' in namespace)
-        self.failIf('foo' in namespace['options'])
+        self.assertFalse('foo' in namespace)
+        self.assertFalse('foo' in namespace['options'])
 
     def test_pt_getContext_w_args_kw(self):
         from Products.Five.browser.pagetemplatefile import ViewMapper
@@ -166,9 +166,9 @@ class ViewPageTemplateFileTests(unittest.TestCase):
         request = DummyRequest()
         foo = Foo(context, request)
         bound = foo.bar
-        self.failUnless(isinstance(bound, BoundPageTemplate))
-        self.failUnless(bound.im_func is template)
-        self.failUnless(bound.im_self is foo)
+        self.assertTrue(isinstance(bound, BoundPageTemplate))
+        self.assertTrue(bound.im_func is template)
+        self.assertTrue(bound.im_self is foo)
 
 class ViewMapperTests(unittest.TestCase):
 
@@ -203,7 +203,7 @@ class ViewMapperTests(unittest.TestCase):
             return self
         provideAdapter(_adapt, (None, None), Interface, name='test')
         mapper = self._makeOne()
-        self.failUnless(mapper['test'] is self)
+        self.assertTrue(mapper['test'] is self)
 
 _marker = object()
 
@@ -224,9 +224,9 @@ class BoundPageTemplateTests(unittest.TestCase):
         pt = DummyTemplate({'foo': 'bar'})
         ob = DummyContext()
         bpt = self._makeOne(pt, ob)
-        self.failUnless(bpt.im_func is pt)
-        self.failUnless(bpt.im_self is ob)
-        self.failUnless(bpt.__parent__ is ob)
+        self.assertTrue(bpt.im_func is pt)
+        self.assertTrue(bpt.im_self is ob)
+        self.assertTrue(bpt.__parent__ is ob)
         self.assertEqual(bpt.macros['foo'], 'bar')
         self.assertEqual(bpt.filename, 'dummy.pt')
 

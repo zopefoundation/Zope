@@ -23,14 +23,14 @@ from zope.interface.verify import verifyObject
 class TestAbstractClasses(TestCase):
 
     def testIFunctional(self):
-        self.failUnless(verifyClass(IFunctional, Functional))
+        self.assertTrue(verifyClass(IFunctional, Functional))
 
 
 class TestBaseTestCase(TestCase):
 
     def testIZopeTestCase(self):
-        self.failUnless(verifyClass(IZopeTestCase, TestCase))
-        self.failUnless(verifyObject(IZopeTestCase, self))
+        self.assertTrue(verifyClass(IZopeTestCase, TestCase))
+        self.assertTrue(verifyObject(IZopeTestCase, self))
 
 
 class TestZopeTestCase(ZopeTestCase):
@@ -38,12 +38,12 @@ class TestZopeTestCase(ZopeTestCase):
     _setup_fixture = 0
 
     def testIZopeTestCase(self):
-        self.failUnless(verifyClass(IZopeTestCase, ZopeTestCase))
-        self.failUnless(verifyObject(IZopeTestCase, self))
+        self.assertTrue(verifyClass(IZopeTestCase, ZopeTestCase))
+        self.assertTrue(verifyObject(IZopeTestCase, self))
 
     def testIZopeSecurity(self):
-        self.failUnless(verifyClass(IZopeSecurity, ZopeTestCase))
-        self.failUnless(verifyObject(IZopeSecurity, self))
+        self.assertTrue(verifyClass(IZopeSecurity, ZopeTestCase))
+        self.assertTrue(verifyObject(IZopeSecurity, self))
 
 
 class TestFunctionalTestCase(FunctionalTestCase):
@@ -51,16 +51,16 @@ class TestFunctionalTestCase(FunctionalTestCase):
     _setup_fixture = 0
 
     def testIFunctional(self):
-        self.failUnless(verifyClass(IFunctional, FunctionalTestCase))
-        self.failUnless(verifyObject(IFunctional, self))
+        self.assertTrue(verifyClass(IFunctional, FunctionalTestCase))
+        self.assertTrue(verifyObject(IFunctional, self))
 
     def testIZopeTestCase(self):
-        self.failUnless(verifyClass(IZopeTestCase, FunctionalTestCase))
-        self.failUnless(verifyObject(IZopeTestCase, self))
+        self.assertTrue(verifyClass(IZopeTestCase, FunctionalTestCase))
+        self.assertTrue(verifyObject(IZopeTestCase, self))
 
     def testIZopeSecurity(self):
-        self.failUnless(verifyClass(IZopeSecurity, FunctionalTestCase))
-        self.failUnless(verifyObject(IZopeSecurity, self))
+        self.assertTrue(verifyClass(IZopeSecurity, FunctionalTestCase))
+        self.assertTrue(verifyObject(IZopeSecurity, self))
 
 
 class TestPortalTestCase(PortalTestCase):
@@ -71,16 +71,16 @@ class TestPortalTestCase(PortalTestCase):
         return None
 
     def testIZopeTestCase(self):
-        self.failUnless(verifyClass(IZopeTestCase, PortalTestCase))
-        self.failUnless(verifyObject(IZopeTestCase, self))
+        self.assertTrue(verifyClass(IZopeTestCase, PortalTestCase))
+        self.assertTrue(verifyObject(IZopeTestCase, self))
 
     def testIPortalTestCase(self):
-        self.failUnless(verifyClass(IPortalTestCase, PortalTestCase))
-        self.failUnless(verifyObject(IPortalTestCase, self))
+        self.assertTrue(verifyClass(IPortalTestCase, PortalTestCase))
+        self.assertTrue(verifyObject(IPortalTestCase, self))
 
     def testIPortalSecurity(self):
-        self.failUnless(verifyClass(IPortalSecurity, PortalTestCase))
-        self.failUnless(verifyObject(IPortalSecurity, self))
+        self.assertTrue(verifyClass(IPortalSecurity, PortalTestCase))
+        self.assertTrue(verifyObject(IPortalSecurity, self))
 
 
 def test_suite():

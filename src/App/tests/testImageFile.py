@@ -27,17 +27,17 @@ class TestImageFile(unittest.TestCase):
         path = os.path.join(os.path.dirname(App.__file__),
                             'www','zopelogo.jpg')
         App.ImageFile.ImageFile(path)
-        self.failIf(self.warningshook.warnings)
+        self.assertFalse(self.warningshook.warnings)
 
     def test_no_warn_on_path_as_prefix(self):
         prefix = os.path.dirname(App.__file__)
         App.ImageFile.ImageFile('www/zopelogo.jpg', prefix)
-        self.failIf(self.warningshook.warnings)
+        self.assertFalse(self.warningshook.warnings)
 
     def test_no_warn_on_namespace_as_prefix(self):
         prefix = App.__dict__ # same as calling globals() inside the App module
         App.ImageFile.ImageFile('www/zopelogo.jpg', prefix)
-        self.failIf(self.warningshook.warnings)
+        self.assertFalse(self.warningshook.warnings)
 
 def test_suite():
     return unittest.TestSuite((

@@ -70,9 +70,9 @@ class TestZopeTestCase(ZopeTestCase.ZopeTestCase):
         # Folder should be set up
         self.app = self._app()
         self._setupFolder()
-        self.failUnless(hasattr_(self.app, folder_name))
-        self.failUnless(hasattr_(self, 'folder'))
-        self.failUnless(user_role in self.folder.userdefined_roles())
+        self.assertTrue(hasattr_(self.app, folder_name))
+        self.assertTrue(hasattr_(self, 'folder'))
+        self.assertTrue(user_role in self.folder.userdefined_roles())
         self.assertPermissionsOfRole(standard_permissions, user_role)
 
     def test_setupUserFolder(self):
@@ -80,7 +80,7 @@ class TestZopeTestCase(ZopeTestCase.ZopeTestCase):
         self.app = self._app()
         self._setupFolder()
         self._setupUserFolder()
-        self.failUnless(hasattr_(self.folder, 'acl_users'))
+        self.assertTrue(hasattr_(self.folder, 'acl_users'))
 
     def test_setupUser(self):
         # User should be set up
@@ -89,7 +89,7 @@ class TestZopeTestCase(ZopeTestCase.ZopeTestCase):
         self._setupUserFolder()
         self._setupUser()
         acl_user = self.folder.acl_users.getUserById(user_name)
-        self.failUnless(acl_user)
+        self.assertTrue(acl_user)
         self.assertEqual(acl_user.getRoles(), (user_role, 'Authenticated'))
         self.assertEqual(type(acl_user.roles), ListType)
 
@@ -235,7 +235,7 @@ class TestZopeTestCase(ZopeTestCase.ZopeTestCase):
         self._setupUser()
         self.login()
         self._clear(1)
-        self.failIf(self.app.__dict__.has_key(folder_name))
+        self.assertFalse(self.app.__dict__.has_key(folder_name))
         auth_name = getSecurityManager().getUser().getUserName()
         self.assertEqual(auth_name, 'Anonymous User')
         self.assertEqual(self._called, ['beforeClose', 'afterClear'])
@@ -245,13 +245,13 @@ class TestZopeTestCase(ZopeTestCase.ZopeTestCase):
     def test_setUp(self):
         # Everything should be set up
         self._setUp()
-        self.failUnless(hasattr_(self.app, folder_name))
-        self.failUnless(hasattr_(self, 'folder'))
-        self.failUnless(user_role in self.folder.userdefined_roles())
+        self.assertTrue(hasattr_(self.app, folder_name))
+        self.assertTrue(hasattr_(self, 'folder'))
+        self.assertTrue(user_role in self.folder.userdefined_roles())
         self.assertPermissionsOfRole(standard_permissions, user_role)
-        self.failUnless(hasattr_(self.folder, 'acl_users'))
+        self.assertTrue(hasattr_(self.folder, 'acl_users'))
         acl_user = self.folder.acl_users.getUserById(user_name)
-        self.failUnless(acl_user)
+        self.assertTrue(acl_user)
         self.assertEqual(acl_user.getRoles(), (user_role, 'Authenticated'))
         self.assertEqual(type(acl_user.roles), ListType)
         auth_name = getSecurityManager().getUser().getId()
@@ -265,7 +265,7 @@ class TestZopeTestCase(ZopeTestCase.ZopeTestCase):
         self._setUp()
         self._called = []
         self._tearDown()
-        self.failIf(self.app.__dict__.has_key(folder_name))
+        self.assertFalse(self.app.__dict__.has_key(folder_name))
         auth_name = getSecurityManager().getUser().getUserName()
         self.assertEqual(auth_name, 'Anonymous User')
         self.assertEqual(self._called, ['beforeTearDown', 'beforeClose', 'afterClear'])
@@ -274,7 +274,7 @@ class TestZopeTestCase(ZopeTestCase.ZopeTestCase):
         # Nothing should be set up
         self._setup_fixture = 0
         self._setUp()
-        self.failIf(hasattr_(self.app, folder_name))
+        self.assertFalse(hasattr_(self.app, folder_name))
         auth_name = getSecurityManager().getUser().getUserName()
         self.assertEqual(auth_name, 'Anonymous User')
         # XXX: Changed in 0.9.0
@@ -362,16 +362,16 @@ class TestPlainUserFolder(ZopeTestCase.ZopeTestCase):
 
     def testGetUserDoesNotWrapUser(self):
         user = self.folder.acl_users.getUserById(user_name)
-        self.failIf(hasattr(user, 'aq_base'))
-        self.failUnless(user is aq_base(user))
+        self.assertFalse(hasattr(user, 'aq_base'))
+        self.assertTrue(user is aq_base(user))
 
     def testLoggedInUserIsWrapped(self):
         user = getSecurityManager().getUser()
         self.assertEqual(user.getId(), user_name)
-        self.failUnless(hasattr(user, 'aq_base'))
-        self.failUnless(user.__class__.__name__, 'User')
-        self.failUnless(user.aq_parent.__class__.__name__, 'UserFolder')
-        self.failUnless(user.aq_parent.aq_parent.__class__.__name__, 'Folder')
+        self.assertTrue(hasattr(user, 'aq_base'))
+        self.assertTrue(user.__class__.__name__, 'User')
+        self.assertTrue(user.aq_parent.__class__.__name__, 'UserFolder')
+        self.assertTrue(user.aq_parent.aq_parent.__class__.__name__, 'Folder')
 
 
 class TestWrappingUserFolder(ZopeTestCase.ZopeTestCase):
@@ -382,17 +382,17 @@ class TestWrappingUserFolder(ZopeTestCase.ZopeTestCase):
 
     def testGetUserWrapsUser(self):
         user = self.folder.acl_users.getUserById(user_name)
-        self.failUnless(hasattr(user, 'aq_base'))
-        self.failIf(user is aq_base(user))
-        self.failUnless(user.aq_parent.__class__.__name__, 'WrappingUserFolder')
+        self.assertTrue(hasattr(user, 'aq_base'))
+        self.assertFalse(user is aq_base(user))
+        self.assertTrue(user.aq_parent.__class__.__name__, 'WrappingUserFolder')
 
     def testLoggedInUserIsWrapped(self):
         user = getSecurityManager().getUser()
         self.assertEqual(user.getId(), user_name)
-        self.failUnless(hasattr(user, 'aq_base'))
-        self.failUnless(user.__class__.__name__, 'User')
-        self.failUnless(user.aq_parent.__class__.__name__, 'WrappingUserFolder')
-        self.failUnless(user.aq_parent.aq_parent.__class__.__name__, 'Folder')
+        self.assertTrue(hasattr(user, 'aq_base'))
+        self.assertTrue(user.__class__.__name__, 'User')
+        self.assertTrue(user.aq_parent.__class__.__name__, 'WrappingUserFolder')
+        self.assertTrue(user.aq_parent.aq_parent.__class__.__name__, 'Folder')
 
 
 def test_suite():

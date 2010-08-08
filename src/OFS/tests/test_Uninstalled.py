@@ -52,7 +52,7 @@ class TestsOfBroken(unittest.TestCase):
 
         klass = Broken(self, None, ('some.python.module', 'MyClass'))
 
-        self.failUnless(issubclass(klass, BrokenClass))
+        self.assertTrue(issubclass(klass, BrokenClass))
         self.assertEqual(klass.__name__, 'MyClass')
         self.assertEqual(klass.__module__, 'some.python.module')
         self.assertEqual(klass.product_name, 'unknown')
@@ -63,7 +63,7 @@ class TestsOfBroken(unittest.TestCase):
 
         klass = Broken(self, None, ('Products.MyProduct.MyClass', 'MyClass'))
 
-        self.failUnless(issubclass(klass, BrokenClass))
+        self.assertTrue(issubclass(klass, BrokenClass))
         self.assertEqual(klass.__name__, 'MyClass')
         self.assertEqual(klass.__module__, 'Products.MyProduct.MyClass')
         self.assertEqual(klass.product_name, 'MyProduct')
@@ -75,8 +75,8 @@ class TestsOfBroken(unittest.TestCase):
 
         inst = Broken(self, OID, ('Products.MyProduct.MyClass', 'MyClass'))
 
-        self.failUnless(isinstance(inst, BrokenClass))
-        self.failUnless(inst._p_jar is self)
+        self.assertTrue(isinstance(inst, BrokenClass))
+        self.assertTrue(inst._p_jar is self)
         self.assertEqual(inst._p_oid, OID)
 
         klass = inst.__class__
@@ -130,7 +130,7 @@ class TestsIntegratedBroken(base.TestCase):
         # get new connection that will give access to broken object
         app = base.app()
         inst = aq_base(app.tr)
-        self.failUnless(isinstance(inst, BrokenClass))
+        self.assertTrue(isinstance(inst, BrokenClass))
         state = inst.__getstate__()
         self.assertEqual(state, {'id': 'tr'})
 
@@ -139,7 +139,7 @@ class TestsIntegratedBroken(base.TestCase):
         transaction.commit()
         # check that object is not left over
         app = base.app()
-        self.failIf('tr' in app.objectIds())
+        self.assertFalse('tr' in app.objectIds())
 
 
 def test_suite():

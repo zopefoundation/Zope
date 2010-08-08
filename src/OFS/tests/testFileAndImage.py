@@ -152,10 +152,10 @@ class FileTests(unittest.TestCase):
         
         # Since we do the create here, let's test the events here too
         self.assertEquals(1, len(self.eventCatcher.created))
-        self.failUnless(aq_base(self.eventCatcher.created[0].object) is aq_base(self.file))
+        self.assertTrue(aq_base(self.eventCatcher.created[0].object) is aq_base(self.file))
         
         self.assertEquals(1, len(self.eventCatcher.modified))
-        self.failUnless(aq_base(self.eventCatcher.created[0].object) is aq_base(self.file))
+        self.assertTrue(aq_base(self.eventCatcher.created[0].object) is aq_base(self.file))
         
         self.eventCatcher.reset()
         
@@ -178,14 +178,14 @@ class FileTests(unittest.TestCase):
         self.file.update_data('foo')
         self.assertEqual(self.file.size, 3)
         self.assertEqual(self.file.data, 'foo')
-        self.failUnless(ADummyCache.invalidated)
-        self.failUnless(ADummyCache.set)
+        self.assertTrue(ADummyCache.invalidated)
+        self.assertTrue(ADummyCache.set)
 
     def testReadData(self):
         s = "a" * (2 << 16)
         f = StringIO(s)
         data, size = self.file._read_data(f)
-        self.failUnless(isinstance(data, Pdata))
+        self.assertTrue(isinstance(data, Pdata))
         self.assertEqual(str(data), s)
         self.assertEqual(len(s), len(str(data)))
         self.assertEqual(len(s), size)
@@ -204,18 +204,18 @@ class FileTests(unittest.TestCase):
         self.file.manage_edit('foobar', 'text/plain', filedata='ASD')
         self.assertEqual(self.file.title, 'foobar')
         self.assertEqual(self.file.content_type, 'text/plain')
-        self.failUnless(ADummyCache.invalidated)
-        self.failUnless(ADummyCache.set)
+        self.assertTrue(ADummyCache.invalidated)
+        self.assertTrue(ADummyCache.set)
         self.assertEquals(1, len(self.eventCatcher.modified))
-        self.failUnless(self.eventCatcher.modified[0].object is self.file)
+        self.assertTrue(self.eventCatcher.modified[0].object is self.file)
 
     def testManageEditWithoutFileData(self):
         self.file.manage_edit('foobar', 'text/plain')
         self.assertEqual(self.file.title, 'foobar')
         self.assertEqual(self.file.content_type, 'text/plain')
-        self.failUnless(ADummyCache.invalidated)
+        self.assertTrue(ADummyCache.invalidated)
         self.assertEquals(1, len(self.eventCatcher.modified))
-        self.failUnless(self.eventCatcher.modified[0].object is self.file)
+        self.assertTrue(self.eventCatcher.modified[0].object is self.file)
 
     def testManageUpload(self):
         f = StringIO('jammyjohnson')
@@ -223,7 +223,7 @@ class FileTests(unittest.TestCase):
         self.assertEqual(self.file.data, 'jammyjohnson')
         self.assertEqual(self.file.content_type, 'application/octet-stream')
         self.assertEquals(1, len(self.eventCatcher.modified))
-        self.failUnless(self.eventCatcher.modified[0].object is self.file)
+        self.assertTrue(self.eventCatcher.modified[0].object is self.file)
 
     def testIfModSince(self):
         now = time.time()
@@ -292,7 +292,7 @@ class FileTests(unittest.TestCase):
         self.file.manage_edit('foobar', 'text/plain',
                               filedata='Now is the time for all good men to '
                                        'come to the aid of the Party.')
-        self.failUnless('Party' in self.file.PrincipiaSearchSource())
+        self.assertTrue('Party' in self.file.PrincipiaSearchSource())
 
     def testFindFile(self):
         self.file.manage_edit('foobar', 'text/plain',
@@ -328,8 +328,8 @@ class ImageTests(FileTests):
         self.assertEqual(self.file.data, self.data)
         self.assertEqual(self.file.width, 16)
         self.assertEqual(self.file.height, 16)
-        self.failUnless(ADummyCache.invalidated)
-        self.failUnless(ADummyCache.set)
+        self.assertTrue(ADummyCache.invalidated)
+        self.assertTrue(ADummyCache.set)
 
     def testStr(self):
         self.assertEqual(str(self.file),

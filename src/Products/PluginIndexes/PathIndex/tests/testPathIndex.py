@@ -121,7 +121,7 @@ class PathIndexTests(unittest.TestCase):
     def test_getEntryForObject_miss_w_default(self):
         index = self._makeOne()
         default = object()
-        self.failUnless(index.getEntryForObject(1234, default) is default)
+        self.assertTrue(index.getEntryForObject(1234, default) is default)
 
     def test_getEntryForObject_hit(self):
         index = self._makeOne()
@@ -402,11 +402,11 @@ class PathIndexTests(unittest.TestCase):
 
     def test_hasUniqueValuesFor_miss(self):
         index = self._makeOne()
-        self.failIf(index.hasUniqueValuesFor('miss'))
+        self.assertFalse(index.hasUniqueValuesFor('miss'))
 
     def test_hasUniqueValuesFor_hit(self):
         index = self._makeOne()
-        self.failUnless(index.hasUniqueValuesFor('path'))
+        self.assertTrue(index.hasUniqueValuesFor('path'))
 
     def test_uniqueValues_empty(self):
         index = self._makeOne()

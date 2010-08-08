@@ -30,25 +30,25 @@ class TestBrowserIdManager(unittest.TestCase):
     def test_hasBrowserId_already_set_on_request_invalid(self):
         request = DummyRequest(browser_id_='xxx')
         mgr = self._makeOne(request)
-        self.failIf(mgr.hasBrowserId())
+        self.assertFalse(mgr.hasBrowserId())
 
     def test_hasBrowserId_already_set_on_request(self):
         from Products.Sessions.BrowserIdManager import getNewBrowserId
         request = DummyRequest(browser_id_=getNewBrowserId())
         mgr = self._makeOne(request)
-        self.failUnless(mgr.hasBrowserId())
+        self.assertTrue(mgr.hasBrowserId())
 
     def test_hasBrowserId_namespace_hit(self):
         from Products.Sessions.BrowserIdManager import getNewBrowserId
         request = DummyRequest(cookies={'bid': getNewBrowserId()})
         mgr = self._makeOne(request)
         mgr.setBrowserIdName('bid')
-        self.failUnless(mgr.hasBrowserId())
+        self.assertTrue(mgr.hasBrowserId())
 
     def test_hasBrowserId_namespace_miss(self):
         request = DummyRequest()
         mgr = self._makeOne(request)
-        self.failIf(mgr.hasBrowserId())
+        self.assertFalse(mgr.hasBrowserId())
         self.assertRaises(AttributeError, getattr, request, 'browser_id_')
         self.assertRaises(AttributeError, getattr, request, 'browser_id_ns_')
 
@@ -70,7 +70,7 @@ class TestBrowserIdManager(unittest.TestCase):
         request = DummyRequest(cookies={'bid': bid})
         mgr = self._makeOne(request)
         mgr.setBrowserIdName('bid')
-        self.failUnless(mgr.hasBrowserId())
+        self.assertTrue(mgr.hasBrowserId())
         self.assertEqual(request.browser_id_, bid)
         self.assertEqual(request.browser_id_ns_, 'cookies')
 
@@ -89,7 +89,7 @@ class TestBrowserIdManager(unittest.TestCase):
         mgr.setBrowserIdName('bid')
         mgr.setBrowserIdNamespaces(())
         bid = mgr.getBrowserId()
-        self.failUnless(isAWellFormedBrowserId(bid))
+        self.assertTrue(isAWellFormedBrowserId(bid))
         self.assertEqual(request.browser_id_, bid)
         self.assertEqual(request.browser_id_ns_, None)
 
@@ -101,7 +101,7 @@ class TestBrowserIdManager(unittest.TestCase):
         mgr.setBrowserIdName('bid')
         mgr.setBrowserIdNamespaces(('cookies',))
         bid = mgr.getBrowserId()
-        self.failUnless(isAWellFormedBrowserId(bid))
+        self.assertTrue(isAWellFormedBrowserId(bid))
         self.assertEqual(request.browser_id_, bid)
         self.assertEqual(request.browser_id_ns_, None)
         self.assertEqual(response.cookies['bid'], {'path': '/', 'value': bid})
@@ -116,14 +116,14 @@ class TestBrowserIdManager(unittest.TestCase):
         bid = getNewBrowserId()
         request = DummyRequest(browser_id_=bid, browser_id_ns_=None)
         mgr = self._makeOne(request)
-        self.failUnless(mgr.isBrowserIdNew())
+        self.assertTrue(mgr.isBrowserIdNew())
 
     def test_isBrowserIdNew_w_ns(self):
         from Products.Sessions.BrowserIdManager import getNewBrowserId
         bid = getNewBrowserId()
         request = DummyRequest(browser_id_=bid, browser_id_ns_='url')
         mgr = self._makeOne(request)
-        self.failIf(mgr.isBrowserIdNew())
+        self.assertFalse(mgr.isBrowserIdNew())
 
     def test_isBrowserIdFromCookie_nonesuch_raises(self):
         request = DummyRequest()
@@ -135,14 +135,14 @@ class TestBrowserIdManager(unittest.TestCase):
         bid = getNewBrowserId()
         request = DummyRequest(browser_id_=bid, browser_id_ns_='url')
         mgr = self._makeOne(request)
-        self.failIf(mgr.isBrowserIdFromCookie())
+        self.assertFalse(mgr.isBrowserIdFromCookie())
 
     def test_isBrowserIdFromCookie_right_ns(self):
         from Products.Sessions.BrowserIdManager import getNewBrowserId
         bid = getNewBrowserId()
         request = DummyRequest(browser_id_=bid, browser_id_ns_='cookies')
         mgr = self._makeOne(request)
-        self.failUnless(mgr.isBrowserIdFromCookie())
+        self.assertTrue(mgr.isBrowserIdFromCookie())
 
     def test_isBrowserIdFromForm_nonesuch_raises(self):
         request = DummyRequest()
@@ -154,14 +154,14 @@ class TestBrowserIdManager(unittest.TestCase):
         bid = getNewBrowserId()
         request = DummyRequest(browser_id_=bid, browser_id_ns_='url')
         mgr = self._makeOne(request)
-        self.failIf(mgr.isBrowserIdFromForm())
+        self.assertFalse(mgr.isBrowserIdFromForm())
 
     def test_isBrowserIdFromForm_right_ns(self):
         from Products.Sessions.BrowserIdManager import getNewBrowserId
         bid = getNewBrowserId()
         request = DummyRequest(browser_id_=bid, browser_id_ns_='form')
         mgr = self._makeOne(request)
-        self.failUnless(mgr.isBrowserIdFromForm())
+        self.assertTrue(mgr.isBrowserIdFromForm())
 
     def test_isBrowserIdFromUrl_nonesuch_raises(self):
         request = DummyRequest()
@@ -173,14 +173,14 @@ class TestBrowserIdManager(unittest.TestCase):
         bid = getNewBrowserId()
         request = DummyRequest(browser_id_=bid, browser_id_ns_='form')
         mgr = self._makeOne(request)
-        self.failIf(mgr.isBrowserIdFromUrl())
+        self.assertFalse(mgr.isBrowserIdFromUrl())
 
     def test_isBrowserIdFromUrl_right_ns(self):
         from Products.Sessions.BrowserIdManager import getNewBrowserId
         bid = getNewBrowserId()
         request = DummyRequest(browser_id_=bid, browser_id_ns_='url')
         mgr = self._makeOne(request)
-        self.failUnless(mgr.isBrowserIdFromUrl())
+        self.assertTrue(mgr.isBrowserIdFromUrl())
 
     def test_flushBrowserIdCookie_wrong_ns_raises(self):
         mgr = self._makeOne()
@@ -341,37 +341,37 @@ class TestBrowserIdManager(unittest.TestCase):
     def test_setCookieSecure_int(self):
         mgr = self._makeOne()
         mgr.setCookieSecure(1)
-        self.failUnless(mgr.getCookieSecure())
+        self.assertTrue(mgr.getCookieSecure())
         mgr.setCookieSecure(0)
-        self.failIf(mgr.getCookieSecure())
+        self.assertFalse(mgr.getCookieSecure())
 
     def test_setCookieSecure_bool(self):
         mgr = self._makeOne()
         mgr.setCookieSecure(True)
-        self.failUnless(mgr.getCookieSecure())
+        self.assertTrue(mgr.getCookieSecure())
         mgr.setCookieSecure(False)
-        self.failIf(mgr.getCookieSecure())
+        self.assertFalse(mgr.getCookieSecure())
 
     def test_setCookieHTTPOnly_bool(self):
         mgr = self._makeOne()
         mgr.setCookieHTTPOnly(True)
-        self.failUnless(mgr.getCookieHTTPOnly())
+        self.assertTrue(mgr.getCookieHTTPOnly())
         mgr.setCookieHTTPOnly(False)
-        self.failIf(mgr.getCookieHTTPOnly())
+        self.assertFalse(mgr.getCookieHTTPOnly())
 
     def test_setAutoUrlEncoding_bool(self):
         mgr = self._makeOne()
         mgr.setAutoUrlEncoding(True)
-        self.failUnless(mgr.getAutoUrlEncoding())
+        self.assertTrue(mgr.getAutoUrlEncoding())
         mgr.setAutoUrlEncoding(False)
-        self.failIf(mgr.getAutoUrlEncoding())
+        self.assertFalse(mgr.getAutoUrlEncoding())
 
     def test_isUrlInBidNamespaces(self):
         mgr = self._makeOne()
         mgr.setBrowserIdNamespaces(('cookies', 'url', 'form'))
-        self.failUnless(mgr.isUrlInBidNamespaces())
+        self.assertTrue(mgr.isUrlInBidNamespaces())
         mgr.setBrowserIdNamespaces(('cookies', 'form'))
-        self.failIf(mgr.isUrlInBidNamespaces())
+        self.assertFalse(mgr.isUrlInBidNamespaces())
 
     def test__setCookie_remove(self):
         response = DummyResponse(cookies={})
@@ -484,13 +484,13 @@ class TestBrowserIdManager(unittest.TestCase):
     def test_hasTraversalHook_missing(self):
         mgr = self._makeOne()
         parent = DummyObject()
-        self.failIf(mgr.hasTraversalHook(parent))
+        self.assertFalse(mgr.hasTraversalHook(parent))
 
     def test_hasTraversalHook_present(self):
         mgr = self._makeOne()
         parent = DummyObject()
         parent.__before_traverse__ = {(0, 'BrowserIdManager'): object()}
-        self.failUnless(mgr.hasTraversalHook(parent))
+        self.assertTrue(mgr.hasTraversalHook(parent))
 
     def test_updateTraversalData_w_url_ns(self):
         from Acquisition import Implicit
@@ -506,7 +506,7 @@ class TestBrowserIdManager(unittest.TestCase):
         hooks = queryBeforeTraverse(parent, 'BrowserIdManager')
         self.assertEqual(len(hooks), 1)
         self.assertEqual(hooks[0][0], 40)
-        self.failUnless(isinstance(hooks[0][1], BrowserIdManagerTraverser))
+        self.assertTrue(isinstance(hooks[0][1], BrowserIdManagerTraverser))
 
     def test_updateTraversalData_not_url_ns(self):
         from Acquisition import Implicit
@@ -519,7 +519,7 @@ class TestBrowserIdManager(unittest.TestCase):
         parent.__before_traverse__ = {(0, 'BrowserIdManager'): object()}
         parent.browser_id_manager = mgr
         parent.browser_id_manager.updateTraversalData() # needs wrapper
-        self.failIf(queryBeforeTraverse(mgr, 'BrowserIdManager'))
+        self.assertFalse(queryBeforeTraverse(mgr, 'BrowserIdManager'))
 
     def test_registerTraversalHook_doesnt_replace_existing(self):
         from Acquisition import Implicit
@@ -535,7 +535,7 @@ class TestBrowserIdManager(unittest.TestCase):
         hooks = queryBeforeTraverse(parent, 'BrowserIdManager')
         self.assertEqual(len(hooks), 1)
         self.assertEqual(hooks[0][0], 0)
-        self.failUnless(hooks[0][1] is hook)
+        self.assertTrue(hooks[0][1] is hook)
 
     def test_registerTraversalHook_normal(self):
         from Acquisition import Implicit
@@ -550,7 +550,7 @@ class TestBrowserIdManager(unittest.TestCase):
         hooks = queryBeforeTraverse(parent, 'BrowserIdManager')
         self.assertEqual(len(hooks), 1)
         self.assertEqual(hooks[0][0], 40)
-        self.failUnless(isinstance(hooks[0][1], BrowserIdManagerTraverser))
+        self.assertTrue(isinstance(hooks[0][1], BrowserIdManagerTraverser))
 
     def test_unregisterTraversalHook_nonesuch_doesnt_raise(self):
         from Acquisition import Implicit
@@ -571,7 +571,7 @@ class TestBrowserIdManager(unittest.TestCase):
         parent.__before_traverse__ = {(0, 'BrowserIdManager'): object()}
         parent.browser_id_manager = mgr
         parent.browser_id_manager.unregisterTraversalHook() # needs wrapper
-        self.failIf(queryBeforeTraverse(mgr, 'BrowserIdManager'))
+        self.assertFalse(queryBeforeTraverse(mgr, 'BrowserIdManager'))
     
 
 class TestBrowserIdManagerTraverser(unittest.TestCase):
@@ -634,7 +634,7 @@ class TestBrowserIdManagerTraverser(unittest.TestCase):
         request = DummyRequest( TraversalRequestNameStack=[], _script=[])
         traverser(container, request)
         bid = request.browser_id_
-        self.failUnless(isAWellFormedBrowserId(bid))
+        self.assertTrue(isAWellFormedBrowserId(bid))
         self.assertEqual(request.browser_id_ns_, None)
         self.assertEqual(len(request.TraversalRequestNameStack), 0)
         self.assertEqual(len(request._script), 2)

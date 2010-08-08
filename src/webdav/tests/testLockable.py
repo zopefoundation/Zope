@@ -4,18 +4,18 @@ class TestUtilFunctions(unittest.TestCase):
     def test_wl_isLocked(self):
         from webdav.Lockable import wl_isLocked
         unlockable = UnlockableResource()
-        self.failIf(wl_isLocked(unlockable))
+        self.assertFalse(wl_isLocked(unlockable))
         lockable_unlocked = LockableResource(locked=False)
-        self.failIf(wl_isLocked(lockable_unlocked))
+        self.assertFalse(wl_isLocked(lockable_unlocked))
         lockable_locked = LockableResource(locked=True)
-        self.failUnless(wl_isLocked(lockable_locked))
+        self.assertTrue(wl_isLocked(lockable_locked))
 
     def test_wl_isLockable(self):
         from webdav.Lockable import wl_isLockable
         unlockable = UnlockableResource()
-        self.failIf(wl_isLockable(unlockable))
+        self.assertFalse(wl_isLockable(unlockable))
         lockable = LockableResource(locked=False)
-        self.failUnless(wl_isLockable(lockable))
+        self.assertTrue(wl_isLockable(lockable))
 
 from webdav.interfaces import IWriteLock
 from zope.interface import implements

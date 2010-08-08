@@ -140,7 +140,7 @@ class DI_Tests(unittest.TestCase):
         self.failUnlessEqual(len(result), len(expectedValues),
             '%s | %s' % (result, expectedValues))
         for k, v in expectedValues:
-            self.failUnless(k in result)
+            self.assertTrue(k in result)
 
     def _convert(self, dt):
         from time import gmtime
@@ -178,16 +178,16 @@ class DI_Tests(unittest.TestCase):
         self.failUnlessEqual(len(index), 0)
         self.failUnlessEqual(len(index.referencedObjects()), 0)
 
-        self.failUnless(index.getEntryForObject(1234) is None)
+        self.assertTrue(index.getEntryForObject(1234) is None)
         marker = []
-        self.failUnless(index.getEntryForObject(1234, marker) is marker)
+        self.assertTrue(index.getEntryForObject(1234, marker) is marker)
         index.unindex_object(1234) # shouldn't throw
 
-        self.failUnless(index.hasUniqueValuesFor('date'))
-        self.failIf(index.hasUniqueValuesFor('foo'))
+        self.assertTrue(index.hasUniqueValuesFor('date'))
+        self.assertFalse(index.hasUniqueValuesFor('foo'))
         self.failUnlessEqual(len(index.uniqueValues('date')), 0)
 
-        self.failUnless(index._apply_index({'zed': 12345}) is None)
+        self.assertTrue(index._apply_index({'zed': 12345}) is None)
 
         self._checkApply(index,
                          {'date': DateTime(0)}, [])
@@ -215,9 +215,9 @@ class DI_Tests(unittest.TestCase):
         self.failUnlessEqual(len(index.referencedObjects()), len(values) - 1)
             # One empty
 
-        self.failUnless(index.getEntryForObject(1234) is None)
+        self.assertTrue(index.getEntryForObject(1234) is None)
         marker = []
-        self.failUnless(index.getEntryForObject(1234, marker) is marker)
+        self.assertTrue(index.getEntryForObject(1234, marker) is marker)
         index.unindex_object(1234) # shouldn't throw
 
         for k, v in values:
@@ -226,7 +226,7 @@ class DI_Tests(unittest.TestCase):
                     self._convert(v.date()))
 
         self.failUnlessEqual(len(index.uniqueValues('date')), len(values) - 2)
-        self.failUnless(index._apply_index({'bar': 123}) is None)
+        self.assertTrue(index._apply_index({'bar': 123}) is None)
 
         self._checkApply(index,
                          {'date': DateTime(0)}, values[1:2])
@@ -273,7 +273,7 @@ class DI_Tests(unittest.TestCase):
         self._checkApply(index,
                          {'date': 1072742900}, [values[7]])
         index.index_object(7, None)
-        self.failIf(7 in index.documentToKeyMap().keys())
+        self.assertFalse(7 in index.documentToKeyMap().keys())
 
 
 def test_suite():

@@ -13,14 +13,14 @@ class MiscTests(unittest.TestCase):
         request = {'request': 1}
         names = {'context' : context, 'here': here, 'request' : request}
         result = call_with_ns(lambda td: td.this, names)
-        self.failUnless(result is context, result)
+        self.assertTrue(result is context, result)
 
     def test_call_with_ns_no_context_or_here(self):
         from Products.PageTemplates.ZRPythonExpr import call_with_ns
         request = {'request': 1}
         names = {'request' : request}
         result = call_with_ns(lambda td: td.this, names)
-        self.failUnless(result is None, result)
+        self.assertTrue(result is None, result)
 
     def test_call_with_ns_no_request(self):
         from Products.PageTemplates.ZRPythonExpr import call_with_ns

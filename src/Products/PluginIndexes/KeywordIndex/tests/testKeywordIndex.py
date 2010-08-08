@@ -243,8 +243,8 @@ class TestKeywordIndex( unittest.TestCase ):
     def test_noindexing_when_noattribute(self):
         to_index = Dummy(['hello'])
         self._index._index_object(10, to_index, attr='UNKNOWN')
-        self.failIf(self._index._unindex.get(10))
-        self.failIf(self._index.getEntryForObject(10))
+        self.assertFalse(self._index._unindex.get(10))
+        self.assertFalse(self._index.getEntryForObject(10))
 
     def test_noindexing_when_raising_attribute(self):
         class FauxObject:
@@ -252,18 +252,18 @@ class TestKeywordIndex( unittest.TestCase ):
                 raise AttributeError
         to_index = FauxObject()
         self._index._index_object(10, to_index, attr='foo')
-        self.failIf(self._index._unindex.get(10))
-        self.failIf(self._index.getEntryForObject(10))
+        self.assertFalse(self._index._unindex.get(10))
+        self.assertFalse(self._index.getEntryForObject(10))
 
     def test_value_removes(self):
         
         to_index = Dummy(['hello'])
         self._index._index_object(10, to_index, attr='foo')
-        self.failUnless(self._index._unindex.get(10))
+        self.assertTrue(self._index._unindex.get(10))
 
         to_index = Dummy('')
         self._index._index_object(10, to_index, attr='foo')
-        self.failIf(self._index._unindex.get(10))
+        self.assertFalse(self._index._unindex.get(10))
 
 
 def test_suite():

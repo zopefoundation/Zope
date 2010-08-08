@@ -26,9 +26,9 @@ class MakerequestTests(unittest.TestCase):
         self.assertRaises(AttributeError, makerequest, object())
         # After the call, it will have a REQUEST attribute.
         item = Implicit()
-        self.failIf(hasattr(item, 'REQUEST'))
+        self.assertFalse(hasattr(item, 'REQUEST'))
         item = makerequest(item)
-        self.failUnless(hasattr(item, 'REQUEST'))
+        self.assertTrue(hasattr(item, 'REQUEST'))
     
     def test_dont_break_getPhysicalPath(self):
         # see http://www.zope.org/Collectors/Zope/2057.  If you want
@@ -49,8 +49,8 @@ class MakerequestTests(unittest.TestCase):
         item.REQUEST.RESPONSE.write('aaa')
         out.seek(0)
         written = out.read()
-        self.failUnless(written.startswith('Status: 200 OK\r\n'))
-        self.failUnless(written.endswith('\naaa'))
+        self.assertTrue(written.startswith('Status: 200 OK\r\n'))
+        self.assertTrue(written.endswith('\naaa'))
 
     def test_environ(self):
         # You can pass an environ argument to use in the request.

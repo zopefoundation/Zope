@@ -53,7 +53,7 @@ class WSGIResponseTests(unittest.TestCase):
         response._streaming = True
         response.body = 'TESTING'
         response.finalize()
-        self.failIf(response.getHeader('Content-Length'))
+        self.assertFalse(response.getHeader('Content-Length'))
 
     def test_finalize_HTTP_1_0_keep_alive_w_content_length(self):
         response = self._makeOne()
@@ -93,7 +93,7 @@ class WSGIResponseTests(unittest.TestCase):
         response.finalize()
         self.assertEqual(response.getHeader('Connection'), 'close')
         self.assertEqual(response.getHeader('Transfer-Encoding'), None)
-        self.failIf(response._chunking)
+        self.assertFalse(response._chunking)
 
     def test_finalize_HTTP_1_1_wo_content_length_streaming_w_http_chunk(self):
         response = self._makeOne()
@@ -115,7 +115,7 @@ class WSGIResponseTests(unittest.TestCase):
         response.setBody('TESTING')
         headers = response.listHeaders()
         sv = [x for x in headers if x[0] == 'Server']
-        self.failIf(sv)
+        self.assertFalse(sv)
 
     def test_listHeaders_includes_Server_header_w_server_version_set(self):
         response = self._makeOne()
@@ -123,7 +123,7 @@ class WSGIResponseTests(unittest.TestCase):
         response.setBody('TESTING')
         headers = response.listHeaders()
         sv = [x for x in headers if x[0] == 'Server']
-        self.failUnless(('Server', 'TESTME') in sv)
+        self.assertTrue(('Server', 'TESTME') in sv)
 
     def test_listHeaders_includes_Date_header(self):
         import time
@@ -134,7 +134,7 @@ class WSGIResponseTests(unittest.TestCase):
         headers = response.listHeaders()
         whenstr = time.strftime('%a, %d %b %Y %H:%M:%S GMT',
                                 time.gmtime(time.mktime(WHEN)))
-        self.failUnless(('Date', whenstr) in headers)
+        self.assertTrue(('Date', whenstr) in headers)
 
     #def test___str__already_wrote_not_chunking(self):
     #    response = self._makeOne()
@@ -186,11 +186,11 @@ class Test_publish(unittest.TestCase):
         _gmi._result = (_before, _after, _object, _realm, _debug_mode,
                         _err_hook, _validated_hook, _tm)
         returned = self._callFUT(request, 'okmodule', _gmi)
-        self.failUnless(returned is response)
+        self.assertTrue(returned is response)
         self.assertEqual(_gmi._called_with, (('okmodule',), {}))
-        self.failUnless(request._processedInputs)
+        self.assertTrue(request._processedInputs)
         self.assertEqual(response.after_list, (_after,))
-        self.failUnless(response.debug_mode)
+        self.assertTrue(response.debug_mode)
         self.assertEqual(response.realm, 'TESTING')
         self.assertEqual(_before._called_with, ((), {}))
         self.assertEqual(request['PARENTS'], [_object])
@@ -319,10 +319,10 @@ class Test_publish_module(unittest.TestCase):
         self.assertEqual(headers, [('Content-Length', '0')])
         self.assertEqual(kw, {})
         (request, module), kw = _publish._called_with
-        self.failUnless(isinstance(request, HTTPRequest))
+        self.assertTrue(isinstance(request, HTTPRequest))
         self.assertEqual(module, 'Zope2')
         self.assertEqual(kw, {})
-        self.failUnless(_response._finalized)
+        self.assertTrue(_response._finalized)
         self.assertEqual(_after1._called_with, ((), {}))
         self.assertEqual(_after2._called_with, ((), {}))
 
@@ -336,7 +336,7 @@ class Test_publish_module(unittest.TestCase):
         self.assertEqual(app_iter, ('', ''))
         (status, headers), kw = start_response._called_with
         self.assertEqual(status, '401 Unauthorized')
-        self.failUnless(('Content-Length', '0') in headers)
+        self.assertTrue(('Content-Length', '0') in headers)
         self.assertEqual(kw, {})
 
     def test_swallows_Redirect(self):
@@ -349,8 +349,8 @@ class Test_publish_module(unittest.TestCase):
         self.assertEqual(app_iter, ('', ''))
         (status, headers), kw = start_response._called_with
         self.assertEqual(status, '302 Moved Temporarily')
-        self.failUnless(('Location', '/redirect_to') in headers)
-        self.failUnless(('Content-Length', '0') in headers)
+        self.assertTrue(('Location', '/redirect_to') in headers)
+        self.assertTrue(('Content-Length', '0') in headers)
         self.assertEqual(kw, {})
 
     def test_response_body_is_file(self):
@@ -368,7 +368,7 @@ class Test_publish_module(unittest.TestCase):
         _publish = DummyCallable()
         _publish._result = _response
         app_iter = self._callFUT(environ, start_response, _publish)
-        self.failUnless(app_iter is body)
+        self.assertTrue(app_iter is body)
 
     def test_request_closed_when_tm_middleware_not_active(self):
         environ = self._makeEnviron()
@@ -384,7 +384,7 @@ class Test_publish_module(unittest.TestCase):
         _publish._result = DummyResponse()
         app_iter = self._callFUT(environ, start_response, _publish,
                                  _request_factory=_request_factory)
-        self.failUnless(_request._closed)
+        self.assertTrue(_request._closed)
 
     def test_request_not_closed_when_tm_middleware_active(self):
         import transaction
@@ -402,9 +402,9 @@ class Test_publish_module(unittest.TestCase):
         _publish._result = DummyResponse()
         app_iter = self._callFUT(environ, start_response, _publish,
                                  _request_factory=_request_factory)
-        self.failIf(_request._closed)
+        self.assertFalse(_request._closed)
         txn = transaction.get()
-        self.failUnless(list(txn.getAfterCommitHooks()))
+        self.assertTrue(list(txn.getAfterCommitHooks()))
 
 
 class DummyRequest(dict):

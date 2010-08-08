@@ -111,28 +111,28 @@ class TestSessionManager(unittest.TestCase):
         del self.app
 
     def testHasId(self):
-        self.failUnless(self.app.session_data_manager.id == \
+        self.assertTrue(self.app.session_data_manager.id == \
                         sdm_name)
 
     def testHasTitle(self):
-        self.failUnless(self.app.session_data_manager.title \
+        self.assertTrue(self.app.session_data_manager.title \
                         == 'Session Data Manager')
 
     def testGetSessionDataNoCreate(self):
         sd = self.app.session_data_manager.getSessionData(0)
-        self.failUnless(sd is None)
+        self.assertTrue(sd is None)
 
     def testGetSessionDataCreate(self):
         from Products.Transience.Transience import TransientObject
         sd = self.app.session_data_manager.getSessionData(1)
-        self.failUnless(sd.__class__ is TransientObject)
+        self.assertTrue(sd.__class__ is TransientObject)
 
     def testHasSessionData(self):
         sd = self.app.session_data_manager.getSessionData()
-        self.failUnless(self.app.session_data_manager.hasSessionData())
+        self.assertTrue(self.app.session_data_manager.hasSessionData())
 
     def testNotHasSessionData(self):
-        self.failUnless(not self.app.session_data_manager.hasSessionData())
+        self.assertTrue(not self.app.session_data_manager.hasSessionData())
 
     def testSessionDataWrappedInSDMandTOC(self):
         from Acquisition import aq_base
@@ -140,28 +140,28 @@ class TestSessionManager(unittest.TestCase):
         sdm = aq_base(getattr(self.app, sdm_name))
         toc = aq_base(getattr(self.app.temp_folder, toc_name))
 
-        self.failUnless(aq_base(sd.aq_parent) is sdm)
-        self.failUnless(aq_base(sd.aq_parent.aq_parent) is toc)
+        self.assertTrue(aq_base(sd.aq_parent) is sdm)
+        self.assertTrue(aq_base(sd.aq_parent.aq_parent) is toc)
 
     def testNewSessionDataObjectIsValid(self):
         from Acquisition import aq_base
         from Products.Transience.Transience import TransientObject
         sdType = type(TransientObject(1))
         sd = self.app.session_data_manager.getSessionData()
-        self.failUnless(type(aq_base(sd)) is sdType)
-        self.failUnless(not hasattr(sd, '_invalid'))
+        self.assertTrue(type(aq_base(sd)) is sdType)
+        self.assertTrue(not hasattr(sd, '_invalid'))
 
     def testBrowserIdIsSet(self):
         sd = self.app.session_data_manager.getSessionData()
         mgr = getattr(self.app, idmgr_name)
-        self.failUnless(mgr.hasBrowserId())
+        self.assertTrue(mgr.hasBrowserId())
 
     def testGetSessionDataByKey(self):
         sd = self.app.session_data_manager.getSessionData()
         mgr = getattr(self.app, idmgr_name)
         token = mgr.getBrowserId()
         bykeysd = self.app.session_data_manager.getSessionDataByKey(token)
-        self.failUnless(sd == bykeysd)
+        self.assertTrue(sd == bykeysd)
 
     def testBadExternalSDCPath(self):
         from Products.Sessions.SessionDataManager import SessionDataManagerErr
@@ -179,7 +179,7 @@ class TestSessionManager(unittest.TestCase):
         sd = sdm.getSessionData()
         sd['test'] = 'Its alive!  Alive!'
         sd.invalidate()
-        self.failUnless(not sdm.getSessionData().has_key('test'))
+        self.assertTrue(not sdm.getSessionData().has_key('test'))
 
     def testGhostUnghostSessionManager(self):
         import transaction
@@ -189,7 +189,7 @@ class TestSessionManager(unittest.TestCase):
         sd.set('foo', 'bar')
         sdm._p_changed = None
         transaction.commit()
-        self.failUnless(sdm.getSessionData().get('foo') == 'bar')
+        self.assertTrue(sdm.getSessionData().get('foo') == 'bar')
 
     def testSubcommitAssignsPJar(self):
         global DummyPersistent # so pickle can find it
@@ -200,9 +200,9 @@ class TestSessionManager(unittest.TestCase):
         sd = self.app.session_data_manager.getSessionData()
         dummy = DummyPersistent()
         sd.set('dp', dummy)
-        self.failUnless(sd['dp']._p_jar is None)
+        self.assertTrue(sd['dp']._p_jar is None)
         transaction.savepoint(optimistic=True)
-        self.failIf(sd['dp']._p_jar is None)
+        self.assertFalse(sd['dp']._p_jar is None)
 
     def testForeignObject(self):
         from ZODB.POSException import InvalidObjectReference
@@ -237,7 +237,7 @@ class TestSessionManager(unittest.TestCase):
         self.app.REQUEST['PARENTS'] = [self.app]
         self.app.REQUEST['URL'] = 'a'
         self.app.REQUEST.traverse('/')
-        self.failUnless(self.app.REQUEST.has_key('TESTOFSESSION'))
+        self.assertTrue(self.app.REQUEST.has_key('TESTOFSESSION'))
 
     def testUnlazifyAutoPopulated(self):
         from Acquisition import aq_base
@@ -247,7 +247,7 @@ class TestSessionManager(unittest.TestCase):
         self.app.REQUEST.traverse('/')
         sess = self.app.REQUEST['TESTOFSESSION']
         sdType = type(TransientObject(1))
-        self.failUnless(type(aq_base(sess)) is sdType)
+        self.assertTrue(type(aq_base(sess)) is sdType)
 
 
 def test_suite():

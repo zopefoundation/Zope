@@ -147,12 +147,12 @@ text
     def test_csv_table_file_option_raise(self):
         source = '.. csv-table:: \n  :file: inclusion.txt'
         result = HTML(source)
-        self.failUnless('File and URL access deactivated' in result)
+        self.assertTrue('File and URL access deactivated' in result)
 
     def test_csv_table_url_option_raise(self):
         source = '.. csv-table:: \n  :url: http://www.evil.org'
         result = HTML(source)
-        self.failUnless('File and URL access deactivated' in result)
+        self.assertTrue('File and URL access deactivated' in result)
 
 
 def test_suite():

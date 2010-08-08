@@ -37,20 +37,20 @@ class TestPropertyManager(unittest.TestCase):
         inst = self._makeOne()
 
         inst._setProperty('prop', ['xxx', 'yyy'], 'lines')
-        self.failUnless(type(inst.getProperty('prop')) == type(()))
-        self.failUnless(type(inst.prop) == type(()))
+        self.assertTrue(type(inst.getProperty('prop')) == type(()))
+        self.assertTrue(type(inst.prop) == type(()))
 
         inst._setPropValue('prop', ['xxx', 'yyy'])
-        self.failUnless(type(inst.getProperty('prop')) == type(()))
-        self.failUnless(type(inst.prop) == type(()))
+        self.assertTrue(type(inst.getProperty('prop')) == type(()))
+        self.assertTrue(type(inst.prop) == type(()))
 
         inst._updateProperty('prop', ['xxx', 'yyy'])
-        self.failUnless(type(inst.getProperty('prop')) == type(()))
-        self.failUnless(type(inst.prop) == type(()))
+        self.assertTrue(type(inst.getProperty('prop')) == type(()))
+        self.assertTrue(type(inst.prop) == type(()))
 
         inst.manage_addProperty('prop2', ['xxx', 'yyy'], 'lines')
-        self.failUnless(type(inst.getProperty('prop2')) == type(()))
-        self.failUnless(type(inst.prop2) == type(()))
+        self.assertTrue(type(inst.getProperty('prop2')) == type(()))
+        self.assertTrue(type(inst.prop2) == type(()))
 
     def test_propertyLabel_no_label_falls_back_to_id(self):
         class NoLabel(self._getTargetClass()):
@@ -99,16 +99,16 @@ class TestPropertySheet(unittest.TestCase):
         inst = self._makeOne('foo')
 
         inst._setProperty('prop', ['xxx', 'yyy'], 'lines')
-        self.failUnless(type(inst.getProperty('prop')) == type(()))
-        self.failUnless(type(inst.prop) == type(()))
+        self.assertTrue(type(inst.getProperty('prop')) == type(()))
+        self.assertTrue(type(inst.prop) == type(()))
 
         inst._updateProperty('prop', ['xxx', 'yyy'])
-        self.failUnless(type(inst.getProperty('prop')) == type(()))
-        self.failUnless(type(inst.prop) == type(()))
+        self.assertTrue(type(inst.getProperty('prop')) == type(()))
+        self.assertTrue(type(inst.prop) == type(()))
 
         inst.manage_addProperty('prop2', ['xxx', 'yyy'], 'lines')
-        self.failUnless(type(inst.getProperty('prop2')) == type(()))
-        self.failUnless(type(inst.prop2) == type(()))
+        self.assertTrue(type(inst.getProperty('prop2')) == type(()))
+        self.assertTrue(type(inst.prop2) == type(()))
 
     def test_dav__propstat_nullns(self):
         # Tests 15 (propnullns) and 16 (propget) from the props suite

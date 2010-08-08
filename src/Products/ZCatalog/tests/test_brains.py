@@ -115,9 +115,9 @@ class TestBrains(unittest.TestCase):
 
     def testHasKey(self):
         b = self._makeBrain(1)
-        self.failUnless('test_field' in b)
-        self.failUnless('data_record_id_' in b)
-        self.failIf('godel' in b)
+        self.assertTrue('test_field' in b)
+        self.assertTrue('data_record_id_' in b)
+        self.assertFalse('godel' in b)
 
     def testGetPath(self):
         b = [self._makeBrain(rid) for rid in range(3)]
@@ -141,7 +141,7 @@ class TestBrains(unittest.TestCase):
     def testGetObjectHappy(self):
         b = self._makeBrain(1)
         self.assertEqual(b.getPath(), '/happy')
-        self.failUnless(aq_base(b.getObject()) is
+        self.assertTrue(aq_base(b.getObject()) is
                         aq_base(self.cat.getobject(1)))
 
     def testGetObjectPropagatesConflictErrors(self):

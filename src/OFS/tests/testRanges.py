@@ -121,17 +121,17 @@ class TestRequestRange(unittest.TestCase):
 
         body = self.doGET(req, rsp)
 
-        self.failUnless(rsp.getStatus() == 416,
+        self.assertTrue(rsp.getStatus() == 416,
             'Expected a 416 status, got %s' % rsp.getStatus())
 
         expect_content_range = 'bytes */%d' % len(self.data)
         content_range = rsp.getHeader('content-range')
-        self.failIf(content_range is None, 'No Content-Range header was set!')
-        self.failUnless(content_range == expect_content_range,
+        self.assertFalse(content_range is None, 'No Content-Range header was set!')
+        self.assertTrue(content_range == expect_content_range,
             'Received incorrect Content-Range header. Expected %s, got %s' % (
                 `expect_content_range`, `content_range`))
 
-        self.failUnless(body == '', 'index_html returned %s' % `body`)
+        self.assertTrue(body == '', 'index_html returned %s' % `body`)
 
     def expectOK(self, rangeHeader, if_range=None):
         req = self.app.REQUEST
@@ -144,7 +144,7 @@ class TestRequestRange(unittest.TestCase):
 
         body = self.doGET(req, rsp)
 
-        self.failUnless(rsp.getStatus() == 200,
+        self.assertTrue(rsp.getStatus() == 200,
             'Expected a 200 status, got %s' % rsp.getStatus())
 
     def expectSingleRange(self, range, start, end, if_range=None):
@@ -158,21 +158,21 @@ class TestRequestRange(unittest.TestCase):
 
         body = self.doGET(req, rsp)
 
-        self.failUnless(rsp.getStatus() == 206,
+        self.assertTrue(rsp.getStatus() == 206,
             'Expected a 206 status, got %s' % rsp.getStatus())
 
         expect_content_range = 'bytes %d-%d/%d' % (
             start, end - 1, len(self.data))
         content_range = rsp.getHeader('content-range')
-        self.failIf(content_range is None, 'No Content-Range header was set!')
-        self.failUnless(content_range == expect_content_range,
+        self.assertFalse(content_range is None, 'No Content-Range header was set!')
+        self.assertTrue(content_range == expect_content_range,
             'Received incorrect Content-Range header. Expected %s, got %s' % (
                 `expect_content_range`, `content_range`))
-        self.failIf(rsp.getHeader('content-length') != str(len(body)),
+        self.assertFalse(rsp.getHeader('content-length') != str(len(body)),
             'Incorrect Content-Length is set! Expected %s, got %s.' % (
                 str(len(body)), rsp.getHeader('content-length')))
 
-        self.failUnless(body == self.data[start:end],
+        self.assertTrue(body == self.data[start:end],
             'Incorrect range returned, expected %s, got %s' % (
                 `self.data[start:end]`, `body`))
 
@@ -192,18 +192,18 @@ class TestRequestRange(unittest.TestCase):
 
         body = self.doGET(req, rsp)
 
-        self.failUnless(rsp.getStatus() == 206,
+        self.assertTrue(rsp.getStatus() == 206,
             'Expected a 206 status, got %s' % rsp.getStatus())
-        self.failIf(rsp.getHeader('content-range'),
+        self.assertFalse(rsp.getHeader('content-range'),
             'The Content-Range header should not be set!')
 
         ct = rsp.getHeader('content-type').split(';')[0]
         draftprefix = draft and 'x-' or ''
-        self.failIf(ct != 'multipart/%sbyteranges' % draftprefix,
+        self.assertFalse(ct != 'multipart/%sbyteranges' % draftprefix,
             "Incorrect Content-Type set. Expected 'multipart/%sbyteranges', "
             "got %s" % (draftprefix, ct))
         if rsp.getHeader('content-length'):
-            self.failIf(rsp.getHeader('content-length') != str(len(body)),
+            self.assertFalse(rsp.getHeader('content-length') != str(len(body)),
                 'Incorrect Content-Length is set! Expected %s, got %s.' % (
                     str(len(body)), rsp.getHeader('content-length')))
 
@@ -224,23 +224,23 @@ class TestRequestRange(unittest.TestCase):
             start, end, size = int(start), int(end), int(size)
             end = end + 1
 
-            self.failIf(size != len(self.data),
+            self.assertFalse(size != len(self.data),
                 'Part Content-Range header reported incorrect length. '
                 'Expected %d, got %d.' % (len(self.data), size))
 
             body = part.get_payload()
 
-            self.failIf(len(body) != end - start,
+            self.assertFalse(len(body) != end - start,
                 'Part (%d, %d) is of wrong length, expected %d, got %d.' % (
                     start, end, end - start, len(body)))
-            self.failIf(body != self.data[start:end],
+            self.assertFalse(body != self.data[start:end],
                 'Part (%d, %d) has incorrect data. Expected %s, got %s.' % (
                     start, end, `self.data[start:end]`, `body`))
 
             add((start, end))
 
         # Copmare the ranges used with the expected range sets.
-        self.failIf(returnedRanges != sets,
+        self.assertFalse(returnedRanges != sets,
             'Got unexpected sets, expected %s, got %s' % (
                 sets, returnedRanges))
 

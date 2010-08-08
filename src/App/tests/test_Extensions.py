@@ -56,13 +56,13 @@ class FuncCodeTests(unittest.TestCase):
         def f(self):
             pass
         fc = self._makeOne(f, im=1)
-        self.failUnless(cmp(fc, None) > 0)
+        self.assertTrue(cmp(fc, None) > 0)
 
     def test___cmp___non_FuncCode(self):
         def f(self):
             pass
         fc = self._makeOne(f, im=1)
-        self.failUnless(cmp(fc, object()) > 0)
+        self.assertTrue(cmp(fc, object()) > 0)
 
     def test___cmp___w_FuncCode_same_args(self):
         def f(self, a, b):
@@ -71,7 +71,7 @@ class FuncCodeTests(unittest.TestCase):
             pass
         fc = self._makeOne(f, im=1)
         fc2 = self._makeOne(g, im=1)
-        self.failUnless(cmp(fc, fc2) == 0)
+        self.assertTrue(cmp(fc, fc2) == 0)
 
     def test___cmp___w_FuncCode_different_args(self):
         def f(self):
@@ -80,7 +80,7 @@ class FuncCodeTests(unittest.TestCase):
             pass
         fc = self._makeOne(f, im=1)
         fc2 = self._makeOne(g, im=1)
-        self.failUnless(cmp(fc, fc2) < 0)
+        self.assertTrue(cmp(fc, fc2) < 0)
 
 
 class _TempdirBase:
@@ -317,14 +317,14 @@ class Test_getObject(_TempdirBase, unittest.TestCase):
         obj = object()
         MODULES = {'somemodule': {'name': obj}}
         found = self._callFUT('somemodule', 'name', modules=MODULES)
-        self.failUnless(found is obj)
+        self.assertTrue(found is obj)
 
     def test_no_such_module(self):
         from zExceptions import NotFound
         MODULES = {}
         self.assertRaises(NotFound, self._callFUT,
                           'nonesuch', 'name', modules=MODULES)
-        self.failIf('nonesuch' in MODULES)
+        self.assertFalse('nonesuch' in MODULES)
 
     def test_not_found_in_module(self):
         from zExceptions import NotFound
@@ -333,8 +333,8 @@ class Test_getObject(_TempdirBase, unittest.TestCase):
         ext = self._makeFile(extdir, 'extension.py')
         self.assertRaises(NotFound, self._callFUT,
                           'foo.extension', 'name', modules=MODULES)
-        self.failUnless('foo.extension' in MODULES)
-        self.failIf('named' in MODULES['foo.extension'])
+        self.assertTrue('foo.extension' in MODULES)
+        self.assertFalse('named' in MODULES['foo.extension'])
 
     def test_found_in_module(self):
         MODULES = {}
@@ -342,7 +342,7 @@ class Test_getObject(_TempdirBase, unittest.TestCase):
         ext = self._makeFile(extdir, 'extension.py', EXTENSION_PY)
         found = self._callFUT('foo.extension', 'named', modules=MODULES)
         self.assertEqual(found, 'NAMED')
-        self.failUnless('foo.extension' in MODULES)
+        self.assertTrue('foo.extension' in MODULES)
         self.assertEqual(MODULES['foo.extension']['named'], 'NAMED')
 
     def test_found_in_module_pyc(self):
@@ -355,7 +355,7 @@ class Test_getObject(_TempdirBase, unittest.TestCase):
         os.remove(ext)
         found = self._callFUT('foo.extension', 'named', modules=MODULES)
         self.assertEqual(found, 'NAMED')
-        self.failUnless('foo.extension' in MODULES)
+        self.assertTrue('foo.extension' in MODULES)
         self.assertEqual(MODULES['foo.extension']['named'], 'NAMED')
 
     def test_found_in_module_after_cache_miss(self):
@@ -388,26 +388,26 @@ class Test_getBrain(_TempdirBase, unittest.TestCase):
 
     def test_no_module_no_class_yields_NoBrains(self):
         from App.Extensions import NoBrains
-        self.failUnless(self._callFUT('', '') is NoBrains)
+        self.assertTrue(self._callFUT('', '') is NoBrains)
 
     def test_missing_name(self):
         from App.Extensions import NoBrains
         from zExceptions import NotFound
-        self.failUnless(self._callFUT('', '') is NoBrains)
+        self.assertTrue(self._callFUT('', '') is NoBrains)
         MODULES = {'somemodule': {}}
         self.assertRaises(NotFound,
                           self._callFUT, 'somemodule', 'name', modules=MODULES)
 
     def test_not_a_class(self):
         from App.Extensions import NoBrains
-        self.failUnless(self._callFUT('', '') is NoBrains)
+        self.assertTrue(self._callFUT('', '') is NoBrains)
         MODULES = {'somemodule': {'name': object()}}
         self.assertRaises(ValueError,
                           self._callFUT, 'somemodule', 'name', modules=MODULES)
 
     def test_found_class(self):
         from App.Extensions import NoBrains
-        self.failUnless(self._callFUT('', '') is NoBrains)
+        self.assertTrue(self._callFUT('', '') is NoBrains)
         MODULES = {'somemodule': {'name': self.__class__}}
         self.assertEqual(self._callFUT('somemodule', 'name', modules=MODULES),
                          self.__class__)
