@@ -30,7 +30,7 @@ class ViewPageTemplateFileTests(unittest.TestCase):
         self.assertEqual(vptf.id, 'seagull.pt')
 
     def test_getId_with_path(self):
-        vptf = self._makeOne('pages/dirpage1.pt')
+        vptf = self._makeOne('templates/dirpage1.pt')
         self.assertEqual(vptf.id, 'dirpage1.pt')
 
     def test_pt_getEngine(self):
@@ -139,7 +139,7 @@ class ViewPageTemplateFileTests(unittest.TestCase):
         request = DummyRequest()
         response = request.response = DummyResponse()
         view = self._makeView(context, request)
-        vptf = self._makeOne('pages/dirpage1.pt')
+        vptf = self._makeOne('templates/dirpage1.pt')
         body = vptf(view)
         self.assertEqual(body, DIRPAGE1)
         self.assertEqual(response._headers['Content-Type'], 'text/html')
@@ -150,13 +150,13 @@ class ViewPageTemplateFileTests(unittest.TestCase):
         response = request.response = DummyResponse(
                                         {'Content-Type': 'text/xhtml'})
         view = self._makeView(context, request)
-        vptf = self._makeOne('pages/dirpage1.pt')
+        vptf = self._makeOne('templates/dirpage1.pt')
         body = vptf(view)
         self.assertEqual(response._headers['Content-Type'], 'text/xhtml')
 
     def test___get___(self):
         from Products.Five.browser.pagetemplatefile import BoundPageTemplate
-        template = self._makeOne('pages/dirpage1.pt')
+        template = self._makeOne('templates/dirpage1.pt')
         class Foo:
             def __init__(self, context, request):
                 self.context = context

@@ -193,7 +193,7 @@
   <five:pagesFromDirectory
       for="Products.Five.tests.testing.simplecontent.ISimpleContent"
       module="Products.Five.browser.tests"
-      directory="pages"
+      directory="templates"
       permission="zope2.Public"
       />
 
