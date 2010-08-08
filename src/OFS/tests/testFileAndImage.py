@@ -195,10 +195,10 @@ class FileTests(unittest.TestCase):
         # From a file
         s = "a" * (1 << 16) * 3
         data, size = self.file._read_data(StringIO(s))
-        self.failIfEqual(data.next, None)
+        self.assertNotEqual(data.next, None)
         # From a string
         data, size = self.file._read_data(s)
-        self.failIfEqual(data.next, None)
+        self.assertNotEqual(data.next, None)
 
     def testManageEditWithFileData(self):
         self.file.manage_edit('foobar', 'text/plain', filedata='ASD')

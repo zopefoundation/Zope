@@ -260,7 +260,7 @@ class TestBaseRequest(unittest.TestCase, BaseRequest_factory):
         folder._setObject('objWithBD', self._makeObjectWithBD())
         folder.objWithBD._default_path = ['']
         r = self._makeOne(root)
-        self.failUnlessRaises(NotFound, r.traverse, 'folder/objWithBD')
+        self.assertRaises(NotFound, r.traverse, 'folder/objWithBD')
 
     def test_traverse_withBBT_handles_AttributeError(self):
         # Test that if __bobo_traverse__ raises AttributeError
@@ -273,7 +273,7 @@ class TestBaseRequest(unittest.TestCase, BaseRequest_factory):
         obj.__bobo_traverse__ = _faux___bobo_traverse__
         folder._setObject('objWithBBT', obj)
         r = self._makeOne(root)
-        self.failUnlessRaises(NotFound, r.traverse,
+        self.assertRaises(NotFound, r.traverse,
                               'folder/objWithBBT/bbt_foo')
 
     def test_traverse_UseTraversalDefault(self):
@@ -309,7 +309,7 @@ class TestBaseRequest(unittest.TestCase, BaseRequest_factory):
         folder._setObject('objWithBDBBT', self._makeObjectWithBDBBT())
         folder.objWithBDBBT._default_path = ['xxx']
         r = self._makeOne(root)
-        self.failUnlessRaises(NotFound, r.traverse, 'folder/objWithBDBBT')
+        self.assertRaises(NotFound, r.traverse, 'folder/objWithBDBBT')
 
     def test_traverse_slash(self):
         root, folder = self._makeRootAndFolder()

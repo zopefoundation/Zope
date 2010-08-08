@@ -15,8 +15,8 @@ Bugs Fixed
 Features Added
 ++++++++++++++
 
-- Replaced failUnless with assertTrue and failIf with assertFalse in tests.
-
+- Updated test assertions to use unittest's ``assert*`` methods in favor of
+  their deprecated `fail*` aliases.
 
 2.13.0a3 (2010-08-04)
 ---------------------

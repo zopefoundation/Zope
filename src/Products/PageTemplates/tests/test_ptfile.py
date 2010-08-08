@@ -135,7 +135,7 @@ class TypeSniffingTestCase(unittest.TestCase):
         f.close()
         pt = PageTemplateFile(self.TEMPFILENAME)
         pt_id = pt.getId()
-        self.failUnlessEqual(
+        self.assertEqual(
                 pt_id, desired_id,
                 'getId() returned %r. Expecting %r' % (pt_id, desired_id)
                 )
@@ -148,7 +148,7 @@ class TypeSniffingTestCase(unittest.TestCase):
         f.close()
         pt = PageTemplateFile(self.TEMPFILENAME)
         pt_path = pt.getPhysicalPath()
-        self.failUnlessEqual(
+        self.assertEqual(
                 pt_path, desired_path,
                 'getPhysicalPath() returned %r. Expecting %r' % (
                     desired_path, pt_path,

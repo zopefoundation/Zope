@@ -156,7 +156,7 @@ class ZopeStarterTestCase(test_logger.LoggingTestBase):
         # XXX need to check that log messages get written to
         # sys.stderr, not that the stream identity for the startup
         # handler matches
-        #self.failUnlessEqual(starter.startup_handler.stream, sys.stderr)
+        #self.assertEqual(starter.startup_handler.stream, sys.stderr)
         conf = self.load_config_text("""
             instancehome <<INSTANCE_HOME>>
             debug-mode off
@@ -172,7 +172,7 @@ class ZopeStarterTestCase(test_logger.LoggingTestBase):
         # XXX need to check that log messages get written to
         # sys.stderr, not that the stream identity for the startup
         # handler matches
-        #self.failIfEqual(starter.startup_handler.stream, sys.stderr)
+        #self.assertNotEqual(starter.startup_handler.stream, sys.stderr)
 
     def testSetupZServerThreads(self):
         conf = self.load_config_text("""
@@ -361,7 +361,7 @@ class ZopeStarterTestCase(test_logger.LoggingTestBase):
         try:
             starter = self.get_starter(conf)
             starter.setupInterpreter()
-            self.failUnlessEqual( sys.getcheckinterval() , newcheckinterval )
+            self.assertEqual( sys.getcheckinterval() , newcheckinterval )
         finally:
             sys.setcheckinterval(oldcheckinterval)
 
@@ -385,7 +385,7 @@ class ZopeStarterTestCase(test_logger.LoggingTestBase):
             f.close()
             configure(fname)
             new_config = getConfiguration()
-            self.failUnlessEqual(new_config.zserver_threads, 100)
+            self.assertEqual(new_config.zserver_threads, 100)
         finally:
             sys.argv = old_argv
             try:

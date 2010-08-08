@@ -36,7 +36,7 @@ class TestTransientObject(TestCase):
 
     def test_id(self):
         t = self.t.new('xyzzy')
-        self.failIfEqual(t.getId(), 'xyzzy') # dont acquire
+        self.assertNotEqual(t.getId(), 'xyzzy') # dont acquire
         self.assertEqual(t.getContainerKey(), 'xyzzy')
 
     def test_validate(self):
@@ -62,12 +62,12 @@ class TestTransientObject(TestCase):
     def test_getLastModifiedSet(self):
         t = self.t.new('xyzzy')
         t['a'] = 1
-        self.failIfEqual(t.getLastModified(), None)
+        self.assertNotEqual(t.getLastModified(), None)
 
     def testSetLastModified(self):
         t = self.t.new('xyzzy')
         t.setLastModified()
-        self.failIfEqual(t.getLastModified(), None)
+        self.assertNotEqual(t.getLastModified(), None)
 
     def test_setLastAccessed(self):
         t = self.t.new('xyzzy')

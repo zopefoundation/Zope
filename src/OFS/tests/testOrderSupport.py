@@ -54,10 +54,10 @@ class TestOrderSupport(unittest.TestCase):
             f = self._makeOne()
             method = getattr(f, methodname)
             if rval == 'ValueError':
-                self.failUnlessRaises( ValueError, method, *args )
+                self.assertRaises( ValueError, method, *args )
             else:
-                self.failUnlessEqual( method(*args), rval )
-            self.failUnlessEqual( f.objectIds(), order )
+                self.assertEqual( method(*args), rval )
+            self.assertEqual( f.objectIds(), order )
 
     def test_moveObjectsUp(self):
         self._doCanonTest( 'moveObjectsUp',
@@ -157,13 +157,13 @@ class TestOrderSupport(unittest.TestCase):
         f.o2.isPrincipiaFolderish = True
         f.o3.isPrincipiaFolderish = True
         f.o4.isPrincipiaFolderish = True
-        self.failUnlessEqual( f.tpValues(), [f.o2, f.o3, f.o4] )
+        self.assertEqual( f.tpValues(), [f.o2, f.o3, f.o4] )
 
         f.setDefaultSorting('meta_type', False)
-        self.failUnlessEqual( f.tpValues(), [f.o3, f.o2, f.o4] )
+        self.assertEqual( f.tpValues(), [f.o3, f.o2, f.o4] )
 
         f.setDefaultSorting('position', True)
-        self.failUnlessEqual( f.tpValues(), [f.o4, f.o3, f.o2] )
+        self.assertEqual( f.tpValues(), [f.o4, f.o3, f.o2] )
 
 
 def test_suite():

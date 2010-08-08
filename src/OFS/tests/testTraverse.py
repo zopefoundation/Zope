@@ -248,12 +248,12 @@ class TestTraverse( unittest.TestCase ):
         self.assertTrue(self.folder1.unrestrictedTraverse( '/folder1/'))
 
     def testTraverseToNone( self ):
-        self.failUnlessRaises(
+        self.assertRaises(
             KeyError,
             self.folder1.unrestrictedTraverse, ('', 'folder1', 'file2' ) )
-        self.failUnlessRaises(
+        self.assertRaises(
             KeyError, self.folder1.unrestrictedTraverse,  '/folder1/file2' )
-        self.failUnlessRaises(
+        self.assertRaises(
             KeyError, self.folder1.unrestrictedTraverse,  '/folder1/file2/' )
 
     def testTraverseMethodRestricted(self):
@@ -272,7 +272,7 @@ class TestTraverse( unittest.TestCase ):
         # Zope security policy.
         self._setupSecurity()
         bb = self._makeBoboTraversable()
-        self.failUnlessRaises(KeyError, bb.restrictedTraverse, 'notfound')
+        self.assertRaises(KeyError, bb.restrictedTraverse, 'notfound')
         bb.restrictedTraverse('bb_subitem')
 
     def testBoboTraverseToMethod(self):
@@ -323,7 +323,7 @@ class TestTraverse( unittest.TestCase ):
         folder.manage_permission(access_contents_information, [], 0)
         bb = self._makeBoboTraversableWithAcquisition()
         bb = bb.__of__(self.root)
-        self.failUnlessRaises(Unauthorized,
+        self.assertRaises(Unauthorized,
                               bb.restrictedTraverse, 'folder1')
 
     def testBoboTraverseToAcquiredAttribute(self):
@@ -349,7 +349,7 @@ class TestTraverse( unittest.TestCase ):
         folder.stuff = 'stuff here'
         bb = self._makeBoboTraversableWithAcquisition()
         bb = bb.__of__(folder)
-        self.failUnlessRaises(Unauthorized,
+        self.assertRaises(Unauthorized,
                               self.root.folder1.restrictedTraverse, 'stuff')
 
     def testBoboTraverseTraversalDefault(self):
@@ -389,7 +389,7 @@ class TestTraverse( unittest.TestCase ):
         self._setupSecurity(CruelSecurityPolicy())
         newSecurityManager( None, self._makeUser().__of__( self.root ) )
         self.root.stuff = 'stuff here'
-        self.failUnlessRaises(Unauthorized,
+        self.assertRaises(Unauthorized,
                               self.app.folder1.restrictedTraverse, 'stuff')
 
     def testDefaultValueWhenUnathorized(self):

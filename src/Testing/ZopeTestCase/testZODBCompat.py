@@ -70,7 +70,7 @@ class TestCopyPaste(ZopeTestCase.ZopeTestCase):
         # _p_oids are None until we commit a subtransaction
         self.assertEqual(self.folder._p_oid, None)
         transaction.savepoint(optimistic=True)
-        self.failIfEqual(self.folder._p_oid, None)
+        self.assertNotEqual(self.folder._p_oid, None)
 
     def testCutPaste(self):
         cb = self.folder.manage_cutObjects(['doc'])
@@ -121,7 +121,7 @@ class TestImportExport(ZopeTestCase.ZopeTestCase):
         # _p_oids are None until we commit a subtransaction
         self.assertEqual(self.folder._p_oid, None)
         transaction.savepoint(optimistic=True)
-        self.failIfEqual(self.folder._p_oid, None)
+        self.assertNotEqual(self.folder._p_oid, None)
 
     def testExport(self):
         self.folder.manage_exportObject('doc')

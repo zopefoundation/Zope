@@ -136,8 +136,8 @@ class DI_Tests(unittest.TestCase):
         result, used = index._apply_index(req)
         if hasattr(result, 'keys'):
             result = result.keys()
-        self.failUnlessEqual(used, ('date',))
-        self.failUnlessEqual(len(result), len(expectedValues),
+        self.assertEqual(used, ('date',))
+        self.assertEqual(len(result), len(expectedValues),
             '%s | %s' % (result, expectedValues))
         for k, v in expectedValues:
             self.assertTrue(k in result)
@@ -175,8 +175,8 @@ class DI_Tests(unittest.TestCase):
         from DateTime import DateTime
         index = self._makeOne()
 
-        self.failUnlessEqual(len(index), 0)
-        self.failUnlessEqual(len(index.referencedObjects()), 0)
+        self.assertEqual(len(index), 0)
+        self.assertEqual(len(index.referencedObjects()), 0)
 
         self.assertTrue(index.getEntryForObject(1234) is None)
         marker = []
@@ -185,7 +185,7 @@ class DI_Tests(unittest.TestCase):
 
         self.assertTrue(index.hasUniqueValuesFor('date'))
         self.assertFalse(index.hasUniqueValuesFor('foo'))
-        self.failUnlessEqual(len(index.uniqueValues('date')), 0)
+        self.assertEqual(len(index.uniqueValues('date')), 0)
 
         self.assertTrue(index._apply_index({'zed': 12345}) is None)
 
@@ -211,8 +211,8 @@ class DI_Tests(unittest.TestCase):
         self._populateIndex(index)
         values = self._getValues()
 
-        self.failUnlessEqual(len(index), len(values) - 2) # One dupe, one empty
-        self.failUnlessEqual(len(index.referencedObjects()), len(values) - 1)
+        self.assertEqual(len(index), len(values) - 2) # One dupe, one empty
+        self.assertEqual(len(index.referencedObjects()), len(values) - 1)
             # One empty
 
         self.assertTrue(index.getEntryForObject(1234) is None)
@@ -222,10 +222,10 @@ class DI_Tests(unittest.TestCase):
 
         for k, v in values:
             if v.date():
-                self.failUnlessEqual(index.getEntryForObject(k),
+                self.assertEqual(index.getEntryForObject(k),
                     self._convert(v.date()))
 
-        self.failUnlessEqual(len(index.uniqueValues('date')), len(values) - 2)
+        self.assertEqual(len(index.uniqueValues('date')), len(values) - 2)
         self.assertTrue(index._apply_index({'bar': 123}) is None)
 
         self._checkApply(index,
@@ -258,7 +258,7 @@ class DI_Tests(unittest.TestCase):
             # and still correct for item 10
             yr, mo, dy, hr, mn = v.date().utctimetuple()[:5]
             val = (((yr * 12 + mo) * 31 + dy) * 24 + hr) * 60 + mn
-            self.failUnlessEqual(index.getEntryForObject(k), val)
+            self.assertEqual(index.getEntryForObject(k), val)
 
     def test_removal(self):
         """ DateIndex would hand back spurious entries when used as a

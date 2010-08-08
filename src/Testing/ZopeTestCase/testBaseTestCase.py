@@ -372,17 +372,17 @@ class TestRequestVariables(base.TestCase):
 
     def testRequestVariables(self):
         request = self.app.REQUEST
-        self.failIfEqual(request.get('SERVER_NAME', ''), '')
-        self.failIfEqual(request.get('SERVER_PORT', ''), '')
-        self.failIfEqual(request.get('REQUEST_METHOD', ''), '')
-        self.failIfEqual(request.get('URL', ''), '')
-        self.failIfEqual(request.get('SERVER_URL', ''), '')
-        self.failIfEqual(request.get('URL0', ''), '')
-        self.failIfEqual(request.get('URL1', ''), '')
-        self.failIfEqual(request.get('BASE0', ''), '')
-        self.failIfEqual(request.get('BASE1', ''), '')
-        self.failIfEqual(request.get('BASE2', ''), '')
-        self.failIfEqual(request.get('ACTUAL_URL', ''), '')
+        self.assertNotEqual(request.get('SERVER_NAME', ''), '')
+        self.assertNotEqual(request.get('SERVER_PORT', ''), '')
+        self.assertNotEqual(request.get('REQUEST_METHOD', ''), '')
+        self.assertNotEqual(request.get('URL', ''), '')
+        self.assertNotEqual(request.get('SERVER_URL', ''), '')
+        self.assertNotEqual(request.get('URL0', ''), '')
+        self.assertNotEqual(request.get('URL1', ''), '')
+        self.assertNotEqual(request.get('BASE0', ''), '')
+        self.assertNotEqual(request.get('BASE1', ''), '')
+        self.assertNotEqual(request.get('BASE2', ''), '')
+        self.assertNotEqual(request.get('ACTUAL_URL', ''), '')
 
 
 import gc

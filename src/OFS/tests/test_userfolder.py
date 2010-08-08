@@ -123,7 +123,7 @@ class UserFolderTests(unittest.TestCase):
         uf = self._makeOne(app)
         user = uf.validate(app.REQUEST, self._makeBasicAuthToken(),
                            ['role1'])
-        self.failIfEqual(user, None)
+        self.assertNotEqual(user, None)
         self.assertEqual(user.getUserName(), 'user1')
 
     def testNotValidateWithoutAuth(self):
