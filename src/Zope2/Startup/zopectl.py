@@ -122,6 +122,10 @@ class ZopeCtlOptions(ZDOptions):
     # the command line option can set this.
     program = None
     
+    # this indicates that no explict socket name has been provided.
+    # the command line option can set this.
+    sockname = None
+    
     # XXX Suppress using Zope's <eventlog> section to avoid using the
     # same logging for zdctl as for the Zope appserver.  There still
     # needs to be a way to set a logfile for zdctl.
@@ -178,7 +182,10 @@ class ZopeCtlOptions(ZDOptions):
             self.program = config.runner.program
         else:
             self.program = [os.path.join(self.directory, "bin", "runzope")]
-        if config.runner and config.runner.socket_name:
+        if self.sockname:
+            # set by command line option
+            pass
+        elif config.runner and config.runner.socket_name:
             self.sockname = config.runner.socket_name
         else:
             self.sockname = os.path.join(self.clienthome, "zopectlsock")
