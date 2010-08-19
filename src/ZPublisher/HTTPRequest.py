@@ -232,6 +232,13 @@ class HTTPRequest(BaseRequest):
         other['VirtualRootPhysicalPath'] = parents[-1].getPhysicalPath()
         self._resetURLS()
 
+    def getVirtualRoot(self):
+        """ Return a slash-separated virtual root.
+
+        If it is same as the physical root, return ''.
+        """
+        return '/'.join([''] + self._script)
+
     def physicalPathToVirtualPath(self, path):
         """ Remove the path to the VirtualRoot from a physical path """
         if type(path) is type(''):

@@ -1029,6 +1029,16 @@ class HTTPRequestTests(unittest.TestCase):
                           '{"intkey":123,"stringkey":"blah"}')
         self.assertEquals(req.cookies['anothercookie'], 'boring')
 
+    def test_getVirtualRoot(self):
+        # https://bugs.launchpad.net/zope2/+bug/193122
+        req = self._makeOne()
+
+        req._script = []
+        self.assertEquals(req.getVirtualRoot(), '')
+
+        req._script = ['foo', 'bar']
+        self.assertEquals(req.getVirtualRoot(), '/foo/bar')
+
 TEST_ENVIRON = {
     'CONTENT_TYPE': 'multipart/form-data; boundary=12345',
     'REQUEST_METHOD': 'POST',
