@@ -15,6 +15,8 @@ Bugs Fixed
 Features Added
 ++++++++++++++
 
+- LP #193122: New method getVirtualRoot added to the Request class
+
 - Updated test assertions to use unittest's ``assert*`` methods in favor of
   their deprecated `fail*` aliases.
 
