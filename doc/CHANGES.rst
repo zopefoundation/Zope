@@ -15,10 +15,12 @@ Bugs Fixed
 Features Added
 ++++++++++++++
 
-- LP #193122: New method getVirtualRoot added to the Request class
+- LP #193122: New method getVirtualRoot added to the Request class.
 
 - Updated test assertions to use unittest's ``assert*`` methods in favor of
   their deprecated `fail*` aliases.
+
+- Update to Zope Toolkit 1.0a3.
 
 2.13.0a3 (2010-08-04)
 ---------------------
