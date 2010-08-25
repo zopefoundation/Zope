@@ -31,6 +31,4 @@ deprecated("Please import from AccessControl.security",
     _getSecurity = 'AccessControl.security:_getSecurity',
     protectName = 'AccessControl.security:protectName',
     protectClass = 'AccessControl.security:protectClass',
-    create_permission_from_permission_directive = \
-        'AccessControl.security:create_permission_from_permission_directive',
 )

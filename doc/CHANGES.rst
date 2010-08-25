@@ -12,6 +12,15 @@ Bugs Fixed
 ++++++++++
 
 
+Restructuring
++++++++++++++
+
+- Removed deprecated
+  ``Products.Five.security.create_permission_from_permission_directive``
+  event handler. Its code was moved into the Zope 2 version of the permission
+  directive in ``AccessControl.security``.
+
+
 Features Added
 ++++++++++++++
 
