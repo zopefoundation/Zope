@@ -20,7 +20,6 @@ Restructuring
   event handler. Its code was moved into the Zope 2 version of the permission
   directive in ``AccessControl.security``.
 
-
 Features Added
 ++++++++++++++
 
@@ -30,6 +29,10 @@ Features Added
   their deprecated `fail*` aliases.
 
 - Update to Zope Toolkit 1.0a3.
+
+- Updated packages:
+
+  - AccessControl = 2.13.3
 
 2.13.0a3 (2010-08-04)
 ---------------------
