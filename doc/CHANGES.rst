@@ -16,7 +16,7 @@ Bugs Fixed
 Features Added
 ++++++++++++++
 
-- LP #193122: New method getVirtualRoot added to the Request class
+- LP #193122: New method getVirtualRoot added to the Request class.
 
 - Added forward-compatibility shims for some frequently used modules moved in
   Zope 2.13.
