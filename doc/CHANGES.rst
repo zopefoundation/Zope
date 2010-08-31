@@ -23,6 +23,7 @@ Features Added
 
 - Updated packages:
 
+  - Acquisition = 2.13.4
   - DateTime = 2.12.5
   - Products.ZSQLMethods = 2.13.3
 
