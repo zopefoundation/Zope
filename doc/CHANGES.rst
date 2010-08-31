@@ -24,6 +24,7 @@ Features Added
 - Updated packages:
 
   - DateTime = 2.12.5
+  - Products.ZSQLMethods = 2.13.3
 
 2.12.10 (2010-07-20)
 --------------------
