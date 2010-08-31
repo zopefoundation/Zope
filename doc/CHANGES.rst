@@ -33,6 +33,7 @@ Features Added
 - Updated packages:
 
   - AccessControl = 2.13.3
+  - Acquisition = 2.13.4
 
 2.13.0a3 (2010-08-04)
 ---------------------
