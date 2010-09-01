@@ -8,6 +8,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Prevent uncaught exceptions from killing ZServer worker threads.
+        https://bugs.launchpad.net/zope2/+bug/627988
+
       - Ensure that mailhosts which share a queue directory do not double-
         deliver mails, by sharing the thread which processes emails for
         that directory.  https://bugs.launchpad.net/zope2/+bug/574286
