@@ -8,6 +8,9 @@ Zope Changes
 
     Bugs fixed
 
+      - Prevent uncaught exceptions from killing ZServer worker threads.
+        https://bugs.launchpad.net/zope2/+bug/627988
+
       - Updated 'pytz' external to point to '2010b' version (not via Zope3).
 
       - Protect ZCTextIndex's clear method against storing Acquisition wrappers.
