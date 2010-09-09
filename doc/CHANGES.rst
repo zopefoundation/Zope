@@ -5,12 +5,8 @@ This file contains change information for the current Zope release.
 Change information for previous versions of Zope can be found at
 http://docs.zope.org/zope2/releases/.
 
-2.13.0a4 (unreleased)
+2.13.0a4 (2010-09-09)
 ---------------------
-
-Bugs Fixed
-++++++++++
-
 
 Restructuring
 +++++++++++++
@@ -34,6 +30,7 @@ Features Added
 
   - AccessControl = 2.13.3
   - Acquisition = 2.13.4
+  - ZODB3 = 3.10.0b6
 
 2.13.0a3 (2010-08-04)
 ---------------------
