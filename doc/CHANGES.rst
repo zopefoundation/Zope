@@ -11,6 +11,10 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
+Features Added
+++++++++++++++
+
+- Add ability to define extra zopectl commands via setuptools entrypoints.
 
 2.13.0a4 (2010-09-09)
 ---------------------

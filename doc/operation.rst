@@ -154,3 +154,40 @@ Troubleshooting
   should already be available.
 
 - See the :doc:`CHANGES` for important notes on this version of Zope.
+
+
+
+Adding extra commands to Zope
+-----------------------------
+
+It is possible to add extra commands to ``zopectl`` by defining *entry points*
+in ``setup.py``. Commands have to be put in the ``zopectl.command`` group:
+
+.. code-block:: python
+
+   setup(name="MyPackage",
+         ....
+         entry_points="""
+         [zopectl.command]
+         init_app = mypackage.commands:init_application
+         """)
+
+.. note::
+
+   Due to an implementation detail of ``zopectl`` you can not use a minus
+   character (``-``) in the command name.
+
+This adds a ``init_app`` command that can be used directly from the commandline::
+
+    bin\zopectl init_app
+
+The command must be implemented as a python callable. It will be called with
+two parameters: the Zope2 application and a tuple with all commandline
+arguments. Here is a basic example:
+
+.. code-block:: python
+
+   def init_application(app, args):
+       print 'Initialisating the application'
+
+
