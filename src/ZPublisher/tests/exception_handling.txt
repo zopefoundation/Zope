@@ -160,7 +160,7 @@ And the same with unicode error value.
     >>> browser.open('http://localhost/test_folder_1_/foo')
     Traceback (most recent call last):
     ...
-    Unauthorized: <unprintable ... object>
+    Unauthorized: ...
 
 Handle zExceptions.Unauthorized raised by BaseRequest.traverse. We take the
 'WWW-Authenticate' header as a sign that HTTPResponse._unauthorized was called.
