@@ -36,9 +36,12 @@ configuration option default_to_interactive is set to false).  Use the
 action "help" to find out about available actions.
 """
 
+import csv
 import os
 import sys
 import signal
+
+import pkg_resources
 
 import zdaemon
 import Zope2.Startup
@@ -316,6 +319,63 @@ class ZopeCmd(ZDCmd):
     def help_debug(self):
         print "debug -- run the Zope debugger to inspect your database"
         print "         manually using a Python interactive shell"
+
+    def __getattr__(self, name):
+        """Getter to check if an unknown command is implement by an entry point."""
+        if not name.startswith("do_"):
+            raise AttributeError(name)
+        data=list(pkg_resources.iter_entry_points("zopectl.command", name=name[3:]))
+        if not data:
+            raise AttributeError(name)
+        if len(data)>1:
+            print >>sys.stderr, "Warning: multiple entry points found for command"
+            return
+        func=data[0].load()
+        if not callable(func):
+            print >>sys.stderr, "Error: %s is not a callable method" % name
+            return
+
+        return self.run_entrypoint(data[0])
+
+
+    def run_entrypoint(self, entry_point):
+        def go(arg):
+            # If the command line was something like
+            # """bin/instance run "one two" three"""
+            # cmd.parseline will have converted it so
+            # that arg == 'one two three'. This is going to
+            # foul up any quoted command with embedded spaces.
+            # So we have to return to self.options.args,
+            # which is a tuple of command line args,
+            # throwing away the "run" command at the beginning.
+            #
+            # Further complications: if self.options.args has come
+            # via subprocess, it may look like
+            # ['run "arg 1" "arg2"'] rather than ['run','arg 1','arg2'].
+            # If that's the case, we'll use csv to do the parsing
+            # so that we can split on spaces while respecting quotes.
+            if len(self.options.args) == 1:
+                tup = csv.reader(self.options.args, delimiter=' ').next()
+
+            # Remove -c and add command name as sys.argv[0]
+            cmd = [ 'import sys',
+                    'sys.argv.pop()',
+                    'sys.argv.append(r\'%s\')' % entry_point.name
+                   ]
+            if len(tup) > 1:
+                argv = tup[1:]
+                cmd.append('[sys.argv.append(x) for x in %s]; ' % argv)
+            cmd.extend([
+                'import pkg_resources',
+                'import Zope2',
+                'func=pkg_resources.EntryPoint.parse(\'%s\').load(False)' % entry_point,
+                'app=Zope2.app()',
+                'func(app)',
+                ])
+            cmdline = self.get_startup_cmd(self.options.python, ' ; '.join(cmd))
+            self._exitstatus = os.system(cmdline)
+        return go
+
 
     def do_run(self, args):
         if not args:
