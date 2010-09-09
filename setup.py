@@ -17,7 +17,7 @@ from setuptools import setup, find_packages
 
 
 setup(name='Zope2',
-    version='2.13.0a4',
+    version='2.13.0a5.dev',
     url='http://zope2.zope.org',
     license='ZPL 2.1',
     description='Zope2 application server / web framework',
