@@ -16,6 +16,9 @@ Features Added
 
 - Add ability to define extra zopectl commands via setuptools entrypoints.
 
+- Updated packages:
+
+  - lxml = 2.2.6
 
 2.12.11 (2010-09-09)
 --------------------
