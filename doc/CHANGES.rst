@@ -18,7 +18,7 @@ Features Added
 
 - Updated packages:
 
-  - lxml = 2.2.6
+  - lxml = 2.2.8
 
 2.12.11 (2010-09-09)
 --------------------
