@@ -16,6 +16,8 @@ Features Added
 
 - Add ability to define extra zopectl commands via setuptools entrypoints.
 
+- Downgraded ZODB3 to 3.10.0b4 to avoid test failures with tempstorage.
+
 2.13.0a4 (2010-09-09)
 ---------------------
 
