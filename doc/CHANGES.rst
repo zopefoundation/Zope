@@ -19,6 +19,7 @@ Features Added
 - Updated packages:
 
   - lxml = 2.2.8
+  - zc.buildout = 1.4.4
 
 2.12.11 (2010-09-09)
 --------------------
