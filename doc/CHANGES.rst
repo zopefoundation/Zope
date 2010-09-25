@@ -20,6 +20,10 @@ Features Added
 
 - Downgraded ZODB3 to 3.10.0b4 to avoid test failures with tempstorage.
 
+- Updated distributions:
+
+  - repoze.retry = 1.0
+
 2.13.0a4 (2010-09-09)
 ---------------------
 
@@ -41,7 +45,7 @@ Features Added
 
 - Update to Zope Toolkit 1.0a3.
 
-- Updated packages:
+- Updated distributions:
 
   - AccessControl = 2.13.3
   - Acquisition = 2.13.4
