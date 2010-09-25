@@ -23,6 +23,7 @@ Features Added
 - Updated distributions:
 
   - repoze.retry = 1.0
+  - tempstorage = 2.12.0
   - zope.testbrowser = 3.10.1
 
 2.13.0a4 (2010-09-09)
