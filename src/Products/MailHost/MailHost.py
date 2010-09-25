@@ -420,31 +420,8 @@ def _mungeHeaders(messageText, mto=None, mfrom=None, subject=None,
         # we don't use get_content_type because that has a default
         # value of 'text/plain'
         mo.set_type(msg_type)
-    if not mo.is_multipart():
-        charset_match = CHARSET_RE.search(mo['Content-Type'] or '')
-        if charset and not charset_match:
-            # Don't change the charset if already set
-            # This encodes the payload automatically based on the default
-            # encoding for the charset
-            mo.set_charset(charset)
-        elif charset_match and not charset:
-            # If a charset parameter was provided use it for header encoding below,
-            # Otherwise, try to use the charset provided in the message.
-            charset = charset_match.groups()[0]
-    else:
-        # Do basically the same for each payload as for the complete
-        # multipart message.
-        for index, payload in enumerate(mo.get_payload()):
-            if not isinstance(payload, Message):
-                payload = message_from_string(payload)
-            charset_match = CHARSET_RE.search(payload['Content-Type'] or '')
-            if payload.get_filename() is None:
-                # No binary file
-                if charset and not charset_match:
-                    payload.set_charset(charset)
-                elif charset_match and not charset:
-                    charset = charset_match.groups()[0]
-            mo.get_payload()[index] = payload
+
+    charset = _set_recursive_charset(mo, charset=charset)
 
     # Parameters given will *always* override headers in the messageText.
     # This is so that you can't override or add to subscribers by adding
@@ -491,6 +468,40 @@ def _mungeHeaders(messageText, mto=None, mfrom=None, subject=None,
         mo['Date'] = DateTime().rfc822()
 
     return mo.as_string(), mto, mfrom
+
+
+def _set_recursive_charset(payload, charset=None):
+    """Set charset for all parts of an multipart message."""
+    def _set_payload_charset(payload, charset=None, index=None):
+        payload_from_string = False
+        if not isinstance(payload, Message):
+            payload = message_from_string(payload)
+            payload_from_string = True
+        charset_match = CHARSET_RE.search(payload['Content-Type'] or '')
+        if charset and not charset_match:
+            # Don't change the charset if already set
+            # This encodes the payload automatically based on the default
+            # encoding for the charset
+            if payload_from_string:
+                payload.get_payload()[index] = payload
+            else:
+                payload.set_charset(charset)
+        elif charset_match and not charset:
+            # If a charset parameter was provided use it for header encoding below,
+            # Otherwise, try to use the charset provided in the message.
+            charset = charset_match.groups()[0]
+        return charset
+    if payload.is_multipart():
+        for index, payload in enumerate(payload.get_payload()):
+            if payload.get_filename() is None:
+                if not payload.is_multipart():
+                    charset = _set_payload_charset(payload, charset=charset, index=index)
+                else:
+                    _set_recursive_charset(payload, charset=charset)
+    else:
+        charset = _set_payload_charset(payload, charset=charset)
+    return charset
+
 
 def _try_encode(text, charset):
     """Attempt to encode using the default charset if none is

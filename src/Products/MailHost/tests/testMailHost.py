@@ -541,12 +541,18 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
 This is plain text.
+
 --===============0490954888==
+Content-Type: multipart/related; boundary="===============2078950065=="
+MIME-Version: 1.0
+
+--===============2078950065==
 Content-Type: text/html; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
 <p>This is html.</p>
+--===============2078950065==--
 --===============0490954888==--
 """)
 

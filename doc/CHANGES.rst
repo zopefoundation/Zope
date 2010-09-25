@@ -11,6 +11,8 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
+- LP #642728: Fixed TypeError on nested multi part messages in MailHost.
+
 Features Added
 ++++++++++++++
 
