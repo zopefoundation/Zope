@@ -156,7 +156,7 @@ Features Added
   behaviour is deprecated as packages can be factored out to their own
   distribution, making the "software home" relative path meaningless.
 
-- Updated packages:
+- Updated distributions:
 
   - AccessControl = 2.13.2
   - DateTime = 2.12.5
@@ -235,7 +235,7 @@ Features Added
 - Directly extend and use the Zope Toolkit KGS release 1.0a2 from
   http://download.zope.org/zopetoolkit/index/.
 
-- Updated packages:
+- Updated distributions:
 
   - DateTime = 2.12.4
   - nt_svcutils = 2.13.0
@@ -396,8 +396,8 @@ General
 - ZCTextIndex query parser treats fullwidth space characters defined in Unicode
   as valid white space.
 
-Updated packages
-++++++++++++++++
+Updated distributions
++++++++++++++++++++++
 
 - Jinja2 = 2.5.0
 - RestrictedPython = 3.6.0a1
