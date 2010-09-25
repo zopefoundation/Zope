@@ -13,8 +13,7 @@
 """Tests ZODB behavior in ZopeTestCase
 
 Demonstrates that cut/copy/paste/clone/rename and import/export
-work if a subtransaction is committed before performing the respective
-operation.
+work if a savepoint is made before performing the respective operation.
 """
 
 import os
@@ -67,7 +66,7 @@ class TestCopyPaste(ZopeTestCase.ZopeTestCase):
     def afterSetUp(self):
         self.setPermissions(cutpaste_permissions)
         self.folder.addDTMLMethod('doc', file='foo')
-        # _p_oids are None until we commit a subtransaction
+        # _p_oids are None until we create a savepoint
         self.assertEqual(self.folder._p_oid, None)
         transaction.savepoint(optimistic=True)
         self.assertNotEqual(self.folder._p_oid, None)
@@ -118,7 +117,7 @@ class TestImportExport(ZopeTestCase.ZopeTestCase):
     def afterSetUp(self):
         self.setupLocalEnvironment()
         self.folder.addDTMLMethod('doc', file='foo')
-        # _p_oids are None until we commit a subtransaction
+        # _p_oids are None until we create a savepoint
         self.assertEqual(self.folder._p_oid, None)
         transaction.savepoint(optimistic=True)
         self.assertNotEqual(self.folder._p_oid, None)
@@ -143,23 +142,13 @@ class TestImportExport(ZopeTestCase.ZopeTestCase):
     def setupLocalEnvironment(self):
         # Create the 'import' directory
         os.mkdir(self.import_dir)
-        try:
-            import App.config
-        except ImportError:
-            # Modify builtins
-            builtins = getattr(__builtins__, '__dict__', __builtins__)
-            self._ih = INSTANCE_HOME
-            builtins['INSTANCE_HOME'] = self.local_home
-            self._ch = CLIENT_HOME
-            builtins['CLIENT_HOME'] = self.import_dir
-        else:
-            # Zope >= 2.7
-            config = App.config.getConfiguration()
-            self._ih = config.instancehome
-            config.instancehome = self.local_home
-            self._ch = config.clienthome
-            config.clienthome = self.import_dir
-            App.config.setConfiguration(config)
+        import App.config
+        config = App.config.getConfiguration()
+        self._ih = config.instancehome
+        config.instancehome = self.local_home
+        self._ch = config.clienthome
+        config.clienthome = self.import_dir
+        App.config.setConfiguration(config)
 
     def afterClear(self):
         # Remove external resources
@@ -327,7 +316,7 @@ class TestTransactionAbort(ZopeTestCase.ZopeTestCase):
         # The foo attribute is still present
         self.assertTrue(hasattr(self.folder, 'foo'))
 
-    def testSubTransactionAbort(self):
+    def testSavepointAbort(self):
         self.folder.foo = 1
         self.assertTrue(hasattr(self.folder, 'foo'))
         transaction.savepoint(optimistic=True)
@@ -342,7 +331,7 @@ class TestTransactionAbort(ZopeTestCase.ZopeTestCase):
         # The _p_foo attribute is still present
         self.assertTrue(hasattr(self.folder, '_p_foo'))
 
-    def testSubTransactionAbortPersistent(self):
+    def testSavepointAbortPersistent(self):
         self.folder._p_foo = 1
         self.assertTrue(hasattr(self.folder, '_p_foo'))
         transaction.savepoint(optimistic=True)
@@ -357,7 +346,7 @@ class TestTransactionAbort(ZopeTestCase.ZopeTestCase):
         # The _v_foo attribute is still present
         self.assertTrue(hasattr(self.folder, '_v_foo'))
 
-    def testSubTransactionAbortVolatile(self):
+    def testSavepointAbortVolatile(self):
         self.folder._v_foo = 1
         self.assertTrue(hasattr(self.folder, '_v_foo'))
         transaction.savepoint(optimistic=True)
