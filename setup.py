@@ -13,7 +13,13 @@
 ##############################################################################
 
 import os
+import sys
 from setuptools import setup, find_packages
+
+additional_install_requires = []
+
+if sys.platform[:3].lower() == "win":
+    additional_install_requires += ['nt_svcutils']
 
 
 setup(name='Zope2',
@@ -56,7 +62,6 @@ setup(name='Zope2',
       'ZopeUndo',
       'docutils',
       'initgroups',
-      'nt_svcutils',
       'pytz',
       'setuptools',
       'tempstorage',
@@ -106,7 +111,7 @@ setup(name='Zope2',
       'Products.MIMETools',
       'Products.PythonScripts',
       'Products.StandardCacheManagers',
-    ],
+    ] + additional_install_requires,
 
     include_package_data=True,
     zip_safe=False,

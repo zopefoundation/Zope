@@ -14,6 +14,8 @@ Bugs Fixed
 - Fixed ``testZODBCompat`` tests in ZopeTestCase to match modern ZODB
   semantics.
 
+- LP #634942: Only require ``nt_svcutils`` on Windows.
+
 Features Added
 ++++++++++++++
 
