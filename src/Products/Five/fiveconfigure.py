@@ -16,16 +16,20 @@
 These directives are specific to Five and have no equivalents outside of it.
 """
 
+import logging
 import os
 import glob
 import warnings
 
+from App.config import getConfiguration
 from zope.interface import classImplements
 from zope.component.interface import provideInterface
 from zope.configuration.exceptions import ConfigurationError
 from zope.publisher.interfaces.browser import IDefaultBrowserLayer
 
 from Products.Five.browser.metaconfigure import page
+
+logger = logging.getLogger('Products.Five')
 
 
 def implements(_context, class_, interface):
@@ -67,11 +71,18 @@ def pagesFromDirectory(_context, directory, module, for_=None,
              layer=layer, for_=for_, template=fname)
 
 
+def handleBrokenProduct(product):
+    if getConfiguration().debug_mode:
+        # Just reraise the error and let Zope handle it.
+        raise
+    # Not debug mode. Zope should continue to load. Print a log message:
+    logger.exception('Could not import Product %s' % product.__name__)
+
+
 from zope.deferredimport import deprecated
 
 deprecated("Please import from OFS.metaconfigure",
     findProducts = 'OFS.metaconfigure:findProducts',
-    handleBrokenProduct = 'OFS.metaconfigure:handleBrokenProduct',
     loadProducts = 'OFS.metaconfigure:loadProducts',
     loadProductsOverrides = 'OFS.metaconfigure:loadProductsOverrides',
     _register_monkies = 'OFS.metaconfigure:_register_monkies',

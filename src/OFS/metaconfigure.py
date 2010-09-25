@@ -31,14 +31,6 @@ def findProducts():
     return products
 
 
-def handleBrokenProduct(product):
-    if debug_mode:
-        # Just reraise the error and let Zope handle it.
-        raise
-    # Not debug mode. Zope should continue to load. Print a log message:
-    logger.exception('Could not import Product %s' % product.__name__)
-
-
 def loadProducts(_context, file=None, files=None, package=None):
     if file is None:
         # set the default
@@ -51,10 +43,7 @@ def loadProducts(_context, file=None, files=None, package=None):
     for product in findProducts():
         zcml = os.path.join(os.path.dirname(product.__file__), file)
         if os.path.isfile(zcml):
-            try:
-                xmlconfig.include(_context, zcml, package=product)
-            except: # Yes, really, *any* kind of error.
-                handleBrokenProduct(product)
+            xmlconfig.include(_context, zcml, package=product)
 
 
 def loadProductsOverrides(_context, file=None, files=None, package=None):
@@ -69,10 +58,7 @@ def loadProductsOverrides(_context, file=None, files=None, package=None):
     for product in findProducts():
         zcml = os.path.join(os.path.dirname(product.__file__), file)
         if os.path.isfile(zcml):
-            try:
-                xmlconfig.includeOverrides(_context, zcml, package=product)
-            except: # Yes, really, *any* kind of error.
-                handleBrokenProduct(product)
+            xmlconfig.includeOverrides(_context, zcml, package=product)
 
 
 def get_registered_packages():

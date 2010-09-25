@@ -19,6 +19,9 @@ Bugs Fixed
 Features Added
 ++++++++++++++
 
+- Changed policy on handling exceptions during ZCML parsing in ``Products``.
+  We no longer catch any exceptions in non-debug mode.
+
 - Added a new BooleanIndex to the standard PluginIndexes.
 
 - Update to Zope Toolkit 1.0c1.
