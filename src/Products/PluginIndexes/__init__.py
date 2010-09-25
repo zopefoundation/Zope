@@ -91,3 +91,17 @@ def initialize(context):
                           icon='www/index.gif',
                           visibility=None,
                          )
+
+    from Products.PluginIndexes.BooleanIndex.BooleanIndex import BooleanIndex
+    from Products.PluginIndexes.BooleanIndex.BooleanIndex import \
+        manage_addBooleanIndex
+    from Products.PluginIndexes.BooleanIndex.BooleanIndex import \
+        manage_addBooleanIndexForm
+
+    context.registerClass(BooleanIndex,
+                          permission='Add Pluggable Index',
+                          constructors=(manage_addBooleanIndexForm,
+                                        manage_addBooleanIndex),
+                          icon='www/index.gif',
+                          visibility=None,
+                         )

@@ -19,6 +19,8 @@ Bugs Fixed
 Features Added
 ++++++++++++++
 
+- Added a new BooleanIndex to the standard PluginIndexes.
+
 - Update to Zope Toolkit 1.0c1.
 
 - Add ability to define extra zopectl commands via setuptools entrypoints.
