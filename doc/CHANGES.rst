@@ -11,6 +11,8 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
+- Fixed two unit tests that failed on fast Windows machines.
+
 - Fixed ``testZODBCompat`` tests in ZopeTestCase to match modern ZODB
   semantics.
 

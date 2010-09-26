@@ -255,6 +255,7 @@ class TestCatalogPlan(cleanup.CleanUp, unittest.TestCase):
         plan.stop_split('index1')
         plan.start_split('sort_on')
         plan.stop_split('sort_on')
+        time.sleep(0.02) # wait at least one Windows clock tick
         plan.stop()
 
         self.assert_(plan.duration > 0)
