@@ -5,6 +5,7 @@ Zope2.startup()
 
 import os
 import shutil
+import time
 import transaction
 import tempfile
 import ZODB
@@ -35,10 +36,12 @@ class HistoryTests(unittest.TestCase):
         t.description = None 
         t.note('Change 1')
         t.commit()
+        time.sleep(0.02) # wait at least one Windows clock tick
         ps.write('return 2')
         t = transaction.get()
         t.note('Change 2')
         t.commit()
+        time.sleep(0.02) # wait at least one Windows clock tick
         ps.write('return 3')
         t = transaction.get()
         t.note('Change 3')
