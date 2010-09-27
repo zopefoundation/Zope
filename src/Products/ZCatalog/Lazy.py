@@ -11,6 +11,9 @@
 #
 ##############################################################################
 
+from itertools import islice, count
+
+
 class Lazy(object):
 
     # Allow (reluctantly) access to unprotected attributes
@@ -43,7 +46,7 @@ class Lazy(object):
 
     def __getslice__(self, i1, i2):
         r = []
-        for i in xrange(i1, i2):
+        for i in islice(count(i1), i2-i1):
             try:
                 r.append(self[i])
             except IndexError:
