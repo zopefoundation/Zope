@@ -13,6 +13,9 @@ Bugs Fixed
 
 - Fixed unit test that failed on fast Windows machines.
 
+- Fixed OverflowError in Products.ZCatalog.Lazy on 64bit python
+  on Windows.
+
 - LP #642728: Fixed TypeError on nested multi part messages in MailHost.
 
 Features Added

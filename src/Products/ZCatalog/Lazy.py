@@ -13,6 +13,8 @@
 __doc__='''$Id$'''
 __version__='$Revision: 1.9 $'[11:-2]
 
+from itertools import islice, count
+
 
 class Lazy:
 
@@ -44,7 +46,7 @@ class Lazy:
 
     def __getslice__(self,i1,i2):
         r=[]
-        for i in xrange(i1,i2):
+        for i in islice(count(i1), i2-i1):
             try: r.append(self[i])
             except IndexError: return r
         return r
