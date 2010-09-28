@@ -535,7 +535,7 @@ def install_products(app):
                         folder_permissions, raise_exc=debug_mode)
 
     # Delayed install of packages-as-products
-    for module, init_func in get_packages_to_initialize():
+    for module, init_func in tuple(get_packages_to_initialize()):
         install_package(app, module, init_func, raise_exc=debug_mode)
 
     Products.meta_types=Products.meta_types+tuple(meta_types)

@@ -11,6 +11,9 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
+- Avoid iterating over the list of packages to initialize while it is being
+  mutated, which was skipping some packages.
+
 - Fixed two unit tests that failed on fast Windows machines.
 
 - Fixed OverflowError in Products.ZCatalog.Lazy on 64bit python
