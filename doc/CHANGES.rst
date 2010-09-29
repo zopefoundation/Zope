@@ -40,7 +40,7 @@ Features Added
 
   - Products.MailHost = 2.13.1
   - repoze.retry = 1.0
-  - tempstorage = 2.12.0
+  - tempstorage = 2.12.1
   - ZODB3 = 3.10.0b7
   - zope.testbrowser = 3.10.1
 
