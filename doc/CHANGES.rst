@@ -36,13 +36,12 @@ Features Added
 
 - Add ability to define extra zopectl commands via setuptools entrypoints.
 
-- Downgraded ZODB3 to 3.10.0b4 to avoid test failures with tempstorage.
-
 - Updated distributions:
 
   - Products.MailHost = 2.13.1
   - repoze.retry = 1.0
   - tempstorage = 2.12.0
+  - ZODB3 = 3.10.0b7
   - zope.testbrowser = 3.10.1
 
 2.13.0a4 (2010-09-09)
