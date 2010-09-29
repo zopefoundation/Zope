@@ -37,6 +37,7 @@ Features Added
 
 - Updated distributions:
 
+  - Acquisition = 2.13.5
   - Products.MailHost = 2.13.1
   - repoze.retry = 1.0
   - tempstorage = 2.12.1
