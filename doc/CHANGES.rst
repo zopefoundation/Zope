@@ -25,6 +25,7 @@ Features Added
 
 - Updated packages:
 
+  - Acquisition = 2.13.5
   - lxml = 2.2.8
   - zc.buildout = 1.4.4
 
