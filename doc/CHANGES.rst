@@ -29,10 +29,27 @@ Features Added
 - Updated packages:
 
   - Acquisition = 2.13.5
+  - distribute = 0.6.14
   - lxml = 2.2.8
+  - z3c.checkversions = 0.4.1
   - zc.buildout = 1.4.4
+  - zc.recipe.testrunner = 1.2.1
   - ZODB3 = 3.9.7
+  - zope.app.error = 3.5.3
+  - zope.app.interface = 3.5.2
+  - zope.app.locales = 3.6.2
+  - zope.app.session = 3.6.2
+  - zope.deferredimport = 3.5.3
+  - zope.i18n = 3.7.4
+  - zope.i18nmessageid = 3.5.3
+  - zope.index = 3.6.1
+  - zope.lifecycleevent = 3.6.2
+  - zope.pagetemplate = 3.5.2
+  - zope.principalregistry = 3.7.1
+  - zope.proxy = 3.6.1
+  - zope.security = 3.7.4
   - zope.sendmail = 3.5.2
+  - zope.session = 3.9.3
 
 2.12.11 (2010-09-09)
 --------------------
