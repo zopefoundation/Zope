@@ -31,6 +31,7 @@ Features Added
   - Acquisition = 2.13.5
   - lxml = 2.2.8
   - zc.buildout = 1.4.4
+  - ZODB3 = 3.9.7
   - zope.sendmail = 3.5.2
 
 2.12.11 (2010-09-09)
