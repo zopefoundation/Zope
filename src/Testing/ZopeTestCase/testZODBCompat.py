@@ -322,50 +322,19 @@ class TestAttributesOfDirtyObjects(ZopeTestCase.ZopeTestCase):
 
 class TestTransactionAbort(ZopeTestCase.ZopeTestCase):
 
+    def _getfolder(self):
+        return getattr(self.app, folder_name, None)
+
     def testTransactionAbort(self):
-        self.folder.foo = 1
-        self.failUnless(hasattr(self.folder, 'foo'))
+        folder = self._getfolder()
+        self.assert_(folder is not None)
+        self.assert_(folder._p_jar is None)
+        transaction.savepoint()
+        self.assert_(folder._p_jar is not None)
         transaction.abort()
-        # The foo attribute is still present
-        self.failUnless(hasattr(self.folder, 'foo'))
-
-    def testSubTransactionAbort(self):
-        self.folder.foo = 1
-        self.failUnless(hasattr(self.folder, 'foo'))
-        transaction.savepoint(optimistic=True)
-        transaction.abort()
-        # This time the abort nukes the foo attribute...
-        self.failIf(hasattr(self.folder, 'foo'))
-
-    def testTransactionAbortPersistent(self):
-        self.folder._p_foo = 1
-        self.failUnless(hasattr(self.folder, '_p_foo'))
-        transaction.abort()
-        # The _p_foo attribute is still present
-        self.failUnless(hasattr(self.folder, '_p_foo'))
-
-    def testSubTransactionAbortPersistent(self):
-        self.folder._p_foo = 1
-        self.failUnless(hasattr(self.folder, '_p_foo'))
-        transaction.savepoint(optimistic=True)
-        transaction.abort()
-        # This time the abort nukes the _p_foo attribute...
-        self.failIf(hasattr(self.folder, '_p_foo'))
-
-    def testTransactionAbortVolatile(self):
-        self.folder._v_foo = 1
-        self.failUnless(hasattr(self.folder, '_v_foo'))
-        transaction.abort()
-        # The _v_foo attribute is still present
-        self.failUnless(hasattr(self.folder, '_v_foo'))
-
-    def testSubTransactionAbortVolatile(self):
-        self.folder._v_foo = 1
-        self.failUnless(hasattr(self.folder, '_v_foo'))
-        transaction.savepoint(optimistic=True)
-        transaction.abort()
-        # This time the abort nukes the _v_foo attribute...
-        self.failIf(hasattr(self.folder, '_v_foo'))
+        del folder
+        folder = self._getfolder()
+        self.assert_(folder is None)
 
 
 def test_suite():

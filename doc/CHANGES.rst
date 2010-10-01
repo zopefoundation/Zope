@@ -11,6 +11,9 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
+- Fixed ``testZODBCompat`` tests in ZopeTestCase to match modern ZODB
+  semantics.
+
 - Fixed unit test that failed on fast Windows machines.
 
 - Fixed OverflowError in Products.ZCatalog.Lazy on 64bit python
