@@ -45,6 +45,7 @@ Features Added
 
   - Acquisition = 2.13.5
   - Products.MailHost = 2.13.1
+  - Products.ZCTextIndex = 2.13.1
   - repoze.retry = 1.0
   - tempstorage = 2.12.1
   - ZODB3 = 3.10.0b7
