@@ -26,6 +26,8 @@ Bugs Fixed
 Features Added
 ++++++++++++++
 
+- Added date range index improvements from ``experimental.catalogqueryplan``.
+
 - Changed policy on handling exceptions during ZCML parsing in ``Products``.
   We no longer catch any exceptions in non-debug mode.
 

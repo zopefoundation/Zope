@@ -20,10 +20,15 @@ from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import manage_zcatalog_indexes
 from AccessControl.Permissions import view
 from AccessControl.SecurityInfo import ClassSecurityInfo
+from Acquisition import aq_base
+from Acquisition import aq_get
+from Acquisition import aq_inner
+from Acquisition import aq_parent
 from App.Common import package_home
 from App.special_dtml import DTMLFile
 from BTrees.IIBTree import IISet
 from BTrees.IIBTree import IITreeSet
+from BTrees.IIBTree import difference
 from BTrees.IIBTree import intersection
 from BTrees.IIBTree import multiunion
 from BTrees.IOBTree import IOBTree
@@ -38,6 +43,12 @@ from Products.PluginIndexes.interfaces import IDateRangeIndex
 
 _dtmldir = os.path.join( package_home( globals() ), 'dtml' )
 MAX32 = int(2**31 - 1)
+
+
+class RequestCache(dict):
+
+    def __str__(self):
+        return "<RequestCache %s items>" % len(self)
 
 
 class DateRangeIndex(UnIndex):
@@ -240,6 +251,13 @@ class DateRangeIndex(UnIndex):
 
         return tuple( result )
 
+    def _cache_key(self, catalog):
+        cid = catalog.getId()
+        counter = getattr(aq_base(catalog), 'getCounter', None)
+        if counter is not None:
+            return '%s_%s' % (cid, counter())
+        return cid
+
     def _apply_index(self, request, resultset=None):
         """
             Apply the index to query parameters given in 'request', which
@@ -253,33 +271,71 @@ class DateRangeIndex(UnIndex):
             second object is a tuple containing the names of all data fields
             used.
         """
-        record = parseIndexRequest(request, self.id, self.query_options)
+        iid = self.id
+        record = parseIndexRequest(request, iid, self.query_options)
         if record.keys is None:
             return None
 
-        term        = self._convertDateTime( record.keys[0] )
+        term = self._convertDateTime(record.keys[0])
 
-        #
-        #   Aggregate sets for each bucket separately, to avoid
-        #   large-small union penalties.
-        #
-        until_only = multiunion( self._until_only.values( term ) )
-        since_only = multiunion( self._since_only.values( None, term ) )
-        until = multiunion( self._until.values( term ) )
+        REQUEST = aq_get(self, 'REQUEST', None)
+        if REQUEST is not None:
+            catalog = aq_parent(aq_parent(aq_inner(self)))
+            if catalog is not None:
+                key = self._cache_key(catalog)
+                cache = REQUEST.get(key, None)
+                tid = term / 10
+                if resultset is None:
+                    cachekey = '_daterangeindex_%s_%s' % (iid, tid)
+                else:
+                    cachekey = '_daterangeindex_inverse_%s_%s' % (iid, tid)
+                if cache is None:
+                    cache = REQUEST[key] = RequestCache()
+                else:
+                    cached = cache.get(cachekey, None)
+                    if cached is not None:
+                        if resultset is None:
+                            return (cached,
+                                    (self._since_field, self._until_field))
+                        else:
+                            return (difference(resultset, cached),
+                                    (self._since_field, self._until_field))
 
-        # Total result is bound by resultset
-        until = intersection(resultset, until)
-        since = multiunion(self._since.values(None, term))
-        bounded = intersection(until, since)
+        if resultset is None:
+            # Aggregate sets for each bucket separately, to avoid
+            # large-small union penalties.
+            until_only = multiunion(self._until_only.values(term))
+            since_only = multiunion(self._since_only.values(None, term))
+            until = multiunion(self._until.values(term))
 
-        #   Merge from smallest to largest.
-        result = multiunion([bounded, until_only, since_only, self._always])
+            # Total result is bound by resultset
+            if REQUEST is None:
+                until = intersection(resultset, until)
 
-        return result, ( self._since_field, self._until_field )
+            since = multiunion(self._since.values(None, term))
+            bounded = intersection(until, since)
 
-    #
-    #   Helper functions.
-    #
+            # Merge from smallest to largest.
+            result = multiunion([bounded, until_only, since_only,
+                                 self._always])
+            if REQUEST is not None and catalog is not None:
+                cache[cachekey] = result
+
+            return (result, (self._since_field, self._until_field))
+        else:
+            # Compute the inverse and subtract from res
+            until_only = multiunion(self._until_only.values(None, term))
+            since_only = multiunion(self._since_only.values(term))
+            until = multiunion(self._until.values(None, term))
+            since = multiunion(self._since.values(term))
+
+            result = multiunion([until_only, since_only, until,since])
+            if REQUEST is not None and catalog is not None:
+                cache[cachekey] = result
+
+            return (difference(resultset, result),
+                    (self._since_field, self._until_field))
+
     def _insertForwardIndexEntry( self, since, until, documentId ):
         """
             Insert 'documentId' into the appropriate set based on
