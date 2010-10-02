@@ -203,23 +203,20 @@ class UnIndex(SimpleItem):
         """
         indexRow = self._index.get(entry, _marker)
 
-        # Make sure there's actually a row there already.  If not, create
-        # an IntSet and stuff it in first.
+        # Make sure there's actually a row there already. If not, create
+        # a set and stuff it in first.
         if indexRow is _marker:
-            self._index[entry] = documentId
-            # XXX _length needs to be migrated to Length object
-            try:
-                self._length.change(1)
-            except AttributeError:
-                if isinstance(self.__len__, Length):
-                    self._length = self.__len__
-                    del self.__len__
-                self._length.change(1)
+            # We always use a set to avoid getting conflict errors on
+            # multiple threads adding a new row at the same time
+            self._index[entry] = IITreeSet((documentId, ))
+            self._length.change(1)
         else:
-            try: indexRow.insert(documentId)
+            try:
+                indexRow.insert(documentId)
             except AttributeError:
-                # index row is an int
-                indexRow=IITreeSet((indexRow, documentId))
+                # Inline migration: index row with one element was an int at
+                # first (before Zope 2.13).
+                indexRow = IITreeSet((indexRow, documentId))
                 self._index[entry] = indexRow
 
     def index_object(self, documentId, obj, threshold=None):

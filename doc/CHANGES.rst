@@ -26,6 +26,10 @@ Bugs Fixed
 Features Added
 ++++++++++++++
 
+- Avoid conflict error hotspot in PluginIndexes' Unindex class by using
+  IITreeSets instead of simple ints from the start. Idea taken from
+  ``enfold.fixes``.
+
 - Added date range index improvements from ``experimental.catalogqueryplan``.
 
 - Changed policy on handling exceptions during ZCML parsing in ``Products``.
