@@ -64,7 +64,7 @@ ZEO servers or use the
 recipe if you use `buildout <http://www.buildout.org/>`_.
 
 More information can be found in the detailed
-`change log <http://pypi.python.org/pypi/ZODB3/3.10.0b1.>`_.
+`change log <http://pypi.python.org/pypi/ZODB3/3.10.0b8>`_.
 
 
 WSGI
