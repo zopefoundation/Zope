@@ -53,6 +53,8 @@ else:
     DSTOFFSET = STDOFFSET
 
 DSTDIFF = DSTOFFSET - STDOFFSET
+MAX32 = int(2**31 - 1)
+
 
 class LocalTimezone(tzinfo):
 
@@ -262,9 +264,9 @@ class DateIndex(UnIndex, PropertyManager):
 
         t_val = ( ( ( ( yr * 12 + mo ) * 31 + dy ) * 24 + hr ) * 60 + mn )
 
-        if isinstance(t_val, long):
-            # t_val must be IntType, not LongType
-            raise OverflowError, (
+        if t_val > MAX32:
+            # t_val must be integer fitting in the 32bit range
+            raise OverflowError(
                 "%s is not within the range of indexable dates (index: %s)"
                 % (value, self.id))
 

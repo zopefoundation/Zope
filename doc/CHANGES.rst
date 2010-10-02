@@ -11,6 +11,9 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
+- Adjusted overflow logic in DateIndex and DateRangeIndex to work with latest
+  ZODB 3.9.7.
+
 - Fixed ``testZODBCompat`` tests in ZopeTestCase to match modern ZODB
   semantics.
 
