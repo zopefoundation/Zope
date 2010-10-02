@@ -48,7 +48,7 @@ Features Added
   - Products.ZCTextIndex = 2.13.1
   - repoze.retry = 1.0
   - tempstorage = 2.12.1
-  - ZODB3 = 3.10.0b7
+  - ZODB3 = 3.10.0b8
   - zope.testbrowser = 3.10.1
 
 2.13.0a4 (2010-09-09)
