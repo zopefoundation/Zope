@@ -104,13 +104,6 @@ setup(name='Zope2',
       'zope.testing',
       'zope.traversing',
       'zope.viewlet',
-      # BBB optional dependencies to be removed in Zope 2.14
-      'Products.BTreeFolder2',
-      'Products.ExternalMethod',
-      'Products.MailHost',
-      'Products.MIMETools',
-      'Products.PythonScripts',
-      'Products.StandardCacheManagers',
     ] + additional_install_requires,
 
     include_package_data=True,
