@@ -32,15 +32,15 @@ class ModuleSecurityTests(unittest.TestCase):
             if module in sys.modules:
                 del sys.modules[module]
 
-    def assertUnauth(self, module, fromlist):
+    def assertUnauth(self, module, fromlist, level=0):
         from zExceptions import Unauthorized
         from AccessControl.ZopeGuards import guarded_import
-        self.assertRaises(Unauthorized,
-                          guarded_import, module, fromlist=fromlist)
+        self.assertRaises(Unauthorized, guarded_import, module,
+                          fromlist=fromlist, level=level)
 
-    def assertAuth(self, module, fromlist):
+    def assertAuth(self, module, fromlist, level=0):
         from AccessControl.ZopeGuards import guarded_import
-        guarded_import(module, fromlist=fromlist)
+        guarded_import(module, fromlist=fromlist, level=level)
 
     def testPrivateModule(self):
         self.assertUnauth('AccessControl.tests.private_module', ())
@@ -75,6 +75,13 @@ class ModuleSecurityTests(unittest.TestCase):
         self.assertRaises(ImportError,
                       guarded_import, 'AccessControl.tests.nonesuch', ())
         self.failUnless('AccessControl.tests.nonesuch' in MS)
+
+    def test_level_zero(self):
+        self.assertAuth('AccessControl.tests.public_module', (), level=0)
+
+    def test_level_nonzero(self):
+        self.assertUnauth('AccessControl.tests.public_module', (), level=1)
+
 
 def test_suite():
     return unittest.makeSuite(ModuleSecurityTests)

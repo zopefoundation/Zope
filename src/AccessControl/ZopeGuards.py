@@ -267,21 +267,27 @@ def guarded_zip(*seqs):
     return zip(*safe_seqs)
 safe_builtins['zip'] = guarded_zip
 
-def guarded_import(mname, globals=None, locals=None, fromlist=None):
+def guarded_import(mname, globals=None, locals=None, fromlist=None,
+                   level=0):
     if fromlist is None:
         fromlist = ()
     if '*' in fromlist:
-        raise Unauthorized, "'from %s import *' is not allowed"
+        raise Unauthorized("'from %s import *' is not allowed")
     if globals is None:
         globals = {}
     if locals is None:
         locals = {}
+    # Refs https://bugs.launchpad.net/zope2/+bug/659968
+    if level != 0:
+        raise Unauthorized("Using import with a level specification isn't "
+                           "supported by AccessControl: %s" % mname)
+
     mnameparts = mname.split('.')
     firstmname = mnameparts[0]
     validate = getSecurityManager().validate
     module = load_module(None, None, mnameparts, validate, globals, locals)
     if module is None:
-        raise Unauthorized, "import of '%s' is unauthorized" % mname
+        raise Unauthorized("import of '%s' is unauthorized" % mname)
     if fromlist is None:
         fromlist = ()
     for name in fromlist:

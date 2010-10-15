@@ -12,6 +12,12 @@ Bugs Fixed
 ++++++++++
 
 
+Features Added
+++++++++++++++
+
+- LP #659968: Added support for level argument to the ``__import__`` function
+  as introduced in Python 2.5. Currently only level=0 is supported.
+
 
 2.12.12 (2010-10-02)
 --------------------
