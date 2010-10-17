@@ -21,6 +21,8 @@ Features Added
 
   - DateTime = 2.12.6
   - mechanize = 0.2.3
+  - zope.sendmail = 3.7.4
+  - zope.testbrowser = 3.10.3
 
 2.13.0b1 (2010-10-09)
 ---------------------
