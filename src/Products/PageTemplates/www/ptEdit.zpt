@@ -73,7 +73,7 @@
     <em tal:condition="context/wl_isLocked">Locked by WebDAV</em>
     <input tal:condition="not:context/wl_isLocked"
            class="form-element" type="submit" 
-           name="pt_editAction:method" value="Save Changes">
+           name="pt_editAction:method" value="Save Changes"/>
     &nbsp;&nbsp;
     <input class="form-element" type="submit" name="height" value="Taller" />
     <input class="form-element" type="submit" name="height" value="Shorter" />
