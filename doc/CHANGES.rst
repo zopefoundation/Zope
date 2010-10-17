@@ -18,6 +18,10 @@ Features Added
 - LP #659968: Added support for level argument to the ``__import__`` function
   as introduced in Python 2.5. Currently only level=-1 is supported.
 
+- Updated distributions:
+
+  - DateTime = 2.12.6
+
 
 2.12.12 (2010-10-02)
 --------------------
@@ -42,7 +46,7 @@ Features Added
 
 - Add ability to define extra zopectl commands via setuptools entrypoints.
 
-- Updated packages:
+- Updated distributions:
 
   - Acquisition = 2.13.5
   - distribute = 0.6.14
