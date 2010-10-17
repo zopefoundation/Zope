@@ -70,7 +70,7 @@ def guarded_getitem(object, index):
         return v
     if getSecurityManager().validate(object, object, None, v):
         return v
-    raise Unauthorized, 'unauthorized access to element %s' % `i`
+    raise Unauthorized('unauthorized access to element %s' % index)
 
 # Create functions using nested scope to store state
 # This is less expensive then instantiating and calling instances
