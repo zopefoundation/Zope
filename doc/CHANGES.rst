@@ -15,6 +15,8 @@ Bugs Fixed
 Features Added
 ++++++++++++++
 
+- Updated to Zope Toolkit 1.0.
+
 - Updated distributions:
 
   - DateTime = 2.12.6
