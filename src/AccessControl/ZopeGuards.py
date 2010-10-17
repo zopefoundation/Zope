@@ -268,7 +268,7 @@ def guarded_zip(*seqs):
 safe_builtins['zip'] = guarded_zip
 
 def guarded_import(mname, globals=None, locals=None, fromlist=None,
-                   level=0):
+                   level=-1):
     if fromlist is None:
         fromlist = ()
     if '*' in fromlist:
@@ -278,7 +278,7 @@ def guarded_import(mname, globals=None, locals=None, fromlist=None,
     if locals is None:
         locals = {}
     # Refs https://bugs.launchpad.net/zope2/+bug/659968
-    if level != 0:
+    if level != -1:
         raise Unauthorized("Using import with a level specification isn't "
                            "supported by AccessControl: %s" % mname)
 
