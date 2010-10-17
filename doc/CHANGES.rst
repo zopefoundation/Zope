@@ -12,6 +12,13 @@ Bugs Fixed
 ++++++++++
 
 
+Features Added
+++++++++++++++
+
+- Updated distributions:
+
+  - DateTime = 2.12.6
+
 2.13.0b1 (2010-10-09)
 ---------------------
 
