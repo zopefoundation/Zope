@@ -76,10 +76,10 @@ class ModuleSecurityTests(unittest.TestCase):
                       guarded_import, 'AccessControl.tests.nonesuch', ())
         self.failUnless('AccessControl.tests.nonesuch' in MS)
 
-    def test_level_zero(self):
+    def test_level_default(self):
         self.assertAuth('AccessControl.tests.public_module', (), level=-1)
 
-    def test_level_nonzero(self):
+    def test_level_nondefault(self):
         self.assertUnauth('AccessControl.tests.public_module', (), level=1)
 
 
