@@ -233,6 +233,7 @@ class ZopeCmd(ZDCmd):
         # signal to Zope that it is being managed
         # (to indicate it's web-restartable)
         os.putenv('ZMANAGED', '1')
+        ZDCmd.do_start(self, arg)
 
     ## START OF WINDOWS ONLY STUFF
     
