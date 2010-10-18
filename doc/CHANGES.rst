@@ -11,6 +11,7 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
+- LP #628448:  Fix ``zopectl start`` on non-Windows platforms.
 
 Features Added
 ++++++++++++++
