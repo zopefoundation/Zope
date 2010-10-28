@@ -1106,13 +1106,13 @@ constraints.
 Security Restrictions of Script (Python)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Scripts are restricted in order to limit their ability
-to do harm. What could be harmful? In general, scripts
-keep you from accessing private Zope objects, making harmful
-changes to Zope objects, hurting the Zope process itself, and
-accessing the server Zope is running on. These restrictions
-are implemented through a collection of limits on what your
-scripts can do.
+Scripts are restricted in order to limit their ability to do harm. What
+could be harmful? In general, scripts keep you from accessing private Zope
+objects, making unauthorized changes to Zope objects and accessing the server
+Zope is running on. These restrictions are implemented through a collection of
+limits on what your scripts can do. The limits are not effective enough to
+prevent malicious users from harming the Zope process on purpose. They only
+provide a safety belt against accidental bad code.
 
 Loop limits
   Scripts cannot create infinite loops. If your script
@@ -1120,6 +1120,9 @@ Loop limits
   restriction covers all kinds of loops including *for* and *while*
   loops. The reason for this restriction is to limit your ability to
   hang Zope by creating an infinite loop.
+
+  This limit does not protect you from creating other sorts of infinite
+  recursions and it's still possible to hang the Zope process.
 
 Import limits
   Scripts cannot import arbitrary
@@ -1129,8 +1132,7 @@ Import limits
   (*string*, *random*, *math*, *sequence*), and modules
   which have been specifically made available to scripts
   by product authors.  See `Appendix B: API Reference`_
-  for more information on these
-  modules.
+  for more information on these modules.
 
 Access limits
   You are restricted by standard Zope

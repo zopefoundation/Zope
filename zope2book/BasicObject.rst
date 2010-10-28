@@ -380,8 +380,10 @@ for the most part, that they are unable to import all but a defined set of
 restricted Python modules, and that they cannot directly access files on
 your file system.  This is a security feature, as it allows site
 administrators to safely delegate the ability to create logic in Python to
-untrusted or "semi-trusted" users.  For more information about Zope's
-security features, see `Users and Security <Security.html>`_.
+less knowledgeable users. The security restrictions aren't stringent enough
+to prevent malicious users from damaging the system. They are only meant as
+a safety belt beginners. For more information about Zope's security features,
+see `Users and Security <Security.html>`_.
 
 Creating a Script (Python)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
