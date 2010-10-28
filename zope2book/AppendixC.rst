@@ -1002,8 +1002,8 @@ These standard Python built-ins are available:
 
 The `range` and `pow` functions are available and work the same way they do in
 standard Python; however, they are limited to keep them from generating very
-large numbers and sequences. This limitation helps protect against denial of
-service attacks.
+large numbers and sequences. This limitation helps to avoid accidental long
+execution times.
 
 These functions are available in Python expressions, but not in Python-based
 scripts:
