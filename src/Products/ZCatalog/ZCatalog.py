@@ -554,7 +554,7 @@ class ZCatalog(Folder, Persistent, Implicit):
                 self._p_jar.cacheGC()
                 self._v_total = 0
                 if pghandler:
-                    pghandler.info('commiting subtransaction')
+                    pghandler.info('committing subtransaction')
 
     security.declareProtected(manage_zcatalog_entries, 'uncatalog_object')
     def uncatalog_object(self, uid):
