@@ -11,6 +11,7 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
+- Fixed Chameleon compatibility in `ptEdit.zpt` of `Products.PageTemplates`.
 
 Features Added
 ++++++++++++++
