@@ -12,6 +12,10 @@ Bugs Fixed
 ++++++++++
 
 
+Features Added
+++++++++++++++
+
+- Updated to Zope Toolkit 1.0.1.
 
 2.13.0 (2010-11-05)
 -------------------
