@@ -408,9 +408,7 @@ def publish_module_profiled(module_name, stdin=sys.stdin, stdout=sys.stdout,
         result=sys._pr_
         pobj.create_stats()
         if _pstat is None:
-            from cStringIO import StringIO
-            stream = StringIO()
-            _pstat = sys._ps_ = pstats.Stats(pobj, stream=stream)
+            _pstat = sys._ps_ = pstats.Stats(pobj)
         else: _pstat.add(pobj)
     finally:
         _plock.release()

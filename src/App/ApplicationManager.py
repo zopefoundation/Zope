@@ -19,6 +19,7 @@ from logging import getLogger
 import os
 import sys
 import time
+from cStringIO import StringIO
 
 from AccessControl.requestmethod import requestmethod
 from AccessControl.SecurityManagement import getSecurityManager
@@ -235,8 +236,9 @@ class DebugManager(Item, Implicit):
             from copy import copy; stats= copy(stats)
             stats.strip_dirs()
         stats.sort_stats(sort)
+        stats.stream = output = StringIO()
         getattr(stats,'print_%s' % mode)(limit)
-        return stats.stream.getvalue()
+        return output.getvalue()
 
     def manage_getSysPath(self):
         return list(sys.path)
