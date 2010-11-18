@@ -386,7 +386,12 @@ def pm(module_name, stdin, stdout, stderr,
 def publish_module_profiled(module_name, stdin=sys.stdin, stdout=sys.stdout,
                             stderr=sys.stderr, environ=os.environ, debug=0,
                             request=None, response=None):
-    import profile, pstats
+    try:
+        import cProfile as profile
+        profile  # pyflakes
+    except ImportError:
+        import profile
+    import pstats
     global _pstat
     _plock.acquire()
     try:

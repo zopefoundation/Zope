@@ -16,6 +16,9 @@ Bugs Fixed
   since Python 2.5.  This breaks Python 2.4 compatibility when the
   publisher-profile-file configuration option is set.
 
+- Use cProfile where possible for the
+  Control_Panel/DebugInfo/manage_profile ZMI view.
+
 
 2.12.13 (2010-11-06)
 --------------------
