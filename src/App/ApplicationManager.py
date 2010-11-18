@@ -15,7 +15,6 @@ __doc__="""System management components"""
 __version__='$Revision: 1.94 $'[11:-2]
 
 from cgi import escape
-from cStringIO import StringIO
 from logging import getLogger
 import os
 import sys
@@ -232,17 +231,12 @@ class DebugManager(Item, Implicit):
         stats=getattr(sys, '_ps_', None)
         if stats is None:
             return None
-        output=StringIO()
-        stdout=sys.stdout
         if stripDirs:
             from copy import copy; stats= copy(stats)
             stats.strip_dirs()
         stats.sort_stats(sort)
-        sys.stdout=output
         getattr(stats,'print_%s' % mode)(limit)
-        sys.stdout.flush()
-        sys.stdout=stdout
-        return output.getvalue()
+        return stats.stream.getvalue()
 
     def manage_getSysPath(self):
         return list(sys.path)
