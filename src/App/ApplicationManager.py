@@ -232,17 +232,13 @@ class DebugManager(Item, Implicit):
         stats = getattr(sys, '_ps_', None)
         if stats is None:
             return None
-        output = StringIO()
-        stdout = sys.stdout
         if stripDirs:
             from copy import copy
             stats = copy(stats)
             stats.strip_dirs()
         stats.sort_stats(sort)
-        sys.stdout = output
-        getattr(stats,'print_%s' % mode)(limit)
-        sys.stdout.flush()
-        sys.stdout = stdout
+        stats.stream = output = StringIO()
+        getattr(stats, 'print_%s' % mode)(limit)
         return output.getvalue()
 
     def manage_profile_reset(self):
