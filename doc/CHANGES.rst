@@ -19,6 +19,8 @@ Bugs Fixed
 - Use cProfile where possible for the
   Control_Panel/DebugInfo/manage_profile ZMI view.
 
+- Stopped testing non-overridden ZTK eggs in ``bin/alltests``.
+
 Features Added
 ++++++++++++++
 
