@@ -16,15 +16,15 @@ Bugs Fixed
   since Python 2.5.  This breaks Python 2.4 compatibility when the
   publisher-profile-file configuration option is set.
 
-- Use cProfile where possible for the
-  Control_Panel/DebugInfo/manage_profile ZMI view.
-
-- Stopped testing non-overridden ZTK eggs in ``bin/alltests``.
-
 Features Added
 ++++++++++++++
 
 - Updated to Zope Toolkit 1.0.1.
+
+- Use cProfile where possible for the
+  Control_Panel/DebugInfo/manage_profile ZMI view.
+
+- Stopped testing non-overridden ZTK eggs in ``bin/alltests``.
 
 2.13.0 (2010-11-05)
 -------------------
