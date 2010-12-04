@@ -27,6 +27,9 @@ Features Added
 - Use cProfile where possible for the
   Control_Panel/DebugInfo/manage_profile ZMI view.
 
+Restructuring
++++++++++++++
+
 - Stopped testing non-overridden ZTK eggs in ``bin/alltests``.
 
 2.13.0 (2010-11-05)
