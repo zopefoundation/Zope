@@ -134,12 +134,12 @@ class OrderSupport(object):
                            suppress_events=False):
         """ Move specified sub-objects by delta.
         """
-        if type(ids) is str:
+        if isinstance(ids, basestring):
             ids = (ids,)
         min_position = 0
         objects = list(self._objects)
-        if subset_ids == None:
-            subset_ids = [ obj['id'] for obj in objects ]
+        if subset_ids is None:
+            subset_ids = self.getIdsSubset(objects)
         else:
             subset_ids = list(subset_ids)
         # unify moving direction
@@ -282,5 +282,13 @@ class OrderSupport(object):
             if self._default_sort_reverse:
                 r.reverse()
         return r
+
+    #
+    #   Helper methods
+    #
+
+    def getIdsSubset(self, objects):
+        return [obj['id'] for obj in objects]
+
 
 InitializeClass(OrderSupport)
