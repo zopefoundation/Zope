@@ -366,8 +366,9 @@ class ZopeCmd(ZDCmd):
             # ['run "arg 1" "arg2"'] rather than ['run','arg 1','arg2'].
             # If that's the case, we'll use csv to do the parsing
             # so that we can split on spaces while respecting quotes.
-            if len(self.options.args) == 1:
-                tup = csv.reader(self.options.args, delimiter=' ').next()
+            tup = self.options.args
+            if len(tup) == 1:
+                tup = csv.reader(tup, delimiter=' ').next()
 
             # Remove -c and add command name as sys.argv[0]
             cmd = [ 'import sys',
@@ -376,13 +377,14 @@ class ZopeCmd(ZDCmd):
                    ]
             if len(tup) > 1:
                 argv = tup[1:]
-                cmd.append('[sys.argv.append(x) for x in %s]; ' % argv)
+                for a in argv:
+                    cmd.append('sys.argv.append(r\'%s\')' % a)
             cmd.extend([
                 'import pkg_resources',
                 'import Zope2',
                 'func=pkg_resources.EntryPoint.parse(\'%s\').load(False)' % entry_point,
                 'app=Zope2.app()',
-                'func(app)',
+                'func(app, sys.argv[1:])',
                 ])
             cmdline = self.get_startup_cmd(self.options.python, ' ; '.join(cmd))
             self._exitstatus = os.system(cmdline)

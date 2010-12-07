@@ -11,6 +11,8 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
+- Fixed argument parsing for entrypoint based zopectl commands.
+
 - Fixed the usage of ``pstats.Stats()`` output stream. The
   `Control_Panel/DebugInfo/manage_profile` ZMI view was broken in Python 2.5+.
 
