@@ -11,6 +11,8 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
+- LP 686664: WebDAV Lock Manager ZMI view wasn't accessible.
+
 - Fixed argument parsing for entrypoint based zopectl commands.
 
 - Fixed the usage of ``pstats.Stats()`` output stream. The
