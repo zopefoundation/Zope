@@ -11,10 +11,8 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
-- Fixed the usage of pstats.Stats() output stream.  The
-  Control_Panel/DebugInfo/manage_profile ZMI view has been broken
-  since Python 2.5.  This breaks Python 2.4 compatibility when the
-  publisher-profile-file configuration option is set.
+- Fixed the usage of ``pstats.Stats()`` output stream. The
+  `Control_Panel/DebugInfo/manage_profile` ZMI view was broken in Python 2.5+.
 
 Features Added
 ++++++++++++++
@@ -24,8 +22,8 @@ Features Added
 
 - Updated to Zope Toolkit 1.0.1.
 
-- Use cProfile where possible for the
-  Control_Panel/DebugInfo/manage_profile ZMI view.
+- Use cProfile where possible for the `Control_Panel/DebugInfo/manage_profile`
+  ZMI view.
 
 Restructuring
 +++++++++++++
