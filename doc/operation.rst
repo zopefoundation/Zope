@@ -176,17 +176,19 @@ in ``setup.py``. Commands have to be put in the ``zopectl.command`` group:
    Due to an implementation detail of ``zopectl`` you can not use a minus
    character (``-``) in the command name.
 
-This adds a ``init_app`` command that can be used directly from the commandline::
+This adds a ``init_app`` command that can be used directly from the command
+line::
 
     bin\zopectl init_app
 
-The command must be implemented as a python callable. It will be called with
-two parameters: the Zope2 application and a tuple with all commandline
+The command must be implemented as a Python callable. It will be called with
+two parameters: the Zope2 application and a list with all command line
 arguments. Here is a basic example:
 
 .. code-block:: python
 
    def init_application(app, args):
-       print 'Initialisating the application'
+       print 'Initializing the application'
 
-
+Make sure the callable can be imported without side-effects, such as setting
+up the database connection used by Zope 2.
