@@ -11,6 +11,7 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
+- LP 686664: WebDAV Lock Manager ZMI view wasn't accessible.
 
 2.13.1 (2010-12-07)
 -------------------
