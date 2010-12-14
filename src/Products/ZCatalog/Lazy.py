@@ -145,42 +145,26 @@ class LazyMap(Lazy):
     # Don't access data until necessary
 
     def __init__(self, func, seq, length=None):
-        self._seq = seq
-        self._data = []
-        self._func = func
+        self._seq=seq
+        self._func=func
         if length is not None:
-            self._len = length
+            self._len=length
         else:
             self._len = len(seq)
+        self._marker = object()
+        self._data = [self._marker] * self._len
 
-    def __getitem__(self, index):
-        data = self._data
+    def __getitem__(self,index):
+        data=self._data
         try:
-            s = self._seq
+            s=self._seq
         except AttributeError:
             return data[index]
 
-        i = index
-        if i < 0:
-            i = len(self) + i
-        if i < 0:
-            raise IndexError(index)
-
-        ind = len(data)
-        if i < ind:
-            return data[i]
-        ind = ind - 1
-
-        func = self._func
-        while i > ind:
-            try:
-                ind = ind + 1
-                data.append(func(s[ind]))
-            except IndexError:
-                del self._func
-                del self._seq
-                raise IndexError(index)
-        return data[i]
+        value = data[index]
+        if value is self._marker:
+            value = data[index] = self._func(s[index])
+        return value
 
 
 class LazyFilter(Lazy):
