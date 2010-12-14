@@ -98,6 +98,16 @@ class TestLazyMap(TestLazyCat):
         lmap = self._createLMap(filter, seq1, seq2, seq3)
         self._compare(lmap, [str(x).lower() for x in (seq1 + seq2 + seq3)])
 
+    def testMapFuncIsOnlyCalledAsNecessary(self):
+        seq = range(10)
+        count = [0]     # closure only works with list, and `nonlocal` in py3
+        def func(x):
+            count[0] += 1
+            return x
+        lmap = self._createLMap(func, seq)
+        self.assertEqual(lmap[5], 5)
+        self.assertEqual(count[0], 1)
+
 
 class TestLazyFilter(TestLazyCat):
     def _createLSeq(self, *seq):

@@ -11,6 +11,7 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
+- Fix `LazyMap` to avoid unnecessary function calls.
 
 2.12.14 (2010-12-07)
 --------------------
