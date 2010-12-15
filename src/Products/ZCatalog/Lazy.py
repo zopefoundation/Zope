@@ -146,24 +146,18 @@ class LazyMap(Lazy):
 
     def __init__(self, func, seq, length=None):
         self._seq = seq
+        self._data = {}
         self._func = func
         if length is not None:
             self._len = length
         else:
             self._len = len(seq)
-        self._marker = object()
-        self._data = [self._marker] * self._len
 
     def __getitem__(self, index):
         data = self._data
-        try:
-            s = self._seq
-        except AttributeError:
+        if index in data:
             return data[index]
-
-        value = data[index]
-        if value is self._marker:
-            value = data[index] = self._func(s[index])
+        value = data[index] = self._func(self._seq[index])
         return value
 
 
