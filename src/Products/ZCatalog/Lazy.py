@@ -133,14 +133,16 @@ class LazyMap(Lazy):
     # Don't access data until necessary
 
     def __init__(self, func, seq, length=None):
-        self._seq=seq
-        self._data={}
-        self._func=func
-        if length is not None: self._len=length
-        else: self._len = len(seq)
+        self._seq = seq
+        self._data = {}
+        self._func = func
+        if length is not None:
+            self._len = length
+        else:
+            self._len = len(seq)
 
-    def __getitem__(self,index):
-        data=self._data
+    def __getitem__(self, index):
+        data = self._data
         if index in data:
             return data[index]
         value = data[index] = self._func(self._seq[index])
