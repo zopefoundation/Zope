@@ -34,6 +34,9 @@ Features Added
 Restructuring
 +++++++++++++
 
+- Factored out the `Products.ZCatalog` and `Products.PluginIndexes` packages
+  into a new `Products.ZCatalog` distribution.
+
 - Stopped testing non-overridden ZTK eggs in ``bin/alltests``.
 
 - Dropped the direct dependencies on packages that have been factored out of
