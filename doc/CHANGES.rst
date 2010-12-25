@@ -31,6 +31,10 @@ Features Added
 - Use cProfile where possible for the `Control_Panel/DebugInfo/manage_profile`
   ZMI view.
 
+- Updated distributions:
+
+  - Products.ZCatalog = 2.13.1
+
 Restructuring
 +++++++++++++
 
