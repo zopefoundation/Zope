@@ -13,6 +13,13 @@ Bugs Fixed
 
 - LP 686664: WebDAV Lock Manager ZMI view wasn't accessible.
 
+Features Added
+++++++++++++++
+
+- Updated distributions:
+
+  - Products.ZCatalog = 2.13.1
+
 Restructuring
 +++++++++++++
 
