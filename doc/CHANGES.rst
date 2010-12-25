@@ -11,9 +11,13 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
-- Fix `LazyMap` to avoid unnecessary function calls.
-
 - LP 686664: WebDAV Lock Manager ZMI view wasn't accessible.
+
+Restructuring
++++++++++++++
+
+- Factored out the `Products.ZCatalog` and `Products.PluginIndexes` packages
+  into a new `Products.ZCatalog` distribution.
 
 2.13.1 (2010-12-07)
 -------------------
