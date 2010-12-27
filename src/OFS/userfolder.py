@@ -122,7 +122,7 @@ class BasicUserFolder(Navigation, Tabs, Item, RoleManager,
                 pw = u._getPassword()
                 if not self._isPasswordEncrypted(pw):
                     pw = self._encryptPassword(pw)
-                    self._doChangeUser(u.getUserName(), pw, u.getRoles(),
+                    self._doChangeUser(u.getId(), pw, u.getRoles(),
                                        u.getDomains())
                     changed = changed + 1
             if REQUEST is not None:
