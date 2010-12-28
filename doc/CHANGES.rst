@@ -11,6 +11,8 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
+- webdav: Fixed permission check and error handling in DeleteCollection.
+
 - LP 686664: WebDAV Lock Manager ZMI view wasn't accessible.
 
 Features Added

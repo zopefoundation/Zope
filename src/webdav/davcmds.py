@@ -18,6 +18,7 @@ from cStringIO import StringIO
 from urllib import quote
 
 import transaction
+from AccessControl.Permissions import delete_objects
 from AccessControl.SecurityManagement import getSecurityManager
 from Acquisition import aq_base
 from Acquisition import aq_parent
@@ -26,11 +27,12 @@ from zExceptions import BadRequest
 from zExceptions import Forbidden
 
 from webdav.common import absattr
+from webdav.common import isDavCollection
+from webdav.common import Locked
+from webdav.common import PreconditionFailed
 from webdav.common import urlbase
 from webdav.common import urlfix
 from webdav.common import urljoin
-from webdav.common import isDavCollection
-from webdav.common import PreconditionFailed
 from webdav.interfaces import IWriteLock
 from webdav.LockItem import LockItem
 from webdav.xmltools import XmlParser
@@ -492,7 +494,7 @@ class DeleteCollection:
     checking *all* descendents (deletes on collections are always of depth
     infinite) for locks and if the locks match. """
 
-    def apply(self, obj, token, user, url=None, result=None, top=1):
+    def apply(self, obj, token, sm, url=None, result=None, top=1):
         if result is None:
             result = StringIO()
             url = urlfix(url, 'DELETE')
@@ -502,7 +504,7 @@ class DeleteCollection:
         parent = aq_parent(obj)
 
         islockable = IWriteLock.providedBy(obj)
-        if parent and (not user.has_permission('Delete objects', parent)):
+        if parent and (not sm.checkPermission(delete_objects, parent)):
             # User doesn't have permission to delete this object
             errmsg = "403 Forbidden"
         elif islockable and obj.wl_isLocked():
@@ -514,8 +516,10 @@ class DeleteCollection:
 
         if errmsg:
             if top and (not iscol):
-                err = errmsg[4:]
-                raise err
+                if errmsg == "403 Forbidden":
+                    raise Forbidden()
+                if errmsg == "423 Locked":
+                    raise Locked()
             elif not result.getvalue():
                 # We haven't had any errors yet, so our result is empty
                 # and we need to set up the XML header
@@ -530,7 +534,7 @@ class DeleteCollection:
                 dflag = hasattr(ob,'_p_changed') and (ob._p_changed == None)
                 if hasattr(ob, '__dav_resource__'):
                     uri = urljoin(url, absattr(ob.getId()))
-                    self.apply(ob, token, user, uri, result, top=0)
+                    self.apply(ob, token, sm, uri, result, top=0)
                     if dflag:
                         ob._p_deactivate()
         if not top:

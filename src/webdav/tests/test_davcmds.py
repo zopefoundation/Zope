@@ -1,25 +1,43 @@
 import unittest
 
+from AccessControl.SecurityManagement import getSecurityManager
+from AccessControl.SecurityManagement import newSecurityManager
+from AccessControl.SecurityManagement import noSecurityManager
+from AccessControl.SecurityManager import setSecurityPolicy
+from zExceptions import Forbidden
+from zope.interface import implements
+
+
+class _DummySecurityPolicy(object):
+
+    def checkPermission(self, permission, object, context):
+        return False
+
+
+class _DummyContent(object):
+
+    from webdav.interfaces import IWriteLock
+    implements(IWriteLock)
+
+    def __init__(self, token=None):
+        self.token = token
+
+    def wl_hasLock(self, token):
+        return self.token == token
+
+    def wl_isLocked(self):
+        return bool(self.token)
+
+
 class TestUnlock(unittest.TestCase):
 
     def _getTargetClass(self):
         from webdav.davcmds import Unlock
+
         return Unlock
 
-    def _makeOne(self):
-        klass = self._getTargetClass()
-        return klass()
-
-    def _makeLockable(self, locktoken):
-        from webdav.interfaces import IWriteLock
-        from zope.interface import implements
-        class Lockable:
-            implements(IWriteLock)
-            def __init__(self, token):
-                self.token = token
-            def wl_hasLock(self, token):
-                return self.token == token
-        return Lockable(locktoken)
+    def _makeOne(self, *args, **kw):
+        return self._getTargetClass()(*args, **kw)
 
     def test_apply_bogus_lock(self):
         """
@@ -36,7 +54,7 @@ class TestUnlock(unittest.TestCase):
         This was caught by litmus locks.notowner_lock test #10.
         """
         inst = self._makeOne()
-        lockable = self._makeLockable(None)
+        lockable = _DummyContent()
         result = inst.apply(lockable, 'bogus',
                             url='http://example.com/foo/UNLOCK', top=0)
         result = result.getvalue()
@@ -44,15 +62,16 @@ class TestUnlock(unittest.TestCase):
             result.find('<d:status>HTTP/1.1 400 Bad Request</d:status>'),
             -1)
 
+
 class TestPropPatch(unittest.TestCase):
 
     def _getTargetClass(self):
         from webdav.davcmds import PropPatch
+
         return PropPatch
 
-    def _makeOne(self, request):
-        klass = self._getTargetClass()
-        return klass(request)
+    def _makeOne(self, *args, **kw):
+        return self._getTargetClass()(*args, **kw)
 
     def test_parse_xml_property_values_with_namespaces(self):
         """
@@ -79,8 +98,50 @@ class TestPropPatch(unittest.TestCase):
         self.assertEqual(len(inst.values), 1)
         self.assertEqual(inst.values[0][3]['__xml_attrs__'], {})
 
+
+class TestDeleteCollection(unittest.TestCase):
+
+    def _getTargetClass(self):
+        from webdav.davcmds import DeleteCollection
+
+        return DeleteCollection
+
+    def _makeOne(self, *args, **kw):
+        return self._getTargetClass()(*args, **kw)
+
+    def setUp(self):
+        self._oldPolicy = setSecurityPolicy(_DummySecurityPolicy())
+        newSecurityManager(None, object())
+
+    def tearDown(self):
+        noSecurityManager()
+        setSecurityPolicy(self._oldPolicy)
+
+    def test_apply_no_parent(self):
+        cmd = self._makeOne()
+        obj = _DummyContent()
+        sm = getSecurityManager()
+        self.assertEqual(cmd.apply(obj, None, sm, '/foo/DELETE'), '')
+
+    def test_apply_no_col_Forbidden(self):
+        cmd = self._makeOne()
+        obj = _DummyContent()
+        obj.__parent__ = _DummyContent()
+        sm = getSecurityManager()
+        self.assertRaises(Forbidden, cmd.apply, obj, None, sm, '/foo/DELETE')
+
+    def test_apply_no_col_Locked(self):
+        from webdav.common import Locked
+
+        cmd = self._makeOne()
+        obj = _DummyContent('LOCKED')
+        sm = getSecurityManager()
+        self.assertRaises(Locked, cmd.apply, obj, None, sm, '/foo/DELETE')
+
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(TestUnlock),
         unittest.makeSuite(TestPropPatch),
+        unittest.makeSuite(TestDeleteCollection),
         ))
