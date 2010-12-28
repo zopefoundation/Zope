@@ -89,7 +89,7 @@ class Collection(Resource):
         url = urlfix(REQUEST['URL'], 'DELETE')
         name = unquote(filter(None, url.split( '/'))[-1])
         parent = self.aq_parent
-        user = getSecurityManager().getUser()
+        sm = getSecurityManager()
         token = None
 
 #        if re.match("/Control_Panel",REQUEST['PATH_INFO']):
@@ -119,7 +119,7 @@ class Collection(Resource):
                 if ifhdr.find(tok) > -1:
                     token = tok
         cmd = DeleteCollection()
-        result = cmd.apply(self, token, user, REQUEST['URL'])
+        result = cmd.apply(self, token, sm, REQUEST['URL'])
 
         if result:
             # There were conflicts, so we need to report them
