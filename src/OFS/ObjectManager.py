@@ -266,15 +266,15 @@ class ObjectManager(CopyContainer,
     def filtered_meta_types(self, user=None):
         # Return a list of the types for which the user has
         # adequate permission to add that type of object.
-        user=getSecurityManager().getUser()
-        meta_types=[]
+        sm = getSecurityManager()
+        meta_types = []
         if callable(self.all_meta_types):
-            all=self.all_meta_types()
+            all = self.all_meta_types()
         else:
-            all=self.all_meta_types
+            all = self.all_meta_types
         for meta_type in all:
             if meta_type.has_key('permission'):
-                if user.has_permission(meta_type['permission'],self):
+                if sm.checkPermission(meta_type['permission'], self):
                     meta_types.append(meta_type)
             else:
                 meta_types.append(meta_type)
