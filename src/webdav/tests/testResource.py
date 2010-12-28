@@ -1,4 +1,5 @@
 import unittest
+
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
 from AccessControl.SecurityManager import setSecurityPolicy
@@ -11,7 +12,7 @@ def make_request_response(environ=None):
     from StringIO import StringIO
     from ZPublisher.HTTPRequest import HTTPRequest
     from ZPublisher.HTTPResponse import HTTPResponse
-    
+
     if environ is None:
         environ = {}
 
@@ -24,56 +25,105 @@ def make_request_response(environ=None):
     req = HTTPRequest(stdin, environ, resp)
     return req, resp
 
+
+class DummyLock:
+
+    def isValid(self):
+        return True
+
+
+class DummyContent(Implicit):
+
+    def cb_isMoveable(self):
+        return True
+
+    def _checkId(self, *arg, **kw):
+        return True
+
+    def _verifyObjectPaste(self, *arg):
+        return True
+
+
+class DummyRequest:
+
+    def __init__(self, form, headers):
+        self.form = form
+        self.headers = headers
+
+    def get_header(self, name, default):
+        return self.headers.get(name, default)
+
+    def get(self, name, default):
+        return self.form.get(name, default)
+
+    def __getitem__(self, name):
+        return self.form[name]
+
+    def physicalPathFromURL(self, *arg):
+        return ['']
+
+
+class DummyResponse:
+
+    def __init__(self):
+        self.headers = {}
+
+    def setHeader(self, name, value, *arg):
+        self.headers[name] = value
+
+
+class _DummySecurityPolicy:
+
+    def validate(self, *args, **kw):
+        return True
+
+
 class TestResource(unittest.TestCase):
+
+    def _getTargetClass(self):
+        from webdav.Resource import Resource
+
+        return Resource
+
+    def _makeOne(self, *args, **kw):
+        return self._getTargetClass()(*args, **kw)
+
     def setUp(self):
         self.app = DummyContent()
-        self.app.acl_users = DummyUserFolder()
-        self._policy = PermissiveSecurityPolicy()
-        self._oldPolicy = setSecurityPolicy(self._policy)
-        newSecurityManager(None, OmnipotentUser().__of__(self.app.acl_users))
+        self._oldPolicy = setSecurityPolicy(_DummySecurityPolicy())
+        newSecurityManager(None, object())
 
     def tearDown(self):
         noSecurityManager()
         setSecurityPolicy(self._oldPolicy)
 
-    def _getTargetClass(self):
-        from webdav.Resource import Resource
-        return Resource
-
-    def _makeOne(self):
-        klass = self._getTargetClass()
-        inst = klass()
-        return inst
-
     def test_interfaces(self):
         from webdav.interfaces import IDAVResource
         from webdav.interfaces import IWriteLock
-        Resource = self._getTargetClass()
         from zope.interface.verify import verifyClass
 
-        verifyClass(IDAVResource, Resource)
-        verifyClass(IWriteLock, Resource)
+        verifyClass(IDAVResource, self._getTargetClass())
+        verifyClass(IWriteLock, self._getTargetClass())
 
     def test_ms_author_via(self):
         import webdav
-        from webdav.Resource import Resource
 
         default_settings = webdav.enable_ms_author_via
         try:
             req, resp = make_request_response()
-            resource = Resource()
+            resource = self._makeOne()
             resource.OPTIONS(req, resp)
             self.assert_(not resp.headers.has_key('ms-author-via'))
 
             webdav.enable_ms_author_via = True
             req, resp = make_request_response()
-            resource = Resource()
+            resource = self._makeOne()
             resource.OPTIONS(req, resp)
             self.assert_(not resp.headers.has_key('ms-author-via'))
 
             req, resp = make_request_response(
                 environ={'USER_AGENT': MS_DAV_AGENT})
-            resource = Resource()
+            resource = self._makeOne()
             resource.OPTIONS(req, resp)
             self.assert_(resp.headers.has_key('ms-author-via'))
             self.assert_(resp.headers['ms-author-via'] == 'DAV')
@@ -83,24 +133,24 @@ class TestResource(unittest.TestCase):
 
     def test_ms_public_header(self):
         import webdav
-        from webdav.Resource import Resource
+
         default_settings = webdav.enable_ms_public_header
         try:
             req, resp = make_request_response()
-            resource = Resource()
+            resource = self._makeOne()
             resource.OPTIONS(req, resp)
             self.assert_(not resp.headers.has_key('public'))
 
             webdav.enable_ms_public_header = True
             req, resp = make_request_response()
-            resource = Resource()
+            resource = self._makeOne()
             resource.OPTIONS(req, resp)
             self.assert_(not resp.headers.has_key('public'))
             self.assert_(resp.headers.has_key('allow'))
 
             req, resp = make_request_response(
                 environ={'USER_AGENT': MS_DAV_AGENT})
-            resource = Resource()
+            resource = self._makeOne()
             resource.OPTIONS(req, resp)
             self.assert_(resp.headers.has_key('public'))
             self.assert_(resp.headers.has_key('allow'))
@@ -180,103 +230,6 @@ class TestResource(unittest.TestCase):
         from webdav.common import Locked
         self.assertRaises(Locked, inst.dav__simpleifhandler, request, response)
 
-class DummyLock:
-    def isValid(self):
-        return True
-
-class DummyContent(Implicit):
-    def cb_isMoveable(self):
-        return True
-
-    def _checkId(self, *arg, **kw):
-        return True
-
-    def _verifyObjectPaste(self, *arg):
-        return True
-
-class DummyUserFolder(Implicit):
-    pass
-
-class DummyRequest:
-    def __init__(self, form, headers):
-        self.form = form
-        self.headers = headers
-        
-    def get_header(self, name, default):
-        return self.headers.get(name, default)
-
-    def get(self, name, default):
-        return self.form.get(name, default)
-
-    def __getitem__(self, name):
-        return self.form[name]
-
-    def physicalPathFromURL(self, *arg):
-        return ['']
-
-class DummyResponse:
-    def __init__(self):
-        self.headers = {}
-
-    def setHeader(self, name, value, *arg):
-        self.headers[name] = value
-
-from AccessControl.PermissionRole import rolesForPermissionOn
-from Acquisition import Implicit
-
-
-class PermissiveSecurityPolicy:
-    """
-        Very permissive security policy for unit testing purposes.
-    """
-    #
-    #   Standard SecurityPolicy interface
-    #
-    def validate( self
-                , accessed=None
-                , container=None
-                , name=None
-                , value=None
-                , context=None
-                , roles=None
-                , *args
-                , **kw):
-        if name and name.startswith('hidden'):
-            return False
-        else:
-            return True
-
-    def checkPermission(self, permission, object, context):
-        if permission == 'forbidden permission':
-            return 0
-        if permission == 'addFoo':
-            return context.user.allowed(object, ['FooAdder'])
-        roles = rolesForPermissionOn(permission, object)
-        if isinstance(roles, basestring):
-            roles=[roles]
-        return context.user.allowed(object, roles)
-
-
-class OmnipotentUser( Implicit ):
-    """
-      Omnipotent User for unit testing purposes.
-    """
-    def getId( self ):
-        return 'all_powerful_Oz'
-
-    getUserName = getId
-
-    def getRoles(self):
-        return ('Manager',)
-
-    def allowed( self, object, object_roles=None ):
-        return 1
-
-    def getRolesInContext(self, object):
-        return ('Manager',)
-
-    def _check_context(self, object):
-        return True
 
 def test_suite():
     return unittest.TestSuite((
