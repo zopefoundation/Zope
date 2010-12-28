@@ -17,6 +17,7 @@ from AccessControl.Permissions import access_contents_information
 from AccessControl.Permissions import add_documents_images_and_files
 from AccessControl.Permissions import view as View
 from AccessControl.SecurityInfo import ClassSecurityInfo
+from AccessControl.SecurityManagement import getSecurityManager
 from Acquisition import Implicit
 from App.special_dtml import DTMLFile
 from App.special_dtml import HTML
@@ -24,12 +25,12 @@ from OFS.ObjectManager import ObjectManager
 from OFS.SimpleItem import Item
 from Persistence import Persistent
 from Products.PluginIndexes.KeywordIndex.KeywordIndex import KeywordIndex
-from Products.ZCatalog.ZCatalog import ZCatalog
 from Products.ZCatalog.Lazy import LazyCat
-from Products.ZCTextIndex.OkapiIndex import OkapiIndex
-from Products.ZCTextIndex.Lexicon import CaseNormalizer
+from Products.ZCatalog.ZCatalog import ZCatalog
 from Products.ZCTextIndex.HTMLSplitter import HTMLWordSplitter
+from Products.ZCTextIndex.Lexicon import CaseNormalizer
 from Products.ZCTextIndex.Lexicon import StopWordRemover
+from Products.ZCTextIndex.OkapiIndex import OkapiIndex
 from Products.ZCTextIndex.ZCTextIndex import PLexicon
 from Products.ZCTextIndex.ZCTextIndex import ZCTextIndex
 
@@ -72,13 +73,13 @@ class HelpSys(Implicit, ObjectManager, Item, Persistent):
     def __call__(self, REQUEST=None, **kw):
         "Searchable interface"
         if REQUEST is not None:
-            perms=[]
-            user=REQUEST.AUTHENTICATED_USER
-            for p in self.ac_inherited_permissions():
-                if user.has_permission(p[0], self):
+            perms = []
+            sm = getSecurityManager()
+            for p in self.ac_inherited_permissions(all=True):
+                if sm.checkPermission(p[0], self):
                     perms.append(p[0])
-            REQUEST.set('permissions',perms)
-        results=[]
+            REQUEST.set('permissions', perms)
+        results = []
         for ph in self.helpValues():
             results.append(apply(getattr(ph, '__call__'), (REQUEST,) , kw))
         return LazyCat(results)
@@ -268,11 +269,9 @@ class ProductHelp(Implicit, ObjectManager, Item, Persistent):
         Help Topics for which the user is not authorized
         are not listed.
         """
-        topics=self.objectValues('Help Topic')
-        if REQUEST is None:
-            return topics
-        return filter(
-            lambda ht, u=REQUEST.AUTHENTICATED_USER: ht.authorized(u), topics)
+        topics = self.objectValues('Help Topic')
+        sm = getSecurityManager()
+        return [ t for t in topics if t.authorized(sm) ]
 
     def tpValues(self):
         """
