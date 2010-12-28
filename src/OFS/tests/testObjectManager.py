@@ -1,23 +1,24 @@
 import unittest
 
-from zope.component.testing import PlacelessSetup
-from zope.interface import implements
-
 from AccessControl.owner import EmergencyUserCannotOwn
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
-from AccessControl.User import User # before SpecialUsers
+from AccessControl.SecurityManager import setSecurityPolicy
 from AccessControl.SpecialUsers import emergency_user, nobody, system
+from AccessControl.User import User # before SpecialUsers
 from Acquisition import aq_base
 from Acquisition import Implicit
 from App.config import getConfiguration
 from logging import getLogger
+from zExceptions import BadRequest
+from zope.component.testing import PlacelessSetup
+from zope.interface import implements
+from Zope2.App import zcml
+
 from OFS.interfaces import IItem
 from OFS.metaconfigure import setDeprecatedManageAddDelete
 from OFS.ObjectManager import ObjectManager
 from OFS.SimpleItem import SimpleItem
-from Zope2.App import zcml
-from zExceptions import BadRequest
 
 logger = getLogger('OFS.subscribers')
 
@@ -102,6 +103,26 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
 
         verifyClass(IContainer, ObjectManager)
         verifyClass(IObjectManager, ObjectManager)
+
+    def test_filtered_meta_types(self):
+
+        class _DummySecurityPolicy(object):
+
+            def checkPermission(self, permission, object, context):
+                return permission == 'addFoo'
+
+        om = self._makeOne()
+        om.all_meta_types = ({'name': 'Foo', 'permission': 'addFoo'},
+                             {'name': 'Bar', 'permission': 'addBar'},
+                             {'name': 'Baz'})
+        try:
+            oldPolicy = setSecurityPolicy(_DummySecurityPolicy())
+            self.assertEqual(len(om.filtered_meta_types()), 2)
+            self.assertEqual(om.filtered_meta_types()[0]['name'], 'Foo')
+            self.assertEqual(om.filtered_meta_types()[1]['name'], 'Baz')
+        finally:
+            noSecurityManager()
+            setSecurityPolicy(oldPolicy)
 
     def test_setObject_set_owner_with_no_user( self ):
         om = self._makeOne()
