@@ -1,7 +1,6 @@
 import unittest
 
 from AccessControl.SecurityManagement import getSecurityManager
-from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
 from AccessControl.SecurityManager import setSecurityPolicy
 from zExceptions import Forbidden
@@ -111,7 +110,6 @@ class TestDeleteCollection(unittest.TestCase):
 
     def setUp(self):
         self._oldPolicy = setSecurityPolicy(_DummySecurityPolicy())
-        newSecurityManager(None, object())
 
     def tearDown(self):
         noSecurityManager()
