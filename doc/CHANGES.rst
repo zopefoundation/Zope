@@ -11,6 +11,8 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
+- HelpSys: Fixed some permission checks.
+
 - OFS: Fixed permission check in ObjectManager.
 
 - webdav: Fixed permission check and error handling in DeleteCollection.

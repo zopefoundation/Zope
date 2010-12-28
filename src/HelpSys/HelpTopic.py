@@ -58,14 +58,11 @@ class HelpTopicBase:
     def helpValues(self, REQUEST=None):
         return ()
 
-    def authorized(self, user):
+    def authorized(self, sm):
         "Is a given user authorized to view this Help Topic?"
         if not self.permissions:
-            return 1
-        for perm in self.permissions:
-            if user.has_permission(perm, self):
-                return 1
-        return 0
+            return True
+        return any( sm.checkPermission(p, self) for p in self.permissions )
 
     # Indexable methods
     # -----------------
