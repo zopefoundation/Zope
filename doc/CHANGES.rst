@@ -33,7 +33,7 @@ Features Added
 
 - Updated distributions:
 
-  - Products.ZCatalog = 2.13.2
+  - Products.ZCatalog = 2.13.3
 
 Restructuring
 +++++++++++++
