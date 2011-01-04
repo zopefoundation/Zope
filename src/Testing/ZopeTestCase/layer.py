@@ -33,7 +33,7 @@ class ZopeLite:
            triggering the testrunner's "resume layer"
            mechanism.
 
-           See zope.testing.testrunner-layers-ntd.txt
+           See zope.testrunner-layers-ntd.txt
         '''
 
 ZopeLiteLayer = ZopeLite

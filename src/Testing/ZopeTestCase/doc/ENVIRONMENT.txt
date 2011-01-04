@@ -41,8 +41,3 @@ tests.
 
 ZEO support ("both") is handled separately, through the new environment 
 variable ZEO_INSTANCE_HOME.
-
-
-You may want to consider using a testrunner to run your tests. You can find one 
-here: http://zope.org/Members/shh/TestRunner
-
