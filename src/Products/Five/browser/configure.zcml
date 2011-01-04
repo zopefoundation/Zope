@@ -6,6 +6,7 @@
       />
 
   <include package="OFS" file="absoluteurl.zcml"/>
+  <adapter factory="zope.browserresource.file.FileETag" />
 
   <browser:view
       for="OFS.interfaces.IObjectManager"

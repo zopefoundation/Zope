@@ -26,10 +26,10 @@ Features Added
 - Moved subset id calculation in `OFS.OrderSupport.moveObjectsByDelta` to a
   new helper method, patch by Tom Gross.
 
-- Updated to Zope Toolkit 1.0.1.
-
 - Use cProfile where possible for the `Control_Panel/DebugInfo/manage_profile`
   ZMI view.
+
+- Updated to Zope Toolkit 1.1dev.
 
 - Updated distributions:
 
