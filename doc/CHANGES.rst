@@ -31,6 +31,9 @@ Features Added
 
 - Updated to Zope Toolkit 1.1dev.
 
+- Added `addzope2user` script, suitable for adding an admin user directly to
+  the root acl_users folder.
+
 - Updated distributions:
 
   - Products.ZCatalog = 2.13.3
