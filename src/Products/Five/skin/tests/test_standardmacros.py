@@ -18,7 +18,7 @@ def test_standard_macros():
     """Test standard macros
 
       >>> uf = self.folder.acl_users
-      >>> uf._doAddUser('manager', 'r00t', ['Manager'], [])
+      >>> _ignored = uf._doAddUser('manager', 'r00t', ['Manager'], [])
       >>> self.login('manager')
 
       >>> from Products.Five.tests.testing import manage_addFiveTraversableFolder

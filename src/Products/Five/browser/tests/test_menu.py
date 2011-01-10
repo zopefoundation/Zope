@@ -87,7 +87,7 @@ def test_menu():
     Let's create a manager user account and log in.
 
       >>> uf = self.folder.acl_users
-      >>> uf._doAddUser('manager', 'r00t', ['Manager'], [])
+      >>> _ignored = uf._doAddUser('manager', 'r00t', ['Manager'], [])
       >>> self.login('manager')
       >>> newInteraction()
 

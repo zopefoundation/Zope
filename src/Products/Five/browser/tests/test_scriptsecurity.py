@@ -74,7 +74,7 @@ def test_resource_restricted_code():
     Now let's create a manager user account and log in:
 
       >>> uf = self.folder.acl_users
-      >>> uf._doAddUser('manager', 'r00t', ['Manager'], [])
+      >>> _ignored = uf._doAddUser('manager', 'r00t', ['Manager'], [])
       >>> self.login('manager')
 
     We can now view them all:
@@ -122,7 +122,7 @@ def test_view_restricted_code():
     wouldn't have all the rights to do traversal etc.:
 
       >>> uf = self.folder.acl_users
-      >>> uf._doAddUser('manager', 'r00t', ['Manager'], [])
+      >>> _ignored = uf._doAddUser('manager', 'r00t', ['Manager'], [])
       >>> self.login('manager')
 
       >>> protected_view_names = [

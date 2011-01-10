@@ -420,9 +420,10 @@ class ZopeCmd(ZDCmd):
             self.options.python ,
             'import Zope2; '
             'app = Zope2.app(); '
-            'app.acl_users._doAddUser(\'%s\', \'%s\', [\'Manager\'], []); '
+            'result = app.acl_users._doAddUser(\'%s\', \'%s\', [\'Manager\'], []); '
             'import transaction; '
             'transaction.commit(); '
+            'print \'Created user:\', result'
             ) % (name, password)
         os.system(cmdline)
 

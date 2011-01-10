@@ -17,7 +17,7 @@ We also need to create a stub user account and login; otherwise we
 wouldn't have all the rights to do traversal etc.:
 
   >>> uf = self.folder.acl_users
-  >>> uf._doAddUser('manager', 'r00t', ['Manager'], [])
+  >>> _ignored = uf._doAddUser('manager', 'r00t', ['Manager'], [])
   >>> self.login('manager')
 
 Now for some actual testing...
