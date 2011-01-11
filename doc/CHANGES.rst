@@ -49,6 +49,9 @@ Bugs Fixed
 Features Added
 ++++++++++++++
 
+- Report success or failure (when known) of creating a new user with
+  the addzope2user script.
+
 - Moved subset id calculation in `OFS.OrderSupport.moveObjectsByDelta` to a
   new helper method, patch by Tom Gross.
 

@@ -55,8 +55,8 @@ Browser pages need to be protected with a permission.  Let's test
 those; we start by adding two users:
 
   >>> uf = self.folder.acl_users
-  >>> uf._doAddUser('viewer', 'secret', [], [])
-  >>> uf._doAddUser('manager', 'r00t', ['Manager'], [])
+  >>> _ignored = uf._doAddUser('viewer', 'secret', [], [])
+  >>> _ignored = uf._doAddUser('manager', 'r00t', ['Manager'], [])
 
   >>> protected_view_names = [
   ...     'eagle.txt', 'falcon.html', 'owl.html', 'flamingo.html',

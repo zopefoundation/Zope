@@ -39,7 +39,7 @@ def test_default_view():
     As a last act of preparation, we create a manager login:
 
       >>> uf = self.folder.acl_users
-      >>> uf._doAddUser('manager', 'r00t', ['Manager'], [])
+      >>> _ignored = uf._doAddUser('manager', 'r00t', ['Manager'], [])
 
     We can specify another default view with browser:defaultView:
 

@@ -33,7 +33,13 @@ def main(argv=sys.argv):
     finder = ZopeFinder(argv)
     finder.filter_warnings()
     app = finder.get_app()
-    adduser(app, user, pwd)
+    result = adduser(app, user, pwd)
+    if result:
+        print "User %s created." % user
+    else:
+        print "Got no result back. User creation may have failed."
+        print "Maybe the user already exists and nothing is done then."
+        print "Or the implementation does not give info when it succeeds."
 
 if __name__ == '__main__':
     main()

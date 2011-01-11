@@ -20,7 +20,7 @@ Set up the test fixtures:
   ...     glob.glob('%s/*.css' % _prefix))]
 
   >>> uf = self.folder.acl_users
-  >>> uf._doAddUser('manager', 'r00t', ['Manager'], [])
+  >>> _ignored = uf._doAddUser('manager', 'r00t', ['Manager'], [])
 
 
 Image resource

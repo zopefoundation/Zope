@@ -379,7 +379,7 @@ Before we can begin, we need to set up a few things.  We need a
 manager account:
 
   >>> uf = self.folder.acl_users
-  >>> uf._doAddUser('manager', 'r00t', ['Manager'], [])
+  >>> _ignored = uf._doAddUser('manager', 'r00t', ['Manager'], [])
 
 Finally, we need to setup a traversable folder.  Otherwise, Five won't
 get do its view lookup magic:
