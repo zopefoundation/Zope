@@ -5,7 +5,7 @@ This file contains change information for the current Zope release.
 Change information for previous versions of Zope can be found at
 http://docs.zope.org/zope2/releases/.
 
-2.13.2 (unreleased)
+2.13.2 (2011-01-19)
 -------------------
 
 Bugs Fixed
@@ -21,6 +21,9 @@ Bugs Fixed
 
 Features Added
 ++++++++++++++
+
+- Report success or failure (when known) of creating a new user with the
+  `addzope2user` script.
 
 - Added `addzope2user` script, suitable for adding an admin user directly to
   the root acl_users folder.
