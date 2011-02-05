@@ -8,6 +8,13 @@ http://docs.zope.org/zope2/releases/.
 2.13.3 (unreleased)
 -------------------
 
+Features Added
+++++++++++++++
+
+- Updated distributions:
+
+  - Products.ZCatalog = 2.13.5
+
 Bugs Fixed
 ++++++++++
 
