@@ -11,6 +11,7 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
+- Applied missing bit of the code merge for LP #713253.
 
 2.13.3 (2011-02-06)
 -------------------
