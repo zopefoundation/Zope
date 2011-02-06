@@ -10,6 +10,9 @@ http://docs.zope.org/zope2/releases/.
 
 Bugs Fixed
 ++++++++++
+ 
+- LP #713253: Prevent publication of acquired attributes, where the acquired
+  object does not have a docstring.
 
 - Fix `LazyMap` to avoid unnecessary function calls.
 

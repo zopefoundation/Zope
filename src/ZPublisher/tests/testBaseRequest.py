@@ -335,6 +335,14 @@ class TestBaseRequest(unittest.TestCase, BaseRequest_factory):
         r = self._makeOne(root)
         self.assertRaises(NotFound, r.traverse, 'folder/objBasic/noview')
 
+    def test_traverse_acquired_attribute_without_docstring(self):
+        from ZPublisher import NotFound
+        root, folder = self._makeRootAndFolder()
+        root._setObject('objBasic',
+                        self._makeObjectWithEmptyDocstring())
+        r = self._makeOne(root)
+        self.assertRaises(NotFound, r.traverse, 'folder/objBasic')
+
     def test_traverse_class_without_docstring(self):
         from ZPublisher import NotFound
         root, folder = self._makeRootAndFolder()
