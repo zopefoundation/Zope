@@ -1,0 +1,33 @@
+<head><title>Test of documentation templates</title></head>
+<body>
+        <div tal:condition="here/args">
+          The arguments were:
+          <span tal:condition="options/batch/previous_sequence">
+            (<span
+              tal:replace="options/batch/previous_sequence_start_item"
+              >previous start item</span>-<span
+              tal:replace="options/batch/previous_sequence_end_item"
+              >previous end item</span>)
+          </span>
+          <dl>
+            <span tal:repeat="arg options/batch">
+              <dt><span tal:replace="arg">??</span>.</dt>
+              <dd>Argument <span tal:define="num arg/num"
+                                 tal:replace="string: $num"
+                  >99</span> was <span tal:replace="arg"
+                  >??</span></dd>
+            </span>
+          </dl>
+          <span tal:condition="options/batch/next_sequence">
+            (<span
+              tal:replace="options/batch/next_sequence_start_item"
+              >next start item</span>-<span
+              tal:replace="options/batch/next_sequence_end_item"
+              >next end item</span>)
+          </span>
+        </div>
+        <p tal:condition="not:here/args">
+          No arguments were given.
+        </p>
+        And I am 100% sure!
+</body>

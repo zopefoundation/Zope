@@ -1,0 +1,39 @@
+define-slot: Define a macro customization point
+
+  Syntax
+
+    'metal:define-slot' syntax::
+   
+      argument ::= Name
+
+  Description
+
+    The 'metal:define-slot' statement defines a macro customization
+    point or *slot*. When a macro is used, its slots can be replaced,
+    in order to customize the macro. Slot definitions provide default
+    content for the slot. You will get the default slot contents if
+    you decide not to customize the macro when using it.
+
+    The 'metal:define-slot' statement must be used inside a
+    'metal:define-macro' statement.
+
+    Slot names must be unique within a macro.
+
+  Examples
+
+    Simple macro with slot::
+
+      <p metal:define-macro="hello">
+        Hello <b metal:define-slot="name">World</b>
+      </p>
+ 
+    This example defines a macro with one slot named 'name'. When you
+    use this macro you can customize the 'b' element by filling the
+    'name' slot.
+
+  See Also
+
+    "metal:fill-slot":metal-fill-slot.stx
+
+
+

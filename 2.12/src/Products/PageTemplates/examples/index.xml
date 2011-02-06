@@ -1,0 +1,33 @@
+<example name="Assorted Examples">
+  <description>
+This is a set of examples of the use of page templates.
+It includes examples of batching, macros, and trees.
+  </description>
+  <payload>
+    <import file="zpt_examples.zexp"/>
+  </payload>
+  <view url="zpt_examples"/>
+</example>
+
+<!-- This file can contain any number of examples.
+
+Each one consists of an <example> with a 'name' attribute,
+containing exactly one <description>.  The name and description
+are displayed in the Examples page.  <description> can have a
+'format' attribute set to 'plain' (the default), 'stx' (structured
+text), or 'html'.
+
+An <example> can contain <payload> elements.  Each <payload> can
+contain any number of <import>, <execute>, and <call> elements.
+These are processed in order when an example is selected from the
+Examples page.  <import> must have a 'file' attribute that names
+a file in the 'examples' directory to be imported.  <execute> must
+have a 'file' attribute that names a file to be run with execfile.
+<call> must have a 'path' attribute that gives the path to a Zope
+object to be called.
+
+An <example> can contain at most one <view> element.  The 'url'
+attribute of a <view> is the URL to view after all <payload> elements have
+been processed. This URL can be relative to the current folder.
+
+-->

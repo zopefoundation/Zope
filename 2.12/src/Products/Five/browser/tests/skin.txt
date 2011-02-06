@@ -1,0 +1,54 @@
+Test layer and skin support
+===========================
+
+Let's register a test layer and test skin:
+
+  >>> import Products.Five.browser.tests
+  >>> from Products.Five import zcml
+  >>> zcml.load_config("configure.zcml", Products.Five)
+  >>> zcml.load_config("skin.zcml", package=Products.Five.browser.tests)
+
+Let's add a test object that we'll access the test page from:
+
+  >>> from Products.Five.tests.testing.simplecontent import manage_addSimpleContent
+  >>> manage_addSimpleContent(self.folder, 'testoid', 'Testoid')
+
+The view was registered on a different layer than 'default', that's
+why we can't access it straight away:
+
+  >>> print http(r"""
+  ... GET /test_folder_1_/testoid/eagle.html HTTP/1.1
+  ... """)
+  HTTP/1.1 404 Not Found
+  ...
+
+It works when we explicitly use the skin that includes that layer:
+
+  >>> print http(r"""
+  ... GET /test_folder_1_/testoid/++skin++TestSkin/eagle.html HTTP/1.1
+  ... """)
+  HTTP/1.1 200 OK
+  ...
+  The eagle has landed
+
+Or when we make that skin the default skin:
+
+  >>> zcml.load_string('''
+  ...   <browser:defaultSkin
+  ...       xmlns:browser="http://namespaces.zope.org/browser"
+  ...       name="TestSkin" />
+  ... ''')
+
+  >>> print http(r"""
+  ... GET /test_folder_1_/testoid/eagle.html HTTP/1.1
+  ... """)
+  HTTP/1.1 200 OK
+  ...
+  The eagle has landed
+
+
+Clean up
+--------
+
+  >>> from zope.component.testing import tearDown
+  >>> tearDown()

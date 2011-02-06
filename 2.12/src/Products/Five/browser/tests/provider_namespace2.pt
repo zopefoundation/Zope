@@ -1,0 +1,16 @@
+ <html>
+   <body>
+     <h1>My Web Page</h1>
+     <div class="left-column">
+       <tal:block define="message string:Hello World!;
+                          type string:error"
+                  replace="structure provider:mypage.MessageBox" />
+       <tal:block define="message string:Hello World again!;
+                          type string:warning"
+                  replace="structure provider:mypage.MessageBox" />
+     </div>
+     <div class="main">
+       Content here
+     </div>
+   </body>
+ </html>

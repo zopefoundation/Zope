@@ -1,0 +1,20 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser">
+
+  <browser:page
+      for="*"
+      name="edit-markers.html"
+      template="edit_markers.pt"
+      class="Products.Five.utilities.browser.marker.EditView"
+      permission="zope2.ManageProperties"
+      />
+
+  <browser:page
+      for="*"
+      name="manage_interfaces"
+      template="manage_interfaces.pt"
+      class="Products.Five.utilities.browser.marker.EditView"
+      permission="zope2.ManageProperties"
+      />
+
+</configure>

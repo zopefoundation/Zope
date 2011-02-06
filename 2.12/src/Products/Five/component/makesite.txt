@@ -1,0 +1,109 @@
+Turning folders into sites
+==========================
+
+Set up
+------
+
+Make this test available as a module so that stuff defined in here can
+be pickled properly:
+
+    >>> from zope.testing.module import setUp, tearDown
+    >>> setUp(test, name='Products.Five.component.makesite')
+
+Load all of Five's configuration (this is a functional test):
+
+    >>> import Products.Five
+    >>> from Products.Five.zcml import load_config
+    >>> load_config('configure.zcml', package=Products.Five)
+
+Enable local component lookup hooks:
+
+    >>> from zope.site.hooks import setHooks
+    >>> setHooks()
+
+
+Making a site
+-------------
+
+    >>> uf = app.acl_users
+    >>> uf._doAddUser('manager', 'r00t', ['Manager'], [])
+
+Create the test browser we'll be using:
+
+    >>> from Products.Five.testbrowser import Browser
+    >>> browser = Browser()
+    >>> browser.addHeader('Authorization', 'Basic manager:r00t')
+
+Let's add a folder:
+
+    >>> browser.open('http://localhost/manage_addProduct/OFSP/folderAdd')
+    >>> browser.getControl(name='id').value = 'folder'
+    >>> browser.getControl('Add').click()
+    >>> browser.getLink('folder').click()
+
+We can turn it into a site by using the ``components.html`` view:
+
+    >>> browser.open('http://localhost/folder/components.html')
+    >>> browser.getControl('Make site').click()
+
+Now we ensure that the folder has been turned into a site:
+
+    >>> from zope.location.interfaces import ISite
+    >>> ISite.providedBy(app.folder)
+    True
+
+We get the site manager for the folder and assert that it is indeed a
+component registry:
+
+    >>> sm = app.folder.getSiteManager()
+    >>> from zope.component.interfaces import IComponents
+    >>> IComponents.providedBy(sm)
+    True
+
+Now we register a simple view locally that we will look up via
+traversal:
+
+    >>> from Products.Five.browser import BrowserView
+    >>> class TestView(BrowserView):
+    ...     """A silly docstring"""
+    ...     __name__ = 'testview.html'
+    ...     def __call__(self):
+    ...         return "Hello World!"
+    >>> from OFS.interfaces import IObjectManager
+    >>> from zope.interface import Interface
+    >>> from zope.publisher.interfaces.browser import IDefaultBrowserLayer
+    >>> from zope.component import getGlobalSiteManager
+    >>> sm.registerAdapter(TestView, (IObjectManager, IDefaultBrowserLayer),
+    ...                    Interface, name='testview.html')
+
+Browse to our local view and check that it works:
+
+    >>> browser.handleErrors = False
+    >>> browser.open('http://localhost/folder/testview.html')
+    >>> print browser.contents
+    Hello World!
+
+Unmaking a site
+---------------
+
+Folderish sites can be reverted back to standard folders also using
+the ``components.html`` view:
+
+    >>> browser.open('http://localhost/folder/components.html')
+    >>> browser.getControl('Unmake site').click()
+
+Ensure that its local components are no longer available:
+
+    >>> ISite.providedBy(app.folder)
+    False
+    >>> browser.open('http://localhost/folder/@@testview.html')
+    Traceback (most recent call last):
+    ...
+    NotFound: ...
+
+Clean up:
+---------
+
+    >>> from zope.testing.cleanup import cleanUp
+    >>> cleanUp()
+    >>> tearDown(test, name='Products.Five.component.makesite')

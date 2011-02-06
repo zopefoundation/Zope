@@ -1,0 +1,76 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+<title>Zope QuickStart</title>
+<link rel="stylesheet" type="text/css" href="&dtml-BASEPATH1;/manage_page_style.css">
+</head>
+<body bgcolor="#ffffff" link="#000099" alink="#000099" vlink="#000099">
+
+<dtml-var "manage_form_title(this(), _,
+           form_title='Zope Quick Start',
+           )">
+
+<dtml-if expr="not PARENTS[0].acl_users.hasUsers()">
+<div class="system-msg">
+<h3>
+You have not created any users in this Zope instance.  In order to
+log in and manage this Zope instance, you'll need to add an adminstrative
+user account.
+</h3>
+
+<p>
+You can create an administrative user account via the "zopectl adduser"
+command from a shell.  <b>Note: You'll need to shut Zope itself down before
+"zopectl adduser" will work.  Restart Zope after executing this command in
+order to log in.</b>
+</p>
+
+</div>
+</dtml-if>
+
+<p>
+Welcome to <strong>Zope</strong>, a high-performance object-oriented 
+platform for building dynamic Web applications. Here are some quick 
+pointers to get you started:
+</p>
+
+<ul>
+<li>
+<p>
+<a href="http://docs.zope.org/zope2/zope2book/" target="_new">Read The 
+Fine Manual</a>.  This document guides you through the whole process of
+learning Zope, from logging in for the first time to creating your own
+web applications.
+</p>
+</li>
+
+<li>
+<p>
+Go to the main <a href="http://docs.zope.org/" target="_new">
+Documentation Overview</a> on <a href="http://www.zope.org" target="_new">Zope.org</a>.  
+Here you will find pointers to official and community contributed documentation.
+</p>
+</li>
+
+<li>
+<p>
+Look at the various <a 
+href="http://www.zope.org/Resources/MailingLists" target="_new">Mailing 
+Lists</a> about Zope.  The Mailing Lists are where you can get 
+quick, accurate, friendly help from a large community of Zope 
+users from around the world.
+</p>
+</li>
+
+<li>
+<p>
+Go directly to the <a href="&dtml-BASEPATH1;/manage" target="_top">
+Zope Management Interface</a> if you'd like to start working with Zope 
+right away.
+</p>
+</li>
+
+</ul>
+
+</body>
+</html>

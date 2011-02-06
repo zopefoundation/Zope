@@ -1,0 +1,13 @@
+<configure 
+  xmlns="http://namespaces.zope.org/zope"
+  xmlns:browser="http://namespaces.zope.org/browser"
+  xmlns:five="http://namespaces.zope.org/five"
+  >
+
+<browser:resource
+  image="z3base.png"
+  name="z3base.png"
+  permission="zope2.ViewManagementScreens"
+  />
+
+</configure>

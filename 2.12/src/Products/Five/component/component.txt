@@ -1,0 +1,71 @@
+Local component look-up
+=======================
+
+``IComponentLookup`` adapter
+-----------------------------
+
+In order to do context-based component look-up, the Component
+Architecture adapts the context to ``IComponentLookup``.  Zope 3's
+default adapter uses the ``ILocation`` API to walk up the object tree
+and find a site that way.  Five provides its own adapter that also
+supports acquisitional parents.
+
+First, we register Five's adapter:
+
+  >>> import zope.component
+  >>> from Products.Five.component import siteManagerAdapter
+  >>> zope.component.provideAdapter(siteManagerAdapter)
+
+Now we create a site object with a stub component registry:
+
+  >>> from OFS.ObjectManager import ObjectManager
+  >>> from zope.interface import alsoProvides
+  >>> from zope.location.interfaces import ISite
+
+  >>> components = object()
+  >>> site = ObjectManager()
+  >>> site.setSiteManager(components)
+  >>> alsoProvides(site, ISite)
+
+When we adapt the site itself, we obviously get its component
+registry:
+
+  >>> from zope.component.interfaces import IComponentLookup
+  >>> IComponentLookup(site) is components
+  True
+ 
+In case the adapted object has an acquisition context, acquisition
+is used to retrieve the closest site:
+  
+  >>> ob = ObjectManager()
+  >>> ob2 = ObjectManager()
+  >>> ob = ob.__of__(site)
+  >>> ob2 = ob2.__of__(ob)
+  >>> IComponentLookup(ob2) is components
+  True
+
+The adapter also works using the ``ILocation`` API by inspecting the
+``__parent__`` object instead of using the acquisition parent:
+
+  >>> from zope.location import Location
+  >>> ob = Location()
+  >>> ob2 = Location()
+  >>> ob.__parent__ = site
+  >>> ob2.__parent__ = ob
+  >>> IComponentLookup(ob2) is components
+  True
+
+If it is unable to find a site and therefore a component registry, the
+global component registry is returned:
+
+  >>> from zope.component import getGlobalSiteManager
+  >>> orphan = ObjectManager()
+  >>> IComponentLookup(orphan) is getGlobalSiteManager()
+  True
+
+
+Clean up:
+---------
+
+  >>> from zope.component.testing import tearDown
+  >>> tearDown()

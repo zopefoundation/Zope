@@ -1,0 +1,363 @@
+Test browser pages
+==================
+
+Let's register a quite large amount of test pages:
+
+  >>> import Products.Five.browser.tests
+  >>> from Products.Five import zcml
+  >>> zcml.load_config("configure.zcml", Products.Five)
+  >>> zcml.load_config('pages.zcml', package=Products.Five.browser.tests)
+
+Let's add a test object that we view most of the pages off of:
+
+  >>> from Products.Five.tests.testing.simplecontent import manage_addSimpleContent
+  >>> manage_addSimpleContent(self.folder, 'testoid', 'Testoid')
+
+We also need to create a stub user account and login; otherwise we
+wouldn't have all the rights to do traversal etc.:
+
+  >>> uf = self.folder.acl_users
+  >>> uf._doAddUser('manager', 'r00t', ['Manager'], [])
+  >>> self.login('manager')
+
+Now for some actual testing...
+
+
+Simple pages
+------------
+
+A browser page that is a view class's attribute (method):
+
+  >>> view = self.folder.unrestrictedTraverse('testoid/eagle.txt')
+  >>> view is not None
+  True
+  >>> from Products.Five.browser.tests.pages import SimpleView
+  >>> isinstance(view, SimpleView)
+  True
+  >>> view()
+  u'The eagle has landed'
+
+A browser page that is a Page Template.
+
+  >>> view = self.folder.unrestrictedTraverse('testoid/owl.html')
+  >>> view()
+  u'<p>2</p>'
+
+A browser page that is a PageTemplate plus a view class:
+
+  >>> view = self.folder.unrestrictedTraverse('testoid/falcon.html')
+  >>> isinstance(view, SimpleView)
+  True
+  >>> view()
+  u'<p>The falcon has taken flight</p>'
+
+Test pages that have been registered through the cumulative
+<browser:pages> directive:
+
+  >>> view = self.folder.unrestrictedTraverse('testoid/eagle-page.txt')
+  >>> isinstance(view, SimpleView)
+  True
+  >>> view()
+  u'The eagle has landed'
+
+  >>> view = self.folder.unrestrictedTraverse('testoid/mouse-page.txt')
+  >>> isinstance(view, SimpleView)
+  True
+  >>> view()
+  u'The mouse has been eaten by the eagle'
+
+Zope 2 objects always need a docstring in order to be published.  Five
+adds a docstring automatically if a view method doesn't have it, but
+it shouldn't modify existing ones:
+
+  >>> view = self.folder.unrestrictedTraverse('testoid/eagle.txt')
+  >>> view.eagle.__doc__ == SimpleView.eagle.__doc__
+  True
+
+Make sure new-style classes work fine as view classes:
+
+  >>> self.folder.unrestrictedTraverse('testoid/@@new_style_class')
+  <Products.Five.metaclass.NewStyleClass ...>
+  
+At one point browser classes with no attribute and no template
+values specified wasn't getting BrowserView mixed in.  Lets make
+sure it is now:
+
+  >>> self.folder.unrestrictedTraverse('testoid/@@new_style_class2')
+  <Products.Five.metaclass.NewStyleClass ...>
+  
+Both browser:view and browser:page are ILocation providers, so make sure they
+have a __name__ attribute:
+
+  >>> page = self.folder.unrestrictedTraverse('testoid/eagle.txt')
+  >>> page.__name__
+  u'eagle.txt'
+
+  >>> view = self.folder.unrestrictedTraverse('testoid/named_view')
+  >>> view.__name__
+  u'named_view'
+
+ZPT-based browser pages
+-----------------------
+
+Test access to ``context`` from ZPTs:
+
+  >>> view = self.folder.unrestrictedTraverse('testoid/flamingo.html')
+  >>> print view()
+  <p>Hello world</p>
+  <p>Hello world</p>
+
+Test macro access from ZPT pages:
+
+  >>> view = self.folder.unrestrictedTraverse('testoid/seagull.html')
+  >>> view()
+  u'<html><head><title>bird macro</title></head><body>Color: gray</body></html>\n'
+
+test_zpt_things:
+
+  >>> view = self.folder.unrestrictedTraverse('testoid/condor.html')
+  >>> print view()
+  <p>Hello world</p>
+  <p>The eagle has landed</p>
+  <p>Hello world</p>
+  <p>Hello world</p>
+
+Make sure that tal:repeat works in ZPT browser pages:
+
+  >>> view = self.folder.unrestrictedTraverse('testoid/ostrich.html')
+  >>> print view()
+  <ul>
+  <li>Alpha</li>
+  <li>Beta</li>
+  <li>Gamma</li>
+  </ul>
+  <ul>
+  <li>0</li>
+  <li>1</li>
+  <li>2</li>
+  </ul>
+
+Test TALES traversal in ZPT pages:
+
+  >>> view = self.folder.unrestrictedTraverse('testoid/tales_traversal.html')
+  >>> print view()
+  <p>testoid</p>
+  <p>test_folder_1_</p>
+
+Make sure that global template variables in ZPT pages are correct:
+
+  >>> view = self.folder.unrestrictedTraverse('testoid/template_variables.html')
+  >>> print view()
+  View is a view: True
+  Context is testoid: True
+  Context.aq_parent is test_folder_1_: True
+  Container is context: True
+  Here is context: True
+  Nothing is None: True
+  Default works: True
+  Root is the application: True
+  Template is a template: True
+  Traverse_subpath exists and is empty: True
+  Request is a request: True
+  User is manager: True
+  Options exist: True
+  Attrs exist: True
+  Repeat exists: True
+  Loop exists: True
+  Modules exists: True
+
+Make sure that ZPT's aren't a security-less zone.  Let's logout and
+try to access some protected stuff.  Let's not forgot to login again,
+of course:
+
+  >>> from AccessControl import allow_module
+  >>> allow_module('smtpd')
+  >>> self.logout()
+  >>> view = self.folder.unrestrictedTraverse('testoid/security.html')
+  >>> print view()
+  <div>NoneType</div>
+  <div>smtpd</div>
+  >>> self.login('manager')
+
+Test pages registered through the <five:pagesFromDirectory /> directive:
+
+  >>> view = self.folder.unrestrictedTraverse('testoid/dirpage1')
+  >>> print view()
+  <html>
+  <p>This is page 1</p>
+  </html>
+
+  >>> view = self.folder.unrestrictedTraverse('testoid/dirpage2')
+  >>> print view()
+  <html>
+  <p>This is page 2</p>
+  </html>
+
+
+Low-level security
+------------------
+
+This tests security on a low level (functional pages test has
+high-level security tests).  Let's manually look up a protected view:
+
+  >>> from zope.component import getMultiAdapter
+  >>> from zope.publisher.browser import TestRequest
+  >>> request = TestRequest()
+  >>> view = getMultiAdapter((self.folder.testoid, request), name=u'eagle.txt')
+
+It's protecting the object with the permission, and not the attribute,
+so we get ('',) instead of ('eagle',):
+
+  >>> view.__ac_permissions__
+  (('View management screens', ('',)),)
+
+The view's __roles__ attribute can be evaluated correctly:
+
+(We have to use aq_acquire here instead of a simple getattr. The
+reason is that __roles__ actually is an object that expects being
+called through the __of__ protocol upon which it renders the roles
+tuple. aq_acquire will trigger this for us.  This isn't a problem,
+really, because AccessControl ends up using aq_acquire anyway, so it
+Just Works.)
+
+  >>> from Acquisition import aq_acquire
+  >>> aq_acquire(view, '__roles__')
+  ('Manager',)
+
+Check to see if view's context properly acquires its true
+parent
+
+  >>> from Acquisition import aq_parent, aq_base, aq_inner
+  >>> context = view.context
+
+Check the wrapper type
+
+  >>> from Acquisition import ImplicitAcquisitionWrapper
+  >>> type(context) == ImplicitAcquisitionWrapper
+  True
+
+The parent of the view is the view's context:
+
+  >>> view.__parent__ == view.context
+  True
+  >>> aq_parent(view) == view.context
+  True
+
+The direct parent of the context is 
+
+  >>> context.aq_inner.aq_parent
+  <Folder at /test_folder_1_> 
+
+C methods work the same
+
+  >>> aq_parent(aq_inner(context))
+  <Folder at /test_folder_1_> 
+
+The same applies to a view registered with <browser:view /> instead of
+<browser:page />
+
+  >>> request = TestRequest()
+  >>> view = getMultiAdapter((self.folder.testoid, request), name=u'permission_view')
+  >>> view.__ac_permissions__
+  (('View management screens', ('',)),)
+  >>> aq_acquire(view, '__roles__')
+  ('Manager',)
+  >>> context = view.context
+  >>> from Acquisition import ImplicitAcquisitionWrapper
+  >>> type(context) == ImplicitAcquisitionWrapper
+  True
+  >>> view.__parent__ == view.context
+  True
+  >>> aq_parent(view) == view.context
+  True
+  >>> context.aq_inner.aq_parent
+  <Folder at /test_folder_1_> 
+  >>> aq_parent(aq_inner(context))
+  <Folder at /test_folder_1_> 
+
+Make sure that methods which are not included in the allowed interface or
+attributes, but which already had security declarations from a base class,
+don't get those declarations overridden to be private. (The roles for
+restrictedTraverse should be None, indicating it is public.)
+
+  >>> view.restrictedTraverse__roles__
+
+High-level security
+-------------------
+
+  >>> protected_view_names = [
+  ...     'eagle.txt', 'falcon.html', 'owl.html', 'flamingo.html',
+  ...     'condor.html', 'permission_view']
+  >>> 
+  >>> public_view_names = [
+  ...     'public_attribute_page',
+  ...     'public_template_page',
+  ...     'public_template_class_page',
+  ...     'nodoc-method', 'nodoc-function', 'nodoc-object',
+  ...     'dirpage1', 'dirpage2']
+
+  >>> from Products.Five.tests.testing.restricted import checkRestricted
+  >>> from Products.Five.tests.testing.restricted import checkUnauthorized
+
+As long as we're not authenticated, we should get Unauthorized for
+protected views, but we should be able to view the public ones:
+
+  >>> self.logout()
+  >>> for view_name in protected_view_names:
+  ...     checkUnauthorized(
+  ...         self.folder,
+  ...         'context.restrictedTraverse("testoid/%s")()' % view_name)
+
+  >>> for view_name in public_view_names:
+  ...     checkRestricted(
+  ...         self.folder,
+  ...         'context.restrictedTraverse("testoid/%s")()' % view_name)
+  >>> self.login('manager')
+
+Being logged in as a manager again, we find that the protected pages
+are accessible to us:
+
+  >>> for view_name in protected_view_names:
+  ...     checkRestricted(
+  ...         self.folder,
+  ...         'context.restrictedTraverse("testoid/%s")()' % view_name)
+
+  >>> checkRestricted(
+  ...     self.folder,
+  ...     'context.restrictedTraverse("testoid/eagle.method").eagle()')
+
+Even when logged in though the private methods should not be accessible:
+
+  >>> checkUnauthorized( self.folder,
+  ...             'context.restrictedTraverse("testoid/eagle.method").mouse()')
+
+
+
+Other
+-----
+
+Make sure that browser pages can be overridden:
+
+  >>> zcml.load_string('''
+  ...     <includeOverrides
+  ...         package="Products.Five.browser.tests"
+  ...         file="overrides.zcml" />
+  ... ''')
+  >>> view = self.folder.unrestrictedTraverse('testoid/overridden_view')
+  >>> view()
+  u'The mouse has been eaten by the eagle'
+
+Test traversal to resources from within ZPT pages:
+
+  >>> zcml.load_config('resource.zcml', package=Products.Five.browser.tests)
+  >>> view = self.folder.unrestrictedTraverse('testoid/parakeet.html')
+  >>> print view()
+  <html><body><img alt=""
+                   src="http://nohost/test_folder_1_/testoid/++resource++pattern.png" /></body></html>
+
+
+Clean up
+--------
+
+  >>> from zope.component.testing import tearDown
+  >>> tearDown()

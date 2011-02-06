@@ -1,0 +1,71 @@
+<dtml-var manage_page_header>
+<dtml-var manage_tabs>
+
+<p class="form-help">
+  Browse the words in the lexicon or enter the word(s) you are interested in
+  below. Globbing characters (*, ?) are supported
+</p>
+
+<dtml-let words_str="' '.join(REQUEST.get('words',[]))">
+  <form action="&dtml-URL;">
+    <p class="form-element">
+      <span class="form-label">Word(s)</span>
+      <input name="words:tokens" size="20"  value="&dtml-words_str;" />
+      <input type="submit" value="Query" />
+
+      <span class="form-label">&nbsp;Output Columns:</span>
+      <input name="cols:int" size="2" value="&dtml-cols;" />
+      <span class="form-label">&nbsp;Rows:</span>
+      <input name="rows:int" size="2" value="&dtml-rows;" />
+    </p>
+  </form>
+  <hr />
+  <form action="&dtml-URL;">
+    <table width="100%"  cellpadding="2" cellspacing="0" border="0">
+
+    <tr class="section-bar">
+      <td><span class="form-label">
+        &dtml-word_count; Words Found<dtml-if word_count>,
+        Displaying &dtml-start_word;-&dtml-end_word;
+        </dtml-if>
+
+        <dtml-if expr="page_count > 0">
+          </span></td>
+          <td align="right"><span class="form-label">
+            Page:
+            <select name="page:int" onchange="this.form.submit()">
+              <dtml-in name="page_range" prefix="page">
+                <option value="&dtml-page_item;"
+                <dtml-if expr="page == page_item">
+                  selected
+                </dtml-if>
+                >
+                  <dtml-var expr="page_item+1">
+                </option>
+              </dtml-in>
+            </select>
+            of &dtml-page_count;
+            <input type="submit" value="Go" />
+            <input type="hidden" name="cols:int" value="&dtml-cols;" />
+            <input type="hidden" name="rows:int" value="&dtml-rows;" />
+            <input type="hidden" name="words:tokens" value="&dtml-words_str;" />
+        </dtml-if>
+        </span></td>
+    </tr>
+    </table>
+  </form>
+</dtml-let>
+
+<dtml-if name="page_columns">
+  <table width="100%" cellpadding="0" cellspacing="10" border="0">
+    <tr>
+    <dtml-in name="page_columns" prefix="column">
+      <td align="left" valign="top">
+        <dtml-var expr="'<br />'.join(column_item)">
+      </td>
+    </dtml-in>
+    </tr>
+  </table>
+</dtml-if>
+
+<dtml-var manage_page_footer>

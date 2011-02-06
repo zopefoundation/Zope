@@ -1,0 +1,142 @@
+<dtml-var manage_page_header>
+<dtml-var manage_tabs>
+
+
+<p class="form-help">
+You can update the data for this file object using the form below. 
+Select a data file from your local computer by clicking the <em>browse</em> 
+button and click <em>upload</em> to update the contents of the
+file. You may also edit the file content directly if the content is a 
+text type and small enough to be edited in a text area.
+</p>
+
+<form action="<dtml-var "REQUEST.URL1" html_quote>" method="post" enctype="multipart/form-data">
+<table cellpadding="2" cellspacing="0" width="100%" border="0">
+<tr>
+  <td align="left" valign="top">
+  <div class="form-optional">
+  Title
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <input type="text" name="title" size="40" value="<dtml-if 
+   title>&dtml-title;</dtml-if>">
+  </td>
+</tr>
+
+<tr>
+  <td align="left" valign="top">
+  <div class="form-label">
+  Content Type
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <input type="text" name="content_type:required" size="40" value="<dtml-if 
+   content_type>&dtml-content_type;</dtml-if>">
+  </td>
+</tr>
+
+<tr>
+  <td align="left" valign="top">
+  <div class="form-optional">
+  Precondition
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <input type="text" name="precondition" size="40" value="<dtml-if 
+   precondition>&dtml-precondition;</dtml-if>">
+  </td>
+</tr>
+
+<dtml-let ct=getContentType>
+  <dtml-if "(ct.startswith('text') or ct.endswith('javascript')) 
+            and this().get_size() < 65536">
+  <tr>
+    <td align="left" valign="top" colspan="2">
+    <div style="width: 100%;">
+    <dtml-let cols="REQUEST.get('dtpref_cols', '100%')"
+              rows="REQUEST.get('dtpref_rows', '20')">
+    <dtml-if "cols[-1]=='%'">
+    <textarea name="filedata:text" wrap="off" style="width: &dtml-cols;;"
+    <dtml-else>
+    <textarea name="filedata:text" wrap="off" cols="&dtml-cols;"
+    </dtml-if>
+              rows="&dtml-rows;"><dtml-var __str__ html_quote></textarea>
+    </dtml-let>
+    </div>
+    </td>
+  </tr>
+  <dtml-else>
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-label">
+    Last Modified
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <div class="form-text">
+    <dtml-var bobobase_modification_time fmt="%Y-%m-%d %H:%M">
+    </div>
+    </td>
+  </tr>
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-label">
+    File Size
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <div class="form-text">
+    <dtml-var size thousands_commas> bytes
+    </div>
+    </td>
+  </tr>
+  </dtml-if>
+</dtml-let>
+
+<tr>
+  <td></td>
+  <td align="left" valign="top">
+  <div class="form-element">
+  <dtml-if wl_isLocked>
+   <em>Locked by WebDAV</em>
+  <dtml-else>
+   <input class="form-element" type="submit" name="manage_edit:method" 
+    value="Save Changes">
+  </dtml-if>
+  </div>
+  </td>
+</tr>
+
+<tr>
+  <td align="left" valign="top">
+  <br />
+  <div class="form-label">
+  File Data
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <br />
+  <input type="file" name="file" size="25" />
+  </td>
+</tr>
+
+<tr>
+  <td></td>
+  <td align="left" valign="top">
+  <div class="form-element">
+  <dtml-if wl_isLocked>
+   <em>Locked by WebDAV</em>
+  <dtml-else>
+   <input class="form-element" type="submit" name="manage_upload:method" 
+    value="Upload">
+  </dtml-if>
+  </div>
+  </td>
+</tr>
+
+</table>
+</form>
+
+<dtml-var manage_page_footer>
+

@@ -1,0 +1,286 @@
+Events in Zope 2.9
+==================
+
+Zope 2.9 (and Zope 2.8 when using Five 1.2) introduces a big change:
+Zope 3 style container events.
+
+With container events, you finally have the ability to react to things
+happening to objects without have to subclass ``manage_afterAdd``,
+``manage_beforeDelete`` or ``manage_afterClone``. Instead, you just have
+to register a subscriber for the appropriate event, for instance
+IObjectAddedEvent, and make it do the work.
+
+Indeed, the old methods like ``manage_afterAdd`` are now discouraged, you
+shouldn't use them anymore.
+
+Let's see how to migrate your products.
+
+Old product
+-----------
+
+Suppose that in an old product you have code that needs to register
+through a central tool whenever a document is created. Or it could be
+indexing itself. Or it could initialize an attribute according to its
+current path. Code like::
+
+    class CoolDocument(...):
+        ...
+        def manage_afterAdd(self, item, container):
+            self.mangled_path = mangle('/'.join(self.getPhysicalPath()))
+            getToolByName(self, 'portal_cool').registerCool(self)
+            super(CoolDocument, self).manage_afterAdd(item, container)
+
+        def manage_afterClone(self, item):
+            self.mangled_path = mangle('/'.join(self.getPhysicalPath()))
+            getToolByName(self, 'portal_cool').registerCool(self)
+            super(CoolDocument, self).manage_afterClone(item)
+
+        def manage_beforeDelete(self, item, container):
+            super(CoolDocument, self).manage_beforeDelete(item, container)
+            getToolByName(self, 'portal_cool').unregisterCool(self)
+
+This would be the best practice in Zope 2.8. Note the use of ``super()``
+to call the base class, which is often omitted because people "know"
+that SimpleItem for instance doesn't do anything in these methods.
+
+If you run this code in Zope 2.9, you will get deprecation warnings,
+telling you that::
+
+    Calling Products.CoolProduct.CoolDocument.CoolDocument.manage_afterAdd
+    is discouraged. You should use event subscribers instead.
+
+Using five:deprecatedManageAddDelete
+------------------------------------
+
+The simplest thing you can do to deal with the deprecation warnings, and
+have correct behavior, is to add in your products a ``configure.zcml``
+file containing::
+
+    <configure
+        xmlns="http://namespaces.zope.org/zope"
+        xmlns:five="http://namespaces.zope.org/five">
+
+      <five:deprecatedManageAddDelete
+          class="Products.CoolProduct.CoolDocument.CoolDocument"/>
+
+    </configure>
+
+This tells Zope that you acknowledge that your class contains deprecated
+methods, and ask it to still call them in the proper manner. So Zope
+will be sending events when an object is added, for instance, and in
+addition call your old ``manage_afterAdd`` method.
+
+One subtlety here is that you may have to modify you methods to just do
+their work, and not call their super class. This is necessary because
+proper events are already dispatched to all relevant classes, and the
+work of the super class will be done trough events, you must not redo it
+by hand. If you call the super class, you will get a warning, saying for
+instance::
+
+    CoolDocument.manage_afterAdd is discouraged. You
+    should use an IObjectAddedEvent subscriber instead.
+
+The fact that you must "just do your work" is especially important for
+the rare cases where people subclass the ``manage_afterAdd`` of object
+managers like folders, and decided to reimplement recursion into the
+children themselves. If you do that, then there will be two recursions
+going on in parallel, the one done by events, and the one done by your
+code. This would be bad.
+
+Using subscribers
+-----------------
+
+In the long run, and before Zope 2.11 where ``manage_afterAdd`` and
+friends will be removed, you will want to use proper subscribers.
+
+First, you'll have to write a subscriber that "does the work", for
+instance::
+
+    def addedCoolDocument(ob, event):
+        """A Cool Document was added to a container."""
+        self.mangled_path = mangle('/'.join(self.getPhysicalPath()))
+
+Note that we're not calling the ``portal_cool`` tool anymore, because
+presumably this tool will also be modified to do its work through
+events, and will have a similar subscriber doing the necessary
+``registerCool``. Note also that here we don't care about the event, but
+in more complex cases we would.
+
+Now we have to register our subscriber for our object. To do that, we
+need to "mark" our object through an interface. We can define in our
+product's ``interfaces.py``::
+
+    from zope.interface import Interface, Attribute
+
+    class ICoolDocument(Interface):
+        """Cool Document."""
+        mangled_path = Attribute("Our mangled path.")
+        ...
+
+Then the class CoolDocument is marked with this interface::
+
+    from zope.interface import implements
+    from Products.CoolProduct.interfaces import ICoolDocument
+    class CoolDocument(...):
+        implements(ICoolDocument)
+        ...
+
+Finally we must link the event and the interface to the subscriber using
+zcml, so in ``configure.zcml`` we'll add::
+
+    ...
+      <subscriber
+          for="Products.CoolProduct.interfaces.ICoolDocument
+               zope.lifecycleevent.interfaces.IObjectAddedEvent"
+          handler="Products.CoolProduct.CoolDocument.addedCoolDocument"
+          />
+    ...
+
+And that's it, everything is plugged. Note that IObjectAddedEvent takes
+care of both ``manage_afterAdd`` and ``manage_afterClone``, as it's sent
+whenever a new object is placed into a container. However this won't
+take care of moves and renamings, we'll see below how to do that.
+
+Event dispatching
+-----------------
+
+When an IObjectEvent (from which all the events we're talking here
+derive) is initially sent, it concerns one object. For instance, a
+specific object is removed. The ``event.object`` attribute is this
+object.
+
+To be able to know about removals, we could just subscribe to the
+appropriate event using a standard event subscriber. In that case, we'd
+have to filter "by hand" to check if the object removed is of the type
+we're interested in, which would be a chore. In addition, any subobjects
+of the removed object wouldn't know what happens to them, and for
+instance they wouldn't have any way of doing some cleanup before they
+disappear.
+
+To solve these two problems, Zope 3 has an additional mechanism by which
+any IObjectEvent is redispatched using multi-adapters of the form ``(ob,
+event)``, so that a subscriber can be specific about the type of object
+it's interested in. Furthermore, this is done recursively for all
+sublocations ``ob`` of the initial object. The ``event`` won't change
+though, and ``event.object`` will still be the original object for which
+the event was initially sent (this corresponds to ``self`` and ``item``
+in the ``manage_afterAdd`` method -- ``self`` is ``ob``, and ``item`` is
+``event.object``).
+
+Understanding the hierarchy of events is important to see how to
+subscribe to them.
+
+ * IObjectEvent is the most general. Any event focused on an object
+   derives from this.
+
+ * IObjectMovedEvent is sent when an object changes location or is
+   renamed. It is quite general, as it also encompasses the case where
+   there's no old location (addition) or no new location (removal).
+
+ * IObjectAddedEvent and IObjectRemovedEvent both derive from
+   IObjectMovedEvent.
+
+ * IObjectCopiedEvent is sent just after an object copy is made, but
+   this doesn't mean the object has been put into its new container yet,
+   so it doesn't have a location.
+
+There are only a few basic use cases about what one wants to do with
+respect to events (but you might want to read the full story in
+Five/tests/event.txt).
+
+The first use case is the one where the object has to be aware of its
+path, like in the CoolDocument example above. That's strictly a Zope 2
+concern, as Zope 3 has others ways to deal with this.
+
+In Zope 2 an object has a new path through creation, copy or move
+(rename is a kind of move). The events sent during these three
+operations are varied: creation sends IObjectAddedEvent, copy sends
+IObjectCopiedEvent then IObjectAddedEvent, and move sends
+IObjectMovedEvent.
+
+So to react to new paths, we have to subscribe to IObjectMovedEvent, but
+this will also get us any IObjectRemovedEvent, which we'll have to
+filter out by hand (this is unfortunate, and due to the way the Zope 3
+interface hierarchy is organized). So to fix the CoolDocument
+configuration we have to add::
+
+    def movedCoolDocument(ob, event):
+        """A Cool Document was moved."""
+        if not IObjectRemovedEvent.providedBy(event):
+            addedCoolDocument(ob, event)
+
+And replace the subscriber with::
+
+    ...
+      <subscriber
+          for="Products.CoolProduct.interfaces.ICoolDocument
+               zope.lifecycleevent.interfaces.IObjectMovedEvent"
+          handler="Products.CoolProduct.CoolDocument.movedCoolDocument"
+          />
+    ...
+
+The second use case is when the object has to do some cleanup when it is
+removed from its parent. This used to be in ``manage_beforeDelete``, now
+we can do the work in a ``removedCoolDocument`` method and just
+subscribe to IObjectRemovedEvent. But wait, this won't take into account
+moves... So in the same vein as above, we would have to write::
+
+    def movedCoolDocument(ob, event):
+        """A Cool Document was moved."""
+        if not IObjectRemovedEvent.providedBy(event):
+            addedCoolDocument(ob, event)
+        if not IObjectAddedEvent.providedBy(event):
+            removedCoolDocument(ob, event)
+
+The third use case is when your object has to stay registered with some
+tool, for instance indexed in a catalog, or as above registered with
+``portal_cool``. Here we have to know the old object's path to
+unregister it, so we have to be called *before* it is removed. We'll use
+``IObjectWillBe...`` events, that are sent before the actual operations
+take place::
+
+    from OFS.interfaces import IObjectWillBeAddedEvent
+    def beforeMoveCoolDocument(ob, event):
+        """A Cool Document will be moved."""
+        if not IObjectWillBeAddedEvent.providedBy(event):
+            getToolByName(ob, 'portal_cool').unregisterCool(ob)
+
+    def movedCoolDocument(ob, event):
+        """A Cool Document was moved."""
+        if not IObjectRemovedEvent.providedBy(event):
+            getToolByName(ob, 'portal_cool').registerCool(ob)
+        ...
+
+And use an additional subscriber::
+
+    ...
+      <subscriber
+          for="Products.CoolProduct.interfaces.ICoolDocument
+               OFS.interfaces.IObjectWillBeMovedEvent"
+          handler="Products.CoolProduct.CoolDocument.beforeMoveCoolDocument"
+          />
+    ...
+
+This has to be done if the tool cannot react by itself to objects being
+added and removed, which obviously would be better as it's ultimately
+the tool's responsibility and not the object's.
+
+Note that if having tests like::
+
+    if not IObjectWillBeAddedEvent.providedBy(event):
+    if not IObjectRemovedEvent.providedBy(event):
+
+seems cumbersome (and backwards), it is also possible to check what kind
+of event you're dealing with using::
+
+    if event.oldParent is not None:
+    if event.newParent is not None:
+
+(However be careful, the ``oldParent`` and ``newParent`` are the old and
+new parents *of the original object* for which the event was sent, not
+of the one to which the event was redispatched using the
+multi-subscribers we have registered.)
+
+The ``IObjectWillBe...`` events are specific to Zope 2 (and imported
+from ``OFS.interfaces``). Zope 3 doesn't really need them, as object
+identity is often enough.

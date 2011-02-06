@@ -1,0 +1,201 @@
+Testing legacy browser views
+============================
+
+This test tests publishing aspects of browser pages.  Let's register
+some:
+
+  >>> import Products.Five.browser.tests
+  >>> from Products.Five import zcml
+  >>> zcml.load_config("configure.zcml", Products.Five)
+  >>> zcml.load_config('aqlegacy.zcml', package=Products.Five.browser.tests)
+
+  >>> from Products.Five.testbrowser import Browser
+  >>> browser = Browser()
+  >>> browser.handleErrors = False
+
+Acquisition API legacy on BrowserView
+-------------------------------------
+
+Let's make sure that accessing those old aq_* properties on browser
+views still works (the printed output is the aq_chain of the view):
+
+  >>> browser.open('http://localhost/test_folder_1_/attributes')
+  >>> print browser.contents
+  [<Products.Five.metaclass.LegacyAttributes object at ...>,
+   <Folder at /test_folder_1_>,
+   <Application at >,
+   <ZPublisher.BaseRequest.RequestContainer object at ...>]
+
+The same goes for browser views that just mix in Acquisition.Explicit:
+
+  >>> browser.open('http://localhost/test_folder_1_/explicitattributes')
+  >>> print browser.contents
+  [<Products.Five.metaclass.ExplicitLegacyAttributes object at ...>,
+   <Folder at /test_folder_1_>,
+   <Application at >,
+   <ZPublisher.BaseRequest.RequestContainer object at ...>]
+
+Let's do some more manual tests with the view object.  But first we
+must get it:
+
+  >>> from zope.component import getMultiAdapter
+  >>> from zope.publisher.browser import TestRequest
+  >>> request = TestRequest()
+  >>> view = getMultiAdapter((self.folder, request), name='attributes')
+
+Let's check for the various aq_* attributes:
+
+  >>> view.aq_parent == self.folder
+  True
+  >>> view.aq_inner == view
+  True
+  >>> view.aq_base == view
+  True
+  >>> view.aq_self == view
+  True
+
+Let's try to acquire something from the root folder:
+
+  >>> button = view.aq_acquire('ZopeAttributionButton')
+  >>> print button()
+  <a href="http://www.zope.org/Credits" target="_top"><img src="http://nohost/p_/ZopeButton" width="115" height="50" border="0" alt="Powered by Zope" /></a>
+
+Let's check that we're in the right context:
+
+  >>> view.aq_inContextOf(self.folder)
+  1
+  >>> view.aq_inContextOf(self.app)
+  1
+  >>> view.aq_inContextOf(object())
+  0
+
+Views also still support the __of__ protocol, at least pro forma:
+
+  >>> view == view.__of__(self.app)
+  True
+
+Acquisition API legacy on a browser view's template
+---------------------------------------------------
+
+A view's template will also support the various aq_* attributes:
+
+  >>> view = getMultiAdapter((self.folder, request), name='template')
+  >>> template = view.template
+
+  >>> template.aq_parent == view
+  True
+  >>> template.aq_inner == template
+  True
+  >>> template.aq_base == template
+  True
+  >>> template.aq_self == template
+  True
+
+  >>> button = template.aq_acquire('ZopeAttributionButton')
+  >>> print button()
+  <a href="http://www.zope.org/Credits" target="_top"><img src="http://nohost/p_/ZopeButton" width="115" height="50" border="0" alt="Powered by Zope" /></a>
+
+
+Mixing in Acquisition.{Ex|Im}plicit
+-----------------------------------
+
+Let's make sure that mixing in Acquisition.Explicit or Implicit won't
+mess up your views (even though you should never have done it in the
+first place...):
+
+  >>> browser.open('http://localhost/test_folder_1_/explicit')
+  >>> print browser.contents
+  Explicit
+
+  >>> browser.open('http://localhost/test_folder_1_/explicit_zcmltemplate')
+  >>> print browser.contents
+  <p>The falcon has taken flight</p>
+
+  >>> browser.open('http://localhost/test_folder_1_/explicit_template')
+  >>> print browser.contents
+  <p>The falcon has taken flight</p>
+
+  >>> browser.open('http://localhost/test_folder_1_/implicit')
+  >>> print browser.contents
+  Implicit
+
+  >>> browser.open('http://localhost/test_folder_1_/implicit_template')
+  >>> print browser.contents
+  <p>The falcon has taken flight</p>
+
+  >>> browser.open('http://localhost/test_folder_1_/implicit_zcmltemplate')
+  >>> print browser.contents
+  <p>The falcon has taken flight</p>
+
+
+Testing legacy content providers and viewlets
+=============================================
+
+  >>> browser.open('http://localhost/test_folder_1_/aqlegacyprovider')
+  >>> print browser.contents
+  <p>Content provider inheriting from Explicit</p>
+
+  >>> browser.open('http://localhost/test_folder_1_/aqlegacymanager')
+  >>> print browser.contents
+  <p>BrowserView viewlet
+  Viewlet inheriting from Explicit</p>
+
+
+Testing namespace traversal
+===========================
+
+Namespace traversal can turn up objects during traversal without
+attribute access.  That means they might not be wrapped by default.
+Here we make sure that they are wrapped and that things like the
+request can be acquired.
+
+First let's try ``restrictedTraverse()``:
+
+  >>> foo = self.folder.restrictedTraverse('++aqlegacy++foo')
+  >>> import Acquisition
+  >>> Acquisition.aq_acquire(foo, 'REQUEST')
+  <HTTPRequest, URL=http://nohost>
+
+Now let's try URL traversal:
+
+  >>> browser.open('http://localhost/test_folder_1_/++aqlegacy++foo/index.html')
+  >>> print browser.contents
+  <p>The falcon has taken flight</p>
+
+
+Testing keyword arguments
+=========================
+
+ViewPageTemplateFile's take arbitrary keyword arguments:
+
+  >>> view = getMultiAdapter((self.folder, request), name='template')
+  >>> template = view.template
+  >>> print template(foo=1, bar=2)
+  <p>The falcon has taken flight</p>
+
+Passing in an argument called instance was supported by the old Five version
+of ViewPageTemplateFile, so we still need to support it.
+
+  >>> print template(instance='allowed')
+  <p>The falcon has taken flight</p>
+
+
+No arguments required
+=====================
+
+ViewPageTemplateFile's require no arguments, but you can only use them as
+class variables:
+
+  >>> view = getMultiAdapter((self.folder, request), name='template_two')
+  >>> print view()
+  Traceback (most recent call last):
+  ...
+  TypeError: __call__() takes at least 2 arguments (1 given)
+  
+
+
+Clean up
+--------
+
+  >>> from zope.component.testing import tearDown
+  >>> tearDown()

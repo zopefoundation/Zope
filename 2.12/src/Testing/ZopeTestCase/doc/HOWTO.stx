@@ -1,0 +1,236 @@
+<style type="text/css"> <!-- li { margin: 1em } --> </style>
+
+ZopeTestCase Mini How-To
+
+    (Still-terse-but-the-Wiki-has-more Version 0.3)
+
+Introduction
+
+    *ZopeTestCase* is an attempt to make writing unit and regression tests 
+    in Zope a more rewarding experience. The package deals with all the plumbing
+    required, and leaves the programmer with writing the tests - and the tests only. 
+    It is built on PyUnit and the Testing package coming with Zope.
+
+    ZopeTestCase provides a Zope sandbox to every test. This sandbox comes fully
+    equipped with ZODB connection, root application object, and REQUEST.
+    When writing tests you have complete control over Zope, the way you have from a Python 
+    product. The framework is easily customized and can be adapted to virtually every 
+    conceivable test situation.
+
+    What you can test with ZTC
+
+    - Basically everything. Including security, transactions, sessions, web access, ...
+
+    What you cannot test with ZTC
+
+    - Web forms and user interaction. This should be left to FunctionalTests.
+
+Prereqs
+
+    For an excellent introduction to unit testing read chapter 11 of Mark Pilgrim's
+    "Dive Into Python.":http://diveintopython.org/unit_testing/index.html
+
+    Read about what unit tests are and what they are not in Chris McDonough's
+    "Unit Testing Zope.":http://zope.org/Members/mcdonc/PDG/UnitTesting 
+
+    Download and install "ZopeTestCase.":http://zope.org/Members/shh/ZopeTestCase 
+    Be prepared to read the source files, especially the example tests. And the README of course.
+
+What You Get
+
+    The ZopeTestCase package consists of the following components:
+
+    framework.py
+
+          This file must be copied into the individual 'tests' directories (See the README for more). 
+          It locates the Testing and ZopeTestCase packages, detects INSTANCE_HOME installations, 
+          and determines the 'custom_zodb.py' file used to set up the test ZODB. 'framework.py' is 
+          included first thing in every test module.
+
+    ZopeLite.py
+
+          This module is designed to work like the 'Zope' module, but to load a lot faster.
+          The speed-up is achieved by not installing Zope products and help files. If your
+          tests require a product to be installed (most don't actually), you must install
+          it yourself using the 'installProduct' method. 'ZopeLite' also provides a 
+          'hasProduct' method, that allows to test whether a product can be found along the 
+          products path, i.e. whether it is available to the test instance.
+
+    ZopeTestCase.py
+
+          This module provides the 'ZopeTestCase' class, which is used as a base class for
+          all test cases. 
+          
+          A ZopeTestCase sets up a default fixture in the newly started Zope instance.
+          This fixture consist of a folder, a userfolder inside that folder, and a
+          user created in that userfolder. The user's role is configured at folder level
+          and populated with default permissions. Finally, the user is logged in.
+
+          This way, once a test runs, a complete and sane Zope "toy" environment is
+          already in place.
+
+          The fixture is destroyed during the tearDown phase and can be switched off 
+          entirely by setting '_setup_fixture=0' in your test case. 
+
+          The ZopeTestCase class provides a number of hooks that allow you to 
+          adapt the fixture to your needs:
+
+          - **'afterSetUp'** is called after the default fixture has been set up. Override this 
+            method to add the objects you intend to test. 
+            
+            *This is clearly the most useful hook.  You may ignore the remaining hooks until you 
+            really need them, if ever.*
+
+          - **'beforeTearDown'** is called at the start of the tearDown phase. The fixture
+            is still in place at this point.
+
+          - **'afterClear'** is called after the fixture has been destroyed. Note that this
+            may occur during setUp *and* tearDown. This method must not throw an exception 
+            even when called repeatedly.
+
+          Hooks for controlling transactions:
+
+          - **'beforeSetUp'** is called before the ZODB connection is opened, at the start of setUp. 
+             The default behaviour of this hook is to call 'transaction.begin()'. 
+             You will rarely want to override this.
+
+          - **'beforeClose'** is called before the ZODB connection is closed, at the end of
+             tearDown. By default this method calls 'transaction.abort()' to discard
+             any changes made by the test. In some situations you may need to override 
+             this hook and commit the transaction instead. Make sure you really know what 
+             you are doing though.
+
+    utils.py
+
+          Provides utility methods to extend the test environment:
+
+          - **'setupCoreSessions'** creates the Zope sessioning objects in the test ZODB.
+
+          - **'setupSiteErrorLog'** creates the error_log object required by ZPublisher.
+
+          - **'startZServer'** starts a ZServer thread on the local host. Use this if the
+            objects you test require URL access to Zope.
+
+          - **'importObjectFromFile'** imports a (.zexp) file into a specified container.
+            Handy for adding "prerolled" components to the sandbox.
+
+          These methods must be run at module level. Do not call them from 'afterSetUp' or from tests!
+
+Writing Tests
+
+    Generally, writing tests with ZTC is no different from writing "ordinary" Zope code. A complete
+    Zope environment is made available to every test. The only real difference is that it is not 
+    driven by ZServer + ZPublisher but by the PyUnit TestRunner.
+    
+    Inside a ZopeTestCase the root application object can be accessed as 'self.app'. 
+    The folder serving as the fixture is available as 'self.folder'. The REQUEST is 
+    reachable as 'self.app.REQUEST'.
+
+    1. In your test module create a test case derived from 'ZopeTestCase'.
+
+    2. Override 'afterSetUp' to add your own objects to 'self.folder'.
+
+    3. Write one or more tests exercising these objects.
+
+    How to setup and run your tests is covered in detail by the 
+    "README":http://zope.org/Members/shh/ZopeTestCase/README
+
+    The easiest way to start with your own tests is to copy the skeleton test 
+    'testSkeleton.py', and take it from there.
+
+    Note that tests are written in unrestricted Python and are not affected by Zope's 
+    security policy. To test the security of individual methods or objects, you must invoke 
+    'restrictedTraverse' or 'validateValue' explicitly!
+
+    A simple test may look like::
+
+      from Testing import ZopeTestCase
+      from AccessControl import Unauthorized
+
+      class ExampleTest(ZopeTestCase.ZopeTestCase):
+
+          def afterSetUp(self):
+              # Add objects to the workarea
+              self.folder.addDTMLMethod('doc', file='foo')
+
+          def testDocument(self):
+              self.assertEqual(self.folder.doc(), 'foo')
+
+          def testEditDocument(self):
+              self.folder.doc.manage_edit('bar', '')
+              self.assertEqual(self.folder.doc(), 'bar')
+
+          def testAccessDocument(self):
+              self.folder.doc.manage_permission('View', ['Manager'])
+              self.assertRaises(Unauthorized, 
+                                self.folder.restrictedTraverse, 'doc')
+
+    Read the Examples
+
+        Please study the example tests for more:
+
+        - **'testSkeleton.py'** represents the simplest possible ZopeTestCase. The module contains all
+          the plumbing required. It is recommended that you copy this file to start your own tests.
+
+        - **'testPythonScript.py'** tests a PythonScript object in the default fixture. 
+          It demonstrates how to manipulate the test user's roles and permissions and how
+          security is validated.
+
+        - **'testShoppingCart.py'** tests the ShoppingCart example. This test
+          uses Sessions and shows how to test a TTW Zope application.
+
+        - **'testFunctional.py'** demonstrates the new functional testing features.
+          Tests may call 'self.publish()' to simulate URL calls to the ZPublisher.
+
+        - **'testWebserver.py'** starts up an HTTP ZServer thread and tests URL access to it. This 
+          test is an example for explicit transaction handling and shows how to use ZODB 
+          sandboxes to further increase isolation between individual tests.
+
+        - **'testZopeTestCase.py'** tests the ZopeTestCase class itself. May be of interest to the
+          investigative types.
+
+        - **'testPortalTestCase.py'** contains an equivalent test suite for the PortalTestCase 
+          base class.
+
+        - **'testZODBCompat.py'** tests various aspects of ZODB behavior in a ZopeTestCase environment.
+          Shows things like cut/paste, import/export, and that _v_ and _p_ variables survive 
+          transaction boundaries.
+
+    Read the Source
+
+        The source files are well documented and an overall worthy read &lt;wink&gt;:
+
+        - The ZopeTestCase class is defined in file 'ZopeTestCase.py'.
+
+        - The interfaces implemented by this class are documented in 'interfaces.py'.
+
+        - All names exported by the ZopeTestCase package are listed in '__init__.py'. 
+
+Resources
+
+    A Wiki with all the documentation:
+    "ZopeTestCaseWiki":http://zope.org/Members/shh/ZopeTestCaseWiki
+
+    Slides of my talk at EuroPython 2003:
+    "UnitTestingZope":http://zope.org/Members/shh/UnitTestingZope.pdf
+
+    A testrunner with INSTANCE_HOME support: 
+    "TestRunner":http://zope.org/Members/shh/TestRunner
+
+Related
+
+    "PyUnit":http://pyunit.sf.net (Steve Purcell)
+  
+    "WebUnit":http://mechanicalcat.net/tech/webunit (Richard Jones) and 
+    "WebUnit":http://webunit.sf.net (Steve Purcell)
+  
+    "ZUnit":http://zope.org/Members/lalo/ZUnit (Lalo Martins)
+  
+    "FunctionalTests":http://zope.org/Members/tseaver/FunctionalTests (Tres Seaver)
+  
+    "WebsiteLoadTest":http://zope.org/Members/ajung/WebsiteLoadTest (Andreas Jung)
+
+Contact
+
+    Feel free to send bug reports, feature requests, etc to stefan at epy.co.at.
+

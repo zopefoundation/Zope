@@ -1,0 +1,30 @@
+return: Returns data
+
+  The 'return' tag stops executing DTML and returns data. It mirrors
+  the Python 'return' statement.
+
+  Syntax
+
+    'return' tag syntax::
+
+      <dtml-return ReturnVariable|expr="ReturnExpression">
+
+    Stops execution of DTML and returns a variable or expression. The
+    DTML output is not returned. Usually a return expression is more
+    useful than a return variable. Scripts largely obsolete this tag.
+
+  Examples
+
+    Returning a variable::
+
+      <dtml-return result>    
+      
+    Returning a Python dictionary::
+
+      <dtml-return expr="{'hi':200, 'lo':5}">
+
+
+
+
+
+

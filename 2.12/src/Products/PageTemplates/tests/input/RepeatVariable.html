@@ -1,0 +1,10 @@
+<html>
+  <body>
+    <ol tal:define="results python:range(5)">
+      <tal:block tal:repeat="items results">
+        <li tal:define="odd repeat/items/odd"
+            tal:content="python:odd and 'odd' or 'even'">Content</li>
+      </tal:block>
+    </ol>
+  </body>
+</html>

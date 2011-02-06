@@ -1,0 +1,117 @@
+<dtml-var manage_page_header>
+
+<dtml-var "manage_form_title(this(), _,
+           form_title='Browser Preferences',
+	   )">
+
+<dtml-if set_zmi_cookies>
+  <dtml-let expires="(_.DateTime('GMT') + 365).rfc822()">
+  <dtml-call expr="RESPONSE.setCookie('dtpref_cols', REQUEST['dtpref_cols'],
+                   path='/', expires=expires)">
+  <dtml-call expr="RESPONSE.setCookie('dtpref_rows', REQUEST['dtpref_rows'],
+                   path='/', expires=expires)">
+  <dtml-call expr="RESPONSE.setCookie('zmi_use_css', REQUEST['zmi_use_css'],
+                   path='/', expires=expires)">
+  <dtml-call expr="RESPONSE.setCookie('zmi_top_frame',
+                   REQUEST['zmi_top_frame'],
+                   path='/', expires=expires)">
+  </dtml-let>
+</dtml-if>
+
+<p class="form-help">
+This form lets you tweak the Zope management interface to fit
+your browser.  Note that you need to press the browser reload
+button in order for some changes to take effect.
+</p>
+
+<form action="&dtml-URL;" method="POST">
+<input type="hidden" name="set_zmi_cookies" value="1" />
+
+<table cellspacing="0" cellpadding="2" border="0">
+
+<tr>
+  <td align="left" valign="top">
+  <div class="form-label">
+  Show Top Frame
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <div class="form-text">
+  <dtml-let tf="REQUEST.get('zmi_top_frame', '1')">
+  <input type="radio" name="zmi_top_frame" value="1"
+    <dtml-if tf>checked="checked"</dtml-if>
+    /> Yes
+  <input type="radio" name="zmi_top_frame" value=""
+    <dtml-unless tf>checked="checked"</dtml-unless>
+    /> No
+  </dtml-let>
+  </div>
+  </td>
+</tr>
+
+<tr>
+  <td align="left" valign="top">
+  <div class="form-label">
+  Use Style Sheets
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <div class="form-text">
+  <dtml-let ag="REQUEST.get('HTTP_USER_AGENT', '')"
+     is_nav4="ag[:9] == 'Mozilla/4' and _.string.find(ag, 'MSIE') < 0"
+     use_css="REQUEST.get('zmi_use_css', '1')">
+  <input type="radio" name="zmi_use_css" value="1"
+    <dtml-if expr="use_css and use_css != 'inline'">checked="checked"</dtml-if>
+    /> Yes
+  <input type="radio" name="zmi_use_css" value=""
+    <dtml-if expr="not use_css">checked="checked"</dtml-if>
+    /> No
+  </dtml-let>
+  </div>
+  </td>
+</tr>
+
+<dtml-let cols="REQUEST.get('dtpref_cols', '100%')"
+          rows="REQUEST.get('dtpref_rows', '20')">
+<tr>
+  <td align="left" valign="top">
+  <div class="form-label">
+  Text Area Width
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <input type="text" name="dtpref_cols" value="&dtml-cols;" size="6" />
+  </td>
+</tr>
+
+<tr>
+  <td align="left" valign="top">
+  <div class="form-label">
+  Text Area Height
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <input type="text" name="dtpref_rows:int" value="&dtml-rows;" size="6" />
+  </td>
+</tr>
+</table>
+
+<span class="form-element">
+<input type="submit" name="submit" value="Change">
+</span>
+
+<div class="form-help">
+  <dtml-if expr="cols[-1]=='%'">
+    <textarea name="data:text" rows="&dtml-rows;" style="width: &dtml-cols;;">
+  <dtml-else>
+    <textarea name="data:text" cols="&dtml-cols;" rows="&dtml-rows;">
+  </dtml-if>
+    This is a sample edit textarea.
+    </textarea>      
+</div>
+
+</dtml-let>
+
+</form>
+
+<dtml-var manage_page_footer>

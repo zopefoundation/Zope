@@ -1,0 +1,176 @@
+<dtml-unless zmi_embedded_css>
+<dtml-call "RESPONSE.setHeader('Content-Type','text/css')">
+<dtml-call "RESPONSE.setHeader('Cache-Control','public,max-age=3600')">
+</dtml-unless>
+h1 {
+  font-family: Verdana, Helvetica, sans-serif; 
+  font-size: 24pt; 
+  font-weight: bold; 
+}
+
+h2 {
+  font-family: Verdana, Helvetica, sans-serif; 
+  font-size: 18pt; 
+  font-weight: bold; 
+}
+
+h3 {
+  font-family: Verdana, Helvetica, sans-serif; 
+  font-size: 14pt; 
+  font-weight: bold; 
+}
+
+a:hover {  
+  font-family: Verdana, Helvetica, sans-serif; 
+  text-decoration: underline;
+  color: #333333; 
+}
+
+a:link {
+  font-family: Verdana, Helvetica, sans-serif; 
+  text-decoration: none;
+  color: #000099;
+}
+
+a {
+  font-family: Verdana, Helvetica, sans-serif; 
+  text-decoration: none;
+  color: #000099;
+}
+
+a.strong-link {
+  font-family: Verdana, Helvetica, sans-serif;
+  text-decoration: underline;
+  color: #000099;
+}
+
+a img {
+  border: 0;
+}
+
+p {
+  font-family: Verdana, Helvetica, sans-serif;
+  font-size: 10pt;
+  color: #333333;
+}
+
+th {
+  font-family: Verdana, Helvetica, sans-serif; 
+  font-weight: bold;
+  font-size: 10pt; 
+  color: #333333;
+}
+
+.form-help {
+  font-family: Verdana, Helvetica, sans-serif;
+  font-size: 10pt;
+  color: #333333;
+}
+
+.std-text {
+  font-family: Verdana, Helvetica, sans-serif;
+  font-size: 10pt;
+  color: #333333;
+}
+
+.tab-small {
+  font-family: Verdana, Helvetica, sans-serif; 
+  font-size: 8pt; 
+  color: #333333;
+}
+
+.location-bar {
+  background-color: #efefef;
+  border: none;
+}
+
+.strong-header {
+  font-family: Verdana, Helvetica, sans-serif;
+  font-size: 12pt;
+  font-weight: bold;
+  background-color: #000000;
+  color: #ffffff;
+}
+
+.list-header {
+  background-color: #c0c0c0;
+  border: none;
+}
+
+.list-item {
+  font-family: Verdana, Helvetica, sans-serif; 
+  font-size: 10pt; 
+}
+
+.list-nav {
+  font-family: Verdana, Helvetica, sans-serif; 
+  font-size: 10pt; 
+  font-weight: bold;
+}
+
+.row-normal {
+  background-color: #ffffff;
+  border: none;
+
+}
+
+.row-hilite {
+  background-color: #efefef;
+  border: none;
+}
+
+.section-bar {
+  background-color: #c0c0c0;
+  border: none;
+}
+
+.system-msg {
+  font-family: Verdana, Helvetica, sans-serif; 
+  font-size: 10pt; 
+  background-color: #ffffff;
+  border:  1px solid #000000;
+  margin-bottom: 6px;
+  margin-top: 6px;
+  padding: 4px;
+  color: #660033;
+}
+
+.form-title {
+  font-family: Verdana, Helvetica, sans-serif; 
+  font-weight: bold;
+  font-size: 12pt; 
+  color: #333333;
+}
+
+.form-label {
+  font-family: Verdana, Helvetica, sans-serif; 
+  font-weight: bold;
+  font-size: 10pt; 
+  color: #333333;
+}
+
+.form-optional {
+  font-family: Verdana, Helvetica, sans-serif; 
+  font-weight: bold;
+  font-style: italic;
+  font-size: 10pt; 
+  color: #333333;
+}
+
+.form-element {
+  font-family: Verdana, Helvetica, aans-serif;
+  font-size: 10pt;
+  color: #000000;
+}
+
+.form-text {
+  font-family: Verdana, Helvetica, sans-serif;
+  font-size: 10pt;
+  color: #333333;
+}
+
+.form-mono {
+  font-family: monospace;
+  font-size: 12px;
+  text-decoration: none;
+}

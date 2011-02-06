@@ -1,0 +1,323 @@
+<dtml-var manage_page_header>
+<dtml-var manage_tabs>
+
+<script type="text/javascript">
+<!-- 
+
+isSelected = false;
+
+function toggleSelect() {
+  if (isSelected == false) {
+    for (i = 0; i < document.objectItems.length; i++)
+      document.objectItems.elements[i].checked = true ;
+      isSelected = true;
+      document.objectItems.selectButton.value = "Deselect All";
+      return isSelected;
+  }
+  else {
+    for (i = 0; i < document.objectItems.length; i++)
+      document.objectItems.elements[i].checked = false ;
+      isSelected = false;
+      document.objectItems.selectButton.value = "Select All";
+      return isSelected;       
+  }
+}
+
+//-->
+</script>
+
+<!-- Add object widget -->
+<br />
+<dtml-if filtered_meta_types>
+  <table width="100%" cellspacing="0" cellpadding="0" border="0">
+  <tr>
+  <td align="left" valign="top">&nbsp;</td>
+  <td align="right" valign="top">
+  <div class="form-element">
+  <form action="<dtml-var "REQUEST.URL1" html_quote>/" method="get">
+  <dtml-if "_.len(filtered_meta_types) > 1">
+    <select class="form-element" name=":action" 
+     onChange="location.href='<dtml-var "REQUEST.URL1" html_quote>/'+this.options[this.selectedIndex].value">
+    <option value="manage_workspace" disabled>Select type to add...</option>
+    <dtml-in filtered_meta_types mapping sort=name>
+    <dtml-if action>
+    <option value="&dtml.html_quote-action;">&dtml-name;</option>
+    </dtml-if>
+    </dtml-in>
+    </select>
+    <input class="form-element" type="submit" name="submit" value=" Add " />
+  <dtml-else>
+    <dtml-in filtered_meta_types mapping sort=name>
+    <input type="hidden" name=":method" value="&dtml.html_quote-action;" />
+    <input class="form-element" type="submit" name="submit" value="Add &dtml-name;" />
+    </dtml-in>
+  </dtml-if>
+  </form>
+  </div>
+  </td>
+  </tr>
+  </table>
+</dtml-if>
+
+<form action="<dtml-var "REQUEST.URL1" html_quote>/" name="objectItems" method="post">
+<dtml-if objectItems>
+  <dtml-let hasOrderSupport="_.getattr(this().aq_explicit, 'has_order_support', 0)">
+  <dtml-unless skey>
+    <dtml-if hasOrderSupport>
+      <dtml-call expr="REQUEST.set('skey', getDefaultSorting()[0])">
+      <dtml-call expr="REQUEST.set('rkey', getDefaultSorting()[1])">
+    <dtml-else>
+      <dtml-call expr="REQUEST.set('skey', 'id')">
+    </dtml-if>
+  </dtml-unless>
+  <dtml-unless rkey><dtml-call expr="REQUEST.set('rkey', '')"></dtml-unless>
+
+<table width="100%" cellspacing="0" cellpadding="2" border="0">
+<tr class="list-header">
+  <td width="5%" align="right" colspan="2"><div 
+   class="list-item"><a href="./manage_main?skey=meta_type<dtml-if 
+   "skey == 'meta_type' and not rkey">&amp;rkey=meta_type</dtml-if>"
+   onMouseOver="window.status='Sort objects by type'; return true"
+   onMouseOut="window.status=''; return true"><dtml-if 
+   "skey == 'meta_type' or rkey == 'meta_type'"
+   ><strong>Type</strong><dtml-else>Type</dtml-if></a></div>
+  </td>
+  <td width="50%" align="left"><div class="list-item"><a 
+   href="./manage_main?skey=id<dtml-if 
+   "skey == 'id' and not rkey">&amp;rkey=id</dtml-if>"
+   onMouseOver="window.status='Sort objects by name'; return true"
+   onMouseOut="window.status=''; return true"><dtml-if 
+   "skey == 'id' or rkey == 'id'"
+   ><strong>Name</strong><dtml-else>Name</dtml-if></a></div>
+  </td>
+  <td width="15%" align="left"><div class="list-item"><a 
+   href="./manage_main?skey=get_size<dtml-if 
+   "skey == 'get_size' and not rkey">&amp;rkey=get_size</dtml-if>"
+   onMouseOver="window.status='Sort objects by size'; return true"
+   onMouseOut="window.status=''; return true"><dtml-if 
+   "skey == 'get_size' or rkey == 'get_size'"
+   ><strong>Size</strong><dtml-else>Size</dtml-if></a></div>
+  </td>
+  <td width="19%" align="left"><div class="list-item"><a 
+   href="./manage_main?skey=bobobase_modification_time<dtml-if 
+   "skey == 'bobobase_modification_time' and not rkey"
+   >&amp;rkey=bobobase_modification_time</dtml-if>"
+   onMouseOver="window.status='Sort objects by modification time'; return true"
+   onMouseOut="window.status=''; return true"><dtml-if 
+   "skey == 'bobobase_modification_time' or rkey == 'bobobase_modification_time'"
+   ><strong>Last Modified</strong><dtml-else>Last Modified</dtml-if></a></div>
+  </td>
+  <dtml-if hasOrderSupport>
+  <td width="10%" align="left"><div class="list-item"><a 
+   href="./manage_main?skey=position"
+   onMouseOver="window.status='Sort objects by position'; return true"
+   onMouseOut="window.status=''; return true"><dtml-if 
+   "skey == 'position'"
+   ><strong>Position</strong><dtml-else>Position</dtml-if></a></div>
+  </td>
+  </dtml-if>
+</tr>
+
+<dtml-in objectItems sort_expr="skey+'/cmp/asc'" reverse_expr="rkey">
+<dtml-if sequence-odd>
+<tr class="row-normal">
+<dtml-else>
+<tr class="row-hilite">
+</dtml-if>
+  <td align="left" valign="top" width="16">
+  <input type="checkbox" name="ids:list" value="&dtml-sequence-key;" />
+  </td>
+  <td align="left" valign="top" nowrap="1">
+
+  <dtml-if om_icons>
+  <a href="&dtml.url_quote-sequence-key;/manage_workspace">
+  <dtml-in om_icons mapping>
+  <img src="&dtml-BASEPATH1;/&dtml.url_quote-path;" alt="&dtml.missing-alt;" 
+   title="&dtml.missing-title;" border="0" width="16" height="16"/></dtml-in></a>
+  <dtml-else>
+
+  <dtml-if icon>
+  <a href="&dtml.url_quote-sequence-key;/manage_workspace">
+  <img src="&dtml-BASEPATH1;/&dtml-icon;" alt="&dtml-meta_type;" 
+   title="&dtml-meta_type;" border="0" /></a>
+  <dtml-else>
+  &nbsp;
+  </dtml-if>
+
+  </dtml-if>
+
+
+  </td>
+
+  <td align="left" valign="top">
+  <div class="list-item">
+  <a href="&dtml.url_quote-sequence-key;/manage_workspace">
+  &dtml-sequence-key; <dtml-if title>(&dtml-title;)</dtml-if>
+  </a>
+  <dtml-try>
+    <dtml-if "wl_isLocked()==1">
+      <img src="/p_/davlocked">
+    </dtml-if>
+  <dtml-except>
+  </dtml-try>
+  </div>
+  </td>
+
+  <dtml-with sequence-key>
+  <td>
+  <div class="list-item">
+  <dtml-try>
+  <dtml-if get_size>
+  <dtml-let ob_size=get_size>
+  <dtml-if "ob_size < 1024">
+  1 Kb
+  <dtml-elif "ob_size > 1048576">
+  <dtml-var "ob_size / 1048576.0" fmt="%0.02f"> Mb
+  <dtml-else>
+  <dtml-var "_.int(ob_size / 1024)"> Kb
+  </dtml-if>
+  </dtml-let>
+  <dtml-else>
+  &nbsp;
+  </dtml-if>
+  <dtml-except>
+  &nbsp;
+  </dtml-try>
+  </div>
+  </td>
+
+  <td>
+  <div class="list-item">
+  <dtml-var bobobase_modification_time fmt="%Y-%m-%d %H:%M">
+  </div>
+  </td>
+  </dtml-with>
+
+  <dtml-if hasOrderSupport>
+  <td>
+  <div class="list-item">
+  <dtml-if "skey == 'position'">
+  <dtml-var sequence-number>
+  <dtml-else>
+  ...
+  </dtml-if>
+  </div>
+  </td>
+  </dtml-if>
+</tr>
+</dtml-in>
+</table>
+
+<table cellspacing="0" cellpadding="2" border="0">
+<tr>
+  <td align="left" valign="top" width="16"></td>
+  <td align="left" valign="top">
+  <div class="form-element">
+  <dtml-unless dontAllowCopyAndPaste>
+  <input class="form-element" type="submit" name="manage_renameForm:method" 
+   value="Rename" />
+  <dtml-if "_.SecurityCheckPermission('Delete objects',this())">
+  <input class="form-element" type="submit" name="manage_cutObjects:method"
+   value="Cut" />
+  </dtml-if>
+  <input class="form-element" type="submit" name="manage_copyObjects:method"
+   value="Copy" />
+  <dtml-if cb_dataValid>
+  <input class="form-element" type="submit" name="manage_pasteObjects:method"
+   value="Paste" />
+  </dtml-if>
+  </dtml-unless>
+  <dtml-if "_.SecurityCheckPermission('Delete objects',this())">
+  <input class="form-element" type="submit" name="manage_delObjects:method"
+   value="Delete" />
+  </dtml-if>
+  <dtml-if "_.SecurityCheckPermission('Import/Export objects', this())">
+  <input class="form-element" type="submit" 
+   name="manage_importExportForm:method" 
+   value="Import/Export" />
+  </dtml-if>
+<script type="text/javascript">
+<!-- 
+if (document.forms[0]) {
+  document.write('<input class="form-element" type="submit" name="selectButton" value="Select All" onClick="toggleSelect(); return false">')
+  }
+//-->
+</script>
+  </div>
+  </td>
+</tr>
+<dtml-if "hasOrderSupport and
+          _.SecurityCheckPermission( 'Manage properties', this() )">
+<tr>
+  <td align="left" valign="top" width="16"></td>
+  <td align="left" valign="top">
+  <div class="form-element">
+  <dtml-if expr="skey == 'position' and _.len(objectItems) > 1">
+  <input class="form-element" type="submit"
+         name="manage_move_objects_up:method" value="Up" />
+  /
+  <input class="form-element" type="submit"
+         name="manage_move_objects_down:method" value="Down" />
+  by
+  <select name="delta:int">
+  <dtml-in "_.range(1,_.min(5,_.len(objectIds())))">
+  <option>&dtml-sequence-item;</option>
+  </dtml-in>
+  <dtml-in "_.range(5,_.len(objectIds()),5)">
+  <option>&dtml-sequence-item;</option>
+  </dtml-in>
+  </select>
+  <input class="form-element" type="submit"
+         name="manage_move_objects_to_top:method" value="Top" />
+  <input class="form-element" type="submit"
+         name="manage_move_objects_to_bottom:method" value="Bottom" />
+  </dtml-if>
+  <dtml-unless expr="(skey, rkey and 1 or 0) == getDefaultSorting()">
+  <input type="hidden" name="key" value="&dtml-skey;">
+  <input type="hidden" name="reverse" value="&dtml-rkey;">
+  <input class="form-element" type="submit"
+         name="manage_set_default_sorting:method"
+         value="Set View as Default" />
+  </dtml-unless>
+  </div>
+  </td>
+</tr>
+</dtml-if>
+</table>
+
+  </dtml-let>
+<dtml-else>
+<table cellspacing="0" cellpadding="2" border="0">
+<tr>
+<td>
+<div class="std-text">
+There are currently no items in <em>&dtml-title_or_id;</em>
+<br /><br />
+</div>
+<dtml-unless dontAllowCopyAndPaste>
+<dtml-if cb_dataValid>
+<div class="form-element">
+<input class="form-element" type="submit" name="manage_pasteObjects:method" 
+ value="Paste" />
+</div>
+</dtml-if>
+</dtml-unless>
+<dtml-if "_.SecurityCheckPermission('Import/Export objects', this())">
+<input class="form-element" type="submit"
+  name="manage_importExportForm:method" value="Import/Export" />
+</dtml-if>
+</td>
+</tr>
+</table>
+</dtml-if>
+</form>
+
+<dtml-if update_menu>
+<script type="text/javascript">
+<!--
+window.parent.update_menu();
+//-->
+</script>
+</dtml-if>
+
+<dtml-var manage_page_footer>

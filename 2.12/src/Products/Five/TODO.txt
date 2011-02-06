@@ -1,0 +1,60 @@
+====
+TODO
+====
+
+v1.2
+----
+
+* i18n and translation of utilities/browser/*pt
+
+* can we stop using zLOG and use the logging package? please?
+
+* events (efge)
+
+  - get rid of deprecation warnings
+
+  - add CHANGES.txt entry
+
+* five:registerClass (yuppie)
+
+  - functional test that checks the ZMI if there really is an entry in
+    the add menu?
+
+* make rendering of resource urls support sites?
+
+
+v1.3
+----
+
+* correctly treat ZCatalog.Catalog(Path)Awareness.CatalogAware w.r.t
+  events (efge)
+
+v1.4
+----
+
+- l10n (philikon)
+
+- Figure out where add-view redirects should go.
+
+- Instructions on using add views.
+
+- HTTP/WebDAV: support dispatching of all HTTP/WebDAV methods to HTTP
+  views.  If lookup fails, fall back to methods on the object (Zope 2
+  style).  Security is implied by HTTP views.
+
+- FTP: allow manage_FTPstat, manage_FTPget, manage_FTPlist to dispatch to
+  filerepresentation adapters.  Make sure to handle security correctly.
+
+- Grant security stuff through ZCML (<grant />)?
+
+- top-level <require />, <allow /> directives as a ZCML spelling of
+  allowModule, allowClass
+
+* marker interfaces
+
+  - re-add 'views_details' that didn't make it into 1.2/1.3
+
+  - add interface for ordering marker interfaces
+
+  - improve the way available marker interfaces are detected. It should be
+    possible to declare interfaces explicitly as marker interfaces.

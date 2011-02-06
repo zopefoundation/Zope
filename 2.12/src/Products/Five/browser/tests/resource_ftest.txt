@@ -1,0 +1,149 @@
+Functional Resource Test
+========================
+
+Set up the test fixtures:
+
+  >>> import Products.Five.browser.tests
+  >>> from Products.Five import zcml
+  >>> zcml.load_config("configure.zcml", Products.Five)
+  >>> zcml.load_config('resource.zcml', package=Products.Five.browser.tests)
+
+  >>> from Products.Five.tests.testing import manage_addFiveTraversableFolder
+  >>> manage_addFiveTraversableFolder(self.folder, 'testoid', 'Testoid')
+
+  >>> import os, glob
+  >>> _prefix = os.path.dirname(Products.Five.browser.tests.__file__)
+  >>> dir_resource_names = [os.path.basename(r) for r in (
+  ...     glob.glob('%s/*.png' % _prefix) +
+  ...     glob.glob('%s/*.pt' % _prefix) +
+  ...     glob.glob('%s/[a-z]*.py' % _prefix) +
+  ...     glob.glob('%s/*.css' % _prefix))]
+
+  >>> uf = self.folder.acl_users
+  >>> uf._doAddUser('manager', 'r00t', ['Manager'], [])
+
+
+Image resource
+~~~~~~~~~~~~~~
+
+  >>> print http(r'''
+  ... GET /test_folder_1_/testoid/++resource++pattern.png HTTP/1.1
+  ... Authorization: Basic manager:r00t
+  ... ''')
+  HTTP/1.1 200 OK
+  ...
+
+Image resources can't be traversed further:
+
+  >>> print http(r'''
+  ... GET /test_folder_1_/testoid/++resource++pattern.png/more HTTP/1.1
+  ... Authorization: Basic manager:r00t
+  ... ''')
+  HTTP/1.1 404 Not Found
+  ...
+
+File resource
+~~~~~~~~~~~~~
+
+  >>> print http(r'''
+  ... GET /test_folder_1_/testoid/++resource++style.css HTTP/1.1
+  ... Authorization: Basic manager:r00t
+  ... ''')
+  HTTP/1.1 200 OK
+  ...
+
+File resources can't be traversed further:
+
+  >>> print http(r'''
+  ... GET /test_folder_1_/testoid/++resource++style.css/more HTTP/1.1
+  ... Authorization: Basic manager:r00t
+  ... ''')
+  HTTP/1.1 404 Not Found
+  ...
+
+Template resource
+~~~~~~~~~~~~~~~~~
+
+  >>> print http(r'''
+  ... GET /test_folder_1_/testoid/++resource++cockatiel.html HTTP/1.1
+  ... Authorization: Basic manager:r00t
+  ... ''')
+  HTTP/1.1 200 OK
+  ...
+
+Template resources can't be traversed further:
+
+  >>> print http(r'''
+  ... GET /test_folder_1_/testoid/++resource++cockatiel.html/more HTTP/1.1
+  ... Authorization: Basic manager:r00t
+  ... ''')
+  HTTP/1.1 404 Not Found
+  ...
+
+Resource directory
+~~~~~~~~~~~~~~~~~~
+
+Page templates aren't guaranteed to render, so exclude them from the test:
+
+  >>> base_url = '/test_folder_1_/testoid/++resource++fivetest_resources/%s'
+  >>> for r in dir_resource_names:
+  ...     if r.endswith('.pt'):
+  ...         continue
+  ...     response = self.publish(base_url % r, basic='manager:r00t')
+  ...     self.assertEquals(200, response.getStatus())
+
+  >>> print http(r'''
+  ... GET /test_folder_1_/testoid/++resource++fivetest_resources/resource_subdir/resource.htm HTTP/1.1
+  ... Authorization: Basic manager:r00t
+  ... ''')
+  HTTP/1.1 200 OK
+  ...
+  <html>
+      <head>
+      </head>
+      <body>
+          This .html should not have a base tag automatically
+          added to the header.
+      </body>
+  </html>
+  <BLANKLINE>
+
+We also can traverse into sub-directories:
+
+  >>> print http(r'''
+  ... GET /test_folder_1_/testoid/++resource++fivetest_resources/resource_subdir/resource.txt HTTP/1.1
+  ... Authorization: Basic manager:r00t
+  ... ''')
+  HTTP/1.1 200 OK
+  ...
+  This is a resource in a subdirectory of a normal resource to test traversal.
+  <BLANKLINE>
+
+  >>> print http(r'''
+  ... GET /test_folder_1_/testoid/++resource++fivetest_resources/resource_subdir/resource.html HTTP/1.1
+  ... Authorization: Basic manager:r00t
+  ... ''')
+  HTTP/1.1 200 OK
+  ...
+  <html>
+      <head>
+      </head>
+      <body>
+          This .html should not have a base tag automatically
+          added to the header.
+      </body>
+  </html>
+  <BLANKLINE>
+
+  >>> print http(r'''
+  ... GET /test_folder_1_/testoid/++resource++fivetest_resources/resource_subdir/not-existant HTTP/1.1
+  ... Authorization: Basic manager:r00t
+  ... ''')
+  HTTP/1.1 404 Not Found
+  ...
+
+Clean up
+--------
+
+  >>> from zope.component.testing import tearDown
+  >>> tearDown()

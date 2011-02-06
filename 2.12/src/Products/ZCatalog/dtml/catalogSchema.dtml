@@ -1,0 +1,86 @@
+<dtml-var manage_page_header>
+<dtml-var manage_tabs>
+
+<p class="form-help">
+This list defines what per object meta data the Catalog will store. 
+When objects get cataloged, the values of any attributes they may have 
+which match a name in this list will get stored in a table in the 
+Catalog.  The Catalog then uses this information to create result 
+objects that are returned whenever the catalog is searched.  It is 
+important to understand that when the Catalog is searched, it returns 
+a list of result objects, <i>not the cataloged objects themselves</i>, 
+so if you want to use the value of an object's attribute in the result 
+of a search, that attribute must be in this list
+</p>
+
+<p class="form-help">
+It is generally a good idea to keep this list lightweight.  It is 
+useful, for example, to keep the 'summary' meta data of a text 
+document (like the first 200 characters) but <i>not</i> the text 
+content in it's entirety (it is useful in this example to <i>index</i> 
+the text contents, which is configured in the <b>Indexes</b> View 
+tab).  This way, the summary data may be shown in the search results.
+</p>
+
+<form action="&dtml-URL1;">
+
+<table cellspacing="0" cellpadding="2" border="0">
+<dtml-in schema sort=sequence-item>
+  <tr>
+    <td align="left" valign="top">
+    <input type="checkbox" name="names:list" value="&dtml-sequence-item;" />
+    </td>
+    <td align="left" valign="top">
+    <div class="form-text">
+    &dtml-sequence-item;
+    </div>
+    </td>
+  </tr>
+  <dtml-if sequence-end>
+    <tr>
+      <td align="left" valign="top">
+      </td>
+      <td align="left" valign="top">
+      <div class="form-element">
+      <input class="form-element" type="submit" name="manage_delColumn:method" 
+       value="Delete" /> 
+      </div>
+      </td>
+    </tr>
+  </dtml-if>
+<dtml-else>
+  <tr>
+    <td></td>
+    <td><em class="std-text">There are currently no metadata elements.</em></td>
+  </tr>
+</dtml-in>
+</table>
+
+<br />
+
+<table cellspacing="0" cellpadding="2" border="0">
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-label">
+    Add Metadata
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <input type="text" name="name" size="20" />
+    </td>
+  </tr>
+  <tr>
+    <td align="left" valign="top">
+    </td>
+    <td align="left" valign="top">
+    <div class="form-element">
+    <input class="form-element" type="submit" name="manage_addColumn:method" 
+     value=" Add " /> 
+    </div>
+    </td>
+  </tr>
+</table>
+
+</form>
+
+<dtml-var manage_page_footer>

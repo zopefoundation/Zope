@@ -1,0 +1,77 @@
+<dtml-var manage_page_header>
+<dtml-var manage_tabs>
+
+    <p class="form-help"> Subtransactions allow Zope to commit small
+      parts of a transaction over a period of time instead of all at once.
+      For
+      ZCatalog, this means using subtransactions can signficantly
+      reduce the memory requirements needed to index huge amounts of
+      text all at once.</p>
+    
+    <p class="form-help"> If enabled, subtransactions will reduce the memory
+      requirements of ZCatalog, but <em>at the expense of speed</em>.
+      If you choose to enable subtransactions, you can adjust how often
+      ZCatalog commits a subtransactions by adjusting the
+      <em>threshold</em> below.</p>
+
+    <p class="form-help"> If you are using ZCatalog and ZSQL Methods in the 
+      same
+      transaction, you <em>must</em> disable subtransactions, they are not
+      compatible with ZSQL Methods.</p>
+
+    <h3>Subtransactions are 
+      <dtml-if threshold>
+	<font color="green"><b>Enabled</b></font>
+      <dtml-else>
+	<font color="red"><b>Disabled</b></font>
+      </dtml-if></h3>
+
+    <form action="&dtml-URL1;" method="POST">
+    <div class="form-element">
+      <dtml-if threshold>
+	<input class="form-element" type="submit" 
+         name="manage_subbingToggle:method"
+	 value="Disable" /> Subtransactions
+      <dtml-else>
+	<input class="form-element" type="submit" 
+         name="manage_subbingToggle:method"
+	 value="Enable" /> Subtransactions
+      </dtml-if>
+    </div>
+    </form>
+
+    <form action="manage_edit" method=POST>
+    <dtml-if threshold>
+
+    <p class="form-help">The Subtransaction threshold is the number of words the catalog
+      will index before it commits a subtransaction.  If this number
+      is low, the Catalog will take longer to index but consume less
+      memory.  If this number is higher, the Catalog will index
+      quickly but consume much more memory.</p>
+
+      Subtransaction threshold: <input name="threshold:int" value="&dtml-threshold;" />
+      <br>
+      <div class="form-element">
+      <input type="submit" name="submit" value="Save Changes">
+      </div>
+    </dtml-if>
+    </form>
+
+    <hr width=75%>
+    <h3>Index Status</h3>
+
+    <ul>
+      <dtml-in index_objects sort=id>
+      <li>
+	<dtml-var "_.len(_['sequence-item'])"> 
+	object are indexed in <b><dtml-var "_['sequence-item'].id" html_quote></b>
+      </li>
+      </dtml-in>
+    </ul>
+
+<dtml-var manage_page_footer>
+
+
+
+
+

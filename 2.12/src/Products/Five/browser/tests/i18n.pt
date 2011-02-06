@@ -1,0 +1,14 @@
+<html i18n:domain="fivetest">
+<body>
+<p i18n:translate="">This is a message</p>
+<p i18n:translate="explicit-msg">This is an explicit message</p>
+<p i18n:translate="">These are <span tal:replace="python:4" i18n:name="number" /> messages</p>
+<p i18n:translate="explicit-msgs">These are <span tal:replace="python:4" i18n:name="number" /> explicit messages</p>
+<table summary="This is an attribute" i18n:attributes="summary">
+</table>
+<table summary="Explicit summary" title="Explicit title" i18n:attributes="summary explicit-summary; title explicit-title" >
+</table>
+<p tal:content="view/this_is_a_message">Text should be inserted here and translated automatically</p>
+<p tal:content="view/this_is_a_message" i18n:translate="">Text should be inserted here and translated</p>
+</body>
+</html>

@@ -1,0 +1,5 @@
+ <html>
+   <body>
+     <tal:block replace="structure provider:mypage.UnknownName" />
+   </body>
+ </html>

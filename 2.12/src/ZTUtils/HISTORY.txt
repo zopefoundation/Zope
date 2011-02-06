@@ -1,0 +1,57 @@
+ZTUtils history
+
+  This file contains change information for previous versions of
+  ZTUtils. Change information for the current release can be found
+  in the file CHANGES.txt.
+
+
+    Version 1.1.3
+
+      Brown-bag bugfix release.
+
+    Version 1.1.2
+
+      Bugs Fixed
+
+        - Orphans defaulted to 3, which was confusing and out of sync
+          with DTML-In.
+
+        - Orphan batches were broken.
+
+    Version 1.1.1
+
+      Bugs Fixed
+
+        - Python 1.5.2-incompatible changes crept in.
+
+    Version 1.1.0
+
+      Features Added
+
+        - TreeMakers have a setChildAccess() method that you can use
+          to control tree construction.  Child nodes can be accessed
+          through either an attribute name or callback function.
+          Children fetched by attribute name can be filtered through a
+          callback function.
+
+        - A new LazyFilter class allows you to filter a sequence using
+          Zope security and an optional filter callback function.  The
+          security and filter tests are lazy, meaning they are
+          performed as late as possible.  
+
+          The optional 'skip' argument determines the reaction when
+          access to a sequence element is refused by the Zope security
+          policy.  The default (None) is to raise the 'Unauthorized'
+          exception.  If a string is passed, such elements are
+          skipped.  If the string is non-empty, it is treated as a
+          permission name, and the element is skipped if the user
+          doesn't have that permission on the element.
+
+        - The Zope versions of TreeMaker, SimpleTreeMaker, and Batch
+          now use LazyFilter. The TreeMakers have a setSkip() method
+          that can be used to set the 'skip' value. Batch has an
+          optional 'skip_unauthorized' argument that is passed to
+          LazyFilter as 'skip'.
+
+        - Utility functions make_query(), url_query(), and
+          make_hidden_input() have been added.

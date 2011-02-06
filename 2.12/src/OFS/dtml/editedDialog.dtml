@@ -1,0 +1,33 @@
+<dtml-var manage_page_header>
+
+<FORM ACTION="manage_workspace" METHOD="POST">
+<TABLE BORDER="0" WIDTH="100%" CELLPADDING="10">
+<TR>
+  <TD VALIGN="TOP">
+  <div class="std-text">
+  <BR>
+  <CENTER><B><FONT SIZE="+6" COLOR="#77003B">!</FONT></B></CENTER>
+  </div>
+  </TD>
+  <TD VALIGN="TOP">
+  <div class="std-text">
+  <BR><BR>
+  <CENTER>
+  &dtml-title_and_id; has been successfully edited.
+  </CENTER>
+  </div>
+  </TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">
+  </TD>
+  <TD VALIGN="TOP">
+  <CENTER>
+  <INPUT TYPE="SUBMIT" VALUE="   Ok   ">
+  </CENTER>
+  </TD>
+</TR>
+</TABLE>
+</FORM>
+
+<dtml-var manage_page_footer>

@@ -1,0 +1,50 @@
+Control Panel - Contents: Zope system controls
+
+  Description
+
+    This view displays information about the Zope process and
+    allows you to restart and/or shutdown Zope.
+
+    System Information
+
+      'Zope version' -- The version of Zope, the type of the release
+      (binary/source), the Python version, and the platform the
+      binaries were compiled on.
+
+      'Python version' -- The Python version that Zope is using.
+
+      'System Platform' -- The type of machine Zope is running on.
+
+      'INSTANCE_HOME' -- The filesystem path where Zope loads add-on
+      software.
+
+      'CLIENT_HOME' -- The filesystem path where Zope stores data and
+      log files.
+
+      'Process ID' -- The PID of the Zope process.
+
+      'Running for' -- How long the Zope process has been running.
+
+    Management Options
+
+      'Database Management' -- Provides access to the database
+      management functions such as packing and cache management.
+
+      'Product Management' -- Provides access to management functions
+      for installed Zope Products.
+
+  Controls
+
+    'Shutdown' -- Shutsdown the Zope process. **Important: You will
+    not be able to access Zope through the web after shutting it
+    down.**
+
+    'Restart' -- Restarts Zope. This control will only appear if Zope
+    is running under daemon control or as a win32 service. **Note: It
+    may take a few moments until the Zope comes back up after being
+    restarted.**
+
+    If your browser supports JavaScript, you should be able to add the
+    following link to your bookmarks/favorites and use it to restart
+    any Zope site: <a href="javascript:window.open('Control_Panel/manage_restart'+'','restart','width=200,height=200,menubar=no,toolbar=no,scrollbars=no,resizable=yes').focus()" class="std-text">(Restart Zope)</a>.
+

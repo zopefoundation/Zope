@@ -1,0 +1,878 @@
+============
+Five Changes
+============
+
+This change log is discontinued. For changes after Five 1.5.2 see Zope's main
+CHANGES.txt file.
+
+Five 1.5.2 (2007-01-10)
+=======================
+
+* Added support for the <securityPolicy /> ZCML directive known from
+  Zope 3.
+
+* View methods which aren't explicitly declared as allowed must be marked
+  private explicitly to avoid being web publishable.
+
+* i18n: Synced FiveTranslationService implementation with Zope 3.3. This makes
+  sure that the TestMessageFallbackDomain is used if registered.
+
+* site/metaconfigure: Local site hook now only applied once per class, so
+  multiple <five:localsite> tags for the same class won't cause config
+  errors.
+
+Five 1.5.1 (2006-11-04)
+=======================
+
+* site: Fixed small bug in FiveSiteManager. (issue #2198)
+
+* browser: processInputs now decodes strings in lists and tuples.
+
+* formlib: Removed redundant subpageform.pt and pageform.pt. Added missing
+  error view configuration.
+
+* Made the __call__ method of ViewMixinForAttributes have the same signature
+  as the original attribute.  This aids some pathological request parameter
+  marshalling.
+
+* Fixed #2168: Missing import
+
+* Port code from Zope 3 making resource directories recursive.
+  Thanks to Richard Waid.
+
+Five 1.5 (2006-08-13)
+=====================
+
+* Enabled the viewlet related directives by default.
+
+* Added acquisition wrappers to viewlets before updating or rendering.
+
+* Allow multiple uses of the <class>/<content> directive.
+
+* Moved the custom 'provider:' tales expression back into Five.  Made the
+  provider directive acquisition wrap the resultant content provider so that
+  simple providers that need security declarations (e.g. those that render
+  pagetemplates) can work with the Zope 2 security machinery.
+
+* Added Five.browser.pagetemplatefile.ViewPageTemplateFile as an alias
+  to ZopeTwoPageTemplateFile and as a Zope 2 correspondence to
+  zope.app.pagetemplate.ViewPageTemplateFile.
+  
+* Added tests to make sure that views are not blocked by acquired attributes.
+
+* Changed the tests to reflect that defaultView no only works for views
+  (and not on attributes).
+
+* The FiveSiteManager classes now work again, but are deprecated for the
+  new zope.component support. There is also a method to migrate Five.site
+  to zope.component.
+
+Five 1.5c (2006-05-29)
+======================
+
+Restructuring
+-------------
+
+* Zope 2.10+ now includes site.zcml as part of its instance creation
+  skel directory.  As a consequence Five now requires this file to exist
+  in every instance.  If upgrading a site from Zope 2.9 to 2.10, you will
+  need to copy site.zcml and package-includes/ from your installed Zope
+  installation location (skel/etc/) into the etc/ directory of your upgraded
+  instance.
+
+  The rationale for requiring this new file is to bring Zope 2 instances
+  closer in consistency to Zope 3 instances.  It also eases use of Zope 3
+  coding techniques in Zope 2 and removes some confusion when trying
+  to run pure Zope 3 applications on Zope 2.
+
+* Zope 2.10+ uses the Zope 3 PageTemplate engine (incl. TAL and
+  TALES).  A bunch of special and magic code in Five has become
+  obsolete with this, some other had to be readjusted.
+
+Bugfixes
+--------
+
+* Fixed an issue where <browser:page> based views that didn't have
+  template or attribute defined weren't getting BrowserView mixed in.
+
+* Fixed an issue where new-style classes could not be used for
+  view components with <browser:page>.
+
+* Provided the 'default' layer alias for backwards compability.  It
+  was deleted by accident during the Zope 3.3 port.
+
+* Five.testbrowser does not swallow cookies anymore, based on patch by
+  Daniel Nouri.
+
+* Five.testbrowser capitalizes headers in the same way as the Zope2
+  HTTPResponse. i.e. content-length -> Content-Length.
+
+Five 1.5b (2006-05-04)
+======================
+
+Features
+--------
+
+* Support for Zope 3.3.  This requires Zope 2.10.
+
+* five:defaultViewable and five:traversable are now unessecary and
+  deprecated, as the functionality exists in the Zope core publisher
+  from Zope 2.10 and up.
+
+Five 1.4.2 (2006-11-04)
+=======================
+
+Bugfixes
+--------
+
+* browser: processInputs now decodes strings in lists and tuples.
+
+* formlib: Removed redundant subpageform.pt and backported pageform.pt fixes
+  from Zope 3. Added missing error view and i18n configuration.
+
+  This change requires Zope 2.9.5 or higher.
+
+* Made the __call__ method of ViewMixinForAttributes have the same signature
+  as the original attribute.  This aids some pathological request parameter
+  marshalling.
+
+* Backported Zope 2.10's pythonproducts zope app handling to help resolve
+  an issue with ConnectionStateError's.
+
+* Port code from Zope 3 making resource directories recursive.
+  Thanks to Richard Waid.
+
+Five 1.4.1 (2006-08-13)
+=======================
+
+Bugfixes
+--------
+
+* Allow multiple uses of the <class>/<content> directive.
+
+* Fix problem with WebDAV/HEAD requests due to new traversal order.
+
+* Made the pythonproducts monkey patching more robust by checking to
+  ensure patches aren't reapplied and cleaning up after itself.
+
+* Backported the new traversal lookup order from Zope 2.10 (attribute, adapter,
+  acquired attribute).
+
+* Made the provider directive acquisition wrap the resultant content provider
+  so that simple providers that need security declarations (e.g. those that
+  render pagetemplates) can work with the Zope 2 security machinery.
+
+* Added acquisition wrappers to viewlets before updating or rendering.
+
+Restructuring
+-------------
+
+* Enabled the viewlet related directives by default.
+
+* Added Five.browser.pagetemplatefile.ViewPageTemplateFile as an alias
+  to ZopeTwoPageTemplateFile and as a Zope 2 correspondence to
+  zope.app.pagetemplate.ViewPageTemplateFile.
+
+Five 1.4 (2006-05-29)
+=====================
+
+Bugfixes
+--------
+
+* Fixed an issue where <browser:page> based views that didn't have
+  template or attribute defined weren't getting BrowserView mixed in.
+
+* Fixed an issue where new-style classes could not be used for
+  view components with <browser:page>.
+
+* Five.testbrowser does not swallow cookies anymore, based on patch by
+  Daniel Nouri.
+
+* Five.testbrowser capitalizes headers in the same way as the Zope2
+  HTTPResponse. i.e. content-length -> Content-Length.
+
+Five 1.4c (2006-05-04)
+======================
+
+Features
+--------
+
+* Added Viewlet and Content Provider support.
+
+Bugfixes
+--------
+
+* Made sure that events are fired as expected in add and edit forms.
+
+* Made sure LocalizerLanguages class normalized language codes to
+  xx-yy, instead of xx_YY or xx-YY.
+
+* Fixed a problem with the new traversal look-up order and the root
+  object (OFS.Application.Application).
+
+Five 1.4b (2006-03-31)
+======================
+
+Features
+--------
+
+* Add python-packages-as-zope-products support which basically allows
+  for using any python package as a zope product without it having to
+  live in Products/
+
+* Add zope.formlib support.  Please see ``doc/formlib.txt`` for more
+  information.
+
+* Port zope.testbrowser to Zope 2.  You can now use
+  Products.Five.testbrowser.Browser in functional tests.
+
+* Make the ``browser:addMenuItem`` directive available.
+
+* Add a file argument to the five:loadProducts and
+  five:loadProductOverrides directives. Use this in the Five site.zcml
+  to load all the Product meta before any Product configure.
+
+  NOTE: Anyone who copied the Five site.zcml to their
+  $INSTANCE_HOME/etc/ directory is going to need to update it.
+
+Five 1.3.8 (2006-11-04)
+=======================
+
+Bugfixes
+--------
+
+* browser: processInputs now decodes strings in lists and tuples.
+
+* Port code from Zope 3 making resource directories recursive.
+  Thanks to Richard Waid.
+
+* Made the __call__ method of ViewMixinForAttributes have the same signature
+  as the original attribute.  This aids some pathological request parameter
+  marshalling.
+
+Five 1.3.7 (2006-08-13)
+=======================
+
+Bugfixes
+--------
+
+* Allow multiple uses of the <class>/<content> directive.
+
+* Fix problem with WebDAV/HEAD requests due to new traversal order.
+
+* Backported the new traversal lookup order from Zope 2.10 (attribute, adapter,
+  acquired attribute).
+
+* fiveconfigure.py: Removed import of deprecated 'LOG' object from 'zLOG'
+  in favor of the facilities provided by Python's 'logging' module.
+
+Five 1.3.6 (2006-05-29)
+=======================
+
+Bugfixes
+--------
+
+* Fixed an issue where <browser:page> based views that didn't have
+  template or attribute defined weren't getting BrowserView mixed in.
+
+* Fixed an issue where new-style classes could not be used for
+  view components with <browser:page>.
+
+Five 1.3.5 (2006-05-04)
+=======================
+
+Bugfixes
+--------
+
+* Made sure that events are fired as expected in add and edit forms.
+
+* Made sure LocalizerLanguages class normalized language codes to
+  xx-yy, instead of xx_YY or xx-YY.
+
+* Fixed a problem with the new traversal look-up order and the root
+  object (OFS.Application.Application).
+
+Five 1.3.4 (2006-03-31)
+=======================
+
+Bugfixes
+--------
+
+* Added the ``class`` ZCML directive as an alias to ``content``.
+
+Five 1.3.3 (2006-03-26)
+=======================
+
+This version is also included in Five 2.9.2
+
+Bugfixes
+--------
+
+* Fixed look-up order during Five traversal.  It is now as follows:
+
+  1. If an object has __bobo_traverse__, use it.
+
+  2. Otherwise do attribute look-up or, if that doesn't work, key item
+     lookup.
+
+  3. If neither __bobo_traverse__ nor attribute/key look-up work, it
+     tries to find a Zope 3-style view.
+
+  This change requires Zope 2.9.2 or higher.
+
+* A local utility registered with an derived interface will now be available
+  by the inherited interface as well, in the same way as Zope3.
+
+Five 1.3.2 (2006-02-25)
+=======================
+
+Bugfixes
+--------
+
+* Five's traversing machinery now mimicks the ZPublisher correctly:
+  When no Zope 3-style view is found, first the object's original
+  ``__bobo_traverse__`` is tried.  If that does not exist, Traversable
+  resorts to attribute look-up.
+
+* Unit tests that did i18n via Localizer would fail because the
+  request attribute that keeps Localizers list of preferred languages
+  did not exist.
+
+Five 1.3.1 (2006-01-08)
+=======================
+
+Bugfixes
+--------
+
+* Fix an adapter look-up bug in the local site implementation that was
+  due to an oversight during the port to Zope 3.2.
+
+Five 1.3 (2006-01-07)
+=====================
+
+This version is also included in Zope 2.9.0.
+
+Bugfixes
+--------
+
+* Fix functional test for local sites and re-enable it for standard
+  test runs.
+
+* If one class was set to have a localsite hook twice, removing the hook
+  would be attempted twice during the cleanup of unit tests, and the
+  tests would fail.
+
+* Fix cleanup of five:traversable.
+
+Five 1.3c (2005-12-06)
+======================
+
+This version is also included in Zope 2.9b1.
+
+Restructuring
+-------------
+
+* (b6) No longer use the ``defaultLayer`` directive, it's been deprecated.
+
+* (b4) Cleaned up security test.
+
+* (b4) Made Five send a ContainerModifiedEvent when appropriate.
+
+Bugfixes
+--------
+
+* (b6) Fixed the form i18n messages to work with Zope 3.2 beta 1.
+
+* (b3) Made the creation of custom skins work again.  It was broken in
+  the port to Zope 3.2.
+
+* (b2) Fixed bug that broke WebDAV access for five:defaultViewable
+  objects. The __browser_default__ now modifies only GET and POST
+  requests.
+
+* (b2) Fixed some event recursion compatibility modes.
+
+Five 1.3b (2005-11-02)
+======================
+
+Restructuring
+-------------
+
+* Support for Zope 3.2 was added. Five now requires Zope 2.9 (which
+  ships with Zope 3.2).
+
+* As scheduled, the temporary fork of the new test runner
+  (``zope.testing``) at ``Five.testing`` was removed.  So was the
+  ``runtests.py`` script.  Use the regular Zope test runner
+  (``test.py`` or ``bin/zopectl test``) to run tests.
+
+* To reflect the Component Architecture simplification in Zope 3 since
+  the X3 3.0 release, ``IFiveUtilityService`` was renamed to
+  ``IFiveUtilityRegistry`` and ``SimpleLocalUtilityService`` was
+  renamed to ``SimpleLocalUtilityRegistry``.  The old names are still
+  available for a short period of time.
+
+* Event support: ``<five:containerEvents/>`` is the default.
+
+* Due to an incompatability with Zope 3.2's ObjectWidget and Zope 2's
+  Page Templates, Five now ships with its own ObjectWidget
+  implementation (which is just a thin wrapper around Zope's one to
+  make it work in Zope 2).  If you use the ObjectWidget, please change
+  your imports to ``Products.Five.form.objectwidget.ObjectWidget``.
+
+* Backwards compatability for Zope 3-style interfaces of Zope 2
+  components has been removed as that functionality is now in the Zope
+  2 core as of Zope 2.9.
+
+Five 1.2.6 (2006-08-13)
+=======================
+
+* Allow multiple uses of the <class>/<content> directive.
+
+* Fix problem with WebDAV/HEAD requests due to new traversal order.
+
+* Backported the new traversal lookup order from Zope 2.10 (attribute,
+  adapter, acquired attribute).
+
+Five 1.2.5 (2006-05-29)
+=======================
+
+Bugfixes
+--------
+
+* Fixed an issue where <browser:page> based views that didn't have
+  template or attribute defined weren't getting BrowserView mixed in.
+
+* Fixed an issue where new-style classes could not be used for
+  view components with <browser:page>.
+
+Five 1.2.4 (2006-05-04)
+=======================
+
+Bugfixes
+--------
+
+* Made sure that events are fired as expected in add and edit forms.
+
+* Made sure LocalizerLanguages class normalized language codes to
+  xx-yy, instead of xx_YY or xx-YY.
+
+* Fixed a problem with the new traversal look-up order and the root
+  object (OFS.Application.Application).
+
+Five 1.2.3 (2006-03-31)
+=======================
+
+Bugfixes
+--------
+
+* Added the ``class`` ZCML directive as an alias to ``content``.
+
+Five 1.2.2 (2006-03-26)
+=======================
+
+Bugfixes
+--------
+
+* A local utility registered with an derived interface will now be available
+  by the inherited interface as well, in the same way as Zope3.
+
+* Fixed look-up order during Five traversal.  It is now as follows:
+
+  1. If an object has __bobo_traverse__, use it.
+
+  2. Otherwise do attribute look-up or, if that doesn't work, key item
+     lookup.
+
+  3. If neither __bobo_traverse__ nor attribute/key look-up work, it
+     tries to find a Zope 3-style view.
+
+Five 1.2.1 (2006-02-25)
+=======================
+
+Bugfixes
+--------
+
+* Five's traversing machinery now mimicks the ZPublisher correctly:
+  When no Zope 3-style view is found, first the object's original
+  ``__bobo_traverse__`` is tried.  If that does not exist, Traversable
+  resorts to attribute look-up.
+
+* Unit tests that did i18n via Localizer would fail because the
+  request attribute that keeps Localizers list of preferred languages
+  did not exist.
+
+Five 1.2 (2006-01-07)
+=====================
+
+Bugfixes
+--------
+
+* Fixed bug that broke WebDAV access for five:defaultViewable objects. The
+  __browser_default__ now modifies only GET and POST requests.
+
+* Fixed some event recursion compatibility modes.
+
+* Fixed loops in zcml loading due to events in some cases.
+
+* Made Five send a ContainerModifiedEvent when appropriate.
+
+* Fix cleanup of five:traversable.
+
+* If one class was set to have a localsite hook twice, removing the
+  hook would be attempted twice during the cleanup of unit tests, and
+  the tests would fail.
+
+Restructuring
+-------------
+
+* Cleaned up security test.
+
+* Added monkey so that ++skin++ works with Zope <= 2.8.4.
+
+Five 1.2b (2005-11-02)
+======================
+
+Features
+--------
+
+* Added IMarkerInterfaces adapter: This adapter provides methods for
+  inspecting and assigning marker interfaces. 'edit-markers.html' (or
+  'manage_interfaces' in the ZMI) allows to change the behavior of specific
+  objects by adding or removing marker interfaces TTW.
+
+* Added the five:registerClass directive: This does the necessary Zope 2
+  registration for Five-based content. It is no longer necessary to add an
+  ``initialize()`` function to the product's __init__ in order to register
+  a meta type to be addable through the ZMI. See doc/products/ViewsTutorial
+  for an example how to use the directive.
+
+* Local site support: Five has now support for creating local sites
+  and thereby local utilities. This is mostly needed for allowing CMF
+  to convert it's portal tools into local utilities.  See
+  doc/localsite.txt for more information
+
+* Event support: When ``<five:containerEvents/>`` is specified, Five
+  makes the standard Zope 2 containers send events instead of using
+  manage_afterAdd, manage_beforeDelete and manage_afterClone. These
+  methods are still called for a class declared
+  ``<five:deprecatedManageAddDelete class=.../>``, and are called in
+  compatibility mode with a deprecation warning for classes that don't
+  use this directive.
+
+Restructuring
+-------------
+
+* Removed backwards compatibility for Five 1.0 Zope core interfaces.
+
+* Removed backwards compatibility for Zope 2.7 and 2.8.0.
+
+* Added a (temporarily) forked copy of the "new-and-improved" test
+  runner and supporting ``zope.testing`` package, lifted from
+  http://svn.zope.org/zope.testing.  This code should be removed for
+  Five 1.3, which will use the updated version of ``zope.testing`` in
+  the Zope 2.9 / Zope 3.2 tree.
+
+  There is a test runner invoking script in the ``Five`` package.  For
+  example, to run the Five tests with the new test runner, simply
+  execute the following command line from your instance home::
+
+    $ bin/zopectl run Products/Five/runtests.py -v -s Products.Five
+
+* Moved the ``Five.testing`` package down to ``Five.tests.testing``,
+  in order to make room for the 'zope.testing' code.
+
+* Removed backwards compatibility for some moved classes (AddForm,
+  EditForm, ContentAdding)
+
+Five 1.1 (2005-10-04)
+=====================
+
+Features
+--------
+
+* When Zope was not in debug mode, an error in a ZCML file would cause Five to
+  stop loading ZCML completely, making all subsequent products "dead". The
+  effect would typically be that objects appeared to have no views at all.
+  Now a ZCML error will only stop the ZCML loading for that product, but the
+  rest of the products will load as usual. A traceback will still be printed
+  in the event log.
+
+  In debug mode the behaviour has not changed; a ZCML error will stop Zope
+  startup completely, and print a traceback if running in foreground mode.
+
+Restructuring
+-------------
+
+* The deprecated FivePageTemplateFile was removed, and the erroneous use of
+  this by EditView was changed.
+
+Bugfixes
+--------
+
+* Repaired 'forms.txt' test which expected an error page when passing
+  'handle_errors' as False;  it now expects an Unauthorized traceback.
+  Note that this test fails on Zope 2.8.1, which incorrectly ignored
+  'handle_errors'.
+
+* FiveTraversable should only do a view lookup and not call the traverse
+  method of its superclass.
+
+* Fixed manage_beforeDelete triggering for classes using five:sendEvents.
+
+* The redefinePermission directive was falsely registered under the
+  ``zope`` namespace, not the ``meta`` namespace as it is in Zope 3.
+
+* Some parts of add.pt and edit.pt were not translated correctly or not
+  translated at all. The fix depends on TAL changes in Zope 2.8.1 and changes
+  in Zope X3-3.0.1 (shipped with 2.8.1). Form i18n is still broken with older
+  Zope versions.
+
+* 'zope' domain translations are now set up by default. Form i18n needs them.
+
+* Added backwards compatibility for some moved classes (AddForm, EditForm,
+  ContentAdding)
+
+* The ZPT variable 'container' makes little sense in Zope3/Five, but is now
+  always set to be the same as 'here' which is normal Zope2 behaviour.
+  It is in Five 1.0.x set to be the same as 'view' which breaks some templates.
+
+* In some hard to replicate cases, using the "modules" variable in ZPT cause
+  an AuthenticationError. Using the secure module importer fixes this.
+
+* If you used some parts of Zope 3 (for example the mail delivery) Five 1.1
+  transaction backport would conflict with Zope 3s transaction module.
+  This is now solved.
+
+Five 1.1b (2005-07-13)
+======================
+
+Features
+--------
+
+* Zope 3-style i18n support has been provided.  Apart from being able
+  to register translations through ZCML, Five now lets Zope 2 ZPTs
+  automatically use Zope 3 translation domains.  Fallback to an
+  old-style translation service (e.g. Localizer or PTS) is supported.
+  This also includes the detection of preferred languages.  See
+  ``doc/i18n.txt`` for more information.
+
+* Added support for Zope 3 -> Zope 2 interface bridging.  This
+  functionality will be part of Zope 2.9, with Five you can already
+  use it in Zope 2.7/2.8.  Since Zope 2 interfaces are rarely used and
+  their Zope 3 equivalents are more meaningful (for the Component
+  Architecture), the preferred way of dealing with interface migration
+  is to write Zope 3 interfaces and bridge them to Zope 2 ones as
+  needed.  To bridge, use the ``Interface.bridge.fromZ3Interface()``
+  function.
+
+* Support for the standard <factory />, <modulealias /> and <hook />
+  ZCML directives was added.
+
+* The default browser view name for all objects is now 'index.html',
+  just as it is in Zope 3.  This means that a view by that name will
+  be looked up if no specific view name is given in the URL.
+
+Restructuring
+-------------
+
+* Restructured the Five source code to be easier to navigate in.
+  Three subpackages were created, Five.browser, Five.form and
+  Five.skin.
+
+* The former test product, ``FiveTest``, was converted into separate
+  modules that provide the mock objects for the corresponding tests
+  and are located right next to them.  Common test helpers have been
+  moved to the Five.testing package.  Overall, the testing framework
+  was much simplified and the individual tests clean up after
+  themselves much like they do in Zope 3.
+
+* Relocated Zope core interfaces. Future Zope versions will ship with their
+  own z3 interfaces. Five now patches the older Zope versions to make sure
+  you can always find the interfaces in 'AccessControl.interfaces',
+  'Acquisition.interfaces', 'App.interfaces', 'OFS.interfaces' and
+  'webdav.interfaces'. Please don't use the aliases in 'Five.interfaces' or
+  'Five.bbb.*interfaces' - they are only provided for backwards
+  compatibility.
+
+* Zope 2.8 HTTPRequest is no longer patched. It has the required methods.
+
+Bugfixes
+--------
+
+* The ZPT variable 'container' did not always contain the parent object
+  of the context.
+
+* The deprecated get_transaction method is no longer used in Zope 2.8.
+
+Five 1.0.2 (2005-07-12)
+=======================
+
+This version is also included in Zope 2.8.1
+
+* Fixed some issues with bridged interfaces: Bases and Methods were not
+  bridged correctly. extends() was never True.
+
+* zope.security.checkPermission now behaves exactly like
+  Five.security.checkPermission (in fact, the former now calls the
+  latter through the indirection of Zope 3 security policies).
+
+* Fixed a bug with resource directories.  Resources within those were
+  not rendering their absolute URL correctly.
+
+Five 1.0.1 (2005-05-31)
+=======================
+
+This version is also included in Zope 2.8.0
+
+* Changed license headers to the ones used in the Zope.org repository.
+  This makes merging between the main development line of Five (hosted
+  on codespeak.net) and the version integrated into Zope 2.8 much
+  easier.  The actual copyright ownership isn't affected because Five
+  had been contributed to the Zope project anyway (which was blessed
+  by all Five contributors).
+
+* Made automatically generated add and edit forms unicode-aware.
+  ZPublisher does not automatically decode incoming form values to
+  unicode, so AddView and EditView emulate this behaviour themselves
+  now.  They also take care of setting the right charset on the
+  outgoing form so that ZPublisher will encode it accordingly when
+  sending the response to the client.  (In Zope 3, all charset
+  negotation between the client and the server takes place in the
+  publisher.)
+
+* Added ``IHTTPCharset`` adapter for ``IHTTPRequest`` so that
+  application can find out the preferred character set of the HTTP
+  client (Zope 2 applications needs to take care of their own charset
+  header).  The adapter is used for the automatically-generated forms
+  when determining encodings for unicode field content.
+
+* Modified edit.pt to make sure editforms have only one body tag.
+
+* Fixed the ``INameChooser`` adapter for ObjectManagers (e.g. Zope 2
+  folders) and added unit tests.
+
+* Fixed small bug in BrowserDefault which caused an error if the class is
+  defaultViewable but the object's interfaces have no defaultView.
+
+Five 1.0 (2005-04-27)
+=====================
+
+Features
+--------
+
+* Zope 3 style ``ISized`` adapters for objects are now exposed to the
+  ZMI and other Zope 2 frameworks via the known ``get_size`` method,
+  provided this is turned for the class in question via the
+  five:sizable ZCML directive.
+
+* There is now a standard standard_macros. Five page templates can use
+  context/@@standard_macros/view to get the default site layout, and
+  people can register their own standard_macros in a skin.
+
+* The addform and editform directive now supports the widget ZCML
+  subdirective, which previously was ignored.
+
+* Five now supports the vocabulary ZCML directive.
+
+Bugfixes
+--------
+
+* Add and edit forms are now protected properly.
+
+* The checkbox widget did not work correctly in its off state, this
+  has been fixed.
+
+Five 0.3 (2005-03-11)
+=====================
+
+* Five now uses the Zope 2 page template engine, not the Zope 3
+  engine. This allows better integration with Zope 2-based page
+  templates, such as macros.
+
+  It uses TrustedExecutables technology (thanks to Dieter Maurer) to
+  turn off Zope 2 security in page templates, so Five's security
+  behavior is very similar to what it was before.
+
+* Five now supports the browser:menu, menuItem and menuItems
+  directives.
+
+* A new Five-specific directive has been added:
+  five:pagesFromDirectory.  This adds one page for each .pt file in a
+  directory to the specified interface. This is useful for Five
+  integration with CMF and other systems that have Page Templates
+  macros that need to be shared between Zope2 and Five.
+
+* Five.security.checkPermission has been changed from a (unused)
+  method for checking the existence of permissions. Use
+  zope.app.security.permission.checkPermission if you need that
+  functionality.
+
+  Instead Five.security.checkPermission is now a Five version of
+  zope.security.checkPermission, which checks if the current user has
+  a permission on an object.
+
+* Support for browser:editform. You can now use schemas for editing.
+
+* Support for browser:addform; add forms using '+'. You can now browse
+  to 'container/+/addsomething.html' to get to a schema-driven add
+  form.
+
+* Fixed a traversal bug which caused Zope to give the wrong error when
+  a page could not be found (missing docstring instead of not
+  found). Zope 2.7.4 (or higher) is required for this fix.
+
+Five 0.2b (2004-09-24)
+======================
+
+* Added utility module, 'bridge', allowing reuse of Zope 2 interfaces
+  (by introspecting them to create equivalent Zope 3 interfaces).
+
+* five:viewable was renamed to five:traversable, five:viewable still
+  works but is deprecated; a deprecation warning is emitted when it is
+  used.
+
+* like in Zope3, an ITraverser adapter is looked up to determine what
+  happens when traversing into a Five traversable object.
+
+* added five:defaultViewable to make instances of a class directly
+  viewable using browser:defaultView. This is hookable by the use of a
+  IBrowserDefault adapter
+
+* deprecated use of Products.Five.api as public API for other products
+  to use, instead import directly from Products.Five. Retired
+  Traversable and Viewable from the public API; use ZCML directives
+  (five:traversable, five:defaultView) instead of mixins to make
+  instances of classes work with Five.
+
+* classes that Five monkeypatches now have a __five_method__
+  attribute, making it easier for Five not to stomp on existing methods.
+
+* registered absolute_url view and IAbsoluteURL adapter for *
+
+* zope.app.traversing is registered by default, to make special
+  namespaces available (eg: @@, ++resource++)
+
+* we now have resources (FileResource, ImageResource,
+  PageTemplateResource) and directory resources.
+
+* Zope 3 'StandardMacros' now works with Five as well.
+
+* browser:page now correctly handles the allow_attributes and protects
+  the named attributes on the view with the same permission used for
+  the view.
+
+* zopeconf.py will try to find etc/zope.conf on INSTANCE_HOME. This
+  requires Zope 2.7.2, as earlier Zope versions have a bug in this
+  area which causes them to look in lib/python/Testing.
+
+* Exposed the Zope 3 event system to Five. A class can be made to send
+  out event notifications using the five:sendEvents directive. Events can
+  be subscribed to using the subscriber directive.
+
+* Change in findProducts so that non-filesystem products are skipped.
+
+Five 0.1 (2004-07-30)
+=====================
+
+Initial public release (mainly Martijn's work)

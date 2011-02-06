@@ -1,0 +1,98 @@
+sqlgroup: Formats complex SQL expressions
+
+  The 'sqlgroup' tag formats complex boolean SQL expressions. You can
+  use it along with the 'sqltest' tag to build dynamic SQL queries
+  that tailor themselves to the environment. This tag is used in SQL
+  Methods.
+
+  Syntax
+
+    'sqlgroup' tag syntax::
+
+      <dtml-sqlgroup>
+      [<dtml-or>]
+      [<dtml-and>]
+      ...
+      </dtml-sqlgroup>
+
+    The 'sqlgroup' tag is a block tag. It is divided into blocks with
+    one or more optional 'or' and 'and' tags. 'sqlgroup' tags can be
+    nested to produce complex logic.
+
+  Attributes
+
+    required=boolean -- Indicates whether the group is required. If it
+    is not required and contains nothing, it is excluded from the DTML
+    output.
+
+    where=boolean -- If true, includes the string "where". This is
+    useful for the outermost 'sqlgroup' tag in a SQL 'select' query.
+
+  Examples
+
+    Sample usage::
+
+      select * from employees 
+      <dtml-sqlgroup where>
+        <dtml-sqltest salary op="gt" type="float" optional>
+      <dtml-and>
+        <dtml-sqltest first type="nb" multiple optional>
+      <dtml-and>
+        <dtml-sqltest last type="nb" multiple optional>
+      </dtml-sqlgroup>  
+
+    If 'first' is 'Bob' and 'last' is 'Smith, McDonald' it renders::
+
+      select * from employees
+      where
+      (first='Bob'
+       and
+       last in ('Smith', 'McDonald')
+      )
+
+    If 'salary' is 50000 and 'last' is 'Smith' it renders::
+
+      select * from employees
+      where 
+      (salary > 50000.0
+       and
+       last='Smith'
+      )
+
+    Nested 'sqlgroup' tags::
+
+      select * from employees
+      <dtml-sqlgroup where>
+        <dtml-sqlgroup>
+           <dtml-sqltest first op="like" type="nb">
+        <dtml-and>
+           <dtml-sqltest last op="like" type="nb">
+        <dtml-sqlgroup>
+      <dtml-or>
+        <dtml-sqltest salary op="gt" type="float">
+      </dtml-sqlgroup>
+
+    Given sample arguments, this template renders to SQL like so::
+
+      select * form employees
+      where
+      (
+        (
+         name like 'A*'
+         and
+         last like 'Smith'
+         )
+       or
+       salary > 20000.0
+      )
+
+  See Also
+
+    "sqltest tag":dtml-sqltest.stx
+
+
+
+
+
+
+

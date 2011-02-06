@@ -1,0 +1,26 @@
+ZCatalog - Status: Control advanced Catalog features
+  
+    Description
+
+        This view allows you to control advanced catalog features.
+                
+        Subtransactions reduce the memory requirements of ZCatalog,
+        but at the expense of speed. If you choose to enable
+        subtransactions, you can adjust how often ZCatalog commits a
+        subtransaction by adjusting the threshold. The index status
+        reports how many objects are cataloged in each index.
+        
+    Controls
+
+        'Enable/Disable' -- If enables, the Subtransaction system is
+        enabled and the threshold specified below is used.
+        
+        'Subtransaction Threshold' -- Allows you to specify how often
+        the ZCatalog will commit the subtransactions. The default
+        value is 10000.
+        
+        'Change' -- Clicked, Zope will update the subtransaction
+        threshold.
+        
+        'Index Status' List -- Each line corresponds to one Index. The
+        line indicates how many objects are cataloged for each Index.

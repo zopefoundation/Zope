@@ -1,0 +1,166 @@
+<dtml-var manage_page_header>
+<dtml-with "_(management_view='Security')">
+<dtml-if  manage_tabs><dtml-var manage_tabs></dtml-if>
+</dtml-with>
+<p class="form-help">
+The listing below shows the current security settings for this item. 
+Permissions are rows and roles are columns.  Checkboxes are used to
+indicate where roles are assigned permissions. You can also assign 
+<strong><a href="manage_listLocalRoles">local roles</a></strong> to 
+users, which give users extra roles in the context of this object and 
+its subobjects.
+</p>
+
+<p class="form-help">  
+When a role is assigned to a permission, users with the given role
+will be able to perform tasks associated with the permission on this
+item. When the <em>Acquire permission settings</em> checkbox is selected
+then the containing objects's permission settings are used. Note: the
+acquired permission settings may be augmented by selecting Roles for
+a permission in addition to selecting to acquire permissions.
+</p>
+
+
+<div>
+    <form action="manage_reportUserPermissions" method="GET">
+        Username:
+        <input type="text" name="user" size="20" />
+        <input type="submit" value="Show me the user permissions and roles in the context of the current object" />
+    </form>
+</div>
+
+<dtml-with expr="_.namespace(valid_roles=valid_roles())">
+<form action="manage_changePermissions" method="post">
+
+<table width="100%" cellspacing="0" cellpadding="2" border="0" nowrap>
+<tr class="list-header">
+  <dtml-unless isTopLevelPrincipiaApplicationObject>
+  <td>&nbsp;</td>
+  </dtml-unless>
+  <td align="left" valign="top">
+  <div class="form-label">
+  <strong>Permission</strong>
+  </div>
+  </td>
+  <td align="left" colspan="<dtml-var expr="_.len(valid_roles)">">
+  <div class="form-label">
+  <strong>Roles</strong>
+  </div>
+  </td>
+</tr>
+
+<dtml-in permission_settings mapping>
+
+<dtml-if "not (_['sequence-index']%10)">
+<tr class="row-normal">
+  <dtml-unless isTopLevelPrincipiaApplicationObject>
+  <td align="left" valign="top">
+  <div class="form-label">
+  <strong>
+  <a href="manage_acquiredForm">Acquire<dtml-unless sequence-index><BR>permission<BR>settings</dtml-unless></a>?
+  </strong>
+  </div>
+  </td>
+  </dtml-unless>
+  <td></td>
+  <dtml-in valid_roles>
+  <td align="left">
+  <div class="list-item">
+  <a href="manage_roleForm?role_to_manage=&dtml.url_quote-sequence-item;">&dtml-sequence-item;</a>
+  </div>
+  </td>
+  </dtml-in valid_roles>
+</tr>
+</dtml-if>
+
+<dtml-if sequence-odd>
+<tr class="row-normal">
+<dtml-else>
+<tr class="row-hilite">
+</dtml-if>
+
+  <dtml-unless isTopLevelPrincipiaApplicationObject>
+  <td align="left" valign="top">
+  <input type="checkbox" name="a&dtml-sequence-index;" &dtml-acquire; />
+  </td>
+  </dtml-unless>
+  <td align="left" nowrap>
+  <div class="list-item">
+  <a href="manage_permissionForm?permission_to_manage=&dtml.url_quote-name;">&dtml-name;</a>
+  </div>
+  </td>
+  <dtml-in roles mapping>
+  <td align="center">
+  <input type="checkbox" name="&dtml-name;" &dtml-checked; />
+  </td>
+  </dtml-in>
+</tr>
+</dtml-in permission_settings>
+
+<tr>
+<dtml-if isTopLevelPrincipiaApplicationObject>
+<td colspan="<dtml-var expr="_.len(valid_roles)+1">" align="left">
+<dtml-else>
+<td colspan="<dtml-var expr="_.len(valid_roles)+2">" align="left">
+</dtml-if>
+<div class="form-element">
+<input class="form-element" type="submit" name="submit" value="Save Changes" />
+</div>
+</td>
+</tr>
+</table>
+</form>
+</dtml-with>
+
+<dtml-if "_['id'] != 'acl_users'">
+<p class="form-help" >
+You can define new roles by entering a role name and clicking the 
+&quot;Add Role&quot; button.
+</p>
+
+<form action="manage_defined_roles" method="post">
+<table cellpadding="2">
+<tr>
+  <td align="left" valign="top">
+  <div class="form-label">
+  User defined roles
+  </td>
+  <td align="left" valign="top">
+  &nbsp;
+  </td>
+</tr>
+<tr>
+  <td align="left" valign="top">
+  <input type="text" name="role" size="16" value="" />
+  </td>
+  <td align="left" valign="top">
+  <div class="form-element">
+  <input class="form-element" type="submit" name="submit" value="Add Role" />
+  </div>
+  </td>
+</tr>
+<dtml-if userdefined_roles>
+<tr>
+  <td align="left" valign="top">
+  <div class="form-element">
+  <select name="roles:list">
+  <dtml-in userdefined_roles>
+  <option value="&dtml-sequence-item;">&dtml-sequence-item;</option>
+  </dtml-in userdefined_roles>
+  </select>
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <div class="form-element">
+  <input class="form-element" type="submit" name="submit" 
+   value="Delete Role" />
+  </div>
+  </td>
+</tr>
+</dtml-if userdefined_roles>
+</table>
+</form>
+</dtml-if>
+
+<dtml-var manage_page_footer>
+

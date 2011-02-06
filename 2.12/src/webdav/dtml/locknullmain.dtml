@@ -1,0 +1,11 @@
+<dtml-var name="manage_page_header">
+<dtml-var name="manage_tabs">
+
+<p>This item is <span style="color: red">locked by WebDAV</span> as a
+  <strong>Lock-Null Resource</strong>.  A lock-null resource is
+  created when a resource is locked before it is fully created,
+  basically reserving its name.  When the owner of this resource
+  issues a command to either fill it with content, or turn it into a
+  collection (folder), that object will replace this one.</p>
+
+<dtml-var name="manage_page_footer">

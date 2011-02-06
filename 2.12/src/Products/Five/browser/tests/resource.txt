@@ -1,0 +1,123 @@
+Testing resources
+=================
+
+Set up the test fixtures:
+
+  >>> import Products.Five.browser.tests
+  >>> from Products.Five import zcml
+  >>> zcml.load_config("configure.zcml", Products.Five)
+  >>> zcml.load_config('resource.zcml', package=Products.Five.browser.tests)
+
+  >>> from Products.Five.tests.testing import manage_addFiveTraversableFolder
+  >>> manage_addFiveTraversableFolder(self.folder, 'testoid', 'Testoid')
+
+  >>> import os, glob
+  >>> _prefix = os.path.dirname(Products.Five.browser.tests.__file__)
+  >>> dir_resource_names = [os.path.basename(r) for r in (
+  ...     glob.glob('%s/*.png' % _prefix) +
+  ...     glob.glob('%s/*.pt' % _prefix) +
+  ...     glob.glob('%s/[a-z]*.py' % _prefix) +
+  ...     glob.glob('%s/*.css' % _prefix))]
+
+
+Resource types
+--------------
+
+  >>> from Products.Five.browser.resource import Resource, PageTemplateResource
+
+Template resource
+~~~~~~~~~~~~~~~~~
+
+  >>> resource = self.folder.unrestrictedTraverse('testoid/++resource++cockatiel.html')
+  >>> isinstance(resource, Resource)
+  True
+  >>> resource()
+  'http://nohost/test_folder_1_/testoid/++resource++cockatiel.html'
+
+File resource
+~~~~~~~~~~~~~
+
+  >>> resource = self.folder.unrestrictedTraverse('testoid/++resource++style.css')
+  >>> isinstance(resource, Resource)
+  True
+  >>> resource()
+  'http://nohost/test_folder_1_/testoid/++resource++style.css'
+
+Image resource
+~~~~~~~~~~~~~~
+
+  >>> resource = self.folder.unrestrictedTraverse('testoid/++resource++pattern.png')
+  >>> isinstance(resource, Resource)
+  True
+  >>> resource()
+  'http://nohost/test_folder_1_/testoid/++resource++pattern.png'
+
+Resource directory
+~~~~~~~~~~~~~~~~~~
+
+  >>> base = 'testoid/++resource++fivetest_resources/%s'
+  >>> base_url = 'http://nohost/test_folder_1_/' + base
+  >>> abs_url = self.folder.unrestrictedTraverse(base % '')()
+  >>> abs_url + '/' == base_url % ''
+  True
+
+PageTemplateResource's __call__ renders the template
+
+  >>> for r in dir_resource_names:
+  ...     resource = self.folder.unrestrictedTraverse(base % r)
+  ...     self.assert_(isinstance(resource, Resource))
+  ...     if not isinstance(resource, PageTemplateResource):
+  ...         self.assertEquals(resource(), base_url % r)
+
+Security
+--------
+
+  >>> from Products.Five.tests.testing.restricted import checkRestricted
+  >>> from Products.Five.tests.testing.restricted import checkUnauthorized
+
+  >>> resource_names = ['cockatiel.html', 'style.css', 'pattern.png']
+
+We should get Unauthorized as long as we're unauthenticated:
+
+  >>> for resource in resource_names:
+  ...     checkUnauthorized(
+  ...         self.folder,
+  ...         'context.restrictedTraverse("testoid/++resource++%s")()' % resource)
+
+  >>> base = 'testoid/++resource++fivetest_resources/%s'
+  >>> for resource in dir_resource_names:
+  ...     path = base % resource
+  ...     checkUnauthorized(self.folder, 'context.restrictedTraverse("%s")' % path)
+
+Now let's create a manager user account and log in:
+
+  >>> uf = self.folder.acl_users
+  >>> uf._doAddUser('manager', 'r00t', ['Manager'], [])
+  >>> self.login('manager')
+
+We can now view them all:
+
+  >>> for resource in resource_names:
+  ...     checkRestricted(
+  ...         self.folder,
+  ...         'context.restrictedTraverse("testoid/++resource++%s")()' % resource)
+
+  >>> base = 'testoid/++resource++fivetest_resources/%s'
+  >>> for resource in dir_resource_names:
+  ...     path = base % resource
+  ...     checkRestricted(self.folder, 'context.restrictedTraverse("%s")' % path)
+
+Let's make sure restrictedTraverse() works directly, too. It used to get
+tripped up on subdirectories due to missing security declarations.
+
+  >>> self.folder.restrictedTraverse('++resource++fivetest_resources/resource.txt') is not None
+  True
+  
+  >>> self.folder.restrictedTraverse('++resource++fivetest_resources/resource_subdir/resource.txt') is not None
+  True
+
+Clean up
+--------
+
+  >>> from zope.component.testing import tearDown
+  >>> tearDown()

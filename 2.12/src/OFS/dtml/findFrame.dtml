@@ -1,0 +1,19 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML lang="en">
+<HEAD>
+<TITLE>Find</TITLE>
+</HEAD>
+<FRAMESET ROWS="52%,*">
+<dtml-if cv_ffaf>
+  <FRAME SRC="<dtml-var "REQUEST.URL1" html_quote>/manage_findAdv" NAME="findForm"
+<dtml-else>
+  <FRAME SRC="<dtml-var "REQUEST.URL1" html_quote>/manage_findForm" NAME="findForm"
+</dtml-if>
+   MARGINWIDTH="2" MARGINHEIGHT="2" SCROLLING="auto">
+  <FRAME SRC="<dtml-var "REQUEST.URL1" html_quote>/manage_findResult" NAME="findResult"
+   MARGINWIDTH="2" MARGINHEIGHT="0" SCROLLING="auto">
+</FRAMESET>
+<NOFRAMES>
+Management interfaces require the use of a <B>frames-capable</B> web browser.
+</NOFRAMES>
+</HTML>

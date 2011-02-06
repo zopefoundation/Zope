@@ -1,0 +1,93 @@
+<dtml-var manage_page_header>
+
+<dtml-var "manage_form_title(this(), _,
+           form_title='Add User',
+           help_product='OFSP',
+           help_topic='User-Folder_Add-User.stx'
+	   )">
+
+<p class="form-help">
+To add a new user, enter the name <dtml-unless remote_user_mode__>
+,password, confirmation</dtml-unless> and roles for the new user and 
+click &quot;Add&quot;. <em>Domains</em> is an optional list of domains 
+from which the user is allowed to login. 
+</p>
+
+<form action="manage_users" method="post">
+<table>
+<tr>
+  <td align="left" valign="top">
+  <div class="form-label">
+  Name
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <input type="text" name="name" size="30" />
+  </td>
+</tr>
+
+<dtml-if remote_user_mode__>
+<input type="hidden" name="password" value="password" />
+<input type="hidden" name="confirm"  value="password" />
+<dtml-else>
+<tr>
+  <td align="left" valign="top">
+  <div class="form-label">
+  Password
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <input type="password" name="password" size="30" />
+  </td>
+</tr>
+<tr>
+  <td align="left" valign="top">
+  <div class="form-label">
+  (Confirm)
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <input type="password" name="confirm" size="30" />
+  </td>
+</tr>
+</dtml-if>
+
+<tr>
+<td align="left" valign="top">
+<div class="form-optional">
+Domains
+</div>
+</td>
+<td align="left" valign="top">
+<input type="text" name="domains:tokens" size="30" value="" />
+</td>
+</tr>
+
+<tr>
+  <td align="left" valign="top">
+  <div class="form-label">
+  Roles
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <div class="form-element">
+  <select name="roles:list" size="5" multiple>
+  <dtml-in valid_roles>
+  <dtml-if expr="_vars['sequence-item'] != 'Authenticated'">
+  <dtml-if expr="_vars['sequence-item'] != 'Anonymous'">
+  <dtml-if expr="_vars['sequence-item'] != 'Shared'">
+  <option value="&dtml-sequence-item;">&dtml-sequence-item;
+  </dtml-if>
+  </dtml-if>
+  </dtml-if>
+  </dtml-in valid_roles>
+  </select>
+  <br />
+  <input type="submit" name="submit" value="Add" />
+  </div>
+</td>
+</tr>
+</table>
+</form>
+
+<dtml-var manage_page_footer>

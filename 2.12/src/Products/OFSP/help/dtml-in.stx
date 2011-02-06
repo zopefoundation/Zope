@@ -1,0 +1,291 @@
+in: Loops over sequences
+
+  The 'in' tag gives you powerful controls for looping over sequences
+  and performing batch processing.
+
+  Syntax
+
+    'in' tag syntax::
+
+      <dtml-in SequenceVariable|expr="SequenceExpression">
+      [<dtml-else>]
+      </dtml-in>
+
+    The 'in' block is repeated once for each item in the sequence
+    variable or sequence expression. The current item is pushed on to
+    the DTML namespace during each executing of the 'in' block.
+
+    If there are no items in the sequence variable or expression, the
+    optional 'else' block is executed.
+
+  Attributes
+
+    mapping -- Iterates over mapping objects rather than
+    instances. This allows values of the mapping objects to be
+    accessed as DTML variables.
+
+    no_push_item -- Inhibit pushing sequence-item onto the namespace
+    stack.
+
+    reverse -- Reverses the sequence.
+
+    sort=string -- Sorts the sequence by the given attribute name.
+
+    start=int -- The number of the first item to be shown, where
+    items are numbered from 1.
+
+    end=int -- The number of the last item to be shown, where items
+    are numbered from 1.
+
+    size=int -- The size of the batch.
+
+    skip_unauthorized -- Don't raise an exception if an unauthorized
+    item is encountered.
+
+    orphan=int -- The desired minimum batch size. This controls how
+    sequences are split into batches. If a batch smaller than the
+    orphan size would occur, then no split is performed, and a batch
+    larger than the batch size results.
+
+      For example, if the sequence size is 12, the batch size is 10
+      the orphan size is 3, then the result is one batch with all 12
+      items since splitting the items into two batches would result in
+      a batch smaller than the orphan size.
+
+      The default value is 0.
+
+    overlap=int -- The number of items to overlap between batches. The
+    default is no overlap.
+
+    previous -- Iterates once if there is a previous batch. Sets batch
+    variables for previous sequence. 
+
+    next -- Iterates once if there is a next batch. Sets batch variables
+    for the next sequence.
+
+    prefix=string -- Provide versions of the tag variables that start
+    with this prefix instead of "sequence", and that use underscores
+    (_) instead of hyphens (-).  The prefix must start with a letter and
+    contain only alphanumeric characters and underscores (_).
+
+    sort_expr=expression -- Sorts the sequence by an attribute named
+    by the value of the expression. This allows you to sort on
+    different attributes.
+
+    reverse_expr=expression -- Reverses the sequence if the expression
+    evaluates to true. This allows you to selectively reverse the
+    sequence.
+
+  Tag Variables
+
+    Current Item Variables
+
+      These variables describe the
+      current item.
+
+        sequence-item -- The current item.
+
+        sequence-key -- The current key. When looping over tuples of the
+        form '(key,value)', the 'in' tag interprets them as
+        '(sequence-key, sequence-item)'. 
+
+        sequence-index -- The index starting with 0 of the current item.
+
+        sequence-number -- The index starting with 1 of the current item.
+
+        sequence-roman -- The index in lowercase Roman numerals of the
+        current item.
+
+        sequence-Roman -- The index in uppercase Roman numerals of the
+        current item.
+
+        sequence-letter -- The index in lowercase letters of the current
+        item.
+
+        sequence-Letter -- The index in uppercase letters of the current
+        item.
+
+        sequence-start -- True if the current item is the first item.
+
+        sequence-end -- True if the current item is the last item.
+
+        sequence-even -- True if the index of the current item is even.
+
+        sequence-odd -- True if the index of the current item is odd.
+
+        sequence-length -- The length of the sequence.
+
+        sequence-var-*variable* -- A variable in the current item. For
+        example, 'sequence-var-title' is the 'title' variable of the
+        current item. Normally you can access these variables directly
+        since the current item is pushed on the DTML namespace. However
+        these variables can be useful when displaying previous and next
+        batch information.
+
+        sequence-index-*variable* -- The index of a variable of the
+        current item.
+
+    Summary Variables
+
+      These variable summarize information about numeric item
+      variables. To use these variable you must loop over objects
+      (like database query results) that have numeric variables.
+
+        total-*variable* -- The total of all occurrences of an item variable. 
+
+        count-*variable* -- The number of occurrences of an item variable.
+
+        min-*variable* -- The minimum value of an item variable.
+
+        max-*variable* -- The maximum value of an item variable.
+
+        mean-*variable* -- The mean value of an item variable.
+
+        variance-*variable* -- The variance of an item variable with
+        count-1 degrees of freedom. 
+
+        variance-n-*variable* -- The variance of an item variable with
+        n degrees of freedom. 
+
+        standard-deviation-*variable* -- The standard-deviation of an
+        item variable with count-1 degrees of freedom.
+
+        standard-deviation-n-*variable* -- The standard-deviation of
+        an item variable with n degrees of freedom.
+
+    Grouping Variables
+
+      These variables allow you to track changes in current item
+      variables.
+
+        first-*variable* -- True if the current item is the first with
+        a particular value for a variable.
+
+        last-*variable* -- True if the current item is the last with a
+        particular value for a variable.
+
+    Batch Variables
+
+      sequence-query -- The query string with the 'start' variable
+      removed. You can use this variable to construct links to next
+      and previous batches.
+
+      sequence-step-size -- The batch size.
+
+      previous-sequence -- True if the current batch is not the
+      first one. Note, this variable is only true for the first loop
+      iteration. 
+
+      previous-sequence-start-index -- The starting index of the
+      previous batch.
+
+      previous-sequence-start-number -- The starting number of the
+      previous batch. Note, this is the same as
+      'previous-sequence-start-index' + 1.
+
+      previous-sequence-end-index -- The ending index of the previous
+      batch. 
+
+      previous-sequence-end-number -- The ending number of the
+      previous batch. Note, this is the same as
+      'previous-sequence-end-index' + 1.
+
+      previous-sequence-size -- The size of the previous batch.
+
+      previous-batches -- A sequence of mapping objects with
+      information about all previous batches. Each mapping object has
+      these keys 'batch-start-index', 'batch-end-index', and
+      'batch-size'.
+
+      next-sequence -- True if the current batch is not the last
+      batch. Note, this variable is only true for the last loop
+      iteration. 
+
+      next-sequence-start-index -- The starting index of the next
+      sequence. 
+
+      next-sequence-start-number -- The starting number of the next
+      sequence. Note, this is the same as 'next-sequence-start-index'
+      + 1.
+
+      next-sequence-end-index -- The ending index of the next
+      sequence. 
+
+      next-sequence-end-number -- The ending number of the next
+      sequence. Note, this is the same as 'next-sequence-end-index'
+      + 1.
+
+      next-sequence-size -- The size of the next index.
+
+      next-batches -- A sequence of mapping objects with information
+      about all following batches. Each mapping object has these keys
+      'batch-start-index', 'batch-end-index', and 'batch-size'.
+
+  Examples
+
+    Looping over sub-objects::
+
+      <dtml-in objectValues>
+        title: <dtml-var title><br>
+      </dtml-in>
+
+    Looping over two sets of objects, using prefixes::
+
+      <dtml-let rows="(1,2,3)" cols="(4,5,6)">
+        <dtml-in rows prefix="row">
+          <dtml-in cols prefix="col">
+            <dtml-var expr="row_item * col_item"><br>
+            <dtml-if col_end>
+              <dtml-var expr="col_total_item * row_mean_item">
+            </dtml-if>
+          </dtml-in>
+        </dtml-in>
+      </dtml-let>
+
+    Looping over a list of '(key, value)' tuples::
+
+      <dtml-in objectItems>
+        id: <dtml-var sequence-key>, title: <dtml-var title><br>
+      </dtml-in> 
+
+    Creating alternate colored table cells::
+
+      <table>
+      <dtml-in objectValues>
+      <tr <dtml-if sequence-odd>bgcolor="#EEEEEE"
+          <dtml-else>bgcolor="#FFFFFF"
+          </dtml-if>
+        <td><dtml-var title></td>
+      </tr>
+      </dtml-in>
+      </table>
+
+    Basic batch processing::
+
+      <p>
+      <dtml-in largeSequence size=10 start=start previous>
+        <a href="<dtml-var absolute_url><dtml-var sequence-query>start=<dtml-var previous-sequence-start-number>">Previous</a>
+      </dtml-in>
+
+      <dtml-in largeSequence size=10 start=start next>
+        <a href="<dtml-var absolute_url><dtml-var sequence-query>start=<dtml-var next-sequence-start-number>">Next</a>
+      </dtml-in>
+      </p>
+
+      <p>
+      <dtml-in largeSequence size=10 start=start>
+        <dtml-var sequence-item>
+      </dtml-in>
+      </p>
+
+    This example creates *Previous* and *Next* links to navigate
+    between batches. Note, by using 'sequence-query', you do not lose
+    any GET variables as you navigate between batches.
+
+
+
+
+
+
+
+

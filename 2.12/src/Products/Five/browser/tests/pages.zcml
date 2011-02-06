@@ -1,0 +1,253 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:meta="http://namespaces.zope.org/meta"
+           xmlns:browser="http://namespaces.zope.org/browser"
+           xmlns:five="http://namespaces.zope.org/five">
+
+  <!-- make the zope2.Public permission work -->
+  <meta:redefinePermission from="zope2.Public" to="zope.Public" />
+
+  <!-- attribute page -->
+  <browser:page
+      for="Products.Five.tests.testing.simplecontent.ISimpleContent"
+      class=".pages.SimpleView"
+      attribute="eagle"
+      name="eagle.txt"
+      permission="zope2.ViewManagementScreens"
+      />
+
+  <browser:page
+      for="Products.Five.tests.testing.simplecontent.ISimpleContent"
+      class=".pages.SimpleView"
+      name="eagle.method"
+      permission="zope2.View"
+      allowed_attributes="eagle"
+      />
+
+  <!-- attribute page -->
+  <browser:pages
+      for="Products.Five.tests.testing.simplecontent.ISimpleContent"
+      class=".pages.SimpleView"
+      permission="zope2.ViewManagementScreens"
+      >
+    <browser:page
+        name="eagle-page.txt"
+        attribute="eagle"
+        />
+    <browser:page
+        name="mouse-page.txt"
+        attribute="mouse"
+        />
+  </browser:pages>
+
+  <!-- template/class page -->
+  <browser:page
+      for="Products.Five.tests.testing.simplecontent.ISimpleContent"
+      class=".pages.SimpleView"
+      template="falcon.pt"
+      name="falcon.html"
+      permission="zope2.ViewManagementScreens"
+      />
+
+  <!-- template page (with simple python expression) -->
+  <browser:page
+      for="Products.Five.tests.testing.simplecontent.ISimpleContent"
+      template="owl.pt"
+      name="owl.html"
+      permission="zope2.ViewManagementScreens"
+      />
+
+  <!-- template page which calls on context using python and path
+       expressions -->
+  <browser:page
+      for="Products.Five.tests.testing.simplecontent.ISimpleContent"
+      template="flamingo.pt"
+      name="flamingo.html"
+      permission="zope2.ViewManagementScreens"
+      />
+
+  <!-- template/class page which calls on context, view, views -->
+  <browser:page
+      for="Products.Five.tests.testing.simplecontent.ISimpleContent"
+      class=".pages.SimpleView"
+      template="condor.pt"
+      name="condor.html"
+      permission="zope2.ViewManagementScreens"
+      />
+
+  <!-- template page that defines a macro page -->
+  <browser:page
+      for="Products.Five.tests.testing.simplecontent.ISimpleContent"
+      template="birdmacro.pt"
+      name="bird.html"
+      permission="zope2.ViewManagementScreens"
+      />
+
+  <!-- template page that uses macro page -->
+  <browser:page
+      for="Products.Five.tests.testing.simplecontent.ISimpleContent"
+      template="seagull.pt"
+      name="seagull.html"
+      permission="zope2.ViewManagementScreens"
+      />
+
+  <!-- test TALES -->
+  <browser:page
+      for="Products.Five.tests.testing.simplecontent.ISimpleContent"
+      template="ostrich.pt"
+      name="ostrich.html"
+      permission="zope2.ViewManagementScreens"
+      />
+
+  <browser:page
+      for="Products.Five.tests.testing.simplecontent.ISimpleContent"
+      template="tales_traversal.pt"
+      name="tales_traversal.html"
+      permission="zope2.ViewManagementScreens"
+      />
+
+  <browser:page
+      for="Products.Five.tests.testing.simplecontent.ISimpleContent"
+      template="template_variables.pt"
+      name="template_variables.html"
+      permission="zope2.ViewManagementScreens"
+      />
+
+  <!-- template security -->
+
+  <browser:page
+      for="Products.Five.tests.testing.simplecontent.ISimpleContent"
+      template="security.pt"
+      name="security.html"
+      permission="zope2.View"
+      />
+
+  <!-- a publicly accessible page, attribute, template, template/class -->
+
+  <browser:page
+      for="Products.Five.tests.testing.simplecontent.ISimpleContent"
+      class=".pages.SimpleView"
+      attribute="eagle"
+      name="public_attribute_page"
+      permission="zope2.Public"
+      />
+
+  <browser:page
+      for="Products.Five.tests.testing.simplecontent.ISimpleContent"
+      template="owl.pt"
+      name="public_template_page"
+      permission="zope2.Public"
+      />
+
+  <browser:page
+      for="Products.Five.tests.testing.simplecontent.ISimpleContent"
+      class=".pages.SimpleView"
+      template="falcon.pt"
+      name="public_template_class_page"
+      permission="zope2.Public"
+      />
+
+  <browser:page
+      for="Products.Five.tests.testing.simplecontent.ISimpleContent"
+      class=".pages.SimpleView"
+      template="parakeet.pt"
+      name="parakeet.html"
+      permission="zope2.ViewManagementScreens"
+      />
+
+  <browser:page
+      for="Products.Five.tests.testing.simplecontent.ISimpleContent"
+      class=".pages.CallView"
+      name="callview.html"
+      permission="zope2.Public"
+      />
+
+  <browser:page
+      for="Products.Five.tests.testing.simplecontent.ISimpleContent"
+      class=".pages.CallTemplate"
+      name="calltemplate.html"
+      permission="zope2.Public"
+      />
+
+  <!-- pages from methods/functions/callables that don't have docstrings -->
+  <browser:pages
+      for="Products.Five.tests.testing.simplecontent.ISimpleContent"
+      class="Products.Five.browser.tests.pages.NoDocstringView"
+      permission="zope2.Public">
+    <browser:page
+        name="nodoc-method"
+        attribute="method"
+        />
+    <browser:page
+        name="nodoc-function"
+        attribute="function"
+        />
+    <browser:page
+        name="nodoc-object"
+        attribute="object"
+        />
+  </browser:pages>
+
+  <!-- five:pagesFromDirectory loads all .pt files in a directory as pages.
+       This is mainly used to load Zope2 skin templates so they can be used
+       in five skins and layers. -->
+  <five:pagesFromDirectory
+      for="Products.Five.tests.testing.simplecontent.ISimpleContent"
+      module="Products.Five.browser.tests"
+      directory="pages"
+      permission="zope2.Public"
+      />
+
+  <!-- make sure browser:page directives with new style classes work -->
+
+  <browser:page
+      for="Products.Five.tests.testing.simplecontent.ISimpleContent"
+      class=".pages.NewStyleClass"
+      name="new_style_class"
+      attribute="method"
+      permission="zope2.Public"
+      />
+
+  <browser:page
+      for="Products.Five.tests.testing.simplecontent.ISimpleContent"
+      class=".pages.NewStyleClass"
+      name="new_style_class2"
+      permission="zope2.Public"
+      />
+
+
+  <!-- Verify that browser:view works, especially when no specific
+       view attribute is specified -->
+
+  <browser:view
+      name=""
+      for="Products.Five.tests.testing.simplecontent.ISimpleContent"
+      class=".pages.SimpleView"
+      permission="zope2.Public"
+      />
+
+  <!-- A named view -->
+  <browser:view
+      name="named_view"
+      for="Products.Five.tests.testing.simplecontent.ISimpleContent"
+      class=".pages.SimpleView"
+      permission="zope2.Public"
+      />
+  
+  <!-- A named view with permissions -->
+  <browser:view
+      name="permission_view"
+      for="Products.Five.tests.testing.simplecontent.ISimpleContent"
+      class=".pages.PermissionView"
+      permission="zope2.ViewManagementScreens"
+      />
+  
+  <!-- stuff that we'll override in overrides.zcml -->
+  <browser:page
+      for="Products.Five.tests.testing.simplecontent.ISimpleContent"
+      class=".pages.SimpleView"
+      attribute="eagle"
+      name="overridden_view"
+      permission="zope2.Public"
+      />
+
+</configure>

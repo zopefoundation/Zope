@@ -1,0 +1,13 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:browser="http://namespaces.zope.org/browser">
+
+  <!-- mouse instead of eagle -->
+  <browser:page
+    for="Products.Five.tests.testing.simplecontent.ISimpleContent"
+    class=".pages.SimpleView"
+    attribute="mouse"
+    name="overridden_view"
+    permission="zope2.Public"
+    />
+
+</configure>

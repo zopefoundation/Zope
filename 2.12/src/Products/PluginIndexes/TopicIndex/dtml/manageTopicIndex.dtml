@@ -1,0 +1,140 @@
+<dtml-var manage_page_header>
+<dtml-var manage_tabs>
+
+
+<form action="&dtml-URL1;/" method="post" enctype="multipart/form-data">
+
+<table cellspacing="0" cellpadding="2" border="1" width="90%" align="center">
+
+<tr>
+  <th colspan="5">
+  Defined FilteredSets
+  </th>
+</tr>
+
+<dtml-if "_.len(filteredSets.values())>0">
+
+    <tr>
+      <th>&nbsp;</th>
+      <th>FilteredSet Id</th>
+      <th>FilteredSet Type</th>
+      <th>Expression</th>
+      <th># entries</th>
+    </tr>
+
+    <dtml-in expr="filteredSets.values()">
+    <dtml-call "REQUEST.set('fs',_['sequence-item'])">
+      <tr>
+
+        <td align="center"> 
+        <input type="checkbox" name="filter_ids:list" value="<dtml-var "fs.getId()" html_quote>">
+        </td>
+
+        <td align="center" valign="top">
+        <div class="form-label">
+         <a href="editFilteredSet?filteredSet=&dtml-id;">&dtml-getId; </a>
+        </div>
+        </td>
+
+        <td align="center" valign="top">
+        <div class="form-label">
+         &dtml-getType;
+        </div>
+        </td>
+
+        <td align="left" valign="top">
+        <div class="form-label">
+         &dtml-getExpression;
+        </div>
+        </td>
+
+        <td align="center" valign="top">
+        <div class="form-label">
+         <dtml-var "_.len(fs.getIds())"> 
+        </div>
+        </td>
+        
+      </tr>
+
+    </dtml-in>
+
+    <tr> 
+      <td colspan="5" align="center">
+        <input class="form-element" type="submit" name="manage_delFilteredSet:method" 
+         value=" Remove " /> 
+
+        <input class="form-element" type="submit" name="manage_clearFilteredSet:method" 
+         value=" Clear " /> 
+
+
+      </td>
+    </tr>
+
+<dtml-else>
+  <tr>
+    <td colspan="5" align="center">
+      <em>no FilteredSets defined </em>
+    </td>
+  </tr>
+
+</dtml-if>
+
+</table>
+</form>
+
+<hr>
+
+<form action="manage_addFilteredSet" method="post" enctype="multipart/form-data">
+<table cellspacing="0" cellpadding="2" border="0">
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-label">
+    Id for FilteredSet
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <input type="text" name="filter_id" size="40" />
+    </td>
+  </tr>
+
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-label">
+    Type of FilteredSet
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <select name="typeFilteredSet">
+    <option value="PythonFilteredSet">PythonFilteredSet
+<dtml-comment>
+    <option value="AttributeFilteredSet">AttributeFilteredSet
+</dtml-comment>
+    </select>
+    </td>
+  </tr>
+
+  
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-label">
+    Expression
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <textarea type="text" name="expr" cols="60" rows="5"></textarea>
+    </td>
+  </tr>
+  <tr>
+    <td align="left" valign="top">
+    </td>
+    <td align="left" valign="top">
+    <div class="form-element">
+    <input class="form-element" type="submit" name="submit" 
+     value=" Add " /> 
+    </div>
+    </td>
+  </tr>
+</table>
+</form>
+
+<dtml-var manage_page_footer>

@@ -1,0 +1,164 @@
+<dtml-let form_title="'Contents'">
+<dtml-if manage_page_header>
+  <dtml-var manage_page_header>
+<dtml-else>
+  <html><head><title>&dtml-form_title;</title></head>
+  <body bgcolor="#ffffff">
+</dtml-if>
+</dtml-let>
+<dtml-var manage_tabs>
+
+<script type="text/javascript">
+<!-- 
+
+isSelected = false;
+
+function toggleSelect() {
+  elem = document.objectItems.elements['ids:list'];
+  if (isSelected == false) {
+    for (i = 0; i < elem.options.length; i++) {
+      elem.options[i].selected = true;
+    }
+    isSelected = true;
+    document.objectItems.selectButton.value = "Deselect All";
+    return isSelected;
+  }
+  else {
+    for (i = 0; i < elem.options.length; i++) {
+      elem.options[i].selected = false;
+    }
+    isSelected = false;
+    document.objectItems.selectButton.value = "Select All";
+    return isSelected;
+  }
+}
+
+//-->
+</script>
+
+<dtml-unless skey><dtml-call expr="REQUEST.set('skey', 'id')"></dtml-unless>
+<dtml-unless rkey><dtml-call expr="REQUEST.set('rkey', '')"></dtml-unless>
+
+<!-- Add object widget -->
+<br />
+<dtml-if filtered_meta_types>
+  <table width="100%" cellspacing="0" cellpadding="0" border="0">
+  <tr>
+  <td align="left" valign="top">&nbsp;</td>
+  <td align="right" valign="top">
+  <div class="form-element">
+  <form action="&dtml-URL1;/" method="get">
+  <dtml-if "_.len(filtered_meta_types) > 1">
+    <select class="form-element" name=":action" 
+     onChange="location.href='&dtml-URL1;/'+this.options[this.selectedIndex].value">
+    <option value="manage_workspace" disabled>Select type to add...</option>
+    <dtml-in filtered_meta_types mapping sort=name>
+    <option value="&dtml.url_quote-action;">&dtml-name;</option>
+    </dtml-in>
+    </select>
+    <input class="form-element" type="submit" name="submit" value=" Add " />
+  <dtml-else>
+    <dtml-in filtered_meta_types mapping sort=name>
+    <input type="hidden" name=":method" value="&dtml.url_quote-action;" />
+    <input class="form-element" type="submit" name="submit" value=" Add &dtml-name;" />
+    </dtml-in>
+  </dtml-if>
+  </form>
+  </div>
+  </td>
+  </tr>
+  </table>
+</dtml-if>
+
+<form action="&dtml-URL1;/" name="objectItems" method="post">
+<dtml-if objectCount>
+<dtml-with expr="getBatchObjectListing(REQUEST)" mapping>
+
+<p>
+<dtml-if prev_batch_url><a href="&dtml-prev_batch_url;">&lt;&lt;</a></dtml-if>
+<em>Items <dtml-var b_start> through <dtml-var b_end> of <dtml-var objectCount></em>
+<dtml-if next_batch_url><a href="&dtml-next_batch_url;">&gt;&gt;</a></dtml-if>
+</p>
+
+<dtml-var formatted_list>
+
+<table cellspacing="0" cellpadding="2" border="0">
+<tr>
+  <td align="left" valign="top" width="16"></td>
+  <td align="left" valign="top">
+  <div class="form-element">
+  <input class="form-element" type="submit"
+   name="manage_object_workspace:method" value="Edit" />
+  <dtml-unless dontAllowCopyAndPaste>
+  <input class="form-element" type="submit" name="manage_renameForm:method" 
+   value="Rename" />
+  <input class="form-element" type="submit" name="manage_cutObjects:method" 
+   value="Cut" /> 
+  <input class="form-element" type="submit" name="manage_copyObjects:method" 
+   value="Copy" />
+  <dtml-if cb_dataValid>
+  <input class="form-element" type="submit" name="manage_pasteObjects:method" 
+   value="Paste" />
+  </dtml-if>
+  </dtml-unless>
+  <dtml-if "_.SecurityCheckPermission('Delete objects',this())">
+  <input class="form-element" type="submit" name="manage_delObjects:method" 
+   value="Delete" />
+  </dtml-if>
+  <dtml-if "_.SecurityCheckPermission('Import/Export objects', this())">
+  <input class="form-element" type="submit" 
+   name="manage_importExportForm:method" 
+   value="Import/Export" />
+  </dtml-if>
+<script type="text/javascript">
+<!-- 
+if (document.forms[0]) {
+  document.write('<input class="form-element" type="submit" name="selectButton" value="Select All" onClick="toggleSelect(); return false">')
+  }
+//-->
+</script>
+  </div>
+  </td>
+</tr>
+</table>
+
+</dtml-with>
+<dtml-else>
+<table cellspacing="0" cellpadding="2" border="0">
+<tr>
+<td>
+<div class="std-text">
+There are currently no items in <em>&dtml-title_or_id;</em>
+<br /><br />
+</div>
+<dtml-unless dontAllowCopyAndPaste>
+<dtml-if cb_dataValid>
+<div class="form-element">
+<input class="form-element" type="submit" name="manage_pasteObjects:method" 
+ value="Paste" />
+</div>
+</dtml-if>
+</dtml-unless>
+<dtml-if "_.SecurityCheckPermission('Import/Export objects', this())">
+<input class="form-element" type="submit"
+  name="manage_importExportForm:method" value="Import/Export" />
+</dtml-if>
+</td>
+</tr>
+</table>
+</dtml-if>
+</form>
+
+<dtml-if update_menu>
+<script type="text/javascript">
+<!--
+window.parent.update_menu();
+//-->
+</script>
+</dtml-if>
+
+<dtml-if manage_page_footer>
+  <dtml-var manage_page_footer>
+<dtml-else>
+  </body></html>
+</dtml-if>

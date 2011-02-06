@@ -1,0 +1,4 @@
+<link type="text/css" rel="stylesheet" href="somestyle.css" media="all"
+      tal:attributes="rel view/getRel;
+                      href view/getURL;
+                      media view/getMedia" />

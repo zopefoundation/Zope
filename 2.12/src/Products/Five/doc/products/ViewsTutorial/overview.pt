@@ -1,0 +1,5 @@
+<html>
+<body>
+<p tal:content="context/objectIds"></p>
+</body>
+</html>

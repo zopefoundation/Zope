@@ -1,0 +1,12 @@
+DTML Method: Template object.
+  
+  Description
+    
+    DTML Methods provide general templating and scripting facilities.
+
+    DTML Documents can contain scripting commands in Document
+    Template Markup Language (DTML), which allows for dynamic
+    behavior.
+
+    Unlike DTML Documents, DTML Methods have no properties, and lookup
+    variables in the namespace of the object they are bound to.

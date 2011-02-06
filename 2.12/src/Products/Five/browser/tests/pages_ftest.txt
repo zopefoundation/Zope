@@ -1,0 +1,160 @@
+Functional Browser Pages Test
+=============================
+
+This test tests publishing aspects of browser pages.  Let's register
+some:
+
+  >>> import Products.Five.browser.tests
+  >>> from Products.Five import zcml
+  >>> zcml.load_config("configure.zcml", Products.Five)
+  >>> zcml.load_config('pages.zcml', package=Products.Five.browser.tests)
+
+Let's also add one of our stub objects to play with:
+
+  >>> from Products.Five.tests.testing.simplecontent import manage_addSimpleContent
+  >>> manage_addSimpleContent(self.folder, 'testoid', 'Testoid')
+
+
+Docstrings
+----------
+
+In Zope 2, objects normally have to have a docstring in order to be
+published.  This crazy requirement luckily isn't true for Zope 3, so
+it should be possible to write docstring-less view classes that are
+still published through ZPublisher.
+
+We see that even though the callables have no docstring, they are
+published nevertheless:
+
+  >>> print http(r"""
+  ... GET /test_folder_1_/testoid/nodoc-function HTTP/1.1
+  ... """)
+  HTTP/1.1 200 OK
+  ...
+  No docstring
+
+  >>> print http(r"""
+  ... GET /test_folder_1_/testoid/nodoc-method HTTP/1.1
+  ... """)
+  HTTP/1.1 200 OK
+  ...
+  No docstring
+
+  >>> print http(r"""
+  ... GET /test_folder_1_/testoid/nodoc-object HTTP/1.1
+  ... """)
+  HTTP/1.1 200 OK
+  ...
+  No docstring
+
+
+Security
+--------
+
+Browser pages need to be protected with a permission.  Let's test
+those; we start by adding two users:
+
+  >>> uf = self.folder.acl_users
+  >>> uf._doAddUser('viewer', 'secret', [], [])
+  >>> uf._doAddUser('manager', 'r00t', ['Manager'], [])
+
+  >>> protected_view_names = [
+  ...     'eagle.txt', 'falcon.html', 'owl.html', 'flamingo.html',
+  ...     'condor.html']
+  >>> 
+  >>> public_view_names = [
+  ...     'public_attribute_page',
+  ...     'public_template_page',
+  ...     'public_template_class_page',
+  ...     'nodoc-method', 'nodoc-function', 'nodoc-object',
+  ...     'dirpage1', 'dirpage2']
+  >>> 
+  >>> ViewManagementScreens = 'View management screens'
+
+As a normal user we shouldn't get to see those pages protected with
+the 'View management screens' permission.  Thus we expect a 401
+Unauthorized:
+
+  >>> for view_name in protected_view_names:
+  ...     response = self.publish('/test_folder_1_/testoid/%s' % view_name,
+  ...                             basic='viewer:secret')
+  ...     status = response.getStatus()
+  ...     self.failUnless(status == 401, (status, 401, view_name))
+
+Methods of views which were not explicitly declared as allowed should not be
+accessible TTW, even if we have the permission to render the view:
+
+  >>> response = self.publish('/test_folder_1_/testoid/eagle.method/mouse',
+  ...                         basic='viewer:secret')
+  >>> self.assertEqual(response.getStatus(), 401)
+
+The same should apply for the user if he has all other permissions
+except 'View management screens':
+
+  >>> permissions = self.folder.possible_permissions()
+  >>> permissions.remove(ViewManagementScreens)
+  >>> self.folder._addRole('Viewer')
+  >>> self.folder.manage_role('Viewer', permissions)
+  >>> self.folder.manage_addLocalRoles('viewer', ['Viewer'])
+
+  >>> for view_name in protected_view_names:
+  ...     response = self.publish('/test_folder_1_/testoid/%s' % view_name,
+  ...                             basic='viewer:secret')
+  ...     status = response.getStatus()
+  ...     self.failUnless(status == 401, (status, 401, view_name))
+
+If we grant 'View management screens' now, the protected views should
+become viewable:
+
+  >>> self.folder.manage_role('Viewer', [ViewManagementScreens])
+  >>> for view_name in protected_view_names:
+  ...     response = self.publish('/test_folder_1_/testoid/%s' % view_name,
+  ...                             basic='viewer:secret')
+  ...     status = response.getStatus()
+  ...     self.failUnless(status == 200, (status, 200, view_name))
+
+Managers should always be able to view anything, including proctected
+stuff:
+
+  >>> for view_name in protected_view_names:
+  ...     response = self.publish('/test_folder_1_/testoid/%s' % view_name,
+  ...                             basic='manager:r00t')
+  ...     self.assertEqual(response.getStatus(), 200)
+
+All public views should always be accessible by anyone:
+
+  >>> for view_name in public_view_names:
+  ...     response = self.publish('/test_folder_1_/testoid/%s' % view_name)
+  ...     status = response.getStatus()
+  ...     self.failUnless(status == 200, (status, 200, view_name))
+
+
+
+Miscellaneous
+-------------
+
+Zope 2 always wants objects in the traversal graph to have a __name__.
+That is also true for views, e.g. a view constructed from a simple
+class bearing only a __call__ method:
+
+  >>> print http(r'''
+  ... GET /test_folder_1_/testoid/callview.html HTTP/1.1
+  ... ''')
+  HTTP/1.1 200 OK
+  ...
+  I was __call__()'ed
+
+or a __call__ object that's callable, such as a ViewPageTemplateFile:
+
+  >>> print http(r'''
+  ... GET /test_folder_1_/testoid/calltemplate.html HTTP/1.1
+  ... ''')
+  HTTP/1.1 200 OK
+  ...
+  <p>The falcon has taken flight</p>
+
+Clean up
+--------
+
+  >>> from zope.component.testing import tearDown
+  >>> tearDown()

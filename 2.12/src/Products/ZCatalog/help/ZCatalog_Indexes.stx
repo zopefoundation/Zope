@@ -1,0 +1,57 @@
+ZCatalog - Indexes: Manage Catalog Indexes
+  
+    Description
+
+        This view allows you to manage the catalog indexes.
+        
+        The catalog provides searching by indexing information about
+        cataloged objects. Indexes record information about object
+        attributes.
+        
+    Controls
+
+        '[List of Indexes]' -- Each line contains one Index entry. The
+        checkbox in the front allows you to mark an index for
+        deletion. Next the Index name is listed which corresponds to
+        attribute names of various objects.
+        
+        'Delete' -- The checkmarked Index(es) will be deleted.
+        
+        'Add Index' - Name -- Allows you to enter the name of a new
+        index.
+        
+        '[Type of Index]' -- You have the choice between four types of
+        Indexes, called 'ZCTextIndex', 'FieldIndex', 'KeywordIndex' and
+        'PathIndex'.  Please refer to the table below to see a
+        description of each Index.
+        
+        'Add' -- The new Index will be added to this catalog.
+      
+        This table lists the different Index types and describes their
+        purpose.
+        
+        'ZCTextIndex' -- Text indexes break content up into individual
+        words. These indexes are often refered to as *full-text
+        indexes*. Text indexes sort results by score, meaning they
+        return 'hits' in order from the most relevant to the lest
+        relevant.
+        
+        'FieldIndex' -- FieldIndexes treat the value of an objects
+        attribute atomically, and can be used, for example, to track
+        only a certain subset of object values, such as 'meta_type'.
+        
+        'KeywordIndex' -- KeywordIndexes index a sequence of objects
+        that act as 'keywords' for an object. A Keyword Index will
+        return any objects that have one or more keywords specified in
+        a search query.
+
+        'PathIndex' -- Index the physical path of a sequence of
+        objects. A Path Index will return all objects that match a
+        partitial path specified in a search query.
+
+        'TopicIndex' -- A TopicIndex is a container for so-called
+        FilteredSet.  A FilteredSet consists of an expression and a set
+        of internal ZCatalog document identifiers that represent a
+        pre-calculated result list for performance reasons. Instead of
+        executing the same query on a ZCatalog multiple times it is much
+        faster to use a TopicIndex instead.

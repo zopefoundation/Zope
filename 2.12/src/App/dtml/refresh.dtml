@@ -1,0 +1,116 @@
+<dtml-comment>
+  Arguments for this method:
+   id, refresh_txt, error_type, error_value, error_tb, devel_mode,
+   auto_refresh_enabled, auto_refresh_other, dependent_products,
+   loaded_modules
+</dtml-comment>
+<dtml-let form_title="'Refresh product: ' + id">
+<dtml-if manage_page_header>
+ <dtml-var manage_page_header>
+<dtml-else>
+ <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+ <html lang="en">
+ <head>
+ <title>&dtml-form_title;</title>
+ </head>
+ <body bgcolor="#FFFFFF" link="#000099" vlink="#555555">
+ <h3>&dtml-form_title;</h3>
+</dtml-if>
+</dtml-let>
+<dtml-var manage_tabs>
+
+<dtml-if expr="refresh_txt == _.None">
+ <p>The refresh function, designed to ease the development of Zope
+ products, is not currently enabled for this product.
+ To make it available, put a file named "refresh.txt" in the &dtml-id;
+ product directory.  Please note that not all products are
+ compatible with the refresh function.</p>
+<dtml-else>
+
+ <dtml-if error_type>
+  <p><b>An exception occurred during the last refresh.</b><br />
+   Exception type: <b>&dtml-error_type;</b> <br />
+   Exception value: <b>&dtml-error_value;</b>
+  </p>
+  <pre>&dtml-error_tb;</pre>
+  <hr />
+ </dtml-if>
+
+ <form action="&dtml-absolute_url;" method="POST">
+  <table border="0">
+   <tr>
+    <td valign="top">
+
+     <dtml-if expr="_.string.strip(refresh_txt)">
+      <p>
+       <b>Important information about refreshing this product:</b><br />
+       <dtml-var refresh_txt fmt="structured-text">
+      </p>
+     </dtml-if>
+
+     <div align="center"><input type="submit"
+         name="manage_performRefresh:method" value="Refresh this product" />
+     </div>
+
+     <p>
+      <dtml-if auto_refresh_enabled>
+       <dtml-if devel_mode>
+       Auto refresh is enabled.  Zope will repeatedly scan for
+       changes to the Python modules that make up this product and
+       execute a refresh when needed.
+       <dtml-else>
+       Although auto refresh is enabled, Zope is not in development
+       mode so auto refresh is not available.  Use the "-D" argument
+       when starting Zope to enable development mode.
+       </dtml-if>
+      <dtml-else>
+       Auto refresh is disabled.  Enable auto refresh
+       to cause Zope to frequently scan this product for changes.
+       Note that auto refresh can slow down Zope considerably
+       if enabled for more than a few products.
+      </dtml-if>
+      <br />
+      <dtml-let checked="auto_refresh_enabled and 'checked' or ' '">
+       <input type="checkbox" name="enable" value="1" &dtml-checked; />
+       Auto refresh mode &nbsp;
+       <input type="submit" name="manage_enableAutoRefresh:method"
+              value="Change" />
+      </dtml-let>
+     </p>
+
+     <dtml-if auto_refresh_other>
+      <p>Select dependent auto-refreshable products to be refreshed
+      simultaneously.<br />
+      <dtml-in auto_refresh_other sort>
+       <dtml-let checked="(_['sequence-item'] in dependent_products) and
+         'checked' or ' '">
+        <input type="checkbox" name="selections:list"
+         value="&dtml-sequence-item;" &dtml-checked; />
+       </dtml-let>
+      </dtml-in>
+      <input type="submit" name="manage_selectDependentProducts:method"
+       value="Change" />
+      </p>
+     </dtml-if>
+
+    </td>
+    <td valign="top" class="row-hilite">
+
+     <p><b>Refreshable product modules:</b></p>
+     <ul>
+      <dtml-in loaded_modules sort>
+       <li>&dtml-sequence-item;</li>
+      </dtml-in>
+     </ul>
+
+    </td>
+   </tr>
+  </table>
+ </form>
+</dtml-if>
+
+<dtml-if manage_page_footer>
+  <dtml-var manage_page_footer>
+<dtml-else>
+  </body></html>
+</dtml-if>

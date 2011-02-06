@@ -1,0 +1,83 @@
+2001-04-26  Evan Simpson <evan@digicool.com>
+
+        * Version 2.0.0
+        * Totally replaced zbytecodhacks engine with Zope's new
+        RestrictedPython package, which it shares with DTML.
+
+1999-12-13  Evan Simpson <evan@4-am.com>
+
+	* Version 0.1.7
+	* Nested functions and lambdas are now supported, with full safety.
+	* You can access all of the dtml-var format functions through a builtin
+	dictionary called special_formats (eg: special_formats['html-quote']).
+	* Handing off to Digital Creations for inclusion in CVS.
+	* Packaged with packProduct script, which excludes parent directories
+	and .pyc files.  Makes for a smaller package, and doesn't step on
+	ownership/permissions of lib/python/Products path elements.
+
+1999-12-01  Evan Simpson <evan@4-am.com>
+
+	* Added COPYRIGHT.txt, making Wide Open Source licence (BSD-style)
+	explicit. (Mike Goldman provided the text, I provided the silly name).
+	* Jeff Rush donated a PrincipiaSearchSource method, so that 
+	PythonMethod objects can be zcataloged to the same degree
+	as DTML Methods.
+	* Also from Jeff Rush, a document_src method, so that the source of
+	PythonMethods can be viewed via a "View Source" link if desired.
+	* If a PM has a 'traverse_subpath' parameter, you can now directly
+	traverse it.  The elements of the subpath will then be put into a list
+	in 'traverse_subpath'. (thanks to Anthony Baxter)
+
+1999-11-11  Evan Simpson <evan@4-am.com>
+
+	* Version 0.1.6
+	* Fix to builtins messed up DTML Methods, so I re-fixed it.
+
+1999-11-05  Evan Simpson <evan@4-am.com>
+
+	* Version 0.1.5
+	* Killed *%#&$@ weird bug in which having 'add' documents in 'www'
+	subdirectory prevented rename, paste, or import of existing
+	PythonMethods! See use of '_www'.
+	* Range, test, and several other Zope 'builtins' had an unbound 'self'
+	argument unless called on _, but that's fixed.
+	* Safe multiplication was utterly broken (thanks to the guard); now
+	it works.  Is anyone using the safe version??
+
+1999-10-18  Evan Simpson <evan@4-am.com>
+
+	* Eliminated bug which delayed stringification of printed values.
+
+1999-10-08  Evan Simpson <evan@4-am.com>
+
+	* Version 0.1.4
+	* Fixed mis-design noticed by Michel Pelletier, and refactored
+	MakeFunction.  Now both kinds of Python Method have the bugfix
+	from 0.1.3, and shouldn't provoke a transaction when called.
+
+1999-10-07  Evan Simpson <evan@4-am.com>
+
+	* Version 0.1.3
+	* Fixed parameter bug with 'self' and no defaults
+
+1999-09-24  Evan Simpson <evan@4-am.com>
+
+        * Version 0.1.2
+        * Added WebDAV/FTP access code donated by Michel Pelletier
+        * Made parameters part of WebDAV/FTP text
+        * Eliminated initialization of globals to None
+        * Added 'global_exists' global function instead
+        * Killed bug with unused parameters
+        * Put switch in Guarded.py to allow both regular and
+        dangerous (XXX) PythonMethods to live side-by-side.
+        This means that people who patched version 0.1.1
+        will have to re-create any unsafe PMs they use (Sorry).
+
+1999-09-10  Evan Simpson <evan@4-am.com>
+
+        * Version 0.1.1
+	* Incorporated DT_Util builtins and guards
+	* Fixed direct access via URL
+	* Fixed methodAdd.dtml
+	* rstrip function body
+	* Major changes to zbytecodehacks

@@ -1,0 +1,36 @@
+File - Edit: File Properties.
+
+  Description
+
+    This view allows you to edit File properties.
+
+  Form Elements
+
+    'Title' -- The optional title of the File.
+
+    'Content type' -- The content type of the file. Zope will try to
+    guess an appropriate content type when you upload a File.
+
+    'Precondition' -- Allows you to specify a precondition for the
+    File. A precondition is a method or document which is executed
+    before the File is viewed or downloaded. If the precondition
+    raises an exception then the File cannot be viewed.
+
+    'File Content' -- If the content of the file object is text-based
+    and small enough to be edited with a Web form, a textarea
+    containing the content of the file will be displayed. You can make
+    changes to the content in this text area and click the 'Save
+    Changes' button to update the file content.
+
+    'Last Modified' -- The time that the object was last changed. This
+    is only displayed if the file data is non-text or too large to be 
+    edited with a Web form.
+
+    'File Size' -- The size (in bytes) of the image data. This is only
+    displayed if the file data is not text or too large to be edited 
+    with a Web form.
+
+    'File Data' -- The file to upload. Use the 'Browse...' button to
+    select a local file.
+
+    'Upload' -- Uploads the file.

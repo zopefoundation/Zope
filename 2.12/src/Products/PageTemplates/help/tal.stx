@@ -1,0 +1,126 @@
+TAL Overview
+
+  The *Template Attribute Language* (TAL) standard is an attribute
+  language used to create dynamic templates.  It allows elements of a
+  document to be replaced, repeated, or omitted.
+
+  The statements of TAL are XML attributes from the TAL namespace.
+  These attributes can be applied to an XML or HTML document in order
+  to make it act as a template.
+
+  A **TAL statement** has a name (the attribute name) and a body (the
+  attribute value).  For example, an 'content' statement might look
+  like 'tal:content="string:Hello"'.  The element on which a statement
+  is defined is its **statement element**.  Most TAL statements
+  require expressions, but the syntax and semantics of these
+  expressions are not part of TAL. TALES is recommended for this
+  purpose.
+
+  TAL Namespace
+
+    The TAL namespace URI and recommended alias are currently defined
+    as::
+
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+
+    This is not a URL, but merely a unique identifier.  Do not expect
+    a browser to resolve it successfully.
+
+    Zope does not require an XML namespace declaration when creating
+    templates with a content-type of 'text/html'. However, it does
+    require an XML namespace declaration for all other content-types.
+
+  TAL Statements   
+
+    These are the tal statements:
+
+    - "tal:attributes":tal-attributes.stx - dynamically change
+      element attributes.
+
+    - "tal:define":tal-define.stx - define variables.
+
+    - "tal:condition":tal-condition.stx - test conditions.
+
+    - "tal:content":tal-content.stx - replace the content of an
+      element.
+
+    - "tal:omit-tag":tal-omit-tag.stx - remove an element, leaving
+      the content of the element.
+
+    - "tal:on-error":tal-on-error.stx - handle errors.
+
+    - "tal:repeat":tal-repeat.stx - repeat an element.
+
+    - "tal:replace":tal-replace.stx - replace the content of an
+      element and remove the element leaving the content.
+
+    Expressions used in statements may return values of any type,
+    although most statements will only accept strings, or will convert
+    values into a string representation.  The expression language must
+    define a value named *nothing* that is not a string.  In
+    particular, this value is useful for deleting elements or
+    attributes.
+
+  Order of Operations
+  
+    When there is only one TAL statement per element, the order in
+    which they are executed is simple.  Starting with the root
+    element, each element's statements are executed, then each of its
+    child elements is visited, in order, to do the same.
+
+    Any combination of statements may appear on the same elements,
+    except that the 'content' and 'replace' statements may not appear
+    together.
+
+    When an element has multiple statements, they are executed in this
+    order:
+
+    1. 'define'
+
+    2. 'condition'
+
+    3. 'repeat'
+
+    4. 'content' or 'replace'
+
+    5. 'attributes'
+
+    6. 'omit-tag'
+
+    Since the 'on-error' statement is only invoked when an error occurs,
+    it does not appear in the list.  
+
+    The reasoning behind this ordering goes like this: You often want
+    to set up variables for use in other statements, so 'define' comes
+    first.  The very next thing to do is decide whether this element
+    will be included at all, so 'condition' is next; since the
+    condition may depend on variables you just set, it comes after
+    'define'.  It is valuable be able to replace various parts of an
+    element with different values on each iteration of a repeat, so
+    'repeat' is next.  It makes no sense to replace attributes and
+    then throw them away, so 'attributes' is last.  The remaining
+    statements clash, because they each replace or edit the statement
+    element.
+
+  See Also
+
+    "TALES Overview":tales.stx
+
+    "METAL Overview":metal.stx
+
+    "tal:attributes":tal-attributes.stx
+
+    "tal:define":tal-define.stx
+
+    "tal:condition":tal-condition.stx
+
+    "tal:content":tal-content.stx
+
+    "tal:omit-tag":tal-omit-tag.stx
+
+    "tal:on-error":tal-on-error.stx
+
+    "tal:repeat":tal-repeat.stx
+
+    "tal:replace":tal-replace.stx
+

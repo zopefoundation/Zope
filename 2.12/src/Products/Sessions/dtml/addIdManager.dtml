@@ -1,0 +1,170 @@
+<dtml-var manage_page_header>
+<dtml-var "manage_form_title(this(), _,
+           form_title='Add Browser Id Manager',
+           help_product='Sessions',
+           help_topic='browser-add.stx'
+	   )">
+
+<FORM ACTION="constructBrowserIdManager" METHOD="POST">
+<TABLE CELLSPACING="2">
+<tr>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<div class="form-help">
+Zope Browser Id Manager objects allow Zope to differentiate between site
+visitors by "tagging" each of their browsers with a unique identifier. This
+is useful if you need to tell visitors apart from one another even if they do
+not "log in" to your site.  Browser Id Managers are generally used
+by interacting with the Zope sessioning machinery.
+</div>
+</tr>
+<tr>
+<td>&nbsp;</td>
+</tr>
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <div class="form-label">
+      Id
+    </div>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <div class="form-label">This object's Zope id must be<br>
+    "browser_id_manager"
+    </div>
+  </TD>
+</TR>
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <div class="form-label">
+      Title
+    </div>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <INPUT TYPE="TEXT" NAME="title" SIZE="40">
+  </TD>
+</TR>
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <div class="form-label">
+      Browser Id Name
+    </div>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <INPUT TYPE="TEXT" NAME="idname" SIZE="20" value="_ZopeId">
+  </TD>
+</TR>
+<tr>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>
+<div align=left class="form-label">Look for Browser Id in</th>
+</td>
+<td>
+<table border=0>
+<tr>
+   <td align=left>
+    <input type="checkbox" name="location:list" value="cookies" CHECKED> Cookies
+   </td>
+</tr>
+<tr>
+   <td align=left>
+    <input type="checkbox" name="location:list" value="form" CHECKED> Forms and Query Strings
+   </td>
+</tr>
+<tr>
+   <td align=left>
+    <input type="checkbox" name="location:list" value="url"> URLs
+   </td> 
+</tr>
+</table>
+</td>
+</tr>
+
+
+<tr>
+<td>&nbsp;</td>
+</tr>
+
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <div class="form-label">
+      Automatically Encode Zope-Generated<br>URLs With A Browser Id
+    </div>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <INPUT TYPE="checkbox" NAME="auto_url_encoding" SIZE="20">
+  </TD>
+</TR>
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <div class="form-label">
+      Cookie Path
+    </div>
+    <div class="form-help">
+     leave blank to provide no path info in the browser cookie
+    </div>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <INPUT TYPE="TEXT" NAME="cookiepath" SIZE="20" value="/">
+  </TD>
+</TR>
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <div class="form-label">
+      Cookie Domain
+    </div>
+    <div class="form-help">
+    leave blank to send cookies without domain<br>
+    info -- however, if cookie domain is not blank,<br>
+    it must contain at least two dots
+    </div>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <INPUT TYPE="TEXT" NAME="cookiedomain" SIZE="20">
+  </TD>
+</TR>
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <div class="form-label">
+      Cookie Lifetime In Days
+    </div>
+    <div class="form-help">
+      0 means send cookies which last only for the<br>
+      lifetime of the browser
+    </div>
+</EM>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <INPUT TYPE="TEXT" NAME="cookielifedays:int" SIZE="20" value="0">
+  </TD>
+</TR>
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <div class="form-label">
+      Only Send Cookie Over HTTPS
+    </div>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <INPUT TYPE="checkbox" NAME="cookiesecure">
+  </TD>
+</TR>
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <div class="form-label">
+      Make cookie not aviable from JavaScript
+    </div>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <INPUT TYPE="checkbox" NAME="cookiehttponly">
+  </TD>
+</TR>
+
+
+</TR> <TR> <TD></TD> <TD>
+<INPUT class="form-element" TYPE="SUBMIT" VALUE=" Add ">
+</TD> </TR> </TABLE> </FORM>
+<dtml-var manage_page_footer>
+
+

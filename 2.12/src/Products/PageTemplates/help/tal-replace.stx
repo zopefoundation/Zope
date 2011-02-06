@@ -1,0 +1,41 @@
+replace: Replace an element
+  
+  Syntax
+
+    'tal:replace' syntax::
+  
+      argument ::= (['text'] | 'structure') expression
+
+  Description  
+
+    The 'tal:replace' statement replaces an element with dynamic
+    content.  It replaces the statement element with either text or a
+    structure (unescaped markup).  The body of the statement is an
+    expression with an optional type prefix.  The value of the
+    expression is converted into an escaped string if you prefix the
+    expression with 'text' or omit the prefix, and is inserted
+    unchanged if you prefix it with 'structure'.  Escaping consists of
+    converting "&amp;" to "&amp;amp;", "&lt;" to "&amp;lt;", and
+    "&gt;" to "&amp;gt;".
+
+    If the value is *nothing*, then the element is simply removed.  If
+    the value is *default*, then the element is left unchanged.
+
+  Examples
+
+    The two ways to insert the title of a template::
+
+      <span tal:replace="template/title">Title</span>
+      <span tal:replace="text template/title">Title</span>
+
+    Inserting HTML/XML::
+
+      <div tal:replace="structure table" />
+
+    Inserting nothing::
+
+      <div tal:replace="nothing">This element is a comment.</div>
+
+  See Also
+
+    "'tal:content'":tal-content.stx

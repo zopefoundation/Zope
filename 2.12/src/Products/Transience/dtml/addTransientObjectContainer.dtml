@@ -1,0 +1,139 @@
+<dtml-var manage_page_header>
+
+<dtml-var "manage_form_title(this(), _,
+           form_title='Add Transient Object Container',
+           help_product='Transience',
+           help_topic='Transience-add.stx'
+	   )">
+
+<FORM ACTION="constructTransientObjectContainer" METHOD="POST">
+<TABLE CELLSPACING="2">
+
+<tr>
+<div class="form-help">
+<td colspan="2">
+<p>
+Transient Object Containers are used to store transient data.
+Transient data will persist, but only for a user-specified period of time,
+(the "data object timeout") after which it will be flushed.
+</p>
+
+<p>
+It is recommended that Transient Object Containers be added to storages which
+do not support undo operations; transient objects are write-intensive;
+their use may cause many undoable transactions, potentially bloating
+undoing ZODB databases.
+</p>
+
+<p>
+Transient Object Containers support <b>Add and Delete Scripts</b> which
+are methods which are invoked when transient objects are added or deleted
+from the container.  A add/delete script is invoked with the item being
+operated upon and the transient object container as arguments.  Specify
+the Zope physical path to the method to be invoked to receive the notification
+(e.g. '/folder/add_notifier').
+</p>
+</div>
+</td>
+</tr>
+
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <div class="form-label">
+      Id
+    </div>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <INPUT TYPE="TEXT" NAME="id" SIZE="20">
+  </TD>
+</TR>
+
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <div class="form-label">
+      Title (optional)
+    </div>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <INPUT TYPE="TEXT" NAME="title" SIZE="40">
+  </TD>
+</TR>
+
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <div class="form-label">
+      Data object timeout (in minutes)
+   </div>
+    <div class="form-help">
+      ("0" means no expiration)
+    </div>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <INPUT TYPE="TEXT" NAME="timeout_mins:int" SIZE="10" value="20">
+  </TD>
+</TR>
+
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <div class="form-label">
+      Timeout resolution (in seconds)
+   </div>
+    <div class="form-help">
+      (accept the default if you're not sure)
+    </div>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <INPUT TYPE="TEXT" NAME="period_secs:int" SIZE="10" value="20">
+  </TD>
+</TR>
+
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <div class="form-label">
+      Maximum number of subobjects
+   </div>
+    <div class="form-help">
+      ("0" means infinite)
+    </div>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <INPUT TYPE="TEXT" NAME="limit:int" SIZE="10" value="1000">
+  </TD>
+</TR>
+
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <div class="form-label">
+      Script to call upon object add (optional)
+   </div>
+    <div class="form-help">
+      (e.g. "/somefolder/addScript")
+    </div>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <INPUT TYPE="TEXT" NAME="addNotification" SIZE="40">
+  </TD>
+</TR>
+
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <div class="form-label">
+      Script to call upon object delete (optional)
+   </div>
+    <div class="form-help">
+      (e.g. "/somefolder/delScript")
+    </div>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <INPUT TYPE="TEXT" NAME="delNotification" SIZE="40">
+  </TD>
+</TR>
+
+<TR> 
+  <TD>
+  </TD> 
+  <TD> <BR><INPUT class="form-element" TYPE="SUBMIT" VALUE=" Add "> </TD> 
+</TR> 
+</TABLE> 
+</FORM> 
+<dtml-var manage_page_footer>

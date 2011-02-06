@@ -1,0 +1,22 @@
+<dtml-var manage_page_header>
+<dtml-with "_(management_view='Security')">
+<dtml-if manage_tabs><dtml-var manage_tabs></dtml-if manage_tabs>
+</dtml-with>
+<p class="form-help">
+Select permissions that acquire permission settings:
+</p>
+
+<form action="manage_acquiredPermissions" method="post">
+<select name="permissions:list" multiple size="10">
+<dtml-in permission_settings mapping>
+  <option<dtml-if acquire> selected</dtml-if>>&dtml-name;</option>
+</dtml-in>
+</select>
+<p>
+<div class="form-element">
+<input class="form-element" type="submit" name="submit" value="Save Changes" />
+</div>
+</p>
+</form>
+
+<dtml-var manage_page_footer>

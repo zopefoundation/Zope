@@ -1,0 +1,50 @@
+<html>
+<head><title>Site Error</title></head>
+<body bgcolor="#FFFFFF">
+
+<dtml-if error_message>
+ <dtml-var error_message>
+<dtml-else>
+
+  <h2>Site Error</h2>
+
+  <p>An error was encountered while publishing this resource.
+  </p>
+  
+  <p>
+      <strong>Error Type: &dtml-error_type;</strong><br/>
+      <strong>Error Value: &dtml-error_value;</strong><br/> 
+  </p>
+ 
+  <hr noshade="noshade" />
+ 
+  <p>Troubleshooting Suggestions</p>
+
+  <ul>
+      <dtml-if "error_type in ('KeyError','NameError')">
+      <li>This resource may be trying to reference a
+      nonexistent object or variable <strong>&dtml-error_value;</strong>.</li>
+      </dtml-if>
+      <li>The URL may be incorrect.</li>
+      <li>The parameters passed to this resource may be incorrect.</li>
+      <li>A resource that this resource relies on may be encountering
+          an error.</li>
+  </ul>
+
+  <p>For more detailed information about the error, please
+  refer to the error log.
+  </p>
+
+  <p>If the error persists please contact the site maintainer.
+  Thank you for your patience.
+  </p>
+
+  <dtml-comment>
+   Here, events like logging and other actions may also be performed, such as
+   sending mail automatically to the administrator.
+  </dtml-comment>
+
+</dtml-if>
+
+</body>
+</html>

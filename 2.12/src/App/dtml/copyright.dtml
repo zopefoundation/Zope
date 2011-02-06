@@ -1,0 +1,234 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+<title>Zope Copyright</title>
+</head>
+<body bgcolor="#ffffff" link="#000099" alink="#000099" vlink="#000099">
+
+<P align="center">
+<a href="#ZPL">Zope License</a> |
+<a href="#PYTHON">Python License</a> |
+<a href="#CREDITS">Zope Credits</a>
+</P>
+
+<A NAME="ZPL">
+
+<H2>Zope Public License (ZPL) Version 2.1</H2>
+<h3>This software is Copyright &copy;
+<a href="http://www.zope.com/" TARGET="_top">Zope Corporation</a>&trade; and
+Contributors. All rights reserved.</h3>
+
+<p>
+This license has been certified as open source. It has also
+been designated as GPL compatible by the Free Software
+Foundation (FSF).
+</p>
+
+<p>
+Redistribution and use in source and binary forms, with or
+without modification, are permitted provided that the
+following conditions are met:
+</p>
+
+<ol>
+
+<li>
+Redistributions in source code must retain the
+   accompanying copyright notice, this list of conditions,
+   and the following disclaimer.
+</li>
+<li>
+Redistributions in binary form must reproduce the accompanying
+   copyright notice, this list of conditions, and the
+   following disclaimer in the documentation and/or other
+   materials provided with the distribution.
+</li>
+<li>
+Names of the copyright holders must not be used to
+   endorse or promote products derived from this software
+   without prior written permission from the copyright
+   holders.
+</li>
+<li>
+The right to distribute this software or to use it for
+   any purpose does not give you the right to use
+   Servicemarks (sm) or Trademarks (tm) of the copyright
+   holders. Use of them is covered by separate agreement
+   with the copyright holders.
+</li>
+<li>
+If any files are modified, you must cause the modified
+   files to carry prominent notices stating that you changed
+   the files and the date of any change.
+</li>
+</ol>
+
+<h3>Disclaimer</h3>
+<p>
+<strong>
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ``AS IS''
+  AND ANY EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT
+  NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
+  AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN
+  NO EVENT SHALL THE COPYRIGHT HOLDERS BE
+  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+  EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+  OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
+  DAMAGE.
+</strong>
+</p>
+
+
+<p>
+This software consists of contributions made by Zope
+Corporation and many individuals on behalf of Zope
+Corporation.  Specific attributions are listed in the
+accompanying credits file.
+</p>
+
+<hr>
+
+<A NAME="PYTHON">
+
+<H3>
+<img src="&dtml-BASEPATH1;/p_/PyPoweredSmall_Gif">
+This software is powered by <a href="http://www.python.org/" TARGET="_top">Python</a>!
+</H3>
+<p>Copyright &copy; 1991-1995 by Stichting Mathematisch Centrum, Amsterdam,
+The Netherlands.</p>
+
+<p><center>All Rights Reserved</center></p>
+
+<p>Permission to use, copy, modify, and distribute this software and its
+documentation for any purpose and without fee is hereby granted,
+provided that the above copyright notice appear in all copies and that
+both that copyright notice and this permission notice appear in
+supporting documentation, and that the names of Stichting Mathematisch
+Centrum or CWI or Corporation for National Research Initiatives or
+CNRI not be used in advertising or publicity pertaining to
+distribution of the software without specific, written prior
+permission.</p>
+
+<p>While CWI is the initial source for this software, a modified version
+is made available by the Corporation for National Research Initiatives
+(CNRI) at the Internet address
+<a href="ftp://ftp.python.org">ftp://ftp.python.org</a>.</p>
+
+<p><strong>STICHTING MATHEMATISCH CENTRUM AND CNRI DISCLAIM ALL WARRANTIES WITH
+REGARD TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS, IN NO EVENT SHALL STICHTING MATHEMATISCH
+CENTRUM OR CNRI BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL
+DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR
+PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
+TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+PERFORMANCE OF THIS SOFTWARE.</strong></p>
+
+<hr>
+<p>Zope uses the xmlrpclib module:</p>
+
+Copyright &copy; 1999 by Secret Labs AB<br>
+Copyright &copy; 1999 by Fredrik Lundh</p>
+
+<p>By obtaining, using, and/or copying this software and/or its
+associated documentation, you agree that you have read, understood,
+and will comply with the following terms and conditions:</p>
+
+<p>Permission to use, copy, modify, and distribute this software and its
+associated documentation for any purpose and without fee is hereby
+granted, provided that the above copyright notice appears in all
+copies, and that both that copyright notice and this permission notice
+appear in supporting documentation, and that the name of Secret Labs
+AB or the author not be used in advertising or publicity pertaining to
+distribution of the software without specific, written prior
+permission.</p>
+
+<p><strong>SECRET LABS AB AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD TO
+THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND
+FITNESS.  IN NO EVENT SHALL SECRET LABS AB OR THE AUTHOR BE LIABLE FOR
+ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT
+OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.</strong></p>
+
+<hr>
+<p>Zope uses the C expat library by James Clark, for parsing XML text.</p>
+
+<P>Copyright (c) 1998, 1999 Zope Foundation and Contributors
+HREF="http://www.mozilla.org/NPL/NPL-1_1Final.html">Mozilla Public
+License Version 1.1</A>.
+</p>
+
+<hr>
+
+<A NAME="CREDITS">
+
+<H3>Zope Credits</H3>
+
+
+<P>
+  The Zope software receives contributions from far and wide.  Here's
+  the Zope Hall of Fame:
+</P>
+<UL>
+
+    <LI>Jeff Bauer is Zope Dude Number One.  Jeff took over PCGI and
+    kept pushing it forward through the years.</LI>
+
+    <LI>Sam Rushing worked with us at Zope Corporation to make Medusa
+    the publishing platform for ZServer and the concurrency of Zope2.</LI>
+
+    <LI>A subset of windows guru Mark Hammond's win32 extensions are
+    bundled with win32 binary distributions of Zope.
+
+    <LI>Martijn Pieters and Brian Hooper contributed the DTML 'in' tag reverse
+    attribute.</LI>
+
+    <LI>Phillip Eby contributed the DTML <code>let</code> tag and many
+      other useful ideas, including the inspiration for the DTML
+      <code>call</code>, <code>with</code> and <code>return</code>
+      tags.</LI>
+
+    <LI>The DateTime module was based on work from Ted Horst.</LI>
+
+    <LI>Jordan Baker contributed the 'try' tag, something I've wanted
+    for a long, long time.</LI>
+
+    <LI>Martijn Pieters chipped in with a safe range function.</LI>
+
+    <LI>Michael Hauser came up with the name "Zope".</LI>
+
+    <LI>Eric Kidd added support for <a href="http://www.xmlrpc.com/">
+        XML-RPC</a></LI>
+
+    <LI>Andrew M. Kuchling wrote the initial version of mod_pcgi, making 
+    him extremely cool in our book.</LI>
+
+    <LI>Jephte CLAIN made some patches to European TimeZope.</LI>
+
+    <LI>All the other Zopistas far and wide that stuck with us during
+    the Bobo/Principia days and politely push us to make the best damn
+    app server on this or any other planet.</LI>
+
+    <LI>Of course the list of credits would be quite incomplete without
+    mentioning Guido van Rossum, benevolent dictator of Python and
+    long-time friend of Zope Corporation.  Zope Power is Python
+    Power.</LI>
+
+    <LI>
+    Special thanks to Richard Stallman and the Free Software
+    Foundation for their assistance and feedback on the GPL-compatible 
+    2.0 version of the Zope Public License.
+    </LI>
+
+</UL>
+ <P>
+ Paul Everitt, <a href="mailto:paul@zope.com">paul@zope.com</a>.
+</P>
+</BODY>
+</HTML>
+

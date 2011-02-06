@@ -1,0 +1,275 @@
+<dtml-var manage_page_header>
+<dtml-var manage_tabs>
+
+<dtml-in expr="('obj_ids', 'obj_metatypes', 'obj_searchterm', 'obj_expr', 'obj_mtime', 'obj_mspec', 'obj_permission', 'obj_roles', 'search_sub')">
+<dtml-else expr="_.hasattr(REQUEST, _['sequence-item'])">
+<dtml-call expr="REQUEST.set(_['sequence-item'], _.None)">
+</dtml-else>
+</dtml-in>
+
+<dtml-if btn_submit>
+<dtml-with "_.namespace(
+    results=PrincipiaFind(this(), 
+	obj_ids=obj_ids, 
+        obj_metatypes=obj_metatypes, 
+        obj_searchterm=obj_searchterm, 
+        obj_expr=obj_expr, 
+        obj_mtime=obj_mtime, 
+        obj_mspec=obj_mspec, 
+        obj_permission=obj_permission, 
+        obj_roles=obj_roles, 
+        search_sub=search_sub, 
+        REQUEST=REQUEST))">
+
+<dtml-unless batch_size>
+<dtml-call "REQUEST.set('batch_size',20)">
+</dtml-unless>
+
+<dtml-if results>
+<p class="std-text">
+Displaying items
+<dtml-in name="results" size=batch_size start=query_start>
+<dtml-if sequence-start>&dtml-sequence-number;</dtml-if><dtml-if 
+ sequence-end>-&dtml-sequence-number; of <dtml-var 
+ "_.len(results)"></dtml-if></dtml-in> items matching your query. You can 
+<a href="#form">revise</a> your search terms below.
+</p>
+<dtml-else>
+<p class="std-text">
+No items were found matching your query. You can <a href="#form">revise</a> 
+your search terms below.
+</p>
+</dtml-if>
+
+<dtml-unless searchtype>
+<dtml-call expr="REQUEST.set('searchtype', 'simple')">
+</dtml-unless>
+<dtml-unless skey>
+<dtml-call expr="REQUEST.set('skey', 'id')">
+</dtml-unless>
+<dtml-unless rkey>
+<dtml-call expr="REQUEST.set('rkey', '')">
+</dtml-unless>
+<dtml-if "rkey == 'reverse'">
+<dtml-call "REQUEST.set('rkey', skey)">
+</dtml-if>
+
+<TABLE width="100%" CELLSPACING="0" CELLPADDING="2" border="0">
+<dtml-if expr="_.len(results) > batch_size">
+<tr class="list-header">
+<td width="50%">
+ <div class="list-item">
+ <dtml-in name="results" previous size="batch_size" start="query_start">
+ <strong> <a href="<dtml-var "REQUEST.URL" html_quote>&dtml-sequence-query;query_start=&dtml-previous-sequence-start-number;">&lt; Previous</a></strong>
+ <dtml-else>&nbsp;</dtml-in></div>
+</td>
+<td align="right" width="50%">
+ <div class="list-item">
+ <dtml-in name="results" next size=batch_size start=query_start>
+ <strong><a href="<dtml-var "REQUEST.URL" html_quote>&dtml-sequence-query;query_start=&dtml-next-sequence-start-number;">Next &gt;</a></strong>
+ <dtml-else>&nbsp;</dtml-in></div>
+</td>
+</tr>
+</dtml-if>
+</table>
+<TABLE width="100%" CELLSPACING="0" CELLPADDING="2" border="0">
+<dtml-in results size="batch_size" start="query_start" sort_expr="skey" reverse_expr="rkey">
+<dtml-if sequence-odd>
+<TR class="row-normal">
+<dtml-else>
+<TR class="row-hilite">
+</dtml-if>
+  <TD ALIGN="LEFT" VALIGN="TOP" WIDTH="16">
+  <A HREF="&dtml.url_quote-sequence-key;/manage_workspace">
+  <IMG SRC="&dtml-BASEPATH1;/&dtml-icon;"
+   ALT="[&dtml-meta_type;]" BORDER="0"></A>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <div class="list-item">
+  <A HREF="&dtml.url_quote-sequence-key;/manage_workspace">
+  &dtml-sequence-key;
+  <dtml-if title>
+  (&dtml-title;)
+  </dtml-if>
+  </A>
+  </div>
+</TD>
+</TR>
+</dtml-in>
+</TABLE>
+</dtml-with>
+</dtml-if>
+
+<a name="form">
+<FORM ACTION="manage_findResult" METHOD="GET">
+<TABLE class="action">
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <div class="form-label">
+  Find objects of type:</a>
+  </div>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <div class="form-element">
+  <SELECT NAME="obj_metatypes:list" SIZE="4" MULTIPLE>
+  <OPTION VALUE="all" <dtml-in obj_metatypes><dtml-if "_['sequence-item'] == 'all'">SELECTED</dtml-if></dtml-in>> All types
+<dtml-in all_meta_types mapping>
+  <OPTION VALUE="&dtml-name;" <dtml-in obj_metatypes><dtml-if "_['sequence-item'] == _['name']">SELECTED</dtml-if></dtml-in>>&dtml-name;
+</dtml-in>
+  </SELECT>
+  </div>
+  </TD>
+</TR>
+
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <div class="form-label">
+  with ids:
+  </div>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <INPUT TYPE="TEXT" NAME="obj_ids:tokens" SIZE="30" VALUE="<dtml-var "' '.join(obj_ids or [])">">
+  </TD>
+</TR>
+
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <div class="form-label">
+  containing:
+  </div>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <INPUT TYPE="TEXT" NAME="obj_searchterm" SIZE="30" VALUE="<dtml-var "REQUEST.obj_searchterm" html_quote>">
+  </TD>
+</TR>
+
+<dtml-if "searchtype == 'advanced'">
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <div class="form-label">
+  expr:
+  </div>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <TEXTAREA NAME="obj_expr" ROWS="4" COLS="30">&dtml-obj_expr;</TEXTAREA>
+  </TD>
+</TR>
+</dtml-if>
+
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <div class="form-label">
+  modified:
+  </div>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <div class="form-element">
+  <SELECT NAME="obj_mspec">
+
+  <OPTION VALUE="&lt;" <dtml-if "REQUEST.obj_mspec == '<'">SELECTED</dtml-if>> before
+  <OPTION VALUE="&gt;" <dtml-if "REQUEST.obj_mspec == '>'">SELECTED</dtml-if>> after
+  </SELECT> 
+  </div>
+  <INPUT TYPE="TEXT" NAME="obj_mtime" SIZE="22" VALUE="&dtml-obj_mtime;">
+  </TD>
+</TR>
+
+
+<dtml-if "searchtype == 'advanced'">
+<INPUT TYPE = "hidden" NAME="searchtype" VALUE="advanced">
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <div class="form-label">
+  where the roles:
+  </div>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <div class="form-element">
+  <SELECT NAME="obj_roles:list" SIZE="3" MULTIPLE>
+<dtml-in valid_roles>
+<dtml-if obj_roles>
+  <OPTION VALUE="&dtml-sequence-item;"<dtml-if "_['sequence-item'] in obj_roles">SELECTED</dtml-if>>&dtml-sequence-item;
+<dtml-else>
+ <OPTION VALUE="&dtml-sequence-item;">&dtml-sequence-item;
+</dtml-if>
+ 
+</dtml-in>
+  </SELECT>
+  </div>
+  </TD>
+</TR>
+
+
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <div class="form-label">
+  have permission:
+  </div>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <div class="form-element">
+  <SELECT NAME="obj_permission">
+<dtml-in permission_settings mapping>
+  <OPTION VALUE="&dtml-name;"<dtml-in obj_metatypes><dtml-if "_['sequence-item'] == _['name']">SELECTED</dtml-if></dtml-in>> &dtml-name;
+</dtml-in>
+  </SELECT>
+  </div>
+  </TD>
+</TR>
+
+
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <div class="form-label">
+  Sort results by:
+  </div>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <div class="form-element">
+  <SELECT NAME="skey">
+  <OPTION VALUE="id">Id
+  <OPTION VALUE="meta_type">Type
+  <OPTION VALUE="bobobase_modification_time">Last Modified
+  </SELECT> 
+  <span class="form-label">
+  <INPUT TYPE="checkbox" NAME="rkey" VALUE="reverse"> Reverse?
+  </span>
+  </div>
+  </TD>
+</TR>
+</dtml-if>
+
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <div class="form-text">
+  <INPUT TYPE="RADIO" NAME="search_sub:int" VALUE="0" <dtml-if "REQUEST.search_sub == 0">CHECKED</dtml-if>> 
+  Search only in this folder
+  <BR>
+  <INPUT TYPE="RADIO" NAME="search_sub:int" VALUE="1" <dtml-if "REQUEST.search_sub == 1">CHECKED</dtml-if>> 
+  Search all subfolders
+  </div>
+  </TD>
+</TR>
+
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <div class="form-element">
+  <INPUT TYPE="SUBMIT" NAME="btn_submit" VALUE="Find">  
+  <span class="form-text">
+ <dtml-if "searchtype == 'advanced'">
+ <a href="manage_findForm">Simple...<a>
+ <dtml-else>
+ <a href="manage_findAdv">Advanced...<a>
+ </dtml-if>
+  </span>
+  </div>
+  </TD>
+</TR>
+</TABLE>
+</FORM>
+
+<dtml-var manage_page_footer>

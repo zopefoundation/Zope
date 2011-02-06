@@ -1,0 +1,57 @@
+Five contributors
+-----------------
+
+- Martijn Faassen (faassen@infrae.com)
+
+- Sidnei da Silva (sidnei@awkly.org)
+
+- Philipp von Weitershausen (philikon@philikon.de)
+
+- Lennart Regebro (regebro@nuxeo.com)
+
+- Tres Seaver (tseaver@palladion.com)
+
+- Jan-Wijbrand Kolman (jw@infrae.com)
+
+- Stefan Holek (ssh@epy.co.at)
+
+- Florent Guillaume (fg@nuxeo.com)
+
+- Godefroid Chapelle (gotcha@bubblenet.be)
+
+- Andy Adiwidjaja (mail@adiwidjaja.com)
+
+- Stuart Bishop (stuart@stuartbishop.net)
+
+- Simon Eisenmann (simon@struktur.de)
+
+- Dieter Maurer (dieter@handshake.de)
+
+- Yvo Schubbe (y.2007-@wcm-solutions.de)
+
+- Malcolm Cleaton (malcolm@jamkit.com)
+
+- Tarek Ziadé (tziade@nuxeo.com)
+
+- Whit Morriss (whit@longnow.org)
+
+- Brian Sutherland (jinty@web.de)
+
+- Rocky Burt (rocky@serverzen.com)
+
+Thank you
+---------
+
+Infrae for the initial development and continuing support.
+
+Martijn Faassen would like to thank ETH Zurich for their support and
+encouragement during the initial development of Five.
+
+Nuxeo for significant contributions to making Five usable in the real
+world.
+
+Dieter Maurer for use of code from TrustedExecutables within Five
+under the ZPL.
+
+The Five developers would like to thank the Zope 3 developers, in
+particular Jim Fulton, for the mountain to stand on.

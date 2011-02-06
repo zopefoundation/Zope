@@ -1,0 +1,81 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:five="http://namespaces.zope.org/five">
+
+  <!-- OFS.Folder.Folder views -->
+
+  <browser:page
+      for="OFS.interfaces.IFolder"
+      name="overview.html"
+      template="overview.pt"
+      permission="zope2.ViewManagementScreens"
+      />
+
+  <browser:page
+      for="OFS.interfaces.IFolder"
+      name="overview2.html"
+      template="overview2.pt"
+      class=".browser.Overview"
+      permission="zope2.ViewManagementScreens"
+      />
+
+  <browser:page
+      for="OFS.interfaces.IFolder"
+      name="test.html"
+      class=".browser.Overview"
+      attribute="directlyPublished"
+      permission="zope2.ViewManagementScreens"
+      />
+
+  <browser:pages
+      for="OFS.interfaces.IFolder"
+      class=".browser.NewExample"
+      permission="zope2.ViewManagementScreens"
+      >
+    <browser:page
+        name="one.html"
+        template="one.pt"
+        />
+    <browser:page
+        name="two.html"
+        attribute="two"
+        />
+  </browser:pages>
+
+  <!-- .democontent.IDemoContent views -->
+
+  <browser:page
+      for="zope.browser.interfaces.IAdding"
+      name="addDemoContent.html"
+      template="addDemoContent.pt"
+      class=".browser.DemoContentAddView"
+      permission="zope2.ViewManagementScreens"
+      />
+
+  <browser:resource
+      name="green5.png"
+      image="green5.png"
+      />
+
+  <five:registerClass
+      class=".democontent.DemoContent"
+      meta_type="Five Demo Content"
+      addview="addDemoContent.html"
+      icon="green5.png"
+      permission="zope2.ViewManagementScreens"
+      />
+
+  <browser:page
+      for=".democontent.IDemoContent"
+      name="someview.html"
+      template="someview.pt"
+      permission="zope2.ViewManagementScreens"
+      />
+
+  <browser:defaultView
+      for=".democontent.IDemoContent"
+      name="someview.html"
+      />
+
+</configure>

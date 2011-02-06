@@ -1,0 +1,41 @@
+TALES String expressions
+
+  Syntax
+
+    String expression syntax::
+
+      string_expression ::= ( plain_string | [ varsub ] )*
+      varsub            ::= ( '$' Path ) | ( '${' Path '}' )
+      plain_string      ::= ( '$$' | non_dollar )*
+      non_dollar        ::= any character except '$'
+
+  Description
+
+    String expressions interpret the expression string as text. If no
+    expression string is supplied the resulting string is *empty*. The
+    string can contain variable substitutions of the form '$name' or
+    '${path}', where 'name' is a variable name, and 'path' is a
+    "path expression":tales-path.stx.
+    The escaped string value of the path expression is inserted into
+    the string. To prevent a '$' from being interpreted this way, it
+    must be escaped as '$$'.
+
+  Examples
+
+    Basic string formatting::
+
+      <span tal:replace="string:$this and $that">
+        Spam and Eggs
+      </span>
+
+    Using paths::
+
+      <p tal:content="total: ${request/form/total}">
+        total: 12
+      </p>
+
+    Including a dollar sign::
+
+      <p tal:content="cost: $$$cost">
+        cost: $42.00
+      </p>

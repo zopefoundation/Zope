@@ -1,0 +1,91 @@
+<dtml-var manage_page_header>
+
+<style type="text/css">
+<!--
+
+td {
+  font-family: Verdana, Helvetica, sans-serif; 
+  font-size: 10pt; 
+  color: #333333;
+}
+
+-->
+</style>
+
+<table width="100%" cellspacing="0" border="0">
+<tr bgcolor="#000000">
+  <td valign="top" nowrap>
+  <dtml-if icon>
+  <a href="manage_workspace" target="manage_main"><img 
+   src="&dtml-BASEPATH1;/&dtml-icon;" border="0"
+   title="Click to open this item" alt="&dtml-meta_type;" /></a> 
+  </dtml-if>
+  <strong>
+  <a href="manage_workspace" target="manage_main">
+  <font color="#ffffff">
+  <dtml-if expr="URLPATH1==BASEPATH1">
+  Root Folder
+  <dtml-else>
+  &dtml-id;
+  </dtml-if>
+  </font>
+  </a>
+  </strong>
+  </td>
+</tr>
+</table>
+<dtml-tree nowrap=1>
+<dtml-if icon>
+<a href="&dtml.url_quote-tree-item-url;/manage_workspace" 
+ target="manage_main"><img src="&dtml-BASEPATH1;/&dtml-icon;" border="0"
+ title="Click to open this item" alt="&dtml-meta_type;" /></a> 
+</dtml-if>
+<a href="&dtml.url_quote-tree-item-url;/manage_workspace" 
+ target="manage_main">&dtml-id;</a>
+</dtml-tree>
+<table cellspacing="0">
+<tr>
+  <td width="16"></td>
+  <td valign="top" nowrap>
+  <strong>
+  <a href="manage_copyright" target="manage_main">
+  &copy; Zope Corporation
+  </a>
+  </strong>
+  </td>
+</tr>
+<tr>
+  <td width="16"></td>
+  <td valign="top" nowrap>
+  <strong>
+  <a href="manage_menu">Refresh</a>
+  </strong>
+  </td>
+</tr>
+</table>
+
+<dtml-unless expr="REQUEST.get('zmi_top_frame', '1')">
+<table width="100%" bgcolor="#6699cc">
+<tr>
+<td valign="top" align="center">
+<div class="form-element">
+<form action="&dtml-BASEPATH1;/" method="POST" target="manage_main">
+<span class="std-text">Logged in as <strong>&dtml-AUTHENTICATED_USER;</strong></span> &nbsp;&nbsp;
+<br />
+<select class="form-element" name=":action" onChange="window.parent.manage_main.location.href='&dtml-BASEPATH1;/'+this.options[this.selectedIndex].value">
+<dtml-if "AUTHENTICATED_USER.getUserName() != 'Anonymous User'">
+<option value="manage_zmi_prefs">Set Preferences</option>
+<option value="manage_zmi_logout">Logout</option>
+</dtml-if>
+</select> 
+<input class="form-element" type="submit" name="submit" value=" Go " />
+&nbsp;
+</form>
+</div>
+</td>
+</tr>
+</table>
+</dtml-unless>
+
+<dtml-var manage_page_footer>
+

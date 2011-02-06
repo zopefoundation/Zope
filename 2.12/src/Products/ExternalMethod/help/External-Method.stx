@@ -1,0 +1,5 @@
+External Method: Call Python methods from Zope
+  
+  External Methods associate a Python function on the filesystem with
+  an object in Zope.  This object can be called from DTML and Python
+  like other Zope methods.

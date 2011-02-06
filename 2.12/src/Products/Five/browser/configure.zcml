@@ -1,0 +1,83 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:browser="http://namespaces.zope.org/browser">
+
+  <interface
+      interface="zope.app.publisher.interfaces.browser.IMenuItemType"
+      />
+
+  <browser:page
+      for="*"
+      name="absolute_url"
+      class=".absoluteurl.AbsoluteURL"
+      permission="zope.Public"
+      allowed_interface="zope.traversing.browser.interfaces.IAbsoluteURL"
+      />
+
+  <view
+      for="*"
+      factory=".absoluteurl.AbsoluteURL"
+      type="zope.publisher.interfaces.http.IHTTPRequest"
+      permission="zope.Public"
+      provides="zope.traversing.browser.interfaces.IAbsoluteURL"
+      />
+
+  <browser:page
+      for="OFS.interfaces.ITraversable"
+      name="absolute_url"
+      class=".absoluteurl.OFSTraversableAbsoluteURL"
+      permission="zope.Public"
+      allowed_interface="zope.traversing.browser.interfaces.IAbsoluteURL"
+      />
+
+  <view
+      for="OFS.interfaces.ITraversable"
+      factory=".absoluteurl.OFSTraversableAbsoluteURL"
+      type="zope.publisher.interfaces.http.IHTTPRequest"
+      permission="zope.Public"
+      provides="zope.traversing.browser.interfaces.IAbsoluteURL"
+      />
+
+  <browser:page
+      for="OFS.interfaces.IApplication"
+      name="absolute_url"
+      class=".absoluteurl.RootAbsoluteURL"
+      permission="zope.Public"
+      allowed_interface="zope.traversing.browser.interfaces.IAbsoluteURL"
+      />
+
+  <view
+      for="OFS.interfaces.IApplication"
+      factory=".absoluteurl.RootAbsoluteURL"
+      type="zope.publisher.interfaces.http.IHTTPRequest"
+      permission="zope.Public"
+      provides="zope.traversing.browser.interfaces.IAbsoluteURL"
+      />
+
+  <browser:view
+      for="OFS.interfaces.IObjectManager"
+      name="+"
+      class=".adding.ContentAdding"
+      permission="zope2.ViewManagementScreens"
+      >
+
+    <browser:page name="index.html"  template="adding.pt" />
+    <browser:page name="action.html" attribute="action" />
+
+  </browser:view>
+
+  <adapter
+      for="OFS.interfaces.IObjectManager"
+      factory=".adding.ObjectManagerNameChooser"
+      provides="zope.container.interfaces.INameChooser"
+      />
+
+  <!-- Menu access -->
+  <browser:page
+      for="*"
+      name="view_get_menu"
+      permission="zope.Public"
+      class="zope.app.publisher.browser.menu.MenuAccessView"
+      allowed_interface="zope.app.publisher.interfaces.browser.IMenuAccessView"
+      />
+
+</configure>

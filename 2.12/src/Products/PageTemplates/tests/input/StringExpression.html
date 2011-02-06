@@ -1,0 +1,16 @@
+<html>
+<head>
+   <title tal:content="string:Hello World!">This is the title</title>
+</head>
+<body>
+  <!-- These next two on-error expressions are very fragile; there's
+       not a lot we can do without fairly interesting exception
+       objects and not be subject to variations in the str() of the
+       exception object. -->
+  <tal:block on-error="string:Error:${error/lineno}" replace="x" />
+  <tal:block on-error="string:Error:${error/lineno}">
+    <p tal:content="x">p</p>
+  </tal:block>
+  <div tal:replace="structure string:&lt;hr /&gt;">rule</div>
+</body>
+</html>

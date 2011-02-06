@@ -1,0 +1,45 @@
+MailHost: Sends mail through an SMTP server.
+
+  MailHosts allow you to send mail via the Simple Mail Transfer
+  Protocol (SMTP).
+
+  This object can be used deliver mail by the <dtml-sendmail> tag
+  or via the send() and simple_send() methods.
+
+    'send(messageText, mto=None, mfrom=None, subject=None, encode=None)'
+
+      Sends an email message where the messageText is an rfc822 formatted
+      message. This allows you complete control over the message headers,
+      including setting any extra headers such as Cc: and Reply-To:.
+      The arguments are:
+
+        messageText -- The mail message. It can either be a rfc822
+        formed text with header fields, or just a body without any
+        header fields. The other arguments given will override the
+        header fields in the message, if they exist.
+
+        mto -- A commaseparated string or list of recipient(s) of the message.
+
+        mfrom -- The address of the message sender.
+
+        subject -- The subject of the message.
+
+        encode -- The rfc822 defined encoding of the message.  The
+        default of 'None' means no encoding is done.  Valid values
+        are 'base64', 'quoted-printable' and 'uuencode'.
+
+    'simple_send(self, mto, mfrom, subject, body)'
+
+      Sends a message. Only To:, From: and Subject: headers can be set.
+      Note that simple_send does not process or validate its arguments
+      in any way.
+      The arguments are:
+
+        mto -- A commaseparated string of recipient(s) of the message.
+
+        mfrom -- The address of the message sender.
+
+        subject -- The subject of the message.
+
+        body -- The body of the message.
+

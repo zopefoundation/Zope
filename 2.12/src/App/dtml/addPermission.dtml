@@ -1,0 +1,56 @@
+<dtml-var manage_page_header>
+
+<dtml-var "manage_form_title(this(), _,
+           form_title='Add Permission',
+           help_product='OFSP',
+           help_topic='Zope-Permission_Add.stx'
+	   )">
+
+<form action="manage_addPermission" method="POST">
+<table cellspacing="0" cellpadding="2" border="0">
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-label">
+    Id
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <input type="text" name="id" size="40" />
+    </td>
+  </tr>
+
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-optional">
+    Title
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <input type="text" name="title" size="40" />
+    </td>
+  </tr>
+
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-label">
+    Name
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <input type="text" name="permission" size="40" />
+    </td>
+  </tr>
+
+  <tr>
+    <td></td>
+    <td align="left" valign="top">
+    <div class="form-element">
+    <br />
+    <input type="submit" name="submit" value="Generate" />
+    </div>
+    </td>
+  </tr>
+</table>
+</form>
+
+<dtml-var manage_page_footer>

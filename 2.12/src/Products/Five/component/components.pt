@@ -1,0 +1,24 @@
+<tal:tag condition="view/update"/>
+<html metal:use-macro="context/@@standard_macros/view"
+      i18n:domain="zope">
+  <body>
+  <div metal:fill-slot="body">
+
+  <p i18n:translate="">Sites support local configuration of components.</p>
+
+  <form action="." tal:attributes="action request/URL" method="post"
+        enctype="multipart/form-data">
+      <div class="row">
+        <div class="controls">
+          <input type="submit" value="Make site" name="MAKESITE"
+                 i18n:attributes="value" tal:condition="not:view/isSite" />
+          <input type="submit" value="Unmake site" name="UNMAKESITE" 
+                 i18n:attributes="value" tal:condition="view/isSite" />
+        </div>
+      </div>
+  </form>
+
+  </div>
+  </body>
+
+</html>

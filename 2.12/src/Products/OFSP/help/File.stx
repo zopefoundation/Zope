@@ -1,0 +1,11 @@
+File: Generic File.
+  
+  Description
+
+    File objects can hold any binary or textual data such as zip
+    files, Java applets, video, text, etcetera.
+
+    Files provide a very limited through the web interface and are
+    appropriate for data that will not be manipulated very much by
+    Zope.
+

@@ -1,0 +1,52 @@
+<h1 tal:replace="structure here/manage_page_header">Header</h1>
+<h2 tal:define="form_title string:Add Page Template"
+    tal:replace="structure here/manage_form_title">Form Title</h2>
+
+<p class="form-help">Page Templates allow you to use simple HTML or
+XML attributes to create dynamic templates.  You may choose to upload
+the template text from a local file by typing the file name or using
+the <em>browse</em> button.</p>
+
+<form action="manage_addPageTemplate" method="post" 
+      enctype="multipart/form-data">
+<table cellspacing="0" cellpadding="2" border="0">
+  <tr>
+    <td align="left" valign="top">
+      <div class="form-label">Id</div>
+    </td>
+    <td align="left" valign="top">
+      <input type="text" name="id" size="40" />
+    </td>
+  </tr>
+  <tr>
+    <td align="left" valign="top">
+      <div class="form-optional">File</div>
+    </td>
+    <td align="left" valign="top">
+      <input type="file" name="file" size="25" value="" />
+    </td>
+  </tr>
+  <tr>
+    <td align="left" valign="top">
+      <div class="form-optional">Encoding</div>
+    </td>
+    <td align="left" valign="top">
+      <input type="text" name="encoding" size="25" value="utf-8" />
+      <em>(only used for non-XML and non-HTML content)</em>
+    </td>
+  </tr>
+  <tr>
+    <td align="left" valign="top"></td>
+    <td align="left" valign="top">
+      <div class="form-element">
+        <input class="form-element" type="submit" name="submit" 
+               value=" Add " /> 
+        <input class="form-element" type="submit" name="submit" 
+               value=" Add and Edit " />
+      </div>
+    </td>
+  </tr>
+</table>
+</form>
+
+<h1 tal:replace="structure here/manage_page_footer">Footer</h1>

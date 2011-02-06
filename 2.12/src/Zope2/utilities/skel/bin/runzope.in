@@ -1,0 +1,8 @@
+#! /bin/sh
+
+INSTANCE_HOME="<<INSTANCE_HOME>>"
+CONFIG_FILE="<<INSTANCE_HOME>>/etc/zope.conf"
+ZOPE_RUN="<<ZOPE_SCRIPTS>>/runzope"
+export INSTANCE_HOME
+
+exec "$ZOPE_RUN" -C "$CONFIG_FILE" "$@"

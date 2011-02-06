@@ -1,0 +1,8 @@
+./include/*
+./bin
+./develop-eggs
+./.installed.cfg
+./eggs
+./parts
+./build
+*.egg-info

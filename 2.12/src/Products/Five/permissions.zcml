@@ -1,0 +1,201 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           i18n_domain="Five">
+
+  <!-- Create permissions declared in ZCML if they don't exist already -->
+  <subscriber
+        for="zope.security.interfaces.IPermission
+             zope.component.interfaces.IRegistered"
+        handler=".security.create_permission_from_permission_directive"
+        />
+
+  <permission
+      id="five.ManageSite"
+      title="Manage Five local sites"
+      />
+
+  <!-- Give common Zope2 and CMF permissions a permission ID
+       The title of the permission is what Zope 2 knows it under -->
+
+  <permission
+    id="zope2.Public"
+    title="Public, everyone can access"
+    />
+
+  <permission
+    id="zope2.Private"
+    title="Private, only accessible from trusted code"
+    />
+
+  <permission
+    id="zope2.AccessContentsInformation"
+    title="Access contents information"
+    />
+
+  <permission
+    id="zope2.ChangeImagesFiles"
+    title="Change Images and Files"
+    />
+
+  <permission
+    id="zope2.ChangeConfig"
+    title="Change configuration"
+    />
+
+  <permission
+    id="zope2.ChangePermissions"
+    title="Change permissions"
+    />
+
+  <permission
+    id="zope2.CopyOrMove"
+    title="Copy or Move"
+    />
+
+  <permission
+    id="zope2.DefinePermissions"
+    title="Define permissions"
+    />
+
+  <permission
+    id="zope2.DeleteObjects"
+    title="Delete objects"
+    />
+
+  <permission
+    id="zope2.FTPAccess"
+    title="FTP access"
+    />
+
+  <permission
+    id="zope2.ImportExport"
+    title="Import/Export objects"
+    />
+
+  <permission
+    id="zope2.ManageProperties"
+    title="Manage properties"
+    />
+
+  <permission
+    id="zope2.ManageUsers"
+    title="Manage users"
+    />
+
+  <permission
+    id="zope2.Undo"
+    title="Undo changes"
+    />
+
+  <permission
+    id="zope2.View"
+    title="View"
+    />
+
+  <permission
+    id="zope2.ViewHistory"
+    title="View History"
+    />
+
+  <permission
+    id="zope2.ViewManagementScreens"
+    title="View management screens"
+    />
+
+  <permission
+    id="zope2.WebDAVLock"
+    title="WebDAV Lock items"
+    />
+
+  <permission
+    id="zope2.WebDAVUnlock"
+    title="WebDAV Unlock items"
+    />
+
+  <permission
+    id="zope2.WebDAVAccess"
+    title="WebDAV access"
+    />
+
+  <!-- CMF Core Permissions -->
+
+  <permission
+    id="cmf.ListFolderContents"
+    title="List folder contents"
+    />
+
+  <permission
+    id="cmf.ListUndoableChanges"
+    title="List undoable changes"
+    />
+
+  <permission
+    id="cmf.AccessInactivePortalContent"
+    title="Access inactive portal content"
+    />
+
+  <permission
+    id="cmf.ManagePortal"
+    title="Manage portal"
+    />
+
+  <permission
+    id="cmf.ModifyPortalContent"
+    title="Modify portal content"
+    />
+
+  <permission
+    id="cmf.ManageProperties"
+    title="Manage properties"
+    />
+
+  <permission
+    id="cmf.ListPortalMembers"
+    title="List portal members"
+    />
+
+  <permission
+    id="cmf.AddPortalFolders"
+    title="Add portal folders"
+    />
+
+  <permission
+    id="cmf.AddPortalContent"
+    title="Add portal content"
+    />
+
+  <permission
+    id="cmf.AddPortalMember"
+    title="Add portal member"
+    />
+
+  <permission
+    id="cmf.SetOwnPassword"
+    title="Set own password"
+    />
+
+  <permission
+    id="cmf.SetOwnProperties"
+    title="Set own properties"
+    />
+
+  <permission
+    id="cmf.MailForgottonPassword"
+    title="Mail forgotten password"
+    />
+
+  <permission
+    id="cmf.RequestReview"
+    title="Request review"
+    />
+
+  <permission
+    id="cmf.ReviewPortalContent"
+    title="Review portal content"
+    />
+
+  <permission
+    id="cmf.AccessFuturePortalContent"
+    title="Access future portal content"
+    />
+
+</configure>

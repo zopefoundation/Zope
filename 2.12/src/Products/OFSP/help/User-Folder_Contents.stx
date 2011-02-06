@@ -1,0 +1,16 @@
+User Folder - Contents: Manage users.
+  
+  Description
+
+    This view allows you to manage the users defined in a User Folder.
+
+  Controls
+
+    Users are listed one per line. Click on a user to edit the user.
+
+    '[Checkbox]' -- Selects users.
+
+    'Add...' -- Adds a new user.
+
+    'Delete' -- Deletes the selected users.
+

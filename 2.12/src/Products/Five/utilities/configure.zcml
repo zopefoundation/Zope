@@ -1,0 +1,12 @@
+<configure xmlns="http://namespaces.zope.org/zope">
+
+  <include package=".browser"/>
+
+  <adapter
+      for="*"
+      provides=".interfaces.IMarkerInterfaces"
+      factory=".marker.MarkerInterfacesAdapter"
+      permission="zope2.ManageProperties"
+      />
+
+</configure>

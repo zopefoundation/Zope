@@ -1,0 +1,148 @@
+ZCatalog Tutorial
+
+  This document provides a tutorial for 'ZCatalog', the new search
+  engine machinery in Zope.  The audience for the document is content
+  managers.
+
+  Contents
+
+    o What is it?  What's it for?  Why's it so cool?
+
+    o ZCatalog Objects
+
+    o Example using ZCatalog
+
+    o Creating Search Forms And Result Reports
+
+    o Using ZCatalog In A Zope Site
+
+    o ZCatalog vs. Catalog
+
+  What is it?  What's it for?  Why's it so cool?
+
+    The 'ZCatalog' provides powerful indexing and searching on a Zope
+    database using a Zope management interface.  A 'ZCatalog' is a
+    Zope object that can be added to a Folder, managed through the
+    web, and extended in many ways.
+
+    The 'ZCatalog' is a very significant project, providing a number
+    of compelling features:
+
+      o **Searches are fast**.  The data structures used by the index
+      provide extremely quick searches without consuming much memory.
+
+      o **Searches are robust**.  The 'ZCatalog' supports boolean
+      search terms, proximity searches, synonyms and stopwords.
+
+      o **Indexing is wildly flexible**.  A 'ZCatalog' can catalog
+      custom properties and track unique values.  Since 'ZCatalog'
+      catalogs objects instead of file handles, you can index any
+      content that can have a Python object wrapped around it.  This
+      also lets objects participate in how they are cataloged,
+      e.g. de-HTML-ifying contents or extracting PDF properties.
+
+      o **Usable outside of Zope**.  The software is broken into a
+      Python 'Catalog' which wrapped by a 'ZCatalog'.  The Python
+      'Catalog' can be used in any Python program; all it requires is
+      the Z object database and the indexing machinery from Zope.
+
+      o **Transactional**.  An indexing operation is part of a Zope
+      transaction.  If something goes wrong after content is indexed,
+      the index is restored to its previous condition.  This also means
+      that Undo will restore an index to its previous condition.
+      Finally, a 'ZCatalog' can be altered privately in a Version,
+      meaning no one else can see the changes to the index.
+
+      o **Cache-friendly**.  The index is internally broken into
+      different "buckets", with each bucket being a separate Zope
+      database object.  Thus, only the part of the index that is needed
+      is loaded into memory.  Alternatively, an un-needed part of the
+      index can be removed from memory.
+
+      o **Results are lazy**.  A search that returns a tremendous
+      number of matches won't return a large result set.  Only the
+      part of the results, such as the second batch of twenty, are
+      returned.
+
+    The 'ZCatalog' is a free, Open Source part of the Zope software
+    repository and thus is covered under the same license as Zope.  It
+    is being developed in conjunction with the Zope Portal Toolkit
+    effort.  However, the 'ZCatalog' product is managed as its own
+    module in CVS.
+
+  ZCatalog Objects
+
+    A 'ZCatalog' performs two activities: indexing information and
+    performing searches.
+
+    Most the work is done in the first step, which is getting objects
+    into the index.  This is done in two ways.  First, if your objects
+    are ZCatalog-aware they automatically update the index when they
+    are added, edited or directly deleted.  *Directly deleted* means
+    the object was deleted from a Folder, not the deletion of a
+    containing Folder.
+
+    The second way that site contents get updated is by "finding"
+    information "into" the 'ZCatalog'.  An operation based on Zope's
+    Find view traverses Folders looking for objects matching the
+    criterion.  The objects are then registered with the Catalog.
+    Objects in the index but no longer in the site are removed from
+    the Catalog.
+
+    Either way -- automatically updating or walking the Folders --
+    'ZCatalog' indexes the objects it finds.  The 'ZCatalog' is set up
+    to look for properties, each of which are added to the index.
+
+    There are two kinds of indexes, called FieldIndex and TextIndex.
+    FieldIndex indexes treat data atomically.  The entire contents of a
+    FieldIndex-indexed property is treated as a unit.  With a
+    TextIndex index, it is broken into words which are indexed
+    individually.  A TextIndex is also known as *full-text index*.
+
+    Note that the 'ZCatalog' doesn't track ZCatalog-unaware objects
+    after it has indexed them.  This means that the 'ZCatalog' must
+    reindex its objects occasionally when the objects have been
+    changed.  Out of date indexes can be prevented by inheriting from
+    a ZCatalog-aware class which can tell the 'ZCatalog' to reindex it
+    whenever a change is made.  Just such a class will be included
+    with the Portal toolkit.
+
+    ZCatalogs are "searchable objects", meaning they cooperate with Z
+    Search Interfaces documented in Z SQL Methods.  Creating a search
+    form for a 'ZCatalog' is a simple matter of adding a Z Search
+    Interface from the management screen and filling in a form.
+    ZCatalogs can also be queried directly from DTML, as shown in the
+    example below.
+
+  Using 'ZCatalog' In A Zope Site
+
+    The 'ZCatalog' provides high-speed access to what is on your site.
+    Thus, the 'ZCatalog' can be used to re-engineer the way your site
+    is laid out.
+
+    For instance, a Slashdot-style presentation is simple.  Just
+    insert some DTML that asks the 'ZCatalog' for recent items.
+    Alternatively, a Site Map is nothing more than presenting the
+    contents of the catalog.  A page with tree-based browsing of
+    software packages by category is also easy.  Perhaps you'd like to
+    provide a link that lists all the packages the current user has
+    authored.
+
+    Thus, the 'ZCatalog' isn't just about searching.  It can be used
+    as the DTML-scriptable engine for browsing a site as well.
+
+    Since the 'ZCatalog' is a normal Zope folderish object, you can
+    also create DTML Methods inside it to present the catalog
+    contents.  For instance, perhaps you'd like to dump the contents
+    of the site as an RDF stream, or do content syndication with RSS.
+    These are just DTML Methods that change the 'Content-Type:' and
+    send back XML.  All without actually waking up any of the content
+    objects in the site.
+
+  ZCatalog vs. Catalog
+
+    The real star of this package is the 'Catalog' module.  All the
+    heavy lifting is done by 'Catalog'.  'ZCatalog' is basically a
+    Zope-aware wrapper around Catalog, which can be used on it's own
+    outside the Zope framework.  The only requirement is that you are
+    using ZODB as your object store.

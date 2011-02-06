@@ -1,0 +1,110 @@
+<h1 tal:replace="structure context/manage_page_header">Header</h1>
+<h1 tal:replace="structure context/manage_tabs">Tabs</h1>
+
+<p class="form-help">
+This page lists the exceptions that have occurred in this site
+recently.  You can configure how many exceptions should be kept
+and whether the exceptions should be copied to Zope's event log
+file(s).
+</p>
+
+<form action="setProperties" method="post">
+<table tal:define="props container/getProperties">
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-label">
+    Number of exceptions to keep
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <input type="text" name="keep_entries" size="40"
+           tal:attributes="value props/keep_entries" />
+    </td>
+  </tr>
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-label">
+    Copy exceptions to the event log
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <input type="checkbox" name="copy_to_zlog"
+           tal:attributes="checked props/copy_to_zlog;
+           disabled not:container/checkEventLogPermission|nothing" />
+    </td>
+  </tr>
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-label">
+    Ignored exception types
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <textarea name="ignored_exceptions:lines" cols="40" rows="3"
+      tal:content="python: '\n'.join(props['ignored_exceptions'])"></textarea>
+    </td>
+  </tr>
+  <tr>
+    <td align="left" valign="top">
+    </td>
+    <td align="left" valign="top">
+    <div class="form-element">
+    <input class="form-element" type="submit" name="submit" 
+     value=" Save Changes " />
+    </div>
+    </td>
+  </tr>
+</table>
+
+<h3>Exception Log (most recent first)</h3>
+
+<div tal:define="entries container/getLogEntries">
+
+<em tal:condition="not:entries">
+No exceptions logged.
+</em>
+
+<table tal:condition="entries">
+ <tr>
+  <th align="left">Time</th>
+  <th align="left">Username (User Id)</th>
+  <th align="left">Exception</th>
+  <th></th>
+ </tr>
+ <tr tal:repeat="entry entries">
+  <td valign="top" nowrap="nowrap">
+   <span tal:content="python: DateTime(entry['time']).Time()">13:04:41</span>
+  </td>
+  <td>
+   <span tal:content="string: ${entry/username} (${entry/userid})">
+      joe (joe)
+   </span>
+  </td>
+  <td valign="top">
+   <a href="showEntry" tal:attributes="href string:showEntry?id=${entry/id}"
+    >
+    <span tal:content="entry/type">AttributeError</span>:
+    <span tal:define="value entry/value"
+      tal:content="python: len(value) &lt; 70 and value or value[:70] + '...'">
+      Application object has no attribute "zzope"</span>
+   </a>
+  </td>
+  <td><a href="#"
+     tal:attributes="href string:${context/absolute_url}/forgetEntry?id=${entry/id}"
+  ><img title="Forget this entry" src="/misc_/SiteErrorLog/ok.gif" border="0"
+     tal:attributes="src string:${request/BASEPATH1}/misc_/SiteErrorLog/ok.gif"
+  /></a></td>
+ </tr>
+</table>
+
+</div>
+
+</form>
+
+<p>
+<form action="manage_main" method="GET">
+<input type="submit" name="submit" value=" Refresh " />
+</form>
+</p>
+
+<h1 tal:replace="structure context/manage_page_footer">Footer</h1>

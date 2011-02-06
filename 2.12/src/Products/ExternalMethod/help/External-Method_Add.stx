@@ -1,0 +1,26 @@
+External Method - Add: Create a new External Method.
+  
+  Description
+
+    Creates a new External Method and adds it to the 
+    current Folder.
+
+  Controls
+
+    'ID' -- Specifies the id of the external method.
+    
+    'Title' -- Allows you to specify the title of the external method.
+    
+    'Function name' -- Allows you to specify the name of the function 
+    to use for the external method.
+    
+    'Python module file' -- Allows you to specify the module in which 
+    the function is located. The Python module may be located in the 
+    Zope 'Extensions' directory, or in a 'Extensions' 
+    directory in a product directory. Product directories are 
+    located in 'lib/python/Products'. If the Python 
+    module is in a product directory this should be indicated 
+    in the name of the module which should be the name of the 
+    product followed by a dot followed by the name of the 
+    Python module file.
+

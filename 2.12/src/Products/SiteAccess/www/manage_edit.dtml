@@ -1,0 +1,65 @@
+<dtml-var manage_page_header>
+<dtml-var manage_tabs>
+
+<p class="form-help">
+You may edit the mappings for this Virtual Host Monster using the form below.
+<strong><em>You don't need to use this tab</em></strong> if you are using
+Apache or some other front-end server to rewrite requests.  This is
+only for simple virtual hosting in a bare Zope server.  If you place
+the hostname that you use to manage your Zope in this list
+<strong><em>you are likely to regret it</em></strong>, and will
+probably need to manage Zope using its raw IP address to fix things.
+</p>
+
+<form action="set_map" method="post">
+<table cellpadding="2" cellspacing="0" width="100%" border="0">
+
+<dtml-with keyword_args mapping>
+<tr>
+  <td align="left" valign="top" class="form-label">Last Modified</td>
+  <td align="left" valign="top" class="form-text">
+<dtml-var bobobase_modification_time fmt="%Y-%m-%d %H:%M">
+  </td>
+</tr>
+
+<tr>
+  <td align="left" valign="top" colspan="2" class="form-help">
+  Each line represents a path mapping for a single host 
+  (<strong>host/path</strong>),
+  or a set of hosts (<strong>*.host/path</strong>).
+  <div style="width: 100%;">
+  <dtml-let cols="REQUEST.get('dtpref_cols', '100%')"
+            rows="REQUEST.get('dtpref_rows', '20')">
+  <dtml-if "cols[-1]=='%'">
+  <textarea name="map_text:text" wrap="off" style="width: &dtml-cols;;"
+  <dtml-else>
+  <textarea name="map_text:text" wrap="off" cols="&dtml-cols;"
+  </dtml-if>
+            rows="&dtml-rows;"><dtml-in lines>&dtml-sequence-item;
+</dtml-in></textarea>
+  </dtml-let>
+  </div>
+  </td>
+</tr>
+</dtml-with>
+
+<tr>
+  <td align="left" valign="top" colspan="2">
+  <div class="form-element">
+  <dtml-if wl_isLocked>
+   <em>Locked by WebDAV</em>
+  <dtml-else>
+   <input class="form-element" type="submit" name="SUBMIT" value="Save Changes">
+  </dtml-if>
+  &nbsp;&nbsp;
+  <input class="form-element" type="submit" name="SUBMIT" value="Taller">
+  <input class="form-element" type="submit" name="SUBMIT" value="Shorter">
+  <input class="form-element" type="submit" name="SUBMIT" value="Wider">
+  <input class="form-element" type="submit" name="SUBMIT" value="Narrower">
+  </div>
+  </td>
+</tr>
+</table>
+</form>
+
+<dtml-var manage_page_footer>

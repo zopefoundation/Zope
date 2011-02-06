@@ -1,0 +1,23 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    >
+
+  <utility 
+      provides="zope.i18n.interfaces.INegotiator"
+      component="zope.i18n.negotiator.negotiator"
+      />
+
+  <adapter
+      for="zope.publisher.interfaces.http.IHTTPRequest"
+      provides="zope.i18n.interfaces.IUserPreferredLanguages"
+      factory="zope.publisher.browser.BrowserLanguages"
+      />
+
+  <adapter
+      for="zope.publisher.interfaces.http.IHTTPRequest"
+      provides="zope.i18n.interfaces.IUserPreferredCharsets"
+      factory="zope.publisher.http.HTTPCharsets"
+      />
+
+</configure>

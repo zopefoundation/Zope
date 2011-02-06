@@ -1,0 +1,54 @@
+<dtml-var standard_html_header>
+
+<h1>API Documentation</h1>
+
+<dtml-if "_.len(apis) > 1 or (apis and funcs)">
+<h3>Classes</h3>
+<dl><dd>
+<h2 class="api">
+<dtml-in apis>
+<a href="#&dtml.url_quote-name;">&dtml-name;</a>
+<dtml-unless sequence-end> , </dtml-unless>
+</dtml-in>
+</h2>
+</dd></dl>
+</dtml-if>
+
+<dtml-if "_.len(funcs) > 1 or (apis and funcs)">
+<h3>Functions</h3>
+<dl><dd>
+<h2 class="api">
+<dtml-in funcs>
+<a href="#&dtml.url_quote-name;">&dtml-name;</a>
+<dtml-unless sequence-end> , </dtml-unless>
+</dtml-in>
+</h2>
+</dd></dl>
+</dtml-if>
+
+<dtml-if doc>
+<dtml-var doc fmt="structured-text">
+<hr noshade>
+</dtml-if>
+
+<dtml-in apis>
+  <dtml-if expr="_['sequence-start'] and funcs">
+    <h2>Classes</h2>
+  </dtml-if>
+  <dtml-var view>
+  <dtml-unless expr="_['sequence-end'] and not funcs">
+    <hr noshade>
+  </dtml-unless>
+</dtml-in>
+
+<dtml-in funcs>
+  <dtml-if expr="_['sequence-start'] and apis">
+    <h2>Functions</h2>
+  </dtml-if>
+  <dtml-var view>
+  <dtml-unless sequence-end>
+    <hr noshade>
+  </dtml-unless>
+</dtml-in>
+
+<dtml-var standard_html_footer>

@@ -1,0 +1,8 @@
+This directory will hold any additional Python packages installed into
+this Zope instance.  Installing Distutils-based packages should be
+done using the command:
+
+  <<PYTHON>> setup.py install --home <<INSTANCE_HOME>>
+
+This will cause the newly installed Python packages to appear in this
+directory.

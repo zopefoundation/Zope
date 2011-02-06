@@ -1,0 +1,32 @@
+define-macro: Define a macro
+
+  Syntax
+
+    'metal:define-macro' syntax::
+
+      argument ::= Name
+
+  Description
+
+    The 'metal:define-macro' statement defines a macro. The macro is
+    named by the statement expression, and is defined as the element
+    and its sub-tree.
+
+    In Zope, a macro definition is available as a sub-object of a
+    template's 'macros' object. For example, to access a macro named
+    'header' in a template named 'master.html', you could use the path
+    expression 'master.html/macros/header'.
+
+  Examples
+
+    Simple macro definition::
+
+      <p metal:define-macro="copyright">
+        Copyright 2001, <em>Foobar</em> Inc.
+      </p>
+
+  See Also
+
+    "metal:use-macro":metal-use-macro.stx
+
+    "metal:define-slot":metal-define-slot.stx

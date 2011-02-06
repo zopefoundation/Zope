@@ -1,0 +1,473 @@
+================
+Container events
+================
+
+Zope 3 container events are used to inform subscribers that an object is
+about to be added/removed from a container, and also after it has been
+done. This is used for bookkeeping and cleaning up in subobjects.
+
+These events replace the old Zope 2 manage_afterAdd, manage_beforeDelete
+and manage_afterClone methods.
+
+All standard Zope containers will only call manage_afterAdd & co on
+classes specified with the directive::
+
+  <five:deprecatedManageAddDelete class="some.content.class"/>
+
+Classes that don't have this directive but still have manage_afterAdd &
+co methods will trigger a warning when they are called (and this is
+strictly a compatibility call, behavior may not be strictly equivalent
+to the original one).
+
+Test setup
+==========
+
+A bit of setup for the tests. Because we'll test copy/paste, we need to
+work inside a database::
+
+  >>> import ZODB.tests.util
+  >>> db = ZODB.tests.util.DB()
+  >>> connection = db.open()
+  >>> root = connection.root()
+
+We'll use a few simple classes (defined in python code for picklability)
+for our tests.
+
+  >>> from Products.Five.tests.test_event import MyApp, MyContent
+  >>> from Products.Five.tests.test_event import MyFolder, MyBTreeFolder
+  >>> from Products.Five.tests.test_event import MyOrderedFolder
+
+  >>> app = MyApp('')
+  >>> root['app'] = app
+  >>> folder = MyFolder('folder')
+  >>> app._setObject('folder', folder) # doctest: +NORMALIZE_WHITESPACE
+  old manage_afterAdd folder folder
+  'folder'
+  >>> folder = app.folder
+  >>> btfolder = MyBTreeFolder('btfolder')
+  >>> app._setObject('btfolder', btfolder) # doctest: +NORMALIZE_WHITESPACE
+  old manage_afterAdd btfolder btfolder
+  'btfolder'
+
+To observe what object events are dispatched, we'll have some
+subscribers print them. We'll actually do that for a specific interface,
+not for (None, IObjectEvent), and register our subscribers before the
+framework's ones, so ours will be called first. This has the effect that
+printed events will be in their "natural" order::
+
+  >>> from zope.component.interfaces import IObjectEvent, IRegistrationEvent
+  >>> from zope.lifecycleevent.interfaces import IObjectMovedEvent
+  >>> from zope.lifecycleevent.interfaces import IObjectCopiedEvent
+  >>> from OFS.interfaces import IObjectWillBeMovedEvent
+  >>> from OFS.interfaces import IObjectClonedEvent
+  >>> from OFS.interfaces import IItem
+  >>> def printObjectEvent(object, event):
+  ...     print event.__class__.__name__, object.getId()
+  >>> def printObjectEventExceptSome(object, event):
+  ...     if (IObjectMovedEvent.providedBy(event) or
+  ...         IObjectCopiedEvent.providedBy(event) or
+  ...         IObjectWillBeMovedEvent.providedBy(event) or
+  ...         IObjectClonedEvent.providedBy(event) or
+  ...         IRegistrationEvent.providedBy(event)):
+  ...         return
+  ...     print event.__class__.__name__, object.getId()
+
+  >>> from zope.component import provideHandler
+  >>> provideHandler(printObjectEvent, (IItem, IObjectMovedEvent))
+  >>> provideHandler(printObjectEvent, (IItem, IObjectCopiedEvent))
+  >>> provideHandler(printObjectEvent, (IItem, IObjectWillBeMovedEvent))
+  >>> provideHandler(printObjectEvent, (IItem, IObjectClonedEvent))
+  >>> provideHandler(printObjectEventExceptSome, (None, IObjectEvent))
+
+Finally we need to load the subscribers configuration::
+
+  >>> import zope.component
+  >>> import OFS.subscribers
+  >>> zope.component.provideAdapter(OFS.subscribers.ObjectManagerSublocations)
+  >>> zope.component.provideHandler(OFS.subscribers.dispatchObjectWillBeMovedEvent)
+  >>> zope.component.provideHandler(OFS.subscribers.dispatchObjectMovedEvent)
+  >>> zope.component.provideHandler(OFS.subscribers.dispatchObjectCopiedEvent)
+  >>> zope.component.provideHandler(OFS.subscribers.dispatchObjectClonedEvent)
+
+We need at least one fake deprecated method to tell the compatibility
+framework that component architecture is initialized::
+
+  >>> from Products.Five.eventconfigure import setDeprecatedManageAddDelete
+  >>> class C(object): pass
+  >>> setDeprecatedManageAddDelete(C)
+
+Old class
+=========
+
+If we use an instance of an old class for which we haven't specified
+anything, events are sent and the manage_afterAdd & co methods are
+called, but with a deprecation warning::
+
+  >>> sub = MyFolder('sub')
+  >>> folder._setObject('sub', sub)
+  ObjectWillBeAddedEvent sub
+  ObjectAddedEvent sub
+  old manage_afterAdd sub sub folder
+  ContainerModifiedEvent folder
+  'sub'
+  >>> sub = folder.sub
+  >>> ob = MyContent('dog')
+  >>> sub._setObject('dog', ob)
+  ObjectWillBeAddedEvent dog
+  ObjectAddedEvent dog
+  old manage_afterAdd dog dog sub
+  ContainerModifiedEvent sub
+  'dog'
+
+And when we rename the subfolder, manage_beforeDelete is also called
+bottom-up and events are sent::
+
+  >>> folder.manage_renameObject('sub', 'marine')
+  ObjectWillBeMovedEvent sub
+  ObjectWillBeMovedEvent dog
+  old manage_beforeDelete dog sub folder
+  old manage_beforeDelete sub sub folder
+  ObjectMovedEvent marine
+  old manage_afterAdd marine marine folder
+  ObjectMovedEvent dog
+  old manage_afterAdd dog marine folder
+  ContainerModifiedEvent folder
+
+Same thing for clone::
+
+  >>> res = folder.manage_clone(folder.marine, 'tank')
+  ObjectCopiedEvent tank
+  ObjectCopiedEvent dog
+  ObjectWillBeAddedEvent tank
+  ObjectWillBeAddedEvent dog
+  ObjectAddedEvent tank
+  old manage_afterAdd tank tank folder
+  ObjectAddedEvent dog
+  old manage_afterAdd dog tank folder
+  ContainerModifiedEvent folder
+  ObjectClonedEvent tank
+  old manage_afterClone tank tank
+  ObjectClonedEvent dog
+  old manage_afterClone dog tank
+  >>> res.getId()
+  'tank'
+
+Old class with deprecatedManageAddDelete
+========================================
+
+We specifiy that our class is deprecated (using zcml in real life)::
+
+  >>> setDeprecatedManageAddDelete(MyContent)
+  >>> setDeprecatedManageAddDelete(MyFolder)
+  >>> setDeprecatedManageAddDelete(MyOrderedFolder)
+
+Now some events are sent but the old manage_afterAdd method is also
+called correctly::
+
+  >>> ob = MyContent('lassie')
+  >>> folder._setObject('lassie', ob)
+  ObjectWillBeAddedEvent lassie
+  ObjectAddedEvent lassie
+  old manage_afterAdd lassie lassie folder
+  ContainerModifiedEvent folder
+  'lassie'
+
+And when we delete the object, manage_beforeDelete is also called and
+events are sent::
+
+  >>> folder.manage_delObjects('lassie')
+  ObjectWillBeRemovedEvent lassie
+  old manage_beforeDelete lassie lassie folder
+  ObjectRemovedEvent lassie
+  ContainerModifiedEvent folder
+
+The old behavior happens for a move or a copy, with events too.
+For a move::
+
+  >>> ob = MyContent('blueberry')
+  >>> folder._setObject('blueberry', ob)
+  ObjectWillBeAddedEvent blueberry
+  ObjectAddedEvent blueberry
+  old manage_afterAdd blueberry blueberry folder
+  ContainerModifiedEvent folder
+  'blueberry'
+  >>> cp = folder.manage_cutObjects('blueberry')
+  >>> folder.manage_pasteObjects(cp)
+  ObjectWillBeMovedEvent blueberry
+  old manage_beforeDelete blueberry blueberry folder
+  ObjectMovedEvent blueberry
+  old manage_afterAdd blueberry blueberry folder
+  ContainerModifiedEvent folder
+  [{'new_id': 'blueberry', 'id': 'blueberry'}]
+
+Old behavior with events for a copy::
+
+  >>> cp = folder.manage_copyObjects('blueberry')
+  >>> folder.manage_pasteObjects(cp)
+  ObjectCopiedEvent copy_of_blueberry
+  ObjectWillBeAddedEvent copy_of_blueberry
+  ObjectAddedEvent copy_of_blueberry
+  old manage_afterAdd copy_of_blueberry copy_of_blueberry folder
+  ContainerModifiedEvent folder
+  ObjectClonedEvent copy_of_blueberry
+  old manage_afterClone copy_of_blueberry copy_of_blueberry
+  [{'new_id': 'copy_of_blueberry', 'id': 'blueberry'}]
+
+Old behavior with events for a renaming::
+
+  >>> folder.manage_renameObject('copy_of_blueberry', 'myrtille')
+  ObjectWillBeMovedEvent copy_of_blueberry
+  old manage_beforeDelete copy_of_blueberry copy_of_blueberry folder
+  ObjectMovedEvent myrtille
+  old manage_afterAdd myrtille myrtille folder
+  ContainerModifiedEvent folder
+
+Old behavior with events for a clone::
+
+  >>> res = folder.manage_clone(folder.blueberry, 'strawberry')
+  ObjectCopiedEvent strawberry
+  ObjectWillBeAddedEvent strawberry
+  ObjectAddedEvent strawberry
+  old manage_afterAdd strawberry strawberry folder
+  ContainerModifiedEvent folder
+  ObjectClonedEvent strawberry
+  old manage_afterClone strawberry strawberry
+  >>> res.getId()
+  'strawberry'
+
+Events are also sent when we work with a BTreeFolder::
+
+  >>> ob = MyContent('luckyluke')
+  >>> btfolder._setObject('luckyluke', ob)
+  ObjectWillBeAddedEvent luckyluke
+  ObjectAddedEvent luckyluke
+  old manage_afterAdd luckyluke luckyluke btfolder
+  ContainerModifiedEvent btfolder
+  'luckyluke'
+
+  >>> btfolder.manage_delObjects('luckyluke')
+  ObjectWillBeRemovedEvent luckyluke
+  old manage_beforeDelete luckyluke luckyluke btfolder
+  ObjectRemovedEvent luckyluke
+  ContainerModifiedEvent btfolder
+
+Here is what happens for a tree of objects. Let's create a simple one::
+
+  >>> subfolder = MyFolder('subfolder')
+  >>> folder._setObject('subfolder', subfolder)
+  ObjectWillBeAddedEvent subfolder
+  ObjectAddedEvent subfolder
+  old manage_afterAdd subfolder subfolder folder
+  ContainerModifiedEvent folder
+  'subfolder'
+  >>> subfolder = folder.subfolder
+  >>> ob = MyContent('donald')
+  >>> subfolder._setObject('donald', ob)
+  ObjectWillBeAddedEvent donald
+  ObjectAddedEvent donald
+  old manage_afterAdd donald donald subfolder
+  ContainerModifiedEvent subfolder
+  'donald'
+
+Renaming a tree of objects. Note that manage_beforeDelete is called
+bottom-up::
+
+  >>> folder.manage_renameObject('subfolder', 'pluto')
+  ObjectWillBeMovedEvent subfolder
+  ObjectWillBeMovedEvent donald
+  old manage_beforeDelete donald subfolder folder
+  old manage_beforeDelete subfolder subfolder folder
+  ObjectMovedEvent pluto
+  old manage_afterAdd pluto pluto folder
+  ObjectMovedEvent donald
+  old manage_afterAdd donald pluto folder
+  ContainerModifiedEvent folder
+
+Cloning a tree of objects::
+
+  >>> res = folder.manage_clone(folder.pluto, 'mickey')
+  ObjectCopiedEvent mickey
+  ObjectCopiedEvent donald
+  ObjectWillBeAddedEvent mickey
+  ObjectWillBeAddedEvent donald
+  ObjectAddedEvent mickey
+  old manage_afterAdd mickey mickey folder
+  ObjectAddedEvent donald
+  old manage_afterAdd donald mickey folder
+  ContainerModifiedEvent folder
+  ObjectClonedEvent mickey
+  old manage_afterClone mickey mickey
+  ObjectClonedEvent donald
+  old manage_afterClone donald mickey
+  >>> res.getId()
+  'mickey'
+
+New class
+=========
+
+If we use classes that don't have any manage_afterAdd & co method,
+everything happens correctly::
+
+  >>> from Products.Five.tests.test_event import MyNewFolder, MyNewContent
+  >>> app = MyApp('')
+  >>> root['app'] = app
+  >>> folder = MyNewFolder('folder')
+  >>> app._setObject('folder', folder) # doctest: +NORMALIZE_WHITESPACE
+  ObjectWillBeAddedEvent folder
+  ObjectAddedEvent folder
+  ContainerModifiedEvent
+  'folder'
+  >>> folder = app.folder
+
+  >>> ob = MyNewContent('dogbert')
+  >>> folder._setObject('dogbert', ob)
+  ObjectWillBeAddedEvent dogbert
+  ObjectAddedEvent dogbert
+  ContainerModifiedEvent folder
+  'dogbert'
+  >>> folder.manage_delObjects('dogbert')
+  ObjectWillBeRemovedEvent dogbert
+  ObjectRemovedEvent dogbert
+  ContainerModifiedEvent folder
+
+Now move::
+
+  >>> ob = MyNewContent('dilbert')
+  >>> folder._setObject('dilbert', ob)
+  ObjectWillBeAddedEvent dilbert
+  ObjectAddedEvent dilbert
+  ContainerModifiedEvent folder
+  'dilbert'
+  >>> cp = folder.manage_cutObjects('dilbert')
+  >>> folder.manage_pasteObjects(cp)
+  ObjectWillBeMovedEvent dilbert
+  ObjectMovedEvent dilbert
+  ContainerModifiedEvent folder
+  [{'new_id': 'dilbert', 'id': 'dilbert'}]
+
+And copy::
+
+  >>> cp = folder.manage_copyObjects('dilbert')
+  >>> folder.manage_pasteObjects(cp)
+  ObjectCopiedEvent copy_of_dilbert
+  ObjectWillBeAddedEvent copy_of_dilbert
+  ObjectAddedEvent copy_of_dilbert
+  ContainerModifiedEvent folder
+  ObjectClonedEvent copy_of_dilbert
+  [{'new_id': 'copy_of_dilbert', 'id': 'dilbert'}]
+
+Then rename::
+
+  >>> folder.manage_renameObject('copy_of_dilbert', 'wally')
+  ObjectWillBeMovedEvent copy_of_dilbert
+  ObjectMovedEvent wally
+  ContainerModifiedEvent folder
+
+Or copy using manage_clone::
+
+  >>> res = folder.manage_clone(folder.dilbert, 'phb')
+  ObjectCopiedEvent phb
+  ObjectWillBeAddedEvent phb
+  ObjectAddedEvent phb
+  ContainerModifiedEvent folder
+  ObjectClonedEvent phb
+  >>> res.getId()
+  'phb'
+
+Also on a BTreeFolder::
+
+  >>> ob = MyNewContent('alice')
+  >>> btfolder._setObject('alice', ob)
+  ObjectWillBeAddedEvent alice
+  ObjectAddedEvent alice
+  ContainerModifiedEvent btfolder
+  'alice'
+  >>> btfolder.manage_renameObject('alice', 'rabbit')
+  ObjectWillBeMovedEvent alice
+  ObjectMovedEvent rabbit
+  ContainerModifiedEvent btfolder
+  >>> btfolder.manage_delObjects('rabbit')
+  ObjectWillBeRemovedEvent rabbit
+  ObjectRemovedEvent rabbit
+  ContainerModifiedEvent btfolder
+
+Now for a tree of objects. Let's create a simple one::
+
+  >>> subfolder = MyNewFolder('subfolder')
+  >>> folder._setObject('subfolder', subfolder)
+  ObjectWillBeAddedEvent subfolder
+  ObjectAddedEvent subfolder
+  ContainerModifiedEvent folder
+  'subfolder'
+  >>> subfolder = folder.subfolder
+  >>> ob = MyNewContent('mel')
+  >>> subfolder._setObject('mel', ob)
+  ObjectWillBeAddedEvent mel
+  ObjectAddedEvent mel
+  ContainerModifiedEvent subfolder
+  'mel'
+
+Renaming a tree of objects::
+
+  >>> folder.manage_renameObject('subfolder', 'firefly')
+  ObjectWillBeMovedEvent subfolder
+  ObjectWillBeMovedEvent mel
+  ObjectMovedEvent firefly
+  ObjectMovedEvent mel
+  ContainerModifiedEvent folder
+
+Cloning a tree of objects::
+
+  >>> res = folder.manage_clone(folder.firefly, 'serenity')
+  ObjectCopiedEvent serenity
+  ObjectCopiedEvent mel
+  ObjectWillBeAddedEvent serenity
+  ObjectWillBeAddedEvent mel
+  ObjectAddedEvent serenity
+  ObjectAddedEvent mel
+  ContainerModifiedEvent folder
+  ObjectClonedEvent serenity
+  ObjectClonedEvent mel
+  >>> res.getId()
+  'serenity'
+
+OrderedFolder has the same renaming behavior than before::
+
+  >>> ofolder = MyOrderedFolder('ofolder')
+  >>> app._setObject('ofolder', ofolder) # doctest: +NORMALIZE_WHITESPACE
+  ObjectWillBeAddedEvent ofolder
+  ObjectAddedEvent ofolder
+  old manage_afterAdd ofolder ofolder
+  ContainerModifiedEvent
+  'ofolder'
+  >>> ob1 = MyNewContent('ob1')
+  >>> ofolder._setObject('ob1', ob1)
+  ObjectWillBeAddedEvent ob1
+  ObjectAddedEvent ob1
+  ContainerModifiedEvent ofolder
+  'ob1'
+  >>> ob2 = MyNewContent('ob2')
+  >>> ofolder._setObject('ob2', ob2)
+  ObjectWillBeAddedEvent ob2
+  ObjectAddedEvent ob2
+  ContainerModifiedEvent ofolder
+  'ob2'
+  >>> ofolder.manage_renameObject('ob1', 'ob4')
+  ObjectWillBeMovedEvent ob1
+  ObjectMovedEvent ob4
+  ContainerModifiedEvent ofolder
+  >>> ofolder.objectIds()
+  ['ob4', 'ob2']
+
+When subobjects are reordered, an event about the container is sent::
+
+  >>> ofolder.moveObjectsUp('ob2')
+  ContainerModifiedEvent ofolder
+  1
+  >>> ofolder.objectIds()
+  ['ob2', 'ob4']
+
+Now cleanup::
+
+  >>> import transaction
+  >>> transaction.abort()

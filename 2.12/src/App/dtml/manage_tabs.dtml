@@ -1,0 +1,164 @@
+<dtml-with "_(manage_options=filtered_manage_options())">
+<dtml-if manage_options>
+<dtml-call "REQUEST.set('n_', _.len(manage_options)-1)">
+<dtml-call "REQUEST.set('a_', 0)">
+<dtml-in manage_options mapping>
+<dtml-if expr="REQUEST.URL[-(_.len(action)):]==action or
+                REQUEST.URL[-17:]=='/manage_workspace' and _['sequence-start']">
+<dtml-call "REQUEST.set('a_', _['sequence-index'])">
+</dtml-if>
+<dtml-if "_.has_key('management_view') and management_view==label">
+<dtml-call "REQUEST.set('a_', _['sequence-index'])">
+</dtml-if>
+</dtml-in>
+
+
+<table cellpadding="0" cellspacing="0" width="100%" border="0">
+
+<tr>
+  <td bgcolor="#000000" rowspan="5" width="10%" valign="bottom" 
+   align="left">&nbsp;&nbsp;<img src="&dtml-BASEPATH1;/p_/sp" 
+   width="2" height="1" alt="" />
+  </td>
+  <td bgcolor="#000000" colspan="<dtml-var "4 * (n_ + 1)">"><img 
+   src="&dtml-BASEPATH1;/p_/sp" width="1" height="5" alt="" /></td>
+</tr>
+
+<tr>
+<dtml-in manage_options>
+<dtml-if "_['sequence-index']==a_">
+  <td bgcolor="#ffffff" rowspan="2" valign="top" 
+   align="left"><img src="&dtml-BASEPATH1;/p_/ltab" width="5" 
+   height="5" alt="" /></td>
+  <td bgcolor="#ffffff"><img src="&dtml-BASEPATH1;/p_/sp"
+   width="1" height="2" alt="" /></td>
+  <td bgcolor="#ffffff" rowspan="2" valign="top" 
+   align="right"><img src="&dtml-BASEPATH1;/p_/rtab" width="5" 
+   height="5" alt="" /></td>
+  <td bgcolor="#000000" rowspan="4"><img src="&dtml-BASEPATH1;/p_/sp"
+ width="2" height="1" alt="" /></td>
+<dtml-else>
+  <td bgcolor="#efefef" rowspan="2" valign="top" 
+   align="left"><img src="&dtml-BASEPATH1;/p_/ltab" width="5" 
+   height="5" alt="" /></td>
+  <td bgcolor="#efefef"><img src="&dtml-BASEPATH1;/p_/sp"
+ width="1" height="2" alt="" /></td>
+  <td bgcolor="#efefef" rowspan="2" valign="top" 
+   align="right"><img src="&dtml-BASEPATH1;/p_/rtab" width="5" 
+   height="5" alt="" /></td>
+  <td bgcolor="#000000" rowspan="4"><img src="&dtml-BASEPATH1;/p_/sp"
+ width="2" height="1" alt="" /></td>
+</dtml-if>
+</dtml-in>
+</tr>
+<tr>
+<dtml-in manage_options mapping>
+<dtml-let s_item=sequence-item s_index=sequence-index>
+<dtml-if "s_index==a_">
+  <td bgcolor="#ffffff" valign="bottom" class="tab-small" 
+   align="center"><font face="Verdana, Arial, Helvetica" 
+   size="1" color="#000000">&nbsp;<a <dtml-if "s_item.get('action')"
+   >href="&dtml-action;"<dtml-else
+   >href="<dtml-var "REQUEST.URL1" html_quote>"</dtml-if
+   ><dtml-if "s_item.get('target')"> target="&dtml-target;"</dtml-if
+   >><span style="color: #000000;"><strong><dtml-var "s_item['label']"
+   ></strong></span></a>&nbsp;</font></td>
+<dtml-else>
+  <td bgcolor="#efefef" valign="bottom" class="tab-small" 
+   align="center"><font face="Verdana, Arial, Helvetica" 
+   size="1" color="#000000">&nbsp;<a <dtml-if "s_item.get('action')"
+   >href="&dtml-action;"<dtml-else
+   >href="<dtml-var "REQUEST.URL1" html_quote>"</dtml-if
+   ><dtml-if "s_item.get('target')"> target="&dtml-target;"</dtml-if
+   >><span style="color: #000000;"><strong><dtml-var "s_item['label']"
+   ></strong></span></a>&nbsp;</font></td>
+</dtml-if>
+</dtml-let>
+</dtml-in>
+</tr>
+<tr>
+<dtml-in manage_options>
+<dtml-if "_['sequence-index']==a_">
+  <td colspan="3" bgcolor="#ffffff"><img src="&dtml-BASEPATH1;/p_/sp"
+ width="2" height="1" alt="" /></td>
+<dtml-else>
+  <td colspan="3" bgcolor="#efefef"><img src="&dtml-BASEPATH1;/p_/sp"
+ width="2" height="1" alt="" /></td>
+</dtml-if>
+</dtml-in>
+</tr>
+<tr>
+<dtml-in manage_options>
+<dtml-if "_['sequence-index']==a_">
+  <td colspan="3" bgcolor="#ffffff"><img src="&dtml-BASEPATH1;/p_/sp"
+ width="2" height="1" alt="" /></td>
+<dtml-else>
+  <td colspan="3" bgcolor="#c0c0c0"><img src="&dtml-BASEPATH1;/p_/sp"
+ width="2" height="1" alt="" /></td>
+</dtml-if>
+</dtml-in>
+</tr>
+</table>
+</dtml-if>
+
+<dtml-unless MANAGE_TABS_NO_BANNER>
+  <br />
+  <table width="100%" cellspacing="0" cellpadding="2" border="0">
+  <tr class="location-bar">
+    <td align="left" valign="top">
+    <div class="std-text">
+    <dtml-if icon>
+    <img src="&dtml-BASEPATH1;/&dtml-icon;" 
+         alt="&dtml-meta_type;" border="0" />
+    </dtml-if>
+    <strong>
+    <dtml-if meta_type>
+      &dtml-meta_type;
+    <dtml-else>
+    Object
+    </dtml-if> 
+    at <dtml-var expr="tabs_path_default(REQUEST)">
+    </strong>
+    <dtml-if wl_isLocked>
+     <img src="&dtml-BASEPATH1;/p_/davlocked"
+      alt="This item has been locked by WebDAV"
+      title="This item has been locked by WebDAV" />
+    </dtml-if wl_isLocked>
+    </div>
+    </td>
+  <dtml-if "_.has_key('help_topic') and _.has_key('help_product')">
+  <dtml-if "HelpSys.helpLink(help_product, help_topic)">
+  <td align="right" valign="top">
+  <div class="std-text">
+  <dtml-var "HelpSys.helpLink(help_product, help_topic)">
+  </div>
+  </td>
+  </dtml-if>
+  <dtml-else>
+  <dtml-if manage_options>
+  <dtml-with "_(option=manage_options[a_])">
+  <dtml-if "option.has_key('help')">
+  <dtml-if "HelpSys.helpLink(option['help'][0], option['help'][1])">
+  <td align="right" valign="top">
+  <div class="std-text">
+  <dtml-var "HelpSys.helpLink(option['help'][0], option['help'][1])">
+  </div>
+  </td>
+  </dtml-if>
+  </dtml-if>
+  </dtml-with>
+  </dtml-if>
+  </dtml-if>
+  </tr>
+  </table>
+
+</dtml-unless>
+
+<dtml-if manage_tabs_message>
+<div class="system-msg">
+<dtml-var manage_tabs_message newline_to_br> 
+(<dtml-var ZopeTime fmt="%Y-%m-%d %H:%M">)
+</div>
+</dtml-if>
+
+</dtml-with>

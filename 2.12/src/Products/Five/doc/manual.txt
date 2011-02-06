@@ -1,0 +1,305 @@
+===========
+Five Manual
+===========
+
+Introduction
+------------
+
+Five's goal is to let you, the Zope 2 developer, use Zope 3 code in
+Zope 2. Our aim is to make as much of Zope 3 code work in Zope 2 as
+possible, while integrating it with Zope 2.
+
+Five can be used inside your current Zope 2 project. The benefits are:
+
+* availability of Zope 3 technologies in Zope 2 like the component
+  architecture and declarative configuration.
+
+* you can gradually evolve your Zope 2 project so it is better
+  positioned for the migration to Zope 3.
+
+* you start learning about Zope 3 right now, preparing yourself better
+  for the future. Since Zope 3 is open to contributions, you could
+  even influence your future for the better.
+
+Five can also be used to develop new Zope 2 products, though depending
+on your deployment requirements it might in that case make more sense
+to develop for Zope 3 directly.
+
+Five is only useful on the Python (Product) level in Zope 2, not from
+within the Zope Management Interface. Five makes no attempt to provide
+a user interface, but is aimed squarely at the Python developer.
+
+Zope 3 interfaces
+-----------------
+
+Interfaces?
+===========
+
+An interface is simply a description of what an object provides to the
+world, i.e. its public attribute and methods. It looks very much like
+a class, but contains no implementation::
+
+  from zope.interface import Interface
+
+  # by convention, all interfaces are prefixed with ``I``
+  class IElephant(Interface):
+      """An elephant is a big object that barely fits in the cupboard.
+      """
+
+      def getAngerLevel():
+          """Anger level, maximum of 100.
+
+          The longer the elephant has been in the cupboard, the angrier.
+          """
+
+      def isInCupboard():
+          """Returns true if the elephant is indeed in cupboard.
+          """
+
+      def trunkSmash(target):
+          """Smash the target with trunk.
+
+          The anger level determines the force of the hit.
+          """
+
+      def trample(target):
+          """Trample the target.
+          
+          The anger level determines the rate of flattening of the target.
+          """
+
+A concrete class somewhere can now claim that it implements the
+interface (i.e. its instance will provide the interface)::
+
+  class PinkElephant:
+      # this says all instances of this class provide IElephant
+      implements(IElephant)
+
+      def getAngerLevel(self):
+          return 0 # this elephant is peaceful
+
+      def isInCupboard(self):
+          return False # it's never in a cupboard but can be found in bottles
+
+      def trunkSmash(self, target):
+          target.tickle()
+
+      def trample(self, target):
+          target.patOnHead()
+
+Interfaces themselves are good for a number of reasons:
+
+* They provide API documentation.
+
+* They help you make explicit the design of your application,
+  hopefully improving it.
+
+* If an object provides an interface, that object is considered to be
+  a *component*. This means you can use Zope 3's component
+  architecture with these objects.
+
+In order to use Five, you'll have to make your objects provide
+interfaces. Sometimes, you cannot change the code of class (as you are
+not the maintainer), but you still want to make it implement an
+interface. Five provides a ZCML directive to do this::
+
+  <five:implements class="tolkien.Oliphant" 
+      implements="interfaces.IElephant" />
+
+Interfaces in Zope 2 versus Zope 3
+==================================
+
+You may be familiar with Zope 2's way of declaring interfaces. Zope 2
+has used the ``__implements__`` class attribute for interface
+declarations. Zope 2 cannot detect Zope 3 interfaces and the Zope 3
+machinery cannot detect Zope 2 interfaces. This is a good thing, as
+Zope 2 has no way to deal with Zope 3 interfaces, and Zope 3 cannot
+comprehend Zope 2 interfaces. This means you can safely make a class
+declare both a Zope 2 and Zope 3 interface independently from each
+other. It's a rare case where you need this though; you're usually
+better off just switching to ``implements()`` for your application if
+you are using Five.
+
+Switching from Zope 2 interfaces to Zope 3 interfaces is easy -- just
+make your interfaces inherit from ``zope.interface.Interface`` instead
+of ``Interface.Interface`` (or ``Interface.Base``). Next, change all
+``__implements__`` to ``implements()``.
+
+This should get you going and your application may very well still
+work. Later on, you will also have to change calls to
+``isImplementedBy`` and such in your application to ``providedBy``, as
+``isImplementedBy`` has been deprecated (you'll see the
+DeprecationWarnings in your Zope log).
+
+N.B.:  As of Zope 2.12, the old Zope2 interfaces are *removed*.
+
+Adapters
+--------
+
+From a Python programmer's perspective, the immediate thing that Five
+brings to do the table are adapters. This section goes through some
+demo code to explain how everything is tied
+together. ``demo/FiveDemo`` is a demo Product you can install and
+examine that has all the presented here together.
+
+Zope 3 adapters depend on Zope 3 interfaces. To create a Zope 3
+interface you need to subclass it from
+``zope.interface.Interface``. Here is an example::
+
+  from zope.interface import Interface
+
+  class IMyInterface(Interface):
+      """This is a Zope 3 interface.
+      """
+      def someMethod():
+          """This method does amazing stuff.
+          """
+
+Now to make some class declare that it implements this interface, you
+need to use the ``implements()`` function in the class::
+
+  from zope.interface import implements
+  from interfaces import IMyInterface
+
+  class MyClass:
+      implements(IMyInterface)
+
+      def someMethod(self):
+           return "I am alive! Alive!"
+
+For an explanation of the relation of Zope 3 interfaces to Zope 2
+interfaces, see below.
+
+Now let's set up the interface that we are adapting to::
+
+  class INewInterface(Interface):
+      """The interface we adapt to.
+      """
+
+      def anotherMethod():
+          """This method does more stuff.
+          """
+
+Next we'll work on the class that implements the adapter. The
+requirement to make a class that is an adapter is very simple; you
+only need to take a context object as the constructor. The context
+object is the object being adapted. An example::
+
+  from zope.interface import implements
+  from interfaces import INewInterface
+
+  class MyAdapter:
+      implements(INewInterface)
+ 
+      def __init__(self, context):
+          self.context = context
+
+      def anotherMethod(self):
+          return "We have adapted: %s" % self.context.someMethod()
+
+Next, we hook it all up using zcml. If the classes are in a module
+called ``classes.py`` and the interfaces in a module called
+``interfaces.py``, we can declare ``MyAdapter`` to be an adapter for
+``IMyInterface`` to ``INewInterface`` like this (in a file called
+``configure.zcml``)::
+
+  <configure xmlns="http://namespaces.zope.org/zope">
+
+    <adapter 
+      for=".interfaces.IMyInterface"
+      provides=".interfaces.INewInterface"
+      factory=".classes.MyAdapter" /> 
+    
+  </configure>
+
+Five will automatically pickup ``configure.zcml`` when it's placed in
+the product's directory.  Any object that provides ``IMyInterface``
+can now be adapted to ``INewInterface``, like this::
+
+  from classes import MyClass
+  from interfaces import INewInterface
+
+  object = MyClass()
+  adapted = INewInterface(object)
+  print adapted.anotherMethod()
+
+Views in Five
+-------------
+
+This section will give a brief introduction on how to use the five
+view system. ``demo/FiveViewsDemo`` is a demo Product you can install
+and examine that has all the presented here tied together, please
+consult it for more details. ``tests/products/FiveTest`` actually
+contains a more detailed set of test views, trying a number of
+features. Finally, read up on the way Zope 3 does it. While Five is a
+subset of Zope 3 functionality and has been adapted to work with Zope
+2, much of Zope 3's documentation still works.
+
+Five enables you to create views for your own objects, or even built-in
+Zope objects, as long as two things are the case:
+
+* The object provides an Zope 3 interface, typically through its class.
+
+* The object (typically its class) is made Zope 3 traversable. This
+  allows Zope 3 views, resources and other things to be attached to a
+  Zope 2 object.
+
+Typically you give your classes an interface using the ``implements``
+directive in the class body::
+
+  class MyClass:
+      implements(ISomeInterface)
+
+For existing objects that you cannot modify this is not
+possible. Instead, we provide a ZCML directive to accomplish this. As
+an example, to make Zope's ``Folder`` (and all its subclasses)
+implement ``IFolder`` (an interface you defined), you can do the
+following in ZCML::
+
+  <five:implements class="OFS.Folder.Folder" 
+                   interface=".interfaces.IFolder" />
+
+``five`` in this case refers to the XML namespace for Five,
+``http://namespace.zope.org/five``.
+
+
+Views in Five are simple classes. The only requirements for a Five
+view class are:
+
+* They need an ``__init__()`` that take a context and a request
+  attribute. Typically this comes from a base class, such as
+  ``BrowserView``.
+
+An example of a simple view::
+ 
+  from Products.Five import BrowserView
+
+  class SimpleFolderView(BrowserView):
+
+      def eagle(self):
+          """Test
+          """
+          return "The eagle has landed: %s" % self.context.objectIds()
+
+Note that it is not a good idea to give a view class its own
+``index_html``, as this confuses Five's view lookup machinery.
+
+This view uses methods in Python, but you can also use other Zope 2 mechanisms
+such as ``PageTemplateFile``.
+
+Finally, we need to hook up the pages through ZCML::
+
+  <browser:page 
+    for=".interfaces.IFolder"
+    class=".browser.SimpleFolderView"
+    attribute="eagle"
+    name="eagle.txt"
+    permission="zope2.ViewManagementScreens"
+    />
+
+``browser`` in this refers to the XML namespace of Zope 3 for browser
+related things; it's
+``http://namespace.zope.org/browser``. ``permission`` declares the
+Zope 2 permission needs in order to access this view. The file
+``permissions.zcml`` in Five contains a mapping of Zope 2 permissions
+to their Zope 3 names.

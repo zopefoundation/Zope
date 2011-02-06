@@ -1,0 +1,66 @@
+<dtml-var manage_page_header>
+
+<dtml-var "manage_form_title(this(), _,
+           form_title='Rename Items',
+           help_product='OFSP',
+           help_topic='ObjectManager_Rename.stx'
+	   )">
+
+<dtml-if expr="REQUEST.has_key('ids')">
+<form action="<dtml-var "REQUEST.URL1" html_quote>" method="post">
+<table border="0">
+<dtml-in expr="manage_CopyContainerAllItems(REQUEST)">
+<tr>
+  <td align="left" valign="bottom" width="16">
+  <img src="&dtml-BASEPATH1;/&dtml-icon;" alt="" border="0" />
+  </td>
+  <td align="left" valign="bottom">
+  <div class="form-text">
+  &dtml-id;
+  </div>
+  </td>
+  <td align="left" valign="bottom">
+<dtml-if cb_isMoveable>
+  <span class="form-text">to:</span>
+  <input type="hidden" name="ids:list" value="&dtml-id;" />
+  <input type="text" name="new_ids:list" size="<dtml-var "_.max(40,_.len(getId())+4)">" value="&dtml-id;" />
+<dtml-else>
+  <span class="form-text">
+  may not be renamed.
+  </span>
+</dtml-if>
+  </td>
+</tr>
+</dtml-in>
+
+<tr>
+<td></td>
+<td colspan="2">
+  <div class="form-element">
+  <input class="form-element" type="hidden" name=":default_method" 
+   value="manage_renameObjects" />
+  <input class="form-element" type="submit" name="manage_renameObjects:method" 
+   value=" Ok " />
+  <input class="form-element" type="submit" name="manage_main:method" 
+   value="Cancel" />
+  </div>
+</td>
+</tr>
+</table>
+</form>
+
+<dtml-else>
+<form action="manage_main" method="get">
+<p align="center">
+<br /><br />
+<span class="form-text">
+You must select an item to rename.
+</span>
+<br /><br />
+<input class="form-element" type="submit" name="submit" value=" Ok " />
+</p>
+</form>
+
+</dtml-if>
+
+<dtml-var manage_page_footer>

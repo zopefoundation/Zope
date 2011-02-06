@@ -1,0 +1,111 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:meta="http://namespaces.zope.org/meta">
+
+  <include package="zope.component" file="meta.zcml" />
+  <include package="zope.security" file="meta.zcml" />
+  <include package="zope.i18n" file="meta.zcml" />
+
+  <include package=".browser" file="meta.zcml" />
+  <include package=".form" file="meta.zcml" />
+
+  <meta:directives namespace="http://namespaces.zope.org/zope">
+
+    <meta:directive
+        name="view"
+        schema="zope.component.zcml.IViewDirective"
+        handler="zope.component.zcml.view"
+        />
+
+    <meta:complexDirective
+        name="class"
+        schema="zope.security.metadirectives.IClassDirective"
+        handler=".metaconfigure.ClassDirective"
+        >
+
+      <meta:subdirective
+          name="implements"
+          schema="zope.security.metadirectives.IImplementsSubdirective"
+          />
+
+      <meta:subdirective
+          name="require"
+          schema="zope.security.metadirectives.IRequireSubdirective"
+          />
+
+      <meta:subdirective
+          name="allow"
+          schema="zope.security.metadirectives.IAllowSubdirective"
+          />
+
+    </meta:complexDirective>
+
+    <meta:directive
+        name="securityPolicy"
+        schema="zope.security.zcml.ISecurityPolicyDirective"
+        handler="zope.security.zcml.securityPolicy"
+        />
+
+  </meta:directives>
+
+  <meta:directives namespace="http://namespaces.zope.org/five">
+
+    <!-- specific to Five -->
+
+    <meta:directive
+       name="loadProducts"
+       schema=".fivedirectives.IInclude"
+       handler=".fiveconfigure.loadProducts"
+       />
+
+    <meta:directive
+       name="loadProductsOverrides"
+       schema=".fivedirectives.IInclude"
+       handler=".fiveconfigure.loadProductsOverrides"
+       />
+
+    <meta:directive
+       name="implements"
+       schema=".fivedirectives.IImplementsDirective"
+       handler=".fiveconfigure.implements"
+       />
+
+    <meta:directive
+       name="containerEvents"
+       schema=".fivedirectives.IContainerEventsDirective"
+       handler=".eventconfigure.containerEvents"
+       />
+
+    <meta:directive
+       name="deprecatedManageAddDelete"
+       schema=".fivedirectives.IDeprecatedManageAddDeleteDirective"
+       handler=".eventconfigure.deprecatedManageAddDelete"
+       />
+
+    <meta:directive
+       name="sizable"
+       schema=".fivedirectives.ISizableDirective"
+       handler=".sizeconfigure.sizable"
+       />
+
+    <meta:directive
+        name="pagesFromDirectory"
+        schema=".fivedirectives.IPagesFromDirectoryDirective"
+        handler=".fiveconfigure.pagesFromDirectory"
+        />
+
+    <meta:directive
+       name="registerClass"
+       schema=".fivedirectives.IRegisterClassDirective"
+       handler=".fiveconfigure.registerClass"
+       />
+
+    <meta:directive
+       name="registerPackage"
+       schema=".fivedirectives.IRegisterPackageDirective"
+       handler=".fiveconfigure.registerPackage"
+       />
+
+  </meta:directives>
+
+</configure>

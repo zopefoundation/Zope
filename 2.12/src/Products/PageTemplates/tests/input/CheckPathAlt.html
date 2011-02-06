@@ -1,0 +1,21 @@
+<html>
+<body>
+   <div tal:define="x string:X;nil string:">
+   <p tal:content="x">1</p>
+   <p tal:content="x | nil">2</p>
+   <p tal:content="python:nil or x">3</p>
+   <p tal:content="y/z | x">4</p>
+   <p tal:content="y/z | string:X">4</p>
+   <p tal:content="y/z | python:'|AXE|'[2]">4</p>
+   <p tal:content="y/z | x | nil">5</p>
+
+   <p tal:attributes="name nil">Z</p>
+   <p tal:attributes="name y/z | nil">Z</p>
+   <p tal:attributes="name y/z | string:">Z</p>
+   <p tal:attributes="name y/z | python:'||'[:0]">Z</p>
+   <p tal:attributes="name y/z | nothing">Z</p>
+
+   <p tal:on-error="python:str(error.value[0])" tal:content="a/b | c/d">Z</p>
+   </div>
+</body>
+</html>

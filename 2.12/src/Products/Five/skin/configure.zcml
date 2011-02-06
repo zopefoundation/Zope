@@ -1,0 +1,19 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:browser="http://namespaces.zope.org/browser">
+
+  <browser:page
+      for="*"
+      name="standard_macros"
+      permission="zope2.View"
+      class=".standardmacros.StandardMacros"
+      allowed_interface="zope.interface.common.mapping.IItemMapping"
+      />
+
+  <browser:page
+      for="*"
+      template="five_template.pt"
+      name="five_template"
+      permission="zope.Public"
+      />
+
+</configure>

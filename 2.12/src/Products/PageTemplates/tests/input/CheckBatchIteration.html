@@ -1,0 +1,10 @@
+<html>
+  <body tal:define="ztu modules/ZTUtils;b python:ztu.Batch(range(10), 5)">
+    <p tal:repeat="n b">
+      Batch 1: item=<span tal:replace="n">n</span>
+    </p>
+    <p tal:repeat="n b/next">
+      Batch 2: item=<span tal:replace="n">n</span>
+    </p>
+  </body>
+</html>

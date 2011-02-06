@@ -1,0 +1,2 @@
+<p>Have you ever seen a cockatiel?</p>
+<p tal:content="string:maybe">dunno</p>

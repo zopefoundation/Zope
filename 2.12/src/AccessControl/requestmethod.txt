@@ -1,0 +1,92 @@
+Request method decorators
+=========================
+
+Using request method decorators, you can limit functions or methods to only
+be callable when the HTTP request was made using a particular method. 
+
+To limit access to a function or method to POST requests, use the requestmethod
+decorator factory::
+
+  >>> from AccessControl.requestmethod import requestmethod
+  >>> @requestmethod('POST')
+  ... def foo(bar, REQUEST):
+  ...     return bar
+  
+When this method is accessed through a request that does not use POST, the
+Forbidden exception will be raised::
+
+  >>> foo('spam', GET)
+  Traceback (most recent call last):
+  ...
+  Forbidden: Request must be POST
+  
+Only when the request was made using POST, will the call succeed::
+
+  >>> foo('spam', POST)
+  'spam'
+  
+It doesn't matter if REQUEST is a positional or a keyword parameter::
+
+  >>> @requestmethod('POST')
+  ... def foo(bar, REQUEST=None):
+  ...     return bar
+  >>> foo('spam', REQUEST=GET)
+  Traceback (most recent call last):
+  ...
+  Forbidden: Request must be POST
+  
+*Not* passing an optional REQUEST always succeeds::
+
+  >>> foo('spam')
+  'spam'
+
+Note that the REQUEST parameter is a requirement for the decorator to operate,
+not including it in the callable signature results in an error::
+
+  >>> @requestmethod('POST')
+  ... def foo(bar):
+  ...     return bar
+  Traceback (most recent call last):
+  ...
+  ValueError: No REQUEST parameter in callable signature
+  
+Because the Zope Publisher uses introspection to match REQUEST variables
+against callable signatures, the result of the decorator must match the
+original closely, and keyword parameter defaults must be preserved::
+
+  >>> import inspect
+  >>> mutabledefault = dict()
+  >>> @requestmethod('POST')
+  ... def foo(bar, baz=mutabledefault, egg=mutabledefault, REQUEST=None, *args):
+  ...     return bar, baz is mutabledefault, egg is None, REQUEST
+  >>> inspect.getargspec(foo)[:3]
+  (['bar', 'baz', 'egg', 'REQUEST'], 'args', None)
+  >>> foo('spam', egg=None)
+  ('spam', True, True, None)
+  >>> foo(monty='python')
+  Traceback (most recent call last):
+  ...
+  TypeError: foo() got an unexpected keyword argument 'monty'
+  
+The requestmethod decorator factory can be used for any request method, simply
+pass in the desired request method::
+
+  >>> @requestmethod('PUT')
+  ... def foo(bar, REQUEST=None):
+  ...     return bar
+  >>> foo('spam', GET)
+  Traceback (most recent call last):
+  ...
+  Forbidden: Request must be PUT
+
+You can pass in multiple request methods allow access by any of them::
+
+  >>> @requestmethod('GET', 'HEAD', 'PROPFIND')
+  ... def foo(bar, REQUEST=None):
+  ...     return bar
+  >>> foo('spam', GET)
+  'spam'
+  >>> foo('spam', POST)
+  Traceback (most recent call last):
+  ...
+  Forbidden: Request must be GET, HEAD or PROPFIND

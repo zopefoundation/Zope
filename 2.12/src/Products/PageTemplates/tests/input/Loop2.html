@@ -1,0 +1,14 @@
+<html>
+<body tal:define="objects python:[
+  {'name': 'fred', 'legs': 2},
+  {'name': 'wilma', 'legs': 2},
+  {'name': 'dino', 'legs': 4},
+]">
+<tal:block repeat="ob objects">
+  <h4 tal:condition="repeat/ob/first/legs">Legs:
+    <span tal:replace="ob/legs">1</span></h4>
+  <p tal:content="ob/name">Name</p>
+  <hr tal:condition="repeat/ob/last/legs" />
+</tal:block>
+</body>
+</html>

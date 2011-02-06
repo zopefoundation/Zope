@@ -1,0 +1,101 @@
+try: Handles exceptions
+
+  The 'try' tag allows exception handling in DTML, mirroring the
+  Python 'try/except' and 'try/finally' constructs.
+
+  Syntax
+
+    The 'try' tag has two different syntaxes, 'try/except/else' and
+    'try/finally'.
+
+    'try/except/else' Syntax::
+
+      <dtml-try>
+	<dtml-except [ExceptionName] [ExceptionName]...>
+	... 
+	[<dtml-else>]
+      </dtml-try>
+
+    The 'try' tag encloses a block in which exceptions can be caught and
+    handled. There can be one or more 'except' tags that handles
+    zero or more exceptions. If an 'except' tag does not specify an
+    exception, then it handles all exceptions.
+
+    When an exception is raised, control jumps to the first 'except'
+    tag that handles the exception. If there is no 'except' tag to
+    handle the exception, then the exception is raised normally.
+
+    If no exception is raised, and there is an 'else' tag, then the
+    'else' tag will be executed after the body of the 'try' tag.
+
+    The 'except' and 'else' tags are optional.
+
+    'try/finally' Syntax::
+
+      <dtml-try>
+	<dtml-finally>
+      </dtml-try>
+
+    The 'finally' tag cannot be used in the same 'try' block as the
+    'except' and 'else' tags. If there is a 'finally' tag, its block
+    will be executed whether or not an exception is raised in the
+    'try' block.
+
+  Attributes
+
+    except -- Zero or more exception names. If no exceptions are
+    listed then the except tag will handle all exceptions.
+
+  Tag Variables
+
+    Inside the 'except' block these variables
+    are defined.
+
+      error_type -- The exception type.
+
+      error_value -- The exception value.
+
+      error_tb -- The traceback.
+
+  Examples
+
+    Catching a math error::
+
+      <dtml-try>
+	<dtml-var expr="1/0">
+      <dtml-except ZeroDivisionError>
+	You tried to divide by zero.
+      </dtml-try>
+
+    Returning information about the handled exception::
+
+      <dtml-try>
+	<dtml-call dangerousMethod>
+      <dtml-except>
+	An error occurred.
+	Error type: <dtml-var error_type>
+	Error value: <dtml-var error_value>
+      </dtml-try>
+
+    Using finally to make sure to perform clean up regardless
+    of whether an error is raised or not::
+
+      <dtml-call acquireLock>
+      <dtml-try>
+	<dtml-call someMethod>
+      <dtml-finally>
+	<dtml-call releaseLock>
+      </dtml-try>
+
+  See Also
+
+    "raise tag":dtml-raise.stx
+
+    "Python Tutorial: Errors and
+    Exceptions":http://www.python.org/doc/current/tut/node10.html
+
+    "Python Built-in
+    Exceptions":http://www.python.org/doc/current/lib/module-exceptions.html
+
+
+

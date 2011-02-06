@@ -1,0 +1,80 @@
+mime: Formats data with MIME
+
+  The 'mime' tag allows you to create MIME encoded data. It is chiefly
+  used to format email inside the 'sendmail' tag.
+
+  Syntax
+
+    'mime' tag syntax::
+
+      <dtml-mime>
+      [<dtml-boundry>]
+      ...
+      </dtml-mime>
+
+    The 'mime' tag is a block tag. The block is can be divided by one
+    or more 'boundry' tags to create a multi-part MIME message. 'mime'
+    tags may be nested. The 'mime' tag is most often used inside the
+    'sendmail' tag.
+
+  Attributes
+
+    Both the 'mime' and 'boundry' tags
+    have the same attributes.
+
+      encode=string -- MIME Content-Transfer-Encoding header, defaults
+      to 'base64'.  Valid encoding options include 'base64',
+      'quoted-printable', 'uuencode', 'x-uuencode', 'uue', 'x-uue',
+      and '7bit'.  If the 'encode' attribute is set to '7bit' no
+      encoding is done on the block and the data is assumed to be in a
+      valid MIME format.
+
+      type=string -- MIME Content-Type header.
+
+      type_expr=string -- MIME Content-Type header as a variable
+      expression. You cannot use both 'type' and 'type_expr'.
+
+      name=string -- MIME Content-Type header name.
+
+      name_expr=string -- MIME Content-Type header name as a variable
+      expression. You cannot use both 'name' and 'name_expr'.
+
+      disposition=string -- MIME Content-Disposition header.
+
+      disposition_expr=string -- MIME Content-Disposition header as a
+      variable expression. You cannot use both 'disposition' and
+      'disposition_expr'.
+
+      filename=string -- MIME Content-Disposition header filename.
+
+      filename_expr=string -- MIME Content-Disposition header filename
+      as a variable expression. You cannot use both 'filename' and
+      'filename_expr'.
+
+      skip_expr=string -- A variable expression that if true, skips
+      the block. You can use this attribute to selectively include
+      MIME blocks.
+
+  Examples
+
+    Sending a file attachment::
+
+      <dtml-sendmail>
+      To: <dtml-recipient>
+      Subject: Resume
+      <dtml-mime type="text/plain" encode="7bit">
+
+      Hi, please take a look at my resume.
+
+      <dtml-boundary type="application/octet-stream" disposition="attachment" 
+      encode="base64" filename_expr="resume_file.getId()"><dtml-var expr="resume_file.read()"></dtml-mime>
+      </dtml-sendmail>
+
+  See Also
+
+    "Python Library: mimetools":http://www.python.org/doc/current/lib/module-mimetools.html
+
+
+
+
+

@@ -1,0 +1,18 @@
+File/Image - Add: Create a File or Image.
+
+  Description
+    
+    Creates a new File or Image.
+
+  Controls
+
+    'Id' -- The id of the File or Image.
+
+      **Note: If you do not provide an Id then the file name will be used.**
+
+    'Title' -- The optional title of the File or Image.
+
+    'File' -- The file to upload. use the 'Browse...' button to
+    select a local file.
+
+    'Add' -- Creates a new File or Image.

@@ -1,0 +1,156 @@
+<dtml-var manage_page_header>
+<dtml-var "manage_tabs(this(), _,
+	form_title='Manage Browser Id Manager',
+	help_product='Sessions',
+	help_topic='browser-change.stx'
+	)">
+
+<FORM ACTION="manage_changeBrowserIdManager" METHOD="POST">
+
+<p class="form-help">
+  Zope Browser Id Manager objects allow Zope to differentiate between site
+  visitors by "tagging" each of their browsers with a unique identifier. This
+  is useful if you need to tell visitors apart from one another even if they do
+  not "log in" to your site.  Browser Id Managers are generally used
+  by interacting with the Zope sessioning machinery.
+</p>
+
+<TABLE CELLSPACING="2" border="0">
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <div class="form-label">
+      Title
+    </div>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <INPUT TYPE="TEXT" NAME="title" SIZE="30" value="&dtml-title;">
+  </TD>
+</TR>
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <div class="form-label">
+      Browser Id Name
+    </div>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <INPUT TYPE="TEXT" NAME="idname" SIZE="20" value="&dtml-getBrowserIdName;">
+  </TD>
+</TR>
+
+<dtml-let namespaces=getBrowserIdNamespaces>
+<tr valign="top">
+<td>
+<div align=left class="form-label">Look for Browser Id in</th>
+</td>
+<td>
+<table border=0>
+<tr>
+   <td align=left>
+    <input type="checkbox" name="location:list" value="cookies"
+     <dtml-if "'cookies' in namespaces">CHECKED</dtml-if>> Cookies
+   </td>
+</tr>
+<tr>
+   <td align=left>
+    <input type="checkbox" name="location:list" value="form"
+    <dtml-if "'form' in namespaces">CHECKED</dtml-if>> Forms and Query Strings
+   </td>
+</tr>
+<tr>
+   <td align=left>
+    <input type="checkbox" name="location:list" value="url"
+     <dtml-if "'url' in namespaces">CHECKED</dtml-if>> URLs
+   </td> 
+</tr>
+</table>
+</td>
+</tr>
+</dtml-let>
+
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <div class="form-label">
+      Automatically Encode Zope-Generated<br>URLs With A Browser Id
+    </div>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <INPUT TYPE="checkbox" NAME="auto_url_encoding"
+     <dtml-if getAutoUrlEncoding>CHECKED</dtml-if>>
+  </TD>
+</TR>
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <div class="form-label">
+      Cookie Path
+    </div>
+    <div class="form-help">
+    leave blank to provide no path info in the browser cookie
+   </div>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <INPUT TYPE="TEXT" NAME="cookiepath" SIZE="20"
+     value="&dtml-getCookiePath;">
+  </TD>
+</TR>
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <div class="form-label">
+      Cookie Domain
+    </div>
+    <div class="form-help">
+    leave blank to send cookies without domain <br>
+    info -- however, if cookie domain is not blank,<br>
+    it must contain at least two dots
+    </div>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <INPUT TYPE="TEXT" NAME="cookiedomain" SIZE="20"
+     value="&dtml-getCookieDomain;">
+  </TD>
+</TR>
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <div class="form-label">
+      Cookie Lifetime In Days
+    </div>
+    <div class="form-help">
+     0 means send cookies which last only for the<br>
+     lifetime of the browser
+    </div>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <INPUT TYPE="TEXT" NAME="cookielifedays:int" SIZE="20"
+     value="&dtml-getCookieLifeDays;">
+  </TD>
+</TR>
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <div class="form-label">
+      Only Send Cookie Over HTTPS
+    </div>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <INPUT TYPE="checkbox" NAME="cookiesecure"
+     <dtml-if getCookieSecure>CHECKED</dtml-if>>
+  </TD>
+</TR>
+
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <div class="form-label">
+      Make cookie not aviable from JavaScript 
+    </div>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <INPUT TYPE="checkbox" NAME="cookiehttponly"
+     <dtml-if getCookieHTTPOnly>CHECKED</dtml-if>>
+  </TD>
+</TR>
+
+<TR>
+  <TD></TD>
+  <TD><BR><INPUT class="form-element" TYPE="SUBMIT" VALUE=" Change "></TD>
+</TR>
+</TABLE>
+</FORM>
+<dtml-var manage_page_footer>

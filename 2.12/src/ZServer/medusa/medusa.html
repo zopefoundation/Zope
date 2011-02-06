@@ -1,0 +1,290 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+<html>
+<head>
+<title>Medusa: A High-Performance Internet Server Architecture</title>
+</head>
+<body>
+<h1> <b>Medusa</b>: A High-Performance Internet Server Architecture </h1>
+
+<h2> What is Medusa? </h2>
+
+Medusa is an architecture for high-performance, robust, long-running
+TCP/IP servers (like HTTP, FTP, and NNTP).  Medusa differs from most
+other server architectures in that it runs as a single process,
+multiplexing I/O with its various client and server connections within
+a single process/thread.
+
+<p>
+
+Medusa  is written in  <a  href="http://www.python.org/">Python</a>, a
+high-level  object-oriented language that  is particularly well suited
+to building powerful, extensible servers.   Medusa can be extended and
+modified at  run-time, even  by the end-user.    User 'scripts' can be
+used to completely change the behavior of the server,  and even add in
+completely new server types.
+
+<h2> How Does it Work? </h2>
+
+Most Internet servers  are built on a 'forking'  model.  ('Fork' is  a
+Unix term  for starting a new  process.)  Such servers actually invoke
+an  entire  new  process  for every  single  client connection.   This
+approach is  simple  to implement,  but does  not  scale  very well to
+high-load situations.  Lots of clients  mean a lot of processes, which
+gobble up    large  quantities of virtual    memory   and other system
+resources.  A  high-load server thus needs  to  have a lot  of memory.
+Many  popular Internet servers  are running with hundreds of megabytes
+of memory.
+
+<p>
+<h3>The I/O bottleneck. </h3>
+<p>
+      
+The vast  majority of  Internet servers  are I/O bound   - for any one
+process,  the CPU is sitting idle  99.9%  of the time, usually waiting
+for input from an external device (in  the case of an Internet server,
+it  is waiting   for  input   from  the  network).   This  problem  is
+exacerbated by the imbalance between server and client bandwidth: most
+clients are connecting at relatively low bandwidths (28.8 kbits/sec or
+less, with network delays and inefficiencies it can be far lower).  To
+a typical server  CPU, the time between  bytes for such a client seems
+like an  eternity!  (Consider that a 200  Mhz CPU can  perform roughly
+50,000 operations for each byte received from such a client).
+      
+<p>
+
+A simple metaphor for a 'forking' server is that of a supermarket
+cashier: for every 'customer' being processed [at a cash register],
+another 'person' must be created to handle each client session.  But
+what if your checkout clerks were so fast they could each individually
+handle hundreds of customers per second?  Since these clerks are
+almost always waiting for a customer to come through their line, you
+have a very large staff, sitting around idle 99.9% of the time!  Why
+not replace this staff with a single <i> super-clerk </i>, flitting
+from aisle to aisle ?
+
+<p>
+
+This is exactly how Medusa works!  It multiplexes all its I/O through
+a single select() loop - this loop can handle hundreds, even thousands
+of simultaneous connections - the actual number is limited only by your
+operating system.  For a more technical overview, see
+<a href="http://www.nightmare.com/medusa/async_sockets.html">
+Asynchronous Socket Programming</a>
+
+<h2> Why is it Better? </h2>
+
+<h3> Performance </h3>
+<p>
+
+The most obvious advantage to a single long-running server process is
+a dramatic improvement in performance.  There are several types of
+overhead involved in the forking model:
+<ul>
+  <li> <b> Process creation/destruction. </b>
+  <p>
+
+  Starting up a new process is an expensive operation on any operating
+  system.  Virtual memory must be allocated, libraries must be
+  initialized, and the operating system now has yet another task to
+  keep track of.  This start-up cost is so high that it is actually
+  <i>noticeable</i> to people!  For example, the first time you pull
+  up a web page with 15 inline images, while you are waiting for the
+  page to load you may have created and destroyed at least 16
+  processes on the web server.
+
+  <p>
+  <li> <b> Virtual Memory </b>
+  <p>
+
+  Each process also requires a certain  amount of virtual memory space
+  to be  allocated on its  behalf.  Even though most operating systems
+  implement a 'copy-on-write'    strategy that makes this  much   less
+  costly than it could be,  the end result is still  very wasteful.  A
+  100-user FTP server can  still easily require hundreds  of megabytes
+  of real  memory in order  to avoid thrashing (excess paging activity
+  due to lack of real memory).
+
+</ul>
+
+  <b>Medusa</b> eliminates  both  types  of  overhead.  Running  as  a
+  single   process,   there   is   no per-client  creation/destruction
+  overhead.  This means each client request  is answered very quickly.
+  And virtual memory  requirements  are lowered dramatically.   Memory
+  requirements can even be controlled with  more precision in order to
+  gain  the  highest performance  possible   for a particular  machine
+  configuration.
+
+<h3> Persistence </h3>
+<p>
+
+Another major advantage to the single-process model is
+<i>persistence</i>.  Often it is necessary to maintain some sort of
+state information that is available to each and every client, i.e., a
+database connection or file pointer.  Forking-model servers that need
+such shared state must arrange some method of getting it - usually via
+an IPC (inter-process communication) mechanism such as sockets or
+named pipes.  IPC itself adds yet another significant and needless
+overhead - single-process servers can simply share such information
+within a single address space.
+
+<p>
+
+Implementing persistence in Medusa is easy - the address space of its
+process (and thus its open database handles, variables, etc...) is
+available to each and every client.
+
+<h3> Not a Strawman </h3>
+
+All right, at this point many of my readers will say I'm beating up on
+a strawman.  In fact, they will say, such server architectures are
+already available - like Microsoft's Internet Information Server.
+IIS avoids the above-named problems by using <i>threads</i>.  Threads
+are 'lightweight processes' - they represent multiple concurrent
+execution paths within a single address space.  Threads solve many of
+the problems mentioned above, but also create new ones:
+
+  <ul>
+    <li>'Threaded' programs are very difficult to write - especially
+        with servers that want to utilize the 'persistence' feature -
+        great care must be taken when accessing or modifying shared resources.
+    <li>There is still additional system overhead when using threads.
+    <li>Not all operating systems support threads, and even on those
+        that do, it is difficult to use them in a portable fashion.
+  </ul>
+
+  <p>   Threads  are  <i>required</i>  in  only a    limited number of
+  situations.  In many    cases where  threads  seem  appropriate,  an
+  asynchronous  solution can actually  be  written with less work, and
+  will perform better.  Avoiding the use of  threads also makes access
+  to  shared resources (like  database  connections) easier to manage,
+  since multi-user locking is not necessary.
+
+  <p> <b>Note:</b> In the rare case where threads are actually
+  necessary, Medusa can of course use them, if the host operating system
+  supports them.  For example, an image-conversion or fractal-generating
+  server might be CPU-intensive, rather than I/O-bound, and thus a good
+  candidate for running in a separate thread.
+
+<p>
+Another solution  (used by many  current  HTTP servers on Unix)  is to
+'pre-spawn' a large number of processes - clients are attached to each
+server  in  turn.  Although  this  alleviates  the performance problem
+<i>up to that number  of users</i>, it still  does not scale well.  To
+reliably and efficiently handle <i>[n]</i> users, <i>[n]</i> processes
+are still necessary.
+
+<h3> Other Advantages </h3>
+  <ul>
+    <li> <b>Extensibility</b>
+    <p>
+
+      Since Medusa is written in Python, it  is easily extensible.  No
+      separate compilation is necessary.  New facilities can be loaded
+      and  unloaded into  the   server without  any  recompilation  or
+      linking, even while the server is running.  [For example, Medusa
+      can be configured to automatically upgrade  itself to the latest
+      version every so often].
+
+      <p>
+    <li> <b> Security </b>
+      <p>
+      
+      Many  of the  most popular  security holes  (popular, at  least,
+      among the mischievous) exploit the fact that servers are usually
+      written in a low-level language.  Unless such languages are used
+      with extreme care,  weaknesses  can be introduced that  are very
+      difficult    to  predict  and    control.  One  of  the favorite
+      loop-holes is the 'memory buffer overflow', used by the Internet
+      Worm (and many others)   to gain unwarranted access to  Internet
+      servers.
+  
+  </ul>
+    <p>
+  
+      Such  problems  are  virtually non-existent  when   working in a
+      high-level language like Python, where for example all access to
+      variables and their components are checked at run-time for valid
+      range operations.   Even unforseen errors  and operating  system
+      bugs can  be caught -  Python includes a full exception-handling
+      system  which  promotes the  construction of  'highly available'
+      servers.  Rather  than crashing  the entire server,  Medusa will
+      usually inform the user, log the error, and keep right on running.
+
+<h2> Current Features </h2>
+
+<ul>
+    <li>  <p>  The  currently  available version  of   Medusa includes
+    integrated World   Wide   Web  (<b>HTTP</b>)  and  file   transfer
+    (<b>FTP</b>)  servers.   This combined server    can solve a major
+    performance  problem at any    high-load  site, by replacing   two
+    forking servers  with a single  non-forking, non-threading server.
+    Multiple servers of each type can also be instantiated. <p>
+
+    <li> <p> Also  included is  a secure 'remote-control'  capability,
+    called  a <b>monitor</b>  server.    With   this server   enabled,
+    authorized users can 'log in' to the  running server, and control,
+    manipulate, and examine   the server  <i>   while it is    running
+    </i>. <p>
+
+    <li> <p> A 'chat server' is included, as a sample server
+    implementation.  It's simple enough to serve as a good
+    introduction to extending Medusa.  It implements a simple IRC-like
+    chat service that could easily be integrated with the HTTP server
+    for an integrated web-oriented chat service.  [For example, a
+    small Java applet could be used on the client end to communicate
+    with the server].
+    <p>
+
+    <li> <p> Several extensions are available for the HTTP server, and
+    more will become available over time.  Each of these extensions can
+    be loaded/unloaded into the server dynamically.<p>
+        
+    <dl>
+    
+        <dt> <b> Status Extension </b> <dd> Provides status
+        information via the HTTP server.  Can report on any or all of
+        the installed servers, and on the extensions loaded into the
+        HTTP server.  [If this server is running Medusa, you should be
+        able to see it <a href="/status">here</a>]
+    
+        <dt> <b> Default Extension </b> <dd> Provides the 'standard'
+        file-delivery http server behavior.  Uses the same abstract
+        filesystem object as the FTP server.  Supports the HTTP/1.1
+        persistent connection via the 'Connection: Keep-Alive' header.
+
+	<dt> <b> HTTP Proxy Extension </b> <dd> Act as a proxy server for HTTP
+        requests.  This lets Medusa  be  used as a 'Firewall'  server.
+        Plans for this  extension include cache support, filtering (to
+        ignore,           say,      all            images         from
+        'http://obnoxious.blinky.advertisements.com/'),       logging,
+        etc...
+  
+        <dt> <b> Planned </b> <dd> On the drawing board are pseudo-filesystem
+        extensions, access to databases like mSQL and Oracle, (and on Windows
+        via ODBC), authentication, server-side includes, and a full-blown
+	proxy/cache system for both HTTP and FTP.  Feedback from users will
+	help me decide which areas to concentrate on, so please email me any
+        suggestions.
+
+    </dl>
+    
+    <p> <li> An API is evolving for users to  extend not just the HTTP
+    server but Medusa as a whole, mixing in other server types and new
+    capabilities  into existing  servers.  NNTP and  POP3 servers have
+    already been written, and will probably  be provided as an add-on.
+    I am actively encouraging other developers to produce (and if they
+    wish, to market) Medusa extensions.
+
+</ul>
+
+<h2> Where Can I Get It? </h2>
+
+<p>
+Medusa is available from <a
+href="http://www.nightmare.com/medusa/">http://www.nightmare.com/medusa</a>
+<p> Feedback, both positive and negative, is much appreciated; please send
+email to <a
+href="mailto:rushing@nightmare.com">rushing@nightmare.com</a>.
+
+</body>
+</html>

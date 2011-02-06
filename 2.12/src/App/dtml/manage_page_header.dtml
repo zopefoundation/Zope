@@ -1,0 +1,30 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+<dtml-unless management_page_charset>
+<dtml-call "REQUEST.set('management_page_charset','utf-8')">
+</dtml-unless>
+<meta http-equiv="content-type" content="text/html;charset=&dtml-management_page_charset;" />
+<dtml-call "RESPONSE and RESPONSE.setHeader('content-type','text/html;charset='+management_page_charset)">
+<title><dtml-if title_or_id><dtml-var title_or_id><dtml-else>Zope</dtml-if></title>
+<dtml-let ag="REQUEST.get('HTTP_USER_AGENT', '')"
+     is_nav4="ag[:9] == 'Mozilla/4' and _.string.find(ag, 'MSIE') < 0"
+     use_css="REQUEST.get('zmi_use_css', '1')"
+     zmi_embedded_css="1">
+<dtml-if use_css>
+<dtml-if is_nav4>
+<style type="text/css">
+<!--
+
+<dtml-var manage_page_style.css>
+
+-->
+</style>
+<dtml-else>
+<link rel="stylesheet" type="text/css" href="&dtml-BASEPATH1;/manage_page_style.css" />
+</dtml-if>
+</dtml-if>
+</dtml-let>
+
+</head>
+<body bgcolor="#ffffff" link="#000099" alink="#000099" vlink="#000099">

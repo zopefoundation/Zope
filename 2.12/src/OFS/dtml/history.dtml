@@ -1,0 +1,84 @@
+<dtml-var manage_page_header>
+<dtml-var manage_tabs>
+
+<dtml-if manage_change_history>
+  <form action="<dtml-var "REQUEST.URL1" html_quote>" method="POST">
+  <table width="100%" cellspacing="0" cellpadding="2" border="0">
+
+    <tr class="list-header">
+       <td width="50%" align="left" valign="top">
+       <div class="list-nav">
+    <dtml-if first_transaction>       
+          <dtml-with expr="_(next=first_transaction*2-last_transaction)">
+            <a href="<dtml-var "REQUEST.URL" html_quote>?first_transaction:int=&dtml.-next;&last_transaction:int=&dtml.-first_transaction;&HistoryBatchSize:int=&dtml.-HistoryBatchSize;">&lt; Later Revisions</a>
+          </dtml-with>
+    <dtml-else>
+    &nbsp;
+    </dtml-if>
+       </div>
+       </td>
+       <td width="50%" align="right" valign="top">
+       <div class="list-nav">
+    <dtml-if expr="_.len(manage_change_history) == HistoryBatchSize"> 
+          <dtml-with expr="_(last=last_transaction+HistoryBatchSize)">
+            <a href="<dtml-var "REQUEST.URL" html_quote>?first_transaction:int=&dtml.-last_transaction;&last_transaction:int=&dtml.-last;&HistoryBatchSize:int=&dtml.-HistoryBatchSize;">Earlier Revisions &gt;</a>
+          </dtml-with>
+    <dtml-else>
+    &nbsp;
+    </dtml-if>
+       </div>
+       </td>
+   </tr>
+   </table>
+
+  <table width="100%" cellspacing="0" cellpadding="2" border="0">
+
+
+
+    <dtml-in manage_change_history mapping>
+    <dtml-if sequence-odd>
+    <tr class="row-normal">
+    <dtml-else>
+    <tr class="row-hilite">
+    </dtml-if>
+        <td align="left" valign="top">
+	  <input type="checkbox" value="&dtml-key;" name="keys:list">
+        </td>
+        <td align="left" valign="top">
+        <div class="list-item">
+	<a href="&dtml-absolute_url;/HistoricalRevisions/&dtml-key;/manage_workspace"><dtml-var time fmt="%Y-%m-%d %H:%M"><dtml-if 
+        user_name> (&dtml-user_name;)</dtml-if></a>
+        <br>&dtml-description;
+	<dtml-if revision>
+        <br>revision: <em>&dtml-revision;</em>
+        </dtml-if>
+        </div>
+        </td>
+      </tr>
+    </dtml-in>
+
+    <tr>
+    <td></td>
+    <td align="left" valign="top">
+    <div class="form-element">
+      <input class="form-element" type="submit" 
+       name="manage_historyCopy:method"
+       value="Copy to present">
+      <input class="form-element" type="submit" 
+       name="manage_historicalComparison:method"
+       value="Compare">
+    </div>
+    </td>
+    </tr>
+
+  </table>
+  </form>
+
+<dtml-else>
+<p class="form-text">
+No change history is available for this object.
+</p>
+</dtml-if>
+
+<dtml-var manage_page_footer>
+

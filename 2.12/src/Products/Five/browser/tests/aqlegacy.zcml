@@ -1,0 +1,142 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:browser="http://namespaces.zope.org/browser">
+
+  <browser:page
+      for="*"
+      name="attributes"
+      class=".aqlegacy.LegacyAttributes"
+      permission="zope.Public"
+      />
+
+  <browser:page
+      for="*"
+      name="explicitattributes"
+      class=".aqlegacy.ExplicitLegacyAttributes"
+      permission="zope.Public"
+      />
+
+  <browser:page
+      for="*"
+      name="template"
+      class=".aqlegacy.LegacyTemplate"
+      permission="zope.Public"
+      />
+
+  <browser:page
+      for="*"
+      name="template_two"
+      class=".aqlegacy.LegacyTemplateTwo"
+      permission="zope.Public"
+      />
+
+  <browser:page
+      for="*"
+      name="explicit"
+      class=".aqlegacy.Explicit"
+      attribute="render"
+      permission="zope.Public"
+      />
+
+  <browser:page
+      for="*"
+      name="explicit_zcmltemplate"
+      class=".aqlegacy.Explicit"
+      template="falcon.pt"
+      permission="zope.Public"
+      />
+
+  <browser:page
+      for="*"
+      name="explicit_template"
+      class=".aqlegacy.ExplicitWithTemplate"
+      attribute="template"
+      permission="zope.Public"
+      />
+
+  <browser:page
+      for="*"
+      name="implicit"
+      class=".aqlegacy.Implicit"
+      attribute="render"
+      permission="zope.Public"
+      />
+
+  <browser:page
+      for="*"
+      name="implicit_template"
+      class=".aqlegacy.ImplicitWithTemplate"
+      attribute="template"
+      permission="zope.Public"
+      />
+
+  <browser:page
+      for="*"
+      name="implicit_zcmltemplate"
+      class=".aqlegacy.Implicit"
+      template="falcon.pt"
+      permission="zope.Public"
+      />
+
+  <!-- Content providers and viewlets -->
+
+  <adapter
+      for="* * *"
+      provides="zope.contentprovider.interfaces.IContentProvider"
+      factory=".aqlegacy.ExplicitContentProvider"
+      name="aqlegacyprovider"
+      />
+
+  <browser:page
+      for="*"
+      name="aqlegacyprovider"
+      template="legacyprovider.pt"
+      permission="zope.Public"
+      />
+
+  <browser:viewletManager
+      name="aqlegacymanager"
+      permission="zope.Public"
+      />
+
+  <browser:viewlet
+      for="*"
+      class=".aqlegacy.ExplicitViewlet"
+      name="explicit"
+      permission="zope.Public"
+      />
+
+  <browser:viewlet
+      for="*"
+      class=".aqlegacy.BrowserViewViewlet"
+      name="browserview"
+      permission="zope.Public"
+      />
+
+  <browser:page
+      for="*"
+      name="aqlegacymanager"
+      template="legacymanager.pt"
+      permission="zope.Public"
+      />
+
+  <!-- Namespace traversal -->
+
+  <adapter
+      for="*"
+      factory=".aqlegacy.LegacyNamespace"
+      name="aqlegacy"
+      />
+  <adapter
+      for="* *"
+      factory=".aqlegacy.LegacyNamespace"
+      name="aqlegacy"
+      />
+
+  <browser:page
+      for=".aqlegacy.LegacyNamespaceObject"
+      name="index.html"
+      template="falcon.pt"
+      permission="zope.Public"
+      />
+
+</configure>

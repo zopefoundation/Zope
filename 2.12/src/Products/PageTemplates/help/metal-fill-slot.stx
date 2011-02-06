@@ -1,0 +1,38 @@
+fill-slot: Customize a macro
+
+  Syntax
+
+    'metal:fill-slot' syntax::
+   
+      argument ::= Name
+
+  Description
+
+    The 'metal:fill-slot' statement customizes a macro by replacing a
+    *slot* in the macro with the statement element (and its content).
+
+    The 'metal:fill-slot' statement must be used inside a
+    'metal:use-macro' statement.
+
+    Slot names must be unique within a macro.
+
+    If the named slot does not exist within the macro, the slot
+    contents will be silently dropped.
+
+  Examples
+
+   Given this macro::
+
+      <p metal:define-macro="hello">
+        Hello <b metal:define-slot="name">World</b>
+      </p>
+ 
+    You can fill the 'name' slot like so::
+
+      <p metal:use-macro="container/master.html/macros/hello">
+        Hello <b metal:fill-slot="name">Kevin Bacon</b>
+      </p>
+ 
+  See Also
+    
+    "metal:define-slot":metal-define-slot.stx

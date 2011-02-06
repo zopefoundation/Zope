@@ -1,0 +1,1 @@
+<p tal:content="provider:aqlegacymanager" />

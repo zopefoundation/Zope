@@ -1,0 +1,59 @@
+<dtml-var manage_page_header>
+<dtml-var manage_tabs>
+
+<br />
+<table width="100%" cellspacing="0" cellpadding="2" border="0">
+
+<tr class="section-bar">
+  <td colspan="2" align="left">
+  <div class="form-label">
+  Minimize
+  </div>
+  </td>
+</tr>
+<tr>
+  <td align="left" valign="top">
+  <div class="form-text">
+  Remove all objects from all ZODB in-memory caches
+  </td>
+  <td>
+  <form action="&dtml-URL1;/manage_minimize" method=GET>
+  <div class="form-element">
+  <input type="submit" name="submit" value="Minimize" />
+  </div>
+  </form>
+  </td>
+</tr>
+</table>
+
+
+<dtml-if show_cache_detail>
+  <h4>Cache Details</h4><P>
+
+  <table border><tr><th>Object Class</th><th>Count</th></tr>
+    <dtml-in cache_detail>
+      <tr><td>&dtml-sequence-key;</td><td>&dtml-sequence-item;</td></tr>
+    </dtml-in>
+  </table>
+</dtml-if>
+
+<dtml-if show_cache_extreme_detail>
+  <h4>Objects in the cache</h4><P>
+
+  <table border><tr><th>Object ID</th>
+             <th>Object Class</th>
+             <th>Reference Count</th>
+             <th>References</th>
+          </tr>
+    <dtml-in cache_extreme_detail mapping>
+      <tr><td>&dtml-oid;</td>
+          <td>&dtml-klass;</td>
+          <td>&dtml-rc;</td>
+          <td>&dtml-references;</td>
+      </tr>
+    </dtml-in>
+  </table>
+</dtml-if>
+
+<dtml-var manage_page_footer>
+

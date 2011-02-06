@@ -1,0 +1,58 @@
+<style type="text/css"> <!-- li { margin: 1em } --> </style>
+
+Default Fixture
+
+    - **'self.app'** is the root application object of the test ZODB (contains Control_Panel, ...)
+     
+      Note that a ZODB connections has already been opened and a transaction begun at this point.
+
+    - **'self.app.REQUEST'** is the request object. Note that the REQUEST is rather minimal because
+      ZPublisher is not involved when running tests, and as such many REQUEST variables are never 
+      set. Feel free to add to the REQUEST whatever your tests require.
+
+    - **'self.folder'** is the work area. This folder will be created anew for each test and thrown 
+      away once the test has finished. The name of the folder is 'test_folder_1_'. You should 
+      use the 'ZopeTestCase.folder_name' constant when you need the folder's name. 'self.folder' is a 
+      reference to the object at 'self.app[folder_name]'.
+
+      A default role definition ('ZopeTestCase.user_role') is added to the folder, and a list of 
+      permissions ('ZopeTestCase.standard_permissions') is assigned to the role. 
+
+    - **'self.folder.acl_users'** is the user folder providing a security context to the work area.
+
+      A default user account is added to the user folder with name 'test_user_1_' and password 'secret'. 
+      You should use the 'ZopeTestCase.user_name' constant when you need the user's name, the 
+      'ZopeTestCase.user_password' constant when you need the user's password. 
+      
+      The default user has a single role, 'ZopeTestCase.user_role'.
+
+    At the end of the setup process the default user is logged in, and the 'afterSetUp' hook is called.
+
+Security API
+
+    - **'self.setRoles(roles, name=user_name)'** allows to change the roles assigned to a user.
+      If the 'name' argument is omitted, changes the roles of the default user.
+
+    - **'self.setPermissions(permissions, role=user_role)'** allows to change the permissions
+      assigned to a role. If the 'role' argument is omitted, changes the permissions of the
+      default role.
+
+    - **'self.login(name=user_name)'** allows to log in as a specified user.
+      If the 'name' argument is omitted, logs in as the default user.
+
+    - **'self.logout()'** allows to log out and become 'Anonymous User'.
+
+Testing Security
+
+    - **'ob.restrictedTraverse("attr")'** is a simple way to check whether the currently logged in user is
+      allowed to access attribute 'attr' of object 'ob'.
+
+    - **'getSecurityManager().validate(None, ob, "attr", ob.attr)'** uses the security manager to do the same.
+      The convenience method 'getSecurityManager().validateValue(ob.attr)' will no longer work 
+      in Zope 2.8.
+
+    Also see the 'testPythonScript.py' example test.
+
+    Note that you have the entire Zope security API at your disposal to further refine your fixture.
+    E.g. to add another user call 'self.folder.acl_users.userFolderAddUser("user2", "secret", ["role2"], [])'.
+

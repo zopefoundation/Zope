@@ -1,0 +1,42 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+<title>Zope on &dtml-BASE0;</title>
+<script type="text/javascript">
+<!--
+function update_menu() {   
+  window.manage_menu.location.href=window.manage_menu.location.href;
+}
+//-->
+</script>
+</head>
+<dtml-let tf="REQUEST.get('zmi_top_frame', '1')"
+          ag="REQUEST.get('HTTP_USER_AGENT', '')">
+
+<dtml-if tf>
+  <dtml-if "ag[:9] == 'Mozilla/4' and _.string.find(ag, 'MSIE') < 0">
+  <frameset rows="42, *">
+  <dtml-else>
+  <frameset rows="34, *">
+  </dtml-if>
+  <frame src="<dtml-var "REQUEST.URL1" html_quote>/manage_top_frame" name="manage_top_frame"
+   marginheight="0" scrolling="no"/>
+</dtml-if>
+
+  <frameset cols="175,*">
+    <frame src="<dtml-var "REQUEST.URL1" html_quote>/manage_menu" name="manage_menu"
+     marginwidth="2" marginheight="2" scrolling="auto"/>
+    <frame src="<dtml-var "REQUEST.URL1" html_quote>/manage_workspace" name="manage_main"
+     marginwidth="2" marginheight="2" scrolling="auto"/>
+  </frameset>
+
+<dtml-if tf>
+  </frameset>
+</dtml-if>
+
+</dtml-let>
+<noframes>
+Management interfaces require the use of a <B>frames-capable</B> web browser.
+</noframes>
+</html>
+

@@ -1,0 +1,16 @@
+Five is distributed under the provisions of the Zope Public License
+(ZPL) v2.1.  See doc/ZopePublicLicense.txt for the license text.
+
+Copyright (C) 2005 Five Contributors. See CREDITS.txt for a list of
+Five contributors.
+
+Five contains source code derived from:
+
+- Zope 3, copyright (C) 2001-2005 by Zope Corporation.
+
+- metaclass.py is derived from PEAK, copyright (C) 1996-2004 by
+  Phillip J. Eby and Tyler C. Sarna. PEAK may be used under the same
+  terms as Zope.
+
+- TrustedExecutables. Dieter Mauer kindly allow licensing this under the
+  ZPL 2.1.

@@ -1,0 +1,51 @@
+<dtml-var manage_page_header>
+<dtml-var manage_tabs>
+
+<form action="<dtml-var "REQUEST.URL1" html_quote>" method="post">
+<table cellspacing="0" cellpadding="2" border="0">
+<dtml-in items sort>
+<dtml-with "_(REQUEST=REQUEST, item=_['sequence-item'].aq_base, isDeletable=isDeletable)" only>
+<dtml-with item>
+<dtml-if id>
+<tr>
+  <td align="left" valign="top">
+  <dtml-if expr="isDeletable(id)"><input type=checkbox name="ids:list" value="&dtml-id;"></dtml-if>
+  </td>
+  <td align="left" valign="top">
+  <a href="&dtml-id;/manage">&dtml-id; <dtml-if xml_namespace>(<dtml-var xml_namespace>)</dtml-if></a>
+  <dtml-if locked_in_session>
+    <dtml-if modified_in_session>
+      <img src="&dtml-BASEPATH1;/p_/locked"
+       alt="This item has been modified in this session" />
+    <dtml-else>
+      <img src="&dtml-BASEPATH1;/p_/lockedo"
+       alt="This item has been modified in another session" />
+    </dtml-if>
+  </dtml-if>
+  </td>
+</tr>
+</dtml-if>
+</dtml-with>
+</dtml-with>
+</dtml-in>
+<tr>
+  <td colspan=2>
+    <input type="submit" name="manage_delPropertySheets:method" 
+  	 class="form-element" value="Delete">
+  </td>
+</tr>
+</table>
+
+<table cellpadding=5>
+ <tr>
+    <td><span class="form-label">Name:</span> <input name="id"></td>
+    <td><span class="form-label">Namespace:</span> <input name="ns"></td>
+    <td>
+      <input type="submit" name="manage_addPropertySheet:method" 
+  	 class="form-element" value="Add">
+    </td>
+  </tr>
+</table>
+</form>
+
+<dtml-var manage_page_footer>

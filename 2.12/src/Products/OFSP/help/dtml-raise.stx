@@ -1,0 +1,37 @@
+raise: Raises an exception 
+
+  The 'raise' tag raises an exception, mirroring the Python 'raise'
+  statement.
+
+  Syntax
+
+    'raise' tag syntax::
+
+      <dtml-raise ExceptionName|ExceptionExpression>
+      </dtml-raise>
+
+    The 'raise' tag is a block tag. It raises an exception. Exceptions
+    can be an exception class or a string. The contents of the tag are
+    passed as the error value.
+
+  Examples
+
+    Raising a KeyError::
+
+      <dtml-raise KeyError></dtml-raise>
+
+    Raising an HTTP 404 error::
+
+      <dtml-raise NotFound>Web Page Not Found</dtml-raise>
+
+  See Also
+
+    "try tag":dtml-try.stx
+
+    "Python Tutorial: Errors and
+    Exceptions":http://www.python.org/doc/current/tut/node10.html
+
+    "Python Built-in
+    Exceptions":http://www.python.org/doc/current/lib/module-exceptions.html
+
+    

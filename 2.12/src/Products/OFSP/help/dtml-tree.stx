@@ -1,0 +1,127 @@
+tree: Inserts a tree widget
+
+  The 'tree' tag displays a dynamic tree widget by querying Zope
+  objects.
+
+  Syntax
+
+    'tree' tag syntax::
+
+      <dtml-tree [VariableName|expr="VariableExpression"]>
+      </dtml-tree>
+
+    The 'tree' tag is a block tag. It renders a dynamic tree widget in
+    HTML. The root of the tree is given by variable name or
+    expression, if present, otherwise it defaults to the current
+    object. The 'tree' block is rendered for each tree node, with the
+    current node pushed onto the DTML namespace.
+
+    Tree state is set in HTTP cookies. Thus for trees to work, cookies
+    must be enabled. Also you can only have one tree per page.
+
+  Attributes
+
+    branches=string -- Finds tree branches by calling the named
+    method. The default method is 'tpValues' which most Zope objects
+    support. 
+
+    branches_expr=string -- Finds tree branches by evaluating the
+    expression.
+
+    id=string -- The name of a method or id to determine tree
+    state. It defaults to 'tpId' which most Zope objects support. This
+    attribute is for advanced usage only.
+
+    url=string -- The name of a method or attribute to determine tree
+    item URLs. It defaults to 'tpURL' which most Zope objects
+    support. This attribute is for advanced usage only.
+
+    leaves=string -- The name of a DTML Document or Method used to
+    render nodes that don't have any children. Note: this document
+    should begin with '<dtml-var standard_html_header>' and end with
+    '<dtml-var standard_html_footer>' in order to ensure proper
+    display in the tree.
+
+    header=string -- The name of a DTML Document or Method displayed
+    before expanded nodes. If the header is not found, it is skipped.
+
+    footer=string -- The name of a DTML Document or Method displayed
+    after expanded nodes. If the footer is not found, it is skipped.
+
+    nowrap=boolean -- If true then rather than wrap, nodes may be
+    truncated to fit available space.
+
+    sort=string -- Sorts the branches by the named attribute.
+
+    reverse -- Reverses the order of the branches.
+
+    assume_children=boolean -- Assumes that nodes have children. This
+    is useful if fetching and querying child nodes is a costly
+    process. This results in plus boxes being drawn next to all nodes.
+
+    single=boolean -- Allows only one branch to be expanded at a
+    time. When you expand a new branch, any other expanded branches
+    close. 
+
+    skip_unauthorized -- Skips nodes that the user is unauthorized to
+    see, rather than raising an error.
+
+    urlparam=string -- A query string which is included in the
+    expanding and contracting widget links. This attribute is for
+    advanced usage only.
+
+    prefix=string -- Provide versions of the tag variables that start
+    with this prefix instead of "tree", and that use underscores
+    (_) instead of hyphens (-).  The prefix must start with a letter and
+    contain only alphanumeric characters and underscores (_).
+
+  Tag Variables
+
+    tree-item-expanded -- True if the current node is expanded.
+
+    tree-item-url -- The URL of the current node.
+
+    tree-root-url -- The URL of the root node.
+
+    tree-level -- The depth of the current node. Top-level nodes have
+    a depth of zero.
+
+    tree-colspan -- The number of levels deep the tree is being
+    rendered. This variable along with the 'tree-level' variable can
+    be used to calculate table rows and colspan settings when
+    inserting table rows into the tree table.
+
+    tree-state -- The tree state expressed as a list of ids and
+    sub-lists of ids. This variable is for advanced usage only.
+
+  Tag Control Variables
+
+    You can control the tree tag by setting
+    these variables.
+
+      expand_all -- If this variable is true then the entire tree is
+      expanded. 
+
+      collapse_all -- If this variable is true then the entire tree is
+      collapsed.
+
+  Examples
+
+    Display a tree rooted in the current object::
+
+      <dtml-tree>
+        <dtml-var title_or_id>
+      </dtml-tree>
+
+    Display a tree rooted in another object, using a custom branches
+    method::
+
+      <dtml-tree expr="folder.object" branches="objectValues">
+        Node id : <dtml-var getId>
+      </dtml-tree>
+
+
+
+
+
+

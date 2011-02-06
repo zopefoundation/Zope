@@ -1,0 +1,292 @@
+<dtml-if management_page_charset>
+    <dtml-comment>
+    A site-global encoding specification in a property.
+    Note that this feature only works if there are no unicode objects
+    around. This means that this feature is not likely to be supported
+    in all future versions of zope.
+    </dtml-comment>
+    <dtml-call "REQUEST.set('management_page_charset',
+                          _['management_page_charset'])">
+    <dtml-call "REQUEST.set('management_page_charset_tag','')">
+<dtml-else>
+    <dtml-comment>
+    Thankfully no site-global encoding specification in a property.
+    We can set UTF-8, and unicode properties will work.
+    </dtml-comment>
+    <dtml-call "REQUEST.set('management_page_charset','UTF-8')">
+    <dtml-call "REQUEST.set('management_page_charset_tag','UTF-8:')">
+</dtml-if>
+    
+<dtml-if "REQUEST.get('management_page_charset',None)=='UTF-8'">
+<dtml-var "u' '">
+</dtml-if>
+<dtml-var manage_page_header>
+<dtml-with "_(management_view='Properties')">
+<dtml-var manage_tabs>
+</dtml-with>
+
+<form action="<dtml-var "REQUEST.URL1" html_quote>" method="post">
+<dtml-if propertyMap>
+<p class="form-help">
+Properties allow you to assign simple values to Zope objects. To change 
+property values, edit the values and click &quot;Save Changes&quot;. 
+</p>
+
+<table cellspacing="0" cellpadding="2" border="0">
+<tr class="list-header">
+  <td align="left" valign="top" width="16">
+  &nbsp;
+  </td>
+  <td align="left" valign="top">
+  <div class="form-label">
+  Name
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <div class="form-label">
+  Value
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <div class="form-label">
+  Type
+  </div>
+  </td>
+</tr>
+
+<dtml-in propertyMap mapping>
+<dtml-let type="not _.has_key('type') and 'string' or type"
+          pdesc="propertyDescription(id)">
+<tr title="&dtml-pdesc;">
+  <td align="left" valign="top" width="16">
+  <dtml-if "'d' in _['sequence-item'].get('mode', 'awd')">
+  <input type="checkbox" name="_ids:<dtml-var "REQUEST['management_page_charset_tag']">string:list" value="&dtml-id;"
+   id="cb-&dtml-id;">
+  <dtml-else>
+  </dtml-if>
+  </td>
+  <td align="left" valign="top">
+  <div class="form-label">
+  <label for="cb-&dtml-id;"><dtml-var "propertyLabel(id)" html_quote></label>
+  </div>
+  </td>
+  <td align="left" valign="top">
+
+  <dtml-if "'w' in _['sequence-item'].get('mode', 'awd')">
+  <dtml-if "type == 'int'">
+  <input type="text" name="&dtml-id;:&dtml-type;"
+   size="35" value="<dtml-if "hasProperty(id)"><dtml-var "'%s' % getProperty(id)" html_quote></dtml-if>">
+  <dtml-elif "type == 'long'">
+  <input type="text" name="&dtml-id;:&dtml-type;" size="35"
+   value="<dtml-if "hasProperty(id)"><dtml-var "('%s' % getProperty(id))" html_quote></dtml-if>">
+  <dtml-elif "type in ('float', 'date')">
+  <input type="text" name="&dtml-id;:<dtml-var "REQUEST['management_page_charset_tag']">&dtml-type;" size="35"
+   value="<dtml-var "getProperty(id)" html_quote>">
+  <dtml-elif "type in ['string','ustring']">
+  <input type="text" name="&dtml-id;:<dtml-var "REQUEST['management_page_charset_tag']">&dtml-type;" size="35"
+   value="<dtml-var "getProperty(id)" html_quote>">
+  <dtml-elif "type=='boolean'">
+  <input type="checkbox" name="&dtml-id;:boolean" size="35"
+   <dtml-if "getProperty(id)">CHECKED</dtml-if>>
+  <dtml-elif "type in ['tokens','utokens']">
+  <input type="text" name="&dtml-id;:<dtml-var "REQUEST['management_page_charset_tag']">&dtml-type;" size="35"
+   value="<dtml-in "getProperty(id)">&dtml-sequence-item; </dtml-in>">
+  <dtml-elif "type in ['text','utext']">
+  <textarea class="form-element" name="&dtml-id;:<dtml-var
+   "REQUEST['management_page_charset_tag']">&dtml-type;"
+   rows="6" cols="35"><dtml-var "getProperty(id)" html_quote></textarea>
+  <dtml-elif "type in ['lines','ulines']">
+  <textarea class="form-element" name="&dtml-id;:<dtml-var
+   "REQUEST['management_page_charset_tag']">&dtml-type;" rows="6"
+   cols="35"><dtml-in "getProperty(id)">&dtml-sequence-item;<dtml-if
+   sequence-end><dtml-else><dtml-var "'\n'"></dtml-if></dtml-in></textarea>
+
+  <dtml-elif "type=='selection'">
+
+    <dtml-if "hasProperty(select_variable)">
+    <div class="form-element">
+    <select name="&dtml-id;:<dtml-var "REQUEST['management_page_charset_tag']">text">
+      <dtml-in "getProperty(select_variable)">
+         <option
+          <dtml-if "_['sequence-item']==getProperty(id)">SELECTED</dtml-if>
+          >&dtml-sequence-item;</option>
+      </dtml-in>
+    </select>
+    </div>
+    <dtml-elif "_.has_key(select_variable)">
+    <div class="form-element">
+    <select name="&dtml-id;:<dtml-var "REQUEST['management_page_charset_tag']">text">
+      <dtml-in "_[select_variable]">
+         <option
+          <dtml-if "_['sequence-item']==getProperty(id)">SELECTED</dtml-if>
+          >&dtml-sequence-item;</option>
+      </dtml-in>
+    </select>
+    </div>
+    <dtml-else>
+    <div class="form-text">
+       No value for &dtml-select_variable;.
+    </div>
+    </dtml-if>
+
+  <dtml-elif "type=='multiple selection'">
+
+    <dtml-if "hasProperty(select_variable)">
+    <div class="form-element">
+    <select name="&dtml-id;:<dtml-var "REQUEST['management_page_charset_tag']">list:string" multiple
+      size="<dtml-var "_.min(7, _.len(getProperty(select_variable)))">">
+      <dtml-in "getProperty(select_variable)">
+         <option<dtml-if 
+         "getProperty(id) and (_['sequence-item'] in getProperty(id))"
+         > SELECTED</dtml-if
+         >>&dtml-sequence-item;</option>
+      </dtml-in>
+    </select>
+    </div>
+    <dtml-elif "_.has_key(select_variable)">
+    <div class="form-element">
+    <select name="&dtml-id;:<dtml-var "REQUEST['management_page_charset_tag']">list:string" multiple
+      size="<dtml-var "_.min(7, _.len(_[select_variable]))">">
+      <dtml-in "_[select_variable]">
+         <option<dtml-if 
+         "getProperty(id) and (_['sequence-item'] in getProperty(id))"
+         > SELECTED</dtml-if
+         >>&dtml-sequence-item;</option>
+      </dtml-in>
+    </select>
+    </div>
+    <dtml-else>
+    <div class="form-text">
+    No value for &dtml-select_variable;.
+    </div>
+    </dtml-if>
+  <dtml-else>
+  <em>Unknown property type</em>
+  </dtml-if>
+  <dtml-else>
+  <table border="1">
+  <tr><td><dtml-var "getProperty(id)" html_quote></td></tr>
+  </table>
+  </dtml-if>
+  </td>
+  <td align="left" valign="top">
+  <div class="list-item">
+  &dtml-type;
+  </div>
+  </td>
+  
+  <dtml-if "id=='title' and 'd' in _['sequence-item'].get('mode', 'awd')">
+    <td align="center" valign="top">
+      <div class="list-item"><b>Warning:</b> be aware that removing 'title'
+       without re-adding it might be dangerous.</div>
+   </td>
+  </dtml-if>
+</tr>
+</dtml-let>
+</dtml-in>
+<tr>
+  <td colspan="2">&nbsp;</td>
+  <td align="left" valign="top">
+  <div class="form-element">
+  <input name="manage_editProperties:method" type="submit" 
+   class="form-element" value="Save Changes" />
+<dtml-if property_extensible_schema__>
+  <input name="manage_delProperties:method" type="submit" 
+   class="form-element" value="Delete" />
+  </div>
+  </td>
+  <td>
+  <dtml-comment>
+  This needs some community review before exposing it officially.
+  <input type="submit" name="manage_propertyTypeForm:method" value="Change Names/Types">
+  </dtml-comment>
+  </td>
+<dtml-else>
+  <td>&nbsp;</td>
+</dtml-if>
+  </td>
+</tr>
+</table>
+
+<dtml-else>
+<p class="form-help">
+Properties allow you to assign simple values to Zope objects. There are 
+currently no properties defined for this item. <dtml-if 
+property_extensible_schema__>To add a property, enter a name, type 
+and value and click the &quot;Add&quot; button.
+</dtml-if>
+</p>
+
+</dtml-if>
+</form>
+
+<dtml-if property_extensible_schema__>
+
+<form action="<dtml-var "REQUEST.URL1" html_quote>/manage_addProperty" method="post">
+
+<p class="form-help">
+To add a new property, enter a name, type and value for the new 
+property and click the &quot;Add&quot; button. 
+</p>
+
+<table>
+<tr>
+  <td align="left" valign="top">
+  <div class="form-label">
+  Name
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <input type="text" name="id:<dtml-var "REQUEST['management_page_charset_tag']">string" size="30" value=""/>
+  </td>
+  <td align="left" valign="top" class="form-label">
+  Type
+  </td>
+  <td align="left" valign="top">
+  <div class="form-element">
+    <select name="type">
+      <option>boolean</option>
+      <option>date</option>
+      <option>float</option>
+      <option>int</option>
+      <option>lines</option>
+      <option>long</option>
+      <option selected>string</option>
+      <option>text</option>
+      <option>tokens</option>
+      <dtml-if "REQUEST['management_page_charset'] == 'UTF-8'">
+        <option>ulines</option>
+        <option>ustring</option>
+        <option>utext</option>
+        <option>utokens</option>
+      </dtml-if>
+      <option>selection</option>
+      <option>multiple selection</option>
+    </select>
+  </div>
+  </td>
+</tr>
+<tr>
+  <td align="left" valign="top">
+  <div class="form-label">
+  Value
+  </div>
+  </td>
+  <td colspan=2 align="left" valign="top">
+  <dtml-if "REQUEST['management_page_charset'] == 'UTF-8'">
+    <input type="text" name="value:UTF-8:ustring" size="30" />   
+  <dtml-else>   
+     <input type="text" name="value:string" size="30" />   
+  </dtml-if> 
+  </td>
+  <td align="right" valign="top">
+  <div class="form-element">
+  <input class="form-element" type="submit" name="submit" value=" Add " />
+  </div>
+  </td>
+</tr>
+</table>
+</form>
+</dtml-if>
+
+<dtml-var manage_page_footer>

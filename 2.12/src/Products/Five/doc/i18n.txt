@@ -1,0 +1,17 @@
+Internationalization
+====================
+
+Translation
+-----------
+
+To register Zope 3 style translation domains, use the following ZCML
+statement::
+
+  <i18n:registerTranslations directory="locales" />
+
+where the 'i18n' prefix is bound to the
+http://namespaces.zope.org/i18n namespace identifier.  The directory
+(in this case 'locales') should conform to the `standard gettext
+locale directory layout`__.
+
+.. __: http://www.gnu.org/software/gettext/manual/html_chapter/gettext_10.html#SEC148

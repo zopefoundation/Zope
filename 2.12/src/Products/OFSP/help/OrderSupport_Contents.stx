@@ -1,0 +1,78 @@
+ObjectManager with OrderSupport - Contents: Edit contained objects.
+
+  Description
+
+    This view displays the contained objects and allows you to add,
+    delete, change and order them.
+
+    Each contained object is displayed on a line and is identified by
+    an icon, an id and a title in parenthesis. Additionally, the size
+    (if applicable) and the date during which the object was last modified
+    are displayed.  You can manage an object by clicking on its identifying
+    link.
+
+    Sorting vs. Ordering
+
+      You can sort contained objects by type, name (id), size,
+      modification date or by position (fixed order, see below). To do so,
+      click on the appropriate column heading. Clicking a second time
+      on any column heading (except position) will reverse the sort
+      on that field. Sorting takes no actions on the contained
+      objects, but will only change the users personal point of view.
+
+      You can order contained objects with the controls on the bottom
+      of the page. The order of objects ('sort by position') is stored
+      in the database and remains fixed until it is changed by another
+      user.
+
+  Controls
+
+    '[Checkbox]' -- Selects the object in order to perform operations
+    on it. The operations you can perform are rename, cut, copy,
+    delete, and export. Some operations may not be visible if they are
+    not allowed.
+
+    'Rename' -- Changes the ids of the selected objects.
+
+    'Cut' -- Cuts selected objects and place them into the
+    clipboard. This is similar to cut in most file managers. Cut
+    objects can be pasted in a new location. When cut objects are
+    pasted into another location the old objects are deleted.
+
+    'Copy' -- Copies selected objects and place them in the
+    clipboard. This is similar to copy in most file managers. Copied
+    objects can be pasted in a new location.
+
+    'Paste' -- Allows you to paste objects from the clipboard into
+    this object. **Note: This option will only appear if objects have
+    previously been copied or cut.**
+
+    'Delete' -- Deletes the selected objects. Deleted objects are
+    *not* placed in the clipboard.
+
+    'Import/Export' -- Imports or exports a Zope object.
+
+    'Available Objects' -- Selects a type of object to add.
+
+    'Add' -- Adds an object specified in 'Available Objects'.
+ 
+    'Select All (Deselect All)' -- Toggles between selecting and
+    deselecting each item currently displayed in the contents view.
+    **Note: This control will only appear if your browser is
+    javascript-enabled.**
+
+    'Set View as Default' -- Sets current sorted view as default contents view
+    for this folder. **Note: This option will only appear if your current
+    sorted view is not the default view.**
+
+    **The following options will only appear in Position view:**
+
+    'Up' -- Moves selected objects up by the selected amount of steps
+    (default is 1).
+
+    'Down' -- Moves selected objects down by the selected amount of steps
+    (default is 1).
+
+    'Top' -- Moves selected objects to the top of the page.
+
+    'Bottom' -- Moves selected objects to the bottom of the page.

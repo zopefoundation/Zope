@@ -1,0 +1,27 @@
+ZCatalog - MetaData Table: Manage Catalog record schema
+  
+    Description
+
+        This view allows you to manage the catalog record schema.
+        
+        The catalog holds records which describe the cataloged
+        objects.  This view allows you to define columns for these
+        records.
+
+    Controls
+
+        '[List of Indexes]' -- Each line contains one Meta Data entry
+        (column).  The checkbox in the front allows you to mark a meta
+        data entry for deletion. Next the meta data entry's name is
+        listed which corresponds to attribute names of various
+        objects, is displayed.
+        
+        'Delete' -- When clicked, the checkmarked Meta Data entries
+        (columns) will be deleted.
+        
+        'Meta Data name' -- Allows you to enter the name of a new meta
+        data entry.
+        
+        'Add' -- When clicked, the new entry (column) will be added to
+        this catalog.
+

@@ -1,0 +1,273 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%deffont "standard" xfont "helvetica-medium-r"
+%deffont "thick" xfont "helvetica-bold-r"
+%deffont "typewriter" xfont "courier-medium-r"
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%% Default settings per each line numbers.
+%%
+%default 1 area 90 90, leftfill, size 2, fore "gray20", back "white", font "standard", hgap 0
+%default 2 size 7, vgap 10, prefix " ", ccolor "blue"
+%default 3 size 2, bar "gray70", vgap 10
+%default 4 size 5, fore "gray20", vgap 30, prefix " ", font "standard"
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%% Default settings that are applied to TAB-indented lines.
+%%
+%tab 1 size 5, vgap 40, prefix "  ", icon box "red" 50
+%tab 2 size 4, vgap 40, prefix "      ", icon arc "yellow" 50
+%tab 3 size 3, vgap 40, prefix "            ", icon delta3 "white" 40
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%page
+
+Five - Zope 3 in Zope 2
+
+
+
+
+%center
+Martijn Faassen, Infrae
+faassen@infrae.com
+Five developer
+
+%page
+
+Views with Five
+
+
+	What are views?
+
+	Why?
+
+	How to make them work?
+
+%page
+
+Actually
+
+
+	This tutorial contains only a few Five specific bits
+
+	Otherwise it applies to Zope 3 as much as to Five
+
+	The Five specific bits are mainly some extra ZCML directives
+
+	These are in their own ZCML namespace
+
+%page
+
+Page example: overview.pt
+
+
+%size 4, fore "blue"
+<html>
+<body>
+<p tal:content="context/objectIds"></p>
+</body>
+</html>
+
+%page
+
+Page example: configure.zcml
+
+
+%size 4, fore "blue"
+<configure 
+  xmlns="http://namespaces.zope.org/zope"
+  xmlns:browser="http://namespaces.zope.org/browser"
+  xmlns:five="http://namespaces.zope.org/five">
+  <five:traversable
+    class="OFS.Folder.Folder"
+    />
+  <browser:page
+      for="OFS.interfaces.IFolder"
+      name="overview.html"
+      template="overview.pt"
+      permission="zope2.ViewManagementScreens"
+      />
+</configure>
+
+%page
+
+What works now
+
+
+	some/folder/overview.html
+
+%page
+
+Hooking up the page, explanation
+
+
+	Much like hooking up an adapter
+
+	Adapter provides new interface (API) for developer
+
+	View provides new interface (UI) for user
+
+	Only five-specific thing is making Folder Zope-3 traversable
+
+	Well, and the Zope 2 permission.
+
+%page
+
+Hooking up a page, with class
+
+
+	We need some helper methods
+
+	Very similar to the way you'd use Python scripts in Zope 2
+
+%page
+
+View class example: overview2.pt
+
+
+%size 4, fore "blue"
+<html>
+<body>
+<p tal:content="view/reversedIds"></p>
+</body>
+</html>
+
+%page
+
+View class example: browser.py
+
+
+%size 4, fore "blue"
+from Products.Five import BrowserView
+
+class Overview(BrowserView):
+    def reversedIds(self):
+        result = []
+        for id in self.context.objectIds():
+            l = list(id)
+            l.reverse()
+            reversed_id = ''.join(l)
+            result.append(reversed_id)
+        return result
+
+%page
+
+Example: configure.zcml
+
+
+%size 4, fore "blue"
+  <browser:page
+      for="OFS.interfaces.IFolder"
+      name="overview2.html"
+      template="overview2.pt"
+      permission="zope2.ViewManagementScreens"
+      class=".browser.Overview"
+      />
+
+%page
+
+A note on security
+
+
+	There is none: both python code and ZPT are trusted
+
+	Only checks are happening on the outside
+
+	Performance benefit
+
+	Advantage of simplicity
+
+%page
+
+Publishing an attribute
+
+
+	Expose python method on view directly to the web
+
+%page
+
+Attribute example: browser.py
+
+
+%size 4, fore "blue"
+    def directlyPublished(self):
+        return "This is directly published"
+
+%page
+
+Attribute example: configure zcml
+
+
+%size 4, fore "blue"
+  <browser:page
+    for="OFS.interfaces.IFolder"
+    name="test.html"
+    class=".browser.Overview"
+    attribute="directlyPublished"
+    permission="zope2.ViewManagementScreens"
+    />
+
+%page
+
+Publishing multiple pages
+
+
+	Convenience directive: browser:pages
+
+%page
+
+Multiple pages example
+
+
+%size 4, fore "blue"
+  <browser:pages
+      for="OFS.interfaces.IFolder"
+      class=".browser.NewExample"
+      permission="zope2.ViewManagementScreens"
+      >
+    <browser:page
+        name="one.html"
+        template="one.pt"
+        />
+    <browser:page
+        name="two.html"
+        attribute="two"
+        />
+  </browser:pages>
+
+%page
+
+Default view for object
+
+
+	We can now set views that are named
+
+	What if we traverse to the object itself?
+
+	Use browser:defaultView
+
+%page
+
+Uh oh
+
+
+	This doesn't seem to work yet with Zope folders. Sidnei, help!
+
+	So we'll try it with a custom SimpleItem-based object
+
+%page
+
+DefaultView example
+
+
+%size 4, fore "blue"
+  <browser:defaultView
+     for=".democontent.IDemoContent"
+     name="someview.html" />
+
+%page
+
+Conclusions
+
+
+	This works the same way as Zope 3 does too
+
+	Can supplement existing view systems in Zope 2

@@ -1,0 +1,62 @@
+METAL Overview
+
+  The *Macro Expansion Template Attribute Language* (METAL) standard
+  is a facility for HTML/XML macro preprocessing. It can be used in
+  conjunction with or independently of "TAL":tal.stx and
+  "TALES":tales.stx.
+
+  Macros provide a way to define a chunk of presentation in one
+  template, and share it in others, so that changes to the macro are
+  immediately reflected in all of the places that share it.
+  Additionally, macros are always fully expanded, even in a template's
+  source text, so that the template appears very similar to its final
+  rendering.
+
+  METAL Namespace
+
+    The METAL namespace URI and recommended alias are currently
+    defined as::
+
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+
+    Just like the TAL namespace URI, this URI is not attached to a web
+    page; it's just a unique identifier.
+
+    Zope does not require an XML namespace declaration when creating
+    templates with a content-type of 'text/html'. However, it does
+    require an XML namespace declaration for all other content-types.
+
+  METAL Statements 
+
+    METAL defines a number of statements:
+
+    * "metal:define-macro":metal-define-macro.stx - Define a macro.
+
+    * "metal:use-macro":metal-use-macro.stx - Use a macro.
+
+    * "metal:define-slot":metal-define-slot.stx - Define a macro
+    customization point.
+
+    * "metal:fill-slot":metal-fill-slot.stx - Customize a macro.
+
+    Although METAL does not define the syntax of expression
+    non-terminals, leaving that up to the implementation, a canonical
+    expression syntax for use in METAL arguments is described in
+    "TALES Specification":tales.stx.
+
+  See Also
+
+    "TAL Overview":tal.stx
+
+    "TALES Overview":tales.stx
+
+    "metal:define-macro":metal-define-macro.stx
+
+    "metal:use-macro":metal-use-macro.stx
+
+    "metal:define-slot":metal-define-slot.stx
+
+    "metal:fill-slot":metal-fill-slot.stx
+
+
+  

@@ -1,0 +1,15 @@
+Zope Permission - Edit: Edit Permission.
+  
+  Description
+ 
+    This view allows you to edit Zope Permission settings.
+
+  Controls
+
+    'Title' -- The optional title of the Zope Permission.
+
+    'Name' --  The name of the permission.
+    **Note: A permission's name must be unique.**
+
+    'Change' -- Change the Permission.
+

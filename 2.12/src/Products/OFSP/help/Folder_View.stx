@@ -1,0 +1,8 @@
+Folder - View: Folder Preview.
+  
+  Description
+
+    This view allows you to preview the public appearance of a Folder.
+
+    This view will only be available if the Folder contains (or acquires) 
+    an 'index_html' object.

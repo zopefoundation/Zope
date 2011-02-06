@@ -1,0 +1,13 @@
+Security - Permissions Acquisition: Security acquisition settings.
+  
+  Description
+  
+    This view allows you to manage security acquisition settings. You
+    can control which permissions acquire security settings.
+
+  Controls
+
+    '[Permissions List]' -- The permissions which
+    should acquire security settings.
+
+    'Change' -- Sets the acquisition settings.
