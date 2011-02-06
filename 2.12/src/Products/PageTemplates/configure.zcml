@@ -1,8 +1,0 @@
-<configure xmlns="http://namespaces.zope.org/zope">
-
-  <utility
-      provides="Products.PageTemplates.interfaces.IUnicodeEncodingConflictResolver"
-      component="Products.PageTemplates.unicodeconflictresolver.PreferredCharsetResolver"
-      />
-
-</configure>

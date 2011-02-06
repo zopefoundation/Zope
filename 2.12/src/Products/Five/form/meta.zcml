@@ -1,5 +1,0 @@
-<configure xmlns="http://namespaces.zope.org/zope">
-
-  <include package="five.formlib" file="meta.zcml" />
-
-</configure>

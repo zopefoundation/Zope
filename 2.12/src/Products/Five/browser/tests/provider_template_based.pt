@@ -1,1 +1,0 @@
-<tal:block replace="structure provider:mypage.TemplateProvider" />
