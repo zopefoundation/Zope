@@ -120,23 +120,21 @@ class DefaultPublishTraverse(object):
                     # Again, clear any error status created by __bobo_traverse__
                     # because we actually found something:
                     request.response.setStatus(200)
-                    return subobject
                 except AttributeError:
                     pass
 
                 # Lastly we try with key access:
-                try:
-                    subobject = object[name]
-                except TypeError: # unsubscriptable
-                    raise KeyError(name)
+                if subobject is None:
+                    try:
+                        subobject = object[name]
+                    except TypeError: # unsubscriptable
+                        raise KeyError(name)
                 
 
         # Ensure that the object has a docstring, or that the parent
         # object has a pseudo-docstring for the object. Objects that
         # have an empty or missing docstring are not published.
         doc = getattr(subobject, '__doc__', None)
-        if doc is None:
-            doc = getattr(object, '%s__doc__' % name, None)
         if not doc:
             raise Forbidden(
                 "The object at %s has an empty or missing " \

@@ -5,11 +5,14 @@ This file contains change information for the current Zope release.
 Change information for previous versions of Zope can be found at
 http://docs.zope.org/zope2/releases/.
 
-2.12.15 (unreleased)
+2.12.15 (2011-02-04)
 --------------------
 
 Bugs Fixed
 ++++++++++
+
+- LP #713253: Prevent publication of acquired attributes, where the acquired
+  object does not have a docstring.
 
 - Fix `LazyMap` to avoid unnecessary function calls.
 
