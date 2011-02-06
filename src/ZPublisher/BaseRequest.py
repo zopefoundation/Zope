@@ -140,8 +140,6 @@ class DefaultPublishTraverse(object):
         # object has a pseudo-docstring for the object. Objects that
         # have an empty or missing docstring are not published.
         doc = getattr(subobject, '__doc__', None)
-        if doc is None:
-            doc = getattr(object, '%s__doc__' % name, None)
         if not doc:
             raise Forbidden(
                 "The object at %s has an empty or missing " \
