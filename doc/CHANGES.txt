@@ -4,6 +4,14 @@ Zope Changes
   Change information for previous versions of Zope can be found in the
   file HISTORY.txt.
 
+  Zope 2.10.13 (2011/02/04)
+
+    Bugs fixed
+
+      - Prevent publication of acquired attributes, where the acquired
+        object does not have a docstring.
+        https://bugs.launchpad.net/zope2/+bug/713253/
+
   Zope 2.10.12 (2010/09/01)
 
     Bugs fixed

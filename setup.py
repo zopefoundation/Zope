@@ -462,7 +462,7 @@ doclines = __doc__.split("\n")
 
 setup(name='Zope',
       author=AUTHOR,
-      version="2.10.7-dev",
+      version="2.10.13",
       maintainer="Zope Corporation",
       maintainer_email="zope-dev@zope.org",
       url = "http://www.zope.org/",
