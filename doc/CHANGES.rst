@@ -11,6 +11,8 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
+- LP #713820: Remove docstrings from various methods in ZCatalog, as they
+  shouldn't be web-publishable.
 
 2.12.15 (2011-02-06)
 --------------------
