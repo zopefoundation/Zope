@@ -43,7 +43,7 @@ Features Added
 - Updated distributions:
 
   - AccessControl = 2.13.4
-  - Products.ZCatalog = 2.13.5
+  - Products.ZCatalog = 2.13.6
 
 Restructuring
 +++++++++++++
