@@ -18,6 +18,7 @@ Features Added
 - Updated distributions:
 
   - Products.ZCatalog = 2.13.6
+  - ZODB3 = 3.10.2
 
 2.13.4 (2011-02-06)
 -------------------
