@@ -47,7 +47,7 @@ class IReadInterface(Interface):
         """List interfaces provided by the object.
         """
 
-    def getDirectlyProvidedNames():
+    def getProvidedNames():
         """List the names of interfaces provided by the object.
         """
 
