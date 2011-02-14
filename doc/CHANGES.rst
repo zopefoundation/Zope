@@ -11,6 +11,7 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
+- Five: Corrected a method name in the IReadInterface interface.
 
 Features Added
 ++++++++++++++
