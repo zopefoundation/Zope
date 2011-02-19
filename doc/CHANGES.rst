@@ -14,6 +14,13 @@ Bugs Fixed
 - LP #713820: Remove docstrings from various methods in ZCatalog, as they
   shouldn't be web-publishable.
 
+Features
+++++++++
+
+- Updated distributions:
+
+  - Acquisition = 2.13.6
+
 2.12.15 (2011-02-06)
 --------------------
 
