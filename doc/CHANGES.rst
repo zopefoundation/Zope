@@ -18,6 +18,7 @@ Features Added
 
 - Updated distributions:
 
+  - Acquisition = 2.13.6
   - Products.ZCatalog = 2.13.6
   - ZODB3 = 3.10.2
 
