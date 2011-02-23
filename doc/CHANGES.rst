@@ -12,6 +12,13 @@ Bugs Fixed
 ++++++++++
 
 
+Features Added
+++++++++++++++
+
+- Updated distributions:
+
+  - Products.ZCatalog = 2.13.7
+
 2.13.5 (2011-02-23)
 -------------------
 
