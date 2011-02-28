@@ -11,6 +11,7 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
+- Corrected copyright information shown in the ZMI.
 
 2.12.16 (2011-02-23)
 --------------------
