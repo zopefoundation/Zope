@@ -11,6 +11,7 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
+- Corrected copyright information shown in the ZMI.
 
 Features Added
 ++++++++++++++
