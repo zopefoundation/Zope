@@ -24,7 +24,7 @@ your browser.  Note that you need to press the browser reload
 button in order for some changes to take effect.
 </p>
 
-<form action="&dtml-URL;" method="POST">
+<form action="&dtml-URL;" method="post">
 <input type="hidden" name="set_zmi_cookies" value="1" />
 
 <table cellspacing="0" cellpadding="2" border="0">
@@ -57,9 +57,7 @@ button in order for some changes to take effect.
   </td>
   <td align="left" valign="top">
   <div class="form-text">
-  <dtml-let ag="REQUEST.get('HTTP_USER_AGENT', '')"
-     is_nav4="ag[:9] == 'Mozilla/4' and _.string.find(ag, 'MSIE') < 0"
-     use_css="REQUEST.get('zmi_use_css', '1')">
+  <dtml-let use_css="REQUEST.get('zmi_use_css', '1')">
   <input type="radio" name="zmi_use_css" value="1"
     <dtml-if expr="use_css and use_css != 'inline'">checked="checked"</dtml-if>
     /> Yes
@@ -97,17 +95,17 @@ button in order for some changes to take effect.
 </table>
 
 <span class="form-element">
-<input type="submit" name="submit" value="Change">
+<input type="submit" name="submit" value="Change" />
 </span>
 
 <div class="form-help">
   <dtml-if expr="cols[-1]=='%'">
-    <textarea name="data:text" rows="&dtml-rows;" style="width: &dtml-cols;;">
+    <textarea name="data:text" cols="" rows="&dtml-rows;" style="width: &dtml-cols;;">
   <dtml-else>
     <textarea name="data:text" cols="&dtml-cols;" rows="&dtml-rows;">
   </dtml-if>
     This is a sample edit textarea.
-    </textarea>      
+    </textarea>
 </div>
 
 </dtml-let>

@@ -37,8 +37,8 @@ function toggleSelect() {
   <form action="<dtml-var "REQUEST.URL1" html_quote>/" method="get">
   <dtml-if "_.len(filtered_meta_types) > 1">
     <select class="form-element" name=":action" 
-     onChange="location.href='<dtml-var "REQUEST.URL1" html_quote>/'+this.options[this.selectedIndex].value">
-    <option value="manage_workspace" disabled>Select type to add...</option>
+     onchange="location.href='<dtml-var "REQUEST.URL1" html_quote>/'+this.options[this.selectedIndex].value">
+    <option value="manage_workspace" disabled="disabled">Select type to add...</option>
     <dtml-in filtered_meta_types mapping sort=name>
     <dtml-if action>
     <option value="&dtml.html_quote-action;">&dtml-name;</option>
@@ -76,42 +76,32 @@ function toggleSelect() {
 <tr class="list-header">
   <td width="5%" align="right" colspan="2"><div 
    class="list-item"><a href="./manage_main?skey=meta_type<dtml-if 
-   "skey == 'meta_type' and not rkey">&amp;rkey=meta_type</dtml-if>"
-   onMouseOver="window.status='Sort objects by type'; return true"
-   onMouseOut="window.status=''; return true"><dtml-if 
+   "skey == 'meta_type' and not rkey">&amp;rkey=meta_type</dtml-if>"><dtml-if 
    "skey == 'meta_type' or rkey == 'meta_type'"
    ><strong>Type</strong><dtml-else>Type</dtml-if></a></div>
   </td>
   <td width="50%" align="left"><div class="list-item"><a 
    href="./manage_main?skey=id<dtml-if 
-   "skey == 'id' and not rkey">&amp;rkey=id</dtml-if>"
-   onMouseOver="window.status='Sort objects by name'; return true"
-   onMouseOut="window.status=''; return true"><dtml-if 
+   "skey == 'id' and not rkey">&amp;rkey=id</dtml-if>"><dtml-if 
    "skey == 'id' or rkey == 'id'"
    ><strong>Name</strong><dtml-else>Name</dtml-if></a></div>
   </td>
   <td width="15%" align="left"><div class="list-item"><a 
    href="./manage_main?skey=get_size<dtml-if 
-   "skey == 'get_size' and not rkey">&amp;rkey=get_size</dtml-if>"
-   onMouseOver="window.status='Sort objects by size'; return true"
-   onMouseOut="window.status=''; return true"><dtml-if 
+   "skey == 'get_size' and not rkey">&amp;rkey=get_size</dtml-if>"><dtml-if 
    "skey == 'get_size' or rkey == 'get_size'"
    ><strong>Size</strong><dtml-else>Size</dtml-if></a></div>
   </td>
   <td width="19%" align="left"><div class="list-item"><a 
    href="./manage_main?skey=bobobase_modification_time<dtml-if 
    "skey == 'bobobase_modification_time' and not rkey"
-   >&amp;rkey=bobobase_modification_time</dtml-if>"
-   onMouseOver="window.status='Sort objects by modification time'; return true"
-   onMouseOut="window.status=''; return true"><dtml-if 
+   >&amp;rkey=bobobase_modification_time</dtml-if>"><dtml-if 
    "skey == 'bobobase_modification_time' or rkey == 'bobobase_modification_time'"
    ><strong>Last Modified</strong><dtml-else>Last Modified</dtml-if></a></div>
   </td>
   <dtml-if hasOrderSupport>
   <td width="10%" align="left"><div class="list-item"><a 
-   href="./manage_main?skey=position"
-   onMouseOver="window.status='Sort objects by position'; return true"
-   onMouseOut="window.status=''; return true"><dtml-if 
+   href="./manage_main?skey=position"><dtml-if 
    "skey == 'position'"
    ><strong>Position</strong><dtml-else>Position</dtml-if></a></div>
   </td>
@@ -127,7 +117,7 @@ function toggleSelect() {
   <td align="left" valign="top" width="16">
   <input type="checkbox" name="ids:list" value="&dtml-sequence-key;" />
   </td>
-  <td align="left" valign="top" nowrap="1">
+  <td align="left" valign="top" nowrap="nowrap">
 
   <dtml-if om_icons>
   <a href="&dtml.url_quote-sequence-key;/manage_workspace">
@@ -239,7 +229,7 @@ function toggleSelect() {
 <script type="text/javascript">
 <!-- 
 if (document.forms[0]) {
-  document.write('<input class="form-element" type="submit" name="selectButton" value="Select All" onClick="toggleSelect(); return false">')
+  document.write('<input class="form-element" type="submit" name="selectButton" value="Select All" onclick="toggleSelect(); return false">')
   }
 //-->
 </script>

@@ -1,7 +1,5 @@
-<dtml-unless zmi_embedded_css>
 <dtml-call "RESPONSE.setHeader('Content-Type','text/css')">
 <dtml-call "RESPONSE.setHeader('Cache-Control','public,max-age=3600')">
-</dtml-unless>
 h1 {
   font-family: Verdana, Helvetica, sans-serif;
   font-size: 24pt;
@@ -59,6 +57,10 @@ th {
   font-weight: bold;
   font-size: 10pt;
   color: #333333;
+}
+
+form {
+  margin-bottom: 1em;
 }
 
 .form-help {

@@ -1,19 +1,19 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
 <title>Zope Copyright</title>
 </head>
 <body bgcolor="#ffffff" link="#000099" alink="#000099" vlink="#000099">
 
-<P align="center">
+<p align="center">
 <a href="#ZPL">Zope License</a> |
 <a href="#PYTHON">Python License</a> |
 <a href="#CREDITS">Zope Credits</a>
-</P>
+</p>
 
-<A NAME="ZPL">
+<a name="ZPL" />
 
-<H2>Zope Public License (ZPL) Version 2.1</H2>
+<h2>Zope Public License (ZPL) Version 2.1</h2>
 <h3>This software is Copyright &copy;
 <a href="http://www.zopefoundation.org/" target="_top">Zope Foundation</a> and
 Contributors. All rights reserved.</h3>
@@ -91,18 +91,17 @@ Corporation.  Specific attributions are listed in the
 accompanying credits file.
 </p>
 
-<hr>
+<hr />
 
-<A NAME="PYTHON">
+<a name="PYTHON" />
 
-<H3>
-<img src="&dtml-BASEPATH1;/p_/PyPoweredSmall_Gif">
-This software is powered by <a href="http://www.python.org/" TARGET="_top">Python</a>!
-</H3>
+<h3>
+<img src="&dtml-BASEPATH1;/p_/PyPoweredSmall_Gif" alt="Python powered" />
+This software is powered by <a href="http://www.python.org/" target="_top">Python</a>!
+</h3>
 <p>Copyright &copy; 1991-1995 by Stichting Mathematisch Centrum, Amsterdam,
-The Netherlands.</p>
-
-<p><center>All Rights Reserved</center></p>
+The Netherlands.
+<br />All Rights Reserved</p>
 
 <p>Permission to use, copy, modify, and distribute this software and its
 documentation for any purpose and without fee is hereby granted,
@@ -128,72 +127,71 @@ PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
 TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 PERFORMANCE OF THIS SOFTWARE.</strong></p>
 
-<hr>
+<hr />
 
-<A NAME="CREDITS">
+<a name="CREDITS" />
 
-<H3>Zope Credits</H3>
+<h3>Zope Credits</h3>
 
 
-<P>
+<p>
   The Zope software receives contributions from far and wide.  Here's
   the Zope Hall of Fame:
-</P>
-<UL>
+</p>
+<ul>
 
-    <LI>Jeff Bauer is Zope Dude Number One.  Jeff took over PCGI and
-    kept pushing it forward through the years.</LI>
+    <li>Jeff Bauer is Zope Dude Number One.  Jeff took over PCGI and
+    kept pushing it forward through the years.</li>
 
-    <LI>Sam Rushing worked with us at Zope Corporation to make Medusa
-    the publishing platform for ZServer and the concurrency of Zope2.</LI>
+    <li>Sam Rushing worked with us at Zope Corporation to make Medusa
+    the publishing platform for ZServer and the concurrency of Zope2.</li>
 
-    <LI>A subset of windows guru Mark Hammond's win32 extensions are
-    bundled with win32 binary distributions of Zope.
+    <li>A subset of windows guru Mark Hammond's win32 extensions are
+    bundled with win32 binary distributions of Zope.</li>
 
-    <LI>Martijn Pieters and Brian Hooper contributed the DTML 'in' tag reverse
-    attribute.</LI>
+    <li>Martijn Pieters and Brian Hooper contributed the DTML 'in' tag reverse
+    attribute.</li>
 
-    <LI>Phillip Eby contributed the DTML <code>let</code> tag and many
+    <li>Phillip Eby contributed the DTML <code>let</code> tag and many
       other useful ideas, including the inspiration for the DTML
       <code>call</code>, <code>with</code> and <code>return</code>
-      tags.</LI>
+      tags.</li>
 
-    <LI>The DateTime module was based on work from Ted Horst.</LI>
+    <li>The DateTime module was based on work from Ted Horst.</li>
 
-    <LI>Jordan Baker contributed the 'try' tag, something I've wanted
-    for a long, long time.</LI>
+    <li>Jordan Baker contributed the 'try' tag, something I've wanted
+    for a long, long time.</li>
 
-    <LI>Martijn Pieters chipped in with a safe range function.</LI>
+    <li>Martijn Pieters chipped in with a safe range function.</li>
 
-    <LI>Michael Hauser came up with the name "Zope".</LI>
+    <li>Michael Hauser came up with the name "Zope".</li>
 
-    <LI>Eric Kidd added support for <a href="http://www.xmlrpc.com/">
-        XML-RPC</a></LI>
+    <li>Eric Kidd added support for <a href="http://www.xmlrpc.com/">
+        XML-RPC</a></li>
 
-    <LI>Andrew M. Kuchling wrote the initial version of mod_pcgi, making 
-    him extremely cool in our book.</LI>
+    <li>Andrew M. Kuchling wrote the initial version of mod_pcgi, making 
+    him extremely cool in our book.</li>
 
-    <LI>Jephte CLAIN made some patches to European TimeZope.</LI>
+    <li>Jephte CLAIN made some patches to European TimeZope.</li>
 
-    <LI>All the other Zopistas far and wide that stuck with us during
+    <li>All the other Zopistas far and wide that stuck with us during
     the Bobo/Principia days and politely push us to make the best damn
-    app server on this or any other planet.</LI>
+    app server on this or any other planet.</li>
 
-    <LI>Of course the list of credits would be quite incomplete without
+    <li>Of course the list of credits would be quite incomplete without
     mentioning Guido van Rossum, benevolent dictator of Python and
     long-time friend of Zope Corporation.  Zope Power is Python
-    Power.</LI>
+    Power.</li>
 
-    <LI>
+    <li>
     Special thanks to Richard Stallman and the Free Software
     Foundation for their assistance and feedback on the GPL-compatible 
     2.0 version of the Zope Public License.
-    </LI>
+    </li>
 
-</UL>
- <P>
+</ul>
+ <p>
  Paul Everitt, <a href="mailto:paul@zope.com">paul@zope.com</a>.
-</P>
-</BODY>
-</HTML>
-
+</p>
+</body>
+</html>

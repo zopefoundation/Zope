@@ -6,7 +6,7 @@ The Control Panel provides access to system information and management
 functions such as database and product management.  
 </p>
 
-<form action="&dtml-URL1;" method="post" onSubmit="">
+<form action="&dtml-URL1;" method="post">
 <table cellspacing="0" cellpadding="2" border="0">
 <tr>
   <td align="left" valign="top">
@@ -77,7 +77,7 @@ functions such as database and product management.
   <td align="left" valign="top">
   <div class="form-text">
   <dtml-in getServers>
-    &dtml-sequence-key; (&dtml-sequence-item;)<br>
+    &dtml-sequence-key; (&dtml-sequence-item;)<br />
   </dtml-in>
   </div>
   </td>
@@ -123,7 +123,6 @@ functions such as database and product management.
 </table>
 </form>
 
-<p>
 <table cellspacing="0" cellpadding="2" border="0">
 <dtml-in objectItems>
 <tr>
@@ -141,6 +140,5 @@ functions such as database and product management.
 </tr>
 </dtml-in objectValues>
 </table>
-</p>
 
 <dtml-var manage_page_footer>
