@@ -18,6 +18,7 @@ Features Added
 
 - Updated distributions:
 
+  - Acquisition = 2.13.7
   - Products.ZCatalog = 2.13.7
 
 2.13.5 (2011-02-23)
