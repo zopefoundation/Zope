@@ -43,7 +43,7 @@ Features Added
 - Updated distributions:
 
   - AccessControl = 2.13.4
-  - Acquisition = 2.13.6
+  - Acquisition = 2.13.7
   - Products.ZCatalog = 2.13.7
 
 Restructuring
