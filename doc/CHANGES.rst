@@ -13,6 +13,13 @@ Bugs Fixed
 
 - Corrected copyright information shown in the ZMI.
 
+Features
+++++++++
+
+- Updated distributions:
+
+  - Acquisition = 2.13.7
+
 2.12.16 (2011-02-23)
 --------------------
 
