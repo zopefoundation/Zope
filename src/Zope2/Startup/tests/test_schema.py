@@ -11,7 +11,6 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-
 """Test that the Zope schema can be loaded."""
 
 import os
@@ -220,6 +219,19 @@ class StartupTestCase(unittest.TestCase):
             max-conflict-retries 15
             """)
         self.assertEqual(conf.max_conflict_retries, 15)
+
+    def test_default_zpublisher_encoding(self):
+        conf, dummy = self.load_config_text("""\
+            instancehome <<INSTANCE_HOME>>
+            """)
+        self.assertEqual(conf.default_zpublisher_encoding, 'iso-8859-15')
+
+        conf, dummy = self.load_config_text("""\
+            instancehome <<INSTANCE_HOME>>
+            default-zpublisher-encoding utf-8
+            """)
+        self.assertEqual(conf.default_zpublisher_encoding, 'utf-8')
+
 
 def test_suite():
     return unittest.makeSuite(StartupTestCase)

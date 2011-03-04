@@ -10,7 +10,9 @@ http://docs.zope.org/zope2/releases/.
 
 Bugs Fixed
 ++++++++++
- 
+
+- Made sure getConfiguration().default_zpublisher_encoding is set correctly.
+
 - LP #713253: Prevent publication of acquired attributes, where the acquired
   object does not have a docstring.
 

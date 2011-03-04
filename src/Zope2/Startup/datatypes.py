@@ -11,7 +11,6 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-
 """Datatypes for the Zope schema for use with ZConfig."""
 
 import os
@@ -228,7 +227,7 @@ class ZopeDatabase(ZODBDatabase):
                     container_class = 'OFS.Folder.Folder'
                 return (real_root, real_path, container_class)
         raise LookupError('Nothing known about mount path %s' % mount_path)
-    
+
 def default_zpublisher_encoding(value):
     # This is a bit clunky but necessary :-(
     # These modules are imported during the configuration process
@@ -239,6 +238,7 @@ def default_zpublisher_encoding(value):
     Converters.default_encoding = value
     HTTPRequest.default_encoding = value
     HTTPResponse.default_encoding = value
+    return value
 
 class DBTab:
     """A Zope database configuration, similar in purpose to /etc/fstab.
