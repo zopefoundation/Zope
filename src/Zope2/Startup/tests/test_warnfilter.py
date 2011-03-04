@@ -87,6 +87,7 @@ class TestWarnFilter(unittest.TestCase):
                    message .*test.*
                 </warnfilter>
                 """)
+            self.assertEqual(len(conf.warnfilters), 2)
             self.assertRaises(TestSchemaWarning, self._dowarning1)
             self.assertRaises(UserWarning, self._dowarning2)
 

@@ -263,8 +263,7 @@
 
   <!-- schema begins  -->
 
-  <multisection type="warnfilter" attribute="warnfilters" name="*"
-                dataype="zLOG.warn_filter_handler">
+  <multisection type="warnfilter" name="*" attribute="warnfilters">
     <!-- from zLOG -->
     <description>
     A multisection which allows a user to set up a Python "warning" filter.
