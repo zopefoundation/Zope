@@ -11,7 +11,6 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-
 """ Startup package.  Responsible for startup configuration of Zope """
 
 import logging
@@ -123,10 +122,8 @@ class ZopeStarter:
         logger.error(msg)
 
     def setupPublisher(self):
-        import Globals # to set data
         import ZPublisher.HTTPRequest
         import ZPublisher.Publish
-        Globals.DevelopmentMode = self.cfg.debug_mode
         ZPublisher.Publish.set_default_debug_mode(self.cfg.debug_mode)
         ZPublisher.Publish.set_default_authentication_realm(
             self.cfg.http_realm)
