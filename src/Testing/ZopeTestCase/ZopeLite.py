@@ -92,8 +92,6 @@ _exec('import ZODB')
 import ZODB
 _write('.')
 
-#_exec('import Globals')
-#import Globals
 _exec('import OFS.SimpleItem')
 import OFS.SimpleItem
 _exec('import OFS.ObjectManager')
@@ -242,4 +240,3 @@ def sandbox(base=None):
     return ZODB.DB(storage)
 
 _write(' done (%.3fs)\n' % (time.time() - _start))
-
