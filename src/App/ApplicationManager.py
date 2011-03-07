@@ -7,7 +7,7 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
 """System management components"""
@@ -217,8 +217,8 @@ class DebugManager(Item, Implicit):
                 } for n in rd]
 
     def dbconnections(self):
-        import Globals  # for data
-        return Globals.DB.connectionDebugInfo()
+        import Zope2  # for data
+        return Zope2.DB.connectionDebugInfo()
 
 
     # Profiling support
@@ -481,4 +481,3 @@ class AltDatabaseManager(DatabaseManager, CacheManager):
     db_name = ApplicationManager.db_name.im_func
     db_size = ApplicationManager.db_size.im_func
     manage_pack = ApplicationManager.manage_pack.im_func
-
