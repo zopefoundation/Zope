@@ -7,7 +7,7 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
 """Product objects
@@ -204,8 +204,6 @@ InitializeClass(Product)
 def initializeProduct(productp, name, home, app):
     # Initialize a persistent product
     assert doInstall()
-
-    import Globals  # to set data
     fver = ''
 
     if hasattr(productp, '__import_error__'):
@@ -289,4 +287,3 @@ def ihasattr(o, name):
 def doInstall():
     from App.config import getConfiguration
     return getConfiguration().enable_product_installation
-

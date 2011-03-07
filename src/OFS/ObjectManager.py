@@ -85,8 +85,6 @@ def checkValidId(self, id, allow_dup=0):
     # only check that the id string contains no illegal chars;
     # check_valid_id() will be called again later with allow_dup
     # set to false before the object is added.
-    import Globals  # for data
-
     if not id or not isinstance(id, str):
         if isinstance(id, unicode):
             id = escape(id)
