@@ -14,8 +14,9 @@
 """ZCML machinery
 """
 
-import os
 import os.path
+
+from App.config import getConfiguration
 from zope.configuration import xmlconfig
 
 _initialized = False
@@ -30,11 +31,9 @@ def load_site(force=False):
         return
     _initialized = True
 
-    import Globals
-    Globals.INSTANCE_HOME
-
     # load instance site configuration file
-    site_zcml = os.path.join(Globals.INSTANCE_HOME, "etc", "site.zcml")
+    instancehome = getConfiguration().instancehome
+    site_zcml = os.path.join(instancehome, "etc", "site.zcml")
 
     if not os.path.exists(site_zcml):
         # check for zope installation home skel during running unit tests

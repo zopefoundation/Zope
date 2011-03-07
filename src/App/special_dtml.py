@@ -7,15 +7,20 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
 
-import DocumentTemplate, Common, Persistence, MethodObject, Globals, os, sys
-from types import InstanceType
+import os
+import sys
 from logging import getLogger
-from App.config import getConfiguration
+from types import InstanceType
 
+import DocumentTemplate
+import MethodObject
+import Persistence
+from App import Common
+from App.config import getConfiguration
 
 LOG = getLogger('special_dtml')
 
@@ -49,7 +54,7 @@ class ClassicHTMLFile(DocumentTemplate.HTMLFile,MethodObject.Method,):
         apply(ClassicHTMLFile.inheritedAttribute('__init__'), args, kw)
 
     def _cook_check(self):
-        if Globals.DevelopmentMode:
+        if getConfiguration().debug_mode:
             __traceback_info__=self.raw
             try:    mtime=os.stat(self.raw)[8]
             except: mtime=0

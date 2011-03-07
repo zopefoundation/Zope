@@ -7,7 +7,7 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
 
@@ -17,18 +17,16 @@ from logging import getLogger
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.SecurityManagement import getSecurityManager
-from App.Common import package_home
-from App.special_dtml import DTMLFile
-from App.config import getConfiguration
 from Acquisition import aq_parent, aq_inner, aq_get
+from App.Common import package_home
+from App.config import getConfiguration
 from ComputedAttribute import ComputedAttribute
 from OFS.SimpleItem import SimpleItem
 from OFS.Traversable import Traversable
-from Shared.DC.Scripts.Script import Script
-from Shared.DC.Scripts.Signature import FuncCode
 from Products.PageTemplates.Expressions import SecureModuleImporter
 from Products.PageTemplates.PageTemplate import PageTemplate
-
+from Shared.DC.Scripts.Script import Script
+from Shared.DC.Scripts.Signature import FuncCode
 from zope.contenttype import guess_content_type
 from zope.pagetemplate.pagetemplatefile import sniff_type
 
@@ -140,8 +138,7 @@ class PageTemplateFile(SimpleItem, Script, PageTemplate, Traversable):
         return self.__name__  # Don't reveal filesystem paths
 
     def _cook_check(self):
-        import Globals  # for data
-        if self._v_last_read and not Globals.DevelopmentMode:
+        if self._v_last_read and not getConfiguration().debug_mode:
             return
         __traceback_info__ = self.filename
         try:

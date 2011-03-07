@@ -7,7 +7,7 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
 import os
@@ -17,6 +17,7 @@ from AccessControl.Permissions import access_contents_information
 from AccessControl.Permissions import view as View
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Implicit
+from App.config import getConfiguration
 from App.ImageFile import ImageFile
 from App.special_dtml import DTMLFile
 from App.special_dtml import HTML
@@ -25,6 +26,7 @@ from OFS.DTMLDocument import DTMLDocument
 from OFS.PropertyManager import PropertyManager
 from OFS.SimpleItem import Item
 from Persistence import Persistent
+
 
 class HelpTopicBase:
     "Mix-in Help Topic support class"
@@ -133,8 +135,7 @@ class HelpTopic(Implicit, HelpTopicBase, Item, PropertyManager, Persistent):
         self._v_last_read = mtime
 
     def _check_for_update(self):
-        import Globals
-        if Globals.DevelopmentMode:
+        if getConfiguration().debug_mode:
             try:    mtime=os.stat(self.file)[8]
             except: mtime=0
             if mtime != self._v_last_read:

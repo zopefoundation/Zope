@@ -7,12 +7,11 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
 """Image object that is stored in a file"""
 
-import os
 import os.path
 import stat
 import time
@@ -47,7 +46,6 @@ class ImageFile(Explicit):
     security = ClassSecurityInfo()
 
     def __init__(self, path, _prefix=None):
-        import Globals  # for data
         if _prefix is None:
             _prefix=getattr(getConfiguration(), 'softwarehome', None) or PREFIX
             if not os.path.isabs(path):
@@ -57,7 +55,7 @@ class ImageFile(Explicit):
         # _prefix is ignored if path is absolute
         path = os.path.join(_prefix, path)
         self.path=path
-        if Globals.DevelopmentMode:
+        if getConfiguration().debug_mode:
             # In development mode, a shorter time is handy
             max_age = 60 # One minute
         else:

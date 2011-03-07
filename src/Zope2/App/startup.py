@@ -13,11 +13,19 @@
 """Initialize the Zope2 Package and provide a published module
 """
 
-from zope.component import queryMultiAdapter
-from zope.event import notify
-from zope.processlifetime import DatabaseOpened
-from zope.processlifetime import DatabaseOpenedWithRoot
+import imp
+import logging
+import sys
+from time import asctime
 
+import AccessControl.User
+import App.ZApplication
+import ExtensionClass
+import OFS.Application
+import transaction
+import ZODB
+import Zope2
+import ZPublisher
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
 from Acquisition import aq_acquire
@@ -26,21 +34,13 @@ from Acquisition import aq_inner
 from Acquisition import aq_parent
 from Acquisition.interfaces import IAcquirer
 from App.config import getConfiguration
-from time import asctime
 from zExceptions import Redirect
 from zExceptions import Unauthorized
 from ZODB.POSException import ConflictError
-import transaction
-import AccessControl.User
-import ExtensionClass
-import imp
-import logging
-import OFS.Application
-import sys
-import ZODB
-import App.ZApplication
-import Zope2
-import ZPublisher
+from zope.component import queryMultiAdapter
+from zope.event import notify
+from zope.processlifetime import DatabaseOpened
+from zope.processlifetime import DatabaseOpenedWithRoot
 
 app = None
 startup_time = asctime()
@@ -127,7 +127,7 @@ def startup():
     # Initialize the app object
     application = app()
     OFS.Application.initialize(application)
-    if Globals.DevelopmentMode:
+    if getConfiguration().debug_mode:
         # Set up auto-refresh.
         from App.RefreshFuncs import setupAutoRefresh
         setupAutoRefresh(application._p_jar)

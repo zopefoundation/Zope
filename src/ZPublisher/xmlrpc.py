@@ -7,7 +7,7 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
 """XML-RPC support module
@@ -24,10 +24,9 @@ import sys
 import types
 import xmlrpclib
 
+from App.config import getConfiguration
 from zExceptions import Unauthorized
 from ZODB.POSException import ConflictError
-
-from ZPublisher.HTTPResponse import HTTPResponse
 
 # Make DateTime.DateTime marshallable via XML-RPC
 # http://www.zope.org/Collectors/Zope/2109
@@ -168,8 +167,7 @@ class Response:
             remove = [r"<[^<>]*>", r"&[A-Za-z]+;"]
             for pat in remove:
                 vstr = re.sub(pat, " ", vstr)
-            import Globals # for data
-            if Globals.DevelopmentMode:
+            if getConfiguration().debug_mode:
                 from traceback import format_exception
                 value = '\n' + ''.join(format_exception(t, vstr, tb))
             else:
