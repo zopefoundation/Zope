@@ -28,6 +28,9 @@ Bugs Fixed
 Features Added
 ++++++++++++++
 
+- ZPublisher: If `IBrowserPage` is provided by a view, form input is decoded.
+  This makes it easier to use ``zope.formlib`` and ``z3c.form`` in Zope 2.
+
 - Report success or failure (when known) of creating a new user with
   the addzope2user script.
 

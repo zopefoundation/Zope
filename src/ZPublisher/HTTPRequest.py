@@ -40,7 +40,6 @@ from AccessControl.tainted import TaintedString
 from ZPublisher.BaseRequest import BaseRequest
 from ZPublisher.BaseRequest import quote
 from ZPublisher.Converters import get_converter
-from ZPublisher.HTTPResponse import HTTPResponse
 from ZPublisher.maybe_lock import allocate_lock
 
 # Flags
@@ -1150,6 +1149,12 @@ class HTTPRequest(BaseRequest):
             other['PATH_INFO'] = path = "%s/%s" % (path,meth)
             self._hacked_path = 1
 
+    def postProcessInputs(self):
+        """Process the values in request.form to decode strings to unicode.
+        """
+        for name, value in self.form.iteritems():
+            self.form[name] = _decode(value, default_encoding)
+
     def resolve_url(self, url):
         # Attempt to resolve a url into an object in the Zope
         # namespace. The url must be a fully-qualified url. The
@@ -1754,3 +1759,16 @@ def _filterPasswordFields(items):
         result.append((k, v))
 
     return result
+
+def _decode(value, charset):
+    """Recursively look for string values and decode.
+    """
+    if isinstance(value, list):
+        return [_decode(v, charset) for v in value]
+    elif isinstance(value, tuple):
+        return tuple(_decode(v, charset) for v in value)
+    elif isinstance(value, dict):
+        return dict((k, _decode(v, charset)) for k, v in value.iteritems())
+    elif isinstance(value, str):
+        return unicode(value, charset, 'replace')
+    return value

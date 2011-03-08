@@ -15,18 +15,25 @@
 
 import sys, os
 import transaction
-from Response import Response
-from Request import Request
-from maybe_lock import allocate_lock
-from mapply import mapply
+
 from zExceptions import Redirect
+from zope.event import notify
 from zope.publisher.interfaces import ISkinnable
+from zope.publisher.interfaces.browser import IBrowserPage
 from zope.publisher.skinnable import setDefaultSkin
 from zope.security.management import newInteraction, endInteraction
-from zope.event import notify
 
-from pubevents import PubStart, PubSuccess, PubFailure, \
-     PubBeforeCommit, PubAfterTraversal, PubBeforeAbort
+from .mapply import mapply
+from .maybe_lock import allocate_lock
+from .pubevents import PubAfterTraversal
+from .pubevents import PubBeforeAbort
+from .pubevents import PubBeforeCommit
+from .pubevents import PubFailure
+from .pubevents import PubStart
+from .pubevents import PubSuccess
+from .Request import Request
+from .Response import Response
+
 
 class Retry(Exception):
     """Raise this to retry a request
@@ -113,6 +120,9 @@ def publish(request, module_name, after_list, debug=0,
             transactions_manager.begin()
 
         object=request.traverse(path, validated_hook=validated_hook)
+
+        if IBrowserPage.providedBy(object):
+            request.postProcessInputs()
 
         notify(PubAfterTraversal(request))
 

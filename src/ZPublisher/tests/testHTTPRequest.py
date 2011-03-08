@@ -1,5 +1,8 @@
 import unittest
 
+from zope.testing.cleanup import cleanUp
+
+
 class RecordTests(unittest.TestCase):
 
     def test_repr(self):
@@ -11,7 +14,11 @@ class RecordTests(unittest.TestCase):
         d = eval(r)
         self.assertEqual(d, rec.__dict__)
 
+
 class HTTPRequestTests(unittest.TestCase):
+
+    def tearDown(self):
+        cleanUp()
 
     def _getTargetClass(self):
         from ZPublisher.HTTPRequest import HTTPRequest
@@ -634,7 +641,33 @@ class HTTPRequestTests(unittest.TestCase):
         self.assertEquals(req.cookies['multi2'],
                           'cookie data with unquoted spaces')
 
+    def test_postProcessInputs(self):
+        from ZPublisher.HTTPRequest import default_encoding
 
+        _NON_ASCII = u'\xc4\xd6\xdc'
+        req = self._makeOne()
+        req.form = {'foo': _NON_ASCII.encode(default_encoding),
+                    'foo_list': [_NON_ASCII.encode(default_encoding), 'SPAM'],
+                    'foo_tuple': (_NON_ASCII.encode(default_encoding), 'HAM'),
+                    'foo_dict': {'foo': _NON_ASCII, 'bar': 'EGGS'}}
+        req.postProcessInputs()
+        self.assertTrue(isinstance(req.form['foo'], unicode))
+        self.assertEqual(req.form['foo'], _NON_ASCII)
+        self.assertTrue(isinstance(req.form['foo_list'], list))
+        self.assertTrue(isinstance(req.form['foo_list'][0], unicode))
+        self.assertEqual(req.form['foo_list'][0], _NON_ASCII)
+        self.assertTrue(isinstance(req.form['foo_list'][1], unicode))
+        self.assertEqual(req.form['foo_list'][1], u'SPAM')
+        self.assertTrue(isinstance(req.form['foo_tuple'], tuple))
+        self.assertTrue(isinstance(req.form['foo_tuple'][0], unicode))
+        self.assertEqual(req.form['foo_tuple'][0], _NON_ASCII)
+        self.assertTrue(isinstance(req.form['foo_tuple'][1], unicode))
+        self.assertEqual(req.form['foo_tuple'][1], u'HAM')
+        self.assertTrue(isinstance(req.form['foo_dict'], dict))
+        self.assertTrue(isinstance(req.form['foo_dict']['foo'], unicode))
+        self.assertEqual(req.form['foo_dict']['foo'], _NON_ASCII)
+        self.assertTrue(isinstance(req.form['foo_dict']['bar'], unicode))
+        self.assertEqual(req.form['foo_dict']['bar'], u'EGGS')
 
     def test_close_removes_stdin_references(self):
         # Verifies that all references to the input stream go away on
