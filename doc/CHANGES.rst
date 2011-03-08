@@ -49,6 +49,7 @@ Features Added
 
   - AccessControl = 2.13.4
   - Acquisition = 2.13.7
+  - Products.BTreeFolder2 = 2.13.2
   - Products.ZCatalog = 2.13.7
 
 Restructuring
