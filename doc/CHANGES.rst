@@ -54,6 +54,10 @@ Features Added
 Restructuring
 +++++++++++++
 
+- Five.browser: Marked `processInputs` and `setPageEncoding` as deprecated.
+  `processInputs` was replaced by the `postProcessInputs` request method and
+  the charset negotiation done by `setPageEncoding` was never fully supported.
+
 - Factored out the `Products.ZCatalog` and `Products.PluginIndexes` packages
   into a new `Products.ZCatalog` distribution.
 

@@ -15,6 +15,8 @@
     encoding.
 """
 
+from warnings import warn
+
 from zope.publisher.browser import isCGI_NAME
 from zope.i18n.interfaces import IUserPreferredCharsets
 
@@ -34,7 +36,10 @@ def processInputValue(value, charsets):
     """Recursively look for values (e.g. elements of lists, tuples or dicts)
     and attempt to decode.
     """
-    
+    warn(u'processInputValue() is deprecated and will be removed in Zope '
+         u'2.16.',
+         DeprecationWarning, stacklevel=2)
+
     if isinstance(value, list):
         return [processInputValue(v, charsets) for v in value]
     elif isinstance(value, tuple):
@@ -53,14 +58,18 @@ def processInputs(request, charsets=None):
     the passed-in list of charsets. If none are passed in, look up the user's
     preferred charsets. The default is to use utf-8.
     """
-    
+    warn(u'processInputs() is deprecated and will be removed in Zope 2.16. If '
+         u'your view implements IBrowserPage, similar processing is now '
+         u'executed automatically.',
+         DeprecationWarning, stacklevel=2)
+
     if charsets is None:
         envadapter = IUserPreferredCharsets(request, None)
         if envadapter is None:
             charsets = ['utf-8']
         else:
             charsets = envadapter.getPreferredCharsets() or ['utf-8']
-    
+
     for name, value in request.form.items():
         if not (isCGI_NAME(name) or name.startswith('HTTP_')):
             request.form[name] = processInputValue(value, charsets)
@@ -70,6 +79,10 @@ def setPageEncoding(request):
     ZPublisher uses the value of this header to determine how to
     encode unicode data for the browser.
     """
+    warn(u'setPageEncoding() is deprecated and will be removed in Zope 2.16. '
+         u'It is recommended to let the ZPublisher use the default_encoding. '
+         u'Please consider setting default-zpublisher-encoding to utf-8.',
+         DeprecationWarning, stacklevel=2)
     envadapter = IUserPreferredCharsets(request)
     charsets = envadapter.getPreferredCharsets() or ['utf-8']
     request.RESPONSE.setHeader(
