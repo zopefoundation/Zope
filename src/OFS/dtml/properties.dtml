@@ -86,10 +86,11 @@ property values, edit the values and click &quot;Save Changes&quot;.
   <input type="text" name="&dtml-id;:&dtml-type;" size="35"
    value="<dtml-if "hasProperty(id)"><dtml-var
     "('%s' % getProperty(id))" html_quote></dtml-if>" />
-  <dtml-elif "type in ('float', 'date')">
+  <dtml-elif "type == 'date' and not _.same_type(getProperty(id), '')
+              and getProperty(id).timezoneNaive()">
   <input type="text" name="&dtml-id;:&dtml-charset_tag;&dtml-type;" size="35"
-   value="<dtml-var "getProperty(id)" html_quote>" />
-  <dtml-elif "type in ['string','ustring']">
+   value="<dtml-var "str(getProperty(id)).rsplit(' ', 1)[0]" html_quote>" />
+  <dtml-elif "type in ['date', 'float', 'string', 'ustring']">
   <input type="text" name="&dtml-id;:&dtml-charset_tag;&dtml-type;" size="35"
    value="<dtml-var "getProperty(id)" html_quote>" />
   <dtml-elif "type=='boolean'">
