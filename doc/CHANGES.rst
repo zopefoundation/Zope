@@ -13,6 +13,9 @@ Bugs Fixed
 
 - Corrected copyright information shown in the ZMI.
 
+- OFS: Fixed editing offset-naive 'date' properties in the ZMI.
+  The "Properties" tab no longer shows the time zone of offset-naive dates.
+
 Features Added
 ++++++++++++++
 
