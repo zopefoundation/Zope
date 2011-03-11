@@ -22,7 +22,6 @@ import marshal
 import os
 import re
 import sys
-import transaction
 
 from AccessControl import ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
@@ -585,24 +584,10 @@ class ObjectManager(CopyContainer,
 
         cfg = getConfiguration()
         f = os.path.join(cfg.clienthome, '%s.%s' % (id, suffix))
-
-        ob = aq_base(ob)
-        parent = getattr(ob, '__parent__', _marker)
-        if parent is not _marker:
-            sp = transaction.savepoint(True)
-            del ob.__parent__
-            # create a savepoint so that the export includes the version
-            # without a __parent__ pointer
-            transaction.savepoint(True)
-        try:
-            if toxml:
-                exportXML(ob._p_jar, ob._p_oid, f)
-            else:
-                ob._p_jar.exportFile(ob._p_oid, f)
-        finally:
-            if parent is not _marker:
-                # roll back so that we don't actually remove the __parent__
-                sp.rollback()
+        if toxml:
+            exportXML(ob._p_jar, ob._p_oid, f)
+        else:
+            ob._p_jar.exportFile(ob._p_oid, f)
 
         if REQUEST is not None:
             return self.manage_main(self, REQUEST,
