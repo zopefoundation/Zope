@@ -589,11 +589,11 @@ class ObjectManager(CopyContainer,
         ob = aq_base(ob)
         parent = getattr(ob, '__parent__', _marker)
         if parent is not _marker:
-            sp = transaction.savepoint(True)
+            sp = transaction.savepoint()
             del ob.__parent__
             # create a savepoint so that the export includes the version
             # without a __parent__ pointer
-            transaction.savepoint(True)
+            transaction.savepoint()
         try:
             if toxml:
                 exportXML(ob._p_jar, ob._p_oid, f)
