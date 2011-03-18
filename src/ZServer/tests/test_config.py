@@ -134,6 +134,22 @@ class ZServerConfigurationTestCase(BaseTest, WarningInterceptor):
         self.assertEqual(server.port, 9381)
         server.close()
 
+    def test_http_over_ipv6(self):
+        factory = self.load_factory("""\
+            <http-server>
+              address [::1]:81
+            </http-server>
+            """)
+        self.assert_(isinstance(factory,
+                                ZServer.datatypes.HTTPServerFactory))
+        self.assertEqual(factory.host, "::1")
+        self.assertEqual(factory.port, 81)
+        self.check_prepare(factory)
+        server = factory.create()
+        self.assertEqual(server.ip, '::1')
+        self.assertEqual(server.port, 9381)
+        server.close()
+    
     def test_http_factory_defaulthost(self):
         factory = self.load_factory("""\
             <http-server>
