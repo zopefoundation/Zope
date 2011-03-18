@@ -35,7 +35,9 @@ class ServerFactory:
             ip = socket.gethostbyname(defaulthost)
             self._set_default_host(defaulthost, ip)
         else:
-            self.ip = socket.gethostbyname(self.host)
+            address_info = socket.getaddrinfo(self.host, self.port)
+            ips = [info[4][0] for info in address_info]
+            self.ip = ips[0]
         self.dnsresolver = dnsresolver
         self.module = module
         self.cgienv = env
