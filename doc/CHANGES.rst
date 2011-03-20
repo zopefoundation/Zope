@@ -19,6 +19,7 @@ Features
 - Updated distributions:
 
   - Acquisition = 2.13.7
+  - python-gettext = 1.1
 
 2.12.16 (2011-02-23)
 --------------------
