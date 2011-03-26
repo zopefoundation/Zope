@@ -11,6 +11,10 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
+- Fix `WSGIResponse` and `publish_module` functions such that they
+  support the `IStreamIterator` interface in addition to `file` (as
+  supported by `ZServer.HTTPResponse`).
+
 - Corrected copyright information shown in the ZMI.
 
 - OFS: Fixed editing offset-naive 'date' properties in the ZMI.
