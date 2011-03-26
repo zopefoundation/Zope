@@ -30,6 +30,7 @@ from ZPublisher.Publish import call_object
 from ZPublisher.Publish import dont_publish_class
 from ZPublisher.Publish import get_module_info
 from ZPublisher.Publish import missing_name
+from ZPublisher.Iterators import IStreamIterator
 
 _NOW = None     # overwrite for testing
 def _now():
@@ -125,7 +126,7 @@ class WSGIResponse(HTTPResponse):
         self.stdout.write(data)
 
     def setBody(self, body, title='', is_error=0):
-        if isinstance(body, file):
+        if isinstance(body, file) or IStreamIterator.providedBy(body):
             body.seek(0, 2)
             length = body.tell()
             body.seek(0)
@@ -226,8 +227,10 @@ def publish_module(environ, start_response,
     status, headers = response.finalize()
     start_response(status, headers)
 
-    if isinstance(response.body, file):
-        result = response.body
+    body = response.body
+
+    if isinstance(body, file) or IStreamIterator.providedBy(body):
+        result = body
     else:
         # If somebody used response.write, that data will be in the
         # stdout StringIO, so we put that before the body.

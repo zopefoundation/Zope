@@ -370,6 +370,32 @@ class Test_publish_module(unittest.TestCase):
         app_iter = self._callFUT(environ, start_response, _publish)
         self.assertTrue(app_iter is body)
 
+    def test_response_is_stream(self):
+        from ZPublisher.Iterators import IStreamIterator
+        from zope.interface import implements
+
+        class test_streamiterator:
+            implements(IStreamIterator)
+            data = "hello"
+            done = 0
+
+            def next(self):
+                if not self.done:
+                    self.done = 1
+                    return self.data
+                raise StopIteration
+
+        _response = DummyResponse()
+        _response._status = '200 OK'
+        _response._headers = [('Content-Length', '4')]
+        body = _response.body = test_streamiterator()
+        environ = self._makeEnviron()
+        start_response = DummyCallable()
+        _publish = DummyCallable()
+        _publish._result = _response
+        app_iter = self._callFUT(environ, start_response, _publish)
+        self.assertTrue(app_iter is body)
+
     def test_request_closed_when_tm_middleware_not_active(self):
         environ = self._makeEnviron()
         start_response = DummyCallable()

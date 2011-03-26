@@ -11,6 +11,10 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
+- Fix `WSGIResponse` and `publish_module` functions such that they
+  support the `IStreamIterator` interface in addition to `file` (as
+  supported by `ZServer.HTTPResponse`).
+
 - Made sure getConfiguration().default_zpublisher_encoding is set correctly.
 
 - LP #713253: Prevent publication of acquired attributes, where the acquired
