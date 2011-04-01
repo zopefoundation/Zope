@@ -27,7 +27,7 @@ Features Added
 
   - Acquisition = 2.13.7
   - Products.BTreeFolder2 = 2.13.3
-  - Products.ZCatalog = 2.13.7
+  - Products.ZCatalog = 2.13.8
   - python-gettext = 1.1.1
 
 2.13.5 (2011-02-23)
