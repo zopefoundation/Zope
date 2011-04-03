@@ -23,6 +23,8 @@ Bugs Fixed
 Features Added
 ++++++++++++++
 
+- Updated to Zope Toolkit 1.0.2.
+
 - Updated distributions:
 
   - Acquisition = 2.13.7
