@@ -23,6 +23,8 @@ Bugs Fixed
 Features Added
 ++++++++++++++
 
+- Add preliminary IPv6 support to ZServer.
+
 - Updated to Zope Toolkit 1.0.2.
 
 - Updated distributions:
@@ -31,6 +33,7 @@ Features Added
   - Products.BTreeFolder2 = 2.13.3
   - Products.ZCatalog = 2.13.8
   - python-gettext = 1.1.1
+  - ZConfig = 2.9.0
 
 2.13.5 (2011-02-23)
 -------------------

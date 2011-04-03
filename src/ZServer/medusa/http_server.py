@@ -542,7 +542,12 @@ class http_server (asyncore.dispatcher):
         self.ip = ip
         self.port = port
         asyncore.dispatcher.__init__ (self)
-        self.create_socket (socket.AF_INET, socket.SOCK_STREAM)
+        
+        if ':' in ip:
+            socket_type = socket.AF_INET6
+        else:
+            socket_type = socket.AF_INET
+        self.create_socket (socket_type, socket.SOCK_STREAM)
         
         self.handlers = []
         
@@ -555,7 +560,10 @@ class http_server (asyncore.dispatcher):
         # lower this to 5 if your OS complains
         self.listen (1024)
         
-        host, port = self.socket.getsockname()
+        name = self.socket.getsockname()
+        host = name[0]
+        port = name[1]
+
         if not ip:
             self.log_info('Computing default hostname', 'warning')
             try:
