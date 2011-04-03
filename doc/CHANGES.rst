@@ -30,10 +30,15 @@ Features Added
 - Updated distributions:
 
   - Acquisition = 2.13.7
+  - mechanize = 0.2.5
   - Products.BTreeFolder2 = 2.13.3
   - Products.ZCatalog = 2.13.8
   - python-gettext = 1.1.1
+  - pytz = 2011e
+  - repoze.tm2 = 1.0b1
+  - repoze.who = 2.0a4
   - ZConfig = 2.9.0
+  - zope.testbrowser = 3.11.1
 
 2.13.5 (2011-02-23)
 -------------------
