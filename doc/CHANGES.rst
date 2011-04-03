@@ -32,6 +32,8 @@ Bugs Fixed
 Features Added
 ++++++++++++++
 
+- Add preliminary IPv6 support to ZServer.
+
 - ZPublisher: If `IBrowserPage` is provided by a view, form input is decoded.
   This makes it easier to use ``zope.formlib`` and ``z3c.form`` in Zope 2.
 
@@ -44,7 +46,7 @@ Features Added
 - Use cProfile where possible for the `Control_Panel/DebugInfo/manage_profile`
   ZMI view.
 
-- Updated to Zope Toolkit 1.1dev.
+- Updated to Zope Toolkit 1.2dev.
 
 - Added `addzope2user` script, suitable for adding an admin user directly to
   the root acl_users folder.
@@ -53,9 +55,14 @@ Features Added
 
   - AccessControl = 2.13.4
   - Acquisition = 2.13.7
+  - manuel = 1.5.0
   - Products.BTreeFolder2 = 2.13.3
   - Products.ZCatalog = 2.13.8
   - python-gettext = 1.1.1
+  - pytz = 2011e
+  - repoze.tm2 = 1.0b1
+  - repoze.who = 2.0a4
+  - zope.testbrowser = 3.11.1
 
 Restructuring
 +++++++++++++
