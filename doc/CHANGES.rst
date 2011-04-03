@@ -19,7 +19,11 @@ Features
 - Updated distributions:
 
   - Acquisition = 2.13.7
+  - distribute = 0.6.15
+  - docutils = 0.7
   - python-gettext = 1.1.1
+  - pytz = 2011e
+  - transaction = 1.0.1
 
 2.12.16 (2011-02-23)
 --------------------
