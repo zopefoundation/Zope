@@ -12,6 +12,13 @@ Bugs Fixed
 ++++++++++
 
 
+Features
+++++++++
+
+- Updated distributions:
+
+  - zope.sendmail = 3.5.3
+
 2.12.17 (2011-04-03)
 --------------------
 
