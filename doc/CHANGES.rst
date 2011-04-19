@@ -15,6 +15,10 @@ Bugs Fixed
 Features Added
 ++++++++++++++
 
+- ZPublisher: HTTPResponse.appendHeader now keeps header values to a single
+  line by default to avoid causing problems for proxy servers which do not
+  correctly handle multi-line headers.
+
 - Updated distributions:
 
   - Products.ZCatalog = 2.13.9

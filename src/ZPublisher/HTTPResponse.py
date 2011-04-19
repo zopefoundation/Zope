@@ -338,7 +338,7 @@ class HTTPResponse(BaseResponse):
             name = literal and name or key
             self.headers[name] = value
 
-    def appendHeader(self, name, value, delimiter=","):
+    def appendHeader(self, name, value, delimiter=", "):
         """ Append a value to an HTTP return header.
 
         Set an HTTP return header "name" with value "value",
@@ -353,7 +353,7 @@ class HTTPResponse(BaseResponse):
         headers = self.headers
         if headers.has_key(name):
             h = headers[name]
-            h = "%s%s\r\n\t%s" % (h, delimiter, value)
+            h = "%s%s%s" % (h, delimiter, value)
         else:
             h = value
         self.setHeader(name,h, scrubbed=True)

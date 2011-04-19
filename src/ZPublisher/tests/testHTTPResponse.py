@@ -445,13 +445,13 @@ class HTTPResponseTests(unittest.TestCase):
         response = self._makeOne()
         response.setHeader('foo', 'bar')
         response.appendHeader('foo', 'foo')
-        self.assertEqual(response.headers.get('foo'), 'bar,\r\n\tfoo')
+        self.assertEqual(response.headers.get('foo'), 'bar, foo')
 
     def test_appendHeader_w_existing_case_insenstative(self):
         response = self._makeOne()
         response.setHeader('xxx', 'bar')
         response.appendHeader('XXX', 'foo')
-        self.assertEqual(response.headers.get('xxx'), 'bar,\r\n\tfoo')
+        self.assertEqual(response.headers.get('xxx'), 'bar, foo')
 
     def test_appendHeader_drops_CRLF(self):
         # RFC2616 disallows CRLF in a header value.
