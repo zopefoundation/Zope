@@ -32,6 +32,10 @@ Bugs Fixed
 Features Added
 ++++++++++++++
 
+- ZPublisher: HTTPResponse.appendHeader now keeps header values to a single
+  line by default to avoid causing problems for proxy servers which do not
+  correctly handle multi-line headers. (Merged from 2.13 branch.)
+
 - Add preliminary IPv6 support to ZServer.
 
 - ZPublisher: If `IBrowserPage` is provided by a view, form input is decoded.
