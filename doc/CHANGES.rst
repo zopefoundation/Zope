@@ -61,7 +61,7 @@ Features Added
   - Acquisition = 2.13.7
   - manuel = 1.5.0
   - Products.BTreeFolder2 = 2.13.3
-  - Products.ZCatalog = 2.13.10
+  - Products.ZCatalog = 2.13.11
   - python-gettext = 1.1.1
   - pytz = 2011e
   - repoze.tm2 = 1.0b1
