@@ -55,6 +55,8 @@ Features Added
 - Added `addzope2user` script, suitable for adding an admin user directly to
   the root acl_users folder.
 
+- Remove "Control panel" object from zodb.
+
 - Updated distributions:
 
   - AccessControl = 2.13.4

@@ -50,6 +50,9 @@ from misc_ import Misc_
 
 LOG = getLogger('Application')
 
+APP_MANAGER = None
+
+
 class Application(ApplicationDefaultPermissions,
                   ZDOM.Root,
                   Folder.Folder,
@@ -69,6 +72,14 @@ class Application(ApplicationDefaultPermissions,
 
     # Create the help system object
     HelpSys = HelpSys('HelpSys')
+
+
+    manage_options=((
+            Folder.Folder.manage_options[0],
+            Folder.Folder.manage_options[1],
+            {'label': 'Control Panel', 'action': 'Control_Panel/manage_main'}, ) +
+                    Folder.Folder.manage_options[2:]
+                    )
 
     p_=misc_.p_
     misc_=misc_.misc_
@@ -95,12 +106,6 @@ class Application(ApplicationDefaultPermissions,
         self.__allow_groups__ = uf
         self._setObject('acl_users', uf)
 
-        # Initialize control panel
-        cpl = ApplicationManager()
-        cpl._init()
-        self._setObject('Control_Panel', cpl)
-        transaction.get().note("Created Zope Application")
-
     def id(self):
         try:
             return self.REQUEST['SCRIPT_NAME'][1:]
@@ -116,6 +121,10 @@ class Application(ApplicationDefaultPermissions,
     def __class_init__(self):
         InitializeClass(self)
 
+    @property
+    def Control_Panel(self):
+        return APP_MANAGER.__of__(self)
+
     def PrincipiaRedirect(self, destination, URL1):
         """Utility function to allow user-controlled redirects"""
         if destination.find('//') >= 0:
@@ -125,7 +134,8 @@ class Application(ApplicationDefaultPermissions,
     Redirect = ZopeRedirect = PrincipiaRedirect
 
     def __bobo_traverse__(self, REQUEST, name=None):
-
+        if name == 'Control_Panel':
+            return APP_MANAGER.__of__(self)
         try:
             return getattr(self, name)
         except AttributeError:
@@ -279,30 +289,19 @@ class AppInitializer:
         self.install_virtual_hosting()
 
     def install_cp_and_products(self):
+        global APP_MANAGER
+        APP_MANAGER = ApplicationManager()
+        APP_MANAGER._init()
+        APP_MANAGER.Products=App.Product.ProductFolder()
+
         app = self.getApp()
+        app._p_activate()
 
-        # Ensure that Control Panel exists.
-        if not hasattr(app, 'Control_Panel'):
-            cpl = ApplicationManager()
-            cpl._init()
-            app._setObject('Control_Panel', cpl)
-            self.commit('Added Control_Panel')
-        else:
-            # Inline migration of old databases
-            cp = app.Control_Panel
-            ids = [i['id'] for i in cp._objects]
-            if 'Versions' in ids:
-                new = []
-                for entry in cp._objects:
-                    if entry['id'] != 'Versions':
-                        new.append(entry)
-                cp._objects = tuple(new)
-                self.commit('Removed Control_Panel.Versions')
-
-        # b/c: Ensure that a ProductFolder exists.
-        if not hasattr(aq_base(app.Control_Panel), 'Products'):
-            app.Control_Panel.Products=App.Product.ProductFolder()
-            self.commit('Added Control_Panel.Products')
+        # Remove Control Panel.
+        if 'Control_Panel' in app.__dict__.keys():
+            del app.__dict__['Control_Panel']
+            app._objects = tuple(i for i in app._objects if i['id'] != 'Control_Panel')
+            self.commit('Removed persistent Control_Panel')
 
     def install_tempfolder_and_sdc(self):
         app = self.getApp()
