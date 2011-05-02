@@ -21,7 +21,7 @@ Features Added
 
 - Updated distributions:
 
-  - Products.ZCatalog = 2.13.10
+  - Products.ZCatalog = 2.13.11
 
 2.13.6 (2011-04-03)
 -------------------
