@@ -21,7 +21,8 @@ Features Added
 
 - Updated distributions:
 
-  - Products.ZCatalog = 2.13.12
+  - Products.ZCatalog = 2.13.13
+  - Products.ZCTextIndex = 2.13.2
 
 2.13.6 (2011-04-03)
 -------------------
