@@ -26,6 +26,7 @@ from Testing.ZopeTestCase import transaction
 
 from AccessControl.Permissions import add_documents_images_and_files
 from AccessControl.Permissions import delete_objects
+from ZPublisher import getRequest
 import tempfile
 
 folder_name = ZopeTestCase.folder_name
@@ -95,7 +96,7 @@ class TestCopyPaste(ZopeTestCase.ZopeTestCase):
 
     def testCOPY(self):
         # WebDAV COPY
-        request = self.app.REQUEST
+        request = getRequest()
         request.environ['HTTP_DEPTH'] = 'infinity'
         request.environ['HTTP_DESTINATION'] = 'http://foo.com/%s/new_doc' % folder_name
         self.folder.doc.COPY(request, request.RESPONSE)
@@ -104,7 +105,7 @@ class TestCopyPaste(ZopeTestCase.ZopeTestCase):
 
     def testMOVE(self):
         # WebDAV MOVE
-        request = self.app.REQUEST
+        request = getRequest()
         request.environ['HTTP_DEPTH'] = 'infinity'
         request.environ['HTTP_DESTINATION'] = 'http://foo.com/%s/new_doc' % folder_name
         self.folder.doc.MOVE(request, request.RESPONSE)

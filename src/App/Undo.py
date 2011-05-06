@@ -22,6 +22,7 @@ from AccessControl.Permissions import undo_changes
 from App.interfaces import IUndoSupport
 from App.special_dtml import DTMLFile
 from DateTime.DateTime import DateTime
+from ZPublisher import getRequest
 import ExtensionClass
 import transaction
 from ZopeUndo.Prefix import Prefix
@@ -48,8 +49,8 @@ class UndoSupport(ExtensionClass.Base):
         )
 
     def get_request_var_or_attr(self, name, default):
-        if hasattr(self, 'REQUEST'):
-            REQUEST=self.REQUEST
+        REQUEST = getRequest()
+        if REQUEST is not None:
             if REQUEST.has_key(name):
                 return REQUEST[name]
             if hasattr(self, name):

@@ -22,7 +22,6 @@ from zope.schema import Bool, BytesLine, Tuple
 
 from AccessControl.interfaces import IOwned
 from AccessControl.interfaces import IRoleManager
-from Acquisition.interfaces import IAcquirer
 from App.interfaces import INavigation
 from App.interfaces import IUndoSupport
 from persistent.interfaces import IPersistent
@@ -378,7 +377,7 @@ class IItemWithName(IItem):
 
 
 # XXX: based on OFS.SimpleItem.SimpleItem
-class ISimpleItem(IItem, IPersistent, IAcquirer, IRoleManager):
+class ISimpleItem(IItem, IPersistent, IRoleManager):
 
     """Not-so-simple item.
     """
@@ -473,7 +472,7 @@ class ICopyContainer(Interface):
 #      not synced with ZopeBook API Reference;
 #      based on OFS.ObjectManager.ObjectManager
 class IObjectManager(IZopeObject, ICopyContainer, INavigation, IManageable,
-                     IAcquirer, IPersistent, IDAVCollection, ITraversable,
+                     IPersistent, IDAVCollection, ITraversable,
                      IPossibleSite, IContainer):
     """Generic object manager
 

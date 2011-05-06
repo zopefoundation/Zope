@@ -63,8 +63,9 @@ def test_absoluteurl():
 
     The absolute url view is obviously not affected by virtual hosting:
 
-      >>> request = self.app.REQUEST
-      >>> request['PARENTS'] = [self.folder.test_folder_1_]
+      >>> from ZPublisher import getRequest
+      >>> request = getRequest()
+      >>> request['PARENTS'] = [self.folder]
       >>> url = request.setServerURL(
       ...     protocol='http', hostname='foo.bar.com', port='80')
       >>> request.setVirtualRoot('')

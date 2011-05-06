@@ -137,7 +137,11 @@ class LegacyNamespace(object):
         self.request = request
 
     def traverse(self, name, ignored):
-        return LegacyNamespaceObject(name)
+        ob = LegacyNamespaceObject(name)
+        ob.__name__ = name
+        ob.__parent__ = self.context
+        return ob
+
 
 class LegacyNamespaceObject(OFS.SimpleItem.SimpleItem):
 

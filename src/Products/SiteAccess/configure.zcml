@@ -1,0 +1,12 @@
+<configure
+   xmlns="http://namespaces.zope.org/zope"
+   xmlns:browser="http://namespaces.zope.org/browser"
+   i18n_domain="zope">
+
+  <adapter
+     for="* *"
+     name="virtual_hosting"
+     provides="zope.interface.Interface"
+     factory=".VirtualHostMonster.getVHM" />
+
+</configure>

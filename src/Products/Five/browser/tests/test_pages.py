@@ -28,13 +28,14 @@ def test_view_with_unwrapped_context():
     >>> from zope.interface import Interface
     >>> from zope.interface import implements
     >>> from zope.component import queryMultiAdapter
+    >>> from ZPublisher import getRequest
     >>> class Unwrapped:
     ...     implements(sc.ISimpleContent)
     >>> unwrapped = Unwrapped()
 
     Simple views should work fine without having their contexts wrapped:
 
-    >>> eagle = queryMultiAdapter((unwrapped, self.app.REQUEST),
+    >>> eagle = queryMultiAdapter((unwrapped, getRequest()),
     ...                            Interface, 'eagle.txt')
     >>> eagle is not None
     True
@@ -47,7 +48,7 @@ def test_view_with_unwrapped_context():
     We also want to be able to render the file-based ZPT without requiring
     that the context be wrapped:
 
-    >>> falcon = queryMultiAdapter((unwrapped, self.app.REQUEST),
+    >>> falcon = queryMultiAdapter((unwrapped, getRequest()),
     ...                            Interface, 'falcon.html')
     >>> falcon is not None
     True

@@ -88,7 +88,7 @@ class Collection(Resource):
         ifhdr = REQUEST.get_header('If', '')
         url = urlfix(REQUEST['URL'], 'DELETE')
         name = unquote(filter(None, url.split( '/'))[-1])
-        parent = self.aq_parent
+        parent = self.__parent__
         sm = getSecurityManager()
         token = None
 

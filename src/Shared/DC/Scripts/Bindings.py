@@ -20,9 +20,8 @@ from AccessControl.SecurityManagement import getSecurityManager
 from AccessControl.Permissions import view_management_screens
 from AccessControl.PermissionRole import _what_not_even_god_should_do
 from AccessControl.ZopeGuards import guarded_getattr
-from Acquisition import aq_parent
-from Acquisition import aq_inner
 from Persistence import Persistent
+from ZPublisher import getRequest
 
 defaultBindings = {'name_context': 'context',
                    'name_container': 'container',
@@ -237,7 +236,7 @@ class Bindings:
         path = request['TraversalRequestNameStack']
         names = self.getBindingAssignments()
         if (not names.isNameAssigned('name_subpath') or
-            (path and hasattr(self.aq_base, path[-1])) ):
+            (path and hasattr(self, path[-1])) ):
             return
         subpath = path[:]
         path[:] = []
@@ -273,11 +272,11 @@ class Bindings:
     def _getContext(self):
         # Utility for bindcode.
         while 1:
-            self = aq_parent(self)
+            self = self.__parent__
             if not getattr(self, '_is_wrapperish', None):
-                parent = aq_parent(self)
-                inner = aq_inner(self)
-                container = aq_parent(inner)
+                parent = self.__parent__
+                inner = self
+                container = inner.__parent__
                 try: getSecurityManager().validate(parent, container, '', self)
                 except Unauthorized:
                     return UnauthorizedBinding('context', self)
@@ -286,11 +285,11 @@ class Bindings:
     def _getContainer(self):
         # Utility for bindcode.
         while 1:
-            self = aq_parent(aq_inner(self))
+            self = self.__parent__
             if not getattr(self, '_is_wrapperish', None):
-                parent = aq_parent(self)
-                inner = aq_inner(self)
-                container = aq_parent(inner)
+                parent = self.__parent__
+                inner = self
+                container = inner.__parent__
                 try: getSecurityManager().validate(parent, container, '', self)
                 except Unauthorized:
                     return UnauthorizedBinding('container', self)
@@ -298,8 +297,9 @@ class Bindings:
 
     def _getTraverseSubpath(self):
         # Utility for bindcode.
-        if hasattr(self, 'REQUEST'):
-            return self.REQUEST.other.get('traverse_subpath', [])
+        request = getRequest()
+        if request is not None:
+            return request.other.get('traverse_subpath', [])
         else:
             return []
 

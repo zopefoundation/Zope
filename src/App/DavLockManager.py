@@ -13,14 +13,12 @@
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
-from Acquisition import aq_base
-from Acquisition import Implicit
 from App.special_dtml import DTMLFile
 from OFS.SimpleItem import Item
 from webdav.Lockable import wl_isLocked
 
 
-class DavLockManager(Item, Implicit):
+class DavLockManager(Item):
     id = 'DavLockManager'
     name = title = 'WebDAV Lock Manager'
     meta_type = 'WebDAV Lock Manager'
@@ -77,7 +75,7 @@ class DavLockManager(Item, Implicit):
 
         if result is None:
             result = []
-        base = aq_base(obj)
+        base = obj
         if not hasattr(base, 'objectItems'):
             return result
         try:
@@ -93,7 +91,7 @@ class DavLockManager(Item, Implicit):
                 p = id
 
             dflag = hasattr(ob, '_p_changed') and (ob._p_changed == None)
-            bs = aq_base(ob)
+            bs = ob
             if wl_isLocked(ob):
                 li = []
                 addlockinfo = li.append

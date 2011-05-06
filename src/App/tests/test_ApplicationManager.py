@@ -68,11 +68,12 @@ class DatabaseChooserTests(ConfigTestBase, unittest.TestCase):
         qux=object()
         self._makeConfig(foo=foo, bar=bar, qux=qux)
         root = self._makeRoot()
-        dc = self._makeOne('test').__of__(root)
+        dc = self._makeOne('test')
+        dc.__parent__ = root
         found = dc['foo']
         self.assertTrue(isinstance(found, AltDatabaseManager))
         self.assertEqual(found.id, 'foo')
-        self.assertTrue(found.aq_parent is dc)
+        self.assertTrue(found.__parent__ is dc)
         conn = found._p_jar
         self.assertTrue(isinstance(conn, FakeConnection))
         self.assertTrue(conn.db() is foo)
@@ -91,11 +92,12 @@ class DatabaseChooserTests(ConfigTestBase, unittest.TestCase):
         qux=object()
         self._makeConfig(foo=foo, bar=bar, qux=qux)
         root = self._makeRoot()
-        dc = self._makeOne('test').__of__(root)
+        dc = self._makeOne('test')
+        dc.__parent__ = root
         found = dc.__bobo_traverse__(None, 'foo')
         self.assertTrue(isinstance(found, AltDatabaseManager))
         self.assertEqual(found.id, 'foo')
-        self.assertTrue(found.aq_parent is dc)
+        self.assertTrue(found.__parent__ is dc)
         conn = found._p_jar
         self.assertTrue(isinstance(conn, FakeConnection))
         self.assertTrue(conn.db() is foo)
@@ -106,7 +108,8 @@ class DatabaseChooserTests(ConfigTestBase, unittest.TestCase):
         qux=object()
         self._makeConfig(foo=foo, bar=bar, qux=qux)
         root = self._makeRoot()
-        dc = self._makeOne('test').__of__(root)
+        dc = self._makeOne('test')
+        dc.__parent__ = root
         dc.spam = spam = object()
         found = dc.__bobo_traverse__(None, 'spam')
         self.assertTrue(found is spam)
@@ -118,7 +121,8 @@ class DatabaseChooserTests(ConfigTestBase, unittest.TestCase):
         qux=object()
         self._makeConfig(foo=foo, bar=bar, qux=qux)
         root = self._makeRoot()
-        dc = self._makeOne('test').__of__(root)
+        dc = self._makeOne('test')
+        dc.__parent__ = root
         values = dc.tpValues()
         self.assertEqual(len(values), 3)
         self.assertTrue(isinstance(values[0], AltDatabaseManager))
@@ -350,10 +354,10 @@ class ApplicationManagerTests(ConfigTestBase,
         am = self._makeOne()
         self.assertEqual(am.sys_platform(), sys.platform)
 
-    def test_ctor_initializes_Products(self):
-        from App.Product import ProductFolder
-        am = self._makeOne()
-        self.assertTrue(isinstance(am.Products, ProductFolder))
+    #def test_ctor_initializes_Products(self):
+    #    from App.Product import ProductFolder
+    #    am = self._makeOne()
+    #    self.assertTrue(isinstance(am.Products, ProductFolder))
 
     def test__canCopy(self):
         am = self._makeOne()

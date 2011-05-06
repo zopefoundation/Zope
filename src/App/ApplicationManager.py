@@ -20,17 +20,21 @@ import sys
 import time
 import urllib
 
+from zope import interface
+from zope.component import getSiteManager
+
 from AccessControl.class_init import InitializeClass
 from AccessControl.requestmethod import requestmethod
 from AccessControl.SecurityManagement import getSecurityManager
-from Acquisition import Implicit
 from App.CacheManager import CacheManager
 from App.config import getConfiguration
 from App.DavLockManager import DavLockManager
 from App.special_dtml import DTMLFile
 from App.Undo import UndoSupport
 from App.version_txt import version_txt
+from App.interfaces import IApplicationManager
 from DateTime.DateTime import DateTime
+from ExtensionClass import Base
 from Lifetime import shutdown
 from OFS.Folder import Folder
 from OFS.SimpleItem import Item
@@ -38,7 +42,7 @@ from OFS.SimpleItem import SimpleItem
 from Product import ProductFolder
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from zExceptions import Redirect
-from ZPublisher import Publish
+from ZPublisher import Publish, getAppRoot
 
 LOG = getLogger('ApplicationManager')
 
@@ -49,7 +53,7 @@ except ImportError:
         return 0
 
 
-class DatabaseManager(Item, Implicit):
+class DatabaseManager(Item):
     """Database management (legacy)
     """
     manage = manage_main = DTMLFile('dtml/dbMain', globals())
@@ -85,7 +89,7 @@ class FakeConnection:
         return self._db
 
 
-class DatabaseChooser(SimpleItem):
+class DatabaseChooser(Item):
     """ Choose which database to view
     """
     meta_type = 'Database Management'
@@ -115,8 +119,10 @@ class DatabaseChooser(SimpleItem):
         db = configuration.dbtab.getDatabase(name=name)
         m = AltDatabaseManager()
         m.id = name
+        m.__name__ = name
+        m.__parent__ = self
         m._p_jar = FakeConnection(db, self.getPhysicalRoot()._p_jar)
-        return m.__of__(self)
+        return m
 
     def __bobo_traverse__(self, request, name):
         configuration = getConfiguration()
@@ -130,9 +136,11 @@ class DatabaseChooser(SimpleItem):
         for name in names:
             m = AltDatabaseManager()
             m.id = name
+            m.__name__ = name
+            m.__parent__ = self
             # Avoid opening the database just for the tree widget.
             m._p_jar = None
-            res.append(m.__of__(self))
+            res.append(m)
         return res
 
 InitializeClass(DatabaseChooser)
@@ -142,7 +150,7 @@ InitializeClass(DatabaseChooser)
 _v_rcs = None
 _v_rst = None
 
-class DebugManager(Item, Implicit):
+class DebugManager(Item):
     """ Debug and profiling information
     """
     manage = manage_main = DTMLFile('dtml/debug', globals())
@@ -159,7 +167,11 @@ class DebugManager(Item, Implicit):
 
     manage_debug = DTMLFile('dtml/debug', globals())
 
-    def refcount(self, n=None, t=(type(Implicit), )):
+    @property
+    def CP(self):
+        return self.__parent__
+
+    def refcount(self, n=None, t=(type(Base), type(object) )):
         # return class reference info
         counts = {}
         for m in sys.modules.values():
@@ -252,37 +264,34 @@ class DebugManager(Item, Implicit):
 InitializeClass(DebugManager)
 
 
-
-
-class ApplicationManager(Folder,CacheManager):
+class ApplicationManager(Folder, CacheManager):
     """System management
     """
+    interface.implements(IApplicationManager)
+
     __roles__ = ('Manager',)
     isPrincipiaFolderish = 1
-    Database = DatabaseChooser('Database') #DatabaseManager()
-    DebugInfo = DebugManager()
-    DavLocks = DavLockManager()
 
     manage = manage_main = DTMLFile('dtml/cpContents', globals())
     manage_main._setName('manage_main')
 
-    _objects=(
-        {'id': 'Database',
-         'meta_type': Database.meta_type},
-        {'id': 'DavLocks',
-         'meta_type': DavLocks.meta_type},
-        {'id': 'Products',
-         'meta_type': 'Product Management'},
-        {'id': 'DebugInfo',
-         'meta_type': DebugInfo.meta_type},
-        )
+    #_objects=(
+    #    {'id': 'Database',
+    #     'meta_type': Database.meta_type},
+    #    {'id': 'DavLocks',
+    #     'meta_type': DavLocks.meta_type},
+    #    {'id': 'Products',
+    #     'meta_type': 'Product Management'},
+    #    {'id': 'DebugInfo',
+    #     'meta_type': DebugInfo.meta_type},
+    #    )
 
     manage_options=(
         ({'label':'Contents', 'action':'manage_main'}, ) +
         UndoSupport.manage_options
         )
 
-    id = 'Control_Panel'
+    id = __name__ = 'Control_Panel'
     name = title = 'Control Panel'
     meta_type = 'Control Panel'
     icon = 'p_/ControlPanel_icon'
@@ -297,8 +306,9 @@ class ApplicationManager(Folder,CacheManager):
     manage_editProperties = None
     manage_delProperties = None
 
-    def __init__(self):
-        self.Products = ProductFolder()
+    @property
+    def __parent__(self):
+        return getAppRoot()
 
     def _canCopy(self, op=0):
         return 0
@@ -475,9 +485,27 @@ class ApplicationManager(Folder,CacheManager):
 
         return Folder.objectIds(self, spec)
 
+
 class AltDatabaseManager(DatabaseManager, CacheManager):
     """ Database management DBTab-style
     """
     db_name = ApplicationManager.db_name.im_func
     db_size = ApplicationManager.db_size.im_func
     manage_pack = ApplicationManager.manage_pack.im_func
+
+
+def installApplicationManager():
+    sm = getSiteManager()
+    cp = sm.queryUtility(IApplicationManager)
+    if cp is not None:
+        return cp
+
+    cp = ApplicationManager()
+    cp._setObject('Database', DatabaseChooser('Database'))
+    cp._setObject('DavLocks', DavLockManager())
+    cp._setObject('Products', ProductFolder())
+    cp._setObject('DebugInfo', DebugManager())
+
+    sm.registerUtility(cp, IApplicationManager)
+    return cp
+

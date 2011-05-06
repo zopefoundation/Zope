@@ -332,6 +332,16 @@ class UserFolder(accesscontrol_userfolder.UserFolder, BasicUserFolder):
                 except:
                     pass
 
+    def _doAddUser(self, name, password, roles, domains, **kw):
+        """Create a new user
+
+        Note that an existing user of this name is simply overwritten."""
+        user = super(UserFolder, self)._doAddUser(
+            name, password, roles, domains, **kw)
+        user.__parent__ = self
+        return user
+
+
 InitializeClass(UserFolder)
 
 

@@ -38,13 +38,13 @@ font-size: 10pt;
 <form action="&dtml-URL;" method="GET">
 <p>
 <ul>
-<li>Zope version: &dtml-version_txt;
-<li>Python version: &dtml-sys_version;
-<li>System Platform: &dtml-sys_platform;
-<li>INSTANCE_HOME: &dtml-getINSTANCE_HOME;
-<li>CLIENT_HOME: &dtml-getCLIENT_HOME;
-<li>Process ID: &dtml-process_id; (&dtml-thread_get_ident;)
-<li>Running for: &dtml-process_time;
+<li>Zope version: <dtml-var "CP.version_txt">
+<li>Python version: <dtml-var "CP.sys_version">
+<li>System Platform: <dtml-var "CP.sys_platform">
+<li>INSTANCE_HOME: <dtml-var "CP.getINSTANCE_HOME">
+<li>CLIENT_HOME: <dtml-var "CP.getCLIENT_HOME">
+<li>Process ID: <dtml-var "CP.process_id"> (<dtml-var "CP.thread_get_ident">)
+<li>Running for: <dtml-var "CP.process_time">
 <li>sys.path: <dtml-in manage_getSysPath><br />&nbsp;
    &dtml-sequence-item;
   </dtml-in>

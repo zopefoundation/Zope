@@ -39,6 +39,7 @@ from webdav.common import urlbase
 from webdav.interfaces import IWriteLock
 from zExceptions import BadRequest
 from zExceptions import Redirect
+from ZPublisher import getRequest
 from ZPublisher.Converters import type_converters
 
 
@@ -59,8 +60,7 @@ class View(Tabs, Base):
     def manage_options(self):
         """Return a manage option data structure for me instance
         """
-        try: r=self.REQUEST
-        except: r=None
+        r=getRequest()
         if r is None:
             pre='../../'
         else:
@@ -730,8 +730,7 @@ class PropertySheets(Traversable, Implicit, Tabs):
     def manage_options(self):
         """Return a manage option data structure for me instance
         """
-        try: r=self.REQUEST
-        except: r=None
+        r=getRequest()
         if r is None:
             pre='../'
         else:

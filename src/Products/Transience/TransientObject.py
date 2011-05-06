@@ -51,7 +51,7 @@ _notfound = []
 
 WRITEGRANULARITY=30 # Timing granularity for access write clustering, seconds
 
-class TransientObject(Persistent, Implicit):
+class TransientObject(Persistent):
     """ Dictionary-like object that supports additional methods
     concerning expiration and containment in a transient object container
     """

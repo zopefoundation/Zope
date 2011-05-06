@@ -28,8 +28,8 @@ from OFS.Folder import Folder
 from OFS.SimpleItem import Item
 from tempstorage.TemporaryStorage import TemporaryStorage
 from ZODB.DB import DB
-
 from Products.TemporaryFolder.mount import MountPoint
+from Acquisition import Implicit
 
 ADD_TEMPORARY_FOLDER_PERM="Add Temporary Folder"
 
@@ -50,7 +50,7 @@ class SimpleTemporaryContainer(Folder):
     icon = 'misc_/TemporaryFolder/tempfolder.gif'
 
 
-class MountedTemporaryFolder(MountPoint, Item):
+class MountedTemporaryFolder(MountPoint, Item, Implicit):
     """
     A mounted RAM database with a basic interface for displaying the
     reason the database did not connect.

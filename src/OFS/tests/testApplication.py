@@ -1,4 +1,5 @@
 import unittest
+from ZPublisher.globalrequest import setRequest
 
 
 class ApplicationTests(unittest.TestCase):
@@ -8,6 +9,7 @@ class ApplicationTests(unittest.TestCase):
         return Application
 
     def _makeOne(self):
+        setRequest(None)
         return self._getTargetClass()()
 
     def test_class_provides_IApplication(self):
@@ -33,12 +35,12 @@ class ApplicationTests(unittest.TestCase):
 
     def test_id_w_request_no_SCRIPT_NAME(self):
         app = self._makeOne()
-        app.REQUEST = {}
+        setRequest({})
         self.assertEqual(app.id(), 'Zope')
 
     def test_id_w_request_w_SCRIPT_NAME(self):
         app = self._makeOne()
-        app.REQUEST = {'SCRIPT_NAME': '/Dummy'}
+        setRequest({'SCRIPT_NAME': '/Dummy'})
         self.assertEqual(app.id(), 'Dummy')
 
     def test_title_and_id_plus_title_or_id(self):
@@ -51,14 +53,14 @@ class ApplicationTests(unittest.TestCase):
         app = self._makeOne()
         app.NAME = 'attribute'
         app._getOb = lambda x, y: x
-        request = {}
-        self.assertEqual(app.__bobo_traverse__(request, 'NAME'), 'attribute')
+        setRequest({})
+        self.assertEqual(app.__bobo_traverse__({}, 'NAME'), 'attribute')
 
     def test___bobo_traverse__attribute_miss_key_hit(self):
         app = self._makeOne()
         app._getOb = lambda x, y: x
-        request = {}
-        self.assertEqual(app.__bobo_traverse__(request, 'OTHER'), 'OTHER')
+        setRequest({})
+        self.assertEqual(app.__bobo_traverse__({}, 'OTHER'), 'OTHER')
 
     def test___bobo_traverse__attribute_key_miss_R_M_default_real_request(self):
         from UserDict import UserDict
@@ -79,8 +81,8 @@ class ApplicationTests(unittest.TestCase):
         app = self._makeOne()
 
         app._getOb = _noWay
-        request = {}
-        self.assertRaises(KeyError, app.__bobo_traverse__, request, 'NONESUCH')
+        setRequest({})
+        self.assertRaises(KeyError, app.__bobo_traverse__, {}, 'NONESUCH')
 
     def test___bobo_traverse__attribute_key_miss_R_M_is_GET(self):
         app = self._makeOne()

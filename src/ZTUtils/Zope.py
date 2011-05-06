@@ -20,6 +20,7 @@ import urllib
 from AccessControl import getSecurityManager
 from DateTime.DateTime import DateTime
 from Products.ZCatalog.Lazy import Lazy
+from ZPublisher import getRequest
 
 from ZTUtils.Batch import Batch
 from ZTUtils.SimpleTree import SimpleTreeMaker
@@ -119,7 +120,7 @@ class SimpleTreeMaker(TreeSkipMixin, SimpleTreeMaker):
         state_name = '%s-state' % tree_pre
         set_name = '%s-setstate' % tree_pre
 
-        req = root_object.REQUEST
+        req = getRequest()
         state = req.get(state_name)
         if state:
             setst = req.form.get(set_name)

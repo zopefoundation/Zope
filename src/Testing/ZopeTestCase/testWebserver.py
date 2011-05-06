@@ -31,6 +31,7 @@ from Testing import ZopeTestCase
 
 from Testing.ZopeTestCase import transaction
 from AccessControl import Unauthorized
+from ZPublisher import getRequest
 import urllib
 
 # Create the error_log object
@@ -145,9 +146,9 @@ class TestWebserver(ZopeTestCase.ZopeTestCase):
     def testModifyObject(self):
         # Test a script that modifies the ZODB
         self.setRoles(['Manager'])
-        self.app.REQUEST.set('title', 'Foo')
+        getRequest().set('title', 'Foo')
         page = self.folder.index_html.change_title(self.folder.index_html,
-                                                   self.app.REQUEST)
+                                                   getRequest())
         self.assertEqual(page, 'Foo')
         self.assertEqual(self.folder.index_html.title, 'Foo')
 

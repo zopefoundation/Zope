@@ -25,13 +25,13 @@ from AccessControl.Permissions import view as View
 from AccessControl.Permissions import ftp_access
 from AccessControl.Permissions import delete_objects
 from AccessControl.SecurityInfo import ClassSecurityInfo
-from Acquisition import Implicit
 from App.special_dtml import DTMLFile
 from DateTime.DateTime import DateTime
 from Persistence import Persistent
 from webdav.common import rfc1123_date
 from webdav.interfaces import IWriteLock
 from webdav.Lockable import ResourceLockedError
+from ZPublisher import getRequest
 from ZPublisher import HTTPRangeSupport
 from ZPublisher.HTTPRequest import FileUpload
 from ZPublisher.Iterators import filestream_iterator
@@ -87,12 +87,11 @@ def manage_addFile(self, id, file='', title='', precondition='',
         REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
 
 
-class File(Persistent, Implicit, PropertyManager,
+class File(Persistent, PropertyManager,
            RoleManager, Item_w__name__, Cacheable):
     """A File object is a content object for arbitrary files."""
 
     implements(implementedBy(Persistent),
-               implementedBy(Implicit),
                implementedBy(PropertyManager),
                implementedBy(RoleManager),
                implementedBy(Item_w__name__),
@@ -630,7 +629,7 @@ class File(Persistent, Implicit, PropertyManager,
     security.declareProtected(ftp_access, 'manage_FTPget')
     def manage_FTPget(self):
         """Return body for ftp."""
-        RESPONSE = self.REQUEST.RESPONSE
+        RESPONSE = getRequest().RESPONSE
 
         if self.ZCacheable_isCachingEnabled():
             result = self.ZCacheable_get(default=None)
@@ -904,7 +903,7 @@ def cookId(id, title, file):
                         )+1:]
     return id, title
 
-class Pdata(Persistent, Implicit):
+class Pdata(Persistent):
     # Wrapper for possibly large data
 
     next=None

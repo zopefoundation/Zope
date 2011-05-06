@@ -16,7 +16,6 @@ import re
 import sys
 
 from AccessControl.class_init import InitializeClass
-from Acquisition import Implicit
 from App.Dialogs import MessageDialog
 from App.special_dtml import HTML
 from Persistence import Persistent
@@ -24,7 +23,7 @@ from zope.structuredtext.html import HTMLWithImages
 from zope.structuredtext.document import DocumentWithImages
 
 
-class HelpBase(Implicit):
+class HelpBase(object):
     """ """
     def __bobo_traverse__(self, REQUEST, name=None):
         # A sneaky trick - we cant really _have_ an index_html
@@ -38,7 +37,7 @@ class HelpBase(Implicit):
         return 1
 
 
-class object(Implicit):
+class object(object):
     def __init__(self, name, ob, op=None):
         self._name=name
         self._obj_=ob

@@ -12,6 +12,8 @@
 #
 ##############################################################################
 import unittest
+from ZPublisher import getRequest
+
 
 def makeConnection():
     import ZODB
@@ -75,6 +77,7 @@ class TestRequestRange(unittest.TestCase):
             # later and pretend we didn't touch the ZODB.
             transaction.commit()
         except:
+            transaction.abort()
             self.connection.close()
             raise
 
@@ -113,7 +116,7 @@ class TestRequestRange(unittest.TestCase):
         return rfc1123_date(self.file._p_mtime + offset)
 
     def expectUnsatisfiable(self, range):
-        req = self.app.REQUEST
+        req = getRequest()
         rsp = req.RESPONSE
 
         # Add the Range header
@@ -134,7 +137,7 @@ class TestRequestRange(unittest.TestCase):
         self.assertTrue(body == '', 'index_html returned %s' % `body`)
 
     def expectOK(self, rangeHeader, if_range=None):
-        req = self.app.REQUEST
+        req = getRequest()
         rsp = req.RESPONSE
 
         # Add headers
@@ -148,7 +151,7 @@ class TestRequestRange(unittest.TestCase):
             'Expected a 200 status, got %s' % rsp.getStatus())
 
     def expectSingleRange(self, range, start, end, if_range=None):
-        req = self.app.REQUEST
+        req = getRequest()
         rsp = req.RESPONSE
 
         # Add headers
@@ -181,7 +184,7 @@ class TestRequestRange(unittest.TestCase):
         import re
         import email
         rangeParse = re.compile('bytes\s*(\d+)-(\d+)/(\d+)')
-        req = self.app.REQUEST
+        req = getRequest()
         rsp = req.RESPONSE
 
         # Add headers

@@ -16,6 +16,7 @@
 import sys
 
 from Acquisition import aq_get
+from ZPublisher import getRequest
 from Products.PageTemplates.interfaces import IUnicodeEncodingConflictResolver
 from zope.interface import implements
 from zope.i18n.interfaces import IUserPreferredCharsets
@@ -66,7 +67,7 @@ class PreferredCharsetResolver:
 
     def resolve(self, context, text, expression):
 
-        request = aq_get(context, 'REQUEST', None)
+        request = getRequest()
 
         # Deal with the fact that a REQUEST is not always available.
         # In this case fall back to the encoding of the ZMI and the

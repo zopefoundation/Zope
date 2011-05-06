@@ -16,19 +16,17 @@ from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import access_contents_information
 from AccessControl.Permissions import view as View
 from AccessControl.SecurityInfo import ClassSecurityInfo
-from Acquisition import Implicit
 from App.config import getConfiguration
 from App.ImageFile import ImageFile
 from App.special_dtml import DTMLFile
 from App.special_dtml import HTML
-from ComputedAttribute import ComputedAttribute
 from OFS.DTMLDocument import DTMLDocument
 from OFS.PropertyManager import PropertyManager
 from OFS.SimpleItem import Item
 from Persistence import Persistent
 
 
-class HelpTopicBase:
+class HelpTopicBase(object):
     "Mix-in Help Topic support class"
 
     _properties=(
@@ -43,13 +41,12 @@ class HelpTopicBase:
     categories=('Content Manager Information',)
     permissions=('View',)
 
-    def _permissions_values(self):
+    @property
+    def permissions_values(self):
         perms=[]
         for m in self.permission_settings():
             perms.append(m['name'])
         return perms
-
-    permissions_values=ComputedAttribute(_permissions_values, 1)
 
     categories_values=(
         'Content Manager Information',
@@ -104,10 +101,10 @@ class HelpTopicBase:
         self.index_object()
 
     def get_catalog(self):
-        return self.catalog
+        return self.__parent__.catalog
 
 
-class HelpTopic(Implicit, HelpTopicBase, Item, PropertyManager, Persistent):
+class HelpTopic(HelpTopicBase, Item, PropertyManager, Persistent):
     """
     Abstract base class for Help Topics
     """

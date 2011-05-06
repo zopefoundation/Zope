@@ -39,6 +39,7 @@ def test_registerPackage():
       ...     xmlns="http://namespaces.zope.org/zope"
       ...     xmlns:five="http://namespaces.zope.org/five"
       ...     i18n_domain="foo">
+      ...   <include package="Zope2.App" />
       ...   <five:registerPackage
       ...       package="pythonproduct2"
       ...       initialize="pythonproduct2.initialize"

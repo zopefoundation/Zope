@@ -18,7 +18,6 @@ from AccessControl.Permissions import add_documents_images_and_files
 from AccessControl.Permissions import view as View
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.SecurityManagement import getSecurityManager
-from Acquisition import Implicit
 from App.special_dtml import DTMLFile
 from App.special_dtml import HTML
 from OFS.ObjectManager import ObjectManager
@@ -33,9 +32,10 @@ from Products.ZCTextIndex.Lexicon import StopWordRemover
 from Products.ZCTextIndex.OkapiIndex import OkapiIndex
 from Products.ZCTextIndex.ZCTextIndex import PLexicon
 from Products.ZCTextIndex.ZCTextIndex import ZCTextIndex
+from ZPublisher import getRequest
 
 
-class HelpSys(Implicit, ObjectManager, Item, Persistent):
+class HelpSys(ObjectManager, Item, Persistent):
     """
     Zope Help System
 
@@ -111,7 +111,7 @@ class HelpSys(Implicit, ObjectManager, Item, Persistent):
         """
         Insert a help button linked to a help topic.
         """
-        return self.button(self, self.REQUEST, product=product, topic=topic)
+        return self.button(self, getRequest(), product=product, topic=topic)
 
     helpURL=DTMLFile('dtml/helpURL',globals())
 
@@ -119,7 +119,7 @@ class HelpSys(Implicit, ObjectManager, Item, Persistent):
     def helpLink(self, product='OFSP', topic='ObjectManager_Contents.stx'):
         # Generate an <a href...> tag linking to a help topic. This
         # is a little lighter weight than the help button approach.
-        basepath=self.REQUEST['BASEPATH1']
+        basepath=getRequest()['BASEPATH1']
         products = self.Control_Panel.Products.objectIds()
         if product not in products:
             return None
@@ -204,7 +204,7 @@ class TreeCollection:
         return self.id
 
 
-class ProductHelp(Implicit, ObjectManager, Item, Persistent):
+class ProductHelp(ObjectManager, Item, Persistent):
     """
     Manages a collection of Help Topics for a given Product.
 

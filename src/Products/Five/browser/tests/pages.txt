@@ -232,9 +232,9 @@ parent
 
 Check the wrapper type
 
-  >>> from Acquisition import ImplicitAcquisitionWrapper
-  >>> type(context) == ImplicitAcquisitionWrapper
-  True
+  #>>> from Acquisition import ImplicitAcquisitionWrapper
+  #>>> type(context) == ImplicitAcquisitionWrapper
+  #True
 
 The parent of the view is the view's context:
 
@@ -245,7 +245,7 @@ The parent of the view is the view's context:
 
 The direct parent of the context is 
 
-  >>> context.aq_inner.aq_parent
+  >>> context.__parent__
   <Folder at /test_folder_1_> 
 
 C methods work the same
@@ -263,14 +263,16 @@ The same applies to a view registered with <browser:view /> instead of
   >>> aq_acquire(view, '__roles__')
   ('Manager',)
   >>> context = view.context
-  >>> from Acquisition import ImplicitAcquisitionWrapper
-  >>> type(context) == ImplicitAcquisitionWrapper
-  True
+
+#  >>> from Acquisition import ImplicitAcquisitionWrapper
+#  >>> type(context) == ImplicitAcquisitionWrapper
+#  True
+
   >>> view.__parent__ == view.context
   True
   >>> aq_parent(view) == view.context
   True
-  >>> context.aq_inner.aq_parent
+  >>> context.__parent__
   <Folder at /test_folder_1_> 
   >>> aq_parent(aq_inner(context))
   <Folder at /test_folder_1_> 

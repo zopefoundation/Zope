@@ -12,7 +12,7 @@
 ##############################################################################
 """Simple Tree classes
 """
-
+from ZPublisher import getRequest
 from Tree import TreeMaker, TreeNode, b2a
 from cgi import escape
 
@@ -56,5 +56,5 @@ class SimpleTreeMaker(TreeMaker):
         node = TreeMaker.tree(self, root, expanded, subtree)
         if not subtree:
             node.tree_pre = self.tree_pre
-            node.baseURL = root.REQUEST['BASEPATH1']
+            node.baseURL = getRequest()['BASEPATH1']
         return node

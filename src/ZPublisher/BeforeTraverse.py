@@ -11,8 +11,6 @@
 #
 ##############################################################################
 """BeforeTraverse interface and helper classes"""
-
-from Acquisition import aq_base
 from logging import getLogger
 
 # Interface
@@ -135,7 +133,7 @@ class NameCaller:
         # i.e. in a CMF Portal, if a DTMLMethod (or a similar object
         # with a fake "func_code" is in the acquisition context
         #args = getattr(getattr(meth, 'func_code', None), 'co_argcount', 2)
-        args = getattr(getattr(aq_base(meth), 'func_code', None),
+        args = getattr(getattr(meth, 'func_code', None),
                        'co_argcount',
                        2)
 

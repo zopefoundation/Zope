@@ -247,7 +247,7 @@ class MountedObject(SimpleItem):
                 conn = self._getMountedConnection(anyjar)
                 root = conn.root()
                 obj = self._traverseToMountedRoot(root, parent)
-                data = aq_base(obj)
+                data = obj
                 # Store the data object in a tuple to hide from acquisition.
                 self._v_data = (data,)
             except:
@@ -258,12 +258,13 @@ class MountedObject(SimpleItem):
             try:
                 # XXX This method of finding the mount point is deprecated.
                 # Do not use the _v_mount_point_ attribute.
-                data._v_mount_point_ = (aq_base(self),)
+                data._v_mount_point_ = (self,)
             except:
                 # Might be a read-only object.
                 pass
 
-        return data.__of__(parent)
+        data.__parent__ = parent
+        return data
 
     def __repr__(self):
         return "%s(id=%s)" % (self.__class__.__name__, repr(self.id))
@@ -368,7 +369,8 @@ def manage_addMounts(dispatcher, paths=(), create_mount_points=True,
         blazer = SimpleTrailblazer(app)
         container = blazer.traverseOrConstruct(path, omit_final=1)
         container._p_jar.add(mo)
-        loaded = mo.__of__(container)
+        from zope.location import LocationProxy
+        loaded = LocationProxy(mo, container)
 
         # Add a faux object to avoid generating manage_afterAdd() events
         # while appeasing OFS.ObjectManager._setObject(), then discreetly

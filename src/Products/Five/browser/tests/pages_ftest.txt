@@ -5,6 +5,7 @@ This test tests publishing aspects of browser pages.  Let's register
 some:
 
   >>> import Products.Five.browser.tests
+  >>> from Testing.makerequest import makerequest
   >>> from Zope2.App import zcml
   >>> zcml.load_config("configure.zcml", Products.Five)
   >>> zcml.load_config('pages.zcml', package=Products.Five.browser.tests)
@@ -13,7 +14,6 @@ Let's also add one of our stub objects to play with:
 
   >>> from Products.Five.tests.testing.simplecontent import manage_addSimpleContent
   >>> manage_addSimpleContent(self.folder, 'testoid', 'Testoid')
-
 
 Docstrings
 ----------
@@ -75,6 +75,8 @@ As a normal user we shouldn't get to see those pages protected with
 the 'View management screens' permission.  Thus we expect a 401
 Unauthorized:
 
+  >>> makerequest(None)
+
   >>> for view_name in protected_view_names:
   ...     response = self.publish('/test_folder_1_/testoid/%s' % view_name,
   ...                             basic='viewer:secret')
@@ -108,6 +110,7 @@ become viewable:
 
   >>> self.folder.manage_role('Viewer', [ViewManagementScreens])
   >>> for view_name in protected_view_names:
+  ...     makerequest(None)
   ...     response = self.publish('/test_folder_1_/testoid/%s' % view_name,
   ...                             basic='viewer:secret')
   ...     status = response.getStatus()
@@ -117,6 +120,7 @@ Managers should always be able to view anything, including proctected
 stuff:
 
   >>> for view_name in protected_view_names:
+  ...     makerequest(None)
   ...     response = self.publish('/test_folder_1_/testoid/%s' % view_name,
   ...                             basic='manager:r00t')
   ...     self.assertEqual(response.getStatus(), 200)
@@ -124,6 +128,7 @@ stuff:
 All public views should always be accessible by anyone:
 
   >>> for view_name in public_view_names:
+  ...     makerequest(None)
   ...     response = self.publish('/test_folder_1_/testoid/%s' % view_name)
   ...     status = response.getStatus()
   ...     self.assertTrue(status == 200, (status, 200, view_name))

@@ -23,6 +23,7 @@ import layer
 
 from zope.interface import implements
 from AccessControl.SecurityManagement import noSecurityManager
+from OFS.Application import initialize
 
 
 def app():

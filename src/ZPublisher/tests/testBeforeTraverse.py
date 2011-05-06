@@ -1,7 +1,6 @@
 import sys
 import logging
 
-from Acquisition import Implicit
 from ZPublisher import BeforeTraverse
 from ZPublisher.BaseRequest import BaseRequest
 from ZPublisher.HTTPResponse import HTTPResponse
@@ -17,7 +16,7 @@ def makeBaseRequest(root):
     return BaseRequest(environment)
 
 
-class DummyObjectBasic(Implicit):
+class DummyObjectBasic(object):
     """ Dummy class with docstring.
     """
     pass

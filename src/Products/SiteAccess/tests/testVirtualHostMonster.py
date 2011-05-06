@@ -8,6 +8,11 @@ Also see http://zope.org/Collectors/Zope/809
 Note: Tests require Zope >= 2.7
 """
 import unittest
+from zope.interface import Interface
+from zope.component import getSiteManager
+from ZPublisher import getRequest
+from Products.SiteAccess.VirtualHostMonster import getVHM
+
 
 class VHMRegressions(unittest.TestCase):
 
@@ -15,6 +20,8 @@ class VHMRegressions(unittest.TestCase):
         import transaction
         from Testing.makerequest import makerequest
         from Testing.ZopeTestCase.ZopeLite import app
+        getSiteManager().registerAdapter(
+            getVHM, (Interface, Interface), Interface, name='virtual_hosting')
         transaction.begin()
         self.app = makerequest(app())
         if 'virtual_hosting' not in  self.app.objectIds():
@@ -25,8 +32,8 @@ class VHMRegressions(unittest.TestCase):
             manage_addVirtualHostMonster(self.app, 'virtual_hosting')
         self.app.manage_addFolder('folder')
         self.app.folder.manage_addDTMLMethod('doc', '')
-        self.app.REQUEST.set('PARENTS', [self.app])
-        self.traverse = self.app.REQUEST.traverse
+        getRequest().set('PARENTS', [self.app])
+        self.traverse = getRequest().traverse
 
     def tearDown(self):
         import transaction
@@ -54,49 +61,49 @@ class VHMRegressions(unittest.TestCase):
     def test_actual_url_no_VHR_no_doc_w_trailing_slash(self):
         ob = self.traverse('/VirtualHostBase/http/www.mysite.com:80'
                            '/folder/')
-        self.assertEqual(self.app.REQUEST['ACTUAL_URL'],
+        self.assertEqual(getRequest()['ACTUAL_URL'],
                         'http://www.mysite.com/folder/')
 
     def test_actual_url_no_VHR_no_doc_no_trailing_slash(self):
         ob = self.traverse('/VirtualHostBase/http/www.mysite.com:80'
                            '/folder')
-        self.assertEqual(self.app.REQUEST['ACTUAL_URL'],
+        self.assertEqual(getRequest()['ACTUAL_URL'],
                          'http://www.mysite.com/folder')
 
     def test_actual_url_no_VHR_w_doc_w_trailing_slash(self):
         ob = self.traverse('/VirtualHostBase/http/www.mysite.com:80'
                            '/folder/doc/')
-        self.assertEqual(self.app.REQUEST['ACTUAL_URL'],
+        self.assertEqual(getRequest()['ACTUAL_URL'],
                         'http://www.mysite.com/folder/doc/')
 
     def test_actual_url_no_VHR_w_doc_no_trailing_slash(self):
         ob = self.traverse('/VirtualHostBase/http/www.mysite.com:80'
                            '/folder/doc')
-        self.assertEqual(self.app.REQUEST['ACTUAL_URL'],
+        self.assertEqual(getRequest()['ACTUAL_URL'],
                          'http://www.mysite.com/folder/doc')
 
     def test_actual_url_w_VHR_w_doc_w_trailing_slash(self):
         ob = self.traverse('/VirtualHostBase/http/www.mysite.com:80'
                            '/folder/VirtualHostRoot/doc/')
-        self.assertEqual(self.app.REQUEST['ACTUAL_URL'],
+        self.assertEqual(getRequest()['ACTUAL_URL'],
                         'http://www.mysite.com/doc/')
 
     def test_actual_url_w_VHR_w_doc_no_trailing_slash(self):
         ob = self.traverse('/VirtualHostBase/http/www.mysite.com:80'
                            '/folder/VirtualHostRoot/doc')
-        self.assertEqual(self.app.REQUEST['ACTUAL_URL'],
+        self.assertEqual(getRequest()['ACTUAL_URL'],
                          'http://www.mysite.com/doc')
 
     def test_actual_url_w_VHR_no_doc_w_trailing_slash(self):
         ob = self.traverse('/VirtualHostBase/http/www.mysite.com:80'
                            '/folder/VirtualHostRoot/')
-        self.assertEqual(self.app.REQUEST['ACTUAL_URL'],
+        self.assertEqual(getRequest()['ACTUAL_URL'],
                          'http://www.mysite.com/')
 
     def test_actual_url_w_VHR_no_doc_no_trailing_slash(self):
         ob = self.traverse('/VirtualHostBase/http/www.mysite.com:80'
                            '/folder/VirtualHostRoot')
-        self.assertEqual(self.app.REQUEST['ACTUAL_URL'],
+        self.assertEqual(getRequest()['ACTUAL_URL'],
                          'http://www.mysite.com/') 
 
 def gen_cases():
@@ -123,13 +130,13 @@ for i, (vaddr, vr, _vh, p, ubase) in enumerate(gen_cases()):
         sl_vh = (_vh and ('/' + _vh))
         aup = sl_vh + (p and ('/' + p))
         self.assertEqual(ob.absolute_url_path(), aup)
-        self.assertEqual(self.app.REQUEST['BASEPATH1'] + '/' + p, aup)
+        self.assertEqual(getRequest()['BASEPATH1'] + '/' + p, aup)
         self.assertEqual(ob.absolute_url(), ubase + aup)
         self.assertEqual(ob.absolute_url(relative=1), p)
         self.assertEqual(ob.virtual_url_path(), p)
         self.assertEqual(ob.getPhysicalPath(), ('', 'folder', 'doc'))
 
-        app = ob.aq_parent.aq_parent
+        app = ob.__parent__.__parent__
         # The absolute URL doesn't end with a slash
         self.assertEqual(app.absolute_url(), ubase + sl_vh)
         # The absolute URL path always begins with a slash

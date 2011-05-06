@@ -5,7 +5,6 @@ Defines the Traverser base class and SiteRoot class
 from cgi import escape
 import os
 
-from Acquisition import Implicit
 from App.Dialogs import MessageDialog
 from App.special_dtml import DTMLFile
 from OFS.SimpleItem import Item
@@ -13,6 +12,7 @@ from Persistence import Persistent
 from ZPublisher.BeforeTraverse import NameCaller
 from ZPublisher.BeforeTraverse import registerBeforeTraverse
 from ZPublisher.BeforeTraverse import unregisterBeforeTraverse
+
 
 SUPPRESS_SITEROOT = os.environ.has_key('SUPPRESS_SITEROOT')
 
@@ -63,7 +63,7 @@ class Traverser(Persistent, Item):
             raise ValueError('Cannot change the id of a %s'
                                 % escape(self.meta_type))
 
-class SiteRoot(Traverser, Implicit):
+class SiteRoot(Traverser):
     """ SiteAccess.SiteRoot object
 
     A SiteRoot causes traversal of its container to replace the part

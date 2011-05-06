@@ -24,7 +24,7 @@ from Acquisition import aq_base
 from Acquisition import Implicit
 from App.special_dtml import DTMLFile
 from DateTime.DateTime import DateTime
-from ExtensionClass import Base
+from ZPublisher import getRequest
 from zExceptions import Redirect
 
 class TemporalParadox(Exception):
@@ -80,7 +80,7 @@ class Historian(Implicit):
         "We aren't real, so we delegate to that that spawned us!"
         raise Redirect, REQUEST['URL2']+'/manage_change_history_page'
 
-class Historical(Base):
+class Historical(object):
     """Mix-in class to provide a veiw that shows hystorical changes
 
     The display is similar to that used for undo, except that the transactions
@@ -110,7 +110,7 @@ class Historical(Base):
     def manage_change_history(self):
         first=0
         last=20
-        request=getattr(self, 'REQUEST', None)
+        request=getRequest()
         if request is not None:
             first=request.get('first_transaction', first)
             last=request.get('last_transaction',last)

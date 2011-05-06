@@ -14,6 +14,7 @@ from OFS.Application import Application
 from OFS.SimpleItem import SimpleItem
 from OFS.Cache import ZCM_MANAGERS
 from OFS.Image import Pdata
+from ZPublisher import getRequest
 from ZPublisher.HTTPRequest import HTTPRequest
 from ZPublisher.HTTPResponse import HTTPResponse
 from App.Common import rfc1123_date
@@ -272,13 +273,13 @@ class FileTests(unittest.TestCase):
 
     def testIndexHtmlWithPdata(self):
         self.file.manage_upload('a' * (2 << 16)) # 128K
-        self.file.index_html(self.app.REQUEST, self.app.REQUEST.RESPONSE)
-        self.assert_(self.app.REQUEST.RESPONSE._wrote)
+        self.file.index_html(getRequest(), getRequest().RESPONSE)
+        self.assert_(getRequest().RESPONSE._wrote)
 
     def testIndexHtmlWithString(self):
         self.file.manage_upload('a' * 100) # 100 bytes
-        self.file.index_html(self.app.REQUEST, self.app.REQUEST.RESPONSE)
-        self.assert_(not self.app.REQUEST.RESPONSE._wrote)
+        self.file.index_html(getRequest(), getRequest().RESPONSE)
+        self.assert_(not getRequest().RESPONSE._wrote)
 
     def testStr(self):
         self.assertEqual(str(self.file), self.data)

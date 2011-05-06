@@ -29,12 +29,13 @@ def test_editview():
       >>> zcml.load_config('configure.zcml', Products.Five.utilities)
       >>> from Products.Five.utilities.browser.marker import EditView
       >>> from Products.Five.tests.testing.simplecontent import SimpleContent
-      >>> obj = SimpleContent('foo', 'Foo').__of__(self.folder)
+      >>> obj = SimpleContent('foo', 'Foo')
+      >>> obj.__parent__ = self.folder
 
     Create an EditView:
 
       >>> view = EditView(obj, {})
-      >>> view.context.aq_inner is obj
+      >>> view.context is obj
       True
       >>> view.request
       {}

@@ -1,6 +1,8 @@
+from ZPublisher import getRequest
+
 def updata(self):
     """Convert SiteAccess objects from 1.x to 2.x"""
-    _cvt_btr(self.REQUEST['PARENTS'][-1])
+    _cvt_btr(getRequest()['PARENTS'][-1])
     from App.Dialogs import MessageDialog
     return MessageDialog(title='Update Complete', message='Update Complete!',
                          action='./manage_main')

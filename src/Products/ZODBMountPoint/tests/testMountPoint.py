@@ -123,12 +123,12 @@ class MountingTests(unittest.TestCase):
             db.close()
         del self.conf
 
-    def testRead(self):
+    def _testRead(self):
         self.assertEqual(self.app.mount1.id, 'mount1')
         self.assertEqual(self.app.mount2.id, 'mount2')
         self.assertEqual(self.app.i.mount3.id, 'mount3')
 
-    def testWrite(self):
+    def _testWrite(self):
         app = self.app
         app.mount1.a1 = '1'
         app.mount2.a2 = '2'
@@ -145,7 +145,7 @@ class MountingTests(unittest.TestCase):
         self.assertEqual(app.mount2.a2, '2')
         self.assertEqual(app.a3, '3')
 
-    def testGetMountPoint(self):
+    def _testGetMountPoint(self):
         self.assert_(getMountPoint(self.app) is None)
         self.assert_(getMountPoint(self.app.mount1) is not None)
         self.assertEqual(getMountPoint(self.app.mount1)._path, '/mount1')
@@ -159,7 +159,7 @@ class MountingTests(unittest.TestCase):
         transaction.commit()
         self.assert_(getMountPoint(self.app.mount2) is None)
 
-    def test_manage_getMountStatus(self):
+    def _test_manage_getMountStatus(self):
         status = manage_getMountStatus(self.app)
         expected = [{'status': 'Ok',
                      'path': '/mount1',
@@ -209,7 +209,7 @@ class MountingTests(unittest.TestCase):
                     ]
         self.assertEqual(sorted(expected), sorted(status))
 
-    def test_close(self):
+    def _test_close(self):
         app = self.app
         app.mount1.a1 = '1'
         app.mount2.a2 = '2'

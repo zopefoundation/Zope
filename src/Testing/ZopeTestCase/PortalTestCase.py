@@ -33,7 +33,7 @@ from zope.interface import implements
 from AccessControl import getSecurityManager
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
-from Acquisition import aq_base
+from ZPublisher import getRequest
 
 portal_name = 'portal'
 from ZopeTestCase import user_name
@@ -78,7 +78,7 @@ class PortalTestCase(base.TestCase):
 
     def _setupUserFolder(self):
         '''Creates the user folder if missing.'''
-        if not hasattr(aq_base(self.portal), 'acl_users'):
+        if not hasattr(self.portal, 'acl_users'):
             self.portal.manage_addUserFolder()
 
     def _setupUser(self):
@@ -94,12 +94,12 @@ class PortalTestCase(base.TestCase):
 
     def _refreshSkinData(self):
         '''Refreshes the skin cache.'''
-        if hasattr(aq_base(self.portal), 'clearCurrentSkin'):
+        if hasattr(self.portal, 'clearCurrentSkin'):
             self.portal.clearCurrentSkin()
         else: # CMF 1.4
             self.portal._v_skindata = None
         try:
-            self.portal.setupCurrentSkin(self.app.REQUEST)
+            self.portal.setupCurrentSkin(getRequest())
         except TypeError:
             self.portal.setupCurrentSkin()
 
@@ -120,7 +120,7 @@ class PortalTestCase(base.TestCase):
            or more lightweight version of the memberarea.
         '''
         pm = self.portal.portal_membership
-        if hasattr(aq_base(pm), 'createMemberArea'):
+        if hasattr(pm, 'createMemberArea'):
             pm.createMemberArea(name)
         else: # CMF 1.4
             pm.createMemberarea(name)
@@ -142,8 +142,6 @@ class PortalTestCase(base.TestCase):
         '''Logs in.'''
         uf = self.portal.acl_users
         user = uf.getUserById(name)
-        if not hasattr(user, 'aq_base'):
-            user = user.__of__(uf)
         newSecurityManager(None, user)
 
     def logout(self):

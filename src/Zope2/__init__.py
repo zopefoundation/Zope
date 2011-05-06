@@ -81,3 +81,18 @@ if os.environ.get('ZOPE_COMPATIBLE_STARTUP'):
     # Open the database immediately (see comment above).
     startup()
 
+
+_marker = object()
+def aq_acquire(ob, name, filter=None, extra=None, explicit=True, 
+               default=0, containment=0):
+    seen = set()
+    
+    while ob is not None or ob not in seen:
+        attr = getattr(ob, name, _marker)
+        if attr is not _marker:
+            return attr
+
+        seen.add(ob)
+        ob = getattr(ob, '__parent__', None)
+
+    raise AttributeError(name)

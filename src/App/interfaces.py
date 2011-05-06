@@ -70,3 +70,7 @@ class IUndoSupport(Interface):
     def manage_undo_transactions(transaction_info=(), REQUEST=None):
         """
         """
+
+
+class IApplicationManager(Interface):
+    """ Application manager marker interface """

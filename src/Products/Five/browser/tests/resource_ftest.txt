@@ -8,6 +8,7 @@ Set up the test fixtures:
   >>> zcml.load_config("configure.zcml", Products.Five)
   >>> zcml.load_config('resource.zcml', package=Products.Five.browser.tests)
 
+  >>> from Testing.makerequest import makerequest
   >>> from Products.Five.tests.testing import manage_addFiveTraversableFolder
   >>> manage_addFiveTraversableFolder(self.folder, 'testoid', 'Testoid')
 
@@ -89,6 +90,7 @@ Page templates aren't guaranteed to render, so exclude them from the test:
   >>> for r in dir_resource_names:
   ...     if r.endswith('.pt'):
   ...         continue
+  ...     makerequest(None)
   ...     response = self.publish(base_url % r, basic='manager:r00t')
   ...     self.assertEquals(200, response.getStatus())
 

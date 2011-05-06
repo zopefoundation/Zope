@@ -4,7 +4,6 @@ import Testing
 import Zope2
 Zope2.startup()
 
-from Acquisition import Implicit
 from ZPublisher.BaseRequest import BaseRequest
 from ZPublisher.HTTPResponse import HTTPResponse
 
@@ -28,7 +27,7 @@ def pt_simple_redirect(a):
 def pt_chain_test(request, string):
     request.set('a', request.get('a', '') + string)
 
-class DummyObjectBasic(Implicit):
+class DummyObjectBasic(object):
     """ Dummy class with docstring.
     """
 

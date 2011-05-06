@@ -1,6 +1,6 @@
 ##############################################################################
 #
-# Copyright (c) 2002 Zope Foundation and Contributors.
+# copyright (c) 2002 Zope Foundation and Contributors.
 #
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
@@ -15,9 +15,6 @@
 
 from urllib import quote as urllib_quote
 import xmlrpc
-
-from Acquisition import aq_base
-from Acquisition.interfaces import IAcquirer
 from ZPublisher.interfaces import UseTraversalDefault
 from zExceptions import Forbidden
 from zExceptions import NotFound
@@ -41,9 +38,8 @@ def quote(text):
     return urllib_quote(text, '/+@')
 
 try:
-    from ExtensionClass import Base
     from ZPublisher.Converters import type_converters
-    class RequestContainer(Base):
+    class RequestContainer(object):
         __roles__=None
         def __init__(self,**kw):
             for k,v in kw.items(): self.__dict__[k]=v
@@ -98,8 +94,8 @@ class DefaultPublishTraverse(object):
                         request.response.setStatus(200)
                         # We don't need to do the docstring security check
                         # for views, so lets skip it and return the object here.
-                        if IAcquirer.providedBy(subobject):
-                            subobject = subobject.__of__(object)
+                        #if IAcquirer.providedBy(subobject):
+                        #    subobject = subobject.__of__(object)
                         return subobject
                     # No view found. Reraise the error raised by __bobo_traverse__
                     raise e
@@ -108,15 +104,13 @@ class DefaultPublishTraverse(object):
         if subobject is UseTraversalDefault:
             # No __bobo_traverse__ or default traversal requested
             # Try with an unacquired attribute:
-            if hasattr(aq_base(object), name):
+            if hasattr(object, name):
                 subobject = getattr(object, name)
             else:
                 # We try to fall back to a view:
                 subobject = queryMultiAdapter((object, request), Interface,
                                               name)
                 if subobject is not None:
-                    if IAcquirer.providedBy(subobject):
-                        subobject = subobject.__of__(object)
                     return subobject
 
                 # And lastly, of there is no view, try acquired attributes, but
@@ -326,9 +320,6 @@ class BaseRequest:
                     ob2 = namespaceLookup(ns, nm, ob, self)
                 except LocationError:
                     raise ztkNotFound(ob, name)
-
-                if IAcquirer.providedBy(ob2):
-                    ob2 = ob2.__of__(ob)
                 return ob2
 
         if name == '.':
@@ -411,10 +402,6 @@ class BaseRequest:
             return response.forbiddenError(self['URL'])
 
         # Traverse the URL to find the object:
-        if hasattr(object, '__of__'):
-            # Try to bind the top-level object to the request
-            # This is how you get 'self.REQUEST'
-            object=object.__of__(RequestContainer(REQUEST=request))
         parents.append(object)
 
         steps=self.steps
@@ -447,17 +434,6 @@ class BaseRequest:
                     # BrowserDefault returns the object to be published
                     # (usually self) and a sequence of names to traverse to
                     # find the method to be published.
-
-                    # This is webdav support. The last object in the path
-                    # should not be acquired. Instead, a NullResource should
-                    # be given if it doesn't exist:
-                    if (no_acquire_flag and
-                        hasattr(object, 'aq_base') and
-                        not hasattr(object,'__bobo_traverse__')):
-                        if object.aq_parent is not object.aq_inner.aq_parent:
-                            from webdav.NullResource import NullResource
-                            object = NullResource(parents[-2], object.getId(),
-                                                  self).__of__(parents[-2])
 
                     if IBrowserPublisher.providedBy(object):
                         adapter = object
@@ -508,6 +484,7 @@ class BaseRequest:
                     self.roles = getRoles(
                         object, check_name, subobject,
                         self.roles)
+
                     object = subobject
                 # traverseName() might raise ZTK's NotFound
                 except (KeyError, AttributeError, ztkNotFound):
@@ -527,22 +504,6 @@ class BaseRequest:
                 steps.append(entry_name)
         finally:
             parents.reverse()
-
-        # Note - no_acquire_flag is necessary to support
-        # things like DAV.  We have to make sure
-        # that the target object is not acquired
-        # if the request_method is other than GET
-        # or POST. Otherwise, you could never use
-        # PUT to add a new object named 'test' if
-        # an object 'test' existed above it in the
-        # heirarchy -- you'd always get the
-        # existing object :(
-        if (no_acquire_flag and
-            hasattr(parents[1], 'aq_base') and
-            not hasattr(parents[1],'__bobo_traverse__')):
-            if not (hasattr(parents[1].aq_base, entry_name) or
-                    parents[1].aq_base.has_key(entry_name)):
-                raise AttributeError, entry_name
 
         # After traversal post traversal hooks aren't available anymore
         del self._post_traverse

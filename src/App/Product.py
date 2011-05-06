@@ -35,13 +35,17 @@
 
 
 import os
-
+from zope import interface
+from zope.component import getUtility
 from AccessControl.class_init import InitializeClass
 from AccessControl.owner import UnownableOwner
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.unauthorized import Unauthorized
-from App.special_dtml import DTMLFile
 from OFS.Folder import Folder
+from ZPublisher import getRequest
+
+from interfaces import IApplicationManager
+from special_dtml import DTMLFile
 
 
 class ProductFolder(Folder):
@@ -81,7 +85,8 @@ class Product(Folder):
 
     manage_options = (
         (Folder.manage_options[0],) +
-        tuple(Folder.manage_options[2:]) 
+        tuple(option for option in 
+              Folder.manage_options[2:] if option['label'] != 'Undo') 
         )
 
     _properties = Folder._properties+(
@@ -105,8 +110,7 @@ class Product(Folder):
     security.declarePublic('DestinationURL')
     def DestinationURL(self):
         "Return the URL for the destination for factory output"
-        return self.REQUEST['BASE4']
-
+        return getRequest()['BASE4']
 
     manage_traceback = DTMLFile('dtml/traceback', globals())
     manage_readme = DTMLFile('dtml/readme', globals())
@@ -203,7 +207,6 @@ InitializeClass(Product)
 
 def initializeProduct(productp, name, home, app):
     # Initialize a persistent product
-    assert doInstall()
     fver = ''
 
     if hasattr(productp, '__import_error__'):
@@ -223,7 +226,8 @@ def initializeProduct(productp, name, home, app):
             continue
 
     old = None
-    products = app.Control_Panel.Products
+    cp = getUtility(IApplicationManager)
+    products = cp.Products
     try:
         if ihasattr(products, name):
             old=getattr(products, name)
@@ -282,8 +286,3 @@ def initializeProduct(productp, name, home, app):
 
 def ihasattr(o, name):
     return hasattr(o, name) and o.__dict__.has_key(name)
-
-
-def doInstall():
-    from App.config import getConfiguration
-    return getConfiguration().enable_product_installation

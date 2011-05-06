@@ -508,7 +508,7 @@ def save_tuple(self, tag, data):
     T = data[2:]
     if not T:
         return EMPTY_TUPLE
-    return save_put(self, MARK + ''.join(T) + TUPLE, data[1])
+    return save_put(self, MARK + ''.join(str(t) for t in T) + TUPLE, data[1])
 
 def save_list(self, tag, data):
     L = data[2:]

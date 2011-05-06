@@ -30,6 +30,7 @@ from Testing.ZopeTestCase import sandbox
 from Acquisition import aq_base
 from AccessControl import getSecurityManager
 from AccessControl.SecurityManagement import newSecurityManager
+from ZPublisher.globalrequest import getRequest, setRequest
 
 
 class HookTest(base.TestCase):
@@ -318,11 +319,11 @@ class TestApplicationRegistry(TestConnectionRegistry):
                 return self._closed
 
         def __init__(self):
-            self.REQUEST = self.Conn()
+            setRequest(self.Conn())
             self._p_jar = self.Conn()
 
         def closed(self):
-            if self.REQUEST.closed() and self._p_jar.closed():
+            if getRequest().closed() and self._p_jar.closed():
                 return 1
             return 0
 
@@ -371,7 +372,7 @@ class TestRequestVariables(base.TestCase):
     '''Makes sure the REQUEST contains required variables'''
 
     def testRequestVariables(self):
-        request = self.app.REQUEST
+        request = getRequest()
         self.assertNotEqual(request.get('SERVER_NAME', ''), '')
         self.assertNotEqual(request.get('SERVER_PORT', ''), '')
         self.assertNotEqual(request.get('REQUEST_METHOD', ''), '')
@@ -401,7 +402,7 @@ class TestRequestGarbage1(base.TestCase):
     def afterSetUp(self):
         _sentinel1[:] = []
         self.anApp = base.app()
-        self.anApp.REQUEST._hold(self.Held())
+        getRequest()._hold(self.Held())
 
     def testBaseCloseClosesRequest(self):
         base.close(self.anApp)
@@ -418,7 +419,7 @@ class TestRequestGarbage2(base.TestCase):
 
     def afterSetUp(self):
         _sentinel2[:] = []
-        self.app.REQUEST._hold(self.Held())
+        getRequest()._hold(self.Held())
 
     def testClearClosesRequest(self):
         self._clear()
@@ -435,7 +436,7 @@ class TestRequestGarbage3(sandbox.Sandboxed, base.TestCase):
 
     def afterSetUp(self):
         _sentinel3[:] = []
-        self.app.REQUEST._hold(self.Held())
+        getRequest()._hold(self.Held())
 
     def testClearClosesRequest(self):
         self._clear()

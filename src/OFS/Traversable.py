@@ -28,13 +28,15 @@ from Acquisition import aq_parent
 from Acquisition.interfaces import IAcquirer
 from OFS.interfaces import ITraversable
 from zExceptions import NotFound
+from ZPublisher import getRequest
 from ZPublisher.interfaces import UseTraversalDefault
 from ZODB.POSException import ConflictError
 
 from zope.interface import implements
 from zope.interface import Interface
 from zope.component import queryMultiAdapter
-from zope.location.interfaces import LocationError
+from zope.location.interfaces import LocationError, ILocation, ILocationInfo
+
 from zope.traversing.namespace import namespaceLookup
 from zope.traversing.namespace import nsParse
 
@@ -42,7 +44,7 @@ _marker = object()
 
 
 class Traversable:
-    implements(ITraversable)
+    implements(ITraversable, ILocation)
 
     security = ClassSecurityInfo()
 
@@ -67,9 +69,9 @@ class Traversable:
             return self.virtual_url_path()
 
         spp = self.getPhysicalPath()
-
+        
         try:
-            toUrl = aq_acquire(self, 'REQUEST').physicalPathToURL
+            toUrl = getRequest().physicalPathToURL
         except AttributeError:
             return path2url(spp[1:])
         return toUrl(spp)
@@ -82,8 +84,9 @@ class Traversable:
         'absolute-path reference' as defined in RFC 2396.
         """
         spp = self.getPhysicalPath()
+
         try:
-            toUrl = aq_acquire(self, 'REQUEST').physicalPathToURL
+            toUrl = getRequest().physicalPathToURL
         except AttributeError:
             return path2url(spp) or '/'
         return toUrl(spp, relative=1) or '/'
@@ -97,14 +100,21 @@ class Traversable:
         path.  In either case, the URL does not begin with a slash.
         """
         spp = self.getPhysicalPath()
+
         try:
-            toVirt = aq_acquire(self, 'REQUEST').physicalPathToVirtualPath
+            toVirt = getRequest().physicalPathToVirtualPath
         except AttributeError:
             return path2url(spp[1:])
         return path2url(toVirt(spp))
 
     security.declarePrivate('getPhysicalRoot')
-    getPhysicalRoot=Acquired
+    def getPhysicalRoot(self):
+        info = ILocationInfo(self, None)
+        if info is not None:
+            return info.getRoot()
+        else:
+            func = aq_acquire(aq_parent(self), 'getPhysicalRoot')
+            return func()
 
     security.declarePublic('getPhysicalPath')
     def getPhysicalPath(self):
@@ -117,7 +127,7 @@ class Traversable:
         """
         path = (self.getId(),)
 
-        p = aq_parent(aq_inner(self))
+        p = self.__parent__
         if p is not None:
             path = p.getPhysicalPath() + path
 
@@ -196,10 +206,9 @@ class Traversable:
                         # Process URI segment parameters.
                         ns, nm = nsParse(name)
                         try:
-                            next = namespaceLookup(
-                                ns, nm, obj, aq_acquire(self, 'REQUEST'))
-                            if IAcquirer.providedBy(next):
-                                next = next.__of__(obj)
+                            next = namespaceLookup(ns, nm, obj, getRequest())
+                            #if IAcquirer.providedBy(next):
+                            #    next = next.__of__(obj)
                             if restricted and not validate(
                                 obj, obj, name, next):
                                 raise Unauthorized(name)
@@ -245,14 +254,14 @@ class Traversable:
                             # behave as if there had been no '__bobo_traverse__'
                             bobo_traverse = None
                         if next is UseTraversalDefault:
-                            if getattr(aq_base(obj), name, _marker) is not _marker:
+                            if getattr(obj, name, _marker) is not _marker:
                                 if restricted:
                                     next = guarded_getattr(obj, name)
                                 else:
                                     next = getattr(obj, name)
                             else:
                                 try:
-                                    next = obj[name]
+                                    next = obj.__getitem__(name)
                                     # The item lookup may return a NullResource,
                                     # if this is the case we save it and return it
                                     # if all other lookups fail.
@@ -269,17 +278,19 @@ class Traversable:
 
                 except (AttributeError, NotFound, KeyError), e:
                     # Try to look for a view
-                    next = queryMultiAdapter((obj, aq_acquire(self, 'REQUEST')),
+                    next = queryMultiAdapter((obj, getRequest()),
                                              Interface, name)
 
                     if next is not None:
-                        if IAcquirer.providedBy(next):
-                            next = next.__of__(obj)
+                        #if IAcquirer.providedBy(next):
+                        #    next = next.__of__(obj)
                         if restricted and not validate(obj, obj, name, next):
                             raise Unauthorized(name)
                     elif bobo_traverse is not None:
                         # Attribute lookup should not be done after
                         # __bobo_traverse__:
+                        #import traceback, sys
+                        #traceback.print_exc(file=sys.stderr)
                         raise e
                     else:
                         # No view, try acquired attributes

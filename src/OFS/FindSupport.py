@@ -26,13 +26,12 @@ from DocumentTemplate.DT_Util import Eval
 from DocumentTemplate.DT_Util import InstanceDict
 from DocumentTemplate.DT_Util import TemplateDict
 from DocumentTemplate.security import RestrictedDTML
-from ExtensionClass import Base
 from zope.interface import implements
 
 from OFS.interfaces import IFindSupport
 
 
-class FindSupport(Base):
+class FindSupport(object):
 
     """Find support for Zope Folders"""
 

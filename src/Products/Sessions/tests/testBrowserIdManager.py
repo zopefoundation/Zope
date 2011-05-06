@@ -14,6 +14,7 @@
 Test suite for session id manager.
 """
 import unittest
+from ZPublisher.globalrequest import setRequest
 
 class TestBrowserIdManager(unittest.TestCase):
 
@@ -24,7 +25,7 @@ class TestBrowserIdManager(unittest.TestCase):
     def _makeOne(self, request=None, name='browser_id_manager'):
         bid = self._getTargetClass()(name)
         if request is not None:
-            bid.REQUEST = request
+            setRequest(request)
         return bid
 
     def test_hasBrowserId_already_set_on_request_invalid(self):
@@ -260,6 +261,7 @@ class TestBrowserIdManager(unittest.TestCase):
         URL = '%s/%s' % (NETHOST, PATH_INFO)
         bid = getNewBrowserId()
         request = DummyRequest(browser_id_=bid)
+
         mgr = self._makeOne(request)
         mgr.setBrowserIdName('bid')
         munged = mgr.encodeUrl(URL, style='inline', create=False)
@@ -501,6 +503,7 @@ class TestBrowserIdManager(unittest.TestCase):
         mgr = self._makeOne()
         mgr.setBrowserIdNamespaces(('url',))
         parent = Parent()
+        mgr.__parent__ = parent
         parent.browser_id_manager = mgr
         parent.browser_id_manager.updateTraversalData() # needs wrapper
         hooks = queryBeforeTraverse(parent, 'BrowserIdManager')
@@ -529,6 +532,7 @@ class TestBrowserIdManager(unittest.TestCase):
         mgr = self._makeOne()
         parent = Parent()
         hook = object()
+        mgr.__parent__ = parent
         parent.__before_traverse__ = {(0, 'BrowserIdManager'): hook}
         parent.browser_id_manager = mgr
         parent.browser_id_manager.registerTraversalHook() # needs wrapper
@@ -545,6 +549,7 @@ class TestBrowserIdManager(unittest.TestCase):
             pass
         mgr = self._makeOne()
         parent = Parent()
+        mgr.__parent__ = parent
         parent.browser_id_manager = mgr
         parent.browser_id_manager.registerTraversalHook() # needs wrapper
         hooks = queryBeforeTraverse(parent, 'BrowserIdManager')
@@ -558,6 +563,7 @@ class TestBrowserIdManager(unittest.TestCase):
             pass
         mgr = self._makeOne()
         parent = Parent()
+        mgr.__parent__ = parent
         parent.browser_id_manager = mgr
         parent.browser_id_manager.unregisterTraversalHook() # needs wrapper
 
@@ -568,6 +574,7 @@ class TestBrowserIdManager(unittest.TestCase):
             pass
         mgr = self._makeOne()
         parent = Parent()
+        mgr.__parent__ = parent
         parent.__before_traverse__ = {(0, 'BrowserIdManager'): object()}
         parent.browser_id_manager = mgr
         parent.browser_id_manager.unregisterTraversalHook() # needs wrapper

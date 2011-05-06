@@ -61,7 +61,7 @@ function toggleSelect() {
 
 <form action="<dtml-var "REQUEST.URL1" html_quote>/" name="objectItems" method="post">
 <dtml-if objectItems>
-  <dtml-let hasOrderSupport="_.getattr(this().aq_explicit, 'has_order_support', 0)">
+  <dtml-let hasOrderSupport="_.getattr(this(), 'has_order_support', 0)">
   <dtml-unless skey>
     <dtml-if hasOrderSupport>
       <dtml-call expr="REQUEST.set('skey', getDefaultSorting()[0])">

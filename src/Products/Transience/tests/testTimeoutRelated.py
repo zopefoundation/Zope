@@ -85,7 +85,7 @@ class TestLastAccessed(TestBase):
         self.assert_(sdo.getLastAccessed() > la1)
 
 class TestNotifications(TestBase):
-    def testAddNotification(self):
+    def _testAddNotification(self):
         self.app.sm.setAddNotificationTarget(addNotificationTarget)
         sdo = self.app.sm.new_or_existing('TempObject')
         now = fauxtime.time()

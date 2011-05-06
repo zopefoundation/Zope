@@ -2,7 +2,7 @@ View is a view: <tal:block
   content="python:hasattr(view,'context') and hasattr(view, 'request')" />
 Context is testoid: <tal:block content="python:context.id == 'testoid'" />
 Context.aq_parent is test_folder_1_: <tal:block 
-  content="python:context.aq_parent.id =='test_folder_1_'" />
+  content="python:context.__parent__.id =='test_folder_1_'" />
 Container is context: <tal:block content="python:container is context" />
 Here is context: <tal:block content="python:here is context"/>
 Nothing is None: <tal:block content="python:nothing is None"/>

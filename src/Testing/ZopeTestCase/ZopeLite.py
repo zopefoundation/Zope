@@ -140,10 +140,17 @@ _apply_patches()
 
 _theApp = None
 
+from zope.component import getSiteManager
+from App.interfaces import IApplicationManager
+from App.ApplicationManager import installApplicationManager
+
 @layer.onsetup
 def _startup():
     global _theApp
     _theApp = Zope2.app()
+    cp = installApplicationManager()
+    getSiteManager().registerUtility(cp, IApplicationManager)
+
 
 # Start ZopeLite
 _startup()

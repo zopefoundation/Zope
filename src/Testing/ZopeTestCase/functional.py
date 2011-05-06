@@ -21,6 +21,7 @@ import sandbox
 import interfaces
 
 from zope.interface import implements
+from ZPublisher import getRequest
 
 
 def savestate(func):
@@ -67,7 +68,7 @@ class Functional(sandbox.Sandboxed):
         if env is None:
             env = {}
 
-        request = self.app.REQUEST
+        request = getRequest()
 
         env['SERVER_NAME'] = request['SERVER_NAME']
         env['SERVER_PORT'] = request['SERVER_PORT']

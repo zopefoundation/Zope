@@ -51,7 +51,7 @@ def parentClassFactory(jar, module, name):
         return parent_db.classFactory(parent_conn, module, name)
 
 
-class MountPoint(persistent.Persistent, Implicit):
+class MountPoint(persistent.Persistent):
     '''The base class for a Zope object which, when traversed,
     accesses a different database.
     '''
@@ -188,7 +188,7 @@ class MountPoint(persistent.Persistent, Implicit):
         else:
             data = t[0]
 
-        return data.__of__(parent)
+        return data
 
     def __of__(self, parent):
         # Accesses the database, returning an acquisition

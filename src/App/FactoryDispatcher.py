@@ -15,16 +15,14 @@
 # Implement the manage_addProduct method of object managers
 import sys
 import types
-
+from zope.component import getUtility
 from AccessControl.class_init import InitializeClass
 from AccessControl.owner import UnownableOwner
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.PermissionMapping import aqwrap
-from Acquisition import Acquired
-from Acquisition import aq_base
-from Acquisition import Implicit
-from ExtensionClass import Base
 from OFS.metaconfigure import get_registered_packages
+from ZPublisher import getRequest
+from interfaces import IApplicationManager
 
 
 def _product_packages():
@@ -44,7 +42,7 @@ def _product_packages():
     return packages
 
 
-class Product(Base):
+class Product(object):
     """Model a non-persistent product wrapper.
     """
 
@@ -60,6 +58,7 @@ class Product(Base):
 
     def __init__(self, id):
         self.id=id
+        self.__name__ = id
 
     security.declarePublic('Destination')
     def Destination(self):
@@ -70,15 +69,28 @@ class Product(Base):
         """Returns the ProductHelp object associated with the Product.
         """
         from HelpSys.HelpSys import ProductHelp
-        return ProductHelp('Help', self.id).__of__(self)
+        help = ProductHelp('Help', self.id)
+        help.__name__ = self.id
+        help.__parent__ = self
 
 InitializeClass(Product)
 
 
-class ProductDispatcher(Implicit):
+class ProductDispatcher(object):
+
+    def __get__(self, inst, cls):
+        return ProductDispatcherInner(inst)
+
+
+class ProductDispatcherInner(object):
     " "
     # Allow access to factory dispatchers
     __allow_access_to_unprotected_subobjects__=1
+
+    __name__ = 'manage_addProduct'
+
+    def __init__(self, parent):
+        self.__parent__ = parent
 
     def __getitem__(self, name):
         return self.__bobo_traverse__(None, name)
@@ -87,20 +99,21 @@ class ProductDispatcher(Implicit):
         # Try to get a custom dispatcher from a Python product
         dispatcher_class=getattr(
             _product_packages().get(name, None),
-            '__FactoryDispatcher__',
-            FactoryDispatcher)
+            '__FactoryDispatcher__', FactoryDispatcher)
 
-        productfolder = self.aq_acquire('_getProducts')()
+        cp = getUtility(IApplicationManager)
+        productfolder = cp.Products
         try:
             product = productfolder._product(name)
         except AttributeError:
             # If we do not have a persistent product entry, return 
             product = Product(name)
 
-        dispatcher=dispatcher_class(product, self.aq_parent, REQUEST)
-        return dispatcher.__of__(self)
+        dispatcher=dispatcher_class(product, self.__parent__, REQUEST)
+        return dispatcher
 
-class FactoryDispatcher(Implicit):
+
+class FactoryDispatcher(object):
     """Provide a namespace for product "methods"
     """
 
@@ -109,7 +122,6 @@ class FactoryDispatcher(Implicit):
     _owner=UnownableOwner
 
     def __init__(self, product, dest, REQUEST=None):
-        product = aq_base(product)
         self._product=product
         self._d=dest
         if REQUEST is not None:
@@ -120,10 +132,14 @@ class FactoryDispatcher(Implicit):
                 v=v[:v.rfind('/')]
                 self._u=v[:v.rfind('/')]
 
+    @property
+    def __parent__(self):
+        return self._d
+
     security.declarePublic('Destination')
     def Destination(self):
         "Return the destination for factory output"
-        return self.__dict__['_d'] # we don't want to wrap the result!
+        return self._d
 
     security.declarePublic('this')
     this=Destination
@@ -155,7 +171,11 @@ class FactoryDispatcher(Implicit):
         raise AttributeError, name
 
     # Provide acquired indicators for critical OM methods:
-    _setObject = _getOb = Acquired
+    def _setObject(self, id, object, **kw):
+        self.__parent__._setObject(id, object, **kw)
+
+    def _getOb(self, id):
+        return self.__parent__._getOb(id)
 
     # Make sure factory methods are unowned:
     _owner=UnownableOwner
@@ -166,5 +186,6 @@ class FactoryDispatcher(Implicit):
         """
         d = update_menu and '/manage_main?update_menu=1' or '/manage_main'
         REQUEST['RESPONSE'].redirect(self.DestinationURL()+d)
+
 
 InitializeClass(FactoryDispatcher)

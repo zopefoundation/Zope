@@ -5,7 +5,6 @@ Defines the VirtualHostMonster class
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import view as View
 from AccessControl.SecurityInfo import ClassSecurityInfo
-from Acquisition import Implicit
 from App.Dialogs import MessageDialog
 from App.special_dtml import DTMLFile
 from OFS.SimpleItem import Item
@@ -17,7 +16,24 @@ from ZPublisher.BeforeTraverse import unregisterBeforeTraverse
 from ZPublisher.BaseRequest import quote
 from zExceptions import BadRequest
 
-class VirtualHostMonster(Persistent, Item, Implicit):
+
+class NameCaller(object, NameCaller):
+
+    def __init__(self, name):
+        self.name = name
+
+    def __call__(self, container, request):
+        while container is not None:
+            try:
+                ob = container[self.name]
+                if ob is not None:
+                    super(NameCaller, self).__call__(container, request)
+                    return
+            except:
+                container = getattr(container, '__parent__', None)
+
+
+class VirtualHostMonster(Persistent, Item):
     """Provide a simple drop-in solution for virtual hosting.
     """
 
@@ -156,6 +172,7 @@ class VirtualHostMonster(Persistent, Item, Implicit):
                 else:
                     request.setServerURL(protocol, host)
                 path = list(stack)
+                
 
             # Find and convert VirtualHostRoot directive
             # If it is followed by one or more path elements that each
@@ -235,7 +252,7 @@ class VirtualHostMonster(Persistent, Item, Implicit):
                 # If there was no explicit VirtualHostRoot, add one at the end
                 if pp[0] == '/':
                     pp = pp[:]
-                    pp.insert(1, self.id)
+                    pp.insert(1, '@@VHM') #self.id)
                 stack.extend(pp)
 
     def __bobo_traverse__(self, request, name):
@@ -252,6 +269,15 @@ class VirtualHostMonster(Persistent, Item, Implicit):
         return parents.pop() # He'll get put back on
 
 InitializeClass(VirtualHostMonster)
+
+
+def getVHM(context, request):
+    root = context.getPhysicalRoot()
+    for id, ob in root.objectItems():
+        if ob.meta_type == 'Virtual Host Monster':
+            return ob
+
+    return context
 
 
 def manage_addVirtualHostMonster(self, id=None, REQUEST=None, **ignored):

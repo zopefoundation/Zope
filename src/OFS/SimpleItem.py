@@ -34,20 +34,18 @@ from Acquisition import aq_acquire
 from Acquisition import aq_base
 from Acquisition import aq_inner
 from Acquisition import aq_parent
-from Acquisition import Implicit
 from App.Management import Tabs
 from App.special_dtml import HTML
 from App.special_dtml import DTMLFile
 from App.Undo import UndoSupport
-from ComputedAttribute import ComputedAttribute
 from DocumentTemplate.html_quote import html_quote
 from DocumentTemplate.ustr import ustr
-from ExtensionClass import Base
 from Persistence import Persistent
 from webdav.Resource import Resource
 from zExceptions import Redirect
 from zExceptions.ExceptionFormatter import format_exception
 from zope.interface import implements
+from zope.location.interfaces import IContained
 
 from OFS.interfaces import IItem
 from OFS.interfaces import IItemWithName
@@ -61,23 +59,25 @@ from OFS.ZDOM import Element
 import logging
 logger = logging.getLogger()
 
-class Item(Base,
-           Resource,
+class Item(Resource,
            CopySource,
            Tabs,
            Traversable,
            Element,
            Owned,
            UndoSupport,
+           object,
            ):
     """A common base class for simple, non-container objects."""
 
-    implements(IItem)
+    implements(IItem, IContained)
 
     security = ClassSecurityInfo()
 
     isPrincipiaFolderish=0
     isTopLevelPrincipiaApplicationObject=0
+
+    __parent__ = __name__ = None
 
     def manage_afterAdd(self, item, container):
         pass
@@ -109,9 +109,6 @@ class Item(Base,
         if hasattr(self, '__name__'):
             return self.__name__
         raise AttributeError, 'This object has no id'
-
-    # Alias id to __name__, which will make tracebacks a good bit nicer:
-    __name__=ComputedAttribute(lambda self: self.getId())
 
     # Name, relative to BASEPATH1 of icon used to display item
     # in folder listings.
@@ -362,9 +359,9 @@ class Item(Base,
         try:
             path = '/'.join(self.getPhysicalPath())
         except:
-            return Base.__repr__(self)
+            return super(Item, self).__repr__()
         context_path = None
-        context = aq_parent(self)
+        context = self.__parent__
         container = aq_parent(aq_inner(self))
         if aq_base(context) is not aq_base(container):
             try:
@@ -433,7 +430,6 @@ def pretty_tb(t, v, tb, as_html=1):
 
 class SimpleItem(Item,
                  Persistent,
-                 Implicit,
                  RoleManager,
                  ):
 

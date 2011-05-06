@@ -30,6 +30,7 @@ from App.Dialogs import MessageDialog
 from OFS.SimpleItem import SimpleItem
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from zExceptions.ExceptionFormatter import format_exception
+from ZPublisher import getRequest
 
 LOG = logging.getLogger('Zope.SiteErrorLog')
 
@@ -163,7 +164,7 @@ class SiteErrorLog (SimpleItem):
                 else:
                     tb_text = info[2]
 
-                request = getattr(self, 'REQUEST', None)
+                request = getRequest()
                 url = None
                 username = None
                 userid   = None

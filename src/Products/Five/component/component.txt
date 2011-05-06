@@ -39,8 +39,8 @@ is used to retrieve the closest site:
   
   >>> ob = ObjectManager()
   >>> ob2 = ObjectManager()
-  >>> ob = ob.__of__(site)
-  >>> ob2 = ob2.__of__(ob)
+  >>> ob.__parent__ = site
+  >>> ob2.__parent__ = ob
   >>> IComponentLookup(ob2) is components
   True
 

@@ -24,7 +24,6 @@ from AccessControl.Permissions import webdav_lock_items
 from AccessControl.Permissions import webdav_unlock_items
 from Acquisition import aq_base
 from Acquisition import aq_parent
-from Acquisition import Implicit
 from App.special_dtml import DTMLFile
 from Persistence import Persistent
 from OFS.CopySupport import CopyError
@@ -50,8 +49,7 @@ from webdav.Resource import Resource
 from zope.contenttype import guess_content_type
 
 
-class NullResource(Persistent, Implicit, Resource):
-
+class NullResource(Persistent, Resource):
     """Null resources are used to handle HTTP method calls on
     objects which do not yet exist in the url namespace."""
 
@@ -162,7 +160,7 @@ class NullResource(Persistent, Implicit, Resource):
         # user can create this type of object (and we don't need to
         # check the clipboard.
         try:
-            parent._verifyObjectPaste(ob.__of__(parent), 0)
+            parent._verifyObjectPaste(ob, 0)
         except CopyError:
              sMsg = 'Unable to create object of class %s in %s: %s' % \
                     (ob.__class__, repr(parent), sys.exc_info()[1],)
@@ -420,7 +418,7 @@ class LockNullResource(NullResource, Item_w__name__):
 
         # Verify that the user can create this type of object
         try:
-            parent._verifyObjectPaste(ob.__of__(parent), 0)
+            parent._verifyObjectPaste(ob, 0)
         except Unauthorized:
             raise
         except:

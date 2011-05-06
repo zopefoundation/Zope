@@ -17,16 +17,16 @@ from logging import getLogger
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.SecurityManagement import getSecurityManager
-from Acquisition import aq_parent, aq_inner, aq_get
+from Acquisition import aq_parent, aq_inner, aq_get, Implicit
 from App.Common import package_home
 from App.config import getConfiguration
-from ComputedAttribute import ComputedAttribute
 from OFS.SimpleItem import SimpleItem
 from OFS.Traversable import Traversable
 from Products.PageTemplates.Expressions import SecureModuleImporter
 from Products.PageTemplates.PageTemplate import PageTemplate
 from Shared.DC.Scripts.Script import Script
 from Shared.DC.Scripts.Signature import FuncCode
+from ZPublisher import getRequest
 from zope.contenttype import guess_content_type
 from zope.pagetemplate.pagetemplatefile import sniff_type
 
@@ -46,7 +46,7 @@ def guess_type(filename, text):
         return content_type
     return sniff_type(text) or 'text/html'
 
-class PageTemplateFile(SimpleItem, Script, PageTemplate, Traversable):
+class PageTemplateFile(Implicit, SimpleItem, Script, PageTemplate, Traversable):
     """Zope 2 implementation of a PageTemplate loaded from a file."""
 
     meta_type = 'Page Template (File)'
@@ -87,10 +87,9 @@ class PageTemplateFile(SimpleItem, Script, PageTemplate, Traversable):
         self.filename = filename
 
     def pt_getContext(self):
-        root = None
-        meth = aq_get(self, 'getPhysicalRoot', None)
-        if meth is not None:
-            root = meth()
+        request = getRequest()
+        parent = aq_parent(self)
+        root = parent.getPhysicalRoot()
         context = self._getContext()
         c = {'template': self,
              'here': context,
@@ -99,7 +98,7 @@ class PageTemplateFile(SimpleItem, Script, PageTemplate, Traversable):
              'nothing': None,
              'options': {},
              'root': root,
-             'request': aq_get(root, 'REQUEST', None),
+             'request': request,
              'modules': SecureModuleImporter,
              }
         return c
@@ -179,14 +178,13 @@ class PageTemplateFile(SimpleItem, Script, PageTemplate, Traversable):
             RESPONSE.setHeader('Content-Type', 'text/plain')
         return self.read()
 
-    def _get__roles__(self):
-        imp = getattr(aq_parent(aq_inner(self)),
-                      '%s__roles__' % self.__name__)
-        if hasattr(imp, '__of__'):
-            return imp.__of__(self)
-        return imp
-
-    __roles__ = ComputedAttribute(_get__roles__, 1)
+    @property
+    def __roles__(self):
+        parent = getattr(self, '__parent__', None)
+        if parent is not None:
+            imp = getattr(parent, '%s__roles__' % self.__name__, None)
+            return imp
+        return None
 
     def getOwner(self, info=0):
         """Gets the owner of the executable object.

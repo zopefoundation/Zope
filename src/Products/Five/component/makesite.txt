@@ -34,6 +34,7 @@ Create the test browser we'll be using:
     >>> browser = Browser()
     >>> browser.addHeader('Authorization', 'Basic manager:r00t')
 
+
 Let's add a folder:
 
     >>> browser.open('http://localhost/manage_addProduct/OFSP/folderAdd')
@@ -83,6 +84,7 @@ Browse to our local view and check that it works:
     >>> print browser.contents
     Hello World!
 
+
 Unmaking a site
 ---------------
 
@@ -100,6 +102,7 @@ Ensure that its local components are no longer available:
     Traceback (most recent call last):
     ...
     NotFound: ...
+
 
 Clean up:
 ---------

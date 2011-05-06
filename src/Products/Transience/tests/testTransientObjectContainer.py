@@ -278,7 +278,6 @@ class TestTransientObjectContainer(TestCase):
             del self.t[k]
 
         self.assertEqual(len(self.t), 0)
-        
 
     def testResetWorks(self):
         self.t[10] = 1

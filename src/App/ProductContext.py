@@ -30,6 +30,7 @@ from OFS.misc_ import misc_
 from OFS.ObjectManager import ObjectManager
 
 from zope.interface import implementedBy
+from zope.location.interfaces import IContained
 
 from App.FactoryDispatcher import FactoryDispatcher
 
@@ -43,6 +44,7 @@ if not hasattr(Products, 'meta_classes'):
 
 _marker = []  # Create a new marker object
 LOG = getLogger('ProductContext')
+
 
 class ProductContext:
 
@@ -166,6 +168,9 @@ class ProductContext:
         else:
             name = initial.__name__
 
+        if IContained.providedBy(initial):
+            initial.__parent__ = productObject
+
         fd = getattr(pack, '__FactoryDispatcher__', None)
         if fd is None:
             class __FactoryDispatcher__(FactoryDispatcher):
@@ -231,7 +236,7 @@ class ProductContext:
         """
         if self.__app is None:
             return self.__prod.getProductHelp()
-        return self.__prod.__of__(self.__app.Control_Panel.Products).getProductHelp()
+        return self.__prod.getProductHelp()
 
     def registerHelpTopic(self, id, topic):
         """
@@ -244,8 +249,8 @@ class ProductContext:
         Sets the title of the Product's Product Help
         """
         h = self.getProductHelp()
-        if getattr(h, 'title', None) != title:
-            h.title = title
+        #if getattr(h, 'title', None) != title:
+        #    h.title = title
 
     def registerHelp(self, directory='help', clear=1,
             title_re=re.compile(r'<title>(.+?)</title>', re.I)):
@@ -333,3 +338,6 @@ class AttrDict:
 
     def __setitem__(self, name, v):
         setattr(self.ob, name, v)
+
+    def has_key(self, key):
+        return hasattr(self, key)

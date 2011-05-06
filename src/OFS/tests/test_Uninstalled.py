@@ -132,7 +132,8 @@ class TestsIntegratedBroken(base.TestCase):
         inst = aq_base(app.tr)
         self.assertTrue(isinstance(inst, BrokenClass))
         state = inst.__getstate__()
-        self.assertEqual(state, {'id': 'tr'})
+        state['__parent__'] = None
+        self.assertEqual(state, {'__name__':'tr', 'id':'tr', '__parent__':None})
 
         # cleanup
         app.manage_delObjects('tr')

@@ -16,7 +16,6 @@ import sys
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
-from Acquisition import Implicit
 from App.special_dtml import DTMLFile
 from App.Management import Tabs
 from OFS.owner import Owned
@@ -54,7 +53,7 @@ def constructSessionDataManager(self, id, title='', path=None,
     if REQUEST is not None:
         return self.manage_main(self, REQUEST, update_menu=1)
 
-class SessionDataManager(Item, Implicit, Persistent, RoleManager, Owned, Tabs):
+class SessionDataManager(Item, Persistent, RoleManager, Owned, Tabs):
     """ The Zope default session data manager implementation """
 
     meta_type = 'Session Data Manager'
@@ -250,7 +249,7 @@ class SessionDataManager(Item, Implicit, Persistent, RoleManager, Owned, Tabs):
     def updateTraversalData(self, requestSessionName=None):
         # Note this cant be called directly at add -- manage_afterAdd will
         # work though.
-        parent = self.aq_inner.aq_parent
+        parent = self.__parent__
 
         if getattr(self,'_hasTraversalHook', None):
             unregisterBeforeTraverse(parent, 'SessionDataManager')

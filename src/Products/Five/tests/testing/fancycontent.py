@@ -21,15 +21,19 @@ from OFS.SimpleItem import SimpleItem
 
 from zope.interface import implements
 from zope.interface import Interface
+from zope.location.interfaces import ILocation
 
 class IFancyContent(Interface):
     pass
 
-class FancyAttribute(Explicit):
+class FancyAttribute(object):
     """Doc test fanatics"""
+    implements(ILocation)
 
-    def __init__(self, name):
+    def __init__(self, name, parent):
         self.name = name
+        self.__name__ = name
+        self.__parent__ = parent
 
     security = ClassSecurityInfo()
 
@@ -58,7 +62,7 @@ class FancyContent(SimpleItem):
             raise KeyError(name)
         elif name == 'raise-valueerror':
             raise ValueError(name)
-        return FancyAttribute(name).__of__(self)
+        return FancyAttribute(name, self)
 
     def get_size(self):
         return 43
@@ -84,7 +88,7 @@ class NonTraversableFancyContent(SimpleItem):
             raise KeyError(name)
         elif name == 'raise-valueerror':
             raise ValueError(name)
-        return FancyAttribute(name).__of__(self)
+        return FancyAttribute(name, self)
 
     def get_size(self):
         return 43

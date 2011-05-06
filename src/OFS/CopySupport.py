@@ -38,7 +38,7 @@ from Acquisition import aq_parent
 from App.Dialogs import MessageDialog
 from App.special_dtml import HTML
 from App.special_dtml import DTMLFile
-from ExtensionClass import Base
+from ZPublisher import getRequest
 from webdav.Lockable import ResourceLockedError
 from zExceptions import Unauthorized, BadRequest
 from ZODB.POSException import ConflictError
@@ -65,7 +65,7 @@ copy_re = re.compile('^copy([0-9]*)_of_(.*)')
 _marker=[]
 
 
-class CopyContainer(Base):
+class CopyContainer(object):
 
     """Interface for containerish objects which allow cut/copy/paste"""
 
@@ -447,13 +447,13 @@ class CopyContainer(Base):
 
     def cb_dataValid(self):
         # Return true if clipboard data seems valid.
-        try:    cp=_cb_decode(self.REQUEST['__cp'])
+        try:    cp=_cb_decode(getRequest()['__cp'])
         except: return 0
         return 1
 
     def cb_dataItems(self):
         # List of objects in the clip board
-        try:    cp=_cb_decode(self.REQUEST['__cp'])
+        try:    cp=_cb_decode(getRequest()['__cp'])
         except: return []
         oblist=[]
 
@@ -539,7 +539,7 @@ class CopyContainer(Base):
 InitializeClass(CopyContainer)
 
 
-class CopySource(Base):
+class CopySource(object):
 
     """Interface for objects which allow themselves to be copied."""
 

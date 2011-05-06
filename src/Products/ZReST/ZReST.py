@@ -14,7 +14,6 @@ import sys
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.SecurityInfo import ModuleSecurityInfo
-from Acquisition import Implicit
 from App.config import getConfiguration 
 from App.special_dtml import DTMLFile
 from DateTime.DateTime import DateTime
@@ -23,6 +22,7 @@ from OFS.PropertyManager import PropertyManager
 from OFS.History import Historical
 from OFS.History import html_diff
 from Persistence import Persistent
+from ZPublisher import getRequest
 
 modulesecurity = ModuleSecurityInfo()
 
@@ -45,7 +45,7 @@ class Warnings:
     def write(self, message):
         self.messages.append(message)
 
-class ZReST(Item, PropertyManager, Historical, Implicit, Persistent):
+class ZReST(Item, PropertyManager, Historical, Persistent):
     '''An instance of this class provides an interface between Zope and
        ReStructuredText for one text.
     '''
@@ -246,7 +246,7 @@ class ZReST(Item, PropertyManager, Historical, Implicit, Persistent):
     def manage_FTPget(self):
         ''' Get source for FTP download
         '''
-        self.REQUEST.RESPONSE.setHeader('Content-Type', 'text/plain')
+        getRequest().RESPONSE.setHeader('Content-Type', 'text/plain')
         s = [
             '.. This is a ReStructuredText Document. Initial comment lines '
                 '(".. ") will be stripped.',

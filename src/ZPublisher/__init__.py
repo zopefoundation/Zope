@@ -26,3 +26,6 @@ def test(*args, **kw):
     import Test
     test=Test.publish
     return apply(test, args, kw)
+
+
+from ZPublisher.globalrequest import getRequest, getAppRoot

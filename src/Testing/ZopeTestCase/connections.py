@@ -12,6 +12,8 @@
 ##############################################################################
 """ZODB connection registry
 """
+from ZPublisher import getRequest
+
 
 class ConnectionRegistry:
     '''ZODB connection registry
@@ -50,7 +52,10 @@ class ConnectionRegistry:
         if hasattr(conn, 'close'):
             conn.close()
         else:
-            conn.REQUEST.close()
+            try:
+                getRequest().close()
+            except:
+                pass
             conn._p_jar.close()
 
 

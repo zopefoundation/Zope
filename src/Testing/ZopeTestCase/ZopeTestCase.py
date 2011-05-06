@@ -104,7 +104,7 @@ class ZopeTestCase(base.TestCase):
         '''Logs in.'''
         uf = self.folder.acl_users
         user = uf.getUserById(name)
-        if not hasattr(user, 'aq_base'):
+        if not hasattr(user, 'aq_base') and hasattr(user, '__of__'):
             user = user.__of__(uf)
         newSecurityManager(None, user)
 

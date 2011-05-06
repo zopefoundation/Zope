@@ -22,7 +22,7 @@ from OFS.SimpleItem import SimpleItem
 
 logger = getLogger('OFS.subscribers')
 
-class FauxRoot( Implicit ):
+class FauxRoot( object ):
 
     id = '/'
 
@@ -32,7 +32,7 @@ class FauxRoot( Implicit ):
     def getPhysicalPath( self ):
         return ()
 
-class FauxUser( Implicit ):
+class FauxUser( object ):
 
     def __init__( self, id, login ):
 
@@ -93,7 +93,9 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         return ObjectManagerWithIItem
 
     def _makeOne( self, *args, **kw ):
-        return self._getTargetClass()( *args, **kw ).__of__( FauxRoot() )
+        ob = self._getTargetClass()( *args, **kw )
+        ob.__parent__ = FauxRoot()
+        return ob
 
     def test_interfaces(self):
         from OFS.interfaces import IObjectManager
@@ -157,7 +159,8 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
 
     def test_setObject_set_owner_with_user( self ):
         om = self._makeOne()
-        user = User( 'user', '123', (), () ).__of__( FauxRoot() )
+        user = User( 'user', '123', (), () ) #.__of__( FauxRoot() )
+        user.__parent__ = FauxRoot()
         newSecurityManager( None, user )
         si = SimpleItem( 'user_creation' )
         self.assertEqual( si.__ac_local_roles__, None )
@@ -166,7 +169,8 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
 
     def test_setObject_set_owner_with_faux_user( self ):
         om = self._makeOne()
-        user = FauxUser( 'user_id', 'user_login' ).__of__( FauxRoot() )
+        user = FauxUser( 'user_id', 'user_login' ) #.__of__( FauxRoot() )
+        user.__parent__ = FauxRoot()
         newSecurityManager( None, user )
         si = SimpleItem( 'faux_creation' )
         self.assertEqual( si.__ac_local_roles__, None )
@@ -207,7 +211,8 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
 
     def test_setObject_no_set_owner_with_user( self ):
         om = self._makeOne()
-        user = User( 'user', '123', (), () ).__of__( FauxRoot() )
+        user = User( 'user', '123', (), () ) #.__of__( FauxRoot() )
+        user.__parent__ = FauxRoot()
         newSecurityManager( None, user )
         si = SimpleItem( 'should_be_okay' )
         self.assertEqual( si.__ac_local_roles__, None )
@@ -216,7 +221,8 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
 
     def test_setObject_no_set_owner_with_faux_user( self ):
         om = self._makeOne()
-        user = FauxUser( 'user_id', 'user_login' ).__of__( FauxRoot() )
+        user = FauxUser( 'user_id', 'user_login' ) #.__of__( FauxRoot() )
+        user.__parent__ = FauxRoot()
         newSecurityManager( None, user )
         si = SimpleItem( 'should_be_okay' )
         self.assertEqual( si.__ac_local_roles__, None )

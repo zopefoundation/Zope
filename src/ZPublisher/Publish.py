@@ -33,6 +33,7 @@ from .pubevents import PubStart
 from .pubevents import PubSuccess
 from .Request import Request
 from .Response import Response
+from .globalrequest import setRequest, setAppRoot
 
 
 class Retry(Exception):
@@ -86,7 +87,9 @@ def publish(request, module_name, after_list, debug=0,
     response=None
 
     try:
+        setRequest(request)
         notify(PubStart(request))
+
         # TODO pass request here once BaseRequest implements IParticipation
         newInteraction()
 
@@ -110,14 +113,20 @@ def publish(request, module_name, after_list, debug=0,
         if bobo_before is not None:
             bobo_before()
 
+        if transactions_manager:
+            transactions_manager.begin()
+
         # Get the path list.
         # According to RFC1738 a trailing space in the path is valid.
         path=request_get('PATH_INFO')
 
-        request['PARENTS']=parents=[object]
+        if hasattr(object,'__bobo_traverse__'):
+            try:
+                object=object.__bobo_traverse__(request)
+            except: pass
 
-        if transactions_manager:
-            transactions_manager.begin()
+        request['PARENTS']=parents=[object]
+        setAppRoot(object)
 
         object=request.traverse(path, validated_hook=validated_hook)
 
@@ -145,6 +154,9 @@ def publish(request, module_name, after_list, debug=0,
         endInteraction()
 
         notify(PubSuccess(request))
+
+        setAppRoot(None)
+        setRequest(None)
 
         return response
     except:

@@ -20,6 +20,8 @@ from sys import stdin, stdout
 from ZPublisher.HTTPRequest import HTTPRequest
 from ZPublisher.HTTPResponse import HTTPResponse
 from ZPublisher.BaseRequest import RequestContainer
+from ZPublisher.globalrequest import setRequest, setAppRoot
+
 
 def makerequest(app, stdout=stdout, environ=None):
     """
@@ -62,5 +64,7 @@ def makerequest(app, stdout=stdout, environ=None):
     from zope.publisher.browser import setDefaultSkin
     setDefaultSkin(req)
 
-    requestcontainer = RequestContainer(REQUEST = req)
-    return app.__of__(requestcontainer)
+    setRequest(req)
+    setAppRoot(app)
+
+    return app

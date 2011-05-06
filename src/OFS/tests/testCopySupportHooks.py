@@ -14,6 +14,7 @@ from AccessControl.SecurityManagement import noSecurityManager
 
 from OFS.SimpleItem import SimpleItem
 from OFS.Folder import Folder
+from ZPublisher import getRequest
 
 from Zope2.App import zcml
 
@@ -83,7 +84,9 @@ class HookTest(unittest.TestCase):
         try:
             uf = self.app.acl_users
             uf._doAddUser('manager', 'secret', ['Manager'], [])
-            user = uf.getUserById('manager').__of__(uf)
+            user = uf.getUserById('manager')
+            if hasattr(user, '__of__'):
+                user = user.__of__(uf)
             newSecurityManager(None, user)
         except:
             self.tearDown()
@@ -149,7 +152,7 @@ class TestCopySupport(HookTest):
 
     def test_5_COPY(self):
         # Test webdav COPY
-        req = self.app.REQUEST
+        req = getRequest()
         req.environ['HTTP_DEPTH'] = 'infinity'
         req.environ['HTTP_DESTINATION'] = '%s/subfolder/mydoc' % self.folder.absolute_url()
         self.folder.mydoc.COPY(req, req.RESPONSE)
@@ -160,7 +163,7 @@ class TestCopySupport(HookTest):
 
     def test_6_MOVE(self):
         # Test webdav MOVE
-        req = self.app.REQUEST
+        req = getRequest()
         req.environ['HTTP_DEPTH'] = 'infinity'
         req.environ['HTTP_DESTINATION'] = '%s/subfolder/mydoc' % self.folder.absolute_url()
         self.folder.mydoc.MOVE(req, req.RESPONSE)
@@ -171,7 +174,7 @@ class TestCopySupport(HookTest):
 
     def test_7_DELETE(self):
         # Test webdav DELETE
-        req = self.app.REQUEST
+        req = getRequest()
         req['URL'] = '%s/mydoc' % self.folder.absolute_url()
         self.folder.mydoc.DELETE(req, req.RESPONSE)
         self.assertEqual(eventlog.called(),
@@ -244,7 +247,7 @@ class TestCopySupportSublocation(HookTest):
 
     def test_5_COPY(self):
         # Test webdav COPY
-        req = self.app.REQUEST
+        req = getRequest()
         req.environ['HTTP_DEPTH'] = 'infinity'
         req.environ['HTTP_DESTINATION'] = '%s/subfolder/myfolder' % self.folder.absolute_url()
         self.folder.myfolder.COPY(req, req.RESPONSE)
@@ -257,7 +260,7 @@ class TestCopySupportSublocation(HookTest):
 
     def test_6_MOVE(self):
         # Test webdav MOVE
-        req = self.app.REQUEST
+        req = getRequest()
         req.environ['HTTP_DEPTH'] = 'infinity'
         req.environ['HTTP_DESTINATION'] = '%s/subfolder/myfolder' % self.folder.absolute_url()
         self.folder.myfolder.MOVE(req, req.RESPONSE)
@@ -270,7 +273,7 @@ class TestCopySupportSublocation(HookTest):
 
     def test_7_DELETE(self):
         # Test webdav DELETE
-        req = self.app.REQUEST
+        req = getRequest()
         req['URL'] = '%s/myfolder' % self.folder.absolute_url()
         self.folder.myfolder.DELETE(req, req.RESPONSE)
         self.assertEqual(eventlog.called(),

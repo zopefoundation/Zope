@@ -13,6 +13,7 @@
 """ Unit tests for OFS.userfolder
 """
 import unittest
+from ZPublisher import getRequest
 
 # TODO class Test_readUserAccessFile(unittest.TestCase)
 
@@ -39,7 +40,8 @@ class UserFolderTests(unittest.TestCase):
     def _makeOne(self, app=None):
         if app is None:
             app = self._makeApp()
-        uf = self._getTargetClass()().__of__(app)
+        uf = self._getTargetClass()()
+        uf.__parent__ = app
         uf._doAddUser('user1', 'secret', ['role1'], [])
         return uf
 
@@ -54,9 +56,10 @@ class UserFolderTests(unittest.TestCase):
         app.addDTMLMethod('doc', file='')
         app.doc.manage_permission('View', ['role1'], acquire=0)
         # Rig the REQUEST so it looks like we traversed to doc
-        app.REQUEST.set('PUBLISHED', app.doc)
-        app.REQUEST.set('PARENTS', [app])
-        app.REQUEST.steps = ['doc']
+        request = getRequest()
+        request.set('PUBLISHED', app.doc)
+        request.set('PARENTS', [app])
+        request.steps = ['doc']
         return app
 
     def _makeBasicAuthToken(self, creds='user1:secret'):
@@ -66,7 +69,8 @@ class UserFolderTests(unittest.TestCase):
     def _login(self, uf, name):
         from AccessControl.SecurityManagement import newSecurityManager
         user = uf.getUserById(name)
-        user = user.__of__(uf)
+        if hasattr(user, '__of__'):
+            user = user.__of__(uf)
         newSecurityManager(None, user)
 
     def test_class_conforms_to_IStandardUserFolder(self):
@@ -100,6 +104,8 @@ class UserFolderTests(unittest.TestCase):
         app = self._makeApp()
         uf = self._makeOne(app)
         user = uf.getUser('user1')
+        if hasattr(user, '__of__'):
+            user = user.__of__(uf)
         self.assertTrue(user.has_permission('View', app))
         app.manage_role('role1', ['Add Folders'])
         self.assertTrue(user.has_permission('Add Folders', app))
@@ -108,6 +114,8 @@ class UserFolderTests(unittest.TestCase):
         app = self._makeApp()
         uf = self._makeOne(app)
         user = uf.getUser('user1')
+        if hasattr(user, '__of__'):
+            user = user.__of__(uf)
         app.manage_role('Owner', ['Add Folders'])
         app.manage_addLocalRoles('user1', ['Owner'])
         self.assertTrue(user.has_permission('Add Folders', app))
@@ -116,12 +124,12 @@ class UserFolderTests(unittest.TestCase):
         app = self._makeApp()
         uf = self._makeOne(app)
         user = uf.getUser('user1')
-        self.assertTrue(user.authenticate('secret', app.REQUEST))
+        self.assertTrue(user.authenticate('secret', getRequest()))
 
     def testValidate(self):
         app = self._makeApp()
         uf = self._makeOne(app)
-        user = uf.validate(app.REQUEST, self._makeBasicAuthToken(),
+        user = uf.validate(getRequest(), self._makeBasicAuthToken(),
                            ['role1'])
         self.assertNotEqual(user, None)
         self.assertEqual(user.getUserName(), 'user1')
@@ -129,7 +137,7 @@ class UserFolderTests(unittest.TestCase):
     def testNotValidateWithoutAuth(self):
         app = self._makeApp()
         uf = self._makeOne(app)
-        user = uf.validate(app.REQUEST, '', ['role1'])
+        user = uf.validate(getRequest(), '', ['role1'])
         self.assertEqual(user, None)
 
     def testValidateWithoutRoles(self):
@@ -142,19 +150,19 @@ class UserFolderTests(unittest.TestCase):
         # roles are passed explicitly to the userfolder validate method.
         app = self._makeApp()
         uf = self._makeOne(app)
-        user = uf.validate(app.REQUEST, self._makeBasicAuthToken())
+        user = uf.validate(getRequest(), self._makeBasicAuthToken())
         self.assertEqual(user.getUserName(), 'user1')
 
     def testNotValidateWithEmptyRoles(self):
         app = self._makeApp()
         uf = self._makeOne(app)
-        user = uf.validate(app.REQUEST, self._makeBasicAuthToken(), [])
+        user = uf.validate(getRequest(), self._makeBasicAuthToken(), [])
         self.assertEqual(user, None)
 
     def testNotValidateWithWrongRoles(self):
         app = self._makeApp()
         uf = self._makeOne(app)
-        user = uf.validate(app.REQUEST, self._makeBasicAuthToken(),
+        user = uf.validate(getRequest(), self._makeBasicAuthToken(),
                            ['Manager'])
         self.assertEqual(user, None)
 

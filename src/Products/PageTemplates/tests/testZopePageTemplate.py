@@ -26,6 +26,7 @@ from zope.component import provideUtility
 from Products.PageTemplates.interfaces import IUnicodeEncodingConflictResolver
 from Products.PageTemplates.unicodeconflictresolver \
     import PreferredCharsetResolver
+from ZPublisher.globalrequest import getRequest, setRequest
 
 
 ascii_str = '<html><body>hello world</body></html>'
@@ -132,8 +133,9 @@ class ZPTUnicodeEncodingConflictResolution(ZopeTestCase):
                                      'request.get(\'data\')" />'), 
                                encoding='ascii')
         zpt = self.app['test']
-        self.app.REQUEST.set('HTTP_ACCEPT_CHARSET', 'ISO-8859-15,utf-8')
-        self.app.REQUEST.set('data', 'üצה')
+        request = getRequest()
+        request.set('HTTP_ACCEPT_CHARSET', 'ISO-8859-15,utf-8')
+        request.set('data', 'üצה')
         result = zpt.pt_render()
         self.assertTrue(result.startswith(unicode('<div>üצה</div>',
                                                   'iso-8859-15')))
@@ -144,9 +146,9 @@ class ZPTUnicodeEncodingConflictResolution(ZopeTestCase):
                                      'request.get(\'data\')" />'), 
                                encoding='ascii')
         zpt = self.app['test']
-        self.app.REQUEST.set('HTTP_ACCEPT_CHARSET', 'utf-8,ISO-8859-15')
-        self.app.REQUEST.set('data',
-                             unicode('üצה', 'iso-8859-15').encode('utf-8'))
+        request = getRequest()
+        request.set('HTTP_ACCEPT_CHARSET', 'utf-8,ISO-8859-15')
+        request.set('data', unicode('üצה', 'iso-8859-15').encode('utf-8'))
         result = zpt.pt_render()
         self.assertTrue(result.startswith(unicode('<div>üצה</div>',
                                                   'iso-8859-15')))
@@ -157,9 +159,9 @@ class ZPTUnicodeEncodingConflictResolution(ZopeTestCase):
                                      'request.get(\'data\')" />'), 
                                encoding='ascii')
         zpt = self.app['test']
-        self.app.REQUEST.set('HTTP_ACCEPT_CHARSET', 'iso-8859-15')
-        self.app.REQUEST.set('data',
-                             unicode('üצה', 'iso-8859-15').encode('utf-8'))
+        request = getRequest()
+        request.set('HTTP_ACCEPT_CHARSET', 'iso-8859-15')
+        request.set('data', unicode('üצה', 'iso-8859-15').encode('utf-8'))
         result = zpt.pt_render()
         self.assertFalse(result.startswith(unicode('<div>üצה</div>',
                                               'iso-8859-15')))
@@ -170,9 +172,9 @@ class ZPTUnicodeEncodingConflictResolution(ZopeTestCase):
                                      'python: %s" />' % "'üצה'"),
                                encoding='iso-8859-15')
         zpt = self.app['test']
-        self.app.REQUEST.set('HTTP_ACCEPT_CHARSET', 'iso-8859-15,utf-8')
-        self.app.REQUEST.set('data', unicode('üצה',
-                                             'iso-8859-15').encode('utf-8'))
+        request = getRequest()
+        request.set('HTTP_ACCEPT_CHARSET', 'iso-8859-15,utf-8')
+        request.set('data', unicode('üצה', 'iso-8859-15').encode('utf-8'))
         result = zpt.pt_render()
         self.assertTrue(result.startswith(unicode('<div>üצה</div>',
                                                   'iso-8859-15')))
@@ -183,10 +185,11 @@ class ZPTUnicodeEncodingConflictResolution(ZopeTestCase):
                                      'python: %s" />' % "'üצה'"),
                                encoding='iso-8859-15')
         zpt = self.app['test']
-        self.app.REQUEST.set('HTTP_ACCEPT_CHARSET',
-                             'x-user-defined, iso-8859-15,utf-8')
-        self.app.REQUEST.set('data',
-                             unicode('üצה', 'iso-8859-15').encode('utf-8'))
+        request = getRequest()
+        request.set('HTTP_ACCEPT_CHARSET',
+                    'x-user-defined, iso-8859-15,utf-8')
+        request.set('data',
+                    unicode('üצה', 'iso-8859-15').encode('utf-8'))
         result = zpt.pt_render()
         self.assertTrue(result.startswith(unicode('<div>üצה</div>',
                         'iso-8859-15')))
@@ -204,8 +207,9 @@ class ZPTUnicodeEncodingConflictResolution(ZopeTestCase):
 
     def testBug246983(self):
         # See https://bugs.launchpad.net/bugs/246983
-        self.app.REQUEST.set('HTTP_ACCEPT_CHARSET', 'utf-8')
-        self.app.REQUEST.set('data', u'üצה'.encode('utf-8'))
+        request = getRequest()
+        request.set('HTTP_ACCEPT_CHARSET', 'utf-8')
+        request.set('data', u'üצה'.encode('utf-8'))
         # Direct inclusion of encoded strings is hadled normally by the unicode
         # conflict resolver
         textDirect = """
@@ -229,11 +233,12 @@ class ZPTUnicodeEncodingConflictResolution(ZopeTestCase):
                                encoding='ascii')
         zpt = self.app['test']
         from zope.publisher.base import DebugFlags
-        self.app.REQUEST.debug = DebugFlags()
+        request = getRequest()
+        request.debug = DebugFlags()
         self.assertEqual(zpt.pt_render(), unicode('<div>foo</div>'))
-        self.app.REQUEST.debug.showTAL = True
+        request.debug.showTAL = True
         self.assertEqual(zpt.pt_render(), unicode('<div tal:content="string:foo">foo</div>'))
-        self.app.REQUEST.debug.sourceAnnotations = True
+        request.debug.sourceAnnotations = True
         self.assertEqual(zpt.pt_render().startswith(unicode('<!--')), True)
 
 class ZopePageTemplateFileTests(ZopeTestCase):
@@ -308,7 +313,7 @@ class ZopePageTemplateFileTests(ZopeTestCase):
 
     def _put(self, text):
         zpt = self._createZPT()
-        REQUEST = self.app.REQUEST
+        REQUEST = getRequest()
         REQUEST.set('BODY', text)
         zpt.PUT(REQUEST, REQUEST.RESPONSE)
         return zpt
@@ -359,11 +364,13 @@ class ZopePageTemplateFileTests(ZopeTestCase):
         result = zpt.pt_render()
         self.assertEqual('ATTR' in result, False)
 
+
 class PreferredCharsetUnicodeResolverTests(unittest.TestCase):
 
     def testPreferredCharsetResolverWithoutRequestAndWithoutEncoding(self):
         # This test checks the edgecase where the unicode conflict resolver
         # is called with a context object having no REQUEST
+        setRequest(None)
         context = object()
         result = PreferredCharsetResolver.resolve(context, 'üצה', None)
         self.assertEqual(result, 'üצה')
@@ -371,6 +378,7 @@ class PreferredCharsetUnicodeResolverTests(unittest.TestCase):
     def testPreferredCharsetResolverWithoutRequestAndWithEncoding(self):
         # This test checks the edgecase where the unicode conflict resolver
         # is called with a context object having no REQUEST
+        setRequest(None)
         class ContextMock:
             management_page_charset = 'iso-8859-15'
         result = PreferredCharsetResolver.resolve(ContextMock(), 'üצה', None)
@@ -382,8 +390,7 @@ class ZPTRegressions(unittest.TestCase):
     def setUp(self):
         transaction.begin()
         self.app = makerequest(Zope2.app())
-        f = self.app.manage_addProduct['PageTemplates'].manage_addPageTemplate
-        self._addPT = f
+        self._addPT = manage_addPageTemplate
         self.title = 'title of page template'
         self.text = 'text of page template'
 
@@ -392,40 +399,40 @@ class ZPTRegressions(unittest.TestCase):
         self.app._p_jar.close()
 
     def testAddWithParams(self):
-        pt = self._addPT('pt1', title=self.title, text=self.text)
+        pt = self._addPT(self.app, 'pt1', title=self.title, text=self.text)
         self.assertEqual(pt.title, self.title)
         self.assertEqual(pt.document_src(), self.text)
 
     def testAddWithoutParams(self):
-        pt = self._addPT('pt1')
+        pt = self._addPT(self.app, 'pt1')
         default_text = open(pt._default_content_fn).read()
         self.assertEqual(pt.title, '')
         self.assertEqual(pt.document_src().strip(), default_text.strip())
 
     def testAddWithRequest(self):
         # Test manage_add with file
-        request = self.app.REQUEST
+        request = getRequest()
         request.form['file'] = DummyFileUpload(filename='some file',
                                                data=self.text,
                                                content_type='text/html')
-        self._addPT('pt1', REQUEST=request)
+        self._addPT(self.app, 'pt1', REQUEST=request)
         # no object is returned when REQUEST is passed.
         pt = self.app.pt1
         self.assertEqual(pt.document_src(), self.text)
 
     def testAddWithRequestButNoFile(self):
         # Collector #596: manage_add with text but no file
-        request = self.app.REQUEST
-        self._addPT('pt1', text=self.text, REQUEST=request)
+        request = getRequest()
+        self._addPT(self.app, 'pt1', text=self.text, REQUEST=request)
         # no object is returned when REQUEST is passed.
         pt = self.app.pt1
         self.assertEqual(pt.document_src(), self.text)
 
     def testFTPGet(self):
         # check for bug #2269
-        request = self.app.REQUEST
+        request = getRequest()
         text = '<span tal:content="string:foobar"></span>'
-        self._addPT('pt1', text=text, REQUEST=request)
+        self._addPT(self.app, 'pt1', text=text, REQUEST=request)
         result = self.app.pt1.manage_FTPget()
         self.assertEqual(result, text)
 
@@ -438,8 +445,7 @@ class ZPTMacros(zope.component.testing.PlacelessSetup, unittest.TestCase):
 
         transaction.begin()
         self.app = makerequest(Zope2.app())
-        f = self.app.manage_addProduct['PageTemplates'].manage_addPageTemplate
-        self._addPT = f
+        self._addPT = manage_addPageTemplate
         self.title = 'title of page template'
         self.text = """
 <metal:block use-macro="template/macros/themacro">
@@ -471,17 +477,18 @@ class ZPTMacros(zope.component.testing.PlacelessSetup, unittest.TestCase):
         self.app._p_jar.close()
 
     def testMacroExpansion(self):
-        request = self.app.REQUEST        
-        self._addPT('pt1', text=self.text, REQUEST=request)
+        request = getRequest()
+        self._addPT(self.app, 'pt1', text=self.text, REQUEST=request)
         pt = self.app.pt1
         self.assertEqual(pt(), self.result)
 
     def testPtErrors(self):
-        request = self.app.REQUEST        
-        self._addPT('pt1', text=self.text, REQUEST=request)
+        request = getRequest()
+        self._addPT(self.app, 'pt1', text=self.text, REQUEST=request)
         pt = self.app.pt1
         pt.pt_render(source=True)
         self.assertEqual(pt.pt_errors(), None)
+
 
 class DummyFileUpload:
 

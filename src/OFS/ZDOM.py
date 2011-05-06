@@ -168,7 +168,7 @@ class Node:
 InitializeClass(Node)
 
 
-class Document(Explicit, Node):
+class Document(Node):
     """
     Document Interface
     """
@@ -535,7 +535,7 @@ class NamedNodeMap:
         return None
 
 
-class Attr(Implicit, Node):
+class Attr(Node):
     """
     Attr interface - The Attr interface represents an attriubte in an
     Element object. Attr objects inherit the Node Interface

@@ -106,7 +106,6 @@ def _registerPackage(module_, init_func=None):
 def registerPackage(_context, package, initialize=None):
     """ZCML directive function for registering a python package product
     """
-
     _context.action(
         discriminator = ('registerPackage', package),
         callable = _registerPackage,

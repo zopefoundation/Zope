@@ -25,21 +25,23 @@ import transaction
 from AccessControl import ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permission import ApplicationDefaultPermissions
-from Acquisition import aq_base
-from App.ApplicationManager import ApplicationManager
+from App.interfaces import IApplicationManager
+from App.ApplicationManager import installApplicationManager
 from App.config import getConfiguration
 from App import FactoryDispatcher
-from App.Product import doInstall
 from DateTime import DateTime
 from HelpSys.HelpSys import HelpSys
 from OFS.metaconfigure import get_packages_to_initialize
 from OFS.metaconfigure import package_initialized
 from OFS.userfolder import UserFolder
 from Persistence import Persistent
+from ZPublisher.globalrequest import getRequest, setAppRoot
 from webdav.NullResource import NullResource
 from zExceptions import Redirect as RedirectException, Forbidden
 
+from zope.component import getUtility
 from zope.interface import implements
+from zope.location import LocationProxy
 
 import Folder
 import misc_
@@ -49,8 +51,6 @@ from interfaces import IApplication
 from misc_ import Misc_
 
 LOG = getLogger('Application')
-
-APP_MANAGER = None
 
 
 class Application(ApplicationDefaultPermissions,
@@ -72,7 +72,6 @@ class Application(ApplicationDefaultPermissions,
 
     # Create the help system object
     HelpSys = HelpSys('HelpSys')
-
 
     manage_options=((
             Folder.Folder.manage_options[0],
@@ -108,7 +107,7 @@ class Application(ApplicationDefaultPermissions,
 
     def id(self):
         try:
-            return self.REQUEST['SCRIPT_NAME'][1:]
+            return getRequest()['SCRIPT_NAME'][1:]
         except:
             return self.title
 
@@ -123,7 +122,7 @@ class Application(ApplicationDefaultPermissions,
 
     @property
     def Control_Panel(self):
-        return APP_MANAGER.__of__(self)
+        return getUtility(IApplicationManager)
 
     def PrincipiaRedirect(self, destination, URL1):
         """Utility function to allow user-controlled redirects"""
@@ -135,7 +134,7 @@ class Application(ApplicationDefaultPermissions,
 
     def __bobo_traverse__(self, REQUEST, name=None):
         if name == 'Control_Panel':
-            return APP_MANAGER.__of__(self)
+            return self.Control_Panel
         try:
             return getattr(self, name)
         except AttributeError:
@@ -148,7 +147,10 @@ class Application(ApplicationDefaultPermissions,
 
         method = REQUEST.get('REQUEST_METHOD', 'GET')
         if not method in ('GET', 'POST'):
-            return NullResource(self, name, REQUEST).__of__(self)
+            resource = NullResource(self, name, REQUEST)
+            resource.__name__ = name
+            resource.__parent__ = self
+            return resource
 
         # Waaa. unrestrictedTraverse calls us with a fake REQUEST.
         # There is proabably a better fix for this.
@@ -169,7 +171,7 @@ class Application(ApplicationDefaultPermissions,
         button along with a link to the Zope site."""
         return '<a href="http://www.zope.org/Credits" target="_top"><img ' \
                'src="%s/p_/ZopeButton" width="115" height="50" border="0" ' \
-               'alt="Powered by Zope" /></a>' % escape(self.REQUEST.BASE1, 1)
+               'alt="Powered by Zope" /></a>' % escape(getRequest().BASE1, 1)
 
 
     def DELETE(self, REQUEST, RESPONSE):
@@ -191,7 +193,7 @@ class Application(ApplicationDefaultPermissions,
         if relative: return ''
         try:
             # Take advantage of computed URL cache
-            return self.REQUEST['BASE1']
+            return getRequest()['BASE1']
         except (AttributeError, KeyError):
             return '/'
 
@@ -199,7 +201,7 @@ class Application(ApplicationDefaultPermissions,
         """The absolute URL path of the root object is BASEPATH1 or "/".
         """
         try:
-            return self.REQUEST['BASEPATH1'] or '/'
+            return getRequest()['BASEPATH1'] or '/'
         except (AttributeError, KeyError):
             return '/'
 
@@ -258,7 +260,9 @@ class Expired(Persistent):
 
 def initialize(app):
     initializer = AppInitializer(app)
+    setAppRoot(app)
     initializer.initialize()
+    setAppRoot(None)
 
 
 class AppInitializer:
@@ -289,10 +293,7 @@ class AppInitializer:
         self.install_virtual_hosting()
 
     def install_cp_and_products(self):
-        global APP_MANAGER
-        APP_MANAGER = ApplicationManager()
-        APP_MANAGER._init()
-        APP_MANAGER.Products=App.Product.ProductFolder()
+        installApplicationManager()
 
         app = self.getApp()
         app._p_activate()
@@ -348,7 +349,7 @@ class AppInitializer:
         # Ensure that there is a transient object container in the temp folder
         config = getConfiguration()
 
-        if not hasattr(aq_base(tf), 'session_data'):
+        if not hasattr(tf, 'session_data'):
             from Products.Transience.Transience import TransientObjectContainer
             addnotify = getattr(config, 'session_add_notify_script_path', None)
             delnotify = getattr(config, 'session_delete_notify_script_path',
@@ -449,7 +450,6 @@ class AppInitializer:
             if hasattr(users, '_createInitialUser'):
                 app.acl_users._createInitialUser()
                 self.commit('Created initial user')
-            users = aq_base(users)
             migrated = getattr(users, '_ofs_migrated', False)
             if not migrated:
                 klass = users.__class__
@@ -517,9 +517,6 @@ def install_products(app):
 
     debug_mode = getConfiguration().debug_mode
 
-    transaction.get().note('Prior to product installs')
-    transaction.commit()
-
     products = get_products()
 
     for priority, product_name, index, product_dir in products:
@@ -581,6 +578,7 @@ def import_products():
         done[product_name]=product_dir
         import_product(product_dir, product_name, raise_exc=debug_mode)
     return done.keys()
+
 
 def import_product(product_dir, product_name, raise_exc=0, log_exc=1):
     path_join=os.path.join
@@ -672,30 +670,18 @@ def install_product(app, product_dir, product_name, meta_types,
             # expected to implement a method named 'initialize' in
             # their __init__.py that takes the ProductContext as an
             # argument.
-            do_install = doInstall()
-            if do_install:
-                productObject = App.Product.initializeProduct(
-                    product, product_name, package_dir, app)
-                context = ProductContext(productObject, app, product)
-            else:
-                # avoid any persistent connection
-                productObject = FactoryDispatcher.Product(product_name)
-                context = ProductContext(productObject, None, product)
+            productObject = App.Product.initializeProduct(
+                product, product_name, package_dir, app)
+            context = ProductContext(productObject, app, product)
 
             # Look for an 'initialize' method in the product.
             initmethod = pgetattr(product, 'initialize', None)
             if initmethod is not None:
                 initmethod(context)
-
-            if do_install:
-                transaction.get().note('Installed product ' + product_name)
-                transaction.commit()
-
         except Exception:
             if log_exc:
                 LOG.error('Couldn\'t install %s' % product_name,
                            exc_info=sys.exc_info())
-            transaction.abort()
             if raise_exc:
                 raise
 
@@ -704,16 +690,12 @@ def install_package(app, module, init_func, raise_exc=False, log_exc=True):
     """Installs a Python package like a product."""
     from App.ProductContext import ProductContext
     try:
-        do_install = doInstall()
         name = module.__name__
-        if do_install:
-            product = App.Product.initializeProduct(module,
-                                                    name,
-                                                    module.__path__[0],
-                                                    app)
-        else:
-            product = FactoryDispatcher.Product(name)
-            app = None
+        product = App.Product.initializeProduct(
+            module,
+            name,
+            module.__path__[0],
+            app)
 
         product.package_name = name
 
@@ -722,15 +704,10 @@ def install_package(app, module, init_func, raise_exc=False, log_exc=True):
             init_func(newContext)
 
         package_initialized(module, init_func)
-
-        if do_install:
-            transaction.get().note('Installed package %s' % module.__name__)
-            transaction.commit()
     except Exception:
         if log_exc:
             LOG.error("Couldn't install %s" % module.__name__,
                       exc_info=True)
-        transaction.abort()
         if raise_exc:
             raise
 
@@ -753,7 +730,7 @@ def install_standards(app):
             if hasattr(app, base):
                 continue
             ob = DTMLFile(base, std_dir)
-            app.manage_addProduct['OFSP'].manage_addDTMLMethod(
+            product = app.manage_addProduct['OFSP'].addDTMLMethod(
                 id=base, file=open(ob.raw))
         elif ext in ('.pt', '.zpt'):
             if hasattr(app, base):
@@ -773,6 +750,7 @@ def install_standards(app):
         app._standard_objects_have_been_added = 1
         transaction.get().note('Installed standard objects')
         transaction.commit()
+
 
 def reinstall_product(app, product_name):
     folder_permissions = get_folder_permissions()

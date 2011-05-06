@@ -37,6 +37,7 @@ from OFS.Traversable import Traversable
 from OFS.PropertyManager import PropertyManager
 from Shared.DC.Scripts.Script import Script 
 from Shared.DC.Scripts.Signature import FuncCode
+from ZPublisher import getRequest
 from webdav.Lockable import ResourceLockedError
 
 from Products.PageTemplates.PageTemplate import PageTemplate
@@ -273,10 +274,8 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
             historyComparisonResults=html_diff(rev1._text, rev2._text) )
 
     def pt_getContext(self, *args, **kw):
-        root = None
-        meth = aq_get(self, 'getPhysicalRoot', None)
-        if meth is not None:
-            root = meth()
+        request = getRequest()
+        root = self.getPhysicalRoot()
         context = self._getContext()
         c = {'template': self,
              'here': context,
@@ -285,7 +284,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
              'nothing': None,
              'options': {},
              'root': root,
-             'request': aq_get(root, 'REQUEST', None),
+             'request': request,
              'modules': SecureModuleImporter,
              }
         return c
@@ -307,7 +306,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
             kw['args'] = args
         bound_names['options'] = kw
 
-        request = aq_get(self, 'REQUEST', None)
+        request = getRequest()
         if request is not None:
             response = request.response
             if not response.headers.has_key('content-type'):
@@ -483,7 +482,7 @@ def manage_addPageTemplate(self, id, title='', text='', encoding='utf-8',
     zpt = ZopePageTemplate(id, text, content_type, output_encoding=encoding)
     zpt.pt_setTitle(title, encoding)
     self._setObject(id, zpt)
-    zpt = getattr(self, id)
+    zpt = self._getOb(id)
 
     if RESPONSE:    
         if submit == " Add and Edit ":

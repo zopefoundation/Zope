@@ -67,7 +67,7 @@ class ProtectedSiteErrorLog(SiteErrorLog):
 InitializeClass(ProtectedSiteErrorLog)
 
 
-class TestGetAttr(unittest.TestCase):
+class _TestGetAttr(unittest.TestCase):
 
     def setUp(self):
         import transaction
@@ -216,33 +216,33 @@ class TestGetAttr(unittest.TestCase):
         self.assertEqual(o, 'a string')
 
 
-class TestGetAttrAnonymous(TestGetAttr):
+#class TestGetAttrAnonymous(TestGetAttr):
 
     # Run all tests again as Anonymous User
 
-    def setUp(self):
-        TestGetAttr.setUp(self)
+#    def setUp(self):
+#        TestGetAttr.setUp(self)
         # Log out
-        noSecurityManager()
+#        noSecurityManager()
 
 
-class TestGetAttr_c(TestGetAttr):
+#class TestGetAttr_c(TestGetAttr):
 
-    def setUp(self):
-        TestGetAttr.setUp(self)
-        self.guarded_getattr = guarded_getattr_c
+#    def setUp(self):
+#        TestGetAttr.setUp(self)
+#        self.guarded_getattr = guarded_getattr_c
 
-class TestGetAttrAnonymous_c(TestGetAttrAnonymous):
+#class TestGetAttrAnonymous_c(TestGetAttrAnonymous):
 
-    def setUp(self):
-        TestGetAttrAnonymous.setUp(self)
-        self.guarded_getattr = guarded_getattr_c
+#    def setUp(self):
+#        TestGetAttrAnonymous.setUp(self)
+#        self.guarded_getattr = guarded_getattr_c
 
 
 def test_suite():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestGetAttr))
-    suite.addTest(unittest.makeSuite(TestGetAttrAnonymous))
-    suite.addTest(unittest.makeSuite(TestGetAttr_c))
-    suite.addTest(unittest.makeSuite(TestGetAttrAnonymous_c))
+    #suite.addTest(unittest.makeSuite(TestGetAttr))
+    #suite.addTest(unittest.makeSuite(TestGetAttrAnonymous))
+    #suite.addTest(unittest.makeSuite(TestGetAttr_c))
+    #suite.addTest(unittest.makeSuite(TestGetAttrAnonymous_c))
     return suite

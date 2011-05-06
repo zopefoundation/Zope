@@ -378,6 +378,8 @@ class Resource(Base, LockableItem):
         except NotFound:
             raise Conflict, 'Object ancestors must already exist.'
         except:
+            import traceback, sys
+            traceback.print_exc(file=sys.stderr)
             t, v, tb=sys.exc_info()
             raise t, v
         if hasattr(parent, '__null_resource__'):

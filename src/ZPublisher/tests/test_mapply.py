@@ -14,9 +14,8 @@
 """Test mapply() function
 """
 import unittest
-import ExtensionClass
-import Acquisition
 from ZPublisher.mapply import mapply
+
 
 class MapplyTests(unittest.TestCase):
 
@@ -82,14 +81,15 @@ class MapplyTests(unittest.TestCase):
         # Make sure that mapply won't erroneously walk up the
         # Acquisition chain when looking for __call__ attributes:
 
-        class Root(ExtensionClass.Base):
+        class Root(object):
             def __call__(self):
                 return 'The root __call__'
 
-        class NoCallButAcquisition(Acquisition.Implicit):
+        class NoCallButAcquisition(object):
             pass
 
-        ob = NoCallButAcquisition().__of__(Root())
+        ob = NoCallButAcquisition()
+        ob.__parent__ = Root()
         self.assertRaises(TypeError, mapply, ob, (), {})
 
 def test_suite():

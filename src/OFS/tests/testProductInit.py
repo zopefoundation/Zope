@@ -14,10 +14,13 @@
 
 import os, unittest, tempfile, shutil, cStringIO
 
+from zope.component import getUtility
 from OFS.Application import Application
 import Zope2.Startup
 import ZConfig
 from App.config import getConfiguration, setConfiguration
+from App.interfaces import IApplicationManager
+from App.ApplicationManager import installApplicationManager
 import Products
 
 TEMPNAME = tempfile.mktemp()
@@ -73,6 +76,7 @@ class TestProductInit( unittest.TestCase ):
     """ Test the application initializer object """
 
     def setUp(self):
+        installApplicationManager()
         global original_config
         if original_config is None:
             original_config = getConfiguration()
@@ -176,7 +180,6 @@ class TestProductInit( unittest.TestCase ):
             self.assertRaises(SyntaxError, self.import_bad_product)
         finally:
             logger.disabled = 0
-            
 
     def import_bad_product(self):
         from OFS.Application import import_product
@@ -216,26 +219,24 @@ class TestProductInit( unittest.TestCase ):
                        'container_filter': None}
                       in Products.meta_types)
 
-    def test_install_products(self):
+    #def test_install_products(self):
+    #    self.makeFakeProducts()
+    #    self.configure(cfg)
+    #    app = getApp()
+    #    from OFS.Application import install_products
+    #    install_products(app)
+    #    obids = app.Control_Panel.Products.keys()
+    #    self.assertEquals(obids, [])
+
+    def test_install_products_enabled(self):
         self.makeFakeProducts()
         self.configure(cfg)
         app = getApp()
         from OFS.Application import install_products
         install_products(app)
-        obids = app.Control_Panel.Products.keys()
-        self.assertEquals(obids, [])
-
-    def test_install_products_enabled(self):
-        self.makeFakeProducts()
-        cfg2 = cfg + '\nenable-product-installation on'
-        self.configure(cfg2)
-        app = getApp()
-        from OFS.Application import install_products
-        install_products(app)
-        obids = app.Control_Panel.Products.keys()
+        obids = getUtility(IApplicationManager).Products.keys()
         for name in FAKEPRODUCTS:
             self.assert_(name in obids)
-
 
 
 def test_suite():

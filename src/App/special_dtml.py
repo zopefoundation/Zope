@@ -15,12 +15,16 @@ import os
 import sys
 from logging import getLogger
 from types import InstanceType
+from zope import interface
+from zope.location.interfaces import IContained
 
 import DocumentTemplate
 import MethodObject
 import Persistence
 from App import Common
 from App.config import getConfiguration
+from ExtensionClass import Base
+from ZPublisher import getRequest
 
 LOG = getLogger('special_dtml')
 
@@ -83,34 +87,72 @@ defaultBindings = {'name_context': 'context',
                    'name_subpath': 'traverse_subpath'}
 
 from Shared.DC.Scripts.Bindings import Bindings
-from Acquisition import Explicit, aq_inner, aq_parent
+from Acquisition import Explicit, Implicit
 from DocumentTemplate.DT_String import _marker, DTReturn, render_blocks
 from DocumentTemplate.DT_Util import TemplateDict, InstanceDict
 from AccessControl import getSecurityManager
-from ComputedAttribute import ComputedAttribute
 
-class DTMLFile(Bindings, Explicit, ClassicHTMLFile):
+
+_marker = object()
+
+class AqWrapper(object):
+
+    def __init__(self, context, request):
+        self.context = context
+        self.request = request
+
+    def __getitem__(self, name, default=None):
+        if name == 'REQUEST':
+            return self.request
+
+        seen = set()
+
+        ob = self.context
+        while ob is not None or ob not in seen:
+            try:
+                attr = ob[name]
+                if attr is not None:
+                    return attr
+            except:
+                pass
+
+            attr = getattr(ob, name, _marker)
+            if attr is not _marker:
+                return attr
+
+            seen.add(ob)
+            ob = getattr(ob, '__parent__', None)
+
+        raise KeyError(name)
+
+    def __len__(self):
+        return 10
+
+
+class DTMLFile(Base, Bindings, Explicit, ClassicHTMLFile):
     "HTMLFile with bindings and support for __render_with_namespace__"
+    interface.implements(IContained)
 
     func_code = None
     func_defaults = None
     _need__name__=1
 
     _Bindings_ns_class = TemplateDict
-    def _get__roles__(self):
-        imp = getattr(aq_parent(aq_inner(self)),
-                      '%s__roles__' % self.__name__)
-        if hasattr(imp, '__of__'):
-            return imp.__of__(self)
-        return imp
 
-    __roles__ = ComputedAttribute(_get__roles__, 1)
+    __parent__ = __name__ = None
+
+    @property
+    def __roles__(self):
+        parent = getattr(self, '__parent__', None)
+        if parent is not None:
+            imp = getattr(parent, '%s__roles__' % self.__name__, None)
+            return imp
+        return None
 
     # By default, we want to look up names in our container.
     _Bindings_client = 'container'
 
     def __init__(self, name, _prefix=None, **kw):
-
         self.ZBindings_edit(defaultBindings)
         self._setFuncSignature()
         apply(DTMLFile.inheritedAttribute('__init__'),
@@ -134,7 +176,7 @@ class DTMLFile(Bindings, Explicit, ClassicHTMLFile):
         ns.guarded_getattr = None
         ns.guarded_getitem = None
 
-        req = None
+        req = getRequest()
         kw_bind = kw
         if cns:
             # Someone called us.
@@ -157,7 +199,7 @@ class DTMLFile(Bindings, Explicit, ClassicHTMLFile):
         else:
             # We're first, so get the REQUEST.
             try:
-                req = self.aq_acquire('REQUEST')
+                req = getRequest()
                 if hasattr(req, 'taintWrapper'):
                     req = req.taintWrapper()
             except: pass
@@ -165,11 +207,13 @@ class DTMLFile(Bindings, Explicit, ClassicHTMLFile):
             ns.this = bound_data['context']
         # Bind 'keyword_args' to the complete set of keyword arguments.
         bound_data['keyword_args'] = kw_bind
+        bound_data['REQUEST'] = getRequest()
 
         # Push globals, initialized variables, REQUEST (if any),
         # and keyword arguments onto the namespace stack
 
-        for nsitem in (self.globals, self._vars, req, kw):
+        for nsitem in (self.globals, self._vars, req, kw, 
+                       AqWrapper(req.PARENTS[-1], req)):
             if nsitem:
                 push(nsitem)
 

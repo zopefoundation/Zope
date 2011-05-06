@@ -28,7 +28,7 @@ import Zope2
 import ZPublisher
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
-from Acquisition import aq_acquire
+from Zope2 import aq_acquire
 from Acquisition import aq_base
 from Acquisition import aq_inner
 from Acquisition import aq_parent
@@ -204,6 +204,7 @@ class ZPublisherExceptionHook:
                     # ouch, a user saw this conflict error :-(
                     self.unresolved_conflict_errors += 1
 
+            log = None
             try:
                 log = aq_acquire(published, '__error_log__', containment=1)
             except AttributeError:
@@ -242,8 +243,9 @@ class ZPublisherExceptionHook:
             if (published is None or published is app or
                 isinstance(published, list)):
                 # At least get the top-level object
-                published=app.__bobo_traverse__(REQUEST).__of__(
-                    RequestContainer(REQUEST))
+                #published=app.__bobo_traverse__(REQUEST).__of__(
+                #    RequestContainer(REQUEST))
+                published=app.__bobo_traverse__(REQUEST)
 
             published = getattr(published, 'im_self', published)
             while 1:
@@ -330,7 +332,13 @@ class TransactionsManager:
                 object = aq_parent(aq_inner(object))
 
             if object is not None:
-                path = '/'.join(object.getPhysicalPath() + to_append)
+                try:
+                    path = '/'.join(object.getPhysicalPath() + to_append)
+                except:
+                    path = request_get('PATH_INFO')
+                    import traceback
+                    traceback.print_exc()
+                    print repr(object), to_append
             else:
                 # As Jim would say, "Waaaaaaaa!"
                 # This may cause problems with virtual hosts

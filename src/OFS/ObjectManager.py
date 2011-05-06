@@ -34,7 +34,6 @@ from AccessControl.Permissions import import_export_objects
 from AccessControl import getSecurityManager
 from AccessControl.ZopeSecurityPolicy import getRoles
 from Acquisition import aq_base
-from Acquisition import Implicit
 from App.Common import is_acquired
 from App.config import getConfiguration
 from App.Dialogs import MessageDialog
@@ -46,12 +45,14 @@ from Persistence import Persistent
 from webdav.Collection import Collection
 from webdav.Lockable import ResourceLockedError
 from webdav.NullResource import NullResource
+from ZPublisher import getRequest
 from zExceptions import BadRequest
 from zope.interface import implements
 from zope.component.interfaces import ComponentLookupError
 from zope.event import notify
 from zope.lifecycleevent import ObjectAddedEvent
 from zope.lifecycleevent import ObjectRemovedEvent
+from zope.location.interfaces import IContained
 from zope.container.contained import notifyContainerModified
 
 from OFS.CopySupport import CopyContainer
@@ -138,7 +139,6 @@ _marker=[]
 class ObjectManager(CopyContainer,
                     Navigation,
                     Tabs,
-                    Implicit,
                     Persistent,
                     Collection,
                     Traversable,
@@ -291,7 +291,7 @@ class ObjectManager(CopyContainer,
         # sub-items are returned. That could have a measurable hit
         # on performance as things are currently implemented, so for
         # the moment we just make sure not to expose private attrs.
-        if id[:1] != '_' and hasattr(aq_base(self), id):
+        if id[:1] != '_' and hasattr(self, id):
             return getattr(self, id)
         if default is _marker:
             raise AttributeError, id
@@ -334,7 +334,9 @@ class ObjectManager(CopyContainer,
 
         self._objects = self._objects + ({'id': id, 'meta_type': t},)
         self._setOb(id, ob)
-        ob = self._getOb(id)
+
+        ob.__dict__['__name__'] = id
+        ob.__dict__['__parent__'] = self
 
         if set_owner:
             # TODO: eventify manage_fixupOwnershipAfterAdd
@@ -764,11 +766,14 @@ class ObjectManager(CopyContainer,
     def __getitem__(self, key):
         v=self._getOb(key, None)
         if v is not None: return v
-        if hasattr(self, 'REQUEST'):
-            request=self.REQUEST
+        request = getRequest()
+        if request is not None:
             method=request.get('REQUEST_METHOD', 'GET')
             if request.maybe_webdav_client and not method in ('GET', 'POST'):
-                return NullResource(self, key, request).__of__(self)
+                r = NullResource(self, key, request)
+                r.__name__ = key
+                r.__parent__ = self
+                return r
         raise KeyError, key
 
     def __setitem__(self, key, value):
