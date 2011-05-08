@@ -580,15 +580,15 @@ class HTTPRequestTests(unittest.TestCase):
     def test_processInputs_w_tainted_values_cleans_exceptions(self):
         # Feed tainted garbage to the conversion methods, and any exception
         # returned should be HTML safe
-        from DateTime.DateTime import DateTime
+        from DateTime.interfaces import SyntaxError
         from ZPublisher.Converters import type_converters
         for type, convert in type_converters.items():
             try:
                 convert('<html garbage>')
-            except Exception, e:
+            except Exception as e:
                 self.assertFalse('<' in e.args,
                     '%s converter does not quote unsafe value!' % type)
-            except DateTime.SyntaxError, e:
+            except SyntaxError as e:
                 self.assertFalse('<' in e,
                     '%s converter does not quote unsafe value!' % type)
 
