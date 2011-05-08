@@ -32,7 +32,7 @@ from ZPublisher.HTTPResponse import HTTPResponse
 # Make DateTime.DateTime marshallable via XML-RPC
 # http://www.zope.org/Collectors/Zope/2109
 from DateTime.DateTime import DateTime
-WRAPPERS = xmlrpclib.WRAPPERS + (DateTime,)
+WRAPPERS = xmlrpclib.WRAPPERS + (DateTime, )
 
 def dump_instance(self, value, write):
     # Check for special wrappers
@@ -50,6 +50,8 @@ def dump_instance(self, value, write):
         self.dump_struct(value, write)
 
 xmlrpclib.Marshaller.dispatch[types.InstanceType] = dump_instance
+xmlrpclib.Marshaller.dispatch[DateTime] = dump_instance
+
 
 def parse_input(data):
     """Parse input data and return a method path and argument tuple

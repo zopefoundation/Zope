@@ -18,14 +18,14 @@ from DateTime.DateTime import DateTime
 class PersistentUtil:
 
     def bobobase_modification_time(self):
-        jar=self._p_jar
-        oid=self._p_oid
+        jar = self._p_jar
+        oid = self._p_oid
         if jar is None or oid is None:
             return DateTime()
 
         try:
             t = self._p_mtime
-        except:
+        except AttributeError:
             t = 0
         return DateTime(t)
 

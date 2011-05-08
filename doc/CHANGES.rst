@@ -15,6 +15,8 @@ Bugs Fixed
 Features Added
 ++++++++++++++
 
+- Added forward compatibility with DateTime 3.
+
 - ZPublisher: HTTPResponse.appendHeader now keeps header values to a single
   line by default to avoid causing problems for proxy servers which do not
   correctly handle multi-line headers.

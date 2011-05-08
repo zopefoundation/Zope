@@ -14,6 +14,7 @@
 import re
 from types import ListType, TupleType, UnicodeType
 from DateTime import DateTime
+from DateTime.interfaces import SyntaxError
 from cgi import escape
 
 # This may get overwritten during configuration
@@ -106,16 +107,16 @@ def field2date(v):
     v = field2string(v)
     try:
         v = DateTime(v)
-    except DateTime.SyntaxError, e:
-        raise DateTime.SyntaxError, "Invalid DateTime "+escape(`v`)
+    except SyntaxError:
+        raise SyntaxError("Invalid DateTime " + escape(repr(v)))
     return v
 
 def field2date_international(v):
     v = field2string(v)
     try:
         v = DateTime(v, datefmt="international")
-    except DateTime.SyntaxError, e:
-        raise DateTime.SyntaxError, "Invalid DateTime "+escape(`v`)
+    except SyntaxError:
+        raise SyntaxError("Invalid DateTime " + escape(repr(v)))
     return v
 
 def field2boolean(v):
