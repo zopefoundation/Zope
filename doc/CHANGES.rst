@@ -61,7 +61,7 @@ Features Added
 
   - AccessControl = 2.13.4
   - Acquisition = 2.13.7
-  - DateTime = 3.0a2
+  - DateTime = 3.0b1
   - manuel = 1.5.0
   - Products.BTreeFolder2 = 2.13.3
   - Products.ZCatalog = 2.13.13
