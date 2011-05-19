@@ -64,7 +64,7 @@ Features Added
   - DateTime = 3.0b1
   - manuel = 1.5.0
   - Products.BTreeFolder2 = 2.13.3
-  - Products.ZCatalog = 2.13.13
+  - Products.ZCatalog = 2.13.14
   - Products.ZCTextIndex = 2.13.2
   - python-gettext = 1.1.1
   - pytz = 2011e
