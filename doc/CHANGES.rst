@@ -11,6 +11,11 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
+- LP #787541: Fix WSGIPublisher to close requests on abort unconditionally.
+  Previously an addAfterCommitHook was used, but this is not run on transaction
+  aborts.  Now a Synchronizer is used which unconditionally closes the request
+  after a transaction is finished.
+
 - Fix `WSGIResponse` and `publish_module` functions such that they
   support the `IStreamIterator` interface in addition to `file` (as
   supported by `ZServer.HTTPResponse`).

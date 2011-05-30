@@ -200,6 +200,31 @@ def publish(request, module_name,
 
     return response
 
+class _RequestCloserForTransaction(object):
+    """Unconditionally close the request at the end of a transaction.
+    
+    See transaction.interfaces.ISynchronizer
+    """
+
+    def __init__(self):
+        self.requests = {}
+
+    def add(self, txn, request):
+        assert txn not in self.requests
+        self.requests[txn] = request
+
+    def beforeCompletion(self, txn):
+        pass
+
+    newTransaction = beforeCompletion
+
+    def afterCompletion(self, txn):
+        request = self.requests.pop(txn, None)
+        if request is not None:
+            request.close()
+
+_request_closer_for_repoze_tm = _RequestCloserForTransaction()
+
 def publish_module(environ, start_response,
                    _publish=publish,                # only for testing
                    _response_factory=WSGIResponse,  # only for testing
@@ -214,6 +239,13 @@ def publish_module(environ, start_response,
     response._server_version = environ.get('SERVER_SOFTWARE')
 
     request = _request_factory(environ['wsgi.input'], environ, response)
+
+    if 'repoze.tm.active' in environ:
+        # NOTE: registerSynch is a no-op after the first request
+        transaction.manager.registerSynch(_request_closer_for_repoze_tm)
+        txn = transaction.get()
+        _request_closer_for_repoze_tm.add(txn, request)
+
     setDefaultSkin(request)
 
     try:
@@ -237,10 +269,7 @@ def publish_module(environ, start_response,
         # XXX This still needs verification that it really works.
         result = (stdout.getvalue(), response.body)
 
-    if 'repoze.tm.active' in environ:
-        txn = transaction.get()
-        txn.addAfterCommitHook(lambda ok: request.close())
-    else:
+    if 'repoze.tm.active' not in environ:
         request.close() # this aborts the transation!
 
     stdout.close()
