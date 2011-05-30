@@ -414,6 +414,7 @@ class Test_publish_module(unittest.TestCase):
 
     def test_request_not_closed_when_tm_middleware_active(self):
         import transaction
+        from ZPublisher import WSGIPublisher
         environ = self._makeEnviron()
         environ['repoze.tm.active'] = 1
         start_response = DummyCallable()
@@ -430,7 +431,22 @@ class Test_publish_module(unittest.TestCase):
                                  _request_factory=_request_factory)
         self.assertFalse(_request._closed)
         txn = transaction.get()
-        self.assertTrue(list(txn.getAfterCommitHooks()))
+        self.assertTrue(txn in WSGIPublisher._request_closer_for_repoze_tm.requests)
+        txn.commit()
+        self.assertTrue(_request._closed)
+        self.assertFalse(txn in WSGIPublisher._request_closer_for_repoze_tm.requests)
+        # try again, but this time raise an exception and abort
+        _request._closed = False
+        _publish._raise = Exception('oops')
+        self.assertRaises(Exception, self._callFUT,
+                          environ, start_response, _publish,
+                          _request_factory=_request_factory)
+        self.assertFalse(_request._closed)
+        txn = transaction.get()
+        self.assertTrue(txn in WSGIPublisher._request_closer_for_repoze_tm.requests)
+        txn.abort()
+        self.assertFalse(txn in WSGIPublisher._request_closer_for_repoze_tm.requests)
+        self.assertTrue(_request._closed)
 
 
 class DummyRequest(dict):
