@@ -53,11 +53,12 @@ class Functional(sandbox.Sandboxed):
     implements(interfaces.IFunctional)
 
     @savestate
-    def publish(self, path, basic=None, env=None, request_method='GET',
-                stdin=None, handle_errors=True):
+    def publish(self, path, basic=None, env=None, extra=None,
+                request_method='GET', stdin=None, handle_errors=True):
         '''Publishes the object at 'path' returning a response object.'''
 
         from StringIO import StringIO
+        from ZPublisher.Request import Request
         from ZPublisher.Response import Response
         from ZPublisher.Publish import publish_module
 
@@ -66,6 +67,8 @@ class Functional(sandbox.Sandboxed):
 
         if env is None:
             env = {}
+        if extra is None:
+            extra = {}
 
         request = self.app.REQUEST
 
@@ -89,12 +92,14 @@ class Functional(sandbox.Sandboxed):
 
         outstream = StringIO()
         response = Response(stdout=outstream, stderr=sys.stderr)
+        request = Request(stdin, env, response)
+        for k, v in extra.items():
+            request[k] = v
 
         publish_module('Zope2',
-                       response=response,
-                       stdin=stdin,
-                       environ=env,
                        debug=not handle_errors,
+                       request=request,
+                       response=response,
                       )
 
         return ResponseWrapper(response, outstream, path)

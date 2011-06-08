@@ -11,6 +11,9 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
+- Testing: Re-added 'extra' argument to Functional.publish.
+  Removing it in Zope 2.13.0a1 did break backwards compatibility.
+
 - LP #787541: Fix WSGIPublisher to close requests on abort unconditionally.
   Previously an addAfterCommitHook was used, but this is not run on transaction
   aborts.  Now a Synchronizer is used which unconditionally closes the request
