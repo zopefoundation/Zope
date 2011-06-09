@@ -24,9 +24,10 @@ Features Added
 
 - Updated distributions:
 
-  - Zope Toolkit 1.0.3
   - Products.ZCatalog = 2.13.14
+  - repoze.who = 2.0b1
   - ZODB3 = 3.10.3
+  - Zope Toolkit 1.0.3
 
 2.13.7 (2011-05-08)
 -------------------
