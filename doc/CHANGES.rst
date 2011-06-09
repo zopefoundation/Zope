@@ -24,6 +24,7 @@ Features Added
 
 - Updated distributions:
 
+  - Zope Toolkit 1.0.3
   - Products.ZCatalog = 2.13.14
   - ZODB3 = 3.10.3
 
