@@ -24,6 +24,7 @@ Features Added
 
 - Updated distributions:
 
+  - Acquisition = 2.13.8
   - Products.ZCatalog = 2.13.14
   - repoze.who = 2.0b1
   - ZODB3 = 3.10.3
