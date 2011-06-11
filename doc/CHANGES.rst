@@ -15,6 +15,9 @@ Bugs Fixed
 Features
 ++++++++
 
+- Updated distributions:
+
+  - Acquisition = 2.13.8
 
 
 2.12.18 (2011-05-08)
