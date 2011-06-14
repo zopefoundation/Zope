@@ -323,7 +323,7 @@ class TransactionsManager:
 
             while object is not None and \
                   not hasattr(object, 'getPhysicalPath'):
-                if not hasattr(object, '__name__'):
+                if getattr(object, '__name__', None) is None:
                     object = None
                     break
                 to_append = (object.__name__,) + to_append
