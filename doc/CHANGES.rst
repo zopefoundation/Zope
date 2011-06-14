@@ -11,6 +11,9 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
+- Ensure __name__ is not None as well as __name__ existing. For example, object
+  could be a widget within a z3c.form MultiWidget, which do not have __name__ set.
+
 - Testing: Re-added 'extra' argument to Functional.publish.
   Removing it in Zope 2.13.0a1 did break backwards compatibility.
 
