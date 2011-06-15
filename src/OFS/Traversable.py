@@ -124,38 +124,6 @@ class Traversable:
 
         return path
 
-        try:
-            path = [self.id]
-        except:
-            path = [self.getId()]
-
-        func = self.getPhysicalPath.im_func
-
-        try:
-            p = self.aq_inner.aq_parent
-        except:
-            p = aq_parent(aq_inner(self))
-
-        while p is not None:
-            if func is not p.getPhysicalPath.im_func:
-                if IApplication.providedBy(p):
-                    path.insert(0, '')
-                    path = tuple(path)
-                else:
-                    path = p.getPhysicalPath() + tuple(path)
-                break
-            else:
-                try:
-                    path.insert(0, p.id)
-                except:
-                    path.insert(0, p.getId())
-                try:
-                    p = p.aq_parent
-                except:
-                    p = None
-                
-        return path
-
     security.declarePrivate('unrestrictedTraverse')
     def unrestrictedTraverse(self, path, default=_marker, restricted=False):
         """Lookup an object by path.
