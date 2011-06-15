@@ -35,8 +35,8 @@ simply written as Zope.  It has three distinct audiences.
 This guide is intended to document Zope for the second audience,
 Developers, as defined above.  If you fit more into the "user"
 audience defined above, you'll probably want to start by reading `The
-Zope Book <http://docs.zope.org/zope2book>`_ .  If you fit more into
-the "administrator" audience defined above, you'll likely be
+Zope Book <http://docs.zope.org/zope2/zope2book>`_ .  If you fit more
+into the "administrator" audience defined above, you'll likely be
 interested in `The Zope Administrator's Guide
 <http://www.zope.org/DocProjects/AdminGuide>`_, although it is
 currently unfinished.
