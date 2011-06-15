@@ -199,7 +199,7 @@ class PropertySheet(Traversable, Persistent, Implicit):
         pself=self.p_self()
         self=self.v_self()
         if hasattr(aq_base(self),id):
-            if not (id=='title' and not self.__dict__.has_key(id)):
+            if not (id=='title' and not id in self.__dict__):
                 raise BadRequest, (
                     'Invalid property id, <em>%s</em>. It is in use.' %
                         escape(id))
@@ -233,7 +233,7 @@ class PropertySheet(Traversable, Persistent, Implicit):
             raise BadRequest, '%s cannot be changed.' % escape(id)
         if type(value)==type(''):
             proptype=propinfo.get('type', 'string')
-            if type_converters.has_key(proptype):
+            if proptype in type_converters:
                 value=type_converters[proptype](value)
         if meta is not None:
             props=[]
@@ -361,7 +361,7 @@ class PropertySheet(Traversable, Persistent, Implicit):
         # property name and value for the requested property.
         xml_id=self.xml_namespace()
         propdict=self._propdict()
-        if not propdict.has_key(name):
+        if name not in propdict:
             if xml_id:
                 prop='<n:%s xmlns:n="%s"/>\n' % (name, xml_id)
             else:
@@ -419,7 +419,7 @@ class PropertySheet(Traversable, Persistent, Implicit):
     def manage_addProperty(self, id, value, type, REQUEST=None):
         """Add a new property via the web. Sets a new property with
         the given id, type, and value."""
-        if type_converters.has_key(type):
+        if type in type_converters:
             value=type_converters[type](value)
         self._setProperty(id, value, type)
         if REQUEST is not None:

@@ -26,7 +26,7 @@ from Acquisition import aq_base
 from Acquisition import aq_inner
 from Acquisition import aq_parent
 from Acquisition.interfaces import IAcquirer
-from OFS.interfaces import ITraversable
+from OFS.interfaces import ITraversable, IApplication
 from zExceptions import NotFound
 from ZPublisher.interfaces import UseTraversalDefault
 from ZODB.POSException import ConflictError
@@ -118,9 +118,42 @@ class Traversable:
         path = (self.getId(),)
 
         p = aq_parent(aq_inner(self))
+
         if p is not None:
             path = p.getPhysicalPath() + path
 
+        return path
+
+        try:
+            path = [self.id]
+        except:
+            path = [self.getId()]
+
+        func = self.getPhysicalPath.im_func
+
+        try:
+            p = self.aq_inner.aq_parent
+        except:
+            p = aq_parent(aq_inner(self))
+
+        while p is not None:
+            if func is not p.getPhysicalPath.im_func:
+                if IApplication.providedBy(p):
+                    path.insert(0, '')
+                    path = tuple(path)
+                else:
+                    path = p.getPhysicalPath() + tuple(path)
+                break
+            else:
+                try:
+                    path.insert(0, p.id)
+                except:
+                    path.insert(0, p.getId())
+                try:
+                    p = p.aq_parent
+                except:
+                    p = None
+                
         return path
 
     security.declarePrivate('unrestrictedTraverse')

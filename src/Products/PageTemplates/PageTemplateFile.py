@@ -107,7 +107,7 @@ class PageTemplateFile(SimpleItem, Script, PageTemplate, Traversable):
     def _exec(self, bound_names, args, kw):
         """Call a Page Template"""
         self._cook_check()
-        if not kw.has_key('args'):
+        if 'args' not in kw:
             kw['args'] = args
         bound_names['options'] = kw
 

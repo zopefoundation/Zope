@@ -17,7 +17,7 @@
 
 from warnings import warn
 
-from zope.publisher.browser import isCGI_NAME
+from ZPublisher.HTTPRequest import isCGI_NAMEs
 from zope.i18n.interfaces import IUserPreferredCharsets
 
 # taken and adapted from zope.publisher.browser.BrowserRequest
@@ -71,7 +71,7 @@ def processInputs(request, charsets=None):
             charsets = envadapter.getPreferredCharsets() or ['utf-8']
 
     for name, value in request.form.items():
-        if not (isCGI_NAME(name) or name.startswith('HTTP_')):
+        if not (name in isCGI_NAMEs or name.startswith('HTTP_')):
             request.form[name] = processInputValue(value, charsets)
 
 def setPageEncoding(request):

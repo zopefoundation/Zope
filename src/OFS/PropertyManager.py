@@ -204,7 +204,7 @@ class PropertyManager(Base, ElementWithAttributes):
             raise BadRequest, 'The property %s does not exist' % escape(id)
         if type(value)==type(''):
             proptype=self.getPropertyType(id) or 'string'
-            if type_converters.has_key(proptype):
+            if proptype in type_converters:
                 value=type_converters[proptype](value)
         self._setPropValue(id, value)
 
@@ -281,7 +281,7 @@ class PropertyManager(Base, ElementWithAttributes):
 
         Sets a new property with the given id, type, and value.
         """
-        if type_converters.has_key(type):
+        if type in type_converters:
             value=type_converters[type](value)
         self._setProperty(id.strip(), value, type)
         if REQUEST is not None:

@@ -669,7 +669,7 @@ def old_validation(groups, request, auth,
         if auth: name,password = auth
         elif roles is None: return ''
         else: return None
-    elif request.environ.has_key('REMOTE_USER'):
+    elif 'REMOTE_USER' in request.environ:
         name=request.environ['REMOTE_USER']
         password=None
     else:
@@ -693,11 +693,11 @@ def old_validation(groups, request, auth,
         if roles is UNSPECIFIED_ROLES: roles=keys()
         g=[]
         for role in roles:
-            if groups.has_key(role): g.append(groups[role])
+            if role in groups: g.append(groups[role])
         groups=g
 
     for d in groups:
-        if d.has_key(name) and (d[name]==password or password is None):
+        if name in d and (d[name]==password or password is None):
             return name
 
     if keys is None:

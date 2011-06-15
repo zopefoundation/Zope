@@ -151,7 +151,7 @@ class ProductContext:
             else:
                 name=method.__name__
                 aliased = 0
-            if not OM.__dict__.has_key(name):
+            if name not in OM.__dict__:
                 setattr(OM, name, method)
                 setattr(OM, name+'__roles__', pr)
                 if aliased:
@@ -213,7 +213,7 @@ class ProductContext:
                 name, method = method
             else:
                 name=os.path.split(method.__name__)[-1]
-            if not productObject.__dict__.has_key(name):
+            if name not in productObject.__dict__:
                 m[name]=method
                 m[name+'__roles__']=pr
 
