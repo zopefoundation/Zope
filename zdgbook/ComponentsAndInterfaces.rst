@@ -256,7 +256,7 @@ ask an interface the names of all the various interface items it
 describes.  From the Python interpreter, for example, you can walk
 right up to an interface and ask it for its *names*::
 
-  >>> User.names()
+  >>> IUser.names()
   ['getUserName', 'getFavoriteColor', 'getPassword']
 
 Interfaces can also give you more interesting information about their
@@ -266,10 +266,10 @@ method.
 
 For example::
 
-  >>> User.namesAndDescriptions()
-  [('getUserName', <Interface.Method.Method object at 80f38f0>),
-  ('getFavoriteColor', <Interface.Method.Method object at 80b24f0>),
-  ('getPassword', <Interface.Method.Method object at 80fded8>)]
+  >>> IUser.namesAndDescriptions()
+  [('getUserName', <zope.interface.interface.Method.Method object at 80f38f0>),
+  ('getFavoriteColor', <zope.interface.interface.Method.Method object at 80b24f0>),
+  ('getPassword', <zope.interface.interface.Method.Method object at 80fded8>)]
 
 As you can see, the "description" of the Interface's three items in
 these cases are all `Method` objects.  Description objects can be
@@ -291,9 +291,9 @@ methods. Method objects have the following methods:
 
 For example::
 
-  >>> m = User.namesAndDescriptions()[0][1]
+  >>> m = IUser.namesAndDescriptions()[0][1]
   >>> m
-  <Interface.Method.Method object at 80f38f0>
+  <zope.interface.interface.Method.Method object at 80f38f0>
   >>> m.getSignatureString()
   '(fullName=1)'
   >>> m.getSignatureInfo()   
