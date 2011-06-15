@@ -33,7 +33,7 @@ provided by `pkg_resources` module included in setuptools.
 Bootstrapping the Build
 =======================
 
-You should have Python 2.5 or 2.6 installed in your system.  To start
+You should have Python 2.6 or 2.7 installed in your system.  To start
 the build process, download and run `bootstrap.py`.  The
 `bootstrap.py` will download and install `setuptools` and
 `zc.buildout` packages.  Also it will create the directory structure
@@ -49,17 +49,16 @@ and `buildout` script inside `bin` directory.
 Installing Zope 2
 =================
 
-From Zope 2.12 onwards Zope 2 is distributed in egg format.  To
-install Zope 2 egg and create an instance, update buildout
-configuration file (``buildout.cfg``) with appropriate parts and
-recipes.
+Zope 2 is distributed in egg format.  To install Zope 2 egg
+and create an instance, update buildout configuration file
+(``buildout.cfg``) with appropriate parts and recipes.
 
 ::
 
   [buildout]
   parts = zope2
           instance
-  extends = http://download.zope.org/Zope2/index/2.12.0/versions.cfg
+  extends = http://download.zope.org/Zope2/index/2.13.7/versions.cfg
 
   [zope2]
   recipe = zc.recipe.egg
