@@ -32,16 +32,17 @@ def _product_packages():
     zope2 packages and those without the Products namespace package.
     """
     import Products
-    packages = {}
+
+    _packages = {}
     for x in dir(Products):
         m = getattr(Products, x)
         if isinstance(m, types.ModuleType):
-            packages[x] = m
+            _packages[x] = m
 
     for m in get_registered_packages():
-        packages[m.__name__] = m
+        _packages[m.__name__] = m
 
-    return packages
+    return _packages
 
 
 class Product(Base):
@@ -85,8 +86,15 @@ class ProductDispatcher(Implicit):
 
     def __bobo_traverse__(self, REQUEST, name):
         # Try to get a custom dispatcher from a Python product
+        global _packages
+        try:
+            package = _packages.get(name, None)
+        except NameError:
+            _packages = _product_packages()
+            package = _packages.get(name, None)
+
         dispatcher_class=getattr(
-            _product_packages().get(name, None),
+            package,
             '__FactoryDispatcher__',
             FactoryDispatcher)
 
@@ -139,7 +147,7 @@ class FactoryDispatcher(Implicit):
     def __getattr__(self, name):
         p=self.__dict__['_product']
         d=p.__dict__
-        if hasattr(p,name) and d.has_key(name):
+        if hasattr(p,name) and name in d:
             m=d[name]
             w=getattr(m, '_permissionMapper', None)
             if w is not None:
@@ -149,7 +157,7 @@ class FactoryDispatcher(Implicit):
 
         # Waaa
         m = 'Products.%s' % p.id
-        if sys.modules.has_key(m) and sys.modules[m]._m.has_key(name):
+        if m in sys.modules and sys.modules[m]._m.has_key(name):
             return sys.modules[m]._m[name]
 
         raise AttributeError, name
