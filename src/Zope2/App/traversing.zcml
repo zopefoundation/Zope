@@ -1,0 +1,61 @@
+<configure xmlns="http://namespaces.zope.org/zope">
+
+  <!-- define default namespace adapters, etc. -->
+  <adapter
+      for="*"
+      factory="zope.traversing.adapters.Traverser"
+      provides="zope.traversing.interfaces.ITraverser" />
+
+  <adapter
+      for="*"
+      factory="zope.traversing.adapters.DefaultTraversable"
+      provides="zope.traversing.interfaces.ITraversable" />
+
+  <adapter
+      name="etc"
+      for="*"
+      provides="zope.traversing.interfaces.ITraversable"
+      factory="zope.traversing.namespace.etc"
+      />
+  <adapter
+      name="etc"
+      for="* zope.publisher.interfaces.IRequest"
+      provides="zope.traversing.interfaces.ITraversable"
+      factory="zope.traversing.namespace.etc"
+      />
+
+  <adapter
+      name="adapter"
+      for="*"
+      provides="zope.traversing.interfaces.ITraversable"
+      factory="zope.traversing.namespace.adapter"
+      />
+  <adapter
+      name="adapter"
+      for="* zope.publisher.interfaces.IRequest"
+      provides="zope.traversing.interfaces.ITraversable"
+      factory="zope.traversing.namespace.adapter"
+      />
+
+  <adapter
+      name="skin"
+      for="* zope.publisher.interfaces.IRequest"
+      provides="zope.traversing.interfaces.ITraversable"
+      factory="zope.traversing.namespace.skin"
+      />
+
+  <adapter
+      name="resource"
+      for="* zope.publisher.interfaces.IRequest"
+      provides="zope.traversing.interfaces.ITraversable"
+      factory="Zope2.App.traversing.resource"
+      />
+
+  <adapter
+      name="view"
+      for="* zope.publisher.interfaces.IRequest"
+      provides="zope.traversing.interfaces.ITraversable"
+      factory="zope.traversing.namespace.view"
+      />
+
+</configure>

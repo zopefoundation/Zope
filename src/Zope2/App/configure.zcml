@@ -5,7 +5,7 @@
   <include file="meta.zcml" />
   <include package="AccessControl" file="permissions.zcml" />
 
-  <include package="zope.traversing" />
+  <include file="traversing.zcml" />
   <include package="OFS "/>
   <include package="ZPublisher" />
 

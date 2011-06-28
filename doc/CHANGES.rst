@@ -5,11 +5,14 @@ This file contains change information for the current Zope release.
 Change information for previous versions of Zope can be found at
 http://docs.zope.org/zope2/releases/.
 
-2.13.8 (unreleased)
+2.13.8 (2011-06-28)
 -------------------
 
 Bugs Fixed
 ++++++++++
+
+- Fixed a serious privilege escalation issue. For more information see:
+  http://plone.org/products/plone/security/advisories/20110622
 
 - Ensure __name__ is not None as well as __name__ existing. For example, object
   could be a widget within a z3c.form MultiWidget, which do not have __name__ set.
