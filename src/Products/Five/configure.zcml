@@ -1,6 +1,9 @@
 <configure xmlns="http://namespaces.zope.org/zope"
            xmlns:five="http://namespaces.zope.org/five">
 
+  <!-- Disable unsupported Zope Toolkit functionality -->
+  <exclude package="zope.traversing" />
+
   <include file="meta.zcml" />
   <include file="permissions.zcml" />
   <include file="i18n.zcml" />
