@@ -33,6 +33,9 @@ Features Added
 Restructuring
 +++++++++++++
 
+- Removed persistent default content, including the `standard_error_message`
+  template.
+
 - Retired icons from the `Zope Management Interface` and various smaller
   cleanups of ZMI screens.
 

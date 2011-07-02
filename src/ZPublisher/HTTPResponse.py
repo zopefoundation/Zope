@@ -490,7 +490,6 @@ class HTTPResponse(BaseResponse):
             else:
                 self.body = body
 
-
         content_type = self.headers.get('content-type')
 
         # Some browsers interpret certain characters in Latin 1 as html
@@ -679,15 +678,16 @@ class HTTPResponse(BaseResponse):
                 "<body>\n%s\n</body>\n"
                 "</html>\n" % (title,body))
 
-    def _error_html(self,title,body):
-        # XXX could this try to use standard_error_message somehow?
-        return ("""\
+    def _error_html(self, title, body):
+        return ("""<html>
+  <head><title>Site Error</title></head>
+  <body bgcolor="#FFFFFF">
   <h2>Site Error</h2>
   <p>An error was encountered while publishing this resource.
   </p>
   <p><strong>%s</strong></p>
 
-  %s""" %(title,body) + \
+  %s""" % (title, body) + \
   """
   <hr noshade="noshade"/>
 
@@ -700,46 +700,41 @@ class HTTPResponse(BaseResponse):
       encountering an error.</li>
   </ul>
 
-  <p>For more detailed information about the error, please
-  refer to the error log.
-  </p>
-
   <p>If the error persists please contact the site maintainer.
   Thank you for your patience.
-  </p>""")
-
+  </p></body></html>""")
 
     def notFoundError(self,entry='Unknown'):
         self.setStatus(404)
-        raise NotFound, self._error_html(
+        raise NotFound(self._error_html(
             "Resource not found",
             "Sorry, the requested resource does not exist." +
             "<p>Check the URL and try again.</p>" +
-            "<p><b>Resource:</b> %s</p>" % escape(entry))
+            "<p><b>Resource:</b> %s</p>" % escape(entry)))
 
     forbiddenError = notFoundError  # If a resource is forbidden,
                                     # why reveal that it exists?
 
     def debugError(self,entry):
-        raise NotFound, self._error_html(
+        raise NotFound(self._error_html(
             "Debugging Notice",
             "Zope has encountered a problem publishing your object.<p>"
-            "\n%s</p>" % entry)
+            "\n%s</p>" % entry))
 
     def badRequestError(self,name):
         self.setStatus(400)
         if re.match('^[A-Z_0-9]+$',name):
-            raise InternalError, self._error_html(
+            raise InternalError(self._error_html(
                 "Internal Error",
-                "Sorry, an internal error occurred in this resource.")
+                "Sorry, an internal error occurred in this resource."))
 
-        raise BadRequest, self._error_html(
+        raise BadRequest(self._error_html(
             "Invalid request",
             "The parameter, <em>%s</em>, " % name +
             "was omitted from the request.<p>" +
             "Make sure to specify all required parameters, " +
             "and try the request again.</p>"
-            )
+            ))
 
     def _unauthorized(self):
         realm = self.realm
@@ -753,7 +748,7 @@ class HTTPResponse(BaseResponse):
                 m = m + '<p>\nUsername and password are not correct.</p>'
             else:
                 m = m + '<p>\nNo Authorization header found.</p>'
-        raise Unauthorized, m
+        raise Unauthorized(m)
 
     def _setBCIHeaders(self, t, tb):
         try:

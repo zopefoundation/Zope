@@ -476,8 +476,12 @@ class AppInitializer:
 
     def install_standards(self):
         app = self.getApp()
-        # this defers to a  function for b/c reasons
-        return install_standards(app)
+        if getattr(app, '_standard_objects_have_been_added', None) is None:
+            return
+        delattr(app, '_standard_objects_have_been_added')
+        transaction.get().note('Removed standard objects flag')
+        transaction.commit()
+
 
 def install_products(app=None):
     folder_permissions = get_folder_permissions()
@@ -624,34 +628,6 @@ def install_package(app, module, init_func, raise_exc=None):
         init_func(newContext)
 
     package_initialized(module, init_func)
-
-
-def install_standards(app):
-    # Check to see if we've already done this before
-    if getattr(app, '_standard_objects_have_been_added', 0):
-        return
-
-    # Install the replaceable standard objects
-    from App.Common import package_home
-    from App.special_dtml import DTMLFile
-
-    std_dir = os.path.join(package_home(globals()), 'standard')
-    wrote = False
-    for fn in os.listdir(std_dir):
-        base, ext = os.path.splitext(fn)
-        if ext == '.dtml':
-            if hasattr(app, base):
-                continue
-            ob = DTMLFile(base, std_dir)
-            app.manage_addProduct['OFSP'].manage_addDTMLMethod(
-                id=base, file=open(ob.raw))
-        else:
-            continue
-        wrote = True
-    if wrote:
-        app._standard_objects_have_been_added = 1
-        transaction.get().note('Installed standard objects')
-        transaction.commit()
 
 
 def pgetattr(product, name, default=install_products, __init__=0):

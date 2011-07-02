@@ -17,5 +17,5 @@ and use the Python interpreter normally to inspect results::
   $ bin/zopectl debug
   Starting debugger (the name "app" is bound to the top-level Zope object)
   >>> app.keys()
-  ['acl_users', 'Control_Panel', 'temp_folder', 'browser_id_manager', 'session_data_manager', 'error_log', 'index_html', 'standard_error_message']
+  ['acl_users']
   >>>

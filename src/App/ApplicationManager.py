@@ -17,6 +17,7 @@ from cStringIO import StringIO
 from logging import getLogger
 import os
 import sys
+from thread import get_ident
 import time
 import urllib
 
@@ -35,18 +36,11 @@ from Lifetime import shutdown
 from OFS.Folder import Folder
 from OFS.SimpleItem import Item
 from OFS.SimpleItem import SimpleItem
-from Product import ProductFolder
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from zExceptions import Redirect
 from ZPublisher import Publish
 
 LOG = getLogger('ApplicationManager')
-
-try:
-    from thread import get_ident
-except ImportError:
-    def get_ident():
-        return 0
 
 
 class DatabaseManager(Item, Implicit):
@@ -268,8 +262,6 @@ class ApplicationManager(Folder, CacheManager):
          'meta_type': Database.meta_type},
         {'id': 'DavLocks',
          'meta_type': DavLocks.meta_type},
-        {'id': 'Products',
-         'meta_type': 'Product Management'},
         {'id': 'DebugInfo',
          'meta_type': DebugInfo.meta_type},
         )
@@ -292,9 +284,6 @@ class ApplicationManager(Folder, CacheManager):
     manage_addProperty = None
     manage_editProperties = None
     manage_delProperties = None
-
-    def __init__(self):
-        self.Products = ProductFolder()
 
     def _canCopy(self, op=0):
         return 0

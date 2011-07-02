@@ -27,10 +27,6 @@ Handle AttributeError.
     Traceback (most recent call last):
     ...
     HTTPError: HTTP Error 500: Internal Server Error
-    >>> 'Error Type: AttributeError' in browser.contents
-    True
-    >>> 'Error Value: ERROR VALUE' in browser.contents
-    True
 
     >>> browser.handleErrors = False
     >>> browser.open('http://localhost/test_folder_1_/foo')
@@ -48,10 +44,6 @@ Handle ImportError.
     Traceback (most recent call last):
     ...
     HTTPError: HTTP Error 500: Internal Server Error
-    >>> 'Error Type: ImportError' in browser.contents
-    True
-    >>> 'Error Value: ERROR VALUE' in browser.contents
-    True
 
     >>> browser.handleErrors = False
     >>> browser.open('http://localhost/test_folder_1_/foo')
@@ -70,10 +62,6 @@ Handle zope.publisher.interfaces.NotFound.
     Traceback (most recent call last):
     ...
     HTTPError: HTTP Error 404: Not Found
-    >>> 'Error Type: NotFound' in browser.contents
-    True
-    >>> "Error Value: Object: 'OBJECT', name: 'NAME'" in browser.contents
-    True
 
     >>> browser.handleErrors = False
     >>> browser.open('http://localhost/test_folder_1_/foo')
@@ -133,10 +121,6 @@ Handle zExceptions.Unauthorized raised by the object. We take the
     Traceback (most recent call last):
     ...
     HTTPError: HTTP Error 401: Unauthorized
-    >>> 'Error Type: Unauthorized' in browser.contents
-    True
-    >>> 'Error Value: ERROR VALUE' in browser.contents
-    True
     >>> browser.headers['WWW-Authenticate']
     'basic realm="Zope2"'
 
@@ -156,10 +140,6 @@ And the same with unicode error value.
     Traceback (most recent call last):
     ...
     HTTPError: HTTP Error 401: Unauthorized
-    >>> 'Error Type: Unauthorized' in browser.contents
-    True
-    >>> 'Error Value: ERROR VALUE \xce\xa9' in browser.contents
-    True
     >>> browser.headers['WWW-Authenticate']
     'basic realm="Zope2"'
 
@@ -181,8 +161,6 @@ Handle zExceptions.Unauthorized raised by BaseRequest.traverse. We take the
     Traceback (most recent call last):
     ...
     HTTPError: HTTP Error 401: Unauthorized
-    >>> 'Site Error' in browser.contents
-    True
     >>> 'You are not authorized to access this resource.' in browser.contents
     True
     >>> browser.headers['WWW-Authenticate']
@@ -212,7 +190,8 @@ converts it into zExceptions.NotFound if we are not in debug mode.
     >>> browser.open('http://localhost/test_folder_1_/baz')
     Traceback (most recent call last):
     ...
-    NotFound:   <h2>Site Error</h2>
+    NotFound: <html>
+    ...<h2>Site Error</h2>
     ...<p><strong>Resource not found</strong></p>...
     ...<p><b>Resource:</b> index_html</p>...
     >>> browser.contents

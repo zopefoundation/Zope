@@ -216,15 +216,6 @@ class TestProductInit( unittest.TestCase ):
                        'container_filter': None}
                       in Products.meta_types)
 
-    def test_install_products(self):
-        self.makeFakeProducts()
-        self.configure(cfg)
-        app = getApp()
-        from OFS.Application import install_products
-        install_products()
-        obids = app.Control_Panel.Products.keys()
-        self.assertEquals(obids, [])
-
 
 def test_suite():
     suite = unittest.TestSuite()

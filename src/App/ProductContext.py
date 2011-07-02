@@ -172,7 +172,7 @@ class ProductContext:
               #           currently also required by the _verifyObjectPaste
               #           method of CopyContainers like Folders.
               'action': ('manage_addProduct/%s/%s' % (pid, name)),
-              # 'product': No longer used
+              # 'product': product id
               'product': pid,
               # 'permission': Guards the add action.
               'permission': permission,

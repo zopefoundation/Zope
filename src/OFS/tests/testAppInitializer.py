@@ -100,9 +100,6 @@ class TestInitialization( unittest.TestCase ):
         i.install_cp_and_products()
         self.assertTrue(hasattr(app, 'Control_Panel'))
         self.assertEqual(app.Control_Panel.meta_type, 'Control Panel')
-        self.assertTrue(hasattr(app.Control_Panel, 'Products'))
-        self.assertEqual(app.Control_Panel.Products.meta_type,
-                         'Product Management')
 
     def test_install_tempfolder_and_sdc(self):
         self.configure(good_cfg)
@@ -203,16 +200,6 @@ class TestInitialization( unittest.TestCase ):
         i = self.getOne()
         i.install_products()
         self.assertTrue('__roles__' in Application.misc_.__dict__)
-
-    def test_install_standards(self):
-        self.configure(good_cfg)
-        i = self.getOne()
-        i.install_products() # required
-        i.install_standards()
-        app = i.getApp()
-        self.assertEqual(app.index_html.meta_type, 'Page Template')
-        self.assertEqual(app.standard_error_message.meta_type, 'DTML Method')
-        self.assertTrue(hasattr(app, '_standard_objects_have_been_added'))
 
 
 def test_suite():
