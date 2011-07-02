@@ -8,17 +8,6 @@
 # you add it to a line that does not begin with '#'.  Note that comments
 # are only allowed at the beginning of a line: you may not add comments
 # after directive text on the same line.
-#
-# Note for Developers
-# ===================
-#
-# This file is *not* auto-generated. If you create a new directive you
-# very likely want to include an example of how to use the new
-# directive in this file.
-#
-# You shouldn't modify 'zope.conf.in' to change
-# configuration. Instead, you should make a copy into 'zope.conf' and
-# modify that to avoid checking in changes to this file by mistake.
 
 # ZConfig "defines" used for later textual substitution
 
@@ -66,31 +55,6 @@ instancehome $INSTANCE
 #      MY_PRODUCT_ENVVAR foobar
 #    </environment>
 
-# Directive: debug-mode
-#
-# Description:
-#     A switch which controls several aspects of Zope operation useful for
-#     developing under Zope.  When debug mode is on:
-#
-#     - The process will not detach from the controlling terminal
-#
-#     - Errors in product initialization will cause startup to fail
-#       (instead of writing error messages to the event log file).
-#
-#     - Filesystem-based scripts such as skins, PageTemplateFiles, and
-#       DTMLFiles can be edited while the server is running and the server
-#       will detect these changes in real time.  When this switch is
-#       off, you must restart the server to see the changes.
-#
-#     Setting this to 'off' when Zope is in a production environment is
-#     encouraged, as it speeds execution (sometimes dramatically).
-#
-# Default: off
-#
-# Example:
-#
-#    debug-mode on
-
 
 # Directive: effective-user
 #
@@ -106,20 +70,6 @@ instancehome $INSTANCE
 #
 #    effective-user chrism
 
-
-# Directive: enable-product-installation
-#
-# Description:
-#     If this directive is turned on, Zope performs 'product installation'
-#     (the registration of Python modules in various Products directories)
-#     at startup. Only turn this on if your code relies on the Products
-#     section in the Control_Panel to be populated.
-#
-# Default: off
-#
-# Example:
-#
-#    enable-product-installation on
 
 # Directive: locale
 #
@@ -227,118 +177,6 @@ instancehome $INSTANCE
 #    lock-filename /home/chrism/projects/sessions/var/Z2.lock
 
 
-# Directive: mime-types
-#
-# Description:
-#     Tells Zope about additional mime.types files that should be
-#     loaded.  The files have the same format as the mime.types file
-#     distributed with Apache.  The "mime-types" setting may be given
-#     more than once in the configuration file.
-#
-# Example:
-#
-#     mime-types  $INSTANCE/etc/mime.types
-
-
-# Directive: structured-text-header-level
-#
-# Description:
-#     Set the default starting HTML header level for structured text
-#     documents. The default is 3, which implies that top-level headers
-#     will be created with an <H3> tag.
-#
-# Default: 3
-#
-# Example:
-#
-#    structured-text-header-level 1
-
-# Directive: rest-input-encoding
-#
-# Description:
-#    Specifies the input encoding of re-StructuredText documents
-#    (e.g. 'utf-8', 'iso-8859-15' or any other valid encoding recognized
-#    by Python).  The default is your Python's default encoding.
-#
-# Default: unset (uses system default)
-#
-# Example:
-#
-#    rest-input-encoding iso-8859-15
-
-# Directive: rest-output-encoding
-#
-# Description:
-#    Specifies the output encoding of re-StructuredText documents
-#    (e.g. 'utf-8', 'iso-8859-15' or any other valid encoding recognized
-#    by Python).  The default is your Python's default encoding.
-#
-# Default: unset (uses system default)
-#
-# Example:
-#
-#    rest-output-encoding iso-8859-15
-
-# Directive: rest-header-level
-#
-# Description:
-#     Set the default starting HTML header level for restructured text
-#     documents. The default is 3, which implies that top-level headers
-#     will be created with an <H3> tag.
-#
-# Default: 3
-#
-# Example:
-#
-#    rest-header-level 2
-
-# Directive: rest-language-code
-#
-# Description:
-#    Language code used for some internal translations inside of the docutils
-#    package and for DTD bibliographic elements mapping. See
-#    lib/python/docutils/languages/ for a list of supported language codes.
-#
-# Default: en
-#
-# Example:
-#
-#    rest-language-code de
-
-# Directive: cgi-environment
-#
-# Description:
-#     A section which allows a user to define arbitrary key-value pairs for
-#     use as the initial CGI environment variables. This is useful
-#     when you want to proxy requests from another web server to Zserver,
-#     and would like Zserver's CGI environment to reflect the CGI
-#     environment of the other web server.
-#
-# Default: unset
-#
-# Example:
-#
-# <cgi-environment>
-#   HTTPS_SERVER Foobar Server 1.0
-#   HTTPS_PORT 443
-# </cgi-environment>
-
-
-
-# Directive: dns-server
-#
-# Description:
-#     Specify the IP address of your DNS server in order to cause resolved
-#     hostnames to be written to Zope's access log. By default, Zope will
-#     not resolve hostnames unless this is set.
-#
-# Default: unset
-#
-# Example:
-#
-#    dns-server 127.0.0.1
-
-
 # Directive: ip-address
 #
 # Description:
@@ -367,32 +205,6 @@ instancehome $INSTANCE
 #
 #    http-realm Slipknot
 
-
-# Directive: cgi-maxlen
-#
-# Description:
-#     Set this value to limit the amount of form data being processed 
-#     by Zope to prevent DoS attacks.
-#
-# Default: 0 (= no restrictions)
-#
-# Example:
-#
-#    cgi-maxlen 10000
-
-
-# Directive: http-header-max-length
-#
-# Description:
-#     Maximum number of bytes allowed within a HTTP request header. The request
-#     is discarded and considered as a DoS attack if the header size exceeds
-#     this limit.
-#
-# Default: 8192
-#
-# Example:
-#
-#     http-header-max-length 16384
 
 # Directive: enable-ms-author-via
 #
