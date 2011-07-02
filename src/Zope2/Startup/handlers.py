@@ -106,10 +106,6 @@ def cgi_maxlen(value):
 def http_header_max_length(value):
     return value
 
-def enable_ms_author_via(value):
-    import webdav
-    webdav.enable_ms_author_via = value
-
 def enable_ms_public_header(value):
     import webdav
     webdav.enable_ms_public_header = value

@@ -555,34 +555,6 @@
     </description>
   </key>
 
-  <key name="enable-ms-author-via" datatype="boolean" handler="enable_ms_author_via" default="off">
-     <description>
-     Set this directive to 'true' to enable the "MS-Author-Via" header
-     in response to an OPTIONS WebDAV request. Early versions of
-     Microsoft Web Folders and Microsoft Office require this header to
-     be present to be able to connect to Zope via WebDAV.
-
-     This is disabled by default since it makes a lot of standards-compliant
-     things unhappy AND it tricks Microsoft Office into trying to edit Office
-     files stored in Zope via WebDAV even when the user isn't allowed to edit
-     them and is only trying to download them.
-
-     Check this collector entry for more information:
-     http://www.zope.org/Collectors/Zope/1441
-
-     Recent versions of Microsoft Web Folders, updated after January
-     2005, do not require this header anymore, and instead require a
-     "Public" header to be present in reply to the OPTIONS WebDAV
-     request.
-     (http://www.redmountainsw.com/wordpress/archives/webfolders-zope)
-
-     To get a recent Microsoft Web Folders implementation, refer to
-     Microsoft KB Article 907306.
-     (Software Update for Web Folders: May 18, 2007).
-     </description>
-     <metadefault>off</metadefault>
-  </key>
-
   <key name="enable-ms-public-header" datatype="boolean" handler="enable_ms_public_header" default="off">
      <description>
      Set this directive to 'on' to enable sending the "Public" header

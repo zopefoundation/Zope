@@ -105,32 +105,6 @@ class TestResource(unittest.TestCase):
         verifyClass(IDAVResource, self._getTargetClass())
         verifyClass(IWriteLock, self._getTargetClass())
 
-    def test_ms_author_via(self):
-        import webdav
-
-        default_settings = webdav.enable_ms_author_via
-        try:
-            req, resp = make_request_response()
-            resource = self._makeOne()
-            resource.OPTIONS(req, resp)
-            self.assert_(not resp.headers.has_key('ms-author-via'))
-
-            webdav.enable_ms_author_via = True
-            req, resp = make_request_response()
-            resource = self._makeOne()
-            resource.OPTIONS(req, resp)
-            self.assert_(not resp.headers.has_key('ms-author-via'))
-
-            req, resp = make_request_response(
-                environ={'USER_AGENT': MS_DAV_AGENT})
-            resource = self._makeOne()
-            resource.OPTIONS(req, resp)
-            self.assert_(resp.headers.has_key('ms-author-via'))
-            self.assert_(resp.headers['ms-author-via'] == 'DAV')
-
-        finally:
-            webdav.enable_ms_author_via = default_settings
-
     def test_ms_public_header(self):
         import webdav
 

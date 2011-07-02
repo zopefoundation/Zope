@@ -104,28 +104,6 @@ class StartupTestCase(unittest.TestCase):
         items.sort()
         self.assertEqual(items, [("FEARFACTORY", "rocks"), ("NSYNC","doesnt")])
 
-    def test_ms_author_via(self):
-        import webdav
-        from Zope2.Startup.handlers import handleConfig
-
-        default_setting = webdav.enable_ms_author_via
-        try:
-            conf, handler = self.load_config_text("""\
-                instancehome <<INSTANCE_HOME>>
-                enable-ms-author-via true
-                """)
-            handleConfig(None, handler)
-            self.assert_(webdav.enable_ms_author_via == True)
-
-            conf, handler = self.load_config_text("""\
-                instancehome <<INSTANCE_HOME>>
-                enable-ms-author-via false
-                """)
-            handleConfig(None, handler)
-            self.assert_(webdav.enable_ms_author_via == False)
-        finally:
-            webdav.enable_ms_author_via = default_setting
-
     def test_ms_public_header(self):
         import webdav
         from Zope2.Startup.handlers import handleConfig

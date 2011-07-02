@@ -31,6 +31,9 @@ Features Added
 Restructuring
 +++++++++++++
 
+- Removed the `enable-ms-author-via` directive which was only required for
+  very old web folder implementations from before 2007.
+
 - Changed zope.conf default settings for `zserver-threads` to `2` and
   `python-check-interval` to `1000`.
 

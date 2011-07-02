@@ -238,8 +238,6 @@ class Resource(Base, LockableItem):
         if ms_dav_agent.match(REQUEST.get_header('User-Agent', '')):
             if webdav.enable_ms_public_header:
                 RESPONSE.setHeader('Public', ', '.join(self.__http_methods__))
-            if webdav.enable_ms_author_via:
-                RESPONSE.setHeader('MS-Author-Via', 'DAV')
 
         RESPONSE.setStatus(200)
         return RESPONSE
