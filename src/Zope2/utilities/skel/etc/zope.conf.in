@@ -568,32 +568,11 @@ instancehome $INSTANCE
 
 # Examples:
 #
-#  <ftp-server>
-#    # valid key is "address"
-#    address 8021
-#  </ftp-server>
-#
 #  <webdav-source-server>
 #    # valid keys are "address" and "force-connection-close"
 #    address 1980
 #    force-connection-close off
 #  </webdav-source-server>
-#
-#  <persistent-cgi>
-#    # valid key is "path"
-#    path somefile
-#  </persistent-cgi>
-#
-#  <fast-cgi>
-#    # valid key is "address"; the address may be hostname:port, port,
-#    # or a path for a Unix-domain socket
-#    address somefile
-#  </fast-cgi>
-#
-#  <monitor-server>
-#    # valid keys are "address"
-#    address 8099
-#  </monitor-server>
 #
 #  <icp-server>
 #    # valid key is "address"
@@ -621,9 +600,9 @@ instancehome $INSTANCE
 <zodb_db main>
     # Main FileStorage database
     <filestorage>
-      # See .../ZODB/component.xml for directives (sectiontype
-      # "filestorage").
+      # See ZODB's component.xml for directives (sectiontype "filestorage").
       path $INSTANCE/var/Data.fs
+      blob-dir $INSTANCE/var/blobstorage
     </filestorage>
     mount-point /
 </zodb_db>

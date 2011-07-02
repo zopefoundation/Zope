@@ -16,6 +16,8 @@ Bugs Fixed
 Features Added
 ++++++++++++++
 
+- Always configure a `blob-dir` in the default skeleton.
+
 - ZPublisher: If `IBrowserPage` is provided by a view, form input is decoded.
   This makes it easier to use ``zope.formlib`` and ``z3c.form`` in Zope 2.
 
