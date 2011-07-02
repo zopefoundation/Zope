@@ -50,61 +50,6 @@ instancehome $INSTANCE
 #    clienthome /home/chrism/projects/sessions/var
 
 
-# Directive: path
-#
-# Description:
-#     Name of a directory which should be inserted into the
-#     the beginning of Python's module search path.  This directive
-#     may be specified as many times as needed to insert additional
-#     directories.  The set of directories specified is inserted into the
-#     beginning of the module search path in the order which they are specified
-#     here.  Note that the processing of this directive may happen too late
-#     under some circumstances; it is recommended that you use the PYTHONPATH
-#     environment variable if using this directive doesn't work for you.
-#
-# Default: $INSTANCE/lib/python
-#
-# Example:
-#
-#    path $INSTANCE/mypymodules
-
-
-# Directive: products
-#
-# Description:
-#     Name of a directory that contains additional Product packages.  This
-#     directive may be used as many times as needed to add additional
-#     collections of products.  Each directory identified will be
-#     added to the __path__ of the Products package.  All Products are
-#     initialized in ascending alphabetical order by product name.  If
-#     two products with the same name exist in two Products directories,
-#     the order in which the packages appear here defines the load
-#     order.  The master Products directory exists in Zope's software home,
-#     and cannot be removed from the products path (and should not be added
-#     to it here).
-#
-# Default: $INSTANCE/Products
-#
-# Example:
-#
-#    products /home/chrism/projects/myproducts
-
-
-# Directive: extensions
-#
-# Description:
-#     Name of a directory that contains additional "extensions"
-#     (implementations of ExternalMethods or catalog brains). This
-#     directive will be searched before the 'Extensions' directory
-#     of the 'instancehome'.
-#
-# Default: unset
-#
-# Example:
-#
-#    extensions /home/chrism/extensions
-
-
 # Directive: environment
 #
 # Description:

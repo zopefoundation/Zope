@@ -31,6 +31,10 @@ Features Added
 Restructuring
 +++++++++++++
 
+- Simplified instance skeleton, removing old `Extensions`, `import`,
+  `lib/python` and `Products` from the default. You can continue to manually
+  add these back.
+
 - Removed the rarely used support for the `++skin++` traverser. You can enable
   it in your own applications by defining::
 

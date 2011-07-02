@@ -311,11 +311,7 @@
        required="yes">
     <description>
       The top-level directory which contains the "instance" data for the
-      application server.  Typically this is a directory which
-      may contain a "Products" subdirectory (which holds instance-local
-      Zope Products), an "Extensions" subdirectory (which holds instance-local
-      external methods), and an "import" directory (which holds instance-local
-      importable ZODB exports).  It may also contain "etc", "bin", "log",
+      application server. It may also contain "etc", "bin", "log",
       and "var" directories depending on how you've configured your Zope
       instance.
     </description>
@@ -348,32 +344,26 @@
 
   <multikey name="products" datatype="existing-directory">
     <description>
-      This specifies additional product directories which are added to
-      Products.__path__.  Directories are added in the order in which
-      they are specified.
+      This specifies a product directory which is added to Products.__path__.
+      Directories are added in the order in which they are specified.
     </description>
-    <metadefault>$instancehome/Products</metadefault>
+    <metadefault></metadefault>
   </multikey>
 
 
   <key name="extensions" datatype="existing-directory">
     <description>
-      This overrides the path to the Extensions directory.
+      This provides a path to an Extensions directory.
     </description>
-    <metadefault>$instancehome/Extensions</metadefault>
+    <metadefault></metadefault>
   </key>
   
   <multikey name="path" datatype="string">
     <description>
       This specifies additional paths directories which are inserted into
-      the beginning of Python's module search path.  The set of directories
-      specified is inserted into the beginning of the module search path in
-      the order which they are specified here.  Note that the processing of
-      this directive may happen too late under some circumstances; it is
-      recommended that you use the PYTHONPATH environment variable if
-      using this directive doesn't work for you.
+      the beginning of Python's module search path.
     </description>
-    <metadefault>$instancehome/lib/python</metadefault>
+    <metadefault></metadefault>
   </multikey>
 
   <key name="pid-filename" datatype="existing-dirpath">
