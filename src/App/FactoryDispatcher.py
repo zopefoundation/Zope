@@ -98,13 +98,7 @@ class ProductDispatcher(Implicit):
             '__FactoryDispatcher__',
             FactoryDispatcher)
 
-        productfolder = self.aq_acquire('_getProducts')()
-        try:
-            product = productfolder._product(name)
-        except AttributeError:
-            # If we do not have a persistent product entry, return 
-            product = Product(name)
-
+        product = Product(name)
         dispatcher=dispatcher_class(product, self.aq_parent, REQUEST)
         return dispatcher.__of__(self)
 

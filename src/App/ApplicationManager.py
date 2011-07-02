@@ -254,7 +254,7 @@ InitializeClass(DebugManager)
 
 
 
-class ApplicationManager(Folder,CacheManager):
+class ApplicationManager(Folder, CacheManager):
     """System management
     """
     __roles__ = ('Manager',)

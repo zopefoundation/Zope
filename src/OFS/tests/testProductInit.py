@@ -221,21 +221,9 @@ class TestProductInit( unittest.TestCase ):
         self.configure(cfg)
         app = getApp()
         from OFS.Application import install_products
-        install_products(app)
+        install_products()
         obids = app.Control_Panel.Products.keys()
         self.assertEquals(obids, [])
-
-    def test_install_products_enabled(self):
-        self.makeFakeProducts()
-        cfg2 = cfg + '\nenable-product-installation on'
-        self.configure(cfg2)
-        app = getApp()
-        from OFS.Application import install_products
-        install_products(app)
-        obids = app.Control_Panel.Products.keys()
-        for name in FAKEPRODUCTS:
-            self.assert_(name in obids)
-
 
 
 def test_suite():

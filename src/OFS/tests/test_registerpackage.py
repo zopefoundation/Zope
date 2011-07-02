@@ -51,9 +51,7 @@ def test_registerPackage():
 
       >>> import Zope2
       >>> from OFS.Application import install_products
-      
-      >>> app = Zope2.app()
-      >>> install_products(app)
+      >>> install_products()
       pythonproduct2 initialized
 
     Make sure it is registered:

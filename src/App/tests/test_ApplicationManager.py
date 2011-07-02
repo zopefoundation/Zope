@@ -350,11 +350,6 @@ class ApplicationManagerTests(ConfigTestBase,
         am = self._makeOne()
         self.assertEqual(am.sys_platform(), sys.platform)
 
-    def test_ctor_initializes_Products(self):
-        from App.Product import ProductFolder
-        am = self._makeOne()
-        self.assertTrue(isinstance(am.Products, ProductFolder))
-
     def test__canCopy(self):
         am = self._makeOne()
         self.assertFalse(am._canCopy())

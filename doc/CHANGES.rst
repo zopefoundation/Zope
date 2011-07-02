@@ -33,6 +33,9 @@ Features Added
 Restructuring
 +++++++++++++
 
+- Removed various persistent product related code and options. The
+  `enable-product-installation` `zope.conf` setting is now a no-op.
+
 - Changed the value for `default-zpublisher-encoding` and
   `management_page_charset` to `utf-8`.
 

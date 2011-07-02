@@ -127,10 +127,6 @@ def startup():
     # Initialize the app object
     application = app()
     OFS.Application.initialize(application)
-    if getConfiguration().debug_mode:
-        # Set up auto-refresh.
-        from App.RefreshFuncs import setupAutoRefresh
-        setupAutoRefresh(application._p_jar)
     application._p_jar.close()
 
     # "Log off" as system user

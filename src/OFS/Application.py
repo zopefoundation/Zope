@@ -13,14 +13,11 @@
 """Application support
 """
 
-import os, sys, traceback
+import os, sys
 from logging import getLogger
 from cgi import escape
-from StringIO import StringIO
 
 import Products
-import App.Product
-import App.ProductRegistry
 import transaction
 from AccessControl import ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
@@ -29,7 +26,6 @@ from Acquisition import aq_base
 from App.ApplicationManager import ApplicationManager
 from App.config import getConfiguration
 from App import FactoryDispatcher
-from App.Product import doInstall
 from DateTime import DateTime
 from HelpSys.HelpSys import HelpSys
 from OFS.metaconfigure import get_packages_to_initialize
@@ -56,7 +52,6 @@ APP_MANAGER = None
 class Application(ApplicationDefaultPermissions,
                   ZDOM.Root,
                   Folder.Folder,
-                  App.ProductRegistry.ProductRegistry,
                   FindSupport,
                  ):
     """Top-level system object"""
@@ -292,7 +287,6 @@ class AppInitializer:
         global APP_MANAGER
         APP_MANAGER = ApplicationManager()
         APP_MANAGER._init()
-        APP_MANAGER.Products=App.Product.ProductFolder()
 
         app = self.getApp()
         app._p_activate()
@@ -498,46 +492,33 @@ class AppInitializer:
             self.commit('Added virtual_hosting')
 
     def install_products(self):
-        app = self.getApp()
-        # this defers to a function for b/c reasons
-        return install_products(app)
+        return install_products()
 
     def install_standards(self):
         app = self.getApp()
         # this defers to a  function for b/c reasons
         return install_standards(app)
 
-def install_products(app):
-    # Install a list of products into the basic folder class, so
-    # that all folders know about top-level objects, aka products
-
+def install_products(app=None):
     folder_permissions = get_folder_permissions()
-    meta_types=[]
-    done={}
-
-    debug_mode = getConfiguration().debug_mode
-
-    transaction.get().note('Prior to product installs')
-    transaction.commit()
-
-    products = get_products()
-
-    for priority, product_name, index, product_dir in products:
+    meta_types = []
+    done = {}
+    for priority, product_name, index, product_dir in get_products():
         # For each product, we will import it and try to call the
         # intialize() method in the product __init__ module. If
         # the method doesnt exist, we put the old-style information
         # together and do a default initialization.
-        if done.has_key(product_name):
+        if product_name in done:
             continue
-        done[product_name]=1
+        done[product_name] = 1
         install_product(app, product_dir, product_name, meta_types,
-                        folder_permissions, raise_exc=debug_mode)
+                        folder_permissions)
 
     # Delayed install of packages-as-products
     for module, init_func in tuple(get_packages_to_initialize()):
-        install_package(app, module, init_func, raise_exc=debug_mode)
+        install_package(app, module, init_func)
 
-    Products.meta_types=Products.meta_types+tuple(meta_types)
+    Products.meta_types = Products.meta_types + tuple(meta_types)
     InitializeClass(Folder.Folder)
 
 def get_products():
@@ -564,66 +545,45 @@ def get_products():
     products.sort()
     return products
 
+
 def import_products():
-    # Try to import each product, checking for and catching errors.
-    done={}
-
-    products = get_products()
-    debug_mode = getConfiguration().debug_mode
-
-    for priority, product_name, index, product_dir in products:
-        if done.has_key(product_name):
+    done = {}
+    for priority, product_name, index, product_dir in get_products():
+        if product_name in done:
             LOG.warn('Duplicate Product name: '
                      'After loading Product %s from %s, '
                      'I skipped the one in %s.' % (
                     `product_name`, `done[product_name]`, `product_dir`) )
             continue
-        done[product_name]=product_dir
-        import_product(product_dir, product_name, raise_exc=debug_mode)
+        done[product_name] = product_dir
+        import_product(product_dir, product_name)
     return done.keys()
 
-def import_product(product_dir, product_name, raise_exc=0, log_exc=1):
+
+def import_product(product_dir, product_name, raise_exc=None):
     path_join=os.path.join
     isdir=os.path.isdir
     exists=os.path.exists
-    _st=type('')
     global_dict=globals()
-    silly=('__doc__',)
     modules=sys.modules
-    have_module=modules.has_key
 
-    try:
-        package_dir=path_join(product_dir, product_name)
-        if not isdir(package_dir): return
-        if not exists(path_join(package_dir, '__init__.py')):
-            if not exists(path_join(package_dir, '__init__.pyc')):
-                if not exists(path_join(package_dir, '__init__.pyo')):
-                    return
+    package_dir = path_join(product_dir, product_name)
+    if not isdir(package_dir):
+        return
 
-        pname="Products.%s" % product_name
-        try:
-            product=__import__(pname, global_dict, global_dict, silly)
-            if hasattr(product, '__module_aliases__'):
-                for k, v in product.__module_aliases__:
-                    if not have_module(k):
-                        if type(v) is _st and have_module(v): v=modules[v]
-                        modules[k]=v
-        except KeyboardInterrupt:
-            raise
-        except:
-            exc = sys.exc_info()
-            if log_exc:
-                LOG.error('Could not import %s' % pname,
-                          exc_info=exc)
-            f=StringIO()
-            traceback.print_exc(100,f)
-            f=f.getvalue()
-            try: modules[pname].__import_error__=f
-            except: pass
-            if raise_exc:
-                raise exc[0], exc[1], exc[2]
-    finally:
-        exc = None
+    if not exists(path_join(package_dir, '__init__.py')):
+        if not exists(path_join(package_dir, '__init__.pyc')):
+            if not exists(path_join(package_dir, '__init__.pyo')):
+                return
+
+    pname = "Products.%s" % product_name
+    product = __import__(pname, global_dict, global_dict, ('__doc__', ))
+    if hasattr(product, '__module_aliases__'):
+        for k, v in product.__module_aliases__:
+            if k not in modules:
+                if isinstance(v, str) and v in modules:
+                    v = modules[v]
+                modules[k] = v
 
 
 def get_folder_permissions():
@@ -635,104 +595,55 @@ def get_folder_permissions():
 
 
 def install_product(app, product_dir, product_name, meta_types,
-                    folder_permissions, raise_exc=0, log_exc=1):
+                    folder_permissions, raise_exc=None):
 
     from App.ProductContext import ProductContext
     path_join=os.path.join
     isdir=os.path.isdir
     exists=os.path.exists
     global_dict=globals()
-    silly=('__doc__',)
 
-    if 1:  # Preserve indentation for diff :-)
-        package_dir=path_join(product_dir, product_name)
-        __traceback_info__=product_name
-        if not isdir(package_dir): return
-        if not exists(path_join(package_dir, '__init__.py')):
-            if not exists(path_join(package_dir, '__init__.pyc')):
-                if not exists(path_join(package_dir, '__init__.pyo')):
-                    return
-        try:
-            product=__import__("Products.%s" % product_name,
-                               global_dict, global_dict, silly)
+    package_dir=path_join(product_dir, product_name)
+    __traceback_info__=product_name
+    if not isdir(package_dir): return
+    if not exists(path_join(package_dir, '__init__.py')):
+        if not exists(path_join(package_dir, '__init__.pyc')):
+            if not exists(path_join(package_dir, '__init__.pyo')):
+                return
 
-            # Install items into the misc_ namespace, used by products
-            # and the framework itself to store common static resources
-            # like icon images.
-            misc_=pgetattr(product, 'misc_', {})
-            if misc_:
-                if isinstance(misc_, dict):
-                    misc_=Misc_(product_name, misc_)
-                Application.misc_.__dict__[product_name]=misc_
+    product=__import__("Products.%s" % product_name,
+                       global_dict, global_dict, ('__doc__', ))
 
-            # Here we create a ProductContext object which contains
-            # information about the product and provides an interface
-            # for registering things like classes and help topics that
-            # should be associated with that product. Products are
-            # expected to implement a method named 'initialize' in
-            # their __init__.py that takes the ProductContext as an
-            # argument.
-            do_install = doInstall()
-            if do_install:
-                productObject = App.Product.initializeProduct(
-                    product, product_name, package_dir, app)
-                context = ProductContext(productObject, app, product)
-            else:
-                # avoid any persistent connection
-                productObject = FactoryDispatcher.Product(product_name)
-                context = ProductContext(productObject, None, product)
+    # Install items into the misc_ namespace, used by products
+    # and the framework itself to store common static resources
+    # like icon images.
+    misc_ = pgetattr(product, 'misc_', {})
+    if misc_:
+        if isinstance(misc_, dict):
+            misc_=Misc_(product_name, misc_)
+        Application.misc_.__dict__[product_name]=misc_
 
-            # Look for an 'initialize' method in the product.
-            initmethod = pgetattr(product, 'initialize', None)
-            if initmethod is not None:
-                initmethod(context)
+    productObject = FactoryDispatcher.Product(product_name)
+    context = ProductContext(productObject, None, product)
 
-            if do_install:
-                transaction.get().note('Installed product ' + product_name)
-                transaction.commit()
-
-        except Exception:
-            if log_exc:
-                LOG.error('Couldn\'t install %s' % product_name,
-                           exc_info=sys.exc_info())
-            transaction.abort()
-            if raise_exc:
-                raise
+    # Look for an 'initialize' method in the product.
+    initmethod = pgetattr(product, 'initialize', None)
+    if initmethod is not None:
+        initmethod(context)
 
 
-def install_package(app, module, init_func, raise_exc=False, log_exc=True):
+def install_package(app, module, init_func, raise_exc=None):
     """Installs a Python package like a product."""
     from App.ProductContext import ProductContext
-    try:
-        do_install = doInstall()
-        name = module.__name__
-        if do_install:
-            product = App.Product.initializeProduct(module,
-                                                    name,
-                                                    module.__path__[0],
-                                                    app)
-        else:
-            product = FactoryDispatcher.Product(name)
-            app = None
+    name = module.__name__
+    product = FactoryDispatcher.Product(name)
+    product.package_name = name
 
-        product.package_name = name
+    if init_func is not None:
+        newContext = ProductContext(product, None, module)
+        init_func(newContext)
 
-        if init_func is not None:
-            newContext = ProductContext(product, app, module)
-            init_func(newContext)
-
-        package_initialized(module, init_func)
-
-        if do_install:
-            transaction.get().note('Installed package %s' % module.__name__)
-            transaction.commit()
-    except Exception:
-        if log_exc:
-            LOG.error("Couldn't install %s" % module.__name__,
-                      exc_info=True)
-        transaction.abort()
-        if raise_exc:
-            raise
+    package_initialized(module, init_func)
 
 
 def install_standards(app):
@@ -774,58 +685,16 @@ def install_standards(app):
         transaction.get().note('Installed standard objects')
         transaction.commit()
 
-def reinstall_product(app, product_name):
-    folder_permissions = get_folder_permissions()
-    meta_types=[]
-
-    transaction.get().note('Prior to product reinstall')
-    transaction.commit()
-
-    for product_dir in Products.__path__:
-        product_names=os.listdir(product_dir)
-        product_names.sort()
-        if product_name in product_names:
-            removeProductMetaTypes(product_name)
-            install_product(app, product_dir, product_name, meta_types,
-                            folder_permissions, raise_exc=1, log_exc=0)
-            break
-
-    Products.meta_types=Products.meta_types+tuple(meta_types)
-    InitializeClass(Folder.Folder)
-
-
-def reimport_product(product_name):
-    for product_dir in Products.__path__:
-        product_names=os.listdir(product_dir)
-        product_names.sort()
-        if product_name in product_names:
-            import_product(product_dir, product_name,
-                           raise_exc=1, log_exc=0)
-            break
-
-
-def removeProductMetaTypes(pid):
-    """Unregisters the meta types registered by a product.
-    """
-    meta_types = Products.meta_types
-    new_mts = []
-    changed = 0
-    for meta_type in meta_types:
-        if meta_type.get('product', None) == pid:
-            # Remove this meta type.
-            changed = 1
-        else:
-            new_mts.append(meta_type)
-    if changed:
-        Products.meta_types = tuple(new_mts)
-
 
 def pgetattr(product, name, default=install_products, __init__=0):
-    if not __init__ and hasattr(product, name): return getattr(product, name)
+    if not __init__ and hasattr(product, name):
+        return getattr(product, name)
     if hasattr(product, '__init__'):
         product=product.__init__
-        if hasattr(product, name): return getattr(product, name)
+        if hasattr(product, name):
+            return getattr(product, name)
 
-    if default is not install_products: return default
+    if default is not install_products:
+        return default
 
-    raise AttributeError, name
+    raise AttributeError(name)

@@ -176,11 +176,10 @@ def _installProduct(name, quiet=0):
     if _patched and not _installedProducts.has_key(name):
         for priority, product_name, index, product_dir in get_products():
             if product_name == name:
-                if not quiet: _print('Installing %s ... ' % product_name)
-                # We want to fail immediately if a product throws an exception
-                # during install, so we set the raise_exc flag.
+                if not quiet:
+                    _print('Installing %s ... ' % product_name)
                 install_product(_theApp, product_dir, product_name, meta_types,
-                                get_folder_permissions(), raise_exc=1)
+                                get_folder_permissions())
                 _installedProducts[product_name] = 1
                 Products.meta_types = Products.meta_types + tuple(meta_types)
                 InitializeClass(Folder)
@@ -207,10 +206,9 @@ def _installPackage(name, quiet=0):
     if _patched and not _installedPackages.has_key(name):
         for module, init_func in get_packages_to_initialize():
             if module.__name__ == name:
-                if not quiet: _print('Installing %s ... ' % module.__name__)
-                # We want to fail immediately if a package throws an exception
-                # during install, so we set the raise_exc flag.
-                install_package(_theApp, module, init_func, raise_exc=1)
+                if not quiet:
+                    _print('Installing %s ... ' % module.__name__)
+                install_package(_theApp, module, init_func)
                 _installedPackages[module.__name__] = 1
                 if not quiet:
                     _print('done (%.3fs)\n' % (time.time() - start))

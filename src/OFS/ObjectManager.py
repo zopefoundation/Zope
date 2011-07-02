@@ -210,14 +210,6 @@ class ObjectManager(CopyContainer,
         import Products
         external_candidates = []
 
-        # Look at _product_meta_types, if there is one
-        _pmt=()
-        if hasattr(self, '_product_meta_types'): _pmt=self._product_meta_types
-        elif hasattr(self, 'aq_acquire'):
-            try: _pmt=self.aq_acquire('_product_meta_types')
-            except:  pass
-        external_candidates.extend(list(_pmt))
-
         # Look at all globally visible meta types.
         for entry in getattr(Products, 'meta_types', ()):
             if ( (interfaces is not None) or (entry.get("visibility", None)=="Global") ):

@@ -190,9 +190,7 @@ class ProductContext:
               #           currently also required by the _verifyObjectPaste
               #           method of CopyContainers like Folders.
               'action': ('manage_addProduct/%s/%s' % (pid, name)),
-              # 'product': Used by ProductRegistry for TTW products and by
-              #            OFS.Application for refreshing products.
-              #            This key might not be available.
+              # 'product': No longer used
               'product': pid,
               # 'permission': Guards the add action.
               'permission': permission,

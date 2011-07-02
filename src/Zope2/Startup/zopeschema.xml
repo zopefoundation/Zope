@@ -414,10 +414,7 @@
 
   <key name="enable-product-installation" datatype="boolean" default="off">
     <description>
-     If this directive is turned on, Zope performs 'product installation'
-     (the registration of Python modules in various Products directories)
-     at startup. Only turn this on if your code relies on the Products section
-     in the Control_Panel to be populated.
+     BBB: This directive has no effect anymore.
     </description>
     <metadefault>off</metadefault>
   </key>
