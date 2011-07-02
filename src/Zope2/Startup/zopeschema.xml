@@ -447,15 +447,15 @@
     <metadefault>us</metadefault>
   </key>
 
-  <key name="zserver-threads" datatype="integer" default="4">
+  <key name="zserver-threads" datatype="integer" default="2">
      <description>
      Specify the number of threads that Zope's ZServer web server will use
-     to service requests. The default is 4.
+     to service requests. The default is 2.
     </description>
-    <metadefault>4 threads</metadefault>
+    <metadefault>2</metadefault>
   </key>
 
-  <key name="python-check-interval" datatype="integer" default="500">
+  <key name="python-check-interval" datatype="integer" default="1000">
     <description>
       Value passed to Python's sys.setcheckinterval() function.  The
       higher this is, the less frequently the Python interpreter

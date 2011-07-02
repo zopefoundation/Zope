@@ -31,6 +31,9 @@ Features Added
 Restructuring
 +++++++++++++
 
+- Changed zope.conf default settings for `zserver-threads` to `2` and
+  `python-check-interval` to `1000`.
+
 - Simplified instance skeleton, removing old `Extensions`, `import`,
   `lib/python` and `Products` from the default. You can continue to manually
   add these back.

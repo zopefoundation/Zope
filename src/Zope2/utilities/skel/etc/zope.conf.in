@@ -159,13 +159,13 @@ instancehome $INSTANCE
 #
 # Description:
 #     Specify the number of threads that Zope's ZServer web server will use
-#     to service requests. The default is 4.
+#     to service requests. The default is 2.
 #
-# Default: 4
+# Default: 2
 #
 # Example:
 #
-#    zserver-threads 10
+#    zserver-threads 3
 
 
 # Directive: python-check-interval
@@ -174,15 +174,15 @@ instancehome $INSTANCE
 #     Specify an integer representing the Python interpreter "check
 #     interval" This interval determines how often the interpreter checks
 #     for periodic things such as thread switches and signal handlers. The
-#     Zope default is 500, but you may want to experiment with other values
-#     in order to attempt to increae performance in your particular
+#     Zope default is 1000, but you may want to experiment with other values
+#     in order to attempt to increase performance in your particular
 #     environment.
 #
-# Default: 500
+# Default: 1000
 #
 # Example:
 #
-#    python-check-interval 1000
+#    python-check-interval 1500
 
 
 # Directive: zserver-read-only-mode
