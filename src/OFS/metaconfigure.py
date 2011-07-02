@@ -118,10 +118,6 @@ def _registerClass(class_, meta_type, permission, addview, icon, global_):
     setattr(class_, 'meta_type', meta_type)
 
     permission_obj = getUtility(IPermission, permission)
-
-    if icon:
-        setattr(class_, 'icon', '++resource++%s' % icon)
-
     interfaces = tuple(implementedBy(class_))
 
     info = {'name': meta_type,
@@ -151,10 +147,6 @@ def registerClass(_context, class_, meta_type, permission, addview=None,
 
 def unregisterClass(class_):
     delattr(class_, 'meta_type')
-    try:
-        delattr(class_, 'icon')
-    except AttributeError:
-        pass
 
 
 def setDeprecatedManageAddDelete(class_):

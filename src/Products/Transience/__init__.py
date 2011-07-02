@@ -25,7 +25,6 @@ def initialize(context):
     context.registerClass(
         Transience.TransientObjectContainer,
         permission=Transience.ADD_CONTAINER_PERM,
-        icon='www/datacontainer.gif',
         constructors=(Transience.constructTransientObjectContainerForm,
                       Transience.constructTransientObjectContainer)
         )

@@ -50,8 +50,6 @@ are shown.
   </td>
   <td align="left" valign="top">
   <div class="form-text">
-  <dtml-if icon><a href="../&dtml-path;/manage_main"><img src="&dtml-icon;"
-   border="0"></a> &nbsp;</dtml-if>
   <a href="../&dtml-path;/manage_main">&dtml-path;</a><dtml-if 
    title>(&dtml-title;)</dtml-if>
   </div>

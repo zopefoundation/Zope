@@ -118,25 +118,7 @@ function toggleSelect() {
   <input type="checkbox" name="ids:list" value="&dtml-sequence-key;" />
   </td>
   <td align="left" valign="top" nowrap="nowrap">
-
-  <dtml-if om_icons>
-  <a href="&dtml.url_quote-sequence-key;/manage_workspace">
-  <dtml-in om_icons mapping>
-  <img src="&dtml-BASEPATH1;/&dtml.url_quote-path;" alt="&dtml.missing-alt;" 
-   title="&dtml.missing-title;" border="0" width="16" height="16"/></dtml-in></a>
-  <dtml-else>
-
-  <dtml-if icon>
-  <a href="&dtml.url_quote-sequence-key;/manage_workspace">
-  <img src="&dtml-BASEPATH1;/&dtml-icon;" alt="&dtml-meta_type;" 
-   title="&dtml-meta_type;" border="0" /></a>
-  <dtml-else>
-  &nbsp;
-  </dtml-if>
-
-  </dtml-if>
-
-
+    <i>&dtml-meta_type;</i>
   </td>
 
   <td align="left" valign="top">
@@ -146,7 +128,7 @@ function toggleSelect() {
   </a>
   <dtml-try>
     <dtml-if "wl_isLocked()==1">
-      <img src="/p_/davlocked">
+      Locked
     </dtml-if>
   <dtml-except>
   </dtml-try>

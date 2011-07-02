@@ -68,10 +68,6 @@ function toggleSelect() {
    id="cb_&dtml-sequence-index;" />
  </td>
  <td align="left" valign="top" width="16">
-  <dtml-if icon>
-  <img src="&dtml-BASEPATH1;/&dtml-icon;" alt="[&dtml-meta_type;]"
-   title="[&dtml-meta_type;]" />
-  </dtml-if icon>
  </td>
  <td align="left" valign="top" class="list-item">
   <label for="cb_&dtml-sequence-index;">&dtml-sequence-key;</label>

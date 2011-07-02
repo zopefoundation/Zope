@@ -47,7 +47,6 @@ constructTemporaryFolderForm=HTMLFile('dtml/addTemporaryFolder', globals())
 class SimpleTemporaryContainer(Folder):
     # dbtab-style container class
     meta_type = 'Temporary Folder'
-    icon = 'misc_/TemporaryFolder/tempfolder.gif'
 
 
 class MountedTemporaryFolder(MountPoint, Item):
@@ -58,7 +57,6 @@ class MountedTemporaryFolder(MountPoint, Item):
     XXX this is only here for backwards compatibility purposes:
     DBTab uses the SimpleTemporaryContainer class instead.
     """
-    icon = 'p_/broken'
     manage_options = ({'label':'Traceback', 'action':'manage_traceback'},)
     meta_type = 'Broken Temporary Folder'
 
@@ -86,11 +84,9 @@ class MountedTemporaryFolder(MountPoint, Item):
 
     def _populate(self, folder, root):
         # Set up our folder object
-        folder.id = self.id                     # be a chameleon
+        folder.id = self.id
         folder.title = self.title
-        folder.icon = "misc_/TemporaryFolder/tempfolder.gif"
         s=folder.manage_options[1:]
         folder.manage_options = (
-            {'label':'Contents', 'action':'manage_main',
-             'help':('TemporaryFolder','TemporaryFolder.stx')},
+            {'label':'Contents', 'action':'manage_main'},
             )+s

@@ -91,9 +91,7 @@ No exceptions logged.
   </td>
   <td><a href="#"
      tal:attributes="href string:${context/absolute_url}/forgetEntry?id=${entry/id}"
-  ><img title="Forget this entry" src="/misc_/SiteErrorLog/ok.gif" border="0"
-     tal:attributes="src string:${request/BASEPATH1}/misc_/SiteErrorLog/ok.gif"
-  /></a></td>
+  >Forget this entry</a></td>
  </tr>
 </table>
 

@@ -436,7 +436,6 @@ class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
             registerBeforeTraverse(parent, hook, name, priority)
 
     # ZMI
-    icon = 'misc_/Sessions/idmgr.gif'
     manage_options=({'label': 'Settings', 'action':'manage_browseridmgr'},
                     {'label': 'Security', 'action':'manage_access'},
                     {'label': 'Ownership', 'action':'manage_owner'},

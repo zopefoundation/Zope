@@ -342,12 +342,11 @@ def findCacheables(ob, manager_id, require_assoc, subfolders,
             if not sm.checkPermission('Change cache settings', subob):
                 continue
             subpath = path + (subob.getId(),)
-            icon = getattr(aq_base(subob), 'icon', '')
             info = {
                 'sortkey': subpath,
                 'path': '/'.join(subpath),
                 'title': getattr(aq_base(subob), 'title', ''),
-                'icon': icon,
+                'icon': None,
                 'associated': associated,}
             rval.append(info)
 

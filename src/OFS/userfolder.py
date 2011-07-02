@@ -302,7 +302,6 @@ class UserFolder(accesscontrol_userfolder.UserFolder, BasicUserFolder):
     UserFolders function chiefly to control access by authenticating
     users and binding them to a collection of roles."""
 
-    icon = 'p_/UserFolder'
     _ofs_migrated = False
 
     def __init__(self):

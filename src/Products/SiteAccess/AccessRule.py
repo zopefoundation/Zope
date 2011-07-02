@@ -28,7 +28,6 @@ def manage_addAccessRule(self, method_id=None, REQUEST=None, **ignored):
     # We want the original object, not stuff in between, and no acquisition
     self = self.this()
     self = getattr(self, 'aq_base', self)
-    priority = (1, 'AccessRule')
 
     if method_id is None or (REQUEST and REQUEST.form.has_key('none')):
         rules = unregisterBeforeTraverse(self, 'AccessRule')
@@ -51,7 +50,7 @@ def manage_addAccessRule(self, method_id=None, REQUEST=None, **ignored):
         hook = AccessRule(method_id)
         registerBeforeTraverse(self, hook, 'AccessRule', 1)
         try:
-            getattr(self, method_id).icon = 'misc_/SiteAccess/AccessRule.gif'
+            getattr(self, method_id).icon = 'accessrule.gif'
         except:
             pass
         if REQUEST:

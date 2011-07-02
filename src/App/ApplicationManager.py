@@ -57,7 +57,6 @@ class DatabaseManager(Item, Implicit):
     id = 'DatabaseManagement'
     name = title = 'Database Management'
     meta_type = 'Database Management'
-    icon = 'p_/DatabaseManagement_icon'
 
     manage_options=((
         {'label':'Database', 'action':'manage_main'},
@@ -90,7 +89,6 @@ class DatabaseChooser(SimpleItem):
     """
     meta_type = 'Database Management'
     name = title = 'Database Management'
-    icon = 'p_/DatabaseManagement_icon'
     isPrincipiaFolderish = 1
 
     manage_options=(
@@ -150,7 +148,6 @@ class DebugManager(Item, Implicit):
     id ='DebugInfo'
     name = title = 'Debug Information'
     meta_type = name
-    icon = 'p_/DebugManager_icon'
 
     manage_options=((
         {'label':'Debugging Info', 'action':'manage_main'},
@@ -285,7 +282,6 @@ class ApplicationManager(Folder, CacheManager):
     id = 'Control_Panel'
     name = title = 'Control Panel'
     meta_type = 'Control Panel'
-    icon = 'p_/ControlPanel_icon'
 
     process_id = os.getpid()
     process_start = int(time.time())

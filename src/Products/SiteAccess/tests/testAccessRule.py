@@ -150,7 +150,7 @@ class Test_manage_addAccessRule(unittest.TestCase):
         rule = container.__before_traverse__[(1, 'AccessRule')]
         self.assertEqual(rule.name, 'new_rule')
         self.assertFalse('icon' in old_rule.__dict__)
-        self.assertEqual(new_rule.icon, 'misc_/SiteAccess/AccessRule.gif')
+        self.assertEqual(new_rule.icon, 'accessrule.gif')
 
     def test_w_valid_method_id_w_existing_rules_w_request(self):
         from ZPublisher.BeforeTraverse import registerBeforeTraverse
@@ -169,7 +169,7 @@ class Test_manage_addAccessRule(unittest.TestCase):
         rule = container.__before_traverse__[(1, 'AccessRule')]
         self.assertEqual(rule.name, 'new_rule')
         self.assertFalse('icon' in old_rule.__dict__)
-        self.assertEqual(new_rule.icon, 'misc_/SiteAccess/AccessRule.gif')
+        self.assertEqual(new_rule.icon, 'accessrule.gif')
 
 
 class Test_getAccessRule(unittest.TestCase):

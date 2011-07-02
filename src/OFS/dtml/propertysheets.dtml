@@ -15,11 +15,9 @@
   <a href="&dtml-id;/manage">&dtml-id; <dtml-if xml_namespace>(<dtml-var xml_namespace>)</dtml-if></a>
   <dtml-if locked_in_session>
     <dtml-if modified_in_session>
-      <img src="&dtml-BASEPATH1;/p_/locked"
-       alt="This item has been modified in this session" />
+      This item has been modified in this session
     <dtml-else>
-      <img src="&dtml-BASEPATH1;/p_/lockedo"
-       alt="This item has been modified in another session" />
+      This item has been modified in another session
     </dtml-if>
   </dtml-if>
   </td>

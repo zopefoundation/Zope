@@ -54,46 +54,10 @@ Let's check for the various aq_* attributes:
   >>> view.aq_self == view
   True
 
-Let's try to acquire something from the root folder:
-
-  >>> button = view.aq_acquire('ZopeAttributionButton')
-  >>> print button()
-  <a href="http://www.zope.org/Credits" target="_top"><img src="http://nohost/p_/ZopeButton" width="115" height="50" border="0" alt="Powered by Zope" /></a>
-
-Let's check that we're in the right context:
-
-  >>> view.aq_inContextOf(self.folder)
-  1
-  >>> view.aq_inContextOf(self.app)
-  1
-  >>> view.aq_inContextOf(object())
-  0
-
 Views also still support the __of__ protocol, at least pro forma:
 
   >>> view == view.__of__(self.app)
   True
-
-Acquisition API legacy on a browser view's template
----------------------------------------------------
-
-A view's template will also support the various aq_* attributes:
-
-  >>> view = getMultiAdapter((self.folder, request), name='template')
-  >>> template = view.template
-
-  >>> template.aq_parent == view
-  True
-  >>> template.aq_inner == template
-  True
-  >>> template.aq_base == template
-  True
-  >>> template.aq_self == template
-  True
-
-  >>> button = template.aq_acquire('ZopeAttributionButton')
-  >>> print button()
-  <a href="http://www.zope.org/Credits" target="_top"><img src="http://nohost/p_/ZopeButton" width="115" height="50" border="0" alt="Powered by Zope" /></a>
 
 
 Mixing in Acquisition.{Ex|Im}plicit

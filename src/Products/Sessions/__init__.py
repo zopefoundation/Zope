@@ -22,7 +22,6 @@ def initialize(context):
 
     context.registerClass(
         BrowserIdManager.BrowserIdManager,
-        icon="www/idmgr.gif",
         permission=BrowserIdManager.ADD_BROWSER_ID_MANAGER_PERM,
         constructors=(BrowserIdManager.constructBrowserIdManagerForm,
                       BrowserIdManager.constructBrowserIdManager)
@@ -30,7 +29,6 @@ def initialize(context):
 
     context.registerClass(
         SessionDataManager.SessionDataManager,
-        icon='www/datamgr.gif',
         permission=SessionDataManager.ADD_SESSION_DATAMANAGER_PERM,
         constructors=(SessionDataManager.constructSessionDataManagerForm,
                       SessionDataManager.constructSessionDataManager)

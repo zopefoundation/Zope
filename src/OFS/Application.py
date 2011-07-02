@@ -15,7 +15,6 @@
 
 import os, sys
 from logging import getLogger
-from cgi import escape
 
 import Products
 import transaction
@@ -153,15 +152,6 @@ class Application(ApplicationDefaultPermissions,
 
     ZopeTime = PrincipiaTime
 
-    security.declarePublic('ZopeAttributionButton')
-    def ZopeAttributionButton(self):
-        """Returns an HTML fragment that displays the 'powered by zope'
-        button along with a link to the Zope site."""
-        return '<a href="http://www.zope.org/Credits" target="_top"><img ' \
-               'src="%s/p_/ZopeButton" width="115" height="50" border="0" ' \
-               'alt="Powered by Zope" /></a>' % escape(self.REQUEST.BASE1, 1)
-
-
     def DELETE(self, REQUEST, RESPONSE):
         """Delete a resource object."""
         self.dav__init(REQUEST, RESPONSE)
@@ -171,9 +161,6 @@ class Application(ApplicationDefaultPermissions,
         """Move a resource to a new location."""
         self.dav__init(REQUEST, RESPONSE)
         raise Forbidden, 'This resource cannot be moved.'
-
-    test_url___allow_groups__=None
-    test_url = ZopeAttributionButton
 
     def absolute_url(self, relative=0):
         """The absolute URL of the root object is BASE1 or "/".
@@ -229,8 +216,6 @@ InitializeClass(Application)
 
 
 class Expired(Persistent):
-
-    icon='p_/broken'
 
     def __setstate__(self, s={}):
         dict=self.__dict__
@@ -649,7 +634,6 @@ def install_standards(app):
     # Install the replaceable standard objects
     from App.Common import package_home
     from App.special_dtml import DTMLFile
-    from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 
     std_dir = os.path.join(package_home(globals()), 'standard')
     wrote = False
@@ -661,17 +645,6 @@ def install_standards(app):
             ob = DTMLFile(base, std_dir)
             app.manage_addProduct['OFSP'].manage_addDTMLMethod(
                 id=base, file=open(ob.raw))
-        elif ext in ('.pt', '.zpt'):
-            if hasattr(app, base):
-                continue
-            ob = PageTemplateFile(fn, std_dir, __name__=fn)
-            app.manage_addProduct['PageTemplates'].manage_addPageTemplate(
-                id=base, title='', text=open(ob.filename))
-        elif ext in ('.ico', '.gif', '.png'):
-            if hasattr(app, fn):
-                continue
-            app.manage_addProduct['OFSP'].manage_addImage(
-                id=fn, title='', file=open(os.path.join(std_dir, fn)))
         else:
             continue
         wrote = True

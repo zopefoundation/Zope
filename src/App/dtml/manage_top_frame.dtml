@@ -4,13 +4,13 @@
 <title></title>
 <link rel="stylesheet" type="text/css" href="&dtml-BASEPATH1;/manage_page_style.css" />
 </head>
-<body bgcolor="#6699cc" link="#000099" alink="#000099" vlink="#000099">
+<body>
 
 <table width="100%" cellpadding="0" cellspacing="0" border="0">
 <tr>
 <td width="180" align="left" valign="top"><a 
-href="http://www.zope.org/" target="_blank"><img src="&dtml-BASEPATH1;/p_/zopelogo_jpg"
-height="32" width="90" border="0" alt="" /></a>
+href="http://zope2.zope.org/" target="_blank"><img src="&dtml-BASEPATH1;/p_/zopelogo_png"
+height="33" width="83" border="0" alt="" /></a>
 </td>
 <td align="right" valign="top">
 <div class="form-element">

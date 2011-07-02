@@ -79,11 +79,7 @@ your search terms below.
 <dtml-else>
 <TR class="row-hilite">
 </dtml-if>
-  <TD ALIGN="LEFT" VALIGN="TOP" WIDTH="16">
-  <A HREF="&dtml.url_quote-sequence-key;/manage_workspace">
-  <IMG SRC="&dtml-BASEPATH1;/&dtml-icon;"
-   ALT="[&dtml-meta_type;]" BORDER="0"></A>
-  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP" WIDTH="16"></TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
   <div class="list-item">
   <A HREF="&dtml.url_quote-sequence-key;/manage_workspace">

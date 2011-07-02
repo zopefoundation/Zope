@@ -18,9 +18,6 @@ import os
 
 from AccessControl.Permission import registerPermissions
 from AccessControl.PermissionRole import PermissionRole
-from App.ImageFile import ImageFile
-from OFS.misc_ import Misc_
-from OFS.misc_ import misc_
 from OFS.ObjectManager import ObjectManager
 
 from zope.interface import implementedBy
@@ -76,10 +73,7 @@ class ProductContext:
           The first method will be used as the initial method called
           when creating an object.
 
-        icon -- The name of an image file in the package to
-                be used for instances. Note that the class icon
-                attribute will be set automagically if an icon is
-                provided.
+        icon -- No longer used.
 
         permissions -- Additional permissions to be registered
            If not provided, then permissions defined in the
@@ -104,10 +98,6 @@ class ProductContext:
         initial=constructors[0]
         productObject=self.__prod
         pid=productObject.id
-
-        if icon and instance_class is not None:
-            setattr(instance_class, 'icon', 'misc_/%s/%s' %
-                    (pid, os.path.split(icon)[1]))
 
         if permissions:
             if isinstance(permissions, basestring): # You goofed it!
@@ -206,14 +196,6 @@ class ProductContext:
             if name not in productObject.__dict__:
                 m[name]=method
                 m[name+'__roles__']=pr
-
-        if icon:
-            name = os.path.split(icon)[1]
-            icon = ImageFile(icon, self.__pack.__dict__)
-            icon.__roles__=None
-            if not hasattr(misc_, pid):
-                setattr(misc_, pid, Misc_(pid, {}))
-            getattr(misc_, pid)[name]=icon
 
     def registerHelp(self, directory=None, clear=None, title_re=None):
         pass

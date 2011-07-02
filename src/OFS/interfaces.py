@@ -336,11 +336,6 @@ class IItem(IZopeObject, IManageable, IFTPAccess, IDAVResource,
         title=u"Title"
         )
 
-    icon = BytesLine(
-        title=u"Icon",
-        description=u"Name of icon, relative to BASEPATH1",
-        )
-
     def getId():
         """Return the id of the object as a string.
 
@@ -857,12 +852,6 @@ class IApplication(IFolder, IRoot):
         """Utility function to return current date/time"""
 
     ZopeTime = PrincipiaTime
-
-    def ZopeAttributionButton():
-        """Returns an HTML fragment that displays the 'powered by zope'
-        button along with a link to the Zope site."""
-
-    test_url = ZopeAttributionButton
 
     def absolute_url(relative=0):
         """The absolute URL of the root object is BASE1 or "/".

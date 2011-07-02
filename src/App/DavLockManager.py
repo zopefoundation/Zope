@@ -24,7 +24,6 @@ class DavLockManager(Item, Implicit):
     id = 'DavLockManager'
     name = title = 'WebDAV Lock Manager'
     meta_type = 'WebDAV Lock Manager'
-    icon = 'p_/davlocked'
 
     security = ClassSecurityInfo()
     security.declareProtected('Manage WebDAV Locks',

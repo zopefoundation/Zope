@@ -26,7 +26,6 @@ from Acquisition import Acquired
 from Acquisition import Explicit
 from Acquisition import aq_get
 from App.Common import package_home
-from App.ImageFile import ImageFile
 from DateTime.DateTime import DateTime
 from OFS.SimpleItem import SimpleItem
 from OFS.History import Historical, html_diff
@@ -387,18 +386,6 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
             return self._text
         return self.read()
 
-    def om_icons(self):
-        """Return a list of icon URLs to be displayed by an ObjectManager"""
-        icons = ({'path': 'misc_/PageTemplates/zpt.gif',
-                  'alt': self.meta_type, 'title': self.meta_type},)
-        if not self._v_cooked:
-            self._cook()
-        if self._v_errors:
-            icons = icons + ({'path': 'misc_/PageTemplates/exclamation.gif',
-                              'alt': 'Error',
-                              'title': 'This template has an error'},)
-        return icons
-
     security.declareProtected(view, 'pt_source_file')
     def pt_source_file(self):
         """Returns a file name to be compiled into the TAL code."""
@@ -490,8 +477,6 @@ def manage_addPageTemplate(self, id, title='', text='', encoding='utf-8',
     else:        
         return zpt
 
-from Products.PageTemplates import misc_
-misc_['exclamation.gif'] = ImageFile('www/exclamation.gif', globals())
 
 def initialize(context):
     context.registerClass(
@@ -499,5 +484,4 @@ def initialize(context):
         permission='Add Page Templates',
         constructors=(manage_addPageTemplateForm,
                       manage_addPageTemplate),
-        icon='www/zpt.gif',
         )

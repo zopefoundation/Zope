@@ -31,47 +31,9 @@ class p_:
     security = ClassSecurityInfo()
     security.declareObjectPublic()
 
-    here = dirname(__file__)
-    broken = ImageFile('www/broken.gif', here)
-
-    import OFS
-    ofs_dir = dirname(OFS.__file__)
-    User_icon = ImageFile('www/User_icon.gif', ofs_dir)
-
-    locked = ImageFile('www/modified.gif', here)
-    lockedo = ImageFile('www/locked.gif', here)
-
-    import webdav
-    davlocked = ImageFile('www/davlock.gif', dirname(webdav.__file__))
-
-    pl = ImageFile('www/Plus_icon.gif', ofs_dir)
-    mi = ImageFile('www/Minus_icon.gif', ofs_dir)
-
     import App
     app_dir = dirname(App.__file__)
-    rtab = ImageFile('www/rtab.gif', app_dir)
-    ltab = ImageFile('www/ltab.gif', app_dir)
-    sp = ImageFile('www/sp.gif', app_dir)
-    r_arrow_gif = ImageFile('www/r_arrow.gif', here)
-    l_arrow_gif = ImageFile('www/l_arrow.gif', here)
-
-    ControlPanel_icon = ImageFile('www/ControlPanel_icon.gif', ofs_dir)
-    ApplicationManagement_icon = ImageFile('www/cpSystem.gif', app_dir)
-    DatabaseManagement_icon = ImageFile('www/dbManage.gif', app_dir)
-    DebugManager_icon = ImageFile('www/DebugManager_icon.gif', app_dir)
-    InstalledProduct_icon = ImageFile('www/installedProduct.gif', app_dir)
-    BrokenProduct_icon = ImageFile('www/brokenProduct.gif', app_dir)
-    Product_icon = ImageFile('www/product.gif', app_dir)
-    Permission_icon = ImageFile('www/permission.gif', app_dir)
-    ProductFolder_icon = ImageFile('www/productFolder.gif', app_dir)
-    PyPoweredSmall_Gif = ImageFile('www/PythonPoweredSmall.gif', app_dir)
-
-    ZopeButton = ImageFile('www/zope_button.jpg', app_dir)
-    ZButton = ImageFile('www/z_button.jpg', app_dir)
-    zopelogo_jpg = ImageFile('www/zopelogo.jpg', app_dir)
-
-    Properties_icon = ImageFile('www/Properties_icon.gif', ofs_dir)
-    Propertysheets_icon = ImageFile('www/Properties_icon.gif', ofs_dir)
+    zopelogo_png = ImageFile('www/zopelogo.png', app_dir)
 
 InitializeClass(p_)
 

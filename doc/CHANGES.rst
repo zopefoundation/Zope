@@ -33,6 +33,9 @@ Features Added
 Restructuring
 +++++++++++++
 
+- Retired icons from the `Zope Management Interface` and various smaller
+  cleanups of ZMI screens.
+
 - Removed the old help system, in favor of the current Sphinx documentation
   hosted at http://docs.zope.org/zope2/. For backwards compatibility the
   `registerHelp` and `registerHelpTitle` methods are still available on the

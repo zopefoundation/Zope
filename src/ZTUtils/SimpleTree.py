@@ -14,7 +14,7 @@
 """
 
 from Tree import TreeMaker, TreeNode, b2a
-from cgi import escape
+
 
 class SimpleTreeNode(TreeNode):
     def branch(self):
@@ -24,20 +24,16 @@ class SimpleTreeNode(TreeNode):
         if self.state < 0:
             setst = 'expand'
             exnum = self.aq_parent.expansion_number
-            img = 'pl'
         else:
             setst = 'collapse'
             exnum = self.expansion_number
-            img = 'mi'
 
-        base = self.aq_acquire('baseURL')
         obid = self.id
         pre = self.aq_acquire('tree_pre')
 
         return {'link': '?%s-setstate=%s,%s,%s#%s' % \
                         (pre, setst[0], exnum, obid, obid),
-                'img': '<img src="%s/p_/%s" alt="%s" border="0">' % \
-                        (escape(base, 1), img, setst)}
+                'img': ''}
 
 
 class SimpleTreeMaker(TreeMaker):

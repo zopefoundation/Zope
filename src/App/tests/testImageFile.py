@@ -19,24 +19,24 @@ class TestImageFile(unittest.TestCase):
         App.config._config = self.oldcfg
 
     def test_warn_on_software_home_default(self):
-        App.ImageFile.ImageFile('App/www/zopelogo.jpg')
+        App.ImageFile.ImageFile('App/www/zopelogo.png')
         self.assertEquals(self.warningshook.warnings.pop()[0],
                           App.ImageFile.NON_PREFIX_WARNING)
 
     def test_no_warn_on_absolute_path(self):
         path = os.path.join(os.path.dirname(App.__file__),
-                            'www','zopelogo.jpg')
+                            'www','zopelogo.png')
         App.ImageFile.ImageFile(path)
         self.assertFalse(self.warningshook.warnings)
 
     def test_no_warn_on_path_as_prefix(self):
         prefix = os.path.dirname(App.__file__)
-        App.ImageFile.ImageFile('www/zopelogo.jpg', prefix)
+        App.ImageFile.ImageFile('www/zopelogo.png', prefix)
         self.assertFalse(self.warningshook.warnings)
 
     def test_no_warn_on_namespace_as_prefix(self):
         prefix = App.__dict__ # same as calling globals() inside the App module
-        App.ImageFile.ImageFile('www/zopelogo.jpg', prefix)
+        App.ImageFile.ImageFile('www/zopelogo.png', prefix)
         self.assertFalse(self.warningshook.warnings)
 
 def test_suite():

@@ -113,10 +113,6 @@ class Item(Base,
     # Alias id to __name__, which will make tracebacks a good bit nicer:
     __name__=ComputedAttribute(lambda self: self.getId())
 
-    # Name, relative to BASEPATH1 of icon used to display item
-    # in folder listings.
-    icon=''
-
     # Meta type used for selecting all objects of a given type.
     meta_type='simple item'
 

@@ -126,10 +126,7 @@ functions such as database and product management.
 <table cellspacing="0" cellpadding="2" border="0">
 <dtml-in objectItems>
 <tr>
-  <td width="16" align="left" valign="top">
-  <a href="&dtml.url_quote-sequence-key;/manage_workspace">
-  <img src="&dtml-BASEPATH1;/&dtml-icon;" alt="" border="0" /></a>
-  </td>
+  <td width="16" align="left" valign="top"></td>
   <td align="left" valign="top">
   <div class="list-item">
   <a href="&dtml.url_quote-sequence-key;/manage_workspace">

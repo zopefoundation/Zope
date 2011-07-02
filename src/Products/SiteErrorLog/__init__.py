@@ -11,18 +11,11 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Site error log product.
-"""
 
 import SiteErrorLog
-from App.ImageFile import ImageFile
 
-misc_={
-    'ok.gif': ImageFile('www/ok.gif', globals()),
-}
 
 def initialize(context):
     context.registerClass(SiteErrorLog.SiteErrorLog,
                           constructors=(SiteErrorLog.manage_addErrorLog,),
-                          permission=SiteErrorLog.use_error_logging,
-                          icon='www/error.gif')
+                          permission=SiteErrorLog.use_error_logging)

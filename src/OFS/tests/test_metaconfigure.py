@@ -87,13 +87,6 @@ class Test__registerClass(unittest.TestCase):
         self.assertEqual(mt[0]['instance'], klass)
         self.assertEqual(mt[0]['container_filter'], None)
 
-    def test_w_icon(self):
-        klass = self._makeClass()
-        self._registerPermission('perm')
-
-        self._callFUT(klass, 'Dummy', 'perm', icon='dummy.png')
-        self.assertEqual(klass.icon, '++resource++dummy.png')
-
     def test_w_global_(self):
         klass = self._makeClass()
         self._registerPermission('perm')

@@ -3,12 +3,6 @@
 <table width="100%" cellspacing="0" border="0">
 <tr bgcolor="#000000">
   <td valign="top" nowrap="nowrap">
-  <dtml-if icon>
-  <a href="manage_workspace" target="manage_main"><img 
-   src="&dtml-BASEPATH1;/&dtml-icon;" border="0"
-   title="Click to open this item" alt="&dtml-meta_type;" /></a> 
-  </dtml-if>
-  <strong>
   <a href="manage_workspace" target="manage_main" style="color: #ffffff;">
   <dtml-if expr="URLPATH1==BASEPATH1">
   Root Folder
@@ -16,16 +10,10 @@
   &dtml-id;
   </dtml-if>
   </a>
-  </strong>
   </td>
 </tr>
 </table>
 <dtml-tree nowrap=1>
-<dtml-if icon>
-<a href="&dtml.url_quote-tree-item-url;/manage_workspace" 
- target="manage_main"><img src="&dtml-BASEPATH1;/&dtml-icon;" border="0"
- title="Click to open this item" alt="&dtml-meta_type;" /></a> 
-</dtml-if>
 <a href="&dtml.url_quote-tree-item-url;/manage_workspace" 
  target="manage_main">&dtml-id;</a>
 </dtml-tree>
@@ -33,34 +21,14 @@
 <table cellspacing="0" bgcolor="#efefef" width="100%">
 <tr>
   <td width="16"></td>
-  <td valign="top" nowrap="nowrap">
-  <strong>
-  <a href="manage_copyright" target="manage_main">
-  &copy; Zope Foundation
-  </a>
-  </strong>
-  </td>
-</tr>
-<tr>
-  <td width="16"></td>
-  <td valign="top" nowrap="nowrap">
-  <strong>
-  <a href="manage_menu">Refresh</a>
-  </strong>
-  </td>
-</tr>
-<tr>
-  <td width="16"></td>
-  <td valign="top" nowrap="nowrap">
-  <strong>
+  <td>
   <a href="manage_menu?save_layout=1">Save layout</a>
-  </strong>
   </td>
 </tr>
 </table>
 
 <dtml-if save_layout>
-  <dtml-call "RESPONSE.setCookie('tree-s', REQUEST.get('tree-s'), expires=ZopeTime('2975-05-26').rfc822())">
+  <dtml-call "RESPONSE.setCookie('tree-s', REQUEST.get('tree-s'), expires=ZopeTime('2100-01-01').rfc822())">
 </dtml-if>
 
 <dtml-unless expr="REQUEST.get('zmi_top_frame', '1')">

@@ -122,7 +122,6 @@ class MountedObject(SimpleItem):
     #_create_mount_points = 0
     _create_mount_points = True
 
-    icon = 'p_/broken'
     manage_options = ({'label':'Traceback', 'action':'manage_traceback'},)
     _v_mount_params = None
     _v_data = None

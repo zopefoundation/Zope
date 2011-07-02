@@ -73,7 +73,6 @@ def test_registerClass():
       ...       meta_type="Foo Type"
       ...       permission="foo.add"
       ...       addview="addfoo.html"
-      ...       icon="foo_icon.png"
       ...       global="false"
       ...       />
       ... </configure>'''
@@ -85,8 +84,6 @@ def test_registerClass():
       >>> from OFS.tests.test_registerclass import SimpleContent
       >>> SimpleContent.meta_type
       'Foo Type'
-      >>> SimpleContent.icon
-      '++resource++foo_icon.png'
 
     And the meta_type is registered correctly::
 
@@ -138,8 +135,6 @@ def test_registerClass():
 
       >>> SimpleContent.meta_type
       'Bar Type'
-      >>> SimpleContent.icon
-      ''
 
     And the meta_type is registered correctly::
 
@@ -168,8 +163,6 @@ def test_registerClass():
       >>> tearDown()
       >>> SimpleContent.meta_type
       'simple item'
-      >>> SimpleContent.icon
-      ''
       >>> [info for info in Products.meta_types if info['name'] == 'Bar Type']
       []
     """

@@ -54,6 +54,11 @@ def constructSessionDataManager(self, id, title='', path=None,
     if REQUEST is not None:
         return self.manage_main(self, REQUEST, update_menu=1)
 
+
+class SessionIdManagerErr(Exception):
+    pass
+
+
 class SessionDataManager(Item, Implicit, Persistent, RoleManager, Owned, Tabs):
     """ The Zope default session data manager implementation """
 
@@ -83,8 +88,6 @@ class SessionDataManager(Item, Implicit, Persistent, RoleManager, Owned, Tabs):
     security.setPermissionDefault(ARBITRARY_SESSIONDATA_PERM,['Manager'])
     security.setPermissionDefault(ACCESS_SESSIONDATA_PERM,
                                   ['Manager','Anonymous'])
-
-    icon='misc_/CoreSessionTracking/datamgr.gif'
 
     implements(ISessionDataManager)
 
@@ -214,7 +217,7 @@ class SessionDataManager(Item, Implicit, Persistent, RoleManager, Owned, Tabs):
         if self.obpath is None:
             err = 'Session data container is unspecified in %s' % self.getId()
             LOG.warn(err)
-            raise SessionIdManagerErr, err
+            raise SessionIdManagerErr(err)
         try:
             # This should arguably use restrictedTraverse, but it
             # currently fails for mounted storages.  This might

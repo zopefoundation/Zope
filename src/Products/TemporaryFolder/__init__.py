@@ -25,7 +25,6 @@ def initialize(context):
     context.registerClass(
         TemporaryFolder.MountedTemporaryFolder,
         permission=TemporaryFolder.ADD_TEMPORARY_FOLDER_PERM,
-        icon='www/tempfolder.gif',
         meta_type='Temporary Folder',
         constructors=(TemporaryFolder.constructTemporaryFolderForm,
                       TemporaryFolder.constructTemporaryFolder),

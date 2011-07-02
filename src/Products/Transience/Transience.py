@@ -100,7 +100,6 @@ class TransientObjectContainer(SimpleItem):
     after a period of inactivity """
 
     meta_type = "Transient Object Container"
-    icon = "misc_/Transience/datacontainer.gif"
 
     implements(ItemWithId,
                StringKeyedHomogeneousItemContainer,

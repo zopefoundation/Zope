@@ -7,8 +7,6 @@
 <tr tal:repeat="info databases">
 <td tal:define="name python: info[0];
                 qname python: info[1]">
-<img src="/p_/DatabaseManagement_icon"
-   tal:attributes="src string:${request/BASE1}/p_/DatabaseManagement_icon" />
 <a tal:content="name" tal:attributes="href
    string:${context/absolute_url}/${qname}/manage_main">Main</a>
 </td>

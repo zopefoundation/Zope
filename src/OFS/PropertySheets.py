@@ -14,7 +14,6 @@
 """
 
 from cgi import escape
-import time
 import sys
 
 from AccessControl.class_init import InitializeClass
@@ -25,7 +24,7 @@ from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.SecurityManagement import getSecurityManager
 from Acquisition import aq_base
 from Acquisition import aq_parent
-from Acquisition import Implicit, Explicit
+from Acquisition import Implicit
 from App.Common import iso8601_date
 from App.Common import rfc1123_date
 from App.Dialogs import MessageDialog
@@ -104,7 +103,6 @@ class PropertySheet(Traversable, Persistent, Implicit):
 
     _properties=()
     _extensible=1
-    icon='p_/Properties_icon'
 
     security = ClassSecurityInfo()
     security.declareObjectProtected(access_contents_information)

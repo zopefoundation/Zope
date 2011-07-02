@@ -9,9 +9,7 @@
 <table border="0">
 <dtml-in expr="manage_CopyContainerAllItems(REQUEST)">
 <tr>
-  <td align="left" valign="bottom" width="16">
-  <img src="&dtml-BASEPATH1;/&dtml-icon;" alt="" border="0" />
-  </td>
+  <td align="left" valign="bottom" width="16"></td>
   <td align="left" valign="bottom">
   <div class="form-text">
   &dtml-id;

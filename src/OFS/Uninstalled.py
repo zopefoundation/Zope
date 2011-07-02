@@ -32,7 +32,7 @@ LOG = getLogger('OFS.Uninstalled')
 class BrokenClass(ZODB_Broken, Explicit, Item, Overridable):
     _p_changed=0
     meta_type='Broken Because Product is Gone'
-    icon='p_/broken'
+
     product_name='unknown'
     id='broken'
 

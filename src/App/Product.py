@@ -22,7 +22,6 @@ class ProductFolder(Folder):
     id = 'Products'
     name = title = 'Product Management'
     meta_type = 'Product Management'
-    icon = 'p_/ProductFolder_icon'
 
     all_meta_types=()
     meta_types=()

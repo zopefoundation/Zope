@@ -14,16 +14,14 @@
 """
 
 from cgi import escape
-import sys
 import urllib
 
 from zope.interface import implements
-from AccessControl import getSecurityManager, Unauthorized
+from AccessControl import Unauthorized
 from AccessControl import ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import view_management_screens
 from App.interfaces import INavigation
-from App.special_dtml import HTMLFile
 from App.special_dtml import DTMLFile
 from ExtensionClass import Base
 from zExceptions import Redirect
@@ -43,10 +41,7 @@ class Tabs(Base):
     security.declarePublic('filtered_manage_options')
     def filtered_manage_options(self, REQUEST=None):
 
-        validate=getSecurityManager().validate
-
         result=[]
-
         try:
             options=tuple(self.manage_options)
         except TypeError:
@@ -169,12 +164,6 @@ class Navigation(Base):
                                 help_topic=None)
     manage_form_title._setFuncSignature(
         varnames=('form_title', 'help_product', 'help_topic') )
-
-    security.declarePublic('zope_quick_start')
-    zope_quick_start=DTMLFile('dtml/zope_quick_start', globals())
-
-    security.declarePublic('manage_copyright')
-    manage_copyright=DTMLFile('dtml/copyright', globals())
 
     security.declarePublic('manage_zmi_logout')
     def manage_zmi_logout(self, REQUEST, RESPONSE):

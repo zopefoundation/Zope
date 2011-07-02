@@ -17,7 +17,6 @@ This class is mixed into the database manager in App.ApplicationManager.
 
 from AccessControl.class_init import InitializeClass
 from App.special_dtml import DTMLFile
-from App.ImageFile import ImageFile
 from DateTime.DateTime import DateTime
 
 class CacheManager:
@@ -29,10 +28,6 @@ class CacheManager:
 
     manage_cacheParameters = DTMLFile('dtml/cacheParameters', globals())
     manage_cacheGC = DTMLFile('dtml/cacheGC', globals())
-
-    transparent_bar = ImageFile('www/transparent_bar.gif', globals())
-    store_bar = ImageFile('www/store_bar.gif', globals())
-    load_bar = ImageFile('www/load_bar.gif', globals())
 
     def _getDB(self):
         return self._p_jar.db()

@@ -52,10 +52,7 @@ class Product(Base):
     security = ClassSecurityInfo()
 
     meta_type='Product'
-    icon='p_/Product_icon'
     version=''
-    configurable_objects_=()
-    import_error_=None
     thisIsAnInstalledProduct = True
     title = 'This is a non-persistent product wrapper.'
 
