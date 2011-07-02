@@ -27,7 +27,6 @@ from App.ApplicationManager import ApplicationManager
 from App.config import getConfiguration
 from App import FactoryDispatcher
 from DateTime import DateTime
-from HelpSys.HelpSys import HelpSys
 from OFS.metaconfigure import get_packages_to_initialize
 from OFS.metaconfigure import package_initialized
 from OFS.userfolder import UserFolder
@@ -64,10 +63,6 @@ class Application(ApplicationDefaultPermissions,
     __defined_roles__ = ('Manager','Anonymous','Owner')
     web__form__method = 'GET'
     isTopLevelPrincipiaApplicationObject = 1
-
-    # Create the help system object
-    HelpSys = HelpSys('HelpSys')
-
 
     manage_options=((
             Folder.Folder.manage_options[0],

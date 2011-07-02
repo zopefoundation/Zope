@@ -841,8 +841,6 @@ class IApplication(IFolder, IRoot):
         title=u"Is top level Principa application object",
         )
 
-    HelpSys = Attribute("Help system")
-
     p_ = Attribute(""" """)
     misc_ = Attribute("Misc.")
 

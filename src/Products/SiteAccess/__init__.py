@@ -18,5 +18,3 @@ def initialize(context):
       permission='Add Virtual Host Monsters',
       constructors=VirtualHostMonster.constructors,
       icon='www/VirtualHostMonster.gif')
-
-    context.registerHelp()

@@ -36,9 +36,6 @@ def initialize(context):
                       SessionDataManager.constructSessionDataManager)
         )
 
-    context.registerHelp()
-    context.registerHelpTitle("Zope Help")
-
     # do module security declarations so folks can use some of the
     # module-level stuff in PythonScripts
     #

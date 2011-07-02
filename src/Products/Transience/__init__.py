@@ -29,5 +29,3 @@ def initialize(context):
         constructors=(Transience.constructTransientObjectContainerForm,
                       Transience.constructTransientObjectContainer)
         )
-    context.registerHelp()
-    context.registerHelpTitle('Zope Help')

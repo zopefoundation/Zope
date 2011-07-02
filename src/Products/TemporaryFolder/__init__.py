@@ -31,6 +31,3 @@ def initialize(context):
                       TemporaryFolder.constructTemporaryFolder),
         visibility=0 # dont show this in the add list for 2.7+ (use dbtab)
         )
-
-    context.registerHelp()
-    context.registerHelpTitle('Zope Help')

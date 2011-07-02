@@ -67,12 +67,6 @@ class Product(Base):
         "Return the destination for factory output"
         return self
 
-    def getProductHelp(self):
-        """Returns the ProductHelp object associated with the Product.
-        """
-        from HelpSys.HelpSys import ProductHelp
-        return ProductHelp('Help', self.id).__of__(self)
-
 InitializeClass(Product)
 
 

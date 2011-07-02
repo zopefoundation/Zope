@@ -126,29 +126,6 @@
     </dtml-if wl_isLocked>
     </div>
     </td>
-  <dtml-if "_.has_key('help_topic') and _.has_key('help_product')">
-  <dtml-if "HelpSys.helpLink(help_product, help_topic)">
-  <td align="right" valign="top">
-  <div class="std-text">
-  <dtml-var "HelpSys.helpLink(help_product, help_topic)">
-  </div>
-  </td>
-  </dtml-if>
-  <dtml-else>
-  <dtml-if manage_options>
-  <dtml-with "_(option=manage_options[a_])">
-  <dtml-if "option.has_key('help')">
-  <dtml-if "HelpSys.helpLink(option['help'][0], option['help'][1])">
-  <td align="right" valign="top">
-  <div class="std-text">
-  <dtml-var "HelpSys.helpLink(option['help'][0], option['help'][1])">
-  </div>
-  </td>
-  </dtml-if>
-  </dtml-if>
-  </dtml-with>
-  </dtml-if>
-  </dtml-if>
   </tr>
   </table>
 

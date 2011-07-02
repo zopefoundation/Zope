@@ -5,9 +5,6 @@
       class="OFS.userfolder.BasicUserFolder"/>
 
   <five:deprecatedManageAddDelete
-      class="HelpSys.HelpTopic.HelpTopicBase"/>
-
-  <five:deprecatedManageAddDelete
       class="OFS.Cache.CacheManager"/>
 
   <five:deprecatedManageAddDelete

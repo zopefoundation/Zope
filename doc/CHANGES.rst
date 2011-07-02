@@ -33,6 +33,11 @@ Features Added
 Restructuring
 +++++++++++++
 
+- Removed the old help system, in favor of the current Sphinx documentation
+  hosted at http://docs.zope.org/zope2/. For backwards compatibility the
+  `registerHelp` and `registerHelpTitle` methods are still available on the
+  ProductContext used during the `initialize` function.
+
 - Removed various persistent product related code and options. The
   `enable-product-installation` `zope.conf` setting is now a no-op.
 

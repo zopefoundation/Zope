@@ -15,16 +15,10 @@
 
 from logging import getLogger
 import os
-import re
-import stat
 
 from AccessControl.Permission import registerPermissions
 from AccessControl.PermissionRole import PermissionRole
-from App.Common import package_home
 from App.ImageFile import ImageFile
-from DateTime.DateTime import DateTime
-from HelpSys import APIHelpTopic
-from HelpSys import HelpTopic
 from OFS.misc_ import Misc_
 from OFS.misc_ import misc_
 from OFS.ObjectManager import ObjectManager
@@ -48,8 +42,6 @@ class ProductContext:
 
     def __init__(self, product, app, package):
         self.__prod = product
-        # app is None by default which signals disabled product installation
-        self.__app = app
         self.__pack = package
 
     def registerClass(self, instance_class=None, meta_type='',
@@ -223,105 +215,16 @@ class ProductContext:
                 setattr(misc_, pid, Misc_(pid, {}))
             getattr(misc_, pid)[name]=icon
 
+    def registerHelp(self, directory=None, clear=None, title_re=None):
+        pass
+
+    def registerHelpTitle(self, title=None):
+        pass
+
     def getProductHelp(self):
-        """
-        Returns the ProductHelp associated with the current Product.
-        """
-        if self.__app is None:
-            return self.__prod.getProductHelp()
-        return self.__prod.__of__(self.__app.Control_Panel.Products).getProductHelp()
-
-    def registerHelpTopic(self, id, topic):
-        """
-        Register a Help Topic for a product.
-        """
-        self.getProductHelp()._setObject(id, topic)
-
-    def registerHelpTitle(self, title):
-        """
-        Sets the title of the Product's Product Help
-        """
-        h = self.getProductHelp()
-        if getattr(h, 'title', None) != title:
-            h.title = title
-
-    def registerHelp(self, directory='help', clear=1,
-            title_re=re.compile(r'<title>(.+?)</title>', re.I)):
-        """
-        Registers Help Topics for all objects in a directory.
-
-        Nothing will be done if the files in the directory haven't
-        changed since the last registerHelp call.
-
-        'clear' indicates whether or not to delete all existing
-        Topics from the Product.
-
-        HelpTopics are created for these kind of files
-
-        .dtml            -- DTMLHelpTopic
-        .html .htm       -- TextHelpTopic
-        .stx .txt        -- STXHelpTopic
-        .jpg .png .gif   -- ImageHelpTopic
-        .py              -- APIHelpTopic
-        """
-
-        if not self.__app:
-            return
-
-        help=self.getProductHelp()
-        path=os.path.join(package_home(self.__pack.__dict__),
-                          directory)
-
-        # If help directory does not exist, log a warning and return.
-        try:
-            dir_mod_time=DateTime(os.stat(path)[stat.ST_MTIME])
-        except OSError, (errno, text):
-            LOG.warn('%s: %s' % (text, path))
-            return
-
-        # test to see if nothing has changed since last registration
-        if help.lastRegistered is not None and \
-                help.lastRegistered >= dir_mod_time:
-            return
-        help.lastRegistered=DateTime()
-
-        if clear:
-            for id in help.objectIds(['Help Topic','Help Image']):
-                help._delObject(id)
-
-        for file in os.listdir(path):
-            ext=os.path.splitext(file)[1]
-            ext=ext.lower()
-            if ext in ('.dtml',):
-                contents = open(os.path.join(path,file),'rb').read()
-                m = title_re.search(contents)
-                if m:
-                    title = m.group(1)
-                else:
-                    title = ''
-                ht=HelpTopic.DTMLTopic(file, '', os.path.join(path,file))
-                self.registerHelpTopic(file, ht)
-            elif ext in ('.html', '.htm'):
-                contents = open(os.path.join(path,file),'rb').read()
-                m = title_re.search(contents)
-                if m:
-                    title = m.group(1)
-                else:
-                    title = ''
-                ht=HelpTopic.TextTopic(file, title, os.path.join(path,file))
-                self.registerHelpTopic(file, ht)
-            elif ext in ('.stx', '.txt'):
-                title=(open(os.path.join(path,file),'rb').readline()).split(':')[0]
-                ht=HelpTopic.STXTopic(file, title, os.path.join(path, file))
-                self.registerHelpTopic(file, ht)
-            elif ext in ('.jpg', '.gif', '.png'):
-                ht=HelpTopic.ImageTopic(file, '', os.path.join(path, file))
-                self.registerHelpTopic(file, ht)
-            elif ext in ('.py',):
-                if file[0] == '_': # ignore __init__.py
-                    continue
-                ht=APIHelpTopic.APIHelpTopic(file, '', os.path.join(path, file))
-                self.registerHelpTopic(file, ht)
+        class DummyHelp(object):
+            lastRegistered = None
+        return DummyHelp()
 
 
 class AttrDict:

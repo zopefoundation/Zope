@@ -73,11 +73,6 @@ class p_:
     Properties_icon = ImageFile('www/Properties_icon.gif', ofs_dir)
     Propertysheets_icon = ImageFile('www/Properties_icon.gif', ofs_dir)
 
-    import HelpSys
-    helpsys_dir = dirname(HelpSys.__file__)
-    ProductHelp_icon=ImageFile('images/productHelp.gif', helpsys_dir)
-    HelpTopic_icon=ImageFile('images/helpTopic.gif', helpsys_dir)
-
 InitializeClass(p_)
 
 

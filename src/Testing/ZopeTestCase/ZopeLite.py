@@ -119,14 +119,6 @@ def _apply_patches():
     def null_initialize(app): pass
     OFS.Application.initialize = null_initialize
 
-    # Avoid expensive help registration
-    def null_register_topic(self,id,topic): pass
-    App.ProductContext.ProductContext.registerHelpTopic = null_register_topic
-    def null_register_title(self,title): pass
-    App.ProductContext.ProductContext.registerHelpTitle = null_register_title
-    def null_register_help(self,directory='',clear=1,title_re=None): pass
-    App.ProductContext.ProductContext.registerHelp = null_register_help
-
     # Avoid loading any ZCML
     from Zope2.App import startup as zopeapp_startup
     def null_load_zcml(): pass

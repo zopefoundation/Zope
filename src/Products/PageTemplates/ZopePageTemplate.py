@@ -501,6 +501,3 @@ def initialize(context):
                       manage_addPageTemplate),
         icon='www/zpt.gif',
         )
-    context.registerHelp()
-    context.registerHelpTitle('Zope Help')
-
