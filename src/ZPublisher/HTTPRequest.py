@@ -56,7 +56,7 @@ xmlrpc = None
 base64 = None
 
 # This may get overwritten during configuration
-default_encoding = 'iso-8859-15'
+default_encoding = 'utf-8'
 
 isCGI_NAMEs = {
         'SERVER_SOFTWARE' : 1,
@@ -642,7 +642,7 @@ class HTTPRequest(BaseRequest):
                                 # We have a string with a specified character
                                 # encoding.  This gets passed to the converter
                                 # either as unicode, if it can handle it, or
-                                # crunched back down to latin-1 if it can not.
+                                # crunched back down to utf-8 if it can not.
                                 item = unicode(item,character_encoding)
                                 if hasattr(converter,'convert_unicode'):
                                     item = converter.convert_unicode(item)

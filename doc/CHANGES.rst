@@ -31,6 +31,9 @@ Features Added
 Restructuring
 +++++++++++++
 
+- Changed the value for `default-zpublisher-encoding` and
+  `management_page_charset` to `utf-8`.
+
 - Removed the `enable-ms-author-via` directive which was only required for
   very old web folder implementations from before 2007.
 

@@ -13,7 +13,7 @@ import Zope2
 import transaction
 
 import zope.component.testing
-from zope.traversing.adapters import DefaultTraversable, Traverser
+from zope.traversing.adapters import DefaultTraversable
 from zope.publisher.http import HTTPCharsets 
 
 from Testing.makerequest import makerequest
@@ -200,7 +200,7 @@ class ZPTUnicodeEncodingConflictResolution(ZopeTestCase):
                                  output_encoding='ascii',
                                 )
         state = cPickle.dumps(empty, protocol=1)
-        clone = cPickle.loads(state)
+        cPickle.loads(state)
 
     def testBug246983(self):
         # See https://bugs.launchpad.net/bugs/246983
@@ -250,7 +250,7 @@ class ZopePageTemplateFileTests(ZopeTestCase):
         result = zpt.pt_render()
         # use startswith() because the renderer appends a trailing \n
         self.assertEqual(result.encode('ascii').startswith(ascii_str), True)
-        self.assertEqual(zpt.output_encoding, 'iso-8859-15')
+        self.assertEqual(zpt.output_encoding, 'utf-8')
 
     def testPT_RenderUnicodeExpr(self):
         # Check workaround for unicode incompatibility of ZRPythonExpr.
@@ -260,7 +260,7 @@ class ZopePageTemplateFileTests(ZopeTestCase):
                                      'unicode(\'\xfe\', \'iso-8859-15\')" />'),
                                encoding='iso-8859-15')
         zpt = self.app['test']
-        result = zpt.pt_render() # should not raise a UnicodeDecodeError
+        zpt.pt_render() # should not raise a UnicodeDecodeError
 
     def testPT_RenderWithISO885915(self):
         manage_addPageTemplate(self.app, 'test',
@@ -270,7 +270,7 @@ class ZopePageTemplateFileTests(ZopeTestCase):
         # use startswith() because the renderer appends a trailing \n
         self.assertTrue(result.encode('iso-8859-15'
                                      ).startswith(iso885915_str))
-        self.assertEqual(zpt.output_encoding, 'iso-8859-15')
+        self.assertEqual(zpt.output_encoding, 'utf-8')
 
     def testPT_RenderWithUTF8(self):
         manage_addPageTemplate(self.app, 'test',
@@ -279,7 +279,7 @@ class ZopePageTemplateFileTests(ZopeTestCase):
         result = zpt.pt_render()
         # use startswith() because the renderer appends a trailing \n
         self.assertEqual(result.encode('utf-8').startswith(utf8_str), True)
-        self.assertEqual(zpt.output_encoding, 'iso-8859-15')
+        self.assertEqual(zpt.output_encoding, 'utf-8')
 
     def testWriteAcceptsUnicode(self):
         manage_addPageTemplate(self.app, 'test', '', encoding='utf-8')
@@ -323,14 +323,9 @@ class ZopePageTemplateFileTests(ZopeTestCase):
         self.assertEqual(zpt.output_encoding, 'utf-8')
         self.assertEqual(zpt.content_type, 'text/html')
 
-    def testPutHTMLIso8859_15WithoutCharsetInfo(self):
-        zpt = self._put(html_iso_8859_15_wo_header)
-        self.assertEqual(zpt.output_encoding, 'iso-8859-15')
-        self.assertEqual(zpt.content_type, 'text/html')
-
     def testPutHTMLUTF8_WithoutCharsetInfo(self):
         zpt = self._put(html_utf8_wo_header)
-        self.assertEqual(zpt.output_encoding, 'iso-8859-15')
+        self.assertEqual(zpt.output_encoding, 'utf-8')
         self.assertEqual(zpt.content_type, 'text/html')
 
     def testPutXMLIso8859_15(self):
@@ -338,20 +333,20 @@ class ZopePageTemplateFileTests(ZopeTestCase):
         zpt = self._put(xml_iso_8859_15)
         self.assertEqual(zpt.output_encoding, 'utf-8')
         self.assertEqual(zpt.content_type, 'text/xml')
-        result = zpt.pt_render() # should not raise an exception
+        zpt.pt_render() # should not raise an exception
 
     def testPutXMLUTF8(self):
         """ XML: use always UTF-8 als output encoding """
         zpt = self._put(xml_utf8)
         self.assertEqual(zpt.output_encoding, 'utf-8')
         self.assertEqual(zpt.content_type, 'text/xml')
-        result = zpt.pt_render() # should not raise an exception
+        zpt.pt_render() # should not raise an exception
 
     def testXMLAttrsMustNotBeLowercased(self):
         zpt = self._put(xml_with_upper_attr)
         self.assertEqual(zpt.content_type, 'text/xml')
         result = zpt.pt_render()
-     	self.assertEqual('ATTR' in result, True)		
+        self.assertEqual('ATTR' in result, True)
 
     def testHTMLAttrsAreLowerCased(self):
         zpt = self._put(html_with_upper_attr)
@@ -372,9 +367,9 @@ class PreferredCharsetUnicodeResolverTests(unittest.TestCase):
         # This test checks the edgecase where the unicode conflict resolver
         # is called with a context object having no REQUEST
         class ContextMock:
-            management_page_charset = 'iso-8859-15'
+            management_page_charset = 'utf-8'
         result = PreferredCharsetResolver.resolve(ContextMock(), 'üצה', None)
-        self.assertEqual(result, u'üצה')
+        self.assertEqual(result, 'üצה')
 
 
 class ZPTRegressions(unittest.TestCase):

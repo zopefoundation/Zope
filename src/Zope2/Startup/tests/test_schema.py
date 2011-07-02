@@ -202,13 +202,13 @@ class StartupTestCase(unittest.TestCase):
         conf, dummy = self.load_config_text("""\
             instancehome <<INSTANCE_HOME>>
             """)
-        self.assertEqual(conf.default_zpublisher_encoding, 'iso-8859-15')
+        self.assertEqual(conf.default_zpublisher_encoding, 'utf-8')
 
         conf, dummy = self.load_config_text("""\
             instancehome <<INSTANCE_HOME>>
-            default-zpublisher-encoding utf-8
+            default-zpublisher-encoding iso-8859-15
             """)
-        self.assertEqual(conf.default_zpublisher_encoding, 'utf-8')
+        self.assertEqual(conf.default_zpublisher_encoding, 'iso-8859-15')
 
 
 def test_suite():

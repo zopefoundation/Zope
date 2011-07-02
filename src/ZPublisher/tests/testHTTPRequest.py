@@ -205,7 +205,6 @@ class HTTPRequestTests(unittest.TestCase):
                   ('utext:utext:utf8', 'test\xc2\xae\ntest\xc2\xae\n'),
                   ('utokens:utokens:utf8', 'test\xc2\xae test\xc2\xae'),
                   ('ulines:ulines:utf8', 'test\xc2\xae\ntest\xc2\xae'),
-
                   ('nouconverter:string:utf8', 'test\xc2\xae'))
         req = self._processInputs(inputs)
 
@@ -219,8 +218,8 @@ class HTTPRequestTests(unittest.TestCase):
         self.assertEquals(req['utokens'], [u'test\u00AE', u'test\u00AE'])
         self.assertEquals(req['ulines'], [u'test\u00AE', u'test\u00AE'])
 
-        # expect a latin1 encoded version
-        self.assertEquals(req['nouconverter'], 'test\xae')
+        # expect a utf-8 encoded version
+        self.assertEquals(req['nouconverter'], 'test\xc2\xae')
 
         self._noTaintedValues(req)
         self._onlyTaintedformHoldsTaintedStrings(req)

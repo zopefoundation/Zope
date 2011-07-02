@@ -152,7 +152,7 @@ class ZopeStarter:
 
         # workaround to allow unicode encoding conversions in DTML
         import codecs
-        dummy = codecs.lookup('iso-8859-1')
+        dummy = codecs.lookup('utf-8')
 
         locale_id = self.cfg.locale
 

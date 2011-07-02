@@ -791,7 +791,6 @@ def xml_escape(value):
     if not isinstance(value, basestring):
         value = unicode(value)
     if not isinstance(value, unicode):
-        # XXX It really shouldn't be hardcoded to latin-1 here.
-        value = value.decode('latin-1')
+        value = value.decode('utf-8')
     value = escape(value)
     return value.encode('utf-8')

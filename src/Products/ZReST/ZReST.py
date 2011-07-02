@@ -73,8 +73,8 @@ class ZReST(Item, PropertyManager, Historical, Implicit, Persistent):
         {'id':'stylesheet', 'type': 'string', 'mode': 'w',
             'default': ''},
         {'id':'report_level', 'type': 'string', 'mode': 'w', 'default': '2'},
-        {'id':'input_encoding', 'type': 'string', 'mode': 'w', 'default': 'iso-8859-15'},
-        {'id':'output_encoding', 'type': 'string', 'mode': 'w', 'default': 'iso-8859-15'},
+        {'id':'input_encoding', 'type': 'string', 'mode': 'w', 'default': 'utf-8'},
+        {'id':'output_encoding', 'type': 'string', 'mode': 'w', 'default': 'utf-8'},
     )
     property_extensible_schema__ = 0
 

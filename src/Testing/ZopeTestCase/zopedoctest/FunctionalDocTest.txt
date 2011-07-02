@@ -86,7 +86,7 @@ Test parameter containing an additional '?'
   ... """)
   HTTP/1.1 200 OK
   Content-Length: 5
-  Content-Type: text/plain; charset=iso-8859-15
+  Content-Type: text/plain; charset=utf-8
   <BLANKLINE>
   index
               

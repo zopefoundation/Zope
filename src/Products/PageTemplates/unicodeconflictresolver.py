@@ -54,7 +54,11 @@ class Z2UnicodeEncodingConflictResolver:
             return unicode(text)
         except UnicodeDecodeError:
             encoding = getattr(context, 'management_page_charset', default_encoding)
-            return unicode(text, encoding, self.mode)
+            try:
+                return unicode(text, encoding, self.mode)
+            except UnicodeDecodeError:
+                # finally try the old management_page_charset default
+                return unicode(text, 'iso-8859-15', self.mode)
 
 
 class PreferredCharsetResolver:

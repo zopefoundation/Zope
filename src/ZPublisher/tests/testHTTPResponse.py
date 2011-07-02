@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-15 -*-
+# -*- coding: utf-8 -*-
 
 import unittest
 import sys
@@ -68,13 +68,13 @@ class HTTPResponseTests(unittest.TestCase):
     def test_ctor_charset_no_content_type_header(self):
         response = self._makeOne(body='foo')
         self.assertEqual(response.headers.get('content-type'),
-                         'text/plain; charset=iso-8859-15')
+                         'text/plain; charset=utf-8')
 
     def test_ctor_charset_text_header_no_charset_defaults_latin1(self):
         response = self._makeOne(body='foo',
                                  headers={'content-type': 'text/plain'})
         self.assertEqual(response.headers.get('content-type'),
-                         'text/plain; charset=iso-8859-15')
+                         'text/plain; charset=utf-8')
 
     def test_ctor_charset_application_header_no_header(self):
         response = self._makeOne(body='foo',
@@ -90,15 +90,15 @@ class HTTPResponseTests(unittest.TestCase):
                          'application/foo; charset: something')
 
     def test_ctor_charset_unicode_body_application_header(self):
-        BODY = unicode('ärger', 'iso-8859-15')
+        BODY = u'\xe4rger'
         response = self._makeOne(body=BODY,
                                  headers={'content-type': 'application/foo'})
         self.assertEqual(response.headers.get('content-type'),
-                         'application/foo; charset=iso-8859-15')
-        self.assertEqual(response.body, 'ärger')
+                         'application/foo; charset=utf-8')
+        self.assertEqual(response.body, BODY.encode('utf-8'))
 
     def test_ctor_charset_unicode_body_application_header_diff_encoding(self):
-        BODY = unicode('ärger', 'iso-8859-15')
+        BODY = u'\xe4rger'
         response = self._makeOne(body=BODY,
                                  headers={'content-type':
                                             'application/foo; charset=utf-8'})
@@ -562,7 +562,7 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertTrue(result)
         self.assertEqual(response.body, EXPECTED)
         self.assertEqual(response.getHeader('Content-Type'),
-                         'text/html; charset=iso-8859-15')
+                         'text/html; charset=utf-8')
         self.assertEqual(response.getHeader('Content-Length'),
                          str(len(EXPECTED)))
 
@@ -576,7 +576,7 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertTrue('TITLE' in response.body)
         self.assertTrue('BODY' in response.body)
         self.assertEqual(response.getHeader('Content-Type'),
-                         'text/html; charset=iso-8859-15')
+                         'text/html; charset=utf-8')
 
     def test_setBody_string_not_HTML(self):
         response = self._makeOne()
@@ -584,7 +584,7 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertTrue(result)
         self.assertEqual(response.body, 'BODY')
         self.assertEqual(response.getHeader('Content-Type'),
-                         'text/plain; charset=iso-8859-15')
+                         'text/plain; charset=utf-8')
         self.assertEqual(response.getHeader('Content-Length'), '4')
 
     def test_setBody_string_HTML(self):
@@ -594,7 +594,7 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertTrue(result)
         self.assertEqual(response.body, HTML)
         self.assertEqual(response.getHeader('Content-Type'),
-                         'text/html; charset=iso-8859-15')
+                         'text/html; charset=utf-8')
         self.assertEqual(response.getHeader('Content-Length'), str(len(HTML)))
 
     def test_setBody_object_with_asHTML(self):
@@ -607,18 +607,18 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertTrue(result)
         self.assertEqual(response.body, HTML)
         self.assertEqual(response.getHeader('Content-Type'),
-                         'text/html; charset=iso-8859-15')
+                         'text/html; charset=utf-8')
         self.assertEqual(response.getHeader('Content-Length'), str(len(HTML)))
 
     def test_setBody_object_with_unicode(self):
         HTML = u'<html><head></head><body><h1>Tr\u0039s Bien</h1></body></html>'
-        ENCODED = HTML.encode('iso-8859-15')
+        ENCODED = HTML.encode('utf-8')
         response = self._makeOne()
         result = response.setBody(HTML)
         self.assertTrue(result)
         self.assertEqual(response.body, ENCODED)
         self.assertEqual(response.getHeader('Content-Type'),
-                         'text/html; charset=iso-8859-15')
+                         'text/html; charset=utf-8')
         self.assertEqual(response.getHeader('Content-Length'),
                          str(len(ENCODED)))
 
@@ -737,7 +737,7 @@ class HTTPResponseTests(unittest.TestCase):
     def test_redirect_explicit_status(self):
         URL = 'http://example.com'
         response = self._makeOne()
-        result = response.redirect(URL, status=307)
+        response.redirect(URL, status=307)
         self.assertEqual(response.status, 307)
         self.assertEqual(response.getHeader('Location'), URL)
         self.assertFalse(response._locked_status)
@@ -745,7 +745,7 @@ class HTTPResponseTests(unittest.TestCase):
     def test_redirect_w_lock(self):
         URL = 'http://example.com'
         response = self._makeOne()
-        result = response.redirect(URL, lock=True)
+        response.redirect(URL, lock=True)
         self.assertEqual(response.status, 302)
         self.assertEqual(response.getHeader('Location'), URL)
         self.assertTrue(response._locked_status)
@@ -1100,7 +1100,7 @@ class HTTPResponseTests(unittest.TestCase):
                          [('X-Powered-By', 'Zope (www.zope.org), '
                                            'Python (www.python.org)'),
                           ('Content-Length', '4'),
-                          ('Content-Type', 'text/plain; charset=iso-8859-15'),
+                          ('Content-Type', 'text/plain; charset=utf-8'),
                          ])
 
     def test___str__already_wrote(self):
@@ -1251,7 +1251,7 @@ class HTTPResponseTests(unittest.TestCase):
                                    'Python (www.python.org)')
         self.assertEqual(lines[2], 'Content-Length: 4')
         self.assertEqual(lines[3],
-                         'Content-Type: text/plain; charset=iso-8859-15')
+                         'Content-Type: text/plain; charset=utf-8')
         self.assertEqual(lines[4], '')
         self.assertEqual(lines[5], 'BLAH')
 

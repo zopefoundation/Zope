@@ -355,104 +355,6 @@ instancehome $INSTANCE
 #    verbose-security on
 
 
-# Directive: maximum-number-of-session-objects
-#
-# Description:
-#     An integer value representing the number of items to use as a
-#     "maximum number of subobjects" value of the
-#     '/temp_folder/session_data' transient object container.
-#
-# Default: 1000
-#
-# Example:
-#
-#    maximum-number-of-session-objects 10000
-
-
-# Directive: session-add-notify-script-path
-#
-# Description:
-#     An optional fill Zope path name of a callable object to be set as the
-#     "script to call on object addition" of the sessioN_data transient
-#     object container created in the /temp_folder folder at startup.
-#
-# Default: unset
-#
-# Example:
-#
-#    session-add-notify-script-path /scripts/add_notifier
-
-
-# Directive: session-delete-notify-script-path
-#
-# Description:
-#     An optional fill Zope path name of a callable object to be set as the
-#     "script to call on object deletion" of the sessioN_data transient
-#     object container created in the /temp_folder folder at startup.
-#
-# Default: unset
-#
-# Example:
-#
-#    session-delete-notify-script-path /scripts/del_notifier
-
-
-# Directive: session-timeout-minutes
-#
-# Description:
-#     An integer value representing the number of minutes to be used as the
-#     "data object timeout" of the '/temp_folder/session_data' transient
-#     object container.
-#
-# Default: 20
-#
-# Example:
-#
-#    session-timeout-minutes 30
-
-
-# Directive: session-resolution-seconds
-#
-# Description:
-#    An integer value representing the number of seconds to be used as the
-#    "timeout resolution" of the '/temp_folder/session_data' transient
-#    object container.
-#
-# Default: 20
-#
-# Example:
-#
-#    session-resolution-seconds 60
-
-
-# Directive: suppress-all-access-rules
-#
-# Description:
-#     If this directive is set to on, no access rules in your Zope site
-#     will be executed. This is useful if you "lock yourself out" of a
-#     particular part of your site by setting an improper access rule.
-#
-# Default: off
-#
-# Example:
-#
-#    suppress-all-access-rules on
-
-
-# Directive: suppress-all-site-roots
-#
-# Description:
-#     If this directive is set to on, no site roots in your Zope site will
-#     be effective. This is useful if you "lock yourself out" of a
-#     particular part of your site by setting an improper site root.
-#
-# Default: off
-#
-# Example:
-#
-#    suppress-all-site-roots on
-
-
 # Directives: logger
 #
 # Description:
@@ -627,17 +529,6 @@ instancehome $INSTANCE
 #
 #    large-file-threshold 1Mb
 
-# Directive: default-zpublisher-encoding
-#
-# Description:
-#     This controls what character set is used to encode unicode
-#     data that reaches ZPublisher without any other specified encoding.
-#
-# Default: iso-8859-15
-#
-# Example:
-#
-#    default-zpublisher-encoding utf-8
 
 # Directives: servers
 #

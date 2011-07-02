@@ -1,4 +1,4 @@
-# *-* coding: iso-8859-15 -*-
+# *-* coding: iso-8859-1 -*-
 
 import unittest
 
@@ -26,7 +26,7 @@ class EngineTestsBase(PlacelessSetup):
             def __call__(self):
                 return 'dummy'
             
-            management_page_charset = 'iso-8859-15'
+            management_page_charset = 'utf-8'
 
         class DummyDocumentTemplate:
             __allow_access_to_unprotected_subobjects__ = 1
@@ -184,8 +184,8 @@ class EngineTestsBase(PlacelessSetup):
             import StrictUnicodeEncodingConflictResolver
         from Products.PageTemplates.interfaces \
             import IUnicodeEncodingConflictResolver
-        provideUtility(StrictUnicodeEncodingConflictResolver, 
-                                      IUnicodeEncodingConflictResolver)        
+        provideUtility(StrictUnicodeEncodingConflictResolver,
+                                      IUnicodeEncodingConflictResolver)
         self.assertEqual(ec.evaluate(expr), u'äüö')
 
 class UntrustedEngineTests(EngineTestsBase, unittest.TestCase):
@@ -229,8 +229,8 @@ class UnicodeEncodingConflictResolverTests(PlacelessSetup, unittest.TestCase):
         provideUtility(StrictUnicodeEncodingConflictResolver, 
                                       IUnicodeEncodingConflictResolver)
         resolver = getUtility(IUnicodeEncodingConflictResolver)
-        self.assertRaises(UnicodeDecodeError,
-                          resolver.resolve, None, 'äüö', None)
+        text = u'\xe4\xfc\xe4'
+        self.assertEqual(resolver.resolve(None, text, None), text)
 
     def testIgnoringResolver(self):
         from zope.component import getUtility

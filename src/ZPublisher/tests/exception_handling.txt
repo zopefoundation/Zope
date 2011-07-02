@@ -158,7 +158,7 @@ And the same with unicode error value.
     HTTPError: HTTP Error 401: Unauthorized
     >>> 'Error Type: Unauthorized' in browser.contents
     True
-    >>> 'Error Value: ERROR VALUE ?' in browser.contents
+    >>> 'Error Value: ERROR VALUE \xce\xa9' in browser.contents
     True
     >>> browser.headers['WWW-Authenticate']
     'basic realm="Zope2"'

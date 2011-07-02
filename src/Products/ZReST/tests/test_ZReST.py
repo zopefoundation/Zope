@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-15 -*-
+# -*- coding: utf-8 -*-
 
 """ Unit tests for ZReST objects
 """
@@ -12,7 +12,7 @@ txt = """Hello World
 
 text text
 
-Von Vögeln und Öfen
+Von V\xc3\xb6geln und \xc3\x96fen
 ===================
 
 - some
@@ -62,15 +62,15 @@ class TestZReST(unittest.TestCase):
     def testConversion(self):
         resty = self._makeOne()
         resty.source = txt
-        resty.input_encoding = 'iso-8859-15'
-        resty.output_encoding = 'iso-8859-15'
+        resty.input_encoding = 'utf-8'
+        resty.output_encoding = 'utf-8'
         resty.render()
         html = resty.index_html()
 
         s = '<h1>Hello World</h1>'
         self.assertEqual(s in html, True)
 
-        s = '<h1>Von Vögeln und Öfen</h1>'
+        s = '<h1>Von V\xc3\xb6geln und \xc3\x96fen</h1>'
         self.assertEqual(s in html, True)
 
         # ZReST should render a complete HTML document

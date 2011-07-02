@@ -36,7 +36,7 @@ from ZPublisher.pubevents import PubBeforeStreaming
 nl2sp = maketrans('\n', ' ')
 
 # This may get overwritten during configuration
-default_encoding = 'iso-8859-15'
+default_encoding = 'utf-8'
 
 # Enable APPEND_TRACEBACKS to make Zope append tracebacks like it used to,
 # but a better solution is to make standard_error_message display error_tb.

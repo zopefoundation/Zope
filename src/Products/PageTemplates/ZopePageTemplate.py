@@ -14,7 +14,6 @@
 """
 
 import os
-import re
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import change_page_templates
@@ -23,7 +22,6 @@ from AccessControl.Permissions import view
 from AccessControl.Permissions import view_management_screens
 from AccessControl.SecurityManagement import getSecurityManager
 from AccessControl.SecurityInfo import ClassSecurityInfo
-from AccessControl.ZopeGuards import safe_builtins
 from Acquisition import Acquired
 from Acquisition import Explicit
 from Acquisition import aq_get
@@ -51,7 +49,6 @@ from Products.PageTemplates.utils import convertToUnicode
 preferred_encodings = ['utf-8', 'iso-8859-15']
 if os.environ.has_key('ZPT_PREFERRED_ENCODING'):
     preferred_encodings.insert(0, os.environ['ZPT_PREFERRED_ENCODING'])
-  
 
 
 class Src(Explicit):
@@ -73,7 +70,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
     "Zope wrapper for Page Template using TAL, TALES, and METAL"
 
     meta_type = 'Page Template'
-    output_encoding = 'iso-8859-15'  # provide default for old instances
+    output_encoding = 'utf-8'  # provide default for old instances
 
     func_defaults = None
     func_code = FuncCode((), 0)
@@ -147,14 +144,14 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
                     output_encoding = charset
                 else:
                     encoding = None
-                    output_encoding = 'iso-8859-15'
+                    output_encoding = 'utf-8'
             else:
                 if charset:
                     encoding = charset
                     output_encoding = charset
                 else:
-                    encoding = 'iso-8859-15'
-                    output_encoding = 'iso-8859-15'
+                    encoding = 'utf-8'
+                    output_encoding = 'utf-8'
 
         else:
             utext, encoding = convertToUnicode(text,

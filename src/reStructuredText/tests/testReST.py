@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-15 -*-
+# -*- coding: utf-8 -*-
 
 import unittest
 import cgi
@@ -11,7 +11,7 @@ txt = """Hello World
 
 text text
 
-Von Vögeln und Öfen
+Von V\xc3\xb6geln und \xc3\x96fen
 ===================
 
 - some
@@ -43,26 +43,25 @@ class TestReST(unittest.TestCase):
                         input_encoding=in_enc,
                         output_encoding=out_enc)
 
-        encoding = 'iso-8859-15'
+        encoding = 'utf-8'
         html = _test(txt, encoding, encoding)
-        self.assertEqual('Vögel' in html, True)
-        self.assertEqual('Öfen' in html, True)
+        self.assertEqual('V\xc3\xb6gel' in html, True)
+        self.assertEqual('\xc3\x96fen' in html, True)
 
         html = _test(txt, encoding, 'unicode')
-        self.assertEqual(unicode('Vögel', encoding) in html, True)
-        self.assertEqual(unicode('Öfen', encoding) in html, True)
+        self.assertEqual(unicode('V\xc3\xb6gel', encoding) in html, True)
+        self.assertEqual(unicode('\xc3\x96fen', encoding) in html, True)
 
         html = _test(unicode(txt, encoding), 'unicode', encoding)
-        self.assertEqual('Vögel' in html, True)
-        self.assertEqual('Öfen' in html, True)
+        self.assertEqual('V\xc3\xb6gel' in html, True)
+        self.assertEqual('\xc3\x96fen' in html, True)
 
         html = _test(unicode(txt, encoding), 'unicode', 'unicode')
-        self.assertEqual(unicode('Vögel', encoding) in html, True)
-        self.assertEqual(unicode('Öfen', encoding) in html, True)
+        self.assertEqual(unicode('V\xc3\xb6gel', encoding) in html, True)
+        self.assertEqual(unicode('\xc3\x96fen', encoding) in html, True)
 
     def testHeaderLevel(self):
-
-        encoding = 'iso-8859-15'
+        encoding = 'utf-8'
         for level in range(0, 5):
             html = HTML(txt, input_encoding=encoding, 
                              output_encoding=encoding, 
@@ -71,7 +70,8 @@ class TestReST(unittest.TestCase):
             expected = '<h%d>Hello World</h%d>' % (level+1, level+1)
             self.assertEqual(expected in html, True)
 
-            expected = '<h%d>Von Vögeln und Öfen</h%d>' % (level+1, level+1)
+            expected = '<h%d>Von V\xc3\xb6geln und \xc3\x96fen</h%d>' % (
+                level+1, level+1)
             self.assertEqual(expected in html, True)
 
     def testWithSingleSubtitle(self):

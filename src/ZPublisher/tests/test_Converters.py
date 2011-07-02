@@ -24,7 +24,7 @@ class ConvertersTests(unittest.TestCase):
         from ZPublisher.Converters import field2string
         to_convert = u'to_convert'
         self.assertEqual(field2string(to_convert),
-                         to_convert.encode('iso-8859-15'))
+                         to_convert.encode('utf-8'))
 
     def test_field2string_with_filelike_object(self):
         from ZPublisher.Converters import field2string

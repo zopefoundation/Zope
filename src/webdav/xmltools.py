@@ -26,7 +26,7 @@ TODO:
    NOTE: So far i didn't have any problems.
          If you have problems please report them.
 
- - We are using a hardcoded default of latin-1 for encoding unicode
+ - We are using a hardcoded default of utf-8 for encoding unicode
    strings. While this is suboptimal, it does match the expected
    encoding from OFS.PropertySheet. We need to find a the encoding
    somehow, maybe use the same encoding as the ZMI is using?
@@ -59,11 +59,11 @@ def unescape(value, entities=None):
         _ent.update(entities)
     return _unescape(value, entities)
 
-# XXX latin-1 is hardcoded on OFS.PropertySheets as the expected
+# utf-8 is hardcoded on OFS.PropertySheets as the expected
 # encoding properties will be stored in. Optimally, we should use the
 # same encoding as the 'default_encoding' property that is used for
 # the ZMI.
-zope_encoding = 'latin-1'
+zope_encoding = 'utf-8'
 
 class Node:
     """ Our nodes no matter what type

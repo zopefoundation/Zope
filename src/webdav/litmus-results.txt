@@ -158,7 +158,7 @@ analyses:
 
       Zope responds to this with a success response like this:
 
-        <?xml version="1.0" encoding="iso-8859-15" ?>
+        <?xml version="1.0" encoding="utf-8" ?>
         <d:prop xmlns:d="DAV:">
           <d:lockdiscovery>
             <d:activelock>

@@ -18,7 +18,7 @@ from DateTime.interfaces import SyntaxError
 from cgi import escape
 
 # This may get overwritten during configuration
-default_encoding = 'iso-8859-15'
+default_encoding = 'utf-8'
 
 def field2string(v):
     if hasattr(v,'read'): return v.read()
