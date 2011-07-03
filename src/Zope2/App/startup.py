@@ -97,12 +97,13 @@ def startup():
     # can indeed be opened. This avoids surprises during runtime when traversal
     # to some database mountpoint fails as the underlying storage cannot be
     # opened at all
-    for mount, name in dbtab.listMountPaths():
-        _db = dbtab.getDatabase(mount)
-        _conn = _db.open()
-        _conn.close()
-        del _conn
-        del _db
+    if dbtab is not None:
+        for mount, name in dbtab.listMountPaths():
+            _db = dbtab.getDatabase(mount)
+            _conn = _db.open()
+            _conn.close()
+            del _conn
+            del _db
 
     notify(DatabaseOpened(DB))
 
