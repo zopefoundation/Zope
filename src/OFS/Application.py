@@ -105,8 +105,8 @@ class Application(ApplicationDefaultPermissions,
     def Redirect(self, destination, URL1):
         """Utility function to allow user-controlled redirects"""
         if destination.find('//') >= 0:
-            raise RedirectException, destination
-        raise RedirectException, ("%s/%s" % (URL1, destination))
+            raise RedirectException(destination)
+        raise RedirectException("%s/%s" % (URL1, destination))
 
     ZopeRedirect = Redirect
 
@@ -132,7 +132,7 @@ class Application(ApplicationDefaultPermissions,
         try:
             REQUEST.RESPONSE.notFoundError("%s\n%s" % (name, method))
         except AttributeError:
-            raise KeyError, name
+            raise KeyError(name)
 
     def ZopeTime(self, *args):
         """Utility function to return current date/time"""
@@ -141,12 +141,12 @@ class Application(ApplicationDefaultPermissions,
     def DELETE(self, REQUEST, RESPONSE):
         """Delete a resource object."""
         self.dav__init(REQUEST, RESPONSE)
-        raise Forbidden, 'This resource cannot be deleted.'
+        raise Forbidden('This resource cannot be deleted.')
 
     def MOVE(self, REQUEST, RESPONSE):
         """Move a resource to a new location."""
         self.dav__init(REQUEST, RESPONSE)
-        raise Forbidden, 'This resource cannot be moved.'
+        raise Forbidden('This resource cannot be moved.')
 
     def absolute_url(self, relative=0):
         """The absolute URL of the root object is BASE1 or "/".
