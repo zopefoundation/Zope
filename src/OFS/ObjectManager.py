@@ -639,9 +639,6 @@ class ObjectManager(CopyContainer,
     def _getImportPaths(self):
         cfg = getConfiguration()
         paths = []
-        zopehome = getattr(cfg, 'zopehome', None)
-        if zopehome is not None and cfg.zopehome is not None:
-            paths.append(zopehome)
         if not cfg.instancehome in paths:
             paths.append(cfg.instancehome)
         if not cfg.clienthome in paths:

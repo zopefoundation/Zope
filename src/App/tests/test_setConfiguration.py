@@ -26,15 +26,11 @@ class SetConfigTests(unittest.TestCase):
         # Save away everything as we need to restore it later on
         self.clienthome = self.getconfig('clienthome')
         self.instancehome = self.getconfig('instancehome') 
-        self.softwarehome = self.getconfig('softwarehome')
-        self.zopehome = self.getconfig('zopehome')
         self.debug_mode = self.getconfig('debug_mode')
 
     def tearDown(self):
         self.setconfig(clienthome=self.clienthome,
                        instancehome=self.instancehome,
-                       softwarehome=self.softwarehome,
-                       zopehome=self.zopehome,
                        debug_mode=self.debug_mode)
 
     def getconfig(self, key):
@@ -70,28 +66,6 @@ class SetConfigTests(unittest.TestCase):
         self.assertEqual(App.FindHomes.INSTANCE_HOME, 'foo')
         self.assertEqual(__builtin__.INSTANCE_HOME, 'foo')
         self.assertEqual(Globals.INSTANCE_HOME, 'foo')
-
-    def testSoftwareHomeLegacySources(self):
-        import os
-        import App.FindHomes
-        import Globals  # for data
-        import __builtin__
-        self.setconfig(softwarehome='foo')
-        self.assertEqual(os.environ.get('SOFTWARE_HOME'), 'foo')
-        self.assertEqual(App.FindHomes.SOFTWARE_HOME, 'foo')
-        self.assertEqual(__builtin__.SOFTWARE_HOME, 'foo')
-        self.assertEqual(Globals.SOFTWARE_HOME, 'foo')
-
-    def testZopeHomeLegacySources(self):
-        import os
-        import App.FindHomes
-        import Globals  # for data
-        import __builtin__
-        self.setconfig(zopehome='foo')
-        self.assertEqual(os.environ.get('ZOPE_HOME'), 'foo')
-        self.assertEqual(App.FindHomes.ZOPE_HOME, 'foo')
-        self.assertEqual(__builtin__.ZOPE_HOME, 'foo')
-        self.assertEqual(Globals.ZOPE_HOME, 'foo')
 
     def testDebugModeLegacySources(self):
         import Globals  # for data

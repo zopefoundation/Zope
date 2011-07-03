@@ -52,16 +52,6 @@ def setConfiguration(cfg):
     os.environ["INSTANCE_HOME"] = cfg.instancehome
     Globals.INSTANCE_HOME = cfg.instancehome
 
-    if hasattr(cfg, 'softwarehome') and cfg.softwarehome is not None:
-        __builtin__.SOFTWARE_HOME = FindHomes.SOFTWARE_HOME = cfg.softwarehome
-        os.environ["SOFTWARE_HOME"] = cfg.softwarehome
-        Globals.SOFTWARE_HOME = cfg.softwarehome
-
-    if hasattr(cfg, 'zopehome') and cfg.zopehome is not None:
-        __builtin__.ZOPE_HOME = FindHomes.ZOPE_HOME = cfg.zopehome
-        os.environ["ZOPE_HOME"] = cfg.zopehome
-        Globals.ZOPE_HOME = cfg.zopehome
-
     Globals.DevelopmentMode = cfg.debug_mode
 
 class DefaultConfiguration:
@@ -72,10 +62,6 @@ class DefaultConfiguration:
         from App import FindHomes
         self.clienthome = FindHomes.CLIENT_HOME
         self.instancehome = FindHomes.INSTANCE_HOME
-        if hasattr(FindHomes, 'SOFTWARE_HOME'):
-            self.softwarehome = FindHomes.SOFTWARE_HOME
-        if hasattr(FindHomes, 'ZOPE_HOME'):
-            self.zopehome = FindHomes.ZOPE_HOME
         self.dbtab = None
         self.debug_mode = True
         self.enable_product_installation = False

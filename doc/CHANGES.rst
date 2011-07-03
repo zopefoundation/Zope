@@ -41,6 +41,8 @@ Features Added
 Restructuring
 +++++++++++++
 
+- Removed the last remaining code to support `SOFTWARE_HOME` and `ZOPE_HOME`.
+
 - Removed ZMI controls for restarting the process, these no longer apply when
   managed as a WSGI application.
 

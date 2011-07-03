@@ -47,7 +47,7 @@ class ImageFile(Explicit):
 
     def __init__(self, path, _prefix=None):
         if _prefix is None:
-            _prefix=getattr(getConfiguration(), 'softwarehome', None) or PREFIX
+            _prefix = PREFIX
             if not os.path.isabs(path):
                 warnings.warn(NON_PREFIX_WARNING, UserWarning, 2)
         elif type(_prefix) is not type(''):

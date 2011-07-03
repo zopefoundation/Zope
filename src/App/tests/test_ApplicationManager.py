@@ -414,50 +414,6 @@ class ApplicationManagerTests(ConfigTestBase,
         am = self._makeOne()
         self.assertEqual(am.thread_get_ident(), thread.get_ident())
 
-    def test_revert_points(self):
-        am = self._makeOne()
-        self.assertEqual(list(am.revert_points()), [])
-
-    def test_version_list(self):
-        # XXX this method is too stupid to live:  returning a bare list
-        #     of versions without even tying them to the products?
-        #     and what about products living outside SOFTWARE_HOME?
-        #     Nobody calls it, either
-        import os
-        am = self._makeOne()
-        config = self._makeConfig()
-        swdir = config.softwarehome = self._makeTempdir()
-        foodir = os.path.join(swdir, 'Products', 'foo')
-        self._makeFile(foodir, 'VERSION.TXT', '1.2')
-        bardir = os.path.join(swdir, 'Products', 'bar')
-        self._makeFile(bardir, 'VERSION.txt', '3.4')
-        bazdir = os.path.join(swdir, 'Products', 'baz')
-        self._makeFile(bazdir, 'version.txt', '5.6')
-        versions = am.version_list()
-        self.assertEqual(versions, ['3.4', '5.6', '1.2'])
-
-    def test_getSOFTWARE_HOME_missing(self):
-        am = self._makeOne()
-        config = self._makeConfig()
-        self.assertEqual(am.getSOFTWARE_HOME(), None)
-
-    def test_getSOFTWARE_HOME_present(self):
-        am = self._makeOne()
-        config = self._makeConfig()
-        swdir = config.softwarehome = self._makeTempdir()
-        self.assertEqual(am.getSOFTWARE_HOME(), swdir)
-
-    def test_getZOPE_HOME_missing(self):
-        am = self._makeOne()
-        config = self._makeConfig()
-        self.assertEqual(am.getZOPE_HOME(), None)
-
-    def test_getZOPE_HOME_present(self):
-        am = self._makeOne()
-        config = self._makeConfig()
-        zopedir = config.zopehome = self._makeTempdir()
-        self.assertEqual(am.getZOPE_HOME(), zopedir)
-
     def test_getINSTANCE_HOME(self):
         am = self._makeOne()
         config = self._makeConfig()

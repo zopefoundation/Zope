@@ -19,22 +19,6 @@ import sys
 import Products
 
 try:
-    home = os.environ['SOFTWARE_HOME']
-except KeyError:
-    pass
-else:
-    home = os.path.realpath(home)
-    __builtin__.SOFTWARE_HOME = SOFTWARE_HOME = home
-
-try:
-    zhome = os.environ['ZOPE_HOME']
-except KeyError:
-    pass
-else:
-    zhome = os.path.realpath(zhome)
-    __builtin__.ZOPE_HOME = ZOPE_HOME = zhome
-
-try:
     chome = os.environ['INSTANCE_HOME']
 except KeyError:
     import Zope2

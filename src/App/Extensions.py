@@ -12,7 +12,7 @@
 ##############################################################################
 """Standard routines for handling extensions.
 
-Extensions currently include external methods and pluggable brains.
+Extensions currently include external methods.
 """
 import imp
 import os
@@ -90,7 +90,6 @@ def getPath(prefix, name, checkProduct=1, suffixes=('',), cfg=None):
         raise ValueError('The file name, %s, should be a simple file name'
                             % name)
 
-    result = None
     if checkProduct:
         dot = name.find('.')
         if dot > 0:
@@ -112,11 +111,6 @@ def getPath(prefix, name, checkProduct=1, suffixes=('',), cfg=None):
             return found
 
     locations = [cfg.instancehome]
-
-    softwarehome = getattr(cfg, 'softwarehome', None)
-    if softwarehome is not None:
-        zopehome = os.path.dirname(softwarehome)
-        locations.append(zopehome)
 
     for home in locations:
         found = _getPath(home, prefix, name, suffixes)
@@ -202,23 +196,3 @@ def getObject(module, name, reload=0,
     except KeyError:
         raise NotFound("The specified object, '%s', was not found "
                        "in module, '%s'." % (name, module))
-
-class NoBrains:
-    pass
-
-
-def getBrain(module, class_name, reload=0, modules=None):
-    """ Check/load a class from an extension.
-    """
-    if not module and not class_name:
-        return NoBrains
-
-    if modules is None:
-        c=getObject(module, class_name, reload)
-    else:
-        c=getObject(module, class_name, reload, modules=modules)
-
-    if getattr(c, '__bases__', None) is None:
-        raise ValueError('%s, is not a class' % class_name)
-
-    return c

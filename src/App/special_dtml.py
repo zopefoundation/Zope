@@ -45,7 +45,7 @@ class ClassicHTMLFile(DocumentTemplate.HTMLFile,MethodObject.Method,):
 
     def __init__(self, name, _prefix=None, **kw):
         if _prefix is None:
-            _prefix = getattr(getConfiguration(), 'softwarehome', PREFIX)
+            _prefix = PREFIX
         elif type(_prefix) is not type(''):
             _prefix = Common.package_home(_prefix)
         args=(self, os.path.join(_prefix, name + '.dtml'))

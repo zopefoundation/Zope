@@ -239,8 +239,6 @@ class DebugManager(Item, Implicit):
 InitializeClass(DebugManager)
 
 
-
-
 class ApplicationManager(Folder, CacheManager):
     """System management
     """
@@ -350,41 +348,6 @@ class ApplicationManager(Folder, CacheManager):
                 REQUEST['URL1'] + '/manage_workspace')
         return t
 
-    def revert_points(self):
-        return ()
-
-    def version_list(self):
-        # Return a list of currently installed products/versions
-        cfg = getConfiguration()
-        product_dir = os.path.join(cfg.softwarehome,'Products')
-        product_names = os.listdir(product_dir)
-        product_names.sort()
-        info = []
-        for product_name in product_names:
-            package_dir = os.path.join(product_dir, product_name)
-            if not os.path.isdir(package_dir):
-                continue
-            version_txt = None
-            for name in ('VERSION.TXT', 'VERSION.txt', 'version.txt'):
-                v = os.path.join(package_dir, name)
-                if os.path.exists(v):
-                    version_txt = v
-                    break
-            if version_txt is not None:
-                file = open(version_txt, 'r')
-                data = file.readline()
-                file.close()
-                info.append(data.strip())
-        return info
-
-    def getSOFTWARE_HOME(self):
-        cfg = getConfiguration()
-        return getattr(cfg, 'softwarehome', None)
-
-    def getZOPE_HOME(self):
-        cfg = getConfiguration()
-        return getattr(cfg, 'zopehome', None)
-
     def getINSTANCE_HOME(self):
         return getConfiguration().instancehome
 
@@ -406,22 +369,6 @@ class ApplicationManager(Folder, CacheManager):
                 l.append((str(type), 'Port: %s' % port))
         return l
 
-    def objectIds(self, spec=None):
-        """ this is a patch for pre-2.4 Zope installations. Such
-            installations don't have an entry for the WebDAV LockManager
-            introduced in 2.4.
-        """
-
-        meta_types = map(lambda x: x.get('meta_type', None), self._objects)
-
-        if not self.DavLocks.meta_type in meta_types:
-
-            lst = list(self._objects)
-            lst.append({'id': 'DavLocks', 
-                        'meta_type': self.DavLocks.meta_type})
-            self._objects = tuple(lst)
-
-        return Folder.objectIds(self, spec)
 
 class AltDatabaseManager(DatabaseManager, CacheManager):
     """ Database management DBTab-style

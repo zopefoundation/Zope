@@ -115,16 +115,11 @@ class zdaemonEnvironDict(UserDict):
         return self.data
 
 # Datatype for the root configuration object
-# (adds the softwarehome and zopehome fields; default values for some
-#  computed paths, configures the dbtab)
+# (default values for some computed paths, configures the dbtab)
 
 def root_config(section):
     from ZConfig import ConfigurationError
     from ZConfig.matcher import SectionValue
-    here = os.path.dirname(os.path.abspath(__file__))
-    swhome = os.path.dirname(os.path.dirname(here))
-    section.softwarehome = swhome
-    section.zopehome = os.path.dirname(os.path.dirname(swhome))
     if section.environment is None:
         section.environment = zdaemonEnvironDict()
     if section.cgi_environment is None:
