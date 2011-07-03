@@ -2,8 +2,7 @@
 <dtml-var manage_tabs>
 
 <p class="form-help">
-The Control Panel provides access to system information and management 
-functions such as database and product management.  
+The Control Panel provides access to system information.
 </p>
 
 <form action="&dtml-URL1;" method="post">
