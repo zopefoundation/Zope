@@ -14,8 +14,6 @@
 
 import os, unittest, tempfile, cStringIO
 
-from logging import getLogger
-
 from OFS.Application import Application, AppInitializer
 import Zope2.Startup
 import ZConfig
@@ -101,69 +99,6 @@ class TestInitialization( unittest.TestCase ):
         self.assertTrue(hasattr(app, 'Control_Panel'))
         self.assertEqual(app.Control_Panel.meta_type, 'Control Panel')
 
-    def test_install_tempfolder_and_sdc(self):
-        self.configure(good_cfg)
-        i = self.getOne()
-        i.install_tempfolder_and_sdc()
-        app = i.getApp()
-        self.assertEqual(app.temp_folder.meta_type, 'Temporary Folder')
-        self.assertEqual(app.temp_folder.session_data.meta_type,
-                         'Transient Object Container')
-        self.assertTrue(app._getInitializerFlag('temp_folder'))
-
-    def test_install_tempfolder_and_sdc_status(self):
-        self.configure(good_cfg)
-        i = self.getOne()
-        status = i.install_tempfolder_and_sdc()
-        self.assertTrue(status)
-
-        i = self.getOne()
-        self.configure(bad_cfg)
-        try:
-            logger = getLogger('Zope.ZODBMountPoint')
-            logger.disabled = 1
-            status = i.install_tempfolder_and_sdc()
-        finally:
-            logger.disabled = 0
-        self.assertFalse(status)
-
-    def test_install_tempfolder_and_sdc_unlimited_sessions(self):
-        unlimited_cfg = good_cfg + """
-        maximum-number-of-session-objects 0
-        """
-        self.configure(unlimited_cfg)
-        i = self.getOne()
-        status = i.install_tempfolder_and_sdc()
-        self.assertTrue(status)
-
-        sdc = i.getApp().temp_folder.session_data
-        self.assertEqual(sdc.getSubobjectLimit(), 0)
-
-    def test_install_browser_id_manager(self):
-        self.configure(good_cfg)
-        i = self.getOne()
-        app = i.getApp()
-        i.install_browser_id_manager()
-        self.assertEqual(app.browser_id_manager.meta_type,'Browser Id Manager')
-        self.assertTrue(app._getInitializerFlag('browser_id_manager'))
-
-    def test_install_virtual_hosting(self):
-        self.configure(good_cfg)
-        i = self.getOne()
-        app = i.getApp()
-        i.install_virtual_hosting()
-        self.assertEqual(app.virtual_hosting.meta_type,'Virtual Host Monster')
-        self.assertTrue(app._getInitializerFlag('virtual_hosting'))
-
-    def test_install_session_data_manager(self):
-        self.configure(good_cfg)
-        i = self.getOne()
-        i.install_session_data_manager()
-        app = i.getApp()
-        self.assertEqual(app.session_data_manager.meta_type,
-                         'Session Data Manager')
-        self.assertTrue(app._getInitializerFlag('session_data_manager'))
-
     def test_install_required_roles(self):
         self.configure(good_cfg)
         i = self.getOne()
@@ -186,14 +121,6 @@ class TestInitialization( unittest.TestCase ):
         finally:
             if os.path.exists(fname):
                 os.unlink(fname)
-
-    def test_install_errorlog(self):
-        self.configure(good_cfg)
-        i = self.getOne()
-        i.install_errorlog()
-        app = i.getApp()
-        self.assertEqual(app.error_log.meta_type, 'Site Error Log')
-        self.assertTrue(app._getInitializerFlag('error_log'))
 
     def test_install_products(self):
         self.configure(good_cfg)

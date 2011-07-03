@@ -33,6 +33,8 @@ Features Added
 Restructuring
 +++++++++++++
 
+- Removed persistent default code like the `error_log` and `temp_folder`.
+
 - Removed persistent default content, including the `standard_error_message`
   template.
 

@@ -200,16 +200,15 @@ class ZPublisherExceptionHook:
                     # ouch, a user saw this conflict error :-(
                     self.unresolved_conflict_errors += 1
 
-            if isinstance(published, list):
-                # special case for zope root
-                error_log_url = ''
-            else:
+            error_log_url = ''
+            if not isinstance(published, list):
                 try:
                     log = aq_acquire(published, '__error_log__', containment=1)
                 except AttributeError:
-                    error_log_url = ''
+                    pass
                 else:
-                    error_log_url = log.raising((t, v, traceback))
+                    if log is not None:
+                        error_log_url = log.raising((t, v, traceback))
 
             if (REQUEST is None or
                 (getattr(REQUEST.get('RESPONSE', None), '_error_format', '')

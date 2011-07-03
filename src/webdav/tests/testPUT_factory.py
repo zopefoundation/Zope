@@ -1,8 +1,8 @@
 import unittest
-import Testing
 import Zope2
 Zope2.startup()
 
+from Products.SiteAccess.VirtualHostMonster import VirtualHostMonster
 from Testing.makerequest import makerequest
 import transaction
 import base64
@@ -14,24 +14,23 @@ class TestPUTFactory(unittest.TestCase):
 
     def setUp(self):
         self.app = makerequest(Zope2.app())
-        try:
-            # Make a manager user
-            uf = self.app.acl_users
-            uf._doAddUser('manager', 'secret', ['Manager'], [])
-            # Make a folder to put stuff into
-            self.app.manage_addFolder('folder', '')
-            self.folder = self.app.folder
-            # Fake a WebDAV PUT request
-            request = self.app.REQUEST
-            request['PARENTS'] = [self.app]
-            request['BODY'] = 'bar'
-            request.environ['CONTENT_TYPE'] = 'text/plain'
-            request.environ['REQUEST_METHOD'] = 'PUT'
-            request.environ['WEBDAV_SOURCE_PORT'] = 1
-            request._auth = auth_info
-        except:
-            self.tearDown()
-            raise
+        # Make a manager user
+        uf = self.app.acl_users
+        uf._doAddUser('manager', 'secret', ['Manager'], [])
+        # Make a folder to put stuff into
+        self.app.manage_addFolder('folder', '')
+        self.folder = self.app.folder
+        # Setup VHM
+        vhm = VirtualHostMonster()
+        vhm.addToContainer(self.app)
+        # Fake a WebDAV PUT request
+        request = self.app.REQUEST
+        request['PARENTS'] = [self.app]
+        request['BODY'] = 'bar'
+        request.environ['CONTENT_TYPE'] = 'text/plain'
+        request.environ['REQUEST_METHOD'] = 'PUT'
+        request.environ['WEBDAV_SOURCE_PORT'] = 1
+        request._auth = auth_info
 
     def tearDown(self):
         transaction.abort()
@@ -69,7 +68,6 @@ class TestPUTFactory(unittest.TestCase):
         self.assertTrue('doc' in self.folder.objectIds())
 
     def testCollector2261(self):
-        from OFS.Folder import manage_addFolder
         from OFS.DTMLMethod import addDTMLMethod
 
         self.app.manage_addFolder('A', '')

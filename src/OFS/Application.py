@@ -23,7 +23,6 @@ from AccessControl.class_init import InitializeClass
 from AccessControl.Permission import ApplicationDefaultPermissions
 from Acquisition import aq_base
 from App.ApplicationManager import ApplicationManager
-from App.config import getConfiguration
 from App import FactoryDispatcher
 from DateTime import DateTime
 from OFS.metaconfigure import get_packages_to_initialize
@@ -59,8 +58,8 @@ class Application(ApplicationDefaultPermissions,
     security = ClassSecurityInfo()
 
     title = 'Zope'
-    __defined_roles__ = ('Manager','Anonymous','Owner')
-    web__form__method = 'GET'
+    __defined_roles__ = ('Manager', 'Anonymous', 'Owner')
+    __error_log__ = None
     isTopLevelPrincipiaApplicationObject = 1
 
     manage_options=((
@@ -70,24 +69,15 @@ class Application(ApplicationDefaultPermissions,
                     Folder.Folder.manage_options[2:]
                     )
 
-    p_=misc_.p_
-    misc_=misc_.misc_
-
-    _reserved_names=('Control_Panel',
-                     'browser_id_manager',
-                     'temp_folder')
+    p_ = misc_.p_
+    misc_ = misc_.misc_
+    _reserved_names = ('Control_Panel', )
 
     # This class-default __allow_groups__ ensures that the
     # emergency user can still access the system if the top-level
     # UserFolder is deleted. This is necessary to allow people
     # to replace the top-level UserFolder object.
-
     __allow_groups__ = UserFolder()
-
-    # Set the universal default method to index_html
-    _object_manager_browser_default_id = 'index_html'
-
-    _initializer_registry = None
 
     def __init__(self):
         # Initialize users
@@ -98,7 +88,7 @@ class Application(ApplicationDefaultPermissions,
     def id(self):
         try:
             return self.REQUEST['SCRIPT_NAME'][1:]
-        except:
+        except (KeyError, TypeError):
             return self.title
 
     def title_and_id(self):
@@ -197,20 +187,7 @@ class Application(ApplicationDefaultPermissions,
         together.
         """
         # We're at the base of the path.
-        return ('',)
-
-    security.declarePrivate('_setInitializerFlag')
-    def _setInitializerFlag(self, flag):
-        if self._initializer_registry is None:
-            self._initializer_registry = {}
-        self._initializer_registry[flag] = 1
-
-    security.declarePrivate('_getInitializerFlag')
-    def _getInitializerFlag(self, flag):
-        reg = self._initializer_registry
-        if reg is None:
-            reg = {}
-        return reg.get(flag)
+        return ('', )
 
 InitializeClass(Application)
 
@@ -253,15 +230,10 @@ class AppInitializer:
     def initialize(self):
         # make sure to preserve relative ordering of calls below.
         self.install_cp_and_products()
-        self.install_tempfolder_and_sdc()
-        self.install_session_data_manager()
-        self.install_browser_id_manager()
         self.install_required_roles()
         self.install_inituser()
-        self.install_errorlog()
         self.install_products()
         self.install_standards()
-        self.install_virtual_hosting()
 
     def install_cp_and_products(self):
         global APP_MANAGER
@@ -276,130 +248,6 @@ class AppInitializer:
             del app.__dict__['Control_Panel']
             app._objects = tuple(i for i in app._objects if i['id'] != 'Control_Panel')
             self.commit('Removed persistent Control_Panel')
-
-    def install_tempfolder_and_sdc(self):
-        app = self.getApp()
-        from Products.ZODBMountPoint.MountedObject import manage_addMounts,\
-             MountedObject
-        from Products.ZODBMountPoint.MountedObject import getConfiguration as \
-             getDBTabConfiguration
-
-        dbtab_config = getDBTabConfiguration()
-
-        tf = getattr(app, 'temp_folder', None)
-
-        if getattr(tf, 'meta_type', None) == MountedObject.meta_type:
-            # tf is a MountPoint object.  This means that the temp_folder
-            # couldn't be mounted properly (the meta_type would have been
-            # the meta type of the container class otherwise).  The
-            # MountPoint object writes a message to zLOG so we don't
-            # need to.
-            return
-
-        if tf is None:
-            # do nothing if we've already installed one
-            if not app._getInitializerFlag('temp_folder'):
-                if dbtab_config is None:
-                    # DefaultConfiguration, do nothing
-                    return
-                mount_paths = [ x[0] for x in dbtab_config.listMountPaths() ]
-                if not '/temp_folder' in mount_paths:
-                    # we won't be able to create the mount point properly
-                    LOG.error('Could not initialze a Temporary Folder because '
-                              'a database was not configured to be mounted at '
-                              'the /temp_folder mount point')
-                    return
-                try:
-                    manage_addMounts(app, ('/temp_folder',))
-                    app._setInitializerFlag('temp_folder')
-                    self.commit('Added temp_folder')
-                    tf = app.temp_folder
-                except:
-                    LOG.error('Could not add a /temp_folder mount point due to an '
-                              'error.', exc_info=sys.exc_info())
-                    return
-
-        # Ensure that there is a transient object container in the temp folder
-        config = getConfiguration()
-
-        if not hasattr(aq_base(tf), 'session_data'):
-            from Products.Transience.Transience import TransientObjectContainer
-            addnotify = getattr(config, 'session_add_notify_script_path', None)
-            delnotify = getattr(config, 'session_delete_notify_script_path',
-                                None)
-            default_limit = 1000
-            default_period_secs = 20
-            default_timeout_mins = 20
-
-            limit = getattr(config, 'maximum_number_of_session_objects',
-                            default_limit)
-            timeout_spec = getattr(config, 'session_timeout_minutes',
-                                   default_timeout_mins)
-            period_spec = getattr(config, 'session_resolution_seconds',
-                                  default_period_secs)
-
-            if addnotify and app.unrestrictedTraverse(addnotify, None) is None:
-                LOG.warn('failed to use nonexistent "%s" script as '
-                         'session-add-notify-script-path' % addnotify)
-                addnotify=None
-
-            if delnotify and app.unrestrictedTraverse(delnotify, None) is None:
-                LOG.warn('failed to use nonexistent "%s" script as '
-                         'session-delete-notify-script-path' % delnotify)
-                delnotify=None
-
-            if 1:  # Preserve indentation for diff
-                toc = TransientObjectContainer('session_data',
-                                               'Session Data Container',
-                                               timeout_mins = timeout_spec,
-                                               addNotification = addnotify,
-                                               delNotification = delnotify,
-                                               limit=limit,
-                                               period_secs = period_spec)
-
-            tf._setObject('session_data', toc)
-            tf_reserved = getattr(tf, '_reserved_names', ())
-            if 'session_data' not in tf_reserved:
-                tf._reserved_names = tf_reserved + ('session_data',)
-            self.commit('Added session_data to temp_folder')
-            return tf # return the tempfolder object for test purposes
-
-    def install_browser_id_manager(self):
-        app = self.getApp()
-        if app._getInitializerFlag('browser_id_manager'):
-            # do nothing if we've already installed one
-            return
-        # Ensure that a browser ID manager exists
-        if not hasattr(app, 'browser_id_manager'):
-            from Products.Sessions.BrowserIdManager import BrowserIdManager
-            bid = BrowserIdManager('browser_id_manager', 'Browser Id Manager')
-            app._setObject('browser_id_manager', bid)
-            # FIXME explicitely call manage_afterAdd, as sometimes
-            # events are initialized too late
-            browser_id_manager = app.browser_id_manager
-            browser_id_manager.manage_afterAdd(browser_id_manager, app)
-            app._setInitializerFlag('browser_id_manager')
-            self.commit('Added browser_id_manager')
-
-    def install_session_data_manager(self):
-        app = self.getApp()
-        if app._getInitializerFlag('session_data_manager'):
-            # do nothing if we've already installed one
-            return
-        # Ensure that a session data manager exists
-        if not hasattr(app, 'session_data_manager'):
-            from Products.Sessions.SessionDataManager import SessionDataManager
-            sdm = SessionDataManager('session_data_manager',
-                title='Session Data Manager',
-                path='/temp_folder/session_data',
-                requestName='SESSION')
-            app._setObject('session_data_manager', sdm)
-            # FIXME explicitely call manage_afterAdd, as sometimes
-            # events are initialized too late
-            session_data_manager = app.session_data_manager
-            session_data_manager.manage_afterAdd(session_data_manager, app)
-            app._setInitializerFlag('session_data_manager')
-            self.commit('Added session_data_manager')
 
     def install_required_roles(self):
         app = self.getApp()
@@ -439,47 +287,16 @@ class AppInitializer:
                     transaction.get().note('Migrated user folder')
                     transaction.commit()
 
-    def install_errorlog(self):
-        app = self.getApp()
-        if app._getInitializerFlag('error_log'):
-            # do nothing if we've already installed one
-            return
-
-        # Install an error_log
-        if not hasattr(app, 'error_log'):
-            from Products.SiteErrorLog.SiteErrorLog import SiteErrorLog
-            error_log = SiteErrorLog()
-            app._setObject('error_log', error_log)
-            # FIXME explicitely call manage_afterAdd, as sometimes
-            # events are initialized too late
-            error_log = app.error_log
-            error_log.manage_afterAdd(error_log, app)
-            app._setInitializerFlag('error_log')
-            self.commit('Added site error_log at /error_log')
-
-    def install_virtual_hosting(self):
-        app = self.getApp()
-        if app._getInitializerFlag('virtual_hosting'):
-            return
-        if (not app.objectIds('Virtual Host Monster') and
-            not hasattr(app, 'virtual_hosting')):
-            from Products.SiteAccess.VirtualHostMonster \
-                import VirtualHostMonster
-            vhm = VirtualHostMonster()
-            vhm.id = 'virtual_hosting'
-            vhm.addToContainer(app)
-            app._setInitializerFlag('virtual_hosting')
-            self.commit('Added virtual_hosting')
-
     def install_products(self):
         return install_products()
 
     def install_standards(self):
         app = self.getApp()
-        if getattr(app, '_standard_objects_have_been_added', None) is None:
-            return
-        delattr(app, '_standard_objects_have_been_added')
-        transaction.get().note('Removed standard objects flag')
+        if getattr(app, '_standard_objects_have_been_added', None) is not None:
+            delattr(app, '_standard_objects_have_been_added')
+        if getattr(app, '_initializer_registry', None) is not None:
+            delattr(app, '_initializer_registry')
+        transaction.get().note('Removed unused application attributes.')
         transaction.commit()
 
 

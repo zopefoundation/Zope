@@ -29,10 +29,9 @@ from AccessControl import ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
-from AccessControl.Permissions import view, view_management_screens
+from AccessControl.Permissions import view_management_screens
 from AccessControl.ImplPython import guarded_getattr as guarded_getattr_py
 from AccessControl.ImplC import guarded_getattr as guarded_getattr_c
-from Products.SiteErrorLog.SiteErrorLog import SiteErrorLog
 
 
 class AllowedItem(SimpleItem):
@@ -56,16 +55,6 @@ class ProtectedItem(SimpleItem):
 
 InitializeClass(ProtectedItem)
 
-class ProtectedSiteErrorLog(SiteErrorLog):
-    '''This differs from the base by declaring security
-       for the object itself.
-    '''
-    id = 'error_log2'
-    security = ClassSecurityInfo()
-    security.declareObjectProtected(view)
-
-InitializeClass(ProtectedSiteErrorLog)
-
 
 class TestGetAttr(unittest.TestCase):
 
@@ -83,7 +72,6 @@ class TestGetAttr(unittest.TestCase):
 
             # Set up objects in the root that we want to aquire
             self.app.manage_addFolder('plain_folder')
-            self.app._setObject('error_log2', ProtectedSiteErrorLog())
 
             # We also want to be able to acquire simple attributes
             self.app.manage_addProperty(id='simple_type', type='string', value='a string')
@@ -131,73 +119,12 @@ class TestGetAttr(unittest.TestCase):
         self.assertEqual(o, self.app.acl_users)
 
     def testAclUsersDenied(self):
-        # XXX: Fails in 2.7.3
         o = self.guarded_getattr(self.folder.denied, 'acl_users')
         self.assertEqual(o, self.app.acl_users)
 
     def testAclUsersProtected(self):
-        # XXX: Fails in 2.7.3 for Anonymous
         o = self.guarded_getattr(self.folder.protected, 'acl_users')
         self.assertEqual(o, self.app.acl_users)
-
-    # Acquire browser id manager
-
-    def testBrowserIdManagerAllowed(self):
-        o = self.guarded_getattr(self.folder.allowed, 'browser_id_manager')
-        self.assertEqual(o, self.app.browser_id_manager)
-
-    def testBrowserIdManagerDenied(self):
-        o = self.guarded_getattr(self.folder.denied, 'browser_id_manager')
-        self.assertEqual(o, self.app.browser_id_manager)
-
-    def testBrowserIdManagerProtected(self):
-        o = self.guarded_getattr(self.folder.protected, 'browser_id_manager')
-        self.assertEqual(o, self.app.browser_id_manager)
-
-    # Acquire error log
-
-    def testErrorLogAllowed(self):
-        o = self.guarded_getattr(self.folder.allowed, 'error_log')
-        self.assertEqual(o, self.app.error_log)
-
-    def testErrorLogDenied(self):
-        # XXX: Fails in 2.7.3
-        o = self.guarded_getattr(self.folder.denied, 'error_log')
-        self.assertEqual(o, self.app.error_log)
-
-    def testErrorLogProtected(self):
-        # XXX: Fails in 2.7.3 for Anonymous
-        o = self.guarded_getattr(self.folder.protected, 'error_log')
-        self.assertEqual(o, self.app.error_log)
-
-    # Now watch this: error log with object security declaration works fine!
-
-    def testProtectedErrorLogAllowed(self):
-        o = self.guarded_getattr(self.folder.allowed, 'error_log2')
-        self.assertEqual(o, self.app.error_log2)
-
-    def testProtectedErrorLogDenied(self):
-        o = self.guarded_getattr(self.folder.denied, 'error_log2')
-        self.assertEqual(o, self.app.error_log2)
-
-    def testProtectedErrorLogProtected(self):
-        o = self.guarded_getattr(self.folder.protected, 'error_log2')
-        self.assertEqual(o, self.app.error_log2)
-
-    # This appears to mean that any potential acquiree must make sure
-    # to declareObjectProtected(SomePermission).
-
-    # From the ZDG:
-    # We've seen how to make  assertions on methods - but in the case of
-    # someObject we are not trying to access any particular method, but
-    # rather the object itself (to pass it to some_method). Because the
-    # security machinery will try to validate access to someObject, we
-    # need a way to let the security machinery know how to handle access
-    # to the object itself in addition to protecting its methods.
-
-    # IOW, acquiring an object in restricted Python now amounts to
-    # "passing it to some_method".
-
 
     # Also test Richard Jones' use-case of acquiring a string:
 
@@ -206,12 +133,10 @@ class TestGetAttr(unittest.TestCase):
         self.assertEqual(o, 'a string')
 
     def testSimpleTypeDenied(self):
-        # XXX: Fails in 2.7.3
         o = self.guarded_getattr(self.folder.denied, 'simple_type')
         self.assertEqual(o, 'a string')
 
     def testSimpleTypeProtected(self):
-        # XXX: Fails in 2.7.3 for Anonymous
         o = self.guarded_getattr(self.folder.protected, 'simple_type')
         self.assertEqual(o, 'a string')
 

@@ -17,7 +17,7 @@ class VHMRegressions(unittest.TestCase):
         from Testing.ZopeTestCase.ZopeLite import app
         transaction.begin()
         self.app = makerequest(app())
-        if 'virtual_hosting' not in  self.app.objectIds():
+        if 'virtual_hosting' not in self.app.objectIds():
             # If ZopeLite was imported, we have no default virtual
             # host monster
             from Products.SiteAccess.VirtualHostMonster \
