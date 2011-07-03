@@ -11,6 +11,9 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
+- Restore ability to undo multiple transactions from the ZMI by using the
+  `undoMultiple` API.
+
 - Made sure getConfiguration().default_zpublisher_encoding is set correctly.
 
 Features Added

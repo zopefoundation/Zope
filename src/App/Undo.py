@@ -132,14 +132,15 @@ class UndoSupport(ExtensionClass.Base):
     def manage_undo_transactions(self, transaction_info=(), REQUEST=None):
         """
         """
-        undo=self._p_jar.db().undo
-
+        tids = {}
         for tid in transaction_info:
-            tid=tid.split()
+            tid = tid.split()
             if tid:
-                transaction.get().note("Undo %s" % ' '.join(tid[1:]))
-                tid=decode64(tid[0])
-                undo(tid)
+                tids[decode64(tid[0])] = tid[-1]
+
+        if tids:
+            transaction.get().note("Undo %s" % ' '.join(tids.values()))
+            self._p_jar.db().undoMultiple(tids.keys())
 
         if REQUEST is None:
             return
