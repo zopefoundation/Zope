@@ -44,6 +44,9 @@ Features Added
 Restructuring
 +++++++++++++
 
+- On the application object, removed `PrincipiaTime` in favor of `ZopeTime` and
+  `PrincipiaRedirect` in favor of `Redirect` or `ZopeRedirect`.
+
 - Removed `OFS.DefaultObservable` - an early predecessor of `zope.event`.
 
 - Removed `mime-types` option from `zope.conf`. You can use the `add_files`

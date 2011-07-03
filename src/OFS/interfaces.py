@@ -839,19 +839,17 @@ class IApplication(IFolder, IRoot):
     p_ = Attribute(""" """)
     misc_ = Attribute("Misc.")
 
-    def PrincipiaRedirect(destination, URL1):
+    def Redirect(destination, URL1):
         """Utility function to allow user-controlled redirects"""
 
-    Redirect = ZopeRedirect = PrincipiaRedirect
+    ZopeRedirect = Redirect
 
     def __bobo_traverse__(REQUEST, name=None):
         """Bobo traverse.
         """
 
-    def PrincipiaTime(*args):
+    def ZopeTime(*args):
         """Utility function to return current date/time"""
-
-    ZopeTime = PrincipiaTime
 
     def absolute_url(relative=0):
         """The absolute URL of the root object is BASE1 or "/".

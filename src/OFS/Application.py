@@ -102,13 +102,13 @@ class Application(ApplicationDefaultPermissions,
     def Control_Panel(self):
         return APP_MANAGER.__of__(self)
 
-    def PrincipiaRedirect(self, destination, URL1):
+    def Redirect(self, destination, URL1):
         """Utility function to allow user-controlled redirects"""
         if destination.find('//') >= 0:
             raise RedirectException, destination
         raise RedirectException, ("%s/%s" % (URL1, destination))
 
-    Redirect = ZopeRedirect = PrincipiaRedirect
+    ZopeRedirect = Redirect
 
     def __bobo_traverse__(self, REQUEST, name=None):
         if name == 'Control_Panel':
@@ -134,11 +134,9 @@ class Application(ApplicationDefaultPermissions,
         except AttributeError:
             raise KeyError, name
 
-    def PrincipiaTime(self, *args):
+    def ZopeTime(self, *args):
         """Utility function to return current date/time"""
-        return apply(DateTime, args)
-
-    ZopeTime = PrincipiaTime
+        return DateTime(*args)
 
     def DELETE(self, REQUEST, RESPONSE):
         """Delete a resource object."""
