@@ -16,6 +16,9 @@ Bugs Fixed
 Features Added
 ++++++++++++++
 
+- Explicitly close all databases on shutdown, which ensures `Data.fs.index`
+  gets written to the file system.
+
 - Always configure a `blob-dir` in the default skeleton.
 
 - ZPublisher: If `IBrowserPage` is provided by a view, form input is decoded.

@@ -76,7 +76,7 @@ def startup():
             m=imp.find_module('custom_zodb',[configuration.testinghome])
         except:
             m=imp.find_module('custom_zodb',[configuration.instancehome])
-    except:
+    except Exception:
         # if there is no custom_zodb, use the config file specified databases
         DB = dbtab.getDatabase('/', is_root=1)
     else:
