@@ -41,6 +41,9 @@ Features Added
 Restructuring
 +++++++++++++
 
+- Removed `Products.ZReST` and the `reStructuredText` wrapper, you can use
+  `docutils` directly to gain `reST` support.
+
 - Removed special code to create user folders and page templates while creating
   new `OFS.Folder` instances.
 

@@ -472,53 +472,6 @@
     </description>
   </key>
 
-  <key name="structured-text-header-level" datatype="integer" default="3"
-       handler="structured_text_header_level">
-    <description>
-     Set the default starting HTML header level for structured text
-     documents. The default is 3, which implies that top-level headers
-     will be created with an H3 HTML tag.
-    </description>
-    <metadefault>3</metadefault>
-  </key>
-
-  <key name="rest-input-encoding" handler="rest_input_encoding">
-    <description>
-    Specifies the input encoding of re-StructuredText documents
-    (e.g. 'utf-8', 'iso-8859' or any other valid encoding recognized
-    by Python).  The default is your Python's default encoding.
-    </description>
-    <metadefault>unset</metadefault>
-  </key>
-
-  <key name="rest-output-encoding" handler="rest_output_encoding">
-    <description>
-    Specifies the output encoding of re-StructuredText documents
-    (e.g. 'utf-8', 'iso-8859' or any other valid encoding recognized
-    by Python).  The default is your Python's default encoding.
-    </description>
-    <metadefault>unset</metadefault>
-  </key>
-
-  <key name="rest-header-level" datatype="integer" default="3"
-       handler="rest_header_level">
-    <description>
-     Set the default starting HTML header level for restructured text
-     documents. The default is 3, which implies that top-level headers
-     will be created with an H3 HTML tag.
-    </description>
-    <metadefault>3</metadefault>
-  </key>
-
-  <key name="rest-language-code" handler="rest_language_code" default="en">
-    <description>
-     Language code used for some internal translations inside of the docutils
-     package and for DTD bibliographic elements mapping. See
-     lib/python/docutils/languages/ for a list of supported language codes.
-    </description>
-    <metadefault>en</metadefault>
-  </key>
-
   <key name="publisher-profile-file">
     <description>
      Causing this directive to point to a file on the filesystem will

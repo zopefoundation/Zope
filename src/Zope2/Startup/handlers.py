@@ -61,26 +61,6 @@ def suppress_all_site_roots(value):
     value and _setenv('SUPPRESS_SITEROOT', value)
     return value
 
-def structured_text_header_level(value):
-    value is not None and _setenv('STX_DEFAULT_LEVEL', value)
-    return value
-
-def rest_input_encoding(value):
-    value and _setenv('REST_INPUT_ENCODING' , value)
-    return value
-
-def rest_output_encoding(value):
-    value and _setenv('REST_OUTPUT_ENCODING' , value)
-    return value
-
-def rest_header_level(value):
-    value and _setenv('REST_DEFAULT_LEVEL' , value)
-    return value
-
-def rest_language_code(value):
-    value and _setenv('REST_LANGUAGE_CODE' , value)
-    return value
-
 def large_file_threshold(value):
     import ZServer
     ZServer.LARGE_FILE_THRESHOLD = value

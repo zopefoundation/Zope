@@ -12,14 +12,6 @@
 #
 ##############################################################################
 
-"""Simple access to configuration values.
-
-The configuration values are represented as a single object with
-attributes for each bit of information.
-"""
-
-import sys
-
 _config = None
 
 def getConfiguration():
@@ -88,13 +80,6 @@ class DefaultConfiguration:
         self.debug_mode = True
         self.enable_product_installation = False
         self.locale = None
-
-        # restructured text
-        default_enc = sys.getdefaultencoding()
-        self.rest_input_encoding = default_enc
-        self.rest_output_encoding = default_enc
-        self.rest_header_level = 3
-        self.rest_language_code = 'en'
 
         # ZServer.HTTPServer
         self.http_header_max_length = 8196
