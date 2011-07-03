@@ -10,9 +10,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""System management components"""
 
-from cgi import escape
 from cStringIO import StringIO
 from logging import getLogger
 import os
@@ -23,7 +21,6 @@ import urllib
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.requestmethod import requestmethod
-from AccessControl.SecurityManagement import getSecurityManager
 from Acquisition import Implicit
 from App.CacheManager import CacheManager
 from App.config import getConfiguration
@@ -32,7 +29,6 @@ from App.special_dtml import DTMLFile
 from App.Undo import UndoSupport
 from App.version_txt import version_txt
 from DateTime.DateTime import DateTime
-from Lifetime import shutdown
 from OFS.Folder import Folder
 from OFS.SimpleItem import Item
 from OFS.SimpleItem import SimpleItem
@@ -337,39 +333,6 @@ class ApplicationManager(Folder, CacheManager):
         if s >= 1048576.0:
             return '%.1fM' % (s/1048576.0)
         return '%.1fK' % (s/1024.0)
-
-    if 'ZMANAGED' in os.environ:
-        manage_restartable = 1
-        @requestmethod('POST')
-        def manage_restart(self, URL1, REQUEST=None):
-            """ Shut down the application for restart.
-            """
-            try:
-                user = '"%s"' % getSecurityManager().getUser().getUserName()
-            except:
-                user = 'unknown user'
-            LOG.info("Restart requested by %s" % user)
-            shutdown(1)
-            return """<html>
-            <head><meta HTTP-EQUIV=REFRESH CONTENT="10; URL=%s/manage_main">
-            </head>
-            <body>Zope is restarting</body></html>
-            """ % escape(URL1, 1)
-
-    @requestmethod('POST')
-    def manage_shutdown(self, REQUEST=None):
-        """Shut down the application"""
-        try:
-            user = '"%s"' % getSecurityManager().getUser().getUserName()
-        except:
-            user = 'unknown user'
-        LOG.info("Shutdown requested by %s" % user)
-        shutdown(0)
-        return """<html>
-        <head>
-        </head>
-        <body>Zope is shutting down</body></html>
-        """
 
     @requestmethod('POST')
     def manage_pack(self, days=0, REQUEST=None, _when=None):

@@ -41,6 +41,9 @@ Features Added
 Restructuring
 +++++++++++++
 
+- Removed ZMI controls for restarting the process, these no longer apply when
+  managed as a WSGI application.
+
 - Removed `bobobase_modification_time` from `Persistence.Persistent`, you can
   use `DateTime(object._p_mtime)` instead.
 

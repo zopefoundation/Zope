@@ -107,19 +107,6 @@ functions such as database and product management.
   </td>
 </tr>
 
-<tr>
-  <td align="left" valign="top">
-  &nbsp;
-  </td>
-  <td align="left" valign="top">
-  <div class="form-element">
-  <dtml-if manage_restartable>
-  <input type="submit" name="manage_restart:action" value="Restart" />
-  </dtml-if>
-  <input type="submit" name="manage_shutdown:action" value="Shutdown" />
-  </div>
-  </td>
-</tr>
 </table>
 </form>
 

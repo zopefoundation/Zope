@@ -414,9 +414,6 @@ class ApplicationManagerTests(ConfigTestBase,
         am = self._makeOne()
         self.assertEqual(am.thread_get_ident(), thread.get_ident())
 
-    #def test_manage_restart(self):  XXX -- TOO UGLY TO TEST
-    #def test_manage_restart(self):  XXX -- TOO UGLY TO TEST
-
     def test_revert_points(self):
         am = self._makeOne()
         self.assertEqual(list(am.revert_points()), [])
