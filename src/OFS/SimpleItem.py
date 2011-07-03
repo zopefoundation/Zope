@@ -57,7 +57,6 @@ from OFS.owner import Owned
 from OFS.CopySupport import CopySource
 from OFS.role import RoleManager
 from OFS.Traversable import Traversable
-from OFS.ZDOM import Element
 
 import logging
 logger = logging.getLogger()
@@ -67,7 +66,6 @@ class Item(Base,
            CopySource,
            Tabs,
            Traversable,
-           Element,
            Owned,
            UndoSupport,
            ):

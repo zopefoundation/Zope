@@ -36,7 +36,6 @@ from zope.interface import implements
 
 import Folder
 import misc_
-import ZDOM
 from FindSupport import FindSupport
 from interfaces import IApplication
 from misc_ import Misc_
@@ -47,7 +46,6 @@ APP_MANAGER = None
 
 
 class Application(ApplicationDefaultPermissions,
-                  ZDOM.Root,
                   Folder.Folder,
                   FindSupport,
                  ):

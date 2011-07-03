@@ -23,7 +23,6 @@ from Acquisition import aq_base
 from ExtensionClass import Base
 from App.special_dtml import DTMLFile
 from App.Dialogs import MessageDialog
-from Persistence import Persistent
 from zExceptions import BadRequest
 from zope.interface import implements
 from ZPublisher.Converters import type_converters
@@ -31,9 +30,8 @@ from ZPublisher.Converters import type_converters
 from OFS.interfaces import IPropertyManager
 from OFS.PropertySheets import DefaultPropertySheets
 from OFS.PropertySheets import vps
-from OFS.ZDOM import ElementWithAttributes
 
-class PropertyManager(Base, ElementWithAttributes):
+class PropertyManager(Base):
 
     """
     The PropertyManager mixin class provides an object with

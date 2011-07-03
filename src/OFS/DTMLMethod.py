@@ -34,7 +34,6 @@ from OFS.History import Historical
 from OFS.History import html_diff
 from OFS.role import RoleManager
 from OFS.SimpleItem import Item_w__name__
-from OFS.ZDOM import ElementWithTitle
 from webdav.Lockable import ResourceLockedError
 from zExceptions import Forbidden
 from zExceptions.TracebackSupplement import PathTracebackSupplement
@@ -48,7 +47,6 @@ class DTMLMethod(RestrictedDTML,
                  HTML,
                  Implicit,
                  RoleManager,
-                 ElementWithTitle,
                  Item_w__name__,
                  Historical,
                  Cacheable,
