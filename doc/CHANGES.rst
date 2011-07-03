@@ -44,6 +44,8 @@ Features Added
 Restructuring
 +++++++++++++
 
+- Removed `OFS.DefaultObservable` - an early predecessor of `zope.event`.
+
 - Removed `mime-types` option from `zope.conf`. You can use the `add_files`
   API from `zope.contenttype` instead.
 
