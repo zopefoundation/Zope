@@ -326,22 +326,6 @@
     <metadefault>$instancehome/var</metadefault>
   </key>
 
-  <multikey name="mime-types" datatype="existing-file">
-    <description>
-      This specifies additional lists of MIME types that should be
-      loaded into Python's "mimetypes" module.  The files should have
-      the same form as the mime.types file distributed with the Apache
-      HTTP server.
-
-      Each line describing a MIME type should contain the major/minor
-      type, followed by a space-separated list of file extensions used
-      for files of that type.  The extensions must not include the '.'
-      used to separate an extension from the base file name.
-
-      Blank lines and lines beginning with a '#' are ignored.
-    </description>
-  </multikey>
-
   <multikey name="products" datatype="existing-directory">
     <description>
       This specifies a product directory which is added to Products.__path__.
