@@ -40,16 +40,6 @@ INavigation.setTaggedValue('manage_page_style.css', Attribute(""" """))
 
 # XXX: might contain non-API methods and outdated comments;
 #      not synced with ZopeBook API Reference;
-#      based on App.PersistentExtra.PersistentUtil
-class IPersistentExtra(Interface):
-
-    def bobobase_modification_time():
-        """
-        """
-
-
-# XXX: might contain non-API methods and outdated comments;
-#      not synced with ZopeBook API Reference;
 #      based on App.Undo.UndoSupport
 class IUndoSupport(Interface):
 

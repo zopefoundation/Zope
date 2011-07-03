@@ -44,13 +44,13 @@ class EtagBaseInterface(Interface):
 
     def http__refreshEtag():
         """\
-        While it may make sense to use the ZODB Object Id or
-        bobobase_modification_time to generate an Etag, this could
+        While it may make sense to use the ZODB Object Id or the
+        database mtime to generate an Etag, this could
         fail on certain REQUESTS because:
 
          o The object is not stored in the ZODB, or
 
-         o A Request such as PUT changes the oid or bobobase_modification_time
+         o A Request such as PUT changes the oid or database mtime
            *AFTER* the Response has been written out, but the Etag needs
            to be updated and returned with the Response of the PUT request.
 
@@ -64,7 +64,7 @@ class EtagSupport:
     function right now is to support the *Lost Updates Problem* by
     allowing Etags and If-Match headers to be checked on PUT calls to
     provide a *Seatbelt* style functionality.  The Etags is based on
-    the bobobase_modification_time, and thus is updated whenever the
+    the databaes mtime, and thus is updated whenever the
     object is updated.  If a PUT request, or other HTTP or Dav request
     comes in with an Etag different than the current one, that request
     can be rejected according to the type of header (If-Match,
@@ -130,15 +130,15 @@ class EtagSupport:
             # There's no 'if-none-match' header either, so there's no
             # problem continuing with the request
             return 1
-        elif ('*' in nonelist):
+        elif ('*' in nonematch):
             # if-none-match: * means that the operation should not
             # be performed if the specified resource exists
             # (webdav.NullResource will want to do special behavior
             # here)
             raise PreconditionFailed
-        elif self.http__etag() in nonelist:
+        elif self.http__etag() in nonematch:
             # The opposite of if-match, the condition fails
             # IF the resources Etag is in the if-none-match list
             raise PreconditionFailed
-        elif self.http__etag() not in nonelist:
+        elif self.http__etag() not in nonematch:
             return 1

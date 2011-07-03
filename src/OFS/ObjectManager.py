@@ -22,6 +22,7 @@ import marshal
 import os
 import re
 import sys
+import time
 
 from AccessControl import ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
@@ -42,6 +43,7 @@ from App.FactoryDispatcher import ProductDispatcher
 from App.Management import Navigation
 from App.Management import Tabs
 from App.special_dtml import DTMLFile
+from DateTime import DateTime
 from Persistence import Persistent
 from webdav.Collection import Collection
 from webdav.Lockable import ResourceLockedError
@@ -740,7 +742,10 @@ class ObjectManager(CopyContainer,
                 self,
                 getRoles(self, 'manage_FTPlist', self.manage_FTPlist, ())):
                 mode=mode | 0007
-        mtime=self.bobobase_modification_time().timeTime()
+        if hasattr(aq_base(self), '_p_mtime'):
+            mtime = DateTime(self._p_mtime).timeTime()
+        else:
+            mtime = time.time()
         # get owner and group
         owner=group='Zope'
         for user, roles in self.get_local_roles():

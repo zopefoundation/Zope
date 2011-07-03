@@ -55,19 +55,6 @@ button and click <em>upload</em> to update the contents of the &dtml-kind;.
 <tr>
   <td align="left" valign="top">
   <div class="form-label">
-  Last Modified
-  </div>
-  </td>
-  <td align="left" valign="top">
-  <div class="form-text">
-  <dtml-var bobobase_modification_time fmt="%Y-%m-%d %H:%M">
-  </div>
-  </td>
-</tr>
-
-<tr>
-  <td align="left" valign="top">
-  <div class="form-label">
   File Size
   </div>
   </td>

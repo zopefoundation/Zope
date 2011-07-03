@@ -10,27 +10,9 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-"""Patch for Persistent to support IPersistentExtra.
-"""
-
-from DateTime.DateTime import DateTime
-
-class PersistentUtil:
-
-    def bobobase_modification_time(self):
-        jar = self._p_jar
-        oid = self._p_oid
-        if jar is None or oid is None:
-            return DateTime()
-
-        try:
-            t = self._p_mtime
-        except AttributeError:
-            t = 0
-        return DateTime(t)
-
 
 _patched = False
+
 
 def patchPersistent():
     global _patched
@@ -39,14 +21,6 @@ def patchPersistent():
 
     _patched = True
 
-    from zope.interface import classImplements
     from Persistence import Persistent
     from AccessControl.class_init import InitializeClass
-    from App.interfaces import IPersistentExtra
     Persistent.__class_init__ = InitializeClass
-
-    for k, v in PersistentUtil.__dict__.items():
-        if k[0] != '_':
-            setattr(Persistent, k, v)
-
-    classImplements(Persistent, IPersistentExtra)

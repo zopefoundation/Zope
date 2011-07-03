@@ -25,14 +25,8 @@
     </td>
   </tr>
   <tr>
-    <td align="left" valign="middle">
-      <div class="form-label">Last Modified</div>
-    </td>
-    <td align="left" valign="middle">
-      <div class="form-text" 
-       tal:content="python:context.bobobase_modification_time().strftime('%Y-%m-%d %I:%M %p')">1/1/2000
-      </div>
-    </td>
+    <td align="left" valign="middle"></td>
+    <td align="left" valign="middle"></td>
     <td align="left" valign="top" colspan="2">
       <a href="source.html" tal:condition="context/html">Browse HTML source</a>
       <a href="source.xml" tal:condition="not:context/html">Browse XML source</a>

@@ -41,6 +41,9 @@ Features Added
 Restructuring
 +++++++++++++
 
+- Removed `bobobase_modification_time` from `Persistence.Persistent`, you can
+  use `DateTime(object._p_mtime)` instead.
+
 - Removed `AccessRule` and `SiteRoot` from `Products.SiteAccess`.
 
 - Removed `Products.ZReST` and the `reStructuredText` wrapper, you can use

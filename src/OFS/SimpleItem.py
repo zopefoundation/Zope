@@ -40,6 +40,7 @@ from App.special_dtml import HTML
 from App.special_dtml import DTMLFile
 from App.Undo import UndoSupport
 from ComputedAttribute import ComputedAttribute
+from DateTime import DateTime
 from DocumentTemplate.html_quote import html_quote
 from DocumentTemplate.ustr import ustr
 from ExtensionClass import Base
@@ -316,8 +317,8 @@ class Item(Base,
         else:
             size=0
         # get modification time
-        if hasattr(aq_base(self), 'bobobase_modification_time'):
-            mtime=self.bobobase_modification_time().timeTime()
+        if hasattr(aq_base(self), '_p_mtime'):
+            mtime=DateTime(self._p_mtime).timeTime()
         else:
             mtime=time.time()
         # get owner and group

@@ -118,7 +118,6 @@
   <SELECT NAME="skey">
   <OPTION VALUE="meta_type">Type
   <OPTION VALUE="id">Id
-  <OPTION VALUE="bobobase_modification_time">Last Modified
   </SELECT> 
   <INPUT TYPE="checkbox" NAME="rkey" VALUE="reverse">
   <span class="form-label"> Reverse?</span>

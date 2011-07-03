@@ -225,7 +225,6 @@ your search terms below.
   <SELECT NAME="skey">
   <OPTION VALUE="id">Id
   <OPTION VALUE="meta_type">Type
-  <OPTION VALUE="bobobase_modification_time">Last Modified
   </SELECT> 
   <span class="form-label">
   <INPUT TYPE="checkbox" NAME="rkey" VALUE="reverse"> Reverse?

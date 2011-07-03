@@ -16,13 +16,6 @@ probably need to manage Zope using its raw IP address to fix things.
 
 <dtml-with keyword_args mapping>
 <tr>
-  <td align="left" valign="top" class="form-label">Last Modified</td>
-  <td align="left" valign="top" class="form-text">
-<dtml-var bobobase_modification_time fmt="%Y-%m-%d %H:%M">
-  </td>
-</tr>
-
-<tr>
   <td align="left" valign="top" colspan="2" class="form-help">
   Each line represents a path mapping for a single host 
   (<strong>host/path</strong>),
