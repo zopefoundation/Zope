@@ -8,7 +8,18 @@ You can have a look at the `detailed change log <CHANGES.html>`_ to learn
 about all minor new features and bugs being solved in this release.
 
 
-Major topic
------------
+Memory use
+----------
 
-TODO
+- DateTime
+- no more icons/images
+- no more default content
+- get some numbers for startup and startup after viewing the ZMI
+
+
+Good bye TTW development
+------------------------
+
+- ZMI getting stripped down
+- a lot less functionality OOTB
+- fewer zope.conf options
