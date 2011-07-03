@@ -36,35 +36,6 @@ information for the Folder.
     <input type="text" name="title" size="40" />
     </td>
   </tr>
-<dtml-if 
- "_.SecurityCheckPermission('Add Documents, Images, and Files',this())">
-  <tr>
-    <td align="left" valign="top">
-    </td>
-    <td align="left" valign="top">
-    <div class="form-text">
-    <input type="checkbox" name="createPublic:int" value="1" 
-     id="cbCreatePublic"> 
-     <label for="cbCreatePublic">Create public interface</label>
-    </div>
-    </td>
-  </tr>
-</dtml-if>
-
-<dtml-if 
- "_.SecurityCheckPermission('Add User Folders',this())">
-  <tr>
-    <td align="left" valign="top">
-    </td>
-    <td align="left" valign="top">
-    <div class="form-text">
-    <input type="checkbox" name="createUserF:int" value="1" 
-     id="cbCreateUserF"> 
-     <label for="cbCreateUserF">Create user folder</label>
-    </div>
-    </td>
-  </tr>
-</dtml-if>
 
   <tr>
     <td align="left" valign="top">

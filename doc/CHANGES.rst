@@ -41,6 +41,9 @@ Features Added
 Restructuring
 +++++++++++++
 
+- Removed special code to create user folders and page templates while creating
+  new `OFS.Folder` instances.
+
 - Removed persistent default code like the `error_log` and `temp_folder`.
 
 - Removed persistent default content, including the `standard_error_message`

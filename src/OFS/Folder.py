@@ -16,10 +16,6 @@ Folders are the basic container objects and are analogous to directories.
 """
 
 from AccessControl.class_init import InitializeClass
-from AccessControl.Permissions import add_page_templates
-from AccessControl.Permissions import add_user_folders
-from AccessControl.SecurityManagement import getSecurityManager
-from AccessControl.unauthorized import Unauthorized
 from App.special_dtml import DTMLFile
 from webdav.Collection import Collection
 from zope.interface import implements
@@ -39,33 +35,11 @@ def manage_addFolder(self, id, title='',
                      createUserF=0,
                      REQUEST=None):
     """Add a new Folder object with id *id*.
-
-    If the 'createPublic' and 'createUserF' parameters are set to any true
-    value, an 'index_html' and a 'UserFolder' objects are created respectively
-    in the new folder.
     """
     ob = Folder(id)
     ob.title = title
     self._setObject(id, ob)
     ob = self._getOb(id)
-
-    checkPermission=getSecurityManager().checkPermission
-
-    if createUserF:
-        if not checkPermission(add_user_folders, ob):
-            raise Unauthorized, (
-                  'You are not authorized to add User Folders.'
-                  )
-        ob.manage_addUserFolder()
-
-    if createPublic:
-        if not checkPermission(add_page_templates, ob):
-            raise Unauthorized, (
-                  'You are not authorized to add Page Templates.'
-                  )
-        ob.manage_addProduct['PageTemplates'].manage_addPageTemplate(
-            id='index_html', title='')
-
     if REQUEST is not None:
         return self.manage_main(self, REQUEST, update_menu=1)
 
