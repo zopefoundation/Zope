@@ -44,6 +44,7 @@ from zope.processlifetime import DatabaseOpenedWithRoot
 
 app = None
 startup_time = asctime()
+_patched = False
 
 
 def load_zcml():
@@ -56,10 +57,20 @@ def load_zcml():
     configure_vocabulary_registry()
 
 
+def patch_persistent():
+    global _patched
+    if _patched:
+        return
+    _patched = True
+
+    from Persistence import Persistent
+    from AccessControl.class_init import InitializeClass
+    Persistent.__class_init__ = InitializeClass
+
+
 def startup():
-    from App.PersistentExtra import patchPersistent
     import Globals  # to set / fetch data
-    patchPersistent()
+    patch_persistent()
 
     global app
 
