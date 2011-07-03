@@ -28,7 +28,6 @@ from DateTime import DateTime
 from OFS.metaconfigure import get_packages_to_initialize
 from OFS.metaconfigure import package_initialized
 from OFS.userfolder import UserFolder
-from Persistence import Persistent
 from webdav.NullResource import NullResource
 from zExceptions import Redirect as RedirectException, Forbidden
 
@@ -187,22 +186,6 @@ class Application(ApplicationDefaultPermissions,
 
 InitializeClass(Application)
 
-
-class Expired(Persistent):
-
-    def __setstate__(self, s={}):
-        dict=self.__dict__
-        if s.has_key('id'):
-            dict['id']=s['id']
-        elif s.has_key('__name__'):
-            dict['id']=s['__name__']
-        else: dict['id']='Unknown'
-        dict['title']='** Expired **'
-
-    def __save__(self):
-        pass
-
-    __inform_commit__=__save__
 
 def initialize(app):
     initializer = AppInitializer(app)
