@@ -16,6 +16,11 @@ Bugs Fixed
 Features Added
 ++++++++++++++
 
+- During startup open a connection to every configured database, to ensure all
+  of them can indeed be accessed. This avoids surprises during runtime when
+  traversal to some database mountpoint could fail as the underlying storage
+  cannot be opened at all.
+
 - Explicitly close all databases on shutdown, which ensures `Data.fs.index`
   gets written to the file system.
 

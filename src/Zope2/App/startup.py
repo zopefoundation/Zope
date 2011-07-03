@@ -93,6 +93,17 @@ def startup():
         else:
             DB = ZODB.DB(m.Storage, databases=databases)
 
+    # Force a connection to every configured database, to ensure all of them
+    # can indeed be opened. This avoids surprises during runtime when traversal
+    # to some database mountpoint fails as the underlying storage cannot be
+    # opened at all
+    for mount, name in dbtab.listMountPaths():
+        _db = dbtab.getDatabase(mount)
+        _conn = _db.open()
+        _conn.close()
+        del _conn
+        del _db
+
     notify(DatabaseOpened(DB))
 
     Globals.BobobaseName = DB.getName()
