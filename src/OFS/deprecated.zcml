@@ -14,8 +14,6 @@
 
   <five:deprecatedManageAddDelete
       class="Products.SiteAccess.VirtualHostMonster.VirtualHostMonster"/>
-  <five:deprecatedManageAddDelete
-      class="Products.SiteAccess.SiteRoot.Traverser"/>
 
   <five:deprecatedManageAddDelete
       class="Products.SiteErrorLog.SiteErrorLog.SiteErrorLog"/>

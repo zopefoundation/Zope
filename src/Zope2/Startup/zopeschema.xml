@@ -688,27 +688,6 @@
      <metadefault>20</metadefault>
   </key>
 
-  <key name="suppress-all-access-rules" datatype="boolean"
-       default="off" handler="suppress_all_access_rules">
-     <description>
-     If this directive is set to on, no access rules in your Zope site
-     will be executed. This is useful if you "lock yourself out" of a
-     particular part of your site by setting an improper access rule.
-     </description>
-     <metadefault>off</metadefault>
-  </key>
-
-
-  <key name="suppress-all-site-roots" datatype="boolean"
-       default="off" handler="suppress_all_site_roots">
-     <description>
-     If this directive is set to on, no site roots in your Zope site will
-     be effective. This is useful if you "lock yourself out" of a
-     particular part of your site by setting an improper site root.
-     </description>
-     <metadefault>off</metadefault>
-  </key>
-
   <section type="eventlog" name="*" attribute="eventlog">
     <description>
       Describes what level of log output is desired and where it

@@ -53,14 +53,6 @@ def session_timeout_minutes(value):
     value not in (None, default) and _setenv('ZSESSION_TIMEOUT_MINS', value)
     return value
 
-def suppress_all_access_rules(value):
-    value and _setenv('SUPPRESS_ACCESSRULE', value)
-    return value
-
-def suppress_all_site_roots(value):
-    value and _setenv('SUPPRESS_SITEROOT', value)
-    return value
-
 def large_file_threshold(value):
     import ZServer
     ZServer.LARGE_FILE_THRESHOLD = value

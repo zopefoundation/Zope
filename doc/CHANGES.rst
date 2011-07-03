@@ -41,6 +41,8 @@ Features Added
 Restructuring
 +++++++++++++
 
+- Removed `AccessRule` and `SiteRoot` from `Products.SiteAccess`.
+
 - Removed `Products.ZReST` and the `reStructuredText` wrapper, you can use
   `docutils` directly to gain `reST` support.
 

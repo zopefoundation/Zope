@@ -23,7 +23,7 @@ from zope.traversing.interfaces import BeforeTraverseEvent
 
 import ExtensionClass
 from Acquisition import aq_base, aq_inner, aq_parent
-from Products.SiteAccess.AccessRule import AccessRule
+from ZPublisher.BeforeTraverse import NameCaller
 from ZPublisher.BeforeTraverse import registerBeforeTraverse
 from ZPublisher.BeforeTraverse import unregisterBeforeTraverse
 
@@ -64,7 +64,7 @@ def enableSite(obj, iface=ISite):
     obj = aq_base(obj)
     if not IPossibleSite.providedBy(obj):
         raise TypeError, 'Must provide IPossibleSite'
-    hook = AccessRule(HOOK_NAME)
+    hook = NameCaller(HOOK_NAME)
     registerBeforeTraverse(obj, hook, HOOK_NAME, 1)
 
     if not hasattr(obj, HOOK_NAME):
