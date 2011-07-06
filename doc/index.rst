@@ -1,6 +1,6 @@
 
-Zope 2.14 specific documentation
-================================
+Zope 4.0 specific documentation
+===============================
 
 Contents:
 

@@ -14,7 +14,7 @@
 """
 
 from zope.deferredimport import deprecated
-deprecated('ZPublisher.TaintedString will be removed in Zope 2.14. Please '
+deprecated('ZPublisher.TaintedString will be removed in Zope 4.0 Please '
            'import from AccessControl.tainted instead.',
            TaintedString = 'AccessControl.tainted:TaintedString',
           )
