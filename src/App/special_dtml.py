@@ -44,7 +44,7 @@ class ClassicHTMLFile(DocumentTemplate.HTMLFile,MethodObject.Method,):
         elif type(_prefix) is not type(''):
             _prefix = Common.package_home(_prefix)
         args=(self, os.path.join(_prefix, name + '.dtml'))
-        if not kw.has_key('__name__'):
+        if '__name__' not in kw:
             kw['__name__'] = os.path.split(name)[-1]
         apply(ClassicHTMLFile.inheritedAttribute('__init__'), args, kw)
 

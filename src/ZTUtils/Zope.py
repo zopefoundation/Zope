@@ -297,18 +297,17 @@ def url_query(request, req_name="URL", omit=None):
             omits = {}
             for name in omit:
                 omits[name] = None
-        omitted = omits.has_key
 
         unq = urllib.unquote
         for i in range(len(qsparts)):
             name = unq(qsparts[i].split('=', 1)[0])
-            if omitted(name):
+            if name in omits:
                 qsparts[i] = ''
             name = name.split(':', 1)[0]
-            if omitted(name):
+            if name in omits:
                 qsparts[i] = ''
             name = name.split('.', 1)[0]
-            if omitted(name):
+            if name in omits:
                 qsparts[i] = ''
 
         qs = '&'.join(filter(None, qsparts))

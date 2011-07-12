@@ -55,7 +55,7 @@ class NameAssignments:
         asgns = {}
         _isLegalName = self._isLegalName
         for name, expr in self._exprs:
-            if mapping.has_key(name):
+            if name in mapping:
                 assigned_name = string.strip(mapping[name])
                 if not assigned_name:
                     continue
@@ -71,7 +71,7 @@ class NameAssignments:
         return 0
 
     def isNameAssigned(self, name):
-        return self._asgns.has_key(name)
+        return name in self._asgns
 
     def getAssignedName(self, name, default=_marker):
         val = self._asgns.get(name, default)
@@ -89,7 +89,7 @@ class NameAssignments:
         rval = []
         asgns = self._asgns
         for name, expr in self._exprs:
-            if asgns.has_key(name):
+            if name in asgns:
                 assigned_name = asgns[name]
                 rval.append(assigned_name)
         return rval
@@ -114,7 +114,7 @@ class NameAssignments:
         assigned_names = []
         asgns = self._asgns
         for name, expr in self._exprs:
-            if asgns.has_key(name):
+            if name in asgns:
                 assigned_name = asgns[name]
                 assigned_names.append(assigned_name)
                 exprtext.append('"%s":%s,' % (assigned_name, expr))
@@ -133,7 +133,7 @@ class NameAssignments:
             passedLastBoundArg = 1
             for name, expr in self._exprs:
                 # Provide a value for the available exprs.
-                if asgns.has_key(name):
+                if name in asgns:
                     assigned_name = asgns[name]
                     if assigned_name == argName:
                         # The value for this argument will be filled in.

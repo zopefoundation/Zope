@@ -220,7 +220,7 @@ class HTTPResponse(BaseResponse):
         if isinstance(status, str):
             status = status.lower()
 
-        if status_codes.has_key(status):
+        if status in status_codes:
             status = status_codes[status]
         else:
             status = 500
@@ -228,7 +228,7 @@ class HTTPResponse(BaseResponse):
         self.status = status
 
         if reason is None:
-            if status_reasons.has_key(status):
+            if status in status_reasons:
                 reason = status_reasons[status]
             else:
                 reason = 'Unknown'
@@ -252,7 +252,7 @@ class HTTPResponse(BaseResponse):
         value = str(value)
 
         cookies = self.cookies
-        if cookies.has_key(name):
+        if name in cookies:
             cookie = cookies[name]
         else:
             cookie = cookies[name] = {}
@@ -273,11 +273,11 @@ class HTTPResponse(BaseResponse):
         value = str(value)
 
         cookies = self.cookies
-        if cookies.has_key(name):
+        if name in cookies:
             cookie = cookies[name]
         else:
             cookie = cookies[name] = {}
-        if cookie.has_key('value'):
+        if 'value' in cookie:
             cookie['value'] = '%s:%s' % (cookie['value'], value)
         else:
             cookie['value'] = value
@@ -351,7 +351,7 @@ class HTTPResponse(BaseResponse):
         name = name.lower()
 
         headers = self.headers
-        if headers.has_key(name):
+        if name in headers:
             h = headers[name]
             h = "%s%s%s" % (h, delimiter, value)
         else:

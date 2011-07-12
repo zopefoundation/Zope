@@ -69,7 +69,7 @@ class BaseResponse:
         cookie in the Response object.
         '''
         cookies = self.cookies
-        if cookies.has_key(name):
+        if name in cookies:
             cookie = cookies[name]
         else:
             cookie = cookies[name] = {}

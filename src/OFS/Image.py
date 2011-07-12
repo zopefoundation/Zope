@@ -504,7 +504,7 @@ class File(Persistent, Implicit, PropertyManager,
 
     def _get_content_type(self, file, body, id, content_type=None):
         headers=getattr(file, 'headers', None)
-        if headers and headers.has_key('content-type'):
+        if headers and 'content-type' in headers:
             content_type=headers['content-type']
         else:
             if not isinstance(body, str): body=body.data

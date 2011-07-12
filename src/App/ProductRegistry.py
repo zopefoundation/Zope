@@ -32,7 +32,7 @@ class ProductRegistryMixin:
         r=[]
         pid=product.id
         for mt in self._getProductRegistryMetaTypes():
-            if mt.has_key('product'):
+            if 'product' in mt:
                 if mt['product']==pid and (
                     meta_type is None or meta_type==mt['name']):
                     continue
@@ -52,7 +52,7 @@ class ProductRegistryMixin:
 
         for mt in meta_types:
             if mt['name']==meta_type:
-                if not mt.has_key('product'): mt['product']=pid
+                if 'product' not in mt: mt['product']=pid
                 if mt['product'] != pid:
                     raise ValueError, (
                         'The type <em>%s</em> is already defined.' % meta_type)

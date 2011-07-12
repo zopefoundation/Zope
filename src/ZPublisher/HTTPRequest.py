@@ -59,7 +59,7 @@ base64 = None
 # This may get overwritten during configuration
 default_encoding = 'iso-8859-15'
 
-isCGI_NAME = {
+isCGI_NAMEs = {
         'SERVER_SOFTWARE' : 1,
         'SERVER_NAME' : 1,
         'GATEWAY_INTERFACE' : 1,
@@ -78,9 +78,11 @@ isCGI_NAME = {
         'CONTENT_TYPE' : 1,
         'CONTENT_LENGTH' : 1,
         'SERVER_URL': 1,
-        }.has_key
+        }
 
-hide_key = {'HTTP_AUTHORIZATION':1, 'HTTP_CGI_AUTHORIZATION': 1}.has_key
+isCGI_NAME = isCGI_NAMEs.has_key
+
+hide_key = {'HTTP_AUTHORIZATION':1, 'HTTP_CGI_AUTHORIZATION': 1}
 
 default_port = {'http': '80', 'https': '443'}
 
@@ -321,14 +323,13 @@ class HTTPRequest(BaseRequest):
         if not clean:
             environ = sane_environment(environ)
 
-        if environ.has_key('HTTP_AUTHORIZATION'):
+        if 'HTTP_AUTHORIZATION' in environ:
             self._auth = environ['HTTP_AUTHORIZATION']
             response._auth = 1
             del environ['HTTP_AUTHORIZATION']
 
         self.stdin = stdin
         self.environ = environ
-        have_env = environ.has_key
         get_env = environ.get
         self.response = response
         other = self.other = {'RESPONSE': response}
@@ -341,9 +342,9 @@ class HTTPRequest(BaseRequest):
         # We don't set up the locale initially but just on first access
         self._locale = _marker
 
-        if environ.has_key('REMOTE_ADDR'):
+        if 'REMOTE_ADDR' in environ:
             self._client_addr = environ['REMOTE_ADDR']
-            if (environ.has_key('HTTP_X_FORWARDED_FOR') and
+            if ('HTTP_X_FORWARDED_FOR' in environ and
                 self._client_addr in trusted_proxies):
                 # REMOTE_ADDR is one of our trusted local proxies.
                 # Not really very remote at all.  The proxy can tell us the
@@ -382,16 +383,16 @@ class HTTPRequest(BaseRequest):
         if server_url is not None:
             other['SERVER_URL'] = server_url = server_url.strip()
         else:
-            if have_env('HTTPS') and (
+            if 'HTTPS' in environ and (
                 environ['HTTPS'] == "on" or environ['HTTPS'] == "ON"):
                 protocol = 'https'
-            elif (have_env('SERVER_PORT_SECURE') and
+            elif ('SERVER_PORT_SECURE' in environ and
                 environ['SERVER_PORT_SECURE'] == "1"):
                 protocol = 'https'
             else:
                 protocol = 'http'
 
-            if have_env('HTTP_HOST'):
+            if 'HTTP_HOST' in environ:
                 host = environ['HTTP_HOST'].strip()
                 hostname, port = splitport(host)
 
@@ -401,7 +402,7 @@ class HTTPRequest(BaseRequest):
                 # the commented code here in case we care enough to come
                 # back and do anything with it later.
                 #
-                # if port is None and environ.has_key('SERVER_PORT'):
+                # if port is None and 'SERVER_PORT' in environ:
                 #     s_port = environ['SERVER_PORT']
                 #     if s_port not in ('80', '443'):
                 #         port = s_port
@@ -486,17 +487,17 @@ class HTTPRequest(BaseRequest):
         # If 'QUERY_STRING' is not present in environ
         # FieldStorage will try to get it from sys.argv[1]
         # which is not what we need.
-        if not environ.has_key('QUERY_STRING'):
+        if 'QUERY_STRING' not in environ:
             environ['QUERY_STRING'] = ''
 
         meth = None
         fs = ZopeFieldStorage(fp=fp,environ=environ,keep_blank_values=1)
         if not hasattr(fs,'list') or fs.list is None:
-            if environ.has_key('HTTP_SOAPACTION'):
+            if 'HTTP_SOAPACTION' in environ:
                 # Stash XML request for interpretation by a SOAP-aware view
                 other['SOAPXML'] = fs.value
             # Hm, maybe it's an XML-RPC
-            elif (fs.headers.has_key('content-type') and
+            elif ('content-type' in fs.headers and
                 'text/xml' in fs.headers['content-type'] and
                 method == 'POST'):
                 # Ye haaa, XML-RPC!
@@ -513,7 +514,7 @@ class HTTPRequest(BaseRequest):
             fslist = fs.list
             tuple_items = {}
             lt = type([])
-            CGI_name = isCGI_NAME
+            CGI_name = isCGI_NAMEs
             defaults = {}
             tainteddefaults = {}
             converter = None
@@ -605,7 +606,7 @@ class HTTPRequest(BaseRequest):
                             l = -1
 
                 # Filter out special names from form:
-                if CGI_name(key) or key[:5] == 'HTTP_':
+                if key in CGI_name or key[:5] == 'HTTP_':
                     continue
 
                 # If the key is tainted, mark it so as well.
@@ -670,13 +671,13 @@ class HTTPRequest(BaseRequest):
 
                         except:
                             if (not item and not (flags & DEFAULT) and
-                                defaults.has_key(key)):
+                                key in defaults):
                                 item = defaults[key]
                                 if flags & RECORD:
                                     item = getattr(item,attr)
                                 if flags & RECORDS:
                                     item = getattr(item[-1], attr)
-                                if tainteddefaults.has_key(tainted_key):
+                                if tainted_key in tainteddefaults:
                                     tainted = tainteddefaults[tainted_key]
                                     if flags & RECORD:
                                         tainted = getattr(tainted, attr)
@@ -703,7 +704,7 @@ class HTTPRequest(BaseRequest):
                         tainted_mapping = taintedform
 
                     #Insert in dictionary
-                    if mapping_object.has_key(key):
+                    if key in mapping_object:
                         if flags & RECORDS:
                             #Get the list and the last record
                             #in the list. reclist is mutable.
@@ -712,7 +713,7 @@ class HTTPRequest(BaseRequest):
 
                             if tainted:
                                 # Store a tainted copy as well
-                                if not tainted_mapping.has_key(tainted_key):
+                                if tainted_key not in tainted_mapping:
                                     tainted_mapping[tainted_key] = deepcopy(
                                         reclist)
                                 treclist = tainted_mapping[tainted_key]
@@ -731,7 +732,7 @@ class HTTPRequest(BaseRequest):
                                         setattr(newrec, attr, tainted)
                                         treclist.append(newrec)
 
-                            elif tainted_mapping.has_key(tainted_key):
+                            elif tainted_key in tainted_mapping:
                                 # If we already put a tainted value into this
                                 # recordset, we need to make sure the whole
                                 # recordset is built.
@@ -791,7 +792,7 @@ class HTTPRequest(BaseRequest):
 
                             # Store a tainted copy as well if necessary
                             if tainted:
-                                if not tainted_mapping.has_key(tainted_key):
+                                if tainted_key not in tainted_mapping:
                                     tainted_mapping[tainted_key] = deepcopy(
                                         mapping_object[key])
                                 b = tainted_mapping[tainted_key]
@@ -802,7 +803,7 @@ class HTTPRequest(BaseRequest):
                                 else:
                                     setattr(b, attr, tainted)
 
-                            elif tainted_mapping.has_key(tainted_key):
+                            elif tainted_key in tainted_mapping:
                                 # If we already put a tainted value into this
                                 # record, we need to make sure the whole record
                                 # is built.
@@ -820,7 +821,7 @@ class HTTPRequest(BaseRequest):
 
                             if tainted:
                                 # Store a tainted version if necessary
-                                if not tainted_mapping.has_key(tainted_key):
+                                if tainted_key not in tainted_mapping:
                                     copied = deepcopy(found)
                                     if isinstance(copied, lt):
                                         tainted_mapping[tainted_key] = copied
@@ -828,7 +829,7 @@ class HTTPRequest(BaseRequest):
                                         tainted_mapping[tainted_key] = [copied]
                                 tainted_mapping[tainted_key].append(tainted)
 
-                            elif tainted_mapping.has_key(tainted_key):
+                            elif tainted_key in tainted_mapping:
                                 # We may already have encountered a tainted
                                 # value for this key, and the tainted_mapping
                                 # needs to hold all the values.
@@ -899,13 +900,13 @@ class HTTPRequest(BaseRequest):
                         tainted = item
 
                     #Insert in dictionary
-                    if mapping_object.has_key(key):
+                    if key in mapping_object:
                         # it is not a record or list of records
                         found = mapping_object[key]
 
                         if tainted:
                             # Store a tainted version if necessary
-                            if not taintedform.has_key(tainted_key):
+                            if tainted_key not in taintedform:
                                 copied = deepcopy(found)
                                 if isinstance(copied, lt):
                                     taintedform[tainted_key] = copied
@@ -916,7 +917,7 @@ class HTTPRequest(BaseRequest):
                                     taintedform[tainted_key]]
                             taintedform[tainted_key].append(tainted)
 
-                        elif taintedform.has_key(tainted_key):
+                        elif tainted_key in taintedform:
                             # We may already have encountered a tainted value
                             # for this key, and the taintedform needs to hold
                             # all the values.
@@ -943,12 +944,12 @@ class HTTPRequest(BaseRequest):
                     if '<' in key:
                         tainted_key = TaintedString(key)
 
-                    if not form.has_key(key):
+                    if key not in form:
                         # if the form does not have the key,
                         # set the default
                         form[key] = value
 
-                        if tainteddefaults.has_key(tainted_key):
+                        if tainted_key in tainteddefaults:
                             taintedform[tainted_key] = \
                                 tainteddefaults[tainted_key]
                     else:
@@ -960,13 +961,13 @@ class HTTPRequest(BaseRequest):
                             r = form[key]
 
                             # First deal with tainted defaults.
-                            if taintedform.has_key(tainted_key):
+                            if tainted_key in taintedform:
                                 tainted = taintedform[tainted_key]
                                 for k, v in tdefault.__dict__.items():
                                     if not hasattr(tainted, k):
                                         setattr(tainted, k, v)
 
-                            elif tainteddefaults.has_key(tainted_key):
+                            elif tainted_key in tainteddefaults:
                                 # Find out if any of the tainted default
                                 # attributes needs to be copied over.
                                 missesdefault = 0
@@ -997,7 +998,7 @@ class HTTPRequest(BaseRequest):
                                 l = [l]
 
                             # First deal with tainted copies
-                            if taintedform.has_key(tainted_key):
+                            if tainted_key in taintedform:
                                 tainted = taintedform[tainted_key]
                                 if not isinstance(tainted, lt):
                                     tainted = [tainted]
@@ -1012,7 +1013,7 @@ class HTTPRequest(BaseRequest):
                                             tainted.append(defitem)
                                 taintedform[tainted_key] = tainted
 
-                            elif tainteddefaults.has_key(tainted_key):
+                            elif tainted_key in tainteddefaults:
                                 missesdefault = 0
                                 for defitem in tdefault:
                                     if isinstance(defitem, record):
@@ -1089,7 +1090,7 @@ class HTTPRequest(BaseRequest):
                         a = a.split( ":")
                         a,new = ':'.join(a[:-1]), a[-1]
                     attr = new
-                    if form.has_key(k):
+                    if k in form:
                         # If the form has the split key get its value
                         tainted_split_key = k
                         if '<' in k:
@@ -1113,7 +1114,7 @@ class HTTPRequest(BaseRequest):
                                     setattr(x,attr,value)
 
                         # Do the same for the tainted counterpart
-                        if taintedform.has_key(tainted_split_key):
+                        if tainted_split_key in taintedform:
                             tainted = taintedform[tainted_split_key]
                             if isinstance(item, record):
                                 seq = tuple(getattr(tainted, attr))
@@ -1129,19 +1130,19 @@ class HTTPRequest(BaseRequest):
                         tainted_key = key
                         if '<' in key:
                             tainted_key = TaintedString(key)
-                        if form.has_key(key):
+                        if key in form:
                             # if it has the original key, get the item
                             # convert it to a tuple
                             item = form[key]
                             item = tuple(form[key])
                             form[key] = item
 
-                        if taintedform.has_key(tainted_key):
+                        if tainted_key in taintedform:
                             tainted = tuple(taintedform[tainted_key])
                             taintedform[tainted_key] = tainted
 
         if meth:
-            if environ.has_key('PATH_INFO'):
+            if 'PATH_INFO' in environ:
                 path = environ['PATH_INFO']
                 while path[-1:] == '/':
                     path = path[:-1]
@@ -1253,7 +1254,7 @@ class HTTPRequest(BaseRequest):
 
         """ #"
         other = self.other
-        if other.has_key(key):
+        if key in other:
             if key == 'REQUEST':
                 return self
             return other[key]
@@ -1271,15 +1272,15 @@ class HTTPRequest(BaseRequest):
                 else:
                     path = [other['SERVER_URL']] + path[:n]
                 URL = '/'.join(path)
-                if other.has_key('PUBLISHED'):
+                if 'PUBLISHED' in other:
                     # Don't cache URLs until publishing traversal is done.
                     other[key] = URL
                     self._urls = self._urls + (key,)
                 return URL
 
-        if isCGI_NAME(key) or key[:5] == 'HTTP_':
+        if key in isCGI_NAMEs or key[:5] == 'HTTP_':
             environ = self.environ
-            if environ.has_key(key) and (not hide_key(key)):
+            if key in environ and (key not in hide_key):
                 return environ[key]
             return ''
 
@@ -1305,7 +1306,7 @@ class HTTPRequest(BaseRequest):
                 else:
                     v.insert(0, other['SERVER_URL'])
                 URL = '/'.join(v)
-                if other.has_key('PUBLISHED'):
+                if 'PUBLISHED' in other:
                     # Don't cache URLs until publishing traversal is done.
                     other[key] = URL
                     self._urls = self._urls + (key,)
@@ -1406,7 +1407,7 @@ class HTTPRequest(BaseRequest):
         keys.update(self._lazies)
 
         for key in self.environ.keys():
-            if (isCGI_NAME(key) or key[:5] == 'HTTP_') and (not hide_key(key)):
+            if (key in isCGI_NAMEs or key[:5] == 'HTTP_') and (key not in hide_key):
                 keys[key] = 1
 
         # Cache URLN and BASEN in self.other.
@@ -1470,7 +1471,7 @@ class HTTPRequest(BaseRequest):
 
         result = result + "</table><h3>environ</h3><table>"
         for k,v in self.environ.items():
-            if not hide_key(k):
+            if k not in hide_key:
                 result = result + row % (escape(k), escape(repr(v)))
         return result + "</table>"
 
@@ -1509,7 +1510,7 @@ class HTTPRequest(BaseRequest):
 
         result = result + "\nENVIRON\n\n"
         for k,v in self.environ.items():
-            if not hide_key(k):
+            if k not in hide_key:
                 result = result + row % (k, v)
         return result
 
@@ -1575,7 +1576,7 @@ def sane_environment(env):
         while key[:9] == 'REDIRECT_':
             key = key[9:]
         dict[key] = val
-    if dict.has_key('HTTP_CGI_AUTHORIZATION'):
+    if 'HTTP_CGI_AUTHORIZATION' in dict:
         dict['HTTP_AUTHORIZATION'] = dict['HTTP_CGI_AUTHORIZATION']
         try:
             del dict['HTTP_CGI_AUTHORIZATION']
@@ -1661,7 +1662,6 @@ def parse_cookie(text,
 
     if result is None:
         result = {}
-    already_have = result.has_key
 
     acquire()
     try:
@@ -1694,7 +1694,7 @@ def parse_cookie(text,
     finally:
         release()
 
-    if not already_have(name):
+    if name not in result:
         result[name] = unquote(value)
 
     return apply(parse_cookie,(text[l:],result))

@@ -353,7 +353,7 @@ class ApplicationManager(Folder,CacheManager):
             return '%.1fM' % (s/1048576.0)
         return '%.1fK' % (s/1024.0)
 
-    if os.environ.has_key('ZMANAGED'):
+    if 'ZMANAGED' in os.environ:
         manage_restartable = 1
         @requestmethod('POST')
         def manage_restart(self, URL1, REQUEST=None):

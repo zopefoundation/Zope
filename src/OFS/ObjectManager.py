@@ -273,7 +273,7 @@ class ObjectManager(CopyContainer,
         else:
             all = self.all_meta_types
         for meta_type in all:
-            if meta_type.has_key('permission'):
+            if 'permission' in meta_type:
                 if sm.checkPermission(meta_type['permission'], self):
                     meta_types.append(meta_type)
             else:
@@ -476,7 +476,6 @@ class ObjectManager(CopyContainer,
         seen={}
         vals=[]
         relativePhysicalPath = ()
-        have=seen.has_key
         x=0
         while x < 100:
             if not hasattr(obj,'_getOb'): break
@@ -486,7 +485,7 @@ class ObjectManager(CopyContainer,
                     try:
                         id=i['id']
                         physicalPath = relativePhysicalPath + (id,)
-                        if (not have(physicalPath)) and (i['meta_type'] in t):
+                        if (physicalPath not in seen) and (i['meta_type'] in t):
                             vals.append(get(id))
                             seen[physicalPath]=1
                     except: pass

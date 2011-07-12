@@ -286,7 +286,7 @@ def get_module_info(module_name, modules={},
                     release=_l.release,
                     ):
 
-    if modules.has_key(module_name): return modules[module_name]
+    if module_name in modules: return modules[module_name]
 
     if module_name[-4:]=='.cgi': module_name=module_name[:-4]
 

@@ -97,7 +97,7 @@ class VirtualHostMonster(Persistent, Item, Implicit):
                 else:
                     host_map = fixed_map
                 hostname, port = (host.split( ':', 1) + [None])[:2]
-                if not host_map.has_key(hostname):
+                if hostname not in host_map:
                     host_map[hostname] = {}
                 host_map[hostname][port] = pp
             except 'LineError', msg:
