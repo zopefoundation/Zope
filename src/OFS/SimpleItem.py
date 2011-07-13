@@ -91,7 +91,7 @@ class Item(Base,
     manage_afterClone.__five_method__ = True
 
     # Direct use of the 'id' attribute is deprecated - use getId()
-    id=''
+    id = ''
 
     security.declarePublic('getId')
     def getId(self):
@@ -100,17 +100,13 @@ class Item(Base,
         This method should be used in preference to accessing an id attribute
         of an object directly. The getId method is public.
         """
-        name=getattr(self, 'id', None)
-        if callable(name):
-            return name()
+        name = self.id
         if name is not None:
             return name
-        if hasattr(self, '__name__'):
-            return self.__name__
-        raise AttributeError, 'This object has no id'
+        return self.__name__
 
     # Alias id to __name__, which will make tracebacks a good bit nicer:
-    __name__=ComputedAttribute(lambda self: self.getId())
+    __name__ = ComputedAttribute(lambda self: self.id)
 
     # Meta type used for selecting all objects of a given type.
     meta_type='simple item'
@@ -377,7 +373,6 @@ InitializeClass(Item)
 
 
 class Item_w__name__(Item):
-
     """Mixin class to support common name/id functions"""
 
     implements(IItemWithName)
@@ -411,12 +406,10 @@ class Item_w__name__(Item):
         getPhysicalRoot() and getPhysicalPath() are designed to operate
         together.
         """
-        path = (self.__name__,)
-
+        path = (self.__name__, )
         p = aq_parent(aq_inner(self))
         if p is not None:
             path = p.getPhysicalPath() + path
-
         return path
 
 

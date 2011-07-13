@@ -141,9 +141,6 @@ class File(Persistent, Implicit, PropertyManager,
         content_type=self._get_content_type(file, data, id, content_type)
         self.update_data(data, content_type, size)
 
-    def id(self):
-        return self.__name__
-
     def _if_modified_since_request_handler(self, REQUEST, RESPONSE):
         # HTTP If-Modified-Since header handling: return True if
         # we can handle this request by returning a 304 response

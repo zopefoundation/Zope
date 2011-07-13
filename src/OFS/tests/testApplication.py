@@ -29,17 +29,17 @@ class ApplicationTests(unittest.TestCase):
 
     def test_id_no_request(self):
         app = self._makeOne()
-        self.assertEqual(app.id(), 'Zope')
+        self.assertEqual(app.getId(), 'Zope')
 
     def test_id_w_request_no_SCRIPT_NAME(self):
         app = self._makeOne()
         app.REQUEST = {}
-        self.assertEqual(app.id(), 'Zope')
+        self.assertEqual(app.getId(), 'Zope')
 
     def test_id_w_request_w_SCRIPT_NAME(self):
         app = self._makeOne()
         app.REQUEST = {'SCRIPT_NAME': '/Dummy'}
-        self.assertEqual(app.id(), 'Dummy')
+        self.assertEqual(app.getId(), 'Dummy')
 
     def test_title_and_id_plus_title_or_id(self):
         app = self._makeOne()

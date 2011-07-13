@@ -82,7 +82,7 @@ class Application(ApplicationDefaultPermissions,
         self.__allow_groups__ = uf
         self._setObject('acl_users', uf)
 
-    def id(self):
+    def getId(self):
         try:
             return self.REQUEST['SCRIPT_NAME'][1:]
         except (KeyError, TypeError):
