@@ -8,6 +8,15 @@ http://docs.zope.org/zope2/releases/.
 2.13.9 (unreleased)
 -------------------
 
+Bugs Fixed
+++++++++++
+
+- Restore ability to undo multiple transactions from the ZMI by using the
+  `undoMultiple` API. Backported from trunk (r122087).
+
+Features Added
+++++++++++++++
+
 - Updated distributions:
 
   - Products.ZCatalog = 2.13.15
