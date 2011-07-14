@@ -114,13 +114,46 @@ class Traversable:
         access this object again later, for example in a copy/paste operation.
         getPhysicalRoot() and getPhysicalPath() are designed to operate
         together.
+
+        This implementation is optimized to avoid excessive amounts of function
+        calls while walking up from an object on a deep level.
         """
-        path = (self.getId(),)
+        try:
+            id = self.id
+        except AttributeError:
+            id = self.getId()
+        else:
+            if id is None:
+                id = self.getId()
 
         p = aq_parent(aq_inner(self))
+        if p is None:
+            return (id, )
 
-        if p is not None:
-            path = p.getPhysicalPath() + path
+        path = [id]
+        func = self.getPhysicalPath.im_func
+        while p is not None:
+            if func is p.getPhysicalPath.im_func:
+                try:
+                    pid = p.id
+                except AttributeError:
+                    pid = p.getId()
+                else:
+                    if pid is None:
+                        pid = p.getId()
+
+                path.insert(0, pid)
+                try:
+                    p = p.__parent__
+                except AttributeError:
+                    p = None
+            else:
+                if IApplication.providedBy(p):
+                    path.insert(0, '')
+                    path = tuple(path)
+                else:
+                    path = p.getPhysicalPath() + tuple(path)
+                break
 
         return path
 

@@ -19,6 +19,9 @@ Bugs Fixed
 Features Added
 ++++++++++++++
 
+- Optimized the `OFS.Traversable.getPhysicalPath` method to avoid excessive
+  amounts of method calls.
+
 - During startup open a connection to every configured database, to ensure all
   of them can indeed be accessed. This avoids surprises during runtime when
   traversal to some database mountpoint could fail as the underlying storage
