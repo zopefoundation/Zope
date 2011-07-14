@@ -20,7 +20,7 @@ The specified log entry was not found.  It may have expired.
 <table>
  <tr>
   <th align="left" valign="top">Time</th>
-  <td tal:content="python: DateTime(entry['time'])"></td>
+  <td tal:content="python: modules['DateTime'].DateTime(entry['time'])"></td>
  </tr>
  <tr>
   <th align="left" valign="top">User Name (User Id)</th>
