@@ -14,6 +14,8 @@ Bugs Fixed
 - Restore ability to undo multiple transactions from the ZMI by using the
   `undoMultiple` API. Backported from trunk (r122087).
 
+- Fixed chameleon compatibility in templates
+
 Features Added
 ++++++++++++++
 
