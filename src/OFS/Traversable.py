@@ -126,11 +126,11 @@ class Traversable:
             if id is None:
                 id = self.getId()
 
+        path = (id, )
         p = aq_parent(aq_inner(self))
         if p is None:
-            return (id, )
+            return path
 
-        path = [id]
         func = self.getPhysicalPath.im_func
         while p is not None:
             if func is p.getPhysicalPath.im_func:
@@ -142,17 +142,16 @@ class Traversable:
                     if pid is None:
                         pid = p.getId()
 
-                path.insert(0, pid)
+                path = (pid, ) + path
                 try:
                     p = p.__parent__
                 except AttributeError:
                     p = None
             else:
                 if IApplication.providedBy(p):
-                    path.insert(0, '')
-                    path = tuple(path)
+                    path = ('', ) + path
                 else:
-                    path = p.getPhysicalPath() + tuple(path)
+                    path = p.getPhysicalPath() + path
                 break
 
         return path
