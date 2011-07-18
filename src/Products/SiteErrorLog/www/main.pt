@@ -73,7 +73,7 @@ No exceptions logged.
  </tr>
  <tr tal:repeat="entry entries">
   <td valign="top" nowrap="nowrap">
-   <span tal:content="python: DateTime(entry['time']).Time()">13:04:41</span>
+   <span tal:content="python: modules['DateTime'].DateTime(entry['time']).Time()">13:04:41</span>
   </td>
   <td>
    <span tal:content="string: ${entry/username} (${entry/userid})">
