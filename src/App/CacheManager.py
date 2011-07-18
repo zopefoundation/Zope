@@ -97,8 +97,7 @@ class CacheManager:
         if REQUEST is not None:
             # format as text
             REQUEST.RESPONSE.setHeader('Content-Type', 'text/plain')
-            return '\n'.join(map(lambda (name, count): '%6d %s' %
-                                   (count, name), detail))
+            return '\n'.join('%6d %s'%(count, name) for count, name in detail)
         else:
             # raw
             return detail
@@ -110,8 +109,7 @@ class CacheManager:
         detail = self._getDB().cacheExtremeDetail()
         if REQUEST is not None:
             # sort the list.
-            lst = map(lambda dict: ((dict['conn_no'], dict['oid']), dict),
-                      detail)
+            lst = [((dict['conn_no'], dict['oid']), dict) for dict in detail]
             # format as text.
             res = [
                 '# Table shows connection number, oid, refcount, state, '

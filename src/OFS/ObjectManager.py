@@ -428,7 +428,7 @@ class ObjectManager(CopyContainer,
 
     def objectMap(self):
         # Return a tuple of mappings containing subobject meta-data
-        return tuple(map(lambda dict: dict.copy(), self._objects))
+        return tuple(d.copy() for d in self._objects)
 
     def objectIds_d(self, t=None):
         if hasattr(self, '_reserved_names'): n=self._reserved_names
@@ -689,7 +689,7 @@ class ObjectManager(CopyContainer,
 
         globbing = REQUEST.environ.get('GLOBBING','')
         if globbing :
-            files = filter(lambda x,g=globbing: fnmatch.fnmatch(x[0],g), files)
+            files = [x for x in files if fnmatch.fnmatch(x[0],globbing)]
 
         files.sort()
 

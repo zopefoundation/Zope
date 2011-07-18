@@ -258,25 +258,22 @@ class PropertySheet(Traversable, Persistent, Implicit):
             raise BadRequest, '%s cannot be deleted.' % escape(id)
         delattr(vself, id)
         pself=self.p_self()
-        pself._properties=tuple(filter(lambda i, n=id: i['id'] != n,
-                                       pself._properties))
+        pself._properties=tuple(i for i in pself._properties if i['id'] != id)
 
     security.declareProtected(access_contents_information, 'propertyIds')
     def propertyIds(self):
         # Return a list of property ids.
-        return map(lambda i: i['id'], self._propertyMap())
+        return [i['id'] for i in self._propertyMap()]
 
     security.declareProtected(access_contents_information, 'propertyValues')
     def propertyValues(self):
         # Return a list of property values.
-        return map(lambda i, s=self: s.getProperty(i['id']),
-                   self._propertyMap())
+        return [self.getProperty(i['id']) for i in self._propertyMap()]
 
     security.declareProtected(access_contents_information, 'propertyItems')
     def propertyItems(self):
         # Return a list of (id, property) tuples.
-        return map(lambda i, s=self: (i['id'], s.getProperty(i['id'])),
-                   self._propertyMap())
+        return [(i['id'], self.getProperty(i['id'])) for i in self._propertyMap()]
 
     security.declareProtected(access_contents_information, 'propertyInfo')
     def propertyInfo(self, id):
@@ -292,7 +289,7 @@ class PropertySheet(Traversable, Persistent, Implicit):
     security.declareProtected(access_contents_information, 'propertyMap')
     def propertyMap(self):
         # Returns a secure copy of the property definitions.
-        return tuple(map(lambda dict: dict.copy(), self._propertyMap()))
+        return tuple(dict.copy() for dict in self._propertyMap())
 
     def _propdict(self):
         dict={}
@@ -327,8 +324,7 @@ class PropertySheet(Traversable, Persistent, Implicit):
             attrs=item.get('meta', {}).get('__xml_attrs__', None)
             if attrs is not None:
                 # It's a xml property. Don't escape value.
-                attrs=map(lambda n: ' %s="%s"' % n, attrs.items())
-                attrs=''.join(attrs)
+                attrs=''.join(' %s="%s"' % n for n in attrs.items())
             else:
                 # It's a non-xml property. Escape value.
                 attrs=''
@@ -381,8 +377,7 @@ class PropertySheet(Traversable, Persistent, Implicit):
             attrs=item.get('meta', {}).get('__xml_attrs__', None)
             if attrs is not None:
                 # It's a xml property. Don't escape value.
-                attrs=map(lambda n: ' %s="%s"' % n, attrs.items())
-                attrs=''.join(attrs)
+                attrs=''.join(' %s="%s"' % n for n in attrs.items())
             else:
                 # It's a non-xml property. Escape value.
                 attrs=''
@@ -539,7 +534,7 @@ class DAVProperties(Virtual, PropertySheet, View):
         return self.pm
 
     def propertyMap(self):
-        return map(lambda dict: dict.copy(), self._propertyMap())
+        return [dict.copy() for dict in self._propertyMap()]
 
     def dav__creationdate(self):
         return iso8601_date(43200.0)
@@ -648,7 +643,7 @@ class PropertySheets(Traversable, Implicit, Tabs):
     security.declareProtected(access_contents_information, 'values')
     def values(self):
         propsets=self.__propsets__()
-        return map(lambda n, s=self: n.__of__(s), propsets)
+        return [n.__of__(self) for n in propsets]
 
     security.declareProtected(access_contents_information, 'items')
     def items(self):

@@ -210,27 +210,26 @@ class PropertyManager(Base):
         if not self.hasProperty(id):
             raise ValueError, 'The property %s does not exist' % escape(id)
         self._delPropValue(id)
-        self._properties=tuple(filter(lambda i, n=id: i['id'] != n,
-                                      self._properties))
+        self._properties=tuple(i for i in self._properties if i['id'] != id)
 
     security.declareProtected(access_contents_information, 'propertyIds')
     def propertyIds(self):
         """Return a list of property ids.
         """
-        return map(lambda i: i['id'], self._properties)
+        return [i['id'] for i in self._properties]
 
     security.declareProtected(access_contents_information, 'propertyValues')
     def propertyValues(self):
         """Return a list of actual property objects.
         """
-        return map(lambda i,s=self: getattr(s,i['id']), self._properties)
+        return [getattr(self, i['id']) for i in self._properties]
 
     security.declareProtected(access_contents_information, 'propertyItems')
     def propertyItems(self):
         """Return a list of (id,property) tuples.
         """
-        return map(lambda i,s=self: (i['id'],getattr(s,i['id'])),
-                                    self._properties)
+        return [(i['id'], getattr(self, i['id'])) for i in self._properties]
+
     def _propertyMap(self):
         """Return a tuple of mappings, giving meta-data for properties.
         """
@@ -242,7 +241,7 @@ class PropertyManager(Base):
 
         Return copies of the real definitions for security.
         """
-        return tuple(map(lambda dict: dict.copy(), self._propertyMap()))
+        return tuple(dict.copy() for dict in self._propertyMap())
 
     security.declareProtected(access_contents_information, 'propertyLabel')
     def propertyLabel(self, id):
