@@ -119,12 +119,9 @@ class Traversable:
         calls while walking up from an object on a deep level.
         """
         try:
-            id = self.id
+            id = self.id or self.getId()
         except AttributeError:
             id = self.getId()
-        else:
-            if id is None:
-                id = self.getId()
 
         path = (id, )
         p = aq_parent(aq_inner(self))
@@ -135,12 +132,9 @@ class Traversable:
         while p is not None:
             if func is p.getPhysicalPath.im_func:
                 try:
-                    pid = p.id
+                    pid = p.id or p.getId()
                 except AttributeError:
                     pid = p.getId()
-                else:
-                    if pid is None:
-                        pid = p.getId()
 
                 path = (pid, ) + path
                 try:
