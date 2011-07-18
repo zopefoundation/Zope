@@ -189,9 +189,9 @@ class Item(Base,
             # allow for a few different traceback options
             if tb is None and error_tb is None:
                 tb=sys.exc_info()[2]
-            if type(tb) is not type('') and (error_tb is None):
+            if type(tb) is not str and (error_tb is None):
                 error_tb = pretty_tb(error_type, error_value, tb)
-            elif type(tb) is type('') and not error_tb:
+            elif type(tb) is str and not error_tb:
                 error_tb = tb
 
             if hasattr(self, '_v_eek'):

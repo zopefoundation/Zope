@@ -587,7 +587,7 @@ def import_product(product_dir, product_name, raise_exc=0, log_exc=1):
     path_join=os.path.join
     isdir=os.path.isdir
     exists=os.path.exists
-    _st=type('')
+    _st=str
     global_dict=globals()
     silly=('__doc__',)
     modules=sys.modules

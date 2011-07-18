@@ -202,7 +202,7 @@ class PropertyManager(Base, ElementWithAttributes):
         self._wrapperCheck(value)
         if not self.hasProperty(id):
             raise BadRequest, 'The property %s does not exist' % escape(id)
-        if type(value)==type(''):
+        if type(value) is str:
             proptype=self.getPropertyType(id) or 'string'
             if proptype in type_converters:
                 value=type_converters[proptype](value)

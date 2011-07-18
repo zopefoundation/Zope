@@ -52,7 +52,7 @@ class ImageFile(Explicit):
             _prefix=getattr(getConfiguration(), 'softwarehome', None) or PREFIX
             if not os.path.isabs(path):
                 warnings.warn(NON_PREFIX_WARNING, UserWarning, 2)
-        elif type(_prefix) is not type(''):
+        elif type(_prefix) is not str:
             _prefix=package_home(_prefix)
         # _prefix is ignored if path is absolute
         path = os.path.join(_prefix, path)

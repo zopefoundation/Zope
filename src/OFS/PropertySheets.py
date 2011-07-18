@@ -231,7 +231,7 @@ class PropertySheet(Traversable, Persistent, Implicit):
         propinfo=self.propertyInfo(id)
         if not 'w' in propinfo.get('mode', 'wd'):
             raise BadRequest, '%s cannot be changed.' % escape(id)
-        if type(value)==type(''):
+        if type(value) is str:
             proptype=propinfo.get('type', 'string')
             if proptype in type_converters:
                 value=type_converters[proptype](value)

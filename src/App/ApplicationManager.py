@@ -346,7 +346,7 @@ class ApplicationManager(Folder,CacheManager):
 
     def db_size(self):
         s = self._p_jar.db().getSize()
-        if type(s) is type(''):
+        if type(s) is str:
             return s
 
         if s >= 1048576.0:

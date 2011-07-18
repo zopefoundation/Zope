@@ -222,7 +222,7 @@ class HTTPRequest(BaseRequest):
     def setVirtualRoot(self, path, hard=0):
         """ Treat the current publishing object as a VirtualRoot """
         other = self.other
-        if isinstance(path, str) or isinstance(path, unicode):
+        if isinstance(path, basestring):
             path = path.split('/')
         self._script[:] = map(quote, filter(None, path))
         del self._steps[:]
@@ -241,7 +241,7 @@ class HTTPRequest(BaseRequest):
 
     def physicalPathToVirtualPath(self, path):
         """ Remove the path to the VirtualRoot from a physical path """
-        if type(path) is type(''):
+        if isinstance(path, basestring):
             path = path.split( '/')
         rpp = self.other.get('VirtualRootPhysicalPath', ('',))
         i = 0

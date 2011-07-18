@@ -158,7 +158,7 @@ class SessionDataManager(Item, Implicit, Persistent, RoleManager, Owned, Tabs):
         """ """
         if not path:
             self.obpath = None # undefined state
-        elif type(path) is type(''):
+        elif type(path) is str:
             if bad_path_chars_in(path):
                 raise SessionDataManagerErr(
                     'Container path contains characters invalid in a Zope '

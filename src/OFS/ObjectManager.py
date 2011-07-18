@@ -411,7 +411,7 @@ class ObjectManager(CopyContainer,
         # If 'spec' is specified, returns objects whose meta_type
         # matches 'spec'.
         if spec is not None:
-            if type(spec)==type('s'):
+            if type(spec) is str:
                 spec=[spec]
             set=[]
             for ob in self._objects:
@@ -471,7 +471,7 @@ class ObjectManager(CopyContainer,
     def superValues(self, t):
         # Return all of the objects of a given type located in
         # this object and containing objects.
-        if type(t)==type('s'): t=(t,)
+        if type(t) is str: t=(t,)
         obj=self
         seen={}
         vals=[]
@@ -507,7 +507,7 @@ class ObjectManager(CopyContainer,
 
         The objects specified in 'ids' get deleted.
         """
-        if type(ids) is type(''): ids=[ids]
+        if type(ids) is str: ids=[ids]
         if not ids:
             return MessageDialog(title='No items specified',
                    message='No items were specified!',

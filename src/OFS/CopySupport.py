@@ -102,7 +102,7 @@ class CopyContainer(Base):
         elif ids is None:
             raise ValueError('ids must be specified')
 
-        if type(ids) is type(''):
+        if type(ids) is str:
             ids=[ids]
         oblist=[]
         for id in ids:
@@ -133,7 +133,7 @@ class CopyContainer(Base):
         elif ids is None:
             raise ValueError('ids must be specified')
 
-        if type(ids) is type(''):
+        if type(ids) is str:
             ids=[ids]
         oblist=[]
         for id in ids:

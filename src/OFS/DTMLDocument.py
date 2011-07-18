@@ -59,7 +59,7 @@ class DTMLDocument(PropertyManager, DTMLMethod):
             raise ResourceLockedError(
                 'This document has been locked via WebDAV.')
 
-        if type(file) is not type(''):
+        if type(file) is not str:
             if REQUEST and not file:
                 raise ValueError, 'No file specified'
             file = file.read()
@@ -103,7 +103,7 @@ class DTMLDocument(PropertyManager, DTMLMethod):
                 return result
 
             r = apply(HTML.__call__, (self, (client, bself), REQUEST), kw)
-            if type(r) is not type('') or RESPONSE is None:
+            if type(r) is not str or RESPONSE is None:
                 if not self._cache_namespace_keys:
                     self.ZCacheable_set(r)
                 return r
@@ -143,7 +143,7 @@ def addDTMLDocument(self, id, title='', file='', REQUEST=None, submit=None):
     """Add a DTML Document object with the contents of file. If
     'file' is empty, default document text is used.
     """
-    if type(file) is not type(''):
+    if type(file) is not str:
         file = file.read()
     if not file:
         file = default_dd_html

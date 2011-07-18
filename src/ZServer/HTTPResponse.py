@@ -163,7 +163,7 @@ class ZServerHTTPResponse(HTTPResponse):
         """
 
 
-        if type(data) != type(''):
+        if type(data) is not str:
             raise TypeError('Value must be a string')
 
         stdout = self.stdout
@@ -174,7 +174,7 @@ class ZServerHTTPResponse(HTTPResponse):
             l = self.headers.get('content-length', None)
             if l is not None:
                 try:
-                    if type(l) is type(''): l = int(l)
+                    if type(l) is str: l = int(l)
                     if l > 128000:
                         self._tempfile = tempfile.TemporaryFile()
                         self._templock = thread.allocate_lock()
