@@ -439,7 +439,7 @@ class CacheManager:
             ids = getVerifiedManagerIds(container)
             id = self.getId()
             if id in ids:
-                manager_ids = filter(lambda s, id=id: s != id, ids)
+                manager_ids = [s for s in ids if s != id]
                 if manager_ids:
                     setattr(container, ZCM_MANAGERS, manager_ids)
                 elif getattr(aq_base(self), ZCM_MANAGERS, None) is not None:

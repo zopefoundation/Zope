@@ -312,7 +312,7 @@ class BaseRequest:
     def __str__(self):
         L1 = self.items()
         L1.sort()
-        return '\n'.join(map(lambda item: "%s:\t%s" % item, L1))
+        return '\n'.join("%s:\t%s" % item for item in L1)
 
     __repr__=__str__
 

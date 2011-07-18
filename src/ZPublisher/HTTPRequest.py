@@ -1726,14 +1726,14 @@ class record:
     def __str__(self):
         L1 = self.__dict__.items()
         L1.sort()
-        return ", ".join(map(lambda item: "%s: %s" % item, L1))
+        return ", ".join("%s: %s" % item for item in L1)
 
     def __repr__(self):
         #return repr( self.__dict__ )
         L1 = self.__dict__.items()
         L1.sort()
         return '{%s}' % ', '.join(
-            map(lambda item: "'%s': %s" % (item[0], repr(item[1])), L1))
+            "'%s': %s" % (item[0], repr(item[1])) for item in L1)
 
     def __cmp__(self, other):
         return (cmp(type(self), type(other)) or

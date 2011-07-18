@@ -149,7 +149,6 @@ class Resource(Base, LockableItem):
         # the final part of the URL  (ie '/a/b/foo.html' becomes '/a/b/')
         if col: url = url[:url.rfind('/')+1]
 
-        havetag = lambda x, self=self: self.wl_hasLock(x)
         found = 0; resourcetagged = 0
         taglist = IfParser(ifhdr)
         for tag in taglist:
@@ -157,7 +156,7 @@ class Resource(Base, LockableItem):
             if not tag.resource:
                 # There's no resource (url) with this tag
                 tag_list = map(tokenFinder, tag.list)
-                wehave = filter(havetag, tag_list)
+                wehave = [tag for tag in tag_list if self.wl_hasLock(tag)]
 
                 if not wehave: continue
                 if tag.NOTTED: continue
@@ -168,7 +167,7 @@ class Resource(Base, LockableItem):
             elif urlbase(tag.resource) == url:
                 resourcetagged = 1
                 tag_list = map(tokenFinder, tag.list)
-                wehave = filter(havetag, tag_list)
+                wehave = [tag for tag in tag_list if self.wl_hasLock(tag)]
 
                 if not wehave: continue
                 if tag.NOTTED: continue

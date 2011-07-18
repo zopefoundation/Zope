@@ -25,7 +25,8 @@ class BrowserView(zope.publisher.browser.BrowserView, AcquisitionBBB):
     # Use an explicit __init__ to work around problems with magically inserted
     # super classes when using BrowserView as a base for viewlets.
     def __init__(self, context, request):
-        zope.publisher.browser.BrowserView.__init__(self, context, request)
+        self.context = context
+        self.request = request
 
     # Classes which are still based on Acquisition and access
     # self.context in a method need to call aq_inner on it, or get a

@@ -464,7 +464,7 @@ class ApplicationManager(Folder,CacheManager):
             introduced in 2.4.
         """
 
-        meta_types = map(lambda x: x.get('meta_type', None), self._objects)
+        meta_types = [x.get('meta_type', None) for x in self._objects]
 
         if not self.DavLocks.meta_type in meta_types:
 

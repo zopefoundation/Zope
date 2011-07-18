@@ -92,7 +92,7 @@ class CopyContainer(Base):
         return self._getOb(REQUEST['ids'][0])
 
     def manage_CopyContainerAllItems(self, REQUEST):
-        return map(lambda i, s=self: s._getOb(i), tuple(REQUEST['ids']))
+        return [self._getOb(i) for i in REQUEST['ids']]
 
     security.declareProtected(delete_objects, 'manage_cutObjects')
     def manage_cutObjects(self, ids=None, REQUEST=None):
