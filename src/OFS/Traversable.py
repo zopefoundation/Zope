@@ -39,6 +39,7 @@ from zope.traversing.namespace import namespaceLookup
 from zope.traversing.namespace import nsParse
 
 _marker = object()
+NullResource = None
 
 
 class Traversable:
@@ -142,30 +143,29 @@ class Traversable:
         If true, then all of the objects along the path are validated with
         the security machinery. Usually invoked using restrictedTraverse().
         """
-        from webdav.NullResource import NullResource
         if not path:
             return self
 
-        if isinstance(path, str):
+        if type(path) is str:
             # Unicode paths are not allowed
             path = path.split('/')
         else:
             path = list(path)
 
         REQUEST = {'TraversalRequestNameStack': path}
-        path.reverse()
+        #path.reverse()
         path_pop = path.pop
 
-        if len(path) > 1 and not path[0]:
+        if len(path) > 1 and not path[-1]:
             # Remove trailing slash
-            path_pop(0)
+            path_pop()
 
         if restricted:
             validate = getSecurityManager().validate
 
-        if not path[-1]:
+        if not path[0]:
             # If the path starts with an empty string, go to the root first.
-            path_pop()
+            path_pop(0)
             obj = self.getPhysicalRoot()
             if restricted:
                 validate(None, None, None, obj) # may raise Unauthorized
@@ -174,8 +174,7 @@ class Traversable:
 
         resource = _marker
         try:
-            while path:
-                name = path_pop()
+            for name in path:
                 __traceback_info__ = path, name
 
                 if name[0] == '_':
@@ -190,7 +189,7 @@ class Traversable:
                         obj = next
                         continue
 
-                bobo_traverse = getattr(obj, '__bobo_traverse__', None)
+                bobo_traverse = None
                 try:
                     if name and name[:1] in '@+' and name != '+' and nsParse(name)[1]:
                         # Process URI segment parameters.
@@ -209,6 +208,7 @@ class Traversable:
                     else:
                         next = UseTraversalDefault # indicator
                         try:
+                            bobo_traverse = getattr(obj, '__bobo_traverse__', None)
                             if bobo_traverse is not None:
                                 next = bobo_traverse(REQUEST, name)
                                 if restricted:
@@ -256,6 +256,10 @@ class Traversable:
                                     # The item lookup may return a NullResource,
                                     # if this is the case we save it and return it
                                     # if all other lookups fail.
+                                    global NullResource
+                                    if NullResource is None:
+                                        from webdav.NullResource import NullResource
+
                                     if isinstance(next, NullResource):
                                         resource = next
                                         raise KeyError(name)

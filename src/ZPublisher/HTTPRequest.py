@@ -332,7 +332,7 @@ class HTTPRequest(BaseRequest):
         self.environ = environ
         get_env = environ.get
         self.response = response
-        other = self.other = {'RESPONSE': response}
+        other = self.other = {'REQUEST': self, 'RESPONSE': response}
         self.form = {}
         self.taintedform = {}
         self.steps = []
@@ -379,9 +379,8 @@ class HTTPRequest(BaseRequest):
         while b and b[0] == '/':
             b = b[1:]
 
-        server_url = get_env('SERVER_URL',None)
-        if server_url is not None:
-            other['SERVER_URL'] = server_url = server_url.strip()
+        if 'SERVER_URL' in environ:
+            other['SERVER_URL'] = server_url = environ['SERVER_URL'].strip()
         else:
             if 'HTTPS' in environ and (
                 environ['HTTPS'] == "on" or environ['HTTPS'] == "ON"):
@@ -1255,8 +1254,6 @@ class HTTPRequest(BaseRequest):
         """ #"
         other = self.other
         if key in other:
-            if key == 'REQUEST':
-                return self
             return other[key]
 
         if key[:1] == 'U':
@@ -1266,7 +1263,7 @@ class HTTPRequest(BaseRequest):
                 path = self._script + self._steps
                 n = len(path) - int(n)
                 if n < 0:
-                    raise KeyError, key
+                    return default
                 if pathonly:
                     path = [''] + path[:n]
                 else:
@@ -1284,9 +1281,6 @@ class HTTPRequest(BaseRequest):
                 return environ[key]
             return ''
 
-        if key == 'REQUEST':
-            return self
-
         if key[:1] == 'B':
             match = BASEmatch(key)
             if match is not None:
@@ -1296,7 +1290,7 @@ class HTTPRequest(BaseRequest):
                 if n:
                     n = n - 1
                     if len(path) < n:
-                        raise KeyError, key
+                        return default
 
                     v = self._script + path[:n]
                 else:
@@ -1394,12 +1388,10 @@ class HTTPRequest(BaseRequest):
         self._lazies[key] = callable
 
     def has_key(self, key, returnTaints=0):
-        try:
-            self.__getitem__(key, returnTaints=returnTaints)
-        except:
-            return 0
-        else:
-            return 1
+        v = self.get(key, _marker, returnTaints=returnTaints)
+        if v is _marker:
+            return False
+        return True
 
     def keys(self, returnTaints=0):
         keys = {}
@@ -1525,7 +1517,7 @@ class HTTPRequest(BaseRequest):
                     base64.decodestring(auth.split()[-1]).split(':', 1)
                 return name, password
 
-    def taintWrapper(self, enabled=TAINTING_ENABLED):
+    def taintWrapper(self, enabled=False):
         return enabled and TaintRequestWrapper(self) or self
 
     def shiftNameToApplication(self):

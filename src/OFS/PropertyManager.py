@@ -144,8 +144,9 @@ class PropertyManager(Base, ElementWithAttributes):
         Returns the optional second argument or None if no such property is
         found.
         """
-        if self.hasProperty(id):
-            return getattr(self, id)
+        for p in self._properties:
+            if id==p['id']:
+                return getattr(self, id)
         return d
 
     security.declareProtected(access_contents_information, 'getPropertyType')
