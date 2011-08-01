@@ -169,9 +169,6 @@ class HTTPRequest(BaseRequest):
 
     retry_max_count = 3
 
-    def __conform__(self, iface):
-        return iface.__adapt__(self)
-
     def supports_retry(self):
         if self.retry_count < self.retry_max_count:
             time.sleep(random.uniform(0, 2 ** (self.retry_count)))
@@ -257,11 +254,11 @@ class HTTPRequest(BaseRequest):
 
     def physicalPathToURL(self, path, relative=0):
         """ Convert a physical path into a URL in the current context """
-        path = self._script + [quote(s) for s in self.physicalPathToVirtualPath(path)]
+        path = self._script + map(quote, self.physicalPathToVirtualPath(path))
         if relative:
             path.insert(0, '')
         else:
-            path.insert(0, self.other['SERVER_URL'])
+            path.insert(0, self['SERVER_URL'])
         return '/'.join(path)
 
     def physicalPathFromURL(self, URL):
@@ -452,9 +449,6 @@ class HTTPRequest(BaseRequest):
                     taintedcookies[k] = v
         self.cookies = cookies
         self.taintedcookies = taintedcookies
-
-    def __nonzero__(self):
-        return True
 
     def processInputs(
         self,
@@ -1296,7 +1290,7 @@ class HTTPRequest(BaseRequest):
                 if n:
                     n = n - 1
                     if len(path) < n:
-                        return default
+                        raise KeyError, key
 
                     v = self._script + path[:n]
                 else:
