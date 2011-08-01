@@ -332,13 +332,13 @@ class HTTPRequest(BaseRequest):
         self.environ = environ
         get_env = environ.get
         self.response = response
-        other = self.other = {'REQUEST': self, 'RESPONSE': response}
+        other = self.other = {'RESPONSE': response}
         self.form = {}
         self.taintedform = {}
         self.steps = []
         self._steps = []
         self._lazies = {}
-        self.debug = DebugFlags()
+        self._debug = DebugFlags()
         # We don't set up the locale initially but just on first access
         self._locale = _marker
 
@@ -379,8 +379,9 @@ class HTTPRequest(BaseRequest):
         while b and b[0] == '/':
             b = b[1:]
 
-        if 'SERVER_URL' in environ:
-            other['SERVER_URL'] = server_url = environ['SERVER_URL'].strip()
+        server_url = get_env('SERVER_URL',None)
+        if server_url is not None:
+            other['SERVER_URL'] = server_url = server_url.strip()
         else:
             if 'HTTPS' in environ and (
                 environ['HTTPS'] == "on" or environ['HTTPS'] == "ON"):
@@ -1251,9 +1252,11 @@ class HTTPRequest(BaseRequest):
         categories. The search order is environment variables,
         other variables, form data, and then cookies.
 
-        """
+        """ #"
         other = self.other
         if key in other:
+            if key == 'REQUEST':
+                return self
             return other[key]
 
         if key[:1] == 'U':
@@ -1263,7 +1266,7 @@ class HTTPRequest(BaseRequest):
                 path = self._script + self._steps
                 n = len(path) - int(n)
                 if n < 0:
-                    return default
+                    raise KeyError, key
                 if pathonly:
                     path = [''] + path[:n]
                 else:
@@ -1280,6 +1283,9 @@ class HTTPRequest(BaseRequest):
             if key in environ and (key not in hide_key):
                 return environ[key]
             return ''
+
+        if key == 'REQUEST':
+            return self
 
         if key[:1] == 'B':
             match = BASEmatch(key)
@@ -1379,6 +1385,8 @@ class HTTPRequest(BaseRequest):
                 if self._locale is _marker:
                     self.setupLocale()
                 return self._locale
+            if key == 'debug':
+                return self._debug
             raise AttributeError, key
         return v
 
@@ -1386,10 +1394,12 @@ class HTTPRequest(BaseRequest):
         self._lazies[key] = callable
 
     def has_key(self, key, returnTaints=0):
-        v = self.get(key, _marker, returnTaints=returnTaints)
-        if v is _marker:
-            return False
-        return True
+        try:
+            self.__getitem__(key, returnTaints=returnTaints)
+        except:
+            return 0
+        else:
+            return 1
 
     def keys(self, returnTaints=0):
         keys = {}
