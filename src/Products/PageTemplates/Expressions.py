@@ -71,7 +71,7 @@ def boboAwareZopeTraverse(object, path_items, econtext):
     while path_items:
         name = path_items.pop()
         if OFS.interfaces.ITraversable.providedBy(object):
-            object = object.restrictedTraverse(name)
+            object = object.unrestrictedTraverse(name, restricted=True)
         else:
             object = traversePathElement(object, name, path_items,
                                          request=request)

@@ -425,7 +425,7 @@ class ObjectManager(CopyContainer,
         # Returns a list of actual subobjects of the current object.
         # If 'spec' is specified, returns only objects whose meta_type
         # match 'spec'.
-        return [ self._getOb(id) for id in self.objectIds(spec) ]
+        return [ getattr(self, id) for id in self.objectIds(spec) ]
 
     security.declareProtected(access_contents_information, 'objectItems')
     def objectItems(self, spec=None):
@@ -763,7 +763,7 @@ class ObjectManager(CopyContainer,
         return self.manage_delObjects(ids=[name])
 
     def __getitem__(self, key):
-        v=self._getOb(key, None)
+        v=getattr(self, key, None)
         if v is not None: return v
         if hasattr(self, 'REQUEST'):
             request=self.REQUEST

@@ -153,17 +153,16 @@ class Traversable:
             path = list(path)
 
         REQUEST = {'TraversalRequestNameStack': path}
-        #path.reverse()
         path_pop = path.pop
 
-        if len(path) > 1 and not path[-1]:
+        if not path[-1]:
             # Remove trailing slash
             path_pop()
 
         if restricted:
             validate = getSecurityManager().validate
 
-        if not path[0]:
+        if path and not path[0]:
             # If the path starts with an empty string, go to the root first.
             path_pop(0)
             obj = self.getPhysicalRoot()
@@ -189,7 +188,7 @@ class Traversable:
                         obj = next
                         continue
 
-                bobo_traverse = None
+                bobo_traverse = getattr(obj, '__bobo_traverse__', None)
                 try:
                     if name and name[:1] in '@+' and name != '+' and nsParse(name)[1]:
                         # Process URI segment parameters.
@@ -208,7 +207,6 @@ class Traversable:
                     else:
                         next = UseTraversalDefault # indicator
                         try:
-                            bobo_traverse = getattr(obj, '__bobo_traverse__', None)
                             if bobo_traverse is not None:
                                 next = bobo_traverse(REQUEST, name)
                                 if restricted:

@@ -169,6 +169,9 @@ class HTTPRequest(BaseRequest):
 
     retry_max_count = 3
 
+    def __conform__(self, iface):
+        return iface.__adapt__(self)
+
     def supports_retry(self):
         if self.retry_count < self.retry_max_count:
             time.sleep(random.uniform(0, 2 ** (self.retry_count)))
@@ -254,11 +257,11 @@ class HTTPRequest(BaseRequest):
 
     def physicalPathToURL(self, path, relative=0):
         """ Convert a physical path into a URL in the current context """
-        path = self._script + map(quote, self.physicalPathToVirtualPath(path))
+        path = self._script + [quote(s) for s in self.physicalPathToVirtualPath(path)]
         if relative:
             path.insert(0, '')
         else:
-            path.insert(0, self['SERVER_URL'])
+            path.insert(0, self.other['SERVER_URL'])
         return '/'.join(path)
 
     def physicalPathFromURL(self, URL):
@@ -338,7 +341,7 @@ class HTTPRequest(BaseRequest):
         self.steps = []
         self._steps = []
         self._lazies = {}
-        self._debug = DebugFlags()
+        self.debug = DebugFlags()
         # We don't set up the locale initially but just on first access
         self._locale = _marker
 
@@ -449,6 +452,9 @@ class HTTPRequest(BaseRequest):
                     taintedcookies[k] = v
         self.cookies = cookies
         self.taintedcookies = taintedcookies
+
+    def __nonzero__(self):
+        return True
 
     def processInputs(
         self,
@@ -1251,7 +1257,7 @@ class HTTPRequest(BaseRequest):
         categories. The search order is environment variables,
         other variables, form data, and then cookies.
 
-        """ #"
+        """
         other = self.other
         if key in other:
             return other[key]
@@ -1379,8 +1385,6 @@ class HTTPRequest(BaseRequest):
                 if self._locale is _marker:
                     self.setupLocale()
                 return self._locale
-            if key == 'debug':
-                return self._debug
             raise AttributeError, key
         return v
 
@@ -1517,7 +1521,7 @@ class HTTPRequest(BaseRequest):
                     base64.decodestring(auth.split()[-1]).split(':', 1)
                 return name, password
 
-    def taintWrapper(self, enabled=False):
+    def taintWrapper(self, enabled=TAINTING_ENABLED):
         return enabled and TaintRequestWrapper(self) or self
 
     def shiftNameToApplication(self):
