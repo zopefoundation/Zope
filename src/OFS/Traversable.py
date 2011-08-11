@@ -137,10 +137,7 @@ class Traversable:
                     pid = p.getId()
 
                 path = (pid, ) + path
-                try:
-                    p = p.__parent__
-                except AttributeError:
-                    p = None
+                p = aq_parent(aq_inner(p))
             else:
                 if IApplication.providedBy(p):
                     path = ('', ) + path
