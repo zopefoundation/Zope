@@ -42,6 +42,7 @@ Features Added
 - Updated distributions:
 
   - DateTime = 3.0b1
+  - docutils = 0.8
   - manuel = 1.5.0
 
 Restructuring
