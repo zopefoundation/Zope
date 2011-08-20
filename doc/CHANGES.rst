@@ -5,7 +5,7 @@ This file contains change information for the current Zope release.
 Change information for previous versions of Zope can be found at
 http://docs.zope.org/zope2/releases/.
 
-2.13.9 (unreleased)
+2.13.9 (2011-08-20)
 -------------------
 
 Bugs Fixed
@@ -14,10 +14,7 @@ Bugs Fixed
 - Restore ability to undo multiple transactions from the ZMI by using the
   `undoMultiple` API. Backported from trunk (r122087).
 
-- Fixed chameleon compatibility in templates
-
-Features Added
-++++++++++++++
+- Fixed Chameleon compatibility in templates.
 
 - Updated distributions:
 
