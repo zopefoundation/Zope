@@ -146,25 +146,26 @@ class Traversable:
         if not path:
             return self
 
-        if type(path) is str:
+        if isinstance(path, str):
             # Unicode paths are not allowed
             path = path.split('/')
         else:
             path = list(path)
 
         REQUEST = {'TraversalRequestNameStack': path}
+        path.reverse()
         path_pop = path.pop
 
-        if not path[-1]:
+        if len(path) > 1 and not path[0]:
             # Remove trailing slash
-            path_pop()
+            path_pop(0)
 
         if restricted:
             validate = getSecurityManager().validate
 
-        if path and not path[0]:
+        if not path[-1]:
             # If the path starts with an empty string, go to the root first.
-            path_pop(0)
+            path_pop()
             obj = self.getPhysicalRoot()
             if restricted:
                 validate(None, None, None, obj) # may raise Unauthorized
@@ -173,7 +174,8 @@ class Traversable:
 
         resource = _marker
         try:
-            for name in path:
+            while path:
+                name = path_pop()
                 __traceback_info__ = path, name
 
                 if name[0] == '_':
