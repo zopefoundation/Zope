@@ -27,6 +27,7 @@ from Acquisition import aq_inner
 from Acquisition import aq_parent
 from Acquisition.interfaces import IAcquirer
 from OFS.interfaces import ITraversable, IApplication
+from webdav.NullResource import NullResource
 from zExceptions import NotFound
 from ZPublisher.interfaces import UseTraversalDefault
 from ZODB.POSException import ConflictError
@@ -166,7 +167,6 @@ class Traversable:
         If true, then all of the objects along the path are validated with
         the security machinery. Usually invoked using restrictedTraverse().
         """
-        from webdav.NullResource import NullResource
         if not path:
             return self
 
