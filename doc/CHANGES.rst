@@ -23,6 +23,8 @@ Features Added
 
   - Products.ZCatalog = 2.13.19
   - Products.ZCTextIndex = 2.13.3
+  - repoze.tm2 = 1.0b2
+  - Zope Toolkit 1.0.4
 
 2.13.8 (2011-06-28)
 -------------------
