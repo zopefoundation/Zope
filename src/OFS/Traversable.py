@@ -27,7 +27,6 @@ from Acquisition import aq_inner
 from Acquisition import aq_parent
 from Acquisition.interfaces import IAcquirer
 from OFS.interfaces import ITraversable, IApplication
-from webdav.NullResource import NullResource
 from zExceptions import NotFound
 from ZPublisher.interfaces import UseTraversalDefault
 from ZODB.POSException import ConflictError
@@ -196,6 +195,8 @@ class Traversable:
         else:
             obj = self
 
+        # import time ordering problem
+        from webdav.NullResource import NullResource
         resource = _marker
         try:
             while path:
