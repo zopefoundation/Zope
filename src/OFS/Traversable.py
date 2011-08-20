@@ -27,6 +27,7 @@ from Acquisition import aq_inner
 from Acquisition import aq_parent
 from Acquisition.interfaces import IAcquirer
 from OFS.interfaces import ITraversable
+from webdav.NullResource import NullResource
 from zExceptions import NotFound
 from ZPublisher.interfaces import UseTraversalDefault
 from ZODB.POSException import ConflictError
@@ -39,7 +40,6 @@ from zope.traversing.namespace import namespaceLookup
 from zope.traversing.namespace import nsParse
 
 _marker = object()
-NullResource = None
 
 
 class Traversable:
@@ -254,10 +254,6 @@ class Traversable:
                                     # The item lookup may return a NullResource,
                                     # if this is the case we save it and return it
                                     # if all other lookups fail.
-                                    global NullResource
-                                    if NullResource is None:
-                                        from webdav.NullResource import NullResource
-
                                     if isinstance(next, NullResource):
                                         resource = next
                                         raise KeyError(name)
