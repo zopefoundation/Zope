@@ -11,6 +11,9 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
+- Updated distributions:
+
+  - Products.ZCatalog = 2.13.20
 
 2.13.9 (2011-08-20)
 -------------------
