@@ -66,8 +66,7 @@ def test_zpt_i18n():
       <p>Dies sind 4 explizite Nachrichten</p>
       <table summary="Dies ist ein Attribut">
       </table>
-      <table summary="Explizite Zusammenfassung"
-             title="Expliziter Titel">
+      <table summary="Explizite Zusammenfassung" title="Expliziter Titel">
       </table>
       <p>Dies ist eine Nachricht</p>
       <p>Dies ist eine Nachricht</p>
