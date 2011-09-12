@@ -21,8 +21,9 @@ class TestPUTFactory(unittest.TestCase):
         self.app.manage_addFolder('folder', '')
         self.folder = self.app.folder
         # Setup VHM
-        vhm = VirtualHostMonster()
-        vhm.addToContainer(self.app)
+        if 'virtual_hosting' not in self.app:
+            vhm = VirtualHostMonster()
+            vhm.addToContainer(self.app)
         # Fake a WebDAV PUT request
         request = self.app.REQUEST
         request['PARENTS'] = [self.app]

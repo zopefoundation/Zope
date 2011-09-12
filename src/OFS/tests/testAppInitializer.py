@@ -99,6 +99,15 @@ class TestInitialization( unittest.TestCase ):
         self.assertTrue(hasattr(app, 'Control_Panel'))
         self.assertEqual(app.Control_Panel.meta_type, 'Control Panel')
 
+    def test_install_virtual_hosting(self):
+        self.configure(good_cfg)
+        i = self.getOne()
+        i.install_virtual_hosting()
+        app = i.getApp()
+        self.assertTrue('virtual_hosting' in app)
+        self.assertEqual(
+            app.virtual_hosting.meta_type, 'Virtual Host Monster')
+
     def test_install_required_roles(self):
         self.configure(good_cfg)
         i = self.getOne()
