@@ -11,6 +11,9 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
+- `undoMultiple` was still broken as transactions were not undone in the proper
+  order : tids were stored and retrieved as dictionary keys. 
+
 - Updated distributions:
 
   - Products.ZCatalog = 2.13.20
