@@ -15,6 +15,7 @@ from os.path import dirname
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
+import App
 from App.ImageFile import ImageFile
 
 
@@ -31,7 +32,6 @@ class p_:
     security = ClassSecurityInfo()
     security.declareObjectPublic()
 
-    import App
     app_dir = dirname(App.__file__)
     zopelogo_png = ImageFile('www/zopelogo.png', app_dir)
 
