@@ -59,7 +59,7 @@ class PageTemplate(ExtensionClass.Base,
                 'Page Template %s has errors: %s' % (
                 self.id, self._v_errors
                 ))
-        return self._v_program.macros
+        return self._v_macros
 
     # these methods are reimplemented or duplicated here because of
     # different call signatures in the Zope 2 world

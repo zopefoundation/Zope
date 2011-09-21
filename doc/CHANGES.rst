@@ -19,8 +19,6 @@ Bugs Fixed
 Features Added
 ++++++++++++++
 
-- Adjust to new zope.pagetemplate macros lookup.
-
 - Optimized the `OFS.Traversable.getPhysicalPath` method to avoid excessive
   amounts of method calls.
 
