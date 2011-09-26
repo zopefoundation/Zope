@@ -15,7 +15,11 @@ from os.path import dirname
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
+import App
 from App.ImageFile import ImageFile
+import HelpSys
+import OFS
+import webdav
 
 
 class misc_:
@@ -34,20 +38,17 @@ class p_:
     here = dirname(__file__)
     broken = ImageFile('www/broken.gif', here)
 
-    import OFS
     ofs_dir = dirname(OFS.__file__)
     User_icon = ImageFile('www/User_icon.gif', ofs_dir)
 
     locked = ImageFile('www/modified.gif', here)
     lockedo = ImageFile('www/locked.gif', here)
 
-    import webdav
     davlocked = ImageFile('www/davlock.gif', dirname(webdav.__file__))
 
     pl = ImageFile('www/Plus_icon.gif', ofs_dir)
     mi = ImageFile('www/Minus_icon.gif', ofs_dir)
 
-    import App
     app_dir = dirname(App.__file__)
     rtab = ImageFile('www/rtab.gif', app_dir)
     ltab = ImageFile('www/ltab.gif', app_dir)
@@ -73,7 +74,6 @@ class p_:
     Properties_icon = ImageFile('www/Properties_icon.gif', ofs_dir)
     Propertysheets_icon = ImageFile('www/Properties_icon.gif', ofs_dir)
 
-    import HelpSys
     helpsys_dir = dirname(HelpSys.__file__)
     ProductHelp_icon=ImageFile('images/productHelp.gif', helpsys_dir)
     HelpTopic_icon=ImageFile('images/helpTopic.gif', helpsys_dir)
