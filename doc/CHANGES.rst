@@ -11,8 +11,10 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
+- Fixed a regression of 2.13.9 in webdav support that broke external editor feature.
+
 - `undoMultiple` was still broken as transactions were not undone in the proper
-  order : tids were stored and retrieved as dictionary keys. 
+  order : tids were stored and retrieved as dictionary keys.
 
 - Updated distributions:
 
@@ -156,7 +158,7 @@ Features Added
 
 Bugs Fixed
 ++++++++++
- 
+
 - LP #713253: Prevent publication of acquired attributes, where the acquired
   object does not have a docstring.
 
@@ -344,12 +346,12 @@ Bugs Fixed
   base class's security info don't get their security overwritten to be
   private.
 
-- LP #143755: Also catch TypeError when trying to determine an 
+- LP #143755: Also catch TypeError when trying to determine an
   indexable value for an object in PluginIndexes.common.UnIndex
 
-- LP #143533: Instead of showing "0.0.0.0" as the SERVER_NAME 
-  request variable when no specific listening IP is configured for 
-  the HTTP server, do a socket lookup to show the current server's 
+- LP #143533: Instead of showing "0.0.0.0" as the SERVER_NAME
+  request variable when no specific listening IP is configured for
+  the HTTP server, do a socket lookup to show the current server's
   fully qualified name.
 
 - LP #143722: Added missing permission to ObjectManager.manage_hasId,
