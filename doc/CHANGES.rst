@@ -5,13 +5,14 @@ This file contains change information for the current Zope release.
 Change information for previous versions of Zope can be found at
 http://docs.zope.org/zope2/releases/.
 
-2.13.10 (unreleased)
+2.13.10 (2011-10-04)
 --------------------
 
-Bugs Fixed
-++++++++++
+- Fixed serious arbitrary code execution issue (CVE 2011-3587)
+  http://zope2.zope.org/news/security-vulnerability-announcement-cve-2011-3587
 
-- Fixed a regression of 2.13.9 in webdav support that broke external editor feature.
+- Fixed a regression of 2.13.9 in webdav support that broke external editor
+  feature.
 
 - `undoMultiple` was still broken as transactions were not undone in the proper
   order : tids were stored and retrieved as dictionary keys.
