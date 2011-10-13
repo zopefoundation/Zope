@@ -330,13 +330,8 @@ class HTTPResponse(BaseResponse):
         if not scrubbed:
             name, value = _scrubHeader(name, value)
         key = name.lower()
-        # The following is crazy, given that we have APIs for cookies.
-        # Special behavior will go away in Zope 2.13
-        if key == 'set-cookie':  
-            self.accumulated_headers.append((name, value))
-        else:
-            name = literal and name or key
-            self.headers[name] = value
+        name = literal and name or key
+        self.headers[name] = value
 
     def appendHeader(self, name, value, delimiter=", "):
         """ Append a value to an HTTP return header.

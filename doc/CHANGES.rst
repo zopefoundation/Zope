@@ -50,6 +50,11 @@ Features Added
 Restructuring
 +++++++++++++
 
+- Removed the special handling of `Set-Cookie` headers in
+  `HTTPResponse.setHeader`. Use the `setCookie`/`appendCookie`/`expireCookie`
+  methods instead, or if low-level control is needed, use `addHeader` instead
+  to get the exact same effect.
+
 - Removed the `App.version_txt.getZopeVersion` API, you can use
   ``pkg_resources.get_distribution('Zope2').version`` instead.
 
