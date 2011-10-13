@@ -40,7 +40,6 @@ from AccessControl.tainted import TaintedString
 from ZPublisher.BaseRequest import BaseRequest
 from ZPublisher.BaseRequest import quote
 from ZPublisher.Converters import get_converter
-from ZPublisher.maybe_lock import allocate_lock
 
 # Flags
 SEQUENCE = 1
@@ -1649,7 +1648,6 @@ class FileUpload:
         return self
 
 
-parse_cookie_lock = allocate_lock()
 QPARMRE= re.compile(
         '([\x00- ]*([^\x00- ;,="]+)="([^"]*)"([\x00- ]*[;,])?[\x00- ]*)')
 PARMRE = re.compile(
@@ -1661,43 +1659,36 @@ def parse_cookie(text,
                  qparmre=QPARMRE,
                  parmre=PARMRE,
                  paramlessre=PARAMLESSRE,
-                 acquire=parse_cookie_lock.acquire,
-                 release=parse_cookie_lock.release,
                  ):
 
     if result is None:
         result = {}
 
-    acquire()
-    try:
+    mo_q = qparmre.match(text)
 
-        mo_q = qparmre.match(text)
+    if mo_q:
+        # Match quoted correct cookies
+        l = len(mo_q.group(1))
+        name = mo_q.group(2)
+        value = mo_q.group(3)
 
-        if mo_q:
-            # Match quoted correct cookies
-            l = len(mo_q.group(1))
-            name = mo_q.group(2)
-            value = mo_q.group(3)
+    else:
+        # Match evil MSIE cookies ;)
+        mo_p = parmre.match(text)
 
+        if mo_p:
+            l = len(mo_p.group(1))
+            name = mo_p.group(2)
+            value = mo_p.group(3)
         else:
-            # Match evil MSIE cookies ;)
-            mo_p = parmre.match(text)
-
-            if mo_p:
-                l = len(mo_p.group(1))
-                name = mo_p.group(2)
-                value = mo_p.group(3)
+            # Broken Cookie without = nor value.
+            broken_p = paramlessre.match(text)
+            if broken_p:
+                l = len(broken_p.group(1))
+                name = broken_p.group(2)
+                value = ''
             else:
-                # Broken Cookie without = nor value.
-                broken_p = paramlessre.match(text)
-                if broken_p:
-                    l = len(broken_p.group(1))
-                    name = broken_p.group(2)
-                    value = ''
-                else:
-                    return result
-    finally:
-        release()
+                return result
 
     if name not in result:
         result[name] = unquote(value)

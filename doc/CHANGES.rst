@@ -50,6 +50,10 @@ Features Added
 Restructuring
 +++++++++++++
 
+- Removed the (very obsolete) thread lock around the cookie parsing code
+  in HTTPRequest.py; the python `re` module is thread-safe, unlike the
+  ancient `regex` module that was once used here.
+
 - Removed the special handling of `Set-Cookie` headers in
   `HTTPResponse.setHeader`. Use the `setCookie`/`appendCookie`/`expireCookie`
   methods instead, or if low-level control is needed, use `addHeader` instead
