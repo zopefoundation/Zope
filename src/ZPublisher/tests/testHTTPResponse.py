@@ -409,28 +409,6 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(response.headers['location'],
                          'http://www.ietf.org/rfc/rfc2616.txt')
 
-    def test_setHeader_Set_Cookie_special_case(self):
-        # This is crazy, given that we have APIs for cookies.  Special
-        # behavior will go away in Zope 2.13
-        response = self._makeOne()
-        response.setHeader('Set-Cookie', 'foo="bar"')
-        self.assertEqual(response.getHeader('Set-Cookie'), None)
-        self.assertEqual(response.accumulated_headers,
-                         [('Set-Cookie', 'foo="bar"')])
-
-    def test_setHeader_drops_CRLF_when_accumulating(self):
-        # RFC2616 disallows CRLF in a header value.
-        # This is crazy, given that we have APIs for cookies.  Special
-        # behavior will go away in Zope 2.13
-        response = self._makeOne()
-        response.setHeader('Set-Cookie', 'allowed="OK"')
-        response.setHeader('Set-Cookie',
-                       'violation="http://www.ietf.org/rfc/\r\nrfc2616.txt"')
-        self.assertEqual(response.accumulated_headers,
-                        [('Set-Cookie', 'allowed="OK"'),
-                         ('Set-Cookie',
-                          'violation="http://www.ietf.org/rfc/rfc2616.txt"')])
-
     def test_appendHeader_no_existing(self):
         response = self._makeOne()
         response.appendHeader('foo', 'foo')
