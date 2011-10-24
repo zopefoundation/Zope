@@ -8,6 +8,7 @@ http://docs.zope.org/zope2/releases/.
 2.13.11 (unreleased)
 --------------------
 
+- Fixed serious authentication vulnerability in stock configuration.
 
 2.13.10 (2011-10-04)
 --------------------
