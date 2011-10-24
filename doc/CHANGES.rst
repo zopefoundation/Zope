@@ -11,6 +11,8 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
+- Fixed serious authentication vulnerability in stock configuration.
+
 - Fixed a regression in webdav support that broke external editor feature.
 
 - Restore ability to undo multiple transactions from the ZMI by using the

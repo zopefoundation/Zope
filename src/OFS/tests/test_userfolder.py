@@ -17,7 +17,15 @@ import unittest
 # TODO class Test_readUserAccessFile(unittest.TestCase)
 
 
-# TODO class BasicUserFoldertests(unittest.TestCase)
+class BasicUserFolderTests(unittest.TestCase):
+ 
+    def _getTargetClass(self):
+        from OFS.userfolder import BasicUserFolder
+        return BasicUserFolder
+ 
+    def test_manage_users_security_initialized(self):
+        uf = self._getTargetClass()()
+        self.assertTrue(hasattr(uf, 'manage_users__roles__'))
 
 
 class UserFolderTests(unittest.TestCase):
@@ -171,6 +179,8 @@ class UserFolderTests(unittest.TestCase):
 
 
 def test_suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(UserFolderTests))
+    suite = unittest.TestSuite((
+        unittest.makeSuite(BasicUserFolderTests),
+        unittest.makeSuite(UserFolderTests),
+    ))
     return suite

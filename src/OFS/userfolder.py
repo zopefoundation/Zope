@@ -293,6 +293,8 @@ class BasicUserFolder(Navigation, Tabs, Item, RoleManager,
                 message='Cannot change the id of a UserFolder',
                 action='./manage_main'))
 
+InitializeClass(BasicUserFolder)
+
 
 class UserFolder(accesscontrol_userfolder.UserFolder, BasicUserFolder):
     """Standard UserFolder object
