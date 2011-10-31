@@ -11,6 +11,8 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
+- Make it possible to use WSGI without repoze.who.
+
 - Fixed serious authentication vulnerability in stock configuration.
 
 - Fixed a regression in webdav support that broke external editor feature.

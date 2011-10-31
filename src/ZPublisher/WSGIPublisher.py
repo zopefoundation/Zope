@@ -108,6 +108,9 @@ class WSGIResponse(HTTPResponse):
 
     def _unauthorized(self):
         self.setStatus(401)
+        realm = self.realm
+        if realm:
+            self.setHeader('WWW-Authenticate', 'basic realm="%s"' % realm, 1)
 
     def write(self,data):
         """ Add data to our output stream.
