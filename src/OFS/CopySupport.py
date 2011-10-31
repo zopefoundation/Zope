@@ -18,7 +18,6 @@ from marshal import dumps
 from marshal import loads
 import re
 import sys
-import tempfile
 from urllib import quote
 from urllib import unquote
 import warnings
@@ -47,6 +46,7 @@ from zope.event import notify
 from zope.lifecycleevent import ObjectCopiedEvent
 from zope.lifecycleevent import ObjectMovedEvent
 from zope.container.contained import notifyContainerModified
+from zope.copy import copy
 
 from OFS.event import ObjectWillBeMovedEvent
 from OFS.event import ObjectClonedEvent
@@ -582,11 +582,7 @@ class CopySource(Base):
                 `container`)
 
         # Ask an object for a new copy of itself.
-        f=tempfile.TemporaryFile()
-        self._p_jar.exportFile(self._p_oid,f)
-        f.seek(0)
-        ob=container._p_jar.importFile(f)
-        f.close()
+        ob = copy(aq_base(self))
         return ob
 
     def _postCopy(self, container, op=0):

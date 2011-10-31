@@ -12,6 +12,10 @@ from OFS.Application import Application
 from OFS.Folder import manage_addFolder
 from OFS.Image import manage_addFile
 from Testing.makerequest import makerequest
+from zope import component
+from zope.testing import cleanup
+from persistent import Persistent
+from zope.location import Location
 
 
 ADD_IMAGES_AND_FILES = 'Add images and files'
@@ -62,6 +66,11 @@ def makeConnection():
     s = DemoStorage()
     return ZODB.DB( s ).open()
 
+
+class PersistentLocation(Persistent, Location):
+    pass
+
+
 class CopySupportTestBase(unittest.TestCase):
 
     def _initFolders(self):
@@ -102,10 +111,16 @@ class CopySupportTestBase(unittest.TestCase):
         del self.responseOut
         del self.root
         del self.connection
+        cleanup.cleanUp()
+
 
 class TestCopySupport( CopySupportTestBase ):
 
     def setUp( self ):
+        from zope.copy.interfaces import ICopyHook
+        from zope.location.interfaces import ILocation
+        from zope.location.pickling import LocationCopyHook
+        component.provideAdapter(LocationCopyHook, (ILocation,), ICopyHook)
 
         folder1, folder2 = self._initFolders()
 
@@ -152,6 +167,7 @@ class TestCopySupport( CopySupportTestBase ):
         self.folder2.manage_pasteObjects( cookie )
         self.assertTrue( 'file' in self.folder1.objectIds() )
         self.assertTrue( 'file' in self.folder2.objectIds() )
+        self.assertTrue(self.folder2.file.__parent__ is self.folder2)
 
     def testCut( self ):
         self.assertTrue( 'file' in self.folder1.objectIds() )
@@ -169,6 +185,15 @@ class TestCopySupport( CopySupportTestBase ):
         self.folder2.manage_pasteObjects(cookie)
         self.assertTrue('newfile' in self.folder1.objectIds())
         self.assertTrue('newfile' in self.folder2.objectIds())
+    
+    def testCopyExcludesNoncontainedObjects(self):
+        self.app.other_ob = other_ob = PersistentLocation()
+        self.app.other_ob.__parent__ = self.app
+
+        ob = self.folder1.file
+        ob.other_ob = self.app.other_ob
+        copied_ob = ob._getCopy(self.folder1)
+        self.assertTrue(copied_ob.other_ob is other_ob)
 
     def testPasteSingleNotSameID( self ):
         self.assertTrue( 'file' in self.folder1.objectIds() )

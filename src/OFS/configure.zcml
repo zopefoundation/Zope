@@ -4,4 +4,6 @@
   <include file="deprecated.zcml"/>
   <include file="event.zcml"/>
 
+  <adapter factory="zope.location.pickling.LocationCopyHook" />
+
 </configure>
