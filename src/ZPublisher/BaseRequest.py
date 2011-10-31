@@ -41,23 +41,6 @@ def quote(text):
     return urllib_quote(text, '/+@')
 
 try:
-    from ExtensionClass import Base
-    from ZPublisher.Converters import type_converters
-    class RequestContainer(Base):
-        __roles__=None
-        def __init__(self,**kw):
-            for k,v in kw.items(): self.__dict__[k]=v
-
-        def manage_property_types(self):
-            return type_converters.keys()
-
-except ImportError:
-    class RequestContainer:
-        __roles__=None
-        def __init__(self,**kw):
-            for k,v in kw.items(): self.__dict__[k]=v
-
-try:
     from AccessControl.ZopeSecurityPolicy import getRoles
 except ImportError:
     def getRoles(container, name, value, default):
@@ -411,10 +394,6 @@ class BaseRequest:
             return response.forbiddenError(self['URL'])
 
         # Traverse the URL to find the object:
-        if hasattr(object, '__of__'):
-            # Try to bind the top-level object to the request
-            # This is how you get 'self.REQUEST'
-            object=object.__of__(RequestContainer(REQUEST=request))
         parents.append(object)
 
         steps=self.steps

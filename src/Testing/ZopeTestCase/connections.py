@@ -25,10 +25,12 @@ class ConnectionRegistry:
         self._conns = []
 
     def register(self, conn):
-        self._conns.append(conn)
+        connset = self._getConnSet(conn)
+        self._conns.append(connset)
 
     def contains(self, conn):
-        return conn in self._conns
+        connset = self._getConnSet(conn)
+        return connset in self._conns
 
     def __len__(self):
         return len(self._conns)
@@ -37,22 +39,25 @@ class ConnectionRegistry:
         return len(self)
 
     def close(self, conn):
+        connset = self._getConnSet(conn)
         if self.contains(conn):
-            self._conns.remove(conn)
-        self._do_close(conn)
+            self._conns.remove(connset)
+        self._do_close(connset)
 
     def closeAll(self):
-        for conn in self._conns:
-            self._do_close(conn)
+        for connset in self._conns:
+            self._do_close(connset)
         self._conns = []
 
-    def _do_close(self, conn):
-        if hasattr(conn, 'close'):
+    def _do_close(self, connset):
+        for conn in connset:
             conn.close()
-        else:
-            conn.REQUEST.close()
-            conn._p_jar.close()
 
+    def _getConnSet(self, conn):
+        if hasattr(conn, '_p_jar'):
+            return (conn.REQUEST, conn._p_jar)
+        else:
+            return (conn,)
 
 registry = ConnectionRegistry()
 register = registry.register

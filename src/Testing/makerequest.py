@@ -19,7 +19,40 @@ import os
 from sys import stdin, stdout
 from ZPublisher.HTTPRequest import HTTPRequest
 from ZPublisher.HTTPResponse import HTTPResponse
-from ZPublisher.BaseRequest import RequestContainer
+from ExtensionClass import Base 
+
+class RequestContainer(Base): 
+    __roles__=None 
+    def __init__(self,**kw): 
+        for k,v in kw.items(): self.__dict__[k]=v 
+
+
+def newrequest(stdout=stdout, environ=None):
+    """
+    Creates a new request for testing.
+
+    *stdout* is an optional file-like object and is used by
+    REQUEST.RESPONSE. The default is sys.stdout.
+
+    *environ* is an optional mapping to be used in the request.
+    Default is a fresh dictionary. Passing os.environ is not
+    recommended; tests should not pollute the real os.environ.
+    """
+    if environ is None:
+        environ = {}
+    resp = HTTPResponse(stdout=stdout)
+    environ.setdefault('SERVER_NAME', 'foo')
+    environ.setdefault('SERVER_PORT', '80')
+    environ.setdefault('REQUEST_METHOD',  'GET')
+    req = HTTPRequest(stdin, environ, resp)
+    req._steps = ['noobject']  # Fake a published object.
+    req['ACTUAL_URL'] = req.get('URL') # Zope 2.7.4
+    
+    # set Zope3-style default skin so that the request is usable for
+    # Zope3-style view look-ups.
+    from zope.publisher.browser import setDefaultSkin
+    setDefaultSkin(req)
+    return req
 
 def makerequest(app, stdout=stdout, environ=None):
     """
@@ -47,20 +80,6 @@ def makerequest(app, stdout=stdout, environ=None):
     Default is a fresh dictionary. Passing os.environ is not
     recommended; tests should not pollute the real os.environ.
     """
-    if environ is None:
-        environ = {}
-    resp = HTTPResponse(stdout=stdout)
-    environ.setdefault('SERVER_NAME', 'foo')
-    environ.setdefault('SERVER_PORT', '80')
-    environ.setdefault('REQUEST_METHOD',  'GET')
-    req = HTTPRequest(stdin, environ, resp)
-    req._steps = ['noobject']  # Fake a published object.
-    req['ACTUAL_URL'] = req.get('URL') # Zope 2.7.4
-    
-    # set Zope3-style default skin so that the request is usable for
-    # Zope3-style view look-ups.
-    from zope.publisher.browser import setDefaultSkin
-    setDefaultSkin(req)
-
+    req = newrequest(stdout, environ)
     requestcontainer = RequestContainer(REQUEST = req)
     return app.__of__(requestcontainer)

@@ -19,6 +19,8 @@ import base
 import utils
 import connections
 
+from zope.globalrequest import setRequest, clearRequest
+
 
 class Sandboxed:
     '''Derive from this class and an xTestCase to make each test
@@ -32,7 +34,8 @@ class Sandboxed:
         '''Returns the app object for a test.'''
         app = Zope2.app(Zope2.sandbox().open())
         AppZapper().set(app)
-        app = utils.makerequest(app)
+        req = utils.newrequest()
+        setRequest(req)
         connections.register(app)
         return app
 
@@ -41,6 +44,7 @@ class Sandboxed:
         AppZapper().clear()
         transaction.abort()
         connections.closeAll()
+        clearRequest()
 
 
 class AppZapper:

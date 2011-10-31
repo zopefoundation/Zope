@@ -31,6 +31,7 @@ from OFS.userfolder import UserFolder
 from webdav.NullResource import NullResource
 from zExceptions import Redirect as RedirectException, Forbidden
 
+from zope.globalrequest import getRequest
 from zope.interface import implements
 
 import Folder
@@ -85,7 +86,7 @@ class Application(ApplicationDefaultPermissions,
     def getId(self):
         try:
             return self.REQUEST['SCRIPT_NAME'][1:]
-        except (KeyError, TypeError):
+        except (KeyError, TypeError, AttributeError):
             return self.title
 
     def title_and_id(self):
@@ -183,6 +184,33 @@ class Application(ApplicationDefaultPermissions,
         """
         # We're at the base of the path.
         return ('', )
+
+    @property
+    def REQUEST(self):
+        # Return the current request
+        request = self.__dict__.get('REQUEST', None)
+        if request is None:
+            request = getRequest()
+        if request is None:
+            raise AttributeError('REQUEST')
+        return request
+    
+    @REQUEST.setter
+    def REQUEST(self, value):
+        # Set the current request as an attribute (used in tests)
+        self.__dict__['REQUEST'] = value
+
+    @REQUEST.deleter
+    def REQUEST(self):
+        del self.__dict__['REQUEST']
+
+    @property
+    def aq_explicit(self):
+        # aq_explict is a property of acquisition wrappers. As the Application
+        # object is no longer wrapped in a RequestContainer, it must be
+        # supported directly.
+        return self
+
 
 InitializeClass(Application)
 

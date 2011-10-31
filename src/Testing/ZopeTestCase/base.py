@@ -21,6 +21,7 @@ import interfaces
 import connections
 import layer
 
+from zope.globalrequest import setRequest, clearRequest
 from zope.interface import implements
 from AccessControl.SecurityManagement import noSecurityManager
 
@@ -106,7 +107,11 @@ class TestCase(unittest.TestCase, object):
 
     def _app(self):
         '''Returns the app object for a test.'''
-        return app()
+        app = Zope2.app()
+        req = utils.newrequest()
+        setRequest(req)
+        connections.register(app)
+        return app
 
     def _setup(self):
         '''Sets up the fixture. Framework authors may
@@ -120,6 +125,7 @@ class TestCase(unittest.TestCase, object):
             self.beforeClose()
         self._close()
         self.logout()
+        clearRequest()
         self.afterClear()
 
     def _close(self):

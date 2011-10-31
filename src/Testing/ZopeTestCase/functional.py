@@ -31,14 +31,16 @@ def savestate(func):
     from AccessControl.SecurityManagement import setSecurityManager
     from zope.site.hooks import getSite
     from zope.site.hooks import setSite
+    from zope.globalrequest import getRequest, setRequest
 
     def wrapped_func(*args, **kw):
-        sm, site = getSecurityManager(), getSite()
+        sm, site, request = getSecurityManager(), getSite(), getRequest()
         try:
             return func(*args, **kw)
         finally:
             setSecurityManager(sm)
             setSite(site)
+            setRequest(request)
     return wrapped_func
 
 
