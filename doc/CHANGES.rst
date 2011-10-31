@@ -11,6 +11,9 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
+- Avoid conflicting signal registrations when run under mod_wsgi.
+  Allows the use of `WSGIRestrictSignal Off` (LP #681853).
+
 - Make it possible to use WSGI without repoze.who.
 
 - Fixed serious authentication vulnerability in stock configuration.
