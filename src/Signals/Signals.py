@@ -108,11 +108,20 @@ def registerZopeSignals(loggers):
 
     if not SignalHandler:
         return
-    SignalHandler.registerHandler(SIGTERM, shutdownFastHandler)
-    SignalHandler.registerHandler(SIGINT, shutdownHandler)
+
+    mod_wsgi = True
+    try:
+        from mod_wsgi import version
+    except ImportError:
+        mod_wsgi = False
+
+    if not mod_wsgi:
+        SignalHandler.registerHandler(SIGTERM, shutdownFastHandler)
+        SignalHandler.registerHandler(SIGINT, shutdownHandler)
     if os.name != 'nt':
-        SignalHandler.registerHandler(SIGHUP, restartHandler)
-        SignalHandler.registerHandler(SIGUSR1, showStacks)
+        if not mod_wsgi:
+            SignalHandler.registerHandler(SIGHUP, restartHandler)
+            SignalHandler.registerHandler(SIGUSR1, showStacks)
         SignalHandler.registerHandler(SIGUSR2, LogfileReopenHandler(loggers))
     else:
         # no restart handler on windows.
