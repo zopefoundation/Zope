@@ -11,10 +11,11 @@ from Acquisition import Implicit
 from OFS.Application import Application
 from OFS.Folder import manage_addFolder
 from OFS.Image import manage_addFile
-from Testing.makerequest import makerequest
+from Testing.makerequest import newrequest
 from zope import component
 from zope.testing import cleanup
 from persistent import Persistent
+from zope.globalrequest import setRequest
 from zope.location import Location
 
 
@@ -82,7 +83,9 @@ class CopySupportTestBase(unittest.TestCase):
             r['Application'] = a
             self.root = a
             responseOut = self.responseOut = cStringIO.StringIO()
-            self.app = makerequest( self.root, stdout=responseOut )
+            request = newrequest(stdout=responseOut)
+            setRequest(request)
+            self.app =  a
             manage_addFolder( self.app, 'folder1' )
             manage_addFolder( self.app, 'folder2' )
             folder1 = getattr( self.app, 'folder1' )
@@ -111,6 +114,7 @@ class CopySupportTestBase(unittest.TestCase):
         del self.responseOut
         del self.root
         del self.connection
+        setRequest(None)
         cleanup.cleanUp()
 
 
