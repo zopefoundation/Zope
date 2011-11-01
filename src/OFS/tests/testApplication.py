@@ -102,6 +102,12 @@ class ApplicationTests(unittest.TestCase):
         self.assertTrue(isinstance(result, NullResource))
         self.assertTrue(aq_parent(aq_inner(result)) is app)
 
+    def test_name_parent(self):
+        app = self._makeOne()
+        self.assertEquals(app.__name__, None)
+        self.assertEquals(app.__parent__, None)
+
+
 def _noWay(self, key, default=None):
     raise KeyError(key)
 

@@ -33,6 +33,7 @@ from zExceptions import Redirect as RedirectException, Forbidden
 
 from zope.globalrequest import getRequest
 from zope.interface import implements
+from zope.location.interfaces import ILocation
 
 import Folder
 import misc_
@@ -51,13 +52,18 @@ class Application(ApplicationDefaultPermissions,
                  ):
     """Top-level system object"""
 
-    implements(IApplication)
+    implements(
+        IApplication,
+        ILocation,
+        )
 
     security = ClassSecurityInfo()
 
     title = 'Zope'
     __defined_roles__ = ('Manager', 'Anonymous', 'Owner')
     __error_log__ = None
+    __name__ = None
+    __parent__ = None
     isTopLevelPrincipiaApplicationObject = 1
 
     manage_options=((

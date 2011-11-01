@@ -13,6 +13,7 @@ from logging import getLogger
 from zExceptions import BadRequest
 from zope.component.testing import PlacelessSetup
 from zope.interface import implements
+from zope.location.interfaces import ILocation
 from Zope2.App import zcml
 
 from OFS.interfaces import IItem
@@ -68,6 +69,11 @@ class ItemForDeletion(SimpleItem):
 class ObjectManagerWithIItem(ObjectManager):
     """The event subscribers work on IItem."""
     implements(IItem)
+
+
+class ObjectManagerWithILocation(ObjectManager, SimpleItem):
+    """A located ObjectManager."""
+    implements(ILocation)
 
 
 class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
@@ -478,7 +484,35 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
             self.assertTrue(filename.endswith('.zexp') or
                             filename.endswith('.xml'))
 
+
+class LocatedObjectManagerTests(ObjectManagerTests):
+    def _getTargetClass(self):
+        return ObjectManagerWithILocation
+
+    def test_container_must_provide_ILocation(self):
+        unlocated = ObjectManager()
+        located = self._makeOne('located')
+        self.assertRaises( AssertionError
+                         , unlocated._setObject, 'located', located )
+
+    def test_set_name_parent(self):
+        root = self._makeOne()
+        one = self._makeOne()
+        one._setId('one')
+        root._setObject('one', one, set_owner=0)
+        self.assertEquals(aq_base(root), aq_base(aq_base(one).__parent__))
+        self.assertEquals(one.__name__, 'one')
+
+    def test_delete(self):
+        root = self._makeOne()
+        one = self._makeOne('one')
+        root._setObject('one', one, set_owner=0)
+        root._delObject('one')
+        self.assertEquals(aq_base(one).__parent__, None)
+
+
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest( unittest.makeSuite( ObjectManagerTests ) )
+    suite.addTest( unittest.makeSuite( LocatedObjectManagerTests ) )
     return suite

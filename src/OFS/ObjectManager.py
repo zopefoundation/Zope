@@ -49,11 +49,14 @@ from webdav.Collection import Collection
 from webdav.Lockable import ResourceLockedError
 from webdav.NullResource import NullResource
 from zExceptions import BadRequest
+from zope.interface import alsoProvides
 from zope.interface import implements
 from zope.component.interfaces import ComponentLookupError
 from zope.event import notify
 from zope.lifecycleevent import ObjectAddedEvent
 from zope.lifecycleevent import ObjectRemovedEvent
+from zope.location.interfaces import IContained
+from zope.location.interfaces import ILocation
 from zope.container.contained import notifyContainerModified
 
 from OFS.CopySupport import CopyContainer
@@ -274,10 +277,36 @@ class ObjectManager(CopyContainer,
 
     _checkId = checkValidId
 
+    def _contained(self, id, object):
+        if ILocation.providedBy(object):
+            if not ILocation.providedBy(self):
+                raise AssertionError(
+                    "Cannot add an object providing ILocation to an "
+                    "unlocated container."
+                    )
+            if not IContained.providedBy(object):
+                alsoProvides(object, IContained)
+            oldparent = getattr(aq_base(object), '__parent__', None)
+            if aq_base(self) is not aq_base(oldparent):
+                aq_base(object).__parent__ = aq_base(self)
+            # __name__ assumed to be a property or set elsewhere
+
     def _setOb(self, id, object):
+        self._contained(id, object)
         setattr(self, id, object)
 
+    def _uncontained(self, id):
+        obj = self._getOb(id, _marker)
+        if obj is not _marker:
+            if IContained.providedBy(obj):
+                try:
+                    aq_base(obj).__parent__ = None
+                except AttributeError:
+                    # No need to fail if we can't set these
+                    pass
+
     def _delOb(self, id):
+        self._uncontained(id)
         delattr(self, id)
 
     def _getOb(self, id, default=_marker):
