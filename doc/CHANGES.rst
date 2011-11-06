@@ -50,7 +50,7 @@ Features Added
 
 - Updated distributions:
 
-  - DateTime = 3.0b1
+  - DateTime = 3.0b3
   - docutils = 0.8
   - manuel = 1.5.0
 
