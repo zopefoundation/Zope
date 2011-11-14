@@ -15,6 +15,7 @@
 
 import time
 
+from AccessControl.class_init import InitializeClass
 from AccessControl.owner import ownerInfo
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Persistence import Persistent
@@ -171,7 +172,6 @@ class LockItem(Persistent):
         return s
 
     def asXML(self):
-
         s = """<?xml version="1.0" encoding="utf-8" ?>
 <d:prop xmlns:d="DAV:">
  <d:lockdiscovery>
@@ -179,3 +179,5 @@ class LockItem(Persistent):
  </d:lockdiscovery>
 </d:prop>""" % self.asLockDiscoveryProperty(ns="d")
         return s
+
+InitializeClass(LockItem)

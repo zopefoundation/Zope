@@ -34,7 +34,6 @@ from webdav.interfaces import IWriteLock
 from webdav.Lockable import ResourceLockedError
 from ZPublisher import HTTPRangeSupport
 from ZPublisher.HTTPRequest import FileUpload
-from ZPublisher.Iterators import filestream_iterator
 from zExceptions import Redirect
 from zope.contenttype import guess_content_type
 from zope.interface import implementedBy
@@ -651,6 +650,9 @@ class File(Persistent, Implicit, PropertyManager,
 
         return ''
 
+InitializeClass(File)
+
+
 manage_addImageForm=DTMLFile('dtml/imageAdd',globals(),
                              Kind='Image',kind='image')
 def manage_addImage(self, id, file, title='', precondition='', content_type='',
@@ -889,6 +891,8 @@ class Image(File):
                 result = '%s %s="%s"' % (result, key, value)
 
         return '%s />' % result
+
+InitializeClass(Image)
 
 
 def cookId(id, title, file):
