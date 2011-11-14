@@ -19,6 +19,7 @@ import time
 
 from AccessControl.Owned import ownerInfo
 from AccessControl.SecurityInfo import ClassSecurityInfo
+from App.class_init import InitializeClass
 from Persistence import Persistent
 from zope.interface import implements
 
@@ -173,7 +174,6 @@ class LockItem(Persistent):
         return s
 
     def asXML(self):
-
         s = """<?xml version="1.0" encoding="utf-8" ?>
 <d:prop xmlns:d="DAV:">
  <d:lockdiscovery>
@@ -181,3 +181,5 @@ class LockItem(Persistent):
  </d:lockdiscovery>
 </d:prop>""" % self.asLockDiscoveryProperty(ns="d")
         return s
+
+InitializeClass(LockItem)
