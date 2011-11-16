@@ -124,15 +124,6 @@ Restructuring
   `lib/python` and `Products` from the default. You can continue to manually
   add these back.
 
-- Removed the rarely used support for the `++skin++` traverser. You can enable
-  it in your own applications by defining::
-
-    <adapter
-      name="skin"
-      for="* zope.publisher.interfaces.IRequest"
-      provides="zope.traversing.interfaces.ITraversable"
-      factory="zope.traversing.namespace.skin" />
-
 - Five.browser: Marked `processInputs` and `setPageEncoding` as deprecated.
   `processInputs` was replaced by the `postProcessInputs` request method and
   the charset negotiation done by `setPageEncoding` was never fully supported.

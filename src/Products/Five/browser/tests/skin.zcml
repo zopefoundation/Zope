@@ -1,0 +1,23 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:meta="http://namespaces.zope.org/meta"
+           xmlns:browser="http://namespaces.zope.org/browser">
+
+  <!-- make the zope2.Public permission work -->
+  <meta:redefinePermission from="zope2.Public" to="zope.Public" />
+
+  <interface
+      interface=".skin.ITestSkin"
+      type="zope.publisher.interfaces.browser.IBrowserSkinType"
+      name="TestSkin"
+      />
+
+  <browser:page
+      for="Products.Five.tests.testing.simplecontent.ISimpleContent"
+      class=".pages.SimpleView"
+      attribute="eagle"
+      name="eagle.html"
+      permission="zope2.Public"
+      layer=".skin.ITestSkin"
+      />
+
+</configure>
