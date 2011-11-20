@@ -15,6 +15,13 @@ http://docs.zope.org/zope2/releases/.
 
 - Fixed serious authentication vulnerability in stock configuration.
 
+- Updated distributions:
+
+  - python-gettext = 1.2
+  - repoze.who = 2.0
+  - ZODB3 = 3.10.5
+  - Zope Toolkit 1.0.5
+
 2.13.10 (2011-10-04)
 --------------------
 
