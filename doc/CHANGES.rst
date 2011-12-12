@@ -8,6 +8,8 @@ http://docs.zope.org/zope2/releases/.
 2.13.11 (unreleased)
 --------------------
 
+- LP #902068: Fixed missing security declaration for `ObjectManager` class.
+
 - Avoid conflicting signal registrations when run under mod_wsgi.
   Allows the use of `WSGIRestrictSignal Off` (LP #681853).
 
