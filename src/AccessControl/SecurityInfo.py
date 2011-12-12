@@ -41,8 +41,13 @@
 import sys
 from logging import getLogger
 
+from App.class_init import InitializeClass
 from AccessControl.ImplPython import _what_not_even_god_should_do
 from Acquisition import Implicit
+from Persistence import Persistent
+
+# always patch Persistent before ClassSecurityInfo is used
+Persistent.__class_init__ = InitializeClass
 
 LOG = getLogger('SecurityInfo')
 
@@ -311,5 +316,4 @@ def allow_class(Class):
     sec.declareObjectPublic()
     sec.setDefaultAccess(1)
     sec.apply(Class)
-    from App.class_init import InitializeClass
     InitializeClass(Class)
