@@ -11,4 +11,11 @@
 #
 ##############################################################################
 
-from zope.sequencesort.ssort import *
+from zope.sequencesort.ssort import nocase, make_sortfunctions
+from zope.sequencesort.ssort import sort, SortEx, SortBy
+
+# only if locale is already imported
+import sys
+if "locale" in sys.modules:
+    from zope.sequencesort.ssort import strcoll_nocase
+del sys

@@ -8,6 +8,9 @@ http://docs.zope.org/zope2/releases/.
 2.12.21 (unreleased)
 --------------------
 
+- Restrict the available functions in `DocumentTemplate.sequence` to public
+  API's of `zope.sequencesort`.
+
 - Turn `UndoSupport.get_request_var_or_attr` helper into a private API.
 
 - Provide security declarations for `BTreeFolder2Base` class, instead of only
