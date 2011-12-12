@@ -5,7 +5,7 @@ This file contains change information for the current Zope release.
 Change information for previous versions of Zope can be found at
 http://docs.zope.org/zope2/releases/.
 
-2.12.21 (unreleased)
+2.12.21 (2011-12-12)
 --------------------
 
 - Restrict the available functions in `DocumentTemplate.sequence` to public
