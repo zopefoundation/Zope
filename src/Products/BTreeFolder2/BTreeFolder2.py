@@ -472,11 +472,15 @@ class BTreeFolder2Base (Persistent):
 
     # Aliases for mapping-like access.
     __len__ = objectCount
+    security.declareProtected(access_contents_information, 'keys')
     keys = objectIds
+    security.declareProtected(access_contents_information, 'values')
     values = objectValues
+    security.declareProtected(access_contents_information, 'items')
     items = objectItems
 
     # backward compatibility
+    security.declareProtected(access_contents_information, 'hasObject')
     hasObject = has_key
 
     security.declareProtected(access_contents_information, 'get')

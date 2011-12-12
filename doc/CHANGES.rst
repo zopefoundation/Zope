@@ -8,6 +8,11 @@ http://docs.zope.org/zope2/releases/.
 2.12.21 (unreleased)
 --------------------
 
+- Provide security declarations for `BTreeFolder2Base` class, instead of only
+  for `BTreeFolder2` via the `OFS.Folder` mix-in.
+
+- LP #902068: Fixed missing security declaration for `ObjectManager` class.
+
 - Fixed serious authentication vulnerability in stock configuration.
 
 2.12.20 (2011-10-04)

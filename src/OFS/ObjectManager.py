@@ -805,7 +805,7 @@ class ObjectManager(CopyContainer,
     def keys(self):
         return self.objectIds()
 
-    security.declareProtected(access_contents_information, 'get')
+    security.declareProtected(access_contents_information, 'items')
     def items(self):
         return self.objectItems()
 
