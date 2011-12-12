@@ -5,7 +5,7 @@ This file contains change information for the current Zope release.
 Change information for previous versions of Zope can be found at
 http://docs.zope.org/zope2/releases/.
 
-2.13.11 (unreleased)
+2.13.11 (2011-12-12)
 --------------------
 
 - Turn `UndoSupport.get_request_var_or_attr` helper into a private API.
