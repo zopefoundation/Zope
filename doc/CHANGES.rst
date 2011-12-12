@@ -20,6 +20,7 @@ http://docs.zope.org/zope2/releases/.
 - Updated distributions:
 
   - AccessControl = 2.13.7
+  - Products.BTreeFolder2 = 2.13.4
   - python-gettext = 1.2
   - repoze.who = 2.0
   - ZODB3 = 3.10.5
