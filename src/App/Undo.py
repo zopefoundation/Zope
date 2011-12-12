@@ -50,7 +50,7 @@ class UndoSupport(ExtensionClass.Base):
         last_transaction=20,
         )
 
-    def get_request_var_or_attr(self, name, default):
+    def _get_request_var_or_attr(self, name, default):
         if hasattr(self, 'REQUEST'):
             REQUEST=self.REQUEST
             if REQUEST.has_key(name):
@@ -74,15 +74,15 @@ class UndoSupport(ExtensionClass.Base):
                               PrincipiaUndoBatchSize=None):
 
         if first_transaction is None:
-            first_transaction = self.get_request_var_or_attr(
+            first_transaction = self._get_request_var_or_attr(
                 'first_transaction', 0)
 
         if PrincipiaUndoBatchSize is None:
-            PrincipiaUndoBatchSize = self.get_request_var_or_attr(
+            PrincipiaUndoBatchSize = self._get_request_var_or_attr(
                 'PrincipiaUndoBatchSize', 20)
 
         if last_transaction is None:
-            last_transaction = self.get_request_var_or_attr(
+            last_transaction = self._get_request_var_or_attr(
                 'last_transaction',
                 first_transaction+PrincipiaUndoBatchSize)
 

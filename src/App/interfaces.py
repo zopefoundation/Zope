@@ -59,10 +59,6 @@ class IUndoSupport(Interface):
 
     manage_UndoForm = Attribute("""Manage Undo form""")
 
-    def get_request_var_or_attr(name, default):
-        """
-        """
-
     def undoable_transactions(first_transaction=None,
                               last_transaction=None,
                               PrincipiaUndoBatchSize=None):

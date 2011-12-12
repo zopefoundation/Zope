@@ -8,6 +8,8 @@ http://docs.zope.org/zope2/releases/.
 2.12.21 (unreleased)
 --------------------
 
+- Turn `UndoSupport.get_request_var_or_attr` helper into a private API.
+
 - Provide security declarations for `BTreeFolder2Base` class, instead of only
   for `BTreeFolder2` via the `OFS.Folder` mix-in.
 
