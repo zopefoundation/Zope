@@ -1,0 +1,9 @@
+include *.txt
+
+recursive-include doc *
+recursive-include src *
+
+global-exclude *.dll
+global-exclude *.pyc
+global-exclude *.pyo
+global-exclude *.so
