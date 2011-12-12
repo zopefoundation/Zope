@@ -41,9 +41,7 @@ def patchPersistent():
 
     from zope.interface import classImplements
     from Persistence import Persistent
-    from AccessControl.class_init import InitializeClass
     from App.interfaces import IPersistentExtra
-    Persistent.__class_init__ = InitializeClass
 
     for k, v in PersistentUtil.__dict__.items():
         if k[0] != '_':
