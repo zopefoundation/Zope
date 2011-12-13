@@ -8,6 +8,9 @@ http://docs.zope.org/zope2/releases/.
 2.13.12 (unreleased)
 --------------------
 
+- Updated distributions:
+
+  - Products.ZCatalog = 2.13.22
 
 2.13.11 (2011-12-12)
 --------------------
