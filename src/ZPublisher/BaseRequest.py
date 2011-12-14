@@ -540,9 +540,9 @@ class BaseRequest:
         if (no_acquire_flag and
             hasattr(parents[1], 'aq_base') and
             not hasattr(parents[1],'__bobo_traverse__')):
-            if not (hasattr(parents[1].aq_base, entry_name) or
-                    parents[1].aq_base.has_key(entry_name)):
-                raise AttributeError, entry_name
+            base = parents[-1].aq_base
+            if not (hasattr(base, entry_name) or entry_name in base):
+                raise AttributeError(entry_name)
 
         # After traversal post traversal hooks aren't available anymore
         del self._post_traverse

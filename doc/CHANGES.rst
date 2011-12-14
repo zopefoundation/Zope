@@ -8,6 +8,10 @@ http://docs.zope.org/zope2/releases/.
 2.13.12 (unreleased)
 --------------------
 
+- Use ``in`` operator instead of deprecated ``has_key`` method (which
+  is not implemented by ``OFS.ObjectManager``). This fixes an issue
+  with WebDAV requests for skin objects.
+
 - Updated distributions:
 
   - Products.ZCatalog = 2.13.22
