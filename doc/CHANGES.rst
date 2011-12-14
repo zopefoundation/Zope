@@ -11,6 +11,10 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
+- Use ``in`` operator instead of deprecated ``has_key`` method (which
+  is not implemented by ``OFS.ObjectManager``). This fixes an issue
+  with WebDAV requests for skin objects.
+
 - Avoid conflicting signal registrations when run under mod_wsgi.
   Allows the use of `WSGIRestrictSignal Off` (LP #681853).
 
