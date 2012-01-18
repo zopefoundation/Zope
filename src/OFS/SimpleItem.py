@@ -45,6 +45,7 @@ from DocumentTemplate.ustr import ustr
 from ExtensionClass import Base
 from Persistence import Persistent
 from webdav.Resource import Resource
+from webdav.xmltools import escape as xml_escape
 from zExceptions import Redirect
 from zExceptions.ExceptionFormatter import format_exception
 from zope.interface import implements
@@ -232,7 +233,7 @@ class Item(Base,
                           'error_value': error_value,
                           'error_tb': error_tb,
                           'error_traceback': error_tb,
-                          'error_message': error_message,
+                          'error_message': xml_escape(str(error_message)),
                           'error_log_url': error_log_url}
 
                 if getattr(aq_base(s), 'isDocTemp', 0):

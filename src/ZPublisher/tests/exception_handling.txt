@@ -203,9 +203,9 @@ converts it into zExceptions.NotFound if we are not in debug mode.
     Traceback (most recent call last):
     ...
     HTTPError: HTTP Error 404: Not Found
-    >>> '<p><strong>Resource not found</strong></p>' in browser.contents
+    >>> '&lt;p&gt;&lt;strong&gt;Resource not found&lt;/strong&gt;&lt;/p&gt;' in browser.contents
     True
-    >>> '<p><b>Resource:</b> index_html</p>' in browser.contents
+    >>> '&lt;p&gt;&lt;b&gt;Resource:&lt;/b&gt; index_html&lt;/p&gt;' in browser.contents
     True
 
     >>> browser.handleErrors = False

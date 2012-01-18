@@ -5,8 +5,11 @@ This file contains change information for the current Zope release.
 Change information for previous versions of Zope can be found at
 http://docs.zope.org/zope2/releases/.
 
-2.13.12 (unreleased)
+2.13.12 (2012-01-18)
 --------------------
+
+- Prevent a cross-site-scripting attack against the default standard
+  error message handling.  (CVE-2010-1104).
 
 - Use ``in`` operator instead of deprecated ``has_key`` method (which
   is not implemented by ``OFS.ObjectManager``). This fixes an issue
