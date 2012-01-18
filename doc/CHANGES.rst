@@ -5,9 +5,11 @@ This file contains change information for the current Zope release.
 Change information for previous versions of Zope can be found at
 http://docs.zope.org/zope2/releases/.
 
-2.12.22 (unreleased)
+2.12.22 (2012-01-18)
 --------------------
 
+- Prevent a cross-site-scripting attack against the default standard
+  error message handling.  (CVE-2010-1104).
 
 2.12.21 (2011-12-12)
 --------------------
