@@ -16,7 +16,7 @@ import os
 from setuptools import setup, find_packages, Extension
 
 setup(name='Zope2',
-    version='2.12.22',
+    version='2.12.23dev',
     url='http://www.zope.org',
     license='ZPL 2.1',
     description='Zope2 application server / web framework',
