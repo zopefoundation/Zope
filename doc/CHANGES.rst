@@ -11,6 +11,10 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
+- Removed HTML tags from exception text of ``Unauthorized`` exception
+  because these tags get escaped since CVE-2010-1104 (see 2.13.12) got
+  fixed.
+
 - Use ``in`` operator instead of deprecated ``has_key`` method (which
   is not implemented by ``OFS.ObjectManager``). This fixes an issue
   with WebDAV requests for skin objects.
