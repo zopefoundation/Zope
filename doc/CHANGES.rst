@@ -8,7 +8,9 @@ http://docs.zope.org/zope2/releases/.
 2.13.13 (unreleased)
 --------------------
 
-- TBD
+- Removed HTML tags from exception text of ``Unauthorized`` exception
+  because these tags get escaped since CVE-2010-1104 (see 2.13.12) got
+  fixed.
 
 2.13.12 (2012-01-18)
 --------------------

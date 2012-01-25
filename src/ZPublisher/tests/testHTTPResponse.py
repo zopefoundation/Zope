@@ -902,8 +902,8 @@ class HTTPResponseTests(unittest.TestCase):
             response.unauthorized()
         except Unauthorized, raised:
             self.assertEqual(response.status, 200) # publisher sets 401 later
-            self.assertTrue("<strong>You are not authorized "
-                            "to access this resource.</strong>" in str(raised))
+            self.assertTrue("You are not authorized "
+                            "to access this resource." in str(raised))
         else:
             self.fail("Didn't raise Unauthorized")
 
@@ -914,8 +914,8 @@ class HTTPResponseTests(unittest.TestCase):
         try:
             response.unauthorized()
         except Unauthorized, raised:
-            self.assertTrue("<p>\nNo Authorization header found.</p>"
-                                in str(raised))
+            self.assertTrue("\nNo Authorization header found."
+                            in str(raised))
         else:
             self.fail("Didn't raise Unauthorized")
 
@@ -927,8 +927,8 @@ class HTTPResponseTests(unittest.TestCase):
         try:
             response.unauthorized()
         except Unauthorized, raised:
-            self.assertTrue("<p>\nUsername and password are not correct.</p>"
-                                in str(raised))
+            self.assertTrue("\nUsername and password are not correct."
+                            in str(raised))
         else:
             self.fail("Didn't raise Unauthorized")
 

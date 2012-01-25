@@ -203,7 +203,7 @@ class HTTPResponse(BaseResponse):
 
     def setStatus(self, status, reason=None, lock=None):
         """ Set the HTTP status code of the response
-        
+
         o The argument may either be an integer or a string from the
           'status_reasons' dict values:  status messages will be converted
           to the correct integer value.
@@ -244,7 +244,7 @@ class HTTPResponse(BaseResponse):
         The response will include an HTTP header that sets a cookie on
         cookie-enabled browsers with a key "name" and value
         "value".
-        
+
         This value overwrites any previously set value for the
         cookie in the Response object.
         """
@@ -263,7 +263,7 @@ class HTTPResponse(BaseResponse):
 
     def appendCookie(self, name, value):
         """ Set an HTTP cookie.
-        
+
         Returns an HTTP header that sets a cookie on cookie-enabled
         browsers with a key "name" and value "value". If a value for the
         cookie has previously been set in the response object, the new
@@ -309,7 +309,7 @@ class HTTPResponse(BaseResponse):
         Return the value associated with a HTTP return header, or
         None if no such header has been set in the response
         yet.
-        
+
         If the 'literal' flag is true, preserve the case of the header name;
         otherwise lower-case the header name before looking up the value.
         """
@@ -318,9 +318,9 @@ class HTTPResponse(BaseResponse):
 
     def setHeader(self, name, value, literal=0, scrubbed=False):
         """ Set an HTTP return header on the response.
-        
+
         Replay any existing value set for the header.
-        
+
         If the 'literal' flag is true, preserve the case of the header name;
         otherwise the header name will be lowercased.
 
@@ -332,7 +332,7 @@ class HTTPResponse(BaseResponse):
         key = name.lower()
         # The following is crazy, given that we have APIs for cookies.
         # Special behavior will go away in Zope 2.13
-        if key == 'set-cookie':  
+        if key == 'set-cookie':
             self.accumulated_headers.append((name, value))
         else:
             name = literal and name or key
@@ -360,7 +360,7 @@ class HTTPResponse(BaseResponse):
 
     def addHeader(self, name, value):
         """ Set a new HTTP return header with the given value,
-        
+
         Retain any previously set headers with the same name.
 
         Note that this API appneds to the 'accumulated_headers' attribute;
@@ -455,7 +455,7 @@ class HTTPResponse(BaseResponse):
             return
         elif lock:
             self._locked_body = 1
-            
+
         if not body:
             return self
 
@@ -546,7 +546,7 @@ class HTTPResponse(BaseResponse):
                         # vary on it. Otherwise if not forced, cache should
                         # respect Accept-Encoding client header
                         vary = self.getHeader('Vary')
-                        if vary is None or 'Accept-Encoding' not in vary: 
+                        if vary is None or 'Accept-Encoding' not in vary:
                             self.appendHeader('Vary', 'Accept-Encoding')
         return self
 
@@ -747,12 +747,12 @@ class HTTPResponse(BaseResponse):
             self.setHeader('WWW-Authenticate', 'basic realm="%s"' % realm, 1)
 
     def unauthorized(self):
-        m = "<strong>You are not authorized to access this resource.</strong>"
+        m = "You are not authorized to access this resource."
         if self.debug_mode:
             if self._auth:
-                m = m + '<p>\nUsername and password are not correct.</p>'
+                m = m + '\nUsername and password are not correct.'
             else:
-                m = m + '<p>\nNo Authorization header found.</p>'
+                m = m + '\nNo Authorization header found.'
         raise Unauthorized, m
 
     def _setBCIHeaders(self, t, tb):
@@ -913,7 +913,7 @@ class HTTPResponse(BaseResponse):
         """ Set headers required by various parts of protocol.
         """
         body = self.body
-        if (not 'content-length' in self.headers and 
+        if (not 'content-length' in self.headers and
             not 'transfer-encoding' in self.headers):
             self.setHeader('content-length', len(body))
         return "%d %s" % (self.status, self.errmsg), self.listHeaders()
@@ -956,7 +956,7 @@ class HTTPResponse(BaseResponse):
             chunks.append("%s: %s" % (key, value))
         # RFC 2616 mandates empty line between headers and payload
         chunks.append('')
-        chunks.append(body) 
+        chunks.append(body)
         return '\r\n'.join(chunks)
 
     def write(self,data):
@@ -975,9 +975,9 @@ class HTTPResponse(BaseResponse):
 
         """
         if not self._wrote:
-            
+
             notify(PubBeforeStreaming(self))
-            
+
             self.outputBody()
             self._wrote = 1
             self.stdout.flush()

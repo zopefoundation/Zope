@@ -13,7 +13,7 @@ Create the browser object we'll be using.
     >>> browser.mech_browser.set_handle_redirect(False)
 
 Create the objects that are raising exceptions.
- 
+
     >>> dummy = app.test_folder_1_._setObject('foo', ExceptionRaiser1())
     >>> dummy = app.test_folder_1_._setObject('bar', ExceptionRaiser2())
     >>> dummy = app.test_folder_1_._setObject('baz', ExceptionRaiser3())
@@ -192,7 +192,7 @@ Handle zExceptions.Unauthorized raised by BaseRequest.traverse. We take the
     >>> browser.open('http://localhost/test_folder_1_/bar')
     Traceback (most recent call last):
     ...
-    Unauthorized: <strong>You are not authorized to access this resource...
+    Unauthorized: You are not authorized to access this resource...
     >>> browser.contents
 
 Handle zExceptions.Forbidden raised by BaseRequest.traverse. 'traverse'
