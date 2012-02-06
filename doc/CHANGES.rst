@@ -8,6 +8,10 @@ http://docs.zope.org/zope2/releases/.
 2.12.23 (unreleased)
 --------------------
 
+- Note end-of-life timeline: Zope 2.12.x is now in security-fix-only mode and
+  will continue to see security updates until October 2013, the same as Python
+  2.6.x does.
+
 - Updated distributions:
 
   - distribute = 0.6.24
