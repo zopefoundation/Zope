@@ -8,7 +8,20 @@ http://docs.zope.org/zope2/releases/.
 2.12.23 (unreleased)
 --------------------
 
-- TBD
+- Updated distributions:
+
+  - distribute = 0.6.24
+  - Products.ZSQLMethods = 2.13.4
+  - zope.catalog = 3.8.2
+  - zope.componentvocabulary = 1.0.1
+  - zope.datetime = 3.4.1
+  - zope.deprecation = 3.4.1
+  - zope.documenttemplate = 3.4.3
+  - zope.index = 3.6.3
+  - zope.keyreference = 3.6.4
+  - zope.mkzeoinstance = 3.9.5
+  - zope.session = 3.9.5
+  - zope.testing = 3.9.7
 
 2.12.22 (2012-01-18)
 --------------------
