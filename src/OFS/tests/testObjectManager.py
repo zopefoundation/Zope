@@ -417,14 +417,6 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         si1 = SimpleItem('1')
         om['1'] = si1
         self.assertTrue(om.get('1') == si1)
-        # A contained item overwrites the method
-        self.assertTrue(hasattr(om.get, 'im_func'))
-        om.__dict__['get'] = si1
-        self.assertTrue(aq_base(om.get) is si1)
-        self.assertTrue(aq_base(om['get']) is si1)
-        # Once the object is gone, the method is back
-        del om['get']
-        self.assertTrue(hasattr(om.get, 'im_func'))
 
     def test_items(self):
         om = self._makeOne()
