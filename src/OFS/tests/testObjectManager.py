@@ -412,11 +412,22 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         om = self._makeOne()
         self.assertTrue(om)
 
-    def test_get(self):
+    def test_get_miss_wo_default(self):
+        om = self._makeOne()
+        self.assertEqual(om.get('nonesuch'), None)
+
+    def test_get_miss_w_default(self):
+        om = self._makeOne()
+        obj = object()
+        self.assertTrue(om.get('nonesuch', obj) is obj)
+
+    def test_get_hit(self):
         om = self._makeOne()
         si1 = SimpleItem('1')
         om['1'] = si1
-        self.assertTrue(om.get('1') == si1)
+        got = om.get('1')
+        self.assertTrue(got.aq_self is si1)
+        self.assertTrue(got.aq_parent is om)
 
     def test_items(self):
         om = self._makeOne()
