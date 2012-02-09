@@ -227,7 +227,8 @@ class ObjectManager(CopyContainer,
 
         # Look at all globally visible meta types.
         for entry in Products.meta_types:
-            if ( (interfaces is not None) or (entry.get("visibility", None)=="Global") ):
+            if ((interfaces is not None) or
+                (entry.get("visibility", None)=="Global")):
                 external_candidates.append(entry)
 
         # Filter the list of external candidates based on the
@@ -235,7 +236,7 @@ class ObjectManager(CopyContainer,
         if interfaces is None:
             interface_constrained_meta_types = external_candidates
         else:
-            interface_constrained_meta_types = []
+            interface_constrained_meta_types = icmt = []
             for entry in external_candidates:
                 try:
                     eil = entry.get('interfaces',None)
@@ -243,7 +244,7 @@ class ObjectManager(CopyContainer,
                         for ei in eil:
                             for i in interfaces:
                                 if ei is i or ei.extends(i):
-                                    interface_constrained_meta_types.append(entry)
+                                    icmt.append(entry)
                                     raise BreakoutException # only append 1ce
                 except BreakoutException:
                     pass
@@ -702,7 +703,8 @@ class ObjectManager(CopyContainer,
 
             all_files = copy.copy(files)
             for f in files:
-                if hasattr(aq_base(f[1]), 'isPrincipiaFolderish') and f[1].isPrincipiaFolderish:
+                if (hasattr(aq_base(f[1]), 'isPrincipiaFolderish') and
+                    f[1].isPrincipiaFolderish):
                     all_files.extend(findChildren(f[1]))
             files = all_files
 
@@ -824,7 +826,8 @@ def findChildren(obj,dirname=''):
 
     lst = []
     for name, child in obj.objectItems():
-        if hasattr(aq_base(child), 'isPrincipiaFolderish') and child.isPrincipiaFolderish:
+        if (hasattr(aq_base(child), 'isPrincipiaFolderish') and
+            child.isPrincipiaFolderish):
             lst.extend(findChildren(child, dirname + obj.id + '/'))
         else:
             lst.append((dirname + obj.id + "/" + name, child))
