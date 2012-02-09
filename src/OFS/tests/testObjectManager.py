@@ -434,42 +434,18 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         si1 = SimpleItem('1')
         om['1'] = si1
         self.assertTrue(('1', si1) in om.items())
-        # A contained item overwrites the method
-        self.assertTrue(hasattr(om.items, 'im_func'))
-        om.__dict__['items'] = si1
-        self.assertTrue(aq_base(om.items) is si1)
-        self.assertTrue(aq_base(om['items']) is si1)
-        # Once the object is gone, the method is back
-        del om['items']
-        self.assertTrue(hasattr(om.items, 'im_func'))
 
     def test_keys(self):
         om = self._makeOne()
         si1 = SimpleItem('1')
         om['1'] = si1
         self.assertTrue('1' in om.keys())
-        # A contained item overwrites the method
-        self.assertTrue(hasattr(om.keys, 'im_func'))
-        om.__dict__['keys'] = si1
-        self.assertTrue(aq_base(om.keys) is si1)
-        self.assertTrue(aq_base(om['keys']) is si1)
-        # Once the object is gone, the method is back
-        del om['keys']
-        self.assertTrue(hasattr(om.keys, 'im_func'))
 
     def test_values(self):
         om = self._makeOne()
         si1 = SimpleItem('1')
         om['1'] = si1
         self.assertTrue(si1 in om.values())
-        # A contained item overwrites the method
-        self.assertTrue(hasattr(om.values, 'im_func'))
-        om.__dict__['values'] = si1
-        self.assertTrue(aq_base(om.values) is si1)
-        self.assertTrue(aq_base(om['values']) is si1)
-        # Once the object is gone, the method is back
-        del om['values']
-        self.assertTrue(hasattr(om.values, 'im_func'))
 
     def test_list_imports(self):
         om = self._makeOne()
