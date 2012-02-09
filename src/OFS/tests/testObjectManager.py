@@ -353,6 +353,10 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         self.assertRaises(BadRequest, om._setObject, '111', si)
         self.assertRaises(BadRequest, om._setObject, 'REQUEST', si)
         self.assertRaises(BadRequest, om._setObject, '/', si)
+        self.assertRaises(BadRequest, om._setObject, 'get', si)
+        self.assertRaises(BadRequest, om._setObject, 'items', si)
+        self.assertRaises(BadRequest, om._setObject, 'keys', si)
+        self.assertRaises(BadRequest, om._setObject, 'values', si)
 
     def test_getsetitem(self):
         om = self._makeOne()
@@ -411,7 +415,6 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
     def test_get(self):
         om = self._makeOne()
         si1 = SimpleItem('1')
-        self.assertRaises(BadRequest, om.__setitem__, 'get', si1)
         om['1'] = si1
         self.assertTrue(om.get('1') == si1)
         # A contained item overwrites the method
@@ -426,7 +429,6 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
     def test_items(self):
         om = self._makeOne()
         si1 = SimpleItem('1')
-        self.assertRaises(BadRequest, om.__setitem__, 'items', si1)
         om['1'] = si1
         self.assertTrue(('1', si1) in om.items())
         # A contained item overwrites the method
@@ -441,7 +443,6 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
     def test_keys(self):
         om = self._makeOne()
         si1 = SimpleItem('1')
-        self.assertRaises(BadRequest, om.__setitem__, 'keys', si1)
         om['1'] = si1
         self.assertTrue('1' in om.keys())
         # A contained item overwrites the method
@@ -456,7 +457,6 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
     def test_values(self):
         om = self._makeOne()
         si1 = SimpleItem('1')
-        self.assertRaises(BadRequest, om.__setitem__, 'values', si1)
         om['1'] = si1
         self.assertTrue(si1 in om.values())
         # A contained item overwrites the method
