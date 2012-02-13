@@ -8,6 +8,8 @@ http://docs.zope.org/zope2/releases/.
 2.13.13 (unreleased)
 --------------------
 
+- Updated to Zope Toolkit 1.0.6.
+
 - Removed HTML tags from exception text of ``Unauthorized`` exception
   because these tags get escaped since CVE-2010-1104 (see 2.13.12) got
   fixed.
