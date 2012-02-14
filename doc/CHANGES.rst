@@ -8,6 +8,10 @@ http://docs.zope.org/zope2/releases/.
 2.12.23 (unreleased)
 --------------------
 
+- Ensure that ObjectManager's ``get`` and ``__getitem__`` methods return only
+  "items" (no attributes / methods from the class or from acquisition).
+  Thanks to Richard Mitchell at Netsight for the report.
+
 - Note end-of-life timeline: Zope 2.12.x is now in security-fix-only mode and
   will continue to see security updates until October 2013, the same as Python
   2.6.x does.
