@@ -11,6 +11,10 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
+- Ensure that ObjectManager's ``get`` and ``__getitem__`` methods return only
+  "items" (no attributes / methods from the class or from acquisition).
+  Thanks to Richard Mitchell at Netsight for the report.
+
 - Removed HTML tags from exception text of ``Unauthorized`` exception
   because these tags get escaped since CVE-2010-1104 (see 2.13.12) got
   fixed.

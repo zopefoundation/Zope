@@ -412,6 +412,22 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         om = self._makeOne()
         self.assertTrue(om)
 
+    def test___getitem___miss(self):
+        om = self._makeOne()
+        self.assertRaises(KeyError, om.__getitem__, 'nonesuch')
+
+    def test___getitem___miss_w_non_instance_attr(self):
+        om = self._makeOne()
+        self.assertRaises(KeyError, om.__getitem__, 'get')
+
+    def test___getitem___hit(self):
+        om = self._makeOne()
+        si1 = SimpleItem('1')
+        om['1'] = si1
+        got = om['1']
+        self.assertTrue(got.aq_self is si1)
+        self.assertTrue(got.aq_parent is om)
+
     def test_get_miss_wo_default(self):
         om = self._makeOne()
         self.assertEqual(om.get('nonesuch'), None)
@@ -420,6 +436,10 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         om = self._makeOne()
         obj = object()
         self.assertTrue(om.get('nonesuch', obj) is obj)
+
+    def test_get_miss_w_non_instance_attr(self):
+        om = self._makeOne()
+        self.assertEqual(om.get('get'), None)
 
     def test_get_hit(self):
         om = self._makeOne()
