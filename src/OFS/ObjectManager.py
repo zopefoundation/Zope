@@ -22,6 +22,7 @@ import marshal
 import os
 import re
 import sys
+from types import NoneType
 
 from AccessControl import ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
@@ -765,12 +766,13 @@ class ObjectManager(CopyContainer,
         return self.manage_delObjects(ids=[name])
 
     def __getitem__(self, key):
-        v=self._getOb(key, None)
-        if v is not None: return v
-        if hasattr(self, 'REQUEST'):
-            request=self.REQUEST
+        if key in self:
+            return self._getOb(key, None)
+        request = getattr(self, 'REQUEST', None)
+        if not isinstance(request, (str, NoneType)):
             method=request.get('REQUEST_METHOD', 'GET')
-            if request.maybe_webdav_client and not method in ('GET', 'POST'):
+            if (request.maybe_webdav_client and
+                method not in ('GET', 'POST')):
                 return NullResource(self, key, request).__of__(self)
         raise KeyError, key
 
@@ -791,7 +793,9 @@ class ObjectManager(CopyContainer,
 
     security.declareProtected(access_contents_information, 'get')
     def get(self, key, default=None):
-        return self._getOb(key, default)
+        if key in self:
+            return self._getOb(key, default)
+        return default
 
     security.declareProtected(access_contents_information, 'keys')
     def keys(self):

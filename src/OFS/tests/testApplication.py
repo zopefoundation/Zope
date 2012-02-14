@@ -57,6 +57,7 @@ class ApplicationTests(unittest.TestCase):
     def test___bobo_traverse__attribute_miss_key_hit(self):
         app = self._makeOne()
         app._getOb = lambda x, y: x
+        app._objects = [{'id': 'OTHER', 'meta_type': None}]
         request = {}
         self.assertEqual(app.__bobo_traverse__(request, 'OTHER'), 'OTHER')
 
