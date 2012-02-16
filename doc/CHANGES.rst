@@ -8,6 +8,10 @@ http://docs.zope.org/zope2/releases/.
 2.13.13 (unreleased)
 --------------------
 
+- LP #933307: Fixed ++skin++ namespace handling.
+  Ported the ``shiftNameToApplication`` implementation from zope.publisher to
+  ZPublisher.HTTPRequest.HTTPRequest.
+
 - Ensure that ObjectManager's ``get`` and ``__getitem__`` methods return only
   "items" (no attributes / methods from the class or from acquisition).
   Thanks to Richard Mitchell at Netsight for the report.

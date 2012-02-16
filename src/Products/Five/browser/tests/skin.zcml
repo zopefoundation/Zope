@@ -14,7 +14,7 @@
   <browser:page
       for="Products.Five.tests.testing.simplecontent.ISimpleContent"
       class=".pages.SimpleView"
-      attribute="eagle"
+      attribute="eagle2"
       name="eagle.html"
       permission="zope2.Public"
       layer=".skin.ITestSkin"
