@@ -1532,9 +1532,16 @@ class HTTPRequest(BaseRequest):
     def taintWrapper(self, enabled=TAINTING_ENABLED):
         return enabled and TaintRequestWrapper(self) or self
 
+    # Original version: zope.publisher.http.HTTPRequest.shiftNameToApplication
     def shiftNameToApplication(self):
         """see zope.publisher.interfaces.http.IVirtualHostRequest"""
-        # this is needed for ++skin++
+        if len(self._steps) == 1:
+            self._script.append(self._steps.pop())
+            self._resetURLS()
+            return
+
+        raise ValueError("Can only shift leading traversal "
+                         "names to application names")
 
     def getURL(self):
         return self.URL
