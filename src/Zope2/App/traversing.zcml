@@ -38,6 +38,13 @@
       />
 
   <adapter
+      name="skin"
+      for="* zope.publisher.interfaces.IRequest"
+      provides="zope.traversing.interfaces.ITraversable"
+      factory="zope.traversing.namespace.skin"
+      />
+
+  <adapter
       name="resource"
       for="* zope.publisher.interfaces.IRequest"
       provides="zope.traversing.interfaces.ITraversable"
