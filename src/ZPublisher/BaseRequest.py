@@ -540,7 +540,7 @@ class BaseRequest:
         if (no_acquire_flag and
             hasattr(parents[1], 'aq_base') and
             not hasattr(parents[1],'__bobo_traverse__')):
-            base = parents[-1].aq_base
+            base = parents[1].aq_base
             if not (hasattr(base, entry_name) or entry_name in base):
                 raise AttributeError(entry_name)
 
