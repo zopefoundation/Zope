@@ -8,7 +8,7 @@ http://docs.zope.org/zope2/releases/.
 2.13.14 (unreleased)
 --------------------
 
-
+- ZPublisher: Fixed a traversal regression introduced in 2.13.12.
 
 2.13.13 (2012-02-20)
 --------------------

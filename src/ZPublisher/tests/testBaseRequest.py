@@ -73,6 +73,9 @@ class BaseRequest_factory:
                 # Attribute without docstring.
                 return 'unpublishable'
 
+            def __contains__(self, name):
+                return False
+
         return DummyObjectBasic
 
     def _makeBasicObject(self):
@@ -190,6 +193,15 @@ class TestBaseRequest(unittest.TestCase, BaseRequest_factory):
         root, folder = self._makeRootAndFolder()
         folder._setObject('objBasic', self._makeBasicObject())
         r = self._makeOne(root)
+        r.traverse('folder/objBasic')
+        self.assertEqual(r.URL, '/folder/objBasic')
+        self.assertEqual(r.response.base, '')
+
+    def test_traverse_basic_no_acquire_flag(self):
+        root, folder = self._makeRootAndFolder()
+        folder._setObject('objBasic', self._makeBasicObject())
+        r = self._makeOne(root)
+        r['REQUEST_METHOD'] = 'HEAD'
         r.traverse('folder/objBasic')
         self.assertEqual(r.URL, '/folder/objBasic')
         self.assertEqual(r.response.base, '')
