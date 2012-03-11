@@ -814,7 +814,7 @@ def main():
         elif mode=='urlfocus':
             sortf = Sort('start', ascending=1)
         else:
-            raise 'Invalid mode'
+            raise ValueError('Invalid mode')
 
         req=get_requests(files, start, end, statsfname, writestats, readstats)
         analyze(req, top, sortf, start, end, mode, resolution, urlfocusurl,
