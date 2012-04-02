@@ -28,7 +28,7 @@ from ZPublisher.BeforeTraverse import registerBeforeTraverse
 from ZPublisher.BeforeTraverse import unregisterBeforeTraverse
 
 # Hook up custom component architecture calls
-from zope.site.hooks import setHooks
+from zope.component.hooks import setHooks
 setHooks()
 
 def findSite(obj, iface=ISite):

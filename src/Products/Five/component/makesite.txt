@@ -18,7 +18,7 @@ Load all of Five's configuration (this is a functional test):
 
 Enable local component lookup hooks:
 
-    >>> from zope.site.hooks import setHooks
+    >>> from zope.component.hooks import setHooks
     >>> setHooks()
 
 

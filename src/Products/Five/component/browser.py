@@ -19,8 +19,8 @@ from Products.Five.component import enableSite, disableSite
 from Products.Five.component.interfaces import IObjectManagerSite
 
 from zope.component.globalregistry import base
+from zope.component.hooks import setSite
 from zope.component.persistentregistry import PersistentComponents
-from zope.site.hooks import setSite
 
 
 class ObjectManagerSiteView(BrowserView):
