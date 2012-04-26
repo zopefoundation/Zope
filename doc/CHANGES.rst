@@ -10,6 +10,10 @@ http://docs.zope.org/zope2/releases/.
 
 - ZPublisher: Fixed a traversal regression introduced in 2.13.12.
 
+- Updated distributions:
+
+  - Products.ZCatalog = 2.13.23
+
 2.13.13 (2012-02-20)
 --------------------
 
