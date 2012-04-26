@@ -65,6 +65,7 @@ Features Added
   - DateTime = 3.0
   - docutils = 0.8.1
   - manuel = 1.5.0
+  - Products.ZCatalog = 3.0a2
 
 Restructuring
 +++++++++++++
