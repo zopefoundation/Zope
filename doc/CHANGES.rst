@@ -8,7 +8,9 @@ http://docs.zope.org/zope2/releases/.
 2.12.24 (unreleased)
 --------------------
 
+- Updated distributions:
 
+  - zope.tales = 3.4.1
 
 2.12.23 (2012-02-20)
 --------------------
