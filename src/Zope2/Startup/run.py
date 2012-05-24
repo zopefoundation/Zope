@@ -20,9 +20,9 @@ def run():
     starter.setConfiguration(opts.configroot)
     try:
         starter.prepare()
-        starter.run()
     finally:
         starter.shutdown()
+    starter.run()
 
 def configure(configfile):
     """ Provide an API which allows scripts like zopectl to configure
