@@ -30,6 +30,7 @@ from ZPublisher.Publish import call_object
 from ZPublisher.Publish import dont_publish_class
 from ZPublisher.Publish import get_module_info
 from ZPublisher.Publish import missing_name
+from ZPublisher.pubevents import PubStart, PubBeforeCommit, PubAfterTraversal
 from ZPublisher.Iterators import IStreamIterator
 
 _NOW = None     # overwrite for testing
@@ -149,6 +150,7 @@ class WSGIResponse(HTTPResponse):
         #        return ''
         raise NotImplementedError
 
+
 def publish(request, module_name,
             _get_module_info=get_module_info,  # only for testing
            ):
@@ -160,8 +162,9 @@ def publish(request, module_name,
      err_hook,
      validated_hook,
      transactions_manager,
-    )= _get_module_info(module_name)
+    ) = _get_module_info(module_name)
 
+    notify(PubStart(request))
     request.processInputs()
     response = request.response
 
@@ -181,8 +184,9 @@ def publish(request, module_name,
     # According to RFC1738 a trailing space in the path is valid.
     path = request.get('PATH_INFO')
 
-    request['PARENTS'] = parents = [object]
+    request['PARENTS'] = [object]
     object = request.traverse(path, validated_hook=validated_hook)
+    notify(PubAfterTraversal(request))
 
     if transactions_manager:
         transactions_manager.recordMetaData(object, request)
@@ -201,7 +205,9 @@ def publish(request, module_name,
     if result is not response:
         response.setBody(result)
 
+    notify(PubBeforeCommit(request))
     return response
+
 
 class _RequestCloserForTransaction(object):
     """Unconditionally close the request at the end of a transaction.
