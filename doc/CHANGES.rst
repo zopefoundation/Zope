@@ -8,6 +8,9 @@ http://docs.zope.org/zope2/releases/.
 2.13.14 (unreleased)
 --------------------
 
+- Added PubStart, PubBeforeCommit and PubAfterTraversal events to the
+  WSGI publisher.
+
 - ZPublisher: Fixed a traversal regression introduced in 2.13.12.
 
 - Updated distributions:
