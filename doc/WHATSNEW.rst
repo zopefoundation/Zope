@@ -83,6 +83,10 @@ NOTE: There's no setup documentation nor streamlined instance creation logic
 for a WSGI setup yet. You are expected to know exactly what you are doing if
 you are trying to use this feature.
 
+Due to the way logic is split out into WSGI middleware, some of the
+`ZPublisher.pubevents` aren't emitted by the WSGI publisher. These are:
+`PubSuccess`, `PubFailure`, `PubBeforeCommit` and `PubBeforeAbort`.
+
 
 Zope Toolkit
 ------------
