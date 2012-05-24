@@ -18,8 +18,11 @@ def run():
     starter = Zope2.Startup.get_starter()
     opts = _setconfig()
     starter.setConfiguration(opts.configroot)
-    starter.prepare()
-    starter.run()
+    try:
+        starter.prepare()
+        starter.run()
+    finally:
+        starter.shutdown()
 
 def configure(configfile):
     """ Provide an API which allows scripts like zopectl to configure
