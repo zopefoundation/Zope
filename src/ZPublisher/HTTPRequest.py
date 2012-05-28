@@ -381,8 +381,8 @@ class HTTPRequest(BaseRequest):
         if server_url is not None:
             other['SERVER_URL'] = server_url = server_url.strip()
         else:
-            if 'HTTPS' in environ and (
-                environ['HTTPS'] == "on" or environ['HTTPS'] == "ON"):
+            https_environ = environ.get('HTTPS', False)
+            if https_environ and https_environ in ('on', 'ON', '1'):
                 protocol = 'https'
             elif ('SERVER_PORT_SECURE' in environ and
                 environ['SERVER_PORT_SECURE'] == "1"):
