@@ -24,13 +24,13 @@
  <tal:loop tal:repeat="interface view/getInterfaceNames">
  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
  <label class="form-mono"
-    tal:content="interface/name" i18n:translate="">INTERFACE</label><br />
+    tal:content="interface/name">INTERFACE</label><br />
  </tal:loop>
  <tal:loop tal:repeat="interface view/getDirectlyProvidedNames">
  <input type="checkbox" id="INTERFACE" name="remove:list"
     tal:attributes="id interface/name; value interface/name" />
  <label class="form-mono" for="INTERFACE" tal:attributes="for interface/name"
-    tal:content="interface/name" i18n:translate="">INTERFACE</label><br />
+    tal:content="interface/name">INTERFACE</label><br />
  </tal:loop>
  <tal:case tal:condition="view/getDirectlyProvidedNames">
  <div class="formControls FormButtons">
@@ -47,7 +47,7 @@
  <input type="checkbox" id="INTERFACE" name="add:list"
     tal:attributes="id interface/name; value interface/name" />
  <label class="form-mono" for="INTERFACE" tal:attributes="for interface/name"
-    tal:content="interface/name" i18n:translate="">INTERFACE</label><br />
+    tal:content="interface/name">INTERFACE</label><br />
  </tal:loop>
  <div class="formControls FormButtons">
   <input class="form-element" type="submit" name="SAVE" value="Add"
