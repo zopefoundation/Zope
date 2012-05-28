@@ -97,10 +97,10 @@ class CacheManager:
         if REQUEST is not None:
             # format as text
             REQUEST.RESPONSE.setHeader('Content-Type', 'text/plain')
-            return '\n'.join('%6d %s'%(count, name) for count, name in detail)
-        else:
-            # raw
-            return detail
+            return '\n'.join(
+                ['%6d %s' % (count, name) for name, count in detail])
+        # raw
+        return detail
 
     def cache_extreme_detail(self, REQUEST=None):
         """
