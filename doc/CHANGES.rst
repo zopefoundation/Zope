@@ -8,6 +8,8 @@ http://docs.zope.org/zope2/releases/.
 2.13.14 (unreleased)
 --------------------
 
+- LP #838978: Fixed TypeError in cache_detail ZMI view.
+
 - Cleanup lock and pid files if the process dies early in startup.
 
 - Added PubStart, PubBeforeCommit and PubAfterTraversal events to the
