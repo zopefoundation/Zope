@@ -8,6 +8,8 @@ http://docs.zope.org/zope2/releases/.
 2.13.14 (unreleased)
 --------------------
 
+- LP #950689: Fix HTTPS detection under mod_wsgi.
+
 - LP #975039: Don't translate interface names in edit_markers ZMI view.
 
 - LP #838978: Fixed TypeError in cache_detail ZMI view.
