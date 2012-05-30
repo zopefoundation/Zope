@@ -21,6 +21,8 @@ http://docs.zope.org/zope2/releases/.
 
 - ZPublisher: Fixed a traversal regression introduced in 2.13.12.
 
+- Updated to Zope Toolkit 1.0.7.
+
 - Updated distributions:
 
   - Products.ZCatalog = 2.13.23
