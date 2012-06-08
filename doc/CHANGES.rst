@@ -8,6 +8,8 @@ http://docs.zope.org/zope2/releases/.
 2.13.15 (unreleased)
 --------------------
 
+- Fix lock file cleanup if there's an error early in startup.
+
 
 2.13.14 (2012-05-31)
 --------------------

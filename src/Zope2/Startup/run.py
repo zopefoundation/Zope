@@ -20,8 +20,9 @@ def run():
     starter.setConfiguration(opts.configroot)
     try:
         starter.prepare()
-    finally:
+    except:
         starter.shutdown()
+        raise
     starter.run()
 
 def configure(configfile):

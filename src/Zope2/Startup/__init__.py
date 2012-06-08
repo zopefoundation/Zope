@@ -303,7 +303,7 @@ class ZopeStarter:
                 pass
 
     def unlinkLockFile(self):
-        if not self.cfg.zserver_read_only_mode:
+        if not self.cfg.zserver_read_only_mode and hasattr(self, 'lockfile'):
             try:
                 self.lockfile.close()
                 os.unlink(self.cfg.lock_filename)
