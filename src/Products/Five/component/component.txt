@@ -19,8 +19,8 @@ First, we register Five's adapter:
 Now we create a site object with a stub component registry:
 
   >>> from OFS.ObjectManager import ObjectManager
+  >>> from zope.component.interfaces import ISite
   >>> from zope.interface import alsoProvides
-  >>> from zope.location.interfaces import ISite
 
   >>> components = object()
   >>> site = ObjectManager()

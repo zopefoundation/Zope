@@ -14,11 +14,12 @@
 """Five local component look-up support
 """
 
-import zope.interface
 import zope.component
 import zope.event
+import zope.interface
 from zope.component.interfaces import IComponentLookup
-from zope.location.interfaces import ISite, IPossibleSite
+from zope.component.interfaces import IPossibleSite
+from zope.component.interfaces import ISite
 from zope.traversing.interfaces import BeforeTraverseEvent
 
 import ExtensionClass

@@ -14,8 +14,10 @@
 """Component interfaces
 """
 
-from zope.location.interfaces import ISite
+from zope.component.interfaces import ISite
 from OFS.interfaces import IObjectManager
 
+
 class IObjectManagerSite(IObjectManager, ISite):
+
     """Object manager that is also a site."""

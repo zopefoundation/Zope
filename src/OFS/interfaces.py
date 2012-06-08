@@ -13,10 +13,10 @@
 """OFS interfaces.
 """
 
+from zope.component.interfaces import IPossibleSite
 from zope.container.interfaces import IContainer
 from zope.interface import Attribute
 from zope.interface import Interface
-from zope.location.interfaces import IPossibleSite
 from zope.location.interfaces import IRoot
 from zope.schema import Bool, BytesLine, Tuple
 
@@ -567,7 +567,7 @@ class IObjectManager(IZopeObject, ICopyContainer, INavigation, IManageable,
         """
 
     def manage_exportObject(id='', download=None, toxml=None,
-                            RESPONSE=None,REQUEST=None):
+                            RESPONSE=None, REQUEST=None):
         """Exports an object to a file and returns that file."""
 
     def manage_importObject(file, REQUEST=None, set_owner=1):

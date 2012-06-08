@@ -48,7 +48,7 @@ We can turn it into a site by using the ``components.html`` view:
 
 Now we ensure that the folder has been turned into a site:
 
-    >>> from zope.location.interfaces import ISite
+    >>> from zope.component.interfaces import ISite
     >>> ISite.providedBy(app.folder)
     True
 
