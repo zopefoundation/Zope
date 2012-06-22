@@ -10,6 +10,7 @@ http://docs.zope.org/zope2/releases/.
 
 - Updated distributions:
 
+  - zdaemon = 2.0.7
   - zope.tales = 3.4.1
 
 2.12.23 (2012-02-20)
