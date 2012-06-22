@@ -10,6 +10,9 @@ http://docs.zope.org/zope2/releases/.
 
 - Fix lock file cleanup if there's an error early in startup.
 
+- Updated distributions:
+
+  - zdaemon = 2.0.7
 
 2.13.14 (2012-05-31)
 --------------------
