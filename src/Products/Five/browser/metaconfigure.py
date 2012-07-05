@@ -20,16 +20,16 @@ namespace in ZCML known from zope.app.
 import os
 from inspect import ismethod
 
-from zope import component
+from zope.component import queryMultiAdapter
+from zope.component.interface import provideInterface
+from zope.component.zcml import handler
+from zope.configuration.exceptions import ConfigurationError
 from zope.interface import implements
 from zope.interface import Interface
-from zope.component.zcml import handler
-from zope.component.interface import provideInterface
-from zope.configuration.exceptions import ConfigurationError
 from zope.publisher.interfaces import NotFound
-from zope.publisher.interfaces.browser import IDefaultBrowserLayer
 from zope.publisher.interfaces.browser import IBrowserPublisher
 from zope.publisher.interfaces.browser import IBrowserRequest
+from zope.publisher.interfaces.browser import IDefaultBrowserLayer
 from zope.security.zcml import Permission
 
 import zope.browserpage.metaconfigure
@@ -56,18 +56,12 @@ from Products.Five.metaclass import makeClass
 def page(_context, name, permission, for_,
          layer=IDefaultBrowserLayer, template=None, class_=None,
          allowed_interface=None, allowed_attributes=None,
-         attribute='__call__', menu=None, title=None,
+         attribute='__call__', menu=None, title=None, 
          ):
-
     _handle_menu(_context, menu, title, [for_], name, permission)
 
     if not (class_ or template):
         raise ConfigurationError("Must specify a class or template")
-    if allowed_attributes is None:
-        allowed_attributes = []
-    if allowed_interface is not None:
-        for interface in allowed_interface:
-            allowed_attributes.extend(interface.names(all=True))
 
     if attribute != '__call__':
         if template:
@@ -92,6 +86,7 @@ def page(_context, name, permission, for_,
         cdict = getSecurityInfo(class_)
         cdict['__name__'] = name
         if template:
+            # class and template
             new_class = makeClassForTemplate(template, bases=(class_, ),
                                              cdict=cdict, name=name)
         elif attribute != "__call__":
@@ -120,12 +115,18 @@ def page(_context, name, permission, for_,
             # some security declarations on it so we really shouldn't
             # modify the original.  So, instead we make a new class
             # with just one base class -- the original
-            new_class = makeClass(class_.__name__, 
+            new_class = makeClass(class_.__name__,
                                   (class_, BrowserView), cdict)
 
     else:
         # template
         new_class = makeClassForTemplate(template, name=name)
+
+    if allowed_attributes is None:
+        allowed_attributes = []
+    if allowed_interface is not None:
+        for interface in allowed_interface:
+            allowed_attributes.extend(interface.names(all=True))
 
     _handle_for(_context, for_)
 
@@ -135,6 +136,9 @@ def page(_context, name, permission, for_,
         args = ('registerAdapter',
                 new_class, (for_, layer), Interface, name, _context.info),
         )
+
+        # Security
+
     _context.action(
         discriminator = ('five:protectClass', new_class),
         callable = protectClass,
@@ -165,6 +169,7 @@ def page(_context, name, permission, for_,
         callable = InitializeClass,
         args = (new_class,)
         )
+
 
 class pages(zope.browserpage.metaconfigure.pages):
 
@@ -200,6 +205,7 @@ class view(zope.browserpage.metaconfigure.view):
         pages = {}
 
         for pname, attribute, template in self.pages:
+
             if template:
                 cdict[pname] = ViewPageTemplateFile(template)
                 if attribute and attribute != name:
@@ -222,8 +228,7 @@ class view(zope.browserpage.metaconfigure.view):
 
                 if name in pages:
                     return getattr(self, pages[name])
-                view = component.queryMultiAdapter((self, request), name=name,
-                                                   default=None)
+                view = queryMultiAdapter((self, request), name=name)
                 if view is not None:
                     return view
 
@@ -236,8 +241,7 @@ class view(zope.browserpage.metaconfigure.view):
 
                 if name in pages:
                     return getattr(self, pages[name])
-                view = component.queryMultiAdapter((self, request), name=name,
-                                                   default=None)
+                view = queryMultiAdapter((self, request), name=name)
                 if view is not None:
                     return view
 
@@ -266,10 +270,10 @@ class view(zope.browserpage.metaconfigure.view):
             cname = str(name)
         except:
             cname = "GeneratedClass"
-            
+
         cdict['__name__'] = name
         newclass = makeClass(cname, bases, cdict)
-        
+
         _handle_for(_context, for_)
 
         if self.provides is not None:
@@ -287,15 +291,15 @@ class view(zope.browserpage.metaconfigure.view):
                     newclass, (for_, layer), self.provides, name,
                     _context.info),
             )
-        
+
         # Security
-        
+
         _context.action(
             discriminator = ('five:protectClass', newclass),
             callable = protectClass,
             args = (newclass, permission)
             )
-        
+
         if allowed_attributes:
             for attr in allowed_attributes:
                 _context.action(
@@ -303,7 +307,7 @@ class view(zope.browserpage.metaconfigure.view):
                     callable = protectName,
                     args = (newclass, attr, permission)
                     )
-        
+
         # Make everything else private
         allowed = allowed_attributes or []
         private_attrs = [name for name in dir(newclass)
@@ -316,7 +320,7 @@ class view(zope.browserpage.metaconfigure.view):
                 callable = protectName,
                 args = (newclass, attr, CheckerPrivateId, False)
                 )
-        
+
         # Protect the class
         _context.action(
             discriminator = ('five:initialize:class', newclass),
@@ -441,6 +445,7 @@ def resourceDirectory(_context, name, directory, layer=IDefaultBrowserLayer,
             args = (new_class,)
             )
 
+
 class ViewMixinForAttributes(BrowserView,
                              zope.browserpage.metaconfigure.simple):
 
@@ -453,6 +458,7 @@ class ViewMixinForAttributes(BrowserView,
     @property
     def __call__(self):
         return getattr(self, self.__page_attribute__)
+
 
 class ViewMixinForTemplates(BrowserView):
     # Cloned from zope.app.pagetemplate.simpleviewclass.simple
@@ -489,4 +495,3 @@ def makeClassForTemplate(filename, globals=None, used_for=None,
         class_.__used_for__ = used_for
 
     return class_
-
