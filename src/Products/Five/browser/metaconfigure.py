@@ -131,7 +131,7 @@ def page(_context, name, permission, for_,
     _handle_for(_context, for_)
 
     _context.action(
-        discriminator = ('view', for_, name, IBrowserRequest, layer),
+        discriminator = ('view', (for_, layer), name, IBrowserRequest),
         callable = handler,
         args = ('registerAdapter',
                 new_class, (for_, layer), Interface, name, _context.info),
@@ -196,7 +196,7 @@ class IFiveViewDirective(IViewDirective):
 class view(zope.browserpage.metaconfigure.view):
 
     def __call__(self):
-        (_context, name, for_, permission, layer, class_,
+        (_context, name, (for_, layer), permission, class_,
          allowed_interface, allowed_attributes) = self.args
 
         required = {}
@@ -284,8 +284,7 @@ class view(zope.browserpage.metaconfigure.view):
                 )
 
         _context.action(
-            discriminator = ('view', for_, name, IBrowserRequest, layer,
-                             self.provides),
+            discriminator = ('view', (for_, layer), name, self.provides),
             callable = handler,
             args = ('registerAdapter',
                     newclass, (for_, layer), self.provides, name,
