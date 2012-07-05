@@ -53,12 +53,12 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.Five.metaclass import makeClass
 
 
-def page(_context, name, permission, for_,
+def page(_context, name, permission, for_=Interface,
          layer=IDefaultBrowserLayer, template=None, class_=None,
          allowed_interface=None, allowed_attributes=None,
          attribute='__call__', menu=None, title=None, 
          ):
-    _handle_menu(_context, menu, title, [for_], name, permission)
+    _handle_menu(_context, menu, title, [for_], name, permission, layer)
 
     if not (class_ or template):
         raise ConfigurationError("Must specify a class or template")
