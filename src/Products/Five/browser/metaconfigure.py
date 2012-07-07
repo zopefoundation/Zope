@@ -33,9 +33,12 @@ from zope.publisher.interfaces.browser import IDefaultBrowserLayer
 from zope.security.zcml import Permission
 
 import zope.browserpage.metaconfigure
-from zope.browserpage.metaconfigure import providesCallable
-from zope.browserpage.metaconfigure import _handle_menu
+from zope.browserpage.metaconfigure import _handle_allowed_attributes
+from zope.browserpage.metaconfigure import _handle_allowed_interface
 from zope.browserpage.metaconfigure import _handle_for
+from zope.browserpage.metaconfigure import _handle_menu
+from zope.browserpage.metaconfigure import _handle_permission
+from zope.browserpage.metaconfigure import providesCallable
 from zope.browserpage.metadirectives import IViewDirective
 
 from AccessControl.class_init import InitializeClass
@@ -52,6 +55,37 @@ from Products.Five.browser.resource import DirectoryResourceFactory
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.Five.metaclass import makeClass
 
+def _configure_z2security(_context, new_class, required):
+    _context.action(
+        discriminator=('five:protectClass', new_class),
+        callable=protectClass,
+        args=(new_class, required.pop(''))
+        )
+    for attr, permission in required.iteritems():
+        _context.action(
+            discriminator=('five:protectName', new_class, attr),
+            callable=protectName,
+            args=(new_class, attr, permission)
+            )
+    # Make everything else private
+    private_attrs = [name for name in dir(new_class)
+                     if (not name.startswith('_')) and
+                        (name not in required) and
+                        ismethod(getattr(new_class, name))]
+    for attr in private_attrs:
+        _context.action(
+            discriminator=('five:protectName', new_class, attr),
+            callable=protectName,
+            args=(new_class, attr, CheckerPrivateId, False)
+            )
+    # Protect the class
+    _context.action(
+        discriminator=('five:initialize:class', new_class),
+        callable=InitializeClass,
+        args=(new_class,)
+        )
+
+# page
 
 def page(_context, name, permission, for_=Interface,
          layer=IDefaultBrowserLayer, template=None, class_=None,
@@ -59,6 +93,9 @@ def page(_context, name, permission, for_=Interface,
          attribute='__call__', menu=None, title=None, 
          ):
     _handle_menu(_context, menu, title, [for_], name, permission, layer)
+    required = {}
+
+    permission = _handle_permission(_context, permission)
 
     if not (class_ or template):
         raise ConfigurationError("Must specify a class or template")
@@ -77,6 +114,7 @@ def page(_context, name, permission, for_=Interface,
         if not os.path.isfile(template):
             raise ConfigurationError("No such file", template)
 
+    # TODO: new __name__ attribute must be tested
     if class_:
         if attribute != '__call__':
             if not hasattr(class_, attribute):
@@ -122,52 +160,23 @@ def page(_context, name, permission, for_=Interface,
         # template
         new_class = makeClassForTemplate(template, name=name)
 
-    if allowed_attributes is None:
-        allowed_attributes = []
-    if allowed_interface is not None:
-        for interface in allowed_interface:
-            allowed_attributes.extend(interface.names(all=True))
+    for n in ('', attribute):
+        required[n] = permission
+
+    _handle_allowed_interface(_context, allowed_interface, permission,
+                              required)
+    _handle_allowed_attributes(_context, allowed_attributes, permission,
+                               required)
 
     _handle_for(_context, for_)
+
+    _configure_z2security(_context, new_class, required)
 
     _context.action(
         discriminator = ('view', (for_, layer), name, IBrowserRequest),
         callable = handler,
         args = ('registerAdapter',
                 new_class, (for_, layer), Interface, name, _context.info),
-        )
-
-        # Security
-
-    _context.action(
-        discriminator = ('five:protectClass', new_class),
-        callable = protectClass,
-        args = (new_class, permission)
-        )
-    if allowed_attributes:
-        for attr in allowed_attributes:
-            _context.action(
-                discriminator = ('five:protectName', new_class, attr),
-                callable = protectName,
-                args = (new_class, attr, permission)
-                )
-    # Make everything else private
-    allowed = [attribute] + (allowed_attributes or [])
-    private_attrs = [name for name in dir(new_class)
-                     if (not name.startswith('_')) and
-                        (name not in allowed) and
-                        ismethod(getattr(new_class, name))]
-    for attr in private_attrs:
-        _context.action(
-            discriminator = ('five:protectName', new_class, attr),
-            callable = protectName,
-            args = (new_class, attr, CheckerPrivateId)
-            )
-    # Protect the class
-    _context.action(
-        discriminator = ('five:initialize:class', new_class),
-        callable = InitializeClass,
-        args = (new_class,)
         )
 
 
@@ -274,7 +283,16 @@ class view(zope.browserpage.metaconfigure.view):
         cdict['__name__'] = name
         newclass = makeClass(cname, bases, cdict)
 
+        for n in ('',):
+            required[n] = permission
+
+        _handle_allowed_interface(_context, allowed_interface, permission,
+                                  required)
+        _handle_allowed_attributes(_context, allowed_attributes, permission,
+                                   required)
         _handle_for(_context, for_)
+
+        _configure_z2security(_context, newclass, required)
 
         if self.provides is not None:
             _context.action(
@@ -291,41 +309,6 @@ class view(zope.browserpage.metaconfigure.view):
                     _context.info),
             )
 
-        # Security
-
-        _context.action(
-            discriminator = ('five:protectClass', newclass),
-            callable = protectClass,
-            args = (newclass, permission)
-            )
-
-        if allowed_attributes:
-            for attr in allowed_attributes:
-                _context.action(
-                    discriminator = ('five:protectName', newclass, attr),
-                    callable = protectName,
-                    args = (newclass, attr, permission)
-                    )
-
-        # Make everything else private
-        allowed = allowed_attributes or []
-        private_attrs = [name for name in dir(newclass)
-                         if (not name.startswith('_')) and
-                            (name not in allowed) and
-                            ismethod(getattr(newclass, name))]
-        for attr in private_attrs:
-            _context.action(
-                discriminator = ('five:protectName', newclass, attr),
-                callable = protectName,
-                args = (newclass, attr, CheckerPrivateId, False)
-                )
-
-        # Protect the class
-        _context.action(
-            discriminator = ('five:initialize:class', newclass),
-            callable = InitializeClass,
-            args = (newclass,)
-            )
 
 _factory_map = {'image':{'prefix':'ImageResource',
                          'count':0,
@@ -447,6 +430,14 @@ def resourceDirectory(_context, name, directory, layer=IDefaultBrowserLayer,
 
 class ViewMixinForAttributes(BrowserView,
                              zope.browserpage.metaconfigure.simple):
+
+    # XXX: this alternative implementation would support permission checks for
+    #      the attribute instead of the view
+    # def browserDefault(self, request):
+    #     return self, (self.__page_attribute__,)
+    #
+    # def publishTraverse(self, request, name):
+    #     return getattr(self, name)
 
     # For some reason, the 'simple' baseclass doesn't implement this
     # mandatory method (see https://bugs.launchpad.net/zope3/+bug/129296)

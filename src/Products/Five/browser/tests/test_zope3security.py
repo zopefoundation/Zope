@@ -78,6 +78,12 @@ def test_allowed_interface():
       ...            xmlns:browser="http://namespaces.zope.org/browser">
       ...   <browser:page
       ...       for="*"
+      ...       name="testpage"
+      ...       permission="zope2.ViewManagementScreens"
+      ...       class="AccessControl.tests.testZCML.Dummy1"
+      ...       allowed_interface="AccessControl.tests.testZCML.IDummy" />
+      ...   <browser:view
+      ...       for="*"
       ...       name="testview"
       ...       permission="zope2.ViewManagementScreens"
       ...       class="AccessControl.tests.testZCML.Dummy1"
@@ -106,7 +112,7 @@ def test_allowed_interface():
       >>> from zope.component import getMultiAdapter
       >>> from zope.publisher.browser import TestRequest
       >>> request = TestRequest()
-      >>> view = getMultiAdapter((dummy1, request), name="testview")
+      >>> view = getMultiAdapter((dummy1, request), name="testpage")
 
     As 'foo' is defined in IDummy, it should have the 'Manager' role.
 
@@ -121,6 +127,16 @@ def test_allowed_interface():
     But 'superMethod' is defined on IDummy by inheritance from ISuperDummy, and
     so should have the 'Manager' role setup.
 
+      >>> getRoles(view, 'superMethod', view.superMethod, ('Def',))
+      ('Manager',)
+
+   Same tests work using the view directive:
+
+      >>> view = getMultiAdapter((dummy1, request), name="testview")
+      >>> getRoles(view, 'foo', view.foo, ('Def',))
+      ('Manager',)
+      >>> getRoles(view, 'wot', view.wot, ('Def',)) is ACCESS_PRIVATE
+      True
       >>> getRoles(view, 'superMethod', view.superMethod, ('Def',))
       ('Manager',)
 

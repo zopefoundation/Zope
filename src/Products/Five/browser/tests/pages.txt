@@ -205,11 +205,11 @@ high-level security tests).  Let's manually look up a protected view:
   >>> request = TestRequest()
   >>> view = getMultiAdapter((self.folder.testoid, request), name=u'eagle.txt')
 
-It's protecting the object with the permission, and not the attribute,
-so we get ('',) instead of ('eagle',):
+With the current browserDefault implementation permissions are checked for the
+object, and not for the attribute, but it is more robust to protect both:
 
   >>> view.__ac_permissions__
-  (('View management screens', ('',)),)
+  (('View management screens', ('', 'eagle')),)
 
 The view's __roles__ attribute can be evaluated correctly:
 
@@ -223,6 +223,21 @@ Just Works.)
   >>> from Acquisition import aq_acquire
   >>> aq_acquire(view, '__roles__')
   ('Manager',)
+
+  >>> aq_acquire(view, 'eagle__roles__')
+  ('Manager',)
+
+Other attributes are private:
+
+  >>> from AccessControl import ACCESS_PRIVATE
+  >>> aq_acquire(view, 'mouse__roles__') is ACCESS_PRIVATE
+  True
+
+In zope.browserpage this is just protected with the specified permission. Not
+sure if this has to be private in Zope 2:
+
+  >>> aq_acquire(view, 'publishTraverse__roles__') is ACCESS_PRIVATE
+  True
 
 Check to see if view's context properly acquires its true
 parent
