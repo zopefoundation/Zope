@@ -24,15 +24,14 @@ from zope.component import queryMultiAdapter
 from zope.component.interface import provideInterface
 from zope.component.zcml import handler
 from zope.configuration.exceptions import ConfigurationError
-from zope.interface import implements
 from zope.interface import Interface
 from zope.publisher.interfaces import NotFound
-from zope.publisher.interfaces.browser import IBrowserPublisher
 from zope.publisher.interfaces.browser import IBrowserRequest
 from zope.publisher.interfaces.browser import IDefaultBrowserLayer
 from zope.security.zcml import Permission
 
 import zope.browserpage.metaconfigure
+import zope.browserpage.simpleviewclass
 from zope.browserpage.metaconfigure import _handle_allowed_attributes
 from zope.browserpage.metaconfigure import _handle_allowed_interface
 from zope.browserpage.metaconfigure import _handle_for
@@ -446,26 +445,13 @@ class simple(BrowserView, zope.browserpage.metaconfigure.simple):
         return getattr(self, self.__page_attribute__)
 
 
-class ViewMixinForTemplates(BrowserView):
-    # Cloned from zope.app.pagetemplate.simpleviewclass.simple
-    implements(IBrowserPublisher)
-
-    def browserDefault(self, request):
-        return self, ()
-
-    def publishTraverse(self, request, name):
-        if name == 'index.html':
-            return self.index
-
-        raise NotFound(self, name, request)
+class ViewMixinForTemplates(BrowserView,
+                            zope.browserpage.simpleviewclass.simple):
 
     def __getitem__(self, name):
         if name == 'macros':
             return self.index.macros
         return self.index.macros[name]
-
-    def __call__(self, *args, **kw):
-        return self.index(*args, **kw)
 
 
 # Original version: zope.browserpage.simpleviewclass.SimpleViewClass
