@@ -46,7 +46,6 @@ from AccessControl.security import protectClass
 from AccessControl.security import protectName
 from AccessControl.security import CheckerPrivateId
 
-from Products.Five.browser import BrowserView
 from Products.Five.browser.resource import FileResourceFactory
 from Products.Five.browser.resource import ImageResourceFactory
 from Products.Five.browser.resource import PageTemplateResourceFactory
@@ -125,6 +124,11 @@ def page(_context, name, permission, for_=Interface,
             new_class = SimpleViewClass(template, bases=(class_, ), name=name)
         else:
             cdict = getSecurityInfo(class_)
+            if not hasattr(class_, 'browserDefault'):
+                cdict.update({
+                    'browserDefault':
+                    lambda self, request: (getattr(self, attribute), ())
+                    })
             cdict['__name__'] = name
             cdict['__page_attribute__'] = attribute
             new_class = makeClass(class_.__name__, (class_, simple), cdict)
@@ -415,29 +419,22 @@ def resourceDirectory(_context, name, directory, layer=IDefaultBrowserLayer,
             )
 
 
-class simple(BrowserView, zope.browserpage.metaconfigure.simple):
-
-    # XXX: this alternative implementation would support permission checks for
-    #      the attribute instead of the view
-    # def browserDefault(self, request):
-    #     return self, (self.__page_attribute__,)
-    #
-    # def publishTraverse(self, request, name):
-    #     return getattr(self, name)
-
-    # For some reason, the 'simple' baseclass doesn't implement this
-    # mandatory method (see https://bugs.launchpad.net/zope3/+bug/129296)
-    def browserDefault(self, request):
-        return getattr(self, self.__page_attribute__), ()
+class simple(zope.browserpage.metaconfigure.simple):
 
     # __call__ should have the same signature as the original method
     @property
     def __call__(self):
-        return getattr(self, self.__page_attribute__)
+        # If a class doesn't provide it's own call, then get the attribute
+        # given by the browser default.
+
+        attr = self.__page_attribute__
+        if attr == '__call__':
+            raise AttributeError("__call__")
+
+        return getattr(self, attr)
 
 
-class ViewMixinForTemplates(BrowserView,
-                            zope.browserpage.simpleviewclass.simple):
+class ViewMixinForTemplates(zope.browserpage.simpleviewclass.simple):
 
     def __getitem__(self, name):
         if name == 'macros':
