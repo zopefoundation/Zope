@@ -267,9 +267,9 @@ class view(zope.browserpage.metaconfigure.view):
                     )
 
         if class_ is not None:
-            bases = (class_, ViewMixinForTemplates)
+            bases = (class_, simple)
         else:
-            bases = (ViewMixinForTemplates,)
+            bases = (simple,)
 
         try:
             cname = str(name)
