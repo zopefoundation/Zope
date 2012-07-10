@@ -8,6 +8,8 @@ http://docs.zope.org/zope2/releases/.
 2.13.16 (unreleased)
 --------------------
 
+- OFS: Fixed TypeError handling in unrestrictedTraverse.
+
 - Updated distributions:
 
   - AccessControl = 2.13.8
