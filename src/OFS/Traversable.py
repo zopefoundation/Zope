@@ -284,9 +284,10 @@ class Traversable:
                                     if isinstance(next, NullResource):
                                         resource = next
                                         raise KeyError(name)
-                                except AttributeError:
+                                except (AttributeError, TypeError):
                                     # Raise NotFound for easier debugging
                                     # instead of AttributeError: __getitem__
+                                    # or TypeError: not subscriptable
                                     raise NotFound(name)
                                 if restricted and not validate(
                                     obj, obj, None, next):

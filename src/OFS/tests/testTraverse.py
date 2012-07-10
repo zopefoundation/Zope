@@ -402,6 +402,20 @@ class TestTraverse( unittest.TestCase ):
         self.assertEqual(
             self.root.folder1.restrictedTraverse('stuff', 42), 42)
 
+    def testNotFoundIsRaised(self):
+        from OFS.SimpleItem import SimpleItem
+        from zExceptions import NotFound
+        from operator import getitem
+        self.folder1._setObject('foo', SimpleItem('foo'))
+        self.assertRaises(AttributeError, getitem, self.folder1.foo,
+                          'doesntexist')
+        self.assertRaises(NotFound, self.folder1.unrestrictedTraverse,
+                          'foo/doesntexist')
+        self.assertRaises(TypeError, getitem,
+                          self.folder1.foo.isPrincipiaFolderish, 'doesntexist')
+        self.assertRaises(NotFound, self.folder1.unrestrictedTraverse,
+                          'foo/isPrincipiaFolderish/doesntexist')
+
     def testDefaultValueWhenNotFound(self):
         # Test that traversing to a non-existent object returns
         # the default when provided
