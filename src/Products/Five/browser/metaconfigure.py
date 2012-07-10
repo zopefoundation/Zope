@@ -120,37 +120,28 @@ def page(_context, name, permission, for_=Interface,
                 raise ConfigurationError(
                     "The provided class doesn't have the specified attribute "
                     )
-        cdict = getSecurityInfo(class_)
-        cdict['__name__'] = name
         if template:
             # class and template
             new_class = SimpleViewClass(template, bases=(class_, ), name=name)
-        elif attribute != "__call__":
-            # we're supposed to make a page for an attribute (read:
-            # method) and it's not __call__.  We thus need to create a
-            # new class using our mixin for attributes.
+        else:
+            cdict = getSecurityInfo(class_)
+            cdict['__name__'] = name
             cdict['__page_attribute__'] = attribute
             new_class = makeClass(class_.__name__, (class_, simple), cdict)
 
-            # in case the attribute does not provide a docstring,
-            # ZPublisher refuses to publish it.  So, as a workaround,
-            # we provide a stub docstring
-            func = getattr(new_class, attribute)
-            if not func.__doc__:
-                # cannot test for MethodType/UnboundMethod here
-                # because of ExtensionClass
-                if hasattr(func, 'im_func'):
-                    # you can only set a docstring on functions, not
-                    # on method objects
-                    func = func.im_func
-                func.__doc__ = "Stub docstring to make ZPublisher work"
-        else:
-            # we could use the class verbatim here, but we'll execute
-            # some security declarations on it so we really shouldn't
-            # modify the original.  So, instead we make a new class
-            # with just one base class -- the original
-            cdict['__page_attribute__'] = attribute
-            new_class = makeClass(class_.__name__, (class_, simple), cdict)
+            if attribute != "__call__":
+                # in case the attribute does not provide a docstring,
+                # ZPublisher refuses to publish it.  So, as a workaround,
+                # we provide a stub docstring
+                func = getattr(new_class, attribute)
+                if not func.__doc__:
+                    # cannot test for MethodType/UnboundMethod here
+                    # because of ExtensionClass
+                    if hasattr(func, 'im_func'):
+                        # you can only set a docstring on functions, not
+                        # on method objects
+                        func = func.im_func
+                    func.__doc__ = "Stub docstring to make ZPublisher work"
 
     else:
         # template
