@@ -125,16 +125,13 @@ def page(_context, name, permission, for_=Interface,
         cdict['__name__'] = name
         if template:
             # class and template
-            new_class = makeClassForTemplate(template, bases=(class_, ),
-                                             cdict=cdict, name=name)
+            new_class = SimpleViewClass(template, bases=(class_, ), name=name)
         elif attribute != "__call__":
             # we're supposed to make a page for an attribute (read:
             # method) and it's not __call__.  We thus need to create a
             # new class using our mixin for attributes.
             cdict.update({'__page_attribute__': attribute})
-            new_class = makeClass(class_.__name__,
-                                  (class_, ViewMixinForAttributes),
-                                  cdict)
+            new_class = makeClass(class_.__name__, (class_, simple), cdict)
 
             # in case the attribute does not provide a docstring,
             # ZPublisher refuses to publish it.  So, as a workaround,
@@ -158,7 +155,7 @@ def page(_context, name, permission, for_=Interface,
 
     else:
         # template
-        new_class = makeClassForTemplate(template, name=name)
+        new_class = SimpleViewClass(template, name=name)
 
     for n in ('', attribute):
         required[n] = permission
@@ -428,8 +425,7 @@ def resourceDirectory(_context, name, directory, layer=IDefaultBrowserLayer,
             )
 
 
-class ViewMixinForAttributes(BrowserView,
-                             zope.browserpage.metaconfigure.simple):
+class simple(BrowserView, zope.browserpage.metaconfigure.simple):
 
     # XXX: this alternative implementation would support permission checks for
     #      the attribute instead of the view
@@ -471,15 +467,19 @@ class ViewMixinForTemplates(BrowserView):
     def __call__(self, *args, **kw):
         return self.index(*args, **kw)
 
-def makeClassForTemplate(filename, globals=None, used_for=None,
-                         bases=(), cdict=None, name=u''):
-    # XXX needs to deal with security from the bases?
-    if cdict is None:
+
+# Original version: zope.browserpage.simpleviewclass.SimpleViewClass
+def SimpleViewClass(src, offering=None, used_for=None, bases=(), name=u''):
+    if bases:
+        cdict = getSecurityInfo(bases[0])
+    else:
         cdict = {}
-    cdict.update({'index': ViewPageTemplateFile(filename, globals),
+    cdict.update({'index': ViewPageTemplateFile(src, offering),
                   '__name__': name})
+
     bases += (ViewMixinForTemplates,)
-    class_ = makeClass("SimpleViewClass from %s" % filename, bases, cdict)
+
+    class_ = makeClass("SimpleViewClass from %s" % src, bases, cdict)
 
     if used_for is not None:
         class_.__used_for__ = used_for

@@ -484,8 +484,8 @@ represent the files in a table:
   ... </html>
   ... ''')
 
-  >>> from Products.Five.browser.metaconfigure import makeClassForTemplate
-  >>> Contents = makeClassForTemplate(contentsTemplate, name='contents.html')
+  >>> from Products.Five.browser.metaconfigure import SimpleViewClass
+  >>> Contents = SimpleViewClass(contentsTemplate, name='contents.html')
 
 
 The Viewlet Manager
