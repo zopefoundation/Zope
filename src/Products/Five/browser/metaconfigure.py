@@ -129,7 +129,7 @@ def page(_context, name, permission, for_=Interface,
             # we're supposed to make a page for an attribute (read:
             # method) and it's not __call__.  We thus need to create a
             # new class using our mixin for attributes.
-            cdict.update({'__page_attribute__': attribute})
+            cdict['__page_attribute__'] = attribute
             new_class = makeClass(class_.__name__, (class_, simple), cdict)
 
             # in case the attribute does not provide a docstring,
@@ -149,8 +149,8 @@ def page(_context, name, permission, for_=Interface,
             # some security declarations on it so we really shouldn't
             # modify the original.  So, instead we make a new class
             # with just one base class -- the original
-            new_class = makeClass(class_.__name__,
-                                  (class_, BrowserView), cdict)
+            cdict['__page_attribute__'] = attribute
+            new_class = makeClass(class_.__name__, (class_, simple), cdict)
 
     else:
         # template
