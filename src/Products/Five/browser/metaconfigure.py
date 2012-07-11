@@ -18,14 +18,17 @@ namespace in ZCML known from zope.app.
 """
 
 import os
+import sys
 from inspect import ismethod
 
 from zope.component import queryMultiAdapter
 from zope.component.interface import provideInterface
 from zope.component.zcml import handler
 from zope.configuration.exceptions import ConfigurationError
+from zope.interface import classImplements
 from zope.interface import Interface
 from zope.publisher.interfaces import NotFound
+from zope.publisher.interfaces.browser import IBrowserPublisher
 from zope.publisher.interfaces.browser import IBrowserRequest
 from zope.publisher.interfaces.browser import IDefaultBrowserLayer
 from zope.security.zcml import Permission
@@ -122,14 +125,17 @@ def page(_context, name, permission, for_=Interface,
             # class and template
             new_class = SimpleViewClass(template, bases=(class_, ), name=name)
         else:
-            cdict = getSecurityInfo(class_)
             if not hasattr(class_, 'browserDefault'):
-                cdict.update({
+                cdict = {
                     'browserDefault':
                     lambda self, request: (getattr(self, attribute), ())
-                    })
+                    }
+            else:
+                cdict = {}
+
             cdict['__name__'] = name
             cdict['__page_attribute__'] = attribute
+            cdict.update(getSecurityInfo(class_))
             new_class = type(class_.__name__, (class_, simple,), cdict)
 
             if attribute != "__call__":
@@ -145,6 +151,9 @@ def page(_context, name, permission, for_=Interface,
                         # on method objects
                         func = func.im_func
                     func.__doc__ = "Stub docstring to make ZPublisher work"
+
+        if hasattr(class_, '__implements__'):
+            classImplements(new_class, IBrowserPublisher)
 
     else:
         # template
@@ -444,16 +453,17 @@ class ViewMixinForTemplates(zope.browserpage.simpleviewclass.simple):
 
 # Original version: zope.browserpage.simpleviewclass.SimpleViewClass
 def SimpleViewClass(src, offering=None, used_for=None, bases=(), name=u''):
-    if bases:
-        cdict = getSecurityInfo(bases[0])
-    else:
-        cdict = {}
-    cdict.update({'index': ViewPageTemplateFile(src, offering),
-                  '__name__': name})
+    if offering is None:
+        offering = sys._getframe(1).f_globals
 
     bases += (ViewMixinForTemplates,)
 
-    class_ = type("SimpleViewClass from %s" % src, bases, cdict)
+    cdict = {'index': ViewPageTemplateFile(src, offering),
+             '__name__': name}
+    if bases:
+        cdict.update(getSecurityInfo(bases[0]))
+    class_ = type("SimpleViewClass from %s" % src, bases,
+                  cdict)
 
     if used_for is not None:
         class_.__used_for__ = used_for
