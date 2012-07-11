@@ -73,6 +73,8 @@ Features Added
 Restructuring
 +++++++++++++
 
+- Five: Removed obsolete metaclass.
+
 - Five: Refactored ``browser:view`` and ``browser:page`` directives.
   This makes their implementation more similar to that in ``zope.browserpage``
   and adds allowed_interface support for the ``browser:view`` directive.

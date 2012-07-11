@@ -8,9 +8,5 @@ Five contains source code derived from:
 
 - Zope, copyright (C) 2001-2005 by Zope Corporation.
 
-- metaclass.py is derived from PEAK, copyright (C) 1996-2004 by
-  Phillip J. Eby and Tyler C. Sarna. PEAK may be used under the same
-  terms as Zope.
-
 - TrustedExecutables. Dieter Mauer kindly allow licensing this under the
   ZPL 2.1.

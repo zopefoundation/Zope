@@ -21,7 +21,7 @@ views still works (the printed output is the aq_chain of the view):
 
   >>> browser.open('http://localhost/test_folder_1_/attributes')
   >>> print browser.contents
-  [<Products.Five.metaclass.LegacyAttributes object at ...>,
+  [<Products.Five.browser.metaconfigure.LegacyAttributes object at ...>,
    <Folder at /test_folder_1_>,
    <Application at >,
    <ZPublisher.BaseRequest.RequestContainer object at ...>]
@@ -30,7 +30,7 @@ The same goes for browser views that just mix in Acquisition.Explicit:
 
   >>> browser.open('http://localhost/test_folder_1_/explicitattributes')
   >>> print browser.contents
-  [<Products.Five.metaclass.ExplicitLegacyAttributes object at ...>,
+  [<Products.Five.browser.metaconfigure.ExplicitLegacyAttributes object at ...>,
    <Folder at /test_folder_1_>,
    <Application at >,
    <ZPublisher.BaseRequest.RequestContainer object at ...>]

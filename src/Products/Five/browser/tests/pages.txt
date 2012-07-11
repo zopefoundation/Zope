@@ -77,14 +77,14 @@ it shouldn't modify existing ones:
 Make sure new-style classes work fine as view classes:
 
   >>> self.folder.unrestrictedTraverse('testoid/@@new_style_class')
-  <Products.Five.metaclass.NewStyleClass ...>
+  <Products.Five.browser.metaconfigure.NewStyleClass ...>
   
 At one point browser classes with no attribute and no template
 values specified wasn't getting BrowserView mixed in.  Lets make
 sure it is now:
 
   >>> self.folder.unrestrictedTraverse('testoid/@@new_style_class2')
-  <Products.Five.metaclass.NewStyleClass ...>
+  <Products.Five.browser.metaconfigure.NewStyleClass ...>
   
 Both browser:view and browser:page are ILocation providers, so make sure they
 have a __name__ attribute:

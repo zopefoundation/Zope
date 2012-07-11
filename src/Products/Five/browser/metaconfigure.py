@@ -51,7 +51,6 @@ from Products.Five.browser.resource import ImageResourceFactory
 from Products.Five.browser.resource import PageTemplateResourceFactory
 from Products.Five.browser.resource import DirectoryResourceFactory
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from Products.Five.metaclass import makeClass
 
 def _configure_z2security(_context, new_class, required):
     _context.action(
@@ -131,7 +130,7 @@ def page(_context, name, permission, for_=Interface,
                     })
             cdict['__name__'] = name
             cdict['__page_attribute__'] = attribute
-            new_class = makeClass(class_.__name__, (class_, simple), cdict)
+            new_class = type(class_.__name__, (class_, simple,), cdict)
 
             if attribute != "__call__":
                 # in case the attribute does not provide a docstring,
@@ -273,7 +272,7 @@ class view(zope.browserpage.metaconfigure.view):
             cname = "GeneratedClass"
 
         cdict['__name__'] = name
-        newclass = makeClass(cname, bases, cdict)
+        newclass = type(cname, bases, cdict)
 
         for n in ('',):
             required[n] = permission
@@ -331,7 +330,7 @@ def resource(_context, name, layer=IDefaultBrowserLayer, permission='zope.Public
     factory_info['count'] += 1
     res_factory = factory_info['factory']
     class_name = '%s%s' % (factory_info['prefix'], factory_info['count'])
-    new_class = makeClass(class_name, (res_factory.resource,), {})
+    new_class = type(class_name, (res_factory.resource,), {})
     factory = res_factory(name, res, resource_factory=new_class)
 
     _context.action(
@@ -380,9 +379,9 @@ def resourceDirectory(_context, name, directory, layer=IDefaultBrowserLayer,
         factory_info['count'] += 1
         class_name = '%s%s' % (factory_info['prefix'], factory_info['count'])
         factory_name = '%s%s' % (factory.__name__, factory_info['count'])
-        f_resource = makeClass(class_name, (factory.resource,), {})
-        f_cache[factory] = makeClass(factory_name, (factory,),
-                                     {'resource':f_resource})
+        f_resource = type(class_name, (factory.resource,), {})
+        f_cache[factory] = type(factory_name, (factory,),
+                                {'resource': f_resource})
     for ext, factory in resource_factories.items():
         resource_factories[ext] = f_cache[factory]
     default_factory = resource_factories['default']
@@ -394,7 +393,7 @@ def resourceDirectory(_context, name, directory, layer=IDefaultBrowserLayer,
     factory_info = _rd_map.get(DirectoryResourceFactory)
     factory_info['count'] += 1
     class_name = '%s%s' % (factory_info['prefix'], factory_info['count'])
-    dir_factory = makeClass(class_name, (resource,), cdict)
+    dir_factory = type(class_name, (resource,), cdict)
     factory = DirectoryResourceFactory(name, directory,
                                        resource_factory=dir_factory)
 
@@ -454,7 +453,7 @@ def SimpleViewClass(src, offering=None, used_for=None, bases=(), name=u''):
 
     bases += (ViewMixinForTemplates,)
 
-    class_ = makeClass("SimpleViewClass from %s" % src, bases, cdict)
+    class_ = type("SimpleViewClass from %s" % src, bases, cdict)
 
     if used_for is not None:
         class_.__used_for__ = used_for
