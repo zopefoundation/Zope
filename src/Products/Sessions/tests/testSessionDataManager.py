@@ -108,6 +108,7 @@ class TestSessionManager(unittest.TestCase):
 
     def tearDown(self):
         _delDB()
+        self.app._p_jar.close()
         del self.app
 
     def testHasId(self):
