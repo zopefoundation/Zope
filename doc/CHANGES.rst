@@ -40,10 +40,6 @@ Bugs Fixed
 Features Added
 ++++++++++++++
 
-- Five: Refactored ``browser:view`` and ``browser:page`` directives.
-  This makes their implementation more similar to that in ``zope.browserpage``
-  and adds allowed_interface support for the ``browser:view`` directive.
-
 - Optimized the `OFS.Traversable.getPhysicalPath` method to avoid excessive
   amounts of method calls.
 
@@ -76,6 +72,12 @@ Features Added
 
 Restructuring
 +++++++++++++
+
+- Five: Refactored ``browser:view`` and ``browser:page`` directives.
+  This makes their implementation more similar to that in ``zope.browserpage``
+  and adds allowed_interface support for the ``browser:view`` directive.
+  By default the `aq_*` attributes are no longer available on those
+  views/pages. If you still use them, you have to mix in Five's BrowserView.
 
 - Removed the (very obsolete) thread lock around the cookie parsing code
   in HTTPRequest.py; the python `re` module is thread-safe, unlike the
