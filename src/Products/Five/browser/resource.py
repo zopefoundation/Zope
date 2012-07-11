@@ -73,7 +73,8 @@ class PageTemplateResource(Resource, BrowserView):
 class FileResource(Resource, zope.browserresource.file.FileResource):
     pass
 
-class ResourceFactory:
+
+class ResourceFactory(object):
 
     factory = None
     resource = None
