@@ -262,6 +262,7 @@ class view(zope.browserpage.metaconfigure.view):
                     )
 
         if class_ is not None:
+            cdict.update(getSecurityInfo(class_))
             bases = (class_, simple)
         else:
             bases = (simple,)

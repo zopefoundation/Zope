@@ -14,9 +14,11 @@
 """Test browser pages
 """
 
+from AccessControl.class_init import InitializeClass
+from AccessControl.SecurityInfo import ClassSecurityInfo
+from OFS.SimpleItem import SimpleItem
 from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from OFS.SimpleItem import SimpleItem
 
 
 class SimpleView(BrowserView):
@@ -96,3 +98,25 @@ class NewStyleClass(object):
     def method(self):
         """Docstring"""
         return
+
+
+class ProtectedView(object):
+
+    security = ClassSecurityInfo()
+
+    security.declarePublic('public_method')
+    def public_method(self):
+        """Docstring"""
+        return u'PUBLIC'
+
+    security.declareProtected('View', 'protected_method')
+    def protected_method(self):
+        """Docstring"""
+        return u'PROTECTED'
+
+    security.declarePrivate('private_method')
+    def private_method(self):
+        """Docstring"""
+        return u'PRIVATE'
+
+InitializeClass(ProtectedView)

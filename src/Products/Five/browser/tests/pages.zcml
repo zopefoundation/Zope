@@ -250,4 +250,28 @@
       permission="zope2.Public"
       />
 
+  <!-- views with protected methods -->
+
+  <browser:page
+      for="Products.Five.tests.testing.simplecontent.ISimpleContent"
+      class=".pages.ProtectedView"
+      name="protected_class_page"
+      permission="zope2.ViewManagementScreens"
+      />
+
+  <browser:page
+      for="Products.Five.tests.testing.simplecontent.ISimpleContent"
+      class=".pages.ProtectedView"
+      template="falcon.pt"
+      name="protected_template_class_page"
+      permission="zope2.ViewManagementScreens"
+      />
+
+  <browser:view
+      for="Products.Five.tests.testing.simplecontent.ISimpleContent"
+      class=".pages.ProtectedView"
+      name="protected_class_view"
+      permission="zope2.ViewManagementScreens"
+      />
+
 </configure>

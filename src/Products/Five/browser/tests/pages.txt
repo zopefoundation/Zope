@@ -319,6 +319,52 @@ Test traversal to resources from within ZPT pages:
   <html><body><img alt=""
                    src="http://nohost/test_folder_1_/testoid/++resource++pattern.png" /></body></html>
 
+Security settings of the base class are combined with new settings based on the
+view permission:
+
+  >>> from AccessControl import ACCESS_PUBLIC
+  >>> view = self.folder.unrestrictedTraverse('testoid/protected_class_page')
+  >>> view.__parent__ == self.folder.testoid
+  True
+  >>> view.__ac_permissions__
+  (('View', ('protected_method',)), ('View management screens', ('', '__call__')))
+  >>> aq_acquire(view, '__call____roles__')
+  ('Manager',)
+  >>> aq_acquire(view, 'public_method__roles__') is ACCESS_PUBLIC
+  True
+  >>> aq_acquire(view, 'protected_method__roles__')
+  ['Manager', 'test_role_1_', 'Manager', 'Anonymous']
+  >>> aq_acquire(view, 'private_method__roles__') is ACCESS_PRIVATE
+  True
+
+  >>> view = self.folder.unrestrictedTraverse('testoid/protected_template_class_page')
+  >>> view.__parent__ == self.folder.testoid
+  True
+  >>> view.__ac_permissions__
+  (('View', ('protected_method',)), ('View management screens', ('', '__call__')))
+  >>> aq_acquire(view, '__call____roles__')
+  ('Manager',)
+  >>> aq_acquire(view, 'public_method__roles__') is ACCESS_PUBLIC
+  True
+  >>> aq_acquire(view, 'protected_method__roles__')
+  ['Manager', 'test_role_1_', 'Manager', 'Anonymous']
+  >>> aq_acquire(view, 'private_method__roles__') is ACCESS_PRIVATE
+  True
+
+  >>> view = self.folder.unrestrictedTraverse('testoid/protected_class_view')
+  >>> view.__parent__ == self.folder.testoid
+  True
+  >>> view.__ac_permissions__
+  (('View', ('protected_method',)), ('View management screens', ('',)))
+  >>> getattr(view, '__call____roles__', False)
+  False
+  >>> aq_acquire(view, 'public_method__roles__') is ACCESS_PUBLIC
+  True
+  >>> aq_acquire(view, 'protected_method__roles__')
+  ['Manager', 'test_role_1_', 'Manager', 'Anonymous']
+  >>> aq_acquire(view, 'private_method__roles__') is ACCESS_PRIVATE
+  True
+
 
 Clean up
 --------
