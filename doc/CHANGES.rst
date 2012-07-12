@@ -16,6 +16,8 @@ http://docs.zope.org/zope2/releases/.
 
 - ZPublisher: Do not assume that you can iterate over a publishable object
 
+- ZPublisher: Do not guess it is a webdav request if the http method is purge
+
 2.13.15 (2012-06-22)
 --------------------
 
