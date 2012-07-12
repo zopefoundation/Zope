@@ -379,7 +379,7 @@ class BaseRequest:
         # How did this request come in? (HTTP GET, PUT, POST, etc.)
         method = request_get('REQUEST_METHOD', 'GET').upper()
 
-        if method=='GET' or method=='POST' and not isinstance(response,
+        if method in ["GET", "POST", "PURGE"] and not isinstance(response,
                                                               xmlrpc.Response):
             # Probably a browser
             no_acquire_flag=0
