@@ -14,6 +14,8 @@ http://docs.zope.org/zope2/releases/.
 
   - AccessControl = 2.13.8
 
+- ZPublisher: Do not assume that you can iterate over a publishable object
+
 2.13.15 (2012-06-22)
 --------------------
 
