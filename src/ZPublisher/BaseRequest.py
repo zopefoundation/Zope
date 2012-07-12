@@ -542,7 +542,7 @@ class BaseRequest:
             not hasattr(parents[1],'__bobo_traverse__')):
             base = parents[1].aq_base
             if not (hasattr(base, entry_name) or 
-                (hasattr(entry_name, '__iter__') and entry_name in base)):
+                (hasattr(base, '__iter__') and entry_name in base)):
                 raise AttributeError(entry_name)
 
         # After traversal post traversal hooks aren't available anymore
