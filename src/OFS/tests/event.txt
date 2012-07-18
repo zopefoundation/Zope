@@ -51,12 +51,13 @@ not for (None, IObjectEvent), and register our subscribers before the
 framework's ones, so ours will be called first. This has the effect that
 printed events will be in their "natural" order::
 
-  >>> from zope.component.interfaces import IObjectEvent, IRegistrationEvent
-  >>> from zope.lifecycleevent.interfaces import IObjectMovedEvent
+  >>> from zope.interface.interfaces import IObjectEvent
+  >>> from zope.interface.interfaces import IRegistrationEvent
   >>> from zope.lifecycleevent.interfaces import IObjectCopiedEvent
-  >>> from OFS.interfaces import IObjectWillBeMovedEvent
-  >>> from OFS.interfaces import IObjectClonedEvent
+  >>> from zope.lifecycleevent.interfaces import IObjectMovedEvent
   >>> from OFS.interfaces import IItem
+  >>> from OFS.interfaces import IObjectClonedEvent
+  >>> from OFS.interfaces import IObjectWillBeMovedEvent
   >>> def printObjectEvent(object, event):
   ...     print event.__class__.__name__, object.getId()
   >>> def printObjectEventExceptSome(object, event):

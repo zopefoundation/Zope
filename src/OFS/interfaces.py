@@ -17,6 +17,7 @@ from zope.component.interfaces import IPossibleSite
 from zope.container.interfaces import IContainer
 from zope.interface import Attribute
 from zope.interface import Interface
+from zope.interface.interfaces import IObjectEvent
 from zope.location.interfaces import IRoot
 from zope.schema import Bool, BytesLine, Tuple
 
@@ -871,8 +872,6 @@ class IApplication(IFolder, IRoot):
 ##################################################
 # Event interfaces
 
-from zope.component.interfaces import IObjectEvent
-
 class IObjectWillBeMovedEvent(IObjectEvent):
     """An object will be moved."""
     oldParent = Attribute("The old location parent for the object.")
@@ -880,11 +879,14 @@ class IObjectWillBeMovedEvent(IObjectEvent):
     newParent = Attribute("The new location parent for the object.")
     newName = Attribute("The new location name for the object.")
 
+
 class IObjectWillBeAddedEvent(IObjectWillBeMovedEvent):
     """An object will be added to a container."""
 
+
 class IObjectWillBeRemovedEvent(IObjectWillBeMovedEvent):
     """An object will be removed from a container"""
+
 
 class IObjectClonedEvent(IObjectEvent):
     """An object has been cloned (a la Zope 2).

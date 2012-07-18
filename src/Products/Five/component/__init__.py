@@ -17,9 +17,9 @@
 import zope.component
 import zope.event
 import zope.interface
-from zope.component.interfaces import IComponentLookup
 from zope.component.interfaces import IPossibleSite
 from zope.component.interfaces import ISite
+from zope.interface.interfaces import IComponentLookup
 from zope.traversing.interfaces import BeforeTraverseEvent
 
 import ExtensionClass
@@ -64,7 +64,7 @@ def enableSite(obj, iface=ISite):
     # We want the original object, not stuff in between, and no acquisition
     obj = aq_base(obj)
     if not IPossibleSite.providedBy(obj):
-        raise TypeError, 'Must provide IPossibleSite'
+        raise TypeError('Must provide IPossibleSite')
     hook = NameCaller(HOOK_NAME)
     registerBeforeTraverse(obj, hook, HOOK_NAME, 1)
 

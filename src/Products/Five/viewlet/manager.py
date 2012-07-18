@@ -27,7 +27,7 @@ class ViewletManagerBase(origManagerBase):
     """A base class for Viewlet managers to work in Zope2"""
 
     template = None
-    
+
     def __getitem__(self, name):
         """See zope.interface.common.mapping.IReadMapping"""
         # Find the viewlet
@@ -37,7 +37,7 @@ class ViewletManagerBase(origManagerBase):
 
         # If the viewlet was not found, then raise a lookup error
         if viewlet is None:
-            raise zope.component.interfaces.ComponentLookupError(
+            raise zope.interface.interfaces.ComponentLookupError(
                 'No provider with name `%s` found.' %name)
 
         # If the viewlet cannot be accessed, then raise an
@@ -77,7 +77,7 @@ class ViewletManagerBase(origManagerBase):
 
 def ViewletManager(name, interface, template=None, bases=()):
     attrDict = {'__name__': name}
-    
+
     if template is not None:
         attrDict['template'] = ZopeTwoPageTemplateFile(template)
 

@@ -30,7 +30,7 @@ Now we create a site object with a stub component registry:
 When we adapt the site itself, we obviously get its component
 registry:
 
-  >>> from zope.component.interfaces import IComponentLookup
+  >>> from zope.interface.interfaces import IComponentLookup
   >>> IComponentLookup(site) is components
   True
  

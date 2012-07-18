@@ -56,7 +56,7 @@ We get the site manager for the folder and assert that it is indeed a
 component registry:
 
     >>> sm = app.folder.getSiteManager()
-    >>> from zope.component.interfaces import IComponents
+    >>> from zope.interface.interfaces import IComponents
     >>> IComponents.providedBy(sm)
     True
 

@@ -5,21 +5,17 @@ Zope2.startup()
 
 import transaction
 
-from Testing.makerequest import makerequest
+from zope import component
+from zope import interface
+from zope.interface.interfaces import IObjectEvent
+from zope.testing import cleanup
 
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
-
-from OFS.SimpleItem import SimpleItem
 from OFS.Folder import Folder
-
+from OFS.SimpleItem import SimpleItem
+from Testing.makerequest import makerequest
 from Zope2.App import zcml
-
-from zope import interface
-from zope import component
-from zope.component.interfaces import IObjectEvent
-
-from zope.testing import cleanup
 
 
 class EventLogger(object):
@@ -38,6 +34,7 @@ eventlog = EventLogger()
 class ITestItem(interface.Interface):
     pass
 
+
 class TestItem(SimpleItem):
     interface.implements(ITestItem)
     def __init__(self, id):
@@ -46,6 +43,7 @@ class TestItem(SimpleItem):
 
 class ITestFolder(interface.Interface):
     pass
+
 
 class TestFolder(Folder):
     interface.implements(ITestFolder)
@@ -330,4 +328,3 @@ def test_suite():
     suite.addTest(makeSuite(TestCopySupport))
     suite.addTest(makeSuite(TestCopySupportSublocation))
     return suite
-

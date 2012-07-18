@@ -50,12 +50,12 @@ from webdav.Collection import Collection
 from webdav.Lockable import ResourceLockedError
 from webdav.NullResource import NullResource
 from zExceptions import BadRequest
-from zope.interface import implements
-from zope.component.interfaces import ComponentLookupError
+from zope.container.contained import notifyContainerModified
 from zope.event import notify
+from zope.interface import implements
+from zope.interface.interfaces import ComponentLookupError
 from zope.lifecycleevent import ObjectAddedEvent
 from zope.lifecycleevent import ObjectRemovedEvent
-from zope.container.contained import notifyContainerModified
 
 from OFS.CopySupport import CopyContainer
 from OFS.interfaces import IObjectManager

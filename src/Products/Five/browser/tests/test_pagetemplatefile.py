@@ -1,5 +1,6 @@
 import unittest
 
+
 class ViewPageTemplateFileTests(unittest.TestCase):
 
     def setUp(self):
@@ -192,7 +193,7 @@ class ViewMapperTests(unittest.TestCase):
         return self._getTargetClass()(ob, request)
 
     def test___getitem___miss(self):
-        from zope.component import ComponentLookupError
+        from zope.interface.interfaces import ComponentLookupError
         mapper = self._makeOne()
         self.assertRaises(ComponentLookupError, mapper.__getitem__, 'nonesuch')
 
