@@ -6,7 +6,6 @@ from AccessControl.SecurityManagement import noSecurityManager
 from AccessControl.SecurityManager import setSecurityPolicy
 from AccessControl.SpecialUsers import emergency_user, nobody, system
 from AccessControl.User import User # before SpecialUsers
-from Acquisition import aq_base
 from Acquisition import Implicit
 from App.config import getConfiguration
 from logging import getLogger
@@ -258,7 +257,7 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
             om._delObject(ob.getId())
         finally:
             logger.disabled = 0
-        
+
     def test_delObject_exception_debug_manager(self):
         # Test exception behavior in manage_beforeDelete in debug mode
         # Manager user
@@ -302,6 +301,21 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
             self.assertRaises(DeleteFailed, om1._delObject, 'om2')
         finally:
             logger.disabled = 0
+
+    def test_manage_delObjects(self):
+        om = self._makeOne()
+        ob = ItemForDeletion()
+        om._setObject('stuff', ob)
+        om.manage_delObjects('stuff')
+        self.assertFalse('stuff' in om)
+
+        om._setObject('stuff', ob)
+        om.manage_delObjects(['stuff'])
+        self.assertFalse('stuff' in om)
+
+        om._setObject('stuff', ob)
+        om.manage_delObjects(u'stuff')
+        self.assertFalse('stuff' in om)
 
     def test_hasObject(self):
         om = self._makeOne()

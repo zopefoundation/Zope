@@ -501,33 +501,35 @@ class ObjectManager(CopyContainer,
 
         The objects specified in 'ids' get deleted.
         """
-        if type(ids) is type(''): ids=[ids]
+        if isinstance(ids, basestring):
+            ids = [ids]
         if not ids:
             return MessageDialog(title='No items specified',
                    message='No items were specified!',
-                   action ='./manage_main',)
-        try:    p=self._reserved_names
-        except: p=()
+                   action='./manage_main',)
+        try:
+            p = self._reserved_names
+        except:
+            p = ()
         for n in ids:
             if n in p:
                 return MessageDialog(title='Not Deletable',
                        message='<EM>%s</EM> cannot be deleted.' % escape(n),
-                       action ='./manage_main',)
+                       action='./manage_main',)
         while ids:
-            id=ids[-1]
-            v=self._getOb(id, self)
+            id = ids[-1]
+            v = self._getOb(id, self)
 
             if v.wl_isLocked():
-                raise ResourceLockedError, (
+                raise ResourceLockedError(
                     'Object "%s" is locked via WebDAV' % v.getId())
 
             if v is self:
-                raise BadRequest, '%s does not exist' % escape(ids[-1])
+                raise BadRequest('%s does not exist' % escape(ids[-1]))
             self._delObject(id)
             del ids[-1]
         if REQUEST is not None:
             return self.manage_main(self, REQUEST, update_menu=1)
-
 
     def tpValues(self):
         # Return a list of subobjects, used by tree tag.
