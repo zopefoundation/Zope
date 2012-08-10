@@ -8,16 +8,16 @@ http://docs.zope.org/zope2/releases/.
 2.13.16 (unreleased)
 --------------------
 
-- OFS: Fixed TypeError handling in unrestrictedTraverse.
-
 - Updated distributions:
 
   - AccessControl = 2.13.8
   - DateTime = 2.12.7
 
-- ZPublisher: Do not assume that you can iterate over a publishable object
+- OFS: Fixed TypeError handling in unrestrictedTraverse.
 
-- ZPublisher: Do not guess it is a webdav request if the http method is purge
+- ZPublisher: Do not assume that you can iterate over a publishable object.
+
+- ZPublisher: Do not guess it is a webdav request if the HTTP method is purge.
 
 2.13.15 (2012-06-22)
 --------------------
