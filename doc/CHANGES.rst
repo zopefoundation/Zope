@@ -13,6 +13,7 @@ http://docs.zope.org/zope2/releases/.
 - Updated distributions:
 
   - AccessControl = 2.13.8
+  - DateTime = 2.12.7
 
 - ZPublisher: Do not assume that you can iterate over a publishable object
 
