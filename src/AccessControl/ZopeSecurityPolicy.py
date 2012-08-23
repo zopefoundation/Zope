@@ -52,9 +52,10 @@ def getRoles(container, name, value, default):
 
     if roles is None or isinstance(roles, tuple_or_list):
         return roles
-    
-    rolesForPermissionOn = getattr(roles, 'rolesForPermissionOn', None)
-    if rolesForPermissionOn is not None:
-        roles = rolesForPermissionOn(value)
+
+    # Do not override global variable `rolesForPermissionOn`.
+    roles_rolesForPermissionOn = getattr(roles, 'rolesForPermissionOn', None)
+    if roles_rolesForPermissionOn is not None:
+        roles = roles_rolesForPermissionOn(value)
 
     return roles

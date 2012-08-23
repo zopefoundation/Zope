@@ -8,6 +8,9 @@ http://docs.zope.org/zope2/releases/.
 2.12.24 (unreleased)
 --------------------
 
+- Fix a bug in ZopeSecurityPolicy.py. Global variable `rolesForPermissionOn`
+  could be overridden if `__role__` had custom rolesForPermissionOn.
+
 - Updated distributions:
 
   - zdaemon = 2.0.7
