@@ -8,6 +8,9 @@ http://docs.zope.org/zope2/releases/.
 2.13.17 (unreleased)
 --------------------
 
+- Updated distributions:
+
+  - AccessControl = 2.13.9
 
 2.13.16 (2012-08-11)
 --------------------
