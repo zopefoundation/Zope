@@ -8,3 +8,4 @@
 ./include/ExtensionClass
 ./include/persistent
 *.egg-info
+.mr.developer.cfg
