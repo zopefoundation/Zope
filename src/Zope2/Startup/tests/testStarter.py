@@ -23,8 +23,8 @@ import tempfile
 import unittest
 
 import ZConfig
-from ZConfig.components.logger.tests import test_logger
-from ZConfig.components.logger.loghandler import NullHandler
+
+from ZConfig.components.logger.tests.test_logger import LoggingTestHelper
 
 import Zope2.Startup
 import Products
@@ -50,15 +50,14 @@ for name in (None, 'trace', 'access'):
                            'handlers':logger.handlers,
                            'filters':logger.filters}
 
-class ZopeStarterTestCase(test_logger.LoggingTestBase):
+class ZopeStarterTestCase(LoggingTestHelper, unittest.TestCase):
 
     schema = None
 
     def setUp(self):
-        from ZConfig.components.logger import loghandler
         if self.schema is None:
             ZopeStarterTestCase.schema = getSchema()
-        test_logger.LoggingTestBase.setUp(self)
+        LoggingTestHelper.setUp(self)
 
     def tearDown(self):
         try:
@@ -69,7 +68,7 @@ class ZopeStarterTestCase(test_logger.LoggingTestBase):
         Products.__path__ = [d for d in Products.__path__
                              if os.path.exists(d)]
 
-        test_logger.LoggingTestBase.tearDown(self)
+        LoggingTestHelper.tearDown(self)
 
         # reset logger states
         for name in (None, 'access', 'trace'):
