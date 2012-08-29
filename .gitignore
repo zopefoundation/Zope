@@ -1,0 +1,12 @@
+/.installed.cfg
+/bin
+/build
+/develop
+/develop-eggs
+/eggs
+/parts
+/include/Acquisition
+/include/ExtensionClass
+/include/persistent
+*.egg-info
+*.py?
