@@ -12,22 +12,21 @@ Note: This is currently work-in-progress!
 Version numbering increase
 --------------------------
 
-- Reflect departure from TTW-development model
-- Various backwards incompatible changes (removed code)
-- Zope 3 vs. 4
+Version numbers for Zope have been confusing in the past. The original Zope
+project iterated trough version one to two up to version 2.13. In parallel
+a separate project was launched using the name Zope 3. Zope 3 wasn't a new
+version of the original Zope project and in hindsight should have used a
+different project name. These days this effort is known as BlueBream.
+
+In order to avoid confusion between the separate Zope 3 project and a new
+version of this project, it was decided to skip ahead and use Zope 4.0 as the
+next version number. The increase in the major part of the version also
+indicates the clear intention to allow backwards incompatible changes.
 
 Memory use
 ----------
 
-- DateTime
-- no more icons/images
-- no more default content
-- get some numbers for startup and startup after viewing the ZMI
-
-
-Good bye TTW development
-------------------------
-
-- ZMI getting stripped down
-- a lot less functionality OOTB
-- fewer zope.conf options
+Zope 4 depends on the new DateTime version 3. DateTime 3 has been optimized
+for better memory use. Applications using a lot of DateTime values like the
+Plone CMS have seen total memory usage to decrease by 10% to 20% for medium
+to large deployments.
