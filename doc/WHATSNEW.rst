@@ -13,7 +13,7 @@ Version numbering increase
 --------------------------
 
 Version numbers for Zope have been confusing in the past. The original Zope
-project iterated trough version one to two up to version 2.13. In parallel
+project iterated through version one to two up to version 2.13. In parallel
 a separate project was launched using the name Zope 3. Zope 3 wasn't a new
 version of the original Zope project and in hindsight should have used a
 different project name. These days this effort is known as BlueBream.
