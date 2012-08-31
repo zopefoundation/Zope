@@ -101,7 +101,7 @@ Restructuring
 - Removed `mime-types` option from `zope.conf`. You can use the `add_files`
   API from `zope.contenttype` instead.
 
-- Removed `OFS.ZDOM`.
+- Removed `OFS.ZDOM`. `OFS.SimpleItem.Item` now implements `getParentNode()`.
 
 - Removed the last remaining code to support `SOFTWARE_HOME` and `ZOPE_HOME`.
 

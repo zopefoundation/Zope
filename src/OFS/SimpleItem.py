@@ -26,6 +26,7 @@ import time
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.SecurityManagement import getSecurityManager
+from AccessControl.Permissions import access_contents_information
 from AccessControl.Permissions import view as View
 from AccessControl.unauthorized import Unauthorized
 from AccessControl.ZopeSecurityPolicy import getRoles
@@ -368,6 +369,12 @@ class Item(Base,
             res += ' used for %s' % context_path
         res += '>'
         return res
+
+    security.declareProtected(access_contents_information, 'getParentNode')
+    def getParentNode(self):
+        """The parent of this node.  All nodes except Document
+        DocumentFragment and Attr may have a parent"""
+        return getattr(self, '__parent__', None)
 
 InitializeClass(Item)
 
