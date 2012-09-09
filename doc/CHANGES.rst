@@ -62,7 +62,7 @@ Features Added
 
 - Updated distributions:
 
-  - AccessControl = 3.0.3
+  - AccessControl = 3.0.4
   - Acquisition = 4.0a1
   - DateTime = 3.0
   - ExtensionClass = 4.0a1
