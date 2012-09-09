@@ -761,10 +761,6 @@ print foo(**kw)
         g['__name__'] = __name__ # so classes can be defined in the script
         return code, g
 
-    def testPythonRealAC(self):
-        code, its_globals = self._compile("actual_python.py")
-        exec code in its_globals
-
     # Compile code in fname, as restricted Python. Return the
     # compiled code, and a safe globals dict for running it in.
     # fname is the string name of a Python file; it must be found

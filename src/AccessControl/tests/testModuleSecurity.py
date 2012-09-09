@@ -42,6 +42,9 @@ class ModuleSecurityTests(unittest.TestCase):
         from AccessControl.ZopeGuards import guarded_import
         guarded_import(module, fromlist=fromlist, level=level)
 
+    def test_unprotected_module(self):
+        self.assertUnauth('os', ())
+
     def testPrivateModule(self):
         self.assertUnauth('AccessControl.tests.private_module', ())
         self.assertUnauth('AccessControl.tests.private_module', ('priv',))

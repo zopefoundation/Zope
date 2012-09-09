@@ -26,11 +26,18 @@ from AccessControl.SecurityInfo import secureModule
 from AccessControl.SecurityInfo import allow_module
 from AccessControl.SecurityInfo import allow_class
 from AccessControl.SimpleObjectPolicies import allow_type
-from AccessControl.unauthorized import Unauthorized  # XXX 
+from AccessControl.unauthorized import Unauthorized
 from AccessControl.ZopeGuards import full_write_guard
 from AccessControl.ZopeGuards import safe_builtins
 
 ModuleSecurityInfo('AccessControl').declarePublic('getSecurityManager')
+
+# allow imports of utility_builtins
+
+for name in ('string', 'math', 'random', 'sets'):
+    ModuleSecurityInfo(name).setDefaultAccess('allow')
+
+ModuleSecurityInfo('DateTime').declarePublic('DateTime')
 
 from AccessControl import DTML  # XXX side effects?
 del DTML

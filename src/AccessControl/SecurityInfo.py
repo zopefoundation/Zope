@@ -211,7 +211,9 @@ _appliedModuleSecurity = {}
 def secureModule(mname, *imp):
     modsec = _moduleSecurity.get(mname, None)
     if modsec is None:
-        return
+        if mname in _appliedModuleSecurity:
+            return sys.modules[mname]
+        return # no MSI, no module
 
     if imp:
         __import__(mname, *imp)

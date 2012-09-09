@@ -131,9 +131,6 @@ class TestPythonScriptNoAq(PythonScriptTestBase):
     def testCollector2295(self):
         res = self._newPS('if False:\n  pass\n#hi')
 
-    def testCollector2295(self):
-        res = self._newPS('if False:\n  pass\n#hi')
-
     def testReduce(self):
         res = self._newPS('return reduce(lambda x, y: x + y, [1,3,5,7])')()
         self.assertEqual(res, 16)
