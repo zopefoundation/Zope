@@ -10,7 +10,7 @@ http://docs.zope.org/zope2/releases/.
 
 - Updated distributions:
 
-  - AccessControl = 2.13.9
+  - AccessControl = 2.13.10
   - Products.PythonScripts = 2.13.2
 
 2.13.16 (2012-08-11)
