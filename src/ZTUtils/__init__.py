@@ -12,11 +12,14 @@
 ##############################################################################
 """Package of template utility classes and functions.
 """
+from AccessControl.SecurityInfo import ModuleSecurityInfo
+security = ModuleSecurityInfo('ZTUtils')
 
+security.declarePublic('encodeExpansion', 'decodeExpansion', 'a2b', 'b2a')
 from Tree import encodeExpansion, decodeExpansion, a2b, b2a
 
-__allow_access_to_unprotected_subobjects__ = 1
-__roles__ = None
-
+security.declarePublic('Batch', 'TreeMaker', 'SimpleTreeMaker', 'LazyFilter')
 from ZTUtils.Zope import Batch, TreeMaker, SimpleTreeMaker, LazyFilter
+
+security.declarePublic('url_query', 'make_query', 'make_hidden_input')
 from ZTUtils.Zope import url_query, make_query, make_hidden_input
