@@ -8,6 +8,8 @@ http://docs.zope.org/zope2/releases/.
 2.13.18 (unreleased)
 --------------------
 
+- Explicitly declared ZTUtils APIs as public (repairs breakages in apps
+  following fix for LP #1047318).
 
 2.13.17 (2012-09-09)
 --------------------
