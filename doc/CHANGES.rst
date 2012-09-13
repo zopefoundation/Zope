@@ -8,6 +8,9 @@ http://docs.zope.org/zope2/releases/.
 2.12.25 (unreleased)
 --------------------
 
+- Explicitly declared ZTUtils APIs as public (repairs breakages in apps
+  followin fix for LP #1047318).
+
 
 2.12.24 (2012-09-09)
 --------------------

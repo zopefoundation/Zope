@@ -11,8 +11,6 @@
 #
 ##############################################################################
 """Package of template utility classes and functions.
-
-$Id$
 """
 # BBB 2005/05/01 -- to be removed after 12 months
 import zope.deferredimport
@@ -20,11 +18,17 @@ zope.deferredimport.define(
     Iterator = 'ZTUtils.Iterator:Iterator'
     )
 
+from AccessControl.SecurityInfo import ModuleSecurityInfo
+security = ModuleSecurityInfo('ZTUtils')
+
+security.declarePublic('encodeExpansion', 'decodeExpansion', 'a2b', 'b2a')
 from Tree import encodeExpansion, decodeExpansion, a2b, b2a
+
+security.declarePublic('SimpleTreeMaker')
 from SimpleTree import SimpleTreeMaker
 
-__allow_access_to_unprotected_subobjects__ = 1
-__roles__ = None
-
+security.declarePublic('Batch', 'TreeMaker', 'SimpleTreeMaker', 'LazyFilter')
 from ZTUtils.Zope import Batch, TreeMaker, SimpleTreeMaker, LazyFilter
+
+security.declarePublic('url_query', 'make_query', 'make_hidden_input')
 from ZTUtils.Zope import url_query, make_query, make_hidden_input
