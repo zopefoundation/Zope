@@ -19,6 +19,7 @@ import transaction
 from zExceptions import Redirect
 from zExceptions import Unauthorized
 from zope.event import notify
+from zope.security.management import newInteraction, endInteraction
 from zope.publisher.skinnable import setDefaultSkin
 from ZServer.medusa.http_date import build_http_date
 
@@ -165,6 +166,7 @@ def publish(request, module_name,
     ) = _get_module_info(module_name)
 
     notify(PubStart(request))
+    newInteraction()
     request.processInputs()
     response = request.response
 
@@ -204,6 +206,8 @@ def publish(request, module_name,
 
     if result is not response:
         response.setBody(result)
+
+    endInteraction()
 
     notify(PubBeforeCommit(request))
     return response
