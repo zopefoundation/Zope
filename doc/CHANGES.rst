@@ -181,6 +181,11 @@ http://docs.zope.org/zope2/
   Ported the ``shiftNameToApplication`` implementation from zope.publisher to
   ZPublisher.HTTPRequest.HTTPRequest.
 
+- Ensure that the ``WSGIPublisher`` begins and ends an *interaction*
+  at the request/response barrier. This is required for instance for
+  the ``checkPermission`` call to function without an explicit
+  ``interaction`` parameter.
+
 - Ensure that ObjectManager's ``get`` and ``__getitem__`` methods return only
   "items" (no attributes / methods from the class or from acquisition).
   Thanks to Richard Mitchell at Netsight for the report.
