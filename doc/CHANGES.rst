@@ -78,6 +78,8 @@ Features Added
 Restructuring
 +++++++++++++
 
+- OFS: Removed duplicate code in ZopeFind and ZopeFindAndApply
+
 - Five: Removed obsolete metaclass.
 
 - Five: Refactored ``browser:view`` and ``browser:page`` directives.
