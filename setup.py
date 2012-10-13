@@ -65,7 +65,6 @@ setup(name='Zope2',
       'initgroups',
       'pytz',
       'setuptools',
-      'tempstorage',
       'transaction',
       'zdaemon',
       'zExceptions',
@@ -113,7 +112,9 @@ setup(name='Zope2',
       'Products.PythonScripts',
       'Products.StandardCacheManagers',
     ] + additional_install_requires,
-
+    extras_require={
+      'test': ['tempstorage'],
+    },
     include_package_data=True,
     zip_safe=False,
     entry_points={
