@@ -431,6 +431,15 @@ class HTTPResponseTests(unittest.TestCase):
                          ('Set-Cookie',
                           'violation="http://www.ietf.org/rfc/rfc2616.txt"')])
 
+    def test_setHeader_drops_LF(self):
+        # Some browsers accept \n in place of \n\r to separate headers,
+        # so we scrub it too.
+        response = self._makeOne()
+        response.setHeader('Location',
+                           'http://www.ietf.org/rfc/\nrfc2616.txt')
+        self.assertEqual(response.headers['location'],
+                         'http://www.ietf.org/rfc/rfc2616.txt')
+
     def test_appendHeader_no_existing(self):
         response = self._makeOne()
         response.appendHeader('foo', 'foo')

@@ -8,6 +8,8 @@ http://docs.zope.org/zope2/releases/.
 2.13.19 (unreleased)
 --------------------
 
+- LP #930812: Scrub headers a bit more.
+
 - Updated distributions:
 
   - tempstorage = 2.12.2
