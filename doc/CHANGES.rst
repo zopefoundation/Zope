@@ -8,6 +8,9 @@ http://docs.zope.org/zope2/releases/.
 2.13.19 (unreleased)
 --------------------
 
+- Updated distributions:
+
+  - tempstorage = 2.12.2
 
 2.13.18 (2012-09-18)
 --------------------
