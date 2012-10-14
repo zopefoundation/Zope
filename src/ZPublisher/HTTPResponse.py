@@ -128,7 +128,7 @@ otherTypes = os.environ.get('DONT_GZIP_MAJOR_MIME_TYPES','').lower()
 if otherTypes:
     uncompressableMimeMajorTypes += tuple(otherTypes.split(','))
 
-_CRLF = re.compile(r'\r[\n]?')
+_CRLF = re.compile(r'[\r\n]')
 
 def _scrubHeader(name, value):
     return ''.join(_CRLF.split(str(name))), ''.join(_CRLF.split(str(value)))
