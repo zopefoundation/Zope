@@ -167,47 +167,48 @@ def publish(request, module_name,
 
     notify(PubStart(request))
     newInteraction()
-    request.processInputs()
-    response = request.response
+    try:
+        request.processInputs()
+        response = request.response
 
-    if bobo_after is not None:
-        response.after_list += (bobo_after,)
+        if bobo_after is not None:
+            response.after_list += (bobo_after,)
 
-    if debug_mode:
-        response.debug_mode = debug_mode
+        if debug_mode:
+            response.debug_mode = debug_mode
 
-    if realm and not request.get('REMOTE_USER', None):
-        response.realm = realm
+        if realm and not request.get('REMOTE_USER', None):
+            response.realm = realm
 
-    if bobo_before is not None:
-        bobo_before()
+        if bobo_before is not None:
+            bobo_before()
 
-    # Get the path list.
-    # According to RFC1738 a trailing space in the path is valid.
-    path = request.get('PATH_INFO')
+        # Get the path list.
+        # According to RFC1738 a trailing space in the path is valid.
+        path = request.get('PATH_INFO')
 
-    request['PARENTS'] = [object]
-    object = request.traverse(path, validated_hook=validated_hook)
-    notify(PubAfterTraversal(request))
+        request['PARENTS'] = [object]
+        object = request.traverse(path, validated_hook=validated_hook)
+        notify(PubAfterTraversal(request))
 
-    if transactions_manager:
-        transactions_manager.recordMetaData(object, request)
+        if transactions_manager:
+            transactions_manager.recordMetaData(object, request)
 
-    result = mapply(object,
-                    request.args,
-                    request,
-                    call_object,
-                    1,
-                    missing_name,
-                    dont_publish_class,
-                    request,
-                    bind=1,
-                    )
+        result = mapply(object,
+                        request.args,
+                        request,
+                        call_object,
+                        1,
+                        missing_name,
+                        dont_publish_class,
+                        request,
+                        bind=1,
+                        )
 
-    if result is not response:
-        response.setBody(result)
-
-    endInteraction()
+        if result is not response:
+            response.setBody(result)
+    finally:
+        endInteraction()
 
     notify(PubBeforeCommit(request))
     return response
