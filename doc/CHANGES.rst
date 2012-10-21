@@ -10,6 +10,7 @@ http://docs.zope.org/zope2/releases/.
 
 - Updated distributions:
 
+  - AccessControl = 2.13.11
   - tempstorage = 2.12.2
 
 - Explicitly close all databases on shutdown, which ensures `Data.fs.index`
