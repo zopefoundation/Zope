@@ -280,7 +280,7 @@ class ZopeStarter:
                 lock_file(self.lockfile)
                 self.lockfile.write(str(os.getpid()))
                 self.lockfile.flush()
-            except IOError:
+            except (IOError, WindowsError):
                 pass
 
     def makePidFile(self):
