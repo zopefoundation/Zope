@@ -42,6 +42,10 @@ Bugs Fixed
 
 - Made sure getConfiguration().default_zpublisher_encoding is set correctly.
 
+- Fix lock and pid file handling on Windows.  On other platforms
+  starting Zope tolerated existing or locked files, this now also
+  works on Windows.
+
 Features Added
 ++++++++++++++
 
