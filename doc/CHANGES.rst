@@ -8,11 +8,14 @@ http://docs.zope.org/zope2/releases/.
 2.13.19 (unreleased)
 --------------------
 
-- LP #930812: Scrub headers a bit more.
-
 - Updated distributions:
 
   - tempstorage = 2.12.2
+
+- Explicitly close all databases on shutdown, which ensures `Data.fs.index`
+  gets written to the file system.
+
+- LP #930812: Scrub headers a bit more.
 
 - Fix lock and pid file handling on Windows.  On other platforms
   starting Zope tolerated existing or locked files, this now also

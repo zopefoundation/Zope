@@ -108,6 +108,9 @@ class ZopeStarter:
             self.shutdown()
 
     def shutdown(self):
+        databases = getattr(self.cfg.dbtab, 'databases', {})
+        for db in databases.values():
+            db.close()
         self.unlinkLockFile()
         self.unlinkPidFile()
 
