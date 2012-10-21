@@ -292,7 +292,7 @@ class ZopeStarter:
                 f = open(self.cfg.pid_filename, 'w')
                 f.write(str(os.getpid()))
                 f.close()
-            except IOError:
+            except (IOError, WindowsError):
                 pass
 
     def unlinkPidFile(self):
