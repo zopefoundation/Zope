@@ -18,6 +18,8 @@ http://docs.zope.org/zope2/releases/.
   - repoze.tm2 = 1.0
   - tempstorage = 2.12.2
 
+- LP #1058049: Fix support for zoperunner section in zope.conf.
+
 - Explicitly close all databases on shutdown, which ensures `Data.fs.index`
   gets written to the file system.
 

@@ -180,7 +180,8 @@ class ZopeCtlOptions(ZDOptions):
         self.directory = config.instancehome
         self.clienthome = config.clienthome
         if self.program:
-            self.program = [self.program]
+            if isinstance(self.program, basestring):
+                self.program = [self.program]
         elif config.runner and config.runner.program:
             self.program = config.runner.program
         else:
