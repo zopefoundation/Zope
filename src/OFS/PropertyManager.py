@@ -323,16 +323,16 @@ class PropertyManager(Base, ElementWithAttributes):
             props = REQUEST.form
         if kw:
             for name, value in kw.items():
-                props[name]=value
-        propdict=self.propdict()
+                props[name] = value
+        propdict = self.propdict()
         for name, value in props.items():
             if self.hasProperty(name):
                 if not 'w' in propdict[name].get('mode', 'wd'):
-                    raise BadRequest, '%s cannot be changed' % escape(name)
+                    raise BadRequest('%s cannot be changed' % escape(name))
                 self._updateProperty(name, value)
         if REQUEST:
-            message="Saved changes."
-            return self.manage_propertiesForm(self,REQUEST,
+            message = "Saved changes."
+            return self.manage_propertiesForm(self, REQUEST,
                                               manage_tabs_message=message)
 
     # Note - this is experimental, pending some community input.
