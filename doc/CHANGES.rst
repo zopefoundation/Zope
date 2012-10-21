@@ -73,7 +73,7 @@ Features Added
 
   - AccessControl = 3.0.5
   - Acquisition = 4.0a1
-  - DateTime = 3.0.1
+  - DateTime = 3.0.2
   - ExtensionClass = 4.0a1
   - docutils = 0.8.1
   - manuel = 1.5.0
