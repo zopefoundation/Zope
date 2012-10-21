@@ -299,9 +299,9 @@ class PropertyManager(Base, ElementWithAttributes):
             name = prop['id']
             if 'w' in prop.get('mode', 'wd'):
                 if prop['type'] == 'multiple selection':
-                    value = REQUEST.get(name, [])
+                    value = REQUEST.form.get(name, [])
                 else:
-                    value = REQUEST.get(name, '')
+                    value = REQUEST.form.get(name, '')
                 self._updateProperty(name, value)
         if REQUEST:
             message = "Saved changes."
@@ -316,8 +316,11 @@ class PropertyManager(Base, ElementWithAttributes):
         name=value parameters
         """
         if REQUEST is None:
-            props={}
-        else: props=REQUEST
+            props = {}
+        elif isinstance(REQUEST, dict):
+            props = REQUEST
+        else:
+            props = REQUEST.form
         if kw:
             for name, value in kw.items():
                 props[name]=value
