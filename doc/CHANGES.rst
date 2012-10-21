@@ -14,6 +14,10 @@ http://docs.zope.org/zope2/releases/.
 
   - tempstorage = 2.12.2
 
+- Fix lock and pid file handling on Windows.  On other platforms
+  starting Zope tolerated existing or locked files, this now also
+  works on Windows.
+
 2.13.18 (2012-09-18)
 --------------------
 
