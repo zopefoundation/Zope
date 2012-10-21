@@ -11,6 +11,11 @@ http://docs.zope.org/zope2/releases/.
 - Updated distributions:
 
   - AccessControl = 2.13.11
+  - distribute = 0.6.29
+  - mr.developer = 1.22
+  - pytz = 2012g
+  - repoze.retry = 1.2
+  - repoze.tm2 = 1.0
   - tempstorage = 2.12.2
 
 - Explicitly close all databases on shutdown, which ensures `Data.fs.index`
