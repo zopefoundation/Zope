@@ -5,18 +5,21 @@ This file contains change information for the current Zope release.
 Change information for previous versions of Zope can be found at
 http://docs.zope.org/zope2/releases/.
 
-2.13.19 (unreleased)
+2.13.19 (2012-10-31)
 --------------------
 
 - Updated distributions:
 
-  - AccessControl = 2.13.11
+  - AccessControl = 2.13.12
   - distribute = 0.6.29
   - mr.developer = 1.22
   - pytz = 2012g
   - repoze.retry = 1.2
   - repoze.tm2 = 1.0
   - tempstorage = 2.12.2
+
+- LP #1071067: Use a stronger random number generator and a constant time
+  comparison function.
 
 - LP #1061247: Fix ZMI properties edit form for properties named `method`.
 
