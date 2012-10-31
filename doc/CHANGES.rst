@@ -5,8 +5,11 @@ This file contains change information for the current Zope release.
 Change information for previous versions of Zope can be found at
 http://docs.zope.org/zope2/releases/.
 
-2.12.26 (unreleased)
+2.12.26 (2012-10-31)
 --------------------
+
+- LP #1071067: Use a stronger random number generator and a constant time
+  comparison function.
 
 - LP #930812: Scrub headers a bit more.
 

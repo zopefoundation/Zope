@@ -11,16 +11,57 @@
 #
 ##############################################################################
 
-__version__='$Revision: 1.9 $'[11:-2]
-
-try:
-    from hashlib import sha1 as sha
-except:
-    from sha import new as sha
-
 import binascii
 from binascii import b2a_base64, a2b_base64
-from random import choice, randrange
+from hashlib import sha1 as sha
+from hashlib import sha256
+from os import getpid
+import time
+
+# Use the system PRNG if possible
+import random
+try:
+    random = random.SystemRandom()
+    using_sysrandom = True
+except NotImplementedError:
+    using_sysrandom = False
+
+
+def _reseed():
+    if not using_sysrandom:
+        # This is ugly, and a hack, but it makes things better than
+        # the alternative of predictability. This re-seeds the PRNG
+        # using a value that is hard for an attacker to predict, every
+        # time a random string is required. This may change the
+        # properties of the chosen random sequence slightly, but this
+        # is better than absolute predictability.
+        random.seed(sha256(
+            "%s%s%s" % (random.getstate(), time.time(), getpid())
+        ).digest())
+
+
+def _choice(c):
+    _reseed()
+    return random.choice(c)
+
+
+def _randrange(r):
+    _reseed()
+    return random.randrange(r)
+
+
+def constant_time_compare(val1, val2):
+    """
+    Returns True if the two strings are equal, False otherwise.
+
+    The time taken is independent of the number of characters that match.
+    """
+    if len(val1) != len(val2):
+        return False
+    result = 0
+    for x, y in zip(val1, val2):
+        result |= ord(x) ^ ord(y)
+    return result == 0
 
 
 class PasswordEncryptionScheme:  # An Interface
@@ -40,11 +81,13 @@ class PasswordEncryptionScheme:  # An Interface
 
 _schemes = []
 
+
 def registerScheme(id, s):
     '''
     Registers an LDAP password encoding scheme.
     '''
     _schemes.append((id, '{%s}' % id, s))
+
 
 def listSchemes():
     r = []
@@ -67,7 +110,7 @@ class SSHADigestScheme:
         # All 256 characters are available.
         salt = ''
         for n in range(7):
-            salt += chr(randrange(256))
+            salt += chr(_randrange(256))
         return salt
 
     def encrypt(self, pw):
@@ -83,7 +126,7 @@ class SSHADigestScheme:
             return 0
         salt = ref[20:]
         compare = b2a_base64(sha(attempt + salt).digest() + salt)[:-1]
-        return (compare == reference)
+        return constant_time_compare(compare, reference)
 
 registerScheme('SSHA', SSHADigestScheme())
 
@@ -95,7 +138,7 @@ class SHADigestScheme:
 
     def validate(self, reference, attempt):
         compare = b2a_base64(sha(attempt).digest())[:-1]
-        return (compare == reference)
+        return constant_time_compare(compare, reference)
 
 registerScheme('SHA', SHADigestScheme())
 
@@ -114,14 +157,14 @@ if crypt is not None:
             choices = ("ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                        "abcdefghijklmnopqrstuvwxyz"
                        "0123456789./")
-            return choice(choices) + choice(choices)
+            return _choice(choices) + _choice(choices)
 
         def encrypt(self, pw):
             return crypt(pw, self.generate_salt())
 
         def validate(self, reference, attempt):
             a = crypt(attempt, reference[:2])
-            return (a == reference)
+            return constant_time_compare(a, reference)
 
     registerScheme('CRYPT', CryptDigestScheme())
 
@@ -144,7 +187,7 @@ class MySQLDigestScheme:
 
     def validate(self, reference, attempt):
         a = self.encrypt(attempt)
-        return (a == reference)
+        return constant_time_compare(a, reference)
 
 registerScheme('MYSQL', MySQLDigestScheme())
 
@@ -158,7 +201,8 @@ def pw_validate(reference, attempt):
         if reference[:lp] == prefix:
             return scheme.validate(reference[lp:], attempt)
     # Assume cleartext.
-    return (reference == attempt)
+    return constant_time_compare(reference, attempt)
+
 
 def is_encrypted(pw):
     for id, prefix, scheme in _schemes:
@@ -167,12 +211,13 @@ def is_encrypted(pw):
             return 1
     return 0
 
+
 def pw_encrypt(pw, encoding='SSHA'):
     """Encrypt the provided plain text password using the encoding if provided
     and return it in an LDAP-style representation."""
     for id, prefix, scheme in _schemes:
         if encoding == id:
             return prefix + scheme.encrypt(pw)
-    raise ValueError, 'Not supported: %s' % encoding
+    raise ValueError('Not supported: %s' % encoding)
 
 pw_encode = pw_encrypt  # backward compatibility

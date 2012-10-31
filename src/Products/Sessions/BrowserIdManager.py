@@ -1,5 +1,5 @@
 ############################################################################
-# 
+#
 # Copyright (c) 2002 Zope Foundation and Contributors.
 #
 # This software is subject to the provisions of the Zope Public License,
@@ -13,8 +13,9 @@
 
 import binascii
 from cgi import escape
+from hashlib import sha256
 import logging
-import random
+import os
 import re
 import string
 import sys
@@ -62,6 +63,29 @@ ADD_BROWSER_ID_MANAGER_PERM="Add Browser Id Manager"
 TRAVERSAL_APPHANDLE = 'BrowserIdManager'
 
 LOG = logging.getLogger('Zope.BrowserIdManager')
+
+# Use the system PRNG if possible
+import random
+try:
+    random = random.SystemRandom()
+    using_sysrandom = True
+except NotImplementedError:
+    using_sysrandom = False
+
+
+def _randint(start, end):
+    if not using_sysrandom:
+        # This is ugly, and a hack, but it makes things better than
+        # the alternative of predictability. This re-seeds the PRNG
+        # using a value that is hard for an attacker to predict, every
+        # time a random string is required. This may change the
+        # properties of the chosen random sequence slightly, but this
+        # is better than absolute predictability.
+        random.seed(sha256(
+            "%s%s%s" % (random.getstate(), time.time(), os.getpid())
+        ).digest())
+    return random.randint(start, end)
+
 
 def constructBrowserIdManager(
     self, id=BROWSERID_MANAGER_NAME, title='', idname='_ZopeId',
@@ -558,7 +582,7 @@ def isAWellFormedBrowserId(bid, binerr=binascii.Error):
         return None
 
 
-def getNewBrowserId(randint=random.randint, maxint=99999999):
+def getNewBrowserId(randint=_randint, maxint=99999999):
     """ Returns 19-character string browser id
     'AAAAAAAABBBBBBBB'
     where:
@@ -573,5 +597,4 @@ def getNewBrowserId(randint=random.randint, maxint=99999999):
 
     An example is: 89972317A0C3EHnUi90w
     """
-    return '%08i%s' % (randint(0, maxint-1), getB64TStamp())
-
+    return '%08i%s' % (randint(0, maxint - 1), getB64TStamp())
