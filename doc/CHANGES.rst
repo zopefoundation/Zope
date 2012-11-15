@@ -131,7 +131,8 @@ http://docs.zope.org/zope2/releases/.
 2.13.11 (2011-12-12)
 --------------------
 
-- Turn `UndoSupport.get_request_var_or_attr` helper into a private API.
+- LP #1079238: Turn `UndoSupport.get_request_var_or_attr` helper into a
+  private API.
 
 - LP #902068: Fixed missing security declaration for `ObjectManager` class.
 
