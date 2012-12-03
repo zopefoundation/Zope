@@ -8,6 +8,9 @@ http://docs.zope.org/zope2/releases/.
 2.13.20 (unreleased)
 --------------------
 
+- Updated distributions:
+
+  - Products.ZCTextIndex = 2.13.4
 
 2.13.19 (2012-10-31)
 --------------------
