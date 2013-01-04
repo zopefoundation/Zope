@@ -11,6 +11,10 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
+- In ``PageTemplate.pt_errors`` accept the ``check_macro_expansion`` argument.
+  This is added for compatibility with ``zope.pagetemplate`` 4.0.0.
+  The argument is ignored (LP #732972).
+
 - Ensure that the ``WSGIPublisher`` begins and ends an *interaction*
   at the request/response barrier. This is required for instance for
   the ``checkPermission`` call to function without an explicit

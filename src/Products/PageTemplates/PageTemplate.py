@@ -79,7 +79,10 @@ class PageTemplate(ExtensionClass.Base,
                    showtal=showtal)
 
 
-    def pt_errors(self, namespace={}):
+    def pt_errors(self, namespace={}, check_macro_expansion=None):
+        # The check_macro_expansion argument is added for
+        # compatibility with zope.pagetemplate 4.0.0.  The argument is
+        # ignored.  See LP #732972.
         self._cook_check()
         err = self._v_errors
         if err:
