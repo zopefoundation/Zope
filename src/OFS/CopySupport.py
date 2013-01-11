@@ -151,7 +151,7 @@ class CopyContainer(Base):
             return self.manage_main(self, REQUEST)
         return cp
 
-    def _get_id(self, id):
+    def _get_id(self, id, obj=None):
         # Allow containers to override the generation of
         # object copy id by attempting to call its _get_id
         # method, if it exists.
@@ -224,7 +224,11 @@ class CopyContainer(Base):
                         message=sys.exc_info()[1],
                         action='manage_main'))
 
-                id = self._get_id(orig_id)
+                try:
+                    id = self._get_id(orig_id, ob)
+                except TypeError:
+                    # BBB for classes which do not have the second parameter.
+                    id = self._get_id(orig_id)
                 result.append({'id': orig_id, 'new_id': id})
 
                 orig_ob = ob
@@ -271,7 +275,11 @@ class CopyContainer(Base):
                 if aq_base(orig_container) is aq_base(self):
                     id = orig_id
                 else:
-                    id = self._get_id(orig_id)
+                    try:
+                        id = self._get_id(orig_id, ob)
+                    except TypeError:
+                        # BBB for classes which do not have the second parameter.
+                        id = self._get_id(orig_id)
                 result.append({'id': orig_id, 'new_id': id})
 
                 notify(ObjectWillBeMovedEvent(ob, orig_container, orig_id,

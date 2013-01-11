@@ -8,6 +8,9 @@ http://docs.zope.org/zope2/releases/.
 2.13.20 (unreleased)
 --------------------
 
+- OFS: Modify CopyContainer to pass the object to _get_id as well,
+  allowing for more flexible id generation logic such as using INameChooser.
+
 - In PageTemplate.pt_errors accept the check_macro_expansion argument.
   This is added for compatibility with zope.pagetemplate 4.0.0.  The
   argument is ignored.  See LP #732972.
@@ -15,6 +18,7 @@ http://docs.zope.org/zope2/releases/.
 - Updated distributions:
 
   - Products.ZCTextIndex = 2.13.4
+
 
 2.13.19 (2012-10-31)
 --------------------

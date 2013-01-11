@@ -170,6 +170,22 @@ class TestCopySupport( CopySupportTestBase ):
         self.assertTrue('newfile' in self.folder1.objectIds())
         self.assertTrue('newfile' in self.folder2.objectIds())
 
+    def testPasteOld_get_idWithoutObjParameter( self ):
+        from OFS.CopySupport import CopyContainer
+        self.assertTrue( 'file' in self.folder1.objectIds() )
+        self.assertFalse( 'file' in self.folder2.objectIds() )
+
+        old_get_id = CopyContainer._get_id
+        try:
+            CopyContainer._get_id = lambda self, id: 'copy'
+            cookie = self.folder1.manage_copyObjects( ids=('file',) )
+            result = self.folder2.manage_pasteObjects( cookie )
+            self.assertTrue( 'file' in self.folder1.objectIds() )
+            self.assertTrue( 'copy' in self.folder2.objectIds() )
+            self.assertTrue( result == [{'id':'file', 'new_id':'copy'}])
+        finally:
+            CopyContainer._get_id = old_get_id
+
     def testPasteSingleNotSameID( self ):
         self.assertTrue( 'file' in self.folder1.objectIds() )
         self.assertFalse( 'file' in self.folder2.objectIds() )
