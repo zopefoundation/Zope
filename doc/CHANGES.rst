@@ -8,6 +8,9 @@ http://docs.zope.org/zope2/releases/.
 2.13.20 (unreleased)
 --------------------
 
+- Make sure the generated classes for simple browser pages (SimpleViewClasses)
+  have a str __name__. See LP #1129030.
+
 - In PageTemplate.pt_errors accept the check_macro_expansion argument.
   This is added for compatibility with zope.pagetemplate 4.0.0.  The
   argument is ignored.  See LP #732972.

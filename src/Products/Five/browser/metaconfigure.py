@@ -59,6 +59,7 @@ def page(_context, name, permission, for_,
          attribute='__call__', menu=None, title=None,
          ):
 
+    name = str(name)  # De-unicode
     _handle_menu(_context, menu, title, [for_], name, permission)
 
     if not (class_ or template):
