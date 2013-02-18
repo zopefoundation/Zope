@@ -92,6 +92,7 @@ def page(_context, name, permission, for_=Interface,
          allowed_interface=None, allowed_attributes=None,
          attribute='__call__', menu=None, title=None, 
          ):
+    name = str(name)  # De-unicode
     _handle_menu(_context, menu, title, [for_], name, permission, layer)
     required = {}
 
@@ -452,7 +453,7 @@ class ViewMixinForTemplates(zope.browserpage.simpleviewclass.simple):
 
 
 # Original version: zope.browserpage.simpleviewclass.SimpleViewClass
-def SimpleViewClass(src, offering=None, used_for=None, bases=(), name=u''):
+def SimpleViewClass(src, offering=None, used_for=None, bases=(), name=''):
     if offering is None:
         offering = sys._getframe(1).f_globals
 
