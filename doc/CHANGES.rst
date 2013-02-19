@@ -11,6 +11,9 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
+- LP #978980: Protect views of ZPT source with 'View Management Screens'
+  permision.
+
 - Make sure the generated classes for simple browser pages (SimpleViewClasses)
   have a str __name__. See LP #1129030.
 

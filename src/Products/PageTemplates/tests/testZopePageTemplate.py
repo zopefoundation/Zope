@@ -232,7 +232,8 @@ class ZPTUnicodeEncodingConflictResolution(ZopeTestCase):
         self.app.REQUEST.debug = DebugFlags()
         self.assertEqual(zpt.pt_render(), unicode('<div>foo</div>'))
         self.app.REQUEST.debug.showTAL = True
-        self.assertEqual(zpt.pt_render(), unicode('<div tal:content="string:foo">foo</div>'))
+        self.assertEqual(zpt.pt_render(),
+                         unicode('<div tal:content="string:foo">foo</div>'))
         self.app.REQUEST.debug.sourceAnnotations = True
         self.assertEqual(zpt.pt_render().startswith(unicode('<!--')), True)
 
@@ -478,6 +479,54 @@ class ZPTMacros(zope.component.testing.PlacelessSetup, unittest.TestCase):
         pt.pt_render(source=True)
         self.assertEqual(pt.pt_errors(), None)
 
+class SrcTests(unittest.TestCase):
+
+    def _getTargetClass(self):
+        from Products.PageTemplates.ZopePageTemplate import Src
+        return Src
+
+    def _makeOne(self, zpt=None):
+        if zpt is None:
+            zpt = self._makeTemplate()
+        zpt.test_src = self._getTargetClass()()
+        return zpt.test_src
+
+    def _makeTemplate(self, id='test', source='<html/>'):
+        from Products.PageTemplates.ZopePageTemplate import ZopePageTemplate
+        return ZopePageTemplate(id, source)
+
+    def test___before_publishing_traverse___wo__hacked_path(self):
+        src = self._makeOne()
+        request = DummyRequest()
+        src.__before_publishing_traverse__(None, request)
+        self.assertFalse('_hacked_path' in request.__dict__)
+
+    def test___before_publishing_traverse___w__hacked_path_false(self):
+        src = self._makeOne()
+        request = DummyRequest()
+        request._hacked_path = False
+        src.__before_publishing_traverse__(None, request)
+        self.assertFalse(request._hacked_path)
+
+    def test___before_publishing_traverse___w__hacked_path_true(self):
+        src = self._makeOne()
+        request = DummyRequest()
+        request._hacked_path = True
+        src.__before_publishing_traverse__(None, request)
+        self.assertFalse(request._hacked_path)
+
+    def test___call__(self):
+        template = self._makeTemplate(source='TESTING')
+        src = self._makeOne(template)
+        request = DummyRequest()
+        response = object()
+        self.assertEqual(src(request, response), 'TESTING')
+
+
+class DummyRequest(dict):
+    pass
+
+
 class DummyFileUpload:
 
     def __init__(self, data='', filename='', content_type=''):
@@ -490,10 +539,12 @@ class DummyFileUpload:
 
        
 def test_suite():
-    suite = unittest.makeSuite(ZPTRegressions)
-    suite.addTests(unittest.makeSuite(ZPTUtilsTests))
-    suite.addTests(unittest.makeSuite(ZPTMacros))
-    suite.addTests(unittest.makeSuite(ZopePageTemplateFileTests))
-    suite.addTests(unittest.makeSuite(ZPTUnicodeEncodingConflictResolution))
-    suite.addTests(unittest.makeSuite(PreferredCharsetUnicodeResolverTests))
-    return suite
+    return unittest.TestSuite((
+        unittest.makeSuite(ZPTRegressions),
+        unittest.makeSuite(ZPTUtilsTests),
+        unittest.makeSuite(ZPTMacros),
+        unittest.makeSuite(ZopePageTemplateFileTests),
+        unittest.makeSuite(ZPTUnicodeEncodingConflictResolution),
+        unittest.makeSuite(PreferredCharsetUnicodeResolverTests),
+        unittest.makeSuite(SrcTests),
+    ))
