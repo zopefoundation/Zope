@@ -56,6 +56,8 @@ if os.environ.has_key('ZPT_PREFERRED_ENCODING'):
 
 class Src(Explicit):
     """ I am scary code """
+    security = ClassSecurityInfo()
+    security.declareObjectProtected(view_management_screens)
 
     PUT = document_src = Acquired
     index_html = None
@@ -67,6 +69,8 @@ class Src(Explicit):
     def __call__(self, REQUEST, RESPONSE):
         " "
         return self.document_src(REQUEST)
+
+InitializeClass(Src)
 
 class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
                        Traversable, PropertyManager):
