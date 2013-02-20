@@ -1,19 +1,16 @@
 import unittest
 
-class TestNode(unittest.TestCase):
+class NodeTests(unittest.TestCase):
 
     def _getTargetClass(self):
         from webdav.xmltools import Node
         return Node
 
     def _makeOne(self, wrapped):
-        klass = self._getTargetClass()
-        return klass(wrapped)
+        return self._getTargetClass()(wrapped)
 
     def test_remove_namespace_attrs(self):
-        """ A method added in Zope 2.11 which removes any attributes
-        which appear to be XML namespace declarations """
-        class DummyMinidomNode:
+        class DummyMinidomNode(object):
             def __init__(self):
                 self.attributes = {'xmlns:foo':'foo', 'xmlns':'bar', 'a':'b'}
             def hasAttributes(self):
@@ -27,7 +24,36 @@ class TestNode(unittest.TestCase):
         self.assertEqual(wrapped.attributes, {'a':'b'})
 
 
+class XmlParserTests(unittest.TestCase):
+
+    def _getTargetClass(self):
+        from webdav.xmltools import XmlParser
+        return XmlParser
+
+    def _makeOne(self):
+        return self._getTargetClass()()
+
+    def test_parse_rejects_entities(self):
+        XML = '\n'.join([
+            '<!DOCTYPE dt_test [',
+            '<!ENTITY entity "1234567890" >',
+            ']>',
+            '<test>&entity;</test>'
+        ])
+        parser = self._makeOne()
+        self.assertRaises(ValueError, parser.parse, XML)
+
+    def test_parse_rejects_doctype_wo_entities(self):
+        XML = '\n'.join([
+            '<!DOCTYPE dt_test []>',
+            '<test/>'
+        ])
+        parser = self._makeOne()
+        self.assertRaises(ValueError, parser.parse, XML)
+
+
 def test_suite():
     return unittest.TestSuite((
-        unittest.makeSuite(TestNode),
-        ))
+        unittest.makeSuite(NodeTests),
+        unittest.makeSuite(XmlParserTests),
+    ))
