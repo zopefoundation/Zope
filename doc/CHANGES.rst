@@ -8,6 +8,9 @@ http://docs.zope.org/zope2/releases/.
 2.12.27 (unreleased)
 --------------------
 
+- LP #978980: Protect views of ZPT source with 'View Management Screens'
+  permision.
+
 
 2.12.26 (2012-10-31)
 --------------------
