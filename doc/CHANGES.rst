@@ -8,6 +8,9 @@ http://docs.zope.org/zope2/releases/.
 2.12.27 (unreleased)
 --------------------
 
+- LP #1114688: Defend against minidom-based DoS in webdav.  (Patch from
+  Christian Heimes).
+
 - LP #978980: Protect views of ZPT source with 'View Management Screens'
   permision.
 

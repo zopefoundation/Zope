@@ -36,7 +36,9 @@ TODO:
 
 from StringIO import StringIO
 from xml.dom import minidom
-from xml.sax.saxutils import escape as _escape, unescape as _unescape
+from xml.sax.expatreader import ExpatParser
+from xml.sax.saxutils import escape as _escape
+from xml.sax.saxutils import unescape as _unescape
 
 escape_entities = {'"': '&quot;',
                    "'": '&apos;',
@@ -171,6 +173,36 @@ class Element(Node):
                 writer.write(value)
         return writer.getvalue()
 
+
+class ProtectedExpatParser(ExpatParser):
+    """ See https://bugs.launchpad.net/zope2/+bug/1114688
+    """
+    def __init__(self, forbid_dtd=True, forbid_entities=True,
+                 *args, **kwargs):
+        # Python 2.x old style class
+        ExpatParser.__init__(self, *args, **kwargs)
+        self.forbid_dtd = forbid_dtd
+        self.forbid_entities = forbid_entities
+
+    def start_doctype_decl(self, name, sysid, pubid, has_internal_subset):
+        raise ValueError("Inline DTD forbidden")
+
+    def entity_decl(self, entityName, is_parameter_entity, value, base, systemId, publicId, notationName):
+        raise ValueError("<!ENTITY> forbidden")
+
+    def unparsed_entity_decl(self, name, base, sysid, pubid, notation_name):
+        # expat 1.2
+        raise ValueError("<!ENTITY> forbidden")
+
+    def reset(self):
+        ExpatParser.reset(self)
+        if self.forbid_dtd:
+            self._parser.StartDoctypeDeclHandler = self.start_doctype_decl
+        if self.forbid_entities:
+            self._parser.EntityDeclHandler = self.entity_decl
+            self._parser.UnparsedEntityDeclHandler = self.unparsed_entity_decl
+
+
 class XmlParser:
     """ Simple wrapper around minidom to support the required
     interfaces for zope.webdav
@@ -182,5 +214,5 @@ class XmlParser:
         pass
 
     def parse(self, data):
-        self.dom = minidom.parseString(data)
+        self.dom = minidom.parseString(data, parser=ProtectedExpatParser())
         return Node(self.dom)
