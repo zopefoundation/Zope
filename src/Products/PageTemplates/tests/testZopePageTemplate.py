@@ -232,7 +232,8 @@ class ZPTUnicodeEncodingConflictResolution(ZopeTestCase):
         self.app.REQUEST.debug = DebugFlags()
         self.assertEqual(zpt.pt_render(), unicode('<div>foo</div>'))
         self.app.REQUEST.debug.showTAL = True
-        self.assertEqual(zpt.pt_render(), unicode('<div tal:content="string:foo">foo</div>'))
+        self.assertEqual(zpt.pt_render(),
+                         unicode('<div tal:content="string:foo">foo</div>'))
         self.app.REQUEST.debug.sourceAnnotations = True
         self.assertEqual(zpt.pt_render().startswith(unicode('<!--')), True)
 
