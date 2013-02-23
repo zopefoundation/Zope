@@ -49,7 +49,7 @@ def test_menu():
       >>> menu.sort(lambda x, y: cmp(x['title'], y['title']))
       >>> from pprint import pprint
       >>> pprint(menu[0])
-      {'action': u'@@cockatiel_menu_public.html',
+      {'action': '@@cockatiel_menu_public.html',
        'description': u'',
        'extra': None,
        'icon': None,
@@ -100,7 +100,7 @@ def test_menu():
 
       >>> menu.sort(lambda x, y: cmp(x['title'], y['title']))
       >>> pprint(menu[0])
-      {'action': u'@@cockatiel_menu_protected.html',
+      {'action': '@@cockatiel_menu_protected.html',
        'description': u'',
        'extra': None,
        'icon': None,
@@ -109,7 +109,7 @@ def test_menu():
        'title': u'Page in a menu (protected)'}
 
       >>> pprint(menu[1])
-      {'action': u'@@cockatiel_menu_public.html',
+      {'action': '@@cockatiel_menu_public.html',
        'description': u'',
        'extra': None,
        'icon': None,

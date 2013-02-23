@@ -208,6 +208,8 @@ class view(zope.browserpage.metaconfigure.view):
         (_context, name, (for_, layer), permission, class_,
          allowed_interface, allowed_attributes) = self.args
 
+        name = str(name)  # De-unicode
+
         required = {}
 
         cdict = {}
