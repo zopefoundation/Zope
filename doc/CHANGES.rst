@@ -90,7 +90,7 @@ Features Added
   - ExtensionClass = 4.0
   - docutils = 0.8.1
   - manuel = 1.5.0
-  - Products.ZCatalog = 3.0b1
+  - Products.ZCatalog = 3.0
 
 Restructuring
 +++++++++++++
