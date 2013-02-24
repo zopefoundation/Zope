@@ -85,12 +85,12 @@ Features Added
 - Updated distributions:
 
   - AccessControl = 3.0.5
-  - Acquisition = 4.0a1
-  - DateTime = 3.0.3
-  - ExtensionClass = 4.0a1
+  - Acquisition = 4.0
+  - DateTime = 4.0
+  - ExtensionClass = 4.0
   - docutils = 0.8.1
   - manuel = 1.5.0
-  - Products.ZCatalog = 3.0a2
+  - Products.ZCatalog = 3.0b1
 
 Restructuring
 +++++++++++++
