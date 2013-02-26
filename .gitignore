@@ -1,0 +1,10 @@
+bin
+build
+dist
+lib
+parts
+
+*.dll
+*.pyc
+*.pyo
+*.so
