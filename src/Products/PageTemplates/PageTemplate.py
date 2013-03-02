@@ -16,7 +16,7 @@
 import sys
 import ExtensionClass
 import zope.pagetemplate.pagetemplate
-from zope.pagetemplate.pagetemplate import _error_start, PTRuntimeError
+from zope.pagetemplate.pagetemplate import PTRuntimeError
 from zope.pagetemplate.pagetemplate import PageTemplateTracebackSupplement
 from zope.tales.expressions import SimpleModuleImporter
 from Products.PageTemplates.Expressions import getEngine
@@ -106,10 +106,10 @@ class PageTemplate(ExtensionClass.Base,
                 return self.pt_render(source=True)
             except:
                 return ('%s\n Macro expansion failed\n %s\n-->\n%s' %
-                        (_error_start, "%s: %s" % sys.exc_info()[:2],
+                        (self._error_start, "%s: %s" % sys.exc_info()[:2],
                          self._text) )
 
-        return ('%s\n %s\n-->\n%s' % (_error_start,
+        return ('%s\n %s\n-->\n%s' % (self._error_start,
                                       '\n '.join(self._v_errors),
                                       self._text))
 
