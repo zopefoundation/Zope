@@ -18,7 +18,11 @@ def run():
     starter = Zope2.Startup.get_starter()
     opts = _setconfig()
     starter.setConfiguration(opts.configroot)
-    starter.prepare()
+    try:
+        starter.prepare()
+    except:
+        starter.shutdown()
+        raise
     starter.run()
 
 def configure(configfile):

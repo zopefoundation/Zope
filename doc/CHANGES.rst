@@ -11,53 +11,12 @@ http://docs.zope.org/zope2/releases/.
 Bugs Fixed
 ++++++++++
 
-- LP #1114688: Defend against minidom-based DoS in webdav.  (Patch from
-  Christian Heimes).
-
-- LP #978980: Protect views of ZPT source with 'View Management Screens'
-  permision.
-
-- Make sure the generated classes for simple browser pages (SimpleViewClasses)
-  have a str __name__. See LP #1129030.
-
-- In ``PageTemplate.pt_errors`` accept the ``check_macro_expansion`` argument.
-  This is added for compatibility with ``zope.pagetemplate`` 4.0.0.
-  The argument is ignored (LP #732972).
-
 - Ensure that the ``WSGIPublisher`` begins and ends an *interaction*
   at the request/response barrier. This is required for instance for
   the ``checkPermission`` call to function without an explicit
   ``interaction`` parameter.
 
-- Ensure that ObjectManager's ``get`` and ``__getitem__`` methods return only
-  "items" (no attributes / methods from the class or from acquisition).
-  Thanks to Richard Mitchell at Netsight for the report.
-
-- Removed HTML tags from exception text of ``Unauthorized`` exception
-  because these tags get escaped since CVE-2010-1104 (see 2.13.12) got
-  fixed.
-
-- Use ``in`` operator instead of deprecated ``has_key`` method (which
-  is not implemented by ``OFS.ObjectManager``). This fixes an issue
-  with WebDAV requests for skin objects.
-
-- Avoid conflicting signal registrations when run under mod_wsgi.
-  Allows the use of `WSGIRestrictSignal Off` (LP #681853).
-
-- Make it possible to use WSGI without repoze.who.
-
-- Fixed serious authentication vulnerability in stock configuration.
-
-- Fixed a regression in webdav support that broke external editor feature.
-
-- Restore ability to undo multiple transactions from the ZMI by using the
-  `undoMultiple` API.
-
 - Made sure getConfiguration().default_zpublisher_encoding is set correctly.
-
-- Fix lock and pid file handling on Windows.  On other platforms
-  starting Zope tolerated existing or locked files, this now also
-  works on Windows.
 
 Features Added
 ++++++++++++++
@@ -80,16 +39,16 @@ Features Added
 
 - Remove `control panel` object from the ZODB.
 
-- Updated to Zope Toolkit 1.2dev.
+- Updated to Zope Toolkit 2.0dev.
 
 - Updated distributions:
 
-  - AccessControl = 3.0.5
+  - AccessControl = 3.0.6
   - Acquisition = 4.0
   - DateTime = 4.0
   - ExtensionClass = 4.0
-  - docutils = 0.8.1
-  - manuel = 1.5.0
+  - docutils = 0.9.1
+  - manuel = 1.6.0
   - Products.ZCatalog = 3.0
 
 Restructuring
