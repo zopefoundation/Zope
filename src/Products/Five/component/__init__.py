@@ -18,7 +18,6 @@ import zope.interface
 import zope.component
 import zope.event
 from zope.component.interfaces import IComponentLookup
-from zope.location.interfaces import ISite, IPossibleSite
 from zope.traversing.interfaces import BeforeTraverseEvent
 
 import ExtensionClass
@@ -27,9 +26,19 @@ from Products.SiteAccess.AccessRule import AccessRule
 from ZPublisher.BeforeTraverse import registerBeforeTraverse
 from ZPublisher.BeforeTraverse import unregisterBeforeTraverse
 
+# BBB
+try:
+    from zope.component.interfaces import IPossibleSite
+    from zope.component.interfaces import ISite
+except ImportError:
+    from zope.location.interfaces import IPossibleSite
+    from zope.location.interfaces import ISite
+
+
 # Hook up custom component architecture calls
 from zope.site.hooks import setHooks
 setHooks()
+
 
 def findSite(obj, iface=ISite):
     """Find a site by walking up the object hierarchy, supporting both

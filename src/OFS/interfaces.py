@@ -16,7 +16,6 @@
 from zope.container.interfaces import IContainer
 from zope.interface import Attribute
 from zope.interface import Interface
-from zope.location.interfaces import IPossibleSite
 from zope.location.interfaces import IRoot
 from zope.schema import Bool, BytesLine, Tuple
 
@@ -28,6 +27,12 @@ from App.interfaces import IUndoSupport
 from persistent.interfaces import IPersistent
 from webdav.interfaces import IDAVCollection
 from webdav.interfaces import IDAVResource
+
+# BBB
+try:
+    from zope.component.interfaces import IPossibleSite
+except ImportError:
+    from zope.location.interfaces import IPossibleSite
 
 
 class IOrderedContainer(Interface):
