@@ -41,7 +41,7 @@ and `buildout` script inside `bin` directory.
 
 ::
 
-  $ cd poll/poll.build
+  $ cd poll/poll_build
   $ touch buildout.cfg
   $ wget -c http://svn.zope.org/repos/main/zc.buildout/trunk/bootstrap/bootstrap.py
   $ python2.6 bootstrap.py
@@ -131,7 +131,7 @@ logically and maintain the dependencies between packages properly.
 
 ::
 
-  $ cd ../poll.build
+  $ cd ../poll.main
 
 Again we need to create the basic directory structure and `setup.py`
 to create egg distribution.  We are going to place python package
