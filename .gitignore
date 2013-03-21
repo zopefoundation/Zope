@@ -10,3 +10,4 @@
 /include/persistent
 *.egg-info
 *.py?
+.mr.developer.cfg
