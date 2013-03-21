@@ -21,6 +21,7 @@ from OFS.SimpleItem import SimpleItem
 
 logger = getLogger('OFS.subscribers')
 
+
 class FauxRoot( Implicit ):
 
     id = '/'
@@ -30,6 +31,7 @@ class FauxRoot( Implicit ):
 
     def getPhysicalPath( self ):
         return ()
+
 
 class FauxUser( Implicit ):
 
@@ -44,6 +46,7 @@ class FauxUser( Implicit ):
 
 class DeleteFailed(Exception):
     pass
+
 
 class ItemForDeletion(SimpleItem):
 
@@ -491,7 +494,85 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
             self.assertTrue(filename.endswith('.zexp') or
                             filename.endswith('.xml'))
 
+
+_marker = object()
+class Test_checkValidId(unittest.TestCase):
+
+    def _callFUT(self, container, id, allow_dup=_marker):
+        from OFS.ObjectManager import checkValidId
+        if allow_dup is _marker:
+            return checkValidId(container, id)
+        return checkValidId(container, id, allow_dup)
+
+    def _makeContainer(self):
+        return object()
+
+    def assertBadRequest(self, id, allow_dup=_marker):
+        from zExceptions import BadRequest
+        try:
+            if allow_dup is not _marker:
+                self._callFUT(self._makeContainer(), id, allow_dup)
+            else:
+                self._callFUT(self._makeContainer(), id)
+        except BadRequest as e:
+            return e
+        self.fail("Didn't raise")
+
+    def test_empty_string(self):
+        e = self.assertBadRequest('')
+        self.assertEqual(str(e),
+                         "('Empty or invalid id specified', '')")
+
+    def test_unicode(self):
+        e = self.assertBadRequest(u'abc')
+        self.assertEqual(str(e),
+                         "('Empty or invalid id specified', u'abc')")
+
+    def test_unicode_escaped(self):
+        e = self.assertBadRequest(u'<abc>&def')
+        self.assertEqual(str(e),
+                         "('Empty or invalid id specified', "
+                         "u'&lt;abc&gt;&amp;def')")
+
+    def test_badid_XSS(self):
+        e = self.assertBadRequest('<abc>&def')
+        self.assertEqual(str(e),
+                         'The id "&lt;abc&gt;&amp;def" contains characters '
+                         'illegal in URLs.')
+
+    def test_one_dot(self):
+        e = self.assertBadRequest('.')
+        self.assertEqual(str(e),
+                         'The id "." is invalid because it is not '
+                         'traversable.')
+
+    def test_two_dots(self):
+        e = self.assertBadRequest('..')
+        self.assertEqual(str(e),
+                         'The id ".." is invalid because it is not '
+                         'traversable.')
+
+    def test_underscore(self):
+        e = self.assertBadRequest('_abc')
+        self.assertEqual(str(e),
+                         'The id "_abc" is invalid because it begins with '
+                         'an underscore.')
+
+    def test_aq_(self):
+        e = self.assertBadRequest('aq_abc')
+        self.assertEqual(str(e),
+                         'The id "aq_abc" is invalid because it begins with '
+                         '"aq_".')
+
+    def test_dunder_suffix(self):
+        e = self.assertBadRequest('abc__')
+        self.assertEqual(str(e),
+                         'The id "abc__" is invalid because it ends with '
+                         'two underscores.')
+
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(ObjectManagerTests),
+        unittest.makeSuite(Test_checkValidId),
     ))
