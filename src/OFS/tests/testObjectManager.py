@@ -492,6 +492,6 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
                             filename.endswith('.xml'))
 
 def test_suite():
-    suite = unittest.TestSuite()
-    suite.addTest( unittest.makeSuite( ObjectManagerTests ) )
-    return suite
+    return unittest.TestSuite((
+        unittest.makeSuite(ObjectManagerTests),
+    ))
