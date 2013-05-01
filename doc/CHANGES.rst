@@ -5,15 +5,14 @@ This file contains change information for the current Zope release.
 Change information for previous versions of Zope can be found at
 http://docs.zope.org/zope2/releases/.
 
-2.12.27 (unreleased)
+2.12.27 (2013-05-01)
 --------------------
 
 - LP #1114688: Defend against minidom-based DoS in webdav.  (Patch from
   Christian Heimes).
 
 - LP #978980: Protect views of ZPT source with 'View Management Screens'
-  permision.
-
+  permission.
 
 2.12.26 (2012-10-31)
 --------------------
