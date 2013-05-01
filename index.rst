@@ -11,10 +11,7 @@ Zope 2 related documentation and articles
 Release information
 ===================
 
-.. toctree::
-   :maxdepth: 2
-
-   releases/index
+Release specific information can be found at: https://zope.readthedocs.org
 
 Maintenance
 ===========
@@ -23,4 +20,3 @@ Maintenance
    :maxdepth: 2
 
    maintenance/index
-

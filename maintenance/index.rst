@@ -16,8 +16,6 @@ The following persons have access to the ``Zope2`` package on PyPI
 (in order to release new versions):
 
 - Hanno Schlichting
-- Tres Seaver
-- Andreas Jung
 
 Steps for creating a new Zope 2 release
 +++++++++++++++++++++++++++++++++++++++
@@ -56,10 +54,9 @@ Steps for creating a new Zope 2 release
 
      /home/zope/zope2index/bin/z2_kgs tags/2.13.15 /var/www/download.zope.org/Zope2/index/2.13.15
 
-- update the version tag for the auto-generated documentation of the release
-  notes on docs.zope.org::
+- update the visible releases on readthedocs.org at::
 
-    svn propedit svn:externals svn+ssh://svn.zope.org/repos/main/zope2docs/trunk/releases
+    https://readthedocs.org/dashboard/zope/versions/
 
 - update version information on zope2.zope.org
 
@@ -76,33 +73,3 @@ Steps for creating a new Zope 2 release
 - update launchpad. Create a new next milestone at::
 
     https://launchpad.net/zope2/2.13/+addmilestone
-
-
-Pre-Zope 2.12 release process
------------------------------
-
-- update version information:
-
-  - setup.py
-  - inst/versions.py
-  - inst/WinBuilders/mk/zope.mk
-
-- run all tests::
-
-      ./configure --with-python=/path/to/python2.4
-      make
-      bin/instance test
-
-- create a source release::
-
-      ./configure --with-python=/path/to/python2.4
-      make sdist
-
-- create a software release package under www.zope.org/Products/Zope and
-  upload the source release as release file
-
-- update the metadata of the release package (copy & paste from a former release)
-
-- create a file CHANGES.txt with the related release notes
-
-- send out a notification email
