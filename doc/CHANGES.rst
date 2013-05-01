@@ -3,7 +3,11 @@ Changelog
 
 This file contains change information for the current Zope release.
 Change information for previous versions of Zope can be found at
-http://docs.zope.org/zope2/releases/.
+http://docs.zope.org/zope2/
+
+2.12.28 (unreleased)
+--------------------
+
 
 2.12.27 (2013-05-01)
 --------------------
