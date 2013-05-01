@@ -3,6 +3,7 @@
 /build
 /develop
 /develop-eggs
+/dist
 /eggs
 /parts
 /include/Acquisition
