@@ -8,8 +8,6 @@ http://docs.zope.org/zope2/releases/.
 2.13.20 (unreleased)
 --------------------
 
-- Backported changes from Zope Toolkit 1.0.8.
-
 - LP #1114688: Defend against minidom-based DoS in webdav.  (Patch from
   Christian Heimes).
 
@@ -23,9 +21,12 @@ http://docs.zope.org/zope2/releases/.
   This is added for compatibility with zope.pagetemplate 4.0.0.  The
   argument is ignored.  See LP #732972.
 
+- Updated to Zope Toolkit 1.0.8.
+
 - Updated distributions:
 
   - Products.ZCTextIndex = 2.13.4
+  - ZConfig = 2.9.1
 
 2.13.19 (2012-10-31)
 --------------------
