@@ -52,7 +52,7 @@ Steps for creating a new Zope 2 release
 
   - create the download index (e.g. for Zope 2.13.15)::
 
-     /home/zope/zope2index/bin/z2_kgs tags/2.13.15 /var/www/download.zope.org/Zope2/index/2.13.15
+     /home/zope/zope2index/bin/z2_kgs 2.13.15 /var/www/download.zope.org/Zope2/index/2.13.15
 
 - update the visible releases on readthedocs.org at::
 
