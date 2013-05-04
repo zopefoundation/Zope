@@ -46,7 +46,7 @@ Features Added
   - AccessControl = 3.0.6
   - Acquisition = 4.0
   - DateTime = 4.0
-  - ExtensionClass = 4.0
+  - ExtensionClass = 4.1a1
   - docutils = 0.9.1
   - manuel = 1.6.0
   - Products.ZCatalog = 3.0
