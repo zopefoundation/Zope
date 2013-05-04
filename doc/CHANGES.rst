@@ -50,6 +50,7 @@ Features Added
   - docutils = 0.9.1
   - manuel = 1.6.0
   - Products.ZCatalog = 3.0
+  - Record = 3.0
 
 Restructuring
 +++++++++++++
