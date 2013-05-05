@@ -49,6 +49,7 @@ Features Added
   - ExtensionClass = 4.1a1
   - docutils = 0.9.1
   - manuel = 1.6.0
+  - Missing = 3.0
   - Products.ZCatalog = 3.0
   - Record = 3.0
 
