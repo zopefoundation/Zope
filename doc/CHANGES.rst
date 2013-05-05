@@ -52,6 +52,7 @@ Features Added
   - Missing = 3.0
   - Products.ZCatalog = 3.0
   - Record = 3.0
+  - ZopeUndo = 4.0
 
 Restructuring
 +++++++++++++
