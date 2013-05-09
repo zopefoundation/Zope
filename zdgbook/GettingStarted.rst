@@ -58,7 +58,7 @@ and create an instance, update buildout configuration file
   [buildout]
   parts = zope2
           instance
-  extends = http://download.zope.org/Zope2/index/2.13.7/versions.cfg
+  extends = http://download.zope.org/Zope2/index/2.13.20/versions.cfg
 
   [zope2]
   recipe = zc.recipe.egg
@@ -298,6 +298,7 @@ The final `buildout.cfg` will look like this.
   develop = ../poll.main
   parts = zope2
           instance
+  extends = http://download.zope.org/Zope2/index/2.13.20/versions.cfg
 
   [zope2]
   recipe = zc.recipe.egg
