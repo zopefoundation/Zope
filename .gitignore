@@ -8,3 +8,4 @@ parts
 *.pyc
 *.pyo
 *.so
+*.egg-info
