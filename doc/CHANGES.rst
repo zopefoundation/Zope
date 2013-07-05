@@ -8,6 +8,8 @@ http://docs.zope.org/zope2/
 2.12.28 (unreleased)
 --------------------
 
+- LP #1094049:  prevent zlib-based DoS when parsing the cookie containing
+  paste tokens.
 
 2.12.27 (2013-05-01)
 --------------------
