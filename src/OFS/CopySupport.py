@@ -23,7 +23,7 @@ from urllib import quote
 from urllib import unquote
 import warnings
 from zlib import compress
-from zlib import decompress
+from zlib import decompressobj
 import transaction
 
 from AccessControl import ClassSecurityInfo
@@ -647,8 +647,12 @@ def absattr(attr):
 def _cb_encode(d):
     return quote(compress(dumps(d), 9))
 
-def _cb_decode(s):
-    return loads(decompress(unquote(s)))
+def _cb_decode(s, maxsize=8192):
+    dec = decompressobj()
+    data = dec.decompress(unquote(s), maxsize)
+    if dec.unconsumed_tail:
+        raise ValueError
+    return loads(data)
 
 def cookie_path(request):
     # Return a "path" value for use in a cookie that refers

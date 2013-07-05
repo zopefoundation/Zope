@@ -8,6 +8,9 @@ http://docs.zope.org/zope2/
 2.13.21 (unreleased)
 --------------------
 
+- LP #1094049:  prevent zlib-based DoS when parsing the cookie containing
+  paste tokens.
+
 - Updated distributions:
 
   - AccessControl = 2.13.12
