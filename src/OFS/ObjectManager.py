@@ -310,6 +310,7 @@ class ObjectManager(CopyContainer,
             raise AttributeError, id
         return default
 
+    security.declareProtected(access_contents_information, 'hasObject')
     def hasObject(self, id):
         """Indicate whether the folder has an item by ID.
 
@@ -449,6 +450,7 @@ class ObjectManager(CopyContainer,
         # Return a tuple of mappings containing subobject meta-data
         return tuple(map(lambda dict: dict.copy(), self._objects))
 
+    security.declareProtected(access_contents_information, 'objectIds_d')
     def objectIds_d(self, t=None):
         if hasattr(self, '_reserved_names'): n=self._reserved_names
         else: n=()
@@ -459,9 +461,11 @@ class ObjectManager(CopyContainer,
             if id not in n: a(id)
         return r
 
+    security.declareProtected(access_contents_information, 'objectValues_d')
     def objectValues_d(self, t=None):
         return map(self._getOb, self.objectIds_d(t))
 
+    security.declareProtected(access_contents_information, 'objectItems_d')
     def objectItems_d(self, t=None):
         r=[]
         a=r.append
@@ -469,6 +473,7 @@ class ObjectManager(CopyContainer,
         for id in self.objectIds_d(t): a((id, g(id)))
         return r
 
+    security.declareProtected(access_contents_information, 'objectMap_d')
     def objectMap_d(self, t=None):
         if hasattr(self, '_reserved_names'): n=self._reserved_names
         else: n=()
@@ -479,6 +484,7 @@ class ObjectManager(CopyContainer,
             if d['id'] not in n: a(d.copy())
         return r
 
+    security.declareProtected(access_contents_information, 'superValues')
     def superValues(self, t):
         # Return all of the objects of a given type located in
         # this object and containing objects.
@@ -547,6 +553,7 @@ class ObjectManager(CopyContainer,
             return self.manage_main(self, REQUEST, update_menu=1)
 
 
+    security.declareProtected(access_contents_information, 'tpValues')
     def tpValues(self):
         # Return a list of subobjects, used by tree tag.
         r=[]
