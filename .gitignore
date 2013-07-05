@@ -9,3 +9,7 @@ parts
 *.pyo
 *.so
 *.egg-info
+.installed.cfg
+.mr.developer.cfg
+develop-eggs
+eggs
