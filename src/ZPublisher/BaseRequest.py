@@ -346,6 +346,7 @@ class BaseRequest:
             ob2 = adapter.publishTraverse(self, name)
 
         return ob2
+    traverseName__roles__ = ()
 
     def traverse(self, path, response=None, validated_hook=None):
         """Traverse the object space
