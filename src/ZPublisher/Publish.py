@@ -12,9 +12,10 @@
 ##############################################################################
 """Python Object Publisher -- Publish Python objects on web servers
 """
-
-import sys, os
+import os
+import sys
 import transaction
+from urlparse import urlparse
 
 from zExceptions import Redirect
 from zope.event import notify
@@ -96,8 +97,18 @@ def publish(request, module_name, after_list, debug=0,
         response=request.response
 
         # First check for "cancel" redirect:
-        if request_get('SUBMIT','').strip().lower()=='cancel':
-            cancel=request_get('CANCEL_ACTION','')
+        if request_get('SUBMIT', '').strip().lower() == 'cancel':
+            cancel = request_get('CANCEL_ACTION', '')
+            if cancel:
+                # Relative URLs aren't part of the spec, but are accepted by
+                # some browsers.
+                for part, base in zip(urlparse(cancel)[:3],
+                                      urlparse(request['BASE1'])[:3]):
+                    if not part:
+                        continue
+                    if not part.startswith(base):
+                        cancel = ''
+                        break
             if cancel:
                 raise Redirect, cancel
 
