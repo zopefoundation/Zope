@@ -8,6 +8,9 @@ http://docs.zope.org/zope2/
 2.13.21 (unreleased)
 --------------------
 
+- LP #1094221: add permissions to some unprotected methods of
+  ``OFS.ObjectManager``.
+
 - LP #1094049:  prevent zlib-based DoS when parsing the cookie containing
   paste tokens.
 
