@@ -8,6 +8,8 @@ http://docs.zope.org/zope2/
 2.12.28 (unreleased)
 --------------------
 
+- LP #1094144:  prevent arbitrary redirections via faked "CANCEL" buttons.
+
 - LP #1094221:  add permissions to some unprotected methods of
   ``OFS.ObjectManager``
 
