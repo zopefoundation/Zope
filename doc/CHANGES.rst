@@ -20,7 +20,7 @@ http://docs.zope.org/zope2/
 
 - Updated distributions:
 
-  - AccessControl = 2.13.12
+  - AccessControl = 2.13.13
 
 2.13.20 (2013-05-01)
 --------------------
