@@ -5,7 +5,7 @@ This file contains change information for the current Zope release.
 Change information for previous versions of Zope can be found at
 http://docs.zope.org/zope2/
 
-2.12.28 (unreleased)
+2.12.28 (2013-07-16)
 --------------------
 
 - LP #1095343: Prevent sandbox escape via ``BaseRequest.traverseName``.
