@@ -42,7 +42,7 @@ Steps for creating a new Zope 2 release
 
 - create the release specific download index on download.zope.org
   (requires login credentials on download.zope.org. In case of
-  problems contact Jens Vagelpohl)
+  problems contact the Zope Foundation's infrastructure team)
 
   - login to download.zope.org
 
