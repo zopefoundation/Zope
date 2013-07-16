@@ -1,4 +1,5 @@
 /.installed.cfg
+/.mr.developer.cfg
 /bin
 /build
 /develop
@@ -11,4 +12,3 @@
 /include/persistent
 *.egg-info
 *.py?
-.mr.developer.cfg
