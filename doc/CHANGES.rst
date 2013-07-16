@@ -8,14 +8,14 @@ http://docs.zope.org/zope2/
 2.12.28 (unreleased)
 --------------------
 
-- LP #1095343:  prevent sandbox escape via ``BaseRequest.traverseName``.
+- LP #1095343: Prevent sandbox escape via ``BaseRequest.traverseName``.
 
-- LP #1094144:  prevent arbitrary redirections via faked "CANCEL" buttons.
+- LP #1094144: Prevent arbitrary redirections via faked "CANCEL" buttons.
 
-- LP #1094221:  add permissions to some unprotected methods of
+- LP #1094221: Add permissions to some unprotected methods of
   ``OFS.ObjectManager``
 
-- LP #1094049:  prevent zlib-based DoS when parsing the cookie containing
+- LP #1094049: Prevent zlib-based DoS when parsing the cookie containing
   paste tokens.
 
 - Updated distributions:
@@ -25,7 +25,7 @@ http://docs.zope.org/zope2/
 2.12.27 (2013-05-01)
 --------------------
 
-- LP #1114688: Defend against minidom-based DoS in webdav.  (Patch from
+- LP #1114688: Defend against minidom-based DoS in webdav. (Patch from
   Christian Heimes).
 
 - LP #978980: Protect views of ZPT source with 'View Management Screens'
