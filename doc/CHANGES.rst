@@ -18,6 +18,10 @@ http://docs.zope.org/zope2/
 - LP #1094049:  prevent zlib-based DoS when parsing the cookie containing
   paste tokens.
 
+- Updated distributions:
+
+  - DateTime = 2.12.7
+
 2.12.27 (2013-05-01)
 --------------------
 
