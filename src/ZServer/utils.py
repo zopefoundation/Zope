@@ -26,8 +26,7 @@ def patchAsyncoreLogger():
     LOG = getLogger('ZServer')
 
     def log_info(self, message, type='info'):
-        if message[:14]=='adding channel' or \
-           message[:15]=='closing channel' or \
+        if message[:44]=='uncaptured python exception, closing channel' or \
            message == 'Computing default hostname':
             LOG.debug(message)
         else:
