@@ -235,6 +235,66 @@ class TestTraverse( unittest.TestCase ):
         self.assertTrue(
             self.folder1.unrestrictedTraverse( ('', 'folder1' ) ))
 
+    def testTraverseNameSpace( self ):
+        """ Test unrestrictedTraverse to a path that contains a namespace
+            adapter.
+        """
+        from OFS.SimpleItem import SimpleItem
+        from Testing.makerequest import makerequest
+        from zope import component
+        from zope import interface
+        from zope.publisher.interfaces.browser import IBrowserRequest
+        from zope.traversing.interfaces import ITraversable
+        from zope.traversing.namespace import namespaceLookup
+        from OFS.Traversable import Traversable
+
+        # First we create a dummy content type and its interface, against
+        # which the namespace adapter will be registered
+        class I(interface.Interface):
+            """Test interface"""
+
+        @interface.implementer(I)
+        class C(Traversable):
+            """ """
+
+        class NameSpaceAdapter(object):
+            def __init__(self, context, request=None):
+                self.context = context
+
+            def traverse(self, name, remaining):
+                return '42'
+
+        # Now we register the namespace adapter twice. Once without expecting a
+        # request object (i.e. providing IBrowserRequest) and once expecting
+        # it.
+        component.provideAdapter(
+            NameSpaceAdapter, (I,), ITraversable, 'norequest')
+
+        component.provideAdapter(
+            NameSpaceAdapter,
+            (I, IBrowserRequest), ITraversable, 'withrequest')
+
+        # Lets instantiate our object, give it a REQUEST attr and see if
+        # unrestrictedTraverse will call the NameSpaceAdapter with name
+        # 'withrequest'.
+        obj = C()
+        request = makerequest(self.app).REQUEST
+        obj.REQUEST = request
+
+        self.assertEquals(
+            obj.unrestrictedTraverse('++withrequest++number'),
+            '42')
+
+        # Now we remove the REQUEST attr. unrestrictedTraverse must now
+        # return the NameSpaceAdapter with name 'norequest'.
+        del obj.REQUEST
+        self.assertEquals(
+            namespaceLookup('norequest', 'number', obj), '42')
+
+        self.assertEquals(
+            obj.unrestrictedTraverse('++norequest++number'),
+            '42')
+
     def testTraverseURLNoSlash( self ):
         self.assertTrue( 'file' in self.folder1.objectIds() )
         self.assertTrue(
