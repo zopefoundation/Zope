@@ -173,11 +173,13 @@ def root_handler(config):
     # set up trusted proxies
     if config.trusted_proxies:
         from ZPublisher import HTTPRequest
+        from ZServer.medusa import http_server
         # DM 2004-11-24: added host name mapping (such that examples in
         # conf file really have a chance to work
         mapped = []
         for name in config.trusted_proxies: mapped.extend(_name2Ips(name))
         HTTPRequest.trusted_proxies = tuple(mapped)
+        http_server.trusted_proxies = tuple(mapped)
     
     # set the maximum number of ConflictError retries
     if config.max_conflict_retries:

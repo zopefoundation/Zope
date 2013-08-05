@@ -6,7 +6,7 @@
 #						 All Rights Reserved.
 #
 
-RCS_ID =  '$Id$'
+RCS_ID =  '$Id: http_server.py 121227 2011-04-03 16:39:36Z hannosch $'
 
 # python modules
 import os
@@ -39,6 +39,16 @@ from urllib import unquote
 # ===========================================================================
 #							Request Object
 # ===========================================================================
+
+# The trusted_proxies configuration setting contains a sequence
+# of front-end proxies that are trusted to supply an accurate
+# X_FORWARDED_FOR header. If a request comes from a trusted proxy
+# and contains an X_FORWARDED_FOR header, the address provided by
+# X_FORWARDED_FOR will be logged
+# The ZConfig machinery may sets this attribute on initialization
+# if any trusted-proxies
+
+trusted_proxies = []
 
 class http_request:
 
@@ -270,6 +280,12 @@ class http_request:
                tz_for_log
 
     def log (self, bytes):
+        origin = self.channel.addr[0]
+        if origin in trusted_proxies and self.get_header('x-forwarded-for'):
+            forwarded = self.get_header('x-forwarded-for')
+            forwarded = forwarded.split(',')[-1].strip()
+            if forwarded:
+                origin = forwarded
         user_agent=self.get_header('user-agent')
         if not user_agent: user_agent=''
         referer=self.get_header('referer')
@@ -288,7 +304,7 @@ class http_request:
                     name = t[0]
 
         self.channel.server.logger.log (
-            self.channel.addr[0],
+            origin,
             '- %s [%s] "%s" %d %d "%s" "%s"\n' % (
                 name,
                 self.log_date_string (time.time()),
