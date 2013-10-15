@@ -12,6 +12,10 @@ http://docs.zope.org/zope2/
   Please be aware that this only logs the real client ips to Z2.log,
   if you set you proxy as a trusted-proxy in zope.conf
 
+- Updated distributions:
+
+    - Products.ZCatalog = 2.13.24
+
 2.13.21 (2013-07-16)
 --------------------
 
