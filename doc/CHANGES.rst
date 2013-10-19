@@ -14,7 +14,7 @@ http://docs.zope.org/zope2/
 
 - Updated distributions:
 
-    - Products.ZCatalog = 2.13.25
+    - Products.ZCatalog = 2.13.26
 
 2.13.21 (2013-07-16)
 --------------------
