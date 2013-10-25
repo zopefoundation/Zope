@@ -1,11 +1,22 @@
 from unittest import TestCase, makeSuite
 
 import urllib
-from ZTUtils.Zope import make_query, complex_marshal
+from ZTUtils.Zope import make_query, complex_marshal, simple_marshal
 from ZTUtils.Zope import make_hidden_input
 from DateTime import DateTime
 
 class QueryTests(TestCase):
+
+    def testSimpleMarshal(self):
+        '''Simple Marshal Complete Test'''
+        self.assertEqual(simple_marshal('string') == '')
+        self.assertEqual(simple_marshal(True) == ':boolean')
+        self.assertEqual(simple_marshal(42) == ":int")
+        self.assertEqual(simple_marshal(3.1415) == ":float")
+        self.assertEqual(simple_marshal(DateTime()) == ":date")
+        self.assertEqual(simple_marshal(u'unicode') == '')  #Because this can be safely encoded to ASCII sting
+        self.assertEqual(simple_marshal(u'unic\xF3de') == ":utf8:ustring") #TODO - don't assume utf8
+        
 
     def testMarshallLists(self):
         '''Test marshalling lists'''
@@ -34,6 +45,7 @@ class QueryTests(TestCase):
                           ('record.arg1', ':date:list:record', test_date),
                           ('record.arg1', ':list:record', 'str'),
                           ('record.arg2', ':int:record', 1)]
+
 
     def testMakeComplexQuery(self):
         '''Test that make_query returns sane results'''
