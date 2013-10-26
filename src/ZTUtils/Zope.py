@@ -262,7 +262,7 @@ def complex_marshal(pairs):
 
     return pairs
 
-def simple_marshal(v):
+def simple_marshal(v, enc='utf8'):
     if isinstance(v, str):
         return ''
     if isinstance(v, bool):
@@ -273,6 +273,8 @@ def simple_marshal(v):
         return ':float'
     if isinstance(v, DateTime):
         return ':date'
+    if isinstance(v, unicode):
+        return ':%s:unicode' % (enc,)
     return ''
 
 def url_query(request, req_name="URL", omit=None):
