@@ -237,6 +237,9 @@ def complex_marshal(pairs):
         sublist = None
         if isinstance(v, str):
             pass
+        if isinstance(v, unicode):
+            m = simple_marshal(v, enc='utf8')
+            v = v.encode('utf8')
         elif hasattr(v, 'items'):
             sublist = []
             for sk, sv in v.items():
@@ -274,7 +277,7 @@ def simple_marshal(v, enc='utf8'):
     if isinstance(v, DateTime):
         return ':date'
     if isinstance(v, unicode):
-        return ':%s:unicode' % (enc,)
+        return ':%s:ustring' % (enc,)
     return ''
 
 def url_query(request, req_name="URL", omit=None):
