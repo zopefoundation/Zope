@@ -6,6 +6,13 @@ from ZTUtils.Zope import make_query, complex_marshal, simple_marshal
 from ZTUtils.Zope import make_hidden_input
 from DateTime import DateTime
 
+#mock ZTUtils.Zope._default_encoding to avoid config setup
+def _default_encoding(): 
+    return 'utf8'
+import ZTUtils.Zope
+ZTUtils.Zope._default_encoding = _default_encoding
+
+
 class QueryTests(TestCase):
 
     def testSimpleMarshal(self):
@@ -44,6 +51,22 @@ class QueryTests(TestCase):
                           ('record.arg1', ':list:record', 'str'),
                           ('record.arg2', ':int:record', 1)]
 
+    def testMarshallRecordsInLists(self):
+        '''Test marshalling records inside lists'''
+        test_date = DateTime()
+        record = {'arg1': [1, test_date, 'str'], 'arg2': 1}
+        test_list = ['top', record, 12]
+        result = complex_marshal([('list_key',test_list),])
+        self.maxDiff = 1000
+        self.assertEqual(result,
+                         [('list_key', ':list', 'top'),
+                          ('list_key.arg1', ':int:list:record:list', 1),
+                          ('list_key.arg1', ':date:list:record:list', test_date),
+                          ('list_key.arg1', ':list:record:list', 'str'),
+                          ('list_key.arg2', ':int:record:list', 1),
+                          ('list_key', ':int:list', 12)]
+                         )
+
     def testMakeComplexQuery(self):
         '''Test that make_query returns sane results'''
         test_date = DateTime()
@@ -78,67 +101,103 @@ class UnicodeQueryTests(TestCase):
     """Duplicating all tests under 'QueryTests' and include unicode handling"""
 
     def testSimpleMarshal(self):
-        self.fail('set zpublisher_default_encoding')
         self.assertEqual(simple_marshal(u'unic\xF3de'), ":utf8:ustring")
-        self.assertEqual(simple_marshal(u'unic\xF3de', enc='latin1'), ":latin1:ustring")
 
     def testMarshallLists(self):
         '''Test marshalling lists'''
         test_date = DateTime()
-        list_ = [1, test_date, 'str', u'unic\xF3de']
+        test_unicode =  u'unic\xF3de'
+        list_ = [1, test_date, 'str', test_unicode]
         result = complex_marshal([('list',list_),])
         assert result == [('list', ':int:list', 1),
                           ('list', ':date:list', test_date),
                           ('list', ':list', 'str'),
-                          ('list', ':utf8:ustring:list', u'unic\xF3de')]
-        self.fail('set zpublisher_default_encoding')
+                          ('list', ':utf8:ustring:list', test_unicode.encode('utf8'))]
 
     def testMarshallRecords(self):
         '''Test marshalling records'''
         test_date = DateTime()
-        record = {'arg1': 1, 'arg2': test_date, 'arg3': 'str', 'arg4': u'unic\xF3de' }
+        test_unicode =  u'unic\xF3de'
+        record = {'arg1': 1, 'arg2': test_date, 'arg3': 'str', 'arg4': test_unicode }
         result = complex_marshal([('record',record),])
         assert result == [('record.arg1', ':int:record', 1),
                           ('record.arg2', ':date:record', test_date),
                           ('record.arg3', ':record', 'str'),
-                          ('record.arg4', ':utf8:ustring:record', u'unic\xF3de')]
-        
-        self.fail('set zpublisher_default_encoding')
+                          ('record.arg4', ':utf8:ustring:record', test_unicode.encode('utf8'))]
 
     def testMarshalListsInRecords(self):
         '''Test marshalling lists inside of records'''
-        self.fail()
-
-    def testMakeComplexQuery(self):
-        """Test that make_query can handle unicode inside records and lists"""
         test_date = DateTime()
-        quote_date = urllib.quote(str(test_date))
-        test_ucode = u'unic\xF3de'
-        quote_ucode = urllib.quote(test_ucode.encode('utf8'))
+        test_unicode =  u'unic\xF3de'
+        record = {'arg1': [1, test_date, test_unicode], 'arg2': 1, 'arg3':  test_unicode}
+        result = complex_marshal([('record',record),])
+
+        expect = [('record.arg1', ':int:list:record', 1),
+                  ('record.arg1', ':date:list:record', test_date),
+                  ('record.arg1', ':utf8:ustring:list:record', test_unicode.encode('utf8')),
+                  ('record.arg2', ':int:record', 1),
+                  ('record.arg3', ':utf8:ustring:record', test_unicode.encode('utf8'))]
+
+        self.assertEqual(result, expect)
+
+    def testMakeQuery(self):
+        test_str = 'foo'
+        test_unicode = u'\u03dd\xf5\xf6'
+        query = make_query(str_key=test_str, unicode_key=test_unicode)
+        
+        expect = {'str_key': test_str,
+                  'unicode_key':  urllib.quote(test_unicode.encode('utf8'))
+                  }
+
+        result = parse_qs_nolist(query)
+        
+    def testMakeComplexQuery(self):
+        """Test that make_query returns sane results"""
+        test_date = DateTime()
+        test_unicode = u'unic\xF3de'
         test_int = 42
         test_str = 'str'
-        test_record = {'arg1': [test_int, test_str, test_ucode, test_date], 'arg2': test_ucode}
-        test_list = [test_int, test_string, test_ucode, test_date]
+        test_record = {'arg1': [test_int, test_str, test_unicode, test_date], 'arg2': test_unicode}
+        test_list = [test_int, test_str, test_unicode, test_date]
         
-        query = make_query(integer=test_int, date=test_date, recordkey=record,
-                           listing=list_, ustr=test_ucode, string=str_)
+        query = make_query(int_key=test_int, date_key=test_date,
+                           str_key=test_str, unicode_key=test_unicode, 
+                           record_key=test_record, list_key=test_list)
         
-        #consider urlparse.parse_qs and compare dictionaries
+        expect = {'int_key:int': str(test_int),
+                  'date_key:date':  str(test_date),
+                  'str_key': test_str,
+                  'unicode_key:utf8:ustring': test_unicode.encode('utf8'),
+                  'record_key.arg1:int:list:record': str(test_int),
+                  'record_key.arg1:list:record': test_str,
+                  'record_key.arg1:utf8:ustring:list:record':test_unicode.encode('utf8'),
+                  'record_key.arg1:date:list:record': str(test_date),
+                  'record_key.arg2:utf8:ustring:record': test_unicode.encode('utf8'),
+                  'list_key:int:list': str(test_int),
+                  'list_key:list': test_str,
+                  'list_key:utf8:ustring:list': test_unicode.encode('utf8'),
+                  'list_key:date:list': str(test_date)
+                  }
+
+        result = parse_qs_nolist(query)
         
-        assert query == 'integer:int=1'+ \
-                        '&date:date=%s' % (quote_date) + \
-                        '&listing:int:list=45' + \
-                          '&listing:list=str' + \
-                          '&listing:utf8:ustring=%s' % (quote_ucode,) + \
-                          '&listing:date:list=%s' % (quote_date,) + \
-                        '&string=str'+ \
-                        '&recordkey.arg1:int:list:record=%s' + \
-                        '&recordkey.arg1:list:record=str' + \
-                        '&recordkey.arg1:list:utf8:ustring=%s' % (quote_ucode) + \
-                        '&recordkey.arg1:date:list:record=%s' % (quote_date) + \
-                        '&recordkey.arg2:utf8:ustring:record=%s' % (quote_ucode) + \
-                        '&ustr=%s' % (quote_ucode)
-  
+        self.maxDiff=3000
+        self.assertEqual(expect, result)
+
+    def testMakeHiddenInput(self):
+        test_unicode = u'unic\xF3de'
+        quote_unicode = test_unicode.encode('utf8')
+        tag = make_hidden_input(foo=test_unicode)
+        #set 'zpublisher_default_encoding'  to utf8
+        self.assertEqual(tag, '<input type="hidden" name="foo:utf8:ustring" value="%s">' % (quote_unicode,))
+
+
+class DeeplyNestedComplexMarshal(TestCase):
+    pass
+
+
+class UnicodeEncodingTests(TestCase):
+    """ test behavior if encoding is specified """
     # def testMakeQueryUnicodeSpecifyEncoding(self):
     #     ''' test that makequery returns unicode strings using specified encoding '''
     #     formdata = {"string" : "str",
@@ -147,18 +206,20 @@ class UnicodeQueryTests(TestCase):
                                
     #     query = make_query_encoded(formdata, enc='latin1')
     #     self.assertEqual(query, "string=str&ustr:latin1:ustring=%", quote_ustr)
+    pass
 
-    def testMakeHiddenInput(self):
-        test_ucode = u'unic\xF3de'
-        quote_ucode = urllib.quote(test_ucode.encode('utf8'))
-        tag = make_hidden_input(foo=test_ucode)
-        #set 'zpublisher_default_encoding'  to utf8
-        self.assertEqual(tag, '<input type="hidden" name="foo:utf8:ustring" value="%s">' % (quote_ucode,))
-        self.fail('set zpublisher_default_encoding')
-        
+def parse_qs_nolist(qs):
+    '''turn list values retuned from urlparse.parse_qs into scalars'''
+    d = urlparse.parse_qs(qs)
+    for k in d:
+        d[k] = d[k][0]
+    return d
 
 def test_suite():
    return TestSuite((
            makeSuite(QueryTests),
            makeSuite(UnicodeQueryTests),
+           makeSuite(UnicodeEncodingTests),
            ))
+
+
