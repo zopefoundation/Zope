@@ -85,15 +85,18 @@ class QueryTests(TestCase):
     def testMarshallListsInLists(self):
         '''Test marshalling lists in lists'''
         #As you see, you cannot see the boundry between sub_list1 and sub_list2
+        #this is an 'oops'. There is no way to marshal this back into a list of lists
+        #Solution: Use a delimiter :)
         test_date = DateTime()
         sub_list = [1, test_date, 'str']
         sub_list2 = [42, test_date, '2ndstr']
-        list_ = [sub_list, sub_list2]
+        list_ = [sub_list,"delimiter ha!", sub_list2]
         result = complex_marshal([('lil',list_),])
         self.assertEqual(result,
                          [('lil', ':int:list:list', 1),
                           ('lil', ':date:list:list', test_date),
                           ('lil', ':list:list', 'str'),
+                          ('lil', ':list', 'delimiter ha!'),
                           ('lil', ':int:list:list', 42),
                           ('lil', ':date:list:list', test_date),
                           ('lil', ':list:list', '2ndstr')])
