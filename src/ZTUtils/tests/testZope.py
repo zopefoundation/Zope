@@ -67,6 +67,37 @@ class QueryTests(TestCase):
                           ('list_key', ':int:list', 12)]
                          )
 
+    def testMarshallRecordsInRecords(self):
+        '''Test marshalling records inside records'''
+        sub_record = {'sub1': 'deep', 'sub2': 1}
+        record = {'arg1':'top', 'arg2':sub_record, 'arg3':12}
+        result = complex_marshal([('r_record',record),])
+        self.maxDiff = 1000
+
+        #dictionaries dont' preserve order - use self.assertItemsEqual
+        self.assertItemsEqual(result,
+                              [('r_record.arg1', ':record', 'top'),
+                               ('r_record.arg2.sub1', ':record:record', 'deep'),
+                               ('r_record.arg2.sub2', ':int:record:record', 1),
+                               ('r_record.arg3', ':int:record', 12)]
+                              )
+
+    def testMarshallListsInLists(self):
+        '''Test marshalling lists in lists'''
+        #As you see, you cannot see the boundry between sub_list1 and sub_list2
+        test_date = DateTime()
+        sub_list = [1, test_date, 'str']
+        sub_list2 = [42, test_date, '2ndstr']
+        list_ = [sub_list, sub_list2]
+        result = complex_marshal([('lil',list_),])
+        self.assertEqual(result,
+                         [('lil', ':int:list:list', 1),
+                          ('lil', ':date:list:list', test_date),
+                          ('lil', ':list:list', 'str'),
+                          ('lil', ':int:list:list', 42),
+                          ('lil', ':date:list:list', test_date),
+                          ('lil', ':list:list', '2ndstr')])
+
     def testMakeComplexQuery(self):
         '''Test that make_query returns sane results'''
         test_date = DateTime()
