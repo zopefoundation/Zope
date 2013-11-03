@@ -226,9 +226,13 @@ class UnicodeQueryTests(TestCase):
         self.assertEqual(tag, '<input type="hidden" name="foo:utf8:ustring" value="%s">' % (quote_unicode,))
 
 
-class DeeplyNestedComplexMarshal(TestCase):
-    pass
+class ComplexMarshalRecursionTests(TestCase):
+    """Test using ComplexMarshal badly..."""
 
+    def testRecursionError(self):
+        list_=['a','b','c']
+        list_.append(list_)
+        self.assertRaises(RuntimeError, complex_marshal, [('this_is_bad', list_)])
 
 class UnicodeEncodingTests(TestCase):
     """ test behavior if encoding is specified """
@@ -254,6 +258,7 @@ def test_suite():
            makeSuite(QueryTests),
            makeSuite(UnicodeQueryTests),
            makeSuite(UnicodeEncodingTests),
+           makeSuite(ComplexMarshalRecursionTests),
            ))
 
 
