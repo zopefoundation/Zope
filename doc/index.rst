@@ -4,8 +4,8 @@ Zope 2.12 specific documentation
 
 .. Note::
 
-    The Zope 2.12.x release series is in security-fix-only mode. It will see
-    security fixes until October 2013, the same as Python 2.6.x does.
+    The Zope 2.12.x release series is no longer maintained and won't see
+    security fixes either anymore. Support ended in October 2013.
 
 Contents:
 
