@@ -19,6 +19,14 @@ Installation
 
 Follow the instructions in ``doc/INSTALL.rst`` to install Zope.
 
+If you do not have a source checkout with docs, you can find the latest
+install docs online at https://github.com/zopefoundation/Zope/blob/master/doc/INSTALL.rst
+
+Note that you *cannot* simply do ``easy_install zope2`` or
+``pip install zope2``, because you need specific versions of all
+dependencies. Follow the documentation to ensure you get the correct
+versions, or else installation is very likely to fail.
+
 License
 =======
 
