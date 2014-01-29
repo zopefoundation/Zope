@@ -838,21 +838,20 @@ class Image(File):
     security.declareProtected(View, 'tag')
     def tag(self, height=None, width=None, alt=None,
             scale=0, xscale=0, yscale=0, css_class=None, title=None, **args):
-        """
-        Generate an HTML IMG tag for this image, with customization.
-        Arguments to self.tag() can be any valid attributes of an IMG tag.
-        'src' will always be an absolute pathname, to prevent redundant
-        downloading of images. Defaults are applied intelligently for
-        'height', 'width', and 'alt'. If specified, the 'scale', 'xscale',
-        and 'yscale' keyword arguments will be used to automatically adjust
-        the output height and width values of the image tag.
+        #Generate an HTML IMG tag for this image, with customization.
+        #Arguments to self.tag() can be any valid attributes of an IMG tag.
+        #'src' will always be an absolute pathname, to prevent redundant
+        #downloading of images. Defaults are applied intelligently for
+        #'height', 'width', and 'alt'. If specified, the 'scale', 'xscale',
+        #and 'yscale' keyword arguments will be used to automatically adjust
+        #the output height and width values of the image tag.
 
-        Since 'class' is a Python reserved word, it cannot be passed in
-        directly in keyword arguments which is a problem if you are
-        trying to use 'tag()' to include a CSS class. The tag() method
-        will accept a 'css_class' argument that will be converted to
-        'class' in the output tag to work around this.
-        """
+        #Since 'class' is a Python reserved word, it cannot be passed in
+        #directly in keyword arguments which is a problem if you are
+        #trying to use 'tag()' to include a CSS class. The tag() method
+        #will accept a 'css_class' argument that will be converted to
+        #'class' in the output tag to work around this.
+
         if height is None: height=self.height
         if width is None:  width=self.width
 
