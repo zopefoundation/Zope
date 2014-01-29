@@ -29,7 +29,7 @@ setup(name='Zope2',
     description='Zope2 application server / web framework',
     author='Zope Foundation and Contributors',
     author_email='zope-dev@zope.org',
-    long_description=file("README.txt").read() + "\n" +
+    long_description=file("README.rst").read() + "\n" +
                      file(os.path.join("doc", "CHANGES.rst")).read(),
     classifiers=[
         'Development Status :: 6 - Mature',
