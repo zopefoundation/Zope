@@ -17,6 +17,7 @@ http://docs.zope.org/zope2/
 - Updated distributions:
 
     - Products.ZCatalog = 2.13.27
+    - Products.ZCTextIndex = 2.13.5
 
 2.13.21 (2013-07-16)
 --------------------
