@@ -6,6 +6,9 @@
 /develop-eggs
 /dist
 /eggs
+/include
+/lib
+/local
 /parts
 /include/Acquisition
 /include/ExtensionClass
