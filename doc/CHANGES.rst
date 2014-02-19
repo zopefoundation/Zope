@@ -5,14 +5,14 @@ This file contains change information for the current Zope release.
 Change information for previous versions of Zope can be found at
 http://docs.zope.org/zope2/
 
-2.13.22 (unreleased)
+2.13.22 (2014-02-19)
 --------------------
 
 - Merge hotfixes from https://pypi.python.org/pypi/Products.PloneHotfix20131210
 
 - LP #143352: Logging of client IP rather than the IP of the Proxy.
   Please be aware that this only logs the real client ips to Z2.log,
-  if you set you proxy as a trusted-proxy in zope.conf
+  if you set you proxy as a trusted-proxy in zope.conf.
 
 - Updated distributions:
 
