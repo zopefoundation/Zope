@@ -45,14 +45,6 @@ Steps for creating a new Zope release
 
     https://readthedocs.org/dashboard/zope/versions/
 
-- close the released milestone::
-
-    https://launchpad.net/zope2/+milestone/2.13.15/+addrelease
-
 - update the status of all bugs associated with the released milestone::
 
-    https://launchpad.net/zope2/+milestone/2.13.15
-
-- update launchpad. Create a new next milestone at::
-
-    https://launchpad.net/zope2/2.13/+addmilestone
+    https://launchpad.net/zope2/+milestone/2.13.x
