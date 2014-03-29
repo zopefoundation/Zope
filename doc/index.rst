@@ -1,6 +1,5 @@
-
-Zope 4.0 specific documentation
-===============================
+Zope documentation
+==================
 
 Contents:
 
@@ -15,5 +14,5 @@ Contents:
    SETUID.rst
    SIGNALS.rst
    DEBUGGING.rst
+   maintenance.rst
    CHANGES.rst
-

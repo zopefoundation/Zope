@@ -1,5 +1,5 @@
-Installing and Zope with ``zc.buildout``
-========================================
+Installing Zope with ``zc.buildout``
+====================================
 
 .. highlight:: bash
 

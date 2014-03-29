@@ -4,6 +4,7 @@
 /build
 /develop
 /develop-eggs
+/doc/.build
 /dist
 /eggs
 /parts
