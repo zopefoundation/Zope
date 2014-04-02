@@ -65,7 +65,7 @@ On Linux, this can be done as follows::
   $ wget http://pypi.python.org/packages/source/Z/Zope2/Zope2-<Zope version>.tar.gz
   $ tar xfvz Zope2-<Zope version>.tar.gz
   $ cd Zope2-<Zope version>
-  $ /path/to/your/python bootstrap/bootstrap.py
+  $ /path/to/your/python bootstrap.py
   $ bin/buildout
 
 
