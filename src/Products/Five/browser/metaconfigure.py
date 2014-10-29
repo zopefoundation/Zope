@@ -192,8 +192,14 @@ class IFiveViewDirective(IViewDirective):
 class view(zope.browserpage.metaconfigure.view):
 
     def __call__(self):
-        (_context, name, for_, permission, layer, class_,
-         allowed_interface, allowed_attributes) = self.args
+        if 7 == len(self.args) and isinstance(self.args[2], tuple):
+            # zope.browserpage 4.0.0 changd the format of the args
+            # See https://github.com/zopefoundation/zope.browserpage/commit/b368364f0ce3aef058cc143b2a06572a4666b65b#diff-9b57f9ca40ff82d7998207d13fdd4846L219
+            (_context, name, (for_, layer), permission, class_,
+             allowed_interface, allowed_attributes) = self.args
+        else:
+            (_context, name, for_, permission, layer, class_,
+             allowed_interface, allowed_attributes) = self.args
 
         name = str(name)  # De-unicode
 
