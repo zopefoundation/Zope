@@ -57,6 +57,8 @@ Features Added
 Restructuring
 +++++++++++++
 
+- Products.SiteErrorLog: Is now a separated package.
+
 - OFS: Removed duplicate code in ZopeFind and ZopeFindAndApply
 
 - Five: Removed obsolete metaclass.
