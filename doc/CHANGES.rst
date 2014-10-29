@@ -8,6 +8,11 @@ http://docs.zope.org/zope2/
 2.13.23 (unreleased)
 --------------------
 
+- LP #1387225:  Zope 2.13.x w/ zope.browserpage 4.x doesn't start.
+
+- LP #1387138:  Zope 2.13.x w/ zope.pagetemplate 4.x doesn't start.
+
+- LP #1386795: Fix ``zopectl start`` with zdaemon 3 and newer.
 
 2.13.22 (2014-02-19)
 --------------------
