@@ -16,11 +16,20 @@
 import sys
 import ExtensionClass
 import zope.pagetemplate.pagetemplate
-from zope.pagetemplate.pagetemplate import _error_start, PTRuntimeError
+from zope.pagetemplate.pagetemplate import PTRuntimeError
 from zope.pagetemplate.pagetemplate import PageTemplateTracebackSupplement
 from zope.tales.expressions import SimpleModuleImporter
 from Products.PageTemplates.Expressions import getEngine
 
+# Newer versions of zope.pagetemplate have this symbol as an instance method
+try:
+    from zope.pagetemplate.pagetemplate import _error_start
+except ImportError:
+    if hasattr(zope.pagetemplate.pagetemplate.PageTemplate, '_error_start'):
+        _error_start = zope.pagetemplate.pagetemplate.PageTemplate._error_start
+    else:
+        _error_start = '<!-- Page Template Diagnostics'
+    
 
 class PageTemplate(ExtensionClass.Base,
                    zope.pagetemplate.pagetemplate.PageTemplate):
