@@ -336,7 +336,8 @@ class ImageTests(FileTests):
           ('<img src="http://foo/file" alt="" title="" height="16" width="16" />'))
 
     def testTag(self):
-        tag_fmt = '<img src="http://foo/file" alt="%s" title="%s" height="16" width="16" />'
+        tag_fmt = ('<img src="http://foo/file" alt="%s" title="%s" '
+                   'height="16" width="16" />')
         self.assertEqual(self.file.tag(), (tag_fmt % ('','')))
         self.file.manage_changeProperties(title='foo')
         self.assertEqual(self.file.tag(), (tag_fmt % ('','foo')))
@@ -357,8 +358,13 @@ class ImageTests(FileTests):
 class ImagePublishTests(Testing.ZopeTestCase.FunctionalTestCase):
     def testTagSafe(self):
         self.app.manage_addImage("image", "")
-        res = self.publish("/image/tag?height=0&width=0&css_class=%22%3E%3Cscript%20type%3D%22text%2Fjavascript%22%3Ealert('evil')%3B%3C%2Fscript%3E%3Cdiv%20class%3D%22")
-        self.assertNotIn('<script type="text/javascript">alert(\'evil\');</script>', res.getBody())
+        res = self.publish(
+            "/image/tag?height=0&width=0&css_class=%22%3E%3Cscript%20type"
+            "%3D%22text%2Fjavascript%22%3Ealert('evil')%3B%3C%2Fscript"
+            "%3E%3Cdiv%20class%3D%22")
+        self.assertFalse(
+            '<script type="text/javascript">alert(\'evil\');</script>'
+                in res.getBody())
 
 
 def test_suite():
