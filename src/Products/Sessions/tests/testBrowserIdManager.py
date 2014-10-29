@@ -14,7 +14,7 @@
 Test suite for session id manager.
 """
 import unittest
-import Testing
+import Testing.ZopeTestCase
 
 class TestBrowserIdManager(unittest.TestCase):
 
@@ -646,13 +646,14 @@ class TestBrowserIdManagerTraverser(unittest.TestCase):
 class TestBrowserIdManagerPublish(Testing.ZopeTestCase.FunctionalTestCase):
 
     def test_encodeUrl_safe(self):
-        from OFS.Application import AppInitializer
-        init = AppInitializer(self.app)
-        init.install_browser_id_manager()
+        from Products.Sessions.BrowserIdManager import BrowserIdManager
+        if not hasattr(self.app, 'browser_id_manager'):
+            bid = BrowserIdManager('browser_id_manager', 'Browser Id Manager')
+            self.app._setObject('browser_id_manager', bid)
 
         res = self.publish(
             '/browser_id_manager/encodeUrl?url=%3Chtml%3EEVIL%2Fhtml%3E%3C!--')
-        self.assertNotIn("<html>EVIL/html>", res.getBody())
+        self.assertFalse("<html>EVIL/html>" in res.getBody())
 
 
 class DummyObject:
