@@ -26,7 +26,9 @@ Options:
 -l/--logfile -- log file to be read by logtail command
 -u/--user -- run the daemon manager program as this user (or numeric id)
 -m/--umask -- provide octal umask for files created by the managed process
+-T/--start-timeout SECONDS -- Start timeout when a test program is used
 -s/--socket-name -- socket between zopectl and zdrun
+
 action [arguments] -- see below
 
 Actions are commands like "start", "stop" and "status".  If -i is
@@ -147,6 +149,8 @@ class ZopeCtlOptions(ZDOptions):
         self.add("interactive", None, "i", "interactive", flag=1)
         self.add("default_to_interactive", "runner.default_to_interactive",
                  default=1)
+        self.add("start_timeout", "runner.start_timeout",
+                 "T:", "start-timeout=", int, default=300)
         self.add("logfile", None, "l:", "logfile=")
         self.add("user", "runner.user", "u:", "user=")
         self.add("prompt", "runner.prompt", default="zopectl>")
