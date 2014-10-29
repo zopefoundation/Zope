@@ -25,10 +25,9 @@ from Products.PageTemplates.Expressions import getEngine
 try:
     from zope.pagetemplate.pagetemplate import _error_start
 except ImportError:
-    if hasattr(zope.pagetemplate.pagetemplate.PageTemplate, '_error_start'):
-        _error_start = zope.pagetemplate.pagetemplate.PageTemplate._error_start
-    else:
-        _error_start = '<!-- Page Template Diagnostics'
+    _error_start = getattr(
+        zope.pagetemplate.pagetemplate.PageTemplate, '_error_start', 
+        '<!-- Page Template Diagnostics')
     
 
 class PageTemplate(ExtensionClass.Base,
