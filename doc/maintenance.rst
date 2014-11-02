@@ -16,6 +16,7 @@ The following persons have access to the ``Zope2`` package on PyPI
 (in order to release new versions):
 
 - Hanno Schlichting
+- Tres Seaver
 
 Steps for creating a new Zope release
 +++++++++++++++++++++++++++++++++++++
