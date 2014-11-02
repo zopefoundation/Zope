@@ -52,7 +52,7 @@ Features Added
   - manuel = 1.6.0
   - Missing = 3.0
   - Persistence = 3.0a1
-  - Products.ZCatalog = 3.0.2
+  - Products.ZCatalog = 3.1
   - Record = 3.0
   - ZopeUndo = 4.0
 
