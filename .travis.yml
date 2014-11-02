@@ -12,4 +12,4 @@ install:
     - bin/buildout
 
 script:
-    - bin/test
+    - bin/alltests -v
