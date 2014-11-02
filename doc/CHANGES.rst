@@ -43,14 +43,15 @@ Features Added
 
 - Updated distributions:
 
-  - AccessControl = 3.0.8
-  - Acquisition = 4.0
+  - AccessControl = 3.0.9
+  - Acquisition = 4.0.1
+  - BTrees = 4.0.8
   - DateTime = 4.0.1
   - ExtensionClass = 4.1a1
   - docutils = 0.9.1
   - manuel = 1.6.0
   - Missing = 3.0
-  - Products.ZCatalog = 3.0.1
+  - Products.ZCatalog = 3.0.2
   - Record = 3.0
   - ZopeUndo = 4.0
 
