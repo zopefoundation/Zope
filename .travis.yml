@@ -4,8 +4,7 @@ python:
     - "2.7"
 
 notifications:
-  email:
-    - hanno@hannosch.eu
+  email: false
 
 install:
     - python bootstrap.py
