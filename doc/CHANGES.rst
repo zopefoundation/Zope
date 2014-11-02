@@ -44,7 +44,7 @@ Features Added
 - Updated distributions:
 
   - AccessControl = 3.0.9
-  - Acquisition = 4.0.2
+  - Acquisition = 4.0.3
   - BTrees = 4.0.8
   - DateTime = 4.0.1
   - ExtensionClass = 4.1a1
