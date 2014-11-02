@@ -38,8 +38,8 @@ class Script(SimpleItem, BindingsUI):
     security = ClassSecurityInfo()
 
     index_html = None
-    func_defaults=()
-    func_code=None
+    func_defaults = __defaults__ = ()
+    func_code = __code__ = None
 
     _Bindings_ns_class = TemplateDict
 

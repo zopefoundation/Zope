@@ -51,8 +51,8 @@ class PageTemplateFile(SimpleItem, Script, PageTemplate, Traversable):
 
     meta_type = 'Page Template (File)'
 
-    func_defaults = None
-    func_code = FuncCode((), 0)
+    func_defaults = __defaults__ = None
+    func_code = __code__ = FuncCode((), 0)
     _v_last_read = 0
 
     # needed by AccessControl.class_init.InitializeClass
