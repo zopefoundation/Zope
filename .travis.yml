@@ -4,7 +4,8 @@ python:
     - "2.7"
 
 notifications:
-  email: false
+  email:
+    zope-dev@zope.org
 
 install:
     - python bootstrap.py
