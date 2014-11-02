@@ -75,8 +75,8 @@ except ImportError:
     from urllib2 import urlopen
 
 ez = {}
-exec(urlopen('https://bitbucket.org/pypa/setuptools/downloads/ez_setup.py'
-            ).read(), ez)
+exec(urlopen('https://bootstrap.pypa.io/ez_setup.py').read(), ez)
+
 if not options.allow_site_packages:
     # ez_setup imports site, which adds site packages
     # this will remove them from the path to ensure that incompatible versions 
@@ -158,8 +158,7 @@ cmd.append(requirement)
 import subprocess
 if subprocess.call(cmd, env=dict(os.environ, PYTHONPATH=setuptools_path)) != 0:
     raise Exception(
-        "Failed to execute command:\n%s",
-        repr(cmd)[1:-1])
+        "Failed to execute command:\n%s" % repr(cmd)[1:-1])
 
 ######################################################################
 # Import and run buildout
