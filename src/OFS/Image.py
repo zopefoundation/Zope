@@ -44,6 +44,9 @@ from OFS.PropertyManager import PropertyManager
 from OFS.role import RoleManager
 from OFS.SimpleItem import Item_w__name__
 
+from OFS.History import Historical
+from OFS.History import html_diff
+
 from zope.event import notify
 from zope.lifecycleevent import ObjectModifiedEvent
 from zope.lifecycleevent import ObjectCreatedEvent
@@ -87,7 +90,7 @@ def manage_addFile(self, id, file='', title='', precondition='',
 
 
 class File(Persistent, Implicit, PropertyManager,
-           RoleManager, Item_w__name__, Cacheable):
+           RoleManager, Item_w__name__, Historical, Cacheable):
     """A File object is a content object for arbitrary files."""
 
     implements(implementedBy(Persistent),
@@ -125,6 +128,7 @@ class File(Persistent, Implicit, PropertyManager,
         + RoleManager.manage_options
         + Item_w__name__.manage_options
         + Cacheable.manage_options
+        + Historical.manage_options
         )
 
     _properties=({'id':'title', 'type': 'string'},
@@ -499,6 +503,21 @@ class File(Persistent, Implicit, PropertyManager,
         if REQUEST:
             message="Saved changes."
             return self.manage_main(self,REQUEST,manage_tabs_message=message)
+
+    def manage_historyCompare(self, rev1, rev2, REQUEST,
+                              historyComparisonResults=''):
+        if self.content_type and ((
+                self.content_type.startswith('text') or
+                self.content_type.endswith('javascript'))
+                and self.get_size() < 65536):
+            return File.inheritedAttribute('manage_historyCompare')(
+                self, rev1, rev2, REQUEST,
+                historyComparisonResults=html_diff(
+                    str(rev1.data),
+                    str(rev2.data)))
+        return File.inheritedAttribute('manage_historyCompare')(
+            self, rev1, rev2, REQUEST,
+            historyComparisonResults=historyComparisonResults)
 
     def _get_content_type(self, file, body, id, content_type=None):
         headers=getattr(file, 'headers', None)

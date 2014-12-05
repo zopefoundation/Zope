@@ -302,6 +302,16 @@ class FileTests(unittest.TestCase):
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0][1], self.file)
 
+    def testHistoryCompare(self):
+        self.file.manage_edit('a', 'text/plain',
+                              filedata='a')
+        getattr(self.app, self.factory)('b',
+                file='b', content_type='text/plain')
+        self.file.manage_historyCompare(
+            self.file,
+            self.app.b,
+            self.app.REQUEST)
+
     def test_interfaces(self):
         from zope.interface.verify import verifyClass
         from OFS.Image import File
