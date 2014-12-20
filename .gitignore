@@ -13,3 +13,5 @@ parts
 .mr.developer.cfg
 develop-eggs
 eggs
+doc/.build/
+include/
