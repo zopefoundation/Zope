@@ -187,3 +187,12 @@ used to automate this whole process.
 
 After installation, refer to :doc:`operation` for documentation on
 configuring and running Zope.
+
+
+Building the documentation with ``Sphinx``
+------------------------------------------
+
+To build the HTML documentation, run the :command:`make-docs` script (installed
+by the buildout)::
+
+   $ bin/make-docs
