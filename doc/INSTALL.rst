@@ -57,16 +57,31 @@ steps:
 
   __ http://pypi.python.org/pypi/Zope2
 
-- Bootstrap the buildout
+- If your Python has ``setuptools`` installed, create a virtual environment
+  *without setuptools* (newer ``setuptools`` versions in the base Python
+  break the version of buildout we use).
+
+- Bootstrap the buildout using the virtual environment's Python.
 
 - Run the buildout
 
 On Linux, this can be done as follows::
 
-  $ wget http://pypi.python.org/packages/source/Z/Zope2/Zope2-<Zope version>.tar.gz
+  $ wget https://pypi.python.org/packages/source/Z/Zope2/Zope2-<Zope version>.tar.gz
   $ tar xfvz Zope2-<Zope version>.tar.gz
   $ cd Zope2-<Zope version>
+
+Then, either::
+
   $ /path/to/your/python bootstrap/bootstrap.py
+
+or (if you have ``setuptools`` installed already)::
+
+  $ /path/to/your/virtualenv --no-setuptools .
+  $ bin/python bootstrap/bootstrap.py
+
+Finally::
+
   $ bin/buildout
 
 
@@ -166,9 +181,9 @@ An example session::
    $ mkdir /path/to/instance
    $ cd /path/to/instance
    $ mkdir etc logs var
-   $ wget http://svn.zope.org/zc.buildout/trunk/bootstrap/bootstrap.py
+   $ wget https://svn.zope.org/zc.buildout/trunk/bootstrap/bootstrap.py
    $ vi buildout.cfg
-   $ /path/to/your/python bootstrap.py
+   $ /path/to/your/python bootstrap.py  # assumes no setuptools installed
    $ bin/buildout
    $ cat eggs/Zope2--*/Zope2/utilities/skel/etc/zope.conf.in > etc/zope.conf
    $ vi etc/zope.conf  # replace <<INSTANCE_HOME>> with buildout directory
