@@ -1,7 +1,7 @@
 include *.txt
 include *.rst
 
-recursive-include doc *
+recursive-include docs *
 recursive-include src *
 
 global-exclude *.dll

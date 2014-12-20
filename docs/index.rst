@@ -15,4 +15,4 @@ Contents:
    SIGNALS.rst
    DEBUGGING.rst
    maintenance.rst
-   CHANGES.rst
+   changes.rst

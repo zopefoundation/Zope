@@ -8,8 +8,8 @@ Zope2 is an open-source web application server.
 This document provides some general information about Zope2 and provides
 links to other documents.
 
-Installation information can be found in ``doc/INSTALL.rst``.  Other
-documentation is also in the "doc" directory and in the zope.org
+Installation information can be found in ``docs/INSTALL.rst``.  Other
+documentation is also in the "docs" directory and in the zope.org
 documentation section at http://docs.zope.org/ .
 
 General Zope information is available at http://www.zope.org/
@@ -17,10 +17,11 @@ General Zope information is available at http://www.zope.org/
 Installation
 ============
 
-Follow the instructions in ``doc/INSTALL.rst`` to install Zope.
+Follow the instructions in ``docs/INSTALL.rst`` to install Zope.
 
 If you do not have a source checkout with docs, you can find the latest
-install docs online at https://github.com/zopefoundation/Zope/blob/master/doc/INSTALL.rst
+install docs online at
+https://github.com/zopefoundation/Zope/blob/master/docs/INSTALL.rst
 
 Note that you *cannot* simply do ``easy_install zope2`` or
 ``pip install zope2``, because you need specific versions of all

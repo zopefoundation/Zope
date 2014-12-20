@@ -153,7 +153,7 @@ Troubleshooting
   you built Python from source all the configuration information
   should already be available.
 
-- See the :doc:`CHANGES` for important notes on this version of Zope.
+- See the :doc:`changes` for important notes on this version of Zope.
 
 
 
