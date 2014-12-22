@@ -1,8 +1,12 @@
 include *.txt
 include *.rst
+include *.cfg
+exclude .*.cfg
 
 recursive-include docs *
 recursive-include src *
+
+prune docs/.build
 
 global-exclude *.dll
 global-exclude *.pyc
