@@ -163,6 +163,10 @@ class DebugManager(Item, Implicit):
         # return class reference info
         counts = {}
         for m in sys.modules.values():
+            if m is None:
+                continue
+            if m.__name__.startswith('six'):
+                continue
             for sym in dir(m):
                 ob = getattr(m, sym)
                 if type(ob) in t:
