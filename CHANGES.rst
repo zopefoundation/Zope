@@ -11,6 +11,9 @@ http://docs.zope.org/zope2/
 Bugs Fixed
 ++++++++++
 
+- Issue #16: prevent leaked connections when broken ``EndRequestEvent``
+  subscribers raise exceptions.
+
 - Ensure that the ``WSGIPublisher`` begins and ends an *interaction*
   at the request/response barrier. This is required for instance for
   the ``checkPermission`` call to function without an explicit
