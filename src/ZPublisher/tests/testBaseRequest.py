@@ -424,6 +424,22 @@ class TestBaseRequest(unittest.TestCase, BaseRequest_factory):
         r = self._makeOne(root)
         self.assertRaises(NotFound, r.traverse, 'folder/simpleFrozenSet')
 
+    def test_close_w_broken_subscriber(self):
+        # See: https://github.com/zopefoundation/Zope/issues/16
+        from zope.event import subscribers
+        root, folder = self._makeRootAndFolder()
+        r = self._makeOne(root)
+        r.other['foo'] = 'Foo'
+        BEFORE = subscribers[:]
+        def _broken(event):
+            raise ValueError("I'm broken")
+        subscribers.append(_broken)
+        try:
+            self.assertRaises(ValueError, r.close)
+        finally:
+            subscribers[:] = BEFORE
+        self.assertEqual(r.other, {})
+
     def test_hold_after_close(self):
         # Request should no longer accept holds after it has been closed
         root, folder = self._makeRootAndFolder()
