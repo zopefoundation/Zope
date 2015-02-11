@@ -38,9 +38,9 @@ Bug tracker
 ===========
 
 Bugs reports should be made through the Zope bugtracker at
-https://bugs.launchpad.net/zope2.  A bug report should contain detailed
-information about how to reproduce the bug, error messages (see
-``/error_log`` within the ZMI or ``var/event.log``).
+https://github.com/zopefoundation/Zope/issues.  A bug report should
+contain detailed information about how to reproduce the bug, error messages
+(see ``/error_log`` within the ZMI or ``var/event.log``).
 
 Mailing list
 ============
