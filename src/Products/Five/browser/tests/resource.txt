@@ -69,6 +69,17 @@ PageTemplateResource's __call__ renders the template
   ...     if not isinstance(resource, PageTemplateResource):
   ...         self.assertEquals(resource(), base_url % r)
 
+Missing resources   
+~~~~~~~~~~~~~~~~~
+
+Looking up a missing resource raises a ``KeyError``, which the publisher
+then maps onto an HTTP 404 ("Not Found") response:
+
+  >>> self.folder.unrestrictedTraverse('testoid/++resource++nonesuch.txt')
+  Traceback (most recent call last):
+  ...
+  KeyError: ...
+
 Clean up
 --------
 
