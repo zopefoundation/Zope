@@ -11,6 +11,9 @@ http://docs.zope.org/zope2/
 Bugs Fixed
 ++++++++++
 
+- Queue additional warning filters at the beginning of the queue in order to
+  allow overrides.
+
 - Issue #16: prevent leaked connections when broken ``EndRequestEvent``
   subscribers raise exceptions.
 
