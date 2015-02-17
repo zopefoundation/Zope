@@ -51,5 +51,5 @@ def warning_filter_handler(section):
     import warnings
     # add the warning filter
     warnings.filterwarnings(section.action, section.message, section.category,
-                            section.module, section.lineno, 1)
+                            section.module, section.lineno)
     return section

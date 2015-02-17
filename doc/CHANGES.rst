@@ -8,6 +8,9 @@ http://docs.zope.org/zope2/
 2.13.23 (unreleased)
 --------------------
 
+- Fix: Queue additional warning filters at the beginning of the queue in order
+  to allow overrides.
+
 - Issue #16:  prevent leaked connections when broken ``EndRequestEvent``
   subscribers raise exceptions.
 
