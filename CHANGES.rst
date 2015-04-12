@@ -11,6 +11,12 @@ http://docs.zope.org/zope2/
 Bugs Fixed
 ++++++++++
 
+- Queue additional warning filters at the beginning of the queue in order to
+  allow overrides.
+
+- Issue #16: prevent leaked connections when broken ``EndRequestEvent``
+  subscribers raise exceptions.
+
 - Ensure that the ``WSGIPublisher`` begins and ends an *interaction*
   at the request/response barrier. This is required for instance for
   the ``checkPermission`` call to function without an explicit
@@ -43,19 +49,25 @@ Features Added
 
 - Updated distributions:
 
-  - AccessControl = 3.0.8
-  - Acquisition = 4.0
+  - AccessControl = 3.0.11
+  - Acquisition = 4.0.3
+  - BTrees = 4.0.8
   - DateTime = 4.0.1
   - ExtensionClass = 4.1a1
   - docutils = 0.9.1
   - manuel = 1.6.0
   - Missing = 3.0
-  - Products.ZCatalog = 3.0.1
+  - Persistence = 3.0a1
+  - Products.ExternalMethod = 2.13.1
+  - Products.MailHost = 2.13.2
+  - Products.ZCatalog = 3.1
   - Record = 3.0
   - ZopeUndo = 4.0
 
 Restructuring
 +++++++++++++
+
+- Products.SiteErrorLog: Is now a separated package.
 
 - OFS: Removed duplicate code in ZopeFind and ZopeFindAndApply
 

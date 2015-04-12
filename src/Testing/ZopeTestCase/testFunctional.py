@@ -30,6 +30,14 @@ from DocumentTemplate.permissions import change_dtml_documents
 from StringIO import StringIO
 from urllib import urlencode
 
+REDIRECT_DTML = '''\
+<dtml-call "RESPONSE.redirect('%s')">'''
+
+SET_COOKIE_DTML = '''\
+<dtml-call "RESPONSE.setCookie('foo', 'Bar', path='/')">'''
+
+CHANGE_TITLE_DTML = '''\
+<dtml-call "manage_changeProperties(title=REQUEST.get('title'))">'''
 
 class TestFunctional(ZopeTestCase.FunctionalTestCase):
 
@@ -45,16 +53,14 @@ class TestFunctional(ZopeTestCase.FunctionalTestCase):
         self.folder.secret_html.manage_permission(view, ['Owner'])
 
         # A method redirecting to the Zope root
-        redirect = '''<dtml-call "RESPONSE.redirect('%s')">''' % self.app.absolute_url()
-        self.folder.addDTMLMethod('redirect', file=redirect)
+        self.folder.addDTMLMethod(
+            'redirect', file=REDIRECT_DTML % self.app.absolute_url())
 
         # A method setting a cookie
-        set_cookie = '''<dtml-call "RESPONSE.setCookie('foo', 'Bar', path='/')">'''
-        self.folder.addDTMLMethod('set_cookie', file=set_cookie)
+        self.folder.addDTMLMethod('set_cookie', file=SET_COOKIE_DTML)
 
         # A method changing the title property of an object
-        change_title = '''<dtml-call "manage_changeProperties(title=REQUEST.get('title'))">'''
-        self.folder.addDTMLMethod('change_title', file=change_title)
+        self.folder.addDTMLMethod('change_title', file=CHANGE_TITLE_DTML)
 
     def testPublishFolder(self):
         response = self.publish(self.folder_path)
@@ -71,14 +77,16 @@ class TestFunctional(ZopeTestCase.FunctionalTestCase):
         self.assertEqual(response.getStatus(), 401)
 
     def testBasicAuth(self):
-        response = self.publish(self.folder_path+'/secret_html', self.basic_auth)
+        response = self.publish(self.folder_path+'/secret_html',
+                                self.basic_auth)
         self.assertEqual(response.getStatus(), 200)
         self.assertEqual(response.getBody(), 'secret')
 
     def testRedirect(self):
         response = self.publish(self.folder_path+'/redirect')
         self.assertEqual(response.getStatus(), 302)
-        self.assertEqual(response.getHeader('Location'), self.app.absolute_url())
+        self.assertEqual(response.getHeader('Location'),
+                         self.app.absolute_url())
 
     def testCookie(self):
         response = self.publish(self.folder_path+'/set_cookie')
@@ -90,9 +98,9 @@ class TestFunctional(ZopeTestCase.FunctionalTestCase):
         # Change the title of a document
         self.setPermissions([manage_properties])
 
+        path = self.folder_path + '/index_html/change_title?title=Foo'
         # Note that we must pass basic auth info
-        response = self.publish(self.folder_path+'/index_html/change_title?title=Foo',
-                                self.basic_auth)
+        response = self.publish(path, self.basic_auth)
 
         self.assertEqual(response.getStatus(), 200)
         self.assertEqual(self.folder.index_html.title_or_id(), 'Foo')
@@ -179,4 +187,3 @@ def test_suite():
     suite = TestSuite()
     suite.addTest(makeSuite(TestFunctional))
     return suite
-

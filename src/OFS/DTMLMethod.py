@@ -64,7 +64,7 @@ class DTMLMethod(RestrictedDTML,
     # Documents masquerade as functions:
     class func_code:
         pass
-    func_code = func_code()
+    func_code = __code__ = func_code()
     func_code.co_varnames = 'self', 'REQUEST', 'RESPONSE'
     func_code.co_argcount = 3
 

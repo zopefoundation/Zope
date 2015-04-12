@@ -353,8 +353,22 @@ class ImageTests(FileTests):
 
         verifyClass(IWriteLock, Image)
 
+
+class ImagePublishTests(Testing.ZopeTestCase.FunctionalTestCase):
+    def testTagSafe(self):
+        self.app.manage_addImage("image", "")
+        res = self.publish(
+            "/image/tag?height=0&width=0&css_class=%22%3E%3Cscript%20type"
+            "%3D%22text%2Fjavascript%22%3Ealert('evil')%3B%3C%2Fscript"
+            "%3E%3Cdiv%20class%3D%22")
+        self.assertFalse(
+            '<script type="text/javascript">alert(\'evil\');</script>'
+                in res.getBody())
+
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(FileTests),
         unittest.makeSuite(ImageTests),
+        unittest.makeSuite(ImagePublishTests)
         ))

@@ -265,8 +265,7 @@ class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
     
     security.declareProtected(ACCESS_CONTENTS_PERM, 'encodeUrl')
     def encodeUrl(self, url, style='querystring', create=1):
-        """ See IBrowserIdManager.
-        """
+        # See IBrowserIdManager
         bid = self.getBrowserId(create)
         if bid is None:
             raise BrowserIdManagerErr('There is no current browser id.')

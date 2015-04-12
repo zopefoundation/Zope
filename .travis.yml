@@ -5,11 +5,11 @@ python:
 
 notifications:
   email:
-    - hanno@hannosch.eu
+    zope-dev@zope.org
 
 install:
     - python bootstrap.py
     - bin/buildout
 
 script:
-    - bin/test
+    - bin/alltests -v

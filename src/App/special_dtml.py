@@ -36,12 +36,14 @@ class HTML(DocumentTemplate.HTML,Persistence.Persistent,):
 class ClassicHTMLFile(DocumentTemplate.HTMLFile,MethodObject.Method,):
     "Persistent HTML Document Templates read from files"
 
-    class func_code: pass
-    func_code=func_code()
-    func_code.co_varnames='trueself', 'self', 'REQUEST'
-    func_code.co_argcount=3
-    _need__name__=1
-    _v_last_read=0
+    class func_code:
+        pass
+
+    func_code = __code__ = func_code()
+    func_code.co_varnames = 'trueself', 'self', 'REQUEST'
+    func_code.co_argcount = 3
+    _need__name__ = 1
+    _v_last_read = 0
 
     def __init__(self, name, _prefix=None, **kw):
         if _prefix is None:
@@ -92,8 +94,8 @@ from ComputedAttribute import ComputedAttribute
 class DTMLFile(Bindings, Explicit, ClassicHTMLFile):
     "HTMLFile with bindings and support for __render_with_namespace__"
 
-    func_code = None
-    func_defaults = None
+    func_code = __code__ = None
+    func_defaults = __defaults__ = None
     _need__name__=1
 
     _Bindings_ns_class = TemplateDict

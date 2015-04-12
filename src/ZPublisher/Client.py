@@ -63,7 +63,7 @@ class Function:
             headers['Host']=urlparse(url)[1]
         self.func_name=url[url.rfind('/')+1:]
         self.__dict__['__name__']=self.func_name
-        self.func_defaults=()
+        self.func_defaults = self.__defaults__ = ()
 
         self.args=arguments
 

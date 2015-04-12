@@ -138,7 +138,7 @@ Test setting cookies
   HTTP/1.1 200 OK
   Content-Length: 0
   ...
-  Set-Cookie: cookie_test="OK"
+  Set-Cookie: foo="Bar"; Path=/
   <BLANKLINE>
 
 Test reading cookies
