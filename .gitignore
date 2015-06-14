@@ -1,8 +1,3 @@
-bin
-build
-dist
-lib
-parts
 
 *.dll
 *.pyc
@@ -11,7 +6,13 @@ parts
 *.egg-info
 .installed.cfg
 .mr.developer.cfg
-develop-eggs
-eggs
-doc/.build/
+bin/
+build/
+develop/
+develop-eggs/
+dist/
+eggs/
 include/
+lib/
+parts/
+doc/.build/
