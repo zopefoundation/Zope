@@ -131,12 +131,16 @@ class WSGIResponse(HTTPResponse):
         self.stdout.write(data)
 
     def setBody(self, body, title='', is_error=0):
-        if isinstance(body, file) or IStreamIterator.providedBy(body):
+        if isinstance(body, file):
             body.seek(0, 2)
             length = body.tell()
             body.seek(0)
             self.setHeader('Content-Length', '%d' % length)
             self.body = body
+        elif IStreamIterator.providedBy(body):
+            self.body = body
+            self._streaming = 1
+            HTTPResponse.setBody(self, '', title, is_error)
         else:
             HTTPResponse.setBody(self, body, title, is_error)
 
