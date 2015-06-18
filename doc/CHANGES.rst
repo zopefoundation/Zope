@@ -8,6 +8,9 @@ http://docs.zope.org/zope2/
 2.13.23 (unreleased)
 --------------------
 
+- LP #1465432:  Ensure that WSGIPublisher starts / ends interaction at
+  request boundaries (analogous to ZPublisher).  Backport from master.
+
 - Fix: Queue additional warning filters at the beginning of the queue in order
   to allow overrides.
 
