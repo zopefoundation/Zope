@@ -8,6 +8,9 @@ http://docs.zope.org/zope2/
 2.13.23 (unreleased)
 --------------------
 
+- LP #1465432:  Ensure that WSGIPublisher starts / ends interaction at
+  request boundaries (analogous to ZPublisher).  Backport from master.
+
 - Fix: Queue additional warning filters at the beginning of the queue in order
   to allow overrides.
 
@@ -180,6 +183,11 @@ http://docs.zope.org/zope2/
 - LP #933307: Fixed ++skin++ namespace handling.
   Ported the ``shiftNameToApplication`` implementation from zope.publisher to
   ZPublisher.HTTPRequest.HTTPRequest.
+
+- Ensure that the ``WSGIPublisher`` begins and ends an *interaction*
+  at the request/response barrier. This is required for instance for
+  the ``checkPermission`` call to function without an explicit
+  ``interaction`` parameter.
 
 - Ensure that ObjectManager's ``get`` and ``__getitem__`` methods return only
   "items" (no attributes / methods from the class or from acquisition).
