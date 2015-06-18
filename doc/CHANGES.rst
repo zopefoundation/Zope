@@ -20,6 +20,18 @@ http://docs.zope.org/zope2/
 
 - LP #1386795: Fix ``zopectl start`` with zdaemon 3 and newer.
 
+- Updated distributions:
+
+  - Acquisition = 2.13.9
+  - DateTime = 2.12.8
+  - Products.ExternalMethod = 2.13.1
+  - Products.Mailhost = 2.13.2
+  - Products.StandardCacheManagers = 2.13.1
+  - ZConfig = 2.9.3
+  - zLOG = 2.11.2
+  - zope.dublincore = 3.7.1
+  - zope.mkzeoinstance = 3.9.6
+
 2.13.22 (2014-02-19)
 --------------------
 
@@ -31,8 +43,8 @@ http://docs.zope.org/zope2/
 
 - Updated distributions:
 
-    - Products.ZCatalog = 2.13.27
-    - Products.ZCTextIndex = 2.13.5
+  - Products.ZCatalog = 2.13.27
+  - Products.ZCTextIndex = 2.13.5
 
 2.13.21 (2013-07-16)
 --------------------
