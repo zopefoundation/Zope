@@ -27,6 +27,7 @@ http://docs.zope.org/zope2/
 
   - Acquisition = 2.13.9
   - DateTime = 2.12.8
+  - Products.BTreeFolder2 = 2.13.5
   - Products.ExternalMethod = 2.13.1
   - Products.Mailhost = 2.13.2
   - Products.StandardCacheManagers = 2.13.1
