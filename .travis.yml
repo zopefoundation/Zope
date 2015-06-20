@@ -6,7 +6,7 @@ python:
 
 notifications:
   email:
-    - hanno@hannosch.eu
+    - tseaver@palladion.com
 
 install:
     - python bootstrap.py
