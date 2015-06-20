@@ -70,6 +70,8 @@ More information can be found in the detailed
 WSGI
 ----
 
+See :doc:`WSGI`.
+
 This Zope release comes with native WSGI support. First pioneered in the
 repoze.zope2 project, this capability finally found its way back into the core
 and obsoletes the externally managed project. With WSGI Zope 2 can natively talk
@@ -79,13 +81,11 @@ factoring out capabilities into WSGI endware. It's expected that this new
 deployment model will over time become the default and the old ZServer
 implementation will be deprecated. There's no concrete timeline for this yet.
 
-NOTE: There's no setup documentation nor streamlined instance creation logic
-for a WSGI setup yet. You are expected to know exactly what you are doing if
-you are trying to use this feature.
+.. note::
 
-Due to the way logic is split out into WSGI middleware, some of the
-`ZPublisher.pubevents` aren't emitted by the WSGI publisher. These are:
-`PubSuccess`, `PubFailure`, `PubBeforeCommit` and `PubBeforeAbort`.
+   Due to the way logic is split out into WSGI middleware, some of the
+   `ZPublisher.pubevents` aren't emitted by the WSGI publisher. These are:
+   `PubSuccess`, `PubFailure`, `PubBeforeCommit` and `PubBeforeAbort`.
 
 
 Zope Toolkit
