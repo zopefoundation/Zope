@@ -8,6 +8,9 @@ http://docs.zope.org/zope2/
 2.13.23 (unreleased)
 --------------------
 
+- LP #1465432:  Ensure that WSGIPublisher starts / ends interaction at
+  request boundaries (analogous to ZPublisher).  Backport from master.
+
 - Fix: Queue additional warning filters at the beginning of the queue in order
   to allow overrides.
 
@@ -20,6 +23,19 @@ http://docs.zope.org/zope2/
 
 - LP #1386795: Fix ``zopectl start`` with zdaemon 3 and newer.
 
+- Updated distributions:
+
+  - Acquisition = 2.13.9
+  - DateTime = 2.12.8
+  - Products.BTreeFolder2 = 2.13.5
+  - Products.ExternalMethod = 2.13.1
+  - Products.Mailhost = 2.13.2
+  - Products.StandardCacheManagers = 2.13.1
+  - ZConfig = 2.9.3
+  - zLOG = 2.11.2
+  - zope.dublincore = 3.7.1
+  - zope.mkzeoinstance = 3.9.6
+
 2.13.22 (2014-02-19)
 --------------------
 
@@ -31,8 +47,8 @@ http://docs.zope.org/zope2/
 
 - Updated distributions:
 
-    - Products.ZCatalog = 2.13.27
-    - Products.ZCTextIndex = 2.13.5
+  - Products.ZCatalog = 2.13.27
+  - Products.ZCTextIndex = 2.13.5
 
 2.13.21 (2013-07-16)
 --------------------
@@ -168,6 +184,11 @@ http://docs.zope.org/zope2/
 - LP #933307: Fixed ++skin++ namespace handling.
   Ported the ``shiftNameToApplication`` implementation from zope.publisher to
   ZPublisher.HTTPRequest.HTTPRequest.
+
+- Ensure that the ``WSGIPublisher`` begins and ends an *interaction*
+  at the request/response barrier. This is required for instance for
+  the ``checkPermission`` call to function without an explicit
+  ``interaction`` parameter.
 
 - Ensure that ObjectManager's ``get`` and ``__getitem__`` methods return only
   "items" (no attributes / methods from the class or from acquisition).
