@@ -8,6 +8,11 @@ http://docs.zope.org/zope2/
 2.13.23 (unreleased)
 --------------------
 
+- Issue #27: Fix publishing of IStreamIterator. This interface does
+  not have seek or tell.
+  Introduce IUnboundStreamIterator to support publishing iterators
+  of unknown length.
+  
 - LP #1465432:  Ensure that WSGIPublisher starts / ends interaction at
   request boundaries (analogous to ZPublisher).  Backport from master.
 
