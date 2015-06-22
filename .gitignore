@@ -15,4 +15,4 @@ eggs/
 include/
 lib/
 parts/
-doc/.build/
+doc/_build/
