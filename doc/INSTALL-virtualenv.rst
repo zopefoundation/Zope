@@ -46,7 +46,7 @@ explicitly:
 
 .. code-block:: sh
 
-  $ bin/mkzopeinstance --python=bin/pythn
+  $ bin/mkzopeinstance --python=bin/python
 
 You will be asked to provide a user name and password for an
 administrator's account during ``mkzopeinstance``.  To see the available
