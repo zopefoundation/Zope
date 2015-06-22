@@ -157,6 +157,7 @@ class WSGIResponseTests(unittest.TestCase):
         response.setBody(body)
         response.finalize()
         self.assertTrue(body is response.body)
+        self.assertEqual(response._streaming, 1)
 
     def test_setBody_IStreamIterator(self):
         from ZPublisher.Iterators import IStreamIterator
@@ -182,6 +183,7 @@ class WSGIResponseTests(unittest.TestCase):
         response.setBody(body)
         response.finalize()
         self.assertTrue(body is response.body)
+        self.assertEqual(response._streaming, 0)
 
     #def test___str__already_wrote_not_chunking(self):
     #    response = self._makeOne()

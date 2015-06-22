@@ -137,12 +137,12 @@ class WSGIResponse(HTTPResponse):
             body.seek(0)
             self.setHeader('Content-Length', '%d' % length)
             self.body = body
+        elif IStreamIterator.providedBy(body):
+            self.body = body
+            HTTPResponse.setBody(self, '', title, is_error)
         elif IUnboundStreamIterator.providedBy(body):
             self.body = body
             self._streaming = 1
-            HTTPResponse.setBody(self, '', title, is_error)
-        elif IStreamIterator.providedBy(body):
-            self.body = body
             HTTPResponse.setBody(self, '', title, is_error)
         else:
             HTTPResponse.setBody(self, body, title, is_error)
