@@ -193,7 +193,7 @@ with static files served from disk at ``/static``:
        egg:paste#evalerror
        egg:repoze.retry#retry
        egg:repoze.tm2#tm
-       zope
+       zope-app
 
    [app:static]
    use = egg:Paste#static
