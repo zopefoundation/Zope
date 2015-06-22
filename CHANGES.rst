@@ -11,6 +11,8 @@ http://docs.zope.org/zope2/
 Bugs Fixed
 ++++++++++
 
+- Document running Zope as a WSGI application.
+
 - Queue additional warning filters at the beginning of the queue in order to
   allow overrides.
 
