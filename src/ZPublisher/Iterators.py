@@ -13,7 +13,7 @@ class IUnboundStreamIterator(Interface):
         """
 
 
-class IStreamIterator(Interface):
+class IStreamIterator(IUnboundStreamIterator):
     """
     An iterator with known length that can be published.
 
