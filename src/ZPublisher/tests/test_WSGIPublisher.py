@@ -184,6 +184,8 @@ class WSGIResponseTests(unittest.TestCase):
         response.finalize()
         self.assertTrue(body is response.body)
         self.assertEqual(response._streaming, 0)
+        self.assertEqual(response.getHeader('Content-Length'),
+                         '%d' % len(test_streamiterator.data))
 
     #def test___str__already_wrote_not_chunking(self):
     #    response = self._makeOne()
