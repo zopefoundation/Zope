@@ -136,6 +136,55 @@ class WSGIResponseTests(unittest.TestCase):
                                 time.gmtime(time.mktime(WHEN)))
         self.assertTrue(('Date', whenstr) in headers)
 
+    def test_setBody_IUnboundStreamIterator(self):
+        from ZPublisher.Iterators import IUnboundStreamIterator
+        from zope.interface import implements
+
+        class test_streamiterator:
+            implements(IUnboundStreamIterator)
+            data = "hello"
+            done = 0
+
+            def next(self):
+                if not self.done:
+                    self.done = 1
+                    return self.data
+                raise StopIteration
+
+        response = self._makeOne()
+        response.setStatus(200)
+        body = test_streamiterator()
+        response.setBody(body)
+        response.finalize()
+        self.assertTrue(body is response.body)
+        self.assertEqual(response._streaming, 1)
+
+    def test_setBody_IStreamIterator(self):
+        from ZPublisher.Iterators import IStreamIterator
+        from zope.interface import implements
+
+        class test_streamiterator:
+            implements(IStreamIterator)
+            data = "hello"
+            done = 0
+
+            def next(self):
+                if not self.done:
+                    self.done = 1
+                    return self.data
+                raise StopIteration
+
+            def __len__(self):
+                return len(self.data)
+
+        response = self._makeOne()
+        response.setStatus(200)
+        body = test_streamiterator()
+        response.setBody(body)
+        response.finalize()
+        self.assertTrue(body is response.body)
+        self.assertEqual(response._streaming, 0)
+
     #def test___str__already_wrote_not_chunking(self):
     #    response = self._makeOne()
     #    response._wrote = True
