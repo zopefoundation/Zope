@@ -8,9 +8,14 @@ http://docs.zope.org/zope2/
 2.13.23 (unreleased)
 --------------------
 
+- Issue #27: Fix publishing of ``ZPublisher.Iterators.IStreamIterator`` under
+  WSGI. This interface does not have ``seek`` or ``tell``.  Introduce
+  ``ZPublisher.Iterators.IUnboundStreamIterator`` to support publishing
+  iterators of unknown length under WSGI.
+
 - Document running Zope as a WSGI application.  See
   https://github.com/zopefoundation/Zope/issues/30
-
+  
 - LP #1465432:  Ensure that WSGIPublisher starts / ends interaction at
   request boundaries (analogous to ZPublisher).  Backport from master.
 
