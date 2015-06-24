@@ -206,6 +206,7 @@ class BaseRequest:
     def __init__(self, other=None, **kw):
         """The constructor is not allowed to raise errors
         """
+        self.__doc__ = None  # Make BaseRequest objects unpublishable
         if other is None: other=kw
         else: other.update(kw)
         self.other=other
@@ -275,6 +276,9 @@ class BaseRequest:
         if v is _marker:
             raise KeyError, key
         return v
+
+    def __bobo_traverse__(self, name):
+        raise KeyError(name)
 
     def __getattr__(self, key, default=_marker):
         v = self.get(key, default)

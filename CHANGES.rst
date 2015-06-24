@@ -11,6 +11,9 @@ http://docs.zope.org/zope2/
 Bugs Fixed
 ++++++++++
 
+- LP #789863:  Ensure that Request objects cannot be published / traversed
+  directly via a URL.
+
 - Document running Zope as a WSGI application.
 
 - Queue additional warning filters at the beginning of the queue in order to
