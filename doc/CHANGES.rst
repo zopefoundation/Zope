@@ -8,6 +8,9 @@ http://docs.zope.org/zope2/
 2.13.23 (unreleased)
 --------------------
 
+- LP #789863:  Ensure that Request objects cannot be published / traversed
+  directly via a URL.
+
 - Issue #27: Fix publishing of ``ZPublisher.Iterators.IStreamIterator`` under
   WSGI. This interface does not have ``seek`` or ``tell``.  Introduce
   ``ZPublisher.Iterators.IUnboundStreamIterator`` to support publishing
