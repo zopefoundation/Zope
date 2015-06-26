@@ -228,6 +228,13 @@ def make_hidden_input(*args, **kwargs):
 
     return '\n'.join(qlist)
 
+def isPrimitive(obj):
+    if hasattr(obj, 'items'):
+        return False
+    if isinstance(obj, list):
+        return False
+    return True
+
 def complex_marshal(pairs):
     '''Add request marshalling information to a list of name-value pairs.
 
@@ -245,13 +252,6 @@ def complex_marshal(pairs):
     addition to their simple marshal string.  Dictionaries will be
     flattened and marshalled using ":record".
     '''
-
-    def isPrimitive(obj):
-        if hasattr(v, 'items'):
-            return False
-        if isinstance(v, list):
-            return False
-        return True
 
     triples = []
 
