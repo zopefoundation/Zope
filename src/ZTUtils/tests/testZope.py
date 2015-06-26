@@ -75,12 +75,12 @@ class QueryTests(TestCase):
         self.maxDiff = 1000
 
         #dictionaries dont' preserve order - use self.assertItemsEqual
-        self.assertItemsEqual(result,
-                              [('r_record.arg1', ':record', 'top'),
-                               ('r_record.arg2.sub1', ':record:record', 'deep'),
-                               ('r_record.arg2.sub2', ':int:record:record', 1),
-                               ('r_record.arg3', ':int:record', 12)]
-                              )
+        self.assertEqual(sorted(result),
+                         [('r_record.arg1', ':record', 'top'),
+                          ('r_record.arg2.sub1', ':record:record', 'deep'),
+                          ('r_record.arg2.sub2', ':int:record:record', 1),
+                          ('r_record.arg3', ':int:record', 12),
+                         ])
 
     def testMarshallListsInLists(self):
         '''Test marshalling lists in lists'''
