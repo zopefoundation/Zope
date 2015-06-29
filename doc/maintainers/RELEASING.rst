@@ -1,0 +1,143 @@
+Makeing a 2.13.x Release
+========================
+
+Make a branch for release prepration.
+-------------------------------------
+
+We need to make a number of changes for the release which we do *not* want
+checked in on the ``2.13`` branch.  Therefore, create a release-preparation
+branch, based on the ``2.13`` branch, as the locus for those changes:
+
+.. code-block:: bash
+
+   $ git checkout -b 2.13.23-prep 2.13
+
+Update the release version in ``setup.py``
+------------------------------------------
+
+Set the new release version, and commit:
+
+.. code-block:: bash
+
+   $ vim setup.py
+   $ git commit -m "Update version for 2.13.23 release" setup.py
+
+Pin versions in ``buildout.cfg``
+--------------------------------
+
+For a release, we want to switch away from the range-based version constraints
+we use for the development branch, and pin the specific versions.
+
+First, re-run the buildout, which will dump the currently-selected versions
+on standard output.  E.g.:
+
+.. code-block:: bash
+
+   $ bin/buildout
+   ...
+   [versions]
+   AccessControl = 2.13.13
+   Acquisition = 2.13.9
+   ...
+   setuptools = 18.0.1
+
+Next, update the ``buildout.cfg`` settings as follows:
+
+- Copy the ``[versions]`` section from the buildout run at the bottom.
+- In the ``[buildout]`` secttion, remove ``show-picked-verions = true``,
+  add ``allow-picked-versions = false``, and remove the ``version_ranges``
+  from the ``extends``.
+
+.. code-block:: bash
+
+   $ vim buildout.cfg
+
+Re-run the buildout and test:
+
+.. code-block:: bash
+
+   $ rm -rf bin/ develop-eggs/ eggs/ include/ lib/
+   $ /opt/Python-2.7.9/bin/virtualenv .
+   $ bin/python bootstrap.py && bin/buildout && bin/alltest --all
+
+Pin versions in a ``pip`` requirements file
+-------------------------------------------
+
+Copy the version pins from the ``[versions]`` section of ``buildout.cfg``
+into a ``requirements.txt`` file, to enalbe ``pip`` users to install
+without buildout.
+
+.. code-block:: bash
+
+   $ vim requirements.txt
+   $ git add requirements.txt
+   $ git commit -m "Pin versoins for 2.13.23 release" buildout.cfg requirements.txt
+
+Review / update the changelog
+-----------------------------
+
+Add today's date to the current release.
+
+.. code-block:: bash
+
+   $ vim doc/CHANGES.rst
+   $ git commit -m "Finalize changelog 2.13.23 release" doc/CHANGES.rst
+
+.. note::
+   
+   Keep track of the hash for this commit:  you will want to cherry-pick
+   it to the ``2.13`` branch later.
+
+Tag the release
+---------------
+
+.. code-block:: bash
+
+   $ git tag -sm "Tag 2.13.23 release" 2.13.23
+
+.. note::
+
+   The ``-s`` signs the tag using PGP.
+
+Register and upload the release to PyPI
+---------------------------------------
+
+.. code-block:: bash
+
+   $ bin/python sdist register upload --sign
+
+.. note::
+
+   The ``upload --sign`` signs the sdist using PGP and uploads the signature
+   to PyPI along with the distribution file.
+
+Push the git release artefacts
+------------------------------
+
+.. code-block:: bash
+
+   $ git push origin 2.13.23-prep && git push --tags
+
+Update the ``2.13`` branch for the next release
+-----------------------------------------------
+
+.. code-block:: bash
+
+   $ git checkout 2.13
+
+Cherry-pick the changelog update from above:
+
+.. code-block:: bash
+
+   $ git cherry-pick -x <hash from commit above>^..<hash from commit above>
+
+Add the next release to the changelog, with "(unreleased)" as its release
+date and a "TBD" bullet, and update the next development release in
+``setup.py``.
+
+.. code-block:: bash
+
+   $ vim doc/CHANGES.rst
+   $ vim setup.py
+   $ git commit -m svb doc/CHANGES.rst setup.py
+   $ git push origin 2.13
