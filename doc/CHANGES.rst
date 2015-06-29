@@ -5,8 +5,13 @@ This file contains change information for the current Zope release.
 Change information for previous versions of Zope can be found at
 http://docs.zope.org/zope2/
 
-2.13.23 (unreleased)
+2.13.23 (2015-06-29)
 --------------------
+
+- Provide a pip-compatible ``requirements.txt`` file for the release.  E.g.::
+
+  $ /path/to/venv/bin/pip install \
+    https://raw.githubusercontent.com/zopefoundation/Zope/2.13.23/requirements.txt
 
 - LP #789863:  Ensure that Request objects cannot be published / traversed
   directly via a URL.
