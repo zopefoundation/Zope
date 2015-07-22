@@ -107,10 +107,12 @@ class QueryTests(TestCase):
         query = make_query(date=test_date, integer=int_, listing=list_,
                            record=record, string=str_)
         
+        expected_query = 'date:date=%s&integer:int=1&listing:int:list=1&listing:date:list=%s&listing:list=str&string=str&record.arg1:int:list:record=1&record.arg1:date:list:record=%s&record.arg1:list:record=str&record.arg2:int:record=1'%(quote_date,quote_date,quote_date)
+        
         querydict = urlparse.parse_qs(query)
-        #XXX This test relies on dictionary ordering, which is unpredictable.
-        ### consider urlparse.parse_qs and compare dictionaries
-        assert query == 'date:date=%s&integer:int=1&listing:int:list=1&listing:date:list=%s&listing:list=str&string=str&record.arg1:int:list:record=1&record.arg1:date:list:record=%s&record.arg1:list:record=str&record.arg2:int:record=1'%(quote_date,quote_date,quote_date)
+        expected_querydict = urlparse.parse_qs(expected_query)
+        self.assertEqual(querydict, expected_querydict)
+        
 
     def testMakeHiddenInput(self):
         tag = make_hidden_input(foo='bar')
@@ -146,7 +148,6 @@ class UnicodeQueryTests(TestCase):
         
     def unpatch(self):
         ZTUtils.Zope._default_encoding = self.restore
-
 
     def testSimpleMarshal(self):
         self.assertEqual(simple_marshal(u'unic\xF3de'), ":utf8:ustring")
