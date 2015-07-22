@@ -6,12 +6,6 @@ from ZTUtils.Zope import make_query, complex_marshal, simple_marshal
 from ZTUtils.Zope import make_hidden_input
 from DateTime import DateTime
 
-#mock ZTUtils.Zope._default_encoding to avoid config setup
-def _default_encoding(): 
-    return 'utf8'
-import ZTUtils.Zope
-ZTUtils.Zope._default_encoding = _default_encoding
-
 
 class QueryTests(TestCase):
 
@@ -74,7 +68,7 @@ class QueryTests(TestCase):
         result = complex_marshal([('r_record',record),])
         self.maxDiff = 1000
 
-        #dictionaries dont' preserve order - use self.assertItemsEqual
+        #dictionaries don't preserve order, manually stort
         self.assertEqual(sorted(result),
                          [('r_record.arg1', ':record', 'top'),
                           ('r_record.arg2.sub1', ':record:record', 'deep'),
@@ -113,6 +107,7 @@ class QueryTests(TestCase):
         query = make_query(date=test_date, integer=int_, listing=list_,
                            record=record, string=str_)
         
+        querydict = urlparse.parse_qs(query)
         #XXX This test relies on dictionary ordering, which is unpredictable.
         ### consider urlparse.parse_qs and compare dictionaries
         assert query == 'date:date=%s&integer:int=1&listing:int:list=1&listing:date:list=%s&listing:list=str&string=str&record.arg1:int:list:record=1&record.arg1:date:list:record=%s&record.arg1:list:record=str&record.arg2:int:record=1'%(quote_date,quote_date,quote_date)
@@ -130,9 +125,28 @@ class QueryTests(TestCase):
         tag = make_hidden_input(foo='"bar"')
         self.assertEqual(tag, '<input type="hidden" name="foo" value="&quot;bar&quot;">')
             
-        
+import ZTUtils.Zope
+
 class UnicodeQueryTests(TestCase):
-    """Duplicating all tests under 'QueryTests' and include unicode handling"""
+    """Duplicating all tests under 'QueryTests' and include unicode handling""" 
+    
+    def setUp(self):
+        self.patch()
+        
+    def tearDown(self):
+        self.unpatch()
+        
+    def patch(self):
+        #mock ZTUtils.Zope._default_encoding to avoid config setup        
+        def _default_encoding(): 
+            return 'utf8'
+        
+        self.restore = ZTUtils.Zope._default_encoding
+        ZTUtils.Zope._default_encoding = _default_encoding
+        
+    def unpatch(self):
+        ZTUtils.Zope._default_encoding = self.restore
+
 
     def testSimpleMarshal(self):
         self.assertEqual(simple_marshal(u'unic\xF3de'), ":utf8:ustring")
