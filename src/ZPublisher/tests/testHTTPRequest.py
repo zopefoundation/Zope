@@ -1,4 +1,6 @@
 import unittest
+from ZPublisher.tests.testBaseRequest import TestRequestZope3ViewsBase
+
 
 from zope.testing.cleanup import cleanUp
 
@@ -15,7 +17,7 @@ class RecordTests(unittest.TestCase):
         self.assertEqual(d, rec.__dict__)
 
 
-class HTTPRequestTests(unittest.TestCase):
+class HTTPRequestFactoryMixin(object):
 
     def tearDown(self):
         cleanUp()
@@ -26,7 +28,7 @@ class HTTPRequestTests(unittest.TestCase):
 
     def _makeOne(self, stdin=None, environ=None, response=None, clean=1):
         from StringIO import StringIO
-        from ZPublisher import NotFound
+        from ZPublisher.HTTPResponse import HTTPResponse
         if stdin is None:
             stdin = StringIO()
 
@@ -43,20 +45,12 @@ class HTTPRequestTests(unittest.TestCase):
             environ['SERVER_PORT'] = '8080'
 
         if response is None:
-            class _FauxResponse(object):
-                _auth = None
-                debug_mode = False
-                errmsg = 'OK'
-
-                def notFoundError(self, message):
-                    raise NotFound, message
-
-                def exception(self, *args, **kw):
-                    pass
-
-            response = _FauxResponse()
+            response = HTTPResponse(stdout=StringIO())
 
         return self._getTargetClass()(stdin, environ, response, clean)
+
+
+class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
 
     def _processInputs(self, inputs):
         from urllib import quote_plus
@@ -143,6 +137,19 @@ class HTTPRequestTests(unittest.TestCase):
             self.assertEquals(req.form[key], req.taintedform[key],
                 "Key %s not correctly reproduced in tainted; expected %r, "
                 "got %r" % (key, req.form[key], req.taintedform[key]))
+
+    def test_no_docstring_on_instance(self):
+        env = {'SERVER_NAME': 'testingharnas', 'SERVER_PORT': '80'}
+        req = self._makeOne(environ=env)
+        self.assertTrue(req.__doc__ is None)
+
+    def test___bobo_traverse___raises(self):
+        env = {'SERVER_NAME': 'testingharnas', 'SERVER_PORT': '80'}
+        req = self._makeOne(environ=env)
+        self.assertRaises(KeyError, req.__bobo_traverse__, 'REQUEST')
+        self.assertRaises(KeyError, req.__bobo_traverse__, 'BODY')
+        self.assertRaises(KeyError, req.__bobo_traverse__, 'BODYFILE')
+        self.assertRaises(KeyError, req.__bobo_traverse__, 'RESPONSE')
 
     def test_processInputs_wo_query_string(self):
         env = {'SERVER_NAME': 'testingharnas', 'SERVER_PORT': '80'}
@@ -1078,6 +1085,34 @@ class HTTPRequestTests(unittest.TestCase):
         req._script = ['foo', 'bar']
         self.assertEquals(req.getVirtualRoot(), '/foo/bar')
 
+
+class TestHTTPRequestZope3Views(TestRequestZope3ViewsBase,):
+
+    def _makeOne(self, root):
+        from zope.interface import directlyProvides
+        from zope.publisher.browser import IDefaultBrowserLayer
+        request = HTTPRequestFactoryMixin()._makeOne()
+        request['PARENTS'] = [root]
+        # The request needs to implement the proper interface
+        directlyProvides(request, IDefaultBrowserLayer)
+        return request
+
+    def test_no_traversal_of_view_request_attribute(self):
+        # make sure views don't accidentally publish the 'request' attribute
+        from ZPublisher import NotFound
+        root, _ = self._makeRootAndFolder()
+
+        # make sure the view itself is traversable:
+        view = self._makeOne(root).traverse('folder/@@meth')
+        from ZPublisher.HTTPRequest import HTTPRequest
+        self.assertEqual(view.request.__class__, HTTPRequest,)
+
+        # but not the request:
+        self.assertRaises(
+            NotFound,
+            self._makeOne(root).traverse, 'folder/@@meth/request'
+        )
+
 TEST_ENVIRON = {
     'CONTENT_TYPE': 'multipart/form-data; boundary=12345',
     'REQUEST_METHOD': 'POST',
@@ -1109,4 +1144,5 @@ def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(RecordTests))
     suite.addTest(unittest.makeSuite(HTTPRequestTests))
+    suite.addTest(unittest.makeSuite(TestHTTPRequestZope3Views))
     return suite

@@ -189,6 +189,19 @@ class TestBaseRequest(unittest.TestCase, BaseRequest_factory):
         folder = root._setObject('folder', self._makeBasicObject())
         return root, folder
 
+    def test_no_docstring_on_instance(self):
+        root, folder = self._makeRootAndFolder()
+        r = self._makeOne(root)
+        self.assertTrue(r.__doc__ is None)
+
+    def test___bobo_traverse___raises(self):
+        root, folder = self._makeRootAndFolder()
+        folder._setObject('objBasic', self._makeBasicObject())
+        r = self._makeOne(root)
+        self.assertRaises(KeyError, r.__bobo_traverse__, 'REQUEST')
+        self.assertRaises(KeyError, r.__bobo_traverse__, 'BODY')
+        self.assertRaises(KeyError, r.__bobo_traverse__, 'BODYFILE')
+
     def test_traverse_basic(self):
         root, folder = self._makeRootAndFolder()
         folder._setObject('objBasic', self._makeBasicObject())
@@ -424,6 +437,22 @@ class TestBaseRequest(unittest.TestCase, BaseRequest_factory):
         r = self._makeOne(root)
         self.assertRaises(NotFound, r.traverse, 'folder/simpleFrozenSet')
 
+    def test_close_w_broken_subscriber(self):
+        # See: https://github.com/zopefoundation/Zope/issues/16
+        from zope.event import subscribers
+        root, folder = self._makeRootAndFolder()
+        r = self._makeOne(root)
+        r.other['foo'] = 'Foo'
+        BEFORE = subscribers[:]
+        def _broken(event):
+            raise ValueError("I'm broken")
+        subscribers.append(_broken)
+        try:
+            self.assertRaises(ValueError, r.close)
+        finally:
+            subscribers[:] = BEFORE
+        self.assertEqual(r.other, {})
+
     def test_hold_after_close(self):
         # Request should no longer accept holds after it has been closed
         root, folder = self._makeRootAndFolder()
@@ -452,7 +481,7 @@ class TestBaseRequest(unittest.TestCase, BaseRequest_factory):
         self.assertRaises(NotFound, r.traverse, 'not_found')
 
 
-class TestBaseRequestZope3Views(unittest.TestCase, BaseRequest_factory):
+class TestRequestZope3ViewsBase(unittest.TestCase, BaseRequest_factory):
 
     _dummy_interface = None
 
@@ -463,13 +492,27 @@ class TestBaseRequestZope3Views(unittest.TestCase, BaseRequest_factory):
     def _makeOne(self, root):
         from zope.interface import directlyProvides
         from zope.publisher.browser import IDefaultBrowserLayer
-        request = super(TestBaseRequestZope3Views, self)._makeOne(root)
+        request = super(TestRequestZope3ViewsBase, self)._makeOne(root)
         # The request needs to implement the proper interface
         directlyProvides(request, IDefaultBrowserLayer)
         return request
 
+    def _makeDummyAclUsers(self):
+        from Acquisition import Implicit
+        from AccessControl.ZopeSecurityPolicy import _noroles
+
+        class AclUsers(Implicit):
+            def validate(self, request, auth='', roles=_noroles):
+                # always validate access as anonymous, good for checking
+                # if things are publishable regardless of authorization
+                from AccessControl.SpecialUsers import nobody
+                return nobody.__of__(self)
+        acl_users = AclUsers()
+        return acl_users
+
     def _makeRootAndFolder(self):
         root = self._makeBasicObject()
+        root.__allow_groups__ = self._makeDummyAclUsers()
         folder = root._setObject('folder', self._makeDummyObject('folder'))
         return root, folder
 
@@ -596,6 +639,9 @@ class TestBaseRequestZope3Views(unittest.TestCase, BaseRequest_factory):
         gsm = getGlobalSiteManager()
         gsm.registerAdapter(name, (self._dummyInterface(), IBrowserRequest),
                             IDefaultViewName, '')
+
+
+class TestBaseRequestZope3Views(TestRequestZope3ViewsBase):
 
     def test_traverse_view(self):
         #simple view

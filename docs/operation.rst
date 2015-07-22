@@ -5,8 +5,8 @@ Configuring and Running Zope
 
 
 Whichever method you used to install Zope and create a server instance (see
-:doc:`INSTALL` and :doc:`INSTALL-buildout`), the end result is configured
-and operated the same way.
+:doc:`INSTALL-buildout` and :doc:`INSTALL-virtualenv`), the end result is
+configured and operated the same way.
 
 
 Configuring Zope
@@ -153,7 +153,7 @@ Troubleshooting
   you built Python from source all the configuration information
   should already be available.
 
-- See the :doc:`CHANGES` for important notes on this version of Zope.
+- See the :doc:`changes` for important notes on this version of Zope.
 
 
 

@@ -1,5 +1,5 @@
-Installing and Zope with ``zc.buildout``
-========================================
+Installing Zope with ``zc.buildout``
+====================================
 
 .. highlight:: bash
 
@@ -54,7 +54,7 @@ steps:
 
 - Download the Zope 2 source distribution from `PyPI`__
 
-  __ http://pypi.python.org/pypi/Zope2
+  __ https://pypi.python.org/pypi/Zope2
 
 - Bootstrap the buildout
 
@@ -62,10 +62,10 @@ steps:
 
 On Linux, this can be done as follows::
 
-  $ wget http://pypi.python.org/packages/source/Z/Zope2/Zope2-<Zope version>.tar.gz
+  $ wget https://pypi.python.org/packages/source/Z/Zope2/Zope2-<Zope version>.tar.gz
   $ tar xfvz Zope2-<Zope version>.tar.gz
   $ cd Zope2-<Zope version>
-  $ /path/to/your/python bootstrap/bootstrap.py
+  $ /path/to/your/python bootstrap.py
   $ bin/buildout
 
 
@@ -164,7 +164,7 @@ An example session::
    $ mkdir /path/to/instance
    $ cd /path/to/instance
    $ mkdir etc logs var
-   $ wget http://svn.zope.org/zc.buildout/trunk/bootstrap/bootstrap.py
+   $ wget http://downloads.buildout.org/2/bootstrap.py
    $ vi buildout.cfg
    $ /path/to/your/python bootstrap.py
    $ bin/buildout
@@ -182,8 +182,17 @@ to find out about additionally commands of zopectl. These commands
 also work at the command line.
 
 Note that there are there are recipes such as `plone.recipe.zope2instance
-<http://pypi.python.org/pypi/plone.recipe.zope2instance>`_ which can be
+<https://pypi.python.org/pypi/plone.recipe.zope2instance>`_ which can be
 used to automate this whole process.
 
 After installation, refer to :doc:`operation` for documentation on
 configuring and running Zope.
+
+
+Building the documentation with ``Sphinx``
+------------------------------------------
+
+To build the HTML documentation, run the :command:`make-docs` script (installed
+by the buildout)::
+
+   $ bin/make-docs

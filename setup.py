@@ -21,6 +21,13 @@ additional_install_requires = []
 if sys.platform[:3].lower() == "win":
     additional_install_requires += ['nt_svcutils']
 
+here = os.path.abspath(os.path.dirname(__file__))
+def _read_file(filename):
+    with open(os.path.join(here, filename)) as f:
+        return f.read()
+
+README = _read_file('README.rst')
+CHANGES = _read_file('CHANGES.rst')
 
 setup(name='Zope2',
     version='4.0a1.dev',
@@ -29,8 +36,7 @@ setup(name='Zope2',
     description='Zope2 application server / web framework',
     author='Zope Foundation and Contributors',
     author_email='zope-dev@zope.org',
-    long_description=file("README.txt").read() + "\n" +
-                     file(os.path.join("doc", "CHANGES.rst")).read(),
+    long_description="\n\n".join([README, CHANGES]),
     classifiers=[
         'Development Status :: 6 - Mature',
         "Environment :: Web Environment",
@@ -56,6 +62,7 @@ setup(name='Zope2',
       'MultiMapping',
       'Persistence',
       'Products.OFSP >= 2.13.2',
+      'Products.SiteErrorLog',
       'Products.ZCatalog',
       'Products.ZCTextIndex',
       'Record',

@@ -15,19 +15,24 @@
 This provides support for simulating function signatures
 """
 
+
 class FuncCode:
 
     def __init__(self, varnames, argcount):
-        self.co_varnames=varnames
-        self.co_argcount=argcount
+        self.co_varnames = varnames
+        self.co_argcount = argcount
 
     def __cmp__(self, other):
-        if other is None: return 1
-        try: return cmp((self.co_argcount, self.co_varnames),
-                        (other.co_argcount, other.co_varnames))
-        except: return 1
+        if other is None:
+            return 1
+        try:
+            return cmp((self.co_argcount, self.co_varnames),
+                       (other.co_argcount, other.co_varnames))
+        except Exception:
+            return 1
 
 # This is meant to be imported directly into a class.
+
 
 def _setFuncSignature(self, defaults=None, varnames=(), argcount=-1):
     # Simplify calls.
@@ -35,7 +40,7 @@ def _setFuncSignature(self, defaults=None, varnames=(), argcount=-1):
         argcount = len(varnames)
     # Generate a change only if we have to.
     if self.func_defaults != defaults:
-        self.func_defaults = defaults
+        self.func_defaults = self.__defaults__ = defaults
     code = FuncCode(varnames, argcount)
     if self.func_code != code:
-        self.func_code = code
+        self.func_code = self.__code__ = code

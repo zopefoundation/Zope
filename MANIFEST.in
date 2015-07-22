@@ -1,9 +1,20 @@
 include *.txt
+include *.rst
+include *.cfg
+exclude .*.cfg
 
-recursive-include doc *
+recursive-include docs *
 recursive-include src *
+
+prune docs/.build
 
 global-exclude *.dll
 global-exclude *.pyc
 global-exclude *.pyo
 global-exclude *.so
+
+include *.py
+include .travis.yml
+include buildout.cfg
+include sources.cfg
+include versions.cfg

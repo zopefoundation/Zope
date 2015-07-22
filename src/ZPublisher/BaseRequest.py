@@ -206,6 +206,7 @@ class BaseRequest:
     def __init__(self, other=None, **kw):
         """The constructor is not allowed to raise errors
         """
+        self.__doc__ = None  # Make BaseRequest objects unpublishable
         if other is None: other=kw
         else: other.update(kw)
         self.other=other
@@ -215,10 +216,12 @@ class BaseRequest:
         self._held=None
 
     def close(self):
-        notify(EndRequestEvent(None, self))
-        # subscribers might need the zodb, so `clear` must come afterwards
-        # (since `self._held=None` might close the connection, see above)
-        self.clear()
+        try:
+            notify(EndRequestEvent(None, self))
+        finally:
+            # subscribers might need the zodb, so `clear` must come afterwards
+            # (since `self._held=None` might close the connection, see above)
+            self.clear()
 
     def processInputs(self):
         """Do any input processing that could raise errors
@@ -273,6 +276,9 @@ class BaseRequest:
         if v is _marker:
             raise KeyError, key
         return v
+
+    def __bobo_traverse__(self, name):
+        raise KeyError(name)
 
     def __getattr__(self, key, default=_marker):
         v = self.get(key, default)
