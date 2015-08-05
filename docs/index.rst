@@ -6,13 +6,16 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-   WHATSNEW.rst
-   INSTALL.rst
-   operation.rst
-   USERS.rst
-   SECURITY.rst
-   SETUID.rst
-   SIGNALS.rst
-   DEBUGGING.rst
-   maintenance.rst
-   changes.rst
+   WHATSNEW
+   INSTALL
+   INSTALL-buildout
+   INSTALL-virtualenv
+   operation
+   WSGI
+   USERS
+   SECURITY
+   SETUID
+   SIGNALS
+   DEBUGGING
+   maintenance
+   changes

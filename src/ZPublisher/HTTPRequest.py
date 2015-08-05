@@ -313,6 +313,7 @@ class HTTPRequest(BaseRequest):
             self._locale = locales.getLocale(None, None, None)
 
     def __init__(self, stdin, environ, response, clean=0):
+        self.__doc__ = None  # Make HTTPRequest objects unpublishable
         self._orig_env = environ
         # Avoid the overhead of scrubbing the environment in the
         # case of request cloning for traversal purposes. If the
