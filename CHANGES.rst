@@ -29,6 +29,12 @@ Bugs Fixed
 
 - Made sure getConfiguration().default_zpublisher_encoding is set correctly.
 
+- Issue #28: Fix publishing of IStreamIterator. This interface does
+  not have seek or tell.
+  Introduce IUnboundStreamIterator to support publishing iterators
+  of unknown length.
+
+
 Features Added
 ++++++++++++++
 

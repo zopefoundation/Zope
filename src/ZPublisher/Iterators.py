@@ -1,25 +1,31 @@
 from zope.interface import Interface
 from zope.interface import implements
 
-class IStreamIterator(Interface):
+class IUnboundStreamIterator(Interface):
     """
-    An iterator that can be published.
-
-    IStreamIterators must not read from the object database.
-    After the application finishes interpreting a request and 
-    returns an iterator to be processed asynchronously, it closes 
-    the ZODB connection. If the iterator then tries to load some 
-    ZODB object, ZODB would do one of two things.  If the connection 
-    is still closed, ZODB would raise an error. If the connection 
-    happens to be re-opened by another thread, ZODB might allow it, 
-    but it has a chance of going insane if it happens to be loading 
-    or storing something in the other thread at the same time.                      """
+    An iterator with unknown length that can be published.
+    """
 
     def next():
         """
         Return a sequence of bytes out of the bytestream, or raise
         StopIeration if we've reached the end of the bytestream.
         """
+
+
+class IStreamIterator(IUnboundStreamIterator):
+    """
+    An iterator with known length that can be published.
+
+    IStreamIterators must not read from the object database.
+    After the application finishes interpreting a request and
+    returns an iterator to be processed asynchronously, it closes
+    the ZODB connection. If the iterator then tries to load some
+    ZODB object, ZODB would do one of two things.  If the connection
+    is still closed, ZODB would raise an error. If the connection
+    happens to be re-opened by another thread, ZODB might allow it,
+    but it has a chance of going insane if it happens to be loading
+    or storing something in the other thread at the same time.                      """
 
     def __len__():
         """

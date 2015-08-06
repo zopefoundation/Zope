@@ -32,7 +32,7 @@ from ZPublisher.Publish import dont_publish_class
 from ZPublisher.Publish import get_module_info
 from ZPublisher.Publish import missing_name
 from ZPublisher.pubevents import PubStart, PubBeforeCommit, PubAfterTraversal
-from ZPublisher.Iterators import IStreamIterator
+from ZPublisher.Iterators import IUnboundStreamIterator, IStreamIterator
 
 _NOW = None     # overwrite for testing
 def _now():
@@ -131,12 +131,19 @@ class WSGIResponse(HTTPResponse):
         self.stdout.write(data)
 
     def setBody(self, body, title='', is_error=0):
-        if isinstance(body, file) or IStreamIterator.providedBy(body):
+        if isinstance(body, file):
             body.seek(0, 2)
             length = body.tell()
             body.seek(0)
             self.setHeader('Content-Length', '%d' % length)
             self.body = body
+        elif IStreamIterator.providedBy(body):
+            self.body = body
+            HTTPResponse.setBody(self, '', title, is_error)
+        elif IUnboundStreamIterator.providedBy(body):
+            self.body = body
+            self._streaming = 1
+            HTTPResponse.setBody(self, '', title, is_error)
         else:
             HTTPResponse.setBody(self, body, title, is_error)
 
