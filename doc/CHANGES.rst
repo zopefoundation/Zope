@@ -8,7 +8,8 @@ http://docs.zope.org/zope2/
 2.13.24 (unreleased)
 --------------------
 
-- TBD
+- Issue #34: Fix ``NameError`` exception for ``WindowsError`` which could
+  happen on non-windows systems.
 
 2.13.23 (2015-06-29)
 --------------------

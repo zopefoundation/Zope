@@ -27,6 +27,12 @@ from ZConfig.components.logger import loghandler
 from zope.event import notify
 from zope.processlifetime import ProcessStarting
 
+try:
+    IO_ERRORS = (IOError, WindowsError)
+except NameError:
+    IO_ERRORS = (IOError,)
+
+
 logger = logging.getLogger("Zope")
 started = False
 
@@ -91,7 +97,7 @@ class ZopeStarter:
         # emit a "ready" message in order to prevent the kinds of emails
         # to the Zope maillist in which people claim that Zope has "frozen"
         # after it has emitted ZServer messages.
-        
+
         logger.info('Ready to handle requests')
         self.sendEvents()
 
@@ -193,7 +199,7 @@ class ZopeStarter:
                 # This one has the delayed listening feature
                 if not server.fast_listen:
                     server.fast_listen = True
-                    server.listen(1024) # same value as defined in medusa.http_server.py  
+                    server.listen(1024) # same value as defined in medusa.http_server.py
 
     def setupServers(self):
         socket_err = (
@@ -283,7 +289,7 @@ class ZopeStarter:
                 lock_file(self.lockfile)
                 self.lockfile.write(str(os.getpid()))
                 self.lockfile.flush()
-            except (IOError, WindowsError):
+            except IO_ERRORS:
                 pass
 
     def makePidFile(self):
@@ -295,7 +301,7 @@ class ZopeStarter:
                 f = open(self.cfg.pid_filename, 'w')
                 f.write(str(os.getpid()))
                 f.close()
-            except (IOError, WindowsError):
+            except IO_ERRORS:
                 pass
 
     def unlinkPidFile(self):
@@ -409,7 +415,7 @@ def dropPrivileges(cfg):
 
     os.setuid(uid)
     logger.info('Set effective user to "%s"' % effective_user)
-    return 1 # for unit testing purposes 
+    return 1 # for unit testing purposes
 
 
 # DM 2004-11-24: added
