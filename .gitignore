@@ -12,3 +12,4 @@ include/
 lib/
 parts/
 docs/_build/
+docs/.build/
