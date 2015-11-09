@@ -30,7 +30,7 @@ README = _read_file('README.rst')
 CHANGES = _read_file('CHANGES.rst')
 
 setup(name='Zope2',
-    version='4.0a1.dev',
+    version='4.0a1.dev0',
     url='http://zope2.zope.org',
     license='ZPL 2.1',
     description='Zope2 application server / web framework',
