@@ -11,6 +11,9 @@ http://docs.zope.org/zope2/
 Bugs Fixed
 ++++++++++
 
+- Fix pt_editForm after the help-system was removed.
+  [pbauer]
+
 - Skipped ipv6 test on Travis, because Travis no longer supports this.
 
 - LP #789863:  Ensure that Request objects cannot be published / traversed
