@@ -79,8 +79,8 @@ class ProductDispatcher(Implicit):
         # Try to get a custom dispatcher from a Python product
         global _packages
         try:
-            package = _packages.get(name, None)
-        except NameError:
+            package = _packages[name]
+        except (NameError, KeyError):
             _packages = _product_packages()
             package = _packages.get(name, None)
 
