@@ -11,6 +11,8 @@ http://docs.zope.org/zope2/
 Bugs Fixed
 ++++++++++
 
+- Skipped ipv6 test on Travis, because Travis no longer supports this.
+
 - LP #789863:  Ensure that Request objects cannot be published / traversed
   directly via a URL.
 
