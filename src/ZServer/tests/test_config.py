@@ -134,6 +134,8 @@ class ZServerConfigurationTestCase(BaseTest, WarningInterceptor):
         self.assertEqual(server.port, 9381)
         server.close()
 
+    @unittest.skipIf(os.environ.get('TRAVIS'),
+                     'ipv6 is not available on Travis anymore')
     def test_http_over_ipv6(self):
         factory = self.load_factory("""\
             <http-server>
@@ -149,7 +151,7 @@ class ZServerConfigurationTestCase(BaseTest, WarningInterceptor):
         self.assertEqual(server.ip, '::1')
         self.assertEqual(server.port, 9381)
         server.close()
-    
+
     def test_http_factory_defaulthost(self):
         factory = self.load_factory("""\
             <http-server>
