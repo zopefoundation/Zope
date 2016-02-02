@@ -11,6 +11,14 @@ http://docs.zope.org/zope2/
 Bugs Fixed
 ++++++++++
 
+- bobo_traverse of ProductDispatcher did not correctly invalidate cache
+  when a product was not initializes after first access of the cache. Types
+  that were added in test-profiles were not useable.
+  [pbauer, jensens]
+
+- Fix pt_editForm after the help-system was removed.
+  [pbauer]
+
 - Skipped ipv6 test on Travis, because Travis no longer supports this.
 
 - LP #789863:  Ensure that Request objects cannot be published / traversed
