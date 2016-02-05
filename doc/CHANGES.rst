@@ -8,6 +8,8 @@ http://docs.zope.org/zope2/
 2.13.24 (unreleased)
 --------------------
 
+- Issue #43: Fix Zope failing to start if a zoperunner is configured.
+
 - Issue #34: Fix ``NameError`` exception for ``WindowsError`` which could
   happen on non-windows systems.
 
