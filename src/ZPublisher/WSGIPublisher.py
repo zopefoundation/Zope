@@ -282,7 +282,7 @@ def publish_module(environ, start_response,
 
     body = response.body
 
-    if isinstance(body, file) or IStreamIterator.providedBy(body):
+    if isinstance(body, file) or IUnboundStreamIterator.providedBy(body):
         result = body
     else:
         # If somebody used response.write, that data will be in the
