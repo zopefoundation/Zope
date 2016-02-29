@@ -8,7 +8,10 @@ http://docs.zope.org/zope2/
 2.13.24 (unreleased)
 --------------------
 
-- Issue #43: Fix Zope failing to start if a zoperunner is configured.
+- Issue #44:  Ensure that iterators declared as implementing
+  ``IUnboundStreamIterator`` are handled properly.
+
+- Issue #43:  Fix Zope failing to start if a zoperunner is configured.
 
 - PR #51:  Harden debug control panel's module-crawling against trickery
   performed by ``six``.
