@@ -5,7 +5,7 @@ This file contains change information for the current Zope release.
 Change information for previous versions of Zope can be found at
 http://docs.zope.org/zope2/
 
-2.13.24 (unreleased)
+2.13.24 (2016-02-29)
 --------------------
 
 - Issue #44:  Ensure that iterators declared as implementing
@@ -18,6 +18,10 @@ http://docs.zope.org/zope2/
 
 - Issue #34: Fix ``NameError`` exception for ``WindowsError`` which could
   happen on non-windows systems.
+
+- Updated distributions:
+
+  - AccessControl = 2.13.14
 
 2.13.23 (2015-06-29)
 --------------------
