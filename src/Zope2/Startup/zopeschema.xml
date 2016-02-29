@@ -198,6 +198,17 @@
       </description>
     </key>
 
+    <key name="start-timeout" datatype="integer" required="no"
+        default="300">
+        <description>
+            When a start-test-program is supplied, a process won't be
+            considered to be started until the test program exits normally
+            or until start-timout seconds have passed.
+
+            This defaults to 300 seconds (5 minutes).
+        </description>
+    </key>
+
   </sectiontype>
 
   <sectiontype name="zodb_db" datatype=".ZopeDatabase"
