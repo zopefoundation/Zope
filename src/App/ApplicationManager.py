@@ -165,7 +165,7 @@ class DebugManager(Item, Implicit):
         for m in sys.modules.values():
             if m is None:
                 continue
-            if m.__name__.startswith('six'):
+            if 'six.' in m.__name__:
                 continue
             for sym in dir(m):
                 ob = getattr(m, sym)
