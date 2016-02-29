@@ -8,6 +8,9 @@ http://docs.zope.org/zope2/
 2.13.24 (unreleased)
 --------------------
 
+- PR #51:  Harden debug control panel's module-crawling against trickery
+  performed by ``six``.
+
 - Issue #34: Fix ``NameError`` exception for ``WindowsError`` which could
   happen on non-windows systems.
 
