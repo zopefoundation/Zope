@@ -33,8 +33,8 @@ http://docs.zope.org/zope2/
 
 - Provide a pip-compatible ``requirements.txt`` file for the release.  E.g.::
 
-  $ /path/to/venv/bin/pip install \
-    https://raw.githubusercontent.com/zopefoundation/Zope/2.13.23/requirements.txt
+      $ /path/to/venv/bin/pip install -r \
+        https://raw.githubusercontent.com/zopefoundation/Zope/2.13.23/requirements.txt
 
 - LP #789863:  Ensure that Request objects cannot be published / traversed
   directly via a URL.
@@ -46,7 +46,7 @@ http://docs.zope.org/zope2/
 
 - Document running Zope as a WSGI application.  See
   https://github.com/zopefoundation/Zope/issues/30
-  
+
 - LP #1465432:  Ensure that WSGIPublisher starts / ends interaction at
   request boundaries (analogous to ZPublisher).  Backport from master.
 
