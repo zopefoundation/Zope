@@ -54,6 +54,7 @@ setup(name='Zope2',
     install_requires=[
       'AccessControl>=2.13.2',
       'Acquisition',
+      'BTrees',
       'DateTime',
       'DocumentTemplate',
       'ExtensionClass',
