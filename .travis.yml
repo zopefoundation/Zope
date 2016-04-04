@@ -9,3 +9,7 @@ script:
     - bin/alltests -v
 notifications:
     email: false
+cache:
+  pip: true
+  directories:
+    - eggs/
