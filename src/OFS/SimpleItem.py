@@ -241,7 +241,7 @@ class Item(Base,
                 try:
                     strv = repr(error_value) # quotes tainted strings
                 except:
-                    strv = ('<unprintable %s object>' % 
+                    strv = ('<unprintable %s object>' %
                             str(type(error_value).__name__))
                 v = strv + (
                     (" (Also, the following error occurred while attempting "
@@ -406,13 +406,13 @@ class Item_w__name__(Item):
         self.__name__=id
 
     def getPhysicalPath(self):
-        """Get the physical path of the object.
+        # Get the physical path of the object.
+        #
+        # Returns a path (an immutable sequence of strings) that can be used to
+        # access this object again later, for example in a copy/paste
+        # operation.  getPhysicalRoot() and getPhysicalPath() are designed to
+        # operate together.
 
-        Returns a path (an immutable sequence of strings) that can be used to
-        access this object again later, for example in a copy/paste operation.
-        getPhysicalRoot() and getPhysicalPath() are designed to operate
-        together.
-        """
         path = (self.__name__, )
         p = aq_parent(aq_inner(self))
         if p is not None:
