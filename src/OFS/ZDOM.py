@@ -95,61 +95,61 @@ class Node:
 
     security.declareProtected(access_contents_information, 'getNodeName')
     def getNodeName(self):
-        """The name of this node, depending on its type"""
+        # The name of this node, depending on its type.
         return None
 
     security.declareProtected(access_contents_information, 'getNodeValue')
     def getNodeValue(self):
-        """The value of this node, depending on its type"""
+        # The value of this node, depending on its type.
         return None
 
     security.declareProtected(access_contents_information, 'getParentNode')
     def getParentNode(self):
-        """The parent of this node.  All nodes except Document
-        DocumentFragment and Attr may have a parent"""
+        # The parent of this node.  All nodes except Document,
+        # DocumentFragment and Attr may have a parent.
         return None
 
     security.declareProtected(access_contents_information, 'getChildNodes')
     def getChildNodes(self):
-        """Returns a NodeList that contains all children of this node.
-        If there are no children, this is a empty NodeList"""
+        # Returns a NodeList that contains all children of this node.
+        # If there are no children, this is a empty NodeList
         return NodeList()
 
     security.declareProtected(access_contents_information, 'getFirstChild')
     def getFirstChild(self):
-        """The first child of this node. If there is no such node
-        this returns None."""
+        # The first child of this node. If there is no such node
+        # this returns None.
         return None
 
     security.declareProtected(access_contents_information, 'getLastChild')
     def getLastChild(self):
-        """The last child of this node. If there is no such node
-        this returns None."""
+        # The last child of this node. If there is no such node
+        # this returns None.
         return None
 
     security.declareProtected(access_contents_information,
                               'getPreviousSibling')
     def getPreviousSibling(self):
-        """The node immediately preceding this node.  If
-        there is no such node, this returns None."""
+        # The node immediately preceding this node.
+        # If there is no such node, this returns None.
         return None
 
     security.declareProtected(access_contents_information, 'getNextSibling')
     def getNextSibling(self):
-        """The node immediately preceding this node.  If
-        there is no such node, this returns None."""
+        # The node immediately preceding this node.
+        # If there is no such node, this returns None.
         return None
 
     security.declareProtected(access_contents_information, 'getAttributes')
     def getAttributes(self):
-        """Returns a NamedNodeMap containing the attributes
-        of this node (if it is an element) or None otherwise."""
+        # Returns a NamedNodeMap containing the attributes
+        # of this node (if it is an element) or None otherwise.
         return None
 
     security.declareProtected(access_contents_information, 'getOwnerDocument')
     def getOwnerDocument(self):
-        """The Document object associated with this node.
-        When this is a document this is None"""
+        # The Document object associated with this node.
+        # When this is a document this is None.
         node = self
         if hasattr(node, 'aq_parent'):
             node = aq_parent(self)
@@ -161,8 +161,8 @@ class Node:
 
     security.declareProtected(access_contents_information, 'hasChildNodes')
     def hasChildNodes(self):
-        """Returns true if the node has any children, false
-        if it doesn't. """
+        # Returns true if the node has any children, false
+        # if it doesn't.
         return len(self.objectIds())
 
 InitializeClass(Node)
@@ -207,36 +207,36 @@ class Document(Explicit, Node):
     # ------------
 
     def getNodeName(self):
-        """The name of this node, depending on its type"""
+        # The name of this node, depending on its type.
         return '#document'
 
     def getNodeType(self):
-        """A code representing the type of the node."""
+        # A code representing the type of the node.
         return DOCUMENT_NODE
 
     def getOwnerDocument(self):
-        """The Document object associated with this node.
-        When this is a document this is None"""
+        # The Document object associated with this node.
+        # When this is a document this is None.
         return self
 
     def getChildNodes(self):
-        """Returns a NodeList that contains all children of this node.
-        If there are no children, this is a empty NodeList"""
+        # Returns a NodeList that contains all children of this node.
+        # If there are no children, this is a empty NodeList.
         return NodeList([aq_parent(self)])
 
     def getFirstChild(self):
-        """The first child of this node. If there is no such node
-        this returns None."""
+        # The first child of this node. If there is no such node
+        # this returns None.
         return aq_parent(self)
 
     def getLastChild(self):
-        """The last child of this node. If there is no such node
-        this returns None."""
+        # The last child of this node. If there is no such node
+        # this returns None.
         return aq_parent(self)
 
     def hasChildNodes(self):
-        """Returns true if the node has any children, false
-        if it doesn't. """
+        # Returns true if the node has any children, false
+        # if it doesn't.
         return 1
 
 InitializeClass(Document)
@@ -283,49 +283,49 @@ class Element(Node):
 
     security.declareProtected(access_contents_information, 'getTagName')
     def getTagName(self):
-        """The name of the element"""
+        # The name of the element.
         return self.__class__.__name__
 
     # Node Attributes
     # ---------------
 
     def getNodeName(self):
-        """The name of this node, depending on its type"""
+        # The name of this node, depending on its type.
         return self.getTagName()
 
     def getNodeType(self):
-        """A code representing the type of the node."""
+        # A code representing the type of the node.
         return ELEMENT_NODE
 
     def getParentNode(self):
-        """The parent of this node.  All nodes except Document
-        DocumentFragment and Attr may have a parent"""
+        # The parent of this node.  All nodes except Document,
+        # DocumentFragment and Attr may have a parent.
         return getattr(self, 'aq_parent', None)
 
     def getChildNodes(self):
-        """Returns a NodeList that contains all children of this node.
-        If there are no children, this is a empty NodeList"""
+        # Returns a NodeList that contains all children of this node.
+        # If there are no children, this is a empty NodeList.
         return  NodeList(self.objectValues())
 
     def getFirstChild(self):
-        """The first child of this node. If there is no such node
-        this returns None"""
+        # The first child of this node. If there is no such node
+        # this returns None
         children = self.getChildNodes()
         if children:
             return children._data[0]
         return None
 
     def getLastChild(self):
-        """The last child of this node.  If there is no such node
-        this returns None."""
+        # The last child of this node.  If there is no such node
+        # this returns None.
         children = self.getChildNodes()
         if children:
             return children._data[-1]
         return None
 
     def getPreviousSibling(self):
-        """The node immediately preceding this node.  If
-        there is no such node, this returns None."""
+        # The node immediately preceding this node.
+        # If there is no such node, this returns None.
         if hasattr(self, 'aq_parent'):
             parent = aq_parent(self)
             ids=list(parent.objectIds())
@@ -338,8 +338,8 @@ class Element(Node):
         return None
 
     def getNextSibling(self):
-        """The node immediately preceding this node.  If
-        there is no such node, this returns None."""
+        # The node immediately preceding this node.
+        # If there is no such node, this returns None.
         if hasattr(self, 'aq_parent'):
             parent = aq_parent(self)
             ids=list(parent.objectIds())
@@ -356,13 +356,13 @@ class Element(Node):
 
     security.declareProtected(access_contents_information, 'getAttribute')
     def getAttribute(self, name):
-        """Retrieves an attribute value by name."""
+        # Retrieves an attribute value by name.
         return None
 
     security.declareProtected(access_contents_information, 'getAttributeNode')
     def getAttributeNode(self, name):
-        """ Retrieves an Attr node by name or None if
-        there is no such attribute. """
+        # Retrieves an Attr node by name or None if
+        # there is no such attribute.
         return None
 
     security.declareProtected(access_contents_information,
@@ -395,8 +395,8 @@ class ElementWithAttributes(Element):
     """
 
     def getAttributes(self):
-        """Returns a NamedNodeMap containing the attributes
-        of this node (if it is an element) or None otherwise."""
+        # Returns a NamedNodeMap containing the attributes
+        # of this node (if it is an element) or None otherwise.
         attribs={}
         for p in self._properties:
             if p['type'] == 'string':
@@ -406,13 +406,13 @@ class ElementWithAttributes(Element):
         return NamedNodeMap(attribs)
 
     def getAttribute(self, name):
-        """Retrieves an attribute value by name."""
+        # Retrieves an attribute value by name.
         if self.getPropertyType(name) == 'string':
             return self.getProperty(name,'')
 
     def getAttributeNode(self, name):
-        """Retrieves an Attr node by name or None if
-        there is no such attribute. """
+        # Retrieves an Attr node by name or None if
+        # there is no such attribute.
         if self.getPropertyType(name) == 'string':
             return Attr(name, self.getProperty(name,'')).__of__(self)
         return None
@@ -426,22 +426,22 @@ class ElementWithTitle(Element):
     """
 
     def getAttributes(self):
-        """Returns a NamedNodeMap containing the attributes
-        of this node (if it is an element) or None otherwise."""
+        # Returns a NamedNodeMap containing the attributes
+        # of this node (if it is an element) or None otherwise.
         title = self.getAttributeNode('title')
         if title is not None:
             return NamedNodeMap({'title':title})
         return NamedNodeMap()
 
     def getAttribute(self, name):
-        """Retrieves an attribute value by name."""
+        # Retrieves an attribute value by name.
         if name=='title' and hasattr(aq_base(self), 'title'):
             return self.title
         return ''
 
     def getAttributeNode(self, name):
-        """Retrieves an Attr node by name or None if
-        there is no such attribute. """
+        # Retrieves an Attr node by name or None if
+        # there is no such attribute.
         value=self.getAttribute(name)
         if value:
             return Attr(name, value).__of__(self)
@@ -454,8 +454,6 @@ class Root(ElementWithAttributes):
     """
 
     def getOwnerDocument(self):
-        """
-        """
         return Document().__of__(self)
 
 
@@ -547,7 +545,7 @@ class Attr(Implicit, Node):
         self.specified = 1
 
     def getNodeName(self):
-        """The name of this node, depending on its type"""
+        # The name of this node, depending on its type.
         return self.name
 
     def getName(self):
@@ -555,11 +553,11 @@ class Attr(Implicit, Node):
         return self.name
 
     def getNodeValue(self):
-        """The value of this node, depending on its type"""
+        # The value of this node, depending on its type.
         return self.value
 
     def getNodeType(self):
-        """A code representing the type of the node."""
+        # A code representing the type of the node.
         return ATTRIBUTE_NODE
 
     def getSpecified(self):

@@ -8,7 +8,9 @@ http://docs.zope.org/zope2/
 2.13.25 (unreleased)
 --------------------
 
-- TBD
+- Removed docstrings from some methods to avoid publishing them.  From
+  Products.PloneHotfix20160419.  [maurits]
+
 
 2.13.24 (2016-02-29)
 --------------------
