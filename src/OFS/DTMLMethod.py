@@ -91,7 +91,7 @@ class DTMLMethod(RestrictedDTML,
     security.declareProtected(View, '__call__')
     def __call__(self, client=None, REQUEST={}, RESPONSE=None, **kw):
         """Render using the given client object
-        
+
         o If client is not passed, we are being called as a sub-template:
           don't do any error propagation.
 
@@ -199,14 +199,12 @@ class DTMLMethod(RestrictedDTML,
 
     security.declareProtected(change_dtml_methods, 'getCacheNamespaceKeys')
     def getCacheNamespaceKeys(self):
-        """ Return the cacheNamespaceKeys.
-        """
+        # Return the cacheNamespaceKeys.
         return self._cache_namespace_keys
 
     security.declareProtected(change_dtml_methods, 'setCacheNamespaceKeys')
     def setCacheNamespaceKeys(self, keys, REQUEST=None):
-        """ Set the list of names looked up to provide a cache key.
-        """
+        # Set the list of names looked up to provide a cache key.
         ks = []
         for key in keys:
             key = str(key).strip()
@@ -354,14 +352,12 @@ class DTMLMethod(RestrictedDTML,
 
     security.declareProtected(view_management_screens, 'PrincipiaSearchSource')
     def PrincipiaSearchSource(self):
-        """ Support for searching - the document's contents are searched.
-        """
+        # Support for searching - the document's contents are searched.
         return self.read()
 
     security.declareProtected(view_management_screens, 'document_src')
     def document_src(self, REQUEST=None, RESPONSE=None):
-        """ Return unprocessed document source.
-        """
+        # Return unprocessed document source.
         if RESPONSE is not None:
             RESPONSE.setHeader('Content-Type', 'text/plain')
         return self.read()

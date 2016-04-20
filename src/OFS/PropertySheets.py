@@ -112,8 +112,8 @@ class PropertySheet(Traversable, Persistent, Implicit):
     __reserved_ids= ('values','items')
 
     def property_extensible_schema__(self):
-        """Return a flag indicating whether new properties may be
-        added or removed."""
+        # Return a flag indicating whether new properties may be
+        # added or removed.
         return self._extensible
 
     def __init__(self, id, md=None):
@@ -169,8 +169,8 @@ class PropertySheet(Traversable, Persistent, Implicit):
 
     security.declareProtected(access_contents_information, 'getPropertyType')
     def getPropertyType(self, id):
-        """Get the type of property 'id', returning None if no
-           such property exists"""
+        # Get the type of property 'id', returning None if no
+        # such property exists.
         pself=self.p_self()
         for md in pself._properties:
             if md['id']==id:
@@ -705,7 +705,7 @@ class PropertySheets(Traversable, Implicit, Tabs):
                 raise BadRequest(
                     'attempt to delete undeletable property sheet: ' + id)
             self.delPropertySheet(id)
-        if REQUEST is not None: 
+        if REQUEST is not None:
             REQUEST.RESPONSE.redirect('%s/manage' % self.absolute_url())
 
     def __len__(self):

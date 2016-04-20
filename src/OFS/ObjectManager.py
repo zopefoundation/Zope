@@ -295,12 +295,11 @@ class ObjectManager(CopyContainer,
 
     security.declareProtected(access_contents_information, 'hasObject')
     def hasObject(self, id):
-        """Indicate whether the folder has an item by ID.
-
-        This doesn't try to be more intelligent than _getOb, and doesn't
-        consult _objects (for performance reasons). The common use case
-        is to check that an object does *not* exist.
-        """
+        # Indicate whether the folder has an item by ID.
+        #
+        # This doesn't try to be more intelligent than _getOb, and doesn't
+        # consult _objects (for performance reasons). The common use case
+        # is to check that an object does *not* exist.
         if (id in ('.', '..') or
             id.startswith('_') or
             id.startswith('aq_') or
