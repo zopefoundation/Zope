@@ -180,27 +180,21 @@ class Document(Explicit, Node):
 
     security.declareProtected(access_contents_information, 'getImplementation')
     def getImplementation(self):
-        """
-        The DOMImplementation object that handles this document.
-        """
+        # The DOMImplementation object that handles this document.
         return DOMImplementation()
 
     security.declareProtected(access_contents_information, 'getDoctype')
     def getDoctype(self):
-        """
-        The Document Type Declaration associated with this document.
-        For HTML documents as well as XML documents without
-        a document type declaration this returns null.
-        """
+        # The Document Type Declaration associated with this document.
+        # For HTML documents as well as XML documents without
+        # a document type declaration this returns null.
         return None
 
     security.declareProtected(access_contents_information,
                               'getDocumentElement')
     def getDocumentElement(self):
-        """
-        This is a convenience attribute that allows direct access to
-        the child node that is the root element of the document.
-        """
+        # This is a convenience attribute that allows direct access to
+        # the child node that is the root element of the document.
         return aq_parent(self)
 
     # Node Methods
@@ -368,12 +362,11 @@ class Element(Node):
     security.declareProtected(access_contents_information,
                               'getElementsByTagName')
     def getElementsByTagName(self, tagname):
-        """ Returns a NodeList of all the Elements with a given tag
-        name in the order in which they would be encountered in a
-        preorder traversal of the Document tree.  Parameter: tagname
-        The name of the tag to match (* = all tags). Return Value: A new
-        NodeList object containing all the matched Elements.
-        """
+        # Returns a NodeList of all the Elements with a given tag
+        # name in the order in which they would be encountered in a
+        # preorder traversal of the Document tree.  Parameter: tagname
+        # The name of the tag to match (* = all tags). Return Value: A new
+        # NodeList object containing all the matched Elements.
         nodeList = []
         for child in self.objectValues():
             if (child.getNodeType()==ELEMENT_NODE and \
@@ -477,12 +470,12 @@ class NodeList:
         return self._data[index]
 
     def item(self, index):
-        """Returns the index-th item in the collection"""
+        # Returns the index-th item in the collection.
         try: return self._data[index]
         except IndexError: return None
 
     def getLength(self):
-        """The length of the NodeList"""
+        # The length of the NodeList.
         return len(self._data)
 
     __len__=getLength
@@ -506,7 +499,7 @@ class NamedNodeMap:
         self._data = data
 
     def item(self, index):
-        """Returns the index-th item in the map"""
+        # Returns the index-th item in the map.
         try: return self._data.values()[index]
         except IndexError: return None
 
@@ -517,17 +510,16 @@ class NamedNodeMap:
             return self._data[key]
 
     def getLength(self):
-        """The length of the NodeList"""
+        # The length of the NodeList.
         return len(self._data)
 
     __len__ = getLength
 
     def getNamedItem(self, name):
-        """Retrieves a node specified by name. Parameters:
-        name Name of a node to retrieve. Return Value A Node (of any
-        type) with the specified name, or None if the specified name
-        did not identify any node in the map.
-        """
+        # Retrieves a node specified by name. Parameters:
+        # name Name of a node to retrieve. Return Value A Node (of any
+        # type) with the specified name, or None if the specified name
+        # did not identify any node in the map.
         if self._data.has_key(name):
             return self._data[name]
         return None
@@ -549,7 +541,7 @@ class Attr(Implicit, Node):
         return self.name
 
     def getName(self):
-        """Returns the name of this attribute."""
+        # Returns the name of this attribute.
         return self.name
 
     def getNodeValue(self):
@@ -561,6 +553,6 @@ class Attr(Implicit, Node):
         return ATTRIBUTE_NODE
 
     def getSpecified(self):
-        """If this attribute was explicitly given a value in the
-        original document, this is true; otherwise, it is false."""
+        # If this attribute was explicitly given a value in the
+        # original document, this is true; otherwise, it is false.
         return self.specified
