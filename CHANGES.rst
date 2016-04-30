@@ -73,7 +73,7 @@ Features Added
   - AccessControl = 3.0.12
   - Acquisition = 4.2.2
   - BTrees = 4.0.8
-  - DateTime = 4.1
+  - DateTime = 4.1.1
   - ExtensionClass = 4.1.2
   - docutils = 0.9.1
   - manuel = 1.6.0
