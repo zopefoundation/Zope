@@ -108,13 +108,13 @@ class Traversable:
 
     security.declarePublic('getPhysicalPath')
     def getPhysicalPath(self):
-        """Get the physical path of the object.
+        # Get the physical path of the object.
+        #
+        # Returns a path (an immutable sequence of strings) that can be used to
+        # access this object again later, for example in a copy/paste
+        # operation.  getPhysicalRoot() and getPhysicalPath() are designed to
+        # operate together.
 
-        Returns a path (an immutable sequence of strings) that can be used to
-        access this object again later, for example in a copy/paste operation.
-        getPhysicalRoot() and getPhysicalPath() are designed to operate
-        together.
-        """
         path = (self.getId(),)
 
         p = aq_parent(aq_inner(self))

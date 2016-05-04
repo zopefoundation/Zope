@@ -144,9 +144,7 @@ class Cacheable:
 
     security.declarePrivate('ZCacheable_getObAndView')
     def ZCacheable_getObAndView(self, view_name):
-        """
-        Returns self and view_name unchanged.
-        """
+        # Returns self and view_name unchanged.
         return self, view_name
 
     security.declarePrivate('ZCacheable_get')
