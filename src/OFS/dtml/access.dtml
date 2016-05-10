@@ -81,7 +81,7 @@ a permission in addition to selecting to acquire permissions.
 
   <dtml-unless isTopLevelPrincipiaApplicationObject>
   <td align="left" valign="top">
-  <input type="checkbox" name="a&dtml-sequence-index;" &dtml-acquire; />
+  <input type="checkbox" name="acquire_&dtml-hashed_name;" &dtml-acquire; />
   </td>
   </dtml-unless>
   <td align="left" nowrap>
