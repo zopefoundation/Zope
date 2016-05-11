@@ -25,6 +25,7 @@ from AccessControl.rolemanager import reqattr
 from AccessControl.Permission import Permission
 from AccessControl.Permissions import change_permissions
 from AccessControl.requestmethod import requestmethod
+from AccessControl.rolemanager import _string_hash
 
 
 class RoleManager(BaseRoleManager):
@@ -104,14 +105,18 @@ class RoleManager(BaseRoleManager):
         permissions=self.ac_inherited_permissions(1)
         fails = []
         for ip in range(len(permissions)):
+            permission_name = permissions[ip][0]
+            permission_hash = _string_hash(permission_name)
             roles = []
-            for ir in indexes:
-                if have("p%dr%d" % (ip, ir)):
-                    roles.append(valid_roles[ir])
+            for role in valid_roles:
+                role_name = role
+                role_hash = _string_hash(role_name)
+                if have("permission_%srole_%s" % (permission_hash, role_hash)):
+                    roles.append(role)
             name, value = permissions[ip][:2]
             try:
                 p = Permission(name, value, self)
-                if not have('a%d' % ip):
+                if not have('acquire_%s' % permission_hash):
                     roles=tuple(roles)
                 p.setRoles(roles)
             except:
