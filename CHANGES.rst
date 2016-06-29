@@ -48,6 +48,9 @@ Bugs Fixed
 Features Added
 ++++++++++++++
 
+- Optimized the `OFS.ObjectManager.__contains__` method to do the
+  least amount of work necessary.
+
 - Optimized the `OFS.Traversable.getPhysicalPath` method to avoid excessive
   amounts of method calls.
 
