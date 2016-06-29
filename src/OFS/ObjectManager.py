@@ -787,7 +787,11 @@ class ObjectManager(CopyContainer,
         return self._setObject(key, value)
 
     def __contains__(self, name):
-        return name in self.objectIds()
+        for ob in self._objects:
+            if name == ob['id']:
+                return True
+
+        return False
 
     def __iter__(self):
         return iter(self.objectIds())

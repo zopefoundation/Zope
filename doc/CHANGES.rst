@@ -8,7 +8,9 @@ http://docs.zope.org/zope2/
 2.13.25 (unreleased)
 --------------------
 
-- TBD
+- Optimized the `OFS.ObjectManager.__contains__` method to do the
+  least amount of work necessary.
+
 
 2.13.24 (2016-02-29)
 --------------------
