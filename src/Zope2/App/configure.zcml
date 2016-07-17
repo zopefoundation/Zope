@@ -8,5 +8,6 @@
   <include file="traversing.zcml" />
   <include package="OFS "/>
   <include package="ZPublisher" />
+  <include package="five.globalrequest"/>
 
 </configure>

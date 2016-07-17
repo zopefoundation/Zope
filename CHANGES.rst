@@ -51,6 +51,8 @@ Bugs Fixed
 Features Added
 ++++++++++++++
 
+- Depend on and automatically set up `five.globalrequest`.
+
 - Optimized the `OFS.ObjectManager.__contains__` method to do the
   least amount of work necessary.
 
@@ -82,6 +84,7 @@ Features Added
   - DateTime = 4.1.1
   - ExtensionClass = 4.1.2
   - docutils = 0.9.1
+  - five.globalrequest = 1.0
   - manuel = 1.6.0
   - Missing = 3.1
   - MultiMapping = 3.0
@@ -93,6 +96,7 @@ Features Added
   - tempstorage = 3.0
   - zExceptions = 3.0
   - zLOG = 3.0
+  - zope.globalrequest = 1.2
   - ZopeUndo = 4.1
 
 Restructuring
