@@ -65,23 +65,23 @@ def manage_addFile(self, id, file='', title='', precondition='',
     precondition = str(precondition)
 
     id, title = cookId(id, title, file)
-    
+
     self=self.this()
 
     # First, we create the file without data:
     self._setObject(id, File(id,title,'',content_type, precondition))
-    
+
     newFile = self._getOb(id)
-    
+
     # Now we "upload" the data.  By doing this in two steps, we
     # can use a database trick to make the upload more efficient.
     if file:
         newFile.manage_upload(file)
     if content_type:
         newFile.content_type=content_type
-    
+
     notify(ObjectCreatedEvent(newFile))
-    
+
     if REQUEST is not None:
         REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
 
@@ -433,8 +433,7 @@ class File(Persistent, Implicit, PropertyManager,
 
     security.declareProtected(View, 'PrincipiaSearchSource')
     def PrincipiaSearchSource(self):
-        """ Allow file objects to be searched.
-        """
+        # Allow file objects to be searched.
         if self.content_type.startswith('text/'):
             return str(self.data)
         return ''
@@ -470,9 +469,9 @@ class File(Persistent, Implicit, PropertyManager,
             self.update_data(filedata, content_type, len(filedata))
         else:
             self.ZCacheable_invalidate()
-        
+
         notify(ObjectModifiedEvent(self))
-        
+
         if REQUEST:
             message="Saved changes."
             return self.manage_main(self,REQUEST,manage_tabs_message=message)
@@ -491,9 +490,9 @@ class File(Persistent, Implicit, PropertyManager,
         content_type=self._get_content_type(file, data, self.__name__,
                                             'application/octet-stream')
         self.update_data(data, content_type, size)
-        
+
         notify(ObjectModifiedEvent(self))
-        
+
         if REQUEST:
             message="Saved changes."
             return self.manage_main(self,REQUEST,manage_tabs_message=message)
@@ -597,10 +596,8 @@ class File(Persistent, Implicit, PropertyManager,
 
     security.declareProtected(View, 'get_size')
     def get_size(self):
-        """Get the size of a file or image.
-
-        Returns the size of the file or image.
-        """
+        # Get the size of a file or image.
+        # Returns the size of the file or image.
         size=self.size
         if size is None: size=len(self.data)
         return size
@@ -610,10 +607,8 @@ class File(Persistent, Implicit, PropertyManager,
 
     security.declareProtected(View, 'getContentType')
     def getContentType(self):
-        """Get the content type of a file or image.
-
-        Returns the content type (MIME type) of a file or image.
-        """
+        # Get the content type of a file or image.
+        # Returns the content type (MIME type) of a file or image.
         return self.content_type
 
 
@@ -674,18 +669,18 @@ def manage_addImage(self, id, file, title='', precondition='', content_type='',
 
     # First, we create the image without data:
     self._setObject(id, Image(id,title,'',content_type, precondition))
-    
+
     newFile = self._getOb(id)
-    
+
     # Now we "upload" the data.  By doing this in two steps, we
     # can use a database trick to make the upload more efficient.
     if file:
         newFile.manage_upload(file)
     if content_type:
         newFile.content_type=content_type
-    
+
     notify(ObjectCreatedEvent(newFile))
-    
+
     if REQUEST is not None:
         try:    url=self.DestinationURL()
         except: url=REQUEST['URL1']
@@ -809,7 +804,7 @@ class Image(File):
         if isinstance(data, unicode):
             raise TypeError('Data can only be str or file-like.  '
                             'Unicode objects are expressly forbidden.')
-        
+
         if size is None: size=len(data)
 
         self.size=size

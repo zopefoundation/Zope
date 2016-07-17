@@ -174,13 +174,13 @@ class Application(ApplicationDefaultPermissions,
         return self
 
     def getPhysicalPath(self):
-        """Get the physical path of the object.
-
-        Returns a path (an immutable sequence of strings) that can be used to
-        access this object again later, for example in a copy/paste operation.
-        getPhysicalRoot() and getPhysicalPath() are designed to operate
-        together.
-        """
+        # Get the physical path of the object.
+        #
+        # Returns a path (an immutable sequence of strings) that can be used to
+        # access this object again later, for example in a copy/paste
+        # operation.  getPhysicalRoot() and getPhysicalPath() are designed to
+        # operate together.
+        #
         # We're at the base of the path.
         return ('', )
 

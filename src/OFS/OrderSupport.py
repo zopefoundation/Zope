@@ -132,8 +132,7 @@ class OrderSupport(object):
     security.declareProtected(manage_properties, 'moveObjectsByDelta')
     def moveObjectsByDelta(self, ids, delta, subset_ids=None,
                            suppress_events=False):
-        """ Move specified sub-objects by delta.
-        """
+        # Move specified sub-objects by delta.
         if isinstance(ids, basestring):
             ids = (ids,)
         min_position = 0
@@ -183,32 +182,27 @@ class OrderSupport(object):
 
     security.declareProtected(manage_properties, 'moveObjectsUp')
     def moveObjectsUp(self, ids, delta=1, subset_ids=None):
-        """ Move specified sub-objects up by delta in container.
-        """
+        # Move specified sub-objects up by delta in container.
         return self.moveObjectsByDelta(ids, -delta, subset_ids)
 
     security.declareProtected(manage_properties, 'moveObjectsDown')
     def moveObjectsDown(self, ids, delta=1, subset_ids=None):
-        """ Move specified sub-objects down by delta in container.
-        """
+        # Move specified sub-objects down by delta in container.
         return self.moveObjectsByDelta(ids, delta, subset_ids)
 
     security.declareProtected(manage_properties, 'moveObjectsToTop')
     def moveObjectsToTop(self, ids, subset_ids=None):
-        """ Move specified sub-objects to top of container.
-        """
+        # Move specified sub-objects to top of container.
         return self.moveObjectsByDelta( ids, -len(self._objects), subset_ids )
 
     security.declareProtected(manage_properties, 'moveObjectsToBottom')
     def moveObjectsToBottom(self, ids, subset_ids=None):
-        """ Move specified sub-objects to bottom of container.
-        """
+        # Move specified sub-objects to bottom of container.
         return self.moveObjectsByDelta( ids, len(self._objects), subset_ids )
 
     security.declareProtected(manage_properties, 'orderObjects')
     def orderObjects(self, key, reverse=None):
-        """ Order sub-objects by key and direction.
-        """
+        # Order sub-objects by key and direction.
         ids = [ id for id, obj in sort( self.objectItems(),
                                         ( (key, 'cmp', 'asc'), ) ) ]
         if reverse:
@@ -218,8 +212,7 @@ class OrderSupport(object):
     security.declareProtected(access_contents_information,
                               'getObjectPosition')
     def getObjectPosition(self, id):
-        """ Get the position of an object by its id.
-        """
+        # Get the position of an object by its id.
         ids = self.objectIds()
         if id in ids:
             return ids.index(id)
@@ -227,22 +220,19 @@ class OrderSupport(object):
 
     security.declareProtected(manage_properties, 'moveObjectToPosition')
     def moveObjectToPosition(self, id, position, suppress_events=False):
-        """ Move specified object to absolute position.
-        """
+        # Move specified object to absolute position.
         delta = position - self.getObjectPosition(id)
         return self.moveObjectsByDelta(id, delta,
                                        suppress_events=suppress_events)
 
     security.declareProtected(access_contents_information, 'getDefaultSorting')
     def getDefaultSorting(self):
-        """ Get default sorting key and direction.
-        """
+        # Get default sorting key and direction.
         return self._default_sort_key, self._default_sort_reverse
 
     security.declareProtected(manage_properties, 'setDefaultSorting')
     def setDefaultSorting(self, key, reverse):
-        """ Set default sorting key and direction.
-        """
+        # Set default sorting key and direction.
         self._default_sort_key = key
         self._default_sort_reverse = reverse and 1 or 0
 
