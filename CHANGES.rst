@@ -88,7 +88,7 @@ Features Added
   - Persistence = 3.0a1
   - Products.ExternalMethod = 2.13.1
   - Products.MailHost = 2.13.2
-  - Products.ZCatalog = 3.1
+  - Products.ZCatalog = 3.1.1
   - Record = 3.1
   - tempstorage = 3.0
   - zExceptions = 3.0
