@@ -58,43 +58,6 @@ if sys.version_info > (3, 0):
 WIN = False
 if sys.platform[:3].lower() == "win":
     WIN = True
-    import pywintypes
-    import win32service
-    import win32serviceutil
-    from nt_svcutils import service
-
-    def do_windows(command):
-        def inner(self, arg):
-
-            name = self.get_service_name()
-            display_name = 'Zope instance at ' + self.options.directory
-
-            # This class exists only so we can take advantage of
-            # win32serviceutil.HandleCommandLine, it is never
-            # instantiated.
-            class InstanceService(service.Service):
-                _svc_name_ = name
-                _svc_display_name_ = display_name
-                _svc_description_ = "A Zope application instance running as a service"
-
-            # getopt sucks :-(
-            argv = [sys.argv[0]]
-            argv.extend(arg.split())
-            argv.append(command)
-
-            # we need to supply this manually as HandleCommandLine guesses wrong
-            serviceClassName = os.path.splitext(service.__file__)[0] + '.Service'
-
-            err = win32serviceutil.HandleCommandLine(
-                InstanceService,
-                serviceClassName,
-                argv=argv,
-            )
-
-            self.InstanceClass = InstanceService
-            return err
-
-        return inner
 
 
 def string_list(arg):
@@ -237,71 +200,6 @@ class ZopeCmd(ZDCmd):
                 svalue = str(value)
             args = [opt, svalue]
         return args
-
-    # START OF WINDOWS ONLY STUFF
-
-    if WIN:
-
-        def get_service_name(self):
-            return 'Zope' + str(hash(self.options.directory.lower()))
-
-        def get_status(self):
-            sn = self.get_service_name()
-            try:
-                stat = win32serviceutil.QueryServiceStatus(sn)[1]
-                self.zd_up = 1
-            except pywintypes.error as err:
-                if err[0] == 1060:
-                    # Service not installed
-                    stat = win32service.SERVICE_STOPPED
-                    self.zd_up = 0
-                else:
-                    raise
-
-            self.zd_pid = (stat == win32service.SERVICE_RUNNING) and -1 or 0
-            self.zd_status = "args=%s" % self.options.program
-
-        do_start = do_windows('start')
-        do_stop = do_windows('stop')
-        do_restart = do_windows('restart')
-
-        # Add extra commands to install and remove the Windows service
-
-        def do_install(self, arg):
-            err = do_windows('install')(self, arg)
-            if not err:
-                # If we installed successfully, put info in registry for the
-                # real Service class to use:
-                command = '"%s" -C "%s"' % (
-                    # This gives us the instance script for buildout instances
-                    # and the install script for classic instances.
-                    os.path.join(os.path.split(sys.argv[0])[0], 'runzope'),
-                    self.options.configfile
-                )
-                self.InstanceClass.setReg('command', command)
-
-                # This is unfortunately needed because runzope.exe is a
-                # setuptools generated .exe that spawns off a sub process,
-                # so pid would give us the wrong event name.
-                self.InstanceClass.setReg(
-                    'pid_filename', self.options.configroot.pid_filename)
-            return err
-
-        def help_install(self):
-            print("install -- Installs Zope as a Windows service.")
-
-        do_remove = do_windows('remove')
-
-        def help_remove(self):
-            print("remove -- Removes the Zope Windows service.")
-
-        do_windebug = do_windows('debug')
-
-        def help_windebug(self):
-            print("windebug -- Runs the Zope Windows service "
-                  "in the foreground, in debug mode.")
-
-    # END OF WINDOWS ONLY STUFF
 
     def get_startup_cmd(self, python, more):
         cmdline = ('%s -c "from Zope2 import configure;'

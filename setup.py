@@ -13,13 +13,9 @@
 ##############################################################################
 
 import os
-import sys
 from setuptools import setup, find_packages
 
 additional_install_requires = []
-
-if sys.platform[:3].lower() == "win":
-    additional_install_requires += ['nt_svcutils']
 
 here = os.path.abspath(os.path.dirname(__file__))
 

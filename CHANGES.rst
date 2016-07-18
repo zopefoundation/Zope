@@ -106,7 +106,9 @@ Features Added
 Restructuring
 +++++++++++++
 
-- Python 2.6 is no longer supported.  Use Python 2.7.
+- Removed nt_svcutils support from zopectl.
+
+- Python 2.6 is no longer supported. Use Python 2.7.
 
 - Products.SiteErrorLog: Is now a separated package.
 
