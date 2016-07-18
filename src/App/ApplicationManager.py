@@ -248,26 +248,23 @@ class ApplicationManager(Folder, CacheManager):
     """
     __roles__ = ('Manager',)
     isPrincipiaFolderish = 1
-    Database = DatabaseChooser('Database') #DatabaseManager()
+    Database = DatabaseChooser('Database')  # DatabaseManager()
     DebugInfo = DebugManager()
     DavLocks = DavLockManager()
 
     manage = manage_main = DTMLFile('dtml/cpContents', globals())
     manage_main._setName('manage_main')
 
-    _objects=(
+    _objects = (
         {'id': 'Database',
          'meta_type': Database.meta_type},
         {'id': 'DavLocks',
          'meta_type': DavLocks.meta_type},
         {'id': 'DebugInfo',
          'meta_type': DebugInfo.meta_type},
-        )
+    )
 
-    manage_options=(
-        ({'label':'Contents', 'action':'manage_main'}, ) +
-        UndoSupport.manage_options
-        )
+    manage_options = ({'label': 'Control Panel', 'action': 'manage_main'}, )
 
     id = 'Control_Panel'
     name = title = 'Control Panel'
