@@ -91,7 +91,7 @@ Features Added
   - Persistence = 3.0a1
   - Products.BTreeFolder2 = 3.0
   - Products.ExternalMethod = 3.0
-  - Products.MailHost = 2.13.2
+  - Products.MailHost = 3.0
   - Products.ZCatalog = 3.2
   - Products.ZCTextIndex = 3.0
   - Record = 3.1
