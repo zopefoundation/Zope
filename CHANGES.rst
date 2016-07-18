@@ -89,6 +89,7 @@ Features Added
   - Missing = 3.1
   - MultiMapping = 3.0
   - Persistence = 3.0a1
+  - Products.BTreeFolder2 = 3.0
   - Products.ExternalMethod = 3.0
   - Products.MailHost = 2.13.2
   - Products.ZCatalog = 3.2
