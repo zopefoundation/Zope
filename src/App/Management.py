@@ -148,9 +148,6 @@ class Navigation(Base):
     security.declareProtected(view_management_screens, 'manage_menu')
     manage_menu       =DTMLFile('dtml/menu', globals())
 
-    security.declareProtected(view_management_screens, 'manage_top_frame')
-    manage_top_frame  =DTMLFile('dtml/manage_top_frame', globals())
-
     security.declareProtected(view_management_screens, 'manage_page_header')
     manage_page_header=DTMLFile('dtml/manage_page_header', globals())
 
@@ -184,9 +181,6 @@ You have been logged out.
 </body>
 </html>""")
         return
-
-    security.declarePublic('manage_zmi_prefs')
-    manage_zmi_prefs=DTMLFile('dtml/manage_zmi_prefs', globals())
 
 # Navigation doesn't have an inherited __class_init__ so doesn't get
 # initialized automatically.

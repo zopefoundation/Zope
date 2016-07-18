@@ -17,41 +17,25 @@
 <a href="&dtml.url_quote-tree-item-url;/manage_workspace" 
  target="manage_main">&dtml-id;</a>
 </dtml-tree>
+
 <br />
-<table cellspacing="0" bgcolor="#efefef" width="100%">
-<tr>
-  <td width="16"></td>
-  <td>
-  <a href="manage_menu?save_layout=1">Save layout</a>
-  </td>
-</tr>
-</table>
 
-<dtml-if save_layout>
-  <dtml-call "RESPONSE.setCookie('tree-s', REQUEST.get('tree-s'), expires=ZopeTime('2100-01-01').rfc822())">
-</dtml-if>
-
-<dtml-unless expr="REQUEST.get('zmi_top_frame', '1')">
 <table width="100%" bgcolor="#6699cc">
 <tr>
 <td valign="top" align="center">
 <div class="form-element">
-<form action="&dtml-BASEPATH1;/" method="POST" target="manage_main">
-<span class="std-text">Logged in as <strong>&dtml-AUTHENTICATED_USER;</strong></span> &nbsp;&nbsp;
+<form action="&dtml-BASEPATH1;/manage_zmi_logout" method="POST" target="manage_main">
+<span class="std-text">Logged in as <strong>&dtml-AUTHENTICATED_USER;</strong></span>
+&nbsp;&nbsp;
 <br />
-<select class="form-element" name=":action" onchange="window.parent.manage_main.location.href='&dtml-BASEPATH1;/'+this.options[this.selectedIndex].value">
 <dtml-if "AUTHENTICATED_USER.getUserName() != 'Anonymous User'">
-<option value="manage_zmi_prefs">Set Preferences</option>
-<option value="manage_zmi_logout">Logout</option>
+<input class="form-element" type="submit" name="submit" value="Logout" />
 </dtml-if>
-</select> 
-<input class="form-element" type="submit" name="submit" value=" Go " />
 &nbsp;
 </form>
 </div>
 </td>
 </tr>
 </table>
-</dtml-unless>
 
 <dtml-var manage_page_footer>

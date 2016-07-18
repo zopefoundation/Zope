@@ -10,30 +10,22 @@ function update_menu() {
 //-->
 </script>
 </head>
-<dtml-let tf="REQUEST.get('zmi_top_frame', '1')">
 
-<dtml-if tf>
-  <frameset rows="34, *">
-  <frame src="<dtml-var "REQUEST.URL1" html_quote>/manage_top_frame" name="manage_top_frame"
-   marginwidth="2" marginheight="2" scrolling="no" noresize="noresize"/>
-</dtml-if>
+<frameset cols="250, *">
+<frame src="<dtml-var "REQUEST.URL1" html_quote>/manage_menu"
+       name="manage_menu"
+       marginwidth="2" marginheight="2"
+       />
+<frame src="<dtml-var "REQUEST.URL1" html_quote>/manage_workspace"
+       name="manage_main"
+       marginwidth="2" marginheight="2"
+       />
+<noframes>
+ <body>
+  <p>Management interfaces require the use of a <b>frames-capable</b> web
+  browser.</p>
+ </body>
+</noframes>
+</frameset>
 
-  <frameset cols="250, *">
-    <frame src="<dtml-var "REQUEST.URL1" html_quote>/manage_menu" name="manage_menu"
-     marginwidth="2" marginheight="2" scrolling="auto"/>
-    <frame src="<dtml-var "REQUEST.URL1" html_quote>/manage_workspace" name="manage_main"
-     marginwidth="2" marginheight="2" scrolling="auto"/>
-    <noframes>
-     <body>
-      <p>Management interfaces require the use of a <b>frames-capable</b> web
-      browser.</p>
-     </body>
-    </noframes>
-  </frameset>
-
-<dtml-if tf>
-  </frameset>
-</dtml-if>
-
-</dtml-let>
 </html>

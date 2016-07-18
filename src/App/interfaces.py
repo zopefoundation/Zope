@@ -26,11 +26,9 @@ class INavigation(Interface):
 
     manage = Attribute(""" """)
     manage_menu = Attribute(""" """)
-    manage_top_frame = Attribute(""" """)
     manage_page_header = Attribute(""" """)
     manage_page_footer = Attribute(""" """)
     manage_form_title = Attribute("""Add Form""")
-    manage_zmi_prefs = Attribute(""" """)
 
     def manage_zmi_logout(REQUEST, RESPONSE):
         """Logout current user"""
