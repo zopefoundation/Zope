@@ -27,6 +27,7 @@ Options:
 -u/--user -- run the daemon manager program as this user (or numeric id)
 -m/--umask -- provide octal umask for files created by the managed process
 -s/--socket-name -- socket between zopectl and zdrun
+-t/--transcript FILE -- log file where to redirect stdout and stderr
 action [arguments] -- see below
 
 Actions are commands like "start", "stop" and "status".  If -i is
@@ -51,6 +52,9 @@ from zdaemon.zdoptions import ZDOptions
 from ZConfig.components.logger.handlers import FileHandlerFactory
 from ZConfig.datatypes import existing_dirpath
 
+if sys.version_info > (3, 0):
+    basestring = str
+
 WIN = False
 if sys.platform[:3].lower() == "win":
     WIN = True
@@ -58,12 +62,12 @@ if sys.platform[:3].lower() == "win":
     import win32service
     import win32serviceutil
     from nt_svcutils import service
-    
+
     def do_windows(command):
-        def inner(self,arg):
+        def inner(self, arg):
 
             name = self.get_service_name()
-            display_name = 'Zope instance at '+self.options.directory
+            display_name = 'Zope instance at ' + self.options.directory
 
             # This class exists only so we can take advantage of
             # win32serviceutil.HandleCommandLine, it is never
@@ -79,24 +83,26 @@ if sys.platform[:3].lower() == "win":
             argv.append(command)
 
             # we need to supply this manually as HandleCommandLine guesses wrong
-            serviceClassName = os.path.splitext(service.__file__)[0]+'.Service'
-            
+            serviceClassName = os.path.splitext(service.__file__)[0] + '.Service'
+
             err = win32serviceutil.HandleCommandLine(
                 InstanceService,
                 serviceClassName,
                 argv=argv,
-                )
+            )
 
             self.InstanceClass = InstanceService
             return err
-            
+
         return inner
+
 
 def string_list(arg):
     return arg.split()
 
+
 def quote_command(command):
-    print " ".join(command)
+    print(" ".join(command))
     # Quote the program name, so it works even if it contains spaces
     command = " ".join(['"%s"' % x for x in command])
     if WIN:
@@ -106,15 +112,15 @@ def quote_command(command):
         command = '"%s"' % command
     return command
 
+
 class ZopeCtlOptions(ZDOptions):
     # Zope controller options.
-    # 
+    #
     # After initialization, this should look very much like a
     # zdaemon.zdctl.ZDCtlOptions instance.  Many of the attributes are
     # initialized from different sources, however.
 
     __doc__ = __doc__
-    
 
     positional_args_allowed = 1
     schemadir = os.path.dirname(Zope2.Startup.__file__)
@@ -124,16 +130,16 @@ class ZopeCtlOptions(ZDOptions):
     # this indicates that no explict program has been provided.
     # the command line option can set this.
     program = None
-    
+
     # this indicates that no explict socket name has been provided.
     # the command line option can set this.
     sockname = None
-    
+
     # XXX Suppress using Zope's <eventlog> section to avoid using the
     # same logging for zdctl as for the Zope appserver.  There still
     # needs to be a way to set a logfile for zdctl.
     logsectionname = None
-    
+
     def __init__(self):
         ZDOptions.__init__(self)
         self.add("program", "runner.program", "p:", "program=",
@@ -153,6 +159,8 @@ class ZopeCtlOptions(ZDOptions):
         self.add("umask", "runner.umask", "m:", "umask=")
         self.add("sockname", "runner.socket_name", "s:", "socket-name=",
                  existing_dirpath, default=None)
+        self.add("transcript", "runner.transcript", "t:", "transcript=",
+                 default="/dev/null")
 
     def realize(self, *args, **kw):
         ZDOptions.realize(self, *args, **kw)
@@ -230,19 +238,19 @@ class ZopeCmd(ZDCmd):
             args = [opt, svalue]
         return args
 
-    ## START OF WINDOWS ONLY STUFF
-    
+    # START OF WINDOWS ONLY STUFF
+
     if WIN:
 
         def get_service_name(self):
-            return 'Zope'+str(hash(self.options.directory.lower()))
-            
+            return 'Zope' + str(hash(self.options.directory.lower()))
+
         def get_status(self):
             sn = self.get_service_name()
             try:
                 stat = win32serviceutil.QueryServiceStatus(sn)[1]
                 self.zd_up = 1
-            except pywintypes.error, err:
+            except pywintypes.error as err:
                 if err[0] == 1060:
                     # Service not installed
                     stat = win32service.SERVICE_STOPPED
@@ -252,59 +260,61 @@ class ZopeCmd(ZDCmd):
 
             self.zd_pid = (stat == win32service.SERVICE_RUNNING) and -1 or 0
             self.zd_status = "args=%s" % self.options.program
-            
+
         do_start = do_windows('start')
         do_stop = do_windows('stop')
         do_restart = do_windows('restart')
 
         # Add extra commands to install and remove the Windows service
 
-        def do_install(self,arg):
-            err = do_windows('install')(self,arg)
+        def do_install(self, arg):
+            err = do_windows('install')(self, arg)
             if not err:
                 # If we installed successfully, put info in registry for the
                 # real Service class to use:
                 command = '"%s" -C "%s"' % (
                     # This gives us the instance script for buildout instances
                     # and the install script for classic instances.
-                    os.path.join(os.path.split(sys.argv[0])[0],'runzope'),
+                    os.path.join(os.path.split(sys.argv[0])[0], 'runzope'),
                     self.options.configfile
-                    )
-                self.InstanceClass.setReg('command',command)
-                
-                # This is unfortunately needed because runzope.exe is a setuptools
-                # generated .exe that spawns off a sub process, so pid would give us
-                # the wrong event name.
-                self.InstanceClass.setReg('pid_filename',self.options.configroot.pid_filename)
+                )
+                self.InstanceClass.setReg('command', command)
+
+                # This is unfortunately needed because runzope.exe is a
+                # setuptools generated .exe that spawns off a sub process,
+                # so pid would give us the wrong event name.
+                self.InstanceClass.setReg(
+                    'pid_filename', self.options.configroot.pid_filename)
             return err
 
         def help_install(self):
-            print "install -- Installs Zope as a Windows service."
+            print("install -- Installs Zope as a Windows service.")
 
         do_remove = do_windows('remove')
 
         def help_remove(self):
-            print "remove -- Removes the Zope Windows service."
+            print("remove -- Removes the Zope Windows service.")
 
         do_windebug = do_windows('debug')
-        
-        def help_windebug(self):
-            print "windebug -- Runs the Zope Windows service in the foreground, in debug mode."
 
-    ## END OF WINDOWS ONLY STUFF
-            
+        def help_windebug(self):
+            print("windebug -- Runs the Zope Windows service "
+                  "in the foreground, in debug mode.")
+
+    # END OF WINDOWS ONLY STUFF
+
     def get_startup_cmd(self, python, more):
-        cmdline = ( '%s -c "from Zope2 import configure;'
-                    'configure(%r);' %
-                    (python, self.options.configfile)
-                    )
+        cmdline = ('%s -c "from Zope2 import configure;'
+                   'configure(%r);' %
+                   (python, self.options.configfile)
+                   )
         return cmdline + more + '\"'
 
     def do_debug(self, arg):
         cmdline = self.get_startup_cmd(self.options.python + ' -i',
                                        'import Zope2; app=Zope2.app()')
-        print ('Starting debugger (the name "app" is bound to the top-level '
-               'Zope object)')
+        print('Starting debugger (the name "app" is bound to the top-level '
+              'Zope object)')
         os.system(cmdline)
 
     def do_foreground(self, arg):
@@ -321,29 +331,33 @@ class ZopeCmd(ZDCmd):
         except KeyboardInterrupt:
             pass
         finally:
-            for addition in local_additions: program.remove(addition)
-            
+            for addition in local_additions:
+                program.remove(addition)
+
     def help_debug(self):
-        print "debug -- run the Zope debugger to inspect your database"
-        print "         manually using a Python interactive shell"
+        print("debug -- run the Zope debugger to inspect your database")
+        print("         manually using a Python interactive shell")
 
     def __getattr__(self, name):
-        """Getter to check if an unknown command is implement by an entry point."""
+        """
+        Getter to check if an unknown command is implement by an entry point.
+        """
         if not name.startswith("do_"):
             raise AttributeError(name)
-        data=list(pkg_resources.iter_entry_points("zopectl.command", name=name[3:]))
+        data = list(pkg_resources.iter_entry_points(
+            "zopectl.command", name=name[3:]))
         if not data:
             raise AttributeError(name)
-        if len(data)>1:
-            print >>sys.stderr, "Warning: multiple entry points found for command"
+        if len(data) > 1:
+            sys.stderr.write(
+                "Warning: multiple entry points found for command")
             return
-        func=data[0].load()
+        func = data[0].load()
         if not callable(func):
-            print >>sys.stderr, "Error: %s is not a callable method" % name
+            sys.stderr.write("Error: %s is not a callable method" % name)
             return
 
         return self.run_entrypoint(data[0])
-
 
     def run_entrypoint(self, entry_point):
         def go(arg):
@@ -366,9 +380,9 @@ class ZopeCmd(ZDCmd):
                 tup = csv.reader(tup, delimiter=' ').next()
 
             # Remove -c and add command name as sys.argv[0]
-            cmd = [ 'import sys',
-                    'sys.argv.pop()',
-                    'sys.argv.append(r\'%s\')' % entry_point.name
+            cmd = ['import sys',
+                   'sys.argv.pop()',
+                   'sys.argv.append(r\'%s\')' % entry_point.name
                    ]
             if len(tup) > 1:
                 argv = tup[1:]
@@ -377,53 +391,55 @@ class ZopeCmd(ZDCmd):
             cmd.extend([
                 'import pkg_resources',
                 'import Zope2',
-                'func=pkg_resources.EntryPoint.parse(\'%s\').load(False)' % entry_point,
+                'func=pkg_resources.EntryPoint.parse(\'%s\').load(False)'
+                % entry_point,
                 'app=Zope2.app()',
                 'func(app, sys.argv[1:])',
-                ])
-            cmdline = self.get_startup_cmd(self.options.python, ' ; '.join(cmd))
+            ])
+            cmdline = self.get_startup_cmd(
+                self.options.python, ' ; '.join(cmd))
             self._exitstatus = os.system(cmdline)
         return go
 
-
     def do_run(self, args):
         if not args:
-            print "usage: run <script> [args]"
+            print("usage: run <script> [args]")
             return
         # replace sys.argv
         script = args.split(' ')[0]
         cmd = (
             "import sys; sys.argv[:]=%r.split(' ');"
             "import Zope2; app=Zope2.app(); execfile(%r)"
-            ) % (args,script)
+        ) % (args, script)
         cmdline = self.get_startup_cmd(self.options.python, cmd)
         self._exitstatus = os.system(cmdline)
 
     def help_run(self):
-        print "run <script> [args] -- run a Python script with the Zope "
-        print "                       environment set up.  The script can use "
-        print "                       the name 'app' access the top-level Zope"
-        print "                       object"
+        print("run <script> [args] -- run a Python script with the Zope ")
+        print("                       environment set up. The script can use ")
+        print("                       the name 'app' access the top-level ")
+        print("                       Zope object")
 
     def do_adduser(self, arg):
         try:
             name, password = arg.split()
-        except:
-            print "usage: adduser <name> <password>"
+        except Exception:
+            print("usage: adduser <name> <password>")
             return
         cmdline = self.get_startup_cmd(
-            self.options.python ,
+            self.options.python,
             'import Zope2; '
             'app = Zope2.app(); '
-            'result = app.acl_users._doAddUser(\'%s\', \'%s\', [\'Manager\'], []); '
+            'result = app.acl_users._doAddUser('
+            '\'%s\', \'%s\', [\'Manager\'], []); '
             'import transaction; '
             'transaction.commit(); '
             'print \'Created user:\', result'
-            ) % (name, password)
+        ) % (name, password)
         os.system(cmdline)
 
     def help_adduser(self):
-        print "adduser <name> <password> -- add a Zope management user"
+        print("adduser <name> <password> -- add a Zope management user")
 
 
 def main(args=None):
@@ -439,19 +455,23 @@ def main(args=None):
         options.interactive = 1
     if options.interactive:
         try:
-            import readline
+            import readline  # NOQA
         except ImportError:
             pass
-        print "program:", " ".join(options.program)
+        print("program:" + " ".join(options.program))
         c.do_status()
         c.cmdloop()
     else:
         return min(c._exitstatus, 1)
 
+
 def _ignoreSIGCHLD(*unused):
     while 1:
-        try: os.waitpid(-1, os.WNOHANG)
-        except OSError: break
+        try:
+            os.waitpid(-1, os.WNOHANG)
+        except OSError:
+            break
+
 
 def run():
     # we don't care to be notified of our childrens' exit statuses.
@@ -461,10 +481,10 @@ def run():
     #     Any signals set to be caught by the calling process are reset
     #     to their default behaviour.
     #     The SIGCHLD signal (when set to SIG_IGN) may or may not be reset
-    #     to SIG_DFL. 
+    #     to SIG_DFL.
     #   If it is not reset, 'os.wait[pid]' can non-deterministically fail.
     #   Thus, use a way such that "SIGCHLD" is definitely reset in children.
-    #signal.signal(signal.SIGCHLD, signal.SIG_IGN)
+    # signal.signal(signal.SIGCHLD, signal.SIG_IGN)
     if not WIN and os.uname()[0] != 'Darwin':
         # On Windows the os.uname method does not exist.
         # On Mac OS X, setting up a signal handler causes waitpid to
