@@ -89,9 +89,10 @@ Features Added
   - Missing = 3.1
   - MultiMapping = 3.0
   - Persistence = 3.0a1
-  - Products.ExternalMethod = 2.13.1
+  - Products.ExternalMethod = 3.0
   - Products.MailHost = 2.13.2
-  - Products.ZCatalog = 3.1.2
+  - Products.ZCatalog = 3.2
+  - Products.ZCTextIndex = 3.0
   - Record = 3.1
   - tempstorage = 3.0
   - zExceptions = 3.0
