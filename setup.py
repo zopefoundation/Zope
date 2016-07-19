@@ -71,7 +71,6 @@ setup(
         'ZopeUndo',
         'docutils',
         'five.globalrequest',
-        'initgroups',
         'pytz',
         'setuptools',
         'tempstorage',

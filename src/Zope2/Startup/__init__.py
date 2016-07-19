@@ -404,8 +404,8 @@ def dropPrivileges(cfg):
         raise ZConfig.ConfigurationError(msg)
 
     try:
-        import initgroups
-        initgroups.initgroups(effective_user, gid)
+        from os import initgroups
+        initgroups(effective_user, gid)
         os.setgid(gid)
     except OSError:
         logger.exception('Could not set group id of effective user')

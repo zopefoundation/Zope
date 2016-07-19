@@ -92,6 +92,7 @@ Features Added
   - Products.BTreeFolder2 = 3.0
   - Products.ExternalMethod = 3.0
   - Products.MailHost = 3.0
+  - Products.OFSP = 3.0
   - Products.PythonScripts = 3.0
   - Products.SiteErrorLog = 3.0
   - Products.StandardCacheManagers = 3.0
@@ -106,6 +107,9 @@ Features Added
 
 Restructuring
 +++++++++++++
+
+- Remove dependency on initgroups. Use the standard libraries os.initgroups
+  instead.
 
 - Removed nt_svcutils support from zopectl.
 
