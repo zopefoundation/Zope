@@ -74,7 +74,7 @@ Features Added
 
 - Remove `control panel` object from the ZODB.
 
-- Updated to Zope Toolkit 2.0dev.
+- Updated to latest versions of Zope Toolkit libraries.
 
 - Updated distributions:
 
@@ -93,6 +93,7 @@ Features Added
   - Products.ExternalMethod = 3.0
   - Products.MailHost = 3.0
   - Products.PythonScripts = 3.0
+  - Products.SiteErrorLog = 3.0
   - Products.StandardCacheManagers = 3.0
   - Products.ZCatalog = 3.2
   - Products.ZCTextIndex = 3.0
