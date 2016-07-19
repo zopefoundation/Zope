@@ -16,23 +16,66 @@
 Mostly just copy and paste from zope.testbrowser.testing.
 """
 
-import sys
-import socket
+import cStringIO
+import httplib
 import urllib2
 
 import mechanize
 
-from zope.testbrowser import testing
-from zope.testbrowser import browser
 import zope.publisher.http
+from zope.testbrowser import browser
+
+from Testing.ZopeTestCase.zopedoctest import functional
 
 
-class PublisherConnection(testing.PublisherConnection):
+class PublisherConnection(object):
 
     def __init__(self, host, timeout=None):
-        from Testing.ZopeTestCase.zopedoctest.functional import http
-        self.caller = http
+        self.caller = functional.http
         self.host = host
+
+    def set_debuglevel(self, level):
+        pass
+
+    def _quote(self, url):
+        # the publisher expects to be able to split on whitespace, so we have
+        # to make sure there is none in the URL
+        return url.replace(' ', '%20')
+
+    def request(self, method, url, body=None, headers=None):
+        """Send a request to the publisher.
+
+        The response will be stored in ``self.response``.
+        """
+        if body is None:
+            body = ''
+
+        if url == '':
+            url = '/'
+
+        url = self._quote(url)
+        # Extract the handle_error option header
+        handle_errors_key = 'X-Zope-Handle-Errors'
+        handle_errors_header = headers.get(handle_errors_key, True)
+        if handle_errors_key in headers:
+            del headers[handle_errors_key]
+        # Translate string to boolean.
+        handle_errors = {'False': False}.get(handle_errors_header, True)
+
+        # Construct the headers.
+        header_chunks = []
+        if headers is not None:
+            for header in headers.items():
+                header_chunks.append('%s: %s' % header)
+            headers = '\n'.join(header_chunks) + '\n'
+        else:
+            headers = ''
+
+        # Construct the full HTTP request string, since that is what the
+        # ``HTTPCaller`` wants.
+        request_string = (method + ' ' + url + ' HTTP/1.1\n' +
+                          headers + '\n' + body)
+        self.response = self.caller(request_string, handle_errors)
 
     def getresponse(self):
         """Return a ``urllib2`` compatible response.
@@ -52,9 +95,10 @@ class PublisherConnection(testing.PublisherConnection):
                 # only change non-literal header names
                 key = "%s%s" % (key[:1].upper(), key[1:])
                 start = 0
-                l = key.find('-',start)
+                l = key.find('-', start)
                 while l >= start:
-                    key = "%s-%s%s" % (key[:l],key[l+1:l+2].upper(),key[l+2:])
+                    key = "%s-%s%s" % (
+                        key[:l], key[l + 1:l + 2].upper(), key[l + 2:])
                     start = l + 1
                     l = key.find('-', start)
             headers.append((key, val))
@@ -65,7 +109,25 @@ class PublisherConnection(testing.PublisherConnection):
         headers.insert(0, ('Status', "%s %s" % (status, reason)))
         headers = '\r\n'.join('%s: %s' % h for h in headers)
         content = real_response.body
-        return testing.PublisherResponse(content, headers, status, reason)
+        return PublisherResponse(content, headers, status, reason)
+
+
+class PublisherResponse(object):
+    """``mechanize`` compatible response object."""
+
+    def __init__(self, content, headers, status, reason):
+        self.content = content
+        self.status = status
+        self.reason = reason
+        self.msg = httplib.HTTPMessage(cStringIO.StringIO(headers), 0)
+        self.content_as_file = cStringIO.StringIO(self.content)
+
+    def read(self, amt=None):
+        return self.content_as_file.read(amt)
+
+    def close(self):
+        """To overcome changes in mechanize and socket in python2.5"""
+        pass
 
 
 class PublisherHTTPHandler(urllib2.HTTPHandler):
@@ -76,10 +138,6 @@ class PublisherHTTPHandler(urllib2.HTTPHandler):
     def http_open(self, req):
         """Open an HTTP connection having a ``urllib2`` request."""
         # Here we connect to the publisher.
-        if sys.version_info > (2, 6) and not hasattr(req, 'timeout'):
-            # Workaround mechanize incompatibility with Python
-            # 2.6. See: LP #280334
-            req.timeout = socket._GLOBAL_DEFAULT_TIMEOUT
         return self.do_open(PublisherConnection, req)
 
 
@@ -90,12 +148,12 @@ class PublisherMechanizeBrowser(mechanize.Browser):
     default_others = ['_http_error', '_http_request_upgrade',
                       '_http_default_error']
     default_features = ['_redirect', '_cookies', '_referer', '_refresh',
-                        '_equiv', '_basicauth', '_digestauth' ]
+                        '_equiv', '_basicauth', '_digestauth']
 
     def __init__(self, *args, **kws):
         self.handler_classes = mechanize.Browser.handler_classes.copy()
         self.handler_classes["http"] = PublisherHTTPHandler
-        self.default_others = [cls for cls in self.default_others 
+        self.default_others = [cls for cls in self.default_others
                                if cls in mechanize.Browser.handler_classes]
         mechanize.Browser.__init__(self, *args, **kws)
 
