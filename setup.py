@@ -15,13 +15,11 @@
 import os
 from setuptools import setup, find_packages
 
-additional_install_requires = []
-
-here = os.path.abspath(os.path.dirname(__file__))
+HERE = os.path.abspath(os.path.dirname(__file__))
 
 
 def _read_file(filename):
-    with open(os.path.join(here, filename)) as f:
+    with open(os.path.join(HERE, filename)) as f:
         return f.read()
 
 README = _read_file('README.rst')
@@ -113,8 +111,7 @@ setup(
         'zope.testing',
         'zope.traversing',
         'zope.viewlet',
-    ] + additional_install_requires,
-
+    ],
     include_package_data=True,
     zip_safe=False,
     entry_points={
