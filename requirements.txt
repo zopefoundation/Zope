@@ -9,7 +9,6 @@ Missing==3.1
 MultiMapping==3.0
 Paste==2.0.3
 PasteDeploy==1.5.2
-PasteScript==2.0.2
 Persistence==3.0a1
 Products.BTreeFolder2==3.0
 Products.ExternalMethod==3.0
@@ -37,7 +36,6 @@ python-gettext==3.0
 pytz==2016.6.1
 repoze.retry==1.4
 repoze.tm2==2.1
-repoze.who==2.3
 six==1.10.0
 tempstorage==3.0
 transaction==1.6.1

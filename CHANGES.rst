@@ -51,6 +51,8 @@ Bugs Fixed
 Features Added
 ++++++++++++++
 
+- Add a new `runwsgi` script to serve PasteDeploy files.
+
 - Depend on and automatically set up `five.globalrequest`.
 
 - Optimized the `OFS.ObjectManager.__contains__` method to do the

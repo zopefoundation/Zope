@@ -146,7 +146,7 @@ used.
 
 A fully-annotated sample can be found in the Zope2 egg::
 
-   $ cat eggs/Zope2--*/Zope2/utilities/skel/etc/zope.conf.in
+   $ cat eggs/Zope2--*/Zope2/utilities/skel/etc/example.conf.in
 
    <rest of the stuff that goes into a zope.conf, e.g. databases and log files.>
 

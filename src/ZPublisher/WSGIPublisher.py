@@ -271,9 +271,9 @@ def publish_module(environ, start_response,
 
     try:
         response = _publish(request, 'Zope2')
-    except Unauthorized, v:
+    except Unauthorized as v:
         response._unauthorized()
-    except Redirect, v:
+    except Redirect as v:
         response.redirect(v)
 
     # Start the WSGI server response

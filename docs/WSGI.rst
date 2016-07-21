@@ -153,6 +153,6 @@ Start the WSGI Server
 
 .. code-block:: sh
 
-   $ bin/paster serve etc/zope.wsgi 
+   $ bin/runwsgi -v etc/zope.ini
    Starting server in PID 24934.
    serving on http://127.0.0.1:8080

@@ -120,6 +120,7 @@ setup(
         ],
         'console_scripts': [
             'mkzopeinstance=Zope2.utilities.mkzopeinstance:main',
+            'runwsgi=Zope2.Startup.serve:main',
             'runzope=Zope2.Startup.run:run',
             'zopectl=Zope2.Startup.zopectl:run',
             'zpasswd=Zope2.utilities.zpasswd:main',
