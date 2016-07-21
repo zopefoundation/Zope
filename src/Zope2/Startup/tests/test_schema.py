@@ -72,7 +72,7 @@ class StartupTestCase(unittest.TestCase):
         cfg = getConfiguration()
         import Zope2.utilities
         base = os.path.dirname(Zope2.utilities.__file__)
-        fn = os.path.join(base, "skel", "etc", "zope.conf.in")
+        fn = os.path.join(base, "skel", "etc", "base.conf.in")
         f = open(fn)
         text = f.read()
         f.close()

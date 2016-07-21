@@ -1,0 +1,34 @@
+%define INSTANCE <<INSTANCE_HOME>>
+
+instancehome $INSTANCE
+
+<eventlog>
+  level info
+  <logfile>
+    path $INSTANCE/log/event.log
+    level info
+  </logfile>
+</eventlog>
+
+<logger access>
+  level WARN
+  <logfile>
+    path $INSTANCE/log/Z2.log
+    format %(message)s
+  </logfile>
+</logger>
+
+<zodb_db main>
+   <filestorage>
+     path $INSTANCE/var/Data.fs
+   </filestorage>
+   mount-point /
+</zodb_db>
+
+<zodb_db temporary>
+   <temporarystorage>
+     name temporary storage for sessioning
+   </temporarystorage>
+   mount-point /temp_folder
+   container-class Products.TemporaryFolder.TemporaryContainer
+</zodb_db>

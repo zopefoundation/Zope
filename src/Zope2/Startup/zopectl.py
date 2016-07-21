@@ -218,6 +218,8 @@ class ZopeCmd(ZDCmd):
     def do_foreground(self, arg):
         program = self.options.program
         local_additions = []
+        if not program.count('-C'):
+            local_additions += ['-C', self.options.configfile]
         if not program.count('-X'):
             local_additions += ['-X']
         if not program.count('debug-mode=on'):

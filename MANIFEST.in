@@ -15,7 +15,7 @@ global-exclude *.pyo
 global-exclude *.so
 
 include *.py
-include .travis.yml
 include buildout.cfg
 include sources.cfg
+include versions-prod.cfg
 include versions.cfg

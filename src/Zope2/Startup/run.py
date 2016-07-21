@@ -46,7 +46,6 @@ def _setconfig(configfile=None):
     accept a configfile argument (string path) in order to specify
     where the configuration file exists. """
     from Zope2.Startup import options, handlers
-    from App import config
     opts = options.ZopeOptions()
     if configfile:
         opts.configfile = configfile
