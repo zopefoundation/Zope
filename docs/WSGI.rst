@@ -5,22 +5,6 @@ This document assumes you have installed Zope into a ``virtualenv`` (see
 :doc:`INSTALL-virtualenv`).
 
 
-Install the Supporting Software
--------------------------------
-
-To run as a WSGI application, you need to install some additional software.
-
-.. code-block:: sh
-
-   $ bin/pip install \
-    --trusted-host download.zope.org \
-    --index http://download.zope.org/Zope2/index/2.13.22/ \
-    repoze.who repoze.tm2 repoze.retry Paste PasteDeploy PasteScript
-   Collecting repoze.who
-   ...
-   Successfully installed Paste-1.7.5.1 PasteDeploy-1.3.4 PasteScript-1.7.5 repoze.retry-1.2 repoze.tm2-1.0 repoze.who-2.0
-
-
 Update the Zope Application Configuration
 -----------------------------------------
 

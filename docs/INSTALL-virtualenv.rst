@@ -20,12 +20,14 @@ Create a Virtual Environment
 Install the Zope2 Software Packages
 -----------------------------------
 
+To install a specific version of Zope, use a tag specific URL instead of
+master as suggested in the below example:
+
 .. code-block:: sh
 
    $ bin/pip install \
-    --trusted-host download.zope.org \
-    --index http://download.zope.org/Zope2/index/2.13.22/ Zope2
-   Collecting Zope2
+   -r https://raw.githubusercontent.com/zopefoundation/Zope/master/requirements.txt
+   Obtaining Zope2
    ...
    Successfully installed ...
 
@@ -40,14 +42,7 @@ Zope server process.  The instance home is created using the
 
 .. code-block:: sh
 
-  $ bin/mkzopeinstance
-
-You can specify the Python interpreter to use for the instance
-explicitly:
-
-.. code-block:: sh
-
-  $ bin/mkzopeinstance --python=bin/python
+  $ bin/mkzopeinstance -d .
 
 You will be asked to provide a user name and password for an
 administrator's account during ``mkzopeinstance``.  To see the available
@@ -57,17 +52,9 @@ command-line options, run the script with the ``--help`` option:
 
    $ bin/mkzopeinstance --help
 
-Using the ``virtualenv`` as the Zope Instance
----------------------------------------------
-
-You can choose to use the ``virtualenv`` as your Zope instance:
-
-.. code-block:: sh
-
-   $ bin/mkzopeinstance -d .
-
-In this case, the instance files will be located in the
-subdirectories of the ``virtualenv``:
+The `-d .` specifies the directory to create the instance home in.
+If you follow the example and choose the current directory, you'll
+find the instances files in the subdirectories of the ``virtualenv``:
 
 - ``etc/`` will hold the configuration files.
 - ``log/`` will hold the log files.

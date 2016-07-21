@@ -7,6 +7,7 @@ recursive-include docs *
 recursive-include src *
 
 prune docs/.build
+prune docs/_build
 
 global-exclude *.dll
 global-exclude *.pyc
