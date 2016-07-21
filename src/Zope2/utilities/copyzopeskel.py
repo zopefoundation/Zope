@@ -188,12 +188,6 @@ def copyskel(sourcedir, targetdir, uid, gid, **replacements):
         print >>sys.stderr, msg
         sys.exit(1)
 
-    # fix file permissions in 'bin' directory
-    bin_dir = os.path.join(targetdir, 'bin')
-    for fname in os.listdir(bin_dir):
-        fullname = os.path.join(bin_dir, fname)
-        os.chmod(fullname, 0700)
-
 
 def copydir(args, sourcedir, names):
     targetdir, replacements, uid, gid = args
