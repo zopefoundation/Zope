@@ -134,7 +134,7 @@ of the frame.
 
 If you haven't used Zope before, you should head to the Zope web
 site and read some documentation. The Zope Documentation section is
-a good place to start. You can access it at http://docs.zope.org/
+a good place to start. You can access it at https://zope.readthedocs.io/
 
 Troubleshooting
 ---------------

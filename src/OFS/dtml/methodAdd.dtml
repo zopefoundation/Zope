@@ -7,10 +7,8 @@
 <p class="form-help">
 A DTML Method is used to hold scripting tags and text content.
 It can contain HTML, XML, plain text, structured-text, etcetera.
-A DTML Method can contain
-<a href="http://www.zope.org/Documentation/Guides/DTML/">DTML
-scripting tags</a> which operate in the context of the DTML Method's
-containing object.
+A DTML Method can contain DTML scripting tags which operate
+in the context of the DTML Method's containing object.
 A DTML Method differs from a DTML Document in that it does not 
 have properties and calls methods on its container object.
 </p>

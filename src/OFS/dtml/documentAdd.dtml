@@ -7,9 +7,7 @@
 <p class="form-help">
 A DTML Document is used to hold text content. It can contain
 HTML, XML, plain text, structured-text, etcetera.
-A DTML document can contain
-<a href="http://www.zope.org/Documentation/Guides/DTML/">DTML
-scripting tags</a>.
+A DTML document can contain DTML scripting tags.
 A DTML Document differs from a DTML Method in that it has properties
 and does not call methods on its container object.
 </p>

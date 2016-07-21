@@ -3,7 +3,7 @@ Changelog
 
 This file contains change information for the current Zope release.
 Change information for previous versions of Zope can be found at
-http://docs.zope.org/zope2/
+https://zope.readthedocs.io/en/2.13/CHANGES.html
 
 4.0a1 (unreleased)
 ------------------
@@ -174,7 +174,7 @@ Restructuring
   cleanups of ZMI screens.
 
 - Removed the old help system, in favor of the current Sphinx documentation
-  hosted at http://docs.zope.org/zope2/. For backwards compatibility the
+  hosted at https://zope.readthedocs.io/. For backwards compatibility the
   `registerHelp` and `registerHelpTitle` methods are still available on the
   ProductContext used during the `initialize` function.
 
