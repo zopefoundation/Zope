@@ -7,7 +7,6 @@ Contents:
    :maxdepth: 2
 
    WHATSNEW
-   INSTALL
    INSTALL-buildout
    INSTALL-virtualenv
    operation

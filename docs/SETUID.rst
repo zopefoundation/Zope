@@ -3,7 +3,7 @@ Zope effective user support
 
 .. note:: 
   It is best practice to run Zope behind a reverse proxy like
-  Apache, Squid or Varnish. In this case, you do not need to run
+  Apache, Nginx or Varnish. In this case, you do not need to run
   or install Zope with root privileges, since the reverse proxy
   will bind to port 80 and proxy back all request to Zope running
   on an unprivileged port.

@@ -10,6 +10,7 @@ If you wish to run Zope in debug mode, run zopectl in foreground mode::
 You can also use it to inspect a Zope instance's running state via an
 interactive Python interpreter by passing zopectl the 'debug' parameter on the
 command line.
+
 The 'top-level' Zope object (the root folder) will be bound to the name 'app'
 within the interpreter. You can then use normal Python method calls against app
 and use the Python interpreter normally to inspect results::

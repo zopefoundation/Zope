@@ -1,9 +1,9 @@
 Running Zope2 as a WSGI Application
 ===================================
 
-
 This document assumes you have installed Zope into a ``virtualenv`` (see
 :doc:`INSTALL-virtualenv`).
+
 
 Install the Supporting Software
 -------------------------------
@@ -91,6 +91,7 @@ rather than a bare ``FileStorage``):
 Because we will be running a separately-configured WSGI server, remove any
 ``<http-server>`` configuration from the file.
 
+
 Create the WSGI Server Configuration
 ------------------------------------
 
@@ -171,35 +172,3 @@ Start the WSGI Server
    $ bin/paster serve etc/zope.wsgi 
    Starting server in PID 24934.
    serving on http://127.0.0.1:8080
-
-Running Other Applications in the same WSGI Server Process
-----------------------------------------------------------
-
-You can use any of the normal ``Paste`` WSGI features to combine Zope and
-other WSGI applications inside the same server process.  E.g., the following
-configuration uses the
-`composite application <http://pythonpaste.org/deploy/#composite-applications>`_
-support offered by ``PasteDeploy`` to host Zope at the ``/`` prefix,
-with static files served from disk at ``/static``:
-
-.. code-block:: ini
-
-   [app:zope-app]
-   use = egg:Zope2#main
-   zope_conf = %(here)s/zope.conf
-
-   [pipeline:zope-pipeline]
-   pipeline =
-       egg:paste#evalerror
-       egg:repoze.retry#retry
-       egg:repoze.tm2#tm
-       zope-app
-
-   [app:static]
-   use = egg:Paste#static
-   document_root = %(here)s/static
-
-   [composite:main]
-   use = egg:Paste#urlmap
-   / = zope-pipeline
-   /static = static

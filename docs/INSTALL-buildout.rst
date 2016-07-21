@@ -9,10 +9,10 @@ This document describes how to get going with Zope using ``zc.buildout``.
 About ``zc.buildout``
 ---------------------
 
-`zc.buildout <http://www.buildout.org/>`_ is a powerful tool for creating
-repeatable builds of a given software configuration and environment.  The
-Zope developers use ``zc.buildout`` to develop Zope itself, as well as
-the underlying packages it uses.
+`zc.buildout <https://pypi.python.org/pypi/zc.buildout>`_ is a powerful
+tool for creating repeatable builds of a given software configuration
+and environment.  The Zope developers use ``zc.buildout`` to develop
+Zope itself, as well as the underlying packages it uses.
 
 Prerequisites
 -------------
@@ -30,14 +30,7 @@ available:
   headers installed which correspond to your system's ``zlib``.
 
 - A C compiler capable of building extension modules for your Python
-  (gcc recommended). This is not necessary for Windows as binary
-  releases of the parts that would need compiling are always made
-  available.
-
-- If you wish to install Zope as a Service on Windows, you will need
-  to have the `pywin32`__ package installed.
-
-  __ https://sourceforge.net/projects/pywin32/
+  (gcc recommended).
 
 
 Installing standalone Zope using zc.buildout
@@ -164,13 +157,13 @@ An example session::
    $ mkdir /path/to/instance
    $ cd /path/to/instance
    $ mkdir etc logs var
-   $ wget http://downloads.buildout.org/2/bootstrap.py
+   $ wget https://bootstrap.pypa.io/bootstrap-buildout.py
    $ vi buildout.cfg
-   $ /path/to/your/python bootstrap.py
+   $ /path/to/your/python bootstrap-buildout.py
    $ bin/buildout
    $ cat eggs/Zope2--*/Zope2/utilities/skel/etc/zope.conf.in > etc/zope.conf
    $ vi etc/zope.conf  # replace <<INSTANCE_HOME>> with buildout directory
-   $ bin/zopectl start
+   $ bin/zopectl fg
 
 In the ``bin`` subdirectory of your instance directory, you will
 find ``runzope`` and ``zopectl`` scripts that can be used as
@@ -180,10 +173,6 @@ You can use ``zopectl`` interactively as a command shell by just
 calling it without any arguments. Try ``help`` there and ``help <command>``
 to find out about additionally commands of zopectl. These commands
 also work at the command line.
-
-Note that there are there are recipes such as `plone.recipe.zope2instance
-<https://pypi.python.org/pypi/plone.recipe.zope2instance>`_ which can be
-used to automate this whole process.
 
 After installation, refer to :doc:`operation` for documentation on
 configuring and running Zope.

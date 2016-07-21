@@ -11,14 +11,14 @@ Create a Virtual Environment
 
 .. code-block:: sh
 
-   $ /opt/Python-2.7.9/bin/virtualenv z213
-   New python executable in z213/bin/python
+   $ virtualenv --python=python2.7 zope
+   New python executable in zope/bin/python2.7
    Installing setuptools, pip, wheel...done.
-   $ cd z213
+   $ cd zope
 
 
-Install the Zope2 2.13.22 Software Packages
--------------------------------------------
+Install the Zope2 Software Packages
+-----------------------------------
 
 .. code-block:: sh
 
@@ -28,6 +28,7 @@ Install the Zope2 2.13.22 Software Packages
    Collecting Zope2
    ...
    Successfully installed ...
+
 
 Creating a Zope instance
 ------------------------

@@ -69,24 +69,9 @@ During startup, Zope emits log messages into
 tools (``cat``, ``more``, ``tail``, etc) and see if there are any errors
 preventing Zope from starting.
 
-.. highlight:: none
 .. note::
 
-  For this to work on Windows, the Zope instance must be installed as
-  a Service. This is done with::
-
-    bin\zopectl install
-
-  If you later want to remove this Service, do the following::
-
-    bin\zopectl remove
-
-  For the full list of options available for setting up Zope as a
-  Windows Service, do::
-
-    bin\zopectl install --help
-
-.. highlight:: bash
+  Running Zope as a daemon is not supported on Windows.
 
 
 Integrating with System Startup
@@ -99,15 +84,6 @@ You can use ``zopectl`` interactively as a command shell by just
 calling it without any arguments. Try ``help`` there and ``help <command>``
 to find out about additionally commands of zopectl. These commands
 also work at the command line.
-
-.. note::
-
-  On Windows, a Service can be installed and set to start
-  automatically with the following:
-
-  .. code-block:: none
-
-    bin\zopectl install --startup=auto
 
 
 Logging In To Zope
@@ -136,16 +112,12 @@ If you haven't used Zope before, you should head to the Zope web
 site and read some documentation. The Zope Documentation section is
 a good place to start. You can access it at https://zope.readthedocs.io/
 
+
 Troubleshooting
 ---------------
 
-- This version of Zope requires Python 2.6.4 or better.
+- This version of Zope requires Python 2.7 or better.
   It will *not* run with Python 3.x.
-
-- The Python you run Zope with *must* have threads compiled in,
-  which is the case for a vanilla build.  Warning: Zope will not run
-  with a Python version that uses ``libpth``.  You *must* use
-  ``libpthread``.
 
 - To build Python extensions you need to have Python configuration
   information available. If your Python comes from an RPM you may
@@ -154,42 +126,3 @@ Troubleshooting
   should already be available.
 
 - See the :doc:`changes` for important notes on this version of Zope.
-
-
-
-Adding extra commands to Zope
------------------------------
-
-It is possible to add extra commands to ``zopectl`` by defining *entry points*
-in ``setup.py``. Commands have to be put in the ``zopectl.command`` group:
-
-.. code-block:: python
-
-   setup(name="MyPackage",
-         ....
-         entry_points="""
-         [zopectl.command]
-         init_app = mypackage.commands:init_application
-         """)
-
-.. note::
-
-   Due to an implementation detail of ``zopectl`` you can not use a minus
-   character (``-``) in the command name.
-
-This adds a ``init_app`` command that can be used directly from the command
-line::
-
-    bin\zopectl init_app
-
-The command must be implemented as a Python callable. It will be called with
-two parameters: the Zope2 application and a list with all command line
-arguments. Here is a basic example:
-
-.. code-block:: python
-
-   def init_application(app, args):
-       print 'Initializing the application'
-
-Make sure the callable can be imported without side-effects, such as setting
-up the database connection used by Zope 2.
