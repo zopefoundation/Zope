@@ -12,6 +12,7 @@
 #
 ##############################################################################
 
+
 def run():
     """ Start a Zope instance """
     import Zope2.Startup
@@ -25,6 +26,7 @@ def run():
         raise
     starter.run()
 
+
 def configure(configfile):
     """ Provide an API which allows scripts like zopectl to configure
     Zope before attempting to do 'app = Zope2.app(). Should be used as
@@ -37,6 +39,7 @@ def configure(configfile):
     starter.setupSecurityOptions()
     starter.dropPrivileges()
     return starter
+
 
 def _setconfig(configfile=None):
     """ Configure a Zope instance based on ZopeOptions.  Optionally
@@ -56,6 +59,7 @@ def _setconfig(configfile=None):
     App.config.setConfiguration(opts.configroot)
     return opts
 
+
 def make_wsgi_app(global_config, zope_conf):
     from App.config import setConfiguration
     from Zope2.Startup import get_starter
@@ -72,6 +76,6 @@ def make_wsgi_app(global_config, zope_conf):
     starter.prepare()
     return publish_module
 
+
 if __name__ == '__main__':
     run()
-

@@ -31,13 +31,18 @@ import os
 import sys
 import copyzopeskel
 
+if sys.version_info > (3, 0):
+    raw_input = input
+
+
 def main():
     try:
-        opts, args = getopt.getopt(sys.argv[1:],
+        opts, args = getopt.getopt(
+            sys.argv[1:],
             "hu:d:s:p:",
             ["help", "user=", "dir=", "skelsrc=", "python="]
-            )
-    except getopt.GetoptError, msg:
+        )
+    except getopt.GetoptError as msg:
         usage(sys.stderr, msg)
         sys.exit(2)
 
@@ -74,7 +79,7 @@ def main():
             if not arg:
                 usage(sys.stderr, "user must not be empty")
                 sys.exit(2)
-            if not ":" in arg:
+            if ":" not in arg:
                 usage(sys.stderr, "user must be specified as name:password")
                 sys.exit(2)
             user, password = arg.split(":", 1)
@@ -85,10 +90,9 @@ def main():
         # to skeltarget.
         skeltarget = instancehome = os.path.abspath(
             os.path.expanduser(get_skeltarget())
-            )
+        )
 
     instancehome = skeltarget
-    configfile = os.path.join(instancehome, 'etc', 'zope.conf')
     if skelsrc is None:
         # default to using stock Zope skeleton source
         skelsrc = os.path.join(os.path.dirname(__file__), "skel")
@@ -105,14 +109,14 @@ def main():
     # need be used.
     if python is None:
         python = sys.executable
-    
+
     psplit = os.path.split(python)
     exedir = os.path.join(*psplit[:-1])
     pythonexe = os.path.join(exedir, 'python.exe')
     pythonwexe = os.path.join(exedir, 'pythonw.exe')
 
-    if ( os.path.isfile(pythonwexe) and os.path.isfile(pythonexe) and
-         (python in [pythonwexe, pythonexe]) ):
+    if (os.path.isfile(pythonwexe) and os.path.isfile(pythonexe) and
+            (python in [pythonwexe, pythonexe])):
         # we're using a Windows build with both python.exe and pythonw.exe
         # in the same directory
         PYTHON = pythonexe
@@ -124,16 +128,17 @@ def main():
     zope2path = get_zope2path(PYTHON)
 
     kw = {
-        "PYTHON":PYTHON,
-        "PYTHONW":PYTHONW,
+        "PYTHON": PYTHON,
+        "PYTHONW": PYTHONW,
         "INSTANCE_HOME": instancehome,
         "ZOPE_SCRIPTS": script_path,
         "ZOPE2PATH": zope2path,
-        }
+    }
 
     copyzopeskel.copyskel(skelsrc, skeltarget, None, None, **kw)
     if user and password:
         write_inituser(inituser, user, password)
+
 
 def usage(stream, msg=None):
     if msg:
@@ -142,25 +147,27 @@ def usage(stream, msg=None):
     program = os.path.basename(sys.argv[0])
     print >>stream, __doc__ % {"program": program}
 
+
 def get_skeltarget():
-    print 'Please choose a directory in which you\'d like to install'
-    print 'Zope "instance home" files such as database files, configuration'
-    print 'files, etc.'
+    print('Please choose a directory in which you\'d like to install')
+    print('Zope "instance home" files such as database files, configuration')
+    print('files, etc.')
     print
     while 1:
         skeltarget = raw_input("Directory: ").strip()
         if skeltarget == '':
-            print 'You must specify a directory'
+            print('You must specify a directory')
             continue
         else:
             break
     return skeltarget
 
+
 def get_inituser():
     import getpass
-    print 'Please choose a username and password for the initial user.'
-    print 'These will be the credentials you use to initially manage'
-    print 'your new Zope instance.'
+    print('Please choose a username and password for the initial user.')
+    print('These will be the credentials you use to initially manage')
+    print('your new Zope instance.')
     print
     user = raw_input("Username: ").strip()
     if user == '':
@@ -172,8 +179,9 @@ def get_inituser():
             break
         else:
             passwd = verify = ''
-            print "Password mismatch, please try again..."
+            print("Password mismatch, please try again...")
     return user, passwd
+
 
 def write_inituser(fn, user, password):
     import binascii
@@ -185,7 +193,8 @@ def write_inituser(fn, user, password):
     pw = binascii.b2a_base64(sha(password).digest())[:-1]
     fp.write('%s:{SHA}%s\n' % (user, pw))
     fp.close()
-    os.chmod(fn, 0644)
+    os.chmod(fn, 0o644)
+
 
 def check_buildout(script_path):
     """ Are we running from within a buildout which supplies 'zopepy'?
@@ -196,6 +205,7 @@ def check_buildout(script_path):
         parser = RawConfigParser()
         parser.read(buildout_cfg)
         return 'zopepy' in parser.sections()
+
 
 def get_zope2path(python):
     """ Get Zope2 path from selected Python interpreter.

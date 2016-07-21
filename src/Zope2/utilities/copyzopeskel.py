@@ -65,18 +65,21 @@ import shutil
 import sys
 import getopt
 
+CVS_DIRS = [os.path.normcase("CVS"), os.path.normcase(".svn")]
+
+
 def main():
     try:
-        opts, args = getopt.getopt(sys.argv[1:],
+        opts, args = getopt.getopt(
+            sys.argv[1:],
             "hs:t:u:g:r:",
             ["help", "sourcedir=", "targetdir=", "uid=", "gid=",
              "replace="]
-            )
-    except getopt.GetoptError, msg:
+        )
+    except getopt.GetoptError as msg:
         usage(sys.stderr, msg)
         sys.exit(2)
 
-    script = os.path.abspath(sys.argv[0])
     sourcedir = None
     targetdir = None
     uid = None
@@ -120,7 +123,7 @@ def main():
                         sys.exit(2)
             except (ImportError, AttributeError):
                 usage(sys.stderr,
-                       "Your system does not support the gid or uid options")
+                      "Your system does not support the gid or uid options")
                 sys.exit(2)
         if opt in ("-g", "--gid"):
             if not arg:
@@ -143,7 +146,7 @@ def main():
                         sys.exit(2)
             except (ImportError, AttributeError):
                 usage(sys.stderr,
-                       "Your system does not support the gid or uid options")
+                      "Your system does not support the gid or uid options")
                 sys.exit(2)
 
         if opt in ("-r", "--replace"):
@@ -161,6 +164,7 @@ def main():
         sys.exit(2)
 
     copyskel(sourcedir, targetdir, uid, gid, **replacements)
+
 
 def copyskel(sourcedir, targetdir, uid, gid, **replacements):
     """ This is an independent function because we'd like to
@@ -180,7 +184,7 @@ def copyskel(sourcedir, targetdir, uid, gid, **replacements):
                          (targetdir, replacements, uid, gid))
         finally:
             os.chdir(pwd)
-    except (IOError, OSError), msg:
+    except (IOError, OSError) as msg:
         print >>sys.stderr, msg
         sys.exit(1)
 
@@ -191,9 +195,8 @@ def copyskel(sourcedir, targetdir, uid, gid, **replacements):
         os.chmod(fullname, 0700)
 
 
-CVS_DIRS = [os.path.normcase("CVS"), os.path.normcase(".svn")]
-
-def copydir((targetdir, replacements, uid, gid), sourcedir, names):
+def copydir(args, sourcedir, names):
+    targetdir, replacements, uid, gid = args
     # Don't recurse into CVS directories:
     for name in names[:]:
         if os.path.normcase(name) in CVS_DIRS:
@@ -227,6 +230,7 @@ def copydir((targetdir, replacements, uid, gid), sourcedir, names):
                 if uid is not None:
                     os.chown(dn, uid, gid)
 
+
 def copyin(src, dst, replacements, uid, gid):
     ifp = open(src)
     text = ifp.read()
@@ -240,12 +244,13 @@ def copyin(src, dst, replacements, uid, gid):
     if uid is not None:
         os.chown(dst, uid, gid)
 
+
 def usage(stream, msg=None):
     if msg:
-        print >>stream, msg
-        print >>stream
+        stream.write(msg)
+        stream.write('\n')
     program = os.path.basename(sys.argv[0])
-    print >>stream, __doc__ % {"program": program}
+    stream.write(__doc__ % {"program": program})
 
 if __name__ == '__main__':
     main()

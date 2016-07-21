@@ -37,12 +37,21 @@ for all necessary information.  The available options are:
     Filename is required and should be the name of the file to store the
     information in (usually "inituser" or "access").
 """
-import sys,  sha, binascii, random, getopt, getpass, os
+import binascii
+import getopt
+import getpass
+import os
+import random
+import sha
+import sys
 
 try:
     from crypt import crypt
 except ImportError:
     crypt = None
+
+if sys.version_info > (3, 0):
+    raw_input = input
 
 PROGRAM = sys.argv[0]
 COMMASPACE = ', '
@@ -53,10 +62,11 @@ def generate_salt():
     salt_choices = ("ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                     "abcdefghijklmnopqrstuvwxyz"
                     "0123456789./")
-    return random.choice(salt_choices)+random.choice(salt_choices)
+    return random.choice(salt_choices) + random.choice(salt_choices)
+
 
 def generate_passwd(password, encoding):
-    encoding=encoding.upper()
+    encoding = encoding.upper()
     if encoding == 'SHA':
         pw = '{SHA}' + binascii.b2a_base64(sha.new(password).digest())[:-1]
     elif encoding == 'CRYPT':
@@ -68,26 +78,28 @@ def generate_passwd(password, encoding):
 
     return pw
 
+
 def write_generated_password(home, ac_path, username):
     pw_choices = ("ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                   "abcdefghijklmnopqrstuvwxyz"
                   "0123456789!")
-    acfile=open(ac_path, 'w')
+    acfile = open(ac_path, 'w')
     pw = ''
     for i in range(8):
         pw = pw + random.choice(pw_choices)
     acfile.write('%s:%s\n' % (username, generate_passwd(pw, 'SHA')))
     acfile.close()
-    os.chmod(ac_path, 0644)
+    os.chmod(ac_path, 0o644)
     return pw
 
+
 def write_access(home, user='', group=''):
-    ac_path=os.path.join(home, 'access')
+    ac_path = os.path.join(home, 'access')
     if not os.path.exists(ac_path):
-        print '-'*78
-        print 'creating default access file'
+        print('-' * 78)
+        print('creating default access file')
         pw = write_generated_password(home, ac_path, 'emergency')
-        print """Note:
+        print("""Note:
         The emergency user name and password are 'emergency'
         and '%s'.
 
@@ -95,9 +107,11 @@ def write_access(home, user='', group=''):
         zpasswd script.  To find out more, type:
 
         %s zpasswd.py
-        """ % (pw, sys.executable)
+        """ % (pw, sys.executable))
 
-        import do; do.ch(ac_path, user, group)
+        import do
+        do.ch(ac_path, user, group)
+
 
 def get_password():
     while 1:
@@ -107,29 +121,31 @@ def get_password():
             return password
         else:
             password = verify = ''
-            print "Password mismatch, please try again..."
+            print("Password mismatch, please try again...")
+
 
 def write_inituser(home, user='', group=''):
-    ac_path=os.path.join(home, 'inituser')
+    ac_path = os.path.join(home, 'inituser')
     if not os.path.exists(ac_path):
-        print '-'*78
-        print 'creating default inituser file'
+        print('-' * 78)
+        print('creating default inituser file')
         pw = write_generated_password(home, ac_path, 'admin')
-        print """Note:
+        print("""Note:
         The initial user name and password are 'admin'
         and '%s'.
 
         You can change the name and password through the web
         interface or using the 'zpasswd.py' script.
-        """ % pw
+        """ % pw)
 
-        import do; do.ch(ac_path, user, group)
+        import do
+        do.ch(ac_path, user, group)
 
 
 def usage(code, msg=''):
-    print >> sys.stderr, __doc__ % globals()
+    sys.stderr.write(__doc__ % globals())
     if msg:
-        print >> sys.stderr, msg
+        sys.stderr.write(msg)
     sys.exit(code)
 
 
@@ -143,7 +159,7 @@ def main():
 
     try:
         opts, args = getopt.getopt(sys.argv[1:], shortopts, longopts)
-    except getopt.error, msg:
+    except getopt.error as msg:
         usage(1, msg)
 
     # Defaults
@@ -183,15 +199,15 @@ def main():
                 break
 
         password = get_password()
-        
+
         while 1:
-            print """
+            print("""
 Please choose a format from:
 
 SHA - SHA-1 hashed password (default)
 CRYPT - UNIX-style crypt password
 CLEARTEXT - no protection
-"""
+""")
             encoding = raw_input("Encoding: ")
             if encoding == '':
                 encoding = 'SHA'
@@ -210,5 +226,5 @@ CLEARTEXT - no protection
 
 
 # If called from the command line
-if __name__=='__main__':
+if __name__ == '__main__':
     main()

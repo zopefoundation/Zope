@@ -13,14 +13,23 @@
 """Request log profiler script
 """
 
-import sys, time, getopt, math, cPickle
+import cPickle
+import getopt
+import math
+import sys
+import time
 from types import StringType
-try: import gzip
-except: pass
+try:
+    import gzip
+except ImportError:
+    pass
 
-class ProfileException(Exception): pass
 
-class Request:
+class ProfileException(Exception):
+    pass
+
+
+class Request(object):
     def __init__(self):
         self.url = None
         self.start = None
@@ -98,10 +107,14 @@ class Request:
 
     def total(self):
         stage = self.endstage()
-        if stage == "B": return 0
-        if stage == "I": return self.t_recdinput - self.start
-        if stage == "A": return self.t_recdoutput - self.start
-        if stage == "E": return self.elapsed
+        if stage == "B":
+            return 0
+        if stage == "I":
+            return self.t_recdinput - self.start
+        if stage == "A":
+            return self.t_recdoutput - self.start
+        if stage == "E":
+            return self.elapsed
 
     def prettyisize(self):
         if self.isize is not None:
@@ -126,7 +139,7 @@ class Request:
             self.prettystart(), self.win(), self.wout(), self.wend(),
             self.total(), self.endstage(), self.prettyosize(),
             self.prettyhttpcode(), self.active, self.url
-            )
+        )
         return self.fmt % body
 
     fmt = "%19s %4s %4s %4s %3s %1s %7s %4s %4s %s"
@@ -136,14 +149,18 @@ class Request:
                 'Code', 'Act', 'URL')
         return self.fmt % body
 
+
 class StartupRequest(Request):
+
     def endstage(self):
         return "U"
 
     def total(self):
         return 0
 
+
 class Cumulative:
+
     def __init__(self, url):
         self.url = url
         self.times = []
@@ -152,11 +169,12 @@ class Cumulative:
 
     def put(self, request):
         elapsed = request.elapsed
-        if elapsed == "I": self.hangs = self.hangs + 1
+        if elapsed == "I":
+            self.hangs = self.hangs + 1
         self.times.append(elapsed)
 
     def all(self):
-        if self.allelapsed == None:
+        if self.allelapsed is None:
             self.allelapsed = []
             for elapsed in self.times:
                 self.allelapsed.append(elapsed)
@@ -167,7 +185,7 @@ class Cumulative:
         body = (
             self.hangs, self.hits(), self.total(), self.max(), self.min(),
             self.median(), self.mean(), self.url
-            )
+        )
         return self.fmt % body
 
     def getheader(self):
@@ -191,8 +209,9 @@ class Cumulative:
             return "I"
         else:
             t = self.total()
-            if t == "I": return "I"
-            return t/l
+            if t == "I":
+                return "I"
+            return t / l
 
     def median(self):
         all = self.all()
@@ -203,24 +222,27 @@ class Cumulative:
             if l == 1:
                 return all[0]
             elif l % 2 != 0:
-                i = l/2 + 1
+                i = l / 2 + 1
                 return all[i]
             else:
-                i = l/2 - 1
+                i = l / 2 - 1
                 i2 = i + 1
                 v1 = all[i]
                 v2 = all[i2]
                 if isinstance(v1, StringType) or isinstance(v2, StringType):
                     return "I"
-                else: return (v1 + v2) / 2
+                else:
+                    return (v1 + v2) / 2
 
     def total(self):
         t = 0
         all = self.all()
         for elapsed in all:
-            if elapsed == "I": continue
+            if elapsed == "I":
+                continue
             t = t + elapsed
         return t
+
 
 def parsebigmlogline(line):
     tup = line.split(None, 3)
@@ -231,6 +253,7 @@ def parsebigmlogline(line):
         return tup
     else:
         return None
+
 
 def get_earliest_file_data(files):
     temp = {}
@@ -245,7 +268,7 @@ def get_earliest_file_data(files):
         line = line.strip()
         tup = parsebigmlogline(line)
         if tup is None:
-            print "Could not interpret line: %s" % line
+            print("Could not interpret line: %s" % line)
             continue
         code, id, timestr, desc = tup
         timestr = timestr.strip()
@@ -261,6 +284,7 @@ def get_earliest_file_data(files):
             file.seek(file.tell() - linelen)
 
     return retn
+
 
 def get_requests(files, start=None, end=None, statsfname=None,
                  writestats=None, readstats=None):
@@ -279,8 +303,10 @@ def get_requests(files, start=None, end=None, statsfname=None,
             if tup is None:
                 break
             code, id, fromepoch, desc = tup
-            if start is not None and fromepoch < start: continue
-            if end is not None and fromepoch > end: break
+            if start is not None and fromepoch < start:
+                continue
+            if end is not None and fromepoch > end:
+                break
             if code == 'U':
                 finished.extend(unfinished.values())
                 unfinished.clear()
@@ -291,7 +317,8 @@ def get_requests(files, start=None, end=None, statsfname=None,
                 continue
             request = unfinished.get(id)
             if request is None:
-                if code != "B": continue # garbage at beginning of file
+                if code != "B":
+                    continue  # garbage at beginning of file
                 request = Request()
                 for pending_req in unfinished.values():
                     pending_req.active = pending_req.active + 1
@@ -300,7 +327,7 @@ def get_requests(files, start=None, end=None, statsfname=None,
             try:
                 request.put(code, t, desc)
             except:
-                print "Unable to handle entry: %s %s %s"%(code, t, desc)
+                print("Unable to handle entry: %s %s %s" % (code, t, desc))
             if request.isfinished():
                 del unfinished[id]
                 finished.append(request)
@@ -318,6 +345,7 @@ def get_requests(files, start=None, end=None, statsfname=None,
 
     return requests
 
+
 def analyze(requests, top, sortf, start=None, end=None, mode='cumulative',
             resolution=60, urlfocusurl=None, urlfocustime=60):
 
@@ -334,17 +362,17 @@ def analyze(requests, top, sortf, start=None, end=None, mode='cumulative',
         requests.sort(sortf)
         write(requests, top)
 
-    elif mode=='timed':
+    elif mode == 'timed':
         computed_start = requests[0].start
         computed_end = requests[-1].t_end
         if start and end:
-            timewrite(requests,start,end,resolution)
+            timewrite(requests, start, end, resolution)
         if start and not end:
-            timewrite(requests,start,computed_end,resolution)
+            timewrite(requests, start, computed_end, resolution)
         if end and not start:
-            timewrite(requests,computed_start,end,resolution)
+            timewrite(requests, computed_start, end, resolution)
         if not end and not start:
-            timewrite(requests,computed_start,computed_end,resolution)
+            timewrite(requests, computed_start, computed_end, resolution)
 
     elif mode == 'urlfocus':
         requests.sort(sortf)
@@ -354,11 +382,13 @@ def analyze(requests, top, sortf, start=None, end=None, mode='cumulative',
         requests.sort(sortf)
         write(requests, top)
 
+
 def urlfocuswrite(requests, url, t):
     l = []
     i = 0
     for request in requests:
-        if request.url == url: l.append(i)
+        if request.url == url:
+            l.append(i)
         i = i + 1
     before = {}
     after = {}
@@ -369,18 +399,20 @@ def urlfocuswrite(requests, url, t):
         start = r.start
         earliest = start - t
         latest = start + t
-        print 'URLs invoked %s seconds before and after %s (#%s, %s)' % \
-              (t, url, x, r.shortprettystart())
-        print '---'
+        print('URLs invoked %s seconds before and after %s (#%s, %s)' %
+              (t, url, x, r.shortprettystart()))
+        print('---')
         i = -1
         for request in requests:
             i = i + 1
-            if request.start < earliest: continue
-            if request.start > latest: break
-            if n == i: # current request
-                print '%3d' % (request.start - start),
-                print '%s' % (request.shortprettystart()),
-                print request.url
+            if request.start < earliest:
+                continue
+            if request.start > latest:
+                break
+            if n == i:  # current request
+                print('%3d\n' % (request.start - start))
+                print('%s\n' % (request.shortprettystart()))
+                print(request.url)
                 continue
             if request.start <= start:
                 if before.get(i):
@@ -392,48 +424,55 @@ def urlfocuswrite(requests, url, t):
                     after[i] = after[i] + 1
                 else:
                     after[i] = 1
-            print '%3d' % (request.start - start),
-            print '%s' % (request.shortprettystart()),
-            print request.url
+            print('%3d\n' % (request.start - start))
+            print('%s\n' % (request.shortprettystart()))
+            print(request.url)
         print
-    print ('Summary of URLs invoked before (and at the same time as) %s '
-           '(times, url)' % url)
+    print('Summary of URLs invoked before (and at the same time as) %s '
+          '(times, url)' % url)
     before = before.items()
     before.sort()
-    for k,v in before:
-        print v, requests[k].url
+    for k, v in before:
+        print(v)
+        print(requests[k].url)
     print
-    print 'Summary of URLs invoked after %s (times, url)' % url
+    print('Summary of URLs invoked after %s (times, url)' % url)
     after = after.items()
     after.sort()
-    for k,v in after:
-        print v, requests[k].url
+    for k, v in after:
+        print(v)
+        print(requests[k].url)
+
 
 def write(requests, top=0):
     if len(requests) == 0:
-        print "No data.\n"
+        print("No data.\n")
         return
     i = 0
     header = requests[0].getheader()
-    print header
+    print(header)
     for stat in requests:
         i = i + 1
         if verbose:
-            print str(stat)
+            print(str(stat))
         else:
-            print str(stat)[:78]
+            print(str(stat)[:78])
         if i == top:
             break
+
 
 def getdate(val):
     try:
         val = val.strip()
-        year, month, day = int(val[:4]), int(val[5:7]), int(val[8:10])
-        hour,minute,second=int(val[11:13]),int(val[14:16]),int(val[17:19])
+        year, month, day = (
+            int(val[:4]), int(val[5:7]), int(val[8:10]))
+        hour, minute, second = (
+            int(val[11:13]), int(val[14:16]), int(val[17:19]))
         t = time.mktime((year, month, day, hour, minute, second, 0, 0, -1))
         return t
-    except:
-        raise ProfileException, "bad date %s" % val
+    except Exception:
+        raise ProfileException("bad date %s" % val)
+
 
 def getTimeslice(period, utime):
     low = int(math.floor(utime)) - period + 1
@@ -442,22 +481,25 @@ def getTimeslice(period, utime):
         if x % period == 0:
             return x
 
+
 def timewrite(requests, start, end, resolution):
-    print "Start: %s    End: %s   Resolution: %d secs" % \
-        (tick2str(start), tick2str(end), resolution)
-    print "-" * 78
+    print("Start: %s    End: %s   Resolution: %d secs" %
+          (tick2str(start), tick2str(end), resolution))
+    print("-" * 78)
     print
-    print "Date/Time                #requests requests/second"
+    print("Date/Time                #requests requests/second")
 
     d = {}
     max = 0
     min = None
     for r in requests:
         t = r.start
-        slice = getTimeslice(resolution,t)
-        if slice > max: max = slice
-        if (min is None) or (slice < min): min = slice
-        if d.has_key(slice):
+        slice = getTimeslice(resolution, t)
+        if slice > max:
+            max = slice
+        if (min is None) or (slice < min):
+            min = slice
+        if slice in d:
             d[slice] = d[slice] + 1
         else:
             d[slice] = 1
@@ -468,7 +510,8 @@ def timewrite(requests, start, end, resolution):
     max_requests = 0
     for slice in range(min, max, resolution):
         num = d.get(slice, 0)
-        if num>max_requests: max_requests = num
+        if num > max_requests:
+            max_requests = num
         hits = hits + num
 
         if avg_requests is None:
@@ -477,18 +520,20 @@ def timewrite(requests, start, end, resolution):
             avg_requests = (avg_requests + num) / 2
 
         s = tick2str(slice)
-        s = s + "     %6d         %4.2lf" % (num,num*1.0/resolution)
-        print s
+        s = s + "     %6d         %4.2lf" % (num, num * 1.0 / resolution)
+        print(s)
 
-    print '='*78
-    print " Peak:                  %6d         %4.2lf" % \
-        (max_requests,max_requests*1.0/resolution)
-    print "  Avg:                  %6d         %4.2lf" % \
-        (avg_requests,avg_requests*1.0/resolution)
-    print "Total:                  %6d          n/a " % (hits)
+    print('=' * 78)
+    print(" Peak:                  %6d         %4.2lf" %
+          (max_requests, max_requests * 1.0 / resolution))
+    print("  Avg:                  %6d         %4.2lf" %
+          (avg_requests, avg_requests * 1.0 / resolution))
+    print("Total:                  %6d          n/a " % (hits))
+
 
 def tick2str(t):
     return time.strftime('%Y-%m-%dT%H:%M:%S', time.localtime(t))
+
 
 def codesort(v1, v2):
     v1 = v1.endstage()
@@ -497,17 +542,22 @@ def codesort(v1, v2):
         return 0
 
     if v1 == "B":
-        return -1 # v1 is smaller than v2
+        return -1  # v1 is smaller than v2
     if v1 == "I":
-        if v2 == "B": return 1 # v1 is larger than v2
-        else: return -1
+        if v2 == "B":
+            return 1  # v1 is larger than v2
+        else:
+            return -1
     if v1 == "A":
-        if v2 in ['B', 'I']: return 1
-        else: return -1
+        if v2 in ['B', 'I']:
+            return 1
+        else:
+            return -1
     if v1 == "E":
         return 1
 
-class Sort:
+
+class Sort(object):
     def __init__(self, fname, ascending=0):
         self.fname = fname
         self.ascending = ascending
@@ -515,16 +565,23 @@ class Sort:
     def __call__(self, i1, i2):
         f1 = getattr(i1, self.fname)
         f2 = getattr(i2, self.fname)
-        if callable(f1): f1 = f1()
-        if callable(f2): f2 = f2()
+        if callable(f1):
+            f1 = f1()
+        if callable(f2):
+            f2 = f2()
         if f1 < f2:
-            if self.ascending: return -1
-            else: return 1
+            if self.ascending:
+                return -1
+            else:
+                return 1
         elif f1 == f2:
             return 0
         else:
-            if self.ascending: return 1
-            else: return -1
+            if self.ascending:
+                return 1
+            else:
+                return -1
+
 
 def detailedusage():
     details = usage(0)
@@ -596,7 +653,8 @@ If the 'verbose' argument is specified, do not trim url to fit into 80 cols.
 
 If the 'today' argument is specified, limit results to hits received today.
 
-If the 'daysago' argument is specified, limit results to hits received n days ago.
+If the 'daysago' argument is specified, limit results to hits received n days
+ago.
 
 The 'resolution' argument is used only for timed reports and specifies the
 number of seconds between consecutive lines in the report
@@ -639,7 +697,8 @@ Examples:
   %(pname)s debug.log --cumulative --sort=mean --daysago=3 --verbose
 
     Show cumulative report statistics sorted by mean for entries in the log
-    which happened three days ago, and do not trim the URL in the resulting report.
+    which happened three days ago, and do not trim the URL in the resulting
+    report.
 
   %(pname)s debug.log --urlfocus='/manage_main' --urlfocustime=60
 
@@ -673,8 +732,9 @@ Examples:
   %(pname)s --readstats='requests.stat' --detailed
 
     Read from 'requests.stat' stats file (instead of actual -M log files)
-    and show detailed report against this data.""" % {'pname':pname}
+    and show detailed report against this data.""" % {'pname': pname}
     return details
+
 
 def usage(basic=1):
     usage = (
@@ -691,8 +751,8 @@ Usage: %s filename1 [filename2 ...]
           [--help]
 
 Provides a profile of one or more Zope "-M" request log files.
-""" % sys.argv[0]
-        )
+""" % sys.argv[0])
+
     if basic == 1:
         usage = usage + """
 If the --help argument is given, detailed usage docs are provided."""
@@ -703,7 +763,9 @@ def main():
     if len(sys.argv) == 1:
         print usage()
         sys.exit(0)
-    if sys.argv[1] == '--help': print detailedusage(); sys.exit(0)
+    if sys.argv[1] == '--help':
+        print(detailedusage())
+        sys.exit(0)
     mode = 'cumulative'
     sortby = None
     trim = 0
@@ -711,9 +773,9 @@ def main():
     verbose = 0
     start = None
     end = None
-    resolution=60
-    urlfocustime=10
-    urlfocusurl=None
+    resolution = 60
+    urlfocustime = 10
+    urlfocusurl = None
     statsfname = None
     readstats = 0
     writestats = 0
@@ -722,8 +784,8 @@ def main():
     i = 1
     for arg in sys.argv[1:]:
         if arg[:2] != '--':
-            if arg[-3:] == '.gz' and globals().has_key('gzip'):
-                files.append(gzip.GzipFile(arg,'r'))
+            if arg[-3:] == '.gz' and 'gzip' in globals():
+                files.append(gzip.GzipFile(arg, 'r'))
             else:
                 files.append(open(arg))
             sys.argv.remove(arg)
@@ -731,60 +793,69 @@ def main():
 
     try:
         opts, extra = getopt.getopt(
-            sys.argv[1:], '', ['sort=', 'top=', 'help', 'verbose', 'today',
-                               'cumulative', 'detailed', 'timed','start=',
-                               'end=','resolution=', 'writestats=','daysago=',
-                               'readstats=','urlfocus=','urlfocustime=']
-            )
+            sys.argv[1:], '', [
+                'sort=', 'top=', 'help', 'verbose', 'today',
+                'cumulative', 'detailed', 'timed', 'start=',
+                'end=', 'resolution=', 'writestats=', 'daysago=',
+                'readstats=', 'urlfocus=', 'urlfocustime=']
+        )
         for opt, val in opts:
 
-            if opt=='--readstats':
+            if opt == '--readstats':
                 statsfname = val
                 readstats = 1
-            elif opt=='--writestats':
+            elif opt == '--writestats':
                 statsfname = val
                 writestats = 1
-            if opt=='--sort': sortby = val
-            if opt=='--top': top=int(val)
-            if opt=='--help': print detailedusage(); sys.exit(0)
-            if opt=='--verbose':
+            if opt == '--sort':
+                sortby = val
+            if opt == '--top':
+                top = int(val)
+            if opt == '--help':
+                print(detailedusage())
+                sys.exit(0)
+            if opt == '--verbose':
                 verbose = 1
-            if opt=='--resolution':
-                resolution=int(val)
-            if opt=='--today':
+            if opt == '--resolution':
+                resolution = int(val)
+            if opt == '--today':
                 now = time.localtime(time.time())
                 # for testing - now = (2001, 04, 19, 0, 0, 0, 0, 0, -1)
                 start = list(now)
                 start[3] = start[4] = start[5] = 0
                 start = time.mktime(start)
                 end = list(now)
-                end[3] = 23; end[4] = 59; end[5] = 59
+                end[3] = 23
+                end[4] = 59
+                end[5] = 59
                 end = time.mktime(end)
-            if opt=='--daysago':
-                now = time.localtime(time.time() - int(val)*3600*24 )
+            if opt == '--daysago':
+                now = time.localtime(time.time() - int(val) * 3600 * 24)
                 # for testing - now = (2001, 04, 19, 0, 0, 0, 0, 0, -1)
                 start = list(now)
                 start[3] = start[4] = start[5] = 0
                 start = time.mktime(start)
                 end = list(now)
-                end[3] = 23; end[4] = 59; end[5] = 59
+                end[3] = 23
+                end[4] = 59
+                end[5] = 59
                 end = time.mktime(end)
-            if opt=='--start':
+            if opt == '--start':
                 start = getdate(val)
-            if opt=='--end':
+            if opt == '--end':
                 end = getdate(val)
-            if opt=='--detailed':
-                mode='detailed'
+            if opt == '--detailed':
+                mode = 'detailed'
                 d_sortby = sortby
-            if opt=='--cumulative':
-                mode='cumulative'
-            if opt=='--timed':
-                mode='timed'
-            if opt=='--urlfocus':
-                mode='urlfocus'
+            if opt == '--cumulative':
+                mode = 'cumulative'
+            if opt == '--timed':
+                mode = 'timed'
+            if opt == '--urlfocus':
+                mode = 'urlfocus'
                 urlfocusurl = val
-            if opt=='--urlfocustime':
-                urlfocustime=int(val)
+            if opt == '--urlfocustime':
+                urlfocustime = int(val)
 
         validcumsorts = ['url', 'hits', 'hangs', 'max', 'min', 'median',
                          'mean', 'total']
@@ -793,14 +864,16 @@ def main():
                          'active', 'url']
 
         if mode == 'cumulative':
-            if sortby is None: sortby = 'total'
+            if sortby is None:
+                sortby = 'total'
             assert sortby in validcumsorts, (sortby, mode, validcumsorts)
             if sortby in ['url']:
                 sortf = Sort(sortby, ascending=1)
             else:
                 sortf = Sort(sortby)
         elif mode == 'detailed':
-            if sortby is None: sortby = 'start'
+            if sortby is None:
+                sortby = 'start'
             assert sortby in validdetsorts, (sortby, mode, validdetsorts)
             if sortby in ['start', 'url', 'httpcode']:
                 sortf = Sort(sortby, ascending=1)
@@ -808,14 +881,15 @@ def main():
                 sortf = codesort
             else:
                 sortf = Sort(sortby)
-        elif mode=='timed':
+        elif mode == 'timed':
             sortf = None
-        elif mode=='urlfocus':
+        elif mode == 'urlfocus':
             sortf = Sort('start', ascending=1)
         else:
             raise ValueError('Invalid mode')
 
-        req=get_requests(files, start, end, statsfname, writestats, readstats)
+        req = get_requests(
+            files, start, end, statsfname, writestats, readstats)
         analyze(req, top, sortf, start, end, mode, resolution, urlfocusurl,
                 urlfocustime)
 

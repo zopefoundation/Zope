@@ -28,18 +28,18 @@ def main(argv=sys.argv):
     try:
         user, pwd = argv[1], argv[2]
     except IndexError:
-        print "%s <username> <password>" % argv[0]
+        print("%s <username> <password>" % argv[0])
         sys.exit(255)
     finder = ZopeFinder(argv)
     finder.filter_warnings()
     app = finder.get_app()
     result = adduser(app, user, pwd)
     if result:
-        print "User %s created." % user
+        print("User %s created." % user)
     else:
-        print "Got no result back. User creation may have failed."
-        print "Maybe the user already exists and nothing is done then."
-        print "Or the implementation does not give info when it succeeds."
+        print("Got no result back. User creation may have failed.")
+        print("Maybe the user already exists and nothing is done then.")
+        print("Or the implementation does not give info when it succeeds.")
 
 if __name__ == '__main__':
     main()
