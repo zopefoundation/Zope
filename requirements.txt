@@ -1,5 +1,5 @@
 -e git+https://github.com/zopefoundation/Zope.git@master#egg=Zope2
-AccessControl==3.0.12
+AccessControl==4.0a1
 Acquisition==4.2.2
 BTrees==4.3.1
 DateTime==4.1.1

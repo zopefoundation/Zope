@@ -78,7 +78,7 @@ Features Added
 
 - Updated distributions:
 
-  - AccessControl = 3.0.12
+  - AccessControl = 4.0a1
   - Acquisition = 4.2.2
   - BTrees = 4.0.8
   - DateTime = 4.1.1
