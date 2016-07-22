@@ -62,7 +62,6 @@ setup(
         'Products.OFSP >= 2.13.2',
         'Products.SiteErrorLog',
         'Products.ZCatalog',
-        'Products.ZCTextIndex',
         'Record',
         'RestrictedPython',
         'ZConfig >= 2.9.2',
