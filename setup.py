@@ -27,7 +27,7 @@ CHANGES = _read_file('CHANGES.rst')
 
 setup(
     name='Zope2',
-    version='4.0a1',
+    version='4.0a2.dev0',
     url='https://zope.readthedocs.io/en/latest/',
     license='ZPL 2.1',
     description='Zope2 application server / web framework',
