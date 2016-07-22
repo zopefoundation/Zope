@@ -11,6 +11,9 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 Bugs Fixed
 ++++++++++
 
+- Remove `Connection` and `Transfer-Encoding` headers from WSGI responses.
+  According to PEP 333 WSGI applications must not emit hop-by-hop headers.
+
 - Removed docstrings from some methods to avoid publishing them.  From
   Products.PloneHotfix20160419.  [maurits]
 

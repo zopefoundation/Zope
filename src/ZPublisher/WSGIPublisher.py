@@ -34,28 +34,24 @@ from ZPublisher.Publish import missing_name
 from ZPublisher.pubevents import PubStart, PubBeforeCommit, PubAfterTraversal
 from ZPublisher.Iterators import IUnboundStreamIterator, IStreamIterator
 
-_NOW = None     # overwrite for testing
+_NOW = None  # overwrite for testing
+
+
 def _now():
     if _NOW is not None:
         return _NOW
     return time.time()
+
 
 class WSGIResponse(HTTPResponse):
     """A response object for WSGI
 
     This Response object knows nothing about ZServer, but tries to be
     compatible with the ZServerHTTPResponse.
-
-    Most significantly, streaming is not (yet) supported.
     """
-    _streaming = _chunking = 0
+    _streaming = 0
     _http_version = None
     _server_version = None
-    _http_connection = None
-
-    # Set this value to 1 if streaming output in
-    # HTTP/1.1 should use chunked encoding
-    http_chunk = 0
 
     # Append any "cleanup" functions to this list.
     after_list = ()
@@ -68,8 +64,8 @@ class WSGIResponse(HTTPResponse):
         # set 204 (no content) status if 200 and response is empty
         # and not streaming
         if ('content-type' not in headers and
-            'content-length' not in headers and
-            not self._streaming and self.status == 200):
+                'content-length' not in headers and
+                not self._streaming and self.status == 200):
             self.setStatus('nocontent')
 
         # add content length if not streaming
@@ -77,25 +73,6 @@ class WSGIResponse(HTTPResponse):
 
         if content_length is None and not self._streaming:
             self.setHeader('content-length', len(body))
-
-        if self._http_version == '1.0':
-            if (self._http_connection == 'keep-alive' and
-                'content-length' in self.headers):
-                self.setHeader('Connection', 'Keep-Alive')
-            else:
-                self.setHeader('Connection', 'close')
-
-        # Close the connection if we have been asked to.
-        # Use chunking if streaming output.
-        if self._http_version == '1.1':
-            if self._http_connection == 'close':
-                self.setHeader('Connection', 'close')
-            elif not self.headers.has_key('content-length'):
-                if self.http_chunk and self._streaming:
-                    self.setHeader('Transfer-Encoding', 'chunked')
-                    self._chunking = 1
-                else:
-                    self.setHeader('Connection','close')
 
         return '%s %s' % (self.status, self.errmsg), self.listHeaders()
 
@@ -114,7 +91,7 @@ class WSGIResponse(HTTPResponse):
         if realm:
             self.setHeader('WWW-Authenticate', 'basic realm="%s"' % realm, 1)
 
-    def write(self,data):
+    def write(self, data):
         """ Add data to our output stream.
 
         HTML data may be returned using a stream-oriented interface.
@@ -122,9 +99,7 @@ class WSGIResponse(HTTPResponse):
         computation of a response to proceed.
         """
         if not self._streaming:
-            
             notify(PubBeforeStreaming(self))
-            
             self._streaming = 1
             self.stdout.flush()
 
@@ -148,14 +123,6 @@ class WSGIResponse(HTTPResponse):
             HTTPResponse.setBody(self, body, title, is_error)
 
     def __str__(self):
-
-        # XXX Consider how we are to handle the cases this logic was trying
-        # to cover
-        #if self._wrote:
-        #    if self._chunking:
-        #        return '0\r\n\r\n'
-        #    else:
-        #        return ''
         raise NotImplementedError
 
 
@@ -256,7 +223,6 @@ def publish_module(environ, start_response,
     stderr = StringIO()
     response = _response_factory(stdout=stdout, stderr=stderr)
     response._http_version = environ['SERVER_PROTOCOL'].split('/')[1]
-    response._http_connection = environ.get('CONNECTION_TYPE', 'close')
     response._server_version = environ.get('SERVER_SOFTWARE')
 
     request = _request_factory(environ['wsgi.input'], environ, response)

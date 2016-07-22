@@ -55,61 +55,6 @@ class WSGIResponseTests(unittest.TestCase):
         response.finalize()
         self.assertFalse(response.getHeader('Content-Length'))
 
-    def test_finalize_HTTP_1_0_keep_alive_w_content_length(self):
-        response = self._makeOne()
-        response._http_version = '1.0'
-        response._http_connection = 'keep-alive'
-        response.setBody('TESTING')
-        response.finalize()
-        self.assertEqual(response.getHeader('Connection'), 'Keep-Alive')
-
-    def test_finalize_HTTP_1_0_keep_alive_wo_content_length_streaming(self):
-        response = self._makeOne()
-        response._http_version = '1.0'
-        response._http_connection = 'keep-alive'
-        response._streaming = True
-        response.finalize()
-        self.assertEqual(response.getHeader('Connection'), 'close')
-
-    def test_finalize_HTTP_1_0_not_keep_alive_w_content_length(self):
-        response = self._makeOne()
-        response._http_version = '1.0'
-        response.setBody('TESTING')
-        response.finalize()
-        self.assertEqual(response.getHeader('Connection'), 'close')
-
-    def test_finalize_HTTP_1_1_connection_close(self):
-        response = self._makeOne()
-        response._http_version = '1.1'
-        response._http_connection = 'close'
-        response.finalize()
-        self.assertEqual(response.getHeader('Connection'), 'close')
-
-    def test_finalize_HTTP_1_1_wo_content_length_streaming_wo_http_chunk(self):
-        response = self._makeOne()
-        response._http_version = '1.1'
-        response._streaming = True
-        response.http_chunk = 0
-        response.finalize()
-        self.assertEqual(response.getHeader('Connection'), 'close')
-        self.assertEqual(response.getHeader('Transfer-Encoding'), None)
-        self.assertFalse(response._chunking)
-
-    def test_finalize_HTTP_1_1_wo_content_length_streaming_w_http_chunk(self):
-        response = self._makeOne()
-        response._http_version = '1.1'
-        response._streaming = True
-        response.http_chunk = 1
-        response.finalize()
-        self.assertEqual(response.getHeader('Connection'), None)
-
-    def test_finalize_HTTP_1_1_w_content_length_wo_chunk_wo_streaming(self):
-        response = self._makeOne()
-        response._http_version = '1.1'
-        response.setBody('TESTING')
-        response.finalize()
-        self.assertEqual(response.getHeader('Connection'), None)
-
     def test_listHeaders_skips_Server_header_wo_server_version_set(self):
         response = self._makeOne()
         response.setBody('TESTING')
@@ -186,18 +131,6 @@ class WSGIResponseTests(unittest.TestCase):
         self.assertEqual(response._streaming, 0)
         self.assertEqual(response.getHeader('Content-Length'),
                          '%d' % len(test_streamiterator.data))
-
-    #def test___str__already_wrote_not_chunking(self):
-    #    response = self._makeOne()
-    #    response._wrote = True
-    #    response._chunking = False
-    #    self.assertEqual(str(response), '')
-
-    #def test___str__already_wrote_w_chunking(self):
-    #    response = self._makeOne()
-    #    response._wrote = True
-    #    response._chunking = True
-    #    self.assertEqual(str(response), '0\r\n\r\n')
 
     def test___str___raises(self):
         response = self._makeOne()
