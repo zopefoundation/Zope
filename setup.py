@@ -122,6 +122,9 @@ setup(
         'paste.app_factory': [
             'main=Zope2.Startup.run:make_wsgi_app',
         ],
+        'paste.filter_app_factory': [
+            'httpexceptions=Zope2.Startup.httpexceptions:main',
+        ],
         'console_scripts': [
             'mkzopeinstance=Zope2.utilities.mkzopeinstance:main',
             'runwsgi=Zope2.Startup.serve:main',

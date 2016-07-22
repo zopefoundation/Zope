@@ -51,6 +51,8 @@ Bugs Fixed
 Features Added
 ++++++++++++++
 
+- Add `egg:Zope2#httpexceptions` WSGI middleware.
+
 - Update available HTTP response code, 302 is now called Found.
 
 - Add a new `runwsgi` script to serve PasteDeploy files.

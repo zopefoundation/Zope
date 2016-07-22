@@ -4,7 +4,7 @@ zope_conf = %(here)s/wsgi.conf
 
 [pipeline:main]
 pipeline =
-    egg:paste#httpexceptions
+    egg:Zope2#httpexceptions
     egg:repoze.retry#retry
     egg:repoze.tm2#tm
     zope
