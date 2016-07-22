@@ -219,5 +219,6 @@ Restructuring
     - ``Products.MailHost``
     - ``Products.MIMETools``
     - ``Products.PythonScripts``
+    - ``Products.SiteErrorLog``
     - ``Products.StandardCacheManagers``
     - ``Products.ZCTextIndex``

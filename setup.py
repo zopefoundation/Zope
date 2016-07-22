@@ -60,7 +60,6 @@ setup(
         'PasteDeploy',
         'Persistence',
         'Products.OFSP >= 2.13.2',
-        'Products.SiteErrorLog',
         'Products.ZCatalog',
         'Record',
         'RestrictedPython',
