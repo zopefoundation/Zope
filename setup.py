@@ -71,7 +71,6 @@ setup(
         'docutils',
         'five.globalrequest',
         'pytz',
-        'repoze.tm2',
         'repoze.retry',
         'setuptools',
         'tempstorage',

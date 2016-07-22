@@ -54,6 +54,8 @@ Bugs Fixed
 Features Added
 ++++++++++++++
 
+- Make repoze.tm2 optional when using the WSGIPublisher.
+
 - Include waitress as a default WSGI app server.
 
 - Add `egg:Zope2#httpexceptions` WSGI middleware.

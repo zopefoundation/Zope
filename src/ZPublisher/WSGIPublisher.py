@@ -126,9 +126,7 @@ class WSGIResponse(HTTPResponse):
         raise NotImplementedError
 
 
-def publish(request, module_name,
-            _get_module_info=get_module_info,  # only for testing
-           ):
+def publish(request, module_info, repoze_tm_active=False):
     (bobo_before,
      bobo_after,
      object,
@@ -136,8 +134,7 @@ def publish(request, module_name,
      debug_mode,
      err_hook,
      validated_hook,
-     transactions_manager,
-    ) = _get_module_info(module_name)
+     transactions_manager) = module_info
 
     notify(pubevents.PubStart(request))
     newInteraction()
@@ -162,6 +159,10 @@ def publish(request, module_name,
         path = request.get('PATH_INFO')
 
         request['PARENTS'] = [object]
+
+        if not repoze_tm_active and transactions_manager:
+            transactions_manager.begin()
+
         object = request.traverse(path, validated_hook=validated_hook)
         notify(pubevents.PubAfterTraversal(request))
 
@@ -183,6 +184,11 @@ def publish(request, module_name,
             response.setBody(result)
 
         notify(pubevents.PubBeforeCommit(request))
+
+        if not repoze_tm_active and transactions_manager:
+            transactions_manager.commit()
+            notify(pubevents.PubSuccess(request))
+
     finally:
         endInteraction()
 
@@ -222,7 +228,10 @@ def publish_module(environ, start_response,
                    _publish=publish,                # only for testing
                    _response_factory=WSGIResponse,  # only for testing
                    _request_factory=HTTPRequest,    # only for testing
-                  ):
+                   ):
+    module_info = get_module_info('Zope2')
+    transactions_manager = module_info[7]
+
     status = 200
     stdout = StringIO()
     stderr = StringIO()
@@ -232,7 +241,9 @@ def publish_module(environ, start_response,
 
     request = _request_factory(environ['wsgi.input'], environ, response)
 
-    if 'repoze.tm.active' in environ:
+    repoze_tm_active = 'repoze.tm.active' in environ
+
+    if repoze_tm_active:
         # NOTE: registerSynch is a no-op after the first request
         transaction.manager.registerSynch(_request_closer_for_repoze_tm)
         txn = transaction.get()
@@ -242,14 +253,16 @@ def publish_module(environ, start_response,
 
     try:
         try:
-            response = _publish(request, 'Zope2')
+            response = _publish(request, module_info, repoze_tm_active)
         except Exception:
             try:
                 exc_info = sys.exc_info()
                 notify(pubevents.PubBeforeAbort(
                     request, exc_info, request.supports_retry()))
 
-                # This should really be after transaction abort
+                if not repoze_tm_active and transactions_manager:
+                    transactions_manager.abort()
+
                 notify(pubevents.PubFailure(
                     request, exc_info, request.supports_retry()))
             finally:
@@ -274,7 +287,7 @@ def publish_module(environ, start_response,
         # XXX This still needs verification that it really works.
         result = (stdout.getvalue(), response.body)
 
-    if 'repoze.tm.active' not in environ:
+    if not repoze_tm_active:
         request.close()  # this aborts the transaction!
 
     stdout.close()

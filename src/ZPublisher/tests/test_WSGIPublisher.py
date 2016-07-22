@@ -12,6 +12,9 @@
 ##############################################################################
 import unittest
 
+from ZPublisher.Publish import get_module_info
+
+
 class WSGIResponseTests(unittest.TestCase):
 
     _old_NOW = None
@@ -140,18 +143,12 @@ class WSGIResponseTests(unittest.TestCase):
 
 class TestPublish(unittest.TestCase):
 
-    def _callFUT(self, request, module_name, _get_module_info=None):
+    def _callFUT(self, request, module_info=None):
         from ZPublisher.WSGIPublisher import publish
-        if _get_module_info is None:
-            return publish(request, module_name)
+        if module_info is None:
+            module_info = get_module_info('Zope2')
 
-        return publish(request, module_name, _get_module_info)
-
-    def test_invalid_module_doesnt_catch_error(self):
-        _gmi = DummyCallable()
-        _gmi._raise = ImportError('testing')
-        self.assertRaises(ImportError, self._callFUT, None, 'nonesuch', _gmi)
-        self.assertEqual(_gmi._called_with, (('nonesuch',), {}))
+        return publish(request, module_info)
 
     def test_wo_REMOTE_USER(self):
         request = DummyRequest(PATH_INFO='/')
@@ -166,12 +163,10 @@ class TestPublish(unittest.TestCase):
         _err_hook = DummyCallable()
         _validated_hook = object()
         _tm = DummyTM()
-        _gmi = DummyCallable()
-        _gmi._result = (_before, _after, _object, _realm, _debug_mode,
-                        _err_hook, _validated_hook, _tm)
-        returned = self._callFUT(request, 'okmodule', _gmi)
+        module_info = (_before, _after, _object, _realm, _debug_mode,
+                       _err_hook, _validated_hook, _tm)
+        returned = self._callFUT(request, module_info)
         self.assertTrue(returned is response)
-        self.assertEqual(_gmi._called_with, (('okmodule',), {}))
         self.assertTrue(request._processedInputs)
         self.assertEqual(response.after_list, (_after,))
         self.assertTrue(response.debug_mode)
@@ -180,6 +175,8 @@ class TestPublish(unittest.TestCase):
         self.assertEqual(request['PARENTS'], [_object])
         self.assertEqual(request._traversed, ('/', None, _validated_hook))
         self.assertEqual(_tm._recorded, (_object, request))
+        self.assertTrue(_tm._begin)
+        self.assertTrue(_tm._commit)
         self.assertEqual(_object._called_with, ((), {}))
         self.assertEqual(response._body, 'RESULT')
         self.assertEqual(_err_hook._called_with, None)
@@ -197,10 +194,9 @@ class TestPublish(unittest.TestCase):
         _err_hook = DummyCallable()
         _validated_hook = object()
         _tm = DummyTM()
-        _gmi = DummyCallable()
-        _gmi._result = (_before, _after, _object, _realm, _debug_mode,
-                        _err_hook, _validated_hook, _tm)
-        self._callFUT(request, 'okmodule', _gmi)
+        module_info = (_before, _after, _object, _realm, _debug_mode,
+                       _err_hook, _validated_hook, _tm)
+        self._callFUT(request, module_info)
         self.assertEqual(response.realm, None)
 
 
@@ -208,7 +204,6 @@ class TestPublishModule(unittest.TestCase):
 
     def setUp(self):
         from zope.testing.cleanup import cleanUp
-
         cleanUp()
 
     def tearDown(self):
@@ -302,9 +297,9 @@ class TestPublishModule(unittest.TestCase):
         self.assertEqual(status, '204 No Content')
         self.assertEqual(headers, [('Content-Length', '0')])
         self.assertEqual(kw, {})
-        (request, module), kw = _publish._called_with
+        (request, module_info, repoze_tm_active), kw = _publish._called_with
         self.assertTrue(isinstance(request, HTTPRequest))
-        self.assertEqual(module, 'Zope2')
+        self.assertEqual(repoze_tm_active, False)
         self.assertEqual(kw, {})
         self.assertTrue(_response._finalized)
         self.assertEqual(_after1._called_with, ((), {}))
@@ -514,6 +509,16 @@ class DummyCallable(object):
 
 class DummyTM(object):
     _recorded = _raise = _result = None
+    _abort = _begin = _commit = False
+
+    def abort(self):
+        self._abort = True
+
+    def begin(self):
+        self._begin = True
+
+    def commit(self):
+        self._commit = True
 
     def recordMetaData(self, *args):
         self._recorded = args
