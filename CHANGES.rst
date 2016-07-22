@@ -54,6 +54,8 @@ Bugs Fixed
 Features Added
 ++++++++++++++
 
+- Include waitress as a default WSGI app server.
+
 - Add `egg:Zope2#httpexceptions` WSGI middleware.
 
 - Update available HTTP response code, 302 is now called Found.
