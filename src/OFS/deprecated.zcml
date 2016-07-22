@@ -15,9 +15,4 @@
   <five:deprecatedManageAddDelete
       class="Products.SiteAccess.VirtualHostMonster.VirtualHostMonster"/>
 
-  <five:deprecatedManageAddDelete
-      class="Products.ZCatalog.CatalogAwareness.CatalogAware"/>
-  <five:deprecatedManageAddDelete
-      class="Products.ZCatalog.CatalogPathAwareness.CatalogAware"/>
-
 </configure>

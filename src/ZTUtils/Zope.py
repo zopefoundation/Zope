@@ -19,9 +19,9 @@ import urllib
 
 from AccessControl import getSecurityManager
 from DateTime.DateTime import DateTime
-from Products.ZCatalog.Lazy import Lazy
 
 from ZTUtils.Batch import Batch
+from ZTUtils.Lazy import Lazy
 from ZTUtils.SimpleTree import SimpleTreeMaker
 from ZTUtils.Tree import decodeExpansion
 from ZTUtils.Tree import encodeExpansion

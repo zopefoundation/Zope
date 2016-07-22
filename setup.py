@@ -60,8 +60,6 @@ setup(
         'PasteDeploy',
         'Persistence',
         'Products.OFSP >= 2.13.2',
-        'Products.ZCatalog',
-        'Record',
         'RestrictedPython',
         'ZConfig >= 2.9.2',
         'ZODB',

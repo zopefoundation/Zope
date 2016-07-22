@@ -221,4 +221,6 @@ Restructuring
     - ``Products.PythonScripts``
     - ``Products.SiteErrorLog``
     - ``Products.StandardCacheManagers``
+    - ``Products.ZCatalog``
     - ``Products.ZCTextIndex``
+    - ``Record``
