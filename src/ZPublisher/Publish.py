@@ -26,12 +26,7 @@ from zope.security.management import newInteraction, endInteraction
 
 from .mapply import mapply
 from .maybe_lock import allocate_lock
-from .pubevents import PubAfterTraversal
-from .pubevents import PubBeforeAbort
-from .pubevents import PubBeforeCommit
-from .pubevents import PubFailure
-from .pubevents import PubStart
-from .pubevents import PubSuccess
+from ZPublisher import pubevents
 from .Request import Request
 from .Response import Response
 
@@ -87,7 +82,7 @@ def publish(request, module_name, after_list, debug=0,
     response=None
 
     try:
-        notify(PubStart(request))
+        notify(pubevents.PubStart(request))
         # TODO pass request here once BaseRequest implements IParticipation
         newInteraction()
 
@@ -135,7 +130,7 @@ def publish(request, module_name, after_list, debug=0,
         if IBrowserPage.providedBy(object):
             request.postProcessInputs()
 
-        notify(PubAfterTraversal(request))
+        notify(pubevents.PubAfterTraversal(request))
 
         if transactions_manager:
             transactions_manager.recordMetaData(object, request)
@@ -149,13 +144,13 @@ def publish(request, module_name, after_list, debug=0,
         if result is not response:
             response.setBody(result)
 
-        notify(PubBeforeCommit(request))
+        notify(pubevents.PubBeforeCommit(request))
 
         if transactions_manager:
             transactions_manager.commit()
         endInteraction()
 
-        notify(PubSuccess(request))
+        notify(pubevents.PubSuccess(request))
 
         return response
     except:
@@ -197,13 +192,14 @@ def publish(request, module_name, after_list, debug=0,
                 # Note: 'abort's can fail. Nevertheless, we want end request handling
                 try:
                     try:
-                        notify(PubBeforeAbort(request, exc_info, retry))
+                        notify(pubevents.PubBeforeAbort(
+                            request, exc_info, retry))
                     finally:
                         if transactions_manager:
                             transactions_manager.abort()
                 finally:
                     endInteraction()
-                    notify(PubFailure(request, exc_info, retry))
+                    notify(pubevents.PubFailure(request, exc_info, retry))
 
             # Only reachable if Retry is raised and request supports retry.
             newrequest=request.retry()
@@ -221,13 +217,13 @@ def publish(request, module_name, after_list, debug=0,
             # Note: 'abort's can fail. Nevertheless, we want end request handling
             try:
                 try:
-                    notify(PubBeforeAbort(request, exc_info, False))
+                    notify(pubevents.PubBeforeAbort(request, exc_info, False))
                 finally:
                     if transactions_manager:
                         transactions_manager.abort()
             finally:
                 endInteraction()
-                notify(PubFailure(request, exc_info, False))
+                notify(pubevents.PubFailure(request, exc_info, False))
             raise
 
 def publish_module_standard(module_name,

@@ -13,6 +13,7 @@
 """ Python Object Publisher -- Publish Python objects on web servers
 """
 from cStringIO import StringIO
+import sys
 import time
 
 import transaction
@@ -26,12 +27,11 @@ from ZServer.medusa.http_date import build_http_date
 from ZPublisher.HTTPRequest import HTTPRequest
 from ZPublisher.HTTPResponse import HTTPResponse
 from ZPublisher.mapply import mapply
-from ZPublisher.pubevents import PubBeforeStreaming
+from ZPublisher import pubevents
 from ZPublisher.Publish import call_object
 from ZPublisher.Publish import dont_publish_class
 from ZPublisher.Publish import get_module_info
 from ZPublisher.Publish import missing_name
-from ZPublisher.pubevents import PubStart, PubBeforeCommit, PubAfterTraversal
 from ZPublisher.Iterators import IUnboundStreamIterator, IStreamIterator
 
 _NOW = None  # overwrite for testing
@@ -99,7 +99,7 @@ class WSGIResponse(HTTPResponse):
         computation of a response to proceed.
         """
         if not self._streaming:
-            notify(PubBeforeStreaming(self))
+            notify(pubevents.PubBeforeStreaming(self))
             self._streaming = 1
             self.stdout.flush()
 
@@ -139,7 +139,7 @@ def publish(request, module_name,
      transactions_manager,
     ) = _get_module_info(module_name)
 
-    notify(PubStart(request))
+    notify(pubevents.PubStart(request))
     newInteraction()
     try:
         request.processInputs()
@@ -163,7 +163,7 @@ def publish(request, module_name,
 
         request['PARENTS'] = [object]
         object = request.traverse(path, validated_hook=validated_hook)
-        notify(PubAfterTraversal(request))
+        notify(pubevents.PubAfterTraversal(request))
 
         if transactions_manager:
             transactions_manager.recordMetaData(object, request)
@@ -181,16 +181,17 @@ def publish(request, module_name,
 
         if result is not response:
             response.setBody(result)
+
+        notify(pubevents.PubBeforeCommit(request))
     finally:
         endInteraction()
 
-    notify(PubBeforeCommit(request))
     return response
 
 
 class _RequestCloserForTransaction(object):
     """Unconditionally close the request at the end of a transaction.
-    
+
     See transaction.interfaces.ISynchronizer
     """
 
@@ -209,9 +210,13 @@ class _RequestCloserForTransaction(object):
     def afterCompletion(self, txn):
         request = self.requests.pop(txn, None)
         if request is not None:
+            if txn.status == 'Committed':
+                notify(pubevents.PubSuccess(request))
+
             request.close()
 
 _request_closer_for_repoze_tm = _RequestCloserForTransaction()
+
 
 def publish_module(environ, start_response,
                    _publish=publish,                # only for testing
@@ -236,8 +241,21 @@ def publish_module(environ, start_response,
     setDefaultSkin(request)
 
     try:
-        response = _publish(request, 'Zope2')
-    except Unauthorized as v:
+        try:
+            response = _publish(request, 'Zope2')
+        except Exception:
+            try:
+                exc_info = sys.exc_info()
+                notify(pubevents.PubBeforeAbort(
+                    request, exc_info, request.supports_retry()))
+
+                # This should really be after transaction abort
+                notify(pubevents.PubFailure(
+                    request, exc_info, request.supports_retry()))
+            finally:
+                del exc_info
+            raise
+    except Unauthorized:
         response._unauthorized()
     except Redirect as v:
         response.redirect(v)
@@ -257,7 +275,7 @@ def publish_module(environ, start_response,
         result = (stdout.getvalue(), response.body)
 
     if 'repoze.tm.active' not in environ:
-        request.close() # this aborts the transation!
+        request.close()  # this aborts the transaction!
 
     stdout.close()
 
