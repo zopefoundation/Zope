@@ -22,10 +22,10 @@ Products.ZCatalog==3.2
 Record==3.1
 RestrictedPython==3.6.0
 WebOb==1.6.1
-WebTest==2.0.21
+WebTest==2.0.23
 ZConfig==3.1.0
-ZEO==4.1.0
-ZODB==4.3.1
+ZEO==4.2.1
+ZODB==4.4.2
 ZopeUndo==4.1
 docutils==0.12
 five.globalrequest==1.0
