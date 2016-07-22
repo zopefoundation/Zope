@@ -28,7 +28,7 @@ class redirecting_handler:
         part = m.group(1)
         
         request['Location'] = self.redirect % part
-        request.error (302) # moved temporarily
+        request.error (302)  # Found
         
     def __repr__ (self):
         return '<Redirecting Handler at %08x [%s => %s]>' % (

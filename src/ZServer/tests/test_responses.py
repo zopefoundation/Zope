@@ -248,7 +248,7 @@ class ZServerHTTPResponseTestCase(unittest.TestCase):
         response._http_connection = 'keep-alive'
         response.redirect('somewhere')
         self._assertResponsesAreEqual(str(response),
-                                      ('HTTP/1.1 302 Moved Temporarily',
+                                      ('HTTP/1.1 302 Found',
                                        'Content-Length: 0',
                                        'Date: ...',
                                        'Location: somewhere',

@@ -21,8 +21,7 @@ import httplib
 import urllib2
 
 import mechanize
-
-import zope.publisher.http
+from zExceptions import status_reasons
 from zope.testbrowser import browser
 
 from Testing.ZopeTestCase.zopedoctest import functional
@@ -86,7 +85,7 @@ class PublisherConnection(object):
         """
         real_response = self.response._response
         status = real_response.getStatus()
-        reason = zope.publisher.http.status_reasons[real_response.status]
+        reason = status_reasons[real_response.status]
         headers = []
         # Convert header keys to camel case. This is basically a copy
         # paste from ZPublisher.HTTPResponse

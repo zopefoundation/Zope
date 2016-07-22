@@ -399,7 +399,7 @@ class Test_publish_module(unittest.TestCase):
         app_iter = self._callFUT(environ, start_response, _publish)
         self.assertEqual(app_iter, ('', ''))
         (status, headers), kw = start_response._called_with
-        self.assertEqual(status, '302 Moved Temporarily')
+        self.assertEqual(status, '302 Found')
         self.assertTrue(('Location', '/redirect_to') in headers)
         self.assertTrue(('Content-Length', '0') in headers)
         self.assertEqual(kw, {})

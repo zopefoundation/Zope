@@ -51,6 +51,8 @@ Bugs Fixed
 Features Added
 ++++++++++++++
 
+- Update available HTTP response code, 302 is now called Found.
+
 - Add a new `runwsgi` script to serve PasteDeploy files.
 
 - Depend on and automatically set up `five.globalrequest`.

@@ -97,7 +97,7 @@ Handle zExceptions.Redirect.
     >>> browser.open('http://localhost/test_folder_1_/foo')
     Traceback (most recent call last):
     ...
-    HTTPError: HTTP Error 302: Moved Temporarily
+    HTTPError: HTTP Error 302: Found
     >>> browser.contents
     ''
     >>> browser.headers['Location']

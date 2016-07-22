@@ -40,7 +40,7 @@ six==1.10.0
 tempstorage==3.0
 transaction==1.6.1
 unittest2==1.1.0
-zExceptions==3.0
+zExceptions==3.2
 zLOG==3.0
 zc.lockfile==1.2.1
 zdaemon==4.1.0

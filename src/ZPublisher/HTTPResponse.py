@@ -24,8 +24,11 @@ from urllib import quote
 import zlib
 
 from zope.event import notify
-from zExceptions import Redirect
-from zExceptions import Unauthorized
+from zExceptions import (
+    Redirect,
+    status_reasons,
+    Unauthorized,
+)
 from zExceptions.ExceptionFormatter import format_exception
 from ZPublisher import BadRequest
 from ZPublisher import InternalError
@@ -41,56 +44,6 @@ default_encoding = 'utf-8'
 # Enable APPEND_TRACEBACKS to make Zope append tracebacks like it used to,
 # but a better solution is to make standard_error_message display error_tb.
 APPEND_TRACEBACKS = 0
-
-
-status_reasons = {
-100: 'Continue',
-101: 'Switching Protocols',
-102: 'Processing',
-200: 'OK',
-201: 'Created',
-202: 'Accepted',
-203: 'Non-Authoritative Information',
-204: 'No Content',
-205: 'Reset Content',
-206: 'Partial Content',
-207: 'Multi-Status',
-300: 'Multiple Choices',
-301: 'Moved Permanently',
-302: 'Moved Temporarily',
-303: 'See Other',
-304: 'Not Modified',
-305: 'Use Proxy',
-307: 'Temporary Redirect',
-400: 'Bad Request',
-401: 'Unauthorized',
-402: 'Payment Required',
-403: 'Forbidden',
-404: 'Not Found',
-405: 'Method Not Allowed',
-406: 'Not Acceptable',
-407: 'Proxy Authentication Required',
-408: 'Request Time-out',
-409: 'Conflict',
-410: 'Gone',
-411: 'Length Required',
-412: 'Precondition Failed',
-413: 'Request Entity Too Large',
-414: 'Request-URI Too Large',
-415: 'Unsupported Media Type',
-416: 'Requested range not satisfiable',
-417: 'Expectation Failed',
-422: 'Unprocessable Entity',
-423: 'Locked',
-424: 'Failed Dependency',
-500: 'Internal Server Error',
-501: 'Not Implemented',
-502: 'Bad Gateway',
-503: 'Service Unavailable',
-504: 'Gateway Time-out',
-505: 'HTTP Version not supported',
-507: 'Insufficient Storage',
-}
 
 status_codes = {}
 # Add mappings for builtin exceptions and

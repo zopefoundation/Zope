@@ -78,7 +78,7 @@ setup(
         'tempstorage',
         'transaction',
         'zdaemon',
-        'zExceptions',
+        'zExceptions >= 3.2',
         'zLOG',
         'zope.browser',
         'zope.browsermenu',

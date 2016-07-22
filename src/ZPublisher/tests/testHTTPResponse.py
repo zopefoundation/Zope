@@ -966,7 +966,7 @@ class HTTPResponseTests(unittest.TestCase):
         response = self._makeOne()
         response.redirect('http://example.com/')
         status, headers = response.finalize()
-        self.assertEqual(status, '302 Moved Temporarily')
+        self.assertEqual(status, '302 Found')
         self.assertEqual(headers,
                          [('X-Powered-By', 'Zope (www.zope.org), '
                                            'Python (www.python.org)'),
@@ -1170,7 +1170,7 @@ class HTTPResponseTests(unittest.TestCase):
         result = str(response)
         lines = result.split('\r\n')
         self.assertEqual(len(lines), 6)
-        self.assertEqual(lines[0], 'Status: 302 Moved Temporarily')
+        self.assertEqual(lines[0], 'Status: 302 Found')
         self.assertEqual(lines[1], 'X-Powered-By: Zope (www.zope.org), '
                                    'Python (www.python.org)')
         self.assertEqual(lines[2], 'Content-Length: 0')
