@@ -107,9 +107,9 @@ Features Added
   - Products.MailHost = 3.0
   - Products.OFSP = 3.0
   - Products.PythonScripts = 3.0
-  - Products.SiteErrorLog = 3.0
+  - Products.SiteErrorLog = 4.0
   - Products.StandardCacheManagers = 3.0
-  - Products.ZCatalog = 3.2
+  - Products.ZCatalog = 4.0a1
   - Products.ZCTextIndex = 3.0
   - Record = 3.1
   - tempstorage = 3.0
