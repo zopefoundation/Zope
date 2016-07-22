@@ -1,4 +1,4 @@
--e git+https://github.com/zopefoundation/Zope.git@master#egg=Zope2
+Zope2==4.0a1
 AccessControl==4.0a1
 Acquisition==4.2.2
 BTrees==4.3.1
