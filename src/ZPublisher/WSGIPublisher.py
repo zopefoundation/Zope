@@ -22,7 +22,6 @@ from zExceptions import Unauthorized
 from zope.event import notify
 from zope.security.management import newInteraction, endInteraction
 from zope.publisher.skinnable import setDefaultSkin
-from ZServer.medusa.http_date import build_http_date
 
 from ZPublisher.HTTPRequest import HTTPRequest
 from ZPublisher.HTTPResponse import HTTPResponse
@@ -35,12 +34,21 @@ from ZPublisher.Publish import missing_name
 from ZPublisher.Iterators import IUnboundStreamIterator, IStreamIterator
 
 _NOW = None  # overwrite for testing
+MONTHNAME = [None, 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+             'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+WEEKDAYNAME = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
 
 def _now():
     if _NOW is not None:
         return _NOW
     return time.time()
+
+
+def build_http_date(when):
+    year, month, day, hh, mm, ss, wd, y, z = time.gmtime(when)
+    return "%s, %02d %3s %4d %02d:%02d:%02d GMT" % (
+        WEEKDAYNAME[wd], day, MONTHNAME[month], year, hh, mm, ss)
 
 
 class WSGIResponse(HTTPResponse):
