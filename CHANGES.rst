@@ -14,6 +14,8 @@ Bugs Fixed
 Features Added
 ++++++++++++++
 
+- Add better blob support to HTTPRequest.ZopeFieldStorage.
+
 Restructuring
 +++++++++++++
 

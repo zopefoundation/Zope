@@ -19,10 +19,15 @@ from cgi import FieldStorage
 import codecs
 from copy import deepcopy
 import os
+from os import unlink
+from os.path import isfile
 import random
 import re
 import sys
-import tempfile
+from tempfile import (
+    mkstemp,
+    _TemporaryFileWrapper,
+)
 import time
 from urllib import unquote
 from urllib import splittype
@@ -1601,10 +1606,33 @@ def sane_environment(env):
     return dict
 
 
+class TemporaryFileWrapper(_TemporaryFileWrapper):
+    """
+    Variant of tempfile._TemporaryFileWrapper that doesn't rely on the
+    automatic Windows behavior of deleting closed files, which even
+    happens, when the file has been moved -- e.g. to the blob storage,
+    and doesn't complain about such a move either.
+    """
+
+    unlink = staticmethod(unlink)
+    isfile = staticmethod(isfile)
+
+    def close(self):
+        if not self.close_called:
+            self.close_called = True
+            self.file.close()
+
+    def __del__(self):
+        self.close()
+        if self.isfile(self.name):
+            self.unlink(self.name)
+
+
 class ZopeFieldStorage(FieldStorage):
 
     def make_file(self, binary=None):
-        return tempfile.NamedTemporaryFile("w+b")
+        handle, name = mkstemp()
+        return TemporaryFileWrapper(os.fdopen(handle, 'w+b'), name)
 
 
 # Original version: zope.publisher.browser.FileUpload
@@ -1648,7 +1676,7 @@ class FileUpload:
         # self.headers so that managed code can access them.
         try:
             self.headers.__allow_access_to_unprotected_subobjects__ = 1
-        except:
+        except Exception:
             pass
 
     def __nonzero__(self):
