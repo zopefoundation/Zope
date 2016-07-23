@@ -105,26 +105,26 @@ class StartupTestCase(unittest.TestCase):
         self.assertEqual(items, [("FEARFACTORY", "rocks"), ("NSYNC","doesnt")])
 
     def test_ms_public_header(self):
-        import webdav
+        from Zope2.Startup import config
         from Zope2.Startup.handlers import handleConfig
 
-        default_setting = webdav.enable_ms_public_header
+        default_setting = config.ZSERVER_ENABLE_MS_PUBLIC_HEADER
         try:
             conf, handler = self.load_config_text("""\
                 instancehome <<INSTANCE_HOME>>
                 enable-ms-public-header true
                 """)
             handleConfig(None, handler)
-            self.assert_(webdav.enable_ms_public_header == True)
+            self.assertTrue(config.ZSERVER_ENABLE_MS_PUBLIC_HEADER)
 
             conf, handler = self.load_config_text("""\
                 instancehome <<INSTANCE_HOME>>
                 enable-ms-public-header false
                 """)
             handleConfig(None, handler)
-            self.assert_(webdav.enable_ms_public_header == False)
+            self.assertFalse(config.ZSERVER_ENABLE_MS_PUBLIC_HEADER)
         finally:
-            webdav.enable_ms_public_header = default_setting
+            config.ZSERVER_ENABLE_MS_PUBLIC_HEADER = default_setting
 
     def test_path(self):
         p1 = tempfile.mktemp()

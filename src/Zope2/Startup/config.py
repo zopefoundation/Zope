@@ -1,29 +1,30 @@
 ##############################################################################
 #
 # Copyright (c) 2002 Zope Foundation and Contributors.
+# All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
 
-from Zope2.Startup.config import (  # NOQA
-    setNumberOfThreads,
-    ZSERVER_THREADS as _n,
-)
-from ZServer.PubCore import ZRendezvous
+TRUSTED_PROXIES = []
 
-_handle = None
+ZSERVER_CONNECTION_LIMIT = 1000
+ZSERVER_ENABLE_MS_PUBLIC_HEADER = False
+ZSERVER_EXIT_CODE = 0
+ZSERVER_LARGE_FILE_THRESHOLD = 524288
+ZSERVER_THREADS = 1
 
 
-def handle(*args, **kw):
-    global _handle
-
-    if _handle is None:
-        _handle = ZRendezvous.ZRendevous(_n).handle
-
-    return _handle(*args, **kw)
+def setNumberOfThreads(n):
+    """This function will self-destruct in 4 statements.
+    """
+    global ZSERVER_THREADS
+    ZSERVER_THREADS = n
+    global setNumberOfThreads
+    del setNumberOfThreads

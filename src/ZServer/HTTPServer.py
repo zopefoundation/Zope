@@ -88,10 +88,10 @@ def get_http_header_max_length():
 
 class zhttp_collector:
     def __init__(self, handler, request, size):
-        from ZServer import LARGE_FILE_THRESHOLD
+        from Zope2.Startup.config import ZSERVER_LARGE_FILE_THRESHOLD
         self.handler = handler
         self.request = request
-        if size > LARGE_FILE_THRESHOLD:
+        if size > ZSERVER_LARGE_FILE_THRESHOLD:
             # write large upload data to a file
             from tempfile import TemporaryFile
             self.data = TemporaryFile('w+b')

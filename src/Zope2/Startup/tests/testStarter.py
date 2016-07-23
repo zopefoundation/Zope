@@ -179,8 +179,8 @@ class ZopeStarterTestCase(LoggingTestHelper, unittest.TestCase):
            zserver-threads 10""")
         starter = self.get_starter(conf)
         starter.setupZServer()
-        from ZServer.PubCore import _n
-        self.assertEqual(_n, 10)
+        from Zope2.Startup.config import ZSERVER_THREADS
+        self.assertEqual(ZSERVER_THREADS, 10)
 
     def testSetupServers(self):
         # We generate a random port number to test against, so that multiple

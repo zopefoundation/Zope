@@ -48,7 +48,8 @@ from urllib import unquote
 # The ZConfig machinery may sets this attribute on initialization
 # if any trusted-proxies
 
-trusted_proxies = []
+from Zope2.Startup.config import TRUSTED_PROXIES as trusted_proxies  # NOQA
+
 
 class http_request:
 

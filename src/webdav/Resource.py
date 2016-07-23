@@ -40,6 +40,7 @@ from zExceptions import Forbidden
 from zExceptions import MethodNotAllowed
 from zExceptions import NotFound
 from zExceptions import Unauthorized
+import Zope2.Startup.config
 from ZPublisher.HTTPRangeSupport import HTTPRangeInterface
 
 from zope.interface import implements
@@ -235,7 +236,7 @@ class Resource(Base, LockableItem):
         # Microsoft Web Folders compatibility, only enabled if
         # User-Agent matches.
         if ms_dav_agent.match(REQUEST.get_header('User-Agent', '')):
-            if webdav.enable_ms_public_header:
+            if Zope2.Startup.config.ZSERVER_ENABLE_MS_PUBLIC_HEADER:
                 RESPONSE.setHeader('Public', ', '.join(self.__http_methods__))
 
         RESPONSE.setStatus(200)

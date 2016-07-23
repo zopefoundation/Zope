@@ -5,8 +5,8 @@ from AccessControl.SecurityManagement import noSecurityManager
 from AccessControl.SecurityManager import setSecurityPolicy
 from Acquisition import Implicit
 
-
 MS_DAV_AGENT = "Microsoft Data Access Internet Publishing Provider DAV"
+
 
 def make_request_response(environ=None):
     from StringIO import StringIO
@@ -106,16 +106,16 @@ class TestResource(unittest.TestCase):
         verifyClass(IWriteLock, self._getTargetClass())
 
     def test_ms_public_header(self):
-        import webdav
+        from Zope2.Startup import config
 
-        default_settings = webdav.enable_ms_public_header
+        default_settings = config.ZSERVER_ENABLE_MS_PUBLIC_HEADER
         try:
             req, resp = make_request_response()
             resource = self._makeOne()
             resource.OPTIONS(req, resp)
             self.assert_(not resp.headers.has_key('public'))
 
-            webdav.enable_ms_public_header = True
+            config.ZSERVER_ENABLE_MS_PUBLIC_HEADER = True
             req, resp = make_request_response()
             resource = self._makeOne()
             resource.OPTIONS(req, resp)
@@ -131,7 +131,7 @@ class TestResource(unittest.TestCase):
             self.assert_(resp.headers['public'] == resp.headers['allow'])
 
         finally:
-            webdav.enable_ms_public_header = default_settings
+            config.ZSERVER_ENABLE_MS_PUBLIC_HEADER = default_settings
 
     def test_MOVE_self_locked(self):
         """

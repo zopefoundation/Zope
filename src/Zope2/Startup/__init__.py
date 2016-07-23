@@ -26,6 +26,8 @@ from ZConfig.components.logger import loghandler
 from zope.event import notify
 from zope.processlifetime import ProcessStarting
 
+import Zope2.Startup.config
+
 try:
     IO_ERRORS = (IOError, WindowsError)
 except NameError:
@@ -34,6 +36,7 @@ except NameError:
 
 logger = logging.getLogger("Zope")
 started = False
+
 
 def get_starter():
     if sys.platform[:3].lower() == "win":
@@ -105,10 +108,10 @@ class ZopeStarter:
         try:
             from App.config import getConfiguration
             config = getConfiguration()
-            import ZServer
             import Lifetime
             Lifetime.loop()
-            sys.exit(ZServer.exit_code)
+            from Zope2.Startup.config import ZSERVER_EXIT_CODE
+            sys.exit(ZSERVER_EXIT_CODE)
         finally:
             self.shutdown()
 
@@ -137,10 +140,11 @@ class ZopeStarter:
         ZPublisher.Publish.set_default_authentication_realm(
             self.cfg.http_realm)
         if self.cfg.trusted_proxies:
-            # DM 2004-11-24: added host name mapping (such that examples in conf file really have a chance to work
             mapped = []
-            for name in self.cfg.trusted_proxies: mapped.extend(_name2Ips(name))
+            for name in self.cfg.trusted_proxies:
+                mapped.extend(_name2Ips(name))
             ZPublisher.HTTPRequest.trusted_proxies = tuple(mapped)
+            Zope2.Startup.config.TRUSTED_PROXIES = tuple(mapped)
 
     def setupSecurityOptions(self):
         import AccessControl
@@ -183,9 +187,9 @@ class ZopeStarter:
 
     def setupZServer(self):
         # Increase the number of threads
-        import ZServer
-        ZServer.setNumberOfThreads(self.cfg.zserver_threads)
-        ZServer.CONNECTION_LIMIT = self.cfg.max_listen_sockets
+        Zope2.Startup.config.setNumberOfThreads(self.cfg.zserver_threads)
+        Zope2.Startup.config.ZSERVER_CONNECTION_LIMIT = \
+            self.cfg.max_listen_sockets
 
     def serverListen(self):
         for server in self.cfg.servers:

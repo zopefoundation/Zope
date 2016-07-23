@@ -23,7 +23,7 @@ dummyLOG = StringIO()
 def setNumberOfThreads(number_of_threads):
     '''Sets number of ZServer threads.'''
     try:
-        from ZServer.PubCore import setNumberOfThreads
+        from Zope2.Startup.config import setNumberOfThreads
         setNumberOfThreads(number_of_threads)
     except ImportError:
         pass

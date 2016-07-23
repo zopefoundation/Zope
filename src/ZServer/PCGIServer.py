@@ -44,6 +44,8 @@ from ZPublisher.HTTPRequest import HTTPRequest
 from Producers import ShutdownProducer, LoggingProducer, CallbackProducer
 import DebugLogger
 
+from Zope2.Startup import config
+
 from cStringIO import StringIO
 from tempfile import TemporaryFile
 import socket, string, os, sys, time
@@ -388,9 +390,11 @@ class PCGIPipe:
                 lambda t=('E', id(self._channel)): apply(DebugLogger.log,t)), 0)
 
             if self._shutdown:
-                try: r=self._shutdown[0]
-                except: r=0
-                ZServer.exit_code=r
+                try:
+                    r = self._shutdown[0]
+                except:
+                    r = 0
+                config.ZSERVER_EXIT_CODE = r
                 self._channel.push(ShutdownProducer(), 0)
                 Wakeup(lambda: asyncore.close_all())
             else:

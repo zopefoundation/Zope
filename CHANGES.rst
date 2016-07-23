@@ -21,6 +21,8 @@ Features Added
 Restructuring
 +++++++++++++
 
+- Add new `Zope2.Startup.config` module to hold configuration.
+
 - Remove `Control_Panel` `/DebugInfo` and `/DavLocks`.
 
 - Remove profiling support via `publisher-profile-file` directive.
