@@ -30,39 +30,46 @@ def setupCoreSessions(app):
     from Acquisition import aq_base
     commit = 0
 
-    if not hasattr(app, 'temp_folder'):
-        from Products.TemporaryFolder.TemporaryFolder import MountedTemporaryFolder
-        tf = MountedTemporaryFolder('temp_folder', 'Temporary Folder')
-        app._setObject('temp_folder', tf)
-        commit = 1
-
-    if not hasattr(aq_base(app.temp_folder), 'session_data'):
+    try:
+        from Products.TemporaryFolder.TemporaryFolder import \
+            MountedTemporaryFolder
         from Products.Transience.Transience import TransientObjectContainer
-        toc = TransientObjectContainer('session_data',
-                    'Session Data Container',
-                    timeout_mins=3,
-                    limit=100)
-        app.temp_folder._setObject('session_data', toc)
-        commit = 1
-
-    if not hasattr(app, 'browser_id_manager'):
         from Products.Sessions.BrowserIdManager import BrowserIdManager
-        bid = BrowserIdManager('browser_id_manager',
-                    'Browser Id Manager')
-        app._setObject('browser_id_manager', bid)
-        commit = 1
-
-    if not hasattr(app, 'session_data_manager'):
         from Products.Sessions.SessionDataManager import SessionDataManager
-        sdm = SessionDataManager('session_data_manager',
-                    title='Session Data Manager',
-                    path='/temp_folder/session_data',
-                    requestName='SESSION')
-        app._setObject('session_data_manager', sdm)
-        commit = 1
+    except ImportError:
+        pass
+    else:
+        if not hasattr(app, 'temp_folder'):
+            tf = MountedTemporaryFolder('temp_folder', 'Temporary Folder')
+            app._setObject('temp_folder', tf)
+            commit = 1
 
-    if commit:
-        transaction.commit()
+        if not hasattr(aq_base(app.temp_folder), 'session_data'):
+            toc = TransientObjectContainer(
+                'session_data',
+                'Session Data Container',
+                timeout_mins=3,
+                limit=100)
+            app.temp_folder._setObject('session_data', toc)
+            commit = 1
+
+        if not hasattr(app, 'browser_id_manager'):
+            bid = BrowserIdManager('browser_id_manager',
+                                   'Browser Id Manager')
+            app._setObject('browser_id_manager', bid)
+            commit = 1
+
+        if not hasattr(app, 'session_data_manager'):
+            sdm = SessionDataManager(
+                'session_data_manager',
+                title='Session Data Manager',
+                path='/temp_folder/session_data',
+                requestName='SESSION')
+            app._setObject('session_data_manager', sdm)
+            commit = 1
+
+        if commit:
+            transaction.commit()
 
 
 @layer.appcall
@@ -83,14 +90,17 @@ def importObjectFromFile(container, filename, quiet=0):
     from ZopeLite import _print, _patched
     quiet = quiet or not _patched
     start = time.time()
-    if not quiet: _print("Importing %s ... " % os.path.basename(filename))
+    if not quiet:
+        _print("Importing %s ... " % os.path.basename(filename))
     container._importObjectFromFile(filename, verify=0)
     transaction.commit()
-    if not quiet: _print('done (%.3fs)\n' % (time.time() - start))
+    if not quiet:
+        _print('done (%.3fs)\n' % (time.time() - start))
 
 
 _Z2HOST = None
 _Z2PORT = None
+
 
 def startZServer(number_of_threads=1, log=None):
     '''Starts an HTTP ZServer thread.'''
@@ -104,7 +114,7 @@ def startZServer(number_of_threads=1, log=None):
         t = QuietThread(target=zserverRunner, args=(_Z2HOST, _Z2PORT, log))
         t.setDaemon(1)
         t.start()
-        time.sleep(0.1) # Sandor Palfy
+        time.sleep(0.1)  # Sandor Palfy
     return _Z2HOST, _Z2PORT
 
 
@@ -134,12 +144,12 @@ def makelist(arg):
     '''Turns arg into a list. Where arg may be
        list, tuple, or string.
     '''
-    if type(arg) == type([]):
+    if isinstance(arg, list):
         return arg
-    if type(arg) == type(()):
+    if isinstance(arg, tuple):
         return list(arg)
-    if type(arg) == type(''):
-       return filter(None, [arg])
+    if isinstance(arg, str):
+        return filter(None, [arg])
     raise ValueError('Argument must be list, tuple, or string')
 
 
@@ -152,4 +162,3 @@ __all__ = [
     'makerequest',
     'makelist',
 ]
-
