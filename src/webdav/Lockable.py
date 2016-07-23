@@ -27,6 +27,7 @@ from webdav.interfaces import IWriteLock
 class ResourceLockedError(Exception):
     pass
 
+
 class LockableItem(EtagSupport):
 
     """Implements the WriteLock interface.
@@ -49,15 +50,16 @@ class LockableItem(EtagSupport):
     # Setting default roles for permissions - we want owners of conent
     # to be able to lock.
     security.setPermissionDefault('WebDAV Lock items', ('Manager', 'Owner',))
-    security.setPermissionDefault('WebDAV Unlock items',('Manager','Owner',))
-
+    security.setPermissionDefault('WebDAV Unlock items', ('Manager', 'Owner',))
 
     def wl_lockmapping(self, killinvalids=0, create=0):
         """ if 'killinvalids' is 1, locks who are no longer valid
         will be deleted """
 
-        try: locks = getattr(self, '_dav_writelocks', None)
-        except: locks = None
+        try:
+            locks = getattr(self, '_dav_writelocks', None)
+        except Exception:
+            locks = None
 
         if locks is None:
             if create:
@@ -88,7 +90,8 @@ class LockableItem(EtagSupport):
         return self.wl_lockmapping(killinvalids).keys()
 
     def wl_hasLock(self, token, killinvalids=0):
-        if not token: return 0
+        if not token:
+            return 0
         return token in self.wl_lockmapping(killinvalids).keys()
 
     def wl_isLocked(self):
@@ -97,8 +100,10 @@ class LockableItem(EtagSupport):
         # valid (timeout has been exceeded)
         locks = self.wl_lockmapping(killinvalids=1)
 
-        if locks.keys(): return 1
-        else: return 0
+        if locks.keys():
+            return 1
+        else:
+            return 0
 
     def wl_setLock(self, locktoken, lock):
         locks = self.wl_lockmapping(create=1)
@@ -106,9 +111,9 @@ class LockableItem(EtagSupport):
             if locktoken == lock.getLockToken():
                 locks[locktoken] = lock
             else:
-                raise ValueError, 'Lock tokens do not match'
+                raise ValueError('Lock tokens do not match')
         else:
-            raise ValueError, 'Lock does not implement the LockItem Interface'
+            raise ValueError('Lock does not implement the LockItem Interface')
 
     def wl_getLock(self, locktoken):
         locks = self.wl_lockmapping(killinvalids=1)
@@ -116,7 +121,7 @@ class LockableItem(EtagSupport):
 
     def wl_delLock(self, locktoken):
         locks = self.wl_lockmapping()
-        if locks.has_key(locktoken):
+        if locktoken in locks:
             del locks[locktoken]
 
     def wl_clearLocks(self):
@@ -142,12 +147,11 @@ class LockableItem(EtagSupport):
 InitializeClass(LockableItem)
 
 
-### Utility functions
-
 def wl_isLocked(ob):
     """ Returns true if the object is locked, returns 0 if the object
     is not locked or does not implement the WriteLockInterface """
     return wl_isLockable(ob) and ob.wl_isLocked()
+
 
 def wl_isLockable(ob):
     return IWriteLock.providedBy(ob)
