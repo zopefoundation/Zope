@@ -2,9 +2,8 @@
            xmlns:five="http://namespaces.zope.org/five">
 
   <five:deprecatedManageAddDelete
-      class="OFS.userfolder.BasicUserFolder"/>
-
+      class="Products.Sessions.BrowserIdManager.BrowserIdManager"/>
   <five:deprecatedManageAddDelete
-      class="OFS.Cache.CacheManager"/>
+      class="Products.Sessions.SessionDataManager.SessionDataManager"/>
 
 </configure>

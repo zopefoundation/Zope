@@ -2,9 +2,6 @@
            xmlns:five="http://namespaces.zope.org/five">
 
   <five:deprecatedManageAddDelete
-      class="OFS.userfolder.BasicUserFolder"/>
-
-  <five:deprecatedManageAddDelete
-      class="OFS.Cache.CacheManager"/>
+      class="Products.SiteAccess.VirtualHostMonster.VirtualHostMonster"/>
 
 </configure>
