@@ -58,7 +58,6 @@ setup(
         'MultiMapping',
         'PasteDeploy',
         'Persistence',
-        'Products.OFSP >= 2.13.2',
         'RestrictedPython',
         'ZConfig >= 2.9.2',
         'ZODB',

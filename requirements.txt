@@ -12,7 +12,6 @@ Persistence==3.0a1
 Products.BTreeFolder2==3.0
 Products.ExternalMethod==3.0
 Products.MailHost==3.0
-Products.OFSP==3.0
 Products.PythonScripts==3.0
 Products.SiteErrorLog==4.0
 Products.StandardCacheManagers==3.0

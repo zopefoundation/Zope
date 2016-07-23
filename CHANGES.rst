@@ -21,6 +21,8 @@ Features Added
 Restructuring
 +++++++++++++
 
+- Merge `Products.OFSP` project back in.
+
 - Dropped dependency declarations for indirect dependencies:
 
     ``docutils``

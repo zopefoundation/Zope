@@ -24,7 +24,6 @@ When the skeleton test is run by typing 'python testSkeleton.py', it
             2.1.3 patches OFS.Application to not auto-install all products
             2.1.4 patches App.ProductContext to not auto-install all help files
             2.1.5 starts Zope
-            2.1.6 installs product PluginIndexes
             2.1.7 installs product OFSP
 
         2.2 imports module Testing.ZopeTestCase.ZopeTestCase
