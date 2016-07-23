@@ -21,7 +21,7 @@ Features Added
 Restructuring
 +++++++++++++
 
-- Remove `Control_Panel/DebugInfo`.
+- Remove `Control_Panel` `/DebugInfo` and `/DavLocks`.
 
 - Remove profiling support via `publisher-profile-file` directive.
 

@@ -23,7 +23,6 @@ from AccessControl.requestmethod import requestmethod
 from Acquisition import Implicit
 from App.CacheManager import CacheManager
 from App.config import getConfiguration
-from App.DavLockManager import DavLockManager
 from App.special_dtml import DTMLFile
 from App.version_txt import version_txt
 from OFS.Folder import Folder
@@ -128,7 +127,6 @@ class ApplicationManager(Folder, CacheManager):
     __roles__ = ('Manager',)
     isPrincipiaFolderish = 1
     Database = DatabaseChooser('Database')  # DatabaseManager()
-    DavLocks = DavLockManager()
 
     manage = manage_main = DTMLFile('dtml/cpContents', globals())
     manage_main._setName('manage_main')
@@ -136,8 +134,6 @@ class ApplicationManager(Folder, CacheManager):
     _objects = (
         {'id': 'Database',
          'meta_type': Database.meta_type},
-        {'id': 'DavLocks',
-         'meta_type': DavLocks.meta_type},
     )
 
     manage_options = ({'label': 'Control Panel', 'action': 'manage_main'}, )
