@@ -1,6 +1,7 @@
 import unittest
 
-class ConfigTestBase:
+
+class ConfigTestBase(object):
 
     def setUp(self):
         import App.config
@@ -12,11 +13,13 @@ class ConfigTestBase:
 
     def _makeConfig(self, **kw):
         import App.config
-        class DummyConfig:
+
+        class DummyConfig(object):
             pass
         App.config._config = config = DummyConfig()
         config.dbtab = DummyDBTab(kw)
         return config
+
 
 class FakeConnectionTests(unittest.TestCase):
 
@@ -33,6 +36,7 @@ class FakeConnectionTests(unittest.TestCase):
         fc = self._makeOne(db, parent_jar)
         self.assertTrue(fc.db() is db)
 
+
 class DatabaseChooserTests(ConfigTestBase, unittest.TestCase):
 
     def _getTargetClass(self):
@@ -44,8 +48,10 @@ class DatabaseChooserTests(ConfigTestBase, unittest.TestCase):
 
     def _makeRoot(self):
         from ExtensionClass import Base
+
         class Root(Base):
             _p_jar = None
+
             def getPhysicalRoot(self):
                 return self
         return Root()
@@ -63,9 +69,9 @@ class DatabaseChooserTests(ConfigTestBase, unittest.TestCase):
     def test___getitem___hit(self):
         from App.ApplicationManager import AltDatabaseManager
         from App.ApplicationManager import FakeConnection
-        foo=object()
-        bar=object()
-        qux=object()
+        foo = object()
+        bar = object()
+        qux = object()
         self._makeConfig(foo=foo, bar=bar, qux=qux)
         root = self._makeRoot()
         dc = self._makeOne('test').__of__(root)
@@ -86,9 +92,9 @@ class DatabaseChooserTests(ConfigTestBase, unittest.TestCase):
     def test___bobo_traverse___hit_db(self):
         from App.ApplicationManager import AltDatabaseManager
         from App.ApplicationManager import FakeConnection
-        foo=object()
-        bar=object()
-        qux=object()
+        foo = object()
+        bar = object()
+        qux = object()
         self._makeConfig(foo=foo, bar=bar, qux=qux)
         root = self._makeRoot()
         dc = self._makeOne('test').__of__(root)
@@ -101,9 +107,9 @@ class DatabaseChooserTests(ConfigTestBase, unittest.TestCase):
         self.assertTrue(conn.db() is foo)
 
     def test___bobo_traverse___miss_db_hit_attr(self):
-        foo=object()
-        bar=object()
-        qux=object()
+        foo = object()
+        bar = object()
+        qux = object()
         self._makeConfig(foo=foo, bar=bar, qux=qux)
         root = self._makeRoot()
         dc = self._makeOne('test').__of__(root)
@@ -113,9 +119,9 @@ class DatabaseChooserTests(ConfigTestBase, unittest.TestCase):
 
     def test_tpValues(self):
         from App.ApplicationManager import AltDatabaseManager
-        foo=object()
-        bar=object()
-        qux=object()
+        foo = object()
+        bar = object()
+        qux = object()
         self._makeConfig(foo=foo, bar=bar, qux=qux)
         root = self._makeRoot()
         dc = self._makeOne('test').__of__(root)
@@ -132,118 +138,7 @@ class DatabaseChooserTests(ConfigTestBase, unittest.TestCase):
         self.assertEqual(values[2]._p_jar, None)
 
 
-class DebugManagerTests(unittest.TestCase):
-
-    def setUp(self):
-        import sys
-        self._sys = sys
-        self._old_sys_modules = sys.modules.copy()
-
-    def tearDown(self):
-        self._sys.modules.clear()
-        self._sys.modules.update(self._old_sys_modules)
-
-    def _getTargetClass(self):
-        from App.ApplicationManager import DebugManager
-        return DebugManager
-
-    def _makeOne(self, id):
-        return self._getTargetClass()(id)
-
-    def _makeModuleClasses(self):
-        import sys
-        import types
-        from ExtensionClass import Base
-        class Foo(Base):
-            pass
-        class Bar(Base):
-            pass
-        class Baz(Base):
-            pass
-        foo = sys.modules['foo'] = types.ModuleType('foo')
-        foo.Foo = Foo
-        Foo.__module__ = 'foo'
-        foo.Bar = Bar
-        Bar.__module__ = 'foo'
-        qux = sys.modules['qux'] = types.ModuleType('qux')
-        qux.Baz = Baz
-        Baz.__module__ = 'qux'
-        return Foo, Bar, Baz
-
-    def test_refcount_no_limit(self):
-        import sys
-        dm = self._makeOne('test')
-        Foo, Bar, Baz = self._makeModuleClasses()
-        pairs = dm.refcount()
-        # XXX : Ugly empiricism here:  I don't know why the count is up 1.
-        foo_count = sys.getrefcount(Foo)
-        self.assertTrue((foo_count+1, 'foo.Foo') in pairs)
-        bar_count = sys.getrefcount(Bar)
-        self.assertTrue((bar_count+1, 'foo.Bar') in pairs)
-        baz_count = sys.getrefcount(Baz)
-        self.assertTrue((baz_count+1, 'qux.Baz') in pairs)
-
-    def test_refdict(self):
-        import sys
-        dm = self._makeOne('test')
-        Foo, Bar, Baz = self._makeModuleClasses()
-        mapping = dm.refdict()
-        # XXX : Ugly empiricism here:  I don't know why the count is up 1.
-        foo_count = sys.getrefcount(Foo)
-        self.assertEqual(mapping['foo.Foo'], foo_count+1)
-        bar_count = sys.getrefcount(Bar)
-        self.assertEqual(mapping['foo.Bar'], bar_count+1)
-        baz_count = sys.getrefcount(Baz)
-        self.assertEqual(mapping['qux.Baz'], baz_count+1)
-
-    def test_rcsnapshot(self):
-        import sys
-        import App.ApplicationManager
-        from DateTime.DateTime import DateTime
-        dm = self._makeOne('test')
-        Foo, Bar, Baz = self._makeModuleClasses()
-        before = DateTime()
-        dm.rcsnapshot()
-        after = DateTime()
-        # XXX : Ugly empiricism here:  I don't know why the count is up 1.
-        self.assertTrue(before <= App.ApplicationManager._v_rst <= after)
-        mapping = App.ApplicationManager._v_rcs
-        foo_count = sys.getrefcount(Foo)
-        self.assertEqual(mapping['foo.Foo'], foo_count+1)
-        bar_count = sys.getrefcount(Bar)
-        self.assertEqual(mapping['foo.Bar'], bar_count+1)
-        baz_count = sys.getrefcount(Baz)
-        self.assertEqual(mapping['qux.Baz'], baz_count+1)
-
-    def test_rcdate(self):
-        import App.ApplicationManager
-        dummy = object()
-        App.ApplicationManager._v_rst = dummy
-        dm = self._makeOne('test')
-        found = dm.rcdate()
-        App.ApplicationManager._v_rst = None
-        self.assertTrue(found is dummy)
-
-    def test_rcdeltas(self):
-        dm = self._makeOne('test')
-        dm.rcsnapshot()
-        Foo, Bar, Baz = self._makeModuleClasses()
-        mappings = dm.rcdeltas()
-        self.assertTrue(len(mappings))
-        mapping = mappings[0]
-        self.assertTrue('rc' in mapping)
-        self.assertTrue('pc' in mapping)
-        self.assertEqual(mapping['delta'], mapping['rc'] - mapping['pc'])
-
-    # def test_dbconnections(self):  XXX -- TOO UGLY TO TEST
-
-    def test_manage_getSysPath(self):
-        import sys
-        dm = self._makeOne('test')
-        self.assertEqual(dm.manage_getSysPath(), list(sys.path))
-
-
-class DBProxyTestsBase:
+class DBProxyTestsBase(object):
 
     def _makeOne(self):
         return self._getTargetClass()()
@@ -279,13 +174,13 @@ class DBProxyTestsBase:
     def test_manage_pack(self):
         am = self._makeOne()
         jar = am._p_jar = self._makeJar('foo', '')
-        am.manage_pack(1, _when=86400*2)
+        am.manage_pack(1, _when=86400 * 2)
         self.assertEqual(jar._db._packed, 86400)
+
 
 class ApplicationManagerTests(ConfigTestBase,
                               DBProxyTestsBase,
-                              unittest.TestCase,
-                             ):
+                              unittest.TestCase):
 
     def setUp(self):
         ConfigTestBase.setUp(self)
@@ -341,55 +236,10 @@ class ApplicationManagerTests(ConfigTestBase,
         am = self._makeOne()
         try:
             am.manage_app('http://example.com/foo')
-        except Redirect, v:
+        except Redirect as v:
             self.assertEqual(v.args, ('http://example.com/foo/manage',))
         else:
             self.fail('Redirect not raised')
-
-    def test_process_time_seconds(self):
-        am = self._makeOne()
-        am.process_start = 0
-        self.assertEqual(am.process_time(0).strip(), '0 sec')
-        self.assertEqual(am.process_time(1).strip(), '1 sec')
-        self.assertEqual(am.process_time(2).strip(), '2 sec')
-
-    def test_process_time_minutes(self):
-        am = self._makeOne()
-        am.process_start = 0
-        self.assertEqual(am.process_time(60).strip(), '1 min 0 sec')
-        self.assertEqual(am.process_time(61).strip(), '1 min 1 sec')
-        self.assertEqual(am.process_time(62).strip(), '1 min 2 sec')
-        self.assertEqual(am.process_time(120).strip(), '2 min 0 sec')
-        self.assertEqual(am.process_time(121).strip(), '2 min 1 sec')
-        self.assertEqual(am.process_time(122).strip(), '2 min 2 sec')
-
-    def test_process_time_hours(self):
-        am = self._makeOne()
-        am.process_start = 0
-        n1 = 60 * 60
-        n2 = n1 * 2
-        self.assertEqual(am.process_time(n1).strip(),
-                         '1 hour  0 sec')
-        self.assertEqual(am.process_time(n1 + 61).strip(),
-                         '1 hour 1 min 1 sec')
-        self.assertEqual(am.process_time(n2 + 1).strip(),
-                         '2 hours  1 sec')
-        self.assertEqual(am.process_time(n2 + 122).strip(),
-                         '2 hours 2 min 2 sec')
-
-    def test_process_time_days(self):
-        am = self._makeOne()
-        am.process_start = 0
-        n1 = 60 * 60 * 24
-        n2 = n1 * 2
-        self.assertEqual(am.process_time(n1).strip(),
-                         '1 day   0 sec')
-        self.assertEqual(am.process_time(n1 + 3661).strip(),
-                         '1 day 1 hour 1 min 1 sec')
-        self.assertEqual(am.process_time(n2 + 1).strip(),
-                         '2 days   1 sec')
-        self.assertEqual(am.process_time(n2 + 7322).strip(),
-                         '2 days 2 hours 2 min 2 sec')
 
     def test_thread_get_ident(self):
         import thread
@@ -408,49 +258,16 @@ class ApplicationManagerTests(ConfigTestBase,
         cldir = config.clienthome = self._makeTempdir()
         self.assertEqual(am.getCLIENT_HOME(), cldir)
 
-    def test_getServers(self):
-        from asyncore import socket_map
-
-        class DummySocketServer:
-            def __init__(self, port):
-                self.port = port
-
-        class AnotherSocketServer(DummySocketServer):
-            pass
-
-        class NotAServer:
-            pass
-
-        am = self._makeOne()
-        _old_socket_map = socket_map.copy()
-        socket_map.clear()
-        socket_map['foo'] = DummySocketServer(45)
-        socket_map['bar'] = AnotherSocketServer(57)
-        socket_map['qux'] = NotAServer()
-
-        try:
-            pairs = am.getServers()
-        finally:
-            socket_map.clear()
-            socket_map.update(_old_socket_map)
-
-        self.assertEqual(len(pairs), 2)
-        self.assertTrue((str(DummySocketServer), 'Port: 45') in pairs)
-        self.assertTrue((str(AnotherSocketServer), 'Port: 57') in pairs)
-
-    #def test_objectIds(self):  XXX -- TOO UGLY TO TEST (BBB for Zope 2.3!!)
-
 
 class AltDatabaseManagerTests(DBProxyTestsBase,
-                              unittest.TestCase,
-                             ):
+                              unittest.TestCase):
 
     def _getTargetClass(self):
         from App.ApplicationManager import AltDatabaseManager
         return AltDatabaseManager
 
 
-class DummyDBTab:
+class DummyDBTab(object):
     def __init__(self, databases=None):
         self._databases = databases or {}
 
@@ -463,7 +280,8 @@ class DummyDBTab:
     def getDatabase(self, name):
         return self._databases[name]
 
-class DummyDB:
+
+class DummyDB(object):
 
     _packed = None
 
@@ -479,12 +297,3 @@ class DummyDB:
 
     def pack(self, when):
         self._packed = when
-
-def test_suite():
-    return unittest.TestSuite((
-        unittest.makeSuite(FakeConnectionTests),
-        unittest.makeSuite(DatabaseChooserTests),
-        unittest.makeSuite(DebugManagerTests),
-        unittest.makeSuite(ApplicationManagerTests),
-        unittest.makeSuite(AltDatabaseManagerTests),
-    ))

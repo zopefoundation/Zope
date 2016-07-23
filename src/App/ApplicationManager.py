@@ -11,7 +11,6 @@
 #
 ##############################################################################
 
-from cStringIO import StringIO
 from logging import getLogger
 import os
 import sys
@@ -26,15 +25,12 @@ from App.CacheManager import CacheManager
 from App.config import getConfiguration
 from App.DavLockManager import DavLockManager
 from App.special_dtml import DTMLFile
-from App.Undo import UndoSupport
 from App.version_txt import version_txt
-from DateTime.DateTime import DateTime
 from OFS.Folder import Folder
 from OFS.SimpleItem import Item
 from OFS.SimpleItem import SimpleItem
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from zExceptions import Redirect
-from ZPublisher import Publish
 
 LOG = getLogger('ApplicationManager')
 
@@ -48,12 +44,12 @@ class DatabaseManager(Item, Implicit):
     name = title = 'Database Management'
     meta_type = 'Database Management'
 
-    manage_options=((
-        {'label':'Database', 'action':'manage_main'},
-        {'label':'Activity', 'action':'manage_activity'},
-        {'label':'Cache Parameters', 'action':'manage_cacheParameters'},
-        {'label':'Flush Cache', 'action':'manage_cacheGC'},
-        ))
+    manage_options = ((
+        {'label': 'Database', 'action': 'manage_main'},
+        {'label': 'Activity', 'action': 'manage_activity'},
+        {'label': 'Cache Parameters', 'action': 'manage_cacheParameters'},
+        {'label': 'Flush Cache', 'action': 'manage_cacheGC'},
+    ))
 
     # These need to be here rather to make tabs work correctly. This
     # needs to be revisited.
@@ -81,9 +77,9 @@ class DatabaseChooser(SimpleItem):
     name = title = 'Database Management'
     isPrincipiaFolderish = 1
 
-    manage_options=(
-        {'label':'Databases', 'action':'manage_main'},
-        )
+    manage_options = (
+        {'label': 'Databases', 'action': 'manage_main'},
+    )
 
     manage_main = PageTemplateFile('www/chooseDatabase.pt', globals())
 
@@ -126,103 +122,12 @@ class DatabaseChooser(SimpleItem):
 InitializeClass(DatabaseChooser)
 
 
-# refcount snapshot info
-_v_rcs = None
-_v_rst = None
-
-class DebugManager(Item, Implicit):
-    """ Debug and profiling information
-    """
-    manage = manage_main = DTMLFile('dtml/debug', globals())
-    manage_main._setName('manage_main')
-    id ='DebugInfo'
-    name = title = 'Debug Information'
-    meta_type = name
-
-    manage_options = ((
-        {'label': 'Debugging Info', 'action': 'manage_main'},
-    ))
-
-    manage_debug = DTMLFile('dtml/debug', globals())
-
-    def refcount(self, n=None, t=(type(Implicit), )):
-        # return class reference info
-        counts = {}
-        for m in sys.modules.values():
-            if m is None:
-                continue
-            if 'six.' in m.__name__:
-                continue
-            for sym in dir(m):
-                ob = getattr(m, sym)
-                if type(ob) in t:
-                    counts[ob] = sys.getrefcount(ob)
-        pairs = []
-        for ob, v in counts.items():
-            if hasattr(ob, '__module__'):
-                name = '%s.%s' % (ob.__module__, ob.__name__)
-            else:
-                name = '%s' % ob.__name__
-            pairs.append((v, name))
-        pairs.sort()
-        pairs.reverse()
-        if n is not None:
-            pairs = pairs[:n]
-        return pairs
-
-    def refdict(self):
-        counts = {}
-        for v, n in self.refcount():
-            counts[n] = v
-        return counts
-
-    def rcsnapshot(self):
-        global _v_rcs
-        global _v_rst
-        _v_rcs = self.refdict()
-        _v_rst = DateTime()
-
-    def rcdate(self):
-        return _v_rst
-
-    def rcdeltas(self):
-        if _v_rcs is None:
-            self.rcsnapshot()
-        nc = self.refdict()
-        rc = _v_rcs
-        rd = []
-        for n, c in nc.items():
-            try:
-                prev = rc.get(n, 0)
-                if c > prev:
-                    rd.append((c - prev, (c, prev, n)))
-            except Exception:
-                pass
-        rd.sort()
-        rd.reverse()
-        return [{'name': n[1][2],
-                 'delta': n[0],
-                 'pc': n[1][1],
-                 'rc': n[1][0],
-                } for n in rd]
-
-    def dbconnections(self):
-        import Zope2  # for data
-        return Zope2.DB.connectionDebugInfo()
-
-    def manage_getSysPath(self):
-        return list(sys.path)
-
-InitializeClass(DebugManager)
-
-
 class ApplicationManager(Folder, CacheManager):
     """System management
     """
     __roles__ = ('Manager',)
     isPrincipiaFolderish = 1
     Database = DatabaseChooser('Database')  # DatabaseManager()
-    DebugInfo = DebugManager()
     DavLocks = DavLockManager()
 
     manage = manage_main = DTMLFile('dtml/cpContents', globals())
@@ -233,8 +138,6 @@ class ApplicationManager(Folder, CacheManager):
          'meta_type': Database.meta_type},
         {'id': 'DavLocks',
          'meta_type': DavLocks.meta_type},
-        {'id': 'DebugInfo',
-         'meta_type': DebugInfo.meta_type},
     )
 
     manage_options = ({'label': 'Control Panel', 'action': 'manage_main'}, )
@@ -273,23 +176,7 @@ class ApplicationManager(Folder, CacheManager):
 
     def manage_app(self, URL2):
         """Return to the main management screen"""
-        raise Redirect, URL2+'/manage'
-
-    def process_time(self, _when=None):
-        if _when is None:
-            _when = time.time()
-        s = int(_when) - self.process_start
-        d = int(s / 86400)
-        s = s - (d * 86400)
-        h = int(s / 3600)
-        s = s -(h * 3600)
-        m = int(s / 60)
-        s = s - (m * 60)
-        d = d and ('%d day%s' % (d, (d != 1 and 's' or ''))) or ''
-        h = h and ('%d hour%s' % (h, (h != 1 and 's' or ''))) or ''
-        m = m and ('%d min' % m) or ''
-        s = '%d sec' % s
-        return '%s %s %s %s' % (d, h, m, s)
+        raise Redirect(URL2 + '/manage')
 
     def thread_get_ident(self):
         return get_ident()
@@ -299,12 +186,12 @@ class ApplicationManager(Folder, CacheManager):
 
     def db_size(self):
         s = self._p_jar.db().getSize()
-        if type(s) is type(''):
+        if isinstance(s, str):
             return s
 
         if s >= 1048576.0:
-            return '%.1fM' % (s/1048576.0)
-        return '%.1fK' % (s/1024.0)
+            return '%.1fM' % (s / 1048576.0)
+        return '%.1fK' % (s / 1024.0)
 
     @requestmethod('POST')
     def manage_pack(self, days=0, REQUEST=None, _when=None):
@@ -327,21 +214,6 @@ class ApplicationManager(Folder, CacheManager):
 
     def getCLIENT_HOME(self):
         return getConfiguration().clienthome
-
-    def getServers(self):
-        # used only for display purposes
-        # return a sequence of two-tuples.  The first element of
-        # each tuple is the service name, the second is a string repr. of
-        # the port/socket/other on which it listens
-        from asyncore import socket_map
-        l = []
-        for k,v in socket_map.items():
-            # this is only an approximation
-            if hasattr(v, 'port'):
-                type = str(getattr(v, '__class__', 'unknown'))
-                port = v.port
-                l.append((str(type), 'Port: %s' % port))
-        return l
 
 
 class AltDatabaseManager(DatabaseManager, CacheManager):

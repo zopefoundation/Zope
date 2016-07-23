@@ -70,38 +70,12 @@ The Control Panel provides access to system information.
 <tr>
   <td align="left" valign="top">
   <div class="form-label">
-  Network Services
-  </div>
-  </td>
-  <td align="left" valign="top">
-  <div class="form-text">
-  <dtml-in getServers>
-    &dtml-sequence-key; (&dtml-sequence-item;)<br />
-  </dtml-in>
-  </div>
-  </td>
-</tr>
-<tr>
-  <td align="left" valign="top">
-  <div class="form-label">
   Process Id
   </div>
   </td>
   <td align="left" valign="top">
   <div class="form-text">
   &dtml-process_id; (&dtml-thread_get_ident;)
-  </div>
-  </td>
-</tr>
-<tr>
-  <td align="left" valign="top">
-  <div class="form-label">
-  Running For
-  </div>
-  </td>
-  <td align="left" valign="top">
-  <div class="form-text">
-  &dtml-process_time;
   </div>
   </td>
 </tr>

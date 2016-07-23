@@ -21,6 +21,8 @@ Features Added
 Restructuring
 +++++++++++++
 
+- Remove `Control_Panel/DebugInfo`.
+
 - Remove profiling support via `publisher-profile-file` directive.
 
 - Create new `Products.Sessions` distribution including Products.Sessions
