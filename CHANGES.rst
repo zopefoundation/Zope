@@ -11,6 +11,8 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 Bugs Fixed
 ++++++++++
 
+- Remove more HelpSys references.
+
 Features Added
 ++++++++++++++
 

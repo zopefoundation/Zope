@@ -1,9 +1,7 @@
 <dtml-var manage_page_header>
 
 <dtml-var "manage_form_title(this(), _, 
-	form_title='Add Temporary Folder',
-	help_product='TemporaryFolder',
-	help_topic='TemporaryFolder.stx'
+	form_title='Add Temporary Folder'
 	)">
 
 <form action="constructTemporaryFolder" method="POST">

@@ -14,7 +14,7 @@
 
 o See Also
 
-    - "Transient Object API":../../Transience/Help/TransienceInterfaces.py
+    - "Transient Object API":../../Transience/TransienceInterfaces.py
 
 """
 from zope.interface import Interface

@@ -315,7 +315,7 @@ class ZopeIterator(Iterator):
         return super(ZopeIterator, self).item()
 
     # 'first' and 'last' are Zope 2 enhancements to the TALES iterator
-    # spec.  See help/tal-repeat.stx for more info
+    # spec.
     def first(self, name=None):
         if self.start:
             return True

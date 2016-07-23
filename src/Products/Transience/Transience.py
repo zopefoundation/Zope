@@ -104,15 +104,10 @@ class TransientObjectContainer(SimpleItem):
     implements(ItemWithId,
                StringKeyedHomogeneousItemContainer,
                TransientItemContainer,
-              )
+               )
     manage_options = (
-        {   'label':    'Manage',
-            'action':   'manage_container',
-            'help':     ('Transience', 'Transience.stx')
-        },
-        {   'label':    'Security',
-            'action':   'manage_access'
-        },
+        {'label': 'Manage', 'action': 'manage_container'},
+        {'label': 'Security', 'action': 'manage_access'},
     )
 
     security = ClassSecurityInfo()

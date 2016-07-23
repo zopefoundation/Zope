@@ -1,8 +1,6 @@
 <dtml-var manage_page_header>
 <dtml-var "manage_form_title(this(), _,
-           form_title='Add Browser Id Manager',
-           help_product='Sessions',
-           help_topic='browser-add.stx'
+           form_title='Add Browser Id Manager'
 	   )">
 
 <FORM ACTION="constructBrowserIdManager" METHOD="POST">
