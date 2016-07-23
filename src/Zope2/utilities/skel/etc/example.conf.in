@@ -275,23 +275,6 @@ instancehome $INSTANCE
 #    trusted-proxy www.example.com
 #    trusted-proxy 192.168.1.1
 
-# Directive: publisher-profile-file
-#
-# Description:
-#    Names a file on the filesystem which causes Zope's Python
-#    profiling capabilities to be enabled.  For more information, see
-#    the Debug Information - > Profiling tab of Zope's Control_Panel
-#    via the Zope Management Interface.  IMPORTANT: setting this
-#    filename will cause Zope code to be executed much more slowly
-#    than normal.  This should not be enabled in production.
-#
-# Default: unset
-#
-# Example:
-#
-#    publisher-profile-file $INSTANCE/var/profile.dat
-
-
 # Directive: security-policy-implementation
 #
 # Description:

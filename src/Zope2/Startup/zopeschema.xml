@@ -456,15 +456,6 @@
     </description>
   </key>
 
-  <key name="publisher-profile-file">
-    <description>
-     Causing this directive to point to a file on the filesystem will
-     cause Zope's profiling capabilities to be enabled. For more
-     information, see the Debug/Profiling tab of Zope's Control_Panel.
-    </description>
-    <metadefault>unset</metadefault>
-  </key>
-
   <section type="cgi-environment" attribute="cgi_environment" name="*">
     <description>
      A section which allows a user to define arbitrary key-value pairs for

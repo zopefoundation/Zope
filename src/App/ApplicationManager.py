@@ -139,10 +139,9 @@ class DebugManager(Item, Implicit):
     name = title = 'Debug Information'
     meta_type = name
 
-    manage_options=((
-        {'label':'Debugging Info', 'action':'manage_main'},
-        {'label':'Profiling', 'action':'manage_profile'},
-        ))
+    manage_options = ((
+        {'label': 'Debugging Info', 'action': 'manage_main'},
+    ))
 
     manage_debug = DTMLFile('dtml/debug', globals())
 
@@ -210,32 +209,6 @@ class DebugManager(Item, Implicit):
     def dbconnections(self):
         import Zope2  # for data
         return Zope2.DB.connectionDebugInfo()
-
-
-    # Profiling support
-
-    manage_profile = DTMLFile('dtml/profile', globals())
-
-    def manage_profile_stats(self, sort='time',
-                             limit=200, stripDirs=1, mode='stats'):
-        """Return profile data if available
-        """
-        stats = getattr(sys, '_ps_', None)
-        if stats is None:
-            return None
-        if stripDirs:
-            from copy import copy
-            stats = copy(stats)
-            stats.strip_dirs()
-        stats.sort_stats(sort)
-        stats.stream = output = StringIO()
-        getattr(stats, 'print_%s' % mode)(limit)
-        return output.getvalue()
-
-    def manage_profile_reset(self):
-        """ Reset profile data
-        """
-        Publish._pstat = sys._ps_ = None
 
     def manage_getSysPath(self):
         return list(sys.path)

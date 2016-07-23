@@ -136,9 +136,6 @@ class ZopeStarter:
         ZPublisher.Publish.set_default_debug_mode(self.cfg.debug_mode)
         ZPublisher.Publish.set_default_authentication_realm(
             self.cfg.http_realm)
-        if self.cfg.publisher_profile_file:
-            filename = self.cfg.publisher_profile_file
-            ZPublisher.Publish.install_profiling(filename)
         if self.cfg.trusted_proxies:
             # DM 2004-11-24: added host name mapping (such that examples in conf file really have a chance to work
             mapped = []

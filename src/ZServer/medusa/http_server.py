@@ -818,13 +818,4 @@ if __name__ == '__main__':
         cs = chat_server.chat_server ('', 7777)
         sh = status_handler.status_extension([hs,ms,ftp,cs,rs])
         hs.install_handler (sh)
-        if ('-p' in sys.argv):
-            def profile_loop ():
-                try:
-                    asyncore.loop()
-                except KeyboardInterrupt:
-                    pass
-            import profile
-            profile.run ('profile_loop()', 'profile.out')
-        else:
-            asyncore.loop()
+        asyncore.loop()

@@ -380,82 +380,10 @@ class DefaultTransactionsManager:
         if auth_user is not None:
             T.setUser(auth_user, request_get('AUTHENTICATION_PATH'))
 
-# profiling support
-
-_pfile = None # profiling filename
-_plock=allocate_lock() # profiling lock
-_pfunc=publish_module_standard
-_pstat=None
-
-def install_profiling(filename):
-    global _pfile
-    _pfile = filename
-    
-def pm(module_name, stdin, stdout, stderr,
-       environ, debug, request, response):
-    try:
-        r=_pfunc(module_name, stdin=stdin, stdout=stdout,
-                 stderr=stderr, environ=environ, debug=debug,
-                 request=request, response=response)
-    except: r=None
-    sys._pr_=r
-
-def publish_module_profiled(module_name, stdin=sys.stdin, stdout=sys.stdout,
-                            stderr=sys.stderr, environ=os.environ, debug=0,
-                            request=None, response=None):
-    try:
-        import cProfile as profile
-        profile  # pyflakes
-    except ImportError:
-        import profile
-    import pstats
-    global _pstat
-    _plock.acquire()
-    try:
-        if request is not None:
-            path_info=request.get('PATH_INFO')
-        else: path_info=environ.get('PATH_INFO')
-        if path_info[-14:]=='manage_profile':
-            return _pfunc(module_name, stdin=stdin, stdout=stdout,
-                          stderr=stderr, environ=environ, debug=debug,
-                          request=request, response=response)
-        pobj=profile.Profile()
-        pobj.runcall(pm, module_name, stdin, stdout, stderr,
-                     environ, debug, request, response)
-        result=sys._pr_
-        pobj.create_stats()
-        if _pstat is None:
-            _pstat = sys._ps_ = pstats.Stats(pobj)
-        else: _pstat.add(pobj)
-    finally:
-        _plock.release()
-
-    if result is None:
-        try:
-            error=sys.exc_info()
-            file=open(_pfile, 'w')
-            file.write(
-            "See the url "
-            "http://www.python.org/doc/current/lib/module-profile.html"
-            "\n for information on interpreting profiler statistics.\n\n"
-                )
-            sys.stdout=file
-            _pstat.strip_dirs().sort_stats('cumulative').print_stats(250)
-            _pstat.strip_dirs().sort_stats('time').print_stats(250)
-            file.flush()
-            file.close()
-        except: pass
-        raise error[0], error[1], error[2]
-    return result
 
 def publish_module(module_name,
                    stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr,
                    environ=os.environ, debug=0, request=None, response=None):
     """ publish a Python module, with or without profiling enabled """
-    if _pfile: # profiling is enabled
-        return publish_module_profiled(module_name, stdin, stdout, stderr,
-                                       environ, debug, request, response)
-    else:
-        return publish_module_standard(module_name, stdin, stdout, stderr,
-                                       environ, debug, request, response)
-
+    return publish_module_standard(module_name, stdin, stdout, stderr,
+                                   environ, debug, request, response)

@@ -21,6 +21,8 @@ Features Added
 Restructuring
 +++++++++++++
 
+- Remove profiling support via `publisher-profile-file` directive.
+
 - Create new `Products.Sessions` distribution including Products.Sessions
   and Products.Transience code.
 
