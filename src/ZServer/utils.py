@@ -13,10 +13,26 @@
 
 """ A set of utility routines used by asyncore initialization """
 
+import sys
+
+import pkg_resources
+
+_version_string = None
+
+
+def _prep_version_data():
+    global _version_string
+    if _version_string is None:
+        v = sys.version_info
+        pyver = "python %d.%d.%d, %s" % (v[0], v[1], v[2], sys.platform)
+        dist = pkg_resources.get_distribution('Zope2')
+        _version_string = "%s, %s" % (dist.version, pyver)
+
 
 def getZopeVersion():
-    import App.version_txt
-    return App.version_txt.version_txt()
+    _prep_version_data()
+    return '(%s)' % _version_string
+
 
 def patchAsyncoreLogger():
     # Poke the Python logging module into asyncore to send messages to logging

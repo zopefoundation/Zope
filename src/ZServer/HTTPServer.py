@@ -43,7 +43,6 @@ from cStringIO import StringIO
 from PubCore import handle
 from HTTPResponse import make_response
 from ZPublisher.HTTPRequest import HTTPRequest
-from App.config import getConfiguration
 
 import asyncore
 import asynchat
@@ -74,6 +73,17 @@ header2env={'content-length'    : 'CONTENT_LENGTH',
             'content-type'      : 'CONTENT_TYPE',
             'connection'        : 'CONNECTION_TYPE',
             }
+
+
+def get_http_header_max_length():
+    max_length = 8192
+    try:
+        from App.config import getConfiguration
+    except ImportError:
+        pass
+    else:
+        max_length = getConfiguration().http_header_max_length
+    return max_length
 
 
 class zhttp_collector:
@@ -352,7 +362,7 @@ class zhttp_channel(http_channel):
         requestCloseOnExec(conn)
         self.queue = []
         self.working=0
-        self.max_header_len = getConfiguration().http_header_max_length
+        self.max_header_len = get_http_header_max_length()
 
     def push(self, producer, send=1):
         # this is thread-safe when send is false
