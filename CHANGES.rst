@@ -8,6 +8,24 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.0a2 (unreleased)
 ------------------
 
+Bugs Fixed
+++++++++++
+
+Features Added
+++++++++++++++
+
+Restructuring
++++++++++++++
+
+- Dropped dependency declarations for indirect dependencies:
+
+    ``docutils``
+    ``Missing``
+    ``pytz``
+    ``zLOG``
+    ``zope.sendmail``
+    ``zope.structuredtext``
+
 
 4.0a1 (2016-07-22)
 ------------------
@@ -218,13 +236,14 @@ Restructuring
 - Dropped the direct dependencies on packages that have been factored out of
   the main Zope 2 tree. Make sure you declare a dependency in your own
   distribution if you still use one of these:
-    - ``Products.BTreeFolder2``
-    - ``Products.ExternalMethod``
-    - ``Products.MailHost``
-    - ``Products.MIMETools``
-    - ``Products.PythonScripts``
-    - ``Products.SiteErrorLog``
-    - ``Products.StandardCacheManagers``
-    - ``Products.ZCatalog``
-    - ``Products.ZCTextIndex``
-    - ``Record``
+
+    ``Products.BTreeFolder2``
+    ``Products.ExternalMethod``
+    ``Products.MailHost``
+    ``Products.MIMETools``
+    ``Products.PythonScripts``
+    ``Products.SiteErrorLog``
+    ``Products.StandardCacheManagers``
+    ``Products.ZCatalog``
+    ``Products.ZCTextIndex``
+    ``Record``
