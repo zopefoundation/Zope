@@ -21,6 +21,9 @@ Features Added
 Restructuring
 +++++++++++++
 
+- Create new `Products.Sessions` distribution including Products.Sessions
+  and Products.Transience code.
+
 - Merge `Products.OFSP` project back in.
 
 - Dropped dependency declarations for indirect dependencies:

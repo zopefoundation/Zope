@@ -1,9 +1,0 @@
-<configure xmlns="http://namespaces.zope.org/zope"
-           xmlns:five="http://namespaces.zope.org/five">
-
-  <five:deprecatedManageAddDelete
-      class="Products.Sessions.BrowserIdManager.BrowserIdManager"/>
-  <five:deprecatedManageAddDelete
-      class="Products.Sessions.SessionDataManager.SessionDataManager"/>
-
-</configure>
