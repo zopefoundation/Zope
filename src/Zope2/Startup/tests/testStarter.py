@@ -33,12 +33,22 @@ from App.config import getConfiguration, setConfiguration
 
 TEMPNAME = tempfile.mktemp()
 TEMPPRODUCTS = os.path.join(TEMPNAME, "Products")
+_SCHEMA = None
+
+LIFETIME = True
+try:
+    import Lifetime  # NOQA
+except ImportError:
+    LIFETIME = False
 
 
 def getSchema():
-    startup = os.path.dirname(Zope2.Startup.__file__)
-    schemafile = os.path.join(startup, 'zopeschema.xml')
-    return ZConfig.loadSchema(schemafile)
+    global _SCHEMA
+    if _SCHEMA is None:
+        startup = os.path.dirname(Zope2.Startup.__file__)
+        schemafile = os.path.join(startup, 'zopeschema.xml')
+        _SCHEMA = ZConfig.loadSchema(schemafile)
+    return _SCHEMA
 
 # try to preserve logging state so we don't screw up other unit tests
 # that come later
@@ -52,13 +62,9 @@ for name in (None, 'trace', 'access'):
                            'filters': logger.filters}
 
 
-class ZopeStarterTestCase(LoggingTestHelper, unittest.TestCase):
-
-    schema = None
+class BaseTestCase(LoggingTestHelper):
 
     def setUp(self):
-        if self.schema is None:
-            ZopeStarterTestCase.schema = getSchema()
         LoggingTestHelper.setUp(self)
 
     def tearDown(self):
@@ -77,12 +83,16 @@ class ZopeStarterTestCase(LoggingTestHelper, unittest.TestCase):
             logger = logging.getLogger(name)
             logger.__dict__.update(logger_states[name])
 
+    @property
+    def schema(self):
+        return getSchema()
+
     def _clearHandlers(self):
         from ZConfig.components.logger import loghandler
         del loghandler._reopenable_handlers[:]
 
-    def get_starter(self, conf):
-        starter = Zope2.Startup.get_starter()
+    def get_starter(self, conf, wsgi=False):
+        starter = Zope2.Startup.get_starter(wsgi=wsgi)
         starter.setConfiguration(conf)
         return starter
 
@@ -104,6 +114,9 @@ class ZopeStarterTestCase(LoggingTestHelper, unittest.TestCase):
         self.assertEqual(conf.instancehome, TEMPNAME)
         return conf
 
+
+class WSGIStarterTestCase(BaseTestCase, unittest.TestCase):
+
     def testSetupLocale(self):
         # XXX this almost certainly won't work on all systems
         import locale
@@ -118,7 +131,7 @@ class ZopeStarterTestCase(LoggingTestHelper, unittest.TestCase):
                         'The specified locale "en_GB" is not supported'):
                     return
                 raise
-            starter = self.get_starter(conf)
+            starter = self.get_starter(conf, wsgi=True)
             starter.setupLocale()
             self.assertEqual(tuple(locale.getlocale()), ('en_GB', 'ISO8859-1'))
         finally:
@@ -142,7 +155,7 @@ class ZopeStarterTestCase(LoggingTestHelper, unittest.TestCase):
               level blather
              </logfile>
            </eventlog>""")
-        starter = self.get_starter(conf)
+        starter = self.get_starter(conf, wsgi=True)
         starter.setupInitialLogging()
 
         # startup handler should take on the level of the event log handler
@@ -164,94 +177,8 @@ class ZopeStarterTestCase(LoggingTestHelper, unittest.TestCase):
               level info
              </logfile>
            </eventlog>""")
-        starter = self.get_starter(conf)
+        starter = self.get_starter(conf, wsgi=True)
         starter.setupInitialLogging()
-
-    def testSetupZServerThreads(self):
-        conf = self.load_config_text("""
-            instancehome <<INSTANCE_HOME>>
-           zserver-threads 10""")
-        starter = self.get_starter(conf)
-        starter.setupZServer()
-        from Zope2.Startup.config import ZSERVER_THREADS
-        self.assertEqual(ZSERVER_THREADS, 10)
-
-    def testSetupServers(self):
-        # We generate a random port number to test against, so that multiple
-        # test runs of this at the same time can succeed
-        port = random.randint(10000, 50000)
-        conf = self.load_config_text("""
-            instancehome <<INSTANCE_HOME>>
-            <http-server>
-                address %(http)s
-            </http-server>
-            <ftp-server>
-               address %(ftp)s
-            </ftp-server>""" % dict(http=port, ftp=port + 1)
-        )
-        starter = self.get_starter(conf)
-        # do the job the 'handler' would have done (call prepare)
-        for server in conf.servers:
-            server.prepare('', None, 'Zope2', {}, None)
-        try:
-            starter.setupServers()
-            import ZServer
-            self.assertEqual(conf.servers[0].__class__,
-                             ZServer.HTTPServer.zhttp_server)
-            self.assertEqual(conf.servers[1].__class__,
-                             ZServer.FTPServer)
-        finally:
-            del conf.servers  # should release servers
-            pass
-
-    def testDropPrivileges(self):
-        # somewhat incomplete because we we're never running as root
-        # when we test, but we test as much as we can
-        if os.name != 'posix':
-            return
-        _old_getuid = os.getuid
-
-        def _return0():
-            return 0
-
-        def make_starter(conf):
-            # remove the debug handler, since we don't want junk on
-            # stderr for the tests
-            starter = self.get_starter(conf)
-            starter.event_logger.removeHandler(starter.debug_handler)
-            return starter
-        try:
-            os.getuid = _return0
-            # no effective user
-            conf = self.load_config_text("""
-                instancehome <<INSTANCE_HOME>>""")
-            starter = make_starter(conf)
-            self.assertRaises(ZConfig.ConfigurationError,
-                              starter.dropPrivileges)
-            # cant find user in passwd database
-            conf = self.load_config_text("""
-                instancehome <<INSTANCE_HOME>>
-                effective-user n0sucHuS3r""")
-            starter = make_starter(conf)
-            self.assertRaises(ZConfig.ConfigurationError,
-                              starter.dropPrivileges)
-            # can't specify '0' as effective user
-            conf = self.load_config_text("""
-                instancehome <<INSTANCE_HOME>>
-                effective-user 0""")
-            starter = make_starter(conf)
-            self.assertRaises(ZConfig.ConfigurationError,
-                              starter.dropPrivileges)
-            # setuid to test runner's uid XXX will this work cross-platform?
-            runnerid = _old_getuid()
-            conf = self.load_config_text("""
-                instancehome <<INSTANCE_HOME>>
-                effective-user %s""" % runnerid)
-            starter = make_starter(conf)
-            finished = starter.dropPrivileges()
-            self.assertTrue(finished)
-        finally:
-            os.getuid = _old_getuid
 
     def testSetupConfiguredLoggers(self):
         if sys.platform[:3].lower() == "win":
@@ -280,9 +207,10 @@ class ZopeStarterTestCase(LoggingTestHelper, unittest.TestCase):
            </logger>
            """)
         try:
-            starter = self.get_starter(conf)
+            starter = self.get_starter(conf, wsgi=True)
             starter.setupInitialLogging()
-            starter.info('hello')
+            zope_logger = logging.getLogger("Zope")
+            zope_logger.info('hello')
             starter.setupFinalLogging()
             logger = logging.getLogger()
             self.assertEqual(logger.level, logging.INFO)
@@ -300,52 +228,6 @@ class ZopeStarterTestCase(LoggingTestHelper, unittest.TestCase):
                     pass
             self._clearHandlers()
 
-    def testMakeLockFile(self):
-        # put something in the way (it should be deleted)
-        name = os.path.join(TEMPNAME, 'lock')
-        conf = self.load_config_text("""
-            instancehome <<INSTANCE_HOME>>
-            lock-filename %s""" % name
-                                     )
-        f = open(name, 'ab')
-        # On Windows, the first byte of the file is locked solid, and even
-        # we (this process) can't read from it via a file object other
-        # than the one passed to lock_file.  So we put a blank
-        # in the test value first, so we can skip over it later.  Also,
-        # because .seek(1) isn't well-defined for files opened in text
-        # mode, we open the file in binary mode (above and below).
-        f.write(' hello')
-        f.close()
-        try:
-            starter = self.get_starter(conf)
-            starter.makeLockFile()
-            f = open(name, 'rb')
-            f.seek(1)   # skip over the locked byte
-            guts = f.read()
-            f.close()
-            self.assertFalse(guts.find('hello') > -1)
-        finally:
-            starter.unlinkLockFile()
-            self.assertFalse(os.path.exists(name))
-
-    def testMakePidFile(self):
-        # put something in the way (it should be deleted)
-        name = os.path.join(TEMPNAME, 'pid')
-        conf = self.load_config_text("""
-            instancehome <<INSTANCE_HOME>>
-            pid-filename %s""" % name
-                                     )
-        f = open(name, 'a')
-        f.write('hello')
-        f.close()
-        try:
-            starter = self.get_starter(conf)
-            starter.makePidFile()
-            self.assertFalse(open(name).read().find('hello') > -1)
-        finally:
-            starter.unlinkPidFile()
-            self.assertFalse(os.path.exists(name))
-
     def testConfigureInterpreter(self):
         import sys
         oldcheckinterval = sys.getcheckinterval()
@@ -355,37 +237,173 @@ class ZopeStarterTestCase(LoggingTestHelper, unittest.TestCase):
                     python-check-interval %d
                     """ % newcheckinterval)
         try:
-            starter = self.get_starter(conf)
+            starter = self.get_starter(conf, wsgi=True)
             starter.setupInterpreter()
             self.assertEqual(sys.getcheckinterval(), newcheckinterval)
         finally:
             sys.setcheckinterval(oldcheckinterval)
 
-    def testZopeRunConfigure(self):
-        old_config = getConfiguration()
-        try:
-            os.mkdir(TEMPNAME)
-            os.mkdir(TEMPPRODUCTS)
-        except OSError as why:
-            if why == errno.EEXIST:
-                # already exists
-                pass
-        old_argv = sys.argv
-        sys.argv = [sys.argv[0]]
-        try:
-            fname = os.path.join(TEMPNAME, 'zope.conf')
-            from Zope2 import configure
-            f = open(fname, 'w')
-            f.write('instancehome %s\nzserver-threads 100\n' % TEMPNAME)
-            f.flush()
-            f.close()
-            configure(fname)
-            new_config = getConfiguration()
-            self.assertEqual(new_config.zserver_threads, 100)
-        finally:
-            sys.argv = old_argv
+
+if LIFETIME:
+    class ZopeStarterTestCase(BaseTestCase, unittest.TestCase):
+
+        def testDropPrivileges(self):
+            # somewhat incomplete because we we're never running as root
+            # when we test, but we test as much as we can
+            if os.name != 'posix':
+                return
+            _old_getuid = os.getuid
+
+            def _return0():
+                return 0
+
+            def make_starter(conf):
+                # remove the debug handler, since we don't want junk on
+                # stderr for the tests
+                starter = self.get_starter(conf, wsgi=False)
+                starter.event_logger.removeHandler(starter.debug_handler)
+                return starter
             try:
-                os.unlink(fname)
-            except:
+                os.getuid = _return0
+                # no effective user
+                conf = self.load_config_text("""
+                    instancehome <<INSTANCE_HOME>>""")
+                starter = make_starter(conf)
+                self.assertRaises(ZConfig.ConfigurationError,
+                                  starter.dropPrivileges)
+                # cant find user in passwd database
+                conf = self.load_config_text("""
+                    instancehome <<INSTANCE_HOME>>
+                    effective-user n0sucHuS3r""")
+                starter = make_starter(conf)
+                self.assertRaises(ZConfig.ConfigurationError,
+                                  starter.dropPrivileges)
+                # can't specify '0' as effective user
+                conf = self.load_config_text("""
+                    instancehome <<INSTANCE_HOME>>
+                    effective-user 0""")
+                starter = make_starter(conf)
+                self.assertRaises(ZConfig.ConfigurationError,
+                                  starter.dropPrivileges)
+                # setuid to test runner's uid
+                runnerid = _old_getuid()
+                conf = self.load_config_text("""
+                    instancehome <<INSTANCE_HOME>>
+                    effective-user %s""" % runnerid)
+                starter = make_starter(conf)
+                finished = starter.dropPrivileges()
+                self.assertTrue(finished)
+            finally:
+                os.getuid = _old_getuid
+
+        def testMakeLockFile(self):
+            # put something in the way (it should be deleted)
+            name = os.path.join(TEMPNAME, 'lock')
+            conf = self.load_config_text("""
+                instancehome <<INSTANCE_HOME>>
+                lock-filename %s""" % name
+                                         )
+            f = open(name, 'ab')
+            # On Windows, the first byte of the file is locked solid, and even
+            # we (this process) can't read from it via a file object other
+            # than the one passed to lock_file.  So we put a blank
+            # in the test value first, so we can skip over it later.  Also,
+            # because .seek(1) isn't well-defined for files opened in text
+            # mode, we open the file in binary mode (above and below).
+            f.write(' hello')
+            f.close()
+            try:
+                starter = self.get_starter(conf, wsgi=False)
+                starter.makeLockFile()
+                f = open(name, 'rb')
+                f.seek(1)   # skip over the locked byte
+                guts = f.read()
+                f.close()
+                self.assertFalse(guts.find('hello') > -1)
+            finally:
+                starter.unlinkLockFile()
+                self.assertFalse(os.path.exists(name))
+
+        def testMakePidFile(self):
+            # put something in the way (it should be deleted)
+            name = os.path.join(TEMPNAME, 'pid')
+            conf = self.load_config_text("""
+                instancehome <<INSTANCE_HOME>>
+                pid-filename %s""" % name
+                                         )
+            f = open(name, 'a')
+            f.write('hello')
+            f.close()
+            try:
+                starter = self.get_starter(conf, wsgi=False)
+                starter.makePidFile()
+                self.assertFalse(open(name).read().find('hello') > -1)
+            finally:
+                starter.unlinkPidFile()
+                self.assertFalse(os.path.exists(name))
+
+        def testSetupZServerThreads(self):
+            conf = self.load_config_text("""
+                instancehome <<INSTANCE_HOME>>
+               zserver-threads 10""")
+            starter = self.get_starter(conf, wsgi=False)
+            starter.setupZServer()
+            from Zope2.Startup.config import ZSERVER_THREADS
+            self.assertEqual(ZSERVER_THREADS, 10)
+
+        def testSetupServers(self):
+            # We generate a random port number to test against, so that
+            # multiple test runs of this at the same time can succeed
+            port = random.randint(10000, 50000)
+            conf = self.load_config_text("""
+                instancehome <<INSTANCE_HOME>>
+                <http-server>
+                    address %(http)s
+                </http-server>
+                <ftp-server>
+                   address %(ftp)s
+                </ftp-server>""" % dict(http=port, ftp=port + 1)
+            )
+            starter = self.get_starter(conf, wsgi=False)
+            # do the job the 'handler' would have done (call prepare)
+            for server in conf.servers:
+                server.prepare('', None, 'Zope2', {}, None)
+            try:
+                starter.setupServers()
+                import ZServer
+                self.assertEqual(conf.servers[0].__class__,
+                                 ZServer.HTTPServer.zhttp_server)
+                self.assertEqual(conf.servers[1].__class__,
+                                 ZServer.FTPServer)
+            finally:
+                del conf.servers  # should release servers
                 pass
-            setConfiguration(old_config)
+
+        def testZopeRunConfigure(self):
+            old_config = getConfiguration()
+            try:
+                os.mkdir(TEMPNAME)
+                os.mkdir(TEMPPRODUCTS)
+            except OSError as why:
+                if why == errno.EEXIST:
+                    # already exists
+                    pass
+            old_argv = sys.argv
+            sys.argv = [sys.argv[0]]
+            try:
+                fname = os.path.join(TEMPNAME, 'zope.conf')
+                from Zope2 import configure
+                f = open(fname, 'w')
+                f.write('instancehome %s\nzserver-threads 100\n' % TEMPNAME)
+                f.flush()
+                f.close()
+                configure(fname)
+                new_config = getConfiguration()
+                self.assertEqual(new_config.zserver_threads, 100)
+            finally:
+                sys.argv = old_argv
+                try:
+                    os.unlink(fname)
+                except Exception:
+                    pass
+                setConfiguration(old_config)

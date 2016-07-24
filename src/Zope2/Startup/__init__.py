@@ -38,18 +38,24 @@ logger = logging.getLogger("Zope")
 started = False
 
 
-def get_starter():
+def get_starter(wsgi=False):
     if sys.platform[:3].lower() == "win":
-        return WindowsZopeStarter()
+        if wsgi:
+            return WindowsWSGIStarter()
+        else:
+            return WindowsZopeStarter()
     else:
-        return UnixZopeStarter()
+        if wsgi:
+            return UnixWSGIStarter()
+        else:
+            return UnixZopeStarter()
 
 
-class ZopeStarter(object):
-    """This is a class which starts a Zope server.
+class WSGIStarter(object):
+    """This is a class which starts Zope as a WSGI app."""
 
-    Making it a class makes it easier to test.
-    """
+    wsgi = True
+
     def __init__(self):
         self.event_logger = logging.getLogger()
         # We log events to the root logger, which is backed by a
@@ -69,19 +75,168 @@ class ZopeStarter(object):
         self.event_logger.addHandler(self.debug_handler)
         self.event_logger.addHandler(self.startup_handler)
 
-    def setConfiguration(self, cfg):
-        self.cfg = cfg
+    def prepare(self):
+        self.setupInitialLogging()
+        self.setupLocale()
+        self.setupSecurityOptions()
+        self.setupPublisher()
+        self.setupFinalLogging()
+        self.setupInterpreter()
+        self.startZope()
+        from App.config import getConfiguration
+        config = getConfiguration()  # NOQA
+        self.registerSignals()
+        logger.info('Ready to handle requests')
+        self.sendEvents()
+
+    def getLoggingLevel(self):
+        if self.cfg.eventlog is None:
+            level = logging.INFO
+        else:
+            # get the lowest handler level.  This is the effective level
+            # level at which which we will spew messages to the console
+            # during startup.
+            level = self.cfg.eventlog.getLowestHandlerLevel()
+        return level
+
+    def registerSignals(self):
+        from Signals import Signals
+        Signals.registerZopeSignals([self.cfg.eventlog,
+                                     self.cfg.access,
+                                     self.cfg.trace])
 
     def sendEvents(self):
         notify(ProcessStarting())
+
+    def setConfiguration(self, cfg):
+        self.cfg = cfg
+
+    def setupConfiguredLoggers(self):
+        # Must happen after ZopeStarter.setupInitialLogging()
+        self.event_logger.removeHandler(self.startup_handler)
+        if self.cfg.zserver_read_only_mode:
+            # no log files written in read only mode
+            return
+
+        if self.cfg.eventlog is not None:
+            self.cfg.eventlog()
+        if self.cfg.access is not None:
+            self.cfg.access()
+        if self.cfg.trace is not None:
+            self.cfg.trace()
+
+        # flush buffered startup messages to event logger
+        if self.cfg.debug_mode:
+            self.event_logger.removeHandler(self.debug_handler)
+            self.startup_handler.flushBufferTo(self.event_logger)
+            self.event_logger.addHandler(self.debug_handler)
+        else:
+            self.startup_handler.flushBufferTo(self.event_logger)
+
+    def setupFinalLogging(self):
+        pass
+
+    def setupInitialLogging(self):
+        if self.cfg.debug_mode:
+            self.debug_handler.setLevel(self.getLoggingLevel())
+        else:
+            self.event_logger.removeHandler(self.debug_handler)
+            self.debug_handler = None
+
+    def setupInterpreter(self):
+        # make changes to the python interpreter environment
+        sys.setcheckinterval(self.cfg.python_check_interval)
+
+    def setupLocale(self):
+        # set a locale if one has been specified in the config
+        if not self.cfg.locale:
+            return
+
+        # workaround to allow unicode encoding conversions in DTML
+        import codecs
+        dummy = codecs.lookup('utf-8')  # NOQA
+
+        locale_id = self.cfg.locale
+
+        if locale_id is not None:
+            try:
+                import locale
+            except:
+                raise ZConfig.ConfigurationError(
+                    'The locale module could not be imported.\n'
+                    'To use localization options, you must ensure\n'
+                    'that the locale module is compiled into your\n'
+                    'Python installation.')
+            try:
+                locale.setlocale(locale.LC_ALL, locale_id)
+            except:
+                raise ZConfig.ConfigurationError(
+                    'The specified locale "%s" is not supported by your'
+                    'system.\nSee your operating system documentation for '
+                    'more\ninformation on locale support.' % locale_id)
+
+    def setupPublisher(self):
+        import ZPublisher.HTTPRequest
+        import ZPublisher.Publish
+        ZPublisher.Publish.set_default_debug_mode(self.cfg.debug_mode)
+        ZPublisher.Publish.set_default_authentication_realm(
+            self.cfg.http_realm)
+        if self.cfg.trusted_proxies:
+            mapped = []
+            for name in self.cfg.trusted_proxies:
+                mapped.extend(_name2Ips(name))
+            ZPublisher.HTTPRequest.trusted_proxies = tuple(mapped)
+            Zope2.Startup.config.TRUSTED_PROXIES = tuple(mapped)
+
+    def setupSecurityOptions(self):
+        import AccessControl
+        AccessControl.setImplementation(
+            self.cfg.security_policy_implementation)
+        AccessControl.setDefaultBehaviors(
+            not self.cfg.skip_ownership_checking,
+            not self.cfg.skip_authentication_checking,
+            self.cfg.verbose_security)
+
+    def startZope(self):
+        # Import Zope
+        import Zope2
+        Zope2.startup()
+
+
+class WindowsWSGIStarter(WSGIStarter):
+
+    def setupInitialLogging(self):
+        super(WindowsWSGIStarter, self).setupInitialLogging()
+        self.setupConfiguredLoggers()
+
+
+class UnixWSGIStarter(WSGIStarter):
+
+    def setupInitialLogging(self):
+        super(UnixWSGIStarter, self).setupInitialLogging()
+        level = self.getLoggingLevel()
+        self.startup_handler.setLevel(level)
+
+        # set the initial logging level (this will be changed by the
+        # ZConfig settings later)
+        self.event_logger.setLevel(level)
+
+    def setupFinalLogging(self):
+        self.setupConfiguredLoggers()
+
+
+class ZopeStarter(WSGIStarter):
+    """This is a class which starts Zope with a ZServer."""
+
+    wsgi = False
 
     def prepare(self):
         self.setupInitialLogging()
         self.setupLocale()
         self.setupSecurityOptions()
         self.setupPublisher()
-        # Start ZServer servers before we drop privileges so we can bind to
-        # "low" ports:
+        # Start ZServer servers before we drop privileges so we can bind
+        # to "low" ports:
         self.setupZServer()
         self.setupServers()
         # drop privileges after setting up servers
@@ -93,20 +248,19 @@ class ZopeStarter(object):
         self.startZope()
         self.serverListen()
         from App.config import getConfiguration
-        config = getConfiguration()
+        config = getConfiguration()  # NOQA
         self.registerSignals()
-        # emit a "ready" message in order to prevent the kinds of emails
-        # to the Zope maillist in which people claim that Zope has "frozen"
-        # after it has emitted ZServer messages.
-
         logger.info('Ready to handle requests')
         self.sendEvents()
+
+    def dropPrivileges(self):
+        return dropPrivileges(self.cfg)
 
     def run(self):
         # the mainloop.
         try:
             from App.config import getConfiguration
-            config = getConfiguration()
+            config = getConfiguration()  # NOQA
             import Lifetime
             Lifetime.loop()
             from Zope2.Startup.config import ZSERVER_EXIT_CODE
@@ -131,56 +285,6 @@ class ZopeStarter(object):
 
     def error(self, msg):
         logger.error(msg)
-
-    def setupPublisher(self):
-        import ZPublisher.HTTPRequest
-        import ZPublisher.Publish
-        ZPublisher.Publish.set_default_debug_mode(self.cfg.debug_mode)
-        ZPublisher.Publish.set_default_authentication_realm(
-            self.cfg.http_realm)
-        if self.cfg.trusted_proxies:
-            mapped = []
-            for name in self.cfg.trusted_proxies:
-                mapped.extend(_name2Ips(name))
-            ZPublisher.HTTPRequest.trusted_proxies = tuple(mapped)
-            Zope2.Startup.config.TRUSTED_PROXIES = tuple(mapped)
-
-    def setupSecurityOptions(self):
-        import AccessControl
-        AccessControl.setImplementation(
-            self.cfg.security_policy_implementation)
-        AccessControl.setDefaultBehaviors(
-            not self.cfg.skip_ownership_checking,
-            not self.cfg.skip_authentication_checking,
-            self.cfg.verbose_security)
-
-    def setupLocale(self):
-        # set a locale if one has been specified in the config
-        if not self.cfg.locale:
-            return
-
-        # workaround to allow unicode encoding conversions in DTML
-        import codecs
-        dummy = codecs.lookup('utf-8')
-
-        locale_id = self.cfg.locale
-
-        if locale_id is not None:
-            try:
-                import locale
-            except:
-                raise ZConfig.ConfigurationError(
-                    'The locale module could not be imported.\n'
-                    'To use localization options, you must ensure\n'
-                    'that the locale module is compiled into your\n'
-                    'Python installation.')
-            try:
-                locale.setlocale(locale.LC_ALL, locale_id)
-            except:
-                raise ZConfig.ConfigurationError(
-                    'The specified locale "%s" is not supported by your'
-                    'system.\nSee your operating system documentation for '
-                    'more\ninformation on locale support.' % locale_id)
 
     def setupZServer(self):
         # Increase the number of threads
@@ -214,53 +318,6 @@ class ZopeStarter(object):
                 raise ZConfig.ConfigurationError(
                     socket_err % (server.servertype(), e[1]))
         self.cfg.servers = servers
-
-    def dropPrivileges(self):
-        return dropPrivileges(self.cfg)
-
-    def getLoggingLevel(self):
-        if self.cfg.eventlog is None:
-            level = logging.INFO
-        else:
-            # get the lowest handler level.  This is the effective level
-            # level at which which we will spew messages to the console
-            # during startup.
-            level = self.cfg.eventlog.getLowestHandlerLevel()
-        return level
-
-    def setupConfiguredLoggers(self):
-        # Must happen after ZopeStarter.setupInitialLogging()
-        self.event_logger.removeHandler(self.startup_handler)
-        if self.cfg.zserver_read_only_mode:
-            # no log files written in read only mode
-            return
-
-        if self.cfg.eventlog is not None:
-            self.cfg.eventlog()
-        if self.cfg.access is not None:
-            self.cfg.access()
-        if self.cfg.trace is not None:
-            self.cfg.trace()
-
-        # flush buffered startup messages to event logger
-        if self.cfg.debug_mode:
-            self.event_logger.removeHandler(self.debug_handler)
-            self.startup_handler.flushBufferTo(self.event_logger)
-            self.event_logger.addHandler(self.debug_handler)
-        else:
-            self.startup_handler.flushBufferTo(self.event_logger)
-
-    def setupInitialLogging(self):
-        if self.cfg.debug_mode:
-            self.debug_handler.setLevel(self.getLoggingLevel())
-        else:
-            self.event_logger.removeHandler(self.debug_handler)
-            self.debug_handler = None
-
-    def startZope(self):
-        # Import Zope
-        import Zope2
-        Zope2.startup()
 
     def makeLockFile(self):
         if not self.cfg.zserver_read_only_mode:
@@ -314,47 +371,13 @@ class ZopeStarter(object):
             except OSError:
                 pass
 
-    def setupInterpreter(self):
-        """ make changes to the python interpreter environment """
-        sys.setcheckinterval(self.cfg.python_check_interval)
+
+class WindowsZopeStarter(WindowsWSGIStarter, ZopeStarter):
+    pass
 
 
-class WindowsZopeStarter(ZopeStarter):
-
-    def registerSignals(self):
-        from Signals import Signals
-        Signals.registerZopeSignals([self.cfg.eventlog,
-                                     self.cfg.access,
-                                     self.cfg.trace])
-
-    def setupInitialLogging(self):
-        ZopeStarter.setupInitialLogging(self)
-        self.setupConfiguredLoggers()
-
-    def setupFinalLogging(self):
-        pass
-
-
-class UnixZopeStarter(ZopeStarter):
-
-    def registerSignals(self):
-        from Signals import Signals
-        Signals.registerZopeSignals([self.cfg.eventlog,
-                                     self.cfg.access,
-                                     self.cfg.trace])
-
-    def setupInitialLogging(self):
-        ZopeStarter.setupInitialLogging(self)
-        level = self.getLoggingLevel()
-
-        self.startup_handler.setLevel(level)
-
-        # set the initial logging level (this will be changed by the
-        # zconfig settings later)
-        self.event_logger.setLevel(level)
-
-    def setupFinalLogging(self):
-        self.setupConfiguredLoggers()
+class UnixZopeStarter(UnixWSGIStarter, ZopeStarter):
+    pass
 
 
 def dropPrivileges(cfg):

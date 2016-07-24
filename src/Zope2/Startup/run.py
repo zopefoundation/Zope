@@ -16,7 +16,7 @@
 def run():
     """ Start a Zope instance """
     import Zope2.Startup
-    starter = Zope2.Startup.get_starter()
+    starter = Zope2.Startup.get_starter(wsgi=False)
     opts = _setconfig()
     starter.setConfiguration(opts.configroot)
     try:
@@ -33,11 +33,10 @@ def configure(configfile):
     follows:  from Zope2.Startup.run import configure;
     configure('/path/to/configfile'); import Zope2; app = Zope2.app() """
     import Zope2.Startup
-    starter = Zope2.Startup.get_starter()
+    starter = Zope2.Startup.get_starter(wsgi=True)
     opts = _setconfig(configfile)
     starter.setConfiguration(opts.configroot)
     starter.setupSecurityOptions()
-    starter.dropPrivileges()
     return starter
 
 
@@ -65,7 +64,7 @@ def make_wsgi_app(global_config, zope_conf):
     from Zope2.Startup.handlers import handleConfig
     from Zope2.Startup.options import ZopeOptions
     from ZPublisher.WSGIPublisher import publish_module
-    starter = get_starter()
+    starter = get_starter(wsgi=True)
     opts = ZopeOptions()
     opts.configfile = zope_conf
     opts.realize(args=(), progname='Zope2WSGI', raise_getopt_errs=False)
