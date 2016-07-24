@@ -41,13 +41,13 @@
 # to add yet another asyncore handler - the thread in this module could
 # then "post" the request to the main thread via this asyncore handler.
 
+import asyncore
+import atexit
+import logging
 import os
 import sys
 import signal
 import threading
-import asyncore
-import atexit
-import Lifetime
 
 # As at pywin32-204, we must ensure pywintypes is the first win32 module
 # imported in our process, otherwise we can end up with 2 pywintypesxx.dll
@@ -62,7 +62,12 @@ import win32con
 import win32event
 import ntsecuritycon
 
-import logging
+LIFETIME = True
+try:
+    from Lifetime import shutdown
+except ImportError:
+    LIFETIME = False
+
 logger = logging.getLogger("WinSignalHandler")
 
 # We simulate signals via win32 named events.  This is the event name
@@ -233,9 +238,12 @@ class SignalHandler(object):
                 # SystemExit does the right thing.  On Windows, we are on
                 # our own thread, so throwing SystemExit there isn't a great
                 # idea.  Just shutdown the main loop.
-                logger.debug(
-                    "Trapped SystemExit(%s) - doing Lifetime shutdown" % rc)
-                Lifetime.shutdown(rc)
+                if LIFETIME:
+                    logger.debug("Trapped SystemExit(%s) - "
+                                 "doing Lifetime shutdown" % rc)
+                    shutdown(rc)
+                else:
+                    raise
             except:
                 logger.exception("A handler for %s failed!'" % signame)
             wakeSelect()  # trigger a walk around the Lifetime loop.

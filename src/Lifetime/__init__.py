@@ -1,5 +1,11 @@
 import asyncore
+import logging
+import sys
 import time
+
+from Signals.threads import dump_threads
+
+logger = logging.getLogger("Z2")
 
 _shutdown_phase = 0
 _shutdown_timeout = 30  # seconds per phase
@@ -84,3 +90,30 @@ def graceful_shutdown_loop():
             # No vetos? That is one step closer to shutting down
             _shutdown_phase += 1
             timestamp = time.time()
+
+
+def shutdownFastHandler():
+    """Shutdown cleanly on SIGTERM. This is registered first,
+       so it should be called after all other handlers."""
+    logger.info("Shutting down fast")
+    shutdown(0, fast=1)
+
+
+def shutdownHandler():
+    """Shutdown cleanly on SIGINT. This is registered first,
+       so it should be called after all other handlers."""
+    logger.info("Shutting down")
+    sys.exit(0)
+
+
+def restartHandler():
+    """Restart cleanly on SIGHUP. This is registered first, so it
+       should be called after all other SIGHUP handlers."""
+    logger.info("Restarting")
+    shutdown(1)
+
+
+def showStacks():
+    """Dump a stracktrace of all threads on the console."""
+    print(dump_threads())
+    sys.stdout.flush()

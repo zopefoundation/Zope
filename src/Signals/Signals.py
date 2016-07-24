@@ -16,11 +16,17 @@ Zope signal handlers for clean shutdown, restart and log rotation.
 
 import logging
 import os
-import sys
 
-import Lifetime
-
-from .threads import dump_threads
+LIFETIME = True
+try:
+    from Lifetime import (
+        shutdownFastHandler,
+        shutdownHandler,
+        restartHandler,
+        showStacks,
+    )
+except ImportError:
+    LIFETIME = False
 
 logger = logging.getLogger("Z2")
 
@@ -35,33 +41,6 @@ if os.name == 'nt':
         SignalHandler = None
 else:
     from SignalHandler import SignalHandler
-
-
-def shutdownFastHandler():
-    """Shutdown cleanly on SIGTERM. This is registered first,
-       so it should be called after all other handlers."""
-    logger.info("Shutting down fast")
-    Lifetime.shutdown(0, fast=1)
-
-
-def shutdownHandler():
-    """Shutdown cleanly on SIGINT. This is registered first,
-       so it should be called after all other handlers."""
-    logger.info("Shutting down")
-    sys.exit(0)
-
-
-def restartHandler():
-    """Restart cleanly on SIGHUP. This is registered first, so it
-       should be called after all other SIGHUP handlers."""
-    logger.info("Restarting")
-    Lifetime.shutdown(1)
-
-
-def showStacks():
-    """Dump a stracktrace of all threads on the console."""
-    print(dump_threads())
-    sys.stdout.flush()
 
 
 class LogfileReopenHandler(object):
@@ -120,11 +99,11 @@ def registerZopeSignals(loggers):
     except ImportError:
         mod_wsgi = False
 
-    if not mod_wsgi:
+    if not mod_wsgi and LIFETIME:
         SignalHandler.registerHandler(SIGTERM, shutdownFastHandler)
         SignalHandler.registerHandler(SIGINT, shutdownHandler)
     if os.name != 'nt':
-        if not mod_wsgi:
+        if not mod_wsgi and LIFETIME:
             SignalHandler.registerHandler(SIGHUP, restartHandler)
             SignalHandler.registerHandler(SIGUSR1, showStacks)
         SignalHandler.registerHandler(SIGUSR2, LogfileReopenHandler(loggers))
