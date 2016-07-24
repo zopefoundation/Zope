@@ -1,7 +1,8 @@
-import sys, asyncore, time
+import asyncore
+import time
 
 _shutdown_phase = 0
-_shutdown_timeout = 30 # seconds per phase
+_shutdown_timeout = 30  # seconds per phase
 
 # The shutdown phase counts up from 0 to 4.
 #
@@ -23,7 +24,8 @@ _shutdown_timeout = 30 # seconds per phase
 # of time that it has currently been in that phase. This method should return
 # true if it does not yet want shutdown to proceed to the next phase.
 
-def shutdown(exit_code,fast = 0):
+
+def shutdown(exit_code, fast=0):
     global _shutdown_phase
     global _shutdown_timeout
     if _shutdown_phase == 0:
@@ -38,12 +40,14 @@ def shutdown(exit_code,fast = 0):
         # enough, but still clean.
         _shutdown_timeout = 1.0
 
+
 def loop():
     # Run the main loop until someone calls shutdown()
     lifetime_loop()
     # Gradually close sockets in the right order, while running a select
     # loop to allow remaining requests to trickle away.
     graceful_shutdown_loop()
+
 
 def lifetime_loop():
     # The main loop. Stay in here until we need to shutdown
@@ -52,7 +56,7 @@ def lifetime_loop():
     while map and _shutdown_phase == 0:
         asyncore.poll(timeout, map)
 
-        
+
 def graceful_shutdown_loop():
     # The shutdown loop. Allow various services to shutdown gradually.
     global _shutdown_phase
@@ -60,19 +64,19 @@ def graceful_shutdown_loop():
     timeout = 1.0
     map = asyncore.socket_map
     while map and _shutdown_phase < 4:
-        time_in_this_phase = time.time()-timestamp 
+        time_in_this_phase = time.time() - timestamp
         veto = 0
-        for fd,obj in map.items():
+        for fd, obj in map.items():
             try:
-                fn = getattr(obj,'clean_shutdown_control')
+                fn = getattr(obj, 'clean_shutdown_control')
             except AttributeError:
                 pass
             else:
                 try:
-                    veto = veto or fn(_shutdown_phase,time_in_this_phase)
+                    veto = veto or fn(_shutdown_phase, time_in_this_phase)
                 except:
                     obj.handle_error()
-        if veto and time_in_this_phase<_shutdown_timeout:
+        if veto and time_in_this_phase < _shutdown_timeout:
             # Any open socket handler can veto moving on to the next shutdown
             # phase.  (but not forever)
             asyncore.poll(timeout, map)
@@ -80,4 +84,3 @@ def graceful_shutdown_loop():
             # No vetos? That is one step closer to shutting down
             _shutdown_phase += 1
             timestamp = time.time()
-    

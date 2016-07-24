@@ -34,6 +34,7 @@ from App.config import getConfiguration, setConfiguration
 TEMPNAME = tempfile.mktemp()
 TEMPPRODUCTS = os.path.join(TEMPNAME, "Products")
 
+
 def getSchema():
     startup = os.path.dirname(Zope2.Startup.__file__)
     schemafile = os.path.join(startup, 'zopeschema.xml')
@@ -45,10 +46,11 @@ def getSchema():
 logger_states = {}
 for name in (None, 'trace', 'access'):
     logger = logging.getLogger(name)
-    logger_states[name] = {'level':logger.level,
-                           'propagate':logger.propagate,
-                           'handlers':logger.handlers,
-                           'filters':logger.filters}
+    logger_states[name] = {'level': logger.level,
+                           'propagate': logger.propagate,
+                           'handlers': logger.handlers,
+                           'filters': logger.filters}
+
 
 class ZopeStarterTestCase(LoggingTestHelper, unittest.TestCase):
 
@@ -94,7 +96,7 @@ class ZopeStarterTestCase(LoggingTestHelper, unittest.TestCase):
         try:
             os.mkdir(TEMPNAME)
             os.mkdir(TEMPPRODUCTS)
-        except OSError, why:
+        except OSError as why:
             if why == 17:
                 # already exists
                 pass
@@ -110,10 +112,10 @@ class ZopeStarterTestCase(LoggingTestHelper, unittest.TestCase):
                 conf = self.load_config_text("""
                     instancehome <<INSTANCE_HOME>>
                     locale en_GB""")
-            except ZConfig.DataConversionError, e:
+            except ZConfig.DataConversionError as e:
                 # Skip this test if we don't have support.
                 if e.message.startswith(
-                    'The specified locale "en_GB" is not supported'):
+                        'The specified locale "en_GB" is not supported'):
                     return
                 raise
             starter = self.get_starter(conf)
@@ -146,16 +148,12 @@ class ZopeStarterTestCase(LoggingTestHelper, unittest.TestCase):
         # startup handler should take on the level of the event log handler
         # with the lowest level
         logger = starter.event_logger
-        self.assertEqual(starter.startup_handler.level, 15) # 15 is BLATHER
+        self.assertEqual(starter.startup_handler.level, 15)  # 15 is BLATHER
         self.assert_(starter.startup_handler in logger.handlers)
         self.assertEqual(logger.level, 15)
         # We expect a debug handler and the startup handler:
         self.assertEqual(len(logger.handlers), 2)
 
-        # XXX need to check that log messages get written to
-        # sys.stderr, not that the stream identity for the startup
-        # handler matches
-        #self.assertEqual(starter.startup_handler.stream, sys.stderr)
         conf = self.load_config_text("""
             instancehome <<INSTANCE_HOME>>
             debug-mode off
@@ -168,10 +166,6 @@ class ZopeStarterTestCase(LoggingTestHelper, unittest.TestCase):
            </eventlog>""")
         starter = self.get_starter(conf)
         starter.setupInitialLogging()
-        # XXX need to check that log messages get written to
-        # sys.stderr, not that the stream identity for the startup
-        # handler matches
-        #self.assertNotEqual(starter.startup_handler.stream, sys.stderr)
 
     def testSetupZServerThreads(self):
         conf = self.load_config_text("""
@@ -193,7 +187,7 @@ class ZopeStarterTestCase(LoggingTestHelper, unittest.TestCase):
             </http-server>
             <ftp-server>
                address %(ftp)s
-            </ftp-server>""" % dict(http=port, ftp=port+1)
+            </ftp-server>""" % dict(http=port, ftp=port + 1)
         )
         starter = self.get_starter(conf)
         # do the job the 'handler' would have done (call prepare)
@@ -207,7 +201,7 @@ class ZopeStarterTestCase(LoggingTestHelper, unittest.TestCase):
             self.assertEqual(conf.servers[1].__class__,
                              ZServer.FTPServer)
         finally:
-            del conf.servers # should release servers
+            del conf.servers  # should release servers
             pass
 
     def testDropPrivileges(self):
@@ -216,8 +210,10 @@ class ZopeStarterTestCase(LoggingTestHelper, unittest.TestCase):
         if os.name != 'posix':
             return
         _old_getuid = os.getuid
+
         def _return0():
             return 0
+
         def make_starter(conf):
             # remove the debug handler, since we don't want junk on
             # stderr for the tests
@@ -292,8 +288,10 @@ class ZopeStarterTestCase(LoggingTestHelper, unittest.TestCase):
             self.assertEqual(logger.level, logging.INFO)
             l = open(os.path.join(TEMPNAME, 'event.log')).read()
             self.assertTrue(l.find('hello') > -1)
-            self.assertTrue(os.path.exists(os.path.join(TEMPNAME, 'Z2.log')))
-            self.assertTrue(os.path.exists(os.path.join(TEMPNAME,'trace.log')))
+            self.assertTrue(
+                os.path.exists(os.path.join(TEMPNAME, 'Z2.log')))
+            self.assertTrue(
+                os.path.exists(os.path.join(TEMPNAME, 'trace.log')))
         finally:
             for name in ('event.log', 'Z2.log', 'trace.log'):
                 try:
@@ -355,12 +353,11 @@ class ZopeStarterTestCase(LoggingTestHelper, unittest.TestCase):
         conf = self.load_config_text("""
                     instancehome <<INSTANCE_HOME>>
                     python-check-interval %d
-                    """ %  newcheckinterval  
-        )
+                    """ % newcheckinterval)
         try:
             starter = self.get_starter(conf)
             starter.setupInterpreter()
-            self.assertEqual( sys.getcheckinterval() , newcheckinterval )
+            self.assertEqual(sys.getcheckinterval(), newcheckinterval)
         finally:
             sys.setcheckinterval(oldcheckinterval)
 
@@ -369,7 +366,7 @@ class ZopeStarterTestCase(LoggingTestHelper, unittest.TestCase):
         try:
             os.mkdir(TEMPNAME)
             os.mkdir(TEMPPRODUCTS)
-        except OSError, why:
+        except OSError as why:
             if why == errno.EEXIST:
                 # already exists
                 pass
@@ -392,7 +389,3 @@ class ZopeStarterTestCase(LoggingTestHelper, unittest.TestCase):
             except:
                 pass
             setConfiguration(old_config)
-
-
-def test_suite():
-    return unittest.makeSuite(ZopeStarterTestCase)

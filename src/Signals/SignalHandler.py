@@ -12,13 +12,15 @@
 ##############################################################################
 """Signal handling dispatcher."""
 
-import sys, os
+import os
+import sys
 import signal
 from logging import getLogger
 
-LOG = getLogger('SignalHandler') 
+LOG = getLogger('SignalHandler')
 
-class SignalHandler:
+
+class SignalHandler(object):
 
     def __init__(self):
         self.registry = {}
@@ -52,7 +54,8 @@ class SignalHandler:
         for handler in self.registry.get(signum, []):
             # Never let a bad handler prevent the standard signal
             # handlers from running.
-            try: handler()
+            try:
+                handler()
             except SystemExit:
                 # if we trap SystemExit, we can't restart
                 raise
@@ -61,6 +64,7 @@ class SignalHandler:
                          exc_info=sys.exc_info())
 
 _signals = None
+
 
 def get_signal_name(n):
     """Return the symbolic name for signal n.

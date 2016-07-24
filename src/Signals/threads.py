@@ -26,10 +26,10 @@ def dump_threads():
                     request = f.f_locals.get('request')
                     if request is not None:
                         reqinfo += (request.get('REQUEST_METHOD', '') + ' ' +
-                                   request.get('PATH_INFO', ''))
+                                    request.get('PATH_INFO', ''))
                         qs = request.get('QUERY_STRING')
                         if qs:
-                            reqinfo += '?'+qs
+                            reqinfo += '?' + qs
                     break
             f = f.f_back
         if reqinfo:
@@ -37,8 +37,8 @@ def dump_threads():
 
         output = StringIO()
         traceback.print_stack(frame, file=output)
-        res.append("Thread %s%s:\n%s" %
-            (thread_id, reqinfo, output.getvalue()))
+        res.append(
+            "Thread %s%s:\n%s" % (thread_id, reqinfo, output.getvalue()))
 
     frames = None
     res.append("End of dump")

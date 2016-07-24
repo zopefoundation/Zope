@@ -45,7 +45,7 @@ def get_starter():
         return UnixZopeStarter()
 
 
-class ZopeStarter:
+class ZopeStarter(object):
     """This is a class which starts a Zope server.
 
     Making it a class makes it easier to test.
@@ -71,7 +71,6 @@ class ZopeStarter:
 
     def setConfiguration(self, cfg):
         self.cfg = cfg
-
 
     def sendEvents(self):
         notify(ProcessStarting())
@@ -174,16 +173,14 @@ class ZopeStarter:
                     'The locale module could not be imported.\n'
                     'To use localization options, you must ensure\n'
                     'that the locale module is compiled into your\n'
-                    'Python installation.'
-                    )
+                    'Python installation.')
             try:
                 locale.setlocale(locale.LC_ALL, locale_id)
             except:
                 raise ZConfig.ConfigurationError(
                     'The specified locale "%s" is not supported by your'
                     'system.\nSee your operating system documentation for '
-                    'more\ninformation on locale support.' % locale_id
-                    )
+                    'more\ninformation on locale support.' % locale_id)
 
     def setupZServer(self):
         # Increase the number of threads
@@ -197,7 +194,8 @@ class ZopeStarter:
                 # This one has the delayed listening feature
                 if not server.fast_listen:
                     server.fast_listen = True
-                    server.listen(1024) # same value as defined in medusa.http_server.py
+                    # same value as defined in medusa.http_server.py
+                    server.listen(1024)
 
     def setupServers(self):
         socket_err = (
@@ -205,17 +203,16 @@ class ZopeStarter:
             'This may mean that your user does not have permission to '
             'bind to the port which the server is trying to use or the '
             'port may already be in use by another application. '
-            '(%s)'
-            )
+            '(%s)')
         servers = []
         for server in self.cfg.servers:
             # create the server from the server factory
             # set up in the config
             try:
                 servers.append(server.create())
-            except socket.error,e:
-                raise ZConfig.ConfigurationError(socket_err
-                                                 % (server.servertype(),e[1]))
+            except socket.error as e:
+                raise ZConfig.ConfigurationError(
+                    socket_err % (server.servertype(), e[1]))
         self.cfg.servers = servers
 
     def dropPrivileges(self):
@@ -372,7 +369,7 @@ def dropPrivileges(cfg):
 
     import pwd
 
-    effective_user  = cfg.effective_user
+    effective_user = cfg.effective_user
     if effective_user is None:
         msg = ('A user was not specified to setuid to; fix this to '
                'start as root (change the effective-user directive '
@@ -413,15 +410,15 @@ def dropPrivileges(cfg):
 
     os.setuid(uid)
     logger.info('Set effective user to "%s"' % effective_user)
-    return 1 # for unit testing purposes
+    return 1  # for unit testing purposes
 
 
-# DM 2004-11-24: added
 def _name2Ips(host, isIp_=compile(r'(\d+\.){3}').match):
     '''map a name *host* to the sequence of its ip addresses;
     use *host* itself (as sequence) if it already is an ip address.
     Thus, if only a specific interface on a host is trusted,
     identify it by its ip (and not the host name).
     '''
-    if isIp_(host): return [host]
+    if isIp_(host):
+        return [host]
     return gethostbyaddr(host)[2]

@@ -22,7 +22,6 @@ import Lifetime
 
 from .threads import dump_threads
 
-
 logger = logging.getLogger("Z2")
 
 if os.name == 'nt':
@@ -37,11 +36,12 @@ if os.name == 'nt':
 else:
     from SignalHandler import SignalHandler
 
+
 def shutdownFastHandler():
     """Shutdown cleanly on SIGTERM. This is registered first,
        so it should be called after all other handlers."""
     logger.info("Shutting down fast")
-    Lifetime.shutdown(0,fast=1)
+    Lifetime.shutdown(0, fast=1)
 
 
 def shutdownHandler():
@@ -49,6 +49,7 @@ def shutdownHandler():
        so it should be called after all other handlers."""
     logger.info("Shutting down")
     sys.exit(0)
+
 
 def restartHandler():
     """Restart cleanly on SIGHUP. This is registered first, so it
@@ -59,11 +60,11 @@ def restartHandler():
 
 def showStacks():
     """Dump a stracktrace of all threads on the console."""
-    print dump_threads()
+    print(dump_threads())
     sys.stdout.flush()
 
 
-class LogfileReopenHandler:
+class LogfileReopenHandler(object):
     """Reopen log files on SIGUSR2.
 
     This is registered first, so it should be called after all other
@@ -77,12 +78,15 @@ class LogfileReopenHandler:
             log.reopen()
         logger.info("Log files reopened successfully")
 
+
 # On Windows, a 'reopen' is useless - the file can not be renamed
 # while open, so we perform a trivial 'rotate'.
-class LogfileRotateHandler:
-    """Rotate log files on SIGUSR2. Only called on Windows. This is 
-       registered first, so it should be called after all other SIGUSR2 
-       handlers."""
+class LogfileRotateHandler(object):
+    """
+    Rotate log files on SIGUSR2. Only called on Windows. This is
+    registered first, so it should be called after all other SIGUSR2
+    handlers.
+    """
     def __init__(self, loggers):
         self.loggers = [log for log in loggers if log is not None]
 
@@ -94,6 +98,7 @@ class LogfileRotateHandler:
                 if hasattr(handler, 'rotate') and callable(handler.rotate):
                     handler.rotate()
         logger.info("Log files rotation complete")
+
 
 def registerZopeSignals(loggers):
     from signal import SIGTERM, SIGINT
@@ -111,7 +116,7 @@ def registerZopeSignals(loggers):
 
     mod_wsgi = True
     try:
-        from mod_wsgi import version
+        from mod_wsgi import version  # NOQA
     except ImportError:
         mod_wsgi = False
 

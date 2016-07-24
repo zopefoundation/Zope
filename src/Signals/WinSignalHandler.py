@@ -20,7 +20,7 @@
 #
 # One event is used per signal, and the event name is based on both the
 # Zope process ID and the signal number.  For example, assuming a process
-# ID of 123, a SIGINT handler would create an event called "Zope-123-2" 
+# ID of 123, a SIGINT handler would create an event called "Zope-123-2"
 # (as signal.SIGINT==2).  The logfile reopen handler uses an event named
 # "Zope-123-12" (as the logfile handler uses SIGUSR2, which == 12)
 
@@ -35,13 +35,14 @@
 
 # NOTE: There is one huge semantic difference between these "signals"
 # and signals on Unix.  On Windows, the signals are delivered asynchronously
-# to a thread inside this module.  This thread calls the event handler 
+# to a thread inside this module.  This thread calls the event handler
 # directly - there is no magic to switch the call back to the main thread.
-# If this is a problem (not currently, but likely later), one option may be 
-# to add yet another asyncore handler - the thread in this module could 
+# If this is a problem (not currently, but likely later), one option may be
+# to add yet another asyncore handler - the thread in this module could
 # then "post" the request to the main thread via this asyncore handler.
 
-import sys, os
+import os
+import sys
 import signal
 import threading
 import asyncore
@@ -62,7 +63,7 @@ import win32event
 import ntsecuritycon
 
 import logging
-logger=logging.getLogger("WinSignalHandler")
+logger = logging.getLogger("WinSignalHandler")
 
 # We simulate signals via win32 named events.  This is the event name
 # prefix we use - the "signal number" is appended to this name.
@@ -76,15 +77,16 @@ winver = sys.getwindowsversion()
 if winver[0] >= 5 and winver[3] == 2:
     event_name_prefix = "Global\\" + event_name_prefix
 
+
 def createEventSecurityObject():
     # Create a security object giving World read/write access,
     # but only "Owner" modify access.
     sa = pywintypes.SECURITY_ATTRIBUTES()
     sidEveryone = pywintypes.SID()
-    sidEveryone.Initialize(ntsecuritycon.SECURITY_WORLD_SID_AUTHORITY,1)
+    sidEveryone.Initialize(ntsecuritycon.SECURITY_WORLD_SID_AUTHORITY, 1)
     sidEveryone.SetSubAuthority(0, ntsecuritycon.SECURITY_WORLD_RID)
     sidCreator = pywintypes.SID()
-    sidCreator.Initialize(ntsecuritycon.SECURITY_CREATOR_SID_AUTHORITY,1)
+    sidCreator.Initialize(ntsecuritycon.SECURITY_CREATOR_SID_AUTHORITY, 1)
     sidCreator.SetSubAuthority(0, ntsecuritycon.SECURITY_CREATOR_OWNER_RID)
 
     acl = pywintypes.ACL()
@@ -94,9 +96,10 @@ def createEventSecurityObject():
     sa.SetSecurityDescriptorDacl(1, acl, 0)
     return sa
 
+
 def wakeSelect():
     """Interrupt a sleeping asyncore 'select' call"""
-    # What is the right thing to do here?  
+    # What is the right thing to do here?
     # asyncore.close_all() works, but I fear that would
     # prevent the poll based graceful cleanup code from working.
     # This seems to work :)
@@ -104,7 +107,8 @@ def wakeSelect():
         if hasattr(obj, "pull_trigger"):
             obj.pull_trigger()
 
-class SignalHandler:
+
+class SignalHandler(object):
 
     def __init__(self):
         self.registry = {}
@@ -113,7 +117,7 @@ class SignalHandler:
         self.shutdown_requested = False
         # Register a "console control handler" for Ctrl+C/Break notification.
         SetConsoleCtrlHandler(consoleCtrlHandler)
-        
+
         # Start the thread that is watching for events.
         thread = threading.Thread(target=self.signalCheckerThread)
         # If something goes terribly wrong, don't wait for this thread!
@@ -126,12 +130,7 @@ class SignalHandler:
         logger.debug("signal handler shutdown starting.")
         self.shutdown_requested = 1
         win32event.SetEvent(self.admin_event_handle)
-        # sadly, this can deadlock at shutdown when Ctrl+C is used
-        # (although not then the event is used to trigger shutdown)
-        # at least in build 204.  Further updates as they come to hand...
-        # Remove the Windows control handler
-        #SetConsoleCtrlHandler(consoleCtrlHandler, 0)
-        self.signal_thread.join(5) # should never block for long!
+        self.signal_thread.join(5)  # should never block for long!
 
         self.registry = None
         self.event_handles = None
@@ -139,7 +138,7 @@ class SignalHandler:
         logger.debug("signal handler shutdown complete.")
 
     def consoleCtrlHandler(self, ctrlType):
-        """Called by Windows on a new thread whenever a console control 
+        """Called by Windows on a new thread whenever a console control
            event is raised."""
         logger.debug("Windows control event %d" % ctrlType)
         sig = None
@@ -153,13 +152,13 @@ class SignalHandler:
             # CTRL_CLOSE_EVENT gives us 5 seconds before displaying
             # the "End process" dialog - so treat as 'fast'
             sig = signal.SIGTERM
-        elif ctrlType in (win32con.CTRL_LOGOFF_EVENT, 
+        elif ctrlType in (win32con.CTRL_LOGOFF_EVENT,
                           win32con.CTRL_SHUTDOWN_EVENT):
             # MSDN says:
-            # "Note that this signal is received only by services. 
-            # Interactive applications are terminated at logoff, so 
+            # "Note that this signal is received only by services.
+            # Interactive applications are terminated at logoff, so
             # they are not present when the system sends this signal."
-            # We can therefore ignore it (our service framework 
+            # We can therefore ignore it (our service framework
             # manages shutdown in this case)
             pass
         else:
@@ -169,9 +168,9 @@ class SignalHandler:
         # that we don't wake the select loop until after the shutdown
         # flags have been set.
         result = 0
-        if sig is not None and self.registry.has_key(sig):
+        if sig is not None and sig in self.registry:
             self.signalHandler(sig, None)
-            result = 1 # don't call other handlers.
+            result = 1  # don't call other handlers.
         return result
 
     def signalCheckerThread(self):
@@ -210,7 +209,8 @@ class SignalHandler:
             # Let the worker thread know there is a new handle.
             win32event.SetEvent(self.admin_event_handle)
             signame = get_signal_name(signum)
-            logger.debug("Installed sighandler for %s (%s)" % (signame, event_name))
+            logger.debug(
+                "Installed sighandler for %s (%s)" % (signame, event_name))
         items.insert(0, handler)
 
     def getRegisteredSignals(self):
@@ -226,19 +226,22 @@ class SignalHandler:
         for handler in self.registry.get(signum, []):
             # Never let a bad handler prevent the standard signal
             # handlers from running.
-            try: handler()
-            except SystemExit, rc:
-                # On Unix, signals are delivered to the main thread, so a 
+            try:
+                handler()
+            except SystemExit as rc:
+                # On Unix, signals are delivered to the main thread, so a
                 # SystemExit does the right thing.  On Windows, we are on
                 # our own thread, so throwing SystemExit there isn't a great
                 # idea.  Just shutdown the main loop.
-                logger.debug("Trapped SystemExit(%s) - doing Lifetime shutdown" % (rc,))
+                logger.debug(
+                    "Trapped SystemExit(%s) - doing Lifetime shutdown" % rc)
                 Lifetime.shutdown(rc)
             except:
                 logger.exception("A handler for %s failed!'" % signame)
-            wakeSelect() # trigger a walk around the Lifetime loop.
+            wakeSelect()  # trigger a walk around the Lifetime loop.
 
 _signals = None
+
 
 def get_signal_name(n):
     """Return the symbolic name for signal n.
@@ -257,19 +260,20 @@ def get_signal_name(n):
                 _signals[v] = k
         # extra ones that aren't (weren't?) in Windows.
         for name, val in ("SIGHUP", 1), ("SIGUSR1", 10), ("SIGUSR2", 12):
-            if not _signals.has_key(name):
+            if name not in _signals:
                 _signals[val] = name
 
     return _signals.get(n, 'signal %d' % n)
 
-# The win32 ConsoleCtrlHandler
+
 def consoleCtrlHandler(ctrlType):
+    # The win32 ConsoleCtrlHandler
     return SignalHandler.consoleCtrlHandler(ctrlType)
 
 # The SignalHandler is actually a singleton.
 SignalHandler = SignalHandler()
 
-# Need to be careful at shutdown - the 'signal watcher' thread which triggers 
-# the shutdown may still be running when the main thread terminates and 
+# Need to be careful at shutdown - the 'signal watcher' thread which triggers
+# the shutdown may still be running when the main thread terminates and
 # Python starts cleaning up.
 atexit.register(SignalHandler.shutdown)
