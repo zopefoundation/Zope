@@ -12,12 +12,15 @@
 #
 ##############################################################################
 
-import os, unittest, tempfile, cStringIO
+import cStringIO
+import os
+import tempfile
+import unittest
 
-from OFS.Application import Application, AppInitializer
-import Zope2.Startup
-import ZConfig
 from App.config import getConfiguration, setConfiguration
+from OFS.Application import Application, AppInitializer
+import ZConfig
+import Zope2.Startup
 
 TEMPNAME = tempfile.mktemp()
 TEMPPRODUCTS = os.path.join(TEMPNAME, "Products")
@@ -44,10 +47,12 @@ good_cfg = bad_cfg + """
 </zodb_db>
 """
 
+
 def getSchema():
     startup = os.path.dirname(os.path.realpath(Zope2.Startup.__file__))
     schemafile = os.path.join(startup, 'zopeschema.xml')
     return ZConfig.loadSchema(schemafile)
+
 
 def getApp():
     from App.ZApplication import ZApplicationWrapper
@@ -56,7 +61,8 @@ def getApp():
 
 original_config = None
 
-class TestInitialization( unittest.TestCase ):
+
+class TestInitialization(unittest.TestCase):
     """ Test the application initializer object """
 
     def setUp(self):
@@ -136,9 +142,3 @@ class TestInitialization( unittest.TestCase ):
         i = self.getOne()
         i.install_products()
         self.assertTrue('__roles__' in Application.misc_.__dict__)
-
-
-def test_suite():
-    suite = unittest.TestSuite()
-    suite.addTest( unittest.makeSuite( TestInitialization ) )
-    return suite
