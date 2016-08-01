@@ -25,6 +25,8 @@ Features Added
 Restructuring
 +++++++++++++
 
+- Remove temp_folder mount point from default configuration.
+
 - Split a WSGI part out of `Zope2.Startup.ZopeStarter`.
 
 - Add new `Zope2.Startup.config` module to hold configuration.

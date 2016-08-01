@@ -590,15 +590,6 @@ instancehome $INSTANCE
     mount-point /
 </zodb_db>
 
-<zodb_db temporary>
-    # Temporary storage database (for sessions)
-    <temporarystorage>
-      name temporary storage for sessioning
-    </temporarystorage>
-    mount-point /temp_folder
-    container-class Products.TemporaryFolder.TemporaryContainer
-</zodb_db>
-
 # Other storage examples
 #
 # ZEO client storage:

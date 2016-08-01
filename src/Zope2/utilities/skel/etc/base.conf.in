@@ -24,11 +24,3 @@ instancehome $INSTANCE
    </filestorage>
    mount-point /
 </zodb_db>
-
-<zodb_db temporary>
-   <temporarystorage>
-     name temporary storage for sessioning
-   </temporarystorage>
-   mount-point /temp_folder
-   container-class Products.TemporaryFolder.TemporaryContainer
-</zodb_db>

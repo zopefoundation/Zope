@@ -176,14 +176,12 @@ class StartupTestCase(unittest.TestCase):
               <filestorage>
                path <<INSTANCE_HOME>>/var/Data.fs
                </filestorage>
-                connection-class  Products.TemporaryFolder.LowConflictConnection.LowConflictConnection
                 mount-point                    /
                 cache-size                     5000
                 pool-size                      7
             </zodb_db>
             """)
-        self.assertEqual(conf.databases[0].config.connection_class.__name__,
-                         'LowConflictConnection')
+        self.assertEqual(conf.databases[0].config.cache_size, 5000)
 
     def test_max_conflict_retries_default(self):
         conf, handler = self.load_config_text("""\

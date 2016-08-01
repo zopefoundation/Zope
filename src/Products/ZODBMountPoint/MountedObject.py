@@ -350,9 +350,6 @@ def manage_getMountStatus(dispatcher):
     return res
 
 
-# DM 2005-05-17: change default for 'create_mount_points' as
-#  otherwise (after our fix) 'temp_folder' can no longer be mounted
-#def manage_addMounts(dispatcher, paths=(), create_mount_points=0,
 def manage_addMounts(dispatcher, paths=(), create_mount_points=True,
                      REQUEST=None):
     """Adds MountedObjects at the requested paths.
