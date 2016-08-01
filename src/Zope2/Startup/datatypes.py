@@ -13,37 +13,35 @@
 ##############################################################################
 """Datatypes for the Zope schema for use with ZConfig."""
 
+import cStringIO
 import os
 from UserDict import UserDict
+import traceback
 
 from ZConfig.components.logger import logger
 from ZODB.config import ZODBDatabase
 
-# generic datatypes
 
 def security_policy_implementation(value):
     value = value.upper()
     ok = ('PYTHON', 'C')
     if value not in ok:
-        raise ValueError, (
-            "security-policy-implementation must be one of %s" % repr(ok)
-            )
+        raise ValueError(
+            "security-policy-implementation must be one of %r" % ok)
     return value
+
 
 def datetime_format(value):
     value = value.lower()
     ok = ('us', 'international')
     if value not in ok:
-        raise ValueError, (
-            "datetime-format must be one of %r" % repr(ok)
-            )
+        raise ValueError("datetime-format must be one of %r" % ok)
     return value
+
 
 def cgi_environment(section):
     return section.environ
 
-# Datatype for the access and trace logs
-# (the loghandler datatypes come from the zLOG package)
 
 class LoggerFactory(logger.LoggerFactory):
     """
@@ -59,25 +57,25 @@ class LoggerFactory(logger.LoggerFactory):
         section.propagate = False
         logger.LoggerFactory.__init__(self, section)
 
-# DNS resolver
 
 def dns_resolver(hostname):
+    # DNS resolver
     from ZServer.medusa import resolver
     return resolver.caching_resolver(hostname)
 
-# mount-point definition
 
 def mount_point(value):
+    # mount-point definition
     if not value:
-        raise ValueError, 'mount-point must not be empty'
+        raise ValueError('mount-point must not be empty')
     if not value.startswith('/'):
-        raise ValueError, ("mount-point '%s' is invalid: mount points must "
-                           "begin with a slash" % value)
+        raise ValueError("mount-point '%s' is invalid: mount points must "
+                         "begin with a slash" % value)
     return value
 
-# A datatype that converts a Python dotted-path-name to an object
 
 def importable_name(name):
+    # A datatype that converts a Python dotted-path-name to an object
     try:
         components = name.split('.')
         start = components[0]
@@ -93,31 +91,31 @@ def importable_name(name):
                 package = __import__(n, g, g, component)
         return package
     except ImportError:
-
-        import traceback, cStringIO
         IO = cStringIO.StringIO()
         traceback.print_exc(file=IO)
         raise ValueError(
-            'The object named by "%s" could not be imported\n%s' %  (name, IO.getvalue()))
+            'The object named by "%s" could not be imported\n%s' % (
+                name, IO.getvalue()))
 
-# A datatype that ensures that a dotted path name can be resolved but
-# returns the name instead of the object
 
 def python_dotted_path(name):
-    ob = importable_name(name) # will fail in course
+    # A datatype that ensures that a dotted path name can be resolved but
+    # returns the name instead of the object
+    ob = importable_name(name)  # NOQA - will fail in course
     return name
 
 
 class zdaemonEnvironDict(UserDict):
     # zdaemon 2 expects to use a 'mapping' attribute of the environ object.
+
     @property
     def mapping(self):
         return self.data
 
-# Datatype for the root configuration object
-# (default values for some computed paths, configures the dbtab)
 
 def root_config(section):
+    # Datatype for the root configuration object
+    # (default values for some computed paths, configures the dbtab)
     from ZConfig import ConfigurationError
     from ZConfig.matcher import SectionValue
     if section.environment is None:
@@ -136,8 +134,8 @@ def root_config(section):
     if not section.databases:
         section.databases = []
 
-    mount_factories = {} # { name -> factory}
-    mount_points = {} # { virtual path -> name }
+    mount_factories = {}  # { name -> factory}
+    mount_points = {}  # { virtual path -> name }
     dup_err = ('Invalid configuration: ZODB databases named "%s" and "%s" are '
                'both configured to use the same mount point, named "%s"')
 
@@ -146,7 +144,7 @@ def root_config(section):
         name = database.config.getSectionName()
         mount_factories[name] = database
         for point in points:
-            if mount_points.has_key(point):
+            if point in mount_points:
                 raise ConfigurationError(dup_err % (mount_points[point],
                                                     name, point))
             mount_points[point] = name
@@ -166,6 +164,7 @@ def root_config(section):
     section.product_config = pconfigs
 
     return section
+
 
 class ZopeDatabase(ZODBDatabase):
     """ A ZODB database datatype that can handle an extended set of
@@ -223,6 +222,7 @@ class ZopeDatabase(ZODBDatabase):
                 return (real_root, real_path, container_class)
         raise LookupError('Nothing known about mount path %s' % mount_path)
 
+
 def default_zpublisher_encoding(value):
     # This is a bit clunky but necessary :-(
     # These modules are imported during the configuration process
@@ -234,6 +234,7 @@ def default_zpublisher_encoding(value):
     HTTPRequest.default_encoding = value
     HTTPResponse.default_encoding = value
     return value
+
 
 class DBTab:
     """A Zope database configuration, similar in purpose to /etc/fstab.
@@ -249,17 +250,14 @@ class DBTab:
         """
         return self.mount_paths.items()
 
-
     def listDatabaseNames(self):
         """Returns a sequence of names.
         """
         return self.db_factories.keys()
 
-
     def hasDatabase(self, name):
         """Returns true if name is the name of a configured database."""
-        return self.db_factories.has_key(name)
-
+        return name in self.db_factories
 
     def _mountPathError(self, mount_path):
         from ZConfig import ConfigurationError
@@ -285,7 +283,7 @@ class DBTab:
     def getDatabaseFactory(self, mount_path=None, name=None):
         if name is None:
             name = self.getName(mount_path)
-        if not self.db_factories.has_key(name):
+        if name not in self.db_factories:
             raise KeyError('%s is not a configured database' % repr(name))
         return self.db_factories[name]
 
@@ -295,12 +293,9 @@ class DBTab:
             self._mountPathError(mount_path)
         return name
 
-# class factories (potentially) used by the class-factory parameter in
-# zopeschema.xml
 
 def minimalClassFactory(jar, module, name,
-                        _silly=('__doc__',), _globals={},
-                        ):
+                        _silly=('__doc__',), _globals={}):
     """Minimal class factory.
 
     If any class is not found, this class factory will propagate
@@ -309,9 +304,9 @@ def minimalClassFactory(jar, module, name,
     m = __import__(module, _globals, _globals, _silly)
     return getattr(m, name)
 
+
 def simpleClassFactory(jar, module, name,
-                       _silly=('__doc__',), _globals={},
-                       ):
+                       _silly=('__doc__',), _globals={}):
     """Class factory.
     """
     import OFS.Uninstalled

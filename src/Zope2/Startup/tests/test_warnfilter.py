@@ -122,6 +122,3 @@ class TestWarnFilter(unittest.TestCase):
                category A.Module.That.Doesnt.Exist
             </warnfilter>
             """)
-
-def test_suite():
-    return unittest.makeSuite(TestWarnFilter)

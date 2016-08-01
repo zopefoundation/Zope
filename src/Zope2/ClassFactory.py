@@ -14,4 +14,4 @@
 """
 
 # Stub in case anyone depends on this
-from App.ClassFactory import ClassFactory
+from App.ClassFactory import ClassFactory  # NOQA

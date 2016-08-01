@@ -24,17 +24,17 @@ import Products
 
 from Zope2.Startup import datatypes
 
-from App.config import getConfiguration
-
 
 TEMPNAME = tempfile.mktemp()
 TEMPPRODUCTS = os.path.join(TEMPNAME, "Products")
 TEMPVAR = os.path.join(TEMPNAME, "var")
 
+
 def getSchema():
     startup = os.path.dirname(os.path.realpath(Zope2.Startup.__file__))
     schemafile = os.path.join(startup, 'zopeschema.xml')
     return ZConfig.loadSchema(schemafile)
+
 
 class StartupTestCase(unittest.TestCase):
 
@@ -68,8 +68,6 @@ class StartupTestCase(unittest.TestCase):
         return conf, handler
 
     def test_load_config_template(self):
-        schema = self.schema
-        cfg = getConfiguration()
         import Zope2.utilities
         base = os.path.dirname(Zope2.utilities.__file__)
         fn = os.path.join(base, "skel", "etc", "base.conf.in")
@@ -102,7 +100,8 @@ class StartupTestCase(unittest.TestCase):
             """)
         items = conf.environment.items()
         items.sort()
-        self.assertEqual(items, [("FEARFACTORY", "rocks"), ("NSYNC","doesnt")])
+        self.assertEqual(
+            items, [("FEARFACTORY", "rocks"), ("NSYNC", "doesnt")])
 
     def test_ms_public_header(self):
         from Zope2.Startup import config
@@ -207,7 +206,3 @@ class StartupTestCase(unittest.TestCase):
             default-zpublisher-encoding iso-8859-15
             """)
         self.assertEqual(conf.default_zpublisher_encoding, 'iso-8859-15')
-
-
-def test_suite():
-    return unittest.makeSuite(StartupTestCase)

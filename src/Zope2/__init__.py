@@ -33,7 +33,12 @@
 # old behavior is likely to cause problems as ZODB backends, like ZEO,
 # gain new features.
 
+import os
+
+from Zope2.Startup.run import configure
+
 _began_startup = 0
+
 
 def startup():
     """Initialize the Zope Package and provide a published module"""
@@ -46,10 +51,12 @@ def startup():
     from Zope2.App.startup import startup as _startup
     _startup()
 
+
 def app(*args, **kw):
     """Utility for scripts to open a connection to the database"""
     startup()
     return bobo_application(*args, **kw)
+
 
 def debug(*args, **kw):
     """Utility to try a Zope request using the interactive interpreter"""
@@ -57,7 +64,6 @@ def debug(*args, **kw):
     import ZPublisher
     return ZPublisher.test('Zope2', *args, **kw)
 
-from Zope2.Startup.run import configure
 
 def _configure():
     # Load configuration file from (optional) environment variable
@@ -66,6 +72,7 @@ def _configure():
     configfile = os.environ.get('ZOPE_CONFIG')
     if configfile is not None:
         configure(configfile)
+
 
 # Zope2.App.startup.startup() sets the following variables in this module.
 DB = None
@@ -76,8 +83,6 @@ zpublisher_exception_hook = None
 __bobo_before__ = None
 
 
-import os
 if os.environ.get('ZOPE_COMPATIBLE_STARTUP'):
     # Open the database immediately (see comment above).
     startup()
-
