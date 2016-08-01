@@ -8,6 +8,8 @@ http://docs.zope.org/zope2/
 2.13.25 (unreleased)
 --------------------
 
+- Add a dependency on the empty `Products.Sessions` project.
+
 - Removed docstrings from some methods to avoid publishing them.  From
   Products.PloneHotfix20160419.  [maurits]
 
