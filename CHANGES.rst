@@ -18,6 +18,10 @@ Features Added
 
 - Add better blob support to HTTPRequest.ZopeFieldStorage.
 
+- Updated distributions:
+
+  - AccessControl = 4.0a2
+
 Restructuring
 +++++++++++++
 
