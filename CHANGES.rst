@@ -25,6 +25,9 @@ Features Added
 Restructuring
 +++++++++++++
 
+- Split `Products.TemporaryFolder` and `Products.ZODBMountPoint` into
+  one new project called `Products.TemporaryFolder`.
+
 - Split a WSGI part out of `zopeschema.xml`. This reduces the supported
   `zope.conf` directives when run under WSGI.
 

@@ -65,7 +65,6 @@ setup(
         'five.globalrequest',
         'repoze.retry',
         'setuptools',
-        'tempstorage',
         'transaction',
         'waitress',
         'zdaemon',
