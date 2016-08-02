@@ -19,34 +19,122 @@ import tempfile
 import unittest
 
 import ZConfig
-import Zope2.Startup
+
 import Products
-
 from Zope2.Startup import datatypes
+from Zope2.Startup.options import ZopeOptions
 
-
+_SCHEMA = {}
 TEMPNAME = tempfile.mktemp()
 TEMPPRODUCTS = os.path.join(TEMPNAME, "Products")
 TEMPVAR = os.path.join(TEMPNAME, "var")
 
 
-def getSchema():
-    startup = os.path.dirname(os.path.realpath(Zope2.Startup.__file__))
-    schemafile = os.path.join(startup, 'zopeschema.xml')
-    return ZConfig.loadSchema(schemafile)
+def getSchema(schemafile):
+    global _SCHEMA
+    if schemafile not in _SCHEMA:
+        opts = ZopeOptions()
+        opts.schemafile = schemafile
+        opts.load_schema()
+        _SCHEMA[schemafile] = opts.schema
+    return _SCHEMA[schemafile]
 
 
-class StartupTestCase(unittest.TestCase):
+class WSGIStartupTestCase(unittest.TestCase):
 
-    schema = None
+    @property
+    def schema(self):
+        return getSchema('wsgischema.xml')
 
-    def setUp(self):
-        if self.schema is None:
-            StartupTestCase.schema = getSchema()
+    def load_config_text(self, text):
+        # We have to create a directory of our own since the existence
+        # of the directory is checked.  This handles this in a
+        # platform-independent way.
+        schema = self.schema
+        sio = cStringIO.StringIO(
+            text.replace("<<INSTANCE_HOME>>", TEMPNAME))
+        os.mkdir(TEMPNAME)
+        os.mkdir(TEMPVAR)
+        try:
+            conf, handler = ZConfig.loadConfigFile(schema, sio)
+        finally:
+            os.rmdir(TEMPVAR)
+            os.rmdir(TEMPNAME)
+        self.assertEqual(conf.instancehome, TEMPNAME)
+        return conf, handler
+
+    def test_load_config_template(self):
+        import Zope2.utilities
+        base = os.path.dirname(Zope2.utilities.__file__)
+        fn = os.path.join(base, "skel", "etc", "base.conf.in")
+        f = open(fn)
+        text = f.read()
+        f.close()
+        self.load_config_text(text)
+
+    def test_environment(self):
+        conf, handler = self.load_config_text("""\
+            # instancehome is here since it's required
+            instancehome <<INSTANCE_HOME>>
+            <environment>
+              FEARFACTORY rocks
+              NSYNC doesnt
+            </environment>
+            """)
+        items = conf.environment.items()
+        items.sort()
+        self.assertEqual(
+            items, [("FEARFACTORY", "rocks"), ("NSYNC", "doesnt")])
+
+    def test_zodb_db(self):
+        conf, handler = self.load_config_text("""\
+            instancehome <<INSTANCE_HOME>>
+            <zodb_db main>
+              <filestorage>
+               path <<INSTANCE_HOME>>/var/Data.fs
+               </filestorage>
+                mount-point                    /
+                cache-size                     5000
+                pool-size                      7
+            </zodb_db>
+            """)
+        self.assertEqual(conf.databases[0].config.cache_size, 5000)
+
+    def test_max_conflict_retries_default(self):
+        conf, handler = self.load_config_text("""\
+            instancehome <<INSTANCE_HOME>>
+            """)
+        self.assertEqual(conf.max_conflict_retries, 3)
+
+    def test_max_conflict_retries_explicit(self):
+        conf, handler = self.load_config_text("""\
+            instancehome <<INSTANCE_HOME>>
+            max-conflict-retries 15
+            """)
+        self.assertEqual(conf.max_conflict_retries, 15)
+
+    def test_default_zpublisher_encoding(self):
+        conf, dummy = self.load_config_text("""\
+            instancehome <<INSTANCE_HOME>>
+            """)
+        self.assertEqual(conf.default_zpublisher_encoding, 'utf-8')
+
+        conf, dummy = self.load_config_text("""\
+            instancehome <<INSTANCE_HOME>>
+            default-zpublisher-encoding iso-8859-15
+            """)
+        self.assertEqual(conf.default_zpublisher_encoding, 'iso-8859-15')
+
+
+class ZServerStartupTestCase(unittest.TestCase):
 
     def tearDown(self):
         Products.__path__ = [d for d in Products.__path__
                              if os.path.exists(d)]
+
+    @property
+    def schema(self):
+        return getSchema('zopeschema.xml')
 
     def load_config_text(self, text):
         # We have to create a directory of our own since the existence
@@ -67,15 +155,6 @@ class StartupTestCase(unittest.TestCase):
         self.assertEqual(conf.instancehome, TEMPNAME)
         return conf, handler
 
-    def test_load_config_template(self):
-        import Zope2.utilities
-        base = os.path.dirname(Zope2.utilities.__file__)
-        fn = os.path.join(base, "skel", "etc", "base.conf.in")
-        f = open(fn)
-        text = f.read()
-        f.close()
-        self.load_config_text(text)
-
     def test_cgi_environment(self):
         conf, handler = self.load_config_text("""\
             # instancehome is here since it's required
@@ -88,20 +167,6 @@ class StartupTestCase(unittest.TestCase):
         items = conf.cgi_environment.items()
         items.sort()
         self.assertEqual(items, [("ANOTHER", "value2"), ("HEADER", "value")])
-
-    def test_environment(self):
-        conf, handler = self.load_config_text("""\
-            # instancehome is here since it's required
-            instancehome <<INSTANCE_HOME>>
-            <environment>
-              FEARFACTORY rocks
-              NSYNC doesnt
-            </environment>
-            """)
-        items = conf.environment.items()
-        items.sort()
-        self.assertEqual(
-            items, [("FEARFACTORY", "rocks"), ("NSYNC", "doesnt")])
 
     def test_ms_public_header(self):
         from Zope2.Startup import config
@@ -159,50 +224,3 @@ class StartupTestCase(unittest.TestCase):
         self.assertEqual(conf.access.name, "access")
         self.assertEqual(conf.access.handler_factories[0].section.path, fn)
         self.assert_(conf.trace is None)
-
-    def test_dns_resolver(self):
-        from ZServer.medusa import resolver
-        conf, handler = self.load_config_text("""\
-            instancehome <<INSTANCE_HOME>>
-            dns-server localhost
-            """)
-        self.assert_(isinstance(conf.dns_resolver, resolver.caching_resolver))
-
-    def test_zodb_db(self):
-        conf, handler = self.load_config_text("""\
-            instancehome <<INSTANCE_HOME>>
-            <zodb_db main>
-              <filestorage>
-               path <<INSTANCE_HOME>>/var/Data.fs
-               </filestorage>
-                mount-point                    /
-                cache-size                     5000
-                pool-size                      7
-            </zodb_db>
-            """)
-        self.assertEqual(conf.databases[0].config.cache_size, 5000)
-
-    def test_max_conflict_retries_default(self):
-        conf, handler = self.load_config_text("""\
-            instancehome <<INSTANCE_HOME>>
-            """)
-        self.assertEqual(conf.max_conflict_retries, 3)
-
-    def test_max_conflict_retries_explicit(self):
-        conf, handler = self.load_config_text("""\
-            instancehome <<INSTANCE_HOME>>
-            max-conflict-retries 15
-            """)
-        self.assertEqual(conf.max_conflict_retries, 15)
-
-    def test_default_zpublisher_encoding(self):
-        conf, dummy = self.load_config_text("""\
-            instancehome <<INSTANCE_HOME>>
-            """)
-        self.assertEqual(conf.default_zpublisher_encoding, 'utf-8')
-
-        conf, dummy = self.load_config_text("""\
-            instancehome <<INSTANCE_HOME>>
-            default-zpublisher-encoding iso-8859-15
-            """)
-        self.assertEqual(conf.default_zpublisher_encoding, 'iso-8859-15')

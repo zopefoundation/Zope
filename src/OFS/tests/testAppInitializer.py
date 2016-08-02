@@ -39,7 +39,7 @@ instancehome <<INSTANCE_HOME>>
 
 def getSchema():
     startup = os.path.dirname(os.path.realpath(Zope2.Startup.__file__))
-    schemafile = os.path.join(startup, 'zopeschema.xml')
+    schemafile = os.path.join(startup, 'wsgischema.xml')
     return ZConfig.loadSchema(schemafile)
 
 

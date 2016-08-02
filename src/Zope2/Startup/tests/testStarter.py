@@ -23,17 +23,16 @@ import tempfile
 import unittest
 
 import ZConfig
-
 from ZConfig.components.logger.tests.test_logger import LoggingTestHelper
 
-import Zope2.Startup
-import Products
-
 from App.config import getConfiguration, setConfiguration
+import Products
+from Zope2.Startup import get_starter
+from Zope2.Startup.options import ZopeOptions
 
 TEMPNAME = tempfile.mktemp()
 TEMPPRODUCTS = os.path.join(TEMPNAME, "Products")
-_SCHEMA = None
+_SCHEMA = {}
 
 LIFETIME = True
 try:
@@ -42,13 +41,14 @@ except ImportError:
     LIFETIME = False
 
 
-def getSchema():
+def getSchema(schemafile):
     global _SCHEMA
-    if _SCHEMA is None:
-        startup = os.path.dirname(Zope2.Startup.__file__)
-        schemafile = os.path.join(startup, 'zopeschema.xml')
-        _SCHEMA = ZConfig.loadSchema(schemafile)
-    return _SCHEMA
+    if schemafile not in _SCHEMA:
+        opts = ZopeOptions()
+        opts.schemafile = schemafile
+        opts.load_schema()
+        _SCHEMA[schemafile] = opts.schema
+    return _SCHEMA[schemafile]
 
 # try to preserve logging state so we don't screw up other unit tests
 # that come later
@@ -83,16 +83,12 @@ class BaseTestCase(LoggingTestHelper):
             logger = logging.getLogger(name)
             logger.__dict__.update(logger_states[name])
 
-    @property
-    def schema(self):
-        return getSchema()
-
     def _clearHandlers(self):
         from ZConfig.components.logger import loghandler
         del loghandler._reopenable_handlers[:]
 
     def get_starter(self, conf, wsgi=False):
-        starter = Zope2.Startup.get_starter(wsgi=wsgi)
+        starter = get_starter(wsgi=wsgi)
         starter.setConfiguration(conf)
         return starter
 
@@ -116,6 +112,10 @@ class BaseTestCase(LoggingTestHelper):
 
 
 class WSGIStarterTestCase(BaseTestCase, unittest.TestCase):
+
+    @property
+    def schema(self):
+        return getSchema('wsgischema.xml')
 
     def testSetupLocale(self):
         # XXX this almost certainly won't work on all systems
@@ -246,6 +246,10 @@ class WSGIStarterTestCase(BaseTestCase, unittest.TestCase):
 
 if LIFETIME:
     class ZopeStarterTestCase(BaseTestCase, unittest.TestCase):
+
+        @property
+        def schema(self):
+            return getSchema('zopeschema.xml')
 
         def testDropPrivileges(self):
             # somewhat incomplete because we we're never running as root
