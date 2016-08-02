@@ -32,8 +32,7 @@ action [arguments] -- see below
 
 Actions are commands like "start", "stop" and "status".  If -i is
 specified or no action is specified on the command line, a "shell"
-interpreting actions typed interactively is started (unless the
-configuration option default_to_interactive is set to false).  Use the
+interpreting actions typed interactively is started. Use the
 action "help" to find out about available actions.
 """
 
@@ -45,12 +44,10 @@ import signal
 import pkg_resources
 
 import zdaemon
-import Zope2.Startup
-
-from zdaemon.zdctl import ZDCmd
-from zdaemon.zdoptions import ZDOptions
+from zdaemon.zdctl import ZDCmd, ZDCtlOptions
 from ZConfig.components.logger.handlers import FileHandlerFactory
-from ZConfig.datatypes import existing_dirpath
+
+from Zope2.Startup.options import ZopeOptions
 
 if sys.version_info > (3, 0):
     basestring = str
@@ -76,25 +73,23 @@ def quote_command(command):
     return command
 
 
-class ZopeCtlOptions(ZDOptions):
+class ZopeCtlOptions(ZopeOptions, ZDCtlOptions):
     # Zope controller options.
     #
     # After initialization, this should look very much like a
     # zdaemon.zdctl.ZDCtlOptions instance.  Many of the attributes are
     # initialized from different sources, however.
 
+    # Provide help message, without indentation.
     __doc__ = __doc__
 
-    positional_args_allowed = 1
-    schemadir = os.path.dirname(Zope2.Startup.__file__)
-    schemafile = "zopeschema.xml"
-    uid = gid = None
+    positional_args_allowed = True
 
-    # this indicates that no explict program has been provided.
+    # this indicates that no explicit program has been provided.
     # the command line option can set this.
     program = None
 
-    # this indicates that no explict socket name has been provided.
+    # this indicates that no explicit socket name has been provided.
     # the command line option can set this.
     sockname = None
 
@@ -104,29 +99,13 @@ class ZopeCtlOptions(ZDOptions):
     logsectionname = None
 
     def __init__(self):
-        ZDOptions.__init__(self)
-        self.add("program", "runner.program", "p:", "program=",
-                 handler=string_list)
-        self.add("backofflimit", "runner.backoff_limit",
-                 "b:", "backoff-limit=", int, default=10)
-        self.add("daemon", "runner.daemon", "d", "daemon", flag=1, default=1)
-        self.add("forever", "runner.forever", "f", "forever",
-                 flag=1, default=0)
-        self.add("hang_around", "runner.hang_around", default=0)
+        ZDCtlOptions.__init__(self)
         self.add("interactive", None, "i", "interactive", flag=1)
         self.add("default_to_interactive", "runner.default_to_interactive",
                  default=1)
-        self.add("logfile", None, "l:", "logfile=")
-        self.add("user", "runner.user", "u:", "user=")
-        self.add("prompt", "runner.prompt", default="zopectl>")
-        self.add("umask", "runner.umask", "m:", "umask=")
-        self.add("sockname", "runner.socket_name", "s:", "socket-name=",
-                 existing_dirpath, default=None)
-        self.add("transcript", "runner.transcript", "t:", "transcript=",
-                 default="/dev/null")
 
     def realize(self, *args, **kw):
-        ZDOptions.realize(self, *args, **kw)
+        ZopeOptions.realize(self, *args, **kw)
         # Additional checking of user option; set uid and gid
         if self.user is not None:
             import pwd
