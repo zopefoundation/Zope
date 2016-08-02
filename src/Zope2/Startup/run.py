@@ -67,6 +67,8 @@ def make_wsgi_app(global_config, zope_conf):
     starter = get_starter(wsgi=True)
     opts = ZopeOptions()
     opts.configfile = zope_conf
+    if opts.schemafile == 'zopeschema.xml':
+        opts.schemafile = 'wsgischema.xml'
     opts.realize(args=(), progname='Zope2WSGI', raise_getopt_errs=False)
     handleConfig(opts.configroot, opts.confighandlers)
     setConfiguration(opts.configroot)

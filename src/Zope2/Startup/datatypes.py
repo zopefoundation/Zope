@@ -114,22 +114,22 @@ class zdaemonEnvironDict(UserDict):
 
 
 def root_config(section):
-    # Datatype for the root configuration object
-    # (default values for some computed paths, configures the dbtab)
     from ZConfig import ConfigurationError
     from ZConfig.matcher import SectionValue
     if section.environment is None:
         section.environment = zdaemonEnvironDict()
-    if section.cgi_environment is None:
-        section.cgi_environment = zdaemonEnvironDict()
+    if hasattr(section, 'cgi_environment'):
+        if section.cgi_environment is None:
+            section.cgi_environment = zdaemonEnvironDict()
     if section.clienthome is None:
         section.clienthome = os.path.join(section.instancehome, "var")
-    # set up defaults for pid_filename and lock_filename if they're
-    # not in the config
-    if section.pid_filename is None:
-        section.pid_filename = os.path.join(section.clienthome, 'Z2.pid')
-    if section.lock_filename is None:
-        section.lock_filename = os.path.join(section.clienthome, 'Z2.lock')
+
+    if hasattr(section, 'pid_filename'):
+        if section.pid_filename is None:
+            section.pid_filename = os.path.join(section.clienthome, 'Z2.pid')
+    if hasattr(section, 'lock_filename'):
+        if section.lock_filename is None:
+            section.lock_filename = os.path.join(section.clienthome, 'Z2.lock')
 
     if not section.databases:
         section.databases = []

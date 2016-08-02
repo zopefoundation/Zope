@@ -99,6 +99,7 @@ class ZopeCtlOptions(ZopeOptions, ZDCtlOptions):
     logsectionname = None
 
     def __init__(self):
+        ZopeOptions.__init__(self)
         ZDCtlOptions.__init__(self)
         self.add("interactive", None, "i", "interactive", flag=1)
         self.add("default_to_interactive", "runner.default_to_interactive",

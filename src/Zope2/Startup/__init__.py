@@ -114,10 +114,6 @@ class WSGIStarter(object):
     def setupConfiguredLoggers(self):
         # Must happen after ZopeStarter.setupInitialLogging()
         self.event_logger.removeHandler(self.startup_handler)
-        if self.cfg.zserver_read_only_mode:
-            # no log files written in read only mode
-            return
-
         if self.cfg.eventlog is not None:
             self.cfg.eventlog()
         if self.cfg.access is not None:

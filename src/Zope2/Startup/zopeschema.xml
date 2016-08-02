@@ -1,31 +1,12 @@
 <schema prefix="Zope2.Startup.datatypes"
         datatype=".root_config"
-        handler="root_handler">
+        handler="root_handler"
+        extends="wsgischema.xml">
 
   <!-- type definitions -->
 
-  <import package="ZConfig.components.logger" file="handlers.xml"/>
-  <import package="ZConfig.components.logger" file="eventlog.xml"/>
-  <import package="ZODB"/>
+  <import package="tempstorage" condition="tempstorage"/>
   <import package="ZServer"/>
-  <import package="tempstorage"/>
-  <import package="Zope2.Startup" file="warnfilter.xml"/>
-
-  <sectiontype name="logger" datatype=".LoggerFactory">
-    <description>
-      This "logger" type only applies to access and request ("trace")
-      logging; event logging is handled by the "logging" package in
-      the Python standard library.  The loghandler type used here is
-      provided by the "ZConfig.components.logger" package.
-    </description>
-    <key name="level"
-         datatype="ZConfig.components.logger.datatypes.logging_level"
-         default="info"/>
-    <multisection name="*"
-                  type="ZConfig.logger.handler"
-                  attribute="handlers"
-                  required="yes"/>
-  </sectiontype>
 
   <sectiontype name="cgi-environment"
                datatype=".cgi_environment"
@@ -37,20 +18,6 @@
     <key name="+" attribute="environ">
       <description>
         Use any key/value pair, e.g. 'HTTPS_PORT 443'
-      </description>
-    </key>
-  </sectiontype>
-
-  <sectiontype name="environment"
-               datatype=".cgi_environment"
-               keytype="identifier">
-    <description>
-     A section which allows you to define simple key-value pairs which
-     will be used as environment variable settings during startup.
-    </description>
-    <key name="+" attribute="environ">
-      <description>
-        Use any key/value pair, e.g. 'MY_PRODUCT_ENVVAR foo_bar'
       </description>
     </key>
   </sectiontype>
@@ -200,131 +167,9 @@
 
   </sectiontype>
 
-  <sectiontype name="zodb_db" datatype=".ZopeDatabase"
-               implements="ZODB.database" extends="zodb">
-
-    <description>
-      We need to specialize the database configuration section for Zope
-      only by including a (required) mount-point argument, which
-      is a string.  A Zope ZODB database can have multiple mount points,
-      so this is a multikey.
-    </description>
-    <multikey name="mount-point" required="yes" attribute="mount_points"
-              datatype=".mount_point">
-      <description>
-       The mount point is a slash-separated path to a 
-       'Products.ZODBMountPoint.Mount.MountPoint' instance in Zope. If 
-       such an instance exists, it can mount an object (the mounted 
-       object) into Zope.
-       By default, the object will be mounted at the same path in Zope (i.e.
-       '/foo/bar' in the database will be mounted at '/foo/bar' in Zope).
-
-       The object can be mounted at a different point using the
-       'virtual_path:real_path' syntax (e.g.  'mount-point /foo/bar:/bar' 
-       will mount the object at '/bar' in the database to '/foo/bar' in 
-       Zope). The name of the mount point ('bar') must be the same as 
-       the mounted object.
-
-       It is also possible to specify the root that should be used in the
-       mounted database by using the syntax
-       'virtual_path:~real_root:real_path'. The root defaults to 'Application'
-       and should not normally be changed.
-      </description>
-    </multikey>
-
-    <key name="connection-class" datatype=".importable_name">
-      <description>
-       Change the connection class a database uses on a per-database basis to
-       support different connection policies.  Use a Python dotted-path
-       name to specify the connection class.
-      </description>
-    </key>
-
-   <key name="class-factory" datatype=".importable_name"
-        default="Zope2.Startup.datatypes.simpleClassFactory">
-      <description>
-       Change the class factory function a database uses on a
-       per-database basis to support different class factory policy.
-       Use a Python dotted-path name to specify the class factory function.
-      </description>
-    </key>
-
-    <key name="container-class" datatype="string">
-      <description>
-       Change the container class a (mounted) database uses on a
-       per-database basis to support a different container than a plain
-       Folder. Use a Python dotted-path name to specify the container class.
-      </description>
-    </key>
-
-  </sectiontype>
-
   <!-- end of type definitions -->
 
   <!-- schema begins  -->
-
-  <multisection type="warnfilter" name="*" attribute="warnfilters">
-    <!-- from zLOG -->
-    <description>
-    A multisection which allows a user to set up a Python "warning" filter.
-    The following keys are valid within a warnfilter section:
-
-      action:  one of the following strings:
-
-           "error"   turn matching warnings into exceptions
-           "ignore"  never print matching warnings
-           "always"  always print matching warnings
-           "default" print the first occurrence of matching warnings
-                     for each location where the warning is issued
-           "module"  print the first occurrence of matching warnings
-                     for each module where the warning is issued
-           "once"    print only the first occurrence of matching
-                     warnings, regardless of location
-
-      message:  a string containing a regular expression that the
-                warning message must match (the match is compiled to
-                always be case-insensitive)
-
-      category: a Python dotted-path classname (must be a subclass of
-                Warning) of which the warning category must be a subclass in
-                order to match
-
-      module:   a string containing a regular expression that the
-                module name must match (the match is compiled to be
-                case-sensitive)
-
-      lineno:   an integer that the line number where the warning
-                occurred must match, or 0 to match all line numbers
-    </description>
-  </multisection>
-
-  <section type="environment" attribute="environment" name="*">
-    <description>
-     A section which allows a user to define arbitrary key-value pairs for
-     use as environment variables during Zope's run cycle.  It
-     is not recommended to set system-related environment variables such as
-     PYTHONPATH within this section.
-    </description>
-  </section>
-
-  <key name="instancehome" datatype="existing-directory"
-       required="yes">
-    <description>
-      The top-level directory which contains the "instance" data for the
-      application server. It may also contain "etc", "bin", "log",
-      and "var" directories depending on how you've configured your Zope
-      instance.
-    </description>
-  </key>
-
-  <key name="clienthome" datatype="existing-directory">
-    <description>
-      The directory used to store the default filestorage file used to
-      back the ZODB database, as well as other files used by the
-      Zope applications server during runtime.
-    </description>
-    <metadefault>$instancehome/var</metadefault>
-  </key>
 
   <multikey name="products" datatype="existing-directory">
     <description>
@@ -333,7 +178,6 @@
     </description>
     <metadefault></metadefault>
   </multikey>
-
 
   <key name="extensions" datatype="existing-directory">
     <description>
@@ -367,25 +211,6 @@
     <metadefault>$clienthome/Z2.lock</metadefault>
   </key>
 
-  <key name="debug-mode" datatype="boolean" default="off">
-    <description>
-    A switch which controls several aspects of Zope operation useful for
-    developing under Zope.  When debug mode is on:
-
-     - Errors in product initialization will cause startup to fail
-       (instead of writing error messages to the event log file).
-
-     - Filesystem-based scripts such as skins, PageTemplateFiles, and
-       DTMLFiles can be edited while the server is running and the server
-       will detect these changes in real time.  When this switch is
-       off, you must restart the server to see the changes.
-
-     Setting this to 'off' when Zope is in a production environment is
-     encouraged, as it speeds execution (sometimes dramatically).
-    </description>
-    <metadefault>off</metadefault>
-  </key>
-
   <key name="effective-user">
     <description>
      If you intend to run Zope as the "root" user, you must supply this
@@ -403,47 +228,12 @@
     <metadefault>off</metadefault>
   </key>
 
-  <key name="locale" datatype="locale" handler="locale">
-    <description>
-     Enable locale (internationalization) support by supplying a locale
-     name to be used. See your operating system documentation for locale
-     information specific to your system. If your Python module does not
-     support the locale module, or if the requested locale is not
-     supported by your system, an error will be raised and Zope will not
-     start.
-    </description>
-    <metadefault>unset</metadefault>
-  </key>
-
-  <key name="datetime-format" datatype=".datetime_format"
-       handler="datetime_format" default="us">
-    <description>
-     Set this variable either to "us" or "international" to force the
-     DateTime module to parse date strings either with
-     month-before-days-before-year ("us") or
-     days-before-month-before-year ("international").  The default
-     behaviour of DateTime (when this setting is left unset) is to
-     parse dates as US dates.
-    </description>
-    <metadefault>us</metadefault>
-  </key>
-
   <key name="zserver-threads" datatype="integer" default="2">
      <description>
      Specify the number of threads that Zope's ZServer web server will use
      to service requests. The default is 2.
     </description>
     <metadefault>2</metadefault>
-  </key>
-
-  <key name="python-check-interval" datatype="integer" default="1000">
-    <description>
-      Value passed to Python's sys.setcheckinterval() function.  The
-      higher this is, the less frequently the Python interpreter
-      checks for keyboard interrupts.  Setting this to higher values
-      also reduces the frequency of potential thread switches, which
-      can improve the performance of a busy server.
-    </description>
   </key>
 
   <key name="zserver-read-only-mode" datatype="boolean" default="off">
@@ -525,93 +315,6 @@
     </description>
   </key>
 
-  <key name="http-realm" default="Zope">
-    <description>
-     The HTTP "Realm" header value sent by this Zope instance. This value
-     often shows up in basic authentication dialogs.
-    </description>
-    <metadefault>Zope</metadefault>
-  </key>
-
-  <key name="automatically-quote-dtml-request-data" datatype="boolean"
-       default="on" handler="automatically_quote_dtml_request_data">
-     <description>
-     Set this directive to 'off' in order to disable the autoquoting of
-     implicitly retrieved REQUEST data by DTML code which contains a '&lt;'
-     when used in &lt;dtml-var&gt; construction. When this directive is 'on',
-     all data implicitly retrieved from the REQUEST in DTML (as opposed to
-     addressing REQUEST.somevarname directly) that contains a '&lt;' will be
-     HTML-quoted when interpolated via a &lt;dtml-var&gt; or &amp;dtml-
-     construct. This mitigates the possibility that DTML programmers will
-     leave their sites open to a "client-side trojan" attack.
-     </description>
-     <metadefault>on</metadefault>
-  </key>
-
-  <multikey name="trusted-proxy" datatype="ipaddr-or-hostname"
-       attribute="trusted_proxies">
-     <description>
-     Define one or more 'trusted-proxies' keys, each of which is a
-     hostname or an IP address.  The set of definitions comprises a list
-     of front-end proxies that are trusted to supply an accurate
-     X_FORWARDED_FOR header to Zope (security-related).
-     </description>
-     <metadefault>unset</metadefault>
-  </multikey>
-
-  <key name="max-conflict-retries" datatype="integer" default="3" attribute="max_conflict_retries">
-    <description>
-      The maximum number of retries on a conflict error
-    </description>
-  </key>
-
-  <key name="security-policy-implementation"
-       datatype=".security_policy_implementation"
-       default="C">
-     <description>
-     The default Zope "security policy" implementation is written in C.
-     Set this key to "PYTHON" to use the Python implementation
-     (useful for debugging purposes); set it to "C" to use the C
-     implementation.
-     </description>
-     <metadefault>C</metadefault>
-  </key>
-
-  <key name="skip-authentication-checking" datatype="boolean"
-       default="off">
-     <description>
-     Set this directive to 'on' to cause Zope to prevent Zope from
-     attempting to authenticate users during normal operation.
-     Potentially dangerous from a security perspective.  Only works if
-     security-policy-implementation is set to 'C'.
-     </description>
-     <metadefault>off</metadefault>
-  </key>
-
-  <key name="skip-ownership-checking" datatype="boolean"
-       default="off">
-     <description>
-     Set this directive to 'on' to cause Zope to ignore ownership checking
-     when attempting to execute "through the web" code. By default, this
-     directive is off in order to prevent 'trojan horse' security problems
-     whereby a user with less privilege can cause a user with more
-     privilege to execute code which the less privileged user has written.
-     </description>
-     <metadefault>off</metadefault>
-  </key>
-
-  <key name="verbose-security" datatype="boolean"
-       default="off">
-     <description>
-     Set this directive to 'on' to enable verbose security exceptions.
-     This can help you track down the reason for Unauthorized exceptions,
-     but it is not suitable for public sites because it may reveal
-     unnecessary information about the structure of your site.  Only
-     works if security-policy-implementation is set to 'PYTHON'.
-     </description>
-     <metadefault>off</metadefault>
-  </key>
-
   <key name="maximum-number-of-session-objects" datatype="integer"
        default="1000" handler="maximum_number_of_session_objects">
      <description>
@@ -663,47 +366,6 @@
      <metadefault>20</metadefault>
   </key>
 
-  <section type="eventlog" name="*" attribute="eventlog">
-    <description>
-      Describes what level of log output is desired and where it
-      should be written.
-    </description>
-  </section>
-
-  <section type="logger" name="access">
-     <description>
-      Describes the logging performed to capture the 'access' log,
-      which typically captures per-request data in common or combined
-      log format.
-    </description>
-  </section>
-
-  <section type="logger" name="trace">
-     <description>
-      Describes the logging performed to capture the 'trace' log,
-      which typically captures detailed per-request data useful for
-      Zope debugging.
-    </description>
-  </section>
-
-  <key name="conflict-error-log-level"
-       datatype="ZConfig.components.logger.datatypes.logging_level"
-       default="info">
-     <description>
-       Specifies at which level conflict errors are logged. Conflict
-       errors, when occurring in small numbers, are a normal part of the
-       Zope optimistic transaction conflict resolution algorithms. They
-       are retried automatically a few times, and are therefore usually
-       not visible by the user. You can specify 'notset' if you don't
-       want them logged, or use any other logger level.
-     </description>
-     <metadefault>info</metadefault>
-  </key>
-
-  <!-- max-listen-sockets and large-file-threshold should really go
-       into the ZServer package, but I can't quite figure out how to
-       put it there -->
-
   <key name="max-listen-sockets" datatype="integer"
        default="1000">
      <description>
@@ -729,72 +391,16 @@
     </description>
   </key>
 
-  <multisection type="ZODB.Database" name="+" attribute="databases">
-    <description>
-       Zope ZODB databases must have a name, and they are required to be
-       referenced via the "zodb_db" database type because it is
-       the only kind of database definition that implements
-       the required mount-point argument.  There is another
-       database sectiontype named "zodb", but it cannot be used
-       in the context of a proper Zope configuration (due to
-       lack of a mount-point).
-    </description>
-  </multisection>
-
   <section type="zoperunner" name="*" attribute="runner"/>
 
-  <key name="default-zpublisher-encoding"
-       datatype=".default_zpublisher_encoding"
-       default="utf-8">
-     <description>
-       This key controls what character set is used to encode unicode
-       data that reaches ZPublisher without any other specified encoding.
-     </description>
+  <key name="python" datatype="existing-path"
+       required="no">
+    <description>
+      Path to the Python interpreter for use by zdaemon.
+      Defaults to sys.executable.
+      Needed for buildout-based instances to supply a python
+      that has all the correct eggs on the path.
+    </description>
   </key>
-
-  <abstracttype name="zope.product.base">
-    <description>
-      Base type for product-specific configuration sections.
-
-      Specific products should implement configuration sections by
-      defining section types that implement this abstract type and
-      using their own schema component to define meaningful settings.
-
-    </description>
-  </abstracttype>
-
-  <sectiontype name="product-config" implements="zope.product.base">
-    <description>
-    Product-specific configuration, expressed as arbitrary name-value pairs.
-    </description>
-
-    <key name="+"
-         attribute="mapping"
-         required="no"
-         />
-  </sectiontype>
-
-  <multisection type="zope.product.base" name="+"
-                attribute="product_config">
-   <description>
-    Product-specific configuration stanzas.
-
-    Products may use the &lt;product-config&gt; section type, or may supply
-    a component.xml which defines section types with their own schemas.
-
-    All sections for this multisection will be collected into the
-    'product_config' attribute of the configuration object.
-   </description>
-  </multisection>
-
-    <key name="python" datatype="existing-path"
-         required="no">
-      <description>
-        Path to the Python interpreter for use by zdaemon.
-        Defaults to sys.executable.
-        Needed for buildout-based instances to supply a python
-        that has all the correct eggs on the path.
-      </description>
-    </key>
 
 </schema>

@@ -83,51 +83,48 @@ def enable_ms_public_header(value):
 
 
 def root_handler(cfg):
-    """ Mutate the configuration with defaults and perform
-    fixups of values that require knowledge about configuration
-    values outside of their context.
-    """
-
     # Set environment variables
     for k, v in cfg.environment.items():
         os.environ[k] = v
 
-    # Add directories to the pythonpath
-    instancelib = os.path.join(cfg.instancehome, 'lib', 'python')
-    if instancelib not in cfg.path:
-        if os.path.isdir(instancelib):
-            cfg.path.append(instancelib)
-    path = cfg.path[:]
-    path.reverse()
-    for dir in path:
-        sys.path.insert(0, dir)
+    if hasattr(cfg, 'path'):
+        # Add directories to the pythonpath
+        instancelib = os.path.join(cfg.instancehome, 'lib', 'python')
+        if instancelib not in cfg.path:
+            if os.path.isdir(instancelib):
+                cfg.path.append(instancelib)
+        path = cfg.path[:]
+        path.reverse()
+        for dir in path:
+            sys.path.insert(0, dir)
 
-    # Add any product directories not already in Products.__path__.
-    # Directories are added in the order they are mentioned
+    if hasattr(cfg, 'products'):
+        # Add any product directories not already in Products.__path__.
+        # Directories are added in the order they are mentioned
+        instanceprod = os.path.join(cfg.instancehome, 'Products')
+        if instanceprod not in cfg.products:
+            if os.path.isdir(instanceprod):
+                cfg.products.append(instanceprod)
 
-    instanceprod = os.path.join(cfg.instancehome, 'Products')
-    if instanceprod not in cfg.products:
-        if os.path.isdir(instanceprod):
-            cfg.products.append(instanceprod)
+        import Products
+        L = []
+        for d in cfg.products + Products.__path__:
+            if d not in L:
+                L.append(d)
+        Products.__path__[:] = L
 
-    import Products
-    L = []
-    for d in cfg.products + Products.__path__:
-        if d not in L:
-            L.append(d)
-    Products.__path__[:] = L
+    if hasattr(cfg, 'servers'):
+        # if no servers are defined, create default servers
+        if not cfg.servers:
+            cfg.servers = []
 
-    # if no servers are defined, create default http server and ftp server
-    if not cfg.servers:
-        cfg.servers = []
-
-    # prepare servers:
-    for factory in cfg.servers:
-        factory.prepare(cfg.ip_address or '',
-                        cfg.dns_resolver,
-                        "Zope2",
-                        cfg.cgi_environment,
-                        cfg.port_base)
+        # prepare servers:
+        for factory in cfg.servers:
+            factory.prepare(cfg.ip_address or '',
+                            cfg.dns_resolver,
+                            "Zope2",
+                            cfg.cgi_environment,
+                            cfg.port_base)
 
     # set up trusted proxies
     if cfg.trusted_proxies:

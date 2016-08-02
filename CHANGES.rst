@@ -25,6 +25,9 @@ Features Added
 Restructuring
 +++++++++++++
 
+- Split a WSGI part out of `zopeschema.xml`. This reduces the supported
+  `zope.conf` directives when run under WSGI.
+
 - Remove temp_folder mount point from default configuration.
 
 - Split a WSGI part out of `Zope2.Startup.ZopeStarter`.
