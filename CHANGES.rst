@@ -20,7 +20,7 @@ Features Added
 
 - Updated distributions:
 
-  - AccessControl = 4.0a2
+  - AccessControl = 4.0a3
   - AuthEncoding = 4.0.0
 
 Restructuring
