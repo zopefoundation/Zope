@@ -1,6 +1,7 @@
 -e git+https://github.com/zopefoundation/Zope.git@master#egg=Zope2
 AccessControl==4.0a2
 Acquisition==4.2.2
+AuthEncoding==4.0.0
 BTrees==4.3.1
 DateTime==4.1.1
 DocumentTemplate==2.13.2
